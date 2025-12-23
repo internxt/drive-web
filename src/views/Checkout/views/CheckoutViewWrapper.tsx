@@ -38,16 +38,7 @@ import { useInitializeCheckout } from '../hooks/useInitializeCheckout';
 import { useProducts } from '../hooks/useProducts';
 import { useUserLocation } from 'hooks/useUserLocation';
 import { useAnalytics } from '../hooks/useAnalytics';
-
-const IS_CRYPTO_PAYMENT_ENABLED = true;
-
-const STATUS_CODE_ERROR = {
-  USER_EXISTS: 409,
-  COUPON_NOT_VALID: 422,
-  PROMO_CODE_BY_NAME_NOT_FOUND: 404,
-  BAD_REQUEST: 400,
-  INTERNAL_SERVER_ERROR: 500,
-};
+import { IS_CRYPTO_PAYMENT_ENABLED, STATUS_CODE_ERROR } from '../constants';
 
 const CheckoutViewWrapper = () => {
   const { planId, promotionCode, currency, paramMobileToken: mobileToken, gclid } = useCheckoutQueryParams();

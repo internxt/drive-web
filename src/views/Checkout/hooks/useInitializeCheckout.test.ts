@@ -8,6 +8,9 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { StripeTheme } from '../constants';
+
+const LIGHT_THEME: StripeTheme = 'light';
 
 describe('Initialize checkout custom hook', () => {
   const mockTranslate = vi.fn((key: string) => key);
@@ -74,7 +77,7 @@ describe('Initialize checkout custom hook', () => {
   describe('Initialization', () => {
     test('When the hook is initialized, then Stripe SDK is loaded', async () => {
       const props = {
-        checkoutTheme: 'light',
+        checkoutTheme: LIGHT_THEME,
         translate: mockTranslate,
       };
 
@@ -88,7 +91,7 @@ describe('Initialize checkout custom hook', () => {
     test('When Stripe SDK fails to load, then user is redirected to signup page', async () => {
       vi.spyOn(paymentService, 'getStripe').mockRejectedValue(new Error('Stripe failed'));
       const props = {
-        checkoutTheme: 'light',
+        checkoutTheme: LIGHT_THEME,
         translate: mockTranslate,
       };
 
@@ -102,7 +105,7 @@ describe('Initialize checkout custom hook', () => {
     test('When Stripe SDK fails to load and user is logged in, then user is redirected to drive page', async () => {
       vi.spyOn(paymentService, 'getStripe').mockRejectedValue(new Error('Stripe failed'));
       const props = {
-        checkoutTheme: 'light',
+        checkoutTheme: LIGHT_THEME,
         user: mockUser,
         translate: mockTranslate,
       };
@@ -118,7 +121,7 @@ describe('Initialize checkout custom hook', () => {
   describe('Loading Stripe elements', () => {
     test('When Stripe SDK is loaded and price is provided, then Stripe elements are loaded', async () => {
       const props = {
-        checkoutTheme: 'light',
+        checkoutTheme: LIGHT_THEME,
         price: mockPriceWithTax,
         translate: mockTranslate,
       };
@@ -134,7 +137,7 @@ describe('Initialize checkout custom hook', () => {
     test('When Stripe elements fail to load, then user is redirected to signup page', async () => {
       vi.spyOn(checkoutService, 'loadStripeElements').mockRejectedValue(new Error('Failed to load elements'));
       const props = {
-        checkoutTheme: 'light',
+        checkoutTheme: LIGHT_THEME,
         price: mockPriceWithTax,
         translate: mockTranslate,
       };
@@ -146,24 +149,9 @@ describe('Initialize checkout custom hook', () => {
       });
     });
 
-    test('When no checkout theme is provided, then Stripe elements are not loaded', async () => {
-      const props = {
-        checkoutTheme: '',
-        price: mockPriceWithTax,
-        translate: mockTranslate,
-      };
-
-      const { result } = renderHook(() => useInitializeCheckout(props));
-
-      await waitFor(() => {
-        expect(result.current.stripeSdk).toBeDefined();
-      });
-      expect(checkoutService.loadStripeElements).not.toHaveBeenCalled();
-    });
-
     test('When no price is provided, then Stripe elements are not loaded', async () => {
       const props = {
-        checkoutTheme: 'light',
+        checkoutTheme: LIGHT_THEME,
         translate: mockTranslate,
       };
 
@@ -179,7 +167,7 @@ describe('Initialize checkout custom hook', () => {
   describe('Loading crypto currencies', () => {
     test('When the plan is lifetime, then crypto currencies are fetched', async () => {
       const props = {
-        checkoutTheme: 'light',
+        checkoutTheme: LIGHT_THEME,
         price: mockLifetimePriceWithTax,
         translate: mockTranslate,
       };
@@ -194,7 +182,7 @@ describe('Initialize checkout custom hook', () => {
 
     test('When the plan is not lifetime, then crypto currencies are not fetched', async () => {
       const props = {
-        checkoutTheme: 'light',
+        checkoutTheme: LIGHT_THEME,
         price: mockPriceWithTax,
         translate: mockTranslate,
       };
@@ -209,7 +197,7 @@ describe('Initialize checkout custom hook', () => {
     test('When fetching crypto currencies fails, then a notification is shown', async () => {
       vi.spyOn(currencyService, 'getAvailableCryptoCurrencies').mockRejectedValue(new Error('Crypto fetch failed'));
       const props = {
-        checkoutTheme: 'light',
+        checkoutTheme: LIGHT_THEME,
         price: mockLifetimePriceWithTax,
         translate: mockTranslate,
       };
@@ -228,7 +216,7 @@ describe('Initialize checkout custom hook', () => {
   describe('Checkout ready state', () => {
     test('When all initialization is complete, then the checkout is ready', async () => {
       const props = {
-        checkoutTheme: 'light',
+        checkoutTheme: LIGHT_THEME,
         price: mockPriceWithTax,
         translate: mockTranslate,
       };
@@ -242,7 +230,7 @@ describe('Initialize checkout custom hook', () => {
 
     test('When hook is initialized without price, then the checkout is not ready', async () => {
       const props = {
-        checkoutTheme: 'light',
+        checkoutTheme: LIGHT_THEME,
         translate: mockTranslate,
       };
 
@@ -258,7 +246,7 @@ describe('Initialize checkout custom hook', () => {
   describe('Hook return values', () => {
     test('When the hook is initialized, then it returns all expected values', async () => {
       const props = {
-        checkoutTheme: 'light',
+        checkoutTheme: LIGHT_THEME,
         price: mockPriceWithTax,
         translate: mockTranslate,
       };

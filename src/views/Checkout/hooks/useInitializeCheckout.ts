@@ -6,33 +6,15 @@ import { checkoutService, currencyService, paymentService } from '../services';
 import { errorService, navigationService } from 'services';
 import { AppView } from 'app/core/types';
 import { PlanInterval } from '../types';
+import { IS_CRYPTO_PAYMENT_ENABLED, STRIPE_THEME_STYLES, StripeTheme } from '../constants';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
-const THEME_STYLES = {
-  dark: {
-    backgroundColor: 'rgb(17 17 17)',
-    textColor: 'rgb(255 255 255)',
-    borderColor: 'rgb(58, 58, 59)',
-    borderInputColor: 'rgb(142, 142, 148)',
-    labelTextColor: 'rgb(229 229 235)',
-  },
-  light: {
-    backgroundColor: 'rgb(255 255 255)',
-    textColor: 'rgb(17 17 17)',
-    borderColor: 'rgb(229, 229, 235)',
-    borderInputColor: 'rgb(174, 174, 179)',
-    labelTextColor: 'rgb(58 58 59)',
-  },
-};
-
 interface UseInitializeCheckoutProps {
-  checkoutTheme: string;
+  checkoutTheme: StripeTheme;
   price?: PriceWithTax;
   user?: UserSettings;
   translate: (key: string) => string;
 }
-
-const IS_CRYPTO_PAYMENT_ENABLED = true;
 
 export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }: UseInitializeCheckoutProps) => {
   const [stripeSdk, setStripeSdk] = useState<Stripe | null>(null);
@@ -98,7 +80,7 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
     }
 
     try {
-      const stripeElements = await checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme], price);
+      const stripeElements = await checkoutService.loadStripeElements(STRIPE_THEME_STYLES[checkoutTheme], price);
       setStripeElementsOptions(stripeElements as StripeElementsOptions);
     } catch (error) {
       const castedError = errorService.castError(error);

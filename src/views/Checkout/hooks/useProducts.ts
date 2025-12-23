@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { checkoutService } from '../services';
 import { CouponCodeData } from '../types';
+import { STATUS_CODE_ERROR } from '../constants';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 interface UseProductsProps {
@@ -23,14 +24,6 @@ interface FetchSelectedPlanPayload {
   currency?: string;
   mobileToken?: string;
 }
-
-const STATUS_CODE_ERROR = {
-  USER_EXISTS: 409,
-  COUPON_NOT_VALID: 422,
-  PROMO_CODE_BY_NAME_NOT_FOUND: 404,
-  BAD_REQUEST: 400,
-  INTERNAL_SERVER_ERROR: 500,
-};
 
 export const useProducts = ({ currency, translate, planId, promotionCode, userAddress }: UseProductsProps) => {
   const [selectedPlan, setSelectedPlan] = useState<PriceWithTax>();
