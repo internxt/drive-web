@@ -60,7 +60,7 @@ export const useProducts = ({ currency, translate, planId, promotionCode, userAd
       country,
     });
     const amount = mobileToken ? { amount: 0, decimalAmount: 0 } : {};
-    setSelectedPlan({ ...plan, ...amount });
+    setSelectedPlan({ ...plan, price: { ...plan.price, ...amount } });
     if (plan?.price?.minimumSeats) {
       setBusinessSeats(plan.price.minimumSeats);
     }

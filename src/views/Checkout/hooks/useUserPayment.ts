@@ -1,242 +1,58 @@
 import { Stripe, StripeElements } from '@stripe/stripe-js';
-
-import { savePaymentDataInLocalStorage } from 'app/analytics/impact.service';
-import checkoutService from '../services/checkout.service';
-import envService from 'services/env.service';
+import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { sendConversionToAPI } from 'app/analytics/googleSheet.service';
 import navigationService from 'services/navigation.service';
 import { AppView } from 'app/core/types';
-import {
-  CreatePaymentIntentPayload,
-  InvoiceStatus,
-  PaymentType,
-  PlanInterval,
-  ProcessPurchasePayload,
-  UseUserPaymentPayload,
-} from '../types';
-import { ActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.context';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { CreateSubscriptionPayload } from '@internxt/sdk/dist/payments/types';
+import notificationsService from 'app/notifications/services/notifications.service';
+import { ActionDialog, DialogActionConfig } from 'app/contexts/dialog-manager/ActionDialogManager.context';
+import { useSubscriptionPayment } from './useSubscriptionPayment';
+import { useLifetimePayment } from './useLifetimePayment';
+import { CouponCodeData, PlanInterval } from '../types';
+
+interface UseUserPaymentParams {
+  selectedPlan: PriceWithTax;
+  token: string;
+  customerId: string;
+  priceId: string;
+  currency: string;
+  couponCodeData?: CouponCodeData;
+  elements: StripeElements;
+  gclidStored?: string;
+  seatsForBusinessSubscription?: number;
+  captchaToken: string;
+  userAddress: string;
+  translate: (key: string) => string;
+  confirmPayment: Stripe['confirmPayment'];
+  confirmSetupIntent: Stripe['confirmSetup'];
+  openCryptoPaymentDialog?: (key: ActionDialog, config?: DialogActionConfig) => void;
+}
 
 export const useUserPayment = () => {
-  const getSubscriptionPaymentIntent = async ({
-    customerId,
-    priceId,
-    token,
+  const { processSubscriptionPayment } = useSubscriptionPayment();
+  const { processLifetimePayment } = useLifetimePayment();
+
+  const trackConversion = async ({
+    gclidStored,
+    selectedPlan,
     currency,
-    quantity,
-    captchaToken,
-    promoCodeId,
-  }: CreateSubscriptionPayload) => {
-    const {
-      type: paymentType,
-      clientSecret: client_secret,
-      subscriptionId,
-      paymentIntentId,
-    } = await checkoutService.createSubscription({
-      customerId,
-      priceId,
-      token,
-      currency,
-      captchaToken,
-      promoCodeId,
-      quantity,
-    });
-
-    return {
-      type: paymentType,
-      clientSecret: client_secret,
-      subscriptionId,
-      paymentIntentId,
-    };
-  };
-
-  const getLifetimePaymentIntent = async ({
-    customerId,
-    priceId,
-    currency,
-    token,
-    userAddress,
-    captchaToken,
-    promoCodeId,
-  }: CreatePaymentIntentPayload) => {
-    const paymentIntentResponse = await checkoutService.createPaymentIntent({
-      customerId,
-      priceId,
-      currency,
-      userAddress,
-      token,
-      captchaToken,
-      promoCodeId: promoCodeId,
-    });
-
-    if (paymentIntentResponse.type === PaymentType['CRYPTO']) {
-      return {
-        id: paymentIntentResponse.id,
-        type: paymentIntentResponse.type,
-        encodedInvoiceIdToken: paymentIntentResponse.token,
-        payload: {
-          ...paymentIntentResponse.payload,
-        },
-      };
-    }
-
-    return {
-      id: paymentIntentResponse.id,
-      type: paymentIntentResponse.type,
-      clientSecret: paymentIntentResponse.clientSecret,
-      invoiceStatus: paymentIntentResponse.invoiceStatus,
-    };
-  };
-
-  const confirmStripePaymentIntent = async (
-    elements: StripeElements,
-    clientSecret: string,
-    confirmPayment: Stripe['confirmPayment'],
-  ) => {
-    const RETURN_URL_DOMAIN = envService.getVariable('hostname');
-    const { error: confirmIntentError } = await confirmPayment({
-      elements,
-      clientSecret: clientSecret,
-      confirmParams: {
-        return_url: `${RETURN_URL_DOMAIN}/checkout/success`,
-      },
-    });
-
-    if (confirmIntentError) {
-      throw new Error(confirmIntentError.message);
-    }
-  };
-
-  const confirmStripeSetupIntent = async (
-    elements: StripeElements,
-    clientSecret: string,
-    setupIntent: Stripe['confirmSetup'],
-  ) => {
-    const RETURN_URL_DOMAIN = envService.getVariable('hostname');
-    const { error: confirmIntentError } = await setupIntent({
-      elements,
-      clientSecret: clientSecret,
-      confirmParams: {
-        return_url: `${RETURN_URL_DOMAIN}/checkout/success`,
-      },
-    });
-
-    if (confirmIntentError) {
-      throw new Error(confirmIntentError.message);
-    }
-  };
-
-  const handleSubscriptionPayment = async ({
-    customerId,
-    priceId,
-    token,
-    currency,
-    seatsForBusinessSubscription = 1,
-    currentSelectedPlan,
+    seatsForBusinessSubscription,
     couponCodeData,
-    elements,
-    captchaToken,
-    translate,
-    confirmPayment,
-    confirmSetupIntent,
-  }: ProcessPurchasePayload) => {
-    const subscription = await getSubscriptionPaymentIntent({
-      customerId,
-      priceId,
-      token,
-      quantity: seatsForBusinessSubscription,
-      captchaToken,
-      promoCodeId: couponCodeData?.codeId,
+  }: {
+    gclidStored: string;
+    selectedPlan: PriceWithTax;
+    currency: string;
+    seatsForBusinessSubscription: number;
+    couponCodeData?: CouponCodeData;
+  }) => {
+    await sendConversionToAPI({
+      gclid: gclidStored,
+      name: `Checkout - ${selectedPlan.price.type}`,
+      value: selectedPlan,
       currency,
-    });
-
-    savePaymentDataInLocalStorage(
-      subscription.subscriptionId,
-      subscription.paymentIntentId,
-      currentSelectedPlan,
-      seatsForBusinessSubscription,
+      timestamp: new Date(),
+      users: seatsForBusinessSubscription,
       couponCodeData,
-    );
-
-    switch (subscription.type) {
-      case 'payment':
-        await confirmStripePaymentIntent(elements, subscription.clientSecret, confirmPayment);
-        break;
-
-      case 'setup':
-        await confirmStripeSetupIntent(elements, subscription.clientSecret, confirmSetupIntent);
-        break;
-
-      default:
-        notificationsService.show({
-          text: translate('notificationMessages.errorCreatingSubscription'),
-          type: ToastType.Error,
-        });
-        break;
-    }
-  };
-
-  const handleLifetimePayment = async ({
-    customerId,
-    priceId,
-    token,
-    currency,
-    currentSelectedPlan,
-    couponCodeData,
-    elements,
-    captchaToken,
-    userAddress,
-    confirmPayment,
-    openCryptoPaymentDialog,
-  }: ProcessPurchasePayload) => {
-    const {
-      id: paymentIntentId,
-      invoiceStatus,
-      encodedInvoiceIdToken,
-      type,
-      clientSecret,
-      payload,
-    } = await getLifetimePaymentIntent({
-      customerId,
-      priceId,
-      token,
-      captchaToken,
-      promoCodeId: couponCodeData?.codeId,
-      userAddress,
-      currency,
     });
-
-    savePaymentDataInLocalStorage(undefined, paymentIntentId, currentSelectedPlan, 1, couponCodeData);
-
-    // !DO NOT REMOVE THIS
-    // If there is a one time payment with a 100% OFF coupon code, the invoice will be marked as 'paid' by Stripe and
-    // no client secret will be provided.
-    if (invoiceStatus && invoiceStatus === InvoiceStatus.PAID) {
-      navigationService.push(AppView.CheckoutSuccess);
-      return;
-    }
-
-    if (type === PaymentType.FIAT && clientSecret) {
-      await confirmStripePaymentIntent(elements, clientSecret, confirmPayment);
-    } else if (type === PaymentType.CRYPTO) {
-      openCryptoPaymentDialog?.(ActionDialog.CryptoPayment, {
-        closeAllDialogsFirst: true,
-        data: {
-          qrUrl: payload?.qrUrl,
-          paymentRequestUri: payload?.paymentRequestUri,
-          encodedInvoiceIdToken,
-          address: payload?.paymentAddress,
-          payAmount: payload?.payAmount,
-          payCurrency: payload?.payCurrency,
-          url: payload?.url,
-          fiat: {
-            amount: currentSelectedPlan.taxes.decimalAmountWithTax,
-            currency: currentSelectedPlan.price.currency,
-          },
-        },
-      });
-    }
   };
 
   const handleUserPayment = async ({
@@ -253,58 +69,54 @@ export const useUserPayment = () => {
     userAddress,
     translate,
     confirmPayment,
-    openCryptoPaymentDialog,
     confirmSetupIntent,
-  }: UseUserPaymentPayload) => {
+    openCryptoPaymentDialog,
+  }: UseUserPaymentParams): Promise<void> => {
     const planInterval = selectedPlan.price.interval;
 
     if (gclidStored) {
-      await sendConversionToAPI({
-        gclid: gclidStored,
-        name: `Checkout - ${selectedPlan.price.type}`,
-        value: selectedPlan,
+      await trackConversion({
+        gclidStored,
+        selectedPlan,
         currency,
-        timestamp: new Date(),
-        users: seatsForBusinessSubscription,
-        couponCodeData: couponCodeData,
+        seatsForBusinessSubscription,
+        couponCodeData,
       });
     }
 
     switch (planInterval) {
       case PlanInterval.MONTH:
       case PlanInterval.YEAR:
-        await handleSubscriptionPayment({
-          currency,
-          currentSelectedPlan: selectedPlan,
+        await processSubscriptionPayment({
           customerId,
-          elements,
           priceId,
           token,
-          couponCodeData,
-          seatsForBusinessSubscription,
+          currency,
+          quantity: seatsForBusinessSubscription,
           captchaToken,
-          userAddress,
-          translate,
+          promoCodeId: couponCodeData?.codeId,
+          selectedPlan,
+          couponCodeData,
+          elements,
           confirmPayment,
           confirmSetupIntent,
+          translate,
         });
         break;
 
       case PlanInterval.LIFETIME:
-        await handleLifetimePayment({
-          currency,
-          currentSelectedPlan: selectedPlan,
+        await processLifetimePayment({
           customerId,
-          elements,
           priceId,
           token,
-          couponCodeData,
-          captchaToken,
+          currency,
           userAddress,
-          translate,
+          captchaToken,
+          selectedPlan,
+          couponCodeData,
+          elements,
           confirmPayment,
           openCryptoPaymentDialog,
-          confirmSetupIntent,
         });
         break;
 
@@ -318,10 +130,6 @@ export const useUserPayment = () => {
   };
 
   return {
-    getSubscriptionPaymentIntent,
-    getLifetimePaymentIntent,
-    handleSubscriptionPayment,
-    handleLifetimePayment,
     handleUserPayment,
   };
 };

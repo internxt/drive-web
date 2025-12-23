@@ -1,2 +1,9 @@
 export { useCheckout } from './useCheckout';
 export { useUserPayment } from './useUserPayment';
+export { useStripeConfirmation } from './useStripeConfirmation';
+export { useSubscriptionPayment } from './useSubscriptionPayment';
+export { useLifetimePayment } from './useLifetimePayment';
+export { useProducts } from './useProducts';
+export { useInitializeCheckout } from './useInitializeCheckout';
+export { useAnalytics } from './useAnalytics';
+export { useCheckoutQueryParams } from './useCheckoutQueryParams';

@@ -138,8 +138,8 @@ describe('Products custom hook', () => {
         await result.current.fetchSelectedPlan({ priceId: 'price_123', currency: 'eur', mobileToken: 'mobile_token' });
       });
 
-      expect(result.current.selectedPlan?.amount).toBe(0);
-      expect(result.current.selectedPlan?.decimalAmount).toBe(0);
+      expect(result.current.selectedPlan?.price?.amount).toBe(0);
+      expect(result.current.selectedPlan?.price?.decimalAmount).toBe(0);
     });
 
     test('When fetching a plan returns a plan with seats, then the they are updated', async () => {

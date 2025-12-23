@@ -1,5 +1,5 @@
 import { trackPaymentConversion } from 'app/analytics/impact.service';
-import localStorageService from 'services/local-storage.service';
+import { checkoutStorageService } from '../services/checkout-storage.service';
 import paymentService from '../services/payment.service';
 import { useAppDispatch } from 'app/store/hooks';
 import { planThunks } from 'app/store/slices/plan';
@@ -45,18 +45,15 @@ const PcCloudSuccess = () => {
   );
 
   useEffect(() => {
-    const customerId = localStorageService.get('customerId');
-    const token = localStorageService.get('customerToken');
-    const currency = localStorageService.get('currency') ?? 'eur';
-    const priceId = localStorageService.get('priceId');
-    const mobileTokenParam = localStorageService.get('mobileToken');
+    const mobileData = checkoutStorageService.getMobileCheckoutData();
+    const currency = checkoutStorageService.getCurrency();
 
-    if (customerId && priceId && token && mobileTokenParam) {
+    if (mobileData) {
       onPcCloudSuccess({
-        customerId,
-        priceId,
-        token,
-        mobileTokenParam,
+        customerId: mobileData.customerId,
+        priceId: mobileData.priceId,
+        token: mobileData.token,
+        mobileTokenParam: mobileData.mobileToken,
         currency,
       });
     }

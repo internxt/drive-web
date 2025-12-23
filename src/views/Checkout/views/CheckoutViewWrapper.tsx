@@ -12,7 +12,7 @@ import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
 import RealtimeService from 'services/socket.service';
-import { STORAGE_KEYS } from 'services/storage-keys';
+import { checkoutStorageService } from '../services/checkout-storage.service';
 import AppError, { AppView, IFormValues } from 'app/core/types';
 import databaseService from 'app/database/services/database.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -91,7 +91,7 @@ const CheckoutViewWrapper = () => {
   const lastName = user?.lastname ?? '';
   const fullName = userAccountName + ' ' + lastName;
 
-  const gclidStored = localStorageService.get(STORAGE_KEYS.GCLID);
+  const gclidStored = checkoutStorageService.getGclid();
   const isCheckoutReadyToRender =
     isCheckoutReady && stripeElementsOptions && stripeSdk && selectedPlan?.price && selectedPlan?.taxes;
 
@@ -103,10 +103,12 @@ const CheckoutViewWrapper = () => {
     setIsUpdatingSubscription,
   } = useCheckout(dispatchReducer);
 
-  const authMethodInitialState: AuthMethodTypes = isAuthenticated ? 'userIsSignedIn' : 'signUp';
-  setAuthMethod(authMethodInitialState);
-
   const { authMethod, isPaying, isUpdateSubscriptionDialogOpen, isUpdatingSubscription, prices } = state;
+
+  useEffect(() => {
+    const authMethodInitialState: AuthMethodTypes = isAuthenticated ? 'userIsSignedIn' : 'signUp';
+    setAuthMethod(authMethodInitialState);
+  }, [isAuthenticated, setAuthMethod]);
 
   const renewsAtPCComp = `${translate('checkout.productCard.pcMobileRenews')}`;
 
@@ -279,11 +281,12 @@ const CheckoutViewWrapper = () => {
 
       if (mobileToken) {
         const setupIntent = await checkoutService.checkoutSetupIntent(customerId);
-        localStorageService.set('customerId', customerId);
-        localStorageService.set('token', token);
-        localStorageService.set('priceId', selectedPlan.price.id);
-        localStorageService.set('customerToken', token);
-        localStorageService.set('mobileToken', mobileToken);
+        checkoutStorageService.saveMobileCheckoutData({
+          customerId,
+          token,
+          priceId: selectedPlan.price.id,
+          mobileToken,
+        });
         const RETURN_URL_DOMAIN = envService.getVariable('hostname');
         const { error: confirmIntentError } = await stripeSDK.confirmSetup({
           elements,
@@ -310,10 +313,11 @@ const CheckoutViewWrapper = () => {
           translate,
           selectedPlan,
           token,
-          gclidStored,
+          gclidStored: gclidStored ?? undefined,
           captchaToken: intentCaptcha,
           seatsForBusinessSubscription: businessSeats,
           openCryptoPaymentDialog,
+
           userAddress: userLocationData?.ip as string,
         });
       }

@@ -176,3 +176,4 @@ export enum PaymentType {
 }
 
 export type { UserInfoProps, CheckoutViewManager } from './checkout.types';
+export { CheckoutError, type CheckoutErrorCode } from './errors';
