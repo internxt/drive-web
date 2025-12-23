@@ -1,6 +1,6 @@
+import { useEffect, useState } from 'react';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { checkoutService } from '../services';
-import { useEffect, useState } from 'react';
 import { CouponCodeData } from '../types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
@@ -81,16 +81,12 @@ export const useProducts = ({ currency, translate, planId, promotionCode, userAd
   }: {
     priceId: string;
     promotionCode: string;
-  }): Promise<void> => {
+  }): Promise<CouponCodeData> => {
     const promoCodeData = await checkoutService.fetchPromotionCodeByName(priceId, promotionCode);
-    const promoCode = {
-      codeId: promoCodeData.codeId,
-      codeName: promotionCode,
-      amountOff: promoCodeData.amountOff,
-      percentOff: promoCodeData.percentOff,
-    };
 
-    setPromoCodeData(promoCode);
+    setPromoCodeData(promoCodeData);
+
+    return promoCodeData;
   };
 
   const removeCouponCode = () => {
@@ -121,6 +117,31 @@ export const useProducts = ({ currency, translate, planId, promotionCode, userAd
     }
   };
 
+  const onCouponChanges = async (userAddress?: string, promoCodeName?: string) => {
+    const priceId = selectedPlan?.price?.id;
+    if (!priceId) {
+      return;
+    }
+
+    try {
+      if (promoCodeName) {
+        await fetchPromotionCode({ priceId, promotionCode: promoCodeName });
+      }
+    } catch (error) {
+      onPromoCodeError(error);
+    }
+
+    try {
+      await fetchSelectedPlan({
+        priceId,
+        userAddress: userAddress,
+        promotionCode: promoCodeName,
+      });
+    } catch (error) {
+      console.error('Error fetching price with taxes', error);
+    }
+  };
+
   return {
     selectedPlan,
     promoCodeData,
@@ -130,5 +151,6 @@ export const useProducts = ({ currency, translate, planId, promotionCode, userAd
     fetchPromotionCode,
     removeCouponCode,
     onPromoCodeError,
+    onCouponChanges,
   };
 };

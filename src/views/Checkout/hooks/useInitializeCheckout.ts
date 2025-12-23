@@ -1,13 +1,29 @@
-import { Stripe, StripeElementsOptions } from '@stripe/stripe-js';
-import { checkoutService, currencyService, paymentService } from '../services';
 import { useEffect, useState } from 'react';
-import { errorService, navigationService } from 'services';
-import { AppView } from 'app/core/types';
+import { Stripe, StripeElementsOptions } from '@stripe/stripe-js';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { CryptoCurrency, PriceWithTax } from '@internxt/sdk/dist/payments/types';
-import { THEME_STYLES } from '../views/CheckoutViewWrapper';
+import { checkoutService, currencyService, paymentService } from '../services';
+import { errorService, navigationService } from 'services';
+import { AppView } from 'app/core/types';
 import { PlanInterval } from '../types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+
+const THEME_STYLES = {
+  dark: {
+    backgroundColor: 'rgb(17 17 17)',
+    textColor: 'rgb(255 255 255)',
+    borderColor: 'rgb(58, 58, 59)',
+    borderInputColor: 'rgb(142, 142, 148)',
+    labelTextColor: 'rgb(229 229 235)',
+  },
+  light: {
+    backgroundColor: 'rgb(255 255 255)',
+    textColor: 'rgb(17 17 17)',
+    borderColor: 'rgb(229, 229, 235)',
+    borderInputColor: 'rgb(174, 174, 179)',
+    labelTextColor: 'rgb(58 58 59)',
+  },
+};
 
 interface UseInitializeCheckoutProps {
   checkoutTheme: string;

@@ -202,15 +202,10 @@ describe('Products custom hook', () => {
       const { result } = renderHook(() => useProducts(props));
 
       await act(async () => {
-        await result.current.fetchPromotionCode({ priceId: 'price_123', promotionCode: 'DISCOUNT10' });
+        await result.current.fetchPromotionCode({ priceId: 'price_123', promotionCode: mockPromoCodeData.codeName });
       });
 
-      expect(result.current.promoCodeData).toEqual({
-        codeId: 'promo_123',
-        codeName: 'DISCOUNT10',
-        amountOff: undefined,
-        percentOff: 20,
-      });
+      expect(result.current.promoCodeData).toEqual(mockPromoCodeData);
     });
   });
 

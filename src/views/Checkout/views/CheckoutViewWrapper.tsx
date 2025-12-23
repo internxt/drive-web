@@ -15,7 +15,6 @@ import RealtimeService from 'services/socket.service';
 import { STORAGE_KEYS } from 'services/storage-keys';
 import AppError, { AppView, IFormValues } from 'app/core/types';
 import databaseService from 'app/database/services/database.service';
-import { getDatabaseProfileAvatar } from 'app/drive/services/database.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import ChangePlanDialog from 'views/NewSettings/components/Sections/Account/Plans/components/ChangePlanDialog';
 import longNotificationsService from 'app/notifications/services/longNotification.service';
@@ -27,40 +26,23 @@ import { planThunks } from 'app/store/slices/plan';
 import { useThemeContext } from 'app/theme/ThemeProvider';
 import { authenticateUser } from 'services/auth.service';
 import { checkoutReducer, initialStateForCheckout } from 'views/Checkout/store/checkoutReducer';
-import { PaymentType } from 'views/Checkout/types';
+import { AuthMethodTypes, PaymentType } from 'views/Checkout/types';
 import { AddressProvider, CheckoutViewManager, UserInfoProps } from '../types/checkout.types';
 import CheckoutView from './CheckoutView';
 import { useUserPayment } from 'views/Checkout/hooks/useUserPayment';
 import { CRYPTO_PAYMENT_DIALOG_KEY, CryptoPaymentDialog } from 'views/Checkout/components/CryptoPaymentDialog';
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 import { generateCaptchaToken } from 'utils/generateCaptchaToken';
-import gaService from 'app/analytics/ga.service';
 import { useCheckoutQueryParams } from '../hooks/useCheckoutQueryParams';
 import { useInitializeCheckout } from '../hooks/useInitializeCheckout';
 import { useProducts } from '../hooks/useProducts';
 import { useUserLocation } from 'hooks/useUserLocation';
+import { useAnalytics } from '../hooks/useAnalytics';
 
 const GCLID_COOKIE_LIFESPAN_DAYS = 90;
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
 const IS_CRYPTO_PAYMENT_ENABLED = true;
-
-export const THEME_STYLES = {
-  dark: {
-    backgroundColor: 'rgb(17 17 17)',
-    textColor: 'rgb(255 255 255)',
-    borderColor: 'rgb(58, 58, 59)',
-    borderInputColor: 'rgb(142, 142, 148)',
-    labelTextColor: 'rgb(229 229 235)',
-  },
-  light: {
-    backgroundColor: 'rgb(255 255 255)',
-    textColor: 'rgb(17 17 17)',
-    borderColor: 'rgb(229, 229, 235)',
-    borderInputColor: 'rgb(174, 174, 179)',
-    labelTextColor: 'rgb(58 58 59)',
-  },
-};
 
 const STATUS_CODE_ERROR = {
   USER_EXISTS: 409,
@@ -71,11 +53,12 @@ const STATUS_CODE_ERROR = {
 };
 
 const CheckoutViewWrapper = () => {
-  const { planId, promotionCode, currency, paramMobileToken, gclid } = useCheckoutQueryParams();
+  const { planId, promotionCode, currency, paramMobileToken: mobileToken, gclid } = useCheckoutQueryParams();
   const { location: userLocationData } = useUserLocation();
   const { translate } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
+
   const [authError, setAuthError] = useState<string | null>(null);
 
   const {
@@ -85,8 +68,7 @@ const CheckoutViewWrapper = () => {
     couponError,
     removeCouponCode,
     fetchSelectedPlan,
-    fetchPromotionCode,
-    onPromoCodeError,
+    onCouponChanges,
   } = useProducts({ currency: currency ?? 'eur', translate, planId, promotionCode, userAddress: userLocationData?.ip });
 
   const { isCheckoutReady, stripeElementsOptions, availableCryptoCurrencies, stripeSdk } = useInitializeCheckout({
@@ -96,8 +78,15 @@ const CheckoutViewWrapper = () => {
     translate,
   });
 
+  useAnalytics({
+    isCheckoutReady,
+    selectedPlan,
+    promoCodeData,
+    businessSeats,
+    gclid,
+  });
+
   const dispatch = useAppDispatch();
-  const [mobileToken, setMobileToken] = useState<string | null>(null);
   const [address, setAddress] = useState<AddressProvider>();
   const [userName, setUserName] = useState(user?.name ?? '');
 
@@ -113,20 +102,23 @@ const CheckoutViewWrapper = () => {
   const userAccountName = user?.name ?? '';
   const lastName = user?.lastname ?? '';
   const fullName = userAccountName + ' ' + lastName;
-  const isUserAuthenticated = !!user;
 
   const gclidStored = localStorageService.get(STORAGE_KEYS.GCLID);
+  const isCheckoutReadyToRender =
+    isCheckoutReady && stripeElementsOptions && stripeSdk && selectedPlan?.price && selectedPlan?.taxes;
 
   const {
     setAuthMethod,
-    setAvatarBlob,
     setIsUserPaying,
     setSeatsForBusinessSubscription,
     setIsUpdateSubscriptionDialogOpen,
     setIsUpdatingSubscription,
   } = useCheckout(dispatchReducer);
 
-  const { authMethod, avatarBlob, isPaying, isUpdateSubscriptionDialogOpen, isUpdatingSubscription, prices } = state;
+  const authMethodInitialState: AuthMethodTypes = isAuthenticated ? 'userIsSignedIn' : 'signUp';
+  setAuthMethod(authMethodInitialState);
+
+  const { authMethod, isPaying, isUpdateSubscriptionDialogOpen, isUpdatingSubscription, prices } = state;
 
   const renewsAtPCComp = `${translate('checkout.productCard.pcMobileRenews')}`;
 
@@ -135,31 +127,9 @@ const CheckoutViewWrapper = () => {
 
   const userInfo: UserInfoProps = {
     name: fullName,
-    avatar: avatarBlob,
+    avatar: user?.avatar ?? null,
     email: user?.email ?? '',
   };
-
-  useEffect(() => {
-    setMobileToken(paramMobileToken);
-
-    if (gclid) {
-      const expiryDate = new Date();
-      expiryDate.setTime(expiryDate.getTime() + GCLID_COOKIE_LIFESPAN_DAYS * MILLISECONDS_PER_DAY);
-      document.cookie = `gclid=${gclid}; expires=${expiryDate.toUTCString()}; path=/`;
-      localStorageService.set(STORAGE_KEYS.GCLID, gclid);
-    }
-  }, [checkoutTheme, mobileToken]);
-
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      setAuthMethod('userIsSignedIn');
-      getDatabaseProfileAvatar()
-        .then((avatarData) => setAvatarBlob(avatarData?.avatarBlob ?? null))
-        .catch(() => {
-          //
-        });
-    }
-  }, [isAuthenticated, user]);
 
   useEffect(() => {
     if (!selectedPlan?.price?.id || !selectedPlan?.price?.currency) {
@@ -176,46 +146,6 @@ const CheckoutViewWrapper = () => {
       });
     }
   }, [address?.country, address?.postal_code, selectedPlan?.price?.id, selectedPlan?.price?.currency]);
-
-  useEffect(() => {
-    if (isCheckoutReady && selectedPlan?.price) {
-      gaService.trackBeginCheckout({
-        planId: selectedPlan.price.id,
-        planPrice: selectedPlan.price.decimalAmount,
-        currency: selectedPlan.price.currency ?? 'eur',
-        planType: selectedPlan.price.type === 'business' ? 'business' : 'individual',
-        interval: selectedPlan.price.interval,
-        storage: selectedPlan.price.bytes.toString(),
-        promoCodeId: promotionCode ?? undefined,
-        couponCodeData: promoCodeData,
-        seats: selectedPlan.price.type === 'business' ? businessSeats : 1,
-      });
-    }
-  }, [isCheckoutReady]);
-
-  const onCheckoutCouponChanges = async (promoCodeName?: string) => {
-    if (!selectedPlan?.price?.id) {
-      return;
-    }
-
-    try {
-      if (promoCodeName) {
-        await fetchPromotionCode({ priceId: selectedPlan.price.id, promotionCode: promoCodeName });
-      }
-    } catch (error) {
-      onPromoCodeError(error);
-    }
-
-    try {
-      await fetchSelectedPlan({
-        priceId: selectedPlan.price.id,
-        userAddress: userLocationData?.ip,
-        promotionCode: promoCodeName,
-      });
-    } catch (error) {
-      console.error('Error fetching price with taxes', error);
-    }
-  };
 
   const onChangePlanClicked = async (priceId: string) => {
     setIsUpdatingSubscription(true);
@@ -442,9 +372,12 @@ const CheckoutViewWrapper = () => {
     const minSeats = selectedPlan.price.minimumSeats;
     const maxSeats = selectedPlan.price.maximumSeats;
 
-    if (maxSeats && seats > maxSeats) {
+    const isMaxSeatsExceeded = maxSeats && seats > maxSeats;
+    const isMinSeatsExceeded = minSeats && seats < minSeats;
+
+    if (isMaxSeatsExceeded) {
       setSeatsForBusinessSubscription(maxSeats);
-    } else if (minSeats && seats < minSeats) {
+    } else if (isMinSeatsExceeded) {
       setSeatsForBusinessSubscription(minSeats);
     } else {
       setSeatsForBusinessSubscription(seats);
@@ -456,7 +389,7 @@ const CheckoutViewWrapper = () => {
   };
 
   const checkoutViewManager: CheckoutViewManager = {
-    onCouponInputChange: onCheckoutCouponChanges,
+    onCouponInputChange: onCouponChanges,
     onLogOut,
     onCheckoutButtonClicked,
     onRemoveAppliedCouponCode: removeCouponCode,
@@ -469,7 +402,7 @@ const CheckoutViewWrapper = () => {
 
   return (
     <>
-      {isCheckoutReady && stripeElementsOptions && stripeSdk && selectedPlan?.price && selectedPlan?.taxes ? (
+      {isCheckoutReadyToRender ? (
         <Elements stripe={stripeSdk} options={{ ...stripeElementsOptions }}>
           <CheckoutView
             checkoutViewVariables={{
@@ -485,7 +418,7 @@ const CheckoutViewWrapper = () => {
             userAuthComponentRef={userAuthComponentRef}
             showCouponCode={!mobileToken}
             userInfo={userInfo}
-            isUserAuthenticated={isUserAuthenticated}
+            isUserAuthenticated={isAuthenticated}
             showHardcodedRenewal={mobileToken ? renewsAtPCComp : undefined}
             checkoutViewManager={checkoutViewManager}
             availableCryptoCurrencies={availableCryptoCurrencies}
