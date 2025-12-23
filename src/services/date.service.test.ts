@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { describe, expect, test } from 'vitest';
+import { beforeEach, afterEach, describe, expect, test, vi } from 'vitest';
 import dateService from './date.service';
 
 describe('dateService', () => {
@@ -34,5 +34,31 @@ describe('dateService', () => {
     const isBefore = dateService.isDateOneBefore({ dateOne, dateTwo });
 
     expect(isBefore).toBe(false);
+  });
+
+  describe('Expiration countdown', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2023-01-01T00:00:00Z'));
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    test('when the expiration is in the future, then remaining days round up', () => {
+      const expiresAt = '2023-01-02T06:00:00Z';
+      expect(dateService.getDaysUntilExpiration(expiresAt)).toBe(2);
+    });
+
+    test('when the expiration has passed, then zero days remain', () => {
+      const expiresAt = '2022-12-31T23:59:59Z';
+      expect(dateService.getDaysUntilExpiration(expiresAt)).toBe(0);
+    });
+
+    test('when the expiration is later today, then it counts as one day remaining', () => {
+      const expiresAt = '2023-01-01T12:00:00Z';
+      expect(dateService.getDaysUntilExpiration(expiresAt)).toBe(1);
+    });
   });
 });
