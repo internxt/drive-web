@@ -36,7 +36,6 @@ describe('prepareFilesToUpload', () => {
     });
 
     vi.mocked(processDuplicateFiles).mockResolvedValue({
-      zeroLengthFiles: 0,
       newFilesToUpload: [
         {
           name: 'file1.txt',
@@ -62,7 +61,6 @@ describe('prepareFilesToUpload', () => {
       parentFolderId,
       content: new File(['content'], 'file1.txt', { type: 'text/plain' }),
     });
-    expect(result.zeroLengthFilesNumber).toBe(0);
 
     expect(checkDuplicatedFiles).toHaveBeenCalledTimes(1);
     expect(processDuplicateFiles).toHaveBeenCalledTimes(2);
@@ -103,7 +101,6 @@ describe('prepareFilesToUpload', () => {
     });
 
     vi.mocked(processDuplicateFiles).mockResolvedValue({
-      zeroLengthFiles: 0,
       newFilesToUpload: [
         {
           name: 'file1.txt',
@@ -129,7 +126,6 @@ describe('prepareFilesToUpload', () => {
       parentFolderId,
       content: new File(['content'], 'file1.txt', { type: 'text/plain' }),
     });
-    expect(result.zeroLengthFilesNumber).toBe(0);
 
     expect(checkDuplicatedFiles).toHaveBeenCalled();
     expect(processDuplicateFiles).toHaveBeenCalled();
@@ -148,7 +144,6 @@ describe('prepareFilesToUpload', () => {
     });
 
     vi.mocked(processDuplicateFiles).mockResolvedValue({
-      zeroLengthFiles: 0,
       newFilesToUpload: largeFileBatch.slice(0, BATCH_SIZE).map((file) => ({
         name: file.name,
         size: file.size,
@@ -165,7 +160,7 @@ describe('prepareFilesToUpload', () => {
     });
 
     expect(result.filesToUpload).toHaveLength(200);
-    expect(result.zeroLengthFilesNumber).toBe(0);
+
     expect(checkDuplicatedFiles).toHaveBeenCalledTimes(2);
     expect(processDuplicateFiles).toHaveBeenCalledTimes(4);
   });
@@ -192,11 +187,10 @@ describe('prepareFilesToUpload', () => {
     });
 
     vi.mocked(processDuplicateFiles).mockResolvedValue({
-      zeroLengthFiles: 0,
       newFilesToUpload: mockProcessedFiles,
     });
 
-    const { filesToUpload, zeroLengthFilesNumber } = await prepareFilesToUpload({
+    const { filesToUpload } = await prepareFilesToUpload({
       files: mockFiles,
       parentFolderId: 'parentFolderId',
     });
@@ -204,7 +198,6 @@ describe('prepareFilesToUpload', () => {
     expect(checkDuplicatedFiles).toHaveBeenCalledTimes(4);
     expect(processDuplicateFiles).toHaveBeenCalledTimes(8);
     expect(filesToUpload).toHaveLength(TOTAL_FILES);
-    expect(zeroLengthFilesNumber).toBe(0);
   });
 
   it('should handle fileType parameter', async () => {
@@ -226,7 +219,6 @@ describe('prepareFilesToUpload', () => {
     });
 
     const mockProcessDuplicateFiles = vi.mocked(processDuplicateFiles).mockResolvedValue({
-      zeroLengthFiles: 0,
       newFilesToUpload: [
         {
           name: 'file1.txt',
@@ -275,7 +267,6 @@ describe('prepareFilesToUpload', () => {
     });
 
     vi.mocked(processDuplicateFiles).mockResolvedValue({
-      zeroLengthFiles: 0,
       newFilesToUpload: visibleFiles.map((file) => ({
         name: file.name,
         size: file.size,
@@ -312,7 +303,6 @@ describe('prepareFilesToUpload', () => {
     });
 
     vi.mocked(processDuplicateFiles).mockResolvedValue({
-      zeroLengthFiles: 0,
       newFilesToUpload: mockFilesWithHidden.map((file) => ({
         name: file.name,
         size: file.size,
@@ -347,7 +337,6 @@ describe('prepareFilesToUpload', () => {
     });
 
     vi.mocked(processDuplicateFiles).mockResolvedValue({
-      zeroLengthFiles: 0,
       newFilesToUpload: mockFilesWithHidden.map((file) => ({
         name: file.name,
         size: file.size,
@@ -381,7 +370,7 @@ describe('prepareFilesToUpload', () => {
     });
 
     expect(result.filesToUpload).toHaveLength(0);
-    expect(result.zeroLengthFilesNumber).toBe(0);
+
     expect(checkDuplicatedFiles).not.toHaveBeenCalled();
     expect(processDuplicateFiles).not.toHaveBeenCalled();
   });
