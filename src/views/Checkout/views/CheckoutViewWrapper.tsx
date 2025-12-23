@@ -122,6 +122,8 @@ const CheckoutViewWrapper = () => {
   const lastName = user?.lastname ?? '';
   const fullName = userAccountName + ' ' + lastName;
   const isUserAuthenticated = !!user;
+  const isCheckoutReadyToRender =
+    isCheckoutReady && stripeElementsOptions && stripeSdk && selectedPlan?.price && selectedPlan?.taxes;
 
   const gclidStored = localStorageService.get(STORAGE_KEYS.GCLID);
 
@@ -471,7 +473,7 @@ const CheckoutViewWrapper = () => {
 
   return (
     <>
-      {isCheckoutReady && stripeElementsOptions && stripeSdk && selectedPlan?.price && selectedPlan?.taxes ? (
+      {isCheckoutReadyToRender ? (
         <Elements stripe={stripeSdk} options={{ ...stripeElementsOptions }}>
           <CheckoutView
             checkoutViewVariables={{
