@@ -39,9 +39,6 @@ import { useProducts } from '../hooks/useProducts';
 import { useUserLocation } from 'hooks/useUserLocation';
 import { useAnalytics } from '../hooks/useAnalytics';
 
-const GCLID_COOKIE_LIFESPAN_DAYS = 90;
-const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
-
 const IS_CRYPTO_PAYMENT_ENABLED = true;
 
 const STATUS_CODE_ERROR = {
@@ -149,7 +146,7 @@ const CheckoutViewWrapper = () => {
 
   const onChangePlanClicked = async (priceId: string) => {
     setIsUpdatingSubscription(true);
-    await handleSubscriptionPayment(priceId);
+    await handleUpdateSubscription(priceId);
     setIsUpdateSubscriptionDialogOpen(false);
     setIsUpdatingSubscription(false);
     navigationService.push(AppView.Drive);
@@ -179,7 +176,7 @@ const CheckoutViewWrapper = () => {
     }
   };
 
-  const handleSubscriptionPayment = async (priceId: string) => {
+  const handleUpdateSubscription = async (priceId: string) => {
     if (!selectedPlan?.price?.type) {
       console.error('No selected plan available for subscription payment');
       return;
