@@ -7,12 +7,14 @@ import { deleteItemsThunk } from 'app/store/slices/storage/storage.thunks/delete
 import { backupsThunks } from '../store/backupsSlice';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useState } from 'react';
 import { Dialog } from '@internxt/ui';
 import backupsService from '../services/backups.service';
 
 interface DeleteBackupDialogProps {
   backupsAsFoldersPath: DriveFolderData[];
   goToFolder: (folderId: number) => void;
+  goToFolderRoot: () => void;
 }
 
 const DeleteBackupDialog = (props: DeleteBackupDialogProps): JSX.Element => {
@@ -20,9 +22,10 @@ const DeleteBackupDialog = (props: DeleteBackupDialogProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isDeleteBackupDialogOpen);
   const currentDevice = useAppSelector((state) => state.backups.currentDevice);
-  const backupsAsFoldersPath = props.backupsAsFoldersPath;
-  const currentBackupsAsFoldersPath = props.backupsAsFoldersPath.at(-1);
-  const previousBackupsAsFoldersPath = props.backupsAsFoldersPath.at(-2);
+  const { backupsAsFoldersPath, goToFolder, goToFolderRoot } = props;
+  const currentBackupsAsFoldersPath = backupsAsFoldersPath.at(-1);
+  const previousBackupsAsFoldersPath = backupsAsFoldersPath.at(-2);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const onClose = (): void => {
     dispatch(uiActions.setIsDeleteBackupDialog(false));
@@ -48,9 +51,10 @@ const DeleteBackupDialog = (props: DeleteBackupDialogProps): JSX.Element => {
   };
 
   const onAccept = async (): Promise<void> => {
-    try {
-      const isDeviceLevel = backupsAsFoldersPath.length === 1;
+    const isDeviceLevel = backupsAsFoldersPath.length <= 1;
 
+    try {
+      setIsDeleting(true);
       if (isDeviceLevel) {
         await deleteDeviceBackup();
       } else {
@@ -59,10 +63,14 @@ const DeleteBackupDialog = (props: DeleteBackupDialogProps): JSX.Element => {
     } catch (e: unknown) {
       errorService.reportError(e);
     } finally {
+      setIsDeleting(false);
       onClose();
-      if (previousBackupsAsFoldersPath) {
-        props.goToFolder(previousBackupsAsFoldersPath.id);
-      }
+    }
+
+    if (previousBackupsAsFoldersPath) {
+      goToFolder(previousBackupsAsFoldersPath.id);
+    } else if (isDeviceLevel) {
+      goToFolderRoot();
     }
   };
 
@@ -77,6 +85,7 @@ const DeleteBackupDialog = (props: DeleteBackupDialogProps): JSX.Element => {
       primaryAction={translate('modals.deleteBackupModal.primaryAction')}
       secondaryAction={translate('modals.deleteBackupModal.secondaryAction')}
       primaryActionColor="danger"
+      isLoading={isDeleting}
     />
   );
 };

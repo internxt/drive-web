@@ -214,7 +214,11 @@ export default function BackupsView(): JSX.Element {
       <Helmet>
         <title>{translate('sideNav.backups')} - Internxt Drive</title>
       </Helmet>
-      <DeleteBackupDialog backupsAsFoldersPath={foldersInBreadcrumbs} goToFolder={goToFolder} />
+      <DeleteBackupDialog
+        backupsAsFoldersPath={foldersInBreadcrumbs}
+        goToFolder={goToFolder}
+        goToFolderRoot={goToFolderRoot}
+      />
       <Dialog
         isOpen={isDeleteModalOpen}
         onClose={onCloseDeleteModal}
