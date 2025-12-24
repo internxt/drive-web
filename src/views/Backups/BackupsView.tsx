@@ -32,6 +32,9 @@ export default function BackupsView(): JSX.Element {
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const workspaceCredentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
   const [foldersInBreadcrumbs, setFoldersInBreadcrumbs] = useState<DriveFolderData[]>([]);
+  const [pendingDeleteItems, setPendingDeleteItems] = useState<DriveItemData[]>([]);
+  const [isDeleteItemsDialogOpen, setIsDeleteItemsDialogOpen] = useState(false);
+  const [isDeletingItems, setIsDeletingItems] = useState(false);
 
   const {
     folderUuid,
@@ -80,46 +83,84 @@ export default function BackupsView(): JSX.Element {
     }
   };
 
-  const onDeleteSelectedItems = async () => {
-    const selectedItemsIDs = new Set(selectedItems.map((item) => item.id));
-    const filteredCurrentItems = currentItems.filter((item) => !selectedItemsIDs.has(item.id));
+  const openDeleteItemsDialog = (items: DriveItemData[]) => {
+    if (!items.length || isFileViewerOpen) {
+      return;
+    }
+
+    setPendingDeleteItems(items);
+    setIsDeleteItemsDialogOpen(true);
+  };
+
+  const onCloseDeleteItemsDialog = () => {
+    setIsDeleteItemsDialogOpen(false);
+    setPendingDeleteItems([]);
+  };
+
+  const performDeleteItems = async (items: DriveItemData[]): Promise<boolean> => {
+    if (!items.length) {
+      return false;
+    }
+
+    setIsDeletingItems(true);
+    const itemIdsToDelete = new Set(items.map((item) => item.id));
+    const filteredCurrentItems = currentItems.filter((item) => !itemIdsToDelete.has(item.id));
+
+    const shouldCloseViewer = isFileViewerOpen && itemToPreview && itemIdsToDelete.has(itemToPreview.id);
+
     try {
-      const deletePromises = selectedItems.map((item) =>
+      const deletePromises = items.map((item) =>
         item.isFolder ? newStorageService.deleteFolderByUuid(item.uuid) : deleteFile(item),
       );
       await Promise.all(deletePromises);
-      dispatch(deleteItemsThunk(selectedItems));
+      dispatch(deleteItemsThunk(items));
       clearSelectedItems();
       updateCurrentItemsList(filteredCurrentItems);
+
+      if (shouldCloseViewer) {
+        onCloseFileViewer();
+      }
+
+      return true;
     } catch (error) {
       errorService.reportError(error);
       notificationsService.show({
         text: translate('notificationMessages.errorDeletingItems'),
         type: ToastType.Error,
       });
+      return false;
+    } finally {
+      setIsDeletingItems(false);
     }
   };
 
+  const onDeleteSelectedItems = async () => {
+    if (isFileViewerOpen) {
+      await performDeleteItems(selectedItems);
+      return;
+    }
+
+    openDeleteItemsDialog(selectedItems);
+  };
+
   const onDeleteFileItemFromFilePreview = async () => {
-    try {
-      if (!itemToPreview || !isFileViewerOpen) {
-        return;
-      }
+    if (!itemToPreview || !isFileViewerOpen) {
+      return;
+    }
 
-      await deleteFile(itemToPreview as DriveItemData);
-      dispatch(deleteItemsThunk([itemToPreview as DriveItemData]));
+    await performDeleteItems([itemToPreview as DriveItemData]);
+  };
 
-      const remainingItems = currentItems.filter((item) => item.id !== itemToPreview.id);
+  const onConfirmDeleteItems = async () => {
+    if (!pendingDeleteItems.length) {
+      onCloseDeleteItemsDialog();
+      return;
+    }
 
-      clearSelectedItems();
-      updateCurrentItemsList(remainingItems);
-      onCloseFileViewer();
-    } catch (error) {
-      errorService.reportError(error);
-      notificationsService.show({
-        text: translate('notificationMessages.errorDeletingItems'),
-        type: ToastType.Error,
-      });
+    const isDeleteSuccessful = await performDeleteItems(pendingDeleteItems);
+
+    if (isDeleteSuccessful) {
+      onCloseDeleteItemsDialog();
     }
   };
 
@@ -185,6 +226,18 @@ export default function BackupsView(): JSX.Element {
         secondaryAction={translate('modals.deleteBackupModal.secondaryAction')}
         primaryActionColor="danger"
         isLoading={isLoadingDeleteModal}
+      />
+      <Dialog
+        isOpen={isDeleteItemsDialogOpen}
+        onClose={onCloseDeleteItemsDialog}
+        onSecondaryAction={onCloseDeleteItemsDialog}
+        onPrimaryAction={onConfirmDeleteItems}
+        title={translate('drive.deleteItems.title')}
+        subtitle={translate('drive.deleteItems.advice')}
+        primaryAction={translate('drive.deleteItems.accept')}
+        secondaryAction={translate('actions.cancel')}
+        primaryActionColor="danger"
+        isLoading={isDeletingItems}
       />
       {itemToPreview && (
         <FileViewerWrapper
