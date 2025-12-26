@@ -14,7 +14,7 @@ import backupsService from '../services/backups.service';
 interface DeleteBackupDialogProps {
   backupsAsFoldersPath: DriveFolderData[];
   goToFolder: (folderId: number) => void;
-  goToFolderRoot: () => void;
+  goToRootFolder: () => void;
 }
 
 const DeleteBackupDialog = (props: DeleteBackupDialogProps): JSX.Element => {
@@ -22,7 +22,7 @@ const DeleteBackupDialog = (props: DeleteBackupDialogProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isDeleteBackupDialogOpen);
   const currentDevice = useAppSelector((state) => state.backups.currentDevice);
-  const { backupsAsFoldersPath, goToFolder, goToFolderRoot } = props;
+  const { backupsAsFoldersPath, goToFolder, goToRootFolder } = props;
   const currentBackupsAsFoldersPath = backupsAsFoldersPath.at(-1);
   const previousBackupsAsFoldersPath = backupsAsFoldersPath.at(-2);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -70,7 +70,7 @@ const DeleteBackupDialog = (props: DeleteBackupDialogProps): JSX.Element => {
     if (previousBackupsAsFoldersPath) {
       goToFolder(previousBackupsAsFoldersPath.id);
     } else if (isDeviceLevel) {
-      goToFolderRoot();
+      goToRootFolder();
     }
   };
 

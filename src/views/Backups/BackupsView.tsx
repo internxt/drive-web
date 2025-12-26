@@ -54,7 +54,7 @@ export default function BackupsView(): JSX.Element {
     isDeleteModalOpen,
     isLoadingDeleteModal,
     goToFolder,
-    goToFolderRoot,
+    goToRootFolder,
     onConfirmDelete,
     onDeviceClicked,
     onDevicesSelected,
@@ -217,7 +217,7 @@ export default function BackupsView(): JSX.Element {
       <DeleteBackupDialog
         backupsAsFoldersPath={foldersInBreadcrumbs}
         goToFolder={goToFolder}
-        goToFolderRoot={goToFolderRoot}
+        goToRootFolder={goToRootFolder}
       />
       <Dialog
         isOpen={isDeleteModalOpen}
@@ -257,7 +257,7 @@ export default function BackupsView(): JSX.Element {
           <BreadcrumbsBackupsView
             backupsAsFoldersPath={foldersInBreadcrumbs}
             goToFolder={goToFolder}
-            goToFolderRoot={goToFolderRoot}
+            goToRootFolder={goToRootFolder}
           />
         ) : (
           <p className="text-lg">{translate('backups.your-devices')}</p>
