@@ -14,10 +14,10 @@ import { useDrop } from 'react-dnd';
 interface BreadcrumbsBackupsViewProps {
   backupsAsFoldersPath: DriveFolderData[];
   goToFolder: (folderId: number, folderUuid?: string) => void;
-  goToFolderRoot: () => void;
+  goToRootFolder: () => void;
 }
 
-const BreadcrumbsBackupsView = ({ backupsAsFoldersPath, goToFolder, goToFolderRoot }: BreadcrumbsBackupsViewProps) => {
+const BreadcrumbsBackupsView = ({ backupsAsFoldersPath, goToFolder, goToRootFolder }: BreadcrumbsBackupsViewProps) => {
   const currentDevice = useAppSelector((state) => state.backups.currentDevice);
   const dispatch = useAppDispatch();
   const namePath = useAppSelector((state) => state.storage.namePath);
@@ -33,7 +33,7 @@ const BreadcrumbsBackupsView = ({ backupsAsFoldersPath, goToFolder, goToFolderRo
       icon: null,
       isFirstPath: true,
       active: true,
-      onClick: () => goToFolderRoot(),
+      onClick: () => goToRootFolder(),
     });
 
     if (currentDevice && 'mac' in currentDevice && 'name' in currentDevice) {
