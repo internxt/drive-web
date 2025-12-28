@@ -137,10 +137,9 @@ export default function BackupsView(): JSX.Element {
   const onDeleteSelectedItems = async () => {
     if (isFileViewerOpen) {
       await performDeleteItems(selectedItems);
-      return;
+    } else {
+      openDeleteItemsDialog(selectedItems);
     }
-
-    openDeleteItemsDialog(selectedItems);
   };
 
   const onDeleteFileItemFromFilePreview = async () => {
