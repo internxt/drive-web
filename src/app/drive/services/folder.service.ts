@@ -27,6 +27,14 @@ import dateService from 'services/date.service';
 import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
 import { queue, QueueObject } from 'async';
 import { QueueUtilsService } from 'utils/queueUtils';
+import { isFileEmpty } from 'utils/isFileEmpty';
+
+export interface GetFileStreamParams {
+  file: DriveFileData;
+  creds: { user: string; pass: string };
+  mnemonic: string;
+  abortController?: AbortController;
+}
 
 export interface IFolders {
   bucket: string;
@@ -214,6 +222,46 @@ export const createFilesIterator = (directoryUUID: string, workspaceId?: string)
   return new DirectoryFilesIterator({ workspaceId, directoryUUID }, 20, 0);
 };
 
+export async function getFileStream({
+  file,
+  creds,
+  mnemonic,
+  abortController,
+}: GetFileStreamParams): Promise<ReadableStream<Uint8Array>> {
+  const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
+  const cachedFile = await lruFilesCacheManager.get(file.id?.toString());
+  const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
+
+  if (cachedFile?.source && !isCachedFileOlder) {
+    return cachedFile.source.stream();
+  }
+
+  if (isFileEmpty(file)) {
+    return new Blob([]).stream();
+  }
+
+  const downloadedFileStream = await downloadFile({
+    bucketId: file.bucket,
+    fileId: file.fileId,
+    creds,
+    mnemonic,
+    options: {
+      notifyProgress: () => {},
+      abortController,
+    },
+  });
+
+  const sourceBlob = await binaryStreamToBlob(downloadedFileStream, file.type || '');
+  await updateDatabaseFileSourceData({
+    folderId: file.folderId,
+    sourceBlob,
+    fileId: file.id,
+    updatedAt: file.updatedAt,
+  });
+
+  return sourceBlob.stream();
+}
+
 interface FolderRef {
   name: string;
   folderId: number;
@@ -312,34 +360,12 @@ export async function downloadFolderAsZip({
         addUniqueItem(file);
         try {
           updateNumItems();
-          const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-          const cachedFile = await lruFilesCacheManager.get(file.id?.toString());
-          const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
-
-          if (cachedFile?.source && !isCachedFileOlder) {
-            return cachedFile.source.stream();
-          }
-
-          const downloadedFileStream = await downloadFile({
-            bucketId: file.bucket,
-            fileId: file.fileId,
+          return await getFileStream({
+            file,
             creds: options.credentials,
             mnemonic: options.mnemonic,
-            options: {
-              notifyProgress: () => {},
-              abortController,
-            },
+            abortController,
           });
-
-          const sourceBlob = await binaryStreamToBlob(downloadedFileStream, file.type || '');
-          await updateDatabaseFileSourceData({
-            folderId: file.folderId,
-            sourceBlob,
-            fileId: file.id,
-            updatedAt: file.updatedAt,
-          });
-
-          return sourceBlob.stream();
         } catch (error: unknown) {
           if (isLostConnectionError(error)) {
             throw error;

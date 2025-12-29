@@ -95,8 +95,15 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, string, {
           const items = selectedWorkspace ? itemsUnparsed.result : itemsUnparsed.files;
 
           parsedItems = items.map(
-            (item) => ({ ...item, isFolder: hasMoreDriveFolders, name: item.plainName }) as DriveItemData,
+            (item) =>
+              ({
+                ...item,
+                isFolder: hasMoreDriveFolders,
+                name: item.plainName,
+                size: Number(item.size),
+              }) as DriveItemData,
           );
+
           itemslength = items.length;
         }
 
