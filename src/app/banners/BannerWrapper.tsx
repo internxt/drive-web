@@ -8,8 +8,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { userSelectors } from 'app/store/slices/user';
 import FeaturesBanner from './FeaturesBanner';
 
-const OFFER_END_DAY = new Date('2026-01-06');
-const TIMEOUT = 8000;
+const OFFER_END_DAY = new Date('2026-01-26');
+const TIMEOUT = 90000;
 
 const BannerWrapper = (): JSX.Element => {
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
