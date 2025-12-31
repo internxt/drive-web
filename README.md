@@ -25,7 +25,6 @@ We aim to have:
 
 ## Scripts
 
-
 ### `yarn run dev`
 
 Runs the app in the development mode.\
