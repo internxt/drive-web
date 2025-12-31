@@ -1,7 +1,7 @@
 import { useSignUp } from '../../hooks/useSignup';
 import { useAppDispatch } from 'app/store/hooks';
 import React, { useState } from 'react';
-import { signup } from '../../services';
+import { submitBlogSignup } from './submitBlogSignup';
 
 export default function ButtonAuth() {
   const dispatch = useAppDispatch();
@@ -12,15 +12,15 @@ export default function ButtonAuth() {
     <div className="w-full">
       <button
         onClick={() => {
-          signup(
-            {
+          submitBlogSignup({
+            data: {
               email: localStorage.getItem('email'),
               password: localStorage.getItem('password'),
             },
             dispatch,
             doRegister,
             setLoading,
-          );
+          });
         }}
         disabled={loading}
         className={
