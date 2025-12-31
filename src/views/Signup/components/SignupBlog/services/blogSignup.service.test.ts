@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach, Mock } from 'vitest';
-import { submitBlogSignup } from './submitBlogSignup';
+import { submitBlogSignup } from './blogSignup.service';
 import { authenticateUser } from 'services/auth.service';
 import envService from 'services/env.service';
 import errorService from 'services/error.service';

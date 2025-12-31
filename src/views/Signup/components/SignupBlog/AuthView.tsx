@@ -7,7 +7,7 @@ import { WarningCircle } from '@phosphor-icons/react';
 import TextInput from 'components/TextInput';
 import PasswordInput from 'components/PasswordInput';
 import { useForm } from 'react-hook-form';
-import { submitBlogSignup } from './submitBlogSignup';
+import { submitBlogSignup } from './services/blogSignup.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export const SignupComponent = ({

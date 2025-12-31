@@ -1,7 +1,7 @@
 import { useSignUp } from '../../hooks/useSignup';
 import { useAppDispatch } from 'app/store/hooks';
 import React, { useState } from 'react';
-import { submitBlogSignup } from './submitBlogSignup';
+import { submitBlogSignup } from './services/blogSignup.service';
 
 export default function ButtonAuth() {
   const dispatch = useAppDispatch();
