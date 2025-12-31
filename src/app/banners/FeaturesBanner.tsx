@@ -45,7 +45,11 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
   ];
 
   const handleOnClick = () => {
-    window.open('https://internxt.com/specialoffer', '_blank', 'noopener noreferrer');
+    window.open(
+      'https://internxt.com/specialoffer?utm_source=intranet&utm_medium=direct&utm_campaign=specialoffer',
+      '_blank',
+      'noopener noreferrer',
+    );
     onClose();
   };
 
