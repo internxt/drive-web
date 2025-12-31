@@ -84,7 +84,7 @@ export default function BackupsView(): JSX.Element {
   };
 
   const openDeleteItemsDialog = (items: DriveItemData[]) => {
-    if (!items.length || isFileViewerOpen) {
+    if (!items.length) {
       return;
     }
 
@@ -135,11 +135,7 @@ export default function BackupsView(): JSX.Element {
   };
 
   const onDeleteSelectedItems = async () => {
-    if (isFileViewerOpen) {
-      await performDeleteItems(selectedItems);
-    } else {
-      openDeleteItemsDialog(selectedItems);
-    }
+    openDeleteItemsDialog(selectedItems);
   };
 
   const onDeleteFileItemFromFilePreview = async () => {
@@ -147,7 +143,7 @@ export default function BackupsView(): JSX.Element {
       return;
     }
 
-    await performDeleteItems([itemToPreview as DriveItemData]);
+    openDeleteItemsDialog([itemToPreview as DriveItemData]);
   };
 
   const onConfirmDeleteItems = async () => {
@@ -226,18 +222,20 @@ export default function BackupsView(): JSX.Element {
         primaryActionColor="danger"
         isLoading={isLoadingDeleteModal}
       />
-      <Dialog
-        isOpen={isDeleteItemsDialogOpen}
-        onClose={onCloseDeleteItemsDialog}
-        onSecondaryAction={onCloseDeleteItemsDialog}
-        onPrimaryAction={onConfirmDeleteItems}
-        title={translate('drive.deleteItems.title')}
-        subtitle={translate('drive.deleteItems.advice')}
-        primaryAction={translate('drive.deleteItems.accept')}
-        secondaryAction={translate('actions.cancel')}
-        primaryActionColor="danger"
-        isLoading={isDeletingItems}
-      />
+      <div className="z-[60]">
+        <Dialog
+          isOpen={isDeleteItemsDialogOpen}
+          onClose={onCloseDeleteItemsDialog}
+          onSecondaryAction={onCloseDeleteItemsDialog}
+          onPrimaryAction={onConfirmDeleteItems}
+          title={translate('drive.deleteItems.title')}
+          subtitle={translate('drive.deleteItems.advice')}
+          primaryAction={translate('drive.deleteItems.accept')}
+          secondaryAction={translate('actions.cancel')}
+          primaryActionColor="danger"
+          isLoading={isDeletingItems}
+        />
+      </div>
       {itemToPreview && (
         <FileViewerWrapper
           file={itemToPreview}
