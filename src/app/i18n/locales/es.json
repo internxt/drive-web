@@ -867,6 +867,15 @@
         "location": "Ubicación"
       }
     },
+    "versionHistory": {
+      "title": "Historial de versiones",
+      "current": "Actual",
+      "expiresInDays": "Expira en {{days}} días",
+      "autosaveVersions": "{{count}}/{{total}} versiones de autoguardado",
+      "restoreVersion": "Restaurar versión",
+      "downloadVersion": "Descargar versión",
+      "deleteVersion": "Eliminar versión"
+    },
     "shareModal": {
       "title": "Compartir \"{{name}}\"",
       "list": {
@@ -1510,6 +1519,7 @@
       "manageLinkAccess": "Gestionar acceso",
       "manageAccess": "Gestionar acceso",
       "download": "Descargar",
+      "versionHistory": "Historial de versiones",
       "moveToTrash": "Mover a la papelera",
       "copyLink": "Copiar enlace",
       "linkSettings": "Ajustes del enlace",

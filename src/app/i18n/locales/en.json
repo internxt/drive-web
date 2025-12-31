@@ -885,6 +885,15 @@
         "location": "Location"
       }
     },
+    "versionHistory": {
+      "title": "Version history",
+      "current": "Current",
+      "expiresInDays": "Expires in {{days}} days",
+      "autosaveVersions": "{{count}}/{{total}} autosave versions",
+      "restoreVersion": "Restore version",
+      "downloadVersion": "Download version",
+      "deleteVersion": "Delete version"
+    },
     "shareModal": {
       "title": "Share \"{{name}}\"",
       "list": {
@@ -1533,6 +1542,7 @@
       "share": "Share",
       "manageAccess": "Manage access",
       "download": "Download",
+      "versionHistory": "Version history",
       "moveToTrash": "Move to trash",
       "copyLink": "Copy link",
       "linkSettings": "Link settings",
