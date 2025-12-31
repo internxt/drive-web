@@ -316,6 +316,12 @@ export const thumbnailableImageExtension: string[] = [
 
 export const thumbnailablePdfExtension: string[] = pdfExtensions['pdf'];
 
-export const thumbnailableExtension: string[] = [...thumbnailableImageExtension, ...thumbnailablePdfExtension];
+export const thumbnailableVideoExtension: string[] = Object.values(videoExtensions).flat();
+
+export const thumbnailableExtension: string[] = [
+  ...thumbnailableImageExtension,
+  ...thumbnailablePdfExtension,
+  ...thumbnailableVideoExtension,
+];
 
 export default fileExtensionGroups;
