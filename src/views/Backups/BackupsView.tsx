@@ -102,12 +102,17 @@ export default function BackupsView(): JSX.Element {
 
   const onDeleteFileItemFromFilePreview = async () => {
     try {
-      if (isFileViewerOpen && itemToPreview) {
-        await deleteFile(itemToPreview as DriveItemData);
-        dispatch(deleteItemsThunk([itemToPreview as DriveItemData]));
+      if (!itemToPreview || !isFileViewerOpen) {
+        return;
       }
+
+      await deleteFile(itemToPreview as DriveItemData);
+      dispatch(deleteItemsThunk([itemToPreview as DriveItemData]));
+
+      const remainingItems = currentItems.filter((item) => item.id !== itemToPreview.id);
+
       clearSelectedItems();
-      updateCurrentItemsList([itemToPreview] as DriveItemData[]);
+      updateCurrentItemsList(remainingItems);
       onCloseFileViewer();
     } catch (error) {
       errorService.reportError(error);
