@@ -117,3 +117,162 @@ describe('BannerManager - showFreeBanner', () => {
     expect(result.showFreeBanner).toBe(false);
   });
 });
+
+describe('BannerManager - showSubscriptionBanner', () => {
+  const today = new Date('2025-06-01');
+
+  beforeAll(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(today);
+  });
+
+  afterAll(() => {
+    vi.useRealTimers();
+  });
+
+  const mockUser: UserSettings = {
+    userId: '1',
+    uuid: 'uuid-1',
+    email: 'test@example.com',
+    name: 'Test',
+    lastname: 'User',
+    username: 'testuser',
+    bridgeUser: '',
+    bucket: '',
+    backupsBucket: null,
+    root_folder_id: 1,
+    rootFolderId: 'folder',
+    rootFolderUuid: 'folder-uuid',
+    sharedWorkspace: false,
+    credit: 0,
+    mnemonic: '',
+    privateKey: '',
+    publicKey: '',
+    revocationKey: '',
+    keys: {
+      ecc: { publicKey: '', privateKey: '' },
+      kyber: { publicKey: '', privateKey: '' },
+    },
+    teams: false,
+    appSumoDetails: null,
+    registerCompleted: true,
+    hasReferralsProgram: false,
+    createdAt: today,
+    avatar: null,
+    emailVerified: true,
+  };
+
+  const validPlanForSubscription: PlanState = {
+    isLoadingPlanLimit: false,
+    isLoadingPlanUsage: false,
+    isLoadingBusinessLimitAndUsage: false,
+    individualPlan: {
+      planId: 'price_1PNxYtFAOdcgaBMQzkimr6OU',
+      productId: 'product-id',
+      name: 'Plan',
+      simpleName: 'Pro',
+      paymentInterval: RenewalPeriod.Monthly,
+      price: 0,
+      monthlyPrice: 0,
+      currency: 'eur',
+      isTeam: false,
+      isLifetime: false,
+      renewalPeriod: RenewalPeriod.Monthly,
+      storageLimit: 0,
+      amountOfSeats: 1,
+      seats: { minimumSeats: 1, maximumSeats: 1 },
+    },
+    businessPlan: null,
+    planLimit: 0,
+    planUsage: 0,
+    usageDetails: null,
+    individualSubscription: {
+      type: 'subscription',
+      subscriptionId: 'sub-123',
+      amount: 999,
+      currency: 'eur',
+      interval: 'month',
+      nextPayment: Date.now(),
+      priceId: 'price_1PNxYtFAOdcgaBMQzkimr6OU',
+    },
+    businessSubscription: null,
+    businessPlanLimit: 0,
+    businessPlanUsage: 0,
+    businessPlanUsageDetails: null,
+  };
+
+  const invalidPlan: PlanState = {
+    isLoadingPlanLimit: false,
+    isLoadingPlanUsage: false,
+    isLoadingBusinessLimitAndUsage: false,
+    individualPlan: {
+      planId: 'invalid-plan-id',
+      productId: 'product-id',
+      name: 'Plan',
+      simpleName: 'Free',
+      paymentInterval: RenewalPeriod.Monthly,
+      price: 0,
+      monthlyPrice: 0,
+      currency: 'eur',
+      isTeam: false,
+      isLifetime: false,
+      renewalPeriod: RenewalPeriod.Monthly,
+      storageLimit: 0,
+      amountOfSeats: 1,
+      seats: { minimumSeats: 1, maximumSeats: 1 },
+    },
+    businessPlan: null,
+    planLimit: 0,
+    planUsage: 0,
+    usageDetails: null,
+    individualSubscription: { type: 'free' },
+    businessSubscription: null,
+    businessPlanLimit: 0,
+    businessPlanUsage: 0,
+    businessPlanUsageDetails: null,
+  };
+
+  const futureDate = new Date('2025-06-10');
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.resetModules();
+  });
+
+  it('returns true when user has a valid subscription plan', () => {
+    (localStorageService.get as Mock).mockReturnValue('');
+
+    const manager = new BannerManager(mockUser, validPlanForSubscription, futureDate);
+    const result = manager.getBannersToShow();
+
+    expect(result.showSubscriptionBanner).toBe(true);
+  });
+
+  it('returns false when user does not have a valid subscription plan', () => {
+    (localStorageService.get as Mock).mockReturnValue('');
+
+    const manager = new BannerManager(mockUser, invalidPlan, futureDate);
+    const result = manager.getBannersToShow();
+
+    expect(result.showSubscriptionBanner).toBe(false);
+  });
+
+  it('returns true for different valid plan IDs', () => {
+    const planWithDifferentId: PlanState = {
+      ...validPlanForSubscription,
+      individualPlan: validPlanForSubscription.individualPlan
+        ? {
+            ...validPlanForSubscription.individualPlan,
+            planId: 'price_1OQ3MDFAOdcgaBMQ3he4Xqed',
+          }
+        : null,
+    };
+
+    (localStorageService.get as Mock).mockReturnValue('');
+
+    const manager = new BannerManager(mockUser, planWithDifferentId, futureDate);
+    const result = manager.getBannersToShow();
+
+    expect(result.showSubscriptionBanner).toBe(true);
+  });
+});
