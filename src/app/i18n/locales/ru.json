@@ -1189,6 +1189,28 @@
     "item-menu": {
       "restore": "Восстановить",
       "delete-permanently": "Удалить навсегда"
+    },
+    "automaticDisposal": {
+      "badge": "Новое обновление",
+      "title": "Автоматическая очистка Корзины",
+      "close": "Закрыть",
+      "description": "Теперь все элементы, перемещенные в Корзину, будут\nавтоматически удалены навсегда после:",
+      "freeUsers": {
+        "duration": "1 день",
+        "label": "для бесплатных пользователей"
+      },
+      "essentialUsers": {
+        "duration": "7 дней",
+        "label": "для пользователей Essential"
+      },
+      "premiumUsers": {
+        "duration": "14 дней",
+        "label": "для пользователей Premium"
+      },
+      "ultimateUsers": {
+        "duration": "30 дней",
+        "label": "для пользователей Ultimate"
+      }
     }
   },
   "tasks": {

@@ -1176,6 +1176,28 @@
     "item-menu": {
       "restore": "Restaurer",
       "delete-permanently": "Supprimer définitivement"
+    },
+    "automaticDisposal": {
+      "badge": "Nouvelle mise à jour",
+      "title": "Élimination automatique de la Corbeille",
+      "close": "Fermer",
+      "description": "Désormais, tous les éléments déplacés dans la Corbeille seront\nsupprimés définitivement automatiquement après:",
+      "freeUsers": {
+        "duration": "1 jour",
+        "label": "pour les utilisateurs gratuits"
+      },
+      "essentialUsers": {
+        "duration": "7 jours",
+        "label": "pour les utilisateurs essentiels"
+      },
+      "premiumUsers": {
+        "duration": "14 jours",
+        "label": "pour les utilisateurs premium"
+      },
+      "ultimateUsers": {
+        "duration": "30 jours",
+        "label": "pour les utilisateurs ultimate"
+      }
     }
   },
   "tasks": {

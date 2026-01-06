@@ -1213,6 +1213,28 @@
     "item-menu": {
       "restore": "恢复",
       "delete-permanently": "永久删除"
+    },
+    "automaticDisposal": {
+      "badge": "新更新",
+      "title": "自动清空垃圾箱",
+      "close": "关闭",
+      "description": "现在所有移至垃圾箱的项目将在以下时间后\n自动永久删除：",
+      "freeUsers": {
+        "duration": "1天",
+        "label": "免费用户"
+      },
+      "essentialUsers": {
+        "duration": "7天",
+        "label": "基础用户"
+      },
+      "premiumUsers": {
+        "duration": "14天",
+        "label": "高级用户"
+      },
+      "ultimateUsers": {
+        "duration": "30天",
+        "label": "终极用户"
+      }
     }
   },
   "tasks": {
