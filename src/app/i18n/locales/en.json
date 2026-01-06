@@ -1248,6 +1248,28 @@
     "item-menu": {
       "restore": "Restore",
       "delete-permanently": "Delete permanently"
+    },
+    "automaticDisposal": {
+      "badge": "New update",
+      "title": "Automatic Trash disposal",
+      "close": "Close",
+      "description": "Now all the items moved to Trash will be\npermanently deleted automatically after:",
+      "freeUsers": {
+        "duration": "1 day",
+        "label": "for free users"
+      },
+      "essentialUsers": {
+        "duration": "7 days",
+        "label": "for essential users"
+      },
+      "premiumUsers": {
+        "duration": "14 days",
+        "label": "for premium users"
+      },
+      "ultimateUsers": {
+        "duration": "30 days",
+        "label": "for ultimate users"
+      }
     }
   },
   "tasks": {

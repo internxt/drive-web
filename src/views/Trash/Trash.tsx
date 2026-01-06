@@ -10,6 +10,10 @@ import { storageActions } from 'app/store/slices/storage';
 import { getTrashPaginated, getWorkspaceTrashPaginated } from './services';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import { uiActions } from 'app/store/slices/ui';
+import { useAppSelector } from 'app/store/hooks';
+import AutomaticTrashDisposalDialog from './components/AutomaticTrashDisposalDialog';
+import { userSelectors } from 'app/store/slices/user';
 
 export interface TrashViewProps {
   isLoadingItemsOnTrash: boolean;
@@ -22,12 +26,17 @@ const TrashView = (props: TrashViewProps) => {
   const { translate } = useTranslationContext();
 
   const workspaceSelected = useSelector(workspacesSelectors.getSelectedWorkspace);
+  const hasSignedToday = useAppSelector(userSelectors.hasSignedToday);
   const getTrash = workspaceSelected ? getWorkspaceTrashPaginated : getTrashPaginated;
 
   useEffect(() => {
     const { dispatch } = props;
     dispatch(storageThunks.resetNamePathThunk());
     dispatch(storageActions.clearSelectedItems());
+
+    if (!hasSignedToday) {
+      dispatch(uiActions.setIsAutomaticTrashDisposalDialogOpen(true));
+    }
   }, []);
 
   return (
@@ -41,6 +50,7 @@ const TrashView = (props: TrashViewProps) => {
         items={items}
         getTrashPaginated={getTrash}
       />
+      <AutomaticTrashDisposalDialog />
     </>
   );
 };
