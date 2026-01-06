@@ -1198,6 +1198,28 @@
     "item-menu": {
       "restore": "Wiederherstellen",
       "delete-permanently": "Lösche dauerhaft"
+    },
+    "automaticDisposal": {
+      "badge": "Neues Update",
+      "title": "Automatische Papierkorb-Entsorgung",
+      "close": "Schließen",
+      "description": "Alle in den Papierkorb verschobenen Elemente werden nun\nautomatisch dauerhaft gelöscht nach:",
+      "freeUsers": {
+        "duration": "1 Tag",
+        "label": "für kostenlose Benutzer"
+      },
+      "essentialUsers": {
+        "duration": "7 Tage",
+        "label": "für Essential-Benutzer"
+      },
+      "premiumUsers": {
+        "duration": "14 Tage",
+        "label": "für Premium-Benutzer"
+      },
+      "ultimateUsers": {
+        "duration": "30 Tage",
+        "label": "für Ultimate-Benutzer"
+      }
     }
   },
   "tasks": {

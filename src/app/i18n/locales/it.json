@@ -1318,6 +1318,28 @@
     "item-menu": {
       "restore": "Ripristino",
       "delete-permanently": "Elimina definitivamente"
+    },
+    "automaticDisposal": {
+      "badge": "Nuovo aggiornamento",
+      "title": "Eliminazione automatica del Cestino",
+      "close": "Chiudi",
+      "description": "Ora tutti gli elementi spostati nel Cestino verranno\neliminati definitivamente automaticamente dopo:",
+      "freeUsers": {
+        "duration": "1 giorno",
+        "label": "per utenti gratuiti"
+      },
+      "essentialUsers": {
+        "duration": "7 giorni",
+        "label": "per utenti essenziali"
+      },
+      "premiumUsers": {
+        "duration": "14 giorni",
+        "label": "per utenti premium"
+      },
+      "ultimateUsers": {
+        "duration": "30 giorni",
+        "label": "per utenti ultimate"
+      }
     }
   },
   "tasks": {

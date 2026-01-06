@@ -1260,6 +1260,28 @@
     "item-menu": {
       "restore": "Restaurar",
       "delete-permanently": "Eliminar permanentemente"
+    },
+    "automaticDisposal": {
+      "badge": "Nueva actualización",
+      "title": "Eliminación automática de la Papelera",
+      "close": "Cerrar",
+      "description": "Ahora todos los elementos movidos a la Papelera se eliminarán\npermanentemente de forma automática después de:",
+      "freeUsers": {
+        "duration": "1 día",
+        "label": "para usuarios gratuitos"
+      },
+      "essentialUsers": {
+        "duration": "7 días",
+        "label": "para usuarios esenciales"
+      },
+      "premiumUsers": {
+        "duration": "14 días",
+        "label": "para usuarios premium"
+      },
+      "ultimateUsers": {
+        "duration": "30 días",
+        "label": "para usuarios ultimate"
+      }
     }
   },
   "tasks": {
