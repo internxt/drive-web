@@ -14,12 +14,24 @@ import { uiActions } from 'app/store/slices/ui';
 import { useAppSelector } from 'app/store/hooks';
 import AutomaticTrashDisposalDialog from './components/AutomaticTrashDisposalDialog';
 import { userSelectors } from 'app/store/slices/user';
+import localStorageService from 'services/local-storage.service';
+
+const HAS_SEEN_TRASH_DISPOSAL_DIALOG_KEY = 'hasSeenTrashDisposalDialog';
 
 export interface TrashViewProps {
   isLoadingItemsOnTrash: boolean;
   items: DriveItemData[];
   dispatch: AppDispatch;
 }
+
+const shouldShowTrashDisposalDialog = (hasSignedToday: boolean): boolean => {
+  const hasSeenDialog = localStorageService.get(HAS_SEEN_TRASH_DISPOSAL_DIALOG_KEY);
+  return !hasSignedToday && !hasSeenDialog;
+};
+
+const markTrashDisposalDialogAsSeen = (): void => {
+  localStorageService.set(HAS_SEEN_TRASH_DISPOSAL_DIALOG_KEY, 'true');
+};
 
 const TrashView = (props: TrashViewProps) => {
   const { items, isLoadingItemsOnTrash } = props;
@@ -34,8 +46,9 @@ const TrashView = (props: TrashViewProps) => {
     dispatch(storageThunks.resetNamePathThunk());
     dispatch(storageActions.clearSelectedItems());
 
-    if (!hasSignedToday) {
+    if (shouldShowTrashDisposalDialog(hasSignedToday)) {
       dispatch(uiActions.setIsAutomaticTrashDisposalDialogOpen(true));
+      markTrashDisposalDialogAsSeen();
     }
   }, []);
 
