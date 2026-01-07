@@ -1911,10 +1911,10 @@
   version "1.0.2"
   resolved "https://codeload.github.com/internxt/prettier-config/tar.gz/9fa74e9a2805e1538b50c3809324f1c9d0f3e4f9"
 
-"@internxt/sdk@=1.11.17":
-  version "1.11.17"
-  resolved "https://registry.yarnpkg.com/@internxt/sdk/-/sdk-1.11.17.tgz#2f5bdada5d3cbf5cfc685a21c24b5df3ff51d8c8"
-  integrity sha512-91iEUvZizlwX6KBEFJ3JdFiGrhMBQ9R54sTc3Pei9QtV2FYTU8nTVEPYAg39tLOGzT/kVuplYOtBxfk6wFtSDA==
+"@internxt/sdk@=1.11.25":
+  version "1.11.25"
+  resolved "https://registry.yarnpkg.com/@internxt/sdk/-/sdk-1.11.25.tgz#9d39c0fac9d86fbc2aa1fbd1e6342b987b10daa3"
+  integrity sha512-2uS4gQh8T3vKXX1Nzpr41Z4r/AqF8+IJZVHqa+2YfOFWxJ5/yc0JCrDJqI/mUTBa27spPZNua2ZgcwyuUeZEgQ==
   dependencies:
     axios "1.13.2"
     uuid "11.1.0"
@@ -3034,10 +3034,10 @@
     "@noble/hashes" "2.0.1"
     "@scure/base" "2.0.0"
 
-"@serenity-kit/opaque@^0.9.0":
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/@serenity-kit/opaque/-/opaque-0.9.0.tgz#fe0aba921bac507d9a729a31d31e095454c2a6c3"
-  integrity sha512-Db4Gx1JBM78ThJhtKUu5xVe+QRkDGktiLTOVcqB879ELF+gX8X6wCVxPqT9YQdehxtrU8Kub4epLuQ0sIKnBbg==
+"@serenity-kit/opaque@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@serenity-kit/opaque/-/opaque-1.0.0.tgz#ef265667cd13977a53f22732f0d204452b5fe59c"
+  integrity sha512-UCu92RBFroWaUOdrIJzjXW8M/wqGGi7/2J8D5BPbCNAYU27iyzr5JDZ0N6wq31IhNhEIr7C/8V3+9aSgXi4F3A==
 
 "@socket.io/component-emitter@~3.1.0":
   version "3.1.2"

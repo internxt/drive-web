@@ -28,15 +28,16 @@ export const loginOpaque = async (
     password,
   });
 
-  const { loginResponse } = await authClient.loginOpaqueStart(email, startLoginRequest, twoFactorCode);
-  const { user, sessionID, sessionKey, exportKey } = await finishOpaqueLogin(
+  const { loginResponse } = await authClient.loginOpaqueStart(email, startLoginRequest);
+  const { user, sessionID, sessionKey, exportKey, token } = await finishOpaqueLogin(
     clientLoginState,
     loginResponse,
     password,
     email,
+    twoFactorCode,
   );
 
-  return { user, sessionID, sessionKey, exportKey };
+  return { user, sessionID, sessionKey, exportKey, token };
 };
 
 export const doLoginOpaque = async (
@@ -44,7 +45,13 @@ export const doLoginOpaque = async (
   password: string,
   twoFactorCode: string,
 ): Promise<{ token: string; user: UserSettings; mnemonic: string; newToken: string }> => {
-  const { sessionID, user: loggedUser, sessionKey, exportKey } = await loginOpaque(email, password, twoFactorCode);
+  const {
+    sessionID,
+    user: loggedUser,
+    sessionKey,
+    exportKey,
+    token,
+  } = await loginOpaque(email, password, twoFactorCode);
 
   const { keys, mnemonic } = await decryptUserKeysAndMnemonic(loggedUser.mnemonic, loggedUser.keys, exportKey);
 
@@ -56,7 +63,8 @@ export const doLoginOpaque = async (
   };
 
   localStorageService.set('xMnemonic', mnemonic);
-  localStorageService.set('xNewToken', sessionID);
+  localStorageService.set('xNewToken', token);
+  localStorageService.set('sessionID', sessionID);
   await setSessionKey(password, sessionKey);
 
   return { token: sessionID, user, mnemonic, newToken: sessionID };
@@ -102,9 +110,15 @@ export const signupOpaque = async (
     startLoginRequest,
   );
 
-  const { user, sessionID, sessionKey } = await finishOpaqueLogin(clientLoginState, loginResponse, password, email);
+  const { user, sessionID, sessionKey, token } = await finishOpaqueLogin(
+    clientLoginState,
+    loginResponse,
+    password,
+    email,
+    '',
+  );
 
-  return { user, sessionID, sessionKey, mnemonic, exportKey };
+  return { user, sessionID, sessionKey, mnemonic, exportKey, token };
 };
 
 export const doSignUpOpaque = async (email: string, password: string, captcha: string) => {
@@ -139,7 +153,13 @@ export const getMac = async (password: string, request: Uint8Array[]): Promise<s
   return computeMac(sessionKey, request);
 };
 
-const finishOpaqueLogin = async (clientLoginState: string, loginResponse: string, password: string, email: string) => {
+const finishOpaqueLogin = async (
+  clientLoginState: string,
+  loginResponse: string,
+  password: string,
+  email: string,
+  twoFactorCode: string,
+) => {
   const loginResult = client.finishLogin({
     clientLoginState,
     loginResponse,
@@ -150,9 +170,9 @@ const finishOpaqueLogin = async (clientLoginState: string, loginResponse: string
   }
   const { finishLoginRequest, sessionKey, exportKey } = loginResult;
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
-  const { sessionID, user } = await authClient.loginOpaqueFinish(email, finishLoginRequest);
+  const { sessionID, user, token } = await authClient.loginOpaqueFinish(email, finishLoginRequest, twoFactorCode);
 
-  return { exportKey, sessionID, sessionKey, user };
+  return { exportKey, sessionID, sessionKey, user, token };
 };
 
 export const doChangePasswordOpaque = async (newPassword: string, currentPassword: string, sessionID: string) => {
@@ -201,6 +221,7 @@ export const doChangePasswordOpaque = async (newPassword: string, currentPasswor
     loginResponse,
     newPassword,
     user.email,
+    '',
   );
 
   return { exportKey, sessionID: newSessionID, sessionKey: newSessionKey };

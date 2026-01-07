@@ -5,6 +5,7 @@ export type ProfileInfoOpaque = {
   sessionID: string;
   sessionKey: string;
   exportKey: string;
+  token: string;
 };
 
 export class OpaqueLoginError extends Error {

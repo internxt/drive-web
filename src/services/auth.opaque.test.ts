@@ -115,41 +115,40 @@ describe('logIn', () => {
               },
             ),
 
-          loginOpaqueStart: vi
-            .fn()
-            .mockImplementation((email: string, startLoginRequest: string, twoFactorCode: string) => {
-              if (twoFactorCode !== mockTwoFactorCode) {
-                throw new Error('Two factor code is incorrect');
-              }
-
-              const { loginResponse, serverLoginState } = server.startLogin({
-                userIdentifier: email,
-                registrationRecord: registrationRecords.get(email),
-                serverSetup,
-                startLoginRequest,
-              });
-
-              serverLoginStates.set(email, serverLoginState);
-
-              return { loginResponse };
-            }),
-
-          loginOpaqueFinish: vi.fn().mockImplementation((email: string, finishLoginRequest: string) => {
-            const { sessionKey } = server.finishLogin({
-              finishLoginRequest,
-              serverLoginState: serverLoginStates.get(email) ?? '',
+          loginOpaqueStart: vi.fn().mockImplementation((email: string, startLoginRequest: string) => {
+            const { loginResponse, serverLoginState } = server.startLogin({
+              userIdentifier: email,
+              registrationRecord: registrationRecords.get(email),
+              serverSetup,
+              startLoginRequest,
             });
 
-            const user = users.get(email);
-            if (!user) {
-              throw new Error('User is not found');
-            }
-            const sessionID = generateID();
+            serverLoginStates.set(email, serverLoginState);
 
-            logedInUsers.set(sessionID, { sessionKey, email });
-
-            return { user, sessionID };
+            return { loginResponse };
           }),
+
+          loginOpaqueFinish: vi
+            .fn()
+            .mockImplementation((email: string, finishLoginRequest: string, twoFactorCode: string) => {
+              if (twoFactorCode && twoFactorCode !== mockTwoFactorCode) {
+                throw new Error(`Two factor code is incorrect, got ${twoFactorCode}, expected ${mockTwoFactorCode}`);
+              }
+              const { sessionKey } = server.finishLogin({
+                finishLoginRequest,
+                serverLoginState: serverLoginStates.get(email) ?? '',
+              });
+
+              const user = users.get(email);
+              if (!user) {
+                throw new Error('User is not found');
+              }
+              const sessionID = generateID();
+
+              logedInUsers.set(sessionID, { sessionKey, email });
+
+              return { user, sessionID };
+            }),
           disableTwoFactorAuth: vi
             .fn()
             .mockImplementation(async (mac: string, twoFactorCode: string, sessionID: string) => {
