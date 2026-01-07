@@ -1574,7 +1574,8 @@
         "name": "Name",
         "modified": "Modified",
         "size": "Size",
-        "actions": "Actions"
+        "actions": "Actions",
+        "autoDelete": "Auto-delete"
       }
     },
     "viewMode": {
