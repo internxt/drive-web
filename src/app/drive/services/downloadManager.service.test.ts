@@ -29,7 +29,6 @@ import { TaskStatus, TaskType } from 'app/tasks/types';
 import localStorageService from 'services/local-storage.service';
 import { binaryStreamToBlob } from 'services/stream.service';
 import { FlatFolderZip } from 'services/zip.service';
-import streamSaver from '../../../libs/streamSaver';
 import { DriveFileData, DriveFolderData, DriveItemData } from '../types';
 import { getDatabaseFileSourceData, updateDatabaseFileSourceData } from './database.service';
 import downloadService from './download.service';
@@ -62,12 +61,6 @@ describe('downloadManagerService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
-    const defaultWritableStream = new WritableStream({
-      write: vi.fn(),
-      close: vi.fn(),
-      abort: vi.fn(),
-    });
-    vi.spyOn(streamSaver, 'createWriteStream').mockReturnValue(defaultWritableStream);
   });
 
   const mockUser: UserSettings = {
