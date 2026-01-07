@@ -57,7 +57,7 @@ interface DriveExplorerListProps {
 
 type ObjectWithId = { id: string | number };
 
-type SortField = 'type' | 'name' | 'updatedAt' | 'size';
+type SortField = 'type' | 'name' | 'updatedAt' | 'size' | 'caducityDate';
 
 type ContextMenuDriveItem = DriveItemData | Pick<DriveItemData, SortField> | (ListShareLinksItem & { code: string });
 
@@ -101,6 +101,59 @@ const resetDriveOrder = ({
   dispatch(storageActions.setHasMoreDriveFolders({ folderId: currentFolderId, status: true }));
   dispatch(storageActions.setHasMoreDriveFiles({ folderId: currentFolderId, status: true }));
   dispatch(fetchSortedFolderContentThunk(currentFolderId));
+};
+
+interface ListHeaderItem {
+  label: string;
+  width: string;
+  name: 'type' | 'name' | 'updatedAt' | 'size' | 'caducityDate';
+  orderable: boolean;
+  defaultDirection: 'ASC' | 'DESC';
+  buttonDataCy?: string;
+  textDataCy?: string;
+}
+
+const getListHeaders = (translate: (key: string) => string, isRecents: boolean, isTrash: boolean): ListHeaderItem[] => {
+  const headers: ListHeaderItem[] = [
+    {
+      label: translate('drive.list.columns.name'),
+      width: 'flex grow items-center min-w-driveNameHeader',
+      name: 'name',
+      orderable: !isRecents,
+      defaultDirection: 'ASC',
+      buttonDataCy: 'driveListHeaderNameButton',
+      textDataCy: 'driveListHeaderNameButtonText',
+    },
+  ];
+
+  if (isTrash) {
+    headers.push({
+      label: translate('drive.list.columns.autoDelete'),
+      width: 'w-date',
+      name: 'caducityDate',
+      orderable: true,
+      defaultDirection: 'ASC',
+    });
+  }
+
+  headers.push(
+    {
+      label: translate('drive.list.columns.modified'),
+      width: 'w-date',
+      name: 'updatedAt',
+      orderable: !isRecents,
+      defaultDirection: 'ASC',
+    },
+    {
+      label: translate('drive.list.columns.size'),
+      orderable: !isRecents && !isTrash,
+      defaultDirection: 'ASC',
+      width: 'w-size',
+      name: 'size',
+    },
+  );
+
+  return headers;
 };
 
 const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
@@ -166,6 +219,12 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
 
     if (value.field === 'size') {
       resetDriveOrder({ dispatch, orderType: 'size', direction, currentFolderId });
+    }
+
+    if (value.field === 'caducityDate') {
+      if (isTrash) {
+        props.resetPaginationState();
+      }
     }
   };
 
@@ -451,43 +510,8 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           />
         )}
         <ShareWithTeamDialog item={props.selectedItems[0]} roles={roles} />
-        <List<DriveItemData, 'type' | 'name' | 'updatedAt' | 'size'>
-          header={[
-            {
-              label: translate('drive.list.columns.name'),
-              width: 'flex grow items-center min-w-driveNameHeader',
-              name: 'name',
-              orderable: !isRecents,
-              defaultDirection: 'ASC',
-              buttonDataCy: 'driveListHeaderNameButton',
-              textDataCy: 'driveListHeaderNameButtonText',
-            },
-            ...(isTrash
-              ? [
-                  {
-                    label: translate('drive.list.columns.autoDelete'),
-                    width: 'w-date',
-                    name: 'updatedAt' as const,
-                    orderable: false,
-                    defaultDirection: 'ASC' as const,
-                  },
-                ]
-              : []),
-            {
-              label: translate('drive.list.columns.modified'),
-              width: 'w-date',
-              name: 'updatedAt',
-              orderable: !isRecents,
-              defaultDirection: 'ASC',
-            },
-            {
-              label: translate('drive.list.columns.size'),
-              orderable: !isRecents && !isTrash,
-              defaultDirection: 'ASC',
-              width: 'w-size',
-              name: 'size',
-            },
-          ]}
+        <List<DriveItemData, 'type' | 'name' | 'updatedAt' | 'size' | 'caducityDate'>
+          header={getListHeaders(translate, isRecents, isTrash)}
           checkboxDataCy="driveListHeaderCheckbox"
           disableKeyboardShortcuts={props.disableKeyboardShortcuts || props.showStopSharingConfirmation}
           items={props.items}

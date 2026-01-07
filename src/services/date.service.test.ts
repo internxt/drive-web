@@ -35,4 +35,35 @@ describe('dateService', () => {
 
     expect(isBefore).toBe(false);
   });
+
+  describe('calculateDaysUntilDate', () => {
+    test('when target date is undefined, then returns 0', () => {
+      const result = dateService.calculateDaysUntilDate();
+      expect(result).toBe(0);
+    });
+
+    test('when target date is in the past, then returns 0', () => {
+      const pastDate = dayjs().subtract(5, 'day').toISOString();
+      const result = dateService.calculateDaysUntilDate(pastDate);
+      expect(result).toBe(0);
+    });
+
+    test('when target date is 10 days in the future, then returns 10', () => {
+      const futureDate = dayjs().add(10, 'day').toISOString();
+      const result = dateService.calculateDaysUntilDate(futureDate);
+      expect(result).toBe(10);
+    });
+
+    test('when target date is tomorrow, then returns 1', () => {
+      const tomorrow = dayjs().add(1, 'day').toISOString();
+      const result = dateService.calculateDaysUntilDate(tomorrow);
+      expect(result).toBe(1);
+    });
+
+    test('when target date is a Date object 30 days ahead, then returns 30', () => {
+      const futureDate = dayjs().add(30, 'day').toDate();
+      const result = dateService.calculateDaysUntilDate(futureDate);
+      expect(result).toBe(30);
+    });
+  });
 });
