@@ -1,11 +1,12 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, Mock, MockInstance, test, vi } from 'vitest';
 
-// Mock streamSaver BEFORE importing it to avoid constructor execution issues in CI
 vi.mock('../../../libs/streamSaver', () => ({
   default: {
-    createWriteStream: vi.fn(),
+    createWriteStream: vi.fn(() => new WritableStream()),
   },
 }));
+
+import streamSaver from '../../../libs/streamSaver';
 
 import { EncryptionVersion, FileStatus } from '@internxt/sdk/dist/drive/storage/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
@@ -61,6 +62,12 @@ describe('downloadManagerService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
+    const defaultWritableStream = new WritableStream({
+      write: vi.fn(),
+      close: vi.fn(),
+      abort: vi.fn(),
+    });
+    vi.spyOn(streamSaver, 'createWriteStream').mockReturnValue(defaultWritableStream);
   });
 
   const mockUser: UserSettings = {
