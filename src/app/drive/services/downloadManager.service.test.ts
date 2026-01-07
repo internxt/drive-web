@@ -33,7 +33,15 @@ import { ConnectionLostError } from 'app/network/requests';
 import { downloadFile } from 'app/network/download';
 import { downloadWorkerHandler } from './worker.service/downloadWorkerHandler';
 
-vi.mock('./../../network/requests', () => ({ ConnectionLostError: vi.fn(), NetworkCredentials: {} }));
+vi.mock('./../../network/requests', () => ({
+  ConnectionLostError: class ConnectionLostError extends Error {
+    constructor(message?: string) {
+      super(message);
+      this.name = 'ConnectionLostError';
+    }
+  },
+  NetworkCredentials: {},
+}));
 vi.mock('app/tasks/services/tasks.service', () => ({
   default: {
     create: vi.fn(),
