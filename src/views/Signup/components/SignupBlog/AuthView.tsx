@@ -7,7 +7,7 @@ import { WarningCircle } from '@phosphor-icons/react';
 import TextInput from 'components/TextInput';
 import PasswordInput from 'components/PasswordInput';
 import { useForm } from 'react-hook-form';
-import { signup } from '../../services';
+import { submitBlogSignup } from './services/blogSignup.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export const SignupComponent = ({
@@ -54,7 +54,7 @@ export const SignupComponent = ({
   return (
     <form
       onSubmit={handleSubmit(async (e) => {
-        await signup(e, dispatch, doRegister, setLoading, appRedirect, setError);
+        await submitBlogSignup({ data: e, dispatch, doRegister, setLoading, setError, redirectToApp: appRedirect });
       })}
     >
       <div className="flex w-full max-w-lg flex-col items-center space-y-2 pt-10 lg:w-max lg:items-start lg:pt-0">
