@@ -1,13 +1,8 @@
 import { Stripe, loadStripe } from '@stripe/stripe-js';
 import envService from 'services/env.service';
-import { paymentService } from 'views/Checkout/services';
+import { paymentService, currencyService } from 'views/Checkout/services';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { userLocation } from 'utils/userLocation';
-
-const productValue = {
-  US: 'usd',
-  CA: 'usd',
-};
 
 const getPlanPrices = async ({
   currencyValue = 'eur',
@@ -20,7 +15,7 @@ const getPlanPrices = async ({
 const fetchPlanPrices = async (userType: UserType) => {
   try {
     const { location } = await userLocation();
-    const currencyValue = productValue[location] ?? 'eur';
+    const currencyValue = currencyService.getCurrencyForLocation(location);
 
     return getPlanPrices({ currencyValue, userType });
   } catch {
