@@ -22,11 +22,13 @@ const isItemInteractive = (item: DriveExplorerItemProps['item']): boolean => {
   return (item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS');
 };
 
-const getAutoDeleteDisplay = (days: number): { text: string; isUrgent: boolean } => {
+const getAutoDeleteDisplay = (
+  days: number,
+  translate: (key: string, options?: { count?: number }) => string,
+): { text: string; isUrgent: boolean } => {
   const isUrgent = days <= 2;
-  const dayText = days === 1 ? 'day' : 'days';
   return {
-    text: `In ${days} ${dayText}`,
+    text: translate('trash.autoDelete.inDays', { count: days }),
     isUrgent,
   };
 };
@@ -41,7 +43,7 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
   const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
 
   const daysUntilDelete = isTrash ? dateService.calculateDaysUntilDate(item.caducityDate) : 0;
-  const autoDeleteInfo = isTrash && daysUntilDelete > 0 ? getAutoDeleteDisplay(daysUntilDelete) : null;
+  const autoDeleteInfo = isTrash && daysUntilDelete > 0 ? getAutoDeleteDisplay(daysUntilDelete, t) : null;
 
   useEffect(() => {
     if (isEditingName(item)) {

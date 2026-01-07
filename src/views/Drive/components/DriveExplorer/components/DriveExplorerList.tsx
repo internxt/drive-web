@@ -195,6 +195,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const currentFolderId = useAppSelector(storageSelectors.currentFolderId);
   const isRecents = props.title === translate('views.recents.head');
   const isTrash = props.title === translate('trash.trash');
+  const skeleton = isTrash ? skinSkeletonTrash : skinSkeleton;
 
   const sortBy = (value: { field: SortField; direction: 'ASC' | 'DESC' }) => {
     let direction = OrderDirection.Asc;
@@ -537,7 +538,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           itemComposition={[(item) => createDriveListItem(item, props.isTrash)]}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
-          skinSkeleton={isTrash ? skinSkeletonTrash : skinSkeleton}
+          skinSkeleton={skeleton}
           emptyState={<></>}
           onNextPage={onEndOfScroll}
           onEnterPressed={(driveItem) => {
