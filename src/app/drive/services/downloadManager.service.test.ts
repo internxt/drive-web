@@ -33,44 +33,16 @@ import { ConnectionLostError } from 'app/network/requests';
 import { downloadFile } from 'app/network/download';
 import { downloadWorkerHandler } from './worker.service/downloadWorkerHandler';
 
-vi.mock('./../../network/requests', () => ({
-  ConnectionLostError: class ConnectionLostError extends Error {
-    constructor(message?: string) {
-      super(message);
-      this.name = 'ConnectionLostError';
-    }
-  },
-  NetworkCredentials: {},
-}));
-vi.mock('app/tasks/services/tasks.service', () => ({
-  default: {
-    create: vi.fn(),
-    updateTask: vi.fn(),
-  },
-}));
-vi.mock('services/error.service', () => ({
-  default: {
-    castError: vi.fn().mockImplementation((e) => ({ message: e.message ?? 'Default error message' })),
-    reportError: vi.fn(),
-  },
-}));
-vi.mock('file-saver', async () => {
-  const actual = await vi.importActual<typeof import('file-saver')>('file-saver');
-  return {
-    ...actual,
-    saveAs: vi.fn(),
-  };
-});
-vi.mock('src/app/network/NetworkFacade.ts', () => ({
-  NetworkFacade: vi.fn().mockImplementation(() => ({
-    downloadFile: vi.fn(),
-    downloadFolder: vi.fn(),
-    downloadItems: vi.fn(),
-    generateTasksForItem: vi.fn(),
-  })),
-}));
-
-vi.mock('app/drive/services/database.service', () => ({
+const mocks = vi.hoisted(() => ({
+  create: vi.fn(),
+  updateTask: vi.fn(),
+  castError: vi.fn().mockImplementation((e) => ({ message: e.message ?? 'Default error message' })),
+  reportError: vi.fn(),
+  saveAs: vi.fn(),
+  downloadFile: vi.fn(),
+  downloadFolder: vi.fn(),
+  downloadItems: vi.fn(),
+  generateTasksForItem: vi.fn(),
   canFileBeCached: vi.fn(),
   deleteDatabaseItems: vi.fn(),
   deleteDatabaseProfileAvatar: vi.fn(),
@@ -83,30 +55,93 @@ vi.mock('app/drive/services/database.service', () => ({
   updateDatabaseFileSourceData: vi.fn(),
   updateDatabaseProfileAvatar: vi.fn(),
   updateDatabaseWorkspaceAvatar: vi.fn(),
-}));
-
-vi.mock('./folder.service', () => ({
   downloadFolderAsZip: vi.fn(),
   createFilesIterator: vi.fn(),
   createFoldersIterator: vi.fn(),
   checkIfCachedSourceIsOlder: vi.fn(),
-}));
-
-vi.mock('app/network/download', () => ({
-  downloadFile: vi.fn(),
-  NetworkCredentials: vi.fn(),
-}));
-
-vi.mock('services/stream.service', () => ({
+  downloadFileNetwork: vi.fn(),
+  NetworkCredentialsFn: vi.fn(),
   binaryStreamToBlob: vi.fn(),
   buildProgressStream: vi.fn(),
   decryptStream: vi.fn(),
   joinReadableBinaryStreams: vi.fn(),
+  getUser: vi.fn(),
+}));
+
+vi.mock('./../../network/requests', () => ({
+  ConnectionLostError: class ConnectionLostError extends Error {
+    constructor(message?: string) {
+      super(message);
+      this.name = 'ConnectionLostError';
+    }
+  },
+  NetworkCredentials: {},
+}));
+vi.mock('app/tasks/services/tasks.service', () => ({
+  default: {
+    create: mocks.create,
+    updateTask: mocks.updateTask,
+  },
+}));
+vi.mock('services/error.service', () => ({
+  default: {
+    castError: mocks.castError,
+    reportError: mocks.reportError,
+  },
+}));
+vi.mock('file-saver', async () => {
+  const actual = await vi.importActual<typeof import('file-saver')>('file-saver');
+  return {
+    ...actual,
+    saveAs: mocks.saveAs,
+  };
+});
+vi.mock('src/app/network/NetworkFacade.ts', () => ({
+  NetworkFacade: vi.fn().mockImplementation(() => ({
+    downloadFile: mocks.downloadFile,
+    downloadFolder: mocks.downloadFolder,
+    downloadItems: mocks.downloadItems,
+    generateTasksForItem: mocks.generateTasksForItem,
+  })),
+}));
+
+vi.mock('app/drive/services/database.service', () => ({
+  canFileBeCached: mocks.canFileBeCached,
+  deleteDatabaseItems: mocks.deleteDatabaseItems,
+  deleteDatabaseProfileAvatar: mocks.deleteDatabaseProfileAvatar,
+  deleteDatabaseWorkspaceAvatar: mocks.deleteDatabaseWorkspaceAvatar,
+  getDatabaseFilePreviewData: mocks.getDatabaseFilePreviewData,
+  getDatabaseFileSourceData: mocks.getDatabaseFileSourceData,
+  getDatabaseProfileAvatar: mocks.getDatabaseProfileAvatar,
+  getDatabaseWorkspaceAvatar: mocks.getDatabaseWorkspaceAvatar,
+  updateDatabaseFilePreviewData: mocks.updateDatabaseFilePreviewData,
+  updateDatabaseFileSourceData: mocks.updateDatabaseFileSourceData,
+  updateDatabaseProfileAvatar: mocks.updateDatabaseProfileAvatar,
+  updateDatabaseWorkspaceAvatar: mocks.updateDatabaseWorkspaceAvatar,
+}));
+
+vi.mock('./folder.service', () => ({
+  downloadFolderAsZip: mocks.downloadFolderAsZip,
+  createFilesIterator: mocks.createFilesIterator,
+  createFoldersIterator: mocks.createFoldersIterator,
+  checkIfCachedSourceIsOlder: mocks.checkIfCachedSourceIsOlder,
+}));
+
+vi.mock('app/network/download', () => ({
+  downloadFile: mocks.downloadFileNetwork,
+  NetworkCredentials: mocks.NetworkCredentialsFn,
+}));
+
+vi.mock('services/stream.service', () => ({
+  binaryStreamToBlob: mocks.binaryStreamToBlob,
+  buildProgressStream: mocks.buildProgressStream,
+  decryptStream: mocks.decryptStream,
+  joinReadableBinaryStreams: mocks.joinReadableBinaryStreams,
 }));
 
 vi.mock('services/local-storage.service', () => ({
   default: {
-    getUser: vi.fn(),
+    getUser: mocks.getUser,
   },
 }));
 vi.mock('./download.service/createFileDownloadStream');
