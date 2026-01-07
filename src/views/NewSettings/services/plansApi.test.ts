@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
-import { paymentService } from 'views/Checkout/services';
+import { currencyService, paymentService } from 'views/Checkout/services';
 import envService from 'services/env.service';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { userLocation } from 'utils/userLocation';
@@ -17,6 +17,9 @@ vi.mock('views/Checkout/services', () => ({
   paymentService: {
     getPrices: vi.fn(),
   },
+  currencyService: {
+    getCurrencyForLocation: vi.fn().mockReturnValue('eur'),
+  },
 }));
 
 vi.mock('utils/userLocation', () => ({
@@ -30,22 +33,28 @@ describe('Fetching the prices', () => {
   });
 
   it('When user location is US, then it fetches prices in USD', async () => {
+    const currencyForLocationSpy = vi.spyOn(currencyService, 'getCurrencyForLocation').mockReturnValue('usd');
+
     (userLocation as Mock).mockResolvedValue({ location: 'US' });
     (paymentService.getPrices as Mock).mockResolvedValue(['price_1']);
 
     const prices = await fetchPlanPrices(UserType.Individual);
 
     expect(userLocation).toHaveBeenCalled();
+    expect(currencyForLocationSpy).toHaveBeenCalledWith('US');
     expect(paymentService.getPrices).toHaveBeenCalledWith('usd', UserType.Individual);
     expect(prices).toEqual(['price_1']);
   });
 
   it('When user location is unknown, then it fetches prices in EUR', async () => {
+    const currencyForLocationSpy = vi.spyOn(currencyService, 'getCurrencyForLocation').mockReturnValue('eur');
+
     (userLocation as Mock).mockResolvedValue({ location: 'JP' });
     (paymentService.getPrices as Mock).mockResolvedValue(['price_2']);
 
     const prices = await fetchPlanPrices(UserType.Individual);
 
+    expect(currencyForLocationSpy).toHaveBeenCalledWith('JP');
     expect(paymentService.getPrices).toHaveBeenCalledWith('eur', UserType.Individual);
     expect(prices).toEqual(['price_2']);
   });
