@@ -42,7 +42,7 @@ interface ThumbnailGenerated {
 
 const VIDEO_FRAME_QUALITY = 0.75;
 
-const isValidImage = (file: File): Promise<boolean> => {
+export const isValidImage = (file: File): Promise<boolean> => {
   return new Promise((resolve) => {
     const img = new Image();
     img.onload = () => resolve(true);
@@ -51,7 +51,7 @@ const isValidImage = (file: File): Promise<boolean> => {
   });
 };
 
-const getImageThumbnail = async (file: File): Promise<ThumbnailGenerated['file']> => {
+export const getImageThumbnail = async (file: File): Promise<ThumbnailGenerated['file']> => {
   const isValid = await isValidImage(file);
   if (!isValid) {
     return null;

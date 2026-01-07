@@ -1,6 +1,9 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { getVideoFrame } from './thumbnail.service';
+import Resizer from 'react-image-file-resizer';
 import { ErrorLoadingVideoFileError } from './errors/thumbnail.service.errors';
+import { getVideoFrame, getImageThumbnail } from './thumbnail.service';
+
+vi.mock('react-image-file-resizer');
 
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -147,6 +150,61 @@ describe('Thumbnail Service', () => {
       mockVideoElement.trigger('seeked');
 
       const result = await thumbnailPromise;
+
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('Get Image Thumbnail', () => {
+    let mockImage: { onload: (() => void) | null; onerror: (() => void) | null };
+
+    beforeEach(() => {
+      vi.clearAllMocks();
+      URL.createObjectURL = vi.fn(() => 'blob:mock-url');
+
+      mockImage = { onload: null, onerror: null };
+      globalThis.Image = vi.fn(() => mockImage) as any;
+    });
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    test('When image is valid, then it should return a resized thumbnail', async () => {
+      const imageFile = new File(['image-content'], 'test-image.jpg', { type: 'image/jpeg' });
+      const mockThumbnailFile = new File(['thumbnail'], 'thumbnail.png', { type: 'image/png' });
+
+      vi.mocked(Resizer.imageFileResizer).mockImplementation(
+        (_file, _maxWidth, _maxHeight, _compressFormat, _quality, _rotation, responseUriFunc) => {
+          responseUriFunc(mockThumbnailFile);
+        },
+      );
+
+      const promise = getImageThumbnail(imageFile);
+      mockImage.onload?.();
+
+      const result = await promise;
+
+      expect(result).toBe(mockThumbnailFile);
+      expect(Resizer.imageFileResizer).toHaveBeenCalledWith(
+        imageFile,
+        300,
+        300,
+        'png',
+        100,
+        0,
+        expect.any(Function),
+        'file',
+      );
+    });
+
+    test('When image is invalid, then it should return nothing', async () => {
+      const invalidImageFile = new File(['corrupted'], 'corrupted.jpg', { type: 'image/jpeg' });
+
+      const promise = getImageThumbnail(invalidImageFile);
+      mockImage.onerror?.();
+
+      const result = await promise;
 
       expect(result).toBeNull();
     });
