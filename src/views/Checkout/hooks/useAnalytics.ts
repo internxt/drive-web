@@ -41,5 +41,5 @@ export const useAnalytics = ({
         localStorageService.set(STORAGE_KEYS.GCLID, gclid);
       }
     }
-  }, [isCheckoutReady]);
+  }, [isCheckoutReady, selectedPlan, promoCodeData, businessSeats, gclid]);
 };
