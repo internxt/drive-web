@@ -53,4 +53,31 @@ describe('Currency Service', () => {
       expect(result[1].currencyId).toBe('ETH');
     });
   });
+
+  describe('Get currency by user location', () => {
+    test('When location is mapped, then mapped currency is returned', () => {
+      const result = currencyService.getCurrencyForLocation('US');
+
+      expect(result).toStrictEqual('usd');
+    });
+
+    test('When location is not mapped and fallback currency is provided, then fallback currency is returned', () => {
+      const fallbackCurrency = 'gbp';
+      const result = currencyService.getCurrencyForLocation('ES', fallbackCurrency);
+
+      expect(result).toStrictEqual(fallbackCurrency);
+    });
+
+    test('When location is not mapped and no fallback currency is provided, then default eur currency is returned', () => {
+      const result = currencyService.getCurrencyForLocation('MX');
+
+      expect(result).toStrictEqual('eur');
+    });
+
+    test('When location is undefined and no fallback currency is provided, then default eur currency is returned', () => {
+      const result = currencyService.getCurrencyForLocation();
+
+      expect(result).toStrictEqual('eur');
+    });
+  });
 });
