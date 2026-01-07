@@ -3,11 +3,13 @@ import { checkoutService } from '../services';
 import { useEffect, useState } from 'react';
 import { CouponCodeData } from '../types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import currencyService from '../services/currency.service';
 
 interface UseProductsProps {
   planId: string | null;
   promotionCode: string | null;
   currency?: string;
+  userLocation?: string;
   userAddress?: string;
   country?: string;
   postalCode?: string;
@@ -32,7 +34,14 @@ const STATUS_CODE_ERROR = {
   INTERNAL_SERVER_ERROR: 500,
 };
 
-export const useProducts = ({ currency, translate, planId, promotionCode, userAddress }: UseProductsProps) => {
+export const useProducts = ({
+  currency,
+  translate,
+  planId,
+  promotionCode,
+  userLocation,
+  userAddress,
+}: UseProductsProps) => {
   const [selectedPlan, setSelectedPlan] = useState<PriceWithTax>();
   const [businessSeats, setBusinessSeats] = useState<number>(1);
   const [promoCodeData, setPromoCodeData] = useState<CouponCodeData | undefined>(undefined);
@@ -41,13 +50,15 @@ export const useProducts = ({ currency, translate, planId, promotionCode, userAd
   useEffect(() => {
     if (!planId || !userAddress) return;
 
+    const currencyPlan = currencyService.getCurrencyForLocation(userLocation, currency);
+
     if (promotionCode) {
-      fetchSelectedPlan({ priceId: planId, currency, userAddress, promotionCode });
+      fetchSelectedPlan({ priceId: planId, currency: currencyPlan, userAddress, promotionCode });
       fetchPromotionCode({ priceId: planId, promotionCode });
     } else {
-      fetchSelectedPlan({ priceId: planId, currency, userAddress });
+      fetchSelectedPlan({ priceId: planId, currency: currencyPlan, userAddress });
     }
-  }, [userAddress, promotionCode]);
+  }, [userLocation, userAddress, promotionCode]);
 
   const fetchSelectedPlan = async ({
     priceId,
