@@ -7,7 +7,7 @@ import { connect, useSelector } from 'react-redux';
 import { ListShareLinksItem, Role } from '@internxt/sdk/dist/drive/share/types';
 import navigationService from 'services/navigation.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { skinSkeleton } from 'components/Skeleton';
+import { skinSkeleton, skinSkeletonTrash } from 'components/Skeleton';
 import { moveItemsToTrash } from '../../../../../views/Trash/services';
 import { OrderDirection, OrderSettings } from 'app/core/types';
 import shareService from 'app/share/services/share.service';
@@ -462,6 +462,17 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
               buttonDataCy: 'driveListHeaderNameButton',
               textDataCy: 'driveListHeaderNameButtonText',
             },
+            ...(isTrash
+              ? [
+                  {
+                    label: translate('drive.list.columns.autoDelete'),
+                    width: 'w-date',
+                    name: 'updatedAt' as const,
+                    orderable: false,
+                    defaultDirection: 'ASC' as const,
+                  },
+                ]
+              : []),
             {
               label: translate('drive.list.columns.modified'),
               width: 'w-date',
@@ -485,7 +496,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           itemComposition={[(item) => createDriveListItem(item, props.isTrash)]}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
-          skinSkeleton={skinSkeleton}
+          skinSkeleton={isTrash ? skinSkeletonTrash : skinSkeleton}
           emptyState={<></>}
           onNextPage={onEndOfScroll}
           onEnterPressed={(driveItem) => {

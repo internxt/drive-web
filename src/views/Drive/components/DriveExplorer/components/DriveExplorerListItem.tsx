@@ -9,6 +9,7 @@ import iconService from 'app/drive/services/icon.service';
 import { useDriveItemActions, useDriveItemDrag, useDriveItemDrop, useDriveItemStoreProps } from '../../../hooks';
 import './DriveExplorerListItem.scss';
 import { t } from 'i18next';
+import { WarningCircle } from '@phosphor-icons/react';
 
 const getItemClassNames = (isSelected: boolean, isDraggingOver: boolean, isDragging: boolean): string => {
   const selectedClass = isSelected ? 'selected' : '';
@@ -21,7 +22,26 @@ const isItemInteractive = (item: DriveExplorerItemProps['item']): boolean => {
   return (item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS');
 };
 
-const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element => {
+const calculateDaysUntilAutoDelete = (caducityDate?: string): number => {
+  if (!caducityDate) return 0;
+
+  const deletionDate = new Date(caducityDate);
+  const now = new Date();
+  const diffTime = deletionDate.getTime() - now.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return Math.max(diffDays, 0);
+};
+
+const getAutoDeleteDisplay = (days: number): { text: string; isUrgent: boolean } => {
+  const isUrgent = days <= 2;
+  const dayText = days === 1 ? 'day' : 'days';
+  return {
+    text: `In ${days} ${dayText}`,
+    isUrgent,
+  };
+};
+
+const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.Element => {
   const { isItemSelected, isEditingName } = useDriveItemStoreProps();
   const { nameInputRef, onNameClicked, onItemClicked, onItemDoubleClicked, downloadAndSetThumbnail } =
     useDriveItemActions(item);
@@ -29,6 +49,9 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
   const { connectDragSource, isDraggingThisItem } = useDriveItemDrag(item);
   const { connectDropTarget, isDraggingOverThisItem } = useDriveItemDrop(item);
   const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
+
+  const daysUntilDelete = isTrash ? calculateDaysUntilAutoDelete(item.caducityDate) : 0;
+  const autoDeleteInfo = isTrash && daysUntilDelete > 0 ? getAutoDeleteDisplay(daysUntilDelete) : null;
 
   useEffect(() => {
     if (isEditingName(item)) {
@@ -110,6 +133,16 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
         /* DROPPABLE ZONE */
         isInteractive && connectDropTarget(<div className="absolute top-0 h-full w-1/2 group-hover:invisible"></div>)
       }
+
+      {/* AUTO-DELETE (only for trash) */}
+      {isTrash && autoDeleteInfo && (
+        <div className="block lg:pl-4 shrink-0 w-date items-center whitespace-nowrap">
+          <div className={`flex items-center gap-1 ${autoDeleteInfo.isUrgent ? 'text-red-dark' : ''}`}>
+            <WarningCircle size={20} className="shrink-0" />
+            <span>{autoDeleteInfo.text}</span>
+          </div>
+        </div>
+      )}
 
       {/* DATE */}
       <div className="block lg:pl-4 shrink-0 w-date items-center whitespace-nowrap">
