@@ -1,11 +1,4 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, Mock, MockInstance, test, vi } from 'vitest';
-
-vi.mock('../../../libs/streamSaver', () => ({
-  default: {
-    createWriteStream: vi.fn(() => new WritableStream()),
-  },
-}));
-
 import streamSaver from '../../../libs/streamSaver';
 
 import { EncryptionVersion, FileStatus } from '@internxt/sdk/dist/drive/storage/types';
