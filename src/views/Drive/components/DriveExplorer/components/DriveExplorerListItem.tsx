@@ -22,16 +22,6 @@ const isItemInteractive = (item: DriveExplorerItemProps['item']): boolean => {
   return (item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS');
 };
 
-const calculateDaysUntilAutoDelete = (caducityDate?: string): number => {
-  if (!caducityDate) return 0;
-
-  const deletionDate = new Date(caducityDate);
-  const now = new Date();
-  const diffTime = deletionDate.getTime() - now.getTime();
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return Math.max(diffDays, 0);
-};
-
 const getAutoDeleteDisplay = (days: number): { text: string; isUrgent: boolean } => {
   const isUrgent = days <= 2;
   const dayText = days === 1 ? 'day' : 'days';
@@ -50,7 +40,7 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
   const { connectDropTarget, isDraggingOverThisItem } = useDriveItemDrop(item);
   const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
 
-  const daysUntilDelete = isTrash ? calculateDaysUntilAutoDelete(item.caducityDate) : 0;
+  const daysUntilDelete = isTrash ? dateService.calculateDaysUntilDate(item.caducityDate) : 0;
   const autoDeleteInfo = isTrash && daysUntilDelete > 0 ? getAutoDeleteDisplay(daysUntilDelete) : null;
 
   useEffect(() => {
