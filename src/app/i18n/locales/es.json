@@ -1226,6 +1226,10 @@
       "restore": "Restaurar",
       "delete-permanently": "Eliminar permanentemente"
     },
+    "autoDelete": {
+      "inDays_one": "En {{count}} día",
+      "inDays_other": "En {{count}} días"
+    },
     "automaticDisposal": {
       "badge": "Nueva actualización",
       "title": "Eliminación automática de la Papelera",
@@ -1514,7 +1518,8 @@
         "name": "Nombre",
         "modified": "Modificado",
         "size": "Tamaño",
-        "actions": "Acciones"
+        "actions": "Acciones",
+        "autoDelete": "Eliminación automática"
       }
     },
     "viewMode": {

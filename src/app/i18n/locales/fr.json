@@ -1177,6 +1177,10 @@
       "restore": "Restaurer",
       "delete-permanently": "Supprimer définitivement"
     },
+    "autoDelete": {
+      "inDays_one": "Dans {{count}} jour",
+      "inDays_other": "Dans {{count}} jours"
+    },
     "automaticDisposal": {
       "badge": "Nouvelle mise à jour",
       "title": "Élimination automatique de la Corbeille",
@@ -1460,7 +1464,8 @@
         "name": "Nom",
         "modified": "Modifié",
         "size": "Taille",
-        "actions": "Actions"
+        "actions": "Actions",
+        "autoDelete": "Suppression automatique"
       }
     },
     "viewMode": {
