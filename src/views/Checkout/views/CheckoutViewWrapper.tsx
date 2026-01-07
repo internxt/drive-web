@@ -96,14 +96,6 @@ const CheckoutViewWrapper = () => {
     translate,
   });
 
-  useAnalytics({
-    isCheckoutReady,
-    businessSeats,
-    gclid,
-    promoCodeData,
-    selectedPlan,
-  });
-
   const dispatch = useAppDispatch();
   const [mobileToken, setMobileToken] = useState<string | null>(null);
   const [address, setAddress] = useState<AddressProvider>();
@@ -122,8 +114,21 @@ const CheckoutViewWrapper = () => {
   const lastName = user?.lastname ?? '';
   const fullName = userAccountName + ' ' + lastName;
   const isUserAuthenticated = !!user;
-  const isCheckoutReadyToRender =
-    isCheckoutReady && stripeElementsOptions && stripeSdk && selectedPlan?.price && selectedPlan?.taxes;
+  const isCheckoutReadyToRender = !!(
+    isCheckoutReady &&
+    stripeElementsOptions &&
+    stripeSdk &&
+    selectedPlan?.price &&
+    selectedPlan?.taxes
+  );
+
+  useAnalytics({
+    isCheckoutReady: isCheckoutReadyToRender,
+    businessSeats,
+    gclid,
+    promoCodeData,
+    selectedPlan,
+  });
 
   const gclidStored = localStorageService.get(STORAGE_KEYS.GCLID);
 
