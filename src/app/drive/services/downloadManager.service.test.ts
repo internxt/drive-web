@@ -1,36 +1,44 @@
-import streamSaver from '../../../libs/streamSaver';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, Mock, MockInstance, test, vi } from 'vitest';
+
+// Mock streamSaver BEFORE importing it to avoid constructor execution issues in CI
+vi.mock('../../../libs/streamSaver', () => ({
+  default: {
+    createWriteStream: vi.fn(),
+  },
+}));
+
+import { EncryptionVersion, FileStatus } from '@internxt/sdk/dist/drive/storage/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { Workspace, WorkspaceCredentialsDetails, WorkspaceData, WorkspaceUser } from '@internxt/sdk/dist/workspaces';
+import { ErrorMessages } from 'app/core/constants';
+import { DriveItemBlobData } from 'app/database/services/database.service';
+import { LRUCache } from 'app/database/services/database.service/LRUCache';
+import { LevelsBlobsCache, LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
 import {
+  areItemArraysEqual,
   DownloadCredentials,
   DownloadItem,
   DownloadItemType,
   DownloadManagerService,
   DownloadTask,
-  areItemArraysEqual,
 } from 'app/drive/services/downloadManager.service';
-import { ErrorMessages } from 'app/core/constants';
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, Mock, MockInstance, test, vi } from 'vitest';
-import { Workspace, WorkspaceCredentialsDetails, WorkspaceData, WorkspaceUser } from '@internxt/sdk/dist/workspaces';
+import { downloadFile } from 'app/network/download';
+import { ConnectionLostError } from 'app/network/requests';
+import tasksService from 'app/tasks/services/tasks.service';
+import { TaskStatus, TaskType } from 'app/tasks/types';
+import localStorageService from 'services/local-storage.service';
+import { binaryStreamToBlob } from 'services/stream.service';
+import { FlatFolderZip } from 'services/zip.service';
+import streamSaver from '../../../libs/streamSaver';
 import { DriveFileData, DriveFolderData, DriveItemData } from '../types';
+import { getDatabaseFileSourceData, updateDatabaseFileSourceData } from './database.service';
+import downloadService from './download.service';
 import {
   checkIfCachedSourceIsOlder,
   createFilesIterator,
   createFoldersIterator,
   downloadFolderAsZip,
 } from './folder.service';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import localStorageService from 'services/local-storage.service';
-import tasksService from 'app/tasks/services/tasks.service';
-import { EncryptionVersion, FileStatus } from '@internxt/sdk/dist/drive/storage/types';
-import { TaskStatus, TaskType } from 'app/tasks/types';
-import downloadService from './download.service';
-import { getDatabaseFileSourceData, updateDatabaseFileSourceData } from './database.service';
-import { FlatFolderZip } from 'services/zip.service';
-import { binaryStreamToBlob } from 'services/stream.service';
-import { LevelsBlobsCache, LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
-import { LRUCache } from 'app/database/services/database.service/LRUCache';
-import { DriveItemBlobData } from 'app/database/services/database.service';
-import { ConnectionLostError } from 'app/network/requests';
-import { downloadFile } from 'app/network/download';
 import { downloadWorkerHandler } from './worker.service/downloadWorkerHandler';
 
 vi.mock('./../../network/requests');
