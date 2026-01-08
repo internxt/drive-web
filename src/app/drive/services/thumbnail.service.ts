@@ -4,6 +4,7 @@ import {
   thumbnailableExtension,
   thumbnailableImageExtension,
   thumbnailablePdfExtension,
+  thumbnailableVideoExtension,
 } from 'app/drive/types/file-types';
 import { Downloadable } from 'app/network/download';
 import { uploadFile as uploadToBucket } from 'app/network/upload';
@@ -21,6 +22,7 @@ import { DriveItemData, ThumbnailConfig } from '../types';
 import fetchFileBlob from './download.service/fetchFileBlob';
 import { getEnvironmentConfig } from './network.service';
 import { FileToUpload } from './file.service/types';
+import { ErrorLoadingVideoFileError } from './errors/thumbnail.service.errors';
 
 export interface ThumbnailToUpload {
   fileId: string;
@@ -38,7 +40,9 @@ interface ThumbnailGenerated {
   type: string;
 }
 
-const isValidImage = (file: File): Promise<boolean> => {
+const VIDEO_FRAME_QUALITY = 0.75;
+
+export const isValidImage = (file: File): Promise<boolean> => {
   return new Promise((resolve) => {
     const img = new Image();
     img.onload = () => resolve(true);
@@ -47,7 +51,7 @@ const isValidImage = (file: File): Promise<boolean> => {
   });
 };
 
-const getImageThumbnail = async (file: File): Promise<ThumbnailGenerated['file']> => {
+export const getImageThumbnail = async (file: File): Promise<ThumbnailGenerated['file']> => {
   const isValid = await isValidImage(file);
   if (!isValid) {
     return null;
@@ -97,6 +101,56 @@ const getPDFThumbnail = async (file: File): Promise<ThumbnailGenerated['file']> 
     });
   }
   return null;
+};
+
+export const generateThumbnailBlob = (video: HTMLVideoElement, onBlob: (blob: Blob | null) => void) => {
+  const canvas = document.createElement('canvas');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    onBlob(null);
+    return;
+  }
+
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  canvas.toBlob((blob) => onBlob(blob), 'image/jpeg', VIDEO_FRAME_QUALITY);
+};
+
+export const getVideoFrame = async (file: File): Promise<ThumbnailGenerated['file']> => {
+  let seekTo = 5;
+
+  const onSeekEvent = (videoPlayer: HTMLVideoElement, resolve: (file: File | null) => void) => {
+    generateThumbnailBlob(videoPlayer, (blob) => {
+      resolve(blob ? new File([blob], '') : null);
+    });
+  };
+
+  const onLoadMetadata = (
+    videoPlayer: HTMLVideoElement,
+    resolve: (file: File | null) => void,
+    reject: (error: Error) => void,
+  ) => {
+    if (videoPlayer.duration < seekTo) {
+      seekTo = videoPlayer.duration / 2;
+    }
+
+    videoPlayer.currentTime = seekTo;
+
+    videoPlayer.addEventListener('seeked', () => onSeekEvent(videoPlayer, resolve));
+  };
+
+  return new Promise((resolve, reject) => {
+    const videoPlayer = document.createElement('video');
+    videoPlayer.setAttribute('src', URL.createObjectURL(file));
+    videoPlayer.load();
+    videoPlayer.addEventListener('error', () => {
+      reject(new ErrorLoadingVideoFileError());
+    });
+
+    videoPlayer.addEventListener('loadedmetadata', () => onLoadMetadata(videoPlayer, resolve, reject));
+  });
 };
 
 export const uploadThumbnail = async (
@@ -163,6 +217,11 @@ export const getThumbnailFrom = async (fileToUpload: FileToUpload): Promise<Thum
 
     if (firstPDFpageImage) {
       thumbnailFile = await getImageThumbnail(firstPDFpageImage);
+    }
+  } else if (thumbnailableVideoExtension.includes(fileType)) {
+    const videoFrame = await getVideoFrame(fileToUpload.content);
+    if (videoFrame) {
+      thumbnailFile = await getImageThumbnail(videoFrame);
     }
   }
 
