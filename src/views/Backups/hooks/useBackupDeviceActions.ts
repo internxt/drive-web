@@ -45,7 +45,7 @@ export const useBackupDeviceActions = (
     }
   }
 
-  const goToFolderRoot = () => {
+  const goToRootFolder = () => {
     setSelectedDevices([]);
     onFolderUuidChanges(undefined);
     dispatch(backupsActions.setCurrentDevice(null));
@@ -109,7 +109,7 @@ export const useBackupDeviceActions = (
     isLoadingDeleteModal,
     selectedDevices,
     goToFolder,
-    goToFolderRoot,
+    goToRootFolder,
     onDeviceClicked,
     onOpenDeleteModal,
     onDevicesSelected,
