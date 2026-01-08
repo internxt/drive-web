@@ -153,6 +153,37 @@ describe('Thumbnail Service', () => {
 
       expect(result).toBeNull();
     });
+
+    test('When video duration is less than seek time, then it should seek to half duration', async () => {
+      const videoDuration = 3;
+      const seekTo = videoDuration / 2;
+      mockVideoElement = createMockVideoElement({ duration: videoDuration });
+
+      vi.spyOn(document, 'createElement').mockImplementation((tagName: string) => {
+        if (tagName === 'video') {
+          return mockVideoElement as unknown as HTMLVideoElement;
+        }
+        if (tagName === 'canvas') {
+          return mockCanvas as unknown as HTMLCanvasElement;
+        }
+        return originalCreateElement(tagName);
+      });
+
+      const videoFile = new File(['video-content'], 'short-video.mp4', { type: 'video/mp4' });
+
+      const thumbnailPromise = getVideoFrame(videoFile);
+
+      await flushPromises();
+      mockVideoElement.trigger('loadedmetadata');
+
+      await flushPromises();
+      mockVideoElement.trigger('seeked');
+
+      const result = await thumbnailPromise;
+
+      expect(result).toBeInstanceOf(File);
+      expect(mockVideoElement.currentTime).toStrictEqual(seekTo);
+    });
   });
 
   describe('Get Image Thumbnail', () => {
