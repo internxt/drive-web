@@ -251,23 +251,22 @@ const trackIncompleteCheckout = async (selectedPlan: PriceWithTax | undefined, p
 
     const priceId = selectedPlan.price.id;
     const planName = bytesToString(selectedPlan.price.bytes) + ' ' + selectedPlan.price.interval;
-
-    const currentParams = new URLSearchParams(window.location.search);
+    const currentParams = new URLSearchParams(globalThis.location.search);
     currentParams.set('planId', priceId);
-
     const completeCheckoutUrl = `https://drive.internxt.com/checkout?${currentParams.toString()}`;
-    const usersClient = await SdkFactory.getNewApiInstance().createUsersClient();
 
+    const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
     await usersClient.handleIncompleteCheckout({
       completeCheckoutUrl,
       planName,
       price,
     });
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
   } catch (error) {
     errorService.reportError(error);
   }
 };
-
 const checkoutService = {
   fetchPromotionCodeByName,
   createCustomer,
