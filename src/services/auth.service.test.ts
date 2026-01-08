@@ -687,7 +687,7 @@ describe('updateCredentialsWithToken', () => {
     expect(keys).toBeUndefined();
   });
 
-  it('should successfully update credentials with token and with backup data (ECC only)', async () => {
+  it('should not send keys when backup data has no publicKeys (legacy backup)', async () => {
     const mockToken = 'test-reset-token';
     const mockNewPassword = 'newPassword123';
     const mockMnemonic =
@@ -721,13 +721,10 @@ describe('updateCredentialsWithToken', () => {
     expect(encryptedPassword).toBeDefined();
     expect(encryptedSalt).toBeDefined();
     expect(encryptedMnemonic).toBeDefined();
-    expect(keys).toBeDefined();
-
-    expect(keys.ecc).toBe('mock-encrypted-data');
-    expect(keys.kyber).toBeUndefined();
+    expect(keys).toBeUndefined();
   });
 
-  it('should successfully update credentials with token and with backup data (ECC and Kyber)', async () => {
+  it('should send both private and public keys when backup data has publicKeys', async () => {
     const mockToken = 'test-reset-token';
     const mockNewPassword = 'newPassword123';
     const mockMnemonic =
@@ -738,6 +735,10 @@ describe('updateCredentialsWithToken', () => {
       keys: {
         ecc: 'test-ecc-private-key',
         kyber: 'test-kyber-private-key',
+      },
+      publicKeys: {
+        ecc: 'test-ecc-public-key',
+        kyber: 'test-kyber-public-key',
       },
     };
 
@@ -763,8 +764,12 @@ describe('updateCredentialsWithToken', () => {
     expect(encryptedMnemonic).toBeDefined();
     expect(keys).toBeDefined();
 
-    expect(keys.ecc).toBe('mock-encrypted-data');
-    expect(keys.kyber).toBe('mock-encrypted-data');
+    expect(keys.private.ecc).toBe('mock-encrypted-data');
+    expect(keys.private.kyber).toBe('mock-encrypted-data');
+    expect(keys.public).toEqual({
+      ecc: 'test-ecc-public-key',
+      kyber: 'test-kyber-public-key',
+    });
   });
 
   it('should throw an error when mnemonic is invalid', async () => {

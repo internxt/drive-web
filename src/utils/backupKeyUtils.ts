@@ -16,6 +16,9 @@ import { encryptMessageWithPublicKey, hybridEncryptMessageWithPublicKey } from '
  * @property {Object} keys - The user's encryption keys
  * @property {string} keys.ecc - The user's ECC private key
  * @property {string} keys.kyber - The user's Kyber private key
+ * @property {Object} [publicKeys] - The user's public keys (for backup validation)
+ * @property {string} [publicKeys.ecc] - The user's ECC public key
+ * @property {string} [publicKeys.kyber] - The user's Kyber public key
  */
 export interface BackupData {
   mnemonic: string;
@@ -23,6 +26,10 @@ export interface BackupData {
   keys: {
     ecc: string;
     kyber: string;
+  };
+  publicKeys?: {
+    ecc?: string;
+    kyber?: string;
   };
 }
 
@@ -48,6 +55,10 @@ export function handleExportBackupKey(translate) {
       keys: {
         ecc: user.keys?.ecc?.privateKey || user.privateKey,
         kyber: user.keys?.kyber?.privateKey || '',
+      },
+      publicKeys: {
+        ecc: user.keys?.ecc?.publicKey || '',
+        kyber: user.keys?.kyber?.publicKey || '',
       },
     };
 
@@ -84,6 +95,12 @@ export const detectBackupKeyFormat = (
           ecc: parsedData.keys.ecc,
           kyber: parsedData.keys.kyber,
         },
+        publicKeys: parsedData.publicKeys
+          ? {
+              ecc: parsedData.publicKeys.ecc,
+              kyber: parsedData.publicKeys.kyber,
+            }
+          : undefined,
       };
       return {
         type: 'new',
