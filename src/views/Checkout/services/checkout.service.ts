@@ -14,6 +14,7 @@ import {
 } from '@internxt/sdk/dist/payments/types';
 import envService from 'services/env.service';
 import errorService from 'services/error.service';
+import { bytesToString } from 'app/drive/services/size.service';
 
 const BORDER_SHADOW = 'rgb(0 102 255)';
 
@@ -244,6 +245,29 @@ const loadStripeElements = async (
   };
 };
 
+const trackIncompleteCheckout = async (selectedPlan: PriceWithTax | undefined, price?: number): Promise<void> => {
+  try {
+    if (!selectedPlan?.price?.id) return;
+
+    const priceId = selectedPlan.price.id;
+    const planName = bytesToString(selectedPlan.price.bytes) + ' ' + selectedPlan.price.interval;
+
+    const currentParams = new URLSearchParams(window.location.search);
+    currentParams.set('planId', priceId);
+
+    const completeCheckoutUrl = `https://drive.internxt.com/checkout?${currentParams.toString()}`;
+    const usersClient = await SdkFactory.getNewApiInstance().createUsersClient();
+
+    await usersClient.handleIncompleteCheckout({
+      completeCheckoutUrl,
+      planName,
+      price,
+    });
+  } catch (error) {
+    errorService.reportError(error);
+  }
+};
+
 const checkoutService = {
   fetchPromotionCodeByName,
   createCustomer,
@@ -254,6 +278,7 @@ const checkoutService = {
   fetchPrices,
   checkoutSetupIntent,
   verifyCryptoPayment,
+  trackIncompleteCheckout,
 };
 
 export default checkoutService;

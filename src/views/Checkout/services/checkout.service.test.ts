@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, test } from 'vitest';
+import { describe, it, expect, vi, beforeEach, test, afterAll } from 'vitest';
 import checkoutService from './checkout.service';
 import {
   CreateCustomerPayload,
@@ -13,9 +13,16 @@ vi.mock('./payment.service', () => ({
   },
 }));
 
+vi.mock('app/drive/services/size.service', () => ({
+  bytesToString: (bytes: number) => `${bytes} B`,
+}));
+
 vi.mock('app/core/factory/sdk', () => ({
   SdkFactory: {
     getNewApiInstance: vi.fn().mockReturnValue({
+      createUsersClient: vi.fn().mockResolvedValue({
+        handleIncompleteCheckout: vi.fn(),
+      }),
       createCheckoutClient: vi.fn().mockResolvedValue({
         createCustomer: vi.fn().mockResolvedValue({
           customerId: 'cus_123',
@@ -307,6 +314,28 @@ describe('Checkout Service tests', () => {
         currency: 'eur',
         payment_method_types: ['card', 'paypal'],
       });
+    });
+  });
+
+  describe('Track Incomplete Checkout', () => {
+    beforeEach(() => {
+      window.history.pushState({}, 'Test Page', '/checkout?source=ads');
+    });
+
+    afterAll(() => {
+      window.history.pushState({}, 'Home', '/');
+    });
+
+    it('When tracking incomplete checkout, then users client is called with correct params preserving query', async () => {
+      const mockPlan: any = {
+        price: { id: 'price_1', bytes: 1000, interval: 'year' },
+      };
+
+      await checkoutService.trackIncompleteCheckout(mockPlan, 99);
+    });
+
+    it('When no plan is selected, then it does not track anything', async () => {
+      await checkoutService.trackIncompleteCheckout(undefined);
     });
   });
 });
