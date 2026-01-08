@@ -246,101 +246,27 @@ const loadStripeElements = async (
 };
 
 const trackIncompleteCheckout = async (selectedPlan: PriceWithTax | undefined, price?: number): Promise<void> => {
-  console.log('[trackIncompleteCheckout] Starting...', {
-    selectedPlan,
-    price,
-    hasPriceId: !!selectedPlan?.price?.id,
-  });
-
   try {
-    // Validación 1: selectedPlan.price.id
-    if (!selectedPlan?.price?.id) {
-      console.warn('[trackIncompleteCheckout] Early return: missing selectedPlan.price.id', {
-        selectedPlan,
-      });
-      return;
-    }
-
-    console.log('[trackIncompleteCheckout] selectedPlan.price.id exists:', selectedPlan.price.id);
-
-    // Validación 2: bytes e interval
-    if (!selectedPlan.price.bytes) {
-      console.warn('[trackIncompleteCheckout] Missing selectedPlan.price.bytes', {
-        bytes: selectedPlan.price.bytes,
-      });
-    }
-
-    if (!selectedPlan.price.interval) {
-      console.warn('[trackIncompleteCheckout] Missing selectedPlan.price.interval', {
-        interval: selectedPlan.price.interval,
-      });
-    }
-
-    // Validación 3: price
-    if (price === undefined || price === null) {
-      console.warn('[trackIncompleteCheckout] price is undefined or null', { price });
-    }
+    if (!selectedPlan?.price?.id) return;
 
     const priceId = selectedPlan.price.id;
-
-    console.log('[trackIncompleteCheckout] Converting bytes to string...', {
-      bytes: selectedPlan.price.bytes,
-    });
-
-    const bytesStr = bytesToString(selectedPlan.price.bytes);
-    console.log('[trackIncompleteCheckout] Bytes converted:', bytesStr);
-
-    const planName = `${bytesStr} ${selectedPlan.price.interval}`;
-    console.log('[trackIncompleteCheckout] Plan name created:', planName);
-
+    const planName = bytesToString(selectedPlan.price.bytes) + ' ' + selectedPlan.price.interval;
     const currentParams = new URLSearchParams(globalThis.location.search);
-    console.log('[trackIncompleteCheckout] Current URL params:', currentParams.toString());
-
     currentParams.set('planId', priceId);
-    console.log('[trackIncompleteCheckout] Updated URL params:', currentParams.toString());
-
     const completeCheckoutUrl = `https://drive.internxt.com/checkout?${currentParams.toString()}`;
-    console.log('[trackIncompleteCheckout] Complete checkout URL:', completeCheckoutUrl);
 
-    console.log('[trackIncompleteCheckout] Creating users client...');
     const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
-    console.log('[trackIncompleteCheckout] Users client created');
-
-    const payload = {
+    await usersClient.handleIncompleteCheckout({
       completeCheckoutUrl,
       planName,
       price,
-    };
-    console.log('[trackIncompleteCheckout] Calling handleIncompleteCheckout with payload:', payload);
-
-    const startTime = Date.now();
-    await usersClient.handleIncompleteCheckout(payload);
-    const endTime = Date.now();
-
-    console.log('[trackIncompleteCheckout] handleIncompleteCheckout completed successfully', {
-      duration: `${endTime - startTime}ms`,
     });
 
-    console.log('[trackIncompleteCheckout] Waiting 100ms...');
     await new Promise((resolve) => setTimeout(resolve, 100));
-
-    console.log('[trackIncompleteCheckout] Finished successfully');
   } catch (error) {
-    console.error('[trackIncompleteCheckout] Error caught:', {
-      error,
-      errorMessage: error instanceof Error ? error.message : 'Unknown error',
-      errorStack: error instanceof Error ? error.stack : undefined,
-      selectedPlan,
-      price,
-    });
-
     errorService.reportError(error);
-
-    // Opcional: re-lanzar el error si es crítico
-    // throw error;
   }
 };
-
 const checkoutService = {
   fetchPromotionCodeByName,
   createCustomer,
