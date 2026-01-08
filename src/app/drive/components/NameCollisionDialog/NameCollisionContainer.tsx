@@ -15,6 +15,7 @@ import { uploadFoldersWithManager } from 'app/network/UploadFolderManager';
 import replaceFileService from 'views/Drive/services/replaceFile.service';
 import { Network, getEnvironmentConfig } from 'app/drive/services/network.service';
 import { fileVersionsActions, fileVersionsSelectors } from 'app/store/slices/fileVersions';
+import { isVersioningExtensionAllowed } from 'views/Drive/components/VersionHistory/utils';
 
 type NameCollisionContainerProps = {
   currentFolderId: string;
@@ -193,7 +194,8 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
         });
       } else {
         const file = itemToUpload as File;
-        isVersioningEnabled ? await replaceFileVersion(file, itemToReplace) : await trashAndUpload(file, itemToReplace);
+        const canReplaceVersion = isVersioningEnabled && isVersioningExtensionAllowed(itemToReplace);
+        canReplaceVersion ? await replaceFileVersion(file, itemToReplace) : await trashAndUpload(file, itemToReplace);
       }
 
       dispatch(fetchSortedFolderContentThunk(folderId));

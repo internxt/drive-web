@@ -42,11 +42,11 @@ export const AutosaveSection = ({
       <button
         onClick={onDeleteAll}
         disabled={!hasSelection}
-        className={`flex items-center justify-center transition-opacity ${
-          hasSelection ? 'opacity-100' : 'opacity-50 cursor-not-allowed'
+        className={`flex h-10 w-10 items-center justify-center rounded-full transition-all ${
+          hasSelection ? 'opacity-100 hover:bg-[#FFE5E5] dark:hover:bg-[#4D1A1A]' : 'opacity-50 cursor-not-allowed'
         }`}
       >
-        <Trash size={24} className="text-[#FF0D0080]" />
+        <Trash size={24} className={hasSelection ? 'text-red' : 'text-[#FF0D0080]'} />
       </button>
     </div>
   );
