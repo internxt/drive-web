@@ -1910,6 +1910,9 @@
   version "1.11.17"
   resolved "https://registry.yarnpkg.com/@internxt/sdk/-/sdk-1.11.17.tgz#2f5bdada5d3cbf5cfc685a21c24b5df3ff51d8c8"
   integrity sha512-91iEUvZizlwX6KBEFJ3JdFiGrhMBQ9R54sTc3Pei9QtV2FYTU8nTVEPYAg39tLOGzT/kVuplYOtBxfk6wFtSDA==
+  dependencies:
+    axios "1.13.2"
+    uuid "11.1.0"
 
 "@internxt/ui@0.1.1":
   version "0.1.1"
