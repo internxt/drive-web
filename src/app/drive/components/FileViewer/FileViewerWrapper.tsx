@@ -253,12 +253,15 @@ const FileViewerWrapper = ({
     const databaseThumbnail = await getDatabaseFilePreviewData({ fileId: driveFile.id });
     const existsThumbnailInDatabase = !!databaseThumbnail;
 
-    const fileObject = new File([file], driveFile.name);
+    const isImageBlob = file.type?.startsWith('image/');
+    const fileType = isImageBlob ? file.type.split('/')[1] : driveFile.type;
+
+    const fileObject = new File([file], driveFile.name, { type: file.type });
 
     const fileUpload: FileToUpload = {
       name: driveFile.name,
       size: driveFile.size,
-      type: driveFile.type,
+      type: fileType,
       content: fileObject,
       parentFolderId: driveFile.folderUuid,
     };

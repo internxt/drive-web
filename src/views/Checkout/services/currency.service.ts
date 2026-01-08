@@ -19,6 +19,13 @@ enum CurrencySymbol {
   VND = '₫', // Vietnamese Dong
 }
 
+const CURRENCY_BY_COUNTRY: Record<string, string> = {
+  US: 'usd',
+  CA: 'usd',
+};
+
+const DEFAULT_CURRENCY = 'eur';
+
 const currencyService = {
   getCurrencySymbol(currency: string): string {
     return currency ? CurrencySymbol[currency.toUpperCase()] : CurrencySymbol.EUR;
@@ -27,6 +34,13 @@ const currencyService = {
   async getAvailableCryptoCurrencies(): Promise<CryptoCurrency[]> {
     const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
     return checkoutClient.getAvailableCryptoCurrencies();
+  },
+
+  getCurrencyForLocation(location?: string, fallback?: string): string {
+    if (location && CURRENCY_BY_COUNTRY[location]) {
+      return CURRENCY_BY_COUNTRY[location];
+    }
+    return fallback ?? DEFAULT_CURRENCY;
   },
 };
 
