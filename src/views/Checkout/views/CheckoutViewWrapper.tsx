@@ -204,8 +204,7 @@ const CheckoutViewWrapper = () => {
   }, [isCheckoutReady]);
 
   useEffect(() => {
-    const isProduction = process.env.NODE_ENV === 'production';
-    if (isProduction && selectedPlan?.price && isAuthenticated && !hasTrackedRef.current) {
+    if (envService.isProduction() && selectedPlan?.price && isAuthenticated && !hasTrackedRef.current) {
       hasTrackedRef.current = true;
       const planPrice = selectedPlan.taxes?.amountWithTax || selectedPlan.price.amount;
       checkoutService.trackIncompleteCheckout(selectedPlan, planPrice);
