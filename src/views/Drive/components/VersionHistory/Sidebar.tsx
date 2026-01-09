@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import storageSelectors from 'app/store/slices/storage/storage.selectors';
+import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import {
   Header,
   CurrentVersionItem,
@@ -11,10 +13,17 @@ import {
   VersionActionDialog,
   VersionHistorySkeleton,
 } from './components';
-import { FileVersion } from './types';
 import fileVersionService from 'views/Drive/components/VersionHistory/services/fileVersion.service';
 import errorService from 'services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import {
+  fetchFileVersionsThunk,
+  fetchVersionLimitsThunk,
+  fileVersionsActions,
+  fileVersionsSelectors,
+} from 'app/store/slices/fileVersions';
+
+type VersionInfo = { id: string; updatedAt: string };
 
 const Sidebar = () => {
   const dispatch = useAppDispatch();
@@ -25,44 +34,86 @@ const Sidebar = () => {
   const versionToDelete = useAppSelector((state: RootState) => state.ui.versionToDelete);
   const isRestoreVersionDialogOpen = useAppSelector((state: RootState) => state.ui.isRestoreVersionDialogOpen);
   const versionToRestore = useAppSelector((state: RootState) => state.ui.versionToRestore);
+  const currentFolderId = useAppSelector(storageSelectors.currentFolderId);
   const { translate } = useTranslationContext();
 
-  const [versions, setVersions] = useState<FileVersion[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const [selectAllAutosave, setSelectAllAutosave] = useState(false);
-  const autosaveVersions = versions.filter((v) => v.isAutosave);
-  const totalAutosaveCount = autosaveVersions.length;
-
-  const userName = user?.name && user?.lastname ? `${user.name} ${user.lastname}` : user?.email || 'Unknown User';
-
-  const fetchVersions = async () => {
-    if (!item || !isOpen) return;
-
-    setIsLoading(true);
-    try {
-      const fileVersions = await fileVersionService.getFileVersions(item.uuid);
-      // TODO: Determine if autosave
-      setVersions(fileVersions);
-    } catch (error) {
-      const castedError = errorService.castError(error);
-      errorService.reportError(castedError);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const limits = useAppSelector(fileVersionsSelectors.getLimits);
+  const versions = useAppSelector((state: RootState) =>
+    item ? fileVersionsSelectors.getVersionsByFileId(state, item.uuid) : [],
+  );
+  const isLoading = useAppSelector((state: RootState) =>
+    item ? fileVersionsSelectors.isLoadingByFileId(state, item.uuid) : false,
+  );
+  const [selectedAutosaveVersions, setSelectedAutosaveVersions] = useState<Set<string>>(new Set());
+  const [isBatchDeleteMode, setIsBatchDeleteMode] = useState(false);
+  const [currentVersion, setCurrentVersion] = useState<VersionInfo>({
+    id: '',
+    updatedAt: '',
+  });
 
   useEffect(() => {
-    fetchVersions();
-  }, [item, isOpen]);
+    if (item) {
+      setCurrentVersion({
+        id: item.fileId,
+        updatedAt: item.updatedAt,
+      });
+    }
+  }, [item]);
+  const totalVersionsCount = versions.length;
+  const selectedCount = selectedAutosaveVersions.size;
+  const selectAllAutosave = selectedCount === totalVersionsCount && totalVersionsCount > 0;
+  const totalAllowedVersions = limits?.versioning.maxVersions ?? 0;
 
-  const onClose = () => {
+  const userName = useMemo(
+    () => (user?.name && user?.lastname ? `${user.name} ${user.lastname}` : user?.email || 'Unknown User'),
+    [user],
+  );
+
+  const userAvatar = user?.avatar ?? null;
+
+  useEffect(() => {
+    if (!item || !isOpen) return;
+
+    if (!limits) {
+      dispatch(fetchVersionLimitsThunk());
+    }
+
+    const hasCachedVersions = versions && versions.length > 0;
+    if (!hasCachedVersions) {
+      dispatch(fetchFileVersionsThunk(item.uuid));
+    }
+  }, [item?.uuid, isOpen, dispatch]);
+
+  const handleError = useCallback(
+    (error: unknown, messageKey: string) => {
+      const castedError = errorService.castError(error);
+      errorService.reportError(castedError);
+      notificationsService.show({
+        text: translate(messageKey),
+        type: ToastType.Error,
+      });
+    },
+    [translate],
+  );
+
+  const onClose = useCallback(() => {
     dispatch(uiActions.setIsVersionHistorySidebarOpen(false));
+    setSelectedAutosaveVersions(new Set());
+    setIsBatchDeleteMode(false);
+  }, [dispatch]);
+
+  const removeVersionsFromSelection = (versionIds: string[]) => {
+    setSelectedAutosaveVersions((prev) => {
+      const updated = new Set(prev);
+      versionIds.forEach((id) => updated.delete(id));
+      return updated;
+    });
   };
 
   const handleCloseDeleteDialog = () => {
     dispatch(uiActions.setIsDeleteVersionDialogOpen(false));
     dispatch(uiActions.setVersionToDelete(null));
+    setIsBatchDeleteMode(false);
   };
 
   const handleCloseRestoreDialog = () => {
@@ -71,23 +122,34 @@ const Sidebar = () => {
   };
 
   const handleDeleteConfirm = async () => {
-    if (!versionToDelete || !item) return;
+    if (!item) return;
+
+    let versionIdsToDelete: string[] = [];
+
+    if (isBatchDeleteMode) {
+      versionIdsToDelete = Array.from(selectedAutosaveVersions);
+    } else if (versionToDelete) {
+      versionIdsToDelete = [versionToDelete.id];
+    }
+
+    if (versionIdsToDelete.length === 0) return;
 
     try {
-      await fileVersionService.deleteVersion(item.uuid, versionToDelete.id.toString());
+      await Promise.all(versionIdsToDelete.map((versionId) => fileVersionService.deleteVersion(item.uuid, versionId)));
+
+      versionIdsToDelete.forEach((versionId) => {
+        dispatch(fileVersionsActions.updateVersionsAfterDelete({ fileUuid: item.uuid, versionId }));
+      });
+
       notificationsService.show({
         text: translate('modals.versionHistory.deleteSuccess'),
         type: ToastType.Success,
       });
-      await fetchVersions();
+      removeVersionsFromSelection(versionIdsToDelete);
     } catch (error) {
-      const castedError = errorService.castError(error);
-      errorService.reportError(castedError);
-      notificationsService.show({
-        text: translate('modals.versionHistory.deleteError'),
-        type: ToastType.Error,
-      });
-      throw error;
+      handleError(error, 'modals.versionHistory.deleteError');
+    } finally {
+      setIsBatchDeleteMode(false);
     }
   };
 
@@ -95,25 +157,51 @@ const Sidebar = () => {
     if (!versionToRestore || !item) return;
 
     try {
-      await fileVersionService.restoreVersion(item.uuid, versionToRestore.id.toString());
+      const restoredVersion = await fileVersionService.restoreVersion(item.uuid, versionToRestore.id);
+
+      setCurrentVersion({
+        id: restoredVersion.fileId as string,
+        updatedAt: new Date().toISOString(),
+      });
+
+      dispatch(fileVersionsActions.invalidateCache(item.uuid));
+      dispatch(fetchFileVersionsThunk(item.uuid));
+
       notificationsService.show({
         text: translate('modals.versionHistory.restoreSuccess'),
         type: ToastType.Success,
       });
-      await fetchVersions();
+      if (currentFolderId) {
+        await dispatch(fetchSortedFolderContentThunk(currentFolderId));
+      }
+      removeVersionsFromSelection([versionToRestore.id]);
     } catch (error) {
-      const castedError = errorService.castError(error);
-      errorService.reportError(castedError);
-      notificationsService.show({
-        text: translate('modals.versionHistory.restoreError'),
-        type: ToastType.Error,
-      });
-      throw error;
+      handleError(error, 'modals.versionHistory.restoreError');
     }
   };
 
-  if (!item) return null;
+  const handleSelectAllAutosave = useCallback(
+    (checked: boolean) => {
+      setSelectedAutosaveVersions(checked ? new Set(versions.map((v) => v.id)) : new Set());
+    },
+    [versions],
+  );
 
+  const handleVersionSelectionChange = useCallback((versionId: string, selected: boolean) => {
+    setSelectedAutosaveVersions((prev) => {
+      const newSelection = new Set(prev);
+      selected ? newSelection.add(versionId) : newSelection.delete(versionId);
+      return newSelection;
+    });
+  }, []);
+
+  const handleDeleteSelectedVersions = useCallback(() => {
+    if (!item || selectedCount === 0) return;
+    setIsBatchDeleteMode(true);
+    dispatch(uiActions.setIsDeleteVersionDialogOpen(true));
+  }, [item, selectedCount, dispatch]);
+
+  if (!item) return null;
   return (
     <>
       {isOpen && <div className="fixed inset-0 z-40 transition-opacity" onClick={onClose} aria-hidden />}
@@ -131,17 +219,31 @@ const Sidebar = () => {
               <VersionHistorySkeleton />
             ) : (
               <>
-                <CurrentVersionItem key={item.id} version={item} userName={userName} />
+                <CurrentVersionItem
+                  key={currentVersion.id}
+                  createdAt={currentVersion.updatedAt}
+                  userName={userName}
+                  userAvatar={userAvatar}
+                />
 
                 <AutosaveSection
-                  totalAutosaveCount={totalAutosaveCount}
+                  totalVersionsCount={totalVersionsCount}
+                  totalAllowedVersions={totalAllowedVersions}
+                  selectedCount={selectedCount}
                   selectAllAutosave={selectAllAutosave}
-                  onSelectAllChange={setSelectAllAutosave}
-                  onDeleteAll={() => {}}
+                  onSelectAllChange={handleSelectAllAutosave}
+                  onDeleteAll={handleDeleteSelectedVersions}
                 />
 
                 {versions.map((version) => (
-                  <VersionItem key={version.id} version={version} userName={userName} />
+                  <VersionItem
+                    key={version.id}
+                    version={version}
+                    userName={userName}
+                    userAvatar={userAvatar}
+                    isSelected={selectedAutosaveVersions.has(version.id)}
+                    onSelectionChange={(selected) => handleVersionSelectionChange(version.id, selected)}
+                  />
                 ))}
               </>
             )}
