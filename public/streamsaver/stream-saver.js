@@ -80,7 +80,6 @@ self.onfetch = (event) => {
 
   const responseHeaders = new Headers({
     'Content-Type': 'application/octet-stream; charset=utf-8',
-    DefaultType: 'None',
     'Content-Security-Policy': "default-src 'none'",
     'X-Content-Security-Policy': "default-src 'none'",
     'X-WebKit-CSP': "default-src 'none'",

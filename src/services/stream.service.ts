@@ -21,7 +21,7 @@ export async function binaryStreamToBlob(stream: BinaryStream, mimeType?: string
     finish = done;
   }
 
-  return new Blob(slices as BlobPart[], mimeType ? { type: mimeType } : { type: DEFAULT_BLOB_MIME_TYPE });
+  return new Blob(slices as BlobPart[], { type: mimeType ?? DEFAULT_BLOB_MIME_TYPE });
 }
 
 export async function binaryStreamToUint8Array(
