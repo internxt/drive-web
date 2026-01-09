@@ -163,6 +163,7 @@ export const doLogin = async (
   twoFactorCode: string,
   loginType: 'web' | 'desktop' | undefined = 'web',
 ): Promise<ProfileInfo> => {
+  console.time(`TIMER: doLogin for ${email}`);
   const authClient = getAuthClient(loginType);
   const loginDetails: LoginDetails = {
     email: email.toLowerCase(),
@@ -217,7 +218,7 @@ export const doLogin = async (
       localStorageService.set('xToken', token);
       localStorageService.set('xMnemonic', clearMnemonic);
       localStorageService.set('xNewToken', newToken);
-
+      console.timeEnd(`TIMER: doLogin for ${email}`);
       return {
         user: clearUser,
         token: token,

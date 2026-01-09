@@ -182,6 +182,7 @@ export default function LogIn(): JSX.Element {
 
     try {
       const { tfaEnabled: isTfaEnabled, useOpaqueLogin } = await is2FAorOpaqueNeeded(email);
+      console.log('TIMER: is2FAorOpaqueNeeded', useOpaqueLogin);
 
       if (!isTfaEnabled || showTwoFactor) {
         const loginType: 'desktop' | 'web' = isUniversalLinkMode ? 'desktop' : 'web';

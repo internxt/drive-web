@@ -45,6 +45,7 @@ export const doLoginOpaque = async (
   password: string,
   twoFactorCode: string,
 ): Promise<{ token: string; user: UserSettings; mnemonic: string; newToken: string }> => {
+  console.time(`TIMER: doLoginOpaque for ${email}`);
   const {
     sessionID,
     user: loggedUser,
@@ -66,6 +67,7 @@ export const doLoginOpaque = async (
   localStorageService.set('xNewToken', token);
   localStorageService.set('sessionID', sessionID);
   await setSessionKey(password, sessionKey);
+  console.timeEnd(`TIMER: doLoginOpaque for ${email}`);
 
   return { token: sessionID, user, mnemonic, newToken: sessionID };
 };
