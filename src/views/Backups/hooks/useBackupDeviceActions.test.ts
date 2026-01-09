@@ -152,7 +152,7 @@ describe('useBackupDeviceActions', () => {
     expect(result.current.selectedDevices).toHaveLength(1);
 
     act(() => {
-      result.current.goToFolderRoot();
+      result.current.goToRootFolder();
     });
 
     expect(result.current.selectedDevices).toEqual([]);
