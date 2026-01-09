@@ -5,6 +5,7 @@ import { useDropdownPositioning, useVersionItemActions } from '../hooks';
 import { formatVersionDate, getDaysUntilExpiration } from '../utils';
 import { FileVersion } from '@internxt/sdk/dist/drive/storage/types';
 import { memo } from 'react';
+import sizeService from 'app/drive/services/size.service';
 
 interface VersionItemProps {
   version: FileVersion;
@@ -32,6 +33,7 @@ export const VersionItem = memo(
     };
 
     const dropdownOpenDirection = dropdownPosition === 'above' ? 'left' : 'right';
+    const versionSize = sizeService.bytesToString(Number.parseInt(version.size), false);
 
     return (
       <>
@@ -66,8 +68,11 @@ export const VersionItem = memo(
                 }`}
               />
               <div className="flex min-w-0 flex-1 flex-col space-y-1">
-                <div className="flex items-center justify-between">
+                <div className="relative flex items-center pr-16">
                   <span className="text-base font-semibold text-gray-100">{formatVersionDate(version.updatedAt)}</span>
+                  <span className="absolute right-[-32px] top-1/2 -translate-y-1/2 whitespace-nowrap text-base text-[#A6A6A6]">
+                    {versionSize}
+                  </span>
                 </div>
                 {version.expiresAt !== undefined && (
                   <div className="flex items-center space-x-1 text-[12px] text-red-dark">
