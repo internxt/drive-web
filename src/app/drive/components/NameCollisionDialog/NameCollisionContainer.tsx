@@ -14,6 +14,8 @@ import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selector
 import { uploadFoldersWithManager } from 'app/network/UploadFolderManager';
 import replaceFileService from 'views/Drive/services/replaceFile.service';
 import { Network, getEnvironmentConfig } from 'app/drive/services/network.service';
+import { fileVersionsActions, fileVersionsSelectors } from 'app/store/slices/fileVersions';
+import { isVersioningExtensionAllowed } from 'views/Drive/components/VersionHistory/utils';
 
 type NameCollisionContainerProps = {
   currentFolderId: string;
@@ -45,6 +47,8 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     () => moveDestinationFolderId ?? currentFolderId,
     [moveDestinationFolderId, currentFolderId],
   );
+  const limits = useAppSelector(fileVersionsSelectors.getLimits);
+  const isVersioningEnabled = limits?.versioning?.enabled ?? false;
 
   const handleNewItems = (files: (File | DriveItemData)[], folders: (IRoot | DriveItemData)[]) => [
     ...files,
@@ -143,6 +147,28 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     return await uploadPromise;
   };
 
+  const replaceFileVersion = async (file: File, itemToReplace: DriveItemData) => {
+    const newFileId = await uploadFileAndGetFileId(file, itemToReplace);
+    await replaceFileService.replaceFile(itemToReplace.uuid, {
+      fileId: newFileId,
+      size: file.size,
+    });
+    dispatch(fileVersionsActions.invalidateCache(itemToReplace.uuid));
+  };
+
+  const trashAndUpload = async (file: File, itemToReplace: DriveItemData) => {
+    await moveItemsToTrash([itemToReplace]);
+    await dispatch(
+      storageThunks.uploadItemsThunk({
+        files: [file],
+        parentFolderId: folderId,
+        options: {
+          disableDuplicatedNamesCheck: true,
+        },
+      }),
+    );
+  };
+
   const replaceAndUploadItem = async ({
     itemsToReplace,
     itemsToUpload,
@@ -156,7 +182,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
 
       if ((itemToUpload as IRoot).fullPathEdited) {
         await moveItemsToTrash([itemToReplace]);
-        uploadFoldersWithManager({
+        await uploadFoldersWithManager({
           payload: [
             {
               root: { ...(itemToUpload as IRoot) },
@@ -165,20 +191,14 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
           ],
           selectedWorkspace,
           dispatch,
-        }).then(() => {
-          dispatch(fetchSortedFolderContentThunk(folderId));
         });
       } else {
         const file = itemToUpload as File;
-        const newFileId = await uploadFileAndGetFileId(file, itemToReplace);
-
-        await replaceFileService.replaceFile(itemToReplace.uuid, {
-          fileId: newFileId,
-          size: file.size,
-        });
-
-        dispatch(fetchSortedFolderContentThunk(folderId));
+        const canReplaceVersion = isVersioningEnabled && isVersioningExtensionAllowed(itemToReplace);
+        canReplaceVersion ? await replaceFileVersion(file, itemToReplace) : await trashAndUpload(file, itemToReplace);
       }
+
+      dispatch(fetchSortedFolderContentThunk(folderId));
     }
   };
 

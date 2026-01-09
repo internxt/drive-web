@@ -2,7 +2,7 @@ import { SdkFactory } from 'app/core/factory/sdk';
 import { DownloadManager } from 'app/network/DownloadManager';
 import { DriveItemData } from 'app/drive/types';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
-import { GetFileLimitsResponse, FileVersion } from '@internxt/sdk/dist/drive/storage/types';
+import { FileLimitsResponse, FileVersion, RestoreFileVersionResponse } from '@internxt/sdk/dist/drive/storage/types';
 
 const getStorageClient = () => SdkFactory.getNewApiInstance().createNewStorageClient();
 
@@ -14,11 +14,11 @@ export async function deleteVersion(fileUuid: string, versionId: string): Promis
   await getStorageClient().deleteFileVersion(fileUuid, versionId);
 }
 
-export async function restoreVersion(fileUuid: string, versionId: string): Promise<FileVersion> {
+export async function restoreVersion(fileUuid: string, versionId: string): Promise<RestoreFileVersionResponse> {
   return getStorageClient().restoreFileVersion(fileUuid, versionId);
 }
 
-export async function getLimits(): Promise<GetFileLimitsResponse> {
+export async function getLimits(): Promise<FileLimitsResponse> {
   return getStorageClient().getFileVersionLimits();
 }
 

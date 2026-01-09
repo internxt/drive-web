@@ -16,9 +16,14 @@ import {
 import fileVersionService from 'views/Drive/components/VersionHistory/services/fileVersion.service';
 import errorService from 'services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { FileVersion, GetFileLimitsResponse } from '@internxt/sdk/dist/drive/storage/types';
+import {
+  fetchFileVersionsThunk,
+  fetchVersionLimitsThunk,
+  fileVersionsActions,
+  fileVersionsSelectors,
+} from 'app/store/slices/fileVersions';
 
-type VersionInfo = { id: string; createdAt: string };
+type VersionInfo = { id: string; updatedAt: string };
 
 const Sidebar = () => {
   const dispatch = useAppDispatch();
@@ -32,21 +37,25 @@ const Sidebar = () => {
   const currentFolderId = useAppSelector(storageSelectors.currentFolderId);
   const { translate } = useTranslationContext();
 
-  const [versions, setVersions] = useState<FileVersion[]>([]);
-  const [limits, setLimits] = useState<GetFileLimitsResponse | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const limits = useAppSelector(fileVersionsSelectors.getLimits);
+  const versions = useAppSelector((state: RootState) =>
+    item ? fileVersionsSelectors.getVersionsByFileId(state, item.uuid) : [],
+  );
+  const isLoading = useAppSelector((state: RootState) =>
+    item ? fileVersionsSelectors.isLoadingByFileId(state, item.uuid) : false,
+  );
   const [selectedAutosaveVersions, setSelectedAutosaveVersions] = useState<Set<string>>(new Set());
   const [isBatchDeleteMode, setIsBatchDeleteMode] = useState(false);
   const [currentVersion, setCurrentVersion] = useState<VersionInfo>({
     id: '',
-    createdAt: '',
+    updatedAt: '',
   });
 
   useEffect(() => {
     if (item) {
       setCurrentVersion({
         id: item.fileId,
-        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
       });
     }
   }, [item]);
@@ -60,28 +69,20 @@ const Sidebar = () => {
     [user],
   );
 
-  const fetchData = useCallback(async () => {
-    if (!item || !isOpen) return;
-
-    setIsLoading(true);
-    try {
-      const [fileVersions, limits] = await Promise.all([
-        fileVersionService.getFileVersions(item.uuid),
-        fileVersionService.getLimits(),
-      ]);
-      setVersions(fileVersions);
-      setLimits(limits);
-    } catch (error) {
-      const castedError = errorService.castError(error);
-      errorService.reportError(castedError);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [item, isOpen]);
+  const userAvatar = user?.avatar ?? null;
 
   useEffect(() => {
-    void fetchData();
-  }, [item, isOpen, fetchData]);
+    if (!item || !isOpen) return;
+
+    if (!limits) {
+      dispatch(fetchVersionLimitsThunk());
+    }
+
+    const hasCachedVersions = versions && versions.length > 0;
+    if (!hasCachedVersions) {
+      dispatch(fetchFileVersionsThunk(item.uuid));
+    }
+  }, [item?.uuid, isOpen, dispatch]);
 
   const handleError = useCallback(
     (error: unknown, messageKey: string) => {
@@ -136,11 +137,14 @@ const Sidebar = () => {
     try {
       await Promise.all(versionIdsToDelete.map((versionId) => fileVersionService.deleteVersion(item.uuid, versionId)));
 
+      versionIdsToDelete.forEach((versionId) => {
+        dispatch(fileVersionsActions.updateVersionsAfterDelete({ fileUuid: item.uuid, versionId }));
+      });
+
       notificationsService.show({
         text: translate('modals.versionHistory.deleteSuccess'),
         type: ToastType.Success,
       });
-      await fetchData();
       removeVersionsFromSelection(versionIdsToDelete);
     } catch (error) {
       handleError(error, 'modals.versionHistory.deleteError');
@@ -156,9 +160,12 @@ const Sidebar = () => {
       const restoredVersion = await fileVersionService.restoreVersion(item.uuid, versionToRestore.id);
 
       setCurrentVersion({
-        id: restoredVersion.id,
-        createdAt: restoredVersion.createdAt,
+        id: restoredVersion.fileId as string,
+        updatedAt: new Date().toISOString(),
       });
+
+      dispatch(fileVersionsActions.invalidateCache(item.uuid));
+      dispatch(fetchFileVersionsThunk(item.uuid));
 
       notificationsService.show({
         text: translate('modals.versionHistory.restoreSuccess'),
@@ -167,7 +174,6 @@ const Sidebar = () => {
       if (currentFolderId) {
         await dispatch(fetchSortedFolderContentThunk(currentFolderId));
       }
-      await fetchData();
       removeVersionsFromSelection([versionToRestore.id]);
     } catch (error) {
       handleError(error, 'modals.versionHistory.restoreError');
@@ -213,7 +219,12 @@ const Sidebar = () => {
               <VersionHistorySkeleton />
             ) : (
               <>
-                <CurrentVersionItem key={currentVersion.id} createdAt={currentVersion.createdAt} userName={userName} />
+                <CurrentVersionItem
+                  key={currentVersion.id}
+                  createdAt={currentVersion.updatedAt}
+                  userName={userName}
+                  userAvatar={userAvatar}
+                />
 
                 <AutosaveSection
                   totalVersionsCount={totalVersionsCount}
@@ -229,6 +240,7 @@ const Sidebar = () => {
                     key={version.id}
                     version={version}
                     userName={userName}
+                    userAvatar={userAvatar}
                     isSelected={selectedAutosaveVersions.has(version.id)}
                     onSelectionChange={(selected) => handleVersionSelectionChange(version.id, selected)}
                   />

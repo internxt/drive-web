@@ -34,6 +34,7 @@ import {
 } from './DriveItemContextMenu';
 import { List } from '@internxt/ui';
 import { DownloadManager } from 'app/network/DownloadManager';
+import { useVersionHistoryMenuConfig } from '../../VersionHistory/hooks';
 
 interface DriveExplorerListProps {
   folderId: string;
@@ -120,6 +121,8 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     isSelectedSharedItem;
 
   const { translate } = useTranslationContext();
+
+  const versionHistoryMenuConfig = useVersionHistoryMenuConfig(props.selectedItems[0]);
 
   const onSelectedItemsChanged = (changes: { props: DriveItemData; value: boolean }[]) => {
     let updatedSelectedItems = props.selectedItems;
@@ -341,6 +344,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     downloadItem: downloadItem,
     viewVersionHistory: viewVersionHistory,
     moveToTrash: props.onOpenStopSharingAndMoveToTrashDialog,
+    versionHistoryConfig: versionHistoryMenuConfig,
   });
 
   const selectedSharedFileMenu = contextMenuDriveItemShared({
@@ -355,6 +359,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     downloadItem: downloadItem,
     viewVersionHistory: viewVersionHistory,
     moveToTrash: props.onOpenStopSharingAndMoveToTrashDialog,
+    versionHistoryConfig: versionHistoryMenuConfig,
   });
 
   const selectedFolderMenu = contextMenuDriveFolderNotSharedLink({
@@ -366,6 +371,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     downloadItem: downloadItem,
     viewVersionHistory: viewVersionHistory,
     moveToTrash: moveToTrash,
+    versionHistoryConfig: versionHistoryMenuConfig,
   });
 
   const selectedFileMenu = contextMenuDriveNotSharedLink({
@@ -378,6 +384,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     downloadItem: downloadItem,
     viewVersionHistory: viewVersionHistory,
     moveToTrash: moveToTrash,
+    versionHistoryConfig: versionHistoryMenuConfig,
   });
 
   const shareWithTeam = () => {
@@ -395,6 +402,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     downloadItem: downloadItem,
     viewVersionHistory: viewVersionHistory,
     moveToTrash: moveToTrash,
+    versionHistoryConfig: versionHistoryMenuConfig,
   });
 
   const workspaceFolderMenu = contextMenuWorkspaceFolder({
@@ -407,6 +415,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     downloadItem: downloadItem,
     viewVersionHistory: viewVersionHistory,
     moveToTrash: moveToTrash,
+    versionHistoryConfig: versionHistoryMenuConfig,
   });
 
   const getContextMenu = () => {

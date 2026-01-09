@@ -5,13 +5,14 @@ import { formatVersionDate } from '../utils';
 interface CurrentVersionItemProps {
   createdAt: string;
   userName: string;
+  userAvatar: string | null;
 }
 
-export const CurrentVersionItem = ({ createdAt, userName }: CurrentVersionItemProps) => {
+export const CurrentVersionItem = ({ createdAt, userName, userAvatar }: CurrentVersionItemProps) => {
   const { translate } = useTranslationContext();
 
   return (
-    <div className="group flex items-start justify-between border-b-[2.5px] border-gray-5 px-5 py-3 hover:bg-gray-1 dark:hover:bg-gray-5">
+    <div className="group flex items-start justify-between border-b-[1px] border-[#ECECEC] dark:border-[#474747] px-5 py-3 hover:bg-gray-1 dark:hover:bg-gray-5">
       <div className="flex min-w-0 flex-1 flex-col space-y-1">
         <div className="flex items-center justify-between">
           <span className="text-base font-semibold text-gray-100">{formatVersionDate(createdAt)}</span>
@@ -20,7 +21,7 @@ export const CurrentVersionItem = ({ createdAt, userName }: CurrentVersionItemPr
           </span>
         </div>
         <div className="flex items-center space-x-2">
-          <Avatar fullName={userName} diameter={24} />
+          <Avatar src={userAvatar} fullName={userName} diameter={24} />
           <span className="text-base text-gray-60 dark:text-gray-80">{userName}</span>
         </div>
       </div>

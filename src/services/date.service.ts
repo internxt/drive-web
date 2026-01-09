@@ -28,6 +28,13 @@ export const formatDefaultDate = (date: Date | string | number, translate: (key:
   return dayjs(date).format(`D MMM, YYYY [${translatedAt}] HH:mm`);
 };
 
+export const getDaysUntilExpiration = (expiresAt: Date | string): number => {
+  const expirationDate = dayjs(expiresAt);
+  const now = dayjs();
+  const diffInDays = expirationDate.diff(now, 'day', true);
+  return Math.max(0, Math.ceil(diffInDays));
+};
+
 const dateService = {
   format,
   fromNow,
@@ -35,6 +42,7 @@ const dateService = {
   getCurrentDate,
   getExpirationDate,
   formatDefaultDate,
+  getDaysUntilExpiration,
 };
 
 export default dateService;
