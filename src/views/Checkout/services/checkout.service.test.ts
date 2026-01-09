@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, test, afterAll, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, test, afterAll } from 'vitest';
 import checkoutService from './checkout.service';
 import {
   CreateCustomerPayload,
@@ -6,7 +6,7 @@ import {
   CreateSubscriptionPayload,
   GetPriceByIdPayload,
 } from '@internxt/sdk/dist/payments/types';
-import { SdkFactory } from 'app/core/factory/sdk';
+import userService from 'services/user.service';
 
 vi.mock('./payment.service', () => ({
   default: {
@@ -16,6 +16,24 @@ vi.mock('./payment.service', () => ({
 
 vi.mock('app/drive/services/size.service', () => ({
   bytesToString: (bytes: number) => `${bytes} B`,
+}));
+
+vi.mock('services/user.service', () => ({
+  default: {
+    sendIncompleteCheckout: vi.fn(),
+  },
+}));
+
+vi.mock('services/env.service', () => ({
+  default: {
+    getVariable: vi.fn(() => 'https://internxt.com'),
+  },
+}));
+
+vi.mock('services/error.service', () => ({
+  default: {
+    reportError: vi.fn(),
+  },
 }));
 
 vi.mock('app/core/factory/sdk', () => ({
@@ -319,22 +337,8 @@ describe('Checkout Service tests', () => {
   });
 
   describe('Track Incomplete Checkout', () => {
-    let mockUsersClient: any;
-
     beforeEach(() => {
       window.history.pushState({}, 'Test Page', '/checkout?source=ads');
-
-      mockUsersClient = {
-        handleIncompleteCheckout: vi.fn().mockResolvedValue({}),
-      };
-
-      vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-        createUsersClient: vi.fn().mockReturnValue(mockUsersClient),
-      } as any);
-    });
-
-    afterEach(() => {
-      vi.restoreAllMocks();
     });
 
     afterAll(() => {
@@ -348,17 +352,16 @@ describe('Checkout Service tests', () => {
 
       await checkoutService.trackIncompleteCheckout(mockPlan, 99);
 
-      expect(mockUsersClient.handleIncompleteCheckout).toHaveBeenCalledWith({
-        completeCheckoutUrl: 'https://drive.internxt.com/checkout?source=ads&planId=price_1',
-        planName: expect.stringContaining('year'),
-        price: 99,
-      });
+      expect(userService.sendIncompleteCheckout).toHaveBeenCalledWith(
+        expect.stringContaining('https://internxt.com/checkout?source=ads&planId=price_1'),
+        '1000 B year',
+        99,
+      );
     });
 
     it('When no plan is selected, then it does not track anything', async () => {
       await checkoutService.trackIncompleteCheckout(undefined);
-
-      expect(mockUsersClient.handleIncompleteCheckout).not.toHaveBeenCalled();
+      expect(userService.sendIncompleteCheckout).not.toHaveBeenCalled();
     });
   });
 });

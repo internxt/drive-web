@@ -93,6 +93,15 @@ const downloadAvatar = async (url: string, signal?: AbortSignal): Promise<Blob> 
   return data;
 };
 
+const sendIncompleteCheckout = async (completeCheckoutUrl: string, planName: string, price?: number): Promise<void> => {
+  const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
+  await usersClient.handleIncompleteCheckout({
+    completeCheckoutUrl,
+    planName,
+    price,
+  });
+};
+
 const userService = {
   sendDeactivationEmail,
   updateUserProfile,
@@ -108,6 +117,7 @@ const userService = {
   refreshUserData,
   refreshAvatarUser,
   downloadAvatar,
+  sendIncompleteCheckout,
 };
 
 export default userService;
