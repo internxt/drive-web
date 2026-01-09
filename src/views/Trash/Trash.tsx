@@ -15,8 +15,7 @@ import { useAppSelector } from 'app/store/hooks';
 import AutomaticTrashDisposalDialog from './components/AutomaticTrashDisposalDialog';
 import { userSelectors } from 'app/store/slices/user';
 import localStorageService from 'services/local-storage.service';
-
-const HAS_SEEN_TRASH_DISPOSAL_DIALOG_KEY = 'hasSeenTrashDisposalDialog';
+import { STORAGE_KEYS } from 'services/storage-keys';
 
 export interface TrashViewProps {
   isLoadingItemsOnTrash: boolean;
@@ -25,12 +24,12 @@ export interface TrashViewProps {
 }
 
 const shouldShowTrashDisposalDialog = (hasSignedToday: boolean): boolean => {
-  const hasSeenDialog = localStorageService.get(HAS_SEEN_TRASH_DISPOSAL_DIALOG_KEY);
+  const hasSeenDialog = localStorageService.get(STORAGE_KEYS.HAS_SEEN_TRASH_DISPOSAL_DIALOG);
   return !hasSignedToday && !hasSeenDialog;
 };
 
 const markTrashDisposalDialogAsSeen = (): void => {
-  localStorageService.set(HAS_SEEN_TRASH_DISPOSAL_DIALOG_KEY, 'true');
+  localStorageService.set(STORAGE_KEYS.HAS_SEEN_TRASH_DISPOSAL_DIALOG, 'true');
 };
 
 const TrashView = (props: TrashViewProps) => {
