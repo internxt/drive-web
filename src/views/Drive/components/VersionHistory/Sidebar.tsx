@@ -69,6 +69,8 @@ const Sidebar = () => {
     [user],
   );
 
+  const userAvatar = user?.avatar ?? null;
+
   useEffect(() => {
     if (!item || !isOpen) return;
 
@@ -217,7 +219,12 @@ const Sidebar = () => {
               <VersionHistorySkeleton />
             ) : (
               <>
-                <CurrentVersionItem key={currentVersion.id} createdAt={currentVersion.updatedAt} userName={userName} />
+                <CurrentVersionItem
+                  key={currentVersion.id}
+                  createdAt={currentVersion.updatedAt}
+                  userName={userName}
+                  userAvatar={userAvatar}
+                />
 
                 <AutosaveSection
                   totalVersionsCount={totalVersionsCount}
@@ -233,6 +240,7 @@ const Sidebar = () => {
                     key={version.id}
                     version={version}
                     userName={userName}
+                    userAvatar={userAvatar}
                     isSelected={selectedAutosaveVersions.has(version.id)}
                     onSelectionChange={(selected) => handleVersionSelectionChange(version.id, selected)}
                   />
