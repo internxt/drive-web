@@ -20,7 +20,7 @@ vi.mock('app/store/hooks', () => ({
   useAppSelector: vi.fn(),
 }));
 
-vi.mock('views/Drive/components/VersionHistory/services/fileVersion.service', () => ({
+vi.mock('views/Drive/services/fileVersion.service', () => ({
   default: {
     downloadVersion: vi.fn(),
   },
