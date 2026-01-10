@@ -876,7 +876,13 @@
       "restoreSuccess": "版本恢复成功",
       "restoreError": "恢复版本失败",
       "deleteSuccess": "版本删除成功",
-      "deleteError": "删除版本失败"
+      "deleteError": "删除版本失败",
+      "lockedFeature": {
+        "title": "功能已锁定",
+        "description": "恢复文件的以前版本并跟踪随时间的变化。",
+        "supportedFormats": "适用于付费计划中的PDF、Word、Excel和CSV文件。",
+        "upgradeButton": "升级"
+      }
     },
     "shareModal": {
       "title": "分享 \"{{name}}\"",

@@ -840,7 +840,13 @@
       "restoreSuccess": "版本復原成功",
       "restoreError": "復原版本失敗",
       "deleteSuccess": "版本刪除成功",
-      "deleteError": "刪除版本失敗"
+      "deleteError": "刪除版本失敗",
+      "lockedFeature": {
+        "title": "功能已鎖定",
+        "description": "復原檔案的先前版本並追蹤隨時間的變化。",
+        "supportedFormats": "適用於付費方案中的PDF、Word、Excel和CSV檔案。",
+        "upgradeButton": "升級"
+      }
     },
     "shareModal": {
       "title": "分享“{{name}}”",

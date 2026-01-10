@@ -813,7 +813,13 @@
       "restoreSuccess": "Version erfolgreich wiederhergestellt",
       "restoreError": "Fehler beim Wiederherstellen der Version",
       "deleteSuccess": "Version erfolgreich gelöscht",
-      "deleteError": "Fehler beim Löschen der Version"
+      "deleteError": "Fehler beim Löschen der Version",
+      "lockedFeature": {
+        "title": "Gesperrte Funktion",
+        "description": "Stellen Sie frühere Versionen Ihrer Dateien wieder her und verfolgen Sie Änderungen im Laufe der Zeit.",
+        "supportedFormats": "Verfügbar für PDF-, Word-, Excel- und CSV-Dateien in kostenpflichtigen Plänen.",
+        "upgradeButton": "Upgrade"
+      }
     },
     "shareModal": {
       "title": "\"{{name}}\" teilen",

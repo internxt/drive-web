@@ -946,7 +946,13 @@
       "restoreSuccess": "Versione ripristinata con successo",
       "restoreError": "Impossibile ripristinare la versione",
       "deleteSuccess": "Versione eliminata con successo",
-      "deleteError": "Impossibile eliminare la versione"
+      "deleteError": "Impossibile eliminare la versione",
+      "lockedFeature": {
+        "title": "Funzione bloccata",
+        "description": "Ripristina le versioni precedenti dei tuoi file e monitora le modifiche nel tempo.",
+        "supportedFormats": "Disponibile per file PDF, Word, Excel e CSV nei piani a pagamento.",
+        "upgradeButton": "Aggiorna"
+      }
     },
     "shareModal": {
       "title": "Condividi \"{{name}}\"",
