@@ -34,7 +34,7 @@ import {
 } from './DriveItemContextMenu';
 import { List } from '@internxt/ui';
 import { DownloadManager } from 'app/network/DownloadManager';
-import { useVersionHistoryMenuConfig } from '../../VersionHistory/hooks';
+import { useVersionHistoryMenuConfig } from 'views/Drive/hooks/useVersionHistoryMenuConfig';
 
 interface DriveExplorerListProps {
   folderId: string;

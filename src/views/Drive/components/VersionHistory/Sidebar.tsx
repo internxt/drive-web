@@ -5,6 +5,8 @@ import { uiActions } from 'app/store/slices/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import navigationService from 'services/navigation.service';
 import {
   Header,
   CurrentVersionItem,
@@ -12,8 +14,9 @@ import {
   AutosaveSection,
   VersionActionDialog,
   VersionHistorySkeleton,
+  LockedFeatureModal,
 } from './components';
-import fileVersionService from 'views/Drive/components/VersionHistory/services/fileVersion.service';
+import fileVersionService from 'views/Drive/services/fileVersion.service';
 import errorService from 'services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import {
@@ -35,6 +38,7 @@ const Sidebar = () => {
   const isRestoreVersionDialogOpen = useAppSelector((state: RootState) => state.ui.isRestoreVersionDialogOpen);
   const versionToRestore = useAppSelector((state: RootState) => state.ui.versionToRestore);
   const currentFolderId = useAppSelector(storageSelectors.currentFolderId);
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const { translate } = useTranslationContext();
 
   const limits = useAppSelector(fileVersionsSelectors.getLimits);
@@ -51,6 +55,24 @@ const Sidebar = () => {
     updatedAt: '',
   });
 
+  const isVersioningEnabled = limits?.versioning?.enabled ?? false;
+
+  const blurredBackgroundVersions = useMemo(() => {
+    if (isVersioningEnabled) return [];
+
+    const fixedDate = new Date('2024-05-01').toISOString();
+    return Array.from({ length: 10 }, (_, i) => ({
+      id: `mock-${i}`,
+      fileId: '',
+      size: '1000000',
+      createdAt: fixedDate,
+      updatedAt: fixedDate,
+      type: 'file',
+    }));
+  }, [isVersioningEnabled]);
+
+  const displayVersions = isVersioningEnabled ? versions : blurredBackgroundVersions;
+
   useEffect(() => {
     if (item) {
       setCurrentVersion({
@@ -59,7 +81,7 @@ const Sidebar = () => {
       });
     }
   }, [item]);
-  const totalVersionsCount = versions.length;
+  const totalVersionsCount = displayVersions.length;
   const selectedCount = selectedAutosaveVersions.size;
   const selectAllAutosave = selectedCount === totalVersionsCount && totalVersionsCount > 0;
   const totalAllowedVersions = limits?.versioning.maxVersions ?? 0;
@@ -201,6 +223,15 @@ const Sidebar = () => {
     dispatch(uiActions.setIsDeleteVersionDialogOpen(true));
   }, [item, selectedCount, dispatch]);
 
+  const handleUpgrade = useCallback(() => {
+    dispatch(uiActions.setIsPreferencesDialogOpen(true));
+    navigationService.openPreferencesDialog({
+      section: 'account',
+      subsection: 'plans',
+      workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId,
+    });
+  }, [dispatch, selectedWorkspace]);
+
   if (!item) return null;
   return (
     <>
@@ -214,8 +245,8 @@ const Sidebar = () => {
         <div className="flex h-full flex-col">
           <Header title={translate('modals.versionHistory.title')} onClose={onClose} />
 
-          <div className="flex-1 overflow-y-auto">
-            {isLoading ? (
+          <div className={`flex-1 relative ${isVersioningEnabled ? 'overflow-y-auto' : 'overflow-y-hidden'}`}>
+            {isVersioningEnabled && isLoading ? (
               <VersionHistorySkeleton />
             ) : (
               <>
@@ -235,7 +266,7 @@ const Sidebar = () => {
                   onDeleteAll={handleDeleteSelectedVersions}
                 />
 
-                {versions.map((version) => (
+                {displayVersions.map((version) => (
                   <VersionItem
                     key={version.id}
                     version={version}
@@ -247,6 +278,7 @@ const Sidebar = () => {
                 ))}
               </>
             )}
+            {!isVersioningEnabled && <LockedFeatureModal onUpgrade={handleUpgrade} />}
           </div>
         </div>
       </div>

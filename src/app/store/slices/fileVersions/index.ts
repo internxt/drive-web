@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { FileVersion, FileLimitsResponse } from '@internxt/sdk/dist/drive/storage/types';
-import fileVersionService from 'views/Drive/components/VersionHistory/services/fileVersion.service';
+import fileVersionService from 'views/Drive/services/fileVersion.service';
 
 interface FileVersionsState {
   versionsByFileId: Record<NonNullable<FileVersion['fileId']>, FileVersion[]>;

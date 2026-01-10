@@ -13,6 +13,7 @@ import { paymentService } from 'views/Checkout/services';
 import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
 import { PlanState, planThunks } from 'app/store/slices/plan';
+import { fetchVersionLimitsThunk } from 'app/store/slices/fileVersions';
 import CancelSubscriptionModal from '../../Workspace/Billing/CancelSubscriptionModal';
 import { fetchPlanPrices, getStripe } from '../../../../services/plansApi';
 import ChangePlanDialog from './components/ChangePlanDialog';
@@ -184,7 +185,10 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
 
   const handlePaymentSuccess = () => {
     showSuccessSubscriptionNotification();
-    setTimeout(() => dispatch(planThunks.initializeThunk()).unwrap(), 2000);
+    setTimeout(() => {
+      dispatch(planThunks.initializeThunk()).unwrap();
+      dispatch(fetchVersionLimitsThunk());
+    }, 2000);
   };
 
   const handleSubscriptionPayment = async (priceId: string) => {
@@ -262,6 +266,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
       setCancellingSubscription(false);
       setTimeout(() => {
         dispatch(planThunks.initializeThunk()).unwrap();
+        dispatch(fetchVersionLimitsThunk());
       }, 1000);
     }
   }

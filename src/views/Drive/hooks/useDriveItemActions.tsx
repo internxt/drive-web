@@ -11,7 +11,7 @@ import { storageActions } from 'app/store/slices/storage';
 import { uiActions } from 'app/store/slices/ui';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { DownloadManager } from 'app/network/DownloadManager';
-import { useVersionHistoryMenuConfig } from '../components/VersionHistory/hooks';
+import { useVersionHistoryMenuConfig } from './useVersionHistoryMenuConfig';
 
 export interface DriveItemActions {
   nameInputRef: React.RefObject<HTMLInputElement>;
@@ -104,10 +104,6 @@ const useDriveItemActions = (item): DriveItemActions => {
   };
 
   const onViewVersionHistoryButtonClicked = () => {
-    if (versionHistoryConfig.locked) {
-      versionHistoryConfig.onLockedClick?.();
-      return;
-    }
     dispatch(uiActions.setVersionHistoryItem(item as DriveItemData));
     dispatch(uiActions.setIsVersionHistorySidebarOpen(true));
   };

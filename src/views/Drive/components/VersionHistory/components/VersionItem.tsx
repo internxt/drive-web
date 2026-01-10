@@ -1,7 +1,8 @@
 import { Info, DotsThree } from '@phosphor-icons/react';
 import { Checkbox, Dropdown, Avatar } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { useDropdownPositioning, useVersionItemActions } from '../hooks';
+import { useDropdownPositioning } from 'views/Drive/hooks/useDropdownPositioning';
+import { useVersionItemActions } from 'views/Drive/hooks/useVersionItemActions';
 import { formatVersionDate, getDaysUntilExpiration } from '../utils';
 import { FileVersion } from '@internxt/sdk/dist/drive/storage/types';
 import { memo } from 'react';

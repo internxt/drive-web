@@ -4,3 +4,4 @@ export { VersionItem } from './VersionItem';
 export { AutosaveSection } from './AutosaveSection';
 export { VersionActionDialog } from './VersionActionDialog';
 export { VersionHistorySkeleton } from './VersionHistorySkeleton';
+export { LockedFeatureModal } from './LockedFeatureModal';
