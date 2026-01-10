@@ -16,26 +16,28 @@ const ICON_SIZES = {
   lock: 35,
 } as const;
 
-const COLORS = {
-  border: '#474747',
-  lock: '#737373',
-} as const;
+const LIGHT_MODE_ICON_BG = '#F9F9FC';
 
 export const LockedFeatureModal = ({ onUpgrade }: LockedFeatureModalProps) => {
   const { translate } = useTranslationContext();
 
   return (
-    <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/30 backdrop-blur-[3px]">
+    <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/10 dark:bg-black/30 backdrop-blur-[3px]">
       <div
-        className="mx-6 flex max-w-xs flex-col items-center gap-4 rounded-2xl border border-gray-10 bg-gray-5 pt-6 dark:border-gray-5 dark:bg-gray-1"
+        className="mx-6 flex max-w-xs flex-col items-center gap-4 rounded-2xl border border-gray-10 bg-surface pt-6 dark:border-gray-5 dark:bg-gray-1"
         style={MODAL_DIMENSIONS}
       >
         <div className="relative mt-1 flex h-20 w-20 items-center justify-center">
-          <div className="rounded-lg border bg-gray-5 p-1 dark:bg-gray-1" style={{ borderColor: COLORS.border }}>
+          <div
+            className="rounded-lg border-2 p-1 border-gray-5 dark:bg-gray-1"
+            style={{
+              backgroundColor: `light-dark(${LIGHT_MODE_ICON_BG}, transparent)`,
+            }}
+          >
             <ClockCounterClockwise size={ICON_SIZES.clock} weight="regular" className="text-primary" />
           </div>
           <div className="absolute bottom-[-10px] left-[-10px]">
-            <LockSimple size={ICON_SIZES.lock} weight="fill" style={{ color: COLORS.lock }} />
+            <LockSimple size={ICON_SIZES.lock} weight="fill" className="text-gray-20 dark:text-gray-30" />
           </div>
         </div>
 
@@ -43,10 +45,10 @@ export const LockedFeatureModal = ({ onUpgrade }: LockedFeatureModalProps) => {
           <h2 className="text-xl font-semibold leading-6 text-gray-100">
             {translate('modals.versionHistory.lockedFeature.title')}
           </h2>
-          <p className="text-xs leading-4 text-gray-80">
+          <p className="text-xs leading-4 text-gray-60 dark:text-gray-80">
             {translate('modals.versionHistory.lockedFeature.description')}
           </p>
-          <p className="text-xs leading-4 text-gray-80">
+          <p className="text-xs leading-4 text-gray-60 dark:text-gray-80">
             {translate('modals.versionHistory.lockedFeature.supportedFormats')}
           </p>
         </div>
