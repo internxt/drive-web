@@ -33,13 +33,15 @@ export async function downloadVersion(
     ...fileItem,
     fileId: version.networkFileId,
     size: Number(version.size),
-    name: fileName,
   };
 
   await DownloadManager.downloadItem({
     payload: [versionFileData],
     selectedWorkspace,
     workspaceCredentials,
+    downloadOptions: {
+      downloadName: fileName,
+    },
   });
 }
 
