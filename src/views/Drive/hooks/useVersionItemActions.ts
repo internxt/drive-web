@@ -8,6 +8,8 @@ import { uiActions } from 'app/store/slices/ui';
 import { RootState } from 'app/store';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { FileVersion } from '@internxt/sdk/dist/drive/storage/types';
+import dateService from 'services/date.service';
+import { items as itemsUtils } from '@internxt/lib';
 
 interface UseVersionItemActionsParams {
   version: FileVersion;
@@ -38,8 +40,14 @@ export const useVersionItemActions = ({ version, onDropdownClose }: UseVersionIt
       return;
     }
 
-    const fileName = item.plainName || item.name;
-    await fileVersionService.downloadVersion(version, item, fileName, selectedWorkspace, workspaceCredentials);
+    const entireFilename = item.plainName || item.name;
+    const formattedDate = dateService.format(version.createdAt, 'DD-MM-YYYY [at] HH:mm');
+    const { filename, extension } = itemsUtils.getFilenameAndExt(entireFilename);
+
+    const fileExtension = extension ? `.${extension}` : '';
+    const versionFileName = `(${formattedDate}) ${filename}${fileExtension}`;
+
+    await fileVersionService.downloadVersion(version, item, versionFileName, selectedWorkspace, workspaceCredentials);
   };
 
   const handleDeleteClick = () => {

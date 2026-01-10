@@ -60,6 +60,7 @@ describe('Version item menu', () => {
     fileId: 'file-uuid',
     networkFileId: 'network-file-id',
     size: '5',
+    createdAt: '2026-01-10T14:30:00.000Z',
   } as FileVersion;
   const fileItem = {
     id: 'file-id',
@@ -142,7 +143,7 @@ describe('Version item menu', () => {
     expect(downloadVersionSpy).toHaveBeenCalledWith(
       version,
       fileItem,
-      fileItem.plainName,
+      '(10-01-2026 at 10:30) pretty-name',
       selectedWorkspace,
       workspaceCredentials,
     );
