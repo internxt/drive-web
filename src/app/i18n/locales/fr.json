@@ -829,7 +829,13 @@
       "restoreSuccess": "Version restaurée avec succès",
       "restoreError": "Échec de la restauration de la version",
       "deleteSuccess": "Version supprimée avec succès",
-      "deleteError": "Échec de la suppression de la version"
+      "deleteError": "Échec de la suppression de la version",
+      "lockedFeature": {
+        "title": "Fonctionnalité verrouillée",
+        "description": "Restaurez les versions précédentes de vos fichiers et suivez les modifications au fil du temps.",
+        "supportedFormats": "Disponible pour les fichiers PDF, Word, Excel et CSV dans les forfaits payants.",
+        "upgradeButton": "Mettre à niveau"
+      }
     },
     "newFolderModal": {
       "title": "Nouveau dossier",

@@ -887,7 +887,13 @@
       "restoreSuccess": "Versión restaurada exitosamente",
       "restoreError": "Error al restaurar la versión",
       "deleteSuccess": "Versión eliminada exitosamente",
-      "deleteError": "Error al eliminar la versión"
+      "deleteError": "Error al eliminar la versión",
+      "lockedFeature": {
+        "title": "Función bloqueada",
+        "description": "Restaura versiones anteriores de tus archivos y realiza un seguimiento de los cambios a lo largo del tiempo.",
+        "supportedFormats": "Disponible para archivos PDF, Word, Excel y CSV en planes de pago.",
+        "upgradeButton": "Mejorar plan"
+      }
     },
     "shareModal": {
       "title": "Compartir \"{{name}}\"",
