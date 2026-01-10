@@ -816,7 +816,20 @@
       "autosaveVersions": "{{count}}/{{total}} versions de sauvegarde automatique",
       "restoreVersion": "Restaurer la version",
       "downloadVersion": "Télécharger la version",
-      "deleteVersion": "Supprimer la version"
+      "deleteVersion": "Supprimer la version",
+      "deleteVersionTitle": "Supprimer la version",
+      "deleteButton": "Supprimer",
+      "restoreButton": "Restaurer",
+      "downloadError": "Échec du téléchargement de la version",
+      "deleteVersionAdvice": "Cette version sera définitivement supprimée. \nCette action ne peut pas être annulée.",
+      "deletingVersion": "Suppression",
+      "restoreVersionTitle": "Restaurer la version",
+      "restoreVersionAdvice": "La restauration de cette version remplacera le fichier actuel et supprimera toutes les versions plus récentes. \nUne fois restaurée, cette action ne peut pas être annulée.\n\nVous pouvez télécharger une copie des versions plus récentes avant de restaurer.",
+      "restoringVersion": "Restauration",
+      "restoreSuccess": "Version restaurée avec succès",
+      "restoreError": "Échec de la restauration de la version",
+      "deleteSuccess": "Version supprimée avec succès",
+      "deleteError": "Échec de la suppression de la version"
     },
     "newFolderModal": {
       "title": "Nouveau dossier",

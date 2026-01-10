@@ -7,7 +7,7 @@ interface HeaderProps {
 
 export const Header = ({ title, onClose }: HeaderProps) => {
   return (
-    <div className="flex items-center justify-between border-b border-gray-10 pt-[29px] pb-[20px] px-[24px]">
+    <div className="flex items-center justify-between border-b-[1px] border-[#ECECEC] dark:border-[#474747] pt-[29px] pb-[20px] px-[24px]">
       <span className="text-lg font-medium text-gray-100">{title}</span>
       <button
         onClick={onClose}

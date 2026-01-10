@@ -58,7 +58,9 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
 
             <VersionHistorySidebar />
           </div>
-          <TaskLogger />
+          <div className="absolute bottom-0 right-0 z-50 w-80">
+            <TaskLogger />
+          </div>
         </div>
       </div>
     </div>
