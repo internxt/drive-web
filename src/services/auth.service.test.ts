@@ -967,13 +967,13 @@ describe('Security and validation', () => {
         createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
       } as any);
 
-      expect(await authService.is2FANeeded('test@example.com')).toBe(true);
+      expect((await authService.is2FAorOpaqueNeeded('test@example.com')).tfaEnabled).toBe(true);
 
       mockAuthClient.securityDetails.mockResolvedValue({ tfaEnabled: false });
-      expect(await authService.is2FANeeded('test@example.com')).toBe(false);
+      expect((await authService.is2FAorOpaqueNeeded('test@example.com')).tfaEnabled).toBe(false);
 
       mockAuthClient.securityDetails.mockRejectedValue({ message: 'User not found', status: 404 });
-      await expect(authService.is2FANeeded('test@example.com')).rejects.toThrow('User not found');
+      await expect(authService.is2FAorOpaqueNeeded('test@example.com')).rejects.toThrow('User not found');
     });
   });
 

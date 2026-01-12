@@ -66,14 +66,32 @@ function clear(): void {
   localStorage.removeItem('theme:isDark');
   localStorage.removeItem('xInvitedToken');
   localStorage.removeItem('xResourcesToken');
+  localStorage.removeItem('sessionKey');
+  localStorage.removeItem('sessionKeySalt');
   localStorage.removeItem(STORAGE_KEYS.B2B_WORKSPACE);
   localStorage.removeItem(STORAGE_KEYS.WORKSPACE_CREDENTIALS);
   localStorage.removeItem(STORAGE_KEYS.GCLID);
 }
 
+function getSessionKey(): string | null {
+  return localStorage.getItem('sessionKey');
+}
+
+function getSessionKeySalt(): string | null {
+  return localStorage.getItem('sessionKeySalt');
+}
+
+function setSessionKey(sessionKey: string, salt: string): void {
+  localStorage.setItem('sessionKey', sessionKey);
+  localStorage.setItem('sessionKeySalt', salt);
+}
+
 const localStorageService = {
   set,
   get,
+  getSessionKey,
+  getSessionKeySalt,
+  setSessionKey,
   getUser,
   getWorkspace,
   hasCompletedTutorial,
