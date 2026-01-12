@@ -147,6 +147,8 @@ const CheckoutViewWrapper = () => {
     email: user?.email ?? '',
   };
 
+  const hasTrackedRef = useRef(false);
+
   useEffect(() => {
     setMobileToken(paramMobileToken);
 
@@ -200,6 +202,14 @@ const CheckoutViewWrapper = () => {
       });
     }
   }, [isCheckoutReady]);
+
+  useEffect(() => {
+    if (envService.isProduction() && selectedPlan?.price && isAuthenticated && !hasTrackedRef.current) {
+      hasTrackedRef.current = true;
+      const planPrice = selectedPlan.taxes?.amountWithTax || selectedPlan.price.amount;
+      checkoutService.trackIncompleteCheckout(selectedPlan, planPrice);
+    }
+  }, [selectedPlan, isAuthenticated]);
 
   const onCheckoutCouponChanges = async (promoCodeName?: string) => {
     if (!selectedPlan?.price?.id) {
