@@ -52,11 +52,7 @@ export class DownloadWorker {
       callbacks.onSuccess(file.fileId);
     } catch (err) {
       console.log('[DOWNLOAD-WORKER] ERROR -->', err);
-      const errorCloned = {
-        message: err instanceof Error ? err.message : String(err),
-        ...(err instanceof Error && err.stack && { stack: err.stack }),
-      };
-      callbacks.onError(errorCloned);
+      callbacks.onError(err);
     } finally {
       this.abortController?.signal.removeEventListener('abort', abortHandler);
     }

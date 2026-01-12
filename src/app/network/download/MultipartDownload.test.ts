@@ -2,7 +2,6 @@ import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { DownloadFilePayload, MultipartDownload } from './MultipartDownload';
 import { NetworkFacade } from '../NetworkFacade';
 import { DownloadChunkTask, DownloadOptions } from '../types/index';
-import { MaxRetriesExceededError } from '../errors/download.errors';
 
 const TEST_BUCKET_ID = 'test-bucket';
 const TEST_FILE_ID = 'test-file';
@@ -50,10 +49,6 @@ function executeDownload(
     fileSize: params?.fileSize ?? TEST_FILE_SIZE,
     options: params?.options,
   });
-}
-
-function isMonotonicallyIncreasing(arr: number[]): boolean {
-  return arr.every((value, index) => index === 0 || value >= arr[index - 1]);
 }
 
 describe('MultipartDownload ', () => {
@@ -278,6 +273,7 @@ describe('MultipartDownload ', () => {
 
   describe('Max retries exceeded', () => {
     test('When a chunk fails more than max retries, then download should fail, abort should be called, and queue should be killed', async () => {
+      const mockedError = new Error('Persistent network error');
       const FIFTY_MEGABYTES = 52428800;
       const fileSize = FIFTY_MEGABYTES * 2.5;
       const abortController = new AbortController();
@@ -291,7 +287,7 @@ describe('MultipartDownload ', () => {
         }
 
         if (chunkStart === 0) {
-          throw new Error('Persistent network error');
+          throw mockedError;
         }
 
         const chunkData = new Uint8Array(1024);
@@ -309,7 +305,7 @@ describe('MultipartDownload ', () => {
 
       const { error } = await consumeStream(resultStream);
 
-      expect(error).toBeInstanceOf(MaxRetriesExceededError);
+      expect(error).toStrictEqual(mockedError);
       expect(abortSpy).toHaveBeenCalledOnce();
       expect(queueKillSpy).toHaveBeenCalledOnce();
     });
