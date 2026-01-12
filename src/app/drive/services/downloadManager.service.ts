@@ -93,6 +93,13 @@ export type DownloadTask = {
 export class DownloadManagerService {
   public static readonly instance: DownloadManagerService = new DownloadManagerService();
 
+  private getSingleItemName(item: DownloadItem['payload'][0]): string {
+    if (item.isFolder) {
+      return item.name;
+    }
+    return item.type ? `${item.name}.${item.type}` : item.name;
+  }
+
   readonly getDownloadCredentialsFromWorkspace = (
     selectedWorkspace: WorkspaceData | null,
     workspaceCredentials: WorkspaceCredentialsDetails | null,
@@ -123,15 +130,8 @@ export class DownloadManagerService {
     let downloadName = downloadItem.downloadOptions?.downloadName;
 
     if (!downloadName) {
-      downloadName = `Internxt (${formattedDate})`;
-      if (itemsPayload.length === 1) {
-        const item = itemsPayload[0];
-        if (itemsPayload[0].isFolder) {
-          downloadName = item.name;
-        } else {
-          downloadName = item.type ? `${item.name}.${item.type}` : item.name;
-        }
-      }
+      downloadName =
+        itemsPayload.length === 1 ? this.getSingleItemName(itemsPayload[0]) : `Internxt (${formattedDate})`;
     }
 
     let taskId = downloadItem.taskId;
