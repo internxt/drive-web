@@ -223,14 +223,14 @@ const Sidebar = () => {
     dispatch(uiActions.setIsDeleteVersionDialogOpen(true));
   }, [item, selectedCount, dispatch]);
 
-  const handleUpgrade = useCallback(() => {
+  const handleUpgrade = () => {
     dispatch(uiActions.setIsPreferencesDialogOpen(true));
     navigationService.openPreferencesDialog({
       section: 'account',
       subsection: 'plans',
       workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId,
     });
-  }, [dispatch, selectedWorkspace]);
+  };
 
   if (!item) return null;
   return (
