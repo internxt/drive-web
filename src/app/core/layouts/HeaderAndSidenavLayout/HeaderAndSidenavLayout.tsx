@@ -11,6 +11,7 @@ import DriveItemInfoMenu from 'app/drive/components/DriveItemInfoMenu/DriveItemI
 import SharedFolderTooBigDialog from '../../../drive/components/SharedFolderTooBigDialog/SharedFolderTooBigDialog';
 import { getAppConfig } from 'services/config.service';
 import ShareItemDialog from '../../../../views/Shared/components/ShareItemDialog/ShareItemDialog';
+import { Sidebar as VersionHistorySidebar } from '../../../../views/Drive/components/VersionHistory';
 
 export interface HeaderAndSidenavLayoutProps {
   children: JSX.Element;
@@ -48,14 +49,18 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
 
         <div className="flex w-1 grow flex-col">
           <Navbar hideSearch={hideSearch} />
-          <div className="flex h-1 w-full grow">
+          <div className="relative flex h-1 w-full grow">
             {children}
 
             {isDriveItemInfoMenuOpen && driveItemInfo && (
               <DriveItemInfoMenu {...driveItemInfo} onClose={onDriveItemInfoMenuClosed} />
             )}
+
+            <VersionHistorySidebar />
           </div>
-          <TaskLogger />
+          <div className="absolute bottom-0 right-0 z-50 w-80">
+            <TaskLogger />
+          </div>
         </div>
       </div>
     </div>
