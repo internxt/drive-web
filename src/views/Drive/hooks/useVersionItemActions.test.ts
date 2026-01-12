@@ -35,6 +35,12 @@ vi.mock('app/notifications/services/notifications.service', () => ({
   },
 }));
 
+vi.mock('services/date.service', () => ({
+  default: {
+    format: vi.fn(() => '10-01-2026 at 14:30'),
+  },
+}));
+
 const mockSetVersionToRestore = vi.hoisted(() => vi.fn((payload) => ({ type: 'setVersionToRestore', payload })));
 const mockSetIsRestoreVersionDialogOpen = vi.hoisted(() =>
   vi.fn((payload) => ({ type: 'setIsRestoreVersionDialogOpen', payload })),
@@ -143,7 +149,7 @@ describe('Version item menu', () => {
     expect(downloadVersionSpy).toHaveBeenCalledWith(
       version,
       fileItem,
-      '(10-01-2026 at 10:30) pretty-name',
+      '(10-01-2026 at 14:30) pretty-name',
       selectedWorkspace,
       workspaceCredentials,
     );
