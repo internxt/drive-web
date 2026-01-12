@@ -2,7 +2,6 @@ import { queue, QueueObject } from 'async';
 import { DownloadOptions, DownloadChunkTask } from '../types/index';
 import { USE_MULTIPART_THRESHOLD_BYTES as FIFTY_MEGABYTES } from '../networkConstants';
 import { NetworkFacade } from '../NetworkFacade';
-import { MaxRetriesExceededError } from '../errors/download.errors';
 
 export interface DownloadFilePayload {
   bucketId: string;
@@ -217,24 +216,13 @@ export class MultipartDownload {
   }): Promise<void> {
     const { task, bucketId, fileId, mnemonic, fileSize, controller, options } = params;
 
-    try {
-      const chunkData = await this.downloadChunk(bucketId, fileId, mnemonic, task.chunkStart, task.chunkEnd, options);
+    const chunkData = await this.downloadChunk(bucketId, fileId, mnemonic, task.chunkStart, task.chunkEnd, options);
 
-      console.log('[DOWNLOAD-MULTIPART] Downloaded chunk', task.index);
+    this.registerCompletedChunk(task.index, chunkData);
 
-      this.registerCompletedChunk(task.index, chunkData);
+    options?.downloadingCallback?.(fileSize, this.downloadedBytes);
 
-      options?.downloadingCallback?.(fileSize, this.downloadedBytes);
-
-      this.streamOrderedChunks(controller);
-    } catch (error) {
-      this.handleDownloadError({
-        task,
-        error: error as Error,
-        controller,
-        options,
-      });
-    }
+    this.streamOrderedChunks(controller);
   }
 
   private handleDownloadError(params: {
@@ -253,10 +241,9 @@ export class MultipartDownload {
     this.revertPartialDownload(task.index);
 
     if (task.attempt >= task.maxRetries) {
-      const finalError = new MaxRetriesExceededError(task.maxRetries, error.message);
-      options?.abortController?.abort();
       this.downloadQueue?.kill();
-      controller.error(finalError);
+      controller.error(error);
+      options?.abortController?.abort();
       return;
     }
 

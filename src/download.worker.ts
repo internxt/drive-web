@@ -36,7 +36,7 @@ const handleDownload = async (params: { file: any; isWorkspace: boolean; isBrave
     onSuccess: (fileId: string) => {
       postMessage({ result: 'success', fileId });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       postMessage({ result: 'error', error });
     },
     onBlob: (blob: Blob) => {
