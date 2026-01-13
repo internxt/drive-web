@@ -847,9 +847,13 @@
         "uploadedBy": "上传者",
         "shared": "共享",
         "size": "大小",
+        "numberOfFiles": "文件数量",
         "modified": "已修改",
         "location": "位置"
-      }
+      },
+      "fileCount_one": "{{count}} 个文件",
+      "fileCount_other": "{{count}} 个文件",
+      "fileCountMoreThan1000": "超过 1000 个文件"
     },
     "shareModal": {
       "title": "分享 \"{{name}}\"",

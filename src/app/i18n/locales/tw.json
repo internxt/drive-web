@@ -811,9 +811,13 @@
         "uploadedBy": "上傳者",
         "shared": "已共享",
         "size": "大小",
+        "numberOfFiles": "文件數量",
         "modified": "修改時間",
         "location": "位置"
-      }
+      },
+      "fileCount_one": "{{count}} 個文件",
+      "fileCount_other": "{{count}} 個文件",
+      "fileCountMoreThan1000": "超過 1000 個文件"
     },
     "shareModal": {
       "title": "分享“{{name}}”",

@@ -784,9 +784,13 @@
         "uploadedBy": "Hochgeladen von",
         "shared": "Freigegeben",
         "size": "Größe",
+        "numberOfFiles": "Anzahl der Dateien",
         "modified": "Geändert",
-        "Ort": "Ort"
-      }
+        "location": "Ort"
+      },
+      "fileCount_one": "{{count}} Datei",
+      "fileCount_other": "{{count}} Dateien",
+      "fileCountMoreThan1000": "Mehr als 1000 Dateien"
     },
     "shareModal": {
       "title": "Aktie \"{{name}}\"",

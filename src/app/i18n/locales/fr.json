@@ -805,9 +805,13 @@
         "uploadedBy": "Téléchargé par",
         "shared": "Partagé",
         "size": "Taille",
+        "numberOfFiles": "Nombre de fichiers",
         "modified": "Modifié",
         "location": "Emplacement"
-      }
+      },
+      "fileCount_one": "{{count}} fichier",
+      "fileCount_other": "{{count}} fichiers",
+      "fileCountMoreThan1000": "Plus de 1000 fichiers"
     },
     "newFolderModal": {
       "title": "Nouveau dossier",
