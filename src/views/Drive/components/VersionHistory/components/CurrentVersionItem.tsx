@@ -12,7 +12,7 @@ export const CurrentVersionItem = ({ createdAt, userName, userAvatar }: CurrentV
   const { translate } = useTranslationContext();
 
   return (
-    <div className="group flex items-start justify-between border-b-[1px] border-[#ECECEC] dark:border-[#474747] px-5 py-3 hover:bg-gray-1 dark:hover:bg-gray-5">
+    <div className="group flex items-start justify-between border-b-[1px] border-[#ECECEC] dark:border-[#474747] px-5 py-3 hover:bg-gray-1 dark:hover:bg-white/3">
       <div className="flex min-w-0 flex-1 flex-col space-y-1">
         <div className="flex items-center justify-between">
           <span className="text-base font-semibold text-gray-100">{formatVersionDate(createdAt)}</span>

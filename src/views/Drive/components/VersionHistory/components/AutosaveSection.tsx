@@ -24,7 +24,7 @@ export const AutosaveSection = ({
   const isIndeterminate = hasSelection && !selectAllAutosave;
 
   return (
-    <div className="group flex items-center justify-between border-b-[1px] border-[#ECECEC] dark:border-[#474747] px-6 py-5 hover:bg-gray-1 dark:hover:bg-gray-5">
+    <div className="group flex items-center justify-between border-b-[1px] border-[#ECECEC] dark:border-[#474747] px-6 py-5 hover:bg-gray-1 dark:hover:bg-white/3">
       <div className="flex items-center space-x-3">
         <Checkbox
           checked={selectAllAutosave}
