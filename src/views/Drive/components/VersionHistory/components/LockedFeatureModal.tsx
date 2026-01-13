@@ -6,34 +6,19 @@ interface LockedFeatureModalProps {
   onUpgrade: () => void;
 }
 
-const MODAL_DIMENSIONS = {
-  width: '282px',
-  height: '333px',
-} as const;
-
 const ICON_SIZES = {
   clock: 64,
   lock: 35,
 } as const;
-
-const LIGHT_MODE_ICON_BG = '#F9F9FC';
 
 export const LockedFeatureModal = ({ onUpgrade }: LockedFeatureModalProps) => {
   const { translate } = useTranslationContext();
 
   return (
     <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/10 dark:bg-black/30 backdrop-blur-[3px]">
-      <div
-        className="mx-6 flex max-w-xs flex-col items-center gap-4 rounded-2xl border border-gray-10 bg-surface pt-6 dark:border-gray-5 dark:bg-gray-1"
-        style={MODAL_DIMENSIONS}
-      >
+      <div className="mx-6 flex w-[282px] h-[333px] max-w-xs flex-col items-center gap-4 rounded-2xl border border-gray-10 bg-surface pt-6 dark:border-gray-5 dark:bg-gray-1">
         <div className="relative mt-1 flex h-20 w-20 items-center justify-center">
-          <div
-            className="rounded-lg border-2 p-1 border-gray-5 dark:bg-gray-1"
-            style={{
-              backgroundColor: `light-dark(${LIGHT_MODE_ICON_BG}, transparent)`,
-            }}
-          >
+          <div className="rounded-lg border-2 p-1 border-gray-5 bg-[#F9F9FC] dark:bg-gray-1">
             <ClockCounterClockwise size={ICON_SIZES.clock} weight="regular" className="text-primary" />
           </div>
           <div className="absolute bottom-[-10px] left-[-10px]">
