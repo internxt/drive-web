@@ -30,7 +30,7 @@ describe('PC Cloud utils', () => {
   });
 
   describe('Processing a PC cloud payment', () => {
-    test('When the user wants to purchase a plan from pc cloud, then the setup should be done correclty', async () => {
+    test('When the user wants to purchase a plan from pc cloud, then the setup should be done correctly', async () => {
       const mockedClientSecret = 'client_secret';
       const setLocalStorageServiceSpy = vi.spyOn(localStorageService, 'set').mockReturnValue();
       vi.spyOn(checkoutService, 'checkoutSetupIntent').mockResolvedValue({
