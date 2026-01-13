@@ -20,13 +20,6 @@ export const usePromotionalCode = ({ promoCodeName }: UsePromotionalCodeProps) =
     }
   }, [promoCodeName]);
 
-  /*************  ✨ Windsurf Command ⭐  *************/
-  /**
-   * Fetches the promotional code data for a given priceId and promotional code.
-   * @param {{ priceId: string, promotionCode: string }}
-   * @returns {Promise<void>}
-   */
-  /*******  862b8641-88ac-49f9-a9a3-0358b8231505  *******/
   const fetchPromotionCode = async ({
     priceId,
     promotionCode,
