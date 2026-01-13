@@ -11,11 +11,8 @@ import envService from 'services/env.service';
 import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
-import RealtimeService from 'services/socket.service';
 import { STORAGE_KEYS } from 'services/storage-keys';
 import AppError, { AppView, IFormValues } from 'app/core/types';
-import databaseService from 'app/database/services/database.service';
-import { getDatabaseProfileAvatar } from 'app/drive/services/database.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import ChangePlanDialog from 'views/NewSettings/components/Sections/Account/Plans/components/ChangePlanDialog';
 import longNotificationsService from 'app/notifications/services/longNotification.service';
@@ -25,8 +22,6 @@ import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { planThunks } from 'app/store/slices/plan';
 import { useThemeContext } from 'app/theme/ThemeProvider';
-import { authenticateUser } from 'services/auth.service';
-import { checkoutReducer, initialStateForCheckout } from 'views/Checkout/store/checkoutReducer';
 import { PaymentType } from 'views/Checkout/types';
 import { AddressProvider, CheckoutViewManager, UserInfoProps } from '../types/checkout.types';
 import CheckoutView from './CheckoutView';
@@ -39,22 +34,33 @@ import { useCheckoutQueryParams } from '../hooks/useCheckoutQueryParams';
 import { useInitializeCheckout } from '../hooks/useInitializeCheckout';
 import { useProducts } from '../hooks/useProducts';
 import { useUserLocation } from 'hooks/useUserLocation';
-import { usePromotionalCode } from '../hooks/usePromotionalCode';
 import {
   GCLID_COOKIE_LIFESPAN_DAYS,
   IS_CRYPTO_PAYMENT_ENABLED,
   MILLISECONDS_PER_DAY,
   STATUS_CODE_ERROR,
 } from '../constants';
+import { usePromotionalCode } from '../hooks/usePromotionalCode';
+import { useAuthCheckout } from '../hooks/useAuthCheckout';
+import { checkoutReducer, initialStateForCheckout } from '../store';
+import { processPcCloudPayment } from '../utils/pcCloud.utils';
 
 const CheckoutViewWrapper = () => {
-  const { planId, promotionCode, currency, paramMobileToken, gclid } = useCheckoutQueryParams();
-  const { location: userLocationData } = useUserLocation();
-
   const { translate } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
-  const [authError, setAuthError] = useState<string | null>(null);
+  const [state, dispatchReducer] = useReducer(checkoutReducer, initialStateForCheckout);
+  const { authMethod, isPaying, isUpdateSubscriptionDialogOpen, isUpdatingSubscription, prices } = state;
+  const {
+    setAuthMethod,
+    setIsUserPaying,
+    setSeatsForBusinessSubscription,
+    setIsUpdateSubscriptionDialogOpen,
+    setIsUpdatingSubscription,
+  } = useCheckout(dispatchReducer);
+
+  const { planId, promotionCode, currency, paramMobileToken, gclid } = useCheckoutQueryParams();
+  const { location: userLocationData } = useUserLocation();
 
   const { selectedPlan, businessSeats, fetchSelectedPlan } = useProducts({
     currency: currency ?? 'eur',
@@ -65,7 +71,7 @@ const CheckoutViewWrapper = () => {
     userAddress: userLocationData?.ip,
   });
 
-  const { couponError, promoCodeData, onPromoCodeError, removeCouponCode, fetchPromotionCode } = usePromotionalCode({
+  const { promoCodeData, couponError, fetchPromotionCode, onPromoCodeError, removeCouponCode } = usePromotionalCode({
     promoCodeName: promotionCode,
   });
 
@@ -76,12 +82,14 @@ const CheckoutViewWrapper = () => {
     translate,
   });
 
+  const { onAuthenticateUser, onLogOut, authError } = useAuthCheckout({
+    changeAuthMethod: setAuthMethod,
+  });
+
   const dispatch = useAppDispatch();
-  const [mobileToken, setMobileToken] = useState<string | null>(null);
   const [address, setAddress] = useState<AddressProvider>();
   const [userName, setUserName] = useState(user?.name ?? '');
 
-  const [state, dispatchReducer] = useReducer(checkoutReducer, initialStateForCheckout);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const { doRegister } = useSignUp('activate');
   const { handleUserPayment } = useUserPayment();
@@ -93,20 +101,8 @@ const CheckoutViewWrapper = () => {
   const userAccountName = user?.name ?? '';
   const lastName = user?.lastname ?? '';
   const fullName = userAccountName + ' ' + lastName;
-  const isUserAuthenticated = !!user;
 
   const gclidStored = localStorageService.get(STORAGE_KEYS.GCLID);
-
-  const {
-    setAuthMethod,
-    setAvatarBlob,
-    setIsUserPaying,
-    setSeatsForBusinessSubscription,
-    setIsUpdateSubscriptionDialogOpen,
-    setIsUpdatingSubscription,
-  } = useCheckout(dispatchReducer);
-
-  const { authMethod, avatarBlob, isPaying, isUpdateSubscriptionDialogOpen, isUpdatingSubscription, prices } = state;
 
   const renewsAtPCComp = `${translate('checkout.productCard.pcMobileRenews')}`;
 
@@ -115,31 +111,24 @@ const CheckoutViewWrapper = () => {
 
   const userInfo: UserInfoProps = {
     name: fullName,
-    avatar: avatarBlob,
+    avatar: user?.avatar ?? null,
     email: user?.email ?? '',
   };
 
   const hasTrackedRef = useRef(false);
 
   useEffect(() => {
-    setMobileToken(paramMobileToken);
-
     if (gclid) {
       const expiryDate = new Date();
       expiryDate.setTime(expiryDate.getTime() + GCLID_COOKIE_LIFESPAN_DAYS * MILLISECONDS_PER_DAY);
       document.cookie = `gclid=${gclid}; expires=${expiryDate.toUTCString()}; path=/`;
       localStorageService.set(STORAGE_KEYS.GCLID, gclid);
     }
-  }, [checkoutTheme, mobileToken]);
+  }, [checkoutTheme]);
 
   useEffect(() => {
     if (isAuthenticated && user) {
       setAuthMethod('userIsSignedIn');
-      getDatabaseProfileAvatar()
-        .then((avatarData) => setAvatarBlob(avatarData?.avatarBlob ?? null))
-        .catch(() => {
-          //
-        });
     }
   }, [isAuthenticated, user]);
 
@@ -152,7 +141,7 @@ const CheckoutViewWrapper = () => {
       fetchSelectedPlan({
         priceId: selectedPlan.price.id,
         currency: selectedPlan.price.currency,
-        promotionCode: promoCodeData?.codeName,
+        promotionCode: promotionCode ?? undefined,
         postalCode: address.postal_code,
         country: address.country,
       });
@@ -300,24 +289,18 @@ const CheckoutViewWrapper = () => {
     const authCaptcha = await generateCaptchaToken();
 
     if (authMethod !== 'userIsSignedIn') {
-      try {
-        await authenticateUser({
-          email,
-          password,
-          authMethod,
-          twoFactorCode: '',
-          dispatch,
-          token: authCaptcha,
-          doSignUp: doRegister,
-        });
-      } catch (err) {
-        const error = err as Error;
-        setAuthError(error.message);
-        (userAuthComponentRef.current as any).scrollIntoView();
-        errorService.reportError(error);
-        setIsUserPaying(false);
-        return;
-      }
+      await onAuthenticateUser({
+        email,
+        password,
+        authMethod,
+        dispatch,
+        authCaptcha,
+        doRegister,
+        onAuthenticationFail: () => {
+          userAuthComponentRef.current?.scrollIntoView();
+          setIsUserPaying(false);
+        },
+      });
     }
 
     try {
@@ -350,25 +333,15 @@ const CheckoutViewWrapper = () => {
         captchaToken: customerToken,
       });
 
-      if (mobileToken) {
-        const setupIntent = await checkoutService.checkoutSetupIntent(customerId);
-        localStorageService.set('customerId', customerId);
-        localStorageService.set('token', token);
-        localStorageService.set('priceId', selectedPlan.price.id);
-        localStorageService.set('customerToken', token);
-        localStorageService.set('mobileToken', mobileToken);
-        const RETURN_URL_DOMAIN = envService.getVariable('hostname');
-        const { error: confirmIntentError } = await stripeSDK.confirmSetup({
+      if (paramMobileToken) {
+        await processPcCloudPayment({
+          customerId,
+          selectedPlan,
+          token,
+          mobileToken: paramMobileToken,
+          stripeSDK,
           elements,
-          clientSecret: setupIntent.clientSecret,
-          confirmParams: {
-            return_url: `${RETURN_URL_DOMAIN}/checkout/pcCloud-success?mobileToken=${mobileToken}&priceId=${selectedPlan.price.id}`,
-          },
         });
-
-        if (confirmIntentError) {
-          throw new Error(confirmIntentError.message);
-        }
       } else {
         const intentCaptcha = await generateCaptchaToken();
 
@@ -407,13 +380,6 @@ const CheckoutViewWrapper = () => {
     } finally {
       setIsUserPaying(false);
     }
-  };
-
-  const onLogOut = async () => {
-    await databaseService.clear();
-    localStorageService.clear();
-    RealtimeService.getInstance().stop();
-    setAuthMethod('signUp');
   };
 
   const onUserAddressChanges = (address: AddressProvider) => {
@@ -474,10 +440,10 @@ const CheckoutViewWrapper = () => {
               selectedCurrency: currency ?? selectedPlan.price.currency,
             }}
             userAuthComponentRef={userAuthComponentRef}
-            showCouponCode={!mobileToken}
+            showCouponCode={!paramMobileToken}
             userInfo={userInfo}
-            isUserAuthenticated={isUserAuthenticated}
-            showHardcodedRenewal={mobileToken ? renewsAtPCComp : undefined}
+            isUserAuthenticated={isAuthenticated}
+            showHardcodedRenewal={paramMobileToken ? renewsAtPCComp : undefined}
             checkoutViewManager={checkoutViewManager}
             availableCryptoCurrencies={availableCryptoCurrencies}
             onCurrencyTypeChanges={onCurrencyTypeChanges}
