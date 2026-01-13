@@ -508,7 +508,9 @@ export class DownloadManagerService {
     abortController?: AbortController;
     sharingOptions: { credentials: { user: string; pass: string }; mnemonic: string };
   }) => {
-    const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
+    const shouldDownloadUsingBlob =
+      !!(navigator.brave && (await navigator.brave.isBrave())) ||
+      (navigator.userAgent.includes('Safari') && payload.file.type === null);
 
     const worker: Worker = downloadWorkerHandler.getWorker();
 
@@ -516,7 +518,7 @@ export class DownloadManagerService {
       file: payload.file,
       isWorkspace: payload.isWorkspace,
       credentials: payload.sharingOptions,
-      isBrave,
+      shouldDownloadUsingBlob,
     };
 
     worker.postMessage({ type: 'download', params: workerPayload });

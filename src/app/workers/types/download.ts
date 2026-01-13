@@ -3,7 +3,7 @@ import { DriveFileData } from 'app/drive/types';
 export interface DownloadFilePayload {
   file: DriveFileData;
   isWorkspace: boolean;
-  isBrave: boolean;
+  shouldDownloadUsingBlob: boolean;
   credentials: any;
 }
 

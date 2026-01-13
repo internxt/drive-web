@@ -115,6 +115,18 @@ describe('downloadManagerService', () => {
     vi.spyOn(streamSaver, 'createWriteStream').mockReturnValue(defaultWritableStream);
   });
 
+  const mockWorker = {
+    postMessage: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    terminate: vi.fn(),
+  } as unknown as Worker;
+
+  const mockSharingOptions = {
+    credentials: { user: 'test-user', pass: 'test-pass' },
+    mnemonic: 'test-mnemonic',
+  };
+
   const mockUser: UserSettings = {
     uuid: 'mock-uuid',
     email: 'mock-email',
@@ -879,6 +891,79 @@ describe('downloadManagerService', () => {
         updateProgressCallback: mockUpdateProgress,
         abortController: mockTask.abortController,
         sharingOptions: mockTask.credentials,
+      });
+    });
+
+    describe('Safari downloads', () => {
+      beforeEach(() => {
+        vi.clearAllMocks();
+
+        Object.defineProperty(window.navigator, 'userAgent', {
+          value:
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15',
+          configurable: true,
+        });
+      });
+
+      afterEach(() => {
+        vi.unstubAllGlobals();
+        vi.clearAllMocks();
+      });
+
+      test('When the file has type, then the download is done with the default method', async () => {
+        const mockUpdateProgress = vi.fn((progress: number) => progress);
+
+        vi.mocked(getDatabaseFileSourceData).mockResolvedValue({ source: null } as any);
+        vi.mocked(checkIfCachedSourceIsOlder).mockReturnValue(true);
+        vi.spyOn(downloadWorkerHandler, 'getWorker').mockReturnValue(mockWorker);
+        vi.spyOn(downloadWorkerHandler, 'handleWorkerMessages').mockResolvedValue(() => {});
+
+        await DownloadManagerService.instance.downloadFile(mockTask, mockUpdateProgress);
+
+        expect(getDatabaseFileSourceData).toHaveBeenCalledWith({
+          fileId: mockFile.id,
+        });
+        expect(checkIfCachedSourceIsOlder).toHaveBeenCalledOnce();
+        expect(mockWorker.postMessage).toHaveBeenCalledWith({
+          type: 'download',
+          params: {
+            file: mockFile,
+            isWorkspace: !!mockTask.credentials.workspaceId,
+            credentials: mockTask.credentials,
+            shouldDownloadUsingBlob: false,
+          },
+        });
+      });
+
+      test('When the file does not have a type, then the download is done using blob', async () => {
+        const mockUpdateProgress = vi.fn((progress: number) => progress);
+
+        const fileWithoutType: DriveFileData = { ...mockFile, type: null as any };
+        const taskWithFileWithoutType: DownloadTask = {
+          ...mockTask,
+          items: [fileWithoutType as DriveItemData],
+        };
+
+        vi.mocked(getDatabaseFileSourceData).mockResolvedValue({ source: null } as any);
+        vi.mocked(checkIfCachedSourceIsOlder).mockReturnValue(true);
+        vi.spyOn(downloadWorkerHandler, 'getWorker').mockReturnValue(mockWorker);
+        vi.spyOn(downloadWorkerHandler, 'handleWorkerMessages').mockResolvedValue(() => {});
+
+        await DownloadManagerService.instance.downloadFile(taskWithFileWithoutType, mockUpdateProgress);
+
+        expect(getDatabaseFileSourceData).toHaveBeenCalledWith({
+          fileId: fileWithoutType.id,
+        });
+        expect(checkIfCachedSourceIsOlder).toHaveBeenCalledOnce();
+        expect(mockWorker.postMessage).toHaveBeenCalledWith({
+          type: 'download',
+          params: {
+            file: fileWithoutType,
+            isWorkspace: !!taskWithFileWithoutType.credentials.workspaceId,
+            credentials: taskWithFileWithoutType.credentials,
+            shouldDownloadUsingBlob: true,
+          },
+        });
       });
     });
 
@@ -1796,18 +1881,6 @@ describe('downloadManagerService', () => {
   });
 
   describe('Download a file from worker', () => {
-    const mockWorker = {
-      postMessage: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      terminate: vi.fn(),
-    } as unknown as Worker;
-
-    const mockSharingOptions = {
-      credentials: { user: 'test-user', pass: 'test-pass' },
-      mnemonic: 'test-mnemonic',
-    };
-
     beforeEach(() => {
       vi.clearAllMocks();
 
@@ -1817,6 +1890,7 @@ describe('downloadManagerService', () => {
       vi.stubGlobal('navigator', {
         ...navigator,
         brave: { isBrave: vi.fn().mockResolvedValue(false) },
+        userAgent: 'Mozilla/5.0 (Chrome)',
       });
       vi.spyOn(console, 'log').mockImplementation(() => {});
     });
@@ -1843,7 +1917,7 @@ describe('downloadManagerService', () => {
           file: mockFile,
           isWorkspace: false,
           credentials: mockSharingOptions,
-          isBrave: false,
+          shouldDownloadUsingBlob: false,
         },
       });
       expect(downloadWorkerHandler.handleWorkerMessages).toHaveBeenCalledWith({
@@ -1873,7 +1947,7 @@ describe('downloadManagerService', () => {
           file: mockFile,
           isWorkspace: true,
           credentials: mockSharingOptions,
-          isBrave: true,
+          shouldDownloadUsingBlob: true,
         },
       });
     });
