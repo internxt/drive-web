@@ -16,7 +16,7 @@ export const LockedFeatureModal = ({ onUpgrade }: LockedFeatureModalProps) => {
 
   return (
     <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/10 dark:bg-black/30 backdrop-blur-[3px]">
-      <div className="mx-6 flex w-[282px] h-[333px] max-w-xs flex-col items-center gap-4 rounded-2xl border border-gray-10 bg-surface pt-6 dark:border-gray-5 dark:bg-gray-1">
+      <div className="mx-1 flex w-[282px] h-[327px] max-w-xs flex-col items-center gap-4 rounded-2xl border border-gray-10 bg-surface pt-6 dark:border-gray-5 dark:bg-gray-1">
         <div className="relative mt-1 flex h-20 w-20 items-center justify-center">
           <div className="rounded-lg border-2 p-1 border-gray-5 bg-[#F9F9FC] dark:bg-gray-1">
             <ClockCounterClockwise size={ICON_SIZES.clock} weight="regular" className="text-primary" />
@@ -26,14 +26,14 @@ export const LockedFeatureModal = ({ onUpgrade }: LockedFeatureModalProps) => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 px-2 text-center">
-          <h2 className="text-xl font-semibold leading-6 text-gray-100">
+        <div className="flex flex-col gap-2 px-3 text-center">
+          <h2 className="font-sans text-xl font-semibold leading-[1.2] tracking-normal text-center text-gray-100">
             {translate('modals.versionHistory.lockedFeature.title')}
           </h2>
-          <p className="text-xs leading-4 text-gray-60 dark:text-gray-80">
+          <p className="font-sans text-xs font-normal leading-[1.2] tracking-normal text-center text-gray-60 dark:text-gray-80">
             {translate('modals.versionHistory.lockedFeature.description')}
           </p>
-          <p className="text-xs leading-4 text-gray-60 dark:text-gray-80">
+          <p className="font-sans text-xs font-normal leading-[1.2] tracking-normal text-center text-gray-60 dark:text-gray-80">
             {translate('modals.versionHistory.lockedFeature.supportedFormats')}
           </p>
         </div>
