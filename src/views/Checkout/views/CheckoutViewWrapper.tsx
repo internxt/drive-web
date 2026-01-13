@@ -39,36 +39,13 @@ import { useCheckoutQueryParams } from '../hooks/useCheckoutQueryParams';
 import { useInitializeCheckout } from '../hooks/useInitializeCheckout';
 import { useProducts } from '../hooks/useProducts';
 import { useUserLocation } from 'hooks/useUserLocation';
-
-const GCLID_COOKIE_LIFESPAN_DAYS = 90;
-const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
-
-const IS_CRYPTO_PAYMENT_ENABLED = true;
-
-export const THEME_STYLES = {
-  dark: {
-    backgroundColor: 'rgb(17 17 17)',
-    textColor: 'rgb(255 255 255)',
-    borderColor: 'rgb(58, 58, 59)',
-    borderInputColor: 'rgb(142, 142, 148)',
-    labelTextColor: 'rgb(229 229 235)',
-  },
-  light: {
-    backgroundColor: 'rgb(255 255 255)',
-    textColor: 'rgb(17 17 17)',
-    borderColor: 'rgb(229, 229, 235)',
-    borderInputColor: 'rgb(174, 174, 179)',
-    labelTextColor: 'rgb(58 58 59)',
-  },
-};
-
-const STATUS_CODE_ERROR = {
-  USER_EXISTS: 409,
-  COUPON_NOT_VALID: 422,
-  PROMO_CODE_BY_NAME_NOT_FOUND: 404,
-  BAD_REQUEST: 400,
-  INTERNAL_SERVER_ERROR: 500,
-};
+import { usePromotionalCode } from '../hooks/usePromotionalCode';
+import {
+  GCLID_COOKIE_LIFESPAN_DAYS,
+  IS_CRYPTO_PAYMENT_ENABLED,
+  MILLISECONDS_PER_DAY,
+  STATUS_CODE_ERROR,
+} from '../constants';
 
 const CheckoutViewWrapper = () => {
   const { planId, promotionCode, currency, paramMobileToken, gclid } = useCheckoutQueryParams();
@@ -79,22 +56,17 @@ const CheckoutViewWrapper = () => {
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
   const [authError, setAuthError] = useState<string | null>(null);
 
-  const {
-    selectedPlan,
-    promoCodeData,
-    businessSeats,
-    couponError,
-    removeCouponCode,
-    fetchSelectedPlan,
-    fetchPromotionCode,
-    onPromoCodeError,
-  } = useProducts({
+  const { selectedPlan, businessSeats, fetchSelectedPlan } = useProducts({
     currency: currency ?? 'eur',
     translate,
     planId,
-    promotionCode,
+    promotionCode: promotionCode ?? undefined,
     userLocation: userLocationData?.location,
     userAddress: userLocationData?.ip,
+  });
+
+  const { couponError, promoCodeData, onPromoCodeError, removeCouponCode, fetchPromotionCode } = usePromotionalCode({
+    promoCodeName: promotionCode,
   });
 
   const { isCheckoutReady, stripeElementsOptions, availableCryptoCurrencies, stripeSdk } = useInitializeCheckout({
