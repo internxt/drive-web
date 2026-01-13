@@ -32,6 +32,7 @@ import { DriveItemBlobData } from 'app/database/services/database.service';
 import { ConnectionLostError } from 'app/network/requests';
 import { downloadFile } from 'app/network/download';
 import { downloadWorkerHandler } from './worker.service/downloadWorkerHandler';
+import deviceService from 'services/device.service';
 
 vi.mock('./../../network/requests', () => ({ ConnectionLostError: vi.fn(), NetworkCredentials: {} }));
 vi.mock('app/tasks/services/tasks.service', () => ({
@@ -897,12 +898,7 @@ describe('downloadManagerService', () => {
     describe('Safari downloads', () => {
       beforeEach(() => {
         vi.clearAllMocks();
-
-        Object.defineProperty(window.navigator, 'userAgent', {
-          value:
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15',
-          configurable: true,
-        });
+        vi.spyOn(deviceService, 'isSafari').mockReturnValue(true);
       });
 
       afterEach(() => {

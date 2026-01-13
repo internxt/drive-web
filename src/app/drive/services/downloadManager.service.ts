@@ -30,6 +30,7 @@ import {
 } from '../types/download-types';
 import { downloadWorkerHandler } from './worker.service/downloadWorkerHandler';
 import { isFileEmpty } from 'utils/isFileEmpty';
+import deviceService from 'services/device.service';
 
 export type DownloadCredentials = {
   credentials: NetworkCredentials;
@@ -510,7 +511,7 @@ export class DownloadManagerService {
   }) => {
     const shouldDownloadUsingBlob =
       !!(navigator.brave && (await navigator.brave.isBrave())) ||
-      (navigator.userAgent.includes('Safari') && payload.file.type === null);
+      (deviceService.isSafari() && payload.file.type === null);
 
     const worker: Worker = downloadWorkerHandler.getWorker();
 
