@@ -96,4 +96,24 @@ describe('newStorageService', () => {
       expect(mockGetFolderContentByUuid).toHaveBeenCalledWith(params);
     });
   });
+
+  describe('Get Folder Statistics', () => {
+    test('When requesting folder statistics, then it returns file count and total size', async () => {
+      const mockUuid = 'test-folder-uuid';
+      const mockStatsResponse = {
+        fileCount: 42,
+        totalSize: 1024000,
+      };
+      const mockGetFolderStats = vi.fn().mockResolvedValue(mockStatsResponse);
+      const mockStorageClient = { getFolderStats: mockGetFolderStats };
+      (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
+        createNewStorageClient: () => mockStorageClient,
+      });
+
+      const result = await newStorageService.getFolderStats(mockUuid);
+
+      expect(mockGetFolderStats).toHaveBeenCalledWith(mockUuid);
+      expect(result).toEqual(mockStatsResponse);
+    });
+  });
 });
