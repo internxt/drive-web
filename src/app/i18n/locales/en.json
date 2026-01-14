@@ -1249,6 +1249,10 @@
       "restore": "Restore",
       "delete-permanently": "Delete permanently"
     },
+    "autoDelete": {
+      "inDays_one": "In {{count}} day",
+      "inDays_other": "In {{count}} days"
+    },
     "automaticDisposal": {
       "badge": "New update",
       "title": "Automatic Trash disposal",
@@ -1536,7 +1540,8 @@
         "name": "Name",
         "modified": "Modified",
         "size": "Size",
-        "actions": "Actions"
+        "actions": "Actions",
+        "autoDelete": "Auto-delete"
       }
     },
     "viewMode": {

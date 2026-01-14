@@ -1164,6 +1164,10 @@
       "restore": "Wiederherstellen",
       "delete-permanently": "Lösche dauerhaft"
     },
+    "autoDelete": {
+      "inDays_one": "In {{count}} Tag",
+      "inDays_other": "In {{count}} Tagen"
+    },
     "automaticDisposal": {
       "badge": "Neues Update",
       "title": "Automatische Papierkorb-Entsorgung",
@@ -1454,7 +1458,8 @@
         "name": "Name",
         "modified": "Modifiziert",
         "size": "Größe",
-        "actions": "Aktionen"
+        "actions": "Aktionen",
+        "autoDelete": "Automatisches Löschen"
       }
     },
     "viewMode": {
