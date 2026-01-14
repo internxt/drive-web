@@ -57,8 +57,9 @@ const deleteUserAvatar = (): Promise<void> => {
   return usersClient.deleteUserAvatar(token);
 };
 
-const sendVerificationEmail = (): Promise<void> => {
-  const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
+const sendVerificationEmail = async (): Promise<void> => {
+  const captchaToken = await generateCaptchaToken();
+  const usersClient = SdkFactory.getNewApiInstance().createUsersClient(captchaToken);
   const token = localStorageService.get('xNewToken') ?? undefined;
   return usersClient.sendVerificationEmail(token);
 };
@@ -74,8 +75,9 @@ const getPublicKeyWithPrecreation = async (email: string): Promise<UserPublicKey
   return usersClient.getPublicKeyWithPrecreation({ email });
 };
 
-const changeEmail = (newEmail: string): Promise<void> => {
-  const authClient = SdkFactory.getNewApiInstance().createUsersClient();
+const changeEmail = async (newEmail: string): Promise<void> => {
+  const captchaToken = await generateCaptchaToken();
+  const authClient = SdkFactory.getNewApiInstance().createUsersClient(captchaToken);
   return authClient.changeUserEmail(newEmail);
 };
 

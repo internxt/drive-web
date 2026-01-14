@@ -6,6 +6,7 @@ import { Workspace } from '../../types';
 import { STORAGE_KEYS } from 'services/storage-keys';
 import { Share, Users } from '@internxt/sdk/dist/drive';
 import packageJson from '../../../../../package.json';
+import { Auth } from '@internxt/sdk/dist/auth';
 
 const MOCKED_NEW_API = 'https://api.internxt.com';
 const MOCKED_PAYMENTS = 'https://payments.internxt.com';
@@ -15,6 +16,12 @@ vi.mock('@internxt/sdk/dist/drive', () => ({
     client: vi.fn(),
   },
   Share: {
+    client: vi.fn(),
+  },
+}));
+
+vi.mock('@internxt/sdk/dist/auth', () => ({
+  Auth: {
     client: vi.fn(),
   },
 }));
@@ -195,7 +202,6 @@ describe('SdkFactory', () => {
           {
             clientName: packageJson.name,
             clientVersion: packageJson.version,
-            customHeaders: {},
           },
           expect.any(Object),
         );
@@ -248,7 +254,6 @@ describe('SdkFactory', () => {
           {
             clientName: packageJson.name,
             clientVersion: packageJson.version,
-            customHeaders: {},
           },
           expect.any(Object),
         );
@@ -269,6 +274,58 @@ describe('SdkFactory', () => {
         instance.createShareClient(captchaToken);
 
         expect(Share.client).toHaveBeenCalledWith(
+          MOCKED_NEW_API,
+          {
+            clientName: packageJson.name,
+            clientVersion: packageJson.version,
+            customHeaders: {
+              'x-internxt-captcha': captchaToken,
+            },
+          },
+          expect.any(Object),
+        );
+      });
+    });
+
+    describe('Creating the auth client', () => {
+      test('When the Auth creates the client without captcha, then the app details are the defined by default', () => {
+        const mockToken = 'test-token';
+        const mockWorkspace = Workspace.Individuals;
+
+        vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
+        vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
+          if (key === 'xNewToken') return mockToken;
+          return null;
+        });
+
+        const instance = SdkFactory.getNewApiInstance();
+        instance.createAuthClient();
+
+        expect(Auth.client).toHaveBeenCalledWith(
+          MOCKED_NEW_API,
+          {
+            clientName: packageJson.name,
+            clientVersion: packageJson.version,
+          },
+          expect.any(Object),
+        );
+      });
+
+      test('When the Auth creates the client with captcha, then the app details include the captcha header', () => {
+        const mockToken = 'test-token';
+        const mockWorkspace = Workspace.Individuals;
+        const captchaToken = 'captcha-token-123';
+
+        vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
+        vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
+          if (key === 'xNewToken') return mockToken;
+          return null;
+        });
+
+        const instance = SdkFactory.getNewApiInstance();
+        instance.createAuthClient({ captchaToken });
+
+        expect(Auth.client).toHaveBeenCalledWith(
           MOCKED_NEW_API,
           {
             clientName: packageJson.name,
