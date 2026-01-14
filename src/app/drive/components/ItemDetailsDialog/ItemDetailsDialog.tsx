@@ -147,6 +147,10 @@ const ItemDetailsDialog = ({
     return translate('modals.itemDetailsModal.fileCount', { count });
   };
 
+  const getFolderStats = (item: DriveItemDetails, itemUuid: string) => {
+    return item.isFolder ? newStorageService.getFolderStats(itemUuid) : undefined;
+  };
+
   const getItemLocation = async (
     item: DriveItemDetails,
     itemType: ItemType,
@@ -188,11 +192,9 @@ const ItemDetailsDialog = ({
     const storageKey = item.isFolder ? STORAGE_KEYS.FOLDER_ACCESS_TOKEN : STORAGE_KEYS.FILE_ACCESS_TOKEN;
     const token = localStorageService.get(storageKey) || undefined;
 
-    const folderStatsPromise = item.isFolder ? newStorageService.getFolderStats(itemUuid) : undefined;
-
     const [location, folderStats] = await Promise.all([
       getItemLocation(item, itemType, itemUuid, itemFolderUuid, token),
-      folderStatsPromise,
+      getFolderStats(item, itemUuid),
     ]);
     const size = calculateItemSize(item, folderStats);
 
