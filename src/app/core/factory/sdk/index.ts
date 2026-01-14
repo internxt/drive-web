@@ -38,9 +38,9 @@ export class SdkFactory {
     return this.sdk.newApiInstance;
   }
 
-  public createAuthClient(options?: { unauthorizedCallback?: () => void }): Auth {
+  public createAuthClient(options?: { captchaToken?: string; unauthorizedCallback?: () => void }): Auth {
     const apiUrl = this.getApiUrl();
-    const appDetails = SdkFactory.getAppDetails();
+    const appDetails = this.getAppDetailsWithHeaders(options?.captchaToken);
     const apiSecurity = this.getNewApiSecurity(options?.unauthorizedCallback);
     return Auth.client(apiUrl, appDetails, apiSecurity);
   }
@@ -67,10 +67,8 @@ export class SdkFactory {
   }
 
   public createShareClient(captchaToken?: string): Share {
-    const customHeaders = this.buildCustomHeaders({ captchaToken });
-
     const apiUrl = this.getApiUrl();
-    const appDetails = SdkFactory.getAppDetails(customHeaders);
+    const appDetails = this.getAppDetailsWithHeaders(captchaToken);
     const apiSecurity = this.getNewApiSecurity();
     return Share.client(apiUrl, appDetails, apiSecurity);
   }
@@ -83,10 +81,8 @@ export class SdkFactory {
   }
 
   public createUsersClient(captchaToken?: string): Users {
-    const customHeaders = this.buildCustomHeaders({ captchaToken });
-
     const apiUrl = this.getApiUrl();
-    const appDetails = SdkFactory.getAppDetails(customHeaders);
+    const appDetails = this.getAppDetailsWithHeaders(captchaToken);
     const apiSecurity = this.getNewApiSecurity();
     return Users.client(apiUrl, appDetails, apiSecurity);
   }
@@ -153,6 +149,11 @@ export class SdkFactory {
       clientVersion: packageJson.version,
       customHeaders,
     };
+  }
+
+  private getAppDetailsWithHeaders(captchaToken?: string): AppDetails {
+    const customHeaders = captchaToken ? this.buildCustomHeaders({ captchaToken }) : undefined;
+    return SdkFactory.getAppDetails(customHeaders);
   }
 
   private static getDesktopAppDetails(): AppDetails {

@@ -4,6 +4,10 @@ import * as bip39 from 'bip39';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useSignUp } from './useSignup';
 
+vi.mock('utils', () => ({
+  generateCaptchaToken: vi.fn(),
+}));
+
 vi.mock('@internxt/lib', () => ({
   aes: {
     encrypt: vi.fn().mockReturnValue('mock-encrypted'),
