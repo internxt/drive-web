@@ -66,9 +66,11 @@ export class SdkFactory {
     return Workspaces.client(apiUrl, appDetails, apiSecurity);
   }
 
-  public createShareClient(): Share {
+  public createShareClient(captchaToken?: string): Share {
+    const customHeaders = this.buildCustomHeaders({ captchaToken });
+
     const apiUrl = this.getApiUrl();
-    const appDetails = SdkFactory.getAppDetails();
+    const appDetails = SdkFactory.getAppDetails(customHeaders);
     const apiSecurity = this.getNewApiSecurity();
     return Share.client(apiUrl, appDetails, apiSecurity);
   }
@@ -80,9 +82,11 @@ export class SdkFactory {
     return Trash.client(apiUrl, appDetails, apiSecurity);
   }
 
-  public createUsersClient(): Users {
+  public createUsersClient(captchaToken?: string): Users {
+    const customHeaders = this.buildCustomHeaders({ captchaToken });
+
     const apiUrl = this.getApiUrl();
-    const appDetails = SdkFactory.getAppDetails();
+    const appDetails = SdkFactory.getAppDetails(customHeaders);
     const apiSecurity = this.getNewApiSecurity();
     return Users.client(apiUrl, appDetails, apiSecurity);
   }
@@ -143,10 +147,11 @@ export class SdkFactory {
     return this.apiUrl;
   }
 
-  private static getAppDetails(): AppDetails {
+  private static getAppDetails(customHeaders?: Record<string, string>): AppDetails {
     return {
       clientName: packageJson.name,
       clientVersion: packageJson.version,
+      customHeaders,
     };
   }
 
@@ -155,14 +160,6 @@ export class SdkFactory {
       clientName: 'drive-desktop',
       clientVersion: packageJson.version,
     };
-  }
-
-  private getToken(workspace: string): Token {
-    const tokenByWorkspace: { [key in Workspace]: string } = {
-      [Workspace.Individuals]: SdkFactory.sdk.localStorage.get('xToken') || '',
-      [Workspace.Business]: SdkFactory.sdk.localStorage.get('xTokenTeam') || '',
-    };
-    return tokenByWorkspace[workspace];
   }
 
   private getNewToken(workspace: string): Token {
@@ -185,5 +182,15 @@ export class SdkFactory {
       }
     }
     return token;
+  }
+
+  private buildCustomHeaders(options?: { captchaToken?: string }): Record<string, string> {
+    const headers: Record<string, string> = {};
+
+    if (options?.captchaToken) {
+      headers['x-internxt-captcha'] = options.captchaToken;
+    }
+
+    return headers;
   }
 }
