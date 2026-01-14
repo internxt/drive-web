@@ -58,16 +58,10 @@ const ItemsDetails = ({ item, translate }: { item: ItemDetailsProps; translate: 
   );
 };
 
-async function getFolderStatsOrUndefined(
-  itemUuid: string,
-  isFolder: boolean,
-): Promise<FolderStatsResponse | undefined> {
-  if (!isFolder) return undefined;
-
-  return newStorageService.getFolderStats(itemUuid).catch(() => undefined);
-}
-
-function calculateItemSize(item: DriveItemDetails, folderStats: FolderStatsResponse | undefined): string | undefined {
+const calculateItemSize = (
+  item: DriveItemDetails,
+  folderStats: FolderStatsResponse | undefined,
+): string | undefined => {
   if (!item.isFolder) {
     return bytesToString(item.size);
   }
@@ -75,7 +69,7 @@ function calculateItemSize(item: DriveItemDetails, folderStats: FolderStatsRespo
     return bytesToString(folderStats.totalSize, false);
   }
   return undefined;
-}
+};
 
 /**
  * Return all the details of the item selected
@@ -136,30 +130,30 @@ const ItemDetailsDialog = ({
     }, 300);
   };
 
-  function formateDate(dateString: string) {
+  const formateDate = (dateString: string) => {
     return dateService.formatDefaultDate(dateString, translate);
-  }
+  };
 
-  function handleButtonItemClick() {
+  const handleButtonItemClick = () => {
     onDetailsButtonClicked(item as AdvancedSharedItem);
     onClose();
-  }
+  };
 
   const MAX_DISPLAYABLE_FILE_COUNT = 1000;
 
-  function formatFileCount(count: number | undefined): string | undefined {
+  const formatFileCount = (count: number | undefined) => {
     if (count === undefined) return undefined;
     if (count > MAX_DISPLAYABLE_FILE_COUNT) return translate('modals.itemDetailsModal.fileCountMoreThan1000');
     return translate('modals.itemDetailsModal.fileCount', { count });
-  }
+  };
 
-  async function getItemLocation(
+  const getItemLocation = async (
     item: DriveItemDetails,
     itemType: ItemType,
     itemUuid: string,
     itemFolderUuid: string,
     token: string | undefined,
-  ): Promise<string> {
+  ) => {
     if (!isWorkspaceSelected) {
       const ancestors = await newStorageService.getFolderAncestors(itemFolderUuid);
       return getLocation(item, ancestors as unknown as DriveItemData[]);
@@ -179,24 +173,26 @@ const ItemDetailsDialog = ({
     }
 
     return '/Shared';
-  }
+  };
 
-  async function getDetailsData(
+  const getDetailsData = async (
     item: DriveItemDetails,
     isShared: string,
     uploaded: string,
     modified: string,
     email: string,
-  ) {
+  ) => {
     const itemType: ItemType = item.isFolder ? 'folder' : 'file';
     const itemUuid = item.uuid;
     const itemFolderUuid = item.isFolder ? itemUuid : item.folderUuid;
     const storageKey = item.isFolder ? STORAGE_KEYS.FOLDER_ACCESS_TOKEN : STORAGE_KEYS.FILE_ACCESS_TOKEN;
     const token = localStorageService.get(storageKey) || undefined;
 
+    const folderStatsPromise = item.isFolder ? newStorageService.getFolderStats(itemUuid) : undefined;
+
     const [location, folderStats] = await Promise.all([
       getItemLocation(item, itemType, itemUuid, itemFolderUuid, token),
-      getFolderStatsOrUndefined(itemUuid, item.isFolder),
+      folderStatsPromise,
     ]);
     const size = calculateItemSize(item, folderStats);
 
@@ -211,7 +207,7 @@ const ItemDetailsDialog = ({
       uploadedBy: item.user?.email ?? item.userEmail ?? email,
       location,
     };
-  }
+  };
 
   return (
     <Modal className="p-0" isOpen={isOpen} onClose={onClose}>
