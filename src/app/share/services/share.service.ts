@@ -36,6 +36,7 @@ import { DownloadManager } from '../../network/DownloadManager';
 import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
 import { AdvancedSharedItem } from '../types';
 import { domainManager } from './DomainManager';
+import { generateCaptchaToken } from 'utils';
 
 interface CreateShareResponse {
   created: boolean;
@@ -158,8 +159,9 @@ export function getSharingRoles(): Promise<Role[]> {
   });
 }
 
-export function inviteUserToSharedFolder(props: ShareFolderWithUserPayload): Promise<SharingInvite> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+export async function inviteUserToSharedFolder(props: ShareFolderWithUserPayload): Promise<SharingInvite> {
+  const captchaToken = await generateCaptchaToken();
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient(captchaToken);
   return shareClient.inviteUserToSharedFolder({ ...props }).catch((error) => {
     throw errorService.castError(error);
   });

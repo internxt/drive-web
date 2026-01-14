@@ -66,9 +66,11 @@ export class SdkFactory {
     return Workspaces.client(apiUrl, appDetails, apiSecurity);
   }
 
-  public createShareClient(): Share {
+  public createShareClient(captchaToken?: string): Share {
+    const customHeaders = this.buildCustomHeaders({ captchaToken });
+
     const apiUrl = this.getApiUrl();
-    const appDetails = SdkFactory.getAppDetails();
+    const appDetails = SdkFactory.getAppDetails(customHeaders);
     const apiSecurity = this.getNewApiSecurity();
     return Share.client(apiUrl, appDetails, apiSecurity);
   }
