@@ -195,6 +195,7 @@ describe('SdkFactory', () => {
           {
             clientName: packageJson.name,
             clientVersion: packageJson.version,
+            customHeaders: {},
           },
           expect.any(Object),
         );
@@ -219,7 +220,9 @@ describe('SdkFactory', () => {
           {
             clientName: packageJson.name,
             clientVersion: packageJson.version,
-            'x-internxt-captcha': captchaToken,
+            customHeaders: {
+              'x-internxt-captcha': captchaToken,
+            },
           },
           expect.any(Object),
         );
@@ -245,6 +248,7 @@ describe('SdkFactory', () => {
           {
             clientName: packageJson.name,
             clientVersion: packageJson.version,
+            customHeaders: {},
           },
           expect.any(Object),
         );
@@ -269,7 +273,9 @@ describe('SdkFactory', () => {
           {
             clientName: packageJson.name,
             clientVersion: packageJson.version,
-            'x-internxt-captcha': captchaToken,
+            customHeaders: {
+              'x-internxt-captcha': captchaToken,
+            },
           },
           expect.any(Object),
         );

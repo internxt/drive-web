@@ -147,11 +147,11 @@ export class SdkFactory {
     return this.apiUrl;
   }
 
-  private static getAppDetails(customerHeaders?: Record<string, string>): AppDetails {
+  private static getAppDetails(customHeaders?: Record<string, string>): AppDetails {
     return {
       clientName: packageJson.name,
       clientVersion: packageJson.version,
-      ...customerHeaders,
+      customHeaders,
     };
   }
 

@@ -9,6 +9,7 @@ import {
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import localStorageService from 'services/local-storage.service';
 import { SdkFactory } from 'app/core/factory/sdk';
+import { generateCaptchaToken } from 'utils';
 
 export const sendDeactivationEmail = (): Promise<void> => {
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
@@ -67,10 +68,8 @@ const getPublicKeyByEmail = (email: string): Promise<UserPublicKeyResponse> => {
   return usersClient.getPublicKeyByEmail({ email });
 };
 
-const getPublicKeyWithPrecreation = (
-  email: string,
-  captchaToken: string,
-): Promise<UserPublicKeyWithCreationResponse> => {
+const getPublicKeyWithPrecreation = async (email: string): Promise<UserPublicKeyWithCreationResponse> => {
+  const captchaToken = await generateCaptchaToken();
   const usersClient = SdkFactory.getNewApiInstance().createUsersClient(captchaToken);
   return usersClient.getPublicKeyWithPrecreation({ email });
 };
