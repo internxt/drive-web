@@ -67,8 +67,11 @@ const getPublicKeyByEmail = (email: string): Promise<UserPublicKeyResponse> => {
   return usersClient.getPublicKeyByEmail({ email });
 };
 
-const getPublicKeyWithPrecreation = (email: string): Promise<UserPublicKeyWithCreationResponse> => {
-  const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
+const getPublicKeyWithPrecreation = (
+  email: string,
+  captchaToken: string,
+): Promise<UserPublicKeyWithCreationResponse> => {
+  const usersClient = SdkFactory.getNewApiInstance().createUsersClient(captchaToken);
   return usersClient.getPublicKeyWithPrecreation({ email });
 };
 

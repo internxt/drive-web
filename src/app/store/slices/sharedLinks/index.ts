@@ -11,6 +11,7 @@ import { UserRoles } from 'app/share/types';
 import { t } from 'i18next';
 import userService from 'services/user.service';
 import { hybridEncryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
+import { generateCaptchaToken } from 'utils';
 
 export const HYBRID_ALGORITHM = 'hybrid';
 export const STANDARD_ALGORITHM = 'ed25519';
@@ -54,7 +55,8 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
       }
       const { mnemonic } = user;
 
-      const publicKeyResponse = await userService.getPublicKeyWithPrecreation(payload.sharedWith);
+      const captchaToken = await generateCaptchaToken();
+      const publicKeyResponse = await userService.getPublicKeyWithPrecreation(payload.sharedWith, captchaToken);
 
       const publicKey = publicKeyResponse.publicKey;
       const publicKyberKey = publicKeyResponse?.publicKyberKey ?? '';
