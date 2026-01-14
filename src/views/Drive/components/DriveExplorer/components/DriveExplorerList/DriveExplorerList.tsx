@@ -3,12 +3,13 @@ import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import React, { memo, useCallback, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
+import { getListHeaders } from './getListHeaders';
 
 import { ListShareLinksItem, Role } from '@internxt/sdk/dist/drive/share/types';
 import navigationService from 'services/navigation.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { skinSkeleton, skinSkeletonTrash } from 'components/Skeleton';
-import { moveItemsToTrash } from '../../../../../views/Trash/services';
+import { moveItemsToTrash } from 'views/Trash/services';
 import { OrderDirection, OrderSettings } from 'app/core/types';
 import shareService from 'app/share/services/share.service';
 import { AppDispatch, RootState } from 'app/store';
@@ -31,7 +32,7 @@ import {
   contextMenuTrashItems,
   contextMenuWorkspaceFile,
   contextMenuWorkspaceFolder,
-} from './DriveItemContextMenu';
+} from '../DriveItemContextMenu';
 import { List } from '@internxt/ui';
 import { DownloadManager } from 'app/network/DownloadManager';
 
@@ -101,59 +102,6 @@ const resetDriveOrder = ({
   dispatch(storageActions.setHasMoreDriveFolders({ folderId: currentFolderId, status: true }));
   dispatch(storageActions.setHasMoreDriveFiles({ folderId: currentFolderId, status: true }));
   dispatch(fetchSortedFolderContentThunk(currentFolderId));
-};
-
-interface ListHeaderItem {
-  label: string;
-  width: string;
-  name: 'type' | 'name' | 'updatedAt' | 'size' | 'caducityDate';
-  orderable: boolean;
-  defaultDirection: 'ASC' | 'DESC';
-  buttonDataCy?: string;
-  textDataCy?: string;
-}
-
-const getListHeaders = (translate: (key: string) => string, isRecents: boolean, isTrash: boolean): ListHeaderItem[] => {
-  const headers: ListHeaderItem[] = [
-    {
-      label: translate('drive.list.columns.name'),
-      width: 'flex grow items-center min-w-driveNameHeader',
-      name: 'name',
-      orderable: !isRecents,
-      defaultDirection: 'ASC',
-      buttonDataCy: 'driveListHeaderNameButton',
-      textDataCy: 'driveListHeaderNameButtonText',
-    },
-  ];
-
-  if (isTrash) {
-    headers.push({
-      label: translate('drive.list.columns.autoDelete'),
-      width: 'w-date',
-      name: 'caducityDate',
-      orderable: true,
-      defaultDirection: 'ASC',
-    });
-  }
-
-  headers.push(
-    {
-      label: translate('drive.list.columns.modified'),
-      width: 'w-date',
-      name: 'updatedAt',
-      orderable: !isRecents,
-      defaultDirection: 'ASC',
-    },
-    {
-      label: translate('drive.list.columns.size'),
-      orderable: !isRecents && !isTrash,
-      defaultDirection: 'ASC',
-      width: 'w-size',
-      name: 'size',
-    },
-  );
-
-  return headers;
 };
 
 const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
