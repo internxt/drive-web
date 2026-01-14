@@ -171,4 +171,5 @@ export type ItemDetailsProps = {
   shared: string;
   type?: string;
   size?: string;
+  numberOfFiles?: string;
 };
