@@ -32,7 +32,7 @@ describe('Download Worker', () => {
   const mockParams = {
     file: mockFile,
     isWorkspace: false,
-    isBrave: false,
+    shouldDownloadUsingBlob: false,
     credentials: { user: 'test', pass: 'test' },
   } as DownloadFilePayload;
 
@@ -142,7 +142,7 @@ describe('Download Worker', () => {
     });
 
     test('When downloading a file for Brave browser, then it should use blob', async () => {
-      const braveParams = { ...mockParams, isBrave: true };
+      const braveParams = { ...mockParams, shouldDownloadUsingBlob: true };
       const mockedChunks = [new Uint8Array([1, 2, 3])];
       const mockedBlob = new Blob(mockedChunks, { type: mockFile.type });
       const mockReader = {
@@ -274,7 +274,7 @@ describe('Download Worker', () => {
     });
 
     test('When downloading as blob, then a single blob is created from the stream', async () => {
-      const braveParams = { ...mockParams, isBrave: true };
+      const braveParams = { ...mockParams, shouldDownloadUsingBlob: true };
       const mockedBlob = new Blob([new Uint8Array([1, 2, 3, 4, 5, 6])], { type: mockFile.type });
 
       const mockStream = {

@@ -30,6 +30,7 @@ import {
 } from '../types/download-types';
 import { downloadWorkerHandler } from './worker.service/downloadWorkerHandler';
 import { isFileEmpty } from 'utils/isFileEmpty';
+import deviceService from 'services/device.service';
 
 export type DownloadCredentials = {
   credentials: NetworkCredentials;
@@ -508,7 +509,9 @@ export class DownloadManagerService {
     abortController?: AbortController;
     sharingOptions: { credentials: { user: string; pass: string }; mnemonic: string };
   }) => {
-    const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
+    const shouldDownloadUsingBlob =
+      !!(navigator.brave && (await navigator.brave.isBrave())) ||
+      (deviceService.isSafari() && payload.file.type === null);
 
     const worker: Worker = downloadWorkerHandler.getWorker();
 
@@ -516,7 +519,7 @@ export class DownloadManagerService {
       file: payload.file,
       isWorkspace: payload.isWorkspace,
       credentials: payload.sharingOptions,
-      isBrave,
+      shouldDownloadUsingBlob,
     };
 
     worker.postMessage({ type: 'download', params: workerPayload });

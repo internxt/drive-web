@@ -3,6 +3,8 @@ import crypto, { Decipher } from 'crypto';
 
 type BinaryStream = ReadableStream<Uint8Array>;
 
+export const DEFAULT_BLOB_MIME_TYPE = 'application/octet-stream';
+
 export async function binaryStreamToBlob(stream: BinaryStream, mimeType?: string): Promise<Blob> {
   const reader = stream.getReader();
   const slices: Uint8Array[] = [];
@@ -19,7 +21,7 @@ export async function binaryStreamToBlob(stream: BinaryStream, mimeType?: string
     finish = done;
   }
 
-  return new Blob(slices as BlobPart[], mimeType ? { type: mimeType } : {});
+  return new Blob(slices as BlobPart[], { type: mimeType ?? DEFAULT_BLOB_MIME_TYPE });
 }
 
 export async function binaryStreamToUint8Array(
