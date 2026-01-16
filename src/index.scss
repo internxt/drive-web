@@ -394,10 +394,11 @@ abbr[title] {
   text-overflow: ellipsis;
 }
 
-@media (max-width: 639px) {
+@media (width <= 639px) {
   .bg-login-gradient {
-    background: linear-gradient(180deg, rgba(249, 249, 252, 0) 0%, #f9f9fc 100%);
+    background: linear-gradient(180deg, rgb(249 249 252 / 0%) 0%, #f9f9fc 100%);
   }
+
   .dark .bg-login-gradient {
     background: linear-gradient(180deg, #1c1c1c 0%, #031632 100%);
   }
@@ -406,7 +407,7 @@ abbr[title] {
 .auth-footer-link {
   @apply font-normal text-base no-underline text-primary hover:text-primary-dark;
 
-  @media (min-width: 640px) {
+  @media (width >= 640px) {
     @apply text-gray-80 hover:text-gray-100;
   }
 }
