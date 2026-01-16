@@ -223,4 +223,40 @@ describe('Uploading a file', () => {
       ),
     ).rejects.toThrow(BucketNotFoundError);
   });
+
+  test('When a file has been uploaded and the file ID is undefined, then an error indicating so is thrown', async () => {
+    const file: FileToUpload = {
+      name: 'test-file',
+      size: 100,
+      type: 'txt',
+      content: new File(['some content'], 'test-file.txt'),
+      parentFolderId: 'folder-123',
+    };
+    const bucketId = 'bucket-123';
+
+    mockGetEnvironmentConfig.mockReturnValue({
+      bridgeUser: 'user',
+      bridgePass: 'pass',
+      encryptionKey: 'key',
+      bucketId,
+    } as any);
+
+    const mockUploadFile = vi.fn().mockReturnValue([Promise.resolve(undefined), { abort: vi.fn() }]);
+    mockNetwork.mockImplementation(
+      () =>
+        ({
+          uploadFile: mockUploadFile,
+        }) as any,
+    );
+
+    await expect(
+      uploadFile(
+        'user@test.com',
+        file,
+        vi.fn(),
+        { isTeam: false },
+        { taskId: 'task-1', isPaused: false, isRetriedUpload: false },
+      ),
+    ).rejects.toThrow(FileIdRequiredError);
+  });
 });
