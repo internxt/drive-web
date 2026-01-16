@@ -32,6 +32,9 @@ export default function BackupsView(): JSX.Element {
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const workspaceCredentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
   const [foldersInBreadcrumbs, setFoldersInBreadcrumbs] = useState<DriveFolderData[]>([]);
+  const [pendingDeleteItems, setPendingDeleteItems] = useState<DriveItemData[]>([]);
+  const [isDeleteItemsDialogOpen, setIsDeleteItemsDialogOpen] = useState(false);
+  const [isDeletingItems, setIsDeletingItems] = useState(false);
 
   const {
     folderUuid,
@@ -51,7 +54,7 @@ export default function BackupsView(): JSX.Element {
     isDeleteModalOpen,
     isLoadingDeleteModal,
     goToFolder,
-    goToFolderRoot,
+    goToRootFolder,
     onConfirmDelete,
     onDeviceClicked,
     onDevicesSelected,
@@ -80,41 +83,79 @@ export default function BackupsView(): JSX.Element {
     }
   };
 
-  const onDeleteSelectedItems = async () => {
-    const selectedItemsIDs = new Set(selectedItems.map((item) => item.id));
-    const filteredCurrentItems = currentItems.filter((item) => !selectedItemsIDs.has(item.id));
+  const openDeleteItemsDialog = (items: DriveItemData[]) => {
+    if (!items.length) {
+      return;
+    }
+
+    setPendingDeleteItems(items);
+    setIsDeleteItemsDialogOpen(true);
+  };
+
+  const onCloseDeleteItemsDialog = () => {
+    setIsDeleteItemsDialogOpen(false);
+    setPendingDeleteItems([]);
+  };
+
+  const performDeleteItems = async (items: DriveItemData[]): Promise<boolean> => {
+    if (!items.length) {
+      return false;
+    }
+
+    setIsDeletingItems(true);
+    const itemIdsToDelete = new Set(items.map((item) => item.id));
+    const filteredCurrentItems = currentItems.filter((item) => !itemIdsToDelete.has(item.id));
+
+    const isViewerItemBeingDeleted = isFileViewerOpen && itemToPreview && itemIdsToDelete.has(itemToPreview.id);
+
     try {
-      const deletePromises = selectedItems.map((item) =>
+      const deletePromises = items.map((item) =>
         item.isFolder ? newStorageService.deleteFolderByUuid(item.uuid) : deleteFile(item),
       );
       await Promise.all(deletePromises);
-      dispatch(deleteItemsThunk(selectedItems));
+      dispatch(deleteItemsThunk(items));
       clearSelectedItems();
       updateCurrentItemsList(filteredCurrentItems);
+
+      if (isViewerItemBeingDeleted) {
+        onCloseFileViewer();
+      }
+
+      return true;
     } catch (error) {
       errorService.reportError(error);
       notificationsService.show({
         text: translate('notificationMessages.errorDeletingItems'),
         type: ToastType.Error,
       });
+      return false;
+    } finally {
+      setIsDeletingItems(false);
     }
   };
 
+  const onDeleteSelectedItems = async () => {
+    openDeleteItemsDialog(selectedItems);
+  };
+
   const onDeleteFileItemFromFilePreview = async () => {
-    try {
-      if (isFileViewerOpen && itemToPreview) {
-        await deleteFile(itemToPreview as DriveItemData);
-        dispatch(deleteItemsThunk([itemToPreview as DriveItemData]));
-      }
-      clearSelectedItems();
-      updateCurrentItemsList([itemToPreview] as DriveItemData[]);
-      onCloseFileViewer();
-    } catch (error) {
-      errorService.reportError(error);
-      notificationsService.show({
-        text: translate('notificationMessages.errorDeletingItems'),
-        type: ToastType.Error,
-      });
+    if (!itemToPreview || !isFileViewerOpen) {
+      return;
+    }
+
+    openDeleteItemsDialog([itemToPreview as DriveItemData]);
+  };
+
+  const onConfirmDeleteItems = async () => {
+    if (!pendingDeleteItems.length) {
+      onCloseDeleteItemsDialog();
+      return;
+    }
+
+    const isDeleteSuccessful = await performDeleteItems(pendingDeleteItems);
+
+    if (isDeleteSuccessful) {
+      onCloseDeleteItemsDialog();
     }
   };
 
@@ -168,7 +209,11 @@ export default function BackupsView(): JSX.Element {
       <Helmet>
         <title>{translate('sideNav.backups')} - Internxt Drive</title>
       </Helmet>
-      <DeleteBackupDialog backupsAsFoldersPath={foldersInBreadcrumbs} goToFolder={goToFolder} />
+      <DeleteBackupDialog
+        backupsAsFoldersPath={foldersInBreadcrumbs}
+        goToFolder={goToFolder}
+        goToRootFolder={goToRootFolder}
+      />
       <Dialog
         isOpen={isDeleteModalOpen}
         onClose={onCloseDeleteModal}
@@ -181,6 +226,20 @@ export default function BackupsView(): JSX.Element {
         primaryActionColor="danger"
         isLoading={isLoadingDeleteModal}
       />
+      <div className="z-[60]">
+        <Dialog
+          isOpen={isDeleteItemsDialogOpen}
+          onClose={onCloseDeleteItemsDialog}
+          onSecondaryAction={onCloseDeleteItemsDialog}
+          onPrimaryAction={onConfirmDeleteItems}
+          title={translate('drive.deleteItems.title')}
+          subtitle={translate('drive.deleteItems.advice')}
+          primaryAction={translate('drive.deleteItems.accept')}
+          secondaryAction={translate('actions.cancel')}
+          primaryActionColor="danger"
+          isLoading={isDeletingItems}
+        />
+      </div>
       {itemToPreview && (
         <FileViewerWrapper
           file={itemToPreview}
@@ -195,7 +254,7 @@ export default function BackupsView(): JSX.Element {
           <BreadcrumbsBackupsView
             backupsAsFoldersPath={foldersInBreadcrumbs}
             goToFolder={goToFolder}
-            goToFolderRoot={goToFolderRoot}
+            goToRootFolder={goToRootFolder}
           />
         ) : (
           <p className="text-lg">{translate('backups.your-devices')}</p>

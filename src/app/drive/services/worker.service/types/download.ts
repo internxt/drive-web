@@ -6,6 +6,6 @@ export interface MessageData {
   blob: Blob;
   progress?: number;
   fileId?: string;
-  error?: string;
+  error?: unknown;
   chunk?: Uint8Array;
 }

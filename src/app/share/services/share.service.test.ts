@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { describe, expect, it, vi, Mock, beforeEach, beforeAll } from 'vitest';
+import { describe, expect, it, vi, Mock, beforeEach, beforeAll, test } from 'vitest';
 import localStorageService from 'services/local-storage.service';
 import { Buffer } from 'buffer';
 import {
@@ -14,6 +14,10 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { decryptMnemonic } from './share.service';
 import { stringUtils } from '@internxt/lib';
 
+vi.mock('utils', () => ({
+  generateCaptchaToken: vi.fn(() => 'mocked-captcha-token'),
+}));
+
 describe('Encryption and Decryption', () => {
   beforeAll(() => {
     globalThis.Buffer = Buffer;
@@ -24,7 +28,13 @@ describe('Encryption and Decryption', () => {
       createFoldersIterator: vi.fn(),
       checkIfCachedSourceIsOlder: vi.fn(),
     }));
-    vi.mock('../../core/factory/sdk', () => ({ SdkFactory: vi.fn() }));
+    vi.mock('../../core/factory/sdk', () => ({
+      SdkFactory: {
+        getNewApiInstance: vi.fn(() => ({
+          createShareClient: vi.fn(),
+        })),
+      },
+    }));
     vi.mock('services/error.service', () => ({
       default: {
         castError: vi.fn().mockImplementation((e) => ({ message: e.message || 'Default error message' })),
@@ -211,5 +221,77 @@ describe('Encryption and Decryption', () => {
   it('should throw an error for an invalid UUID format', () => {
     const invalidUuid = 'invalid-uuid-string';
     expect(() => stringUtils.encodeV4Uuid(invalidUuid)).toThrowError();
+  });
+});
+
+describe('Inviting user to Shared Folder', () => {
+  const mockProps = {
+    itemId: 'test-item-id',
+    itemType: 'folder' as const,
+    sharedWith: 'user@example.com',
+    encryptionKey: 'test-encryption-key',
+    encryptionAlgorithm: 'test-algorithm',
+    roleId: 'test-role-id',
+    notifyUser: true,
+    notificationMessage: 'You have been invited',
+  };
+
+  const mockSharingInvite = {
+    id: 'invite-id',
+    itemId: 'test-item-id',
+    itemType: 'folder',
+    sharedWith: 'user@example.com',
+    encryptionKey: 'test-encryption-key',
+    encryptionAlgorithm: 'test-algorithm',
+    roleId: 'test-role-id',
+    type: 'SELF',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  test('When inviting a user, then the captcha token should be generated and included when creating the client', async () => {
+    const { generateCaptchaToken } = await import('utils');
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    const { inviteUserToSharedFolder } = await import('./share.service');
+
+    const mockInviteUserToSharedFolderFn = vi.fn().mockResolvedValue(mockSharingInvite);
+    const mockCreateShareClientFn = vi.fn(() => ({
+      inviteUserToSharedFolder: mockInviteUserToSharedFolderFn,
+    }));
+
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
+      createShareClient: mockCreateShareClientFn,
+    } as any);
+
+    await inviteUserToSharedFolder(mockProps);
+
+    expect(generateCaptchaToken).toHaveBeenCalledTimes(1);
+    expect(mockCreateShareClientFn).toHaveBeenCalledWith('mocked-captcha-token');
+    expect(mockInviteUserToSharedFolderFn).toHaveBeenCalledWith({ ...mockProps });
+  });
+
+  test('When an error occurs while inviting a user, then an error indicating so is thrown', async () => {
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    const { inviteUserToSharedFolder } = await import('./share.service');
+    const errorService = (await import('services/error.service')).default;
+
+    const originalError = new Error('API Error');
+    const mockInviteUserToSharedFolderFn = vi.fn().mockRejectedValue(originalError);
+    const mockCreateShareClientFn = vi.fn(() => ({
+      inviteUserToSharedFolder: mockInviteUserToSharedFolderFn,
+    }));
+
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
+      createShareClient: mockCreateShareClientFn,
+    } as any);
+
+    await expect(inviteUserToSharedFolder(mockProps)).rejects.toEqual({
+      message: 'API Error',
+    });
+    expect(errorService.castError).toHaveBeenCalledWith(originalError);
   });
 });

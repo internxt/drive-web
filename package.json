@@ -1,6 +1,6 @@
 {
   "name": "drive-web",
-  "version": "v1.0.633",
+  "version": "v1.0.652",
   "private": true,
   "dependencies": {
     "@dashlane/pqc-kem-kyber512-browser": "^1.0.0",
@@ -8,7 +8,7 @@
     "@iconscout/react-unicons": "^1.1.6",
     "@internxt/css-config": "1.1.0",
     "@internxt/lib": "1.4.1",
-    "@internxt/sdk": "=1.11.23",
+    "@internxt/sdk": "=1.12.0",
     "@internxt/ui": "0.1.1",
     "@phosphor-icons/react": "^2.1.7",
     "@popperjs/core": "^2.11.6",
@@ -48,7 +48,7 @@
     "react": "^18.2.0",
     "react-avatar-editor": "^13.0.2",
     "react-bootstrap": "^2.9.0",
-    "react-device-detect": "^1.15.0",
+    "react-device-detect": "^2.2.3",
     "react-dnd": "14.0.5",
     "react-dnd-html5-backend": "^14.0.0",
     "react-dom": "^18.2.0",
@@ -157,7 +157,7 @@
     "stylelint-scss": "^6.8.1",
     "tailwindcss": "^3.3.4",
     "typescript": "^4.4.2",
-    "vite": "=6.3.6",
+    "vite": "=6.4.1",
     "vite-plugin-bundle-obfuscator": "^1.7.0",
     "vite-plugin-node-polyfills": "=0.23.0",
     "vite-plugin-static-copy": "^3.1.2",
@@ -172,5 +172,10 @@
     "*.{js,jsx,tsx,ts,json}": [
       "prettier --write"
     ]
+  },
+  "resolutions": {
+    "glob": "^10.5.0",
+    "js-yaml": "^4.1.1",
+    "vitest/vite": "5.4.21"
   }
 }

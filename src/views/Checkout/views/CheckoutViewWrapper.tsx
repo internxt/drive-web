@@ -73,6 +73,7 @@ const STATUS_CODE_ERROR = {
 const CheckoutViewWrapper = () => {
   const { planId, promotionCode, currency, paramMobileToken, gclid } = useCheckoutQueryParams();
   const { location: userLocationData } = useUserLocation();
+
   const { translate } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
@@ -87,7 +88,14 @@ const CheckoutViewWrapper = () => {
     fetchSelectedPlan,
     fetchPromotionCode,
     onPromoCodeError,
-  } = useProducts({ currency: currency ?? 'eur', translate, planId, promotionCode, userAddress: userLocationData?.ip });
+  } = useProducts({
+    currency: currency ?? 'eur',
+    translate,
+    planId,
+    promotionCode,
+    userLocation: userLocationData?.location,
+    userAddress: userLocationData?.ip,
+  });
 
   const { isCheckoutReady, stripeElementsOptions, availableCryptoCurrencies, stripeSdk } = useInitializeCheckout({
     user,
@@ -138,6 +146,8 @@ const CheckoutViewWrapper = () => {
     avatar: avatarBlob,
     email: user?.email ?? '',
   };
+
+  const hasTrackedRef = useRef(false);
 
   useEffect(() => {
     setMobileToken(paramMobileToken);
@@ -193,6 +203,14 @@ const CheckoutViewWrapper = () => {
     }
   }, [isCheckoutReady]);
 
+  useEffect(() => {
+    if (envService.isProduction() && selectedPlan?.price && isAuthenticated && !hasTrackedRef.current) {
+      hasTrackedRef.current = true;
+      const planPrice = selectedPlan.taxes?.amountWithTax || selectedPlan.price.amount;
+      checkoutService.trackIncompleteCheckout(selectedPlan, planPrice);
+    }
+  }, [selectedPlan, isAuthenticated]);
+
   const onCheckoutCouponChanges = async (promoCodeName?: string) => {
     if (!selectedPlan?.price?.id) {
       return;
@@ -210,6 +228,7 @@ const CheckoutViewWrapper = () => {
       await fetchSelectedPlan({
         priceId: selectedPlan.price.id,
         userAddress: userLocationData?.ip,
+        currency: selectedPlan.price.currency,
         promotionCode: promoCodeName,
       });
     } catch (error) {
