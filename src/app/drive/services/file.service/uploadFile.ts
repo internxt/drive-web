@@ -12,7 +12,7 @@ import { OwnerUserAuthenticationData } from 'app/network/types';
 import { FileToUpload } from './types';
 import { FileEntry } from '@internxt/sdk/dist/workspaces';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
-import { BucketNotFoundError, FileIdRequiredError, RetryableFileError } from './upload.errors';
+import { BucketNotFoundError, FileIdRequiredError } from './upload.errors';
 import { isFileEmpty } from 'utils/isFileEmpty';
 
 export interface FileUploadOptions {
@@ -134,7 +134,7 @@ export async function uploadFile(
   options.abortCallback?.(abort?.abort);
 
   const fileId = await promise;
-  if (fileId === undefined) throw new RetryableFileError(file);
+  if (fileId === undefined) throw new FileIdRequiredError();
 
   let response = await createFileEntry({
     bucketId: bucketId,
