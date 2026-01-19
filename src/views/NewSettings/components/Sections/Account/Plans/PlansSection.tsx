@@ -312,12 +312,11 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     <Section title="Plans" onClosePreferences={onClosePreferences}>
       {shouldDisplayChangePlanDialog() && priceSelected && (
         <ChangePlanDialog
-          prices={isIndividualSubscriptionSelected ? individualPrices : businessPrices}
           isDialogOpen={isDialogOpen}
           setIsDialogOpen={setIsDialogOpen}
           onPlanClick={onChangePlanClicked}
           isUpdatingSubscription={isUpdatingSubscription}
-          priceIdSelected={priceSelected.id}
+          priceSelected={priceSelected}
           subscriptionSelected={selectedSubscriptionType}
           isLoading={isLoadingCheckout}
         />

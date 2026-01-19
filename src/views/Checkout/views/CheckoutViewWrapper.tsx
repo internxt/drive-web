@@ -50,7 +50,7 @@ const CheckoutViewWrapper = () => {
   const { checkoutTheme } = useThemeContext();
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
   const [state, dispatchReducer] = useReducer(checkoutReducer, initialStateForCheckout);
-  const { authMethod, isPaying, isUpdateSubscriptionDialogOpen, isUpdatingSubscription, prices } = state;
+  const { authMethod, isPaying, isUpdateSubscriptionDialogOpen, isUpdatingSubscription } = state;
   const {
     setAuthMethod,
     setIsUserPaying,
@@ -107,7 +107,7 @@ const CheckoutViewWrapper = () => {
 
   const renewsAtPCComp = `${translate('checkout.productCard.pcMobileRenews')}`;
 
-  const canChangePlanDialogBeOpened = prices && selectedPlan?.price && isUpdateSubscriptionDialogOpen;
+  const canChangePlanDialogBeOpened = selectedPlan?.price && isUpdateSubscriptionDialogOpen;
   const isCryptoPaymentDialogOpen = isDialogOpen(CRYPTO_PAYMENT_DIALOG_KEY);
 
   const userInfo: UserInfoProps = {
@@ -125,7 +125,7 @@ const CheckoutViewWrapper = () => {
       document.cookie = `gclid=${gclid}; expires=${expiryDate.toUTCString()}; path=/`;
       localStorageService.set(STORAGE_KEYS.GCLID, gclid);
     }
-  }, [checkoutTheme]);
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated && user) {
@@ -432,11 +432,17 @@ const CheckoutViewWrapper = () => {
           />
           {canChangePlanDialogBeOpened ? (
             <ChangePlanDialog
-              prices={prices}
               isDialogOpen={isUpdateSubscriptionDialogOpen}
               setIsDialogOpen={setIsUpdateSubscriptionDialogOpen}
               onPlanClick={onChangePlanClicked}
-              priceIdSelected={selectedPlan.price.id}
+              priceSelected={{
+                amount: selectedPlan.price.amount,
+                currency: selectedPlan.price.currency,
+                interval: selectedPlan.price.interval,
+                userType: selectedPlan.price.type,
+                bytes: selectedPlan.price.bytes,
+                id: selectedPlan.price.id,
+              }}
               isUpdatingSubscription={isUpdatingSubscription}
               subscriptionSelected={selectedPlan.price.type}
             />
