@@ -43,6 +43,7 @@ import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from 'app/core/factory/sdk';
 import errorService from 'services/error.service';
 import vpnAuthService from './vpnAuth.service';
+import { generateCaptchaToken } from 'utils';
 
 type ProfileInfo = {
   user: UserSettings;
@@ -535,13 +536,15 @@ const extractOneUseCredentialsForAutoSubmit = (
   }
 };
 
-const sendChangePasswordEmail = (email: string): Promise<void> => {
-  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+const sendChangePasswordEmail = async (email: string): Promise<void> => {
+  const captchaToken = await generateCaptchaToken();
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient({ captchaToken });
   return authClient.sendChangePasswordEmail(email);
 };
 
-export const requestUnblockAccount = (email: string): Promise<void> => {
-  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+export const requestUnblockAccount = async (email: string): Promise<void> => {
+  const captchaToken = await generateCaptchaToken();
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient({ captchaToken });
   return authClient.requestUnblockAccount(email);
 };
 

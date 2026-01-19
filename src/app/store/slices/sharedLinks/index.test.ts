@@ -33,6 +33,9 @@ describe('Encryption and Decryption', () => {
         getPublicKeyWithPrecreation: vi.fn(),
       },
     }));
+    vi.mock('utils', () => ({
+      generateCaptchaToken: vi.fn().mockResolvedValue('mock-captcha-token'),
+    }));
 
     vi.mock('services/error.service', () => ({
       default: {

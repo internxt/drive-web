@@ -53,6 +53,7 @@ export const useProducts = ({ currency, planId, promotionCode, userLocation, use
       postalCode,
       country,
     });
+
     const amount = mobileToken ? { amount: 0, decimalAmount: 0 } : {};
     setSelectedPlan({ ...plan, ...amount });
     if (plan?.price?.minimumSeats) {

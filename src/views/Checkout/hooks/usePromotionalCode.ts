@@ -6,27 +6,21 @@ import { CouponCodeData } from '../types';
 import { STATUS_CODE_ERROR } from '../constants';
 
 interface UsePromotionalCodeProps {
+  priceId: string | null;
   promoCodeName: string | null;
 }
 
-export const usePromotionalCode = ({ promoCodeName }: UsePromotionalCodeProps) => {
+export const usePromotionalCode = ({ priceId, promoCodeName }: UsePromotionalCodeProps) => {
   const { translate } = useTranslationContext();
   const [promoCodeData, setPromoCodeData] = useState<CouponCodeData | undefined>();
   const [couponError, setCouponError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (promoCodeName) {
-      fetchPromotionCode({ priceId: '', promotionCode: promoCodeName });
+    if (priceId && promoCodeName) {
+      fetchPromotionCode({ priceId, promotionCode: promoCodeName });
     }
   }, [promoCodeName]);
 
-  /*************  ✨ Windsurf Command ⭐  *************/
-  /**
-   * Fetches the promotional code data for a given priceId and promotional code.
-   * @param {{ priceId: string, promotionCode: string }}
-   * @returns {Promise<void>}
-   */
-  /*******  862b8641-88ac-49f9-a9a3-0358b8231505  *******/
   const fetchPromotionCode = async ({
     priceId,
     promotionCode,

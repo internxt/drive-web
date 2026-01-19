@@ -71,7 +71,8 @@ const CheckoutViewWrapper = () => {
     userAddress: userLocationData?.ip,
   });
 
-  const { promoCodeData, couponError, fetchPromotionCode, onPromoCodeError, removeCouponCode } = usePromotionalCode({
+  const { couponError, promoCodeData, onPromoCodeError, removeCouponCode, fetchPromotionCode } = usePromotionalCode({
+    priceId: planId,
     promoCodeName: promotionCode,
   });
 
