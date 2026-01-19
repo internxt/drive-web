@@ -6,17 +6,18 @@ import { CouponCodeData } from '../types';
 import { STATUS_CODE_ERROR } from '../constants';
 
 interface UsePromotionalCodeProps {
+  priceId: string | null;
   promoCodeName: string | null;
 }
 
-export const usePromotionalCode = ({ promoCodeName }: UsePromotionalCodeProps) => {
+export const usePromotionalCode = ({ priceId, promoCodeName }: UsePromotionalCodeProps) => {
   const { translate } = useTranslationContext();
   const [promoCodeData, setPromoCodeData] = useState<CouponCodeData | undefined>();
   const [couponError, setCouponError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (promoCodeName) {
-      fetchPromotionCode({ priceId: '', promotionCode: promoCodeName });
+    if (priceId && promoCodeName) {
+      fetchPromotionCode({ priceId, promotionCode: promoCodeName });
     }
   }, [promoCodeName]);
 

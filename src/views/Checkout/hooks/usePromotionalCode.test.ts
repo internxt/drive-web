@@ -31,6 +31,7 @@ describe('Promotional Codes Custom Hook', () => {
         codeName: initialCouponCode,
       });
       const props = {
+        priceId: 'price_123',
         promoCodeName: initialCouponCode,
       };
 
@@ -47,6 +48,7 @@ describe('Promotional Codes Custom Hook', () => {
     test('When fetching a promotional code, then promo code data is saved', async () => {
       vi.spyOn(checkoutService, 'fetchPromotionCodeByName').mockResolvedValue(mockPromoCodeData);
       const props = {
+        priceId: 'price_123',
         promoCodeName: null,
       };
 
@@ -69,6 +71,7 @@ describe('Promotional Codes Custom Hook', () => {
     test('When removing coupon code, then promotional code is removed', async () => {
       vi.spyOn(checkoutService, 'fetchPromotionCodeByName').mockResolvedValue(mockPromoCodeData);
       const props = {
+        priceId: 'price_123',
         promoCodeName: null,
       };
 
@@ -89,9 +92,7 @@ describe('Promotional Codes Custom Hook', () => {
 
   describe('On promo code error', () => {
     test('When promo code is not found, then an error indicating so is thrown', () => {
-      const props = {
-        promoCodeName: null,
-      };
+      const props = { priceId: 'price_123', promoCodeName: null };
       const { result } = renderHook(() => usePromotionalCode(props));
       const error = Object.assign(new Error('Promo code not found'), { status: 404 });
 
@@ -104,9 +105,7 @@ describe('Promotional Codes Custom Hook', () => {
     });
 
     test('When there is a bad request while fetching the coupon code, then an error indicating so is thrown', () => {
-      const props = {
-        promoCodeName: null,
-      };
+      const props = { priceId: 'price_123', promoCodeName: null };
       const { result } = renderHook(() => usePromotionalCode(props));
       const error = Object.assign(new Error('Invalid request'), { status: 400 });
 
@@ -118,9 +117,7 @@ describe('Promotional Codes Custom Hook', () => {
     });
 
     test('When it is a random error, then a general error indicating so is thrown', () => {
-      const props = {
-        promoCodeName: null,
-      };
+      const props = { priceId: 'price_123', promoCodeName: null };
       const { result } = renderHook(() => usePromotionalCode(props));
       const error = new Error('Unknown error');
 
@@ -132,9 +129,7 @@ describe('Promotional Codes Custom Hook', () => {
     });
 
     test('When an error occurs and we want to show a notification, then a toast notification is shown', () => {
-      const props = {
-        promoCodeName: null,
-      };
+      const props = { priceId: 'price_123', promoCodeName: null };
       const { result } = renderHook(() => usePromotionalCode(props));
       const error = new Error('Error applying coupon');
       const notificationsServiceSpy = vi.spyOn(notificationsService, 'show');

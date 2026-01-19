@@ -66,6 +66,7 @@ const CheckoutViewWrapper = () => {
   });
 
   const { couponError, promoCodeData, onPromoCodeError, removeCouponCode, fetchPromotionCode } = usePromotionalCode({
+    priceId: planId,
     promoCodeName: promotionCode,
   });
 
