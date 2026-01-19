@@ -1,6 +1,7 @@
 import { envService, localStorageService } from 'services';
 import { checkoutService } from '../services';
 import { Stripe, StripeElements } from '@stripe/stripe-js';
+import { PcCloudError } from './utils.errors';
 
 export interface ProcessPcCloudPaymentProps {
   customerId: string;
@@ -38,10 +39,3 @@ export const processPcCloudPayment = async ({
     throw new PcCloudError(confirmIntentError.message);
   }
 };
-
-export class PcCloudError extends Error {
-  constructor(message?: string) {
-    super(message ?? 'An error occurred while processing your payment');
-    this.name = 'PcCloudError';
-  }
-}

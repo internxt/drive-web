@@ -1,7 +1,8 @@
 import { envService, localStorageService } from 'services';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { checkoutService } from '../services';
-import { PcCloudError, processPcCloudPayment, ProcessPcCloudPaymentProps } from './pcCloud.utils';
+import { processPcCloudPayment, ProcessPcCloudPaymentProps } from './pcCloud.utils';
+import { PcCloudError } from './utils.errors';
 
 const mockedProps: ProcessPcCloudPaymentProps = {
   customerId: 'customer_id',
