@@ -169,9 +169,9 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   }, []);
 
   const showCancelSubscriptionErrorNotification = useCallback(
-    (errorMessage?: string) =>
+    (error?: Error) =>
       notificationsService.show({
-        text: errorMessage ?? translate('notificationMessages.errorCancelSubscription'),
+        text: error?.message ?? translate('notificationMessages.errorCancelSubscription'),
         type: ToastType.Error,
       }),
     [translate],
@@ -189,37 +189,16 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
 
   const handleSubscriptionPayment = async (priceId: string) => {
     try {
-      stripe = await getStripe(stripe);
-      const updatedSubscription = await paymentService.updateSubscriptionPrice({
-        priceId,
+      await paymentService.updateSubscriptionWithConfirmation({
+        priceId: priceId,
         userType: selectedSubscriptionType,
+        onSuccess: handlePaymentSuccess,
+        onError: showCancelSubscriptionErrorNotification,
       });
-
-      if (updatedSubscription.request3DSecure) {
-        stripe
-          .confirmCardPayment(updatedSubscription.clientSecret)
-          .then(async (result) => {
-            if (result.error) {
-              notificationsService.show({
-                type: ToastType.Error,
-                text: result.error.message as string,
-              });
-            } else {
-              handlePaymentSuccess();
-            }
-          })
-          .catch((err) => {
-            const error = errorService.castError(err);
-            errorService.reportError(error);
-            showCancelSubscriptionErrorNotification(error.message);
-          });
-      } else {
-        handlePaymentSuccess();
-      }
     } catch (err) {
       const error = errorService.castError(err);
       errorService.reportError(error);
-      showCancelSubscriptionErrorNotification(error.message);
+      showCancelSubscriptionErrorNotification(error);
     }
   };
 
