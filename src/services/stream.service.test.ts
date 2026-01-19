@@ -7,6 +7,7 @@ import {
   binaryStreamToUint8Array,
   buildProgressStream,
   joinReadableBinaryStreams,
+  DEFAULT_BLOB_MIME_TYPE,
 } from './stream.service';
 import { getDecryptedStream } from 'app/network/download';
 
@@ -44,7 +45,7 @@ describe('Stream service', () => {
   });
 
   describe('binaryStreamToBlob', () => {
-    it('should convert a binary stream to a blob without mime type', async () => {
+    it('should convert a binary stream to a blob with the default mime type', async () => {
       const mockData = [new Uint8Array([1, 2, 3]), new Uint8Array([4, 5, 6])];
       const stream = new ReadableStream<Uint8Array>({
         start(controller) {
@@ -59,7 +60,7 @@ describe('Stream service', () => {
 
       expect(blob).toBeInstanceOf(Blob);
       expect(blob.size).toBe(6);
-      expect(blob.type).toBe('');
+      expect(blob.type).toStrictEqual(DEFAULT_BLOB_MIME_TYPE);
     });
 
     it('should convert a binary stream to a blob with mime type', async () => {

@@ -6,6 +6,7 @@ import { readReferalCookie, RegisterFunction } from 'services/auth.service';
 import { SdkFactory } from '../../../app/core/factory/sdk';
 import { getKeys } from '../../../app/crypto/services/keys.service';
 import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from '../../../app/crypto/services/utils';
+import { generateCaptchaToken } from 'utils';
 
 type RegisterPreCreatedUser = (
   email: string,
@@ -100,7 +101,10 @@ export function useSignUp(referrer?: string): {
   };
 
   const doRegisterPreCreatedUser = async (email: string, password: string, invitationId: string, captcha: string) => {
-    const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+    const captchaToken = await generateCaptchaToken();
+    const authClient = SdkFactory.getNewApiInstance().createAuthClient({
+      captchaToken,
+    });
 
     const registerDetails = await generateRegisterDetails(email, password, captcha);
 

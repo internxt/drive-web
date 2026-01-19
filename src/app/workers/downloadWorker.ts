@@ -12,7 +12,7 @@ export class DownloadWorker {
   private constructor() {}
 
   async downloadFile(params: DownloadFilePayload, callbacks: DownloadFileCallback, abortController?: AbortController) {
-    const { file, isWorkspace, isBrave, credentials } = params;
+    const { file, isWorkspace, shouldDownloadUsingBlob, credentials } = params;
     this.abortController = abortController ?? new AbortController();
 
     let streamReader: ReadableStreamDefaultReader<Uint8Array> | null = null;
@@ -41,7 +41,7 @@ export class DownloadWorker {
 
       this.abortController.signal.addEventListener('abort', abortHandler);
 
-      if (isBrave) {
+      if (shouldDownloadUsingBlob) {
         const blob = await binaryStreamToBlob(downloadedFile, file.type);
         callbacks.onBlob(blob);
       } else {

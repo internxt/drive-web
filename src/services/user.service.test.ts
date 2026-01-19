@@ -41,6 +41,10 @@ vi.mock('../app/core/factory/sdk', () => ({
   },
 }));
 
+vi.mock('utils', () => ({
+  generateCaptchaToken: vi.fn().mockResolvedValue('mocked-captcha-token'),
+}));
+
 describe('userService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -123,6 +127,7 @@ describe('userService', () => {
       publicKey: 'key123',
       publicKyberKey: 'kyberKey456',
     };
+    const captchaToken = 'mocked-captcha-token';
     usersClientMock.getPublicKeyWithPrecreation.mockResolvedValue(mockResponse);
 
     const result = await userService.getPublicKeyWithPrecreation(testEmail);
