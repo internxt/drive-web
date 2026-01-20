@@ -1,14 +1,20 @@
+import { RefObject, MouseEvent } from 'react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { User } from '../User';
 import { InvitedUsersSkeletonLoader } from '../InvitedUsersSkeletonLoader';
 import { InvitedUserProps } from '../../types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 interface InvitedUsersListProps {
-  userList;
+  userList: RefObject<HTMLDivElement>;
   invitedUsers: InvitedUserProps[];
   areInvitedUsersLoading: boolean;
-  user;
-  openUserOptions: (e: any, user: InvitedUserProps, selectedIndex: number | null) => void;
+  user: UserSettings;
+  openUserOptions: (
+    e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>,
+    user: InvitedUserProps,
+    selectedIndex: number | null,
+  ) => void;
   userOptionsY: number;
   selectedUserListIndex: number | null;
   onRemoveUser: (user: InvitedUserProps) => void;

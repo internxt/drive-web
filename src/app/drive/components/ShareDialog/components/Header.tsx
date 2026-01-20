@@ -1,9 +1,10 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { ArrowLeft, X } from '@phosphor-icons/react';
 import { Views } from '../types';
+import { ItemToShare } from 'app/store/slices/storage/types';
 
 interface HeaderProps {
-  itemToShare;
+  itemToShare: ItemToShare | null;
   isLoading: boolean;
   headerView: Views;
   setView: (view: Views) => void;

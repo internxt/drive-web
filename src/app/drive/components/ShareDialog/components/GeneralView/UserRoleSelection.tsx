@@ -4,7 +4,7 @@ import { CaretDown, Check, Globe, Link, Users } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { AccessMode } from '../../types';
 
-export const LoadingState = ({ isLoading }: { isLoading: boolean }) => {
+const LoadingState = ({ isLoading }: { isLoading: boolean }) => {
   return (
     <div className="flex h-full w-5 items-center justify-center">
       {isLoading ? <Loader classNameLoader="h-5 w-5" /> : <Check size={20} />}
