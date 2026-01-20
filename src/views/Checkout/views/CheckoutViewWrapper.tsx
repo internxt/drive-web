@@ -43,7 +43,7 @@ import { usePromotionalCode } from '../hooks/usePromotionalCode';
 import { useAuthCheckout } from '../hooks/useAuthCheckout';
 import { checkoutReducer, initialStateForCheckout } from '../store';
 import { processPcCloudPayment } from '../utils/pcCloud.utils';
-import { CheckoutLoader } from './CheckoutLoader';
+import { CheckoutLoader } from '../components/CheckoutLoader';
 
 const CheckoutViewWrapper = () => {
   const { translate } = useTranslationContext();
