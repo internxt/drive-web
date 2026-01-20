@@ -3,7 +3,6 @@ import { Role } from 'app/store/slices/sharedLinks/types';
 import { AccessMode, InvitedUserProps, RequestProps, Views } from '../types';
 import { ShareDialogAction, ActionTypes } from './ShareDialogContext';
 
-// View actions
 export const setView = (payload: Views): ShareDialogAction => ({
   type: ActionTypes.SET_VIEW,
   payload,
@@ -14,7 +13,6 @@ export const setIsLoading = (payload: boolean): ShareDialogAction => ({
   payload,
 });
 
-// Roles actions
 export const setRoles = (payload: Role[]): ShareDialogAction => ({
   type: ActionTypes.SET_ROLES,
   payload,
@@ -25,7 +23,6 @@ export const setInviteDialogRoles = (payload: Role[]): ShareDialogAction => ({
   payload,
 });
 
-// Access & sharing actions
 export const setAccessMode = (payload: AccessMode): ShareDialogAction => ({
   type: ActionTypes.SET_ACCESS_MODE,
   payload,
@@ -41,7 +38,6 @@ export const setSharingMeta = (payload: SharingMeta | null): ShareDialogAction =
   payload,
 });
 
-// Invited users actions
 export const setInvitedUsers = (payload: InvitedUserProps[]): ShareDialogAction => ({
   type: ActionTypes.SET_INVITED_USERS,
   payload,
@@ -62,7 +58,6 @@ export const removeUser = (payload: string): ShareDialogAction => ({
   payload,
 });
 
-// Access requests actions
 export const setAccessRequests = (payload: RequestProps[]): ShareDialogAction => ({
   type: ActionTypes.SET_ACCESS_REQUESTS,
   payload,
@@ -73,7 +68,6 @@ export const updateRequestStatus = (payload: { email: string; status: RequestPro
   payload,
 });
 
-// User options popover actions
 export const setSelectedUserListIndex = (payload: number | null): ShareDialogAction => ({
   type: ActionTypes.SET_SELECTED_USER_LIST_INDEX,
   payload,
@@ -89,7 +83,6 @@ export const setUserOptionsY = (payload: number): ShareDialogAction => ({
   payload,
 });
 
-// Dialog states actions
 export const setShowStopSharingConfirmation = (payload: boolean): ShareDialogAction => ({
   type: ActionTypes.SET_SHOW_STOP_SHARING_CONFIRMATION,
   payload,
@@ -115,7 +108,6 @@ export const setIsRestrictedPasswordDialogOpen = (payload: boolean): ShareDialog
   payload,
 });
 
-// Batch actions
 export const resetDialogData = (): ShareDialogAction => ({
   type: ActionTypes.RESET_DIALOG_DATA,
 });
