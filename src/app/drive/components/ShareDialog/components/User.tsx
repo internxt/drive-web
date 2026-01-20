@@ -4,6 +4,24 @@ import { MouseEvent } from 'react';
 import { UserOptions } from './UserOptions';
 import { InvitedUserProps } from '../types';
 
+interface UserProps {
+  user: InvitedUserProps;
+  listPosition: number | null;
+  translate: (key: string, props?: Record<string, unknown>) => string;
+  openUserOptions: (
+    event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>,
+    user: InvitedUserProps,
+    listPosition: number | null,
+  ) => void;
+  selectedUserListIndex: number | null;
+  userOptionsY: number;
+  onRemoveUser: (user: InvitedUserProps) => void;
+  userOptionsEmail?: InvitedUserProps;
+  onChangeRole: (email: string, roleName: string) => void;
+  disableUserOptionsPanel: boolean;
+  disableRoleChange: boolean;
+}
+
 export const User = ({
   user,
   listPosition,
@@ -16,23 +34,7 @@ export const User = ({
   onChangeRole,
   disableUserOptionsPanel,
   disableRoleChange,
-}: {
-  user: InvitedUserProps;
-  listPosition: number | null;
-  translate: (key: string, props?: Record<string, unknown>) => string;
-  openUserOptions: (
-    event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>,
-    user: InvitedUserProps,
-    listPosition: number | null,
-  ) => void;
-  selectedUserListIndex;
-  userOptionsY;
-  onRemoveUser;
-  userOptionsEmail;
-  onChangeRole: (email: string, roleName: string) => void;
-  disableUserOptionsPanel: boolean;
-  disableRoleChange: boolean;
-}) => (
+}: UserProps) => (
   <div
     className={`group flex h-14 shrink-0 items-center space-x-2.5 border-t ${
       user.roleName === 'owner' ? 'border-transparent' : 'border-gray-5'
