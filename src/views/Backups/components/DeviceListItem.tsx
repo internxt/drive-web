@@ -61,6 +61,6 @@ interface DeviceSizeCellProps {
 }
 
 export function DeviceSizeCell({ device }: Readonly<DeviceSizeCellProps>): JSX.Element {
-  const size = 'size' in device ? sizeService.bytesToString(device.size) : '';
+  const size = 'size' in device && device.size > 0 ? sizeService.bytesToString(device.size) : '-';
   return <div>{size}</div>;
 }
