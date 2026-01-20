@@ -106,13 +106,12 @@ const getVersionHistoryMenuItem = (
 ): MenuItemType<DriveItemData> => {
   const isLocked = config?.isLocked ?? false;
   const isExtensionAllowed = config?.isExtensionAllowed ?? true;
-  const onUpgradeClick = config?.onUpgradeClick;
 
   if (isLocked) {
     return {
       name: t('drive.dropdown.versionHistory') as string,
       icon: LockSimple,
-      action: onUpgradeClick,
+      action: viewVersionHistory,
       disabled: () => false,
       node: (
         <div

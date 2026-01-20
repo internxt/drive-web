@@ -1,7 +1,8 @@
 import { Info, DotsThree } from '@phosphor-icons/react';
 import { Checkbox, Dropdown, Avatar } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { useDropdownPositioning, useVersionItemActions } from '../hooks';
+import { useDropdownPositioning } from 'views/Drive/hooks/useDropdownPositioning';
+import { useVersionItemActions } from 'views/Drive/hooks/useVersionItemActions';
 import { formatVersionDate, getDaysUntilExpiration } from '../utils';
 import { FileVersion } from '@internxt/sdk/dist/drive/storage/types';
 import { memo } from 'react';
@@ -52,7 +53,7 @@ export const VersionItem = memo(
           type="button"
           aria-pressed={isSelected}
           aria-label={`Version from ${formatVersionDate(version.createdAt)}`}
-          className={`group relative w-full px-6 cursor-pointer text-left ${isSelected ? 'bg-primary/10' : 'hover:bg-gray-1'}`}
+          className={`group relative w-full px-6 cursor-pointer text-left ${isSelected ? 'bg-primary/10' : 'hover:bg-gray-1 dark:hover:bg-white/3'}`}
           onClick={handleItemClick}
         >
           <div className="flex min-w-0 flex-1 items-center justify-between border-b-[1px] border-[#ECECEC] dark:border-[#474747] py-3">

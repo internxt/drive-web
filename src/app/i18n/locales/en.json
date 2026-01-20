@@ -905,7 +905,13 @@
       "restoreSuccess": "Version restored successfully",
       "restoreError": "Failed to restore version",
       "deleteSuccess": "Version deleted successfully",
-      "deleteError": "Failed to delete version"
+      "deleteError": "Failed to delete version",
+      "lockedFeature": {
+        "title": "Locked feature",
+        "description": "Restore previous versions of your files and track changes over time.",
+        "supportedFormats": "Available for PDF, Word, Excel, and CSV files in paid plans.",
+        "upgradeButton": "Upgrade"
+      }
     },
     "shareModal": {
       "title": "Share \"{{name}}\"",

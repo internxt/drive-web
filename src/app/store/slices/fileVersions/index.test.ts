@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { FileVersion, FileLimitsResponse } from '@internxt/sdk/dist/drive/storage/types';
-import fileVersionService from 'views/Drive/components/VersionHistory/services/fileVersion.service';
+import fileVersionService from 'views/Drive/services/fileVersion.service';
 import { fileVersionsActions, fileVersionsReducer, fetchFileVersionsThunk, fetchVersionLimitsThunk } from './index';
 import { RootState } from '../..';
 
-vi.mock('views/Drive/components/VersionHistory/services/fileVersion.service', () => ({
+vi.mock('views/Drive/services/fileVersion.service', () => ({
   default: {
     getFileVersions: vi.fn(),
     getLimits: vi.fn(),

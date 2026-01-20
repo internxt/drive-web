@@ -20,7 +20,7 @@ vi.mock('app/store/hooks', () => ({
   useAppSelector: vi.fn(),
 }));
 
-vi.mock('views/Drive/components/VersionHistory/services/fileVersion.service', () => ({
+vi.mock('views/Drive/services/fileVersion.service', () => ({
   default: {
     downloadVersion: vi.fn(),
   },
@@ -32,6 +32,12 @@ vi.mock('app/notifications/services/notifications.service', () => ({
   },
   ToastType: {
     Error: 'error',
+  },
+}));
+
+vi.mock('services/date.service', () => ({
+  default: {
+    format: vi.fn(() => '10-01-2026 at 14:30'),
   },
 }));
 
@@ -60,6 +66,7 @@ describe('Version item menu', () => {
     fileId: 'file-uuid',
     networkFileId: 'network-file-id',
     size: '5',
+    createdAt: '2026-01-10T14:30:00.000Z',
   } as FileVersion;
   const fileItem = {
     id: 'file-id',
@@ -142,7 +149,7 @@ describe('Version item menu', () => {
     expect(downloadVersionSpy).toHaveBeenCalledWith(
       version,
       fileItem,
-      fileItem.plainName,
+      '(10-01-2026 at 14:30) pretty-name',
       selectedWorkspace,
       workspaceCredentials,
     );

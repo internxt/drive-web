@@ -102,11 +102,13 @@ describe('File version actions', () => {
           ...fileItem,
           fileId: version.networkFileId,
           size: Number(version.size),
-          name: 'custom-name',
         },
       ],
       selectedWorkspace,
       workspaceCredentials,
+      downloadOptions: {
+        downloadName: 'custom-name',
+      },
     });
   });
 });
