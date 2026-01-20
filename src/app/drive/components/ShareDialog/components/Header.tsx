@@ -1,17 +1,20 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { ArrowLeft, X } from '@phosphor-icons/react';
-import { Views } from '../types';
+import { useShareDialogContext } from '../context';
+import { setView } from '../context/ShareDialogContext.actions';
+import { ItemToShare } from 'app/store/slices/storage/types';
 
 interface HeaderProps {
-  itemToShare;
-  isLoading: boolean;
-  headerView: Views;
-  setView: (view: Views) => void;
+  itemToShare: ItemToShare | null;
   onClose: () => void;
 }
 
-export const Header = ({ headerView, isLoading, itemToShare, onClose, setView }: HeaderProps): JSX.Element => {
+export const Header = ({ itemToShare, onClose }: HeaderProps): JSX.Element => {
   const { translate } = useTranslationContext();
+  const {
+    state: { view, isLoading },
+    dispatch: actionDispatch,
+  } = useShareDialogContext();
 
   const headers = {
     general: (
@@ -29,7 +32,7 @@ export const Header = ({ headerView, isLoading, itemToShare, onClose, setView }:
     ),
     invite: (
       <div className="flex items-center space-x-4">
-        <ArrowLeft className="cursor-pointer" onClick={() => setView('general')} size={24} />
+        <ArrowLeft className="cursor-pointer" onClick={() => actionDispatch(setView('general'))} size={24} />
         <span className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-xl font-medium">
           {translate('modals.shareModal.invite.title')}
         </span>
@@ -37,7 +40,7 @@ export const Header = ({ headerView, isLoading, itemToShare, onClose, setView }:
     ),
     requests: (
       <div className="flex items-center space-x-4">
-        <ArrowLeft className="cursor-pointer" onClick={() => setView('general')} size={24} />
+        <ArrowLeft className="cursor-pointer" onClick={() => actionDispatch(setView('general'))} size={24} />
         <span className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-xl font-medium">
           {translate('modals.shareModal.requests.title')}
         </span>
@@ -45,5 +48,5 @@ export const Header = ({ headerView, isLoading, itemToShare, onClose, setView }:
     ),
   };
 
-  return headers[headerView];
+  return headers[view];
 };
