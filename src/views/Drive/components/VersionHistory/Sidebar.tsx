@@ -42,6 +42,7 @@ const Sidebar = () => {
   const { translate } = useTranslationContext();
 
   const limits = useAppSelector(fileVersionsSelectors.getLimits);
+  const isLimitsLoading = useAppSelector(fileVersionsSelectors.isLimitsLoading);
   const versions = useAppSelector((state: RootState) =>
     item ? fileVersionsSelectors.getVersionsByFileId(state, item.uuid) : [],
   );
@@ -56,6 +57,7 @@ const Sidebar = () => {
   });
 
   const isVersioningEnabled = limits?.versioning?.enabled ?? false;
+  const isLoadingContent = (isVersioningEnabled && isLoading) || isLimitsLoading;
 
   const blurredBackgroundVersions = useMemo(() => {
     if (isVersioningEnabled) return [];
@@ -247,7 +249,7 @@ const Sidebar = () => {
           <Header title={translate('modals.versionHistory.title')} onClose={onClose} />
 
           <div className={`flex-1 relative ${isVersioningEnabled ? 'overflow-y-auto' : 'overflow-y-hidden'}`}>
-            {isVersioningEnabled && isLoading ? (
+            {isLoadingContent ? (
               <VersionHistorySkeleton />
             ) : (
               <>
@@ -279,7 +281,7 @@ const Sidebar = () => {
                 ))}
               </>
             )}
-            {!isVersioningEnabled && <LockedFeatureModal onUpgrade={handleUpgrade} />}
+            {!isVersioningEnabled && !isLimitsLoading && <LockedFeatureModal onUpgrade={handleUpgrade} />}
           </div>
         </div>
       </div>
