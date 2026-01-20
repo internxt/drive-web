@@ -4,7 +4,7 @@ import { IFormValues } from 'app/core/types';
 import { AuthMethodTypes } from './index';
 
 export interface UserInfoProps {
-  avatar: Blob | null;
+  avatar: string | null;
   name: string;
   email: string;
 }

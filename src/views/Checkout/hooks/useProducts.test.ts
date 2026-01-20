@@ -28,13 +28,6 @@ describe('Products custom hook', () => {
     },
   };
 
-  const mockPromoCodeData = {
-    codeId: 'promo_123',
-    amountOff: undefined,
-    percentOff: 20,
-    codeName: 'DISCOUNT20',
-  };
-
   beforeEach(() => {
     vi.clearAllMocks();
   });
