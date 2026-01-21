@@ -4,7 +4,6 @@ import { Stripe, StripeElements } from '@stripe/stripe-js';
 import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import { Loader } from '@internxt/ui';
 import { useCheckout } from 'views/Checkout/hooks/useCheckout';
 import { useSignUp } from 'views/Signup/hooks/useSignup';
 import envService from 'services/env.service';
@@ -44,13 +43,14 @@ import { usePromotionalCode } from '../hooks/usePromotionalCode';
 import { useAuthCheckout } from '../hooks/useAuthCheckout';
 import { checkoutReducer, initialStateForCheckout } from '../store';
 import { processPcCloudPayment } from '../utils/pcCloud.utils';
+import { CheckoutLoader } from '../components/CheckoutLoader';
 
 const CheckoutViewWrapper = () => {
   const { translate } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
   const [state, dispatchReducer] = useReducer(checkoutReducer, initialStateForCheckout);
-  const { authMethod, isPaying, isUpdateSubscriptionDialogOpen, isUpdatingSubscription, prices } = state;
+  const { authMethod, isPaying, isUpdateSubscriptionDialogOpen, isUpdatingSubscription } = state;
   const {
     setAuthMethod,
     setIsUserPaying,
@@ -107,7 +107,7 @@ const CheckoutViewWrapper = () => {
 
   const renewsAtPCComp = `${translate('checkout.productCard.pcMobileRenews')}`;
 
-  const canChangePlanDialogBeOpened = prices && selectedPlan?.price && isUpdateSubscriptionDialogOpen;
+  const canChangePlanDialogBeOpened = selectedPlan?.price && isUpdateSubscriptionDialogOpen;
   const isCryptoPaymentDialogOpen = isDialogOpen(CRYPTO_PAYMENT_DIALOG_KEY);
 
   const userInfo: UserInfoProps = {
@@ -125,7 +125,7 @@ const CheckoutViewWrapper = () => {
       document.cookie = `gclid=${gclid}; expires=${expiryDate.toUTCString()}; path=/`;
       localStorageService.set(STORAGE_KEYS.GCLID, gclid);
     }
-  }, [checkoutTheme]);
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated && user) {
@@ -237,30 +237,13 @@ const CheckoutViewWrapper = () => {
     }
 
     try {
-      const updatedSubscription = await paymentService.updateSubscriptionPrice({
-        priceId,
+      await paymentService.updateSubscriptionWithConfirmation({
+        priceId: selectedPlan.price.id,
         userType: selectedPlan.price.type,
+        coupon: promotionCode ?? undefined,
+        onSuccess: handlePaymentSuccess,
+        onError: (error) => handleErrorMessage(error, translate('notificationMessages.errorCancelSubscription')),
       });
-      if (updatedSubscription.request3DSecure && stripeSdk) {
-        stripeSdk
-          .confirmCardPayment(updatedSubscription.clientSecret)
-          .then(async (result) => {
-            if (result.error) {
-              notificationsService.show({
-                type: ToastType.Error,
-                text: result.error.message as string,
-              });
-            } else {
-              handlePaymentSuccess();
-            }
-          })
-          .catch((err) => {
-            const error = errorService.castError(err);
-            handleErrorMessage(error, translate('notificationMessages.errorCancelSubscription'));
-          });
-      } else {
-        handlePaymentSuccess();
-      }
     } catch (err) {
       const error = errorService.castError(err);
       handleErrorMessage(error, translate('notificationMessages.errorCancelSubscription'));
@@ -287,7 +270,7 @@ const CheckoutViewWrapper = () => {
     const isStripeNotLoaded = !stripeSDK || !elements;
     const customerName = companyName ?? userName;
 
-    const authCaptcha = await generateCaptchaToken();
+    const captchaToken = await generateCaptchaToken();
 
     if (authMethod !== 'userIsSignedIn') {
       await onAuthenticateUser({
@@ -295,7 +278,7 @@ const CheckoutViewWrapper = () => {
         password,
         authMethod,
         dispatch,
-        authCaptcha,
+        authCaptcha: captchaToken,
         doRegister,
         onAuthenticationFail: () => {
           userAuthComponentRef.current?.scrollIntoView();
@@ -344,8 +327,6 @@ const CheckoutViewWrapper = () => {
           elements,
         });
       } else {
-        const intentCaptcha = await generateCaptchaToken();
-
         await handleUserPayment({
           confirmPayment: stripeSDK.confirmPayment,
           confirmSetupIntent: stripeSDK.confirmSetup,
@@ -358,7 +339,7 @@ const CheckoutViewWrapper = () => {
           selectedPlan,
           token,
           gclidStored,
-          captchaToken: intentCaptcha,
+          captchaToken,
           seatsForBusinessSubscription: businessSeats,
           openCryptoPaymentDialog,
           userAddress: userLocationData?.ip as string,
@@ -451,11 +432,17 @@ const CheckoutViewWrapper = () => {
           />
           {canChangePlanDialogBeOpened ? (
             <ChangePlanDialog
-              prices={prices}
               isDialogOpen={isUpdateSubscriptionDialogOpen}
               setIsDialogOpen={setIsUpdateSubscriptionDialogOpen}
               onPlanClick={onChangePlanClicked}
-              priceIdSelected={selectedPlan.price.id}
+              priceSelected={{
+                amount: selectedPlan.price.amount,
+                currency: selectedPlan.price.currency,
+                interval: selectedPlan.price.interval,
+                userType: selectedPlan.price.type,
+                bytes: selectedPlan.price.bytes,
+                id: selectedPlan.price.id,
+              }}
               isUpdatingSubscription={isUpdatingSubscription}
               subscriptionSelected={selectedPlan.price.type}
             />
@@ -468,9 +455,7 @@ const CheckoutViewWrapper = () => {
           )}
         </Elements>
       ) : (
-        <div className="flex h-full items-center justify-center bg-gray-1">
-          <Loader type="pulse" />
-        </div>
+        <CheckoutLoader />
       )}
     </>
   );

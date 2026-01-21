@@ -177,6 +177,34 @@ const paymentService = {
     return paymentsClient.updateSubscriptionPrice({ priceId, couponCode: coupon, userType });
   },
 
+  async updateSubscriptionWithConfirmation({
+    priceId,
+    userType,
+    coupon,
+    onSuccess,
+    onError,
+  }: {
+    priceId: string;
+    userType: UserType.Individual | UserType.Business;
+    coupon?: string;
+    onSuccess: () => void;
+    onError: (error: Error) => void;
+  }): Promise<void> {
+    const stripe = await this.getStripe();
+    const updatedSubscription = await this.updateSubscriptionPrice({ priceId, coupon, userType });
+
+    if (updatedSubscription.request3DSecure) {
+      const result = await stripe.confirmCardPayment(updatedSubscription.clientSecret);
+      if (result?.error?.message) {
+        onError(new Error(result.error.message));
+      } else {
+        onSuccess();
+      }
+    } else {
+      onSuccess();
+    }
+  },
+
   async updateWorkspaceMembers(workspaceId: string, subscriptionId: string, updatedMembers: number) {
     const paymentsClient = await SdkFactory.getNewApiInstance().createPaymentsClient();
     return paymentsClient.updateWorkspaceMembers(workspaceId, subscriptionId, updatedMembers);
