@@ -63,7 +63,7 @@ export type RegisterFunction = (
   mnemonic: string;
 }>;
 
-export type SignUpParams = {
+type SignUpParams = {
   doSignUp: RegisterFunction;
   email: string;
   password: string;
@@ -80,7 +80,7 @@ type LogInParams = {
   loginType?: 'web' | 'desktop';
 };
 
-export type AuthenticateUserParams = {
+type AuthenticateUserParams = {
   email: string;
   password: string;
   authMethod: AuthMethodTypes;
@@ -286,7 +286,7 @@ export const recoverAccountWithBackupKey = async (
 /**
  * Recovery method for old backup keys format (mnemonic only)
  */
-export const recoveryOldBackuptWithToken = async (token: string, password: string, mnemonic: string): Promise<void> => {
+const recoveryOldBackuptWithToken = async (token: string, password: string, mnemonic: string): Promise<void> => {
   try {
     const authClient = SdkFactory.getNewApiInstance().createAuthClient();
     const recoverPayload = await prepareOldBackupRecoverPayloadForBackend({ mnemonic, password, token });

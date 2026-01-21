@@ -24,8 +24,6 @@ export type PreviewFileItem = DriveFileData & {
   folderUuid: string;
 };
 
-export type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;
-
 export type SharedNamePath = {
   id: number;
   name: string;

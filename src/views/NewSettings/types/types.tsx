@@ -1,4 +1,3 @@
-import { ReactNode } from 'react';
 export interface SelectSectionProps {
   section: string;
   subsection?: string;
@@ -23,18 +22,6 @@ export interface BillingDetailsCardProps {
   onEditButtonClick: () => void;
 }
 
-export interface ActivityTabProps {
-  role: MemberRole;
-  isActivityEnabled: boolean;
-  activity: Activity;
-}
-
-export interface TeamsTabProps {
-  role: string;
-  teams: Teams;
-  isTeams: boolean;
-}
-
 export type DriveProduct = {
   name: string;
   usageInBytes: number;
@@ -42,23 +29,3 @@ export type DriveProduct = {
 };
 
 export type MemberRole = 'owner' | 'manager' | 'member' | 'deactivated' | 'current' | 'planType';
-
-export type Teams = {
-  team: string;
-  role: MemberRole;
-}[];
-
-export type ActiveTab = {
-  name: string;
-  tab: string;
-  view: ReactNode;
-};
-
-export type Activity = {
-  date: string;
-  records: {
-    title: string;
-    description: string;
-    time: string;
-  }[];
-}[];

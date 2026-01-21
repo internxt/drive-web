@@ -11,7 +11,6 @@ import {
   hybridEncryptMessageWithPublicKey,
   hybridDecryptMessageWithPrivateKey,
   comparePrivateKeyCiphertextIDs,
-  comparePublicKeyCiphertextIDs,
   compareKeyPairIDs,
 } from '../../../src/app/crypto/services/pgp.service';
 
@@ -253,7 +252,6 @@ describe('Encryption and Decryption', () => {
     const publicKey = await openpgp.readKey({ armoredKey: privateKeyArmored });
 
     expect(comparePrivateKeyCiphertextIDs(privateKey, message)).toBeTruthy();
-    expect(comparePublicKeyCiphertextIDs(publicKey, message)).toBeTruthy();
     expect(compareKeyPairIDs(privateKey, publicKey)).toBeTruthy();
   });
 

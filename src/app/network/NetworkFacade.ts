@@ -50,14 +50,6 @@ interface UploadTask {
   index: number;
 }
 
-export interface DownloadChunkTask {
-  index: number;
-  chunkStart: number;
-  chunkEnd: number;
-  attempt: number;
-  maxRetries: number;
-}
-
 /**
  * The entry point for interacting with the network
  */
