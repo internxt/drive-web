@@ -1,9 +1,10 @@
+import { Popover } from '@headlessui/react';
 import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { UserPlus } from '@phosphor-icons/react';
+import { CaretDown, CheckCircle, UserPlus } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { MAX_SHARED_NAME_LENGTH } from '../../../../views/Shared/SharedView';
-import { Button, Modal } from '@internxt/ui';
+import { Avatar, Button, Modal } from '@internxt/ui';
 import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { Role } from 'app/store/slices/sharedLinks/types';
@@ -248,6 +249,29 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const onAcceptRequest = (email: string, roleName: UserRole) => {
+    // TODO -> Accept user access request
+    setAccessRequests((prevRequests) =>
+      prevRequests.map((request) => {
+        if (request.email === email) {
+          return { ...request, status: REQUEST_STATUS.ACCEPTED };
+        }
+        return request;
+      }),
+    );
+  };
+
+  const handleDenyRequest = (email: string) => {
+    setAccessRequests((prevRequests) =>
+      prevRequests.map((request) => {
+        if (request.email === email) {
+          return { ...request, status: REQUEST_STATUS.DENIED };
+        }
+        return request;
+      }),
+    );
   };
 
   const onClose = (): void => {
@@ -585,6 +609,106 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
           itemToShare={itemToShare?.item}
           roles={inviteDialogRoles}
         />
+      ),
+      requests: (
+        <div className="relative flex flex-col space-y-3 pb-24" style={{ minHeight: '377px', maxHeight: '640px' }}>
+          {accessRequests.length > 0 ? (
+            accessRequests.map((request, index) => (
+              <div
+                className={`flex flex-col space-y-3 ${
+                  index > 0 && isRequestPending(request.status) && 'border-t border-gray-5 pt-3'
+                } ${!isRequestPending(request.status) && 'hide-request'}`}
+                key={request.email + index}
+              >
+                <div className="flex shrink-0 items-center space-x-2.5">
+                  <Avatar src={request.avatar} fullName={`${request.name} ${request.lastname}`} diameter={40} />
+
+                  <div className="flex flex-1 flex-col overflow-hidden">
+                    <p className="w-full overflow-hidden text-ellipsis whitespace-nowrap font-medium leading-tight">
+                      {request.name}&nbsp;{request.lastname}
+                    </p>
+                    <p className="w-full overflow-hidden text-ellipsis whitespace-nowrap text-sm leading-none text-gray-50">
+                      {request.email}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center space-x-1.5">
+                    <Popover className="relative">
+                      {({ open }) => (
+                        <>
+                          <Popover.Button tabIndex={-1} className="relative">
+                            <Button variant="primary">
+                              <span>{translate('modals.shareModal.requests.actions.accept')}</span>
+                              <CaretDown size={24} />
+                            </Button>
+                          </Popover.Button>
+
+                          <Popover.Panel
+                            className={`absolute right-0 z-10 mt-1 origin-top-right whitespace-nowrap rounded-lg border border-gray-10 bg-surface p-1 shadow-subtle transition-all duration-50 ease-out ${
+                              open ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
+                            }`}
+                            style={{ minWidth: '160px' }}
+                            static
+                          >
+                            {({ close }) => (
+                              <>
+                                {/* Reader */}
+                                <button
+                                  className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
+                                  onClick={() => {
+                                    onAcceptRequest(request.email, 'reader');
+                                    close();
+                                  }}
+                                >
+                                  <p className="w-full text-left text-base font-medium leading-none">
+                                    {translate('modals.shareModal.requests.actions.roles.reader')}
+                                  </p>
+                                </button>
+
+                                {/* Editor */}
+                                <button
+                                  className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
+                                  onClick={() => {
+                                    onAcceptRequest(request.email, 'editor');
+                                    close();
+                                  }}
+                                >
+                                  <p className="w-full text-left text-base font-medium leading-none">
+                                    {translate('modals.shareModal.requests.actions.roles.editor')}
+                                  </p>
+                                </button>
+                              </>
+                            )}
+                          </Popover.Panel>
+                        </>
+                      )}
+                    </Popover>
+                    <Button variant="secondary" onClick={() => handleDenyRequest(request.email)}>
+                      <span>{translate('modals.shareModal.requests.actions.deny')}</span>
+                    </Button>
+                  </div>
+                </div>
+
+                {request.message ? (
+                  <div className="mb-3 flex flex-col space-y-1 rounded-lg bg-gray-5 p-4 text-base leading-tight">
+                    {request.message.split('\n').map((line) => (
+                      <p>{line}</p>
+                    ))}
+                  </div>
+                ) : (
+                  <></>
+                )}
+              </div>
+            ))
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="flex flex-col items-center justify-center space-y-1 rounded-2xl bg-gray-5 p-6 text-lg font-medium text-gray-50">
+                <CheckCircle weight="thin" size={64} />
+                <span>{translate('modals.shareModal.requests.empty')}</span>
+              </div>
+            </div>
+          )}
+        </div>
       ),
     };
 
