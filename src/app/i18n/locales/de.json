@@ -789,7 +789,7 @@
       }
     },
     "shareModal": {
-      "title": "Aktie \"{{name}}\"",
+      "title": "\"{{name}}\" teilen",
       "list": {
         "peopleWithAccess": "Personen mit Zugang",
         "invite": "Einladen",
