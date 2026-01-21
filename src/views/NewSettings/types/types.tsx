@@ -54,8 +54,6 @@ export type ActiveTab = {
   view: ReactNode;
 };
 
-export type TypeTabs = ActiveTab[];
-
 export type Activity = {
   date: string;
   records: {

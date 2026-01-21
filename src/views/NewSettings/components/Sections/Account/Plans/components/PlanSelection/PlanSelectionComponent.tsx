@@ -5,11 +5,6 @@ import { displayAmount } from '../../../../../../utils/planUtils';
 import { PlanSelectionCardSkeleton } from './skeletons/PlanSelectionCardSkeleton';
 import { currencyService } from 'views/Checkout/services';
 
-export interface UserSubscriptionProps {
-  individual: UserSubscription | null;
-  business: UserSubscription | null;
-}
-
 interface PlanSelectionComponentProps {
   pricesToRender: DisplayPrice[];
   priceSelected: DisplayPrice;
