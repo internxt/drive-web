@@ -77,7 +77,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
   const {
     accessMode,
-    accessRequests,
     inviteDialogRoles,
     invitedUsers,
     isLoading,
@@ -121,7 +120,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     onStopSharingItem: props.onStopSharingItem,
   });
 
-  const { getAndUpdateInvitedUsers, handleDenyRequest, onAcceptRequest, onInviteUser } = useShareItemInvitations({
+  const { getAndUpdateInvitedUsers, onInviteUser } = useShareItemInvitations({
     isUserOwner,
     itemToShare,
   });

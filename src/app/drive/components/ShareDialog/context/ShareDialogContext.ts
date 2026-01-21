@@ -13,7 +13,6 @@ export interface ShareDialogState {
   sharingMeta: SharingMeta | null;
   invitedUsers: InvitedUserProps[];
   currentUserFolderRole?: string;
-  accessRequests: RequestProps[];
   selectedUserListIndex: number | null;
   userOptionsEmail?: InvitedUserProps;
   userOptionsY: number;
@@ -36,7 +35,6 @@ export type ShareDialogAction =
   | { type: 'SET_CURRENT_USER_FOLDER_ROLE'; payload?: string }
   | { type: 'UPDATE_USER_ROLE'; payload: { email: string; roleId: string; roleName: string } }
   | { type: 'REMOVE_USER'; payload: string }
-  | { type: 'SET_ACCESS_REQUESTS'; payload: RequestProps[] }
   | { type: 'UPDATE_REQUEST_STATUS'; payload: { email: string; status: RequestProps['status'] } }
   | { type: 'SET_SELECTED_USER_LIST_INDEX'; payload: number | null }
   | { type: 'SET_USER_OPTIONS_EMAIL'; payload?: InvitedUserProps }
@@ -60,7 +58,6 @@ export const ActionTypes = {
   SET_CURRENT_USER_FOLDER_ROLE: 'SET_CURRENT_USER_FOLDER_ROLE',
   UPDATE_USER_ROLE: 'UPDATE_USER_ROLE',
   REMOVE_USER: 'REMOVE_USER',
-  SET_ACCESS_REQUESTS: 'SET_ACCESS_REQUESTS',
   UPDATE_REQUEST_STATUS: 'UPDATE_REQUEST_STATUS',
   SET_SELECTED_USER_LIST_INDEX: 'SET_SELECTED_USER_LIST_INDEX',
   SET_USER_OPTIONS_EMAIL: 'SET_USER_OPTIONS_EMAIL',

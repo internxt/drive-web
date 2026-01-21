@@ -18,7 +18,6 @@ const initialState: ShareDialogState = {
   sharingMeta: null,
   invitedUsers: [],
   currentUserFolderRole: undefined,
-  accessRequests: [],
   selectedUserListIndex: null,
   userOptionsEmail: undefined,
   userOptionsY: 0,
@@ -72,17 +71,6 @@ const reducer = (state: ShareDialogState, action: ShareDialogAction): ShareDialo
       return {
         ...state,
         invitedUsers: state.invitedUsers.filter((user) => user.uuid !== action.payload),
-      };
-
-    case ActionTypes.SET_ACCESS_REQUESTS:
-      return { ...state, accessRequests: action.payload };
-
-    case ActionTypes.UPDATE_REQUEST_STATUS:
-      return {
-        ...state,
-        accessRequests: state.accessRequests.map((request) =>
-          request.email === action.payload.email ? { ...request, status: action.payload.status } : request,
-        ),
       };
 
     case ActionTypes.SET_SELECTED_USER_LIST_INDEX:

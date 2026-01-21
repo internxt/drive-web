@@ -1,19 +1,13 @@
 import shareService from 'app/share/services/share.service';
 import { useCallback } from 'react';
-import {
-  setAccessRequests,
-  setInvitedUsers,
-  setSelectedUserListIndex,
-  setView,
-} from '../context/ShareDialogContext.actions';
+import { setInvitedUsers, setSelectedUserListIndex, setView } from '../context/ShareDialogContext.actions';
 import { getLocalUserData } from '../utils';
 import { useShareDialogContext } from '../context';
-import { REQUEST_STATUS, UserRole } from '../types';
 
 export const useShareItemInvitations = ({ itemToShare, isUserOwner }) => {
   const { state, dispatch: actionDispatch } = useShareDialogContext();
 
-  const { roles, accessRequests } = state;
+  const { roles } = state;
 
   const getAndUpdateInvitedUsers = useCallback(async () => {
     if (!itemToShare?.item) return;
@@ -40,38 +34,13 @@ export const useShareItemInvitations = ({ itemToShare, isUserOwner }) => {
     }
   }, [itemToShare, roles, isUserOwner, actionDispatch]);
 
-  const onAcceptRequest = (email: string, roleName: UserRole) => {
-    // TODO -> Accept user access request
-    const modifiedAccessRequests = accessRequests.map((request) => {
-      if (request.email === email) {
-        return { ...request, status: REQUEST_STATUS.ACCEPTED };
-      }
-      return request;
-    });
-
-    actionDispatch(setAccessRequests(modifiedAccessRequests));
-  };
-
-  const handleDenyRequest = (email: string) => {
-    const deniedRequests = accessRequests.map((request) => {
-      if (request.email === email) {
-        return { ...request, status: REQUEST_STATUS.DENIED };
-      }
-      return request;
-    });
-
-    actionDispatch(setAccessRequests(deniedRequests));
-  };
-
   const onInviteUser = () => {
     actionDispatch(setView('invite'));
     actionDispatch(setSelectedUserListIndex(null));
   };
 
   return {
-    getAndUpdateInvitedUsers,
-    onAcceptRequest,
-    handleDenyRequest,
     onInviteUser,
+    getAndUpdateInvitedUsers,
   };
 };
