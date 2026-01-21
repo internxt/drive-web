@@ -28,24 +28,6 @@ export interface CreatePaymentSessionPayload {
   canceledUrl?: string;
 }
 
-export interface CreateTeamsPaymentSessionPayload {
-  test?: boolean;
-  mode: StripeSessionMode;
-  priceId: string;
-  quantity: number;
-  mnemonicTeam: string;
-  successUrl?: string;
-  canceledUrl?: string;
-}
-
-export interface ValidateCheckoutSessionResponse {
-  valid: boolean;
-  customerId?: string;
-  planId: string;
-  userType?: UserType;
-  message?: string;
-}
-
 let stripe: Stripe;
 
 const paymentService = {

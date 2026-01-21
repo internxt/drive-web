@@ -23,12 +23,6 @@ export interface BillingDetailsCardProps {
   onEditButtonClick: () => void;
 }
 
-export interface TabsProps {
-  tabs: TypeTabs;
-  activeTab: ActiveTab;
-  setActiveTab: (activeTab) => void;
-}
-
 export interface ActivityTabProps {
   role: MemberRole;
   isActivityEnabled: boolean;
@@ -40,10 +34,6 @@ export interface TeamsTabProps {
   teams: Teams;
   isTeams: boolean;
 }
-export interface ActivityFiltersProps {
-  selectedRoles: string[];
-  setIsSelectedRoles: (selectedRoles) => void;
-}
 
 export type DriveProduct = {
   name: string;
@@ -51,23 +41,7 @@ export type DriveProduct = {
   color: 'red' | 'orange' | 'yellow' | 'green' | 'pink' | 'indigo' | 'primary' | 'gray';
 };
 
-export type Sections = Section[];
-
 export type MemberRole = 'owner' | 'manager' | 'member' | 'deactivated' | 'current' | 'planType';
-
-export type Member = {
-  id: string;
-  name: string;
-  lastname: string;
-  email: string;
-  role: MemberRole;
-  storage: number;
-  products: DriveProduct[];
-  isActivityEnabled: boolean;
-  activity: Activity;
-  isTeams: boolean;
-  teams: Teams;
-};
 
 export type Teams = {
   team: string;

@@ -109,17 +109,3 @@ export const fetchSortedFolderContentThunk = createAsyncThunk<void, string, { st
     }
   },
 );
-
-export const fetchSortedFolderContentThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
-  builder
-    .addCase(fetchSortedFolderContentThunk.pending, (state, action) => {
-      state.loadingFolders[action.meta.arg] = true;
-    })
-    .addCase(fetchSortedFolderContentThunk.fulfilled, (state, action) => {
-      state.loadingFolders[action.meta.arg] = false;
-    })
-    .addCase(fetchSortedFolderContentThunk.rejected, (state, action) => {
-      state.loadingFolders[action.meta.arg] = false;
-      notificationsService.show({ text: t('error.fetchingFolderContent'), type: ToastType.Error });
-    });
-};
