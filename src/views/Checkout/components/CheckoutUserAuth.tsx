@@ -9,7 +9,7 @@ import { InputsComponent } from './InputsComponent';
 interface CheckoutUserAuthProps {
   userData: {
     name: string;
-    avatar: Blob | null;
+    avatar: string | null;
     email?: string;
   };
   authMethod: AuthMethodTypes;
@@ -63,11 +63,7 @@ export const CheckoutUserAuth = ({
         {isUserSignedIn ? (
           <div className="flex w-full items-center justify-center">
             <div className="flex flex-col items-center gap-2.5">
-              <Avatar
-                diameter={42}
-                fullName={userData.name}
-                src={userData.avatar ? URL.createObjectURL(userData.avatar) : null}
-              />
+              <Avatar diameter={42} fullName={userData.name} src={userData.avatar ?? null} />
               <p className="text-lg font-semibold">{userData.name}</p>
               <p>{userData?.email}</p>
               <Button onClick={onLogOut}>{translate('actions.logOut')}</Button>
