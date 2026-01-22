@@ -38,7 +38,7 @@
     "idb": "^6.1.5",
     "js-file-download": "^0.4.12",
     "lint-staged": "^13.1.0",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "openpgp": "^5.11.3",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
