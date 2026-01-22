@@ -58,11 +58,6 @@ export const removeUser = (payload: string): ShareDialogAction => ({
   payload,
 });
 
-export const setAccessRequests = (payload: RequestProps[]): ShareDialogAction => ({
-  type: ActionTypes.SET_ACCESS_REQUESTS,
-  payload,
-});
-
 export const updateRequestStatus = (payload: { email: string; status: RequestProps['status'] }): ShareDialogAction => ({
   type: ActionTypes.UPDATE_REQUEST_STATUS,
   payload,
