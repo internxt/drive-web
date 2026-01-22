@@ -2,7 +2,6 @@ import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { UserPlus } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { MAX_SHARED_NAME_LENGTH } from '../../../../views/Shared/SharedView';
 import { Button, Modal } from '@internxt/ui';
 import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
@@ -11,14 +10,12 @@ import { uiActions } from 'app/store/slices/ui';
 import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import errorService from 'services/error.service';
-import localStorageService from 'services/local-storage.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import shareService, { copyTextToClipboard, getSharingRoles } from 'app/share/services/share.service';
 import { AdvancedSharedItem } from 'app/share/types';
 import { isUserItemOwner } from 'views/Shared/utils/sharedViewUtils';
 import { sharedThunks } from 'app/store/slices/sharedLinks';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-import { DriveItemData } from 'app/drive/types';
 import ShareInviteDialog from '../ShareInviteDialog/ShareInviteDialog';
 import './ShareDialog.scss';
 import envService from 'services/env.service';
@@ -33,14 +30,7 @@ import { ProtectWithPassword } from './components/GeneralView/ProtectWithPasswor
 import { UserRoleSelection } from './components/GeneralView/UserRoleSelection';
 import { InvitedUsersList } from './components/GeneralView/InvitedUsersList';
 import { Header } from './components/Header';
-
-const cropSharedName = (name: string) => {
-  if (name.length > MAX_SHARED_NAME_LENGTH) {
-    return name.substring(0, 32).concat('...');
-  } else {
-    return name;
-  }
-};
+import { cropSharedName, filterEditorAndReader, getLocalUserData, isAdvancedShareItem } from './utils';
 
 type ShareDialogProps = {
   user: UserSettings;
@@ -48,33 +38,6 @@ type ShareDialogProps = {
   onShareItem?: () => void;
   onStopSharingItem?: () => void;
   onCloseDialog?: () => void;
-};
-
-const isAdvancedShareItem = (item: DriveItemData | AdvancedSharedItem): item is AdvancedSharedItem => {
-  return item['encryptionKey'];
-};
-
-const getLocalUserData = () => {
-  const user = localStorageService.getUser() as UserSettings;
-  const ownerData = {
-    name: user.name,
-    lastname: user.lastname,
-    email: user.email,
-    sharingId: '',
-    avatar: user.avatar,
-    uuid: user.uuid,
-    role: {
-      id: 'NONE',
-      name: 'OWNER',
-      createdAt: '',
-      updatedAt: '',
-    },
-  };
-  return ownerData;
-};
-
-const filterEditorAndReader = (users: Role[]): Role[] => {
-  return users.filter((user) => user.name === 'EDITOR' || user.name === 'READER');
 };
 
 const ShareDialog = (props: ShareDialogProps): JSX.Element => {
