@@ -2,9 +2,9 @@ import { DriveItemData } from 'app/drive/types';
 import { REQUEST_STATUS, RequestStatus } from '../types';
 import { AdvancedSharedItem } from 'app/share/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { localStorageService } from 'services';
 import { Role } from '@internxt/sdk/dist/drive/share/types';
 import { MAX_SHARED_NAME_LENGTH } from 'views/Shared/SharedView';
+import localStorageService from 'services/local-storage.service';
 
 export const isRequestPending = (status: RequestStatus): boolean =>
   status !== REQUEST_STATUS.DENIED && status !== REQUEST_STATUS.ACCEPTED;

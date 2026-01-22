@@ -59,8 +59,6 @@ export interface ShareDialogProps {
   onCloseDialog?: () => void;
 }
 
-const OWNER_ROLE = { id: 'NONE', name: 'owner' };
-
 const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const { onCloseDialog } = props;
 
