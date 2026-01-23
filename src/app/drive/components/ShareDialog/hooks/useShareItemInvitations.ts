@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import shareService from 'app/share/services/share.service';
 import { setInvitedUsers, setSelectedUserListIndex, setView } from '../context/ShareDialogContext.actions';
 import { getLocalUserData } from '../utils';
-import { useShareDialogContext } from '../context/ShareDialogContextProvider';
+import { useShareDialogContext } from '../context';
 import { ItemToShare } from 'app/store/slices/storage/types';
 
 interface ShareItemInvitationsProps {

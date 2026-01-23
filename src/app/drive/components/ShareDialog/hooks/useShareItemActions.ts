@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useShareDialogContext } from '../context/ShareDialogContextProvider';
+import { useShareDialogContext } from '../context';
 import {
   removeUser,
   setIsLoading,
