@@ -37,7 +37,7 @@ export class LoginPage {
     this.needHelp = this.page.getByRole('link', { name: 'Need help?' });
     this.wrongCredentials = this.page.locator('[class="flex flex-row items-start pt-1"] span');
     //drive
-    this.driveTitle = this.page.locator('span[class="max-w-sm flex-1 cursor-pointer truncate undefined"]');
+    this.driveTitle = this.page.locator('span.max-w-sm.flex-1.truncate').first();
     //account recovery
     this.accountRecoveryTitle = this.page.locator(
       'h1[class="text-3xl font-medium text-gray-100"]:has-text("Account recovery")',
