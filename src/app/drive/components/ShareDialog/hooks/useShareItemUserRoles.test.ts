@@ -88,8 +88,12 @@ describe('Share Items User Roles', () => {
 
       await result.current.changeAccess('public');
 
-      expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({ payload: null }));
-      expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({ payload: true }));
+      expect(mockDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'SET_SELECTED_USER_LIST_INDEX', payload: null }),
+      );
+      expect(mockDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'SET_IS_RESTRICTED_SHARING_DIALOG_OPEN', payload: true }),
+      );
       expect(updateSharingTypeSpy).not.toHaveBeenCalled();
     });
 
@@ -120,7 +124,9 @@ describe('Share Items User Roles', () => {
       await result.current.changeAccess('restricted');
 
       expect(updateShareTypeSpy).toHaveBeenCalledWith('item-uuid-123', 'folder', 'private');
-      expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({ payload: 'restricted' }));
+      expect(mockDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'SET_ACCESS_MODE', payload: 'restricted' }),
+      );
     });
 
     test('When changing to public mode for file, then updates sharing type and creates public share', async () => {
@@ -137,9 +143,15 @@ describe('Share Items User Roles', () => {
 
       expect(updateShareTypeSpy).toHaveBeenCalledWith('item-uuid-123', 'file', 'public');
       expect(createPublicShareFromOwnerUserSpy).toHaveBeenCalledWith('item-uuid-123', 'file');
-      expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({ payload: mockShareInfo }));
-      expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({ payload: false }));
-      expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({ payload: 'public' }));
+      expect(mockDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'SET_SHARING_META', payload: mockShareInfo }),
+      );
+      expect(mockDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'SET_IS_PASSWORD_PROTECTED', payload: false }),
+      );
+      expect(mockDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'SET_ACCESS_MODE', payload: 'public' }),
+      );
     });
 
     test('When changing access mode sets loading states correctly', async () => {
@@ -151,8 +163,8 @@ describe('Share Items User Roles', () => {
       await result.current.changeAccess('public');
 
       const calls = mockDispatch.mock.calls;
-      expect(calls[1]).toEqual([expect.objectContaining({ payload: true })]);
-      expect(calls[calls.length - 1]).toEqual([expect.objectContaining({ payload: false })]);
+      expect(calls[1]).toEqual([expect.objectContaining({ type: 'SET_IS_LOADING', payload: true })]);
+      expect(calls.at(-1)).toEqual([expect.objectContaining({ type: 'SET_IS_LOADING', payload: false })]);
     });
 
     test('When error occurs, then shows error notification and reports error', async () => {
@@ -191,10 +203,13 @@ describe('Share Items User Roles', () => {
       });
       expect(mockDispatch).toHaveBeenCalledWith(
         expect.objectContaining({
+          type: 'SET_INVITED_USERS',
           payload: [{ ...mockInvitedUsers[0], roleId: '3', roleName: 'reader' }, mockInvitedUsers[1]],
         }),
       );
-      expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({ payload: null }));
+      expect(mockDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'SET_SELECTED_USER_LIST_INDEX', payload: null }),
+      );
     });
 
     test('When user email is not found, then nothing happens', async () => {

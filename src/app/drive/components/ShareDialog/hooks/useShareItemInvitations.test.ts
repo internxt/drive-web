@@ -82,8 +82,10 @@ describe('Share item Invitations', () => {
       result.current.onInviteUser();
 
       expect(mockDispatch).toHaveBeenCalledTimes(2);
-      expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({ payload: 'invite' }));
-      expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({ payload: null }));
+      expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'SET_VIEW', payload: 'invite' }));
+      expect(mockDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'SET_SELECTED_USER_LIST_INDEX', payload: null }),
+      );
     });
   });
 
@@ -141,6 +143,7 @@ describe('Share item Invitations', () => {
 
       expect(mockDispatch).toHaveBeenCalledWith(
         expect.objectContaining({
+          type: 'SET_INVITED_USERS',
           payload: [
             { ...mockUsers[0], roleName: 'editor' },
             { ...mockUsers[1], roleName: 'reader' },
@@ -162,6 +165,7 @@ describe('Share item Invitations', () => {
       expect(utils.getLocalUserData).toHaveBeenCalled();
       expect(mockDispatch).toHaveBeenCalledWith(
         expect.objectContaining({
+          type: 'SET_INVITED_USERS',
           payload: [{ ...mockOwnerData, roleName: 'owner' }],
         }),
       );

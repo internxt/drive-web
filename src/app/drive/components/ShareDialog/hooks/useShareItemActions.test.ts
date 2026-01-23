@@ -129,7 +129,9 @@ describe('Share Item Actions', () => {
       await result.current.onCopyLink();
 
       expect(mockedCopyToClipboard).toHaveBeenCalled();
-      expect(mockActionDispatch).toHaveBeenCalledWith(expect.objectContaining({ payload: null }));
+      expect(mockActionDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'SET_SELECTED_USER_LIST_INDEX', payload: null }),
+      );
     });
 
     test('When access mode is public, then gets public share link', async () => {
@@ -159,7 +161,9 @@ describe('Share Item Actions', () => {
       await result.current.onCopyLink();
 
       expect(getPublicShareLinkSpy).toHaveBeenCalledWith('item-uuid-123', 'file', undefined);
-      expect(mockActionDispatch).toHaveBeenCalledWith(expect.objectContaining({ payload: mockSharingMeta }));
+      expect(mockActionDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'SET_SHARING_META', payload: mockSharingMeta }),
+      );
       expect(mockOnShareItem).toHaveBeenCalled();
     });
   });
@@ -178,7 +182,9 @@ describe('Share Item Actions', () => {
 
       result.current.onPasswordCheckboxChange();
 
-      expect(mockActionDispatch).toHaveBeenCalledWith(expect.objectContaining({ payload: true }));
+      expect(mockActionDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'SET_IS_RESTRICTED_PASSWORD_DIALOG_OPEN', payload: true }),
+      );
     });
 
     test('When password is already protected, then opens password disable dialog', () => {
@@ -203,7 +209,9 @@ describe('Share Item Actions', () => {
 
       result.current.onPasswordCheckboxChange();
 
-      expect(mockActionDispatch).toHaveBeenCalledWith(expect.objectContaining({ payload: true }));
+      expect(mockActionDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'SET_OPEN_PASSWORD_DISABLE_DIALOG', payload: true }),
+      );
     });
 
     test('When password is not protected, then opens password input', () => {
@@ -219,7 +227,9 @@ describe('Share Item Actions', () => {
 
       result.current.onPasswordCheckboxChange();
 
-      expect(mockActionDispatch).toHaveBeenCalledWith(expect.objectContaining({ payload: true }));
+      expect(mockActionDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'SET_OPEN_PASSWORD_INPUT', payload: true }),
+      );
     });
   });
 
@@ -251,7 +261,9 @@ describe('Share Item Actions', () => {
       await result.current.onSavePublicSharePassword('my-password');
 
       expect(saveSharingPasswordSpy).toHaveBeenCalledWith('sharing-id-123', 'my-password', 'encrypted-code');
-      expect(mockActionDispatch).toHaveBeenCalledWith(expect.objectContaining({ payload: true }));
+      expect(mockActionDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'SET_IS_PASSWORD_PROTECTED', payload: true }),
+      );
       expect(mockOnShareItem).toHaveBeenCalled();
     });
 
@@ -274,8 +286,12 @@ describe('Share Item Actions', () => {
       await result.current.onSavePublicSharePassword('my-password');
 
       expect(createPublicShareFromOwnerUserSpy).toHaveBeenCalledWith('item-uuid-123', 'file', 'my-password');
-      expect(mockActionDispatch).toHaveBeenCalledWith(expect.objectContaining({ payload: mockSharingMeta }));
-      expect(mockActionDispatch).toHaveBeenCalledWith(expect.objectContaining({ payload: true }));
+      expect(mockActionDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'SET_SHARING_META', payload: mockSharingMeta }),
+      );
+      expect(mockActionDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'SET_IS_PASSWORD_PROTECTED', payload: true }),
+      );
     });
 
     test('When error occurs, then casts error and closes password input', async () => {
@@ -296,7 +312,9 @@ describe('Share Item Actions', () => {
       await result.current.onSavePublicSharePassword('my-password');
 
       expect(castErrorSpy).toHaveBeenCalledWith(error);
-      expect(mockActionDispatch).toHaveBeenCalledWith(expect.objectContaining({ payload: false }));
+      expect(mockActionDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'SET_OPEN_PASSWORD_INPUT', payload: false }),
+      );
     });
   });
 
@@ -325,7 +343,9 @@ describe('Share Item Actions', () => {
       await result.current.onDisablePassword();
 
       expect(removeSharingPasswordSpy).toHaveBeenCalledWith('sharing-id-123');
-      expect(mockActionDispatch).toHaveBeenCalledWith(expect.objectContaining({ payload: false }));
+      expect(mockActionDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'SET_IS_PASSWORD_PROTECTED', payload: false }),
+      );
     });
 
     test('When error occurs, then casts error and closes dialog', async () => {
@@ -354,12 +374,14 @@ describe('Share Item Actions', () => {
       await result.current.onDisablePassword();
 
       expect(castErrorSpy).toHaveBeenCalledWith(error);
-      expect(mockActionDispatch).toHaveBeenCalledWith(expect.objectContaining({ payload: false }));
+      expect(mockActionDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'SET_OPEN_PASSWORD_DISABLE_DIALOG', payload: false }),
+      );
     });
   });
 
   describe('Stop Sharing', () => {
-    test('When stopping sharing, then dispatches thunk and closes dialog', async () => {
+    test('When stopping sharing, then triggers the action and closes dialog', async () => {
       mockDispatch.mockResolvedValue({ payload: true });
 
       const itemToShare = createItemToShare(true, 'folder-uuid-456');
@@ -410,7 +432,9 @@ describe('Share Item Actions', () => {
       await result.current.onRemoveUser(user);
 
       expect(mockDispatch).toHaveBeenCalled();
-      expect(mockActionDispatch).toHaveBeenCalledWith(expect.objectContaining({ payload: 'user-uuid-123' }));
+      expect(mockActionDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'REMOVE_USER', payload: 'user-uuid-123' }),
+      );
       expect(mockOnClose).toHaveBeenCalled();
     });
 
