@@ -11,7 +11,7 @@ import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import errorService from 'services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import shareService, { copyTextToClipboard, getSharingRoles } from 'app/share/services/share.service';
+import shareService, { getSharingRoles } from 'app/share/services/share.service';
 import { AdvancedSharedItem } from 'app/share/types';
 import { isUserItemOwner } from 'views/Shared/utils/sharedViewUtils';
 import { sharedThunks } from 'app/store/slices/sharedLinks';
@@ -31,6 +31,7 @@ import { UserRoleSelection } from './components/GeneralView/UserRoleSelection';
 import { InvitedUsersList } from './components/GeneralView/InvitedUsersList';
 import { Header } from './components/Header';
 import { cropSharedName, filterEditorAndReader, getLocalUserData, isAdvancedShareItem } from './utils';
+import { copyTextToClipboard } from 'utils/copyToClipboard.utils';
 
 type ShareDialogProps = {
   user: UserSettings;
