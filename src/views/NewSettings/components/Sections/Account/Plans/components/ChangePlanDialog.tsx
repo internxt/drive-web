@@ -9,21 +9,19 @@ import { RootState } from 'app/store';
 import { PlanState } from 'app/store/slices/plan';
 
 const ChangePlanDialog = ({
-  prices,
   isDialogOpen,
   setIsDialogOpen,
   onPlanClick,
   isUpdatingSubscription,
-  priceIdSelected,
+  priceSelected,
   subscriptionSelected,
   isLoading,
 }: {
-  prices: DisplayPrice[];
   isDialogOpen: boolean;
   isUpdatingSubscription?: boolean;
   setIsDialogOpen: (value: boolean) => void;
   onPlanClick: (value: string, currency: string) => void;
-  priceIdSelected: string;
+  priceSelected: DisplayPrice;
   subscriptionSelected: UserType;
   isLoading?: boolean;
 }): JSX.Element => {
@@ -43,11 +41,10 @@ const ChangePlanDialog = ({
 
   const subscription = isIndividualSubscription ? individualSubscription : businessSubscription;
   const userHasLifetimeSub = individualSubscription?.type === 'lifetime';
-  const selectedPlan: DisplayPrice = prices.find((price) => price.id === priceIdSelected) as DisplayPrice;
 
-  const selectedPlanSize = selectedPlan?.bytes;
-  const selectedPlanAmount = selectedPlan?.amount;
-  const selectedPlanInterval = selectedPlan?.interval;
+  const selectedPlanSize = priceSelected?.bytes;
+  const selectedPlanAmount = priceSelected?.amount;
+  const selectedPlanInterval = priceSelected?.interval;
   const selectedPlanSizeString =
     userHasLifetimeSub && selectedPlanInterval === 'lifetime'
       ? bytesToString(selectedPlanSize + planLimit)
@@ -158,7 +155,7 @@ const ChangePlanDialog = ({
         </Button>
         <Button
           variant="primary"
-          onClick={() => onPlanClick(priceIdSelected, selectedPlan?.currency)}
+          onClick={() => onPlanClick(priceSelected.id, priceSelected?.currency)}
           loading={isLoading}
           disabled={isUpdatingSubscription}
         >
