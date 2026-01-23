@@ -1,4 +1,4 @@
-import { Popover } from '@headlessui/react';
+import Popover from 'components/Popover';
 import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import {
@@ -651,9 +651,9 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
               <p className="font-medium">{translate('modals.shareModal.general.generalAccess')}</p>
 
               <Popover className="relative z-10">
-                {({ open }) => (
+                {({ open, close, Button: PopoverButton, Panel: PopoverPanel }) => (
                   <>
-                    <Popover.Button as="div" className="z-1 outline-none">
+                    <PopoverButton as="div" className="outline-none">
                       <Button variant="secondary" disabled={isLoading || !isUserOwner}>
                         {accessMode === 'public' ? <Globe size={24} /> : <Users size={24} />}
                         <span>
@@ -669,94 +669,85 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                           <CaretDown size={24} />
                         )}
                       </Button>
-                    </Popover.Button>
+                    </PopoverButton>
 
-                    <Popover.Panel
-                      className={`absolute bottom-full z-0 mb-1 w-80 origin-bottom-left rounded-lg border border-gray-10 bg-surface p-1 shadow-subtle transition-all duration-50 ease-out ${
-                        open ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
-                      }`}
-                      static
-                    >
-                      {({ close }) => (
-                        <>
-                          {/* Public */}
-                          <button
-                            className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
-                            onClick={() => changeAccess('public')}
-                          >
-                            <Globe size={32} weight="light" />
-                            <div className="flex flex-1 flex-col items-start">
-                              <p className="text-base font-medium leading-none">
-                                {translate('modals.shareModal.general.accessOptions.public.title')}
+                    <PopoverPanel className="absolute bottom-full left-0 z-0 mb-1 w-80 origin-bottom-left rounded-lg border border-gray-10 bg-surface p-1 shadow-subtle">
+                      {/* Public */}
+                      <button
+                        className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
+                        onClick={() => changeAccess('public')}
+                      >
+                        <Globe size={32} weight="light" />
+                        <div className="flex flex-1 flex-col items-start">
+                          <p className="text-base font-medium leading-none">
+                            {translate('modals.shareModal.general.accessOptions.public.title')}
+                          </p>
+                          <p className="text-left text-sm leading-tight text-gray-60">
+                            {translate('modals.shareModal.general.accessOptions.public.subtitle')}
+                          </p>
+                        </div>
+                        <div className="flex h-full w-5 items-center justify-center">
+                          {accessMode === 'public' ? (
+                            isLoading ? (
+                              <Loader classNameLoader="h-5 w-5" />
+                            ) : (
+                              <Check size={20} />
+                            )
+                          ) : null}
+                        </div>
+                      </button>
+                      {/* Restricted */}
+                      {!isWorkspace && (
+                        <button
+                          className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
+                          onClick={() => changeAccess('restricted')}
+                        >
+                          <Users size={32} weight="light" />
+                          <div className="flex flex-1 flex-col items-start">
+                            <div className="flex flex-row gap-2 items-center">
+                              <p
+                                className={`text-base font-medium leading-none ${isRestrictedSharingAvailable ? '' : 'text-gray-70'}`}
+                              >
+                                {translate('modals.shareModal.general.accessOptions.restricted.title')}
                               </p>
-                              <p className="text-left text-sm leading-tight text-gray-60">
-                                {translate('modals.shareModal.general.accessOptions.public.subtitle')}
-                              </p>
-                            </div>
-                            <div className="flex h-full w-5 items-center justify-center">
-                              {accessMode === 'public' ? (
-                                isLoading ? (
-                                  <Loader classNameLoader="h-5 w-5" />
-                                ) : (
-                                  <Check size={20} />
-                                )
-                              ) : null}
-                            </div>
-                          </button>
-                          {/* Restricted */}
-                          {!isWorkspace && (
-                            <button
-                              className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
-                              onClick={() => changeAccess('restricted')}
-                            >
-                              <Users size={32} weight="light" />
-                              <div className="flex flex-1 flex-col items-start">
-                                <div className="flex flex-row gap-2 items-center">
-                                  <p
-                                    className={`text-base font-medium leading-none ${isRestrictedSharingAvailable ? '' : 'text-gray-70'}`}
-                                  >
-                                    {translate('modals.shareModal.general.accessOptions.restricted.title')}
-                                  </p>
-                                  {!isRestrictedSharingAvailable && (
-                                    <div className="py-1 px-2 ml-2 rounded-md bg-gray-5">
-                                      <p className="text-xs font-semibold">{translate('actions.locked')}</p>
-                                    </div>
-                                  )}
+                              {!isRestrictedSharingAvailable && (
+                                <div className="py-1 px-2 ml-2 rounded-md bg-gray-5">
+                                  <p className="text-xs font-semibold">{translate('actions.locked')}</p>
                                 </div>
-                                <p
-                                  className={`text-left text-sm leading-tight ${isRestrictedSharingAvailable ? 'text-gray-60' : 'text-gray-70'}`}
-                                >
-                                  {translate('modals.shareModal.general.accessOptions.restricted.subtitle')}
-                                </p>
-                              </div>
-                              <div className="flex h-full w-5 items-center justify-center">
-                                {accessMode === 'restricted' ? (
-                                  isLoading ? (
-                                    <Loader classNameLoader="h-5 w-5" />
-                                  ) : (
-                                    <Check size={20} />
-                                  )
-                                ) : null}
-                              </div>
-                            </button>
-                          )}
-                          {/* Stop sharing */}
-                          {(currentUserFolderRole === 'owner' || isUserOwner || props?.isDriveItem) && (
-                            <button
-                              className="flex h-11 w-full cursor-pointer items-center justify-start rounded-lg pl-14 pr-3 hover:bg-gray-5"
-                              onClick={() => {
-                                setShowStopSharingConfirmation(true);
-                                close();
-                              }}
+                              )}
+                            </div>
+                            <p
+                              className={`text-left text-sm leading-tight ${isRestrictedSharingAvailable ? 'text-gray-60' : 'text-gray-70'}`}
                             >
-                              <p className="text-base font-medium">
-                                {translate('modals.shareModal.general.accessOptions.stopSharing')}
-                              </p>
-                            </button>
-                          )}
-                        </>
+                              {translate('modals.shareModal.general.accessOptions.restricted.subtitle')}
+                            </p>
+                          </div>
+                          <div className="flex h-full w-5 items-center justify-center">
+                            {accessMode === 'restricted' ? (
+                              isLoading ? (
+                                <Loader classNameLoader="h-5 w-5" />
+                              ) : (
+                                <Check size={20} />
+                              )
+                            ) : null}
+                          </div>
+                        </button>
                       )}
-                    </Popover.Panel>
+                      {/* Stop sharing */}
+                      {(currentUserFolderRole === 'owner' || isUserOwner || props?.isDriveItem) && (
+                        <button
+                          className="flex h-11 w-full cursor-pointer items-center justify-start rounded-lg pl-14 pr-3 hover:bg-gray-5"
+                          onClick={() => {
+                            setShowStopSharingConfirmation(true);
+                            close();
+                          }}
+                        >
+                          <p className="text-base font-medium">
+                            {translate('modals.shareModal.general.accessOptions.stopSharing')}
+                          </p>
+                        </button>
+                      )}
+                    </PopoverPanel>
                   </>
                 )}
               </Popover>
@@ -842,52 +833,45 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
                   <div className="flex items-center space-x-1.5">
                     <Popover className="relative">
-                      {({ open }) => (
+                      {({ close, Button: PopoverButton, Panel: PopoverPanel }) => (
                         <>
-                          <Popover.Button tabIndex={-1} className="relative">
+                          <PopoverButton as="div" className="outline-none">
                             <Button variant="primary">
                               <span>{translate('modals.shareModal.requests.actions.accept')}</span>
                               <CaretDown size={24} />
                             </Button>
-                          </Popover.Button>
+                          </PopoverButton>
 
-                          <Popover.Panel
-                            className={`absolute right-0 z-10 mt-1 origin-top-right whitespace-nowrap rounded-lg border border-gray-10 bg-surface p-1 shadow-subtle transition-all duration-50 ease-out ${
-                              open ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
-                            }`}
+                          <PopoverPanel
+                            className="absolute right-0 z-10 mt-1 origin-top-right whitespace-nowrap rounded-lg border border-gray-10 bg-surface p-1 shadow-subtle"
                             style={{ minWidth: '160px' }}
-                            static
                           >
-                            {({ close }) => (
-                              <>
-                                {/* Reader */}
-                                <button
-                                  className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
-                                  onClick={() => {
-                                    onAcceptRequest(request.email, 'reader');
-                                    close();
-                                  }}
-                                >
-                                  <p className="w-full text-left text-base font-medium leading-none">
-                                    {translate('modals.shareModal.requests.actions.roles.reader')}
-                                  </p>
-                                </button>
+                            {/* Reader */}
+                            <button
+                              className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
+                              onClick={() => {
+                                onAcceptRequest(request.email, 'reader');
+                                close();
+                              }}
+                            >
+                              <p className="w-full text-left text-base font-medium leading-none">
+                                {translate('modals.shareModal.requests.actions.roles.reader')}
+                              </p>
+                            </button>
 
-                                {/* Editor */}
-                                <button
-                                  className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
-                                  onClick={() => {
-                                    onAcceptRequest(request.email, 'editor');
-                                    close();
-                                  }}
-                                >
-                                  <p className="w-full text-left text-base font-medium leading-none">
-                                    {translate('modals.shareModal.requests.actions.roles.editor')}
-                                  </p>
-                                </button>
-                              </>
-                            )}
-                          </Popover.Panel>
+                            {/* Editor */}
+                            <button
+                              className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
+                              onClick={() => {
+                                onAcceptRequest(request.email, 'editor');
+                                close();
+                              }}
+                            >
+                              <p className="w-full text-left text-base font-medium leading-none">
+                                {translate('modals.shareModal.requests.actions.roles.editor')}
+                              </p>
+                            </button>
+                          </PopoverPanel>
                         </>
                       )}
                     </Popover>

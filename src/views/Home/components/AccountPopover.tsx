@@ -2,7 +2,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Desktop, SignOut, Gear } from '@phosphor-icons/react';
 import { ReactNode } from 'react';
-import { Popover } from '@internxt/ui';
+import Popover from 'components/Popover';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
 import { userThunks } from 'app/store/slices/user';
@@ -115,9 +115,7 @@ export default function AccountPopover({ className = '', user, plan }: Readonly<
     </div>
   );
 
-  return (
-    <Popover className={className} childrenButton={avatarWrapper} panel={() => panel} data-test="app-header-dropdown" />
-  );
+  return <Popover className={className} childrenButton={avatarWrapper} panel={panel} data-test="app-header-dropdown" />;
 }
 
 interface ItemProps {
