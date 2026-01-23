@@ -32,7 +32,7 @@ import { Header } from './components/Header';
 import { cropSharedName, filterEditorAndReader, getLocalUserData, isAdvancedShareItem } from './utils';
 import { useShareItemActions } from './hooks/useShareItemActions';
 
-type ShareDialogProps = {
+export type ShareDialogProps = {
   user: UserSettings;
   isDriveItem?: boolean;
   onShareItem?: () => void;
