@@ -18,7 +18,6 @@ import { sharedThunks } from 'app/store/slices/sharedLinks';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import ShareInviteDialog from '../ShareInviteDialog/ShareInviteDialog';
 import './ShareDialog.scss';
-import envService from 'services/env.service';
 import { AccessMode, InvitedUserProps, UserRole, ViewProps, Views } from './types';
 import navigationService from 'services/navigation.service';
 import { Service } from '@internxt/sdk/dist/drive/payments/types/tiers';
@@ -31,7 +30,7 @@ import { UserRoleSelection } from './components/GeneralView/UserRoleSelection';
 import { InvitedUsersList } from './components/GeneralView/InvitedUsersList';
 import { Header } from './components/Header';
 import { cropSharedName, filterEditorAndReader, getLocalUserData, isAdvancedShareItem } from './utils';
-import { copyTextToClipboard } from 'utils/copyToClipboard.utils';
+import { useShareItemActions } from './hooks/useShareItemActions';
 
 type ShareDialogProps = {
   user: UserSettings;
@@ -82,6 +81,14 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   });
   const isProtectWithPasswordOptionAvailable = accessMode === 'public' && !isLoading && isUserOwner;
   const closeSelectedUserPopover = () => setSelectedUserListIndex(null);
+  const { getPrivateShareLink } = useShareItemActions({
+    dispatch,
+    isPasswordSharingAvailable,
+    itemToShare,
+    onClose: () => dispatch(uiActions.setIsShareDialogOpen(false)),
+    onShareItem: props.onShareItem,
+    onStopSharingItem: props.onStopSharingItem,
+  });
 
   const resetDialogData = () => {
     setSelectedUserListIndex(null);
@@ -191,18 +198,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
   const onClose = (): void => {
     dispatch(uiActions.setIsShareDialogOpen(false));
-  };
-
-  const getPrivateShareLink = async () => {
-    try {
-      await copyTextToClipboard(`${envService.getVariable('hostname')}/shared/?folderuuid=${itemToShare?.item.uuid}`);
-      notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
-    } catch {
-      notificationsService.show({
-        text: translate('modals.shareModal.errors.copy-to-clipboard'),
-        type: ToastType.Error,
-      });
-    }
   };
 
   const onCopyLink = async (): Promise<void> => {
