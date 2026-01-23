@@ -1,10 +1,16 @@
-import shareService from 'app/share/services/share.service';
 import { useCallback } from 'react';
+import shareService from 'app/share/services/share.service';
 import { setInvitedUsers, setSelectedUserListIndex, setView } from '../context/ShareDialogContext.actions';
 import { getLocalUserData } from '../utils';
-import { useShareDialogContext } from '../context';
+import { useShareDialogContext } from '../context/ShareDialogContextProvider';
+import { ItemToShare } from 'app/store/slices/storage/types';
 
-export const useShareItemInvitations = ({ itemToShare, isUserOwner }) => {
+interface ShareItemInvitationsProps {
+  itemToShare: ItemToShare | null;
+  isUserOwner: boolean;
+}
+
+export const useShareItemInvitations = ({ itemToShare, isUserOwner }: ShareItemInvitationsProps) => {
   const { state, dispatch: actionDispatch } = useShareDialogContext();
 
   const { roles } = state;

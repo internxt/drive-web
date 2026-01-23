@@ -10,10 +10,10 @@ import {
 } from '../context/ShareDialogContext.actions';
 import { AccessMode, UserRole } from '../types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { errorService } from 'services';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { useShareDialogContext } from '../context';
+import { useShareDialogContext } from '../context/ShareDialogContextProvider';
 import { ItemToShare } from 'app/store/slices/storage/types';
+import errorService from 'services/error.service';
 
 interface ShareItemUserRolesProps {
   isRestrictedSharingAvailable: boolean;
@@ -42,11 +42,13 @@ export const useShareItemUserRoles = ({ isRestrictedSharingAvailable, itemToShar
         const itemId = itemToShare?.item.uuid ?? '';
 
         await shareService.updateSharingType(itemId, itemType, sharingType);
+
         if (sharingType === 'public') {
           const shareInfo = await shareService.createPublicShareFromOwnerUser(itemId, itemType);
           actionDispatch(setSharingMeta(shareInfo));
           actionDispatch(setIsPasswordProtected(false));
         }
+
         actionDispatch(setAccessMode(mode));
       } catch (error) {
         errorService.reportError(error);
@@ -64,11 +66,13 @@ export const useShareItemUserRoles = ({ isRestrictedSharingAvailable, itemToShar
       actionDispatch(setSelectedUserListIndex(null));
       const roleId = roles.find((role) => role.name.toLowerCase() === roleName.toLowerCase())?.id;
       const sharingId = invitedUsers.find((invitedUser) => invitedUser.email === email)?.sharingId;
+
       if (roleId && sharingId) {
         await shareService.updateUserRoleOfSharedFolder({
           sharingId: sharingId,
           newRoleId: roleId,
         });
+
         const modifiedInvitedUsers = invitedUsers.map((invitedUser) => {
           if (invitedUser.email === email) {
             return { ...invitedUser, roleId, roleName: roleName as UserRole };

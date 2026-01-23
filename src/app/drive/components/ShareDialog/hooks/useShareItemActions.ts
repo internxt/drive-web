@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useShareDialogContext } from '../context';
+import { useShareDialogContext } from '../context/ShareDialogContextProvider';
 import {
   removeUser,
   setIsLoading,
@@ -14,11 +14,13 @@ import {
 import { cropSharedName, isAdvancedShareItem } from '../utils';
 import { sharedThunks } from 'app/store/slices/sharedLinks';
 import { ItemToShare } from 'app/store/slices/storage/types';
-import shareService, { copyTextToClipboard } from 'app/share/services/share.service';
+import shareService from 'app/share/services/share.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { envService, errorService } from 'services';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { InvitedUserProps } from '../types';
+import errorService from 'services/error.service';
+import envService from 'services/env.service';
+import { copyTextToClipboard } from 'utils/copyToClipboard.utils';
 
 interface ShareItemActionsProps {
   itemToShare: ItemToShare | null;
@@ -66,9 +68,11 @@ export const useShareItemActions = ({
         itemToShare.item.isFolder ? 'folder' : 'file',
         encryptionKey,
       );
+
       if (sharingInfo) {
         actionDispatch(setSharingMeta(sharingInfo));
       }
+
       props.onShareItem?.();
       actionDispatch(setSelectedUserListIndex(null));
     }
@@ -80,10 +84,10 @@ export const useShareItemActions = ({
       return;
     }
 
-    if (!isPasswordProtected) {
-      actionDispatch(setOpenPasswordInput(true));
-    } else {
+    if (isPasswordProtected) {
       actionDispatch(setOpenPasswordDisableDialog(true));
+    } else {
+      actionDispatch(setOpenPasswordInput(true));
     }
   }, [isPasswordProtected, isPasswordSharingAvailable]);
 
@@ -92,13 +96,13 @@ export const useShareItemActions = ({
       try {
         let sharingInfo = sharingMeta;
 
-        if (!sharingInfo?.encryptedCode) {
+        if (sharingInfo?.encryptedCode) {
+          await shareService.saveSharingPassword(sharingInfo.id, plainPassword, sharingInfo.encryptedCode);
+        } else {
           const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
           const itemId = itemToShare?.item.uuid ?? '';
           sharingInfo = await shareService.createPublicShareFromOwnerUser(itemId, itemType, plainPassword);
           actionDispatch(setSharingMeta(sharingInfo));
-        } else {
-          await shareService.saveSharingPassword(sharingInfo.id, plainPassword, sharingInfo.encryptedCode);
         }
 
         actionDispatch(setIsPasswordProtected(true));
