@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, test } from 'vitest';
 import { loadStripe } from '@stripe/stripe-js/pure';
 import paymentService from './payment.service';
 import { SdkFactory } from '../../../app/core/factory/sdk';
@@ -34,6 +34,7 @@ describe('paymentService', () => {
 
   const mockStripe = {
     redirectToCheckout: vi.fn(),
+    confirmCardPayment: vi.fn(),
   };
 
   beforeEach(() => {
@@ -138,6 +139,65 @@ describe('paymentService', () => {
         couponCode: 'DISCOUNT',
         userType: UserType.Individual,
       });
+    });
+  });
+
+  describe('Update subscription with confirmation', () => {
+    test('When the user updates the subscription with confirmation, the 3DS is requested and checked', async () => {
+      const updateSubscriptionPricePayload = {
+        userSubscription: { id: 'sub_123' },
+        request3DSecure: true,
+        clientSecret: 'cs_123',
+      };
+
+      mockPaymentsClient.updateSubscriptionPrice.mockResolvedValue(updateSubscriptionPricePayload);
+      mockStripe.confirmCardPayment.mockResolvedValue({ paymentIntent: { status: 'succeeded' } });
+      const onSuccessCallback = vi.fn();
+
+      await paymentService.updateSubscriptionWithConfirmation({
+        priceId: 'price_123',
+        userType: UserType.Individual,
+        coupon: 'DISCOUNT',
+        onSuccess: onSuccessCallback,
+        onError: vi.fn(),
+      });
+
+      expect(mockPaymentsClient.updateSubscriptionPrice).toHaveBeenCalledWith({
+        priceId: 'price_123',
+        couponCode: 'DISCOUNT',
+        userType: UserType.Individual,
+      });
+      expect(mockStripe.confirmCardPayment).toHaveBeenCalledWith(updateSubscriptionPricePayload.clientSecret);
+      expect(onSuccessCallback).toHaveBeenCalled();
+    });
+
+    test('When the user updates the subscription and there is an error with the confirmation, then the error is handled correctly', async () => {
+      const updateSubscriptionPricePayload = {
+        userSubscription: { id: 'sub_123' },
+        request3DSecure: true,
+        clientSecret: 'cs_123',
+      };
+      const mockedMessageError = 'Error updating price';
+
+      mockPaymentsClient.updateSubscriptionPrice.mockResolvedValue(updateSubscriptionPricePayload);
+      mockStripe.confirmCardPayment.mockResolvedValue({ error: { message: mockedMessageError } });
+      const onErrorCallback = vi.fn();
+
+      await paymentService.updateSubscriptionWithConfirmation({
+        priceId: 'price_123',
+        userType: UserType.Individual,
+        coupon: 'DISCOUNT',
+        onSuccess: vi.fn(),
+        onError: onErrorCallback,
+      });
+
+      expect(mockPaymentsClient.updateSubscriptionPrice).toHaveBeenCalledWith({
+        priceId: 'price_123',
+        couponCode: 'DISCOUNT',
+        userType: UserType.Individual,
+      });
+      expect(mockStripe.confirmCardPayment).toHaveBeenCalledWith(updateSubscriptionPricePayload.clientSecret);
+      expect(onErrorCallback).toHaveBeenCalledWith(new Error(mockedMessageError));
     });
   });
 
