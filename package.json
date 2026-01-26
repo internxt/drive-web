@@ -1,6 +1,6 @@
 {
   "name": "drive-web",
-  "version": "v1.0.658",
+  "version": "v1.0.663",
   "private": true,
   "dependencies": {
     "@dashlane/pqc-kem-kyber512-browser": "^1.0.0",
@@ -33,12 +33,12 @@
     "heic2any": "^0.0.4",
     "history": "^4.10.1",
     "https-browserify": "^1.0.0",
-    "i18next": "^22.4.9",
+    "i18next": "^22.5.1",
     "i18next-browser-languagedetector": "^7.2.0",
     "idb": "^6.1.5",
     "js-file-download": "^0.4.12",
     "lint-staged": "^13.1.0",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "openpgp": "^5.11.3",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
