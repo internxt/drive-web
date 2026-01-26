@@ -10,8 +10,6 @@ export interface LegacyShardMeta {
   tree: string[];
 }
 
-export type ShardMeta = Omit<LegacyShardMeta, 'challenges' | 'challenges_as_str' | 'tree'>;
-
 export interface DownloadOptions {
   key?: Buffer;
   token?: string;

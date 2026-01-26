@@ -1,14 +1,11 @@
-import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { t } from 'i18next';
 import { storageActions } from '..';
 import { RootState } from '../../..';
 import { SdkFactory } from '../../../../core/factory/sdk';
 import errorService from 'services/error.service';
 import { DriveItemData } from 'app/drive/types';
-import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
-import { StorageState } from '../storage.model';
 
 const DEFAULT_LIMIT = 50;
 
@@ -109,17 +106,3 @@ export const fetchSortedFolderContentThunk = createAsyncThunk<void, string, { st
     }
   },
 );
-
-export const fetchSortedFolderContentThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
-  builder
-    .addCase(fetchSortedFolderContentThunk.pending, (state, action) => {
-      state.loadingFolders[action.meta.arg] = true;
-    })
-    .addCase(fetchSortedFolderContentThunk.fulfilled, (state, action) => {
-      state.loadingFolders[action.meta.arg] = false;
-    })
-    .addCase(fetchSortedFolderContentThunk.rejected, (state, action) => {
-      state.loadingFolders[action.meta.arg] = false;
-      notificationsService.show({ text: t('error.fetchingFolderContent'), type: ToastType.Error });
-    });
-};

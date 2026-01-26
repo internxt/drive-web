@@ -1,15 +1,12 @@
-import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 import _ from 'lodash';
 
 import newStorageService from 'app/drive/services/new-storage.service';
-import { t } from 'i18next';
 import { storageActions } from '..';
 import { RootState } from '../../..';
 import databaseService, { DatabaseCollection } from '../../../../database/services/database.service';
 import { DriveFolderData, DriveItemData } from 'app/drive/types';
-import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
-import { StorageState } from '../storage.model';
 
 export const fetchDialogContentThunk = createAsyncThunk<void, string, { state: RootState }>(
   'storage/fetchDialogContentThunk',
@@ -53,12 +50,3 @@ export const fetchDialogContentThunk = createAsyncThunk<void, string, { state: R
     });
   },
 );
-
-export const fetchDialogContentThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
-  builder
-    .addCase(fetchDialogContentThunk.pending, () => undefined)
-    .addCase(fetchDialogContentThunk.fulfilled, () => undefined)
-    .addCase(fetchDialogContentThunk.rejected, (state, action) => {
-      notificationsService.show({ text: t('error.fetchingFolderContent'), type: ToastType.Error });
-    });
-};

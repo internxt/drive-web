@@ -79,35 +79,13 @@ export type RequestedPlanData = DisplayPrice & {
   maximumSeats?: number;
 };
 
-// Checkout View Data
-export type PlanData = {
-  selectedPlan: RequestedPlanData;
-  upsellPlan: RequestedPlanData;
-};
-
 export type AuthMethodTypes = 'signUp' | 'signIn' | 'userIsSignedIn';
-
-export interface ClientSecretData {
-  clientSecretType: 'payment' | 'setup';
-  client_secret: string;
-}
-
-export interface PasswordStateProps {
-  tag: 'error' | 'warning' | 'success';
-  label: string;
-}
 
 export interface CouponCodeData {
   codeId: string;
   codeName: string;
   amountOff?: number;
   percentOff?: number;
-}
-
-export interface ErrorStates {
-  authError: string;
-  stripeError: string;
-  couponError: string;
 }
 
 export type ErrorType = 'auth' | 'stripe' | 'coupon';

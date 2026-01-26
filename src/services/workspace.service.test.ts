@@ -34,7 +34,6 @@ const mockWorkspacesClient = {
   createFileEntry: vi.fn(),
   createFolder: vi.fn(),
   getWorkspaceCredentials: vi.fn(),
-  changeUserRole: vi.fn(),
   getWorkspacePendingInvitations: vi.fn(),
   getPersonalTrash: vi.fn(),
   validateWorkspaceInvitation: vi.fn(),
@@ -54,7 +53,6 @@ const mockWorkspacesClient = {
   getMemberUsage: vi.fn(),
   modifyMemberUsage: vi.fn(),
   getWorkspace: vi.fn(),
-  getWorkspaceUsage: vi.fn(),
   leaveWorkspace: vi.fn(),
   getWorkspaceLogs: vi.fn(),
 };
@@ -305,13 +303,6 @@ describe('workspace service', () => {
         mockIds.memberId,
       );
     });
-
-    it('should change user role', async () => {
-      const roleData = { teamId: mockIds.teamId, memberId: mockIds.memberId, role: 'admin' };
-      mockWorkspacesClient.changeUserRole.mockResolvedValue(undefined);
-      await workspaceService.changeUserRole(roleData);
-      expect(mockWorkspacesClient.changeUserRole).toHaveBeenCalledWith(mockIds.teamId, mockIds.memberId, 'admin');
-    });
   });
 
   describe('When managing files and folders', () => {
@@ -487,13 +478,6 @@ describe('workspace service', () => {
         args: [mockIds.workspaceId],
         mockData: { used: 1024, total: 5120 },
       },
-      {
-        name: 'workspace usage',
-        fn: 'getWorkspaceUsage',
-        clientFn: 'getWorkspaceUsage',
-        args: [mockIds.workspaceId],
-        mockData: { totalWorkspaceSpace: 10240, spaceAssigned: 5120, spaceUsed: 2048 },
-      },
     ])('should retrieve $name', async ({ fn, clientFn, args, mockData }) => {
       mockWorkspacesClient[clientFn].mockResolvedValue(mockData);
       const result = await workspaceService[fn](...args);
@@ -505,13 +489,6 @@ describe('workspace service', () => {
       mockWorkspacesClient.modifyMemberUsage.mockResolvedValue(mockData);
       const result = await workspaceService.modifyMemberUsage(mockIds.workspaceId, mockIds.memberId, 10240);
       expect(result).toEqual(mockData);
-    });
-
-    it('should handle errors when retrieving workspace usage fails', async () => {
-      await testErrorHandling(
-        () => workspaceService.getWorkspaceUsage(mockIds.workspaceId),
-        mockWorkspacesClient.getWorkspaceUsage,
-      );
     });
   });
 

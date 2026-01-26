@@ -280,18 +280,6 @@ const contextMenuDriveFolderShared = ({
   ];
 };
 
-const contextMenuMultipleSharedView = ({
-  downloadItem,
-  moveToTrash,
-}: {
-  downloadItem: (item: ListShareLinksItem) => void;
-  moveToTrash: (item: ListShareLinksItem) => void;
-}): Array<MenuItemType<ListShareLinksItem>> => [
-  getDownloadMenuItem(downloadItem),
-  { separator: true },
-  getMoveToTrashMenuItem(moveToTrash),
-];
-
 const contextMenuTrashItems = ({
   openPreview,
   restoreItem,
@@ -357,17 +345,6 @@ const contextMenuSelectedBackupItems = ({
     },
   },
 ];
-
-const contextMenuDriveItemSharedsView = ({
-  copyShareLink,
-  openShareAccessSettings,
-}: {
-  copyShareLink: (item) => void;
-  openShareAccessSettings: (item) => void;
-}): Array<MenuItemType<DriveItemData>> => {
-  const shareLinkItems = [manageLinkAccessMenuItem(openShareAccessSettings), getCopyLinkMenuItem(copyShareLink)];
-  return [...shareLinkItems];
-};
 
 const contextMenuDriveItemSharedAFS = ({
   openPreview,
@@ -511,10 +488,8 @@ export {
   contextMenuDriveFolderSharedAFS,
   contextMenuDriveItemShared,
   contextMenuDriveItemSharedAFS,
-  contextMenuDriveItemSharedsView,
   contextMenuDriveNotSharedLink,
   contextMenuMultipleSelectedTrashItems,
-  contextMenuMultipleSharedView,
   contextMenuMultipleSharedViewAFS,
   contextMenuSelectedBackupItems,
   contextMenuSelectedItems,

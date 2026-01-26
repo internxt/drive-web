@@ -52,13 +52,6 @@ describe('userService', () => {
     vi.spyOn(localStorageService, 'get').mockReturnValue(testToken);
   });
 
-  it('should send a deactivation email', async () => {
-    authClientMock.sendUserDeactivationEmail.mockResolvedValue({ success: true });
-    const result = await userService.sendDeactivationEmail();
-    expect(result).toEqual({ success: true });
-    expect(authClientMock.sendUserDeactivationEmail).toHaveBeenCalledWith(testToken);
-  });
-
   it('should pre-create user', async () => {
     usersClientMock.preRegister.mockResolvedValue('mockPreCreate');
     const response = await userService.preCreateUser(testEmail);
