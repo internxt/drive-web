@@ -98,7 +98,7 @@ class UploadManager {
     },
     [FileSizeType.Small]: {
       upperBound: TWENTY_MEGABYTES - 1,
-      lowerBound: 1,
+      lowerBound: 0,
       concurrency: 6,
     },
   };
@@ -135,13 +135,14 @@ class UploadManager {
       const upload = async () => {
         uploadAttempts++;
 
-        if (!existsRelatedTask)
+        if (!existsRelatedTask) {
           tasksService.updateTask({
             taskId: taskId,
             merge: {
               status: TaskStatus.InProcess,
             },
           });
+        }
 
         const uploadStatus = this.uploadRepository?.getUploadState(fileData.relatedTaskId ?? taskId);
         const isPaused = (await uploadStatus) === TaskStatus.Paused;
