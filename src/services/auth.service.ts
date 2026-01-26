@@ -347,13 +347,12 @@ export const updateCredentialsWithToken = async (
         }
       : undefined;
 
-  const keys =
-    privateKeys && backupData?.publicKeys
-      ? {
-          private: privateKeys,
-          public: backupData?.publicKeys,
-        }
-      : undefined;
+  const keys = privateKeys
+    ? {
+        private: privateKeys,
+        ...(backupData?.publicKeys && { public: backupData.publicKeys }),
+      }
+    : undefined;
 
   return authClient.changePasswordWithLinkV2(
     token,

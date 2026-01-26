@@ -687,7 +687,7 @@ describe('updateCredentialsWithToken', () => {
     expect(keys).toBeUndefined();
   });
 
-  it('should not send keys when backup data has no publicKeys (legacy backup)', async () => {
+  it('When backup data has no publicKeys (legacy backup), then it should send only privateKeys', async () => {
     const mockToken = 'test-reset-token';
     const mockNewPassword = 'newPassword123';
     const mockMnemonic =
@@ -721,7 +721,10 @@ describe('updateCredentialsWithToken', () => {
     expect(encryptedPassword).toBeDefined();
     expect(encryptedSalt).toBeDefined();
     expect(encryptedMnemonic).toBeDefined();
-    expect(keys).toBeUndefined();
+    expect(keys).toBeDefined();
+
+    expect(keys.private.ecc).toBe('mock-encrypted-data');
+    expect(keys.public).toBeUndefined();
   });
 
   it('should send both private and public keys when backup data has publicKeys', async () => {
