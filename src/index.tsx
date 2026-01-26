@@ -27,6 +27,37 @@ import envService from 'services/env.service';
 import { enforceCanonicalDriveDomain } from 'utils/canonicalDomain.utils';
 import { initializeServiceWorkers } from 'utils/initializeServiceWorkers.utils';
 
+/**
+ * Patches Node.prototype.removeChild to prevent NotFoundError when browser
+ * translation features (like Edge auto-translate) move DOM nodes.
+ *
+ * Browser translators modify the DOM by wrapping or moving text nodes, which can
+ * cause React to lose track of its nodes and throw "Failed to execute 'removeChild'"
+ * errors during cleanup.
+ *
+ * This patch adds a safety check before removing nodes, allowing translation to
+ * work while preventing crashes.
+ *
+ * This must be placed here because if we move it to a function (in another file),
+ * the function will be called too late.
+ *
+ * Read more: https://github.com/vercel/next.js/issues/58055#issuecomment-3133346877
+ */
+if (typeof Node !== 'undefined' && Node.prototype.removeChild) {
+  const originalRemoveChild = Node.prototype.removeChild;
+  Node.prototype.removeChild = function <T extends Node>(child: T): T {
+    if (!this.contains(child)) {
+      console.warn('Google Translate attempted to remove a child node from the wrong parent. Skipping.', {
+        childNode: child?.nodeName,
+        expectedParent: this?.nodeName,
+        actualParent: child?.parentNode?.nodeName,
+      });
+      return child;
+    }
+    return originalRemoveChild.call(this, child) as T;
+  };
+}
+
 enforceCanonicalDriveDomain();
 
 // Initialize workers immediately

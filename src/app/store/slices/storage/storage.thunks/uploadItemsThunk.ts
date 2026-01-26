@@ -56,17 +56,6 @@ const DEFAULT_OPTIONS: Partial<UploadItemsThunkOptions> = {
   showErrors: true,
 };
 
-const showEmptyFilesNotification = (zeroLengthFilesNumber: number) => {
-  if (zeroLengthFilesNumber > 0) {
-    const fileText = zeroLengthFilesNumber === 1 ? 'file' : 'files';
-
-    notificationsService.show({
-      text: `Empty files are not supported.\n${zeroLengthFilesNumber} empty ${fileText} not uploaded.`,
-      type: ToastType.Warning,
-    });
-  }
-};
-
 const isUploadAllowed = ({
   state,
   files,
@@ -146,14 +135,12 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     });
     if (!continueWithUpload) return;
 
-    const { filesToUpload, zeroLengthFilesNumber } = await prepareFilesToUpload({
+    const { filesToUpload } = await prepareFilesToUpload({
       files,
       parentFolderId,
       disableDuplicatedNamesCheck: options.disableDuplicatedNamesCheck,
       fileType,
     });
-
-    showEmptyFilesNotification(zeroLengthFilesNumber);
 
     const filesToUploadData = filesToUpload.map((file) => ({
       filecontent: file,
@@ -323,7 +310,6 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
         parentFolderId,
       });
     }
-    showEmptyFilesNotification(zeroLengthFilesNumber);
 
     let ownerUserAuthenticationDataForWorkspaces: any = null;
     if (workspaceId) {
@@ -426,15 +412,13 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
         workspacesToken: workspaceCredentials?.tokenHeader,
       };
     }
-    const { filesToUpload, zeroLengthFilesNumber } = await prepareFilesToUpload({
+    const { filesToUpload } = await prepareFilesToUpload({
       files,
       parentFolderId,
       disableDuplicatedNamesCheck: options.disableDuplicatedNamesCheck,
       disableExistenceCheck: options.disableExistenceCheck,
       notUploadHiddenFiles: options.notUploadHiddenFiles,
     });
-
-    showEmptyFilesNotification(zeroLengthFilesNumber);
 
     const filesToUploadData = filesToUpload.map((file) => ({
       filecontent: file,

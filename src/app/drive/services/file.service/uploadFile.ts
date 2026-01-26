@@ -1,6 +1,5 @@
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { Network } from 'app/drive/services/network.service';
-import { DriveFileData } from 'app/drive/types';
 import { SdkFactory } from 'app/core/factory/sdk';
 import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
@@ -11,6 +10,10 @@ import { getEnvironmentConfig } from '../network.service';
 import { generateThumbnailFromFile } from '../thumbnail.service';
 import { OwnerUserAuthenticationData } from 'app/network/types';
 import { FileToUpload } from './types';
+import { FileEntry } from '@internxt/sdk/dist/workspaces';
+import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
+import { BucketNotFoundError, FileIdRequiredError } from './upload.errors';
+import { isFileEmpty } from 'utils/isFileEmpty';
 
 export interface FileUploadOptions {
   isTeam: boolean;
@@ -20,12 +23,63 @@ export interface FileUploadOptions {
   isUploadedFromFolder?: boolean;
 }
 
-class RetryableFileError extends Error {
-  constructor(public file: FileToUpload) {
-    super('Retryable file');
-    this.name = 'RetryableFileError';
-  }
+interface UploadFileProps {
+  file: FileToUpload;
+  fileId?: string;
+  isWorkspaceUpload?: boolean;
+  bucketId: string;
+  workspaceId?: string;
+  resourcesToken?: string;
+  ownerToken?: string;
 }
+
+export const createFileEntry = async ({
+  bucketId,
+  fileId,
+  file,
+  isWorkspaceUpload,
+  workspaceId,
+  resourcesToken,
+  ownerToken,
+}: UploadFileProps) => {
+  const date = new Date();
+
+  if (isWorkspaceUpload && workspaceId) {
+    if (!fileId) {
+      throw new FileIdRequiredError();
+    }
+
+    const workspaceFileEntry: FileEntry = {
+      name: file.name,
+      bucket: bucketId,
+      fileId: fileId,
+      encryptVersion: StorageTypes.EncryptionVersion.Aes03,
+      folderUuid: file.parentFolderId,
+      size: file.size,
+      plainName: file.name,
+      type: file.type,
+      modificationTime: date.toISOString(),
+      date: date.toISOString(),
+    };
+
+    return workspacesService.createFileEntry(workspaceFileEntry, workspaceId, resourcesToken);
+  } else {
+    const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+    const fileEntry: StorageTypes.FileEntryByUuid = {
+      fileId: fileId,
+      type: file.type,
+      size: file.size,
+      plainName: file.name,
+      bucket: bucketId,
+      folderUuid: file.parentFolderId,
+      encryptVersion: StorageTypes.EncryptionVersion.Aes03,
+      modificationTime: date.toISOString(),
+      date: date.toISOString(),
+    };
+
+    return storageClient.createFileEntryByUuid(fileEntry, ownerToken);
+  }
+};
 
 export async function uploadFile(
   userEmail: string,
@@ -40,13 +94,28 @@ export async function uploadFile(
 ): Promise<DriveFileData> {
   const { bridgeUser, bridgePass, encryptionKey, bucketId } =
     options.ownerUserAuthenticationData ?? getEnvironmentConfig(options.isTeam);
+  const workspaceId = options?.ownerUserAuthenticationData?.workspaceId;
+  const workspacesToken = options?.ownerUserAuthenticationData?.workspacesToken;
+  const resourcesToken = options?.ownerUserAuthenticationData?.resourcesToken;
+
+  const isWorkspacesUpload = workspaceId && workspacesToken;
+
+  if (isFileEmpty(file.content) && !isWorkspacesUpload) {
+    return createFileEntry({
+      bucketId: bucketId,
+      file,
+      resourcesToken: resourcesToken ?? workspacesToken,
+      workspaceId: workspaceId,
+      ownerToken: workspacesToken,
+    });
+  }
 
   if (!bucketId) {
     notificationsService.show({ text: 'Login again to start uploading files', type: ToastType.Warning });
     localStorageService.clear();
     navigationService.push(AppView.Login);
 
-    throw new Error('Bucket not found!');
+    throw new BucketNotFoundError();
   }
 
   const [promise, abort] = new Network(bridgeUser, bridgePass, encryptionKey).uploadFile(
@@ -65,45 +134,18 @@ export async function uploadFile(
   options.abortCallback?.(abort?.abort);
 
   const fileId = await promise;
-  if (fileId === undefined) throw new RetryableFileError(file);
+  if (fileId === undefined) throw new FileIdRequiredError();
 
-  const workspaceId = options?.ownerUserAuthenticationData?.workspaceId;
-  const workspacesToken = options?.ownerUserAuthenticationData?.workspacesToken;
-  const resourcesToken = options?.ownerUserAuthenticationData?.resourcesToken;
+  let response = await createFileEntry({
+    bucketId: bucketId,
+    fileId: fileId,
+    file,
+    isWorkspaceUpload: !!isWorkspacesUpload,
+    resourcesToken: resourcesToken ?? workspacesToken,
+    workspaceId: workspaceId,
+    ownerToken: workspacesToken,
+  });
 
-  const isWorkspacesUpload = workspaceId && workspacesToken;
-  let response;
-
-  if (isWorkspacesUpload) {
-    const date = new Date();
-    const workspaceFileEntry = {
-      name: file.name,
-      bucket: bucketId,
-      fileId: fileId,
-      encryptVersion: StorageTypes.EncryptionVersion.Aes03,
-      folderUuid: file.parentFolderId,
-      size: file.size,
-      plainName: file.name,
-      type: file.type,
-      modificationTime: date.toISOString(),
-      date: date.toISOString(),
-    };
-
-    response = await workspacesService.createFileEntry(workspaceFileEntry, workspaceId, resourcesToken);
-  } else {
-    const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-    const fileEntry: StorageTypes.FileEntryByUuid = {
-      fileId: fileId,
-      type: file.type,
-      size: file.size,
-      plainName: file.name,
-      bucket: bucketId,
-      folderUuid: file.parentFolderId,
-      encryptVersion: StorageTypes.EncryptionVersion.Aes03,
-    };
-
-    response = await storageClient.createFileEntryByUuid(fileEntry, options.ownerUserAuthenticationData?.token);
-  }
   if (!response.thumbnails) {
     response = {
       ...response,
