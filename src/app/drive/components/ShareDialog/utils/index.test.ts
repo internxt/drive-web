@@ -1,36 +1,9 @@
 import { describe, expect, test, vi, beforeEach, afterEach } from 'vitest';
-import { isRequestPending, cropSharedName, isAdvancedShareItem, getLocalUserData, filterEditorAndReader } from '.';
-import { REQUEST_STATUS } from '../types';
+import { cropSharedName, isAdvancedShareItem, getLocalUserData, filterEditorAndReader } from '.';
 import { localStorageService } from 'services';
 import { DriveItemData } from 'app/drive/types';
 import { AdvancedSharedItem } from 'app/share/types';
 import { Role } from '@internxt/sdk/dist/drive/share/types';
-
-describe('Check if the request is pending', () => {
-  test('When request status is pending, then returns true', () => {
-    const status = REQUEST_STATUS.PENDING;
-
-    const result = isRequestPending(status);
-
-    expect(result).toBeTruthy();
-  });
-
-  test('When request status is accepted, then returns false', () => {
-    const status = REQUEST_STATUS.ACCEPTED;
-
-    const result = isRequestPending(status);
-
-    expect(result).toBeFalsy();
-  });
-
-  test('When request status is denied, then returns false', () => {
-    const status = REQUEST_STATUS.DENIED;
-
-    const result = isRequestPending(status);
-
-    expect(result).toBeFalsy();
-  });
-});
 
 describe('Cropping the name', () => {
   test('When name length is less than max length, then returns original name', () => {
