@@ -157,7 +157,6 @@ export type DownloadFilesData = { name: string; type: string; items?: DriveItemD
 export type DownloadFolderData = { id: number; name: string; type: string; isFolder: boolean };
 export type UploadFileData = { uploadFile: File; parentFolderId: string };
 export type UploadFolderData = { folder: IRoot; parentFolderId: string };
-export type UploadSharedItemData = UploadFileData & SharedItemAuthenticationData;
 export type SharedItemAuthenticationData = {
   currentFolderId: string;
   ownerUserAuthenticationData: {

@@ -15,12 +15,6 @@ export function comparePrivateKeyCiphertextIDs(privateKey: PrivateKey, encrypted
   return messageKeyID === privateKeyID;
 }
 
-export function comparePublicKeyCiphertextIDs(publicKey: PublicKey, encryptedMessage: Message<string>): boolean {
-  const messageKeyID = encryptedMessage.getEncryptionKeyIDs()[0].toHex();
-  const publiKeyID = publicKey.getSubkeys()[0].getKeyID().toHex();
-  return messageKeyID === publiKeyID;
-}
-
 export function compareKeyPairIDs(privateKey: PrivateKey, publicKey: PublicKey): boolean {
   const publiKeyID = publicKey.getSubkeys()[0].getKeyID().toHex();
   const privateKeyID = privateKey.getSubkeys()[0].getKeyID().toHex();

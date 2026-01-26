@@ -16,6 +16,7 @@ const usersClientMock = {
   verifyEmailChange: vi.fn(),
   checkChangeEmailExpiration: vi.fn(),
   getPublicKeyWithPrecreation: vi.fn(),
+  handleIncompleteCheckout: vi.fn(),
 };
 
 const authClientMock = {
@@ -40,18 +41,15 @@ vi.mock('../app/core/factory/sdk', () => ({
   },
 }));
 
+vi.mock('utils', () => ({
+  generateCaptchaToken: vi.fn().mockResolvedValue('mocked-captcha-token'),
+}));
+
 describe('userService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
     vi.spyOn(localStorageService, 'get').mockReturnValue(testToken);
-  });
-
-  it('should send a deactivation email', async () => {
-    authClientMock.sendUserDeactivationEmail.mockResolvedValue({ success: true });
-    const result = await userService.sendDeactivationEmail();
-    expect(result).toEqual({ success: true });
-    expect(authClientMock.sendUserDeactivationEmail).toHaveBeenCalledWith(testToken);
   });
 
   it('should pre-create user', async () => {
@@ -122,11 +120,59 @@ describe('userService', () => {
       publicKey: 'key123',
       publicKyberKey: 'kyberKey456',
     };
+    const captchaToken = 'mocked-captcha-token';
     usersClientMock.getPublicKeyWithPrecreation.mockResolvedValue(mockResponse);
 
     const result = await userService.getPublicKeyWithPrecreation(testEmail);
 
     expect(result).toEqual(mockResponse);
     expect(usersClientMock.getPublicKeyWithPrecreation).toHaveBeenCalledWith({ email: testEmail });
+  });
+
+  it('should send incomplete checkout with all parameters', async () => {
+    usersClientMock.handleIncompleteCheckout.mockResolvedValue({ success: true });
+
+    const completeCheckoutUrl = 'https://drive.internxt.com/checkout?planId=price_123';
+    const planName = '1TB year';
+    const price = 99.99;
+
+    await userService.sendIncompleteCheckout(completeCheckoutUrl, planName, price);
+
+    expect(usersClientMock.handleIncompleteCheckout).toHaveBeenCalledWith({
+      completeCheckoutUrl,
+      planName,
+      price,
+    });
+  });
+
+  it('should send incomplete checkout without price parameter', async () => {
+    usersClientMock.handleIncompleteCheckout.mockResolvedValue({ success: true });
+
+    const completeCheckoutUrl = 'https://drive.internxt.com/checkout?planId=price_456';
+    const planName = '2TB month';
+
+    await userService.sendIncompleteCheckout(completeCheckoutUrl, planName);
+
+    expect(usersClientMock.handleIncompleteCheckout).toHaveBeenCalledWith({
+      completeCheckoutUrl,
+      planName,
+      price: undefined,
+    });
+  });
+
+  it('should send incomplete checkout with price as 0', async () => {
+    usersClientMock.handleIncompleteCheckout.mockResolvedValue({ success: true });
+
+    const completeCheckoutUrl = 'https://drive.internxt.com/checkout?planId=free_plan';
+    const planName = 'Free Plan';
+    const price = 0;
+
+    await userService.sendIncompleteCheckout(completeCheckoutUrl, planName, price);
+
+    expect(usersClientMock.handleIncompleteCheckout).toHaveBeenCalledWith({
+      completeCheckoutUrl,
+      planName,
+      price: 0,
+    });
   });
 });

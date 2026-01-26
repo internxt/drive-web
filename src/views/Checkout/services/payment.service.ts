@@ -28,24 +28,6 @@ export interface CreatePaymentSessionPayload {
   canceledUrl?: string;
 }
 
-export interface CreateTeamsPaymentSessionPayload {
-  test?: boolean;
-  mode: StripeSessionMode;
-  priceId: string;
-  quantity: number;
-  mnemonicTeam: string;
-  successUrl?: string;
-  canceledUrl?: string;
-}
-
-export interface ValidateCheckoutSessionResponse {
-  valid: boolean;
-  customerId?: string;
-  planId: string;
-  userType?: UserType;
-  message?: string;
-}
-
 let stripe: Stripe;
 
 const paymentService = {
@@ -175,6 +157,34 @@ const paymentService = {
     const paymentsClient = await SdkFactory.getNewApiInstance().createPaymentsClient();
 
     return paymentsClient.updateSubscriptionPrice({ priceId, couponCode: coupon, userType });
+  },
+
+  async updateSubscriptionWithConfirmation({
+    priceId,
+    userType,
+    coupon,
+    onSuccess,
+    onError,
+  }: {
+    priceId: string;
+    userType: UserType.Individual | UserType.Business;
+    coupon?: string;
+    onSuccess: () => void;
+    onError: (error: Error) => void;
+  }): Promise<void> {
+    const stripe = await this.getStripe();
+    const updatedSubscription = await this.updateSubscriptionPrice({ priceId, coupon, userType });
+
+    if (updatedSubscription.request3DSecure) {
+      const result = await stripe.confirmCardPayment(updatedSubscription.clientSecret);
+      if (result?.error?.message) {
+        onError(new Error(result.error.message));
+      } else {
+        onSuccess();
+      }
+    } else {
+      onSuccess();
+    }
   },
 
   async updateWorkspaceMembers(workspaceId: string, subscriptionId: string, updatedMembers: number) {

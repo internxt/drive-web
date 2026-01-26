@@ -9,12 +9,7 @@ import {
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import localStorageService from 'services/local-storage.service';
 import { SdkFactory } from 'app/core/factory/sdk';
-
-export const sendDeactivationEmail = (): Promise<void> => {
-  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
-  const token = localStorageService.get('xNewToken') ?? undefined;
-  return authClient.sendUserDeactivationEmail(token);
-};
+import { generateCaptchaToken } from 'utils';
 
 const preCreateUser = (email: string): Promise<PreCreateUserResponse> => {
   const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
@@ -56,8 +51,9 @@ const deleteUserAvatar = (): Promise<void> => {
   return usersClient.deleteUserAvatar(token);
 };
 
-const sendVerificationEmail = (): Promise<void> => {
-  const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
+const sendVerificationEmail = async (): Promise<void> => {
+  const captchaToken = await generateCaptchaToken();
+  const usersClient = SdkFactory.getNewApiInstance().createUsersClient(captchaToken);
   const token = localStorageService.get('xNewToken') ?? undefined;
   return usersClient.sendVerificationEmail(token);
 };
@@ -67,13 +63,15 @@ const getPublicKeyByEmail = (email: string): Promise<UserPublicKeyResponse> => {
   return usersClient.getPublicKeyByEmail({ email });
 };
 
-const getPublicKeyWithPrecreation = (email: string): Promise<UserPublicKeyWithCreationResponse> => {
-  const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
+const getPublicKeyWithPrecreation = async (email: string): Promise<UserPublicKeyWithCreationResponse> => {
+  const captchaToken = await generateCaptchaToken();
+  const usersClient = SdkFactory.getNewApiInstance().createUsersClient(captchaToken);
   return usersClient.getPublicKeyWithPrecreation({ email });
 };
 
-const changeEmail = (newEmail: string): Promise<void> => {
-  const authClient = SdkFactory.getNewApiInstance().createUsersClient();
+const changeEmail = async (newEmail: string): Promise<void> => {
+  const captchaToken = await generateCaptchaToken();
+  const authClient = SdkFactory.getNewApiInstance().createUsersClient(captchaToken);
   return authClient.changeUserEmail(newEmail);
 };
 
@@ -93,8 +91,16 @@ const downloadAvatar = async (url: string, signal?: AbortSignal): Promise<Blob> 
   return data;
 };
 
+const sendIncompleteCheckout = async (completeCheckoutUrl: string, planName: string, price?: number): Promise<void> => {
+  const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
+  await usersClient.handleIncompleteCheckout({
+    completeCheckoutUrl,
+    planName,
+    price,
+  });
+};
+
 const userService = {
-  sendDeactivationEmail,
   updateUserProfile,
   updateUserAvatar,
   deleteUserAvatar,
@@ -108,6 +114,7 @@ const userService = {
   refreshUserData,
   refreshAvatarUser,
   downloadAvatar,
+  sendIncompleteCheckout,
 };
 
 export default userService;

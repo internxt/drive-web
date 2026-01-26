@@ -144,7 +144,7 @@ describe('Download Worker Handler', () => {
 
       mockedWorker1.emitMessage({
         result: 'error',
-        error: mockedError.message,
+        error: mockedError,
       });
       mockedWorker2.emitMessage({
         result: 'success',
@@ -540,7 +540,7 @@ describe('Download Worker Handler', () => {
 
     mockedWorker.emitMessage({
       result: 'error',
-      error: mockedError.message,
+      error: mockedError,
     });
 
     await expect(workerHandlerPromise).rejects.toThrow(mockedError);

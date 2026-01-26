@@ -43,6 +43,7 @@ import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from 'app/core/factory/sdk';
 import errorService from 'services/error.service';
 import vpnAuthService from './vpnAuth.service';
+import { generateCaptchaToken } from 'utils';
 
 type ProfileInfo = {
   user: UserSettings;
@@ -62,7 +63,7 @@ export type RegisterFunction = (
   mnemonic: string;
 }>;
 
-export type SignUpParams = {
+type SignUpParams = {
   doSignUp: RegisterFunction;
   email: string;
   password: string;
@@ -79,7 +80,7 @@ type LogInParams = {
   loginType?: 'web' | 'desktop';
 };
 
-export type AuthenticateUserParams = {
+type AuthenticateUserParams = {
   email: string;
   password: string;
   authMethod: AuthMethodTypes;
@@ -285,7 +286,7 @@ export const recoverAccountWithBackupKey = async (
 /**
  * Recovery method for old backup keys format (mnemonic only)
  */
-export const recoveryOldBackuptWithToken = async (token: string, password: string, mnemonic: string): Promise<void> => {
+const recoveryOldBackuptWithToken = async (token: string, password: string, mnemonic: string): Promise<void> => {
   try {
     const authClient = SdkFactory.getNewApiInstance().createAuthClient();
     const recoverPayload = await prepareOldBackupRecoverPayloadForBackend({ mnemonic, password, token });
@@ -542,13 +543,15 @@ const extractOneUseCredentialsForAutoSubmit = (
   }
 };
 
-const sendChangePasswordEmail = (email: string): Promise<void> => {
-  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+const sendChangePasswordEmail = async (email: string): Promise<void> => {
+  const captchaToken = await generateCaptchaToken();
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient({ captchaToken });
   return authClient.sendChangePasswordEmail(email);
 };
 
-export const requestUnblockAccount = (email: string): Promise<void> => {
-  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+export const requestUnblockAccount = async (email: string): Promise<void> => {
+  const captchaToken = await generateCaptchaToken();
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient({ captchaToken });
   return authClient.requestUnblockAccount(email);
 };
 

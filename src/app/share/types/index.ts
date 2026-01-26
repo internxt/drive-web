@@ -1,6 +1,6 @@
 import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
-import { DriveFileData } from 'app/drive/types';
 import { NetworkCredentials } from '../../network/download';
+import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 
 export type AdvancedSharedItem = SharedFolders &
   SharedFiles & {
@@ -23,8 +23,6 @@ export type PreviewFileItem = DriveFileData & {
   mnemonic?: string;
   folderUuid: string;
 };
-
-export type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;
 
 export type SharedNamePath = {
   id: number;

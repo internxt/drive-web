@@ -128,6 +128,9 @@ beforeAll(() => {
       generateMnemonic: vi.fn(),
     };
   });
+  vi.mock('utils', () => ({
+    generateCaptchaToken: vi.fn(),
+  }));
 });
 
 beforeEach(() => {

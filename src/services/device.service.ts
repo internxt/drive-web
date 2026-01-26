@@ -1,4 +1,4 @@
-import { isMobile, isAndroid, isIOS } from 'react-device-detect';
+import { isMobile, isAndroid, isIOS, isSafari } from 'react-device-detect';
 
 const deviceService = {
   isMobile(): boolean {
@@ -12,6 +12,9 @@ const deviceService = {
         globalThis.location.href = 'https://apps.apple.com/us/app/internxt-drive-secure-file-storage/id1465869889';
       }
     }
+  },
+  isSafari(): boolean {
+    return isSafari;
   },
 };
 

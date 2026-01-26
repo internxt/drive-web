@@ -5,7 +5,7 @@ import { errorService, navigationService } from 'services';
 import { AppView } from 'app/core/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { CryptoCurrency, PriceWithTax } from '@internxt/sdk/dist/payments/types';
-import { THEME_STYLES } from '../views/CheckoutViewWrapper';
+import { IS_CRYPTO_PAYMENT_ENABLED, THEME_STYLES } from '../constants';
 import { PlanInterval } from '../types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
@@ -15,8 +15,6 @@ interface UseInitializeCheckoutProps {
   user?: UserSettings;
   translate: (key: string) => string;
 }
-
-const IS_CRYPTO_PAYMENT_ENABLED = true;
 
 export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }: UseInitializeCheckoutProps) => {
   const [stripeSdk, setStripeSdk] = useState<Stripe | null>(null);

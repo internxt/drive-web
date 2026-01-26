@@ -1,24 +1,3 @@
-import { vi } from 'vitest';
-
-export const createUploadWebWorker = (): Worker => {
-  return {
-    postMessage: vi.fn(),
-    terminate: vi.fn(),
-    onmessage: vi.fn(),
-    onerror: vi.fn(),
-  } as unknown as Worker;
-};
-
-export default {
-  createWriteStream: vi.fn().mockImplementation(() => ({
-    getWriter: vi.fn().mockReturnValue({
-      write: vi.fn(),
-      close: vi.fn(),
-      abort: vi.fn(),
-    }),
-  })),
-};
-
 export class MockWorker implements Partial<Worker> {
   private listeners: Record<string, ((event: any) => void)[]> = {};
   public messagesSent: any[] = [];
@@ -52,11 +31,3 @@ export class MockWorker implements Partial<Worker> {
     (this.listeners['error'] || []).forEach((cb) => cb(error));
   }
 }
-
-export const WORKER_MESSAGE_STATES = {
-  SUCCESS: 'success',
-  ERROR: 'error',
-  ABORT: 'abort',
-  CHECK_UPLOAD_STATUS: 'checkUploadStatus',
-  UPLOAD_STATUS: 'uploadStatus',
-};
