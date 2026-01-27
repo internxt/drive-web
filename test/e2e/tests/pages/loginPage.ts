@@ -23,7 +23,7 @@ export class LoginPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.loginTitle = this.page.getByRole('heading', { name: 'Log in' });
+    this.loginTitle = this.page.getByRole('heading', { name: 'Login' });
     this.emailInput = this.page.getByPlaceholder('Email', { exact: true });
     this.passwordInput = this.page.getByPlaceholder('Password', { exact: true });
     this.loginButton = this.page.getByRole('button', { name: 'Log in' });

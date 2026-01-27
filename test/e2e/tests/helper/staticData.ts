@@ -23,7 +23,7 @@ export const staticData = {
   termsOfServiceTitle: 'Terms of Service',
   needHelpTitle: 'How can we help you?',
   howToCreateBackUpKeyPageTitle: 'How do I create a backup key?',
-  logInPageTitle: 'Log in',
+  logInPageTitle: 'Login',
 
   userAlreadyRegistered: 'already registered',
   accountRecovery: 'Account recovery',
