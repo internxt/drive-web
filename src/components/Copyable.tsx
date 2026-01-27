@@ -1,7 +1,7 @@
 import { Copy } from '@phosphor-icons/react';
 import { useState } from 'react';
 import Tooltip from './Tooltip';
-import { copyTextToClipboard } from 'app/share/services/share.service';
+import { copyTextToClipboard } from 'utils/copyToClipboard.utils';
 
 interface CopyableProps {
   className?: string;

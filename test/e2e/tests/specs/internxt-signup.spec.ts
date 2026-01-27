@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { expect, test } from '@playwright/test';
+import { expect, Request, Route, test } from '@playwright/test';
 import { staticData } from '../helper/staticData';
 import { SignUpPage } from '../pages/signUpPage';
 import { getUser, getUserCredentials } from '../helper/getUser';
@@ -9,7 +9,7 @@ const credentialsFile = getUserCredentials();
 const user = getUser();
 const invalidEmail = 'invalid@internxt.com';
 
-const mockedCall = async (route, request) => {
+const mockedCall = async (route: Route, request: Request) => {
   const { email } = request.postDataJSON();
 
   if (invalidEmail === email) {

@@ -56,12 +56,12 @@ import EditItemNameDialog from 'app/drive/components/EditItemNameDialog/EditItem
 import ItemDetailsDialog from 'app/drive/components/ItemDetailsDialog/ItemDetailsDialog';
 import MoveItemsDialog from 'app/drive/components/MoveItemsDialog/MoveItemsDialog';
 import NameCollisionContainer from 'app/drive/components/NameCollisionDialog/NameCollisionContainer';
-import ShareDialog from 'app/drive/components/ShareDialog/ShareDialog';
 import StopSharingAndMoveToTrashDialogWrapper from 'views/Trash/components/StopSharingAndMoveToTrashDialogWrapper';
 import UploadItemsFailsDialog from 'app/drive/components/UploadItemsFailsDialog/UploadItemsFailsDialog';
 import WarningMessageWrapper from 'views/Home/components/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
+import { ShareDialogWrapper } from 'app/drive/components/ShareDialog/ShareDialogWrapper';
 import { EventData, SOCKET_EVENTS } from 'services/types/socket.types';
 
 const MenuItemToGetSize = ({
@@ -537,7 +537,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     >
       <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />
       <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
-      <ShareDialog isDriveItem onShareItem={handleOnShareItem} />
+      <ShareDialogWrapper isDriveItem onShareItem={handleOnShareItem} />
       <NameCollisionContainer />
       <MoveItemsDialog
         items={[...items]}
