@@ -96,7 +96,7 @@ const App = (props: AppProps): JSX.Element => {
         const newLimit = data.payload?.maxSpaceBytes;
 
         if (newLimit) {
-          dispatch(planActions.updatePlanLimitFromSocket(Number(newLimit)));
+          dispatch(planActions.updatePlanLimit(Number(newLimit)));
         }
       }
     },

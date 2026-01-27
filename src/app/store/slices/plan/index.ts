@@ -124,7 +124,7 @@ export const planSlice = createSlice({
   name: 'plan',
   initialState,
   reducers: {
-    updatePlanLimitFromSocket: (state, action) => {
+    updatePlanLimit: (state, action) => {
       if (action.payload) {
         state.planLimit = action.payload;
         state.isLoadingPlanLimit = false;
