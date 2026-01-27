@@ -28,10 +28,6 @@ vi.mock('..', () => ({
   },
 }));
 
-vi.mock('i18next', () => ({
-  t: vi.fn((key) => key),
-}));
-
 describe('Thunk of fetch sorted folder content', () => {
   const mockFolderId = 'folder-123';
   const dispatch = vi.fn();

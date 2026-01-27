@@ -34,8 +34,6 @@ type PasswordState = {
   label: string;
 };
 
-export type Views = 'signUp' | 'downloadBackupKey';
-
 function SignUpForm(): JSX.Element {
   const { translate } = useTranslationContext();
   const [isValidPassword, setIsValidPassword] = useState(false);

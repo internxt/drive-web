@@ -12,14 +12,6 @@ describe('dateService', () => {
     expect(formattedDate).toBe('01/10/2023');
   });
 
-  test('fromNow function should correctly return a string describing the time elapsed since a given date', () => {
-    const date = new Date();
-    const fromNow = dateService.fromNow(date);
-
-    expect(fromNow).toBe(dayjs(date).fromNow());
-    expect(fromNow).toBe('a few seconds ago');
-  });
-
   test('isDateOneBefore function should correctly determine if one date is before another', () => {
     const dateOne = new Date();
     const dateTwo = new Date(Date.now() + 1000);

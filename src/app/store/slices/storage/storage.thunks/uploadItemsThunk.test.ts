@@ -79,7 +79,6 @@ describe('uploadItemsThunk', () => {
   it('should upload files successfully', async () => {
     (prepareFilesToUpload as Mock).mockResolvedValue({
       filesToUpload: [mockFile],
-      zeroLengthFilesNumber: 0,
     });
 
     await uploadItemsThunk({
@@ -91,28 +90,9 @@ describe('uploadItemsThunk', () => {
     expect(uploadFileWithManager).toHaveBeenCalled();
   });
 
-  it('should show notification for empty files', async () => {
-    const notificationsServiceSpy = vi.spyOn(notificationsService, 'show');
-    (prepareFilesToUpload as Mock).mockResolvedValue({
-      filesToUpload: [],
-      zeroLengthFilesNumber: 1,
-    });
-
-    await uploadItemsThunk({
-      files: [mockFile],
-      parentFolderId: 'parent1',
-    })(dispatch, getState as () => RootState, {});
-
-    expect(notificationsServiceSpy).toHaveBeenCalledWith({
-      text: 'Empty files are not supported.\n1 empty file not uploaded.',
-      type: ToastType.Warning,
-    });
-  });
-
   it('should handle upload errors', async () => {
     (prepareFilesToUpload as Mock).mockResolvedValue({
       filesToUpload: [mockFile],
-      zeroLengthFilesNumber: 0,
     });
     const notificationsServiceSpy = vi.spyOn(notificationsService, 'show');
     (uploadFileWithManager as Mock).mockRejectedValue(new Error('Upload failed'));
@@ -131,7 +111,6 @@ describe('uploadItemsThunk', () => {
   it('should handle retry upload', async () => {
     (prepareFilesToUpload as Mock).mockResolvedValue({
       filesToUpload: [mockFile],
-      zeroLengthFilesNumber: 0,
     });
     (uploadFileWithManager as Mock).mockRejectedValueOnce(new Error('Upload failed'));
     const RetryChangeStatusSpy = vi.spyOn(RetryManager, 'changeStatus');

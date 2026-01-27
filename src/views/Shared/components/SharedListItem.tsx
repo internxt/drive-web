@@ -109,7 +109,7 @@ export const SharedListItem = ({
 
       {/* SIZE */}
       <div className="w-40 pl-4 block shrink-0 items-center whitespace-nowrap">
-        {sizeService.bytesToString(item.size, false) === '' ? (
+        {sizeService.bytesToString(item.size, false) === '' || item.isFolder ? (
           <span className="opacity-25">—</span>
         ) : (
           sizeService.bytesToString(item.size, false)

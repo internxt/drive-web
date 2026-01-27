@@ -1,4 +1,3 @@
-export { default as AuthButton } from './AuthButton';
 export { default as BaseButton } from './BaseButton';
 export { default as BaseDialog } from './BaseDialog';
 export { default as BreadcrumbsBackupsView } from './BreadcrumbsBackupsView';
@@ -9,7 +8,6 @@ export { default as BreadcrumbsMoveItemsDialogView } from './BreadcrumbsMoveItem
 export * from './BreadcrumbsHelper';
 export { default as Card } from './Card';
 export { default as Copyable } from './Copyable';
-export { default as DefaultAvatar } from './DefaultAvatar';
 export { default as Empty } from './Empty';
 export { default as ExpiredLinkView } from './ExpiredLinkView';
 export { LoadingRowSkeleton } from './LoadingRowSkeleton';

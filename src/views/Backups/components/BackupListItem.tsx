@@ -55,7 +55,7 @@ export default function BackupListItem({ item, onItemClicked }: Readonly<BackupL
 
       {/* SIZE */}
       <div className="w-size shrink-0 items-center whitespace-nowrap">
-        {sizeService.bytesToString(item.size, false) === '' ? (
+        {sizeService.bytesToString(item.size, false) === '' || item.isFolder ? (
           <span className="opacity-25">—</span>
         ) : (
           sizeService.bytesToString(item.size, false)

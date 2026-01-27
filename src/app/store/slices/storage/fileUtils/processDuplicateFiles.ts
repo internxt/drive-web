@@ -20,13 +20,10 @@ export const processDuplicateFiles = async ({
   parentFolderId,
   disableDuplicatedNamesCheck,
   duplicatedFiles,
-}: ProcessDuplicateFilesParams): Promise<{ newFilesToUpload: FileToUpload[]; zeroLengthFiles: number }> => {
-  const zeroLengthFiles = files.filter((file) => file.size === 0).length;
+}: ProcessDuplicateFilesParams): Promise<{ newFilesToUpload: FileToUpload[] }> => {
   const newFilesToUpload: FileToUpload[] = [...existingFilesToUpload];
 
   const processFile = async (file: File): Promise<void> => {
-    if (file.size === 0) return;
-
     const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
     let finalFilename = filename;
 
@@ -45,7 +42,7 @@ export const processDuplicateFiles = async ({
     });
   };
 
-  await Promise.all(files.filter((file) => file.size > 0).map(processFile));
+  await Promise.all(files.map(processFile));
 
-  return { newFilesToUpload, zeroLengthFiles };
+  return { newFilesToUpload };
 };

@@ -1,14 +1,9 @@
-import { DisplayPrice, UserSubscription } from '@internxt/sdk/dist/drive/payments/types/types';
+import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types/types';
 import PlanSelectionCard from './PlanSelectionCard';
 import { bytesToString } from 'app/drive/services/size.service';
 import { displayAmount } from '../../../../../../utils/planUtils';
 import { PlanSelectionCardSkeleton } from './skeletons/PlanSelectionCardSkeleton';
 import { currencyService } from 'views/Checkout/services';
-
-export interface UserSubscriptionProps {
-  individual: UserSubscription | null;
-  business: UserSubscription | null;
-}
 
 interface PlanSelectionComponentProps {
   pricesToRender: DisplayPrice[];
