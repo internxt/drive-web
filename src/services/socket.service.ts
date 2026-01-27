@@ -1,14 +1,13 @@
 import io, { Socket } from 'socket.io-client';
 import localStorageService from './local-storage.service';
 import envService from './env.service';
-
-export const SOCKET_EVENTS = {
-  FILE_CREATED: 'FILE_CREATED',
-};
+import { SocketNotConnectedError } from './errors/socket.errors';
+import { EventData } from './types/socket.types';
 
 export default class RealtimeService {
   private socket?: Socket;
   private static instance: RealtimeService;
+  private readonly eventHandlers: Set<(data: EventData) => void> = new Set();
 
   static getInstance(): RealtimeService {
     if (!this.instance) {
@@ -27,16 +26,29 @@ export default class RealtimeService {
       auth: {
         token: getToken(),
       },
-      reconnection: isProduction(),
-      withCredentials: true,
+      reconnection: true,
+      withCredentials: isProduction(),
     });
 
     this.socket.on('connect', () => {
       if (!isProduction()) {
         console.log('[REALTIME]: CONNECTED WITH ID', this.socket?.id);
       }
-
       onConnected?.();
+    });
+
+    this.socket.on('event', (data) => {
+      if (!isProduction()) {
+        console.log('[REALTIME] EVENT RECEIVED:', JSON.stringify(data, null, 2));
+      }
+
+      this.eventHandlers.forEach((handler) => {
+        try {
+          handler(data);
+        } catch (error) {
+          console.error('[REALTIME] Error in event handler:', error);
+        }
+      });
     });
 
     this.socket.on('disconnect', (reason) => {
@@ -52,37 +64,40 @@ export default class RealtimeService {
 
   getClientId(): string | undefined {
     if (!this.socket) {
-      throw new Error('Realtime service is not connected');
+      throw new SocketNotConnectedError();
     }
     return this.socket.id;
   }
 
-  onEvent(cb: (data: any) => void): boolean {
-    if (this.socket?.disconnected) {
-      console.log('[REALTIME] SOCKET IS DISCONNECTED');
-      return false;
+  onEvent(cb: (data: any) => void): () => void {
+    if (!isProduction()) {
+      console.log('[REALTIME] Registering event handler. Total handlers:', this.eventHandlers.size + 1);
     }
 
-    this.socket?.on('event', (data) => {
-      if (!isProduction()) {
-        console.log('[REALTIME] EVENT RECEIVED:', JSON.stringify(data, null, 2));
-      }
+    this.eventHandlers.add(cb);
 
-      cb(data);
-    });
-    return true;
+    // Return cleanup function
+    return () => {
+      if (!isProduction()) {
+        console.log('[REALTIME] Removing event handler. Remaining handlers:', this.eventHandlers.size - 1);
+      }
+      this.eventHandlers.delete(cb);
+    };
   }
 
   removeAllListeners() {
-    this.socket?.removeAllListeners();
+    if (!isProduction()) {
+      console.log('[REALTIME] Clearing all event handlers');
+    }
+    this.eventHandlers.clear();
   }
 
   stop(): void {
     console.log('[REALTIME] STOPING...');
 
-    if (this.socket && this.socket?.connected) {
+    if (this.socket?.connected) {
       console.log('[REALTIME] SOCKET CLOSED.');
-      this.socket?.close();
+      this.socket.close();
     }
   }
 }

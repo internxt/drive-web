@@ -123,7 +123,14 @@ export const fetchBusinessLimitUsageThunk = createAsyncThunk<GetMemberUsageRespo
 export const planSlice = createSlice({
   name: 'plan',
   initialState,
-  reducers: {},
+  reducers: {
+    updatePlanLimitFromSocket: (state, action) => {
+      if (action.payload) {
+        state.planLimit = action.payload;
+        state.isLoadingPlanLimit = false;
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(initializeThunk.pending, (state) => {
@@ -217,7 +224,7 @@ export const planSelectors = {
   isCurrentPlanLifetime: (state: RootState): boolean => {
     const currentPlan = currentPlanSelector(state);
 
-    return currentPlan !== null && currentPlan.isLifetime;
+    return currentPlan?.isLifetime ?? false;
   },
   planLimitToShow: (state: RootState): number => {
     const { selectedWorkspace } = state.workspaces;
@@ -254,5 +261,7 @@ export const planThunks = {
   fetchSubscriptionThunk,
   fetchBusinessLimitUsageThunk,
 };
+
+export const planActions = planSlice.actions;
 
 export default planSlice.reducer;

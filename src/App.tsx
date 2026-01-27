@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { DndProvider } from 'react-dnd';
 import { Toaster } from 'react-hot-toast';
 import { connect } from 'react-redux';
@@ -36,6 +36,7 @@ import { getRoutes } from './app/routes/routes';
 import { domainManager } from './app/share/services/DomainManager';
 import { PreviewFileItem } from './app/share/types';
 import { AppDispatch, RootState } from './app/store';
+import { planActions } from './app/store/slices/plan';
 import { sessionActions } from './app/store/slices/session';
 import { uiActions } from './app/store/slices/ui';
 import { initializeUserThunk } from './app/store/slices/user';
@@ -43,6 +44,7 @@ import { workspaceThunks } from './app/store/slices/workspaces/workspacesStore';
 import { manager } from 'utils/dnd-utils';
 import useBeforeUnload from './hooks/useBeforeUnload';
 import useVpnAuth from './hooks/useVpnAuth';
+import { EventData, SOCKET_EVENTS } from 'services/types/socket.types';
 
 import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?raw';
 const blob = new Blob([workerUrl], { type: 'application/javascript' });
@@ -87,6 +89,30 @@ const App = (props: AppProps): JSX.Element => {
     initializeInitialAppState();
     i18next.changeLanguage();
   }, []);
+
+  const handlePlanUpdatedEvent = useCallback(
+    (data: EventData) => {
+      if (data.event === SOCKET_EVENTS.PLAN_UPDATED) {
+        const newLimit = data.payload?.maxSpaceBytes;
+
+        if (newLimit) {
+          dispatch(planActions.updatePlanLimitFromSocket(Number(newLimit)));
+        }
+      }
+    },
+    [dispatch],
+  );
+
+  useEffect(() => {
+    try {
+      const realtimeService = RealtimeService.getInstance();
+      const cleanup = realtimeService.onEvent(handlePlanUpdatedEvent);
+
+      return cleanup;
+    } catch (err) {
+      errorService.reportError(err);
+    }
+  }, [handlePlanUpdatedEvent]);
 
   useEffect(() => {
     if (!isWorkspaceIdParam) {

@@ -1,7 +1,9 @@
-import { beforeEach, describe, expect, it, vi, afterEach } from 'vitest';
-import RealtimeService, { SOCKET_EVENTS } from './socket.service';
+import { beforeEach, describe, expect, vi, afterEach, test } from 'vitest';
+import RealtimeService from './socket.service';
 import localStorageService from './local-storage.service';
 import envService from './env.service';
+import { SocketNotConnectedError } from './errors/socket.errors';
+import { SOCKET_EVENTS } from './types/socket.types';
 
 const { mockSocket, ioMock } = vi.hoisted(() => {
   const mockSocket = {
@@ -9,6 +11,7 @@ const { mockSocket, ioMock } = vi.hoisted(() => {
     connected: true,
     disconnected: false,
     on: vi.fn(),
+    off: vi.fn(),
     removeAllListeners: vi.fn(),
     close: vi.fn(),
   };
@@ -20,12 +23,6 @@ const { mockSocket, ioMock } = vi.hoisted(() => {
 
 vi.mock('socket.io-client', () => ({
   default: ioMock,
-}));
-
-vi.mock('./local-storage.service', () => ({
-  default: {
-    get: vi.fn(),
-  },
 }));
 
 vi.mock('./env.service', () => ({
@@ -51,12 +48,13 @@ describe('RealtimeService', () => {
       return '';
     });
 
-    vi.mocked(localStorageService.get).mockReturnValue('mock-token-123');
+    vi.spyOn(localStorageService, 'get').mockReturnValue('mock-token-123');
 
     mockSocket.id = 'mock-socket-id';
     mockSocket.connected = true;
     mockSocket.disconnected = false;
     mockSocket.on.mockClear();
+    mockSocket.off.mockClear();
     mockSocket.removeAllListeners.mockClear();
     mockSocket.close.mockClear();
   });
@@ -67,7 +65,7 @@ describe('RealtimeService', () => {
   });
 
   describe('Service instance management', () => {
-    it('returns the same service instance across multiple requests', () => {
+    test('When getInstance is called multiple times, then it returns the same service instance', () => {
       const instance1 = RealtimeService.getInstance();
       const instance2 = RealtimeService.getInstance();
 
@@ -76,32 +74,32 @@ describe('RealtimeService', () => {
   });
 
   describe('Event constants', () => {
-    it('provides predefined event types for subscription', () => {
-      expect(SOCKET_EVENTS).toHaveProperty('FILE_CREATED');
-      expect(SOCKET_EVENTS.FILE_CREATED).toBe('FILE_CREATED');
+    test('When accessing SOCKET_EVENTS, then it provides predefined event types', () => {
+      expect(SOCKET_EVENTS.FILE_CREATED).toStrictEqual('FILE_CREATED');
+      expect(SOCKET_EVENTS.PLAN_UPDATED).toStrictEqual('PLAN_UPDATED');
     });
   });
 
   describe('Establishing realtime connection', () => {
-    it('establishes a secure connection with authentication when initialized', () => {
+    test('When init is called, then it establishes a secure connection with authentication', () => {
       service.init();
 
       expect(ioMock).toHaveBeenCalledWith('https://notifications.example.com', {
         auth: { token: 'mock-token-123' },
-        reconnection: false,
-        withCredentials: true,
+        reconnection: true,
+        withCredentials: false,
       });
     });
 
-    it.each(['connect', 'disconnect', 'connect_error'])(
-      'monitors connection lifecycle through %s events',
+    test.each(['connect', 'event', 'disconnect', 'connect_error'])(
+      'When init is called, then it monitors connection lifecycle through %s events',
       (eventName) => {
         service.init();
         expect(mockSocket.on).toHaveBeenCalledWith(eventName, expect.any(Function));
       },
     );
 
-    it('notifies the application when connection is successfully established', () => {
+    test('When connection is successfully established, then it notifies the application via callback', () => {
       const onConnectedCallback = vi.fn();
       service.init(onConnectedCallback);
 
@@ -111,12 +109,12 @@ describe('RealtimeService', () => {
       expect(onConnectedCallback).toHaveBeenCalledTimes(1);
     });
 
-    it.each([
-      { env: 'production', reconnection: true, logs: false },
-      { env: 'development', reconnection: false, logs: true },
+    test.each([
+      { env: 'production', reconnection: true, withCredentials: true, logs: false },
+      { env: 'development', reconnection: true, withCredentials: false, logs: true },
     ])(
-      'adjusts behavior for $env environment with reconnection=$reconnection and logging=$logs',
-      ({ env, reconnection, logs }) => {
+      'When running in $env environment, then it adjusts reconnection=$reconnection, withCredentials=$withCredentials and logging=$logs',
+      ({ env, reconnection, withCredentials, logs }) => {
         vi.mocked(envService.getVariable).mockImplementation((key: string) => {
           if (key === 'nodeEnv') return env;
           if (key === 'notifications') return 'https://notifications.example.com';
@@ -128,7 +126,7 @@ describe('RealtimeService', () => {
         expect(ioMock).toHaveBeenCalledWith('https://notifications.example.com', {
           auth: { token: 'mock-token-123' },
           reconnection,
-          withCredentials: true,
+          withCredentials,
         });
 
         if (logs) {
@@ -141,7 +139,7 @@ describe('RealtimeService', () => {
   });
 
   describe('Retrieving connection identifier', () => {
-    it('provides a unique identifier for the connected client', () => {
+    test('When getting the client Id after initialization, then it provides a unique identifier', () => {
       service.init();
 
       const clientId = service.getClientId();
@@ -149,21 +147,20 @@ describe('RealtimeService', () => {
       expect(clientId).toBe('mock-socket-id');
     });
 
-    it('reports an error when requesting the client ID before connecting', () => {
-      expect(() => service.getClientId()).toThrow('Realtime service is not connected');
+    test('When getting the client id before connecting, then an error indicating so is thrown', () => {
+      expect(() => service.getClientId()).toThrow(SocketNotConnectedError);
     });
   });
 
   describe('Receiving realtime notifications', () => {
-    it('delivers realtime notifications to subscribed listeners', () => {
+    test('When an event is received, then it delivers the notification to subscribed listeners', () => {
       service.init();
       const callback = vi.fn();
-      const eventData = { type: 'FILE_CREATED', payload: { fileId: '123' } };
+      const eventData = { event: 'FILE_CREATED', payload: { fileId: '123' } };
 
-      const result = service.onEvent(callback);
+      const cleanup = service.onEvent(callback);
 
-      expect(result).toBe(true);
-      expect(mockSocket.on).toHaveBeenCalledWith('event', expect.any(Function));
+      expect(cleanup).toBeInstanceOf(Function);
 
       const eventHandler = mockSocket.on.mock.calls.find((call) => call[0] === 'event')?.[1];
       eventHandler?.(eventData);
@@ -171,50 +168,121 @@ describe('RealtimeService', () => {
       expect(callback).toHaveBeenCalledWith(eventData);
     });
 
-    it('prevents event subscriptions when the connection is lost', () => {
+    test('When an event is received, then it distributes to all registered handlers', () => {
       service.init();
-      mockSocket.disconnected = true;
+      const callback1 = vi.fn();
+      const callback2 = vi.fn();
+      const eventData = { event: 'PLAN_UPDATED', payload: { maxSpaceBytes: 1000 } };
 
-      const result = service.onEvent(vi.fn());
+      service.onEvent(callback1);
+      service.onEvent(callback2);
 
-      expect(result).toBe(false);
-      expect(consoleLogSpy).toHaveBeenCalledWith('[REALTIME] SOCKET IS DISCONNECTED');
+      const eventHandler = mockSocket.on.mock.calls.find((call) => call[0] === 'event')?.[1];
+      eventHandler?.(eventData);
+
+      expect(callback1).toHaveBeenCalledWith(eventData);
+      expect(callback2).toHaveBeenCalledWith(eventData);
+    });
+
+    test('When one handler throws an error, then it does not affect other handlers', () => {
+      service.init();
+      const errorCallback = vi.fn(() => {
+        throw new Error('Handler error');
+      });
+      const successCallback = vi.fn();
+      const eventData = { event: 'TEST', payload: {} };
+
+      service.onEvent(errorCallback);
+      service.onEvent(successCallback);
+
+      const eventHandler = mockSocket.on.mock.calls.find((call) => call[0] === 'event')?.[1];
+      eventHandler?.(eventData);
+
+      expect(errorCallback).toHaveBeenCalledWith(eventData);
+      expect(successCallback).toHaveBeenCalledWith(eventData);
+      expect(consoleErrorSpy).toHaveBeenCalledWith('[REALTIME] Error in event handler:', expect.any(Error));
+    });
+
+    test('When a handler is registered before init, then it receives events after initialization', () => {
+      const callback = vi.fn();
+      const eventData = { event: 'TEST', payload: {} };
+
+      service.onEvent(callback);
+
+      service.init();
+
+      const eventHandler = mockSocket.on.mock.calls.find((call) => call[0] === 'event')?.[1];
+      eventHandler?.(eventData);
+
+      expect(callback).toHaveBeenCalledWith(eventData);
     });
   });
 
   describe('Cleaning up event subscriptions', () => {
-    it('clears all active event subscriptions when requested', () => {
+    test('When the cleanup function is called, then it removes a specific handler', () => {
       service.init();
-      service.removeAllListeners();
+      const callback = vi.fn();
+      const eventData = { event: 'TEST', payload: {} };
 
-      expect(mockSocket.removeAllListeners).toHaveBeenCalledTimes(1);
+      const cleanup = service.onEvent(callback);
+
+      const eventHandler = mockSocket.on.mock.calls.find((call) => call[0] === 'event')?.[1];
+
+      eventHandler?.(eventData);
+      expect(callback).toHaveBeenCalledTimes(1);
+
+      cleanup();
+
+      eventHandler?.(eventData);
+      expect(callback).toHaveBeenCalledTimes(1);
     });
 
-    it('handles cleanup safely even when not initialized', () => {
+    test('When removing all listeners function is called, then it clears all active event subscriptions', () => {
+      service.init();
+      const callback1 = vi.fn();
+      const callback2 = vi.fn();
+      const eventData = { event: 'TEST', payload: {} };
+
+      service.onEvent(callback1);
+      service.onEvent(callback2);
+
+      service.removeAllListeners();
+
+      const eventHandler = mockSocket.on.mock.calls.find((call) => call[0] === 'event')?.[1];
+      eventHandler?.(eventData);
+
+      expect(callback1).not.toHaveBeenCalled();
+      expect(callback2).not.toHaveBeenCalled();
+    });
+
+    test('When cleanup is called on uninitialized service, then it handles it safely', () => {
       expect(() => service.removeAllListeners()).not.toThrow();
     });
   });
 
   describe('Closing the connection', () => {
-    it.each([
+    test.each([
       { connected: true, closes: true },
       { connected: false, closes: false },
-    ])('closes the socket only when connected (connected=$connected, closes=$closes)', ({ connected, closes }) => {
-      service.init();
-      mockSocket.connected = connected;
+    ])(
+      'When the socket is connected, then closes it (connected=$connected, closes=$closes)',
+      ({ connected, closes }) => {
+        service.init();
+        mockSocket.connected = connected;
 
-      service.stop();
+        service.stop();
 
-      if (closes) {
-        expect(mockSocket.close).toHaveBeenCalledTimes(1);
-      } else {
-        expect(mockSocket.close).not.toHaveBeenCalled();
-      }
-    });
+        if (closes) {
+          expect(mockSocket.close).toHaveBeenCalledTimes(1);
+        } else {
+          expect(mockSocket.close).not.toHaveBeenCalled();
+        }
+      },
+    );
   });
 
   describe('Complete workflow', () => {
-    it('connects, receives notifications, and disconnects successfully in a complete flow', () => {
+    test('When the socket is connected, then receives notifications and disconnects successfully', () => {
       const onConnected = vi.fn();
       const eventCallback = vi.fn();
 
@@ -224,7 +292,7 @@ describe('RealtimeService', () => {
 
       service.onEvent(eventCallback);
       const eventHandler = mockSocket.on.mock.calls.find((call) => call[0] === 'event')?.[1];
-      eventHandler?.({ type: 'FILE_CREATED' });
+      eventHandler?.({ event: 'FILE_CREATED', payload: { fileId: '123' } });
 
       service.stop();
 
