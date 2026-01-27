@@ -298,7 +298,7 @@ function SignUpForm(): JSX.Element {
             to={getLoginLink()}
             className="cursor-pointer appearance-none text-center text-primary no-underline hover:text-primary focus:text-primary-dark"
           >
-            {translate('auth.signup.login')}
+            {translate('auth.button.loginAction')}
           </Link>
         </div>
 
@@ -310,7 +310,7 @@ function SignUpForm(): JSX.Element {
               variant="secondary"
               className="w-full !border-highlight/10 !bg-white/15 !text-gray-80 !shadow-sm hover:!bg-white/25 dark:!border-white/10 dark:!text-white"
             >
-              {translate('auth.signup.login')}
+              {translate('auth.button.loginAction')}
             </Button>
           </Link>
         </div>
