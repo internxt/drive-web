@@ -24,6 +24,7 @@ export const staticData = {
   needHelpTitle: 'How can we help you?',
   howToCreateBackUpKeyPageTitle: 'How do I create a backup key?',
   logInPageTitle: 'Login',
+  logInButtonText: 'Log in',
 
   userAlreadyRegistered: 'already registered',
   accountRecovery: 'Account recovery',
