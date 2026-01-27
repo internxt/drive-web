@@ -61,14 +61,6 @@ export interface OAuthSuccessMessage {
 }
 
 /**
- * Error message structure
- */
-export interface OAuthErrorMessage {
-  type: OAuthMessageType.ERROR;
-  error: string;
-}
-
-/**
  * Gets the target origin for postMessage based on the opener's origin
  *
  * @returns {string | null} The validated origin or null if not allowed

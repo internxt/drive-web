@@ -77,10 +77,6 @@ export default class AppError extends Error {
   }
 }
 
-export enum DevicePlatform {
-  Web = 'web',
-}
-
 export enum Workspace {
   Individuals = 'personal',
   Business = 'business',
@@ -88,11 +84,6 @@ export enum Workspace {
 
 export enum DragAndDropType {
   DriveItem = 'drive-item',
-}
-
-export enum TimeInterval {
-  Month = 'month',
-  Year = 'year',
 }
 
 export enum AppViewLayout {
@@ -146,16 +137,6 @@ export enum AppView {
   UniversalLinkOk = 'universal-link-ok',
   UniversalLinkError = 'universal-link-error',
   OAuthLink = 'oauth-link',
-}
-
-export enum SignupDeviceSource {
-  Macintosh = 'MacOs',
-  Android = 'Android',
-  Iphone = 'iPhone',
-  Windows = 'Windows',
-  Linux = 'Linux',
-  Ipad = 'iPad',
-  Other = 'Other',
 }
 
 export enum LocalStorageItem {
