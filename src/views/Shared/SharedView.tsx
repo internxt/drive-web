@@ -25,7 +25,6 @@ import FileViewerWrapper from '../../app/drive/components/FileViewer/FileViewerW
 import ItemDetailsDialog from '../../app/drive/components/ItemDetailsDialog/ItemDetailsDialog';
 import MoveItemsDialog from '../../app/drive/components/MoveItemsDialog/MoveItemsDialog';
 import NameCollisionContainer from '../../app/drive/components/NameCollisionDialog/NameCollisionContainer';
-import ShareDialog from '../../app/drive/components/ShareDialog/ShareDialog';
 import ShowInvitationsDialog from '../../app/drive/components/ShowInvitationsDialog/ShowInvitationsDialog';
 import StopSharingAndMoveToTrashDialogWrapper from '../Trash/components/StopSharingAndMoveToTrashDialogWrapper';
 import WarningMessageWrapper from 'views/Home/components/WarningMessageWrapper';
@@ -67,6 +66,7 @@ import {
   isCurrentUserViewer,
   isItemOwnedByCurrentUser,
 } from './utils/sharedViewUtils';
+import { ShareDialogWrapper } from 'app/drive/components/ShareDialog/ShareDialogWrapper';
 
 export const MAX_SHARED_NAME_LENGTH = 32;
 
@@ -595,7 +595,7 @@ function SharedView({
       />
       <ItemDetailsDialog onDetailsButtonClicked={handleDetailsButtonClicked} />
       {isShareDialogOpen && (
-        <ShareDialog
+        <ShareDialogWrapper
           onCloseDialog={handleOnCloseShareDialog}
           onStopSharingItem={() => actionDispatch(setSelectedItems([]))}
         />
