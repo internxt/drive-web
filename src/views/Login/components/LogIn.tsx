@@ -301,7 +301,7 @@ export default function LogIn(): JSX.Element {
 
         {/* Mobile: button style */}
         <div className="w-full sm:hidden">
-          <p className="w-full text-center font-medium text-base">{translate('auth.login.dontHaveAccount')}</p>
+          <p className="w-full text-center">{translate('auth.login.dontHaveAccountMobile')}</p>
           <Link to={getSignupLink()} className="mt-2 block w-full no-underline">
             <Button
               variant="secondary"

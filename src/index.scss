@@ -405,7 +405,7 @@ abbr[title] {
 }
 
 .auth-footer-link {
-  @apply font-normal text-base no-underline text-primary hover:text-primary-dark;
+  @apply font-medium text-base no-underline text-primary hover:text-primary-dark;
 
   @media (width >= 640px) {
     @apply text-gray-80 hover:text-gray-100;

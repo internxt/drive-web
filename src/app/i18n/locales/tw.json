@@ -102,7 +102,8 @@
     "login": {
       "title": "登錄",
       "forgotPwd": "忘記密碼？",
-      "dontHaveAccount": "沒有 Internxt 帳戶？",
+      "dontHaveAccount": "沒有帳戶？",
+      "dontHaveAccountMobile": "沒有 Internxt 帳戶？",
       "createAccount": "創建帳戶",
       "2FA": "雙重身份驗證代碼",
       "twoFactorAuthenticationCode": "雙重身份驗證代碼",
@@ -114,7 +115,8 @@
     },
     "signup": {
       "title": "創建帳戶",
-      "haveAccount": "已有 Internxt 帳戶？",
+      "haveAccount": "已有帳戶？",
+      "haveAccountMobile": "已有 Internxt 帳戶？",
       "login": "登錄",
       "encrypting": "加密中",
       "info": {

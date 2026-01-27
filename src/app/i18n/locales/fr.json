@@ -82,7 +82,8 @@
     "login": {
       "title": " Connexion ",
       "forgotPwd": "Mot de passe oublié?",
-      "dontHaveAccount": "Vous n'avez pas de compte Internxt ?",
+      "dontHaveAccount": "Vous n'avez pas de compte ?",
+      "dontHaveAccountMobile": "Vous n'avez pas de compte Internxt ?",
       "createAccount": "Créer un compte",
       "2FA": "Code à deux facteurs",
       "twoFactorAuthenticationCode": "Code d'authentification à deux facteurs",
@@ -94,7 +95,8 @@
     },
     "signup": {
       "title": "Créer un compte",
-      "haveAccount": "Vous avez déjà un compte Internxt ?",
+      "haveAccount": "Vous avez déjà un compte ?",
+      "haveAccountMobile": "Vous avez déjà un compte Internxt ?",
       "login": " Connexion ",
       "encrypting": "Encryptant",
       "info": {

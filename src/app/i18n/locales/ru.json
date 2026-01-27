@@ -82,7 +82,8 @@
     "login": {
       "title": "Войти",
       "forgotPwd": "Забыли пароль?",
-      "dontHaveAccount": "У вас нет учетной записи Internxt?",
+      "dontHaveAccount": "У вас нет учетной записи?",
+      "dontHaveAccountMobile": "У вас нет учетной записи Internxt?",
       "createAccount": "Создать учетную запись",
       "2FA": "Двухфакторный код",
       "twoFactorAuthenticationCode": "Код двухфакторной аутентификации",
@@ -94,7 +95,8 @@
     },
     "signup": {
       "title": "Создать учетную запись",
-      "haveAccount": "Уже есть аккаунт Internxt?",
+      "haveAccount": "Уже есть аккаунт?",
+      "haveAccountMobile": "Уже есть аккаунт Internxt?",
       "login": "Войти",
       "encrypting": "Идет шифрование",
       "info": {

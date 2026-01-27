@@ -304,7 +304,7 @@ function SignUpForm(): JSX.Element {
 
         {/* Mobile: button style */}
         <div className="w-full sm:hidden">
-          <p className="w-full text-center font-medium">{translate('auth.signup.haveAccount')}</p>
+          <p className="w-full text-center">{translate('auth.signup.haveAccountMobile')}</p>
           <Link to={getLoginLink()} className="mt-2 block w-full no-underline">
             <Button
               variant="secondary"
