@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, vi, afterEach, test } from 'vitest';
 import RealtimeService from './socket.service';
-import localStorageService from './local-storage.service';
-import envService from './env.service';
+import localStorageService from '../local-storage.service';
+import envService from '../env.service';
 import { SocketNotConnectedError } from './errors/socket.errors';
 import { SOCKET_EVENTS } from './types/socket.types';
 
@@ -25,12 +25,6 @@ vi.mock('socket.io-client', () => ({
   default: ioMock,
 }));
 
-vi.mock('./env.service', () => ({
-  default: {
-    getVariable: vi.fn(),
-  },
-}));
-
 describe('RealtimeService', () => {
   let service: RealtimeService;
   let consoleLogSpy: ReturnType<typeof vi.spyOn>;
@@ -42,7 +36,7 @@ describe('RealtimeService', () => {
     service = RealtimeService.getInstance();
     consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
     consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    vi.mocked(envService.getVariable).mockImplementation((key: string) => {
+    vi.spyOn(envService, 'getVariable').mockImplementation((key: string) => {
       if (key === 'nodeEnv') return 'test';
       if (key === 'notifications') return 'https://notifications.example.com';
       return '';
@@ -115,7 +109,7 @@ describe('RealtimeService', () => {
     ])(
       'When running in $env environment, then it adjusts reconnection=$reconnection, withCredentials=$withCredentials and logging=$logs',
       ({ env, reconnection, withCredentials, logs }) => {
-        vi.mocked(envService.getVariable).mockImplementation((key: string) => {
+        vi.spyOn(envService, 'getVariable').mockImplementation((key: string) => {
           if (key === 'nodeEnv') return env;
           if (key === 'notifications') return 'https://notifications.example.com';
           return '';

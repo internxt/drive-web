@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { DndProvider } from 'react-dnd';
 import { Toaster } from 'react-hot-toast';
 import { connect } from 'react-redux';
@@ -22,7 +22,7 @@ import envService from 'services/env.service';
 import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
-import RealtimeService from 'services/socket.service';
+
 import { AppViewConfig } from './app/core/types';
 import { LRUFilesCacheManager } from './app/database/services/database.service/LRUFilesCacheManager';
 import { LRUFilesPreviewCacheManager } from './app/database/services/database.service/LRUFilesPreviewCacheManager';
@@ -36,7 +36,6 @@ import { getRoutes } from './app/routes/routes';
 import { domainManager } from './app/share/services/DomainManager';
 import { PreviewFileItem } from './app/share/types';
 import { AppDispatch, RootState } from './app/store';
-import { planActions } from './app/store/slices/plan';
 import { sessionActions } from './app/store/slices/session';
 import { uiActions } from './app/store/slices/ui';
 import { initializeUserThunk } from './app/store/slices/user';
@@ -44,9 +43,10 @@ import { workspaceThunks } from './app/store/slices/workspaces/workspacesStore';
 import { manager } from 'utils/dnd-utils';
 import useBeforeUnload from './hooks/useBeforeUnload';
 import useVpnAuth from './hooks/useVpnAuth';
-import { EventData, SOCKET_EVENTS } from 'services/types/socket.types';
 
 import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?raw';
+import { eventHandler } from 'services/sockets/event-handler.service';
+import RealtimeService from 'services/sockets/socket.service';
 const blob = new Blob([workerUrl], { type: 'application/javascript' });
 pdfjs.GlobalWorkerOptions.workerSrc = URL.createObjectURL(blob);
 
@@ -90,29 +90,16 @@ const App = (props: AppProps): JSX.Element => {
     i18next.changeLanguage();
   }, []);
 
-  const handlePlanUpdatedEvent = useCallback(
-    (data: EventData) => {
-      if (data.event === SOCKET_EVENTS.PLAN_UPDATED) {
-        const newLimit = data.payload?.maxSpaceBytes;
-
-        if (newLimit) {
-          dispatch(planActions.updatePlanLimit(Number(newLimit)));
-        }
-      }
-    },
-    [dispatch],
-  );
-
   useEffect(() => {
     try {
       const realtimeService = RealtimeService.getInstance();
-      const cleanup = realtimeService.onEvent(handlePlanUpdatedEvent);
+      const cleanup = realtimeService.onEvent(eventHandler.onPlanUpdated);
 
       return cleanup;
     } catch (err) {
       errorService.reportError(err);
     }
-  }, [handlePlanUpdatedEvent]);
+  }, []);
 
   useEffect(() => {
     if (!isWorkspaceIdParam) {

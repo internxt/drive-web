@@ -1,6 +1,6 @@
 import io, { Socket } from 'socket.io-client';
-import localStorageService from './local-storage.service';
-import envService from './env.service';
+import localStorageService from '../local-storage.service';
+import envService from '../env.service';
 import { SocketNotConnectedError } from './errors/socket.errors';
 import { EventData } from './types/socket.types';
 
@@ -76,7 +76,6 @@ export default class RealtimeService {
 
     this.eventHandlers.add(cb);
 
-    // Return cleanup function
     return () => {
       if (!isProduction()) {
         console.log('[REALTIME] Removing event handler. Remaining handlers:', this.eventHandlers.size - 1);

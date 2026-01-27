@@ -24,7 +24,6 @@ import BannerWrapper from 'app/banners/BannerWrapper';
 import deviceService from 'services/device.service';
 import errorService from 'services/error.service';
 import navigationService from 'services/navigation.service';
-import RealtimeService from 'services/socket.service';
 import { ClearTrashDialog } from 'views/Trash/components';
 import { CreateFolderDialog } from 'views/Drive/components';
 import DeleteItemsDialog from 'views/Trash/components/DeleteItemsDialog';
@@ -62,7 +61,8 @@ import WarningMessageWrapper from 'views/Home/components/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import { ShareDialogWrapper } from 'app/drive/components/ShareDialog/ShareDialogWrapper';
-import { EventData, SOCKET_EVENTS } from 'services/types/socket.types';
+import RealtimeService from 'services/sockets/socket.service';
+import { eventHandler } from 'services/sockets/event-handler.service';
 
 const MenuItemToGetSize = ({
   isTrash,
@@ -309,23 +309,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   );
 
   const realtimeService = RealtimeService.getInstance();
-  const handleFileCreatedEvent = useCallback(
-    (data: EventData) => {
-      if (data.event === SOCKET_EVENTS.FILE_CREATED) {
-        const item = data.payload;
-        if (item.folderUuid === currentFolderId) {
-          dispatch(
-            storageActions.pushItems({
-              updateRecents: true,
-              folderIds: [item.folderUuid],
-              items: [item],
-            }),
-          );
-        }
-      }
-    },
-    [currentFolderId, dispatch],
-  );
 
   useEffect(() => {
     if (itemToRename) {
@@ -335,13 +318,13 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   useEffect(() => {
     try {
-      const cleanup = realtimeService.onEvent(handleFileCreatedEvent);
+      const cleanup = realtimeService.onEvent((data) => eventHandler.onFileCreated(data, currentFolderId));
 
       return cleanup;
     } catch (err) {
       errorService.reportError(err);
     }
-  }, [handleFileCreatedEvent]);
+  }, [currentFolderId]);
 
   useEffect(() => {
     deviceService.redirectForMobile();
