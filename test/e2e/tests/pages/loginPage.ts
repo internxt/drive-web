@@ -20,8 +20,6 @@ export class LoginPage {
   private accountRecoveryTitle: Locator;
   //SignUp
   private createAccounTitle: Locator;
-  //terms and conditions
-  private termsOfService: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -31,7 +29,7 @@ export class LoginPage {
     this.loginButton = this.page.getByRole('button', { name: 'Log in' });
     this.loginButtonText = this.page.locator('[data-cy="loginButton"] div');
     this.forgotPassword = this.page.getByText('Forgot your password?');
-    this.dontHaveAccountText = this.page.getByText(/Don.t have an account\?/).first();
+    this.dontHaveAccountText = this.page.getByText(/Don.t have an Internxt account\?/).first();
     this.createAccount = this.page.getByRole('link', { name: 'Create account' });
     this.termsAndConditions = this.page.getByRole('link', { name: 'Terms and conditions' });
     this.needHelp = this.page.getByRole('link', { name: 'Need help?' });
@@ -96,7 +94,7 @@ export class LoginPage {
     const createAccountText = await this.createAccount.textContent({
       timeout: 10000,
     });
-    expect(dontHaveAccountText).toEqual('Don’t have an account?');
+    expect(dontHaveAccountText).toEqual("Don't have an Internxt account?");
     expect(createAccountText).toEqual('Create account');
     await expect(this.createAccount).toBeEnabled();
     await this.createAccount.click();

@@ -272,7 +272,7 @@ export default function LogIn(): JSX.Element {
             variant="primary"
             disabled={isLoggingIn}
           >
-            {isLoggingIn && isValid ? translate('auth.decrypting') : translate('auth.login.title')}
+            {isLoggingIn && isValid ? translate('auth.decrypting') : translate('auth.button.loginAction')}
           </Button>
         </form>
 
@@ -301,7 +301,7 @@ export default function LogIn(): JSX.Element {
 
         {/* Mobile: button style */}
         <div className="w-full sm:hidden">
-          <p className="w-full text-center font-medium">{translate('auth.login.dontHaveAccount')}</p>
+          <p className="w-full text-center font-medium text-base">{translate('auth.login.dontHaveAccount')}</p>
           <Link to={getSignupLink()} className="mt-2 block w-full no-underline">
             <Button
               variant="secondary"

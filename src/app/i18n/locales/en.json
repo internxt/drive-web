@@ -101,19 +101,22 @@
     "terms2": "you accept the terms & conditions",
     "decrypting": "Decrypting...",
     "login": {
-      "title": "Log in",
+      "title": "Login",
       "forgotPwd": "Forgot your password?",
-      "dontHaveAccount": "Don’t have an account?",
+      "dontHaveAccount": "Don't have an Internxt account?",
       "createAccount": "Create account",
       "2FA": "Two factor code",
       "twoFactorAuthenticationCode": "Two factor authentication code",
       "wrongLogin": "Invalid username or password",
       "failedToSendAuthData": "Failed to send authentication data. Please try again."
     },
+    "button": {
+      "loginAction": "Log in"
+    },
     "signup": {
       "title": "Create account",
-      "haveAccount": "Already have an account?",
-      "login": "Log in",
+      "haveAccount": "Already have an Internxt account?",
+      "login": "Login",
       "encrypting": "Encrypting",
       "info": {
         "normalText": "Internxt doesn’t store passwords.",
@@ -244,7 +247,7 @@
       },
       "title": {
         "signUp": "Create an account",
-        "signIn": "Log in",
+        "signIn": "Login",
         "userIsSignedIn": "User signed in as"
       },
       "emailMustNotBeEmpty": "Email must not be empty",

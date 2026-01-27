@@ -33,7 +33,7 @@ export class SignUpPage {
     this.createAccountButton = this.page.getByRole('button', { name: 'Create account' }).first();
     this.createAccountButtonText = this.page.getByRole('button', { name: 'Create account' }).first().locator('div');
     this.byCreatingYourAccountText = this.page.locator('[class="mt-2 w-full text-xs text-gray-50"]');
-    this.alreadyHaveAccountText = this.page.getByText('Already have an account?').first();
+    this.alreadyHaveAccountText = this.page.getByText('Already have an Internxt account?').first();
     this.logIn = this.page.getByRole('link', { name: 'Log in' });
     this.termsAndConditions = this.page.getByRole('link', { name: 'you accept the terms & conditions' });
     this.needHelp = this.page.getByRole('link', { name: 'Need help?' });
