@@ -21,11 +21,12 @@ import { InvitedUserProps } from '../types';
 import errorService from 'services/error.service';
 import envService from 'services/env.service';
 import { copyTextToClipboard } from 'utils/copyToClipboard.utils';
+import { AppDispatch } from 'app/store';
 
 interface ShareItemActionsProps {
   itemToShare: ItemToShare | null;
   isPasswordSharingAvailable: boolean;
-  dispatch: any;
+  dispatch: AppDispatch;
   onClose: () => void;
   onShareItem?: () => void;
   onStopSharingItem?: () => void;

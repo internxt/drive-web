@@ -118,7 +118,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
 
       {/* SIZE */}
       <div className="w-size lg:pl-4 shrink-0 items-center whitespace-nowrap">
-        {sizeService.bytesToString(item.size, false) === '' ? (
+        {sizeService.bytesToString(item.size, false) === '' || item.isFolder ? (
           <span className="opacity-25">—</span>
         ) : (
           sizeService.bytesToString(item.size, false)

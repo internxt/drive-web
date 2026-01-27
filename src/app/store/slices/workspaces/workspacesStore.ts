@@ -18,13 +18,6 @@ import { planThunks } from '../plan';
 import sessionThunks from '../session/session.thunks';
 import workspacesSelectors from './workspaces.selectors';
 
-export interface PersonalWorkspace {
-  uuid: string;
-  name: string;
-  type: 'Business' | 'Personal';
-  avatar: MediaSource | null;
-}
-
 export interface WorkspacesState {
   workspaces: WorkspaceData[];
   workspaceCredentials: WorkspaceCredentialsDetails | null;

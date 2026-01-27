@@ -37,23 +37,6 @@ const iconsByFileExtensionGroup = {
 };
 const extensionsList = fileExtensionService.computeExtensionsLists();
 
-export const icons = {
-  AudioFile,
-  CodeFile,
-  FigmaFile,
-  ImageFile,
-  PdfFile,
-  PptFile,
-  TxtFile,
-  VideoFile,
-  WordFile,
-  XlsFile,
-  XmlFile,
-  ZipFile,
-  DefaultFile,
-  LightFolder,
-};
-
 export const getItemIcon = (isFolder: boolean, itemExtension?: string): FunctionComponent<SVGProps<SVGSVGElement>> => {
   let groupId: FileExtensionGroup = FileExtensionGroup.Default;
 

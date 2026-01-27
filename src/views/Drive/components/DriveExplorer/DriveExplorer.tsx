@@ -61,7 +61,7 @@ import UploadItemsFailsDialog from 'app/drive/components/UploadItemsFailsDialog/
 import WarningMessageWrapper from 'views/Home/components/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
-import ShareDialogWrapper from 'app/drive/components/ShareDialog/ShareDialogWrapper';
+import { ShareDialogWrapper } from 'app/drive/components/ShareDialog/ShareDialogWrapper';
 
 const MenuItemToGetSize = ({
   isTrash,

@@ -66,7 +66,7 @@ import {
   isCurrentUserViewer,
   isItemOwnedByCurrentUser,
 } from './utils/sharedViewUtils';
-import ShareDialogWrapper from 'app/drive/components/ShareDialog/ShareDialogWrapper';
+import { ShareDialogWrapper } from 'app/drive/components/ShareDialog/ShareDialogWrapper';
 
 export const MAX_SHARED_NAME_LENGTH = 32;
 

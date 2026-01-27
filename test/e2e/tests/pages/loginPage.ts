@@ -20,8 +20,6 @@ export class LoginPage {
   private accountRecoveryTitle: Locator;
   //SignUp
   private createAccounTitle: Locator;
-  //terms and conditions
-  private termsOfService: Locator;
 
   constructor(page: Page) {
     this.page = page;

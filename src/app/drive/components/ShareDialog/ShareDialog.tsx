@@ -51,13 +51,13 @@ import { useShareItemActions } from './hooks/useShareItemActions';
 import { useShareItemInvitations } from './hooks/useShareItemInvitations';
 import { useShareItemUserRoles } from './hooks/useShareItemUserRoles';
 
-export interface ShareDialogProps {
+export type ShareDialogProps = {
   user: UserSettings;
   isDriveItem?: boolean;
   onShareItem?: () => void;
   onStopSharingItem?: () => void;
   onCloseDialog?: () => void;
-}
+};
 
 const OWNER_ROLE = { id: 'NONE', name: 'owner' };
 

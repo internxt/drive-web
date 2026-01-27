@@ -1,12 +1,8 @@
-import { ShareDialogProvider } from './context';
+import { ShareDialogProvider } from './context/ShareDialogContextProvider';
 import ShareDialog, { ShareDialogProps } from './ShareDialog';
 
-const ShareDialogWrapper = (props: Omit<ShareDialogProps, 'user'>) => {
-  return (
-    <ShareDialogProvider>
-      <ShareDialog {...props} />
-    </ShareDialogProvider>
-  );
-};
-
-export default ShareDialogWrapper;
+export const ShareDialogWrapper = (props: Omit<ShareDialogProps, 'user'>) => (
+  <ShareDialogProvider>
+    <ShareDialog {...props} />
+  </ShareDialogProvider>
+);

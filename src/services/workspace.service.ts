@@ -210,21 +210,6 @@ export function getWorkspaceCredentials(workspaceId: string): Promise<WorkspaceC
   });
 }
 
-export function changeUserRole({
-  teamId,
-  memberId,
-  role,
-}: {
-  teamId: string;
-  memberId: string;
-  role: string;
-}): Promise<void> {
-  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
-  return workspaceClient.changeUserRole(teamId, memberId, role).catch((error) => {
-    throw errorService.castError(error);
-  });
-}
-
 export function getWorkspacePendingInvitations(
   workspaceId: string,
   limit: number,
@@ -421,15 +406,6 @@ export function getWorkspace(workspaceId: string): Promise<Workspace> {
   });
 }
 
-export function getWorkspaceUsage(
-  workspaceId: string,
-): Promise<{ totalWorkspaceSpace: number; spaceAssigned: number; spaceUsed: number }> {
-  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
-  return workspaceClient.getWorkspaceUsage(workspaceId).catch((error) => {
-    throw errorService.castError(error);
-  });
-}
-
 export function leaveWorkspace(workspaceId: string): Promise<void> {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
   return workspaceClient.leaveWorkspace(workspaceId).catch((error) => {
@@ -481,7 +457,6 @@ const workspacesService = {
   addTeamUser,
   removeTeamUser,
   changeTeamManager,
-  changeUserRole,
   processInvitation,
   createFileEntry,
   createFolder,

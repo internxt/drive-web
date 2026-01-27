@@ -11,12 +11,6 @@ import localStorageService from 'services/local-storage.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 import { generateCaptchaToken } from 'utils';
 
-export const sendDeactivationEmail = (): Promise<void> => {
-  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
-  const token = localStorageService.get('xNewToken') ?? undefined;
-  return authClient.sendUserDeactivationEmail(token);
-};
-
 const preCreateUser = (email: string): Promise<PreCreateUserResponse> => {
   const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
   return usersClient.preRegister(email);
@@ -107,7 +101,6 @@ const sendIncompleteCheckout = async (completeCheckoutUrl: string, planName: str
 };
 
 const userService = {
-  sendDeactivationEmail,
   updateUserProfile,
   updateUserAvatar,
   deleteUserAvatar,
