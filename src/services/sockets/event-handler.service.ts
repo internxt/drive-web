@@ -1,4 +1,4 @@
-import { planActions } from 'app/store/slices/plan';
+import { planActions, planThunks } from 'app/store/slices/plan';
 import { EventData, SOCKET_EVENTS } from './types/socket.types';
 import { store } from 'app/store';
 import { storageActions } from 'app/store/slices/storage';
@@ -11,6 +11,8 @@ export class EventHandler {
 
     if (newLimit) {
       store.dispatch(planActions.updatePlanLimit(Number(newLimit)));
+    } else {
+      store.dispatch(planThunks.fetchLimitThunk());
     }
   }
 

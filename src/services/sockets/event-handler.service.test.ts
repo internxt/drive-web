@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, vi, test } from 'vitest';
 import { EventHandler } from './event-handler.service';
 import { SOCKET_EVENTS, EventData } from './types/socket.types';
 import { store } from 'app/store';
-import { planActions } from 'app/store/slices/plan';
+import { planActions, planThunks } from 'app/store/slices/plan';
 import { storageActions } from 'app/store/slices/storage';
 
 vi.mock('app/store', () => ({
@@ -14,6 +14,12 @@ vi.mock('app/store', () => ({
 vi.mock('app/store/slices/plan', () => ({
   planActions: {
     updatePlanLimit: vi.fn((limit: number) => ({ type: 'plan/updatePlanLimit', payload: limit })),
+  },
+  planThunks: {
+    fetchLimitThunk: vi.fn(() => ({ type: 'plan/fetchLimitThunk' })),
+    fetchUsageThunk: vi.fn(() => ({ type: 'plan/fetchUsageThunk' })),
+    fetchSubscriptionThunk: vi.fn(() => ({ type: 'plan/fetchSubscriptionThunk' })),
+    fetchBusinessLimitUsageThunk: vi.fn(() => ({ type: 'plan/fetchBusinessLimitUsageThunk' })),
   },
 }));
 
@@ -54,23 +60,7 @@ describe('Event Handler', () => {
       });
     });
 
-    test('should log the plan limit update', () => {
-      const eventData: EventData = {
-        event: SOCKET_EVENTS.PLAN_UPDATED,
-        email: 'test@example.com',
-        clientId: 'client-123',
-        userId: 'user-123',
-        payload: {
-          maxSpaceBytes: 2000000,
-        },
-      };
-
-      eventHandler.onPlanUpdated(eventData);
-
-      expect(consoleLogSpy).toHaveBeenCalledWith('[Event Handler] Updating plan limit: ', 2000000);
-    });
-
-    test('When there is no new limit, then it should not dispatch ', () => {
+    test('When there is no new limit, then it should fetch the limit', () => {
       const eventData: EventData = {
         event: SOCKET_EVENTS.PLAN_UPDATED,
         email: 'test@example.com',
@@ -83,7 +73,7 @@ describe('Event Handler', () => {
 
       eventHandler.onPlanUpdated(eventData);
 
-      expect(store.dispatch).not.toHaveBeenCalled();
+      expect(store.dispatch).toHaveBeenCalledWith(planThunks.fetchLimitThunk());
     });
   });
 
