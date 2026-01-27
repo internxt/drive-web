@@ -10,7 +10,7 @@ import { useAppDispatch, useAppSelector } from '../../../../app/store/hooks';
 import PasswordInput from 'components/PasswordInput';
 import { Check, Copy } from '@phosphor-icons/react';
 import dateService from 'services/date.service';
-import shareService, { copyTextToClipboard } from '../../../../app/share/services/share.service';
+import shareService from '../../../../app/share/services/share.service';
 import localStorageService from 'services/local-storage.service';
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
 import { TFunction } from 'i18next';
@@ -18,6 +18,7 @@ import { useTranslationContext } from '../../../../app/i18n/provider/Translation
 import { domainManager } from '../../../../app/share/services/DomainManager';
 import _ from 'lodash';
 import { AdvancedSharedItem } from '../../../../app/share/types';
+import { copyTextToClipboard } from 'utils/copyToClipboard.utils';
 
 interface ShareItemDialogProps {
   share?: ShareLink;

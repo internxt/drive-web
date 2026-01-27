@@ -22,7 +22,6 @@ import {
 } from '@internxt/sdk/dist/drive/share/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
-import copy from 'copy-to-clipboard';
 import { t } from 'i18next';
 import { Iterator } from '../../core/collections';
 import { SdkFactory } from '../../core/factory/sdk';
@@ -37,6 +36,7 @@ import notificationsService, { ToastType } from '../../notifications/services/no
 import { AdvancedSharedItem } from '../types';
 import { domainManager } from './DomainManager';
 import { generateCaptchaToken } from 'utils';
+import { copyTextToClipboard } from 'utils/copyToClipboard.utils';
 
 interface CreateShareResponse {
   created: boolean;
@@ -351,14 +351,6 @@ export const getPublicShareLink = async (
       type: ToastType.Error,
     });
     errorService.reportError(error);
-  }
-};
-
-export const copyTextToClipboard = async (text: string) => {
-  try {
-    await navigator.clipboard.writeText(text);
-  } catch {
-    copy(text);
   }
 };
 
