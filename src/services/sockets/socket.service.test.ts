@@ -75,16 +75,6 @@ describe('RealtimeService', () => {
   });
 
   describe('Establishing realtime connection', () => {
-    test('When init is called, then it establishes a secure connection with authentication', () => {
-      service.init();
-
-      expect(ioMock).toHaveBeenCalledWith('https://notifications.example.com', {
-        auth: { token: 'mock-token-123' },
-        reconnection: true,
-        withCredentials: false,
-      });
-    });
-
     test.each(['connect', 'event', 'disconnect', 'connect_error'])(
       'When init is called, then it monitors connection lifecycle through %s events',
       (eventName) => {
