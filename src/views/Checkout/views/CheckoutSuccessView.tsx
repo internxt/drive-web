@@ -2,11 +2,8 @@ import useEffectAsync from 'hooks/useEffectAsync';
 import navigationService from 'services/navigation.service';
 import { AppView } from 'app/core/types';
 import { useAppDispatch } from 'app/store/hooks';
-import { planThunks } from 'app/store/slices/plan';
-import { userThunks } from 'app/store/slices/user';
 import { useCallback, useRef } from 'react';
 import localStorageService from 'services/local-storage.service';
-import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { trackPaymentConversion } from 'app/analytics/impact.service';
 import gaService from 'app/analytics/ga.service';
 import metaService from 'app/analytics/meta.service';
@@ -34,12 +31,6 @@ const CheckoutSuccessView = (): JSX.Element => {
     }
 
     hasTrackedRef.current = true;
-
-    setTimeout(async () => {
-      await dispatch(userThunks.initializeUserThunk());
-      await dispatch(planThunks.initializeThunk());
-      await dispatch(workspaceThunks.fetchWorkspaces());
-    }, 3000);
 
     try {
       metaService.trackPurchase();
