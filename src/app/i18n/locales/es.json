@@ -83,15 +83,20 @@
       "title": "Iniciar Sesión",
       "forgotPwd": "¿Olvidaste tu contraseña?",
       "dontHaveAccount": "¿No tienes cuenta?",
+      "dontHaveAccountMobile": "¿No tienes cuenta de Internxt?",
       "createAccount": "Crear cuenta",
       "2FA": "Código de dos factores",
       "twoFactorAuthenticationCode": "Código de autenticación de dos factores",
       "wrongLogin": "Nombre de usuario o contraseña no válidos",
       "failedToSendAuthData": "Error al enviar datos de autenticación. Por favor, inténtalo de nuevo."
     },
+    "button": {
+      "loginAction": "Iniciar sesión"
+    },
     "signup": {
       "title": "Crear cuenta",
       "haveAccount": "¿Ya tienes una cuenta?",
+      "haveAccountMobile": "¿Ya tienes una cuenta de Internxt?",
       "login": "Iniciar sesión",
       "encrypting": "Cifrando",
       "info": {

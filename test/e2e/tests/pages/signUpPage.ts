@@ -30,10 +30,10 @@ export class SignUpPage {
     this.passwordWarning = this.page.locator('[class="pt-1"] p');
     this.disclaimer = this.page.locator('[class$="pr-4 dark:bg-primary/20"] p');
     this.learnMoreLinkText = this.page.getByRole('link', { name: 'Learn more' });
-    this.createAccountButton = this.page.getByRole('button', { name: 'Create account' });
-    this.createAccountButtonText = this.page.locator('[class$="justify-center space-x-2"]');
+    this.createAccountButton = this.page.getByRole('button', { name: 'Create account' }).first();
+    this.createAccountButtonText = this.page.getByRole('button', { name: 'Create account' }).first().locator('div');
     this.byCreatingYourAccountText = this.page.locator('[class="mt-2 w-full text-xs text-gray-50"]');
-    this.alreadyHaveAccountText = this.page.locator('[class$="space-x-1.5 font-medium"] span');
+    this.alreadyHaveAccountText = this.page.getByText('Already have an account?').first();
     this.logIn = this.page.getByRole('link', { name: 'Log in' });
     this.termsAndConditions = this.page.getByRole('link', { name: 'you accept the terms & conditions' });
     this.needHelp = this.page.getByRole('link', { name: 'Need help?' });
