@@ -11,7 +11,7 @@ import {
 import { AccessMode, UserRole } from '../types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { useShareDialogContext } from '../context/ShareDialogContextProvider';
+import { useShareDialogContext } from '../context';
 import { ItemToShare } from 'app/store/slices/storage/types';
 import errorService from 'services/error.service';
 

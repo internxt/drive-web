@@ -41,7 +41,7 @@ export class SignUpPage {
     //LOGIN PAGE
     this.loginTitle = this.page.getByRole('heading', { level: 1 });
     //DRIVE PAGE
-    this.driveTitle = this.page.locator('[class="max-w-sm flex-1 cursor-pointer truncate undefined"]');
+    this.driveTitle = this.page.locator('span.max-w-sm.flex-1.truncate').first();
   }
 
   async typeInEmail(email: string) {
