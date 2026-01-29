@@ -6,22 +6,22 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import PasswordFieldWithInfo from './PasswordFieldWithInfo';
 
+import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
+import { Button } from '@internxt/ui';
+import { AppView, IFormValues } from 'app/core/types';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useAppDispatch } from 'app/store/hooks';
 import { planThunks } from 'app/store/slices/plan';
-import { errorService, navigationService, envService, localStorageService } from 'services';
-import { AppView, IFormValues } from 'app/core/types';
 import TextInput from 'components/TextInput';
-import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
-import { useSignUp } from '../hooks/useSignup';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import authService, { authenticateUser } from 'services/auth.service';
-import PreparingWorkspaceAnimation from '../../../components/PreparingWorkspaceAnimation';
-import { paymentService } from 'views/Checkout/services';
 import { MAX_PASSWORD_LENGTH } from 'components/ValidPassword';
-import { Button } from '@internxt/ui';
-import { AuthMethodTypes } from 'views/Checkout/types';
+import { envService, errorService, localStorageService, navigationService } from 'services';
+import authService, { authenticateUser } from 'services/auth.service';
 import vpnAuthService from 'services/vpnAuth.service';
+import { paymentService } from 'views/Checkout/services';
+import { AuthMethodTypes } from 'views/Checkout/types';
 import { useOAuthFlow } from 'views/Login/hooks/useOAuthFlow';
+import PreparingWorkspaceAnimation from '../../../components/PreparingWorkspaceAnimation';
+import { useSignUp } from '../hooks/useSignup';
 
 export interface SignUpProps {
   location: {
@@ -291,13 +291,27 @@ function SignUpForm(): JSX.Element {
 
         <div className="w-full border-b border-gray-10" />
 
-        <div className="flex w-full items-center justify-center space-x-1.5 font-medium">
+        {/* Desktop: link style */}
+        <div className="hidden w-full items-center justify-center space-x-1.5 font-medium sm:flex">
           <span>{translate('auth.signup.haveAccount')}</span>
           <Link
             to={getLoginLink()}
-            className="cursor-pointer font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
+            className="cursor-pointer appearance-none text-center text-primary no-underline hover:text-primary focus:text-primary-dark"
           >
-            {translate('auth.signup.login')}
+            {translate('auth.button.loginAction')}
+          </Link>
+        </div>
+
+        {/* Mobile: button style */}
+        <div className="w-full sm:hidden">
+          <p className="w-full text-center">{translate('auth.signup.haveAccountMobile')}</p>
+          <Link to={getLoginLink()} className="mt-2 block w-full no-underline">
+            <Button
+              variant="secondary"
+              className="w-full !border-highlight/10 !bg-white/15 !text-gray-80 !shadow-sm hover:!bg-white/25 dark:!border-white/10 dark:!text-white"
+            >
+              {translate('auth.button.loginAction')}
+            </Button>
           </Link>
         </div>
       </div>

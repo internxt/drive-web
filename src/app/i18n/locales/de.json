@@ -83,15 +83,20 @@
       "title": "Anmelden",
       "forgotPwd": "Haben Sie Ihr Passwort vergessen?",
       "dontHaveAccount": "Sie haben kein Konto?",
+      "dontHaveAccountMobile": "Sie haben kein Internxt-Konto?",
       "createAccount": "Konto erstellen",
       "2FA": "Zwei-Faktor-Code",
       "twoFactorAuthenticationCode": "Zwei-Faktor-Authentifizierungscode",
       "wrongLogin": "Ungültiger Benutzername oder Passwort",
       "failedToSendAuthData": "Fehler beim Senden der Authentifizierungsdaten. Bitte versuchen Sie es erneut."
     },
+    "button": {
+      "loginAction": "Anmelden"
+    },
     "signup": {
       "title": "Konto erstellen",
       "haveAccount": "Haben Sie bereits ein Konto?",
+      "haveAccountMobile": "Haben Sie bereits ein Internxt-Konto?",
       "login": "Anmelden",
       "encrypting": "Verschlüsselung im Gange",
       "info": {
