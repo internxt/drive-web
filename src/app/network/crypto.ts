@@ -103,16 +103,20 @@ export async function getEncryptedFile(
   let done = false;
   let offset = 0;
 
-  while (!done) {
-    const status = await readable.read();
+  try {
+    while (!done) {
+      const status = await readable.read();
 
-    if (!status.done) {
-      hasher.update(status.value);
-      fileParts.set(status.value, offset);
-      offset += status.value.length;
+      if (!status.done) {
+        hasher.update(status.value);
+        fileParts.set(status.value, offset);
+        offset += status.value.length;
+      }
+
+      done = status.done;
     }
-
-    done = status.done;
+  } finally {
+    readable.releaseLock();
   }
 
   const sha256Result = hasher.digest();

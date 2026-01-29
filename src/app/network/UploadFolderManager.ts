@@ -149,6 +149,42 @@ export class UploadFoldersManager {
 
   private tasksInfo: Record<string, TaskInfo> = {};
 
+  /**
+   * Determines optimal folder concurrency based on system memory
+   * Similar to UploadManager but more conservative for folder operations
+   */
+  private static getOptimalFolderConcurrency(): number {
+    if (!window?.performance?.memory) {
+      // Memory API not available, use conservative default
+      return 3;
+    }
+
+    const memoryLimit = window.performance.memory.jsHeapSizeLimit;
+    const memoryGB = memoryLimit / 1024 ** 3;
+
+    // Low-RAM machine (< 2 GB heap): Use 2 concurrent folder uploads
+    if (memoryGB < 2) {
+      console.log(
+        `[UploadFoldersManager] Low RAM detected (${memoryGB.toFixed(1)} GB heap), using folder concurrency: 2`,
+      );
+      return 2;
+    }
+
+    // Medium-RAM machine (2-4 GB heap): Use 3 concurrent folder uploads
+    if (memoryGB < 4) {
+      console.log(
+        `[UploadFoldersManager] Medium RAM detected (${memoryGB.toFixed(1)} GB heap), using folder concurrency: 3`,
+      );
+      return 3;
+    }
+
+    // High-RAM machine (≥ 4 GB heap): Use 6 concurrent folder uploads
+    console.log(
+      `[UploadFoldersManager] High RAM detected (${memoryGB.toFixed(1)} GB heap), using folder concurrency: 6`,
+    );
+    return 6;
+  }
+
   constructor(
     payload: UploadFolderPayload[],
     selectedWorkspace: WorkspaceData | null,
@@ -163,9 +199,10 @@ export class UploadFoldersManager {
     (task, next: (err: Error | null, res?: DriveFolderData) => void) => {
       if (this.abortController?.signal.aborted) return;
 
+      const adaptiveConcurrency = UploadFoldersManager.getOptimalFolderConcurrency();
       const newConcurrency = QueueUtilsService.instance.getConcurrencyUsingPerfomance(
         this.uploadFoldersQueue.concurrency,
-        UploadFoldersManager.MAX_CONCURRENT_UPLOADS,
+        adaptiveConcurrency,
       );
       if (this.uploadFoldersQueue.concurrency !== newConcurrency) {
         this.uploadFoldersQueue.concurrency = newConcurrency;
@@ -179,7 +216,7 @@ export class UploadFoldersManager {
           next(e);
         });
     },
-    UploadFoldersManager.MAX_CONCURRENT_UPLOADS,
+    UploadFoldersManager.getOptimalFolderConcurrency(),
   );
 
   private readonly createFolderWithRetry = async (
@@ -227,6 +264,17 @@ export class UploadFoldersManager {
     });
   };
 
+  private readonly shouldBatchFiles = (): boolean => {
+    if (!window?.performance?.memory) {
+      return false;
+    }
+
+    const memory = window.performance.memory;
+    const memoryUsagePercentage = memory.usedJSHeapSize / memory.jsHeapSizeLimit;
+
+    return memoryUsagePercentage > 0.8;
+  };
+
   private readonly handleFileUploads = async (
     level: IRoot,
     createdFolder: DriveFolderData,
@@ -236,29 +284,73 @@ export class UploadFoldersManager {
     if (level.childrenFiles.length === 0) return;
     if (abortController.signal.aborted) return;
 
-    await this.dispatch(
-      uploadItemsParallelThunk({
-        files: level.childrenFiles,
-        parentFolderId: createdFolder.uuid,
-        options: {
-          relatedTaskId: taskId,
-          showNotifications: false,
-          showErrors: false,
-          abortController: abortController,
-          disableDuplicatedNamesCheck: true,
-          disableExistenceCheck: true,
-          isUploadedFromFolder: true,
-          notUploadHiddenFiles: true,
-        },
-        onFileUploadCallback: () => this.updateTaskProgress(taskId, abortController),
-      }),
-    )
-      .unwrap()
-      .catch(() => {
-        this.stopUploadTask(taskId, abortController);
-        this.killQueueAndNotifyError(taskId);
-        return;
-      });
+    const BATCH_SIZE = 100;
+    const shouldBatch = this.shouldBatchFiles() && level.childrenFiles.length > BATCH_SIZE;
+
+    if (shouldBatch) {
+      console.log(
+        `[UploadFolderManager] High memory usage detected, batching ${level.childrenFiles.length} files into groups of ${BATCH_SIZE}`,
+      );
+
+      // Upload files in batches to prevent memory exhaustion
+      for (let i = 0; i < level.childrenFiles.length; i += BATCH_SIZE) {
+        if (abortController.signal.aborted) return;
+
+        const batch = level.childrenFiles.slice(i, i + BATCH_SIZE);
+
+        await this.dispatch(
+          uploadItemsParallelThunk({
+            files: batch,
+            parentFolderId: createdFolder.uuid,
+            options: {
+              relatedTaskId: taskId,
+              showNotifications: false,
+              showErrors: false,
+              abortController: abortController,
+              disableDuplicatedNamesCheck: true,
+              disableExistenceCheck: true,
+              isUploadedFromFolder: true,
+              notUploadHiddenFiles: true,
+            },
+            onFileUploadCallback: () => this.updateTaskProgress(taskId, abortController),
+          }),
+        )
+          .unwrap()
+          .catch(() => {
+            this.stopUploadTask(taskId, abortController);
+            this.killQueueAndNotifyError(taskId);
+            return;
+          });
+
+        if (i + BATCH_SIZE < level.childrenFiles.length) {
+          await wait(200);
+        }
+      }
+    } else {
+      await this.dispatch(
+        uploadItemsParallelThunk({
+          files: level.childrenFiles,
+          parentFolderId: createdFolder.uuid,
+          options: {
+            relatedTaskId: taskId,
+            showNotifications: false,
+            showErrors: false,
+            abortController: abortController,
+            disableDuplicatedNamesCheck: true,
+            disableExistenceCheck: true,
+            isUploadedFromFolder: true,
+            notUploadHiddenFiles: true,
+          },
+          onFileUploadCallback: () => this.updateTaskProgress(taskId, abortController),
+        }),
+      )
+        .unwrap()
+        .catch(() => {
+          this.stopUploadTask(taskId, abortController);
+          this.killQueueAndNotifyError(taskId);
+          return;
+        });
+    }
   };
 
   private readonly queueChildFolders = (level: IRoot, createdFolder: DriveFolderData, taskFolder: TaskFolder): void => {
