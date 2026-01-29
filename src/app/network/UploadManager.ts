@@ -78,6 +78,7 @@ class UploadManager {
   private onFileUploadCallback?: (driveFileData: DriveFileData) => void;
   private uploadRepository?: PersistUploadRepository;
   private filesUploadedList: (DriveFileData & { taskId: string })[] = [];
+  private readonly optimalConcurrency: number;
   private filesGroups: Record<
     FileSizeType,
     {
@@ -102,6 +103,36 @@ class UploadManager {
       concurrency: 6,
     },
   };
+
+  /**
+   * Determines optimal concurrency based on system memory
+   * Low-RAM machines get lower concurrency to prevent memory exhaustion
+   */
+  private getOptimalConcurrency(): number {
+    if (!window?.performance?.memory) {
+      // Memory API not available, use conservative default
+      return 4;
+    }
+
+    const memoryLimit = window.performance.memory.jsHeapSizeLimit;
+    const memoryGB = memoryLimit / 1024 ** 3;
+
+    // Low-RAM machine (< 2 GB heap): Use 2 concurrent uploads
+    if (memoryGB < 2) {
+      console.log(`[UploadManager] Low RAM detected (${memoryGB.toFixed(1)} GB heap), using concurrency: 2`);
+      return 2;
+    }
+
+    // Medium-RAM machine (2-4 GB heap): Use 4 concurrent uploads
+    if (memoryGB < 4) {
+      console.log(`[UploadManager] Medium RAM detected (${memoryGB.toFixed(1)} GB heap), using concurrency: 4`);
+      return 4;
+    }
+
+    // High-RAM machine (≥ 4 GB heap): Use 6 concurrent uploads
+    console.log(`[UploadManager] High RAM detected (${memoryGB.toFixed(1)} GB heap), using concurrency: 6`);
+    return 6;
+  }
 
   private uploadQueue: QueueObject<UploadManagerFileParams> = queue<UploadManagerFileParams & { taskId: string }>(
     (fileData, next: (err: Error | null, res?: DriveFileData) => void) => {
@@ -285,6 +316,11 @@ class UploadManager {
     this.maxSpaceOccupiedCallback = maxSpaceOccupiedCallback;
     this.uploadRepository = uploadRepository;
     this.onFileUploadCallback = onFileUploadCallback;
+
+    this.optimalConcurrency = this.getOptimalConcurrency();
+
+    this.filesGroups[FileSizeType.Small].concurrency = this.optimalConcurrency;
+    this.filesGroups[FileSizeType.Medium].concurrency = this.optimalConcurrency;
   }
 
   private handleUploadErrors({
