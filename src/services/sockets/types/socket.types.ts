@@ -13,12 +13,12 @@ interface BaseEventData {
 }
 
 interface FileCreatedEvent extends BaseEventData {
-  event: 'FILE_CREATED';
+  event: typeof SOCKET_EVENTS.FILE_CREATED;
   payload: DriveItemData;
 }
 
 interface PlanUpdatedEvent extends BaseEventData {
-  event: 'PLAN_UPDATED';
+  event: typeof SOCKET_EVENTS.PLAN_UPDATED;
   payload: {
     maxSpaceBytes: number;
   };
