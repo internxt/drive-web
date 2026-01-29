@@ -313,6 +313,7 @@ export class DownloadManagerService {
   readonly downloadItems = async (
     downloadTask: DownloadTask,
     updateProgressCallback: (progress: number) => void,
+    updateDownloadedProgress: (progress: number) => void,
     incrementItemCount: () => void,
   ) => {
     const { connectionLost, cleanup } = this.handleConnectionLost(5000);
@@ -321,10 +322,13 @@ export class DownloadManagerService {
 
       const folderZip = new FlatFolderZip(options.downloadName, { abortController });
       const downloadProgress: number[] = [];
+      const lastReportedBytes: number[] = [];
       const failedItems: DownloadItemType[] = [];
+      let downloadedProgress = 0;
 
       items.forEach((_, index) => {
         downloadProgress[index] = 0;
+        lastReportedBytes[index] = 0;
       });
 
       const calculateProgress = () => {
@@ -357,6 +361,18 @@ export class DownloadManagerService {
           return;
         }
 
+        const notifyProgressCallback = (totalBytes: number, downloadedBytes: number) => {
+          const progress = downloadedBytes / totalBytes;
+          downloadProgress[index] = progress;
+
+          const bytesDelta = downloadedBytes - lastReportedBytes[index];
+          downloadedProgress += bytesDelta;
+          lastReportedBytes[index] = downloadedBytes;
+
+          updateDownloadedProgress(bytesDelta);
+          updateProgressCallback(calculateProgress());
+        };
+
         const downloadedFileStream = await downloadFile({
           fileId: (driveItem as DriveFileData).fileId,
           bucketId: (driveItem as DriveFileData).bucket,
@@ -367,14 +383,7 @@ export class DownloadManagerService {
           mnemonic: (driveItem as AdvancedSharedItem).credentials?.mnemonic ?? credentials.mnemonic,
           options: {
             abortController,
-            notifyProgress: (totalBytes, downloadedBytes) => {
-              const progress = downloadedBytes / totalBytes;
-              console.log('[NOTIFY PROGRESS] Download progress', downloadedBytes);
-
-              downloadProgress[index] = progress;
-
-              updateProgressCallback(calculateProgress());
-            },
+            notifyProgress: notifyProgressCallback,
           },
         });
 
@@ -400,6 +409,7 @@ export class DownloadManagerService {
             downloadProgress[index] = progress;
             updateProgressCallback(calculateProgress());
           },
+          downloadProgress: updateDownloadedProgress,
           updateNumItems: incrementItemCount,
           options: {
             destination: folderZip,

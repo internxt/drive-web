@@ -295,7 +295,7 @@ describe('downloadManager', () => {
     await DownloadManager.downloadItem(downloadItem);
 
     expect(downloadItemsSpy).toHaveBeenCalledOnce();
-    expect(downloadItemsSpy).toHaveBeenCalledWith(mockTask, expect.anything(), expect.anything());
+    expect(downloadItemsSpy).toHaveBeenCalledWith(mockTask, expect.anything(), expect.anything(), expect.anything());
     expect(downloadFolderSpy).not.toHaveBeenCalled();
     expect(downloadFileSpy).not.toHaveBeenCalled();
   });

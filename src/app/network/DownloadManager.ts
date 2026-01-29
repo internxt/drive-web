@@ -143,7 +143,12 @@ export class DownloadManager {
       });
 
       if (items.length > 1) {
-        await DownloadManagerService.instance.downloadItems(downloadTask, updateStatusTaskProgress, incrementItemCount);
+        await DownloadManagerService.instance.downloadItems(
+          downloadTask,
+          updateStatusTaskProgress,
+          updateDownloadedProgress,
+          incrementItemCount,
+        );
       } else if (items[0].isFolder) {
         await DownloadManagerService.instance.downloadFolder(
           downloadTask,
