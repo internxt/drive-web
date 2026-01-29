@@ -113,7 +113,7 @@ describe('downloadManager', () => {
     };
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
-    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerfomance').mockReturnValue(6);
+    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(6);
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
@@ -130,7 +130,7 @@ describe('downloadManager', () => {
     await DownloadManager.downloadItem(downloadItem);
 
     expect(downloadFolderSpy).toHaveBeenCalledOnce();
-    expect(downloadFolderSpy).toHaveBeenCalledWith(mockTask, expect.anything(), expect.anything());
+    expect(downloadFolderSpy).toHaveBeenCalledWith(mockTask, expect.anything(), expect.anything(), expect.anything());
     expect(downloadFileSpy).not.toHaveBeenCalled();
     expect(downloadItemsSpy).not.toHaveBeenCalled();
   });
@@ -185,7 +185,7 @@ describe('downloadManager', () => {
     };
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
-    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerfomance').mockReturnValue(6);
+    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(6);
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
@@ -278,7 +278,7 @@ describe('downloadManager', () => {
     };
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
-    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerfomance').mockReturnValue(6);
+    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(6);
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
@@ -350,7 +350,7 @@ describe('downloadManager', () => {
     };
     const newConcurrency = DownloadManager.downloadQueue.concurrency + 1;
 
-    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerfomance').mockReturnValue(newConcurrency);
+    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(newConcurrency);
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
@@ -420,7 +420,7 @@ describe('downloadManager', () => {
     };
     const newConcurrency = DownloadManager.downloadQueue.concurrency + 1;
 
-    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerfomance').mockReturnValue(newConcurrency);
+    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(newConcurrency);
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
@@ -494,7 +494,7 @@ describe('downloadManager', () => {
     };
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
-    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerfomance').mockReturnValue(6);
+    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(6);
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
@@ -573,7 +573,7 @@ describe('downloadManager', () => {
     };
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
-    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerfomance').mockReturnValue(6);
+    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(6);
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
@@ -651,7 +651,7 @@ describe('downloadManager', () => {
     };
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
-    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerfomance').mockReturnValue(6);
+    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(6);
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
@@ -677,7 +677,7 @@ describe('downloadManager', () => {
 
     expect(errorServiceSpy).toHaveBeenCalledWith(testError);
     expect(downloadFileSpy).not.toHaveBeenCalled();
-    expect(downloadFolderSpy).toHaveBeenCalledWith(mockTask, expect.anything(), expect.anything());
+    expect(downloadFolderSpy).toHaveBeenCalledWith(mockTask, expect.anything(), expect.anything(), expect.anything());
     expect(downloadItemsSpy).not.toHaveBeenCalled();
   });
 

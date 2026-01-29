@@ -615,6 +615,8 @@ describe('downloadManagerService', () => {
       taskId: mockTaskId,
       failedItems: [],
     };
+
+    const mockTaskStatusProgress = vi.fn((progress: number) => progress);
     const mockUpdateProgress = vi.fn((progress: number) => progress);
     const mockIncrementItemCount = vi.fn(() => 0);
 
@@ -626,14 +628,18 @@ describe('downloadManagerService', () => {
     const handleConnectionLostSpy = vi.spyOn(DownloadManagerService.instance, 'handleConnectionLost');
     const checkAndHandleConnectionLossSpy = vi.spyOn(DownloadManagerService.instance, 'checkAndHandleConnectionLost');
 
-    await DownloadManagerService.instance.downloadFolder(mockTask, mockUpdateProgress, mockIncrementItemCount);
+    await DownloadManagerService.instance.downloadFolder(
+      mockTask,
+      mockTaskStatusProgress,
+      mockUpdateProgress,
+      mockIncrementItemCount,
+    );
 
     expect(updateTaskSpy).toHaveBeenCalledWith({
       taskId: mockTaskId,
       merge: {
         status: TaskStatus.InProcess,
         progress: Infinity,
-        nItems: 0,
       },
     });
     expect(downloadFolderItemSpy).toHaveBeenCalledWith({
@@ -641,7 +647,8 @@ describe('downloadManagerService', () => {
       isSharedFolder: mockTask.options.areSharedItems,
       foldersIterator: mockTask.createFoldersIterator,
       filesIterator: mockTask.createFilesIterator,
-      updateProgress: expect.anything(),
+      updateProgress: mockTaskStatusProgress,
+      downloadProgress: mockUpdateProgress,
       updateNumItems: mockIncrementItemCount,
       options: {
         closeWhenFinished: true,
@@ -678,6 +685,7 @@ describe('downloadManagerService', () => {
     };
     const mockFile2: DriveFileData = { ...mockFile, id: 2, name: 'File2' };
 
+    const mockTaskStatusProgress = vi.fn((progress: number) => progress);
     const mockUpdateProgress = vi.fn((progress: number) => progress);
     const mockIncrementItemCount = vi.fn(() => 0);
 
@@ -692,7 +700,12 @@ describe('downloadManagerService', () => {
     const handleConnectionLostSpy = vi.spyOn(DownloadManagerService.instance, 'handleConnectionLost');
     const checkAndHandleConnectionLossSpy = vi.spyOn(DownloadManagerService.instance, 'checkAndHandleConnectionLost');
 
-    await DownloadManagerService.instance.downloadFolder(mockTask, mockUpdateProgress, mockIncrementItemCount);
+    await DownloadManagerService.instance.downloadFolder(
+      mockTask,
+      mockTaskStatusProgress,
+      mockUpdateProgress,
+      mockIncrementItemCount,
+    );
 
     expect(mockTask.failedItems).toEqual([mockFile, mockFile2]);
     expect(handleConnectionLostSpy).toHaveBeenCalledWith(5000);
@@ -723,6 +736,7 @@ describe('downloadManagerService', () => {
       failedItems: [],
     };
 
+    const mockTaskStatusProgress = vi.fn((progress: number) => progress);
     const mockUpdateProgress = vi.fn((progress: number) => progress);
     const mockIncrementItemCount = vi.fn(() => 0);
 
@@ -736,7 +750,12 @@ describe('downloadManagerService', () => {
     const checkAndHandleConnectionLossSpy = vi.spyOn(DownloadManagerService.instance, 'checkAndHandleConnectionLost');
 
     await expect(
-      DownloadManagerService.instance.downloadFolder(mockTask, mockUpdateProgress, mockIncrementItemCount),
+      DownloadManagerService.instance.downloadFolder(
+        mockTask,
+        mockTaskStatusProgress,
+        mockUpdateProgress,
+        mockIncrementItemCount,
+      ),
     ).rejects.toThrow(ErrorMessages.ServerUnavailable);
 
     expect(mockTask.failedItems).toEqual([]);
@@ -766,6 +785,7 @@ describe('downloadManagerService', () => {
       failedItems: [],
     };
 
+    const mockTaskStatusProgress = vi.fn((progress: number) => progress);
     const mockUpdateProgress = vi.fn();
     const mockIncrementItemCount = vi.fn();
 
@@ -781,7 +801,12 @@ describe('downloadManagerService', () => {
     });
 
     await expect(
-      DownloadManagerService.instance.downloadFolder(mockTask, mockUpdateProgress, mockIncrementItemCount),
+      DownloadManagerService.instance.downloadFolder(
+        mockTask,
+        mockTaskStatusProgress,
+        mockUpdateProgress,
+        mockIncrementItemCount,
+      ),
     ).rejects.toThrow(ConnectionLostError);
 
     expect(handleConnectionLostSpy).toHaveBeenCalledWith(5000);
@@ -1571,13 +1596,19 @@ describe('downloadManagerService', () => {
         failedItems: [],
       };
 
+      const mockTaskStatusProgress = vi.fn((progress: number) => progress);
       const mockUpdateProgress = vi.fn();
       const mockIncrementItemCount = vi.fn();
 
       (downloadFolderAsZip as Mock).mockRejectedValueOnce(new Error('Folder download error'));
 
       await expect(
-        DownloadManagerService.instance.downloadFolder(mockTask, mockUpdateProgress, mockIncrementItemCount),
+        DownloadManagerService.instance.downloadFolder(
+          mockTask,
+          mockTaskStatusProgress,
+          mockUpdateProgress,
+          mockIncrementItemCount,
+        ),
       ).rejects.toThrow('Folder download error');
     });
 

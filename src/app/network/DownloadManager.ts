@@ -41,7 +41,7 @@ export class DownloadManager {
     (downloadTask, next: (err?: Error) => void) => {
       if (downloadTask.abortController?.signal.aborted) return next(new Error('Download aborted'));
 
-      const newConcurrency = QueueUtilsService.instance.getConcurrencyUsingPerfomance(
+      const newConcurrency = QueueUtilsService.instance.getConcurrencyUsingPerformance(
         this.downloadQueue.concurrency,
         DownloadManager.MAX_CONCURRENT_DOWNLOADS,
       );
@@ -83,6 +83,7 @@ export class DownloadManager {
    */
   private static readonly downloadTask = async (downloadTask: DownloadTask) => {
     const { items, taskId, abortController } = downloadTask;
+    let downloadedProgress = 0;
 
     const task = tasksService.findTask(taskId);
     if (task?.status === TaskStatus.Cancelled || abortController?.signal.aborted) {
@@ -98,13 +99,25 @@ export class DownloadManager {
     tasksService.addListener({ event: TaskEvent.TaskCancelled, listener: cancelTaskListener });
 
     try {
-      const updateProgressCallback = (progress: number) => {
+      const updateStatusTaskProgress = (taskStatusProgress: number) => {
         if (task?.status !== TaskStatus.Cancelled) {
           tasksService.updateTask({
             taskId,
             merge: {
               status: TaskStatus.InProcess,
-              progress,
+              progress: taskStatusProgress,
+            },
+          });
+        }
+      };
+
+      const updateDownloadedProgress = (progress: number) => {
+        downloadedProgress += progress;
+        if (task?.status !== TaskStatus.Cancelled) {
+          tasksService.updateTask({
+            taskId,
+            merge: {
+              downloadedProgress,
             },
           });
         }
@@ -115,8 +128,8 @@ export class DownloadManager {
           tasksService.updateTask({
             taskId,
             merge: {
+              downloadedProgress,
               status: TaskStatus.InProcess,
-              nItems: (task?.nItems ?? 0) + 1,
             },
           });
         }
@@ -130,11 +143,16 @@ export class DownloadManager {
       });
 
       if (items.length > 1) {
-        await DownloadManagerService.instance.downloadItems(downloadTask, updateProgressCallback, incrementItemCount);
+        await DownloadManagerService.instance.downloadItems(downloadTask, updateStatusTaskProgress, incrementItemCount);
       } else if (items[0].isFolder) {
-        await DownloadManagerService.instance.downloadFolder(downloadTask, updateProgressCallback, incrementItemCount);
+        await DownloadManagerService.instance.downloadFolder(
+          downloadTask,
+          updateStatusTaskProgress,
+          updateDownloadedProgress,
+          incrementItemCount,
+        );
       } else {
-        await DownloadManagerService.instance.downloadFile(downloadTask, updateProgressCallback);
+        await DownloadManagerService.instance.downloadFile(downloadTask, updateStatusTaskProgress);
       }
 
       if (downloadTask.failedItems && downloadTask.failedItems.length > 0) {

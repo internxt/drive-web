@@ -17,7 +17,7 @@ type TaskLoggerActionsProps = {
   isHovered: boolean;
   status: string;
   progress: string;
-  nItems: string;
+  downloadedProgress?: number;
   cancelAction: () => void;
   retryAction: () => void;
   taskType: TaskType;
@@ -57,7 +57,7 @@ export const TaskLoggerActions = ({
   isHovered,
   status,
   progress,
-  nItems,
+  downloadedProgress,
   cancelAction,
   retryAction,
   taskType,
@@ -72,7 +72,6 @@ export const TaskLoggerActions = ({
     <Action
       isHovered={isHovered}
       progress={progress}
-      nItems={nItems}
       cancelAction={() => {
         cancelAction();
         removeUpload(taskId);
@@ -82,6 +81,7 @@ export const TaskLoggerActions = ({
       resumeAction={() => {
         resumeUpload(taskId);
       }}
+      downloadedProgress={downloadedProgress}
       magnifyingAction={openItemAction}
       infoAction={openRetryItemsAction}
       taskType={taskType}

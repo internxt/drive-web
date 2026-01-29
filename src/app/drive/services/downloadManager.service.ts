@@ -214,6 +214,7 @@ export class DownloadManagerService {
   readonly downloadFolder = async (
     downloadTask: DownloadTask,
     updateProgressCallback: (progress: number) => void,
+    updateDownloadedProgress: (progress: number) => void,
     incrementItemCount: () => void,
   ) => {
     const { connectionLost, cleanup } = this.handleConnectionLost(5000);
@@ -226,7 +227,6 @@ export class DownloadManagerService {
       merge: {
         status: TaskStatus.InProcess,
         progress: Infinity,
-        nItems: 0,
       },
     });
 
@@ -237,6 +237,7 @@ export class DownloadManagerService {
         foldersIterator: createFoldersIterator,
         filesIterator: createFilesIterator,
         updateProgress: updateProgressCallback,
+        downloadProgress: updateDownloadedProgress,
         updateNumItems: incrementItemCount,
         options: {
           closeWhenFinished: true,
@@ -368,6 +369,7 @@ export class DownloadManagerService {
             abortController,
             notifyProgress: (totalBytes, downloadedBytes) => {
               const progress = downloadedBytes / totalBytes;
+              console.log('[NOTIFY PROGRESS] Download progress', downloadedBytes);
 
               downloadProgress[index] = progress;
 
