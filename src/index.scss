@@ -393,3 +393,21 @@ abbr[title] {
 .text-ellipsis {
   text-overflow: ellipsis;
 }
+
+@media (width <= 639px) {
+  .bg-login-gradient {
+    background: linear-gradient(180deg, rgb(249 249 252 / 0%) 0%, #f9f9fc 100%);
+  }
+
+  .dark .bg-login-gradient {
+    background: linear-gradient(180deg, #1c1c1c 0%, #031632 100%);
+  }
+}
+
+.auth-footer-link {
+  @apply font-medium text-base no-underline text-primary hover:text-primary-dark;
+
+  @media (width >= 640px) {
+    @apply text-gray-80 hover:text-gray-100;
+  }
+}

@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
 import { expect, Request, Route, test } from '@playwright/test';
+import { getUser, getUserCredentials } from '../helper/getUser';
 import { staticData } from '../helper/staticData';
 import { SignUpPage } from '../pages/signUpPage';
-import { getUser, getUserCredentials } from '../helper/getUser';
 const BASE_API_URL = process.env.REACT_APP_DRIVE_NEW_API_URL;
 
 const credentialsFile = getUserCredentials();
@@ -97,13 +97,11 @@ test.describe('Internxt SignUp', async () => {
     expect(termsOfServiceTitle).toEqual(staticData.termsOfServiceTitle);
   });
 
-  test('TC7: Validate that the user is redirected to the “Log in” page after clicking on “Log in”', async ({
-    page,
-  }) => {
+  test('TC7: Validate that the user is redirected to the “Login” page after clicking on “Log in”', async ({ page }) => {
     const SignupPage = new SignUpPage(page);
 
     const { logInText, logInTitle } = await SignupPage.clickOnLogIn();
-    expect(logInText).toEqual(staticData.logInPageTitle);
+    expect(logInText).toEqual(staticData.logInButtonText);
     expect(logInTitle).toEqual(staticData.logInPageTitle);
   });
 
