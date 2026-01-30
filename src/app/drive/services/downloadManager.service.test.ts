@@ -1337,6 +1337,58 @@ describe('downloadManagerService', () => {
   });
 
   describe('downloadItems', () => {
+    test('When downloading files, then the downloaded progress should be updated correctly', async () => {
+      const mockTask: DownloadTask = {
+        abortController: new AbortController(),
+        items: [mockFile as DriveItemData],
+        createFilesIterator: createFilesIterator,
+        createFoldersIterator: createFoldersIterator,
+        credentials: {
+          credentials: { user: 'any-user', pass: 'any-pass' },
+          mnemonic: 'any-mnemonic',
+        },
+        options: { areSharedItems: false, downloadName: `${mockFile.name}.${mockFile.type}`, showErrors: true },
+        taskId: 'mock-task-id',
+        failedItems: [],
+      };
+
+      const mockUpdateStatusProgress = vi.fn();
+      const mockUpdateDownloadedProgress = vi.fn();
+      const mockIncrementItemCount = vi.fn();
+
+      const levelsBlobsCache = new LevelsBlobsCache();
+      const lruCache = new LRUCache<DriveItemBlobData>(levelsBlobsCache, 1);
+      vi.spyOn(lruCache, 'get').mockResolvedValue({ id: mockFile.id, parentId: mockFile.folderId, source: undefined });
+      vi.spyOn(LRUFilesCacheManager, 'getInstance').mockResolvedValue(lruCache);
+      (checkIfCachedSourceIsOlder as Mock).mockReturnValue(true);
+
+      (downloadFile as Mock).mockImplementation(async ({ options }) => {
+        const { notifyProgress } = options;
+        if (notifyProgress) {
+          notifyProgress(100, 25);
+          notifyProgress(100, 50);
+          notifyProgress(100, 100);
+        }
+        return new ReadableStream();
+      });
+
+      (binaryStreamToBlob as Mock).mockResolvedValue({ stream: () => new ReadableStream() });
+      vi.spyOn(FlatFolderZip.prototype, 'addFile').mockResolvedValue();
+      vi.spyOn(FlatFolderZip.prototype, 'close').mockResolvedValue();
+      vi.spyOn(FlatFolderZip.prototype, 'abort').mockImplementation(() => {});
+
+      await DownloadManagerService.instance.downloadItems(
+        mockTask,
+        mockUpdateStatusProgress,
+        mockUpdateDownloadedProgress,
+        mockIncrementItemCount,
+      );
+
+      expect(mockUpdateDownloadedProgress).toHaveBeenCalledWith(25);
+      expect(mockUpdateDownloadedProgress).toHaveBeenCalledWith(25);
+      expect(mockUpdateDownloadedProgress).toHaveBeenCalledWith(50);
+    });
+
     test('When there is an empty file, then it should be added to the zip without downloading', async () => {
       const emptyFile: DriveFileData = { ...mockFile, id: 3, name: 'EmptyFile', size: 0 };
       const mockTask: DownloadTask = {
