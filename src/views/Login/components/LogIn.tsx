@@ -6,26 +6,26 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import localStorageService from 'services/local-storage.service';
-import { twoFactorRegexPattern } from 'services/validation.service';
 import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
 import { userActions } from 'app/store/slices/user';
 import authService, { authenticateUser, is2FANeeded } from 'services/auth.service';
+import localStorageService from 'services/local-storage.service';
+import { twoFactorRegexPattern } from 'services/validation.service';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Button } from '@internxt/ui';
 import { WarningCircle } from '@phosphor-icons/react';
-import { useOAuthFlow } from 'views/Login/hooks/useOAuthFlow';
-import { errorService, navigationService, workspacesService, envService, vpnAuthService } from 'services';
 import AppError, { AppView, IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import useLoginRedirections from '../hooks/useLoginRedirections';
 import shareService from 'app/share/services/share.service';
 import PasswordInput from 'components/PasswordInput';
 import TextInput from 'components/TextInput';
+import { envService, errorService, navigationService, vpnAuthService, workspacesService } from 'services';
 import { AuthMethodTypes } from 'views/Checkout/types';
+import { useOAuthFlow } from 'views/Login/hooks/useOAuthFlow';
+import useLoginRedirections from '../hooks/useLoginRedirections';
 
 const showNotification = ({ text, isError }: { text: string; isError: boolean }) => {
   notificationsService.show({
@@ -272,7 +272,7 @@ export default function LogIn(): JSX.Element {
             variant="primary"
             disabled={isLoggingIn}
           >
-            {isLoggingIn && isValid ? translate('auth.decrypting') : translate('auth.login.title')}
+            {isLoggingIn && isValid ? translate('auth.decrypting') : translate('auth.button.loginAction')}
           </Button>
         </form>
 
@@ -288,13 +288,27 @@ export default function LogIn(): JSX.Element {
 
         <div className="w-full border-b border-gray-10" />
 
-        <div className="flex w-full items-center justify-center space-x-1.5 font-medium">
+        {/* Desktop: link style */}
+        <div className="hidden w-full items-center justify-center space-x-1.5 font-medium sm:flex">
           <span>{translate('auth.login.dontHaveAccount')}</span>
           <Link
             to={getSignupLink()}
             className="cursor-pointer appearance-none text-center text-primary no-underline hover:text-primary focus:text-primary-dark"
           >
             {translate('auth.login.createAccount')}
+          </Link>
+        </div>
+
+        {/* Mobile: button style */}
+        <div className="w-full sm:hidden">
+          <p className="w-full text-center">{translate('auth.login.dontHaveAccountMobile')}</p>
+          <Link to={getSignupLink()} className="mt-2 block w-full no-underline">
+            <Button
+              variant="secondary"
+              className="w-full !border-highlight/10 !bg-white/15 !text-gray-80 !shadow-sm hover:!bg-white/25 dark:!border-white/10 dark:!text-white"
+            >
+              {translate('auth.login.createAccount')}
+            </Button>
           </Link>
         </div>
       </div>

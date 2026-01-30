@@ -101,15 +101,20 @@
       "title": "登录",
       "forgotPwd": "忘记密码了？",
       "dontHaveAccount": "没有账户？",
+      "dontHaveAccountMobile": "没有 Internxt 账户？",
       "createAccount": "创建账户",
       "2FA": "双因素代码",
       "twoFactorAuthenticationCode": "双因素验证码",
       "wrongLogin": "用户名或密码无效",
       "failedToSendAuthData": "发送身份验证数据失败。请重试。"
     },
+    "button": {
+      "loginAction": "登录"
+    },
     "signup": {
       "title": "创建账户",
       "haveAccount": "已有账户？",
+      "haveAccountMobile": "已有 Internxt 账户？",
       "login": "登录",
       "encrypting": "加密中",
       "info": {
