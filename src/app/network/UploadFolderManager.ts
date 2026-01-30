@@ -139,8 +139,8 @@ export const uploadFoldersWithManager = ({
 };
 
 export class UploadFoldersManager {
-  private static readonly MAX_CONCURRENT_UPLOADS = 6;
-  private static readonly MAX_UPLOAD_ATTEMPTS = 2;
+  private static readonly MAX_CONCURRENT_UPLOADS = 1;
+  private static readonly MAX_UPLOAD_ATTEMPTS = 1;
 
   private readonly payload: UploadFolderPayload[];
   private readonly selectedWorkspace: WorkspaceData | null;
