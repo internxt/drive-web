@@ -8,7 +8,7 @@ import sizeService from 'app/drive/services/size.service';
 import iconService from 'app/drive/services/icon.service';
 import { useDriveItemActions, useDriveItemDrag, useDriveItemDrop, useDriveItemStoreProps } from '../../../../hooks';
 import './DriveExplorerListItem.scss';
-import { t } from 'i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { WarningCircle } from '@phosphor-icons/react';
 
 const getItemClassNames = (isSelected: boolean, isDraggingOver: boolean, isDragging: boolean): string => {
@@ -36,6 +36,7 @@ const getAutoDeleteStatusInfo = (
 };
 
 const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.Element => {
+  const { translate } = useTranslationContext();
   const { isItemSelected, isEditingName } = useDriveItemStoreProps();
   const { nameInputRef, onNameClicked, onItemClicked, onItemDoubleClicked, downloadAndSetThumbnail } =
     useDriveItemActions(item);
@@ -46,8 +47,8 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
 
   const daysUntilDelete = isTrash ? dateService.calculateDaysUntilDate(item.caducityDate) : 0;
   const autoDeleteStatusInfo = useMemo(
-    () => (isTrash && daysUntilDelete > 0 ? getAutoDeleteStatusInfo(daysUntilDelete, t) : null),
-    [isTrash, daysUntilDelete],
+    () => (isTrash && daysUntilDelete > 0 ? getAutoDeleteStatusInfo(daysUntilDelete, translate) : null),
+    [isTrash, daysUntilDelete, translate],
   );
 
   useEffect(() => {
@@ -143,7 +144,7 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
 
       {/* DATE */}
       <div className="block lg:pl-4 shrink-0 w-date items-center whitespace-nowrap">
-        {dateService.formatDefaultDate(item.updatedAt, t)}
+        {dateService.formatDefaultDate(item.updatedAt, translate)}
       </div>
 
       {/* SIZE */}
