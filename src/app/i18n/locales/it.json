@@ -918,8 +918,12 @@
         "uploaded": "Caricato",
         "uploadedBy": "Caricato da",
         "shared": "Condiviso",
+        "numberOfFiles": "Numero di file",
         "location": "Posizione"
-      }
+      },
+      "fileCount_one": "{{count}} file",
+      "fileCount_other": "{{count}} file",
+      "fileCountMoreThan1000": "Più di 1000 file"
     },
     "shareModal": {
       "title": "Condividi \"{{name}}\"",

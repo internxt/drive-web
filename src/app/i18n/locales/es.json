@@ -863,9 +863,13 @@
         "uploadedBy": "Subido por",
         "shared": "Compartido",
         "size": "Tamaño",
+        "numberOfFiles": "Número de archivos",
         "modified": "Modificado",
         "location": "Ubicación"
-      }
+      },
+      "fileCount_one": "{{count}} archivo",
+      "fileCount_other": "{{count}} archivos",
+      "fileCountMoreThan1000": "Más de 1000 archivos"
     },
     "shareModal": {
       "title": "Compartir \"{{name}}\"",

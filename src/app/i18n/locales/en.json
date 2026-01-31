@@ -881,9 +881,13 @@
         "uploadedBy": "Uploaded by",
         "shared": "Shared",
         "size": "Size",
+        "numberOfFiles": "Number of files",
         "modified": "Modified",
         "location": "Location"
-      }
+      },
+      "fileCount_one": "{{count}} file",
+      "fileCount_other": "{{count}} files",
+      "fileCountMoreThan1000": "1000+ files"
     },
     "shareModal": {
       "title": "Share \"{{name}}\"",
