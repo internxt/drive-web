@@ -1214,6 +1214,10 @@
       "restore": "恢复",
       "delete-permanently": "永久删除"
     },
+    "autoDelete": {
+      "inDays_one": "{{count}} 天后",
+      "inDays_other": "{{count}} 天后"
+    },
     "automaticDisposal": {
       "badge": "新更新",
       "title": "自动清空垃圾箱",
@@ -1501,7 +1505,8 @@
         "name": "名称",
         "modified": "修改日期",
         "size": "大小",
-        "actions": "操作"
+        "actions": "操作",
+        "autoDelete": "自动删除"
       }
     },
     "viewMode": {

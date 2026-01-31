@@ -1284,6 +1284,10 @@
       "restore": "Ripristino",
       "delete-permanently": "Elimina definitivamente"
     },
+    "autoDelete": {
+      "inDays_one": "Tra {{count}} giorno",
+      "inDays_other": "Tra {{count}} giorni"
+    },
     "automaticDisposal": {
       "badge": "Nuovo aggiornamento",
       "title": "Eliminazione automatica del Cestino",
@@ -1567,7 +1571,8 @@
         "name": "Nome",
         "modified": "Ultima modifica",
         "size": "Dimensione",
-        "actions": "Azioni"
+        "actions": "Azioni",
+        "autoDelete": "Eliminazione automatica"
       }
     },
     "viewMode": {
