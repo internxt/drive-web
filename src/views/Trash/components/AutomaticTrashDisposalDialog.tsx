@@ -18,7 +18,7 @@ const AutomaticTrashDisposalDialog = (): JSX.Element => {
   return (
     <Modal maxWidth="max-w-md" isOpen={isOpen} onClose={onClose}>
       <div className="flex flex-col space-y-2">
-        <span className="w-fit rounded bg-primary/10 px-1 text-sm font-semibold text-primary dark:bg-[#082D66] dark:text-[#72AAFF]">
+        <span className="w-fit rounded-[2px] bg-primary/10 px-1 pt-[0.5px] text-sm font-semibold text-primary dark:bg-[#082D66] dark:text-[#72AAFF]">
           {translate('trash.automaticDisposal.badge')}
         </span>
 
