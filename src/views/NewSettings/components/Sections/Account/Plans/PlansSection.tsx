@@ -13,7 +13,12 @@ import { paymentService } from 'views/Checkout/services';
 import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
 import { PlanState, planThunks } from 'app/store/slices/plan';
-import { fetchVersionLimitsThunk } from 'app/store/slices/fileVersions';
+import {
+  fetchVersionLimitsThunk,
+  VERSION_LIMITS_POLL_MAX_ATTEMPTS,
+  VERSION_LIMITS_POLL_DELAYS,
+  fileVersionsSelectors,
+} from 'app/store/slices/fileVersions';
 import CancelSubscriptionModal from '../../Workspace/Billing/CancelSubscriptionModal';
 import { fetchPlanPrices, getStripe } from '../../../../services/plansApi';
 import ChangePlanDialog from './components/ChangePlanDialog';
@@ -47,6 +52,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
+  const versionLimits = useSelector(fileVersionsSelectors.getLimits);
 
   const { individualSubscription, businessSubscription } = plan;
   let stripe;
@@ -183,12 +189,34 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     [translate],
   );
 
+  const pollVersionLimitsUntilChanged = useCallback(
+    async (attempt = 0, previousLimits = versionLimits) => {
+      if (attempt >= VERSION_LIMITS_POLL_MAX_ATTEMPTS) return;
+
+      const delay = VERSION_LIMITS_POLL_DELAYS[attempt] || VERSION_LIMITS_POLL_DELAYS.at(-1);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      const result = await dispatch(fetchVersionLimitsThunk({ isSilent: true })).unwrap();
+
+      const hasLimitsChanged =
+        previousLimits?.versioning.enabled !== result.limits.versioning.enabled ||
+        previousLimits?.versioning.maxFileSize !== result.limits.versioning.maxFileSize ||
+        previousLimits?.versioning.retentionDays !== result.limits.versioning.retentionDays ||
+        previousLimits?.versioning.maxVersions !== result.limits.versioning.maxVersions;
+
+      if (!hasLimitsChanged) {
+        pollVersionLimitsUntilChanged(attempt + 1, previousLimits);
+      }
+    },
+    [dispatch, versionLimits],
+  );
+
   const handlePaymentSuccess = () => {
     showSuccessSubscriptionNotification();
     setTimeout(() => {
       dispatch(planThunks.initializeThunk()).unwrap();
-      dispatch(fetchVersionLimitsThunk());
     }, 2000);
+
+    pollVersionLimitsUntilChanged();
   };
 
   const handleSubscriptionPayment = async (priceId: string) => {
@@ -266,8 +294,9 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
       setCancellingSubscription(false);
       setTimeout(() => {
         dispatch(planThunks.initializeThunk()).unwrap();
-        dispatch(fetchVersionLimitsThunk());
       }, 1000);
+
+      pollVersionLimitsUntilChanged();
     }
   }
 

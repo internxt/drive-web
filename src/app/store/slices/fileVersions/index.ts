@@ -2,6 +2,9 @@ import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { FileVersion, FileLimitsResponse } from '@internxt/sdk/dist/drive/storage/types';
 import fileVersionService from 'views/Drive/services/fileVersion.service';
 
+export const VERSION_LIMITS_POLL_MAX_ATTEMPTS = 3;
+export const VERSION_LIMITS_POLL_DELAYS = [2000, 4000, 6000];
+
 interface FileVersionsState {
   versionsByFileId: Record<NonNullable<FileVersion['fileId']>, FileVersion[]>;
   isLoadingByFileId: Record<NonNullable<FileVersion['fileId']>, boolean>;
@@ -30,14 +33,17 @@ export const fetchFileVersionsThunk = createAsyncThunk(
   },
 );
 
-export const fetchVersionLimitsThunk = createAsyncThunk('fileVersions/fetchLimits', async (_, { rejectWithValue }) => {
-  try {
-    const limits = await fileVersionService.getLimits();
-    return limits;
-  } catch (error) {
-    return rejectWithValue((error as Error).message);
-  }
-});
+export const fetchVersionLimitsThunk = createAsyncThunk(
+  'fileVersions/fetchLimits',
+  async ({ isSilent = false }: { isSilent?: boolean } = {}, { rejectWithValue }) => {
+    try {
+      const limits = await fileVersionService.getLimits();
+      return { limits, isSilent };
+    } catch (error) {
+      return rejectWithValue((error as Error).message);
+    }
+  },
+);
 
 export const fileVersionsSlice = createSlice({
   name: 'fileVersions',
@@ -75,11 +81,14 @@ export const fileVersionsSlice = createSlice({
         state.isLoadingByFileId[action.meta.arg] = false;
         state.errorsByFileId[action.meta.arg] = action.payload as string;
       })
-      .addCase(fetchVersionLimitsThunk.pending, (state) => {
-        state.isLimitsLoading = true;
+      .addCase(fetchVersionLimitsThunk.pending, (state, action) => {
+        const isSilent = action.meta.arg?.isSilent || false;
+        if (!isSilent) {
+          state.isLimitsLoading = true;
+        }
       })
       .addCase(fetchVersionLimitsThunk.fulfilled, (state, action) => {
-        state.limits = action.payload;
+        state.limits = action.payload.limits;
         state.isLimitsLoading = false;
       })
       .addCase(fetchVersionLimitsThunk.rejected, (state) => {

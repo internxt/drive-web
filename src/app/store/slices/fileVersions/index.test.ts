@@ -54,11 +54,11 @@ describe('File history state', () => {
       const getLimitsSpy = vi.spyOn(fileVersionService, 'getLimits').mockResolvedValueOnce(limits);
       const dispatch = vi.fn();
 
-      const action = await fetchVersionLimitsThunk()(dispatch, () => ({}) as RootState, undefined);
+      const action = await fetchVersionLimitsThunk({})(dispatch, () => ({}) as RootState, undefined);
 
       expect(getLimitsSpy).toHaveBeenCalled();
       expect(action.meta.requestStatus).toBe('fulfilled');
-      expect(action.payload).toBe(limits);
+      expect(action.payload).toEqual({ limits, isSilent: false });
     });
 
     it('when version limits fail to load, then the error is reported', async () => {
@@ -67,7 +67,7 @@ describe('File history state', () => {
         .mockRejectedValueOnce(new Error('limits unavailable'));
       const dispatch = vi.fn();
 
-      const action = await fetchVersionLimitsThunk()(dispatch, () => ({}) as RootState, undefined);
+      const action = await fetchVersionLimitsThunk({})(dispatch, () => ({}) as RootState, undefined);
 
       expect(getLimitsSpy).toHaveBeenCalled();
       expect(action.meta.requestStatus).toBe('rejected');
@@ -138,7 +138,7 @@ describe('File history state', () => {
     });
 
     it('when limits are loading or finished, then the loading state updates', () => {
-      const pendingState = fileVersionsReducer(undefined, fetchVersionLimitsThunk.pending('', undefined));
+      const pendingState = fileVersionsReducer(undefined, fetchVersionLimitsThunk.pending('', {}));
       expect(pendingState.isLimitsLoading).toBe(true);
 
       const limits: FileLimitsResponse = {
@@ -146,14 +146,14 @@ describe('File history state', () => {
       };
       const fulfilledState = fileVersionsReducer(
         pendingState,
-        fetchVersionLimitsThunk.fulfilled(limits, '', undefined),
+        fetchVersionLimitsThunk.fulfilled({ limits, isSilent: false }, '', {}),
       );
       expect(fulfilledState.isLimitsLoading).toBe(false);
-      expect(fulfilledState.limits).toBe(limits);
+      expect(fulfilledState.limits).toEqual(limits);
 
       const rejectedState = fileVersionsReducer(
         pendingState,
-        fetchVersionLimitsThunk.rejected(new Error('err'), '', undefined),
+        fetchVersionLimitsThunk.rejected(new Error('err'), '', {}),
       );
       expect(rejectedState.isLimitsLoading).toBe(false);
     });
