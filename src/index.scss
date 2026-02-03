@@ -411,3 +411,9 @@ abbr[title] {
     @apply text-gray-80 hover:text-gray-100;
   }
 }
+
+/* Saving space for the scrollbar when it is not visible so that the content does not shift */
+/* stylelint-disable-next-line selector-id-pattern */
+#scrollableList {
+  scrollbar-gutter: stable;
+}
