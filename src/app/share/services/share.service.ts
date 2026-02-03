@@ -37,6 +37,7 @@ import { AdvancedSharedItem } from '../types';
 import { domainManager } from './DomainManager';
 import { generateCaptchaToken } from 'utils';
 import { copyTextToClipboard } from 'utils/copyToClipboard.utils';
+import { retryWithBackoff } from '../../network/retry-with-rate-limit';
 
 interface CreateShareResponse {
   created: boolean;
@@ -123,12 +124,21 @@ export function getPublicSharedFolderContent(
   code?: string,
   orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
 ): Promise<ListSharedItemsResponse> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient
-    .getPublicSharedFolderContent(sharedFolderId, type, token, page, perPage, code, orderBy)
-    .catch((error) => {
-      throw error;
-    });
+  return retryWithBackoff(
+    async () => {
+      const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+      return shareClient.getPublicSharedFolderContent(sharedFolderId, type, token, page, perPage, code, orderBy);
+    },
+    {
+      maxRetries: 5,
+      maxDelay: 60000,
+      onRetry: (attempt, delay) => {
+        console.log(
+          `[PUBLIC-SHARED-${type.toUpperCase()}] Retry attempt ${attempt} after ${delay}ms for folder ${sharedFolderId}`,
+        );
+      },
+    },
+  );
 }
 
 export function deleteShareLink(shareId: string): Promise<{ deleted: boolean; shareId: string }> {
