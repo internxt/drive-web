@@ -58,20 +58,6 @@ describe('retryWithBackoff', () => {
     expect(timeUtils.wait).toHaveBeenCalledWith(5000);
   });
 
-  it('when different error formats received then recognizes all as rate limits', async () => {
-    const testCases = [
-      { status: 429, headers: { 'x-internxt-ratelimit-reset': '1000' } },
-      { response: { status: 429 }, headers: { 'x-internxt-ratelimit-reset': '1000' } },
-    ];
-
-    for (const errorFormat of testCases) {
-      const mockFn = vi.fn().mockRejectedValueOnce(errorFormat).mockResolvedValueOnce('success');
-      await retryWithBackoff(mockFn);
-      expect(mockFn).toHaveBeenCalledTimes(2);
-      vi.clearAllMocks();
-    }
-  });
-
   it('when error is not rate limit then throws immediately without retry', async () => {
     const mockFn = vi.fn().mockRejectedValue({ status: 500, message: 'Internal Server Error' });
 
@@ -89,9 +75,7 @@ describe('retryWithBackoff', () => {
     await retryWithBackoff(mockFn, { onRetry });
 
     expect(timeUtils.wait).toHaveBeenCalledWith(10000);
-    expect(onRetry).toHaveBeenCalledWith(1, 10000, {
-      retryAfter: 10000,
-    });
+    expect(onRetry).toHaveBeenCalledWith(1, 10000);
   });
 
   it('when headers missing or invalid then throws error', async () => {

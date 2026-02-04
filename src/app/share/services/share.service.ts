@@ -130,7 +130,6 @@ export function getPublicSharedFolderContent(
       return shareClient.getPublicSharedFolderContent(sharedFolderId, type, token, page, perPage, code, orderBy);
     },
     {
-      maxRetries: 5,
       onRetry: (attempt, delay) => {
         console.warn(
           `[PUBLIC-SHARED-${type.toUpperCase()}] Retry attempt ${attempt} after ${delay}ms for folder ${sharedFolderId}`,

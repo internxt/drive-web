@@ -4,23 +4,14 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { t } from 'i18next';
 
 let hasShownRateLimitToast = false;
-export interface RateLimitInfo {
-  retryAfter: number;
-}
 
 export interface RetryOptions {
   maxRetries?: number;
-  onRetry?: (attempt: number, delay: number, rateLimitInfo?: RateLimitInfo) => void;
+  onRetry?: (attempt: number, delay: number) => void;
 }
 
 interface ErrorWithStatus {
   status?: number;
-  statusCode?: number;
-  message?: string;
-  response?: {
-    status?: number;
-    headers?: Record<string, string>;
-  };
   headers?: Record<string, string>;
 }
 
@@ -32,10 +23,10 @@ const isRateLimitError = (error: unknown): boolean => {
   if (!isErrorWithStatus(error)) {
     return false;
   }
-  return error.status === HTTP_CODES.TOO_MANY_REQUESTS || error.response?.status === HTTP_CODES.TOO_MANY_REQUESTS;
+  return error.status === HTTP_CODES.TOO_MANY_REQUESTS;
 };
 
-const extractRateLimitInfo = (error: ErrorWithStatus): RateLimitInfo | undefined => {
+const extractRetryAfter = (error: ErrorWithStatus): number | undefined => {
   const headers = error.headers;
   const resetHeader = headers?.['x-internxt-ratelimit-reset'];
   if (!resetHeader) {
@@ -47,19 +38,18 @@ const extractRateLimitInfo = (error: ErrorWithStatus): RateLimitInfo | undefined
     return undefined;
   }
 
-  return {
-    retryAfter: resetValueMs,
-  };
+  return resetValueMs;
 };
 
 /**
  * Retries a function when it encounters a rate limit error (429).
- * Uses the retry-after value from the x-ratelimit-reset header to wait before retrying.
+ * Uses the retry-after value from the x-internxt-ratelimit-reset header to wait before retrying.
+ * Shows a warning toast notification on the first rate limit encounter.
  *
  * @param fn - The async function to execute with retry logic
  * @param options - Configuration options for retry behavior
  * @param options.maxRetries - Maximum number of retry attempts (default: 5)
- * @param options.onRetry - Callback invoked before each retry with attempt number, delay, and rate limit info
+ * @param options.onRetry - Optional callback invoked before each retry with attempt number and retry after value
  * @returns The result of the function if successful
  * @throws The original error if it's not a rate limit error, if max retries exceeded, or if rate limit headers are missing
  */
@@ -78,9 +68,9 @@ export const retryWithBackoff = async <T>(fn: () => Promise<T>, options: RetryOp
         throw error;
       }
 
-      const rateLimitInfo = extractRateLimitInfo(error as ErrorWithStatus);
+      const retryAfter = extractRetryAfter(error as ErrorWithStatus);
 
-      if (!rateLimitInfo) {
+      if (!retryAfter) {
         throw error;
       }
 
@@ -89,12 +79,13 @@ export const retryWithBackoff = async <T>(fn: () => Promise<T>, options: RetryOp
         notificationsService.show({
           text: t('shared-links.toast.rate-limit-retry'),
           type: ToastType.Warning,
+          duration: Infinity,
         });
       }
 
-      opts.onRetry(attempt + 1, rateLimitInfo.retryAfter, rateLimitInfo);
+      opts.onRetry(attempt + 1, retryAfter);
 
-      await wait(rateLimitInfo.retryAfter);
+      await wait(retryAfter);
     }
   }
 
