@@ -1165,7 +1165,8 @@
       "link-updated": "鏈接設置已更新",
       "link-deleted": "鏈接已刪除",
       "links-deleted": "鏈接已刪除",
-      "error-deleting-links": "刪除鏈接時出錯"
+      "error-deleting-links": "刪除鏈接時出錯",
+      "rate-limit-retry": "這比預期的時間要長。請稍候..."
     }
   },
   "trash": {

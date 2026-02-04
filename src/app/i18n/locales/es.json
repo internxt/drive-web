@@ -1212,7 +1212,8 @@
       "link-updated": "Link settings updated",
       "link-deleted": "Enlace eliminado",
       "links-deleted": "Enlaces eliminados",
-      "error-deleting-links": "Se produjo un error al eliminar enlaces compartidos"
+      "error-deleting-links": "Se produjo un error al eliminar enlaces compartidos",
+      "rate-limit-retry": "Esto está tardando más de lo esperado. Por favor, espera..."
     }
   },
   "trash": {

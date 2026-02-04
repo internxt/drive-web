@@ -1200,7 +1200,8 @@
       "link-updated": "链接设置已更新",
       "link-deleted": "链接已删除",
       "links-deleted": "链接已删除",
-      "error-deleting-links": "删除共享链接时发生错误"
+      "error-deleting-links": "删除共享链接时发生错误",
+      "rate-limit-retry": "这比预期的时间要长。请稍候..."
     }
   },
   "trash": {

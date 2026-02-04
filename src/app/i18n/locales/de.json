@@ -1150,7 +1150,8 @@
       "copy-to-clipboard": "Link in die Zwischenablage kopiert",
       "link-updated": "Linkeinstellungen aktualisiert",
       "link-deleted": "Link gelöscht",
-      "links-deleted": "Link(s) gelöscht"
+      "links-deleted": "Link(s) gelöscht",
+      "rate-limit-retry": "Dies dauert länger als erwartet. Bitte warten..."
     }
   },
   "trash": {

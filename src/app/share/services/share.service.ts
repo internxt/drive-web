@@ -131,9 +131,8 @@ export function getPublicSharedFolderContent(
     },
     {
       maxRetries: 5,
-      maxDelay: 60000,
       onRetry: (attempt, delay) => {
-        console.log(
+        console.warn(
           `[PUBLIC-SHARED-${type.toUpperCase()}] Retry attempt ${attempt} after ${delay}ms for folder ${sharedFolderId}`,
         );
       },
