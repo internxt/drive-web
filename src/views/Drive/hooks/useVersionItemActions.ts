@@ -44,7 +44,7 @@ export const useVersionItemActions = ({ version, onDropdownClose }: UseVersionIt
     const formattedDate = dateService.format(version.createdAt, 'DD-MM-YYYY [at] HH:mm');
     const { filename, extension } = itemsUtils.getFilenameAndExt(entireFilename);
 
-    const fileExtension = extension ? `.${extension}` : '';
+    const fileExtension = extension || item.type ? `.${extension || item.type}` : '';
     const versionFileName = `(${formattedDate}) ${filename}${fileExtension}`;
 
     await fileVersionService.downloadVersion(version, item, versionFileName, selectedWorkspace, workspaceCredentials);
