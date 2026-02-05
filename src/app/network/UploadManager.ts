@@ -178,7 +178,7 @@ class UploadManager {
             }
           },
           {
-            isTeam: false,
+            isTeam: !!this.options?.ownerUserAuthenticationData?.workspaceId,
             abortController: this.abortController ?? fileData.abortController,
             ownerUserAuthenticationData: this.options?.ownerUserAuthenticationData,
             abortCallback: (abort?: () => void) => {

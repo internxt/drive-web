@@ -286,7 +286,7 @@ export const downloadThumbnail = async (thumbnailToDownload: Thumbnail, isWorksp
   // TODO: CHECK WHY WITH THUMBNAILS NOT HAS TO USE WORKSPACE CREDENTIALS
   return await fetchFileBlob(
     { fileId: thumbnailToDownload.bucket_file, bucketId: thumbnailToDownload.bucket_id } as Downloadable,
-    { isWorkspace: false, updateProgressCallback, abortController },
+    { isWorkspace, updateProgressCallback, abortController },
   );
 };
 
