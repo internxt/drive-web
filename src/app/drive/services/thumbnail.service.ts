@@ -1,5 +1,6 @@
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import {
   thumbnailableExtension,
   thumbnailableImageExtension,
@@ -283,10 +284,21 @@ export const downloadThumbnail = async (thumbnailToDownload: Thumbnail, isWorksp
     return;
   };
   const abortController = new AbortController();
-  // TODO: CHECK WHY WITH THUMBNAILS NOT HAS TO USE WORKSPACE CREDENTIALS
+
+  let useWorkspaceCredentials = isWorkspace;
+
+  if (isWorkspace) {
+    const user = localStorageService.getUser() as UserSettings;
+    const isInPersonalBucket = thumbnailToDownload.bucket_id === user.bucket;
+
+    if (isInPersonalBucket) {
+      useWorkspaceCredentials = false;
+    }
+  }
+
   return await fetchFileBlob(
     { fileId: thumbnailToDownload.bucket_file, bucketId: thumbnailToDownload.bucket_id } as Downloadable,
-    { isWorkspace, updateProgressCallback, abortController },
+    { isWorkspace: useWorkspaceCredentials, updateProgressCallback, abortController },
   );
 };
 
