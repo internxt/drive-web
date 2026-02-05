@@ -115,6 +115,8 @@ export function getSharedFolderContent(
     });
 }
 
+let hasShownRateLimitNotification = false;
+
 export function getPublicSharedFolderContent(
   sharedFolderId: string,
   type: 'folders' | 'files',
@@ -134,6 +136,14 @@ export function getPublicSharedFolderContent(
         console.warn(
           `[PUBLIC-SHARED-${type.toUpperCase()}] Retry attempt ${attempt} after ${delay}ms for folder ${sharedFolderId}`,
         );
+        if (!hasShownRateLimitNotification) {
+          hasShownRateLimitNotification = true;
+          notificationsService.show({
+            text: t('shared-links.toast.rate-limit-retry'),
+            type: ToastType.Warning,
+            duration: Infinity,
+          });
+        }
       },
     },
   );

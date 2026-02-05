@@ -6,32 +6,13 @@ vi.mock('utils/timeUtils', () => ({
   wait: vi.fn(() => Promise.resolve()),
 }));
 
-vi.mock('app/notifications/services/notifications.service', () => ({
-  default: {
-    show: vi.fn(),
-  },
-  ToastType: {
-    Warning: 'warning',
-  },
-}));
-
-vi.mock('i18next', () => ({
-  t: vi.fn((key: string) => key),
-}));
-
-const createRateLimitError = (status: number, headers?: Record<string, string>, message?: string) => ({
-  status,
-  headers,
-  ...(message && { message }),
+const createRateLimitError = (resetDelay: string, additionalHeaders?: Record<string, string>) => ({
+  status: 429,
+  headers: { 'x-internxt-ratelimit-reset': resetDelay, ...additionalHeaders },
 });
 
 const createRateLimitMock = (resetDelay: string, additionalHeaders?: Record<string, string>) =>
-  vi
-    .fn()
-    .mockRejectedValueOnce(
-      createRateLimitError(429, { 'x-internxt-ratelimit-reset': resetDelay, ...additionalHeaders }),
-    )
-    .mockResolvedValueOnce('success');
+  vi.fn().mockRejectedValueOnce(createRateLimitError(resetDelay, additionalHeaders)).mockResolvedValueOnce('success');
 
 describe('retryWithBackoff', () => {
   beforeEach(() => {
@@ -67,15 +48,19 @@ describe('retryWithBackoff', () => {
     expect(timeUtils.wait).not.toHaveBeenCalled();
   });
 
-  it('when headers provided then extracts info and calls callback', async () => {
-    const mockFn = createRateLimitMock('10000');
+  it('when rate limited multiple times then calls onRetry for each retry', async () => {
+    const error = createRateLimitError('1000');
+    const mockFn = vi.fn().mockRejectedValueOnce(error).mockRejectedValueOnce(error).mockResolvedValueOnce('success');
 
     const onRetry = vi.fn();
 
-    await retryWithBackoff(mockFn, { onRetry });
+    const result = await retryWithBackoff(mockFn, { onRetry });
 
-    expect(timeUtils.wait).toHaveBeenCalledWith(10000);
-    expect(onRetry).toHaveBeenCalledWith(1, 10000);
+    expect(result).toBe('success');
+    expect(mockFn).toHaveBeenCalledTimes(3);
+    expect(onRetry).toHaveBeenCalledTimes(2);
+    expect(onRetry).toHaveBeenNthCalledWith(1, 1, 1000);
+    expect(onRetry).toHaveBeenNthCalledWith(2, 2, 1000);
   });
 
   it('when headers missing or invalid then throws error', async () => {

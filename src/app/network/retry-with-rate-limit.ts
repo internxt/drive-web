@@ -1,9 +1,5 @@
 import { wait } from 'utils/timeUtils';
 import { HTTP_CODES } from 'app/core/constants';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { t } from 'i18next';
-
-let hasShownRateLimitToast = false;
 
 export interface RetryOptions {
   maxRetries?: number;
@@ -44,7 +40,6 @@ const extractRetryAfter = (error: ErrorWithStatus): number | undefined => {
 /**
  * Retries a function when it encounters a rate limit error (429).
  * Uses the retry-after value from the x-internxt-ratelimit-reset header to wait before retrying.
- * Shows a warning toast notification on the first rate limit encounter.
  *
  * @param fn - The async function to execute with retry logic
  * @param options - Configuration options for retry behavior
@@ -72,15 +67,6 @@ export const retryWithBackoff = async <T>(fn: () => Promise<T>, options: RetryOp
 
       if (!retryAfter) {
         throw error;
-      }
-
-      if (!hasShownRateLimitToast) {
-        hasShownRateLimitToast = true;
-        notificationsService.show({
-          text: t('shared-links.toast.rate-limit-retry'),
-          type: ToastType.Warning,
-          duration: Infinity,
-        });
       }
 
       opts.onRetry(attempt + 1, retryAfter);
