@@ -1151,6 +1151,7 @@
       "link-updated": "Linkeinstellungen aktualisiert",
       "link-deleted": "Link gelöscht",
       "links-deleted": "Link(s) gelöscht",
+      "error-deleting-links": "Fehler beim Löschen der Links",
       "rate-limit-retry": "Dies dauert länger als erwartet. Bitte warten..."
     }
   },
