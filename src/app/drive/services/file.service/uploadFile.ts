@@ -10,10 +10,10 @@ import { getEnvironmentConfig } from '../network.service';
 import { generateThumbnailFromFile } from '../thumbnail.service';
 import { OwnerUserAuthenticationData } from 'app/network/types';
 import { FileToUpload } from './types';
-import { FileEntry } from '@internxt/sdk/dist/workspaces';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 import { BucketNotFoundError, FileIdRequiredError } from './upload.errors';
 import { isFileEmpty } from 'utils/isFileEmpty';
+import { FileEntry } from '@internxt/sdk/dist/workspaces';
 
 export interface FileUploadOptions {
   isTeam: boolean;
@@ -104,7 +104,7 @@ export async function uploadFile(
     return createFileEntry({
       bucketId: bucketId,
       file,
-      resourcesToken: resourcesToken ?? workspacesToken,
+      resourcesToken: resourcesToken,
       workspaceId: workspaceId,
       ownerToken: workspacesToken,
     });
@@ -141,7 +141,7 @@ export async function uploadFile(
     fileId: fileId,
     file,
     isWorkspaceUpload: !!isWorkspacesUpload,
-    resourcesToken: resourcesToken ?? workspacesToken,
+    resourcesToken: resourcesToken,
     workspaceId: workspaceId,
     ownerToken: workspacesToken,
   });

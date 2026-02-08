@@ -35,7 +35,7 @@
     "cta": "80% de descuento"
   },
   "valentinesBanner": {
-    "title": "¡Amor sin limites!",
+    "title": "¡Amor sin límites!",
     "subtitle": "90% de descuento en nuestro plan de 2TB. Código: VDAY",
     "cta": "Obtén la oferta"
   },
@@ -234,7 +234,7 @@
       "emailMustNotBeEmpty": "El correo electrónico no debe estar vacío",
       "privacyGuarantee": "Garantía de privacidad: No compartimos su información y solo contactaremos contigo cuando sea necesario para brindar nuestro servicio."
     },
-    "addressBillingTitle": "Facturación de Dirección",
+    "addressBillingTitle": "Dirección de facturación",
     "crypto": "Crypto",
     "addressBilling": {
       "optional": {
@@ -571,14 +571,14 @@
         },
         "info": {
           "title": "Personal",
-          "description": "Check your storage user and account details",
+          "description": "Revisa el uso de almacenamiento y detalles de tu cuenta",
           "advice1": {
-            "title": "What data can be edited?",
-            "description": "For strict security reasons and to protect your data at Internxt we do not allow the data of a user account such as email to be modified."
+            "title": "¿Qué datos se pueden editar?",
+            "description": "Por razones estrictas de seguridad y para proteger tus datos en Internxt, no permitimos que se modifiquen los datos de una cuenta de usuario como el correo electrónico."
           },
           "advice2": {
-            "title": "Security account",
-            "description": "Your files are encrypted before leaving your device, so only you can access your files, no tricks, no hidden things, just privacy, that’s Internxt."
+            "title": "Seguridad de la cuenta",
+            "description": "Tus archivos se cifran antes de salir de tu dispositivo, por lo que solo tú puedes acceder a tus archivos, sin trucos, sin cosas ocultas, solo privacidad, eso es Internxt."
           }
         },
         "plans": {
@@ -589,7 +589,7 @@
             "personal": "Cambiar a Planes Individuales",
             "business": "Cambiar a Planes para Empresas"
           },
-          "viewAllFeatures": "View all features",
+          "viewAllFeatures": "Ver todas las características",
           "card": {
             "annually": "{{amount}} facturado al año",
             "monthly": "{{amount}} al mes",
@@ -644,23 +644,23 @@
           }
         },
         "password": {
-          "title": "Password",
-          "description": "Change your password",
+          "title": "Contraseña",
+          "description": "Cambia tu contraseña",
           "advice1": {
-            "title": "Change password",
-            "description": "Changing your password will sign you out from all your devices. The password introduced will be needed for logging in again."
+            "title": "Cambiar contraseña",
+            "description": "Cambiar tu contraseña cerrará sesión en todos tus dispositivos. Necesitarás la nueva contraseña para iniciar sesión de nuevo."
           },
           "advice2": {
-            "title": "What should you keep in mind so that your password is secure?",
+            "title": "¿Qué debes tener en cuenta para que tu contraseña sea segura?",
             "description": ""
           },
           "advice3": {
-            "title": "New encryption key",
-            "description": "By changing your password, all your files will be un-encrypted with your old password, and then re-encrypted using your new password, and thus you won't lose access to them! This action cannot be undone."
+            "title": "Nueva clave de cifrado",
+            "description": "Al cambiar tu contraseña, todos tus archivos se descifrarán con tu contraseña antigua y luego se volverán a cifrar con tu nueva contraseña, ¡así no perderás el acceso a ellos! Esta acción no se puede deshacer."
           },
           "advice4": {
-            "title": "What data can be edited?",
-            "description": "For strict security reasons and to protect your data at Internxt we do not allow the data of a user account such as email to be modified."
+            "title": "¿Qué datos se pueden editar?",
+            "description": "Por razones estrictas de seguridad y para proteger tus datos en Internxt, no permitimos que se modifiquen los datos de una cuenta de usuario como el correo electrónico."
           }
         },
         "security": {
@@ -735,7 +735,7 @@
               "description": "Tu contraseña es la única forma de acceder a tu cuenta, el equipo de Internxt no puede acceder a tu cuenta o cambiar tu contraseña. Esto es para prevenir que nadie acceda a tu cuenta o robe tus datos. <br/><br/>Entre otras cosas, tu contraseña se usa en el proceso de encriptación, por lo que ni siquiera Internxt tiene acceso a ella. Cada vez que inicias sesión, necesitas tu contraseña para desencriptar tus archivos, de esta forma nos aseguramos de que solo tú tienes dicha clave."
             },
             "faq2": {
-              "title": "¿Cómo puedo mantener segura mis credenciales?",
+              "title": "¿Cómo puedo mantener seguras mis credenciales?",
               "description": "Recomendamos usar un administrador de contraseñas para guardar tus credenciales de forma segura, no solo para acceder a Internxt, sino para protegerte mientras navegas."
             },
             "faq3": {
@@ -1022,7 +1022,7 @@
       "confirmPassword": "Confirmar contraseña",
       "strongPassword": "La contraseña es fuerte",
       "errors": {
-        "longPassword": "La contraseña puede tener como maximo 50 caracteres",
+        "longPassword": "La contraseña puede tener como máximo 50 caracteres",
         "shortPassword": "La contraseña debe tener al menos 8 caracteres",
         "notComplex": "La contraseña debe contener al menos una letra mayúscula, una minúscula y un número",
         "weakPassword": "La contraseña es débil",
@@ -1134,7 +1134,7 @@
     "emptyPassword": "La contraseña no puede estar vacía.",
     "errorMovingToTrash": "Ha ocurrido un error mientras se movian los items a la basura.",
     "errorDeletingFromTrash": "Ha ocurrido un error mientras se eliminaban los items de la basura.",
-    "maxSizeUploadLimitError": "File too large (greater than 40GB)",
+    "maxSizeUploadLimitError": "Archivo demasiado grande (mayor de 40GB)",
     "connectionLostError": "Conexión a internet perdida",
     "errorLoadingTrashItems": "Error al cargar items de la papelera",
     "updateAvatarError": "Error al actualizar el avatar",
@@ -1208,8 +1208,8 @@
       "close": "Cerrar"
     },
     "toast": {
-      "copy-to-clipboard": "Link copied to clipboard",
-      "link-updated": "Link settings updated",
+      "copy-to-clipboard": "Enlace copiado al portapapeles",
+      "link-updated": "Configuración del enlace actualizada",
       "link-deleted": "Enlace eliminado",
       "links-deleted": "Enlaces eliminados",
       "error-deleting-links": "Se produjo un error al eliminar enlaces compartidos"
@@ -1288,8 +1288,8 @@
     "download-backup": {
       "status": {
         "pending": "Descarga pendiente",
-        "decrypting": "Decrypting backup",
-        "in-process": "{{progress}}% Downloading backup",
+        "decrypting": "Descifrando copia de seguridad",
+        "in-process": "{{progress}}% Descargando copia de seguridad",
         "success": "Copia de seguridad descargada",
         "error": "Error durante la descarga",
         "cancelled": "Descarga cancelada"
@@ -1418,14 +1418,14 @@
     "passwordChanged": "Contraseña actualizada correctamente",
     "teamInvitationSent": "Invitación enviada a {{email}}",
     "referralInvitationSent": "Invitación enviada a {{email}}",
-    "deletedTeamMember": "The {{resource}} has been successfully deleted",
+    "deletedTeamMember": "{{resource}} ha sido eliminado exitosamente",
     "accountDeactivationEmailSent": "Email de desactivación enviado!",
-    "claimEmailSent": "Claim email sent!",
-    "teamsSubscriptionRedeemed": "Your team is ready! Log in again to start using Teams",
+    "claimEmailSent": "¡Correo de reclamación enviado!",
+    "teamsSubscriptionRedeemed": "¡Tu equipo está listo! Inicia sesión nuevamente para comenzar a usar Teams",
     "linkCopied": "Enlace copiado!",
     "twoFactorAuthActivated": "Su autenticación de dos factores ha sido activada!",
     "twoFactorAuthDisabled": "Su autenticación de dos factores ha sido desactivada.",
-    "joinedToTheTeam": "You have successfully joined to the team",
+    "joinedToTheTeam": "Te has unido al equipo exitosamente",
     "done": "Hecho",
     "subscribeToNewsletter": "{{email}} suscrito con éxito a la newsletter"
   },
@@ -1477,7 +1477,7 @@
     "restore": "Restaurar",
     "copyLink": "Copiar enlace",
     "report": "Reportar abuso",
-    "yes": "Si",
+    "yes": "Sí",
     "no": "No",
     "more": "Más",
     "continue": "Continuar",
@@ -1562,7 +1562,7 @@
       "unlimited": "Team members: {{total}}"
     },
     "plans": {
-      "advice": "You will be redirected to your AppSumo account"
+      "advice": "Serás redirigido a tu cuenta de AppSumo"
     }
   },
   "newsletter": {
@@ -1704,7 +1704,7 @@
             "empty": "Sin actividad",
             "disabilitedOwner": {
               "title": "Comenzar con la actividad",
-              "subtitle": "Registros de la activdad claros, para la gestión de archivos y cuentas",
+              "subtitle": "Registros de la actividad claros, para la gestión de archivos y cuentas",
               "action": "Activar Actividad"
             },
             "disabilitedMember": {
@@ -1715,7 +1715,7 @@
               "title": "Roles",
               "member": "Miembro",
               "manager": "Gestor",
-              "owner": "Propiestario"
+              "owner": "Propietario"
             },
             "filter": {
               "button": "Filtrar",
