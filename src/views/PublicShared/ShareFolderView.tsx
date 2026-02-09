@@ -139,11 +139,24 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
       if (folderInfo) {
         setIsDownloading(true);
 
+        let hasShownRateLimitNotification = false;
+
         downloadPublicSharedFolder({
           encryptionKey: folderInfo.encryptionKey,
           item: folderInfo.item,
           code,
           incrementItemCount,
+          onRetry: (attempt, delay) => {
+            console.warn(`[PUBLIC-SHARED-FOLDER] Retry attempt ${attempt} after ${delay}ms`);
+            if (!hasShownRateLimitNotification) {
+              hasShownRateLimitNotification = true;
+              notificationsService.show({
+                text: translate('shared-links.toast.rate-limit-retry'),
+                type: ToastType.Warning,
+                duration: Infinity,
+              });
+            }
+          },
         })
           .then(() => {
             updateProgress(1);

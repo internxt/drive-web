@@ -37,6 +37,7 @@ import { AdvancedSharedItem } from '../types';
 import { domainManager } from './DomainManager';
 import { generateCaptchaToken } from 'utils';
 import { copyTextToClipboard } from 'utils/copyToClipboard.utils';
+import { retryWithBackoff } from '../../network/retry-with-rate-limit';
 
 interface CreateShareResponse {
   created: boolean;
@@ -120,15 +121,29 @@ export function getPublicSharedFolderContent(
   token: string | null,
   page: number,
   perPage: number,
-  code?: string,
-  orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
+  options?: {
+    code?: string;
+    orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC';
+    onRetry?: (attempt: number, delay: number) => void;
+  },
 ): Promise<ListSharedItemsResponse> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient
-    .getPublicSharedFolderContent(sharedFolderId, type, token, page, perPage, code, orderBy)
-    .catch((error) => {
-      throw error;
-    });
+  return retryWithBackoff(
+    async () => {
+      const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+      return shareClient.getPublicSharedFolderContent(
+        sharedFolderId,
+        type,
+        token,
+        page,
+        perPage,
+        options?.code,
+        options?.orderBy,
+      );
+    },
+    {
+      onRetry: options?.onRetry,
+    },
+  );
 }
 
 export function deleteShareLink(shareId: string): Promise<{ deleted: boolean; shareId: string }> {
@@ -486,22 +501,31 @@ class DirectorySharedFilesIterator implements Iterator<SharedFiles> {
 class DirectoryPublicSharedFolderIterator implements Iterator<SharedFolders> {
   private page: number;
   private itemsPerPage: number;
-  private readonly queryValues: { directoryId: string; resourcesToken?: string };
+  private readonly queryValues: {
+    directoryId: string;
+    resourcesToken?: string;
+    onRetry?: (attempt: number, delay: number) => void;
+  };
 
-  constructor(queryValues: { directoryId: string; resourcesToken?: string }, page?: number, itemsPerPage?: number) {
+  constructor(
+    queryValues: { directoryId: string; resourcesToken?: string; onRetry?: (attempt: number, delay: number) => void },
+    page?: number,
+    itemsPerPage?: number,
+  ) {
     this.page = page ?? 0;
     this.itemsPerPage = itemsPerPage ?? 5;
     this.queryValues = queryValues;
   }
 
   async next() {
-    const { directoryId, resourcesToken } = this.queryValues;
+    const { directoryId, resourcesToken, onRetry } = this.queryValues;
     const items = await getPublicSharedFolderContent(
       directoryId,
       'folders',
       resourcesToken ?? '',
       this.page,
       this.itemsPerPage,
+      { onRetry },
     );
     const folders = items.items.map((folder) => ({ ...folder, name: folder?.plainName ?? folder.name }));
     this.page += 1;
@@ -515,10 +539,20 @@ class DirectoryPublicSharedFolderIterator implements Iterator<SharedFolders> {
 class DirectoryPublicSharedFilesIterator implements Iterator<SharedFiles> {
   private page: number;
   private itemsPerPage: number;
-  private readonly queryValues: { directoryId: string; resourcesToken?: string; code?: string };
+  private readonly queryValues: {
+    directoryId: string;
+    resourcesToken?: string;
+    code?: string;
+    onRetry?: (attempt: number, delay: number) => void;
+  };
 
   constructor(
-    queryValues: { directoryId: string; resourcesToken?: string; code?: string },
+    queryValues: {
+      directoryId: string;
+      resourcesToken?: string;
+      code?: string;
+      onRetry?: (attempt: number, delay: number) => void;
+    },
     page?: number,
     itemsPerPage?: number,
   ) {
@@ -528,7 +562,7 @@ class DirectoryPublicSharedFilesIterator implements Iterator<SharedFiles> {
   }
 
   async next() {
-    const { directoryId, resourcesToken, code } = this.queryValues;
+    const { directoryId, resourcesToken, code, onRetry } = this.queryValues;
 
     const items = await getPublicSharedFolderContent(
       directoryId,
@@ -536,7 +570,7 @@ class DirectoryPublicSharedFilesIterator implements Iterator<SharedFiles> {
       resourcesToken ?? '',
       this.page,
       this.itemsPerPage,
-      code,
+      { code, onRetry },
     );
     const files = items.items.map((file) => ({ ...file, name: file?.plainName ?? file.name }));
     this.page += 1;
@@ -657,12 +691,14 @@ export async function downloadPublicSharedFolder({
   token,
   code,
   incrementItemCount,
+  onRetry,
 }: {
   encryptionKey: string;
   item;
   token?: string;
   code: string;
   incrementItemCount: () => void;
+  onRetry?: (attempt: number, delay: number) => void;
 }): Promise<void> {
   const initPage = 0;
   const itemsPerPage = 15;
@@ -676,7 +712,7 @@ export async function downloadPublicSharedFolder({
     '',
     0,
     15,
-    code,
+    { code, onRetry },
   );
 
   if (!credentials) {
@@ -685,7 +721,7 @@ export async function downloadPublicSharedFolder({
 
   const createFoldersIterator = (directoryUuid: string, resourcesToken?: string) => {
     return new DirectoryPublicSharedFolderIterator(
-      { directoryId: directoryUuid, resourcesToken: resourcesToken ?? token },
+      { directoryId: directoryUuid, resourcesToken: resourcesToken ?? token, onRetry },
       initPage,
       itemsPerPage,
     );
@@ -693,7 +729,7 @@ export async function downloadPublicSharedFolder({
 
   const createFilesIterator = (directoryUuid: string, resourcesToken?: string) => {
     return new DirectoryPublicSharedFilesIterator(
-      { directoryId: directoryUuid, resourcesToken: resourcesToken ?? token, code: code },
+      { directoryId: directoryUuid, resourcesToken: resourcesToken ?? token, code: code, onRetry },
       initPage,
       itemsPerPage,
     );

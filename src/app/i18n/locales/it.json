@@ -1270,7 +1270,8 @@
       "link-updated": "Impostazioni di collegamento aggiornate",
       "link-deleted": "Link rimosso",
       "links-deleted": "Link(s) rimossi",
-      "error-deleting-links": "Si è verificato un errore durante l'eliminazione dei link condivisi"
+      "error-deleting-links": "Si è verificato un errore durante l'eliminazione dei link condivisi",
+      "rate-limit-retry": "Ci sta mettendo più tempo del previsto. Attendere prego..."
     }
   },
   "trash": {

@@ -1163,7 +1163,8 @@
       "link-updated": "Mise à jour des paramètres de lien",
       "link-deleted": "Lien supprimé",
       "links-deleted": "Lien(s) supprimé",
-      "error-deleting-links": "Une erreur s'est produite lors de la suppression des liens partagés"
+      "error-deleting-links": "Une erreur s'est produite lors de la suppression des liens partagés",
+      "rate-limit-retry": "Cela prend plus de temps que prévu. Veuillez patienter..."
     }
   },
   "trash": {

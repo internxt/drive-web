@@ -1235,7 +1235,8 @@
       "link-updated": "Link settings updated",
       "link-deleted": "Link deleted",
       "links-deleted": "Link(s) deleted",
-      "error-deleting-links": "An error occurred deleting links"
+      "error-deleting-links": "An error occurred deleting links",
+      "rate-limit-retry": "This is taking longer than expected. Please wait..."
     }
   },
   "trash": {
