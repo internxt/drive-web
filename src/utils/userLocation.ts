@@ -1,7 +1,6 @@
-import { UserLocation } from '@internxt/sdk';
-import { SdkFactory } from 'app/core/factory/sdk';
+import { getUserLocation, UserLocation } from '@internxt/sdk';
+import envService from 'services/env.service';
 
 export const userLocation = (): Promise<UserLocation> => {
-  const client = SdkFactory.getNewApiInstance().createLocationClient();
-  return client.getUserLocation();
+  return getUserLocation(envService.getVariable('location'));
 };
