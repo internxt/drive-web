@@ -7,11 +7,9 @@ import { STORAGE_KEYS } from 'services/storage-keys';
 import { Share, Users } from '@internxt/sdk/dist/drive';
 import packageJson from '../../../../../package.json';
 import { Auth } from '@internxt/sdk/dist/auth';
-import { Location } from '@internxt/sdk';
 
 const MOCKED_NEW_API = 'https://api.internxt.com';
 const MOCKED_PAYMENTS = 'https://payments.internxt.com';
-const MOCKED_LOCATION = 'https://location.internxt.com';
 
 vi.mock('@internxt/sdk/dist/drive', () => ({
   Users: {
@@ -28,18 +26,11 @@ vi.mock('@internxt/sdk/dist/auth', () => ({
   },
 }));
 
-vi.mock('@internxt/sdk', () => ({
-  Location: {
-    client: vi.fn(),
-  },
-}));
-
 vi.mock('services/env.service', () => ({
   default: {
     getVariable: vi.fn((key: string) => {
       if (key === 'newApi') return MOCKED_NEW_API;
       if (key === 'payments') return MOCKED_PAYMENTS;
-      if (key === 'location') return MOCKED_LOCATION;
       return '';
     }),
   },
@@ -342,31 +333,6 @@ describe('SdkFactory', () => {
             customHeaders: {
               'x-internxt-captcha': captchaToken,
             },
-          },
-          expect.any(Object),
-        );
-      });
-    });
-
-    describe('Creating the location client', () => {
-      test('When the Location client is created, then it uses the location API URL and default app details', () => {
-        const mockToken = 'test-token';
-        const mockWorkspace = Workspace.Individuals;
-
-        vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
-        vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-          if (key === 'xNewToken') return mockToken;
-          return null;
-        });
-
-        const instance = SdkFactory.getNewApiInstance();
-        instance.createLocationClient();
-
-        expect(Location.client).toHaveBeenCalledWith(
-          MOCKED_LOCATION,
-          {
-            clientName: packageJson.name,
-            clientVersion: packageJson.version,
           },
           expect.any(Object),
         );

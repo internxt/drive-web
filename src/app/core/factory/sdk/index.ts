@@ -10,7 +10,6 @@ import { Workspace } from '../../types';
 import { Checkout } from '@internxt/sdk/dist/payments';
 import envService from 'services/env.service';
 import { STORAGE_KEYS } from 'services/storage-keys';
-import { Location } from '@internxt/sdk';
 
 export class SdkFactory {
   private static sdk: {
@@ -112,13 +111,6 @@ export class SdkFactory {
     const appDetails = SdkFactory.getAppDetails();
     const apiSecurity = this.getNewApiSecurity();
     return Backups.client(apiUrl, appDetails, apiSecurity);
-  }
-
-  public createLocationClient(): Location {
-    const apiUrl = envService.getVariable('location');
-    const appDetails = SdkFactory.getAppDetails();
-    const apiSecurity = this.getNewApiSecurity();
-    return Location.client(apiUrl, appDetails, apiSecurity);
   }
 
   /** Helpers **/

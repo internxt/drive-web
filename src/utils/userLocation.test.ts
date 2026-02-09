@@ -1,10 +1,21 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+// tests/userLocation.test.ts
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
+import * as sdk from '@internxt/sdk';
 import { userLocation } from './userLocation';
-import { SdkFactory } from 'app/core/factory/sdk';
 
-vi.mock('app/core/factory/sdk', () => ({
-  SdkFactory: {
-    getNewApiInstance: vi.fn(),
+vi.mock('@internxt/sdk', async () => {
+  const actual = await vi.importActual<typeof import('@internxt/sdk')>('@internxt/sdk');
+  return {
+    ...actual,
+    getUserLocation: vi.fn(),
+  };
+});
+
+vi.mock('../../config', () => ({
+  envConfig: {
+    api: {
+      location: 'https://mocked-location-api.com',
+    },
   },
 }));
 
@@ -14,21 +25,15 @@ describe('User location function', () => {
     location: 'ES',
   };
 
-  const mockGetUserLocation = vi.fn();
-  const mockCreateLocationClient = vi.fn();
-
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetUserLocation.mockResolvedValue(mockedLocation);
-    mockCreateLocationClient.mockReturnValue({ getUserLocation: mockGetUserLocation });
-    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
-      createLocationClient: mockCreateLocationClient,
-    } as unknown as SdkFactory);
+    vi.resetModules();
+    (sdk.getUserLocation as Mock).mockResolvedValue(mockedLocation);
   });
 
   it('When the user location is requested, then the IP and country are returned', async () => {
     const result = await userLocation();
 
-    expect(result).toStrictEqual(mockedLocation);
+    expect(result).toEqual(mockedLocation);
   });
 });
