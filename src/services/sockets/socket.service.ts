@@ -38,9 +38,7 @@ export default class RealtimeService {
     });
 
     this.socket.on('event', (data) => {
-      if (!envService.isProduction()) {
-        console.log('[REALTIME] EVENT RECEIVED:', JSON.stringify(data, null, 2));
-      }
+      console.log('[REALTIME] EVENT RECEIVED:', JSON.stringify(data, null, 2));
 
       this.eventHandlers.forEach((handler) => {
         try {
