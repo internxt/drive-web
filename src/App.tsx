@@ -22,7 +22,7 @@ import envService from 'services/env.service';
 import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
-import RealtimeService from 'services/socket.service';
+
 import { AppViewConfig } from './app/core/types';
 import { LRUFilesCacheManager } from './app/database/services/database.service/LRUFilesCacheManager';
 import { LRUFilesPreviewCacheManager } from './app/database/services/database.service/LRUFilesPreviewCacheManager';
@@ -45,6 +45,8 @@ import useBeforeUnload from './hooks/useBeforeUnload';
 import useVpnAuth from './hooks/useVpnAuth';
 
 import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?raw';
+import { eventHandler } from 'services/sockets/event-handler.service';
+import RealtimeService from 'services/sockets/socket.service';
 const blob = new Blob([workerUrl], { type: 'application/javascript' });
 pdfjs.GlobalWorkerOptions.workerSrc = URL.createObjectURL(blob);
 
@@ -86,6 +88,17 @@ const App = (props: AppProps): JSX.Element => {
   useEffect(() => {
     initializeInitialAppState();
     i18next.changeLanguage();
+  }, []);
+
+  useEffect(() => {
+    try {
+      const realtimeService = RealtimeService.getInstance();
+      const cleanup = realtimeService.onEvent(eventHandler.onPlanUpdated);
+
+      return cleanup;
+    } catch (err) {
+      errorService.reportError(err);
+    }
   }, []);
 
   useEffect(() => {

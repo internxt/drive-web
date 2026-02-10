@@ -116,9 +116,8 @@ export class SdkFactory {
 
   public createLocationClient(): Location {
     const apiUrl = envService.getVariable('location');
-    const appDetails = SdkFactory.getAppDetails();
-    const apiSecurity = this.getNewApiSecurity();
-    return Location.client(apiUrl, appDetails, apiSecurity);
+
+    return Location.client(apiUrl);
   }
 
   /** Helpers **/
