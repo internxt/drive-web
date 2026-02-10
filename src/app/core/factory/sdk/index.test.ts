@@ -362,14 +362,7 @@ describe('SdkFactory', () => {
         const instance = SdkFactory.getNewApiInstance();
         instance.createLocationClient();
 
-        expect(Location.client).toHaveBeenCalledWith(
-          MOCKED_LOCATION,
-          {
-            clientName: packageJson.name,
-            clientVersion: packageJson.version,
-          },
-          expect.any(Object),
-        );
+        expect(Location.client).toHaveBeenCalledWith(MOCKED_LOCATION);
       });
     });
   });
