@@ -94,16 +94,12 @@ describe('RealtimeService', () => {
     });
 
     test.each([
-      { env: 'production', reconnection: true, withCredentials: true, logs: false },
-      { env: 'development', reconnection: true, withCredentials: false, logs: true },
+      { isProduction: true, reconnection: true, withCredentials: true, logs: false },
+      { isProduction: false, reconnection: true, withCredentials: false, logs: true },
     ])(
-      'When running in $env environment, then it adjusts reconnection=$reconnection, withCredentials=$withCredentials and logging=$logs',
-      ({ env, reconnection, withCredentials, logs }) => {
-        vi.spyOn(envService, 'getVariable').mockImplementation((key: string) => {
-          if (key === 'nodeEnv') return env;
-          if (key === 'notifications') return 'https://notifications.example.com';
-          return '';
-        });
+      'When running in isProduction=$isProduction environment, then it adjusts reconnection=$reconnection, withCredentials=$withCredentials and logging=$logs',
+      ({ isProduction, reconnection, withCredentials, logs }) => {
+        vi.spyOn(envService, 'isProduction').mockReturnValue(isProduction);
 
         service.init();
 
