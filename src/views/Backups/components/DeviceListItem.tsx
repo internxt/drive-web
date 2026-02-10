@@ -53,7 +53,7 @@ interface DeviceDateCellProps {
 }
 
 export function DeviceDateCell({ device, translate }: Readonly<DeviceDateCellProps>): JSX.Element {
-  return <div className="pl-4">{dateService.formatDefaultDate(device.updatedAt, translate)}</div>;
+  return <div>{dateService.formatDefaultDate(device.updatedAt, translate)}</div>;
 }
 
 interface DeviceSizeCellProps {
@@ -62,5 +62,5 @@ interface DeviceSizeCellProps {
 
 export function DeviceSizeCell({ device }: Readonly<DeviceSizeCellProps>): JSX.Element {
   const size = 'size' in device && device.size > 0 ? sizeService.bytesToString(device.size) : '-';
-  return <div className="pl-4">{size}</div>;
+  return <div>{size}</div>;
 }

@@ -49,12 +49,12 @@ export default function BackupListItem({ item, onItemClicked }: Readonly<BackupL
       </div>
 
       {/* DATE */}
-      <div className="block shrink-0 pl-4 w-date items-center whitespace-nowrap">
+      <div className="block shrink-0 w-date items-center whitespace-nowrap">
         {dateService.formatDefaultDate(item.updatedAt, t)}
       </div>
 
       {/* SIZE */}
-      <div className="w-size shrink-0 pl-4 items-center whitespace-nowrap">
+      <div className="w-size shrink-0 items-center whitespace-nowrap">
         {sizeService.bytesToString(item.size, false) === '' || item.isFolder ? (
           <span className="opacity-25">—</span>
         ) : (
