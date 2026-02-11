@@ -120,6 +120,64 @@ describe('RealtimeService', () => {
     );
   });
 
+  describe('Logging behavior', () => {
+    const resetServiceWithProduction = (isProduction: boolean) => {
+      vi.spyOn(envService, 'isProduction').mockReturnValue(isProduction);
+      (RealtimeService as unknown as { instance: RealtimeService | undefined }).instance = undefined;
+      return RealtimeService.getInstance();
+    };
+
+    test('When not in production, then it logs on connect event', () => {
+      service = resetServiceWithProduction(false);
+      service.init();
+      const connectHandler = mockSocket.on.mock.calls.find((call) => call[0] === 'connect')?.[1];
+      connectHandler?.();
+      expect(consoleLogSpy).toHaveBeenCalledWith('[REALTIME]: CONNECTED WITH ID', mockSocket.id);
+    });
+
+    test('When in production, then it does not log on connect event', () => {
+      service = resetServiceWithProduction(true);
+      service.init();
+      const connectHandler = mockSocket.on.mock.calls.find((call) => call[0] === 'connect')?.[1];
+      connectHandler?.();
+      expect(consoleLogSpy).not.toHaveBeenCalledWith('[REALTIME]: CONNECTED WITH ID', mockSocket.id);
+    });
+
+    test('When not in production, then it logs on disconnect event', () => {
+      service = resetServiceWithProduction(false);
+      service.init();
+      const disconnectHandler = mockSocket.on.mock.calls.find((call) => call[0] === 'disconnect')?.[1];
+      disconnectHandler?.('transport close');
+      expect(consoleLogSpy).toHaveBeenCalledWith('[REALTIME] DISCONNECTED:', 'transport close');
+    });
+
+    test('When in production, then it does not log on disconnect event', () => {
+      service = resetServiceWithProduction(true);
+      service.init();
+      const disconnectHandler = mockSocket.on.mock.calls.find((call) => call[0] === 'disconnect')?.[1];
+      disconnectHandler?.('transport close');
+      expect(consoleLogSpy).not.toHaveBeenCalledWith('[REALTIME] DISCONNECTED:', 'transport close');
+    });
+
+    test('When not in production, then it logs errors on connect_error event', () => {
+      service = resetServiceWithProduction(false);
+      service.init();
+      const connectErrorHandler = mockSocket.on.mock.calls.find((call) => call[0] === 'connect_error')?.[1];
+      const error = new Error('connection refused');
+      connectErrorHandler?.(error);
+      expect(consoleErrorSpy).toHaveBeenCalledWith('[REALTIME] CONNECTION ERROR:', error);
+    });
+
+    test('When in production, then it does not log errors on connect_error event', () => {
+      service = resetServiceWithProduction(true);
+      service.init();
+      const connectErrorHandler = mockSocket.on.mock.calls.find((call) => call[0] === 'connect_error')?.[1];
+      const error = new Error('connection refused');
+      connectErrorHandler?.(error);
+      expect(consoleErrorSpy).not.toHaveBeenCalledWith('[REALTIME] CONNECTION ERROR:', error);
+    });
+  });
+
   describe('Retrieving connection identifier', () => {
     test('When getting the client Id after initialization, then it provides a unique identifier', () => {
       service.init();
