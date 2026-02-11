@@ -25,8 +25,12 @@ import {
   fileVersionsActions,
   fileVersionsSelectors,
 } from 'app/store/slices/fileVersions';
+import { getDaysUntilExpiration } from 'services/date.service';
+import { FileVersion } from '@internxt/sdk/dist/drive/storage/types';
 
 type VersionInfo = { id: string; updatedAt: string };
+
+const EMPTY_ARRAY: FileVersion[] = [];
 
 const Sidebar = () => {
   const dispatch = useAppDispatch();
@@ -44,7 +48,7 @@ const Sidebar = () => {
   const limits = useAppSelector(fileVersionsSelectors.getLimits);
   const isLimitsLoading = useAppSelector(fileVersionsSelectors.isLimitsLoading);
   const versions = useAppSelector((state: RootState) =>
-    item ? fileVersionsSelectors.getVersionsByFileId(state, item.uuid) : [],
+    item ? fileVersionsSelectors.getVersionsByFileId(state, item.uuid) : EMPTY_ARRAY,
   );
   const isLoading = useAppSelector((state: RootState) =>
     item ? fileVersionsSelectors.isLoadingByFileId(state, item.uuid) : false,
@@ -73,7 +77,13 @@ const Sidebar = () => {
     }));
   }, [isVersioningEnabled]);
 
-  const displayVersions = isVersioningEnabled ? versions : blurredBackgroundVersions;
+  const displayVersions = useMemo(() => {
+    if (!isVersioningEnabled) return blurredBackgroundVersions;
+    return versions.filter((version) => {
+      if (!version.expiresAt) return true;
+      return getDaysUntilExpiration(version.expiresAt) > 0;
+    });
+  }, [isVersioningEnabled, versions]);
 
   useEffect(() => {
     if (item) {
