@@ -95,11 +95,13 @@ describe('RealtimeService', () => {
 
     test.each([
       { isProduction: true, reconnection: true, withCredentials: true, logs: false },
-      { isProduction: false, reconnection: true, withCredentials: false, logs: true },
+      { isProduction: false, reconnection: false, withCredentials: false, logs: true },
     ])(
       'When running in isProduction=$isProduction environment, then it adjusts reconnection=$reconnection, withCredentials=$withCredentials and logging=$logs',
       ({ isProduction, reconnection, withCredentials, logs }) => {
         vi.spyOn(envService, 'isProduction').mockReturnValue(isProduction);
+        (RealtimeService as unknown as { instance: RealtimeService | undefined }).instance = undefined;
+        service = RealtimeService.getInstance();
 
         service.init();
 
