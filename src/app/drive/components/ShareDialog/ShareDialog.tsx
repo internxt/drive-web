@@ -218,12 +218,12 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     const buttonY: number = ((e as MouseEvent).currentTarget as HTMLElement).getBoundingClientRect().top;
     const buttonHeight: number = ((e as MouseEvent).currentTarget as HTMLElement).offsetHeight;
     const userListY: number = userList.current ? userList.current.getBoundingClientRect().top : 0;
-    setUserOptionsY(buttonY + buttonHeight - userListY + 8);
+    actionDispatch(setUserOptionsY(buttonY + buttonHeight - userListY + 8));
 
     if (selectedIndex === selectedUserListIndex) closeSelectedUserPopover();
-    else setSelectedUserListIndex(selectedIndex);
+    else actionDispatch(setSelectedUserListIndex(selectedIndex));
 
-    setUserOptionsEmail(user);
+    actionDispatch(setUserOptionsEmail(user));
 
     if (userOptions.current) {
       userOptions.current.click();
@@ -335,7 +335,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       invite: (
         <ShareInviteDialog
           onClose={() => {
-            setView('general');
+            actionDispatch(setView('general'));
           }}
           onInviteUser={onInviteUser}
           itemToShare={itemToShare?.item}
