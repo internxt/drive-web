@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { planSelectors, PlanState } from './index';
+import { describe, it, expect, test } from 'vitest';
+import { planSelectors, PlanState, planSlice, planActions } from './index';
 import { RootState } from '../..';
 import { StoragePlan, RenewalPeriod } from '@internxt/sdk/dist/drive/payments/types/types';
 
@@ -136,6 +136,57 @@ describe('Plan Selectors', () => {
       const result = planSelectors.isPlanActive(state)('any-plan-id');
 
       expect(result).toBe(false);
+    });
+  });
+});
+
+describe('Plan Reducers', () => {
+  describe('Update Limit plan', () => {
+    test('When providing a max space bytes, then should update the plan limit and stop loading the plan limit', () => {
+      const initialState: PlanState = {
+        isLoadingPlanLimit: true,
+        isLoadingPlanUsage: false,
+        isLoadingBusinessLimitAndUsage: false,
+        individualPlan: null,
+        businessPlan: null,
+        planLimit: 0,
+        planUsage: 0,
+        usageDetails: null,
+        individualSubscription: null,
+        businessSubscription: null,
+        businessPlanLimit: 0,
+        businessPlanUsage: 0,
+        businessPlanUsageDetails: null,
+      };
+
+      const newLimit = 5000000000;
+      const result = planSlice.reducer(initialState, planActions.updatePlanLimit(newLimit));
+
+      expect(result.planLimit).toStrictEqual(newLimit);
+      expect(result.isLoadingPlanLimit).toStrictEqual(false);
+    });
+
+    test('When there is no max space bytes, then should not update the user plan limit', () => {
+      const initialState: PlanState = {
+        isLoadingPlanLimit: true,
+        isLoadingPlanUsage: false,
+        isLoadingBusinessLimitAndUsage: false,
+        individualPlan: null,
+        businessPlan: null,
+        planLimit: 1000000000,
+        planUsage: 0,
+        usageDetails: null,
+        individualSubscription: null,
+        businessSubscription: null,
+        businessPlanLimit: 0,
+        businessPlanUsage: 0,
+        businessPlanUsageDetails: null,
+      };
+
+      const result = planSlice.reducer(initialState, planActions.updatePlanLimit(null));
+
+      expect(result.planLimit).toStrictEqual(initialState.planLimit);
+      expect(result.isLoadingPlanLimit).toStrictEqual(true);
     });
   });
 });
