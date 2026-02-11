@@ -2018,8 +2018,7 @@
               "Condivisione file protetta da password",
               "VPN Crittografata",
               "Antivirus"
-            ],
-            "comingSoonFeatures": ["Versionamento dei File"]
+            ]
           },
           "3TB": {
             "title": "Premium",
@@ -2054,7 +2053,7 @@
               "Cleaner (Pulitore)",
               "Meet (Videoconferenza)"
             ],
-            "comingSoonFeatures": ["Versionamento dei File", "Mail"]
+            "comingSoonFeatures": ["Versionamento dei File", "Mail", "Foto"]
           },
           "1GB": {
             "title": "Gratuito",
