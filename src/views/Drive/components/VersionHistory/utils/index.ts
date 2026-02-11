@@ -3,14 +3,12 @@ import { DriveItemData } from 'app/drive/types';
 
 export const formatVersionDate = (date: string): string => dateService.format(date, 'MMM D, h:mm A');
 
-const ALLOWED_VERSIONING_EXTENSIONS = ['pdf', 'docx', 'xlsx', 'csv'];
+const ALLOWED_VERSIONING_EXTENSIONS = new Set(['pdf', 'docx', 'xlsx', 'csv']);
 
 export const isVersioningExtensionAllowed = (item?: Pick<DriveItemData, 'type'> | null): boolean => {
-  if (!item || !item.type) {
+  if (!item?.type) {
     return false;
   }
   const extension = item.type.toLowerCase();
-  return ALLOWED_VERSIONING_EXTENSIONS.includes(extension);
+  return ALLOWED_VERSIONING_EXTENSIONS.has(extension);
 };
-
-export const getDaysUntilExpiration = (expiresAt: string): number => dateService.getDaysUntilExpiration(expiresAt);

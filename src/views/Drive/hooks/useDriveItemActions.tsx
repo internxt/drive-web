@@ -39,7 +39,6 @@ const useDriveItemActions = (item): DriveItemActions => {
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const workspaceCredentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
   const isWorkspace = !!selectedWorkspace;
-  const versionHistoryConfig = useVersionHistoryMenuConfig(item);
 
   const onRenameItemButtonClicked = () => {
     dispatch(storageActions.setItemToRename(item as DriveItemData));
