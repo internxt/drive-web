@@ -1905,8 +1905,7 @@
               "Passwortgeschütztes Teilen von Dateien",
               "Verschlüsseltes VPN",
               "Antivirus"
-            ],
-            "comingSoonFeatures": ["Dateiversionierung"]
+            ]
           },
           "3TB": {
             "title": "Premium",
@@ -1941,7 +1940,7 @@
               "Cleaner (Bereinigungstool)",
               "Meet (Videokonferenz)"
             ],
-            "comingSoonFeatures": ["Dateiversionierung", "Mail"]
+            "comingSoonFeatures": ["Dateiversionierung", "Mail", "Fotos"]
           },
           "1GB": {
             "title": "Kostenlos",
@@ -1954,36 +1953,41 @@
           "1TB": {
             "title": "Standard",
             "features": [
-              "1TB Zero-Knowledge verschlüsselter Speicher pro Benutzer",
+              "1 TB verschlüsselter Speicherplatz pro Benutzer",
               "Post-Quanten-Verschlüsselung",
-              "Ultraschnelles unbegrenztes VPN (FR, DE, PL)",
-              "Antivirus",
-              "Sicherung Ihrer Dateien",
-              "Passwortgeschützter Dateiaustausch",
-              "Einladen, Teilen & Zusammenarbeiten",
+              "Zero-Knowledge-Verschlüsselung",
+              "Zwei-Faktor-Authentifizierung",
+              "Computer-Backup",
+              "Passwortgeschützte Dateifreigabe",
+              "Einladen, teilen & zusammenarbeiten",
               "DSGVO-Konformität",
-              "Zwei-Faktor-Authentifizierung (2FA)",
-              "CLI & WebDav Unterstützung",
-              "Kontoverwaltung für Abrechnung & Zahlungen"
-            ],
-            "comingSoonFeatures": ["Gerätereiniger", "Dark Web Monitor"]
+              "CLI & WebDAV",
+              "Organisationsverwaltung",
+              "Verschlüsseltes VPN",
+              "Antivirus",
+              "Cleaner"
+            ]
           },
           "2TB": {
             "title": "Pro",
             "features": [
-              "2TB Zero-Knowledge verschlüsselter Speicher pro Benutzer",
+              "2 TB verschlüsselter Speicherplatz pro Benutzer",
               "Post-Quanten-Verschlüsselung",
-              "Ultraschnelles unbegrenztes VPN (FR, DE, PL, CA, UK)",
-              "Antivirus",
-              "Sicherung Ihrer Dateien",
-              "Passwortgeschützter Dateiaustausch",
-              "Einladen, Teilen & Zusammenarbeiten",
+              "Zero-Knowledge-Verschlüsselung",
+              "Zwei-Faktor-Authentifizierung",
+              "Computer-Backup",
+              "Passwortgeschützte Dateifreigabe",
+              "Einladen, teilen & zusammenarbeiten",
               "DSGVO-Konformität",
-              "Zwei-Faktor-Authentifizierung (2FA)",
-              "CLI, WebDav, Rclone & NAS Unterstützung",
-              "Kontoverwaltung für Abrechnung & Zahlungen"
+              "Unterstützung für CLI, WebDAV, Rclone & NAS",
+              "Organisationsverwaltung",
+              "Verschlüsseltes VPN",
+              "Antivirus",
+              "Cleaner",
+              "Meet",
+              "Mail"
             ],
-            "comingSoonFeatures": ["Gerätereiniger", "Dark Web Monitor", "Meet", "Mail"]
+            "comingSoonFeatures": ["Dateiversionierung"]
           }
         },
         "user": "Benutzer"
