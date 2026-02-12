@@ -41,7 +41,7 @@ export const useVersionItemActions = ({ version, onDropdownClose }: UseVersionIt
     }
 
     const entireFilename = item.plainName || item.name;
-    const formattedDate = dateService.format(version.createdAt, 'DD-MM-YYYY [at] HH:mm');
+    const formattedDate = dateService.format(version.modificationTime, 'DD-MM-YYYY [at] HH:mm');
     const { filename, extension } = itemsUtils.getFilenameAndExt(entireFilename);
 
     const fileExtension = extension || item.type ? `.${extension || item.type}` : '';

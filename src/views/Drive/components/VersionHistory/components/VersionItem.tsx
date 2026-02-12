@@ -53,7 +53,7 @@ export const VersionItem = memo(
           ref={itemRef as React.RefObject<HTMLButtonElement>}
           type="button"
           aria-pressed={isSelected}
-          aria-label={`Version from ${formatVersionDate(version.createdAt)}`}
+          aria-label={`Version from ${formatVersionDate(version.modificationTime)}`}
           className={`group relative w-full px-6 cursor-pointer text-left ${isSelected ? 'bg-primary/10' : 'hover:bg-gray-1 dark:hover:bg-white/3'}`}
           onClick={handleItemClick}
         >
@@ -71,7 +71,9 @@ export const VersionItem = memo(
               />
               <div className="flex min-w-0 flex-1 flex-col space-y-1">
                 <div className="relative flex items-center pr-16">
-                  <span className="text-base font-semibold text-gray-100">{formatVersionDate(version.updatedAt)}</span>
+                  <span className="text-base font-semibold text-gray-100">
+                    {formatVersionDate(version.modificationTime)}
+                  </span>
                   <span className="absolute right-[-32px] top-1/2 -translate-y-1/2 whitespace-nowrap text-base text-[#A6A6A6]">
                     {versionSize}
                   </span>
