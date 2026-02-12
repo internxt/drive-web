@@ -416,6 +416,13 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     }
   };
 
+  const onTrashCleared = useCallback(() => {
+    dispatch(storageActions.resetTrash());
+    paginationState.setHasMoreItems(false);
+    setHasMoreTrashFolders(false);
+    onItemsDeleted?.();
+  }, [onItemsDeleted]);
+
   const onCloseEditItemDialog = (newItem) => {
     if (newItem && editNameItem) {
       if (isFileViewerOpen) {
@@ -530,7 +537,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         }}
         isTrash={isTrash}
       />
-      <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
+      <ClearTrashDialog onItemsDeleted={onTrashCleared} />
       <UploadItemsFailsDialog />
       <MenuItemToGetSize isTrash={isTrash} translate={translate} menuItemsRef={menuItemsRef} />
       <ItemDetailsDialog onDetailsButtonClicked={onDetailsButtonClicked} />

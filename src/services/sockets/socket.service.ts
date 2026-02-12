@@ -8,6 +8,7 @@ export default class RealtimeService {
   private socket?: Socket;
   private static instance: RealtimeService;
   private readonly eventHandlers: Set<(data: EventData) => void> = new Set();
+  private readonly isProduction = envService.isProduction();
 
   static getInstance(): RealtimeService {
     if (!this.instance) {
@@ -18,7 +19,7 @@ export default class RealtimeService {
   }
 
   init(onConnected?: () => void): void {
-    if (!envService.isProduction()) {
+    if (!this.isProduction) {
       console.log('[REALTIME]: CONNECTING...');
     }
 
@@ -26,12 +27,12 @@ export default class RealtimeService {
       auth: {
         token: getToken(),
       },
-      reconnection: true,
-      withCredentials: envService.isProduction(),
+      reconnection: this.isProduction,
+      withCredentials: this.isProduction,
     });
 
     this.socket.on('connect', () => {
-      if (!envService.isProduction()) {
+      if (!this.isProduction) {
         console.log('[REALTIME]: CONNECTED WITH ID', this.socket?.id);
       }
       onConnected?.();
@@ -50,13 +51,13 @@ export default class RealtimeService {
     });
 
     this.socket.on('disconnect', (reason) => {
-      if (!envService.isProduction()) {
+      if (!this.isProduction) {
         console.log('[REALTIME] DISCONNECTED:', reason);
       }
     });
 
     this.socket.on('connect_error', (error) => {
-      if (!envService.isProduction()) console.error('[REALTIME] CONNECTION ERROR:', error);
+      if (!this.isProduction) console.error('[REALTIME] CONNECTION ERROR:', error);
     });
   }
 
@@ -68,14 +69,14 @@ export default class RealtimeService {
   }
 
   onEvent(cb: (data: any) => void): () => void {
-    if (!envService.isProduction()) {
+    if (!this.isProduction) {
       console.log('[REALTIME] Registering event handler. Total handlers:', this.eventHandlers.size + 1);
     }
 
     this.eventHandlers.add(cb);
 
     return () => {
-      if (!envService.isProduction()) {
+      if (!this.isProduction) {
         console.log('[REALTIME] Removing event handler. Remaining handlers:', this.eventHandlers.size - 1);
       }
       this.eventHandlers.delete(cb);
@@ -83,7 +84,7 @@ export default class RealtimeService {
   }
 
   removeAllListeners() {
-    if (!envService.isProduction()) {
+    if (!this.isProduction) {
       console.log('[REALTIME] Clearing all event handlers');
     }
     this.eventHandlers.clear();
