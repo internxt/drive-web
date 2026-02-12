@@ -31,7 +31,6 @@ import {
 } from './DriveItemContextMenu';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { DownloadManager } from 'app/network/DownloadManager';
-import { useVersionHistoryMenuConfig } from 'views/Drive/hooks/useVersionHistoryMenuConfig';
 
 const DriveTopBarActions = ({
   selectedItems,
@@ -63,8 +62,6 @@ const DriveTopBarActions = ({
 
   const hasItemsAndIsNotTrash = hasAnyItemSelected && !isTrash;
   const hasItemsAndIsTrash = hasAnyItemSelected && isTrash;
-
-  const versionHistoryMenuConfig = useVersionHistoryMenuConfig(selectedItems[0]);
 
   const viewModesIcons = {
     [FileViewMode.List]: (
@@ -99,11 +96,6 @@ const DriveTopBarActions = ({
       selectedWorkspace,
       workspaceCredentials,
     });
-  };
-
-  const onViewVersionHistoryButtonClicked = (): void => {
-    dispatch(uiActions.setVersionHistoryItem(selectedItems[0]));
-    dispatch(uiActions.setIsVersionHistorySidebarOpen(true));
   };
 
   const onBulkDeleteButtonClicked = (): void => {
@@ -184,9 +176,7 @@ const DriveTopBarActions = ({
     renameItem: onSelectedOneItemRename,
     moveItem: onMoveItemButtonClicked,
     downloadItem: onDownloadButtonClicked,
-    viewVersionHistory: onViewVersionHistoryButtonClicked,
     moveToTrash: onBulkDeleteButtonClicked,
-    versionHistoryConfig: versionHistoryMenuConfig,
   });
 
   const workspaceFolderMenu = contextMenuWorkspaceFolder({
@@ -197,9 +187,7 @@ const DriveTopBarActions = ({
     renameItem: onSelectedOneItemRename,
     moveItem: onMoveItemButtonClicked,
     downloadItem: onDownloadButtonClicked,
-    viewVersionHistory: onViewVersionHistoryButtonClicked,
     moveToTrash: onBulkDeleteButtonClicked,
-    versionHistoryConfig: versionHistoryMenuConfig,
   });
 
   const dropdownActions = () => {
@@ -220,9 +208,7 @@ const DriveTopBarActions = ({
             renameItem: onSelectedOneItemRename,
             moveItem: onMoveItemButtonClicked,
             downloadItem: onDownloadButtonClicked,
-            viewVersionHistory: onViewVersionHistoryButtonClicked,
             moveToTrash: onBulkDeleteButtonClicked,
-            versionHistoryConfig: versionHistoryMenuConfig,
           })
         : contextMenuDriveItemShared({
             openPreview: onOpenPreviewButtonClicked,
@@ -232,9 +218,7 @@ const DriveTopBarActions = ({
             renameItem: onSelectedOneItemRename,
             moveItem: onMoveItemButtonClicked,
             downloadItem: onDownloadButtonClicked,
-            viewVersionHistory: onViewVersionHistoryButtonClicked,
             moveToTrash: onBulkDeleteButtonClicked,
-            versionHistoryConfig: versionHistoryMenuConfig,
           });
     } else {
       return selectedItems[0].isFolder
@@ -245,9 +229,7 @@ const DriveTopBarActions = ({
             renameItem: onSelectedOneItemRename,
             moveItem: onMoveItemButtonClicked,
             downloadItem: onDownloadButtonClicked,
-            viewVersionHistory: onViewVersionHistoryButtonClicked,
             moveToTrash: onBulkDeleteButtonClicked,
-            versionHistoryConfig: versionHistoryMenuConfig,
           })
         : contextMenuDriveNotSharedLink({
             shareLink: onOpenShareSettingsButtonClicked,
@@ -257,9 +239,7 @@ const DriveTopBarActions = ({
             renameItem: onSelectedOneItemRename,
             moveItem: onMoveItemButtonClicked,
             downloadItem: onDownloadButtonClicked,
-            viewVersionHistory: onViewVersionHistoryButtonClicked,
             moveToTrash: onBulkDeleteButtonClicked,
-            versionHistoryConfig: versionHistoryMenuConfig,
           });
     }
   };

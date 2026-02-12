@@ -11,7 +11,6 @@ interface HandleWorkerMessagesPayload {
   abortController?: AbortController;
   itemData: DriveFileData;
   updateProgressCallback: (progress: number) => void;
-  downloadName?: string;
 }
 
 interface HandleMessagesPayload {
@@ -38,10 +37,9 @@ export class DownloadWorkerHandler {
     abortController,
     itemData,
     updateProgressCallback,
-    downloadName,
   }: HandleWorkerMessagesPayload) {
     const fileName = itemData.plainName ?? itemData.name;
-    const completeFilename = downloadName || (itemData.type ? `${fileName}.${itemData.type}` : fileName);
+    const completeFilename = itemData.type ? `${fileName}.${itemData.type}` : fileName;
     const downloadId = itemData.fileId;
     const fileSize = itemData.size;
 
