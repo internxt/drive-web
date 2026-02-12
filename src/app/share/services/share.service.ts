@@ -37,7 +37,7 @@ import { AdvancedSharedItem } from '../types';
 import { domainManager } from './DomainManager';
 import { generateCaptchaToken } from 'utils';
 import { copyTextToClipboard } from 'utils/copyToClipboard.utils';
-import { retryWithBackoff } from '../../network/retry-with-rate-limit';
+import { retryWithBackoff, RetryReason } from '../../network/retry-with-backoff';
 
 interface CreateShareResponse {
   created: boolean;
@@ -124,7 +124,7 @@ export function getPublicSharedFolderContent(
   options?: {
     code?: string;
     orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC';
-    onRetry?: (attempt: number, delay: number) => void;
+    onRetry?: (attempt: number, delay: number, reason: RetryReason) => void;
   },
 ): Promise<ListSharedItemsResponse> {
   return retryWithBackoff(
@@ -504,11 +504,15 @@ class DirectoryPublicSharedFolderIterator implements Iterator<SharedFolders> {
   private readonly queryValues: {
     directoryId: string;
     resourcesToken?: string;
-    onRetry?: (attempt: number, delay: number) => void;
+    onRetry?: (attempt: number, delay: number, reason: RetryReason) => void;
   };
 
   constructor(
-    queryValues: { directoryId: string; resourcesToken?: string; onRetry?: (attempt: number, delay: number) => void },
+    queryValues: {
+      directoryId: string;
+      resourcesToken?: string;
+      onRetry?: (attempt: number, delay: number, reason: RetryReason) => void;
+    },
     page?: number,
     itemsPerPage?: number,
   ) {
@@ -543,7 +547,7 @@ class DirectoryPublicSharedFilesIterator implements Iterator<SharedFiles> {
     directoryId: string;
     resourcesToken?: string;
     code?: string;
-    onRetry?: (attempt: number, delay: number) => void;
+    onRetry?: (attempt: number, delay: number, reason: RetryReason) => void;
   };
 
   constructor(
@@ -551,7 +555,7 @@ class DirectoryPublicSharedFilesIterator implements Iterator<SharedFiles> {
       directoryId: string;
       resourcesToken?: string;
       code?: string;
-      onRetry?: (attempt: number, delay: number) => void;
+      onRetry?: (attempt: number, delay: number, reason: RetryReason) => void;
     },
     page?: number,
     itemsPerPage?: number,
@@ -698,7 +702,7 @@ export async function downloadPublicSharedFolder({
   token?: string;
   code: string;
   incrementItemCount: () => void;
-  onRetry?: (attempt: number, delay: number) => void;
+  onRetry?: (attempt: number, delay: number, reason: RetryReason) => void;
 }): Promise<void> {
   const initPage = 0;
   const itemsPerPage = 15;
