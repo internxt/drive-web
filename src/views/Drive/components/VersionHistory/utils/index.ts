@@ -1,7 +1,7 @@
 import dateService from 'services/date.service';
 import { DriveItemData } from 'app/drive/types';
 
-export const formatVersionDate = (date: string): string => dateService.format(date, 'MMM D, h:mm A');
+export const formatVersionDate = (date: string): string => dateService.format(date, 'D MMM, YYYY [at] HH:mm');
 
 const ALLOWED_VERSIONING_EXTENSIONS = new Set(['pdf', 'docx', 'xlsx', 'csv']);
 

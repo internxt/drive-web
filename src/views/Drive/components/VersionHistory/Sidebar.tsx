@@ -250,7 +250,7 @@ const Sidebar = () => {
     <>
       {shouldShowSidebar && <div className="fixed inset-0 z-40 transition-opacity" onClick={onClose} aria-hidden />}
       <div
-        className={`absolute right-0 top-0 z-50 h-full w-80 transform bg-surface dark:bg-gray-1 transition-transform duration-300 ease-in-out ${
+        className={`absolute right-0 top-0 z-50 h-full w-[335px] transform bg-surface dark:bg-gray-1 transition-transform duration-300 ease-in-out ${
           shouldShowSidebar ? 'translate-x-0' : 'translate-x-full'
         }`}
         style={{ boxShadow: '-2px 0 8px rgba(0, 0, 0, 0.1)' }}
