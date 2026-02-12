@@ -47,6 +47,7 @@ export type DownloadItem = {
   downloadOptions?: {
     areSharedItems?: boolean;
     showErrors?: boolean;
+    downloadName?: string;
   };
   createFoldersIterator?: FolderIterator | SharedFolderIterator;
   createFilesIterator?: FileIterator | SharedFileIterator;
@@ -92,6 +93,13 @@ export type DownloadTask = {
 export class DownloadManagerService {
   public static readonly instance: DownloadManagerService = new DownloadManagerService();
 
+  private getSingleItemName(item: DownloadItem['payload'][0]): string {
+    if (item.isFolder) {
+      return item.name;
+    }
+    return item.type ? `${item.name}.${item.type}` : item.name;
+  }
+
   readonly getDownloadCredentialsFromWorkspace = (
     selectedWorkspace: WorkspaceData | null,
     workspaceCredentials: WorkspaceCredentialsDetails | null,
@@ -119,14 +127,11 @@ export class DownloadManagerService {
     const abort = () => Promise.resolve(uploadFolderAbortController.abort('Download cancelled'));
 
     const formattedDate = date.format(new Date(), 'YYYY-MM-DD_HHmmss');
-    let downloadName = `Internxt (${formattedDate})`;
-    if (itemsPayload.length === 1) {
-      const item = itemsPayload[0];
-      if (itemsPayload[0].isFolder) {
-        downloadName = item.name;
-      } else {
-        downloadName = item.type ? `${item.name}.${item.type}` : item.name;
-      }
+    let downloadName = downloadItem.downloadOptions?.downloadName;
+
+    if (!downloadName) {
+      downloadName =
+        itemsPayload.length === 1 ? this.getSingleItemName(itemsPayload[0]) : `Internxt (${formattedDate})`;
     }
 
     let taskId = downloadItem.taskId;
@@ -295,6 +300,7 @@ export class DownloadManagerService {
           updateProgressCallback,
           abortController,
           sharingOptions: credentials,
+          downloadName: options.downloadName,
         });
 
         console.timeEnd(`download-file-${file.uuid}`);
@@ -508,6 +514,7 @@ export class DownloadManagerService {
     updateProgressCallback: (progress: number) => void;
     abortController?: AbortController;
     sharingOptions: { credentials: { user: string; pass: string }; mnemonic: string };
+    downloadName?: string;
   }) => {
     const shouldDownloadUsingBlob =
       !!(navigator.brave && (await navigator.brave.isBrave())) ||
@@ -531,6 +538,7 @@ export class DownloadManagerService {
       itemData: payload.file,
       updateProgressCallback: payload.updateProgressCallback,
       abortController: payload.abortController,
+      downloadName: payload.downloadName,
     });
   };
 }

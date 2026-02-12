@@ -25,6 +25,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
     onMoveToTrashButtonClicked,
     onShowDetailsButtonClicked,
     onDownloadItemButtonClicked,
+    onViewVersionHistoryButtonClicked,
     onLinkSettingsButtonClicked,
     onRenameItemButtonClicked,
     onOpenPreviewButtonClicked,
@@ -50,6 +51,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
           renameItem: onRenameItemButtonClicked,
           moveItem: onMoveItemButtonClicked,
           downloadItem: onDownloadItemButtonClicked,
+          viewVersionHistory: onViewVersionHistoryButtonClicked,
           moveToTrash: onMoveToTrashButtonClicked,
         });
       }
@@ -61,6 +63,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
         renameItem: onRenameItemButtonClicked,
         moveItem: onMoveItemButtonClicked,
         downloadItem: onDownloadItemButtonClicked,
+        viewVersionHistory: onViewVersionHistoryButtonClicked,
         moveToTrash: onMoveToTrashButtonClicked,
       });
     } else if (item?.isFolder) {
@@ -71,6 +74,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
         renameItem: onRenameItemButtonClicked,
         moveItem: onMoveItemButtonClicked,
         downloadItem: onDownloadItemButtonClicked,
+        viewVersionHistory: onViewVersionHistoryButtonClicked,
         moveToTrash: onMoveToTrashButtonClicked,
       });
     }
@@ -82,6 +86,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
       renameItem: onRenameItemButtonClicked,
       moveItem: onMoveItemButtonClicked,
       downloadItem: onDownloadItemButtonClicked,
+      viewVersionHistory: onViewVersionHistoryButtonClicked,
       moveToTrash: onMoveToTrashButtonClicked,
     });
   };

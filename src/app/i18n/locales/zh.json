@@ -856,6 +856,34 @@
         "location": "位置"
       }
     },
+    "versionHistory": {
+      "title": "版本历史",
+      "current": "当前",
+      "expiresInDays": "{{days}} 天后到期",
+      "autosaveVersions": "{{count}}/{{total}} 自动保存版本",
+      "restoreVersion": "恢复版本",
+      "downloadVersion": "下载版本",
+      "deleteVersion": "删除版本",
+      "deleteVersionTitle": "删除版本",
+      "deleteButton": "删除",
+      "restoreButton": "恢复",
+      "downloadError": "下载版本失败",
+      "deleteVersionAdvice": "此版本将被永久删除。\n此操作无法撤销。",
+      "deletingVersion": "删除中",
+      "restoreVersionTitle": "恢复版本",
+      "restoreVersionAdvice": "恢复此版本将替换当前文件并删除所有较新的版本。\n一旦恢复，此操作无法撤销。\n\n您可以在恢复之前下载较新版本的副本。",
+      "restoringVersion": "恢复中",
+      "restoreSuccess": "版本恢复成功",
+      "restoreError": "恢复版本失败",
+      "deleteSuccess": "版本删除成功",
+      "deleteError": "删除版本失败",
+      "lockedFeature": {
+        "title": "功能已锁定",
+        "description": "恢复文件的以前版本并跟踪随时间的变化。",
+        "supportedFormats": "适用于付费计划中的PDF、Word、Excel和CSV文件。",
+        "upgradeButton": "升级"
+      }
+    },
     "shareModal": {
       "title": "分享 \"{{name}}\"",
       "list": {
@@ -1503,6 +1531,7 @@
       "share": "分享",
       "manageAccess": "管理访问权限",
       "download": "下载",
+      "versionHistory": "版本历史",
       "moveToTrash": "移入垃圾箱",
       "copyLink": "复制链接",
       "linkSettings": "链接设置",

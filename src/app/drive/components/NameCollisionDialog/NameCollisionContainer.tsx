@@ -12,6 +12,10 @@ import { DriveItemData } from 'app/drive/types';
 import { IRoot } from 'app/store/slices/storage/types';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { uploadFoldersWithManager } from 'app/network/UploadFolderManager';
+import replaceFileService from 'views/Drive/services/replaceFile.service';
+import { Network, getEnvironmentConfig } from 'app/drive/services/network.service';
+import { fileVersionsActions, fileVersionsSelectors } from 'app/store/slices/fileVersions';
+import { isVersioningExtensionAllowed } from 'views/Drive/components/VersionHistory/utils';
 
 type NameCollisionContainerProps = {
   currentFolderId: string;
@@ -43,6 +47,8 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     () => moveDestinationFolderId ?? currentFolderId,
     [moveDestinationFolderId, currentFolderId],
   );
+  const limits = useAppSelector(fileVersionsSelectors.getLimits);
+  const isVersioningEnabled = limits?.versioning?.enabled ?? false;
 
   const handleNewItems = (files: (File | DriveItemData)[], folders: (IRoot | DriveItemData)[]) => [
     ...files,
@@ -122,6 +128,47 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     );
   };
 
+  const uploadFileAndGetFileId = async (file: File, itemToReplace: DriveItemData) => {
+    const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(!!selectedWorkspace);
+    const network = new Network(bridgeUser, bridgePass, encryptionKey);
+
+    const taskId = `replace-${itemToReplace.uuid}-${Date.now()}`;
+
+    const [uploadPromise] = network.uploadFile(
+      bucketId,
+      {
+        filecontent: file,
+        filesize: file.size,
+        progressCallback: () => {},
+      },
+      { taskId },
+    );
+
+    return await uploadPromise;
+  };
+
+  const replaceFileVersion = async (file: File, itemToReplace: DriveItemData) => {
+    const newFileId = await uploadFileAndGetFileId(file, itemToReplace);
+    await replaceFileService.replaceFile(itemToReplace.uuid, {
+      fileId: newFileId,
+      size: file.size,
+    });
+    dispatch(fileVersionsActions.invalidateCache(itemToReplace.uuid));
+  };
+
+  const trashAndUpload = async (file: File, itemToReplace: DriveItemData) => {
+    await moveItemsToTrash([itemToReplace]);
+    await dispatch(
+      storageThunks.uploadItemsThunk({
+        files: [file],
+        parentFolderId: folderId,
+        options: {
+          disableDuplicatedNamesCheck: true,
+        },
+      }),
+    );
+  };
+
   const replaceAndUploadItem = async ({
     itemsToReplace,
     itemsToUpload,
@@ -129,11 +176,13 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     itemsToReplace: DriveItemData[];
     itemsToUpload: (IRoot | File)[];
   }) => {
-    await moveItemsToTrash(itemsToReplace);
+    for (let i = 0; i < itemsToUpload.length; i++) {
+      const itemToUpload = itemsToUpload[i];
+      const itemToReplace = itemsToReplace[i];
 
-    itemsToUpload.forEach((itemToUpload) => {
       if ((itemToUpload as IRoot).fullPathEdited) {
-        uploadFoldersWithManager({
+        await moveItemsToTrash([itemToReplace]);
+        await uploadFoldersWithManager({
           payload: [
             {
               root: { ...(itemToUpload as IRoot) },
@@ -142,23 +191,15 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
           ],
           selectedWorkspace,
           dispatch,
-        }).then(() => {
-          dispatch(fetchSortedFolderContentThunk(folderId));
         });
       } else {
-        dispatch(
-          storageThunks.uploadItemsThunk({
-            files: [itemToUpload] as File[],
-            parentFolderId: folderId,
-            options: {
-              disableDuplicatedNamesCheck: true,
-            },
-          }),
-        ).then(() => {
-          dispatch(fetchSortedFolderContentThunk(folderId));
-        });
+        const file = itemToUpload as File;
+        const canReplaceVersion = isVersioningEnabled && isVersioningExtensionAllowed(itemToReplace);
+        canReplaceVersion ? await replaceFileVersion(file, itemToReplace) : await trashAndUpload(file, itemToReplace);
       }
-    });
+
+      dispatch(fetchSortedFolderContentThunk(folderId));
+    }
   };
 
   const keepAndUploadItem = async (itemsToUpload: (IRoot | File)[]) => {

@@ -820,6 +820,34 @@
         "location": "位置"
       }
     },
+    "versionHistory": {
+      "title": "版本歷史",
+      "current": "目前",
+      "expiresInDays": "{{days}} 天後過期",
+      "autosaveVersions": "{{count}}/{{total}} 自動儲存版本",
+      "restoreVersion": "復原版本",
+      "downloadVersion": "下載版本",
+      "deleteVersion": "刪除版本",
+      "deleteVersionTitle": "刪除版本",
+      "deleteButton": "刪除",
+      "restoreButton": "復原",
+      "downloadError": "下載版本失敗",
+      "deleteVersionAdvice": "此版本將被永久刪除。\n此操作無法復原。",
+      "deletingVersion": "刪除中",
+      "restoreVersionTitle": "復原版本",
+      "restoreVersionAdvice": "復原此版本將取代目前檔案並刪除所有較新的版本。\n一旦復原，此操作無法撤銷。\n\n您可以在復原之前下載較新版本的副本。",
+      "restoringVersion": "復原中",
+      "restoreSuccess": "版本復原成功",
+      "restoreError": "復原版本失敗",
+      "deleteSuccess": "版本刪除成功",
+      "deleteError": "刪除版本失敗",
+      "lockedFeature": {
+        "title": "功能已鎖定",
+        "description": "復原檔案的先前版本並追蹤隨時間的變化。",
+        "supportedFormats": "適用於付費方案中的PDF、Word、Excel和CSV檔案。",
+        "upgradeButton": "升級"
+      }
+    },
     "shareModal": {
       "title": "分享“{{name}}”",
       "list": {
@@ -1458,6 +1486,7 @@
     },
     "dropdown": {
       "openPreview": "打開預覽",
+      "versionHistory": "版本歷史",
       "details": "詳細信息",
       "shareLink": "分享",
       "shareTeam": "与团队分享",
