@@ -11,6 +11,7 @@ import taskManagerReducer from './slices/taskManager';
 import uiReducer from './slices/ui';
 import userReducer from './slices/user';
 import workspacesReducer from './slices/workspaces/workspacesStore';
+import { fileVersionsReducer } from './slices/fileVersions';
 
 export const store = configureStore({
   reducer: {
@@ -25,6 +26,7 @@ export const store = configureStore({
     referrals: referralsReducer,
     shared: sharedReducer,
     workspaces: workspacesReducer,
+    fileVersions: fileVersionsReducer,
   },
 });
 

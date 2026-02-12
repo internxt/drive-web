@@ -917,6 +917,7 @@ describe('downloadManagerService', () => {
         updateProgressCallback: mockUpdateProgress,
         abortController: mockTask.abortController,
         sharingOptions: mockTask.credentials,
+        downloadName: mockTask.options.downloadName,
       });
     });
 
