@@ -18,6 +18,7 @@ import {
   VERSION_LIMITS_POLL_MAX_ATTEMPTS,
   VERSION_LIMITS_POLL_DELAYS,
   fileVersionsSelectors,
+  fileVersionsActions,
 } from 'app/store/slices/fileVersions';
 import CancelSubscriptionModal from '../../Workspace/Billing/CancelSubscriptionModal';
 import { fetchPlanPrices, getStripe } from '../../../../services/plansApi';
@@ -204,8 +205,11 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
         previousLimits?.versioning.maxVersions !== result.limits.versioning.maxVersions;
 
       if (!hasLimitsChanged) {
-        pollVersionLimitsUntilChanged(attempt + 1, previousLimits);
+        await pollVersionLimitsUntilChanged(attempt + 1, previousLimits);
+        return;
       }
+
+      dispatch(fileVersionsActions.clearAllCache());
     },
     [dispatch, versionLimits],
   );
@@ -215,7 +219,6 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     setTimeout(() => {
       dispatch(planThunks.initializeThunk()).unwrap();
     }, 2000);
-
     pollVersionLimitsUntilChanged();
   };
 
@@ -274,7 +277,6 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
       setTimeout(() => {
         dispatch(planThunks.initializeThunk()).unwrap();
       }, 1000);
-
       pollVersionLimitsUntilChanged();
     }
   }

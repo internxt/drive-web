@@ -116,7 +116,7 @@ const Sidebar = () => {
     if (!hasCachedVersions) {
       dispatch(fetchFileVersionsThunk(item.uuid));
     }
-  }, [item?.uuid, isOpen, dispatch]);
+  }, [item?.uuid, isOpen, dispatch, limits]);
 
   const handleError = useCallback(
     (error: unknown, messageKey: string) => {
