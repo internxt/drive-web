@@ -271,13 +271,13 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
 
   const moveToTrash = useCallback(
     (items: ContextMenuDriveItem[]) => {
-      if (isSelectedSharedItem) {
+      if (isSelectedSharedItems) {
         props.onOpenStopSharingAndMoveToTrashDialog();
       } else {
         moveItemsToTrash(items as DriveItemData[], () => dispatch(fetchSortedFolderContentThunk(currentFolderId)));
       }
     },
-    [isSelectedSharedItem, props.onOpenStopSharingAndMoveToTrashDialog, moveItemsToTrash, dispatch],
+    [isSelectedSharedItems, props.onOpenStopSharingAndMoveToTrashDialog, moveItemsToTrash, dispatch],
   );
 
   const selectedItemsContextMenu = contextMenuSelectedItems({
