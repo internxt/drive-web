@@ -11,7 +11,6 @@ import { storageActions } from 'app/store/slices/storage';
 import { uiActions } from 'app/store/slices/ui';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { DownloadManager } from 'app/network/DownloadManager';
-import { useVersionHistoryMenuConfig } from './useVersionHistoryMenuConfig';
 
 export interface DriveItemActions {
   nameInputRef: React.RefObject<HTMLInputElement>;
