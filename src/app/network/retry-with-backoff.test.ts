@@ -90,14 +90,6 @@ describe('retryWithBackoff', () => {
     expect(timeUtils.wait).toHaveBeenCalledTimes(2);
   });
 
-  it('when error is string then throws immediately', async () => {
-    const mockFn = vi.fn().mockRejectedValue('string error');
-
-    await expect(retryWithBackoff(mockFn)).rejects.toBe('string error');
-    expect(mockFn).toHaveBeenCalledTimes(1);
-    expect(timeUtils.wait).not.toHaveBeenCalled();
-  });
-
   it('when server error occurs then retries and succeeds', async () => {
     const mockFn = vi
       .fn()

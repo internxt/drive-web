@@ -9,7 +9,6 @@ import sizeService from 'app/drive/services/size.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import shareService, { downloadPublicSharedFolder, getPublicSharingMeta } from 'app/share/services/share.service';
-import { RetryReason } from 'app/network/retry-with-backoff';
 import { TaskProgress } from 'app/tasks/types';
 import { useEffect, useState } from 'react';
 import { match } from 'react-router';
