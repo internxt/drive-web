@@ -1966,8 +1966,7 @@
               "Comparte archivos con contraseña",
               "VPN Cifrada",
               "Antivirus"
-            ],
-            "comingSoonFeatures": ["Versionado de archivos"]
+            ]
           },
           "3TB": {
             "title": "Premium",
@@ -2002,7 +2001,7 @@
               "Cleaner",
               "Meet"
             ],
-            "comingSoonFeatures": ["Versionado de archivos", "Mail"]
+            "comingSoonFeatures": ["Versionado de archivos", "Mail", "Fotos"]
           },
           "1GB": {
             "title": "Gratis",
@@ -2016,35 +2015,40 @@
             "title": "Estándar",
             "features": [
               "1TB de almacenamiento cifrado por usuario",
-              "Cifrado post-cuántico",
-              "VPN ilimitada ultrarrápida (FR, DE, PL)",
-              "Antivirus",
-              "Copia de seguridad de tus archivos",
-              "Compartir archivos protegidos con contraseña",
+              "Cifrado poscuántico",
+              "Cifrado de conocimiento cero",
+              "Autenticación de dos factores",
+              "Copia de seguridad del ordenador",
+              "Intercambio de archivos protegido por contraseña",
               "Invitar, compartir y colaborar",
               "Cumplimiento del RGPD",
-              "Autenticación de dos factores (2FA)",
-              "Soporte para CLI y WebDav",
-              "Gestionar facturación y pagos de la cuenta"
-            ],
-            "comingSoonFeatures": ["Limpiador de dispositivos", "Monitor de Dark Web"]
+              "CLI y WebDAV",
+              "Gestión de la organización",
+              "VPN cifrada",
+              "Antivirus",
+              "Limpiador"
+            ]
           },
           "2TB": {
             "title": "Pro",
             "features": [
               "2TB de almacenamiento cifrado por usuario",
-              "Cifrado post-cuántico",
-              "VPN ilimitada ultrarrápida (FR, DE, PL, CA, UK)",
-              "Antivirus",
-              "Copia de seguridad de tus archivos",
-              "Compartir archivos protegidos con contraseña",
+              "Cifrado poscuántico",
+              "Cifrado de conocimiento cero",
+              "Autenticación de dos factores",
+              "Copia de seguridad del ordenador",
+              "Intercambio de archivos protegido por contraseña",
               "Invitar, compartir y colaborar",
               "Cumplimiento del RGPD",
-              "Autenticación de dos factores (2FA)",
-              "Soporte para CLI, WebDav, Rclone y NAS",
-              "Gestionar facturación y pagos de la cuenta"
+              "Soporte para CLI, WebDAV, Rclone y NAS",
+              "Gestión de la organización",
+              "VPN cifrada",
+              "Antivirus",
+              "Limpiador",
+              "Meet",
+              "Correo"
             ],
-            "comingSoonFeatures": ["Limpiador de dispositivos", "Monitor de Dark Web", "Meet", "Mail"]
+            "comingSoonFeatures": ["Versionado de archivos"]
           }
         },
         "user": "usuario"

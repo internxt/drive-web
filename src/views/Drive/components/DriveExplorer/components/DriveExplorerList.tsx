@@ -270,16 +270,14 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   );
 
   const moveToTrash = useCallback(
-    (item: ContextMenuDriveItem) => {
-      const driveItem = item as DriveItemData;
-
-      if (isSelectedSharedItem) {
+    (items: ContextMenuDriveItem[]) => {
+      if (isSelectedSharedItems) {
         props.onOpenStopSharingAndMoveToTrashDialog();
       } else {
-        moveItemsToTrash([driveItem]);
+        moveItemsToTrash(items as DriveItemData[], () => dispatch(fetchSortedFolderContentThunk(currentFolderId)));
       }
     },
-    [isSelectedSharedItem, props.onOpenStopSharingAndMoveToTrashDialog, moveItemsToTrash],
+    [isSelectedSharedItems, props.onOpenStopSharingAndMoveToTrashDialog, moveItemsToTrash, dispatch, currentFolderId],
   );
 
   const selectedItemsContextMenu = contextMenuSelectedItems({
@@ -295,9 +293,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
         workspaceCredentials,
       });
     },
-    moveToTrash: () => {
-      isSelectedSharedItems ? props.onOpenStopSharingAndMoveToTrashDialog() : moveItemsToTrash(props.selectedItems);
-    },
+    moveToTrash: () => moveToTrash(props.selectedItems),
   });
 
   const multipleSelectedTrashItemsContextMenu = contextMenuMultipleSelectedTrashItems({
@@ -354,7 +350,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     renameItem: renameItem,
     moveItem: moveItem,
     downloadItem: downloadItem,
-    moveToTrash: moveToTrash,
+    moveToTrash: () => moveToTrash(props.selectedItems),
   });
 
   const selectedFileMenu = contextMenuDriveNotSharedLink({
@@ -365,7 +361,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     renameItem: renameItem,
     moveItem: moveItem,
     downloadItem: downloadItem,
-    moveToTrash: moveToTrash,
+    moveToTrash: () => moveToTrash(props.selectedItems),
   });
 
   const shareWithTeam = () => {
@@ -381,7 +377,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     renameItem: renameItem,
     moveItem: moveItem,
     downloadItem: downloadItem,
-    moveToTrash: moveToTrash,
+    moveToTrash: () => moveToTrash(props.selectedItems),
   });
 
   const workspaceFolderMenu = contextMenuWorkspaceFolder({
@@ -392,7 +388,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     renameItem: renameItem,
     moveItem: moveItem,
     downloadItem: downloadItem,
-    moveToTrash: moveToTrash,
+    moveToTrash: () => moveToTrash(props.selectedItems),
   });
 
   const getContextMenu = () => {
@@ -502,9 +498,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           keyBoardShortcutActions={{
             onBackspaceKeyPressed: () => {
               if (props.selectedItems.length) {
-                isSelectedSharedItems
-                  ? props.onOpenStopSharingAndMoveToTrashDialog()
-                  : moveItemsToTrash(props.selectedItems);
+                moveToTrash(props.selectedItems);
               }
             },
             onRKeyPressed: () => {
