@@ -20,24 +20,22 @@ export class LoginPage {
   private accountRecoveryTitle: Locator;
   //SignUp
   private createAccounTitle: Locator;
-  //terms and conditions
-  private termsOfService: Locator;
 
   constructor(page: Page) {
     this.page = page;
-    this.loginTitle = this.page.getByRole('heading', { name: 'Log in' });
+    this.loginTitle = this.page.getByRole('heading', { name: 'Login' });
     this.emailInput = this.page.getByPlaceholder('Email', { exact: true });
     this.passwordInput = this.page.getByPlaceholder('Password', { exact: true });
     this.loginButton = this.page.getByRole('button', { name: 'Log in' });
     this.loginButtonText = this.page.locator('[data-cy="loginButton"] div');
     this.forgotPassword = this.page.getByText('Forgot your password?');
-    this.dontHaveAccountText = this.page.getByText('Don’t have an account?');
-    this.createAccount = this.page.getByText('Create account');
+    this.dontHaveAccountText = this.page.getByText(/Don.t have an account\?/).first();
+    this.createAccount = this.page.getByRole('link', { name: 'Create account' });
     this.termsAndConditions = this.page.getByRole('link', { name: 'Terms and conditions' });
     this.needHelp = this.page.getByRole('link', { name: 'Need help?' });
     this.wrongCredentials = this.page.locator('[class="flex flex-row items-start pt-1"] span');
     //drive
-    this.driveTitle = this.page.locator('span[class="max-w-sm flex-1 cursor-pointer truncate undefined"]');
+    this.driveTitle = this.page.locator('span.max-w-sm.flex-1.truncate').first();
     //account recovery
     this.accountRecoveryTitle = this.page.locator(
       'h1[class="text-3xl font-medium text-gray-100"]:has-text("Account recovery")',
@@ -96,7 +94,7 @@ export class LoginPage {
     const createAccountText = await this.createAccount.textContent({
       timeout: 10000,
     });
-    expect(dontHaveAccountText).toEqual('Don’t have an account?');
+    expect(dontHaveAccountText).toEqual("Don't have an account?");
     expect(createAccountText).toEqual('Create account');
     await expect(this.createAccount).toBeEnabled();
     await this.createAccount.click();

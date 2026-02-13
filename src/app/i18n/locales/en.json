@@ -101,19 +101,24 @@
     "terms2": "you accept the terms & conditions",
     "decrypting": "Decrypting...",
     "login": {
-      "title": "Log in",
+      "title": "Login",
       "forgotPwd": "Forgot your password?",
-      "dontHaveAccount": "Don’t have an account?",
+      "dontHaveAccount": "Don't have an account?",
+      "dontHaveAccountMobile": "Don't have an Internxt account?",
       "createAccount": "Create account",
       "2FA": "Two factor code",
       "twoFactorAuthenticationCode": "Two factor authentication code",
       "wrongLogin": "Invalid username or password",
       "failedToSendAuthData": "Failed to send authentication data. Please try again."
     },
+    "button": {
+      "loginAction": "Log in"
+    },
     "signup": {
       "title": "Create account",
       "haveAccount": "Already have an account?",
-      "login": "Log in",
+      "haveAccountMobile": "Already have an Internxt account?",
+      "login": "Login",
       "encrypting": "Encrypting",
       "info": {
         "normalText": "Internxt doesn’t store passwords.",
@@ -244,7 +249,7 @@
       },
       "title": {
         "signUp": "Create an account",
-        "signIn": "Log in",
+        "signIn": "Login",
         "userIsSignedIn": "User signed in as"
       },
       "emailMustNotBeEmpty": "Email must not be empty",
@@ -1984,8 +1989,7 @@
               "Password-protected file sharing",
               "Encrypted VPN",
               "Antivirus"
-            ],
-            "comingSoonFeatures": ["File Versioning"]
+            ]
           },
           "3TB": {
             "title": "Premium",
@@ -2020,7 +2024,7 @@
               "Cleaner",
               "Meet"
             ],
-            "comingSoonFeatures": ["File Versioning", "Mail"]
+            "comingSoonFeatures": ["File Versioning", "Mail", "Photos"]
           },
           "1GB": {
             "title": "Free",
@@ -2033,36 +2037,41 @@
           "1TB": {
             "title": "Standard",
             "features": [
-              "1TB zero-knowledge encrypted storage per user",
+              "1TB encrypted storage per user",
               "Post-quantum encryption",
-              "Ultra fast unlimited VPN (FR, DE, PL)",
-              "Antivirus",
-              "Backup your files",
+              "Zero-knowledge encryption",
+              "Two-factor authentication",
+              "Backup your computer",
               "Password-protected file sharing",
               "Invite, share & collaborate",
               "GDPR compliance",
-              "Two-factor authentication (2FA)",
-              "CLI & WebDav support",
-              "Manage account billing & payments"
-            ],
-            "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor"]
+              "CLI & WebDav",
+              "Organization management",
+              "Encrypted VPN",
+              "Antivirus",
+              "Cleaner"
+            ]
           },
           "2TB": {
             "title": "Pro",
             "features": [
-              "2TB zero-knowledge encrypted storage per user",
+              "2TB encrypted storage per user",
               "Post-quantum encryption",
-              "Ultra fast unlimited VPN (FR, DE, PL, CA, UK)",
-              "Antivirus",
-              "Backup your files",
+              "Zero-knowledge encryption",
+              "Two-factor authentication",
+              "Backup your computer",
               "Password-protected file sharing",
               "Invite, share & collaborate",
               "GDPR compliance",
-              "Two-factor authentication (2FA)",
               "CLI, WebDav, Rclone & NAS support",
-              "Manage account billing & payments"
+              "Organization management",
+              "Encrypted VPN",
+              "Antivirus",
+              "Cleaner",
+              "Meet",
+              "Mail"
             ],
-            "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor", "Meet", "Mail"]
+            "comingSoonFeatures": ["File Versioning"]
           }
         },
         "user": "user"

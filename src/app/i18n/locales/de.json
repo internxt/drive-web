@@ -83,15 +83,20 @@
       "title": "Anmelden",
       "forgotPwd": "Haben Sie Ihr Passwort vergessen?",
       "dontHaveAccount": "Sie haben kein Konto?",
+      "dontHaveAccountMobile": "Sie haben kein Internxt-Konto?",
       "createAccount": "Konto erstellen",
       "2FA": "Zwei-Faktor-Code",
       "twoFactorAuthenticationCode": "Zwei-Faktor-Authentifizierungscode",
       "wrongLogin": "Ungültiger Benutzername oder Passwort",
       "failedToSendAuthData": "Fehler beim Senden der Authentifizierungsdaten. Bitte versuchen Sie es erneut."
     },
+    "button": {
+      "loginAction": "Anmelden"
+    },
     "signup": {
       "title": "Konto erstellen",
       "haveAccount": "Haben Sie bereits ein Konto?",
+      "haveAccountMobile": "Haben Sie bereits ein Internxt-Konto?",
       "login": "Anmelden",
       "encrypting": "Verschlüsselung im Gange",
       "info": {
@@ -1900,8 +1905,7 @@
               "Passwortgeschütztes Teilen von Dateien",
               "Verschlüsseltes VPN",
               "Antivirus"
-            ],
-            "comingSoonFeatures": ["Dateiversionierung"]
+            ]
           },
           "3TB": {
             "title": "Premium",
@@ -1936,7 +1940,7 @@
               "Cleaner (Bereinigungstool)",
               "Meet (Videokonferenz)"
             ],
-            "comingSoonFeatures": ["Dateiversionierung", "Mail"]
+            "comingSoonFeatures": ["Dateiversionierung", "Mail", "Fotos"]
           },
           "1GB": {
             "title": "Kostenlos",
@@ -1949,36 +1953,41 @@
           "1TB": {
             "title": "Standard",
             "features": [
-              "1TB Zero-Knowledge verschlüsselter Speicher pro Benutzer",
+              "1 TB verschlüsselter Speicherplatz pro Benutzer",
               "Post-Quanten-Verschlüsselung",
-              "Ultraschnelles unbegrenztes VPN (FR, DE, PL)",
-              "Antivirus",
-              "Sicherung Ihrer Dateien",
-              "Passwortgeschützter Dateiaustausch",
-              "Einladen, Teilen & Zusammenarbeiten",
+              "Zero-Knowledge-Verschlüsselung",
+              "Zwei-Faktor-Authentifizierung",
+              "Computer-Backup",
+              "Passwortgeschützte Dateifreigabe",
+              "Einladen, teilen & zusammenarbeiten",
               "DSGVO-Konformität",
-              "Zwei-Faktor-Authentifizierung (2FA)",
-              "CLI & WebDav Unterstützung",
-              "Kontoverwaltung für Abrechnung & Zahlungen"
-            ],
-            "comingSoonFeatures": ["Gerätereiniger", "Dark Web Monitor"]
+              "CLI & WebDAV",
+              "Organisationsverwaltung",
+              "Verschlüsseltes VPN",
+              "Antivirus",
+              "Cleaner"
+            ]
           },
           "2TB": {
             "title": "Pro",
             "features": [
-              "2TB Zero-Knowledge verschlüsselter Speicher pro Benutzer",
+              "2 TB verschlüsselter Speicherplatz pro Benutzer",
               "Post-Quanten-Verschlüsselung",
-              "Ultraschnelles unbegrenztes VPN (FR, DE, PL, CA, UK)",
-              "Antivirus",
-              "Sicherung Ihrer Dateien",
-              "Passwortgeschützter Dateiaustausch",
-              "Einladen, Teilen & Zusammenarbeiten",
+              "Zero-Knowledge-Verschlüsselung",
+              "Zwei-Faktor-Authentifizierung",
+              "Computer-Backup",
+              "Passwortgeschützte Dateifreigabe",
+              "Einladen, teilen & zusammenarbeiten",
               "DSGVO-Konformität",
-              "Zwei-Faktor-Authentifizierung (2FA)",
-              "CLI, WebDav, Rclone & NAS Unterstützung",
-              "Kontoverwaltung für Abrechnung & Zahlungen"
+              "Unterstützung für CLI, WebDAV, Rclone & NAS",
+              "Organisationsverwaltung",
+              "Verschlüsseltes VPN",
+              "Antivirus",
+              "Cleaner",
+              "Meet",
+              "Mail"
             ],
-            "comingSoonFeatures": ["Gerätereiniger", "Dark Web Monitor", "Meet", "Mail"]
+            "comingSoonFeatures": ["Dateiversionierung"]
           }
         },
         "user": "Benutzer"

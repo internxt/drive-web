@@ -43,5 +43,5 @@ export interface OwnerUserAuthenticationData {
   // to manage B2B workspaces
   workspaceId?: string;
   workspacesToken?: string;
-  resourcesToken: string;
+  resourcesToken?: string;
 }

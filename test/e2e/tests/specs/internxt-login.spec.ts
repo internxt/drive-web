@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, Request, Route, test } from '@playwright/test';
 import { staticData } from '../helper/staticData';
 import { LoginPage } from '../pages/loginPage';
 import { getLoggedUser, getUserCredentials } from '../helper/getUser';
@@ -8,7 +8,7 @@ const credentialsFile = getUserCredentials();
 const user = getLoggedUser();
 const invalidEmail = 'invalid@internxt.com';
 
-const mockLoginCall = async (route, request) => {
+const mockLoginCall = async (route: Route, request: Request) => {
   await route.fulfill({
     status: 200,
     contentType: 'application/json',
@@ -22,7 +22,7 @@ const mockLoginCall = async (route, request) => {
   });
 };
 
-const mockAccessCall = async (route, request) => {
+const mockAccessCall = async (route: Route, request: Request) => {
   const { email } = request.postDataJSON();
 
   if (invalidEmail === email) {

@@ -24,7 +24,6 @@ import BannerWrapper from 'app/banners/BannerWrapper';
 import deviceService from 'services/device.service';
 import errorService from 'services/error.service';
 import navigationService from 'services/navigation.service';
-import RealtimeService, { SOCKET_EVENTS } from 'services/socket.service';
 import { ClearTrashDialog } from 'views/Trash/components';
 import { CreateFolderDialog } from 'views/Drive/components';
 import DeleteItemsDialog from 'views/Trash/components/DeleteItemsDialog';
@@ -56,12 +55,14 @@ import EditItemNameDialog from 'app/drive/components/EditItemNameDialog/EditItem
 import ItemDetailsDialog from 'app/drive/components/ItemDetailsDialog/ItemDetailsDialog';
 import MoveItemsDialog from 'app/drive/components/MoveItemsDialog/MoveItemsDialog';
 import NameCollisionContainer from 'app/drive/components/NameCollisionDialog/NameCollisionContainer';
-import ShareDialog from 'app/drive/components/ShareDialog/ShareDialog';
 import StopSharingAndMoveToTrashDialogWrapper from 'views/Trash/components/StopSharingAndMoveToTrashDialogWrapper';
 import UploadItemsFailsDialog from 'app/drive/components/UploadItemsFailsDialog/UploadItemsFailsDialog';
 import WarningMessageWrapper from 'views/Home/components/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
+import { ShareDialogWrapper } from 'app/drive/components/ShareDialog/ShareDialogWrapper';
+import RealtimeService from 'services/sockets/socket.service';
+import { eventHandler } from 'services/sockets/event-handler.service';
 
 const MenuItemToGetSize = ({
   isTrash,
@@ -308,20 +309,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   );
 
   const realtimeService = RealtimeService.getInstance();
-  const handleFileCreatedEvent = (data) => {
-    if (data.event === SOCKET_EVENTS.FILE_CREATED) {
-      const folderId = data.payload.folderId;
-      if (folderId === currentFolderId) {
-        dispatch(
-          storageActions.pushItems({
-            updateRecents: true,
-            folderIds: [folderId],
-            items: [data.payload as DriveItemData],
-          }),
-        );
-      }
-    }
-  };
 
   useEffect(() => {
     if (itemToRename) {
@@ -331,8 +318,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   useEffect(() => {
     try {
-      realtimeService.removeAllListeners();
-      realtimeService.onEvent(handleFileCreatedEvent);
+      const cleanup = realtimeService.onEvent((data) => eventHandler.onFileCreated(data, currentFolderId));
+
+      return cleanup;
     } catch (err) {
       errorService.reportError(err);
     }
@@ -427,6 +415,13 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       dispatch(uiActions.setIsClearTrashDialogOpen(true));
     }
   };
+
+  const onTrashCleared = useCallback(() => {
+    dispatch(storageActions.resetTrash());
+    paginationState.setHasMoreItems(false);
+    setHasMoreTrashFolders(false);
+    onItemsDeleted?.();
+  }, [onItemsDeleted]);
 
   const onCloseEditItemDialog = (newItem) => {
     if (newItem && editNameItem) {
@@ -532,7 +527,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     >
       <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />
       <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
-      <ShareDialog isDriveItem onShareItem={handleOnShareItem} />
+      <ShareDialogWrapper isDriveItem onShareItem={handleOnShareItem} />
       <NameCollisionContainer />
       <MoveItemsDialog
         items={[...items]}
@@ -542,7 +537,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         }}
         isTrash={isTrash}
       />
-      <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
+      <ClearTrashDialog onItemsDeleted={onTrashCleared} />
       <UploadItemsFailsDialog />
       <MenuItemToGetSize isTrash={isTrash} translate={translate} menuItemsRef={menuItemsRef} />
       <ItemDetailsDialog onDetailsButtonClicked={onDetailsButtonClicked} />

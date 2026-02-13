@@ -86,7 +86,7 @@ export const SharedListItem = ({
       </div>
 
       {/* OWNER */}
-      <div className="block pl-4 flex-row w-64 shrink-0 items-center whitespace-nowrap">
+      <div className="block  flex-row w-64 shrink-0 items-center whitespace-nowrap">
         <div className="flex flex-row gap-4 items-center">
           <div>
             <Avatar
@@ -108,7 +108,7 @@ export const SharedListItem = ({
       </div>
 
       {/* SIZE */}
-      <div className="w-40 pl-4 block shrink-0 items-center whitespace-nowrap">
+      <div className="w-40  block shrink-0 items-center whitespace-nowrap">
         {sizeService.bytesToString(item.size, false) === '' || item.isFolder ? (
           <span className="opacity-25">—</span>
         ) : (
@@ -117,7 +117,7 @@ export const SharedListItem = ({
       </div>
 
       {/* DATE */}
-      <div className="block pl-4 shrink-0 w-40 items-center whitespace-nowrap">
+      <div className="block  shrink-0 w-40 items-center whitespace-nowrap">
         {dateService.format(item.createdAt, 'D MMM YYYY')}
       </div>
     </div>

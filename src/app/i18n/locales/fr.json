@@ -83,15 +83,20 @@
       "title": " Connexion ",
       "forgotPwd": "Mot de passe oublié?",
       "dontHaveAccount": "Vous n'avez pas de compte ?",
+      "dontHaveAccountMobile": "Vous n'avez pas de compte Internxt ?",
       "createAccount": "Créer un compte",
       "2FA": "Code à deux facteurs",
       "twoFactorAuthenticationCode": "Code d'authentification à deux facteurs",
       "wrongLogin": "Nom d'utilisateur ou mot de passe invalide",
       "failedToSendAuthData": "Échec de l'envoi des données d'authentification. Veuillez réessayer."
     },
+    "button": {
+      "loginAction": "Se connecter"
+    },
     "signup": {
       "title": "Créer un compte",
       "haveAccount": "Vous avez déjà un compte ?",
+      "haveAccountMobile": "Vous avez déjà un compte Internxt ?",
       "login": " Connexion ",
       "encrypting": "Encryptant",
       "info": {
@@ -1906,8 +1911,7 @@
               "Partage de fichiers protégé par mot de passe",
               "VPN Chiffré",
               "Antivirus"
-            ],
-            "comingSoonFeatures": ["Historique des versions de fichiers"]
+            ]
           },
           "3TB": {
             "title": "Premium",
@@ -1942,7 +1946,7 @@
               "Nettoyeur",
               "Meet (Réunion)"
             ],
-            "comingSoonFeatures": ["Historique des versions de fichiers", "Mail"]
+            "comingSoonFeatures": ["Historique des versions de fichiers", "Mail", "Photos"]
           },
           "1GB": {
             "title": "Gratuit",
@@ -1955,36 +1959,41 @@
           "1TB": {
             "title": "Standard",
             "features": [
-              "1TB de stockage chiffré à connaissance zéro par utilisateur",
+              "1 To de stockage chiffré par utilisateur",
               "Chiffrement post-quantique",
-              "VPN illimité ultra rapide (FR, DE, PL)",
-              "Antivirus",
-              "Sauvegarde de vos fichiers",
-              "Partage de fichiers protégés par mot de passe",
+              "Chiffrement à connaissance nulle",
+              "Authentification à deux facteurs",
+              "Sauvegarde de l'ordinateur",
+              "Partage de fichiers protégé par mot de passe",
               "Inviter, partager et collaborer",
-              "Conformité au RGPD",
-              "Authentification à deux facteurs (2FA)",
-              "Support CLI et WebDav",
-              "Gérer la facturation et les paiements du compte"
-            ],
-            "comingSoonFeatures": ["Nettoyage de l'appareil", "Surveillance du dark web"]
+              "Conformité RGPD",
+              "CLI et WebDAV",
+              "Gestion de l'organisation",
+              "VPN chiffré",
+              "Antivirus",
+              "Nettoyeur"
+            ]
           },
           "2TB": {
             "title": "Pro",
             "features": [
-              "2TB de stockage chiffré à connaissance zéro par utilisateur",
+              "2 To de stockage chiffré par utilisateur",
               "Chiffrement post-quantique",
-              "VPN illimité ultra rapide (FR, DE, PL, CA, UK)",
-              "Antivirus",
-              "Sauvegarde de vos fichiers",
-              "Partage de fichiers protégés par mot de passe",
+              "Chiffrement à connaissance nulle",
+              "Authentification à deux facteurs",
+              "Sauvegarde de l'ordinateur",
+              "Partage de fichiers protégé par mot de passe",
               "Inviter, partager et collaborer",
-              "Conformité au RGPD",
-              "Authentification à deux facteurs (2FA)",
-              "Support CLI, WebDav, Rclone et NAS",
-              "Gérer la facturation et les paiements du compte"
+              "Conformité RGPD",
+              "Prise en charge CLI, WebDAV, Rclone et NAS",
+              "Gestion de l'organisation",
+              "VPN chiffré",
+              "Antivirus",
+              "Nettoyeur",
+              "Meet",
+              "Mail"
             ],
-            "comingSoonFeatures": ["Nettoyage de l'appareil", "Surveillance du dark web", "Meet", "Mail"]
+            "comingSoonFeatures": ["Historique des versions de fichiers"]
           }
         },
         "user": "Utilisateur"

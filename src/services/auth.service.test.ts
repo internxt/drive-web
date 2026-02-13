@@ -86,7 +86,7 @@ beforeAll(() => {
     workspaceThunks: vi.fn(),
   }));
 
-  vi.mock('services/socket.service', () => ({
+  vi.mock('services/sockets/socket.service', () => ({
     default: {
       getInstance: vi.fn().mockReturnValue({
         stop: vi.fn(),

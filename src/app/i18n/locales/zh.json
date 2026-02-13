@@ -101,15 +101,20 @@
       "title": "登录",
       "forgotPwd": "忘记密码了？",
       "dontHaveAccount": "没有账户？",
+      "dontHaveAccountMobile": "没有 Internxt 账户？",
       "createAccount": "创建账户",
       "2FA": "双因素代码",
       "twoFactorAuthenticationCode": "双因素验证码",
       "wrongLogin": "用户名或密码无效",
       "failedToSendAuthData": "发送身份验证数据失败。请重试。"
     },
+    "button": {
+      "loginAction": "登录"
+    },
     "signup": {
       "title": "创建账户",
       "haveAccount": "已有账户？",
+      "haveAccountMobile": "已有 Internxt 账户？",
       "login": "登录",
       "encrypting": "加密中",
       "info": {
@@ -1948,8 +1953,7 @@
               "密码保护的文件共享",
               "加密 VPN",
               "杀毒软件"
-            ],
-            "comingSoonFeatures": ["文件版本控制"]
+            ]
           },
           "3TB": {
             "title": "Premium (高级版)",
@@ -1984,7 +1988,7 @@
               "清理工具 (Cleaner)",
               "会议 (Meet)"
             ],
-            "comingSoonFeatures": ["文件版本控制", "邮件 (Mail)"]
+            "comingSoonFeatures": ["文件版本控制", "邮件 (Mail)", "照片 (Photos)"]
           },
           "1GB": {
             "title": "Free (免费版)",
@@ -1997,36 +2001,41 @@
           "1TB": {
             "title": "标准版",
             "features": [
-              "每用户1TB零知识加密存储",
+              "每个用户 1TB 加密存储空间",
               "后量子加密",
-              "超快无限制VPN（法国、德国、波兰）",
+              "零知识加密",
+              "双重身份验证",
+              "备份您的计算机",
+              "受密码保护的文件共享",
+              "邀请、共享与协作",
+              "符合 GDPR 标准",
+              "CLI 与 WebDAV",
+              "组织管理",
+              "加密 VPN",
               "防病毒",
-              "文件备份",
-              "密码保护文件共享",
-              "邀请、共享和协作",
-              "符合GDPR",
-              "双因素认证（2FA）",
-              "支持CLI和WebDav",
-              "管理账户账单和支付"
-            ],
-            "comingSoonFeatures": ["设备清理器", "暗网监控"]
+              "清理工具"
+            ]
           },
           "2TB": {
             "title": "专业版",
             "features": [
-              "每用户2TB零知识加密存储",
+              "每个用户 2TB 加密存储空间",
               "后量子加密",
-              "超快无限制VPN（法国、德国、波兰、加拿大、英国）",
+              "零知识加密",
+              "双重身份验证",
+              "备份您的计算机",
+              "受密码保护的文件共享",
+              "邀请、共享与协作",
+              "符合 GDPR 标准",
+              "支持 CLI、WebDAV、Rclone 和 NAS",
+              "组织管理",
+              "加密 VPN",
               "防病毒",
-              "文件备份",
-              "密码保护文件共享",
-              "邀请、共享和协作",
-              "符合GDPR",
-              "双因素认证（2FA）",
-              "支持CLI、WebDav、Rclone和NAS",
-              "管理账户账单和支付"
+              "清理工具",
+              "Meet",
+              "邮件"
             ],
-            "comingSoonFeatures": ["设备清理器", "暗网监控", "视频会议", "邮件"]
+            "comingSoonFeatures": ["文件版本控制"]
           }
         },
         "user": "用户"
