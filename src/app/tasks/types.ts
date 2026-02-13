@@ -46,9 +46,9 @@ export interface BaseTask {
   action: TaskType;
   status: TaskStatus;
   progress: number;
-  nItems?: number;
   cancellable: boolean;
   showNotification: boolean;
+  downloadedProgress?: number;
   subtitle?: string;
   stop?: () => Promise<void>;
 }
@@ -181,7 +181,7 @@ export interface TaskNotification {
   subtitle: string;
   icon: FunctionComponent<SVGProps<SVGSVGElement>>;
   progress: number;
-  nItems?: number;
+  downloadedProgress?: number;
   isTaskCancellable: boolean;
 }
 
@@ -192,5 +192,6 @@ export interface TaskFilter {
 
 export interface UpdateTaskPayload {
   taskId: string;
+  downloadedProgress?: number;
   merge: Partial<TaskData>;
 }

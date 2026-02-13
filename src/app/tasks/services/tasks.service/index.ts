@@ -99,7 +99,7 @@ class TaskManagerService {
       subtitle: this.getTaskNotificationSubtitle(task),
       icon: this.getTaskNotificationIcon(task),
       progress: task.progress,
-      nItems: task.nItems,
+      downloadedProgress: task.downloadedProgress,
       isTaskCancellable: task.cancellable,
       itemUUID: task?.itemUUID,
     };

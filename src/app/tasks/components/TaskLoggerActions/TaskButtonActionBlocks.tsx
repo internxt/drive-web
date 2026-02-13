@@ -11,10 +11,11 @@ import RestartIcon from '../../../../assets/icons/tasklogger/circle-arrow.svg?re
 import WarningIcon from '../../../../assets/icons/tasklogger/warning.svg?react';
 import { TaskLoggerButton } from '../TaskLoggerButton/TaskLoggerButton';
 import { t } from 'i18next';
+import { bytesToString } from 'app/drive/services/size.service';
 
 interface UploadingBlockProps {
   progressPercentage: string;
-  nItems: string;
+  downloadedProgress?: number;
 }
 
 const UploadingBlock = ({ progressPercentage }: UploadingBlockProps): JSX.Element => {
@@ -30,12 +31,12 @@ const UploadingBlock = ({ progressPercentage }: UploadingBlockProps): JSX.Elemen
   );
 };
 
-const DownloadingBlock = ({ progressPercentage, nItems }: UploadingBlockProps): JSX.Element => {
+const DownloadingBlock = ({ progressPercentage, downloadedProgress }: UploadingBlockProps): JSX.Element => {
   return (
     <div className="flex flex-row justify-between space-x-1.5">
-      <div className="flex h-8 w-8 items-center justify-center">
+      <div className="flex h-8 w-10 items-center justify-center">
         <span className="text-sm font-medium text-primary">
-          {nItems && +nItems > 0 ? `${nItems}` : `${progressPercentage}%`}
+          {downloadedProgress ? `${bytesToString(downloadedProgress)}` : `${progressPercentage}%`}
         </span>
       </div>
       <div className="flex h-8 w-8 items-center justify-center">
@@ -48,8 +49,8 @@ const DownloadingBlock = ({ progressPercentage, nItems }: UploadingBlockProps): 
 const PauseBlock = ({
   isHovered,
   progress,
-  nItems,
   cancelAction,
+  downloadedProgress,
   taskType,
   pauseAction,
   showPauseButton,
@@ -62,7 +63,7 @@ const PauseBlock = ({
       {taskType.includes('upload') && showPauseButton && <TaskLoggerButton onClick={pauseAction} Icon={Pause} />}
     </div>
   ) : (
-    <InProgressItem progressPercentage={progress} nItems={nItems} />
+    <InProgressItem progressPercentage={progress} downloadedProgress={downloadedProgress} />
   );
 };
 
