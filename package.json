@@ -1,6 +1,6 @@
 {
   "name": "drive-web",
-  "version": "v1.0.683",
+  "version": "v1.0.685",
   "private": true,
   "dependencies": {
     "@dashlane/pqc-kem-kyber512-browser": "^1.0.0",
@@ -18,7 +18,7 @@
     "@typeform/embed-react": "^1.19.0",
     "@vitest/browser": "^2.1.9",
     "assert": "^2.1.0",
-    "axios": "^1.12.0",
+    "axios": "^1.13.5",
     "bip39": "^3.0.3",
     "browserify-zlib": "^0.2.0",
     "copy-to-clipboard": "^3.3.1",
