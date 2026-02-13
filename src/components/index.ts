@@ -7,7 +7,6 @@ export { default as BreadcrumbsMenuDrive } from './BreadcrumbsMenuDrive';
 export { default as BreadcrumbsMoveItemsDialogView } from './BreadcrumbsMoveItemsDialogView';
 export * from './BreadcrumbsHelper';
 export { default as Card } from './Card';
-export { default as Copyable } from './Copyable';
 export { default as Empty } from './Empty';
 export { default as ExpiredLinkView } from './ExpiredLinkView';
 export { LoadingRowSkeleton } from './LoadingRowSkeleton';
