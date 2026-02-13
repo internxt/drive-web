@@ -23,7 +23,6 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { UpdateMembersCard } from './UpdateMembersCard';
 import { SelectNewMembersModal } from './components/UpdateMembers/SelectNewMembersModal';
 import { ConfirmUpdatedMembersModal } from './components/UpdateMembers/ConfirmUpdatedMembersModal';
-import AppError from 'app/core/types';
 import errorService from 'services/error.service';
 import workspacesService from 'services/workspace.service';
 import { WorkspaceUser } from '@internxt/sdk/dist/workspaces';
@@ -79,10 +78,12 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
       const members = await workspacesService.getWorkspacesMembers(workspaceId);
       setCurrentWorkspaceMembers([...members.activatedUsers, ...members.disabledUsers]);
     } catch (error) {
+      const castedError = errorService.castError(error);
       errorService.reportError(error);
       notificationsService.show({
         text: translate('notificationMessages.errorWhileFetchingCurrentWorkspaceMembers'),
         type: ToastType.Error,
+        requestId: castedError.requestId,
       });
     } finally {
       setAreFetchingCurrentMembers(false);
@@ -102,10 +103,11 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
         dispatch(planThunks.initializeThunk());
       }, 3000);
     } catch (err) {
-      console.error(err);
+      const castedError = errorService.castError(err);
       notificationsService.show({
         text: translate('notificationMessages.errorCancelSubscription'),
         type: ToastType.Error,
+        requestId: castedError.requestId,
       });
     }
   };
@@ -179,20 +181,22 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
       setIsConfirmingMembersWorkspace(false);
       setIsConfirmingMembersWorkspaceModalOpen(false);
     } catch (err) {
-      const error = err as AppError;
-      if (error.status === UPDATE_MEMBERS_BAD_RESPONSE) {
+      const castedError = errorService.castError(err);
+      if (castedError.status === UPDATE_MEMBERS_BAD_RESPONSE) {
         notificationsService.show({
-          text: error.message,
+          text: castedError.message,
           type: ToastType.Error,
+          requestId: castedError.requestId,
         });
       } else {
         notificationsService.show({
           text: translate('notificationMessages.errorWhileUpdatingWorkspaceMembers'),
           type: ToastType.Error,
+          requestId: castedError.requestId,
         });
       }
 
-      errorService.reportError(error);
+      errorService.reportError(castedError);
     }
   };
 

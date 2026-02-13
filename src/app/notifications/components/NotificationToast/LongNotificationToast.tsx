@@ -10,10 +10,18 @@ const LongNotificationToast = ({
   action,
   visible,
   closable,
+  requestId,
   onClose,
 }: Omit<ToastShowProps, 'duration'> & { visible: boolean; onClose: () => void }): JSX.Element => {
   let Icon: typeof CheckCircle | undefined;
   let IconColor: string | undefined;
+
+  const handleCopyRequestId = () => {
+    if (requestId) {
+      navigator.clipboard.writeText(requestId);
+    }
+  };
+
   switch (type) {
     case ToastType.Success:
       Icon = CheckCircle;
@@ -55,7 +63,18 @@ const LongNotificationToast = ({
           {Icon && <Icon weight="fill" className={`${IconColor} mr-1.5`} size={24} />}
         </div>
         <div className="ml-1.5 flex-1">
-          <p className="whitespace-normal break-words text-gray-80">{text}</p>
+          <div className="flex-1">
+            <p className="line-clamp-2 whitespace-pre break-words text-gray-80">{text}</p>
+            {requestId && type === ToastType.Error && (
+              <button
+                onClick={handleCopyRequestId}
+                className="mt-1 text-xs text-gray-50 hover:text-gray-60"
+                title="Click to copy"
+              >
+                Request ID: {requestId}
+              </button>
+            )}
+          </div>
           {action &&
             (action.to ? (
               <NavLink

@@ -346,9 +346,11 @@ export const getPublicShareLink = async (
     notificationsService.show({ text: t('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
     return publicSharingItemData;
   } catch (error) {
+    const castedError = errorService.castError(error);
     notificationsService.show({
       text: t('modals.shareModal.errors.copy-to-clipboard'),
       type: ToastType.Error,
+      requestId: castedError.requestId,
     });
     errorService.reportError(error);
   }

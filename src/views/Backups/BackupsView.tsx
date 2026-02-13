@@ -124,9 +124,11 @@ export default function BackupsView(): JSX.Element {
       return true;
     } catch (error) {
       errorService.reportError(error);
+      const castedError = errorService.castError(error);
       notificationsService.show({
         text: translate('notificationMessages.errorDeletingItems'),
         type: ToastType.Error,
+        requestId: castedError.requestId,
       });
       return false;
     } finally {

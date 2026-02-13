@@ -18,6 +18,7 @@ vi.mock('app/core/factory/sdk', () => ({
 vi.mock('services/error.service', () => ({
   default: {
     reportError: vi.fn(),
+    castError: vi.fn((err) => ({ message: err?.message || 'Unknown error', requestId: 'test-request-id' })),
   },
 }));
 
@@ -157,6 +158,7 @@ describe('DeleteItems', () => {
     expect(notificationsService.show).toHaveBeenCalledWith({
       text: 'error.errorDeletingFromTrash',
       type: 'error',
+      requestId: 'test-request-id',
     });
     expect(errorService.reportError).toHaveBeenCalledWith(mockError);
   });

@@ -33,9 +33,11 @@ export default function RestartAccount(props: Readonly<RestartAccount>): JSX.Ele
       await authService.resetAccountWithToken(token, password);
       setIsEmailSent(true);
     } catch (error) {
+      const castedError = errorService.castError(error);
       notificationsService.show({
         text: translate('auth.restartAccount.error'),
         type: ToastType.Error,
+        requestId: castedError.requestId,
       });
       errorService.reportError(error);
     }
