@@ -132,11 +132,15 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
   useEffect(() => {
     if (isOpen) {
-      getSharingRoles().then((roles) => {
-        const parsedRoles = filterEditorAndReader(roles);
-        actionDispatch(setRoles([...parsedRoles, OWNER_ROLE]));
-        actionDispatch(setInviteDialogRoles(parsedRoles));
-      });
+      getSharingRoles()
+        .then((roles) => {
+          const parsedRoles = filterEditorAndReader(roles);
+          actionDispatch(setRoles([...parsedRoles, OWNER_ROLE]));
+          actionDispatch(setInviteDialogRoles(parsedRoles));
+        })
+        .catch(() => {
+          actionDispatch(setInviteDialogRoles([]));
+        });
     }
 
     if (!isOpen) {

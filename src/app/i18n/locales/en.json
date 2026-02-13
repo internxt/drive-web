@@ -987,7 +987,8 @@
           "errorInviting": "Error sending invitation to {{email}}",
           "userAlreadyInvited": "The user {{email}} has already been invited",
           "acceptedError": "Error accepting invitation to shared folder",
-          "declinedError": "Error declining invitation to shared folder"
+          "declinedError": "Error declining invitation to shared folder",
+          "loadingRoles": "Could not load available roles. Please try again later."
         }
       },
       "requestAccess": {
