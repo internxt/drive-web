@@ -70,10 +70,12 @@ export default function BlockedAccountView(): JSX.Element {
       await authService.requestUnblockAccount(userEmail);
       setEnableResendButton(false);
     } catch (error) {
+      const castedError = errorService.castError(error);
       errorService.reportError(error);
       notificationsService.show({
         text: translate('error.serverError'),
         type: ToastType.Error,
+        requestId: castedError.requestId,
       });
     } finally {
       setSendingEmail(false);

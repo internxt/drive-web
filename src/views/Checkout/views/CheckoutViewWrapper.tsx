@@ -221,11 +221,13 @@ const CheckoutViewWrapper = () => {
       notificationsService.show({
         text: defaultErrorMessage,
         type: ToastType.Error,
+        requestId: error?.requestId,
       });
     } else {
       longNotificationsService.show({
         type: ToastType.Error,
         text: error?.message,
+        requestId: error?.requestId,
       });
     }
   };

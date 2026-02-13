@@ -5,6 +5,7 @@ import newStorageService from 'app/drive/services/new-storage.service';
 import { DriveItemData } from 'app/drive/types';
 import errorService from 'services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import AppError from 'app/core/types';
 
 const DEFAULT_LIMIT = 50;
 
@@ -23,11 +24,12 @@ export const useBackupsPagination = (folderUuid: string | undefined, clearSelect
     }
   }, [folderUuid]);
 
-  const handleError = useCallback((error: Error) => {
+  const handleError = useCallback((error: AppError) => {
     errorService.reportError(error.message);
     notificationsService.show({
       type: ToastType.Error,
       text: t('notificationMessages.errorWhileFetchingMoreItems'),
+      requestId: error.requestId,
     });
     setHasMoreItems(false);
   }, []);
@@ -65,7 +67,8 @@ export const useBackupsPagination = (folderUuid: string | undefined, clearSelect
           setHasMoreItems(false);
         }
       } catch (err) {
-        handleError(err as Error);
+        const castedError = errorService.castError(err);
+        handleError(castedError);
       } finally {
         setAreFetchingItems(false);
       }

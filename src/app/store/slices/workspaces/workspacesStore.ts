@@ -17,6 +17,7 @@ import { decryptMnemonic } from '../../../share/services/share.service';
 import { planThunks } from '../plan';
 import sessionThunks from '../session/session.thunks';
 import workspacesSelectors from './workspaces.selectors';
+import { errorService } from 'services';
 
 export interface WorkspacesState {
   workspaces: WorkspaceData[];
@@ -182,7 +183,8 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
         }
       }, 1000);
     } catch (error) {
-      notificationsService.show({ text: 'Error setting up workspace', type: ToastType.Error });
+      const castedError = errorService.castError(error);
+      notificationsService.show({ text: castedError.message, type: ToastType.Error, requestId: castedError.requestId });
     }
   },
 );

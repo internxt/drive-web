@@ -253,6 +253,7 @@ export class DownloadManager {
     notificationsService.show({
       text: t(errorText, { message: castedError.message || '' }),
       type: ToastType.Error,
+      requestId: castedError.requestId,
     });
   };
 
