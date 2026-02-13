@@ -77,7 +77,7 @@ export const createFileEntry = async ({
       date: date.toISOString(),
     };
 
-    return storageClient.createFileEntryByUuid(fileEntry, ownerToken);
+    return storageClient.createFileEntryByUuid(fileEntry, resourcesToken ?? ownerToken);
   }
 };
 
