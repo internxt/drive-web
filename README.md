@@ -66,39 +66,7 @@ It correctly bundles React in production mode and optimizes the build for the be
 The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
 
-## Directory structure (old)
-
-- [.github](./.github)
-- [.husky](./.husky)
-- [public](./public)
-- [scripts](./scripts)
-- [src](./src)
-  - [app](./src/app)
-  - [assets](./src/assets)
-  - [App.tsx](./src/App.tsx)
-  - [index.scss](./src/index.scss)
-  - [index.tsx](./src/index.tsx)
-  - [react-app-env.d.ts](./src/react-app-env.d.ts)
-  - [reportWebVitals.ts](./src/reportWebVitals.ts)
-  - [setupTests.ts](./src/setupTests.ts)
-- [test](./test)
-- [.env.example](./.env.example)
-- [.eslintrc.json](./eslintrc.json)
-- [.gitignore](./.gitignore)
-- [.npmrc.template](./.npmrc.template)
-- [.pretierrc.json](./.pretierrc.json)
-- [.stylelintignore](./.stylelintignore)
-- [.stylelintrc.json](./.stylelintrc.json)
-- [craco.config.js](./craco.config.js)
-- [package.json](./package.json)
-- [README.md](./README.md)
-- [tailwind.config.js](./tailwind.config.js)
-- [tsconfig.json](./tsconfig.json)
-- [yarn.lock](./yarn.lock)
-
-The [/src](./src) folder contains the source code.
-
-# New Project Structure
+# Project Structure
 
 This project is organized following a **visual and functional hierarchy** approach. Each view (or page) has its own folder containing its specific components, styles, and logic. Additionally, reusable components, custom hooks, utilities, and global styles are stored in separate directories to enhance reusability and maintainability.
 
