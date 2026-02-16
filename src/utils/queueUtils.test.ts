@@ -21,30 +21,30 @@ describe('QueueUtilsService', () => {
     consoleWarnSpy.mockRestore();
   });
 
-  describe('getConcurrencyUsingPerfomance', () => {
+  describe('Getting the concurrency depending on the browser performance', () => {
     it('should increase concurrency when memory < 70%, respecting max limit', () => {
       mockMemory(60, 100);
-      expect(service.getConcurrencyUsingPerfomance(5, 10)).toBe(6);
+      expect(service.getConcurrencyUsingPerformance(5, 10)).toBe(6);
       expect(consoleWarnSpy).toHaveBeenCalledWith('Memory usage under 70%. Increasing queue concurrency to 6');
 
       consoleWarnSpy.mockClear();
-      expect(service.getConcurrencyUsingPerfomance(10, 10)).toBe(10);
+      expect(service.getConcurrencyUsingPerformance(10, 10)).toBe(10);
       expect(consoleWarnSpy).not.toHaveBeenCalled();
     });
 
     it('should decrease concurrency when memory >= 80%, not going below 1', () => {
       mockMemory(80, 100);
-      expect(service.getConcurrencyUsingPerfomance(5, 10)).toBe(4);
+      expect(service.getConcurrencyUsingPerformance(5, 10)).toBe(4);
       expect(consoleWarnSpy).toHaveBeenCalledWith('Memory usage reached 80%. Reducing folder upload concurrency.');
 
       consoleWarnSpy.mockClear();
-      expect(service.getConcurrencyUsingPerfomance(1, 10)).toBe(1);
+      expect(service.getConcurrencyUsingPerformance(1, 10)).toBe(1);
       expect(consoleWarnSpy).not.toHaveBeenCalled();
     });
 
     it('should maintain concurrency when memory is between 70-80%', () => {
       mockMemory(75, 100);
-      expect(service.getConcurrencyUsingPerfomance(5, 10)).toBe(5);
+      expect(service.getConcurrencyUsingPerformance(5, 10)).toBe(5);
       expect(consoleWarnSpy).not.toHaveBeenCalled();
     });
 
@@ -55,7 +55,7 @@ describe('QueueUtilsService', () => {
         configurable: true,
       });
 
-      expect(service.getConcurrencyUsingPerfomance(5, 10)).toBe(5);
+      expect(service.getConcurrencyUsingPerformance(5, 10)).toBe(5);
       expect(consoleWarnSpy).toHaveBeenCalledWith('Memory usage control is not available');
     });
 
@@ -67,7 +67,7 @@ describe('QueueUtilsService', () => {
         configurable: true,
       });
 
-      expect(service.getConcurrencyUsingPerfomance(5, 10)).toBe(5);
+      expect(service.getConcurrencyUsingPerformance(5, 10)).toBe(5);
     });
   });
 });
