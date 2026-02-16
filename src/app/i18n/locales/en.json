@@ -1989,8 +1989,7 @@
               "Password-protected file sharing",
               "Encrypted VPN",
               "Antivirus"
-            ],
-            "comingSoonFeatures": ["File Versioning"]
+            ]
           },
           "3TB": {
             "title": "Premium",
@@ -2025,7 +2024,7 @@
               "Cleaner",
               "Meet"
             ],
-            "comingSoonFeatures": ["File Versioning", "Mail"]
+            "comingSoonFeatures": ["File Versioning", "Mail", "Photos"]
           },
           "1GB": {
             "title": "Free",
@@ -2038,36 +2037,41 @@
           "1TB": {
             "title": "Standard",
             "features": [
-              "1TB zero-knowledge encrypted storage per user",
+              "1TB encrypted storage per user",
               "Post-quantum encryption",
-              "Ultra fast unlimited VPN (FR, DE, PL)",
-              "Antivirus",
-              "Backup your files",
+              "Zero-knowledge encryption",
+              "Two-factor authentication",
+              "Backup your computer",
               "Password-protected file sharing",
               "Invite, share & collaborate",
               "GDPR compliance",
-              "Two-factor authentication (2FA)",
-              "CLI & WebDav support",
-              "Manage account billing & payments"
-            ],
-            "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor"]
+              "CLI & WebDav",
+              "Organization management",
+              "Encrypted VPN",
+              "Antivirus",
+              "Cleaner"
+            ]
           },
           "2TB": {
             "title": "Pro",
             "features": [
-              "2TB zero-knowledge encrypted storage per user",
+              "2TB encrypted storage per user",
               "Post-quantum encryption",
-              "Ultra fast unlimited VPN (FR, DE, PL, CA, UK)",
-              "Antivirus",
-              "Backup your files",
+              "Zero-knowledge encryption",
+              "Two-factor authentication",
+              "Backup your computer",
               "Password-protected file sharing",
               "Invite, share & collaborate",
               "GDPR compliance",
-              "Two-factor authentication (2FA)",
               "CLI, WebDav, Rclone & NAS support",
-              "Manage account billing & payments"
+              "Organization management",
+              "Encrypted VPN",
+              "Antivirus",
+              "Cleaner",
+              "Meet",
+              "Mail"
             ],
-            "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor", "Meet", "Mail"]
+            "comingSoonFeatures": ["File Versioning"]
           }
         },
         "user": "user"

@@ -146,8 +146,7 @@ const PlanDetailsList = ({
           </div>
         ))}
 
-        {/* Coming soon features */}
-        {planTypeTextPath !== 'essentialFeatures' && planTypeTextPath !== 'freeFeatures' && (
+        {Array.isArray(comingSoonFeatureKeys) && comingSoonFeatureKeys.length > 0 && (
           <>
             <span className="text-sm font-semibold text-gray-100">
               {t('preferences.account.plans.planFeaturesList.comingSoon')}
