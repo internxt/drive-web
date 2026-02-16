@@ -30,9 +30,11 @@ export default function ChangePassword(props: Readonly<ChangePasswordProps>): JS
     try {
       const backupData = JSON.parse(uploadedBackupKeyContent);
 
-      if (backupData.mnemonic && validateMnemonic(backupData.mnemonic)) {
-        setBackupKeyContent(uploadedBackupKeyContent);
+      if (!backupData.mnemonic || !validateMnemonic(backupData.mnemonic)) {
+        throw new Error('Invalid mnemonic in backup key');
       }
+
+      setBackupKeyContent(uploadedBackupKeyContent);
     } catch (err) {
       errorService.reportError(err);
       const castedError = errorService.castError(err);
