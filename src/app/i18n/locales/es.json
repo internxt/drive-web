@@ -1486,6 +1486,9 @@
     "logOut": "Cerrar sesión",
     "locked": "Bloqueado"
   },
+  "toastNotification": {
+    "textCopied": "Texto copiado al portapapeles"
+  },
   "drive": {
     "usage": "Uso",
     "currentPlan": "Actual plan",

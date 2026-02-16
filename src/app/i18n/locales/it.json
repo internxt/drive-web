@@ -1539,6 +1539,9 @@
     "logOut": "Disconnettersi",
     "locked": "Bloccato"
   },
+  "toastNotification": {
+    "textCopied": "Testo copiato negli appunti"
+  },
   "drive": {
     "usage": "Utilizzo",
     "currentPlan": "Piano attuale",

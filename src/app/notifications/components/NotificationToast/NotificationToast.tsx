@@ -2,7 +2,8 @@ import { Transition } from '@headlessui/react';
 import { Loader } from '@internxt/ui';
 import { CheckCircle, Info, Warning, WarningOctagon, X } from '@phosphor-icons/react';
 import { NavLink } from 'react-router-dom';
-import { ToastShowProps, ToastType } from '../../services/notifications.service';
+import notificationsService, { ToastShowProps, ToastType } from '../../services/notifications.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 const NotificationToast = ({
   text,
@@ -13,9 +14,11 @@ const NotificationToast = ({
   requestId,
   onClose,
 }: Omit<ToastShowProps, 'duration'> & { visible: boolean; onClose: () => void }): JSX.Element => {
+  const { translate } = useTranslationContext();
   const handleCopyRequestId = () => {
     if (requestId) {
       navigator.clipboard.writeText(requestId);
+      notificationsService.show({ text: translate('toastNotification.textCopied'), type: ToastType.Success });
     }
   };
   let Icon: typeof CheckCircle | undefined;

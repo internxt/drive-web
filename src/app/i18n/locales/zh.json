@@ -1473,6 +1473,9 @@
     "logOut": "登出",
     "locked": "已锁定"
   },
+  "toastNotification": {
+    "textCopied": "文本已复制到剪贴板"
+  },
   "drive": {
     "usage": "使用情况",
     "currentPlan": "目前的计划",

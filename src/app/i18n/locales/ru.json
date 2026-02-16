@@ -1445,6 +1445,9 @@
     "logOut": "Выйти",
     "locked": "Заблокировано"
   },
+  "toastNotification": {
+    "textCopied": "Текст скопирован в буфер обмена"
+  },
   "drive": {
     "usage": "Использование",
     "currentPlan": "Текущий план",

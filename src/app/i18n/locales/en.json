@@ -1508,6 +1508,9 @@
     "logOut": "Log out",
     "locked": "Locked"
   },
+  "toastNotification": {
+    "textCopied": "Text copied to clipboard"
+  },
   "drive": {
     "usage": "Usage",
     "currentPlan": "Current plan",

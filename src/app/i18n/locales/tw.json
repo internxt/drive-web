@@ -1438,6 +1438,9 @@
     "logOut": "登出",
     "locked": "已鎖定"
   },
+  "toastNotification": {
+    "textCopied": "文字已複製到剪貼簿"
+  },
   "drive": {
     "usage": "使用量",
     "currentPlan": "當前計劃",

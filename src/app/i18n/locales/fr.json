@@ -1432,6 +1432,9 @@
     "logOut": "Se déconnecter",
     "locked": "Verrouillé"
   },
+  "toastNotification": {
+    "textCopied": "Texte copié dans le presse-papiers"
+  },
   "drive": {
     "usage": "Usage",
     "currentPlan": "Plan actuel",

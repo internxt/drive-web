@@ -1426,6 +1426,9 @@
     "logOut": "Abmelden",
     "locked": "Gesperrt"
   },
+  "toastNotification": {
+    "textCopied": "Text in die Zwischenablage kopiert"
+  },
   "drive": {
     "usage": "Verwendung",
     "currentPlan": "Derzeitiger Plan",
