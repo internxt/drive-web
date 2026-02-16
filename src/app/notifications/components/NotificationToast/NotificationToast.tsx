@@ -69,7 +69,7 @@ const NotificationToast = ({
               className="mt-1 text-xs text-gray-50 hover:text-gray-60"
               title="Click to copy"
             >
-              Request ID: {requestId}
+              ID: {requestId}
             </button>
           )}
         </div>
