@@ -34,6 +34,7 @@ export interface GetFileStreamParams {
   creds: { user: string; pass: string };
   mnemonic: string;
   abortController?: AbortController;
+  downloadProgress?: (progress: number) => void;
 }
 
 export interface IFolders {
@@ -227,12 +228,14 @@ export async function getFileStream({
   creds,
   mnemonic,
   abortController,
+  downloadProgress,
 }: GetFileStreamParams): Promise<ReadableStream<Uint8Array>> {
   const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
   const cachedFile = await lruFilesCacheManager.get(file.id?.toString());
   const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
 
   if (cachedFile?.source && !isCachedFileOlder) {
+    downloadProgress?.(file.size);
     return cachedFile.source.stream();
   }
 
@@ -240,13 +243,18 @@ export async function getFileStream({
     return new Blob([]).stream();
   }
 
+  let lastReportedProgress = 0;
   const downloadedFileStream = await downloadFile({
     bucketId: file.bucket,
     fileId: file.fileId,
     creds,
     mnemonic,
     options: {
-      notifyProgress: () => {},
+      notifyProgress: (_, progress) => {
+        const progressDelta = progress - lastReportedProgress;
+        downloadProgress?.(progressDelta);
+        lastReportedProgress = progress;
+      },
       abortController,
     },
   });
@@ -279,6 +287,7 @@ export async function downloadFolderAsZip({
   updateNumItems,
   options,
   abortController,
+  downloadProgress,
 }: {
   folder: DriveFolderData;
   isSharedFolder: boolean;
@@ -288,6 +297,7 @@ export async function downloadFolderAsZip({
   updateNumItems: () => void;
   options: DownloadFolderAsZipOptions;
   abortController?: AbortController;
+  downloadProgress?: (progress: number) => void;
 }): Promise<{
   totalItems: DownloadFilesType;
   failedItems: DownloadFilesType;
@@ -319,7 +329,7 @@ export async function downloadFolderAsZip({
   const downloadQueue: QueueObject<FolderRef> = queue<FolderRef>((folderToDownload, next: (err?: Error) => void) => {
     if (abortController?.signal.aborted) return next(new Error('Download aborted'));
 
-    const newConcurrency = QueueUtilsService.instance.getConcurrencyUsingPerfomance(
+    const newConcurrency = QueueUtilsService.instance.getConcurrencyUsingPerformance(
       downloadQueue.concurrency,
       maxConcurrency,
     );
@@ -365,6 +375,7 @@ export async function downloadFolderAsZip({
             creds: options.credentials,
             mnemonic: options.mnemonic,
             abortController,
+            downloadProgress,
           });
         } catch (error: unknown) {
           if (isLostConnectionError(error)) {
