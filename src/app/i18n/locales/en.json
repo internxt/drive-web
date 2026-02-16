@@ -1161,7 +1161,8 @@
     "connectionLostError": "Internet connection lost",
     "errorLoadingTrashItems": "Error loading trash items",
     "updateAvatarError": "Error updating avatar",
-    "featuresUnavailable": "Some features may be unavailable"
+    "featuresUnavailable": "Some features may be unavailable",
+    "errorSettingWorkspace": "Error setting up workspace"
   },
   "backups": {
     "backups-from": "Backups from {{deviceName}}",

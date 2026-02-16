@@ -197,7 +197,6 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     if (errors.length > 0) {
       for (const error of errors) {
         if (error.message) {
-          errorService.castError(error);
           console.error('message Error when upload', error.message);
           notificationsService.show({ text: error.message, type: ToastType.Error, requestId: error.requestId });
         }
@@ -375,7 +374,6 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
 
     if (errors.length > 0) {
       for (const error of errors) {
-        errorService.castError(error);
         if (error.message)
           notificationsService.show({ text: error.message, type: ToastType.Error, requestId: error.requestId });
       }
@@ -468,7 +466,6 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
 
     if (errors.length > 0) {
       for (const error of errors) {
-        errorService.castError(error);
         if (error.message)
           notificationsService.show({ text: error.message, type: ToastType.Error, requestId: error.requestId });
       }

@@ -1102,7 +1102,8 @@
     "connectionLostError": "Потеряно подключение к Интернету",
     "errorLoadingTrashItems": "Ошибка при загрузке элементов корзины",
     "updateAvatarError": "Ошибка при обновлении аватара",
-    "featuresUnavailable": "Некоторые функции могут быть недоступны"
+    "featuresUnavailable": "Некоторые функции могут быть недоступны",
+    "errorSettingWorkspace": "Ошибка при настройке рабочего стола"
   },
   "backups": {
     "backups-from": "Резервные копии с {{deviceName}}",

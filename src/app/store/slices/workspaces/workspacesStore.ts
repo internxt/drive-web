@@ -184,7 +184,11 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
       }, 1000);
     } catch (error) {
       const castedError = errorService.castError(error);
-      notificationsService.show({ text: castedError.message, type: ToastType.Error, requestId: castedError.requestId });
+      notificationsService.show({
+        text: t('error.errorSettingWorkspace'),
+        type: ToastType.Error,
+        requestId: castedError.requestId,
+      });
     }
   },
 );
