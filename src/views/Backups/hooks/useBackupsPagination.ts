@@ -5,7 +5,7 @@ import newStorageService from 'app/drive/services/new-storage.service';
 import { DriveItemData } from 'app/drive/types';
 import errorService from 'services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import AppError from 'app/core/types';
+import { AppError } from '@internxt/sdk';
 
 const DEFAULT_LIMIT = 50;
 

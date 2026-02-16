@@ -67,18 +67,6 @@ export interface AppViewConfig {
   hideSearch?: boolean;
 }
 
-export default class AppError extends Error {
-  readonly status?: number;
-  readonly requestId?: string;
-
-  constructor(message: string, status?: number, requestId?: string) {
-    super(message);
-
-    this.status = status;
-    this.requestId = requestId;
-  }
-}
-
 export enum Workspace {
   Individuals = 'personal',
   Business = 'business',

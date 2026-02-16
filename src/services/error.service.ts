@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios';
-import AppError from 'app/core/types';
+import { AppError } from '@internxt/sdk';
 import envService from './env.service';
 
 interface AxiosErrorResponse {
@@ -9,10 +9,7 @@ interface AxiosErrorResponse {
 
 interface ErrorWithStatus extends Error {
   status?: number;
-}
-
-interface ErrorWithRequestId {
-  requestId?: string;
+  headers?: Record<string, string>;
 }
 
 const errorService = {
@@ -31,26 +28,25 @@ const errorService = {
   castError(err: unknown): AppError {
     let castedError: AppError = new AppError('Unknown error');
 
-    let requestId = (err as any)?.headers?.['x-request-id'];
+    if (err instanceof AppError) {
+      return err;
+    }
 
     if (err instanceof AxiosError) {
       const axiosError = err as AxiosError<AxiosErrorResponse>;
-
       const responseData = axiosError.response?.data;
-      requestId = requestId || axiosError.response?.headers['x-request-id'];
+      const headers = axiosError.response?.headers as Record<string, string>;
+      const message = responseData?.error || responseData?.message || axiosError.message || 'Unknown error';
 
-      castedError = new AppError(
-        responseData?.error || responseData?.message || 'Unknown error',
-        axiosError.response?.status,
-        requestId,
-      );
+      castedError = new AppError(message, axiosError.response?.status, undefined, headers);
     } else if (typeof err === 'string') {
-      castedError = new AppError(err, undefined, requestId);
+      castedError = new AppError(err);
     } else if (err instanceof Error) {
-      castedError = new AppError(err.message || 'Unknown error', (err as ErrorWithStatus).status, requestId);
+      const headers = (err as ErrorWithStatus).headers;
+      castedError = new AppError(err.message || 'Unknown error', (err as ErrorWithStatus).status, undefined, headers);
     } else {
       const map = err as Record<string, unknown>;
-      castedError = map.message ? new AppError(map.message as string, map.status as number, requestId) : castedError;
+      castedError = map.message ? new AppError(map.message as string, map.status as number) : castedError;
     }
 
     return castedError;

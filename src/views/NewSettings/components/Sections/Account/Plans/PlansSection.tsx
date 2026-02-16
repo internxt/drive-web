@@ -1,6 +1,7 @@
 import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import AppError, { AppView } from 'app/core/types';
+import { AppError } from '@internxt/sdk';
+import { AppView } from 'app/core/types';
 import Section from '../../../Section';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';

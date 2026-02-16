@@ -17,15 +17,6 @@ vi.mock('i18next', () => ({
 
 vi.mock('../../../core/types', () => ({
   AppView: vi.fn(),
-  default: class AppError extends Error {
-    status?: number;
-    requestId?: string;
-    constructor(message: string, status?: number, requestId?: string) {
-      super(message);
-      this.status = status;
-      this.requestId = requestId;
-    }
-  },
 }));
 vi.mock('../../../share/services/share.service', () => ({
   decryptMnemonic: vi.fn(),

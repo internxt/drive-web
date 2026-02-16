@@ -26,7 +26,7 @@ import RetryManager from 'app/network/RetryManager';
 import { FileToUpload } from 'app/drive/services/file.service/types';
 import { prepareFilesToUpload } from '../fileUtils/prepareFilesToUpload';
 import { StorageState } from '../storage.model';
-import AppError from 'app/core/types';
+import { AppError } from '@internxt/sdk';
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;
