@@ -11,8 +11,9 @@ import {
 } from '../../crypto/services/pgp.service';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { decryptMnemonic } from './share.service';
+import shareService, { decryptMnemonic, getPublicShareLink } from './share.service';
 import { stringUtils } from '@internxt/lib';
+import notificationsService from 'app/notifications/services/notifications.service';
 
 vi.mock('utils', () => ({
   generateCaptchaToken: vi.fn(() => 'mocked-captcha-token'),
@@ -37,7 +38,9 @@ describe('Encryption and Decryption', () => {
     }));
     vi.mock('services/error.service', () => ({
       default: {
-        castError: vi.fn().mockImplementation((e) => ({ message: e.message || 'Default error message' })),
+        castError: vi
+          .fn()
+          .mockImplementation((e) => ({ message: e.message || 'Default error message', requestId: 'test-request-id' })),
         reportError: vi.fn(),
       },
     }));
@@ -289,9 +292,20 @@ describe('Inviting user to Shared Folder', () => {
       createShareClient: mockCreateShareClientFn,
     } as any);
 
-    await expect(inviteUserToSharedFolder(mockProps)).rejects.toEqual({
-      message: 'API Error',
-    });
+    await expect(inviteUserToSharedFolder(mockProps)).rejects.toEqual(
+      expect.objectContaining({ message: originalError.message }),
+    );
     expect(errorService.castError).toHaveBeenCalledWith(originalError);
+  });
+});
+
+describe('Get shared link', () => {
+  test('When an error occurs fetching a shared link, then a notification is shown', async () => {
+    vi.spyOn(shareService, 'createPublicSharingItem').mockRejectedValue(new Error('Unexpected error'));
+    const showNotificationSpy = vi.spyOn(notificationsService, 'show');
+
+    await getPublicShareLink('uuid', 'file');
+
+    expect(showNotificationSpy).toHaveBeenCalledWith(expect.objectContaining({ requestId: 'test-request-id' }));
   });
 });
