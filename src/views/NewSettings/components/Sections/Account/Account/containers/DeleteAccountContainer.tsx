@@ -40,7 +40,7 @@ const DeleteAccountContainer = ({ onClosePreferences }: { onClosePreferences: ()
       onClose();
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
-      notificationsService.show({ text: castedError.message, type: ToastType.Error });
+      notificationsService.show({ text: castedError.message, type: ToastType.Error, requestId: castedError.requestId });
     } finally {
       setIsLoading(false);
     }

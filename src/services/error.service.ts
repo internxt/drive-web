@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios';
-import AppError from 'app/core/types';
+import { AppError } from '@internxt/sdk';
 import envService from './env.service';
 
 interface AxiosErrorResponse {
@@ -9,6 +9,7 @@ interface AxiosErrorResponse {
 
 interface ErrorWithStatus extends Error {
   status?: number;
+  headers?: Record<string, string>;
 }
 
 const errorService = {
@@ -27,18 +28,22 @@ const errorService = {
   castError(err: unknown): AppError {
     let castedError: AppError = new AppError('Unknown error');
 
+    if (err instanceof AppError) {
+      return err;
+    }
+
     if (err instanceof AxiosError) {
       const axiosError = err as AxiosError<AxiosErrorResponse>;
       const responseData = axiosError.response?.data;
+      const headers = axiosError.response?.headers as Record<string, string>;
+      const message = responseData?.error || responseData?.message || axiosError.message || 'Unknown error';
 
-      castedError = new AppError(
-        responseData?.error || responseData?.message || 'Unknown error',
-        axiosError.response?.status,
-      );
+      castedError = new AppError(message, axiosError.response?.status, undefined, headers);
     } else if (typeof err === 'string') {
       castedError = new AppError(err);
     } else if (err instanceof Error) {
-      castedError = new AppError(err.message || 'Unknown error', (err as ErrorWithStatus).status);
+      const headers = (err as ErrorWithStatus).headers;
+      castedError = new AppError(err.message || 'Unknown error', (err as ErrorWithStatus).status, undefined, headers);
     } else {
       const map = err as Record<string, unknown>;
       castedError = map.message ? new AppError(map.message as string, map.status as number) : castedError;

@@ -1089,7 +1089,8 @@
     "connectionLostError": "Lost Internet connection",
     "errorLoadingTrashItems": "Erreur de chargement des éléments de la corbeille",
     "updateAvatarError": "Erreur lors de la mise à jour de l'avatar",
-    "featuresUnavailable": "Certaines fonctionnalités peuvent être indisponibles"
+    "featuresUnavailable": "Certaines fonctionnalités peuvent être indisponibles",
+    "errorSettingWorkspace": "Erreur lors de la configuration de l'espace de travail"
   },
   "backups": {
     "backups-from": "Sauvagardes de {{deviceName}}",
@@ -1430,6 +1431,9 @@
     "keepCurrent": "Garder actuel",
     "logOut": "Se déconnecter",
     "locked": "Verrouillé"
+  },
+  "toastNotification": {
+    "textCopied": "Texte copié dans le presse-papiers"
   },
   "drive": {
     "usage": "Usage",

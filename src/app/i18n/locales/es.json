@@ -1138,7 +1138,8 @@
     "connectionLostError": "Conexión a internet perdida",
     "errorLoadingTrashItems": "Error al cargar items de la papelera",
     "updateAvatarError": "Error al actualizar el avatar",
-    "featuresUnavailable": "Algunas funciones pueden no estar disponibles"
+    "featuresUnavailable": "Algunas funciones pueden no estar disponibles",
+    "errorSettingWorkspace": "Error al configurar el espacio de trabajo"
   },
   "backups": {
     "backups-from": "Copias de seguridad de {{deviceName}}",
@@ -1484,6 +1485,9 @@
     "keepCurrent": "Mantener actual",
     "logOut": "Cerrar sesión",
     "locked": "Bloqueado"
+  },
+  "toastNotification": {
+    "textCopied": "Texto copiado al portapapeles"
   },
   "drive": {
     "usage": "Uso",

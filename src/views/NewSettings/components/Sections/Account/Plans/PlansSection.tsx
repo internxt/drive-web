@@ -1,5 +1,6 @@
 import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { AppError } from '@internxt/sdk';
 import { AppView } from 'app/core/types';
 import Section from '../../../Section';
 import { useCallback, useEffect, useState } from 'react';
@@ -169,10 +170,11 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   }, []);
 
   const showCancelSubscriptionErrorNotification = useCallback(
-    (error?: Error) =>
+    (error?: AppError) =>
       notificationsService.show({
         text: error?.message ?? translate('notificationMessages.errorCancelSubscription'),
         type: ToastType.Error,
+        requestId: error?.requestId,
       }),
     [translate],
   );
@@ -232,10 +234,12 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
       notificationsService.show({ text: translate('notificationMessages.successCancelSubscription') });
       setIsCancelSubscriptionModalOpen(false);
     } catch (error) {
+      const castedError = errorService.castError(error);
       errorService.reportError(error);
       notificationsService.show({
         text: translate('notificationMessages.errorCancelSubscription'),
         type: ToastType.Error,
+        requestId: castedError.requestId,
       });
     } finally {
       setCancellingSubscription(false);

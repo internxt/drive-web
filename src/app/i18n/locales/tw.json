@@ -1091,7 +1091,8 @@
     "connectionLostError": "網絡連接已丟失",
     "errorLoadingTrashItems": "加載垃圾桶項目時出錯",
     "updateAvatarError": "更新頭像時發生錯誤",
-    "featuresUnavailable": "某些功能可能無法使用"
+    "featuresUnavailable": "某些功能可能無法使用",
+    "errorSettingWorkspace": "設定工作區時出錯"
   },
   "backups": {
     "backups-from": "來自{{deviceName}}的備份",
@@ -1436,6 +1437,9 @@
     "keepCurrent": "保持目前",
     "logOut": "登出",
     "locked": "已鎖定"
+  },
+  "toastNotification": {
+    "textCopied": "文字已複製到剪貼簿"
   },
   "drive": {
     "usage": "使用量",

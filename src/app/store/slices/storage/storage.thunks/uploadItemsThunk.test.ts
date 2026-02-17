@@ -1,5 +1,10 @@
-import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
-import { uploadItemsParallelThunk, uploadItemsThunk, uploadItemsThunkExtraReducers } from './uploadItemsThunk';
+import { describe, it, expect, vi, beforeEach, Mock, test } from 'vitest';
+import {
+  uploadItemsParallelThunk,
+  uploadItemsThunk,
+  uploadItemsThunkExtraReducers,
+  uploadSharedItemsThunk,
+} from './uploadItemsThunk';
 import { RootState } from '../../..';
 import { prepareFilesToUpload } from '../fileUtils/prepareFilesToUpload';
 import { uploadFileWithManager } from '../../../../network/UploadManager';
@@ -7,6 +12,10 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import RetryManager from 'app/network/RetryManager';
 import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
 import { StorageState } from '../storage.model';
+import errorService from 'services/error.service';
+import { AppError } from '@internxt/sdk';
+import shareService from '../../../../share/services/share.service';
+import workspacesSelectors from '../../workspaces/workspaces.selectors';
 
 vi.mock('../../../../share/services/share.service', () => ({
   default: {
@@ -123,6 +132,105 @@ describe('uploadItemsThunk', () => {
     })(dispatch, getState as () => RootState, {});
 
     expect(RetryChangeStatusSpy).toHaveBeenCalledWith('task1', 'failed');
+  });
+
+  test('when there is an error while uploading items, then a notification is shown', async () => {
+    const randomError = new AppError('Test Error', undefined, undefined, {
+      'x-request-id': 'test-request-id',
+    });
+    const castErrorSpy = vi.spyOn(errorService, 'castError');
+    const showNotificationSpy = vi.spyOn(notificationsService, 'show');
+    (prepareFilesToUpload as Mock).mockResolvedValue({
+      filesToUpload: [mockFile],
+    });
+    (uploadFileWithManager as Mock).mockRejectedValue(randomError);
+
+    await uploadItemsThunk({
+      files: [mockFile],
+      parentFolderId: 'parent1',
+    })(dispatch, getState as () => RootState, {});
+
+    expect(castErrorSpy).toHaveBeenCalledWith(randomError);
+    expect(showNotificationSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        requestId: 'test-request-id',
+      }),
+    );
+  });
+});
+
+describe('upload shared items thunk', () => {
+  const dispatch = vi.fn();
+  const getState = () => {
+    return { user: { user: { email: 'test@test.com' } } };
+  };
+  const mockFile = new File(['content'], 'file.txt', { type: 'text/plain' });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.resetModules();
+  });
+
+  test('when there is an error while uploading shared items, then a notification is shown', async () => {
+    const randomError = new AppError('Test Error', undefined, undefined, {
+      'x-request-id': 'test-request-id',
+    });
+    const castErrorSpy = vi.spyOn(errorService, 'castError');
+    const showNotificationSpy = vi.spyOn(notificationsService, 'show');
+    (workspacesSelectors.getSelectedWorkspace as Mock).mockReturnValue(null);
+    (shareService.getSharedFolderContent as Mock).mockResolvedValue({ items: [] });
+    (uploadFileWithManager as Mock).mockRejectedValue(randomError);
+
+    await uploadSharedItemsThunk({
+      files: [mockFile],
+      parentFolderId: 'parent1',
+      currentFolderId: 'folder1',
+      isDeepFolder: false,
+    })(dispatch, getState as () => RootState, {});
+
+    expect(castErrorSpy).toHaveBeenCalledWith(randomError);
+    expect(showNotificationSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        requestId: 'test-request-id',
+      }),
+    );
+  });
+});
+
+describe('Upload items in parallel thunk', () => {
+  const dispatch = vi.fn();
+  const getState = () => {
+    return { user: { user: { email: 'test@test.com' } } };
+  };
+  const mockFile = new File(['content'], 'file.txt', { type: 'text/plain' });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.resetModules();
+  });
+
+  test('when there is an error while uploading items in parallel, then a notification is shown', async () => {
+    const randomError = new AppError('Test Error', undefined, undefined, {
+      'x-request-id': 'test-request-id',
+    });
+    const castErrorSpy = vi.spyOn(errorService, 'castError');
+    const showNotificationSpy = vi.spyOn(notificationsService, 'show');
+    (prepareFilesToUpload as Mock).mockResolvedValue({
+      filesToUpload: [mockFile],
+    });
+    (uploadFileWithManager as Mock).mockRejectedValue(randomError);
+
+    await uploadItemsParallelThunk({
+      files: [mockFile],
+      parentFolderId: 'parent1',
+    })(dispatch, getState as () => RootState, {});
+
+    expect(castErrorSpy).toHaveBeenCalledWith(randomError);
+    expect(showNotificationSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        requestId: 'test-request-id',
+      }),
+    );
   });
 });
 

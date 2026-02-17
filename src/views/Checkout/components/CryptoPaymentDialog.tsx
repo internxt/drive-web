@@ -10,6 +10,7 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import checkoutService from '../services/checkout.service';
 import { Currency } from '../types';
 import { useEffect, useState } from 'react';
+import { errorService } from 'services';
 
 export const CRYPTO_PAYMENT_DIALOG_KEY = ActionDialog.CryptoPayment;
 
@@ -74,9 +75,11 @@ export const CryptoPaymentDialog = () => {
       }
     } catch (error) {
       console.error('Error while verifying crypto payment', error);
+      const castedError = errorService.castError(error);
       notificationsService.show({
         text: translate('checkout.confirmCryptoPayment.notifications.unexpectedError'),
         type: ToastType.Error,
+        requestId: castedError.requestId,
       });
     }
   };

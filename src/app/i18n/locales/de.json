@@ -1086,7 +1086,8 @@
     "maxSizeUploadLimitError": "Datei zu groß (größer als 40 GB)",
     "braveNotSupportMultiplePhotosDowload": "Brave unterstützt nicht das Herunterladen mehrerer Fotos.",
     "updateAvatarError": "Fehler beim Aktualisieren des Avatars",
-    "featuresUnavailable": "Einige Funktionen sind möglicherweise nicht verfügbar"
+    "featuresUnavailable": "Einige Funktionen sind möglicherweise nicht verfügbar",
+    "errorSettingWorkspace": "Fehler beim Konfigurieren des Arbeitsbereichs"
   },
   "backups": {
     "backups-from": "Backups von {{deviceName}}",
@@ -1424,6 +1425,9 @@
     "keepCurrent": "Aktuell behalten",
     "logOut": "Abmelden",
     "locked": "Gesperrt"
+  },
+  "toastNotification": {
+    "textCopied": "Text in die Zwischenablage kopiert"
   },
   "drive": {
     "usage": "Verwendung",

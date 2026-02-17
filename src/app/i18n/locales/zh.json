@@ -1126,7 +1126,8 @@
     "connectionLostError": "互联网连接丢失",
     "errorLoadingTrashItems": "加载垃圾箱内的项目时出错",
     "updateAvatarError": "更新头像时出错",
-    "featuresUnavailable": "某些功能可能无法使用"
+    "featuresUnavailable": "某些功能可能无法使用",
+    "errorSettingWorkspace": "设置工作区时出错"
   },
   "backups": {
     "backups-from": "来自 {{deviceName}} 的备份",
@@ -1471,6 +1472,9 @@
     "keepCurrent": "保持当前",
     "logOut": "登出",
     "locked": "已锁定"
+  },
+  "toastNotification": {
+    "textCopied": "文本已复制到剪贴板"
   },
   "drive": {
     "usage": "使用情况",

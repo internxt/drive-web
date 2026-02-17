@@ -1,7 +1,7 @@
 import { WarningCircle } from '@phosphor-icons/react';
 import errorService from 'services/error.service';
 import validationService from 'services/validation.service';
-import AppError from 'app/core/types';
+import { AppError } from '@internxt/sdk';
 import iconService from 'app/drive/services/icon.service';
 import transformItemService from 'app/drive/services/item-transform.service';
 import sizeService from 'app/drive/services/size.service';

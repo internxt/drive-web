@@ -1196,7 +1196,8 @@
     "connectionLostError": "Connessione Internet persa",
     "errorLoadingTrashItems": "Errore nel caricamento degli elementi del cestino",
     "updateAvatarError": "Errore nell'aggiornamento dell'avatar",
-    "featuresUnavailable": "Alcune funzionalità potrebbero non essere disponibili"
+    "featuresUnavailable": "Alcune funzionalità potrebbero non essere disponibili",
+    "errorSettingWorkspace": "Errore nella configurazione dello spazio di lavoro"
   },
   "backups": {
     "backups-from": "Backup da {{deviceName}}",
@@ -1537,6 +1538,9 @@
     "keepCurrent": "Mantieni attuale",
     "logOut": "Disconnettersi",
     "locked": "Bloccato"
+  },
+  "toastNotification": {
+    "textCopied": "Testo copiato negli appunti"
   },
   "drive": {
     "usage": "Utilizzo",
