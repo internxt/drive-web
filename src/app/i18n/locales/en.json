@@ -890,6 +890,34 @@
         "location": "Location"
       }
     },
+    "versionHistory": {
+      "title": "Version history",
+      "current": "Current",
+      "expiresInDays": "Expires in {{days}} days",
+      "autosaveVersions": "{{count}}/{{total}} autosave versions",
+      "restoreVersion": "Restore version",
+      "downloadVersion": "Download version",
+      "deleteVersion": "Delete version",
+      "deleteVersionTitle": "Delete version",
+      "deleteButton": "Delete",
+      "restoreButton": "Restore",
+      "downloadError": "Failed to download version",
+      "deleteVersionAdvice": "This version will be permanently deleted. \nThis action cannot be undone.",
+      "deletingVersion": "Deleting",
+      "restoreVersionTitle": "Restore version",
+      "restoreVersionAdvice": "Restoring this version will replace the current file and remove all newer versions. \nOnce restored, this action cannot be undone.\n\nYou can download a copy of newer versions before restoring.",
+      "restoringVersion": "Restoring",
+      "restoreSuccess": "Version restored successfully",
+      "restoreError": "Failed to restore version",
+      "deleteSuccess": "Version deleted successfully",
+      "deleteError": "Failed to delete version",
+      "lockedFeature": {
+        "title": "Locked feature",
+        "description": "Restore previous versions of your files and track changes over time.",
+        "supportedFormats": "Available for PDF, Word, Excel, and CSV files in paid plans.",
+        "upgradeButton": "Upgrade"
+      }
+    },
     "shareModal": {
       "title": "Share \"{{name}}\"",
       "list": {
@@ -1542,6 +1570,7 @@
       "share": "Share",
       "manageAccess": "Manage access",
       "download": "Download",
+      "versionHistory": "Version history",
       "moveToTrash": "Move to trash",
       "copyLink": "Copy link",
       "linkSettings": "Link settings",

@@ -833,6 +833,34 @@
         "location": "Расположение"
       }
     },
+    "versionHistory": {
+      "title": "История версий",
+      "current": "Текущая",
+      "expiresInDays": "Истекает через {{days}} дней",
+      "autosaveVersions": "{{count}}/{{total}} версий автосохранения",
+      "restoreVersion": "Восстановить версию",
+      "downloadVersion": "Скачать версию",
+      "deleteVersion": "Удалить версию",
+      "deleteVersionTitle": "Удалить версию",
+      "deleteButton": "Удалить",
+      "restoreButton": "Восстановить",
+      "downloadError": "Не удалось загрузить версию",
+      "deleteVersionAdvice": "Эта версия будет удалена навсегда. \nЭто действие нельзя отменить.",
+      "deletingVersion": "Удаление",
+      "restoreVersionTitle": "Восстановить версию",
+      "restoreVersionAdvice": "Восстановление этой версии заменит текущий файл и удалит все более новые версии. \nПосле восстановления это действие нельзя отменить.\n\nВы можете скачать копию более новых версий перед восстановлением.",
+      "restoringVersion": "Восстановление",
+      "restoreSuccess": "Версия успешно восстановлена",
+      "restoreError": "Не удалось восстановить версию",
+      "deleteSuccess": "Версия успешно удалена",
+      "deleteError": "Не удалось удалить версию",
+      "lockedFeature": {
+        "title": "Заблокированная функция",
+        "description": "Восстанавливайте предыдущие версии файлов и отслеживайте изменения со временем.",
+        "supportedFormats": "Доступно для файлов PDF, Word, Excel и CSV в платных тарифах.",
+        "upgradeButton": "Обновить"
+      }
+    },
     "shareModal": {
       "title": "Поделиться \"{{name}}\"",
       "list": {
@@ -1478,6 +1506,7 @@
       "manageLinkAccess": "Управление доступом",
       "manageAccess": "Управление доступом",
       "download": "Загрузить",
+      "versionHistory": "История версий",
       "moveToTrash": "Переместить в корзину",
       "copyLink": "Копировать ссылку",
       "linkSettings": "Настройки ссылки",
