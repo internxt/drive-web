@@ -281,7 +281,7 @@ const FileViewerWrapper = ({
         content: thumbnailGenerated.file,
       };
 
-      const thumbnailUploaded = await uploadThumbnail(userEmail as string, thumbnailToUpload, false, () => {});
+      const thumbnailUploaded = await uploadThumbnail(userEmail as string, thumbnailToUpload, isWorkspace, () => {});
 
       setCurrentThumbnail(thumbnailGenerated.file, thumbnailUploaded, driveFile as DriveItemData, dispatch);
 
