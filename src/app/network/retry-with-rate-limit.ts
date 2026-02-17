@@ -24,17 +24,17 @@ const isRateLimitError = (error: unknown): boolean => {
 
 const extractRetryAfter = (error: ErrorWithStatus): number | undefined => {
   const headers = error.headers;
-  const resetHeader = headers?.['x-internxt-ratelimit-reset'];
+  const resetHeader = headers?.['retry-after'];
   if (!resetHeader) {
     return undefined;
   }
 
-  const resetValueMs = Number.parseInt(resetHeader, 10);
-  if (Number.isNaN(resetValueMs)) {
+  const resetValueInSeconds = Number.parseInt(resetHeader, 10);
+  if (Number.isNaN(resetValueInSeconds)) {
     return undefined;
   }
 
-  return resetValueMs;
+  return resetValueInSeconds * 1000;
 };
 
 /**

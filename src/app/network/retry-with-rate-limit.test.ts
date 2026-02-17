@@ -6,9 +6,9 @@ vi.mock('utils/timeUtils', () => ({
   wait: vi.fn(() => Promise.resolve()),
 }));
 
-const createRateLimitError = (resetDelay: string, additionalHeaders?: Record<string, string>) => ({
+const createRateLimitError = (retryAfterSeconds: string, additionalHeaders?: Record<string, string>) => ({
   status: 429,
-  headers: { 'x-internxt-ratelimit-reset': resetDelay, ...additionalHeaders },
+  headers: { 'retry-after': retryAfterSeconds, ...additionalHeaders },
 });
 
 const createRateLimitMock = (resetDelay: string, additionalHeaders?: Record<string, string>) =>
@@ -30,7 +30,7 @@ describe('retryWithBackoff', () => {
   });
 
   it('when rate limited then retries with delay from headers', async () => {
-    const mockFn = createRateLimitMock('5000');
+    const mockFn = createRateLimitMock('5');
 
     const result = await retryWithBackoff(mockFn);
 
@@ -49,7 +49,7 @@ describe('retryWithBackoff', () => {
   });
 
   it('when rate limited multiple times then calls onRetry for each retry', async () => {
-    const error = createRateLimitError('1000');
+    const error = createRateLimitError('1');
     const mockFn = vi.fn().mockRejectedValueOnce(error).mockRejectedValueOnce(error).mockResolvedValueOnce('success');
 
     const onRetry = vi.fn();
@@ -67,7 +67,7 @@ describe('retryWithBackoff', () => {
     const testCases = [
       { status: 429 },
       { status: 429, headers: {} },
-      { status: 429, headers: { 'x-internxt-ratelimit-reset': 'invalid' } },
+      { status: 429, headers: { 'retry-after': 'invalid' } },
     ];
 
     for (const error of testCases) {
@@ -80,7 +80,7 @@ describe('retryWithBackoff', () => {
 
   it('when max retries exceeded then throws original error', async () => {
     const error = new Error('Rate limit exceeded');
-    Object.assign(error, { status: 429, headers: { 'x-internxt-ratelimit-reset': '1000' } });
+    Object.assign(error, { status: 429, headers: { 'retry-after': '1' } });
     const mockFn = vi.fn().mockRejectedValue(error);
 
     await expect(retryWithBackoff(mockFn, { maxRetries: 2 })).rejects.toThrow('Rate limit exceeded');
