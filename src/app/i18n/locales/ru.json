@@ -1102,7 +1102,8 @@
     "connectionLostError": "Потеряно подключение к Интернету",
     "errorLoadingTrashItems": "Ошибка при загрузке элементов корзины",
     "updateAvatarError": "Ошибка при обновлении аватара",
-    "featuresUnavailable": "Некоторые функции могут быть недоступны"
+    "featuresUnavailable": "Некоторые функции могут быть недоступны",
+    "errorSettingWorkspace": "Ошибка при настройке рабочего стола"
   },
   "backups": {
     "backups-from": "Резервные копии с {{deviceName}}",
@@ -1443,6 +1444,9 @@
     "keepCurrent": "Сохранить текущее",
     "logOut": "Выйти",
     "locked": "Заблокировано"
+  },
+  "toastNotification": {
+    "textCopied": "Текст скопирован в буфер обмена"
   },
   "drive": {
     "usage": "Использование",
@@ -1924,8 +1928,7 @@
               "Обмен файлами с защитой паролем",
               "Зашифрованный VPN",
               "Антивирус"
-            ],
-            "comingSoonFeatures": ["Версионирование файлов"]
+            ]
           },
           "3TB": {
             "title": "Premium (Премиум)",
@@ -1960,7 +1963,7 @@
               "Cleaner (Очиститель)",
               "Meet (Видеоконференции)"
             ],
-            "comingSoonFeatures": ["Версионирование файлов", "Mail (Почта)"]
+            "comingSoonFeatures": ["Версионирование файлов", "Mail (Почта)", "Фотографии"]
           },
           "1GB": {
             "title": "Free (Бесплатный)",
@@ -1971,38 +1974,43 @@
           "title": "Детали плана",
           "storage": " хранилища",
           "1TB": {
-            "title": "Стандартный",
+            "title": "Standard",
             "features": [
-              "1TB зашифрованного хранилища с нулевым знанием на пользователя",
-              "Постквантовое шифрование",
-              "Сверхбыстрый безлимитный VPN (FR, DE, PL)",
-              "Антивирус",
-              "Резервное копирование ваших файлов",
-              "Защищенный паролем обмен файлами",
-              "Приглашение, обмен и сотрудничество",
-              "Соответствие GDPR",
-              "Двухфакторная аутентификация (2FA)",
-              "Поддержка CLI и WebDav",
-              "Управление выставлением счетов и платежами"
-            ],
-            "comingSoonFeatures": ["Очиститель устройств", "Мониторинг даркнета"]
+              "1 TB di spazio di archiviazione crittografato per utente",
+              "Crittografia post-quantistica",
+              "Crittografia zero-knowledge",
+              "Autenticazione a due fattori",
+              "Backup del computer",
+              "Condivisione file protetta da password",
+              "Invita, condividi e collabora",
+              "Conformità GDPR",
+              "CLI e WebDAV",
+              "Gestione dell'organizzazione",
+              "VPN crittografata",
+              "Antivirus",
+              "Pulizia"
+            ]
           },
           "2TB": {
-            "title": "Про",
+            "title": "Pro",
             "features": [
-              "2TB зашифрованного хранилища с нулевым знанием на пользователя",
-              "Постквантовое шифрование",
-              "Сверхбыстрый безлимитный VPN (FR, DE, PL, CA, UK)",
-              "Антивирус",
-              "Резервное копирование ваших файлов",
-              "Защищенный паролем обмен файлами",
-              "Приглашение, обмен и сотрудничество",
-              "Соответствие GDPR",
-              "Двухфакторная аутентификация (2FA)",
-              "Поддержка CLI, WebDav, Rclone и NAS",
-              "Управление выставлением счетов и платежами"
+              "2 TB di spazio di archiviazione crittografato per utente",
+              "Crittografia post-quantistica",
+              "Crittografia zero-knowledge",
+              "Autenticazione a due fattori",
+              "Backup del computer",
+              "Condivisione file protetta da password",
+              "Invita, condividi e collabora",
+              "Conformità GDPR",
+              "Supporto per CLI, WebDAV, Rclone e NAS",
+              "Gestione dell'organizzazione",
+              "VPN crittografata",
+              "Antivirus",
+              "Pulizia",
+              "Meet",
+              "Mail"
             ],
-            "comingSoonFeatures": ["Очиститель устройств", "Мониторинг даркнета", "Meet", "Mail"]
+            "comingSoonFeatures": ["Versionamento dei file"]
           }
         },
         "user": "Пользователь"

@@ -9,6 +9,7 @@ import { paymentService } from 'views/Checkout/services';
 import { Button, Modal } from '@internxt/ui';
 import { useAppDispatch } from 'app/store/hooks';
 import { planThunks } from 'app/store/slices/plan';
+import { errorService } from 'services';
 
 interface CancelSubscriptionModalProps {
   isOpen: boolean;
@@ -45,10 +46,11 @@ const CancelSubscriptionModal = ({
           setCouponAvailable(response.elegible);
         })
         .catch((error) => {
-          console.error(error);
+          const castedError = errorService.castError(error);
           notificationsService.show({
             text: translate('notificationMessages.errorApplyCoupon'),
             type: ToastType.Error,
+            requestId: castedError.requestId,
           });
         });
   }, [isOpen]);
@@ -67,16 +69,19 @@ const CancelSubscriptionModal = ({
         dispatch(planThunks.initializeThunk()).unwrap();
       }, 1000);
     } catch (error: any) {
+      const castedError = errorService.castError(error);
       const errorMessage = JSON.parse(error.message);
       if (errorMessage.message === 'User already applied coupon') {
         notificationsService.show({
           text: translate('notificationMessages.alreadyAppliedCoupon'),
           type: ToastType.Error,
+          requestId: castedError.requestId,
         });
       } else {
         notificationsService.show({
           text: translate('notificationMessages.errorApplyCoupon'),
           type: ToastType.Error,
+          requestId: castedError.requestId,
         });
       }
     } finally {

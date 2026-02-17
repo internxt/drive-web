@@ -94,10 +94,12 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[], onSuccess?: () =>
       },
     });
   } catch (error) {
+    const castedError = errorService.castError(error);
     notificationsService.dismiss(movingItemsToastId);
     notificationsService.show({
       text: t('error.errorMovingToTrash'),
       type: ToastType.Error,
+      requestId: castedError.requestId,
     });
 
     errorService.reportError(error);

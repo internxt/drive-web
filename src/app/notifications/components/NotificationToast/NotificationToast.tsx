@@ -2,7 +2,8 @@ import { Transition } from '@headlessui/react';
 import { Loader } from '@internxt/ui';
 import { CheckCircle, Info, Warning, WarningOctagon, X } from '@phosphor-icons/react';
 import { NavLink } from 'react-router-dom';
-import { ToastShowProps, ToastType } from '../../services/notifications.service';
+import notificationsService, { ToastShowProps, ToastType } from '../../services/notifications.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 const NotificationToast = ({
   text,
@@ -10,8 +11,16 @@ const NotificationToast = ({
   action,
   visible,
   closable,
+  requestId,
   onClose,
 }: Omit<ToastShowProps, 'duration'> & { visible: boolean; onClose: () => void }): JSX.Element => {
+  const { translate } = useTranslationContext();
+  const handleCopyRequestId = () => {
+    if (requestId) {
+      navigator.clipboard.writeText(requestId);
+      notificationsService.show({ text: translate('toastNotification.textCopied'), type: ToastType.Success });
+    }
+  };
   let Icon: typeof CheckCircle | undefined;
   let IconColor: string | undefined;
 
@@ -55,7 +64,18 @@ const NotificationToast = ({
         {type === ToastType.Loading && <Loader classNameLoader="mr-1.5 h-6 w-6" />}
         {Icon && <Icon weight="fill" className={`${IconColor} mr-1.5`} size={24} />}
 
-        <p className="line-clamp-2 flex-1 whitespace-pre break-words text-gray-80">{text}</p>
+        <div className="flex-1">
+          <p className="line-clamp-2 whitespace-pre break-words text-gray-80">{text}</p>
+          {requestId && type === ToastType.Error && (
+            <button
+              onClick={handleCopyRequestId}
+              className="mt-1 text-xs text-gray-50 hover:text-gray-60"
+              title="Click to copy"
+            >
+              ID: {requestId}
+            </button>
+          )}
+        </div>
         {action &&
           (action.to ? (
             <NavLink

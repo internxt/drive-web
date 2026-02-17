@@ -1196,7 +1196,8 @@
     "connectionLostError": "Connessione Internet persa",
     "errorLoadingTrashItems": "Errore nel caricamento degli elementi del cestino",
     "updateAvatarError": "Errore nell'aggiornamento dell'avatar",
-    "featuresUnavailable": "Alcune funzionalità potrebbero non essere disponibili"
+    "featuresUnavailable": "Alcune funzionalità potrebbero non essere disponibili",
+    "errorSettingWorkspace": "Errore nella configurazione dello spazio di lavoro"
   },
   "backups": {
     "backups-from": "Backup da {{deviceName}}",
@@ -1537,6 +1538,9 @@
     "keepCurrent": "Mantieni attuale",
     "logOut": "Disconnettersi",
     "locked": "Bloccato"
+  },
+  "toastNotification": {
+    "textCopied": "Testo copiato negli appunti"
   },
   "drive": {
     "usage": "Utilizzo",
@@ -2018,8 +2022,7 @@
               "Condivisione file protetta da password",
               "VPN Crittografata",
               "Antivirus"
-            ],
-            "comingSoonFeatures": ["Versionamento dei File"]
+            ]
           },
           "3TB": {
             "title": "Premium",
@@ -2054,7 +2057,7 @@
               "Cleaner (Pulitore)",
               "Meet (Videoconferenza)"
             ],
-            "comingSoonFeatures": ["Versionamento dei File", "Mail"]
+            "comingSoonFeatures": ["Versionamento dei File", "Mail", "Foto"]
           },
           "1GB": {
             "title": "Gratuito",
@@ -2067,36 +2070,41 @@
           "1TB": {
             "title": "Standard",
             "features": [
-              "1TB di archiviazione criptata a conoscenza zero per utente",
+              "1TB di archiviazione crittografata per utente",
               "Crittografia post-quantistica",
-              "VPN illimitata ultraveloce (FR, DE, PL)",
-              "Antivirus",
-              "Backup dei tuoi file",
+              "Crittografia zero-knowledge",
+              "Autenticazione a due fattori",
+              "Backup del computer",
               "Condivisione file protetta da password",
               "Invita, condividi e collabora",
-              "Conformità GDPR",
-              "Autenticazione a due fattori (2FA)",
-              "Supporto CLI e WebDav",
-              "Gestisci fatturazione e pagamenti dell'account"
-            ],
-            "comingSoonFeatures": ["Pulitore dispositivi", "Monitoraggio Dark Web"]
+              "Conformità al GDPR",
+              "CLI e WebDAV",
+              "Gestione dell'organizzazione",
+              "VPN crittografata",
+              "Antivirus",
+              "Pulizia"
+            ]
           },
           "2TB": {
             "title": "Pro",
             "features": [
-              "2TB di archiviazione criptata a conoscenza zero per utente",
+              "2TB di archiviazione crittografata per utente",
               "Crittografia post-quantistica",
-              "VPN illimitata ultraveloce (FR, DE, PL, CA, UK)",
-              "Antivirus",
-              "Backup dei tuoi file",
+              "Crittografia zero-knowledge",
+              "Autenticazione a due fattori",
+              "Backup del computer",
               "Condivisione file protetta da password",
               "Invita, condividi e collabora",
-              "Conformità GDPR",
-              "Autenticazione a due fattori (2FA)",
-              "Supporto CLI, WebDav, Rclone e NAS",
-              "Gestisci fatturazione e pagamenti dell'account"
+              "Conformità al GDPR",
+              "Supporto per CLI, WebDAV, Rclone e NAS",
+              "Gestione dell'organizzazione",
+              "VPN crittografata",
+              "Antivirus",
+              "Pulizia",
+              "Meet",
+              "Email"
             ],
-            "comingSoonFeatures": ["Pulitore dispositivi", "Monitoraggio Dark Web", "Meet", "Mail"]
+            "comingSoonFeatures": ["Cronologia versioni file"]
           }
         },
         "user": "Utente",

@@ -1,5 +1,5 @@
 import errorService from 'services/error.service';
-import AppError from 'app/core/types';
+import { AppError } from '@internxt/sdk';
 import { DriveFolderData } from 'app/drive/types';
 import { createFolder } from 'app/store/slices/storage/folderUtils/createFolder';
 import { checkFolderDuplicated } from 'app/store/slices/storage/folderUtils/checkFolderDuplicated';

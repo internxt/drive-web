@@ -4,6 +4,7 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { checkoutService } from '../services';
 import { CouponCodeData } from '../types';
 import { STATUS_CODE_ERROR } from '../constants';
+import { errorService } from 'services';
 
 interface UsePromotionalCodeProps {
   priceId: string | null;
@@ -46,6 +47,7 @@ export const usePromotionalCode = ({ priceId, promoCodeName }: UsePromotionalCod
 
   const onPromoCodeError = (err: unknown, showNotification?: boolean) => {
     const error = err as Error;
+    const castedError = errorService.castError(err);
     const statusCode = (err as any).status;
     let errorMessage = translate('notificationMessages.errorApplyingCoupon');
     if (statusCode) {
@@ -63,6 +65,7 @@ export const usePromotionalCode = ({ priceId, promoCodeName }: UsePromotionalCod
       notificationsService.show({
         text: errorMessage,
         type: ToastType.Error,
+        requestId: castedError.requestId,
       });
     }
   };

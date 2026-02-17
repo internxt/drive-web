@@ -104,37 +104,77 @@ describe('Folder Service', () => {
       expect(downloadFile).not.toHaveBeenCalled();
     });
 
-    test('When the file has content and is not cached, then it should download the file', async () => {
-      const { getFileStream } = await import('./folder.service');
+    describe('The file is not empty and is not cached', () => {
+      test('When the download starts, the download progress of the file should be reported correctly', async () => {
+        const { getFileStream } = await import('./folder.service');
 
-      const mockLruCache = {
-        get: vi.fn().mockResolvedValue(undefined),
-      };
-      vi.spyOn(LRUFilesCacheManager, 'getInstance').mockResolvedValue(mockLruCache as any);
+        const mockDownloadProgress = vi.fn();
+        const mockLruCache = {
+          get: vi.fn().mockResolvedValue(undefined),
+        };
+        vi.spyOn(LRUFilesCacheManager, 'getInstance').mockResolvedValue(mockLruCache as any);
 
-      const mockDownloadedStream = new ReadableStream();
-      vi.mocked(downloadFile).mockResolvedValue(mockDownloadedStream as any);
+        const mockDownloadedStream = new ReadableStream();
 
-      const mockBlob = new Blob(['downloaded content']);
-      vi.mocked(binaryStreamToBlob).mockResolvedValue(mockBlob);
-      vi.mocked(updateDatabaseFileSourceData).mockResolvedValue();
+        // Simulate the download progress
+        vi.mocked(downloadFile).mockImplementation(async ({ options }) => {
+          if (options?.notifyProgress) {
+            options.notifyProgress(0, 25);
+            options.notifyProgress(0, 50);
+            options.notifyProgress(0, 75);
+            options.notifyProgress(0, 100);
+          }
+          return mockDownloadedStream as any;
+        });
 
-      const stream = await getFileStream({
-        file: mockFile,
-        creds: { user: 'test-user', pass: 'test-pass' },
-        mnemonic: 'test-mnemonic',
+        const mockBlob = new Blob(['downloaded content']);
+        vi.mocked(binaryStreamToBlob).mockResolvedValue(mockBlob);
+        vi.mocked(updateDatabaseFileSourceData).mockResolvedValue();
+
+        await getFileStream({
+          file: mockFile,
+          creds: { user: 'test-user', pass: 'test-pass' },
+          mnemonic: 'test-mnemonic',
+          downloadProgress: mockDownloadProgress,
+        });
+
+        const totalBytesReported = mockDownloadProgress.mock.calls.reduce((sum, call) => sum + call[0], 0);
+
+        expect(totalBytesReported).toBe(mockFile.size);
       });
 
-      expect(stream).toBeInstanceOf(ReadableStream);
-      expect(downloadFile).toHaveBeenCalledWith({
-        bucketId: mockFile.bucket,
-        fileId: mockFile.fileId,
-        creds: { user: 'test-user', pass: 'test-pass' },
-        mnemonic: 'test-mnemonic',
-        options: {
-          notifyProgress: expect.any(Function),
-          abortController: undefined,
-        },
+      test('When the download starts, then it should be completed successfully', async () => {
+        const { getFileStream } = await import('./folder.service');
+
+        const mockLruCache = {
+          get: vi.fn().mockResolvedValue(undefined),
+        };
+        vi.spyOn(LRUFilesCacheManager, 'getInstance').mockResolvedValue(mockLruCache as any);
+
+        const mockDownloadedStream = new ReadableStream();
+        vi.mocked(downloadFile).mockResolvedValue(mockDownloadedStream as any);
+
+        const mockBlob = new Blob(['downloaded content']);
+        vi.mocked(binaryStreamToBlob).mockResolvedValue(mockBlob);
+        vi.mocked(updateDatabaseFileSourceData).mockResolvedValue();
+
+        const stream = await getFileStream({
+          file: mockFile,
+          creds: { user: 'test-user', pass: 'test-pass' },
+          mnemonic: 'test-mnemonic',
+        });
+
+        expect(stream).toBeInstanceOf(ReadableStream);
+        expect(downloadFile).toHaveBeenCalledWith({
+          bucketId: mockFile.bucket,
+          fileId: mockFile.fileId,
+          creds: { user: 'test-user', pass: 'test-pass' },
+          mnemonic: 'test-mnemonic',
+          options: {
+            notifyProgress: expect.any(Function),
+            abortController: undefined,
+          },
+        });
       });
     });
   });

@@ -23,7 +23,6 @@ import { RootState } from 'app/store';
 import { ActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.context';
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import AppError from 'app/core/types';
 
 interface MemberDetailsContainer {
   member: WorkspaceUser;
@@ -90,16 +89,18 @@ const MemberDetailsContainer = ({
         type: ToastType.Success,
       });
     } catch (error) {
-      const appError = error as AppError;
-      if (appError.status === UPDATED_SPACE_IS_NOT_VALID_FOR_MEMBER) {
+      const castedError = errorService.castError(error);
+      if (castedError.status === UPDATED_SPACE_IS_NOT_VALID_FOR_MEMBER) {
         notificationsService.show({
           text: translate('notificationMessages.errorModifyingStorage'),
           type: ToastType.Error,
+          requestId: castedError.requestId,
         });
       } else {
         notificationsService.show({
           text: translate('notificationMessages.generalErrorWhileModifyingStorage'),
           type: ToastType.Error,
+          requestId: castedError.requestId,
         });
       }
       errorService.reportError(error);

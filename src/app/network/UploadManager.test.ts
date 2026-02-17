@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { uploadFileWithManager } from './UploadManager';
 import tasksService from 'app/tasks/services/tasks.service';
 import errorService from 'services/error.service';
-import AppError from 'app/core/types';
+import { AppError } from '@internxt/sdk';
 import uploadFile from 'app/drive/services/file.service/uploadFile';
 import DatabaseUploadRepository from 'app/repositories/DatabaseUploadRepository';
 import { DriveFileData } from 'app/drive/types';

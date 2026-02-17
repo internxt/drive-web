@@ -8,7 +8,6 @@ import { Button, Modal } from '@internxt/ui';
 import { useAppDispatch } from 'app/store/hooks';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import dayjs from 'dayjs';
-import AppError from 'app/core/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { wait } from 'utils/timeUtils';
 
@@ -49,18 +48,19 @@ const PendingInvitationsDialog = ({
       await wait(3000);
       dispatch(workspaceThunks.fetchWorkspaces());
     } catch (err) {
-      const appError = err as AppError;
-      if (appError.status === WORKSPACE_INVITATION_BAD_REQUEST) {
+      const error = errorService.castError(err);
+      if (error.status === WORKSPACE_INVITATION_BAD_REQUEST) {
         notificationsService.show({
           text: translate('notificationMessages.invalidWorkspaceInvitationError'),
           type: ToastType.Error,
+          requestId: error.requestId,
         });
       } else {
-        const error = errorService.castError(err);
         errorService.reportError(error);
         notificationsService.show({
           text: translate('notificationMessages.errorAcceptingWorkspaceInvitation'),
           type: ToastType.Error,
+          requestId: error.requestId,
         });
       }
     } finally {

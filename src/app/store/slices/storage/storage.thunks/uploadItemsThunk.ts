@@ -26,6 +26,7 @@ import RetryManager from 'app/network/RetryManager';
 import { FileToUpload } from 'app/drive/services/file.service/types';
 import { prepareFilesToUpload } from '../fileUtils/prepareFilesToUpload';
 import { StorageState } from '../storage.model';
+import { AppError } from '@internxt/sdk';
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;
@@ -106,7 +107,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     { getState, dispatch },
   ) => {
     const user = getState().user.user as UserSettings;
-    const errors: Error[] = [];
+    const errors: AppError[] = [];
     const options = { ...DEFAULT_OPTIONS, ...payloadOptions };
 
     const state = getState();
@@ -183,7 +184,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       );
     } catch (error) {
       if (taskId && isRetry) RetryManager.changeStatus(taskId, 'failed');
-      errors.push(error as Error);
+      errors.push(errorService.castError(error));
     }
 
     options.onSuccess?.();
@@ -197,7 +198,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       for (const error of errors) {
         if (error.message) {
           console.error('message Error when upload', error.message);
-          notificationsService.show({ text: error.message, type: ToastType.Error });
+          notificationsService.show({ text: error.message, type: ToastType.Error, requestId: error.requestId });
         }
       }
     }
@@ -238,7 +239,7 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
     const state = getState();
     const user = state.user.user as UserSettings;
     const filesToUpload: FileToUpload[] = [];
-    const errors: Error[] = [];
+    const errors: AppError[] = [];
 
     const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
     const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
@@ -361,7 +362,7 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
         },
       );
     } catch (error) {
-      errors.push(error as Error);
+      errors.push(errorService.castError(error));
     }
 
     options.onSuccess?.();
@@ -373,7 +374,8 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
 
     if (errors.length > 0) {
       for (const error of errors) {
-        if (error.message) notificationsService.show({ text: error.message, type: ToastType.Error });
+        if (error.message)
+          notificationsService.show({ text: error.message, type: ToastType.Error, requestId: error.requestId });
       }
     }
   },
@@ -394,7 +396,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
     const user = state.user.user as UserSettings;
     const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
     const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
-    const errors: Error[] = [];
+    const errors: AppError[] = [];
     const abortController = payloadOptions?.abortController ?? new AbortController();
 
     const options = { ...DEFAULT_OPTIONS, ...payloadOptions };
@@ -457,14 +459,15 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
         onFileUploadCallback,
       );
     } catch (error) {
-      errors.push(error as Error);
+      errors.push(errorService.castError(error));
     }
 
     options.onSuccess?.();
 
     if (errors.length > 0) {
       for (const error of errors) {
-        if (error.message) notificationsService.show({ text: error.message, type: ToastType.Error });
+        if (error.message)
+          notificationsService.show({ text: error.message, type: ToastType.Error, requestId: error.requestId });
       }
 
       throw new Error(t('error.uploadingItems') as string);
