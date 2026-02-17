@@ -109,7 +109,7 @@ const getVersionHistoryMenuItem = (
 
   if (isLocked) {
     return {
-      name: t('drive.dropdown.versionHistory') as string,
+      name: String(t('drive.dropdown.versionHistory')),
       icon: LockSimple,
       action: viewVersionHistory,
       disabled: () => false,
@@ -127,7 +127,7 @@ const getVersionHistoryMenuItem = (
   }
 
   return {
-    name: t('drive.dropdown.versionHistory') as string,
+    name: String(t('drive.dropdown.versionHistory')),
     icon: ClockCounterClockwise,
     action: viewVersionHistory,
     disabled: (item: DriveItemData) => item.isFolder || !isExtensionAllowed,
