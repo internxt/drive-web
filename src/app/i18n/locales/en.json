@@ -2031,14 +2031,14 @@
               "Post-Quantum Encryption",
               "Zero-Knowledge Encryption",
               "Two-Factor Authentication",
+              "File Versioning",
               "Backup your computer",
               "Password-protected file sharing",
               "Invite, share & collaborate",
               "Encrypted VPN",
               "Antivirus",
               "Cleaner"
-            ],
-            "comingSoonFeatures": ["File Versioning"]
+            ]
           },
           "5TB": {
             "title": "Ultimate",
@@ -2047,6 +2047,7 @@
               "Post-Quantum Encryption",
               "Zero-Knowledge Encryption",
               "Two-Factor Authentication",
+              "File Versioning",
               "Backup your computer",
               "Password-protected file sharing",
               "Invite, share & collaborate",
@@ -2057,7 +2058,7 @@
               "Cleaner",
               "Meet"
             ],
-            "comingSoonFeatures": ["File Versioning", "Mail", "Photos"]
+            "comingSoonFeatures": ["Mail", "Photos"]
           },
           "1GB": {
             "title": "Free",
@@ -2093,6 +2094,7 @@
               "Zero-knowledge encryption",
               "Two-factor authentication",
               "Backup your computer",
+              "File Versioning",
               "Password-protected file sharing",
               "Invite, share & collaborate",
               "GDPR compliance",
@@ -2103,8 +2105,7 @@
               "Cleaner",
               "Meet",
               "Mail"
-            ],
-            "comingSoonFeatures": ["File Versioning"]
+            ]
           }
         },
         "user": "user"

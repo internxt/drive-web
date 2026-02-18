@@ -2060,14 +2060,14 @@
               "Crittografia Post-Quantistica",
               "Crittografia Zero-Knowledge",
               "Autenticazione a Due Fattori",
+              "Versionamento dei File",
               "Backup del computer",
               "Condivisione file protetta da password",
               "Invita, condividi e collabora",
               "VPN Crittografata",
               "Antivirus",
               "Cleaner (Pulitore)"
-            ],
-            "comingSoonFeatures": ["Versionamento dei File"]
+            ]
           },
           "5TB": {
             "title": "Ultimate (Definitivo)",
@@ -2076,6 +2076,7 @@
               "Crittografia Post-Quantistica",
               "Crittografia Zero-Knowledge",
               "Autenticazione a Due Fattori",
+              "Versionamento dei File",
               "Backup del computer",
               "Condivisione file protetta da password",
               "Invita, condividi e collabora",
@@ -2086,7 +2087,7 @@
               "Cleaner (Pulitore)",
               "Meet (Videoconferenza)"
             ],
-            "comingSoonFeatures": ["Versionamento dei File", "Mail", "Foto"]
+            "comingSoonFeatures": ["Mail", "Foto"]
           },
           "1GB": {
             "title": "Gratuito",
@@ -2121,6 +2122,7 @@
               "Crittografia post-quantistica",
               "Crittografia zero-knowledge",
               "Autenticazione a due fattori",
+              "Cronologia versioni file",
               "Backup del computer",
               "Condivisione file protetta da password",
               "Invita, condividi e collabora",
@@ -2132,8 +2134,7 @@
               "Pulizia",
               "Meet",
               "Email"
-            ],
-            "comingSoonFeatures": ["Cronologia versioni file"]
+            ]
           }
         },
         "user": "Utente",
