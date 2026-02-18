@@ -540,7 +540,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <ClearTrashDialog onItemsDeleted={onTrashCleared} />
       <UploadItemsFailsDialog />
       <MenuItemToGetSize isTrash={isTrash} translate={translate} menuItemsRef={menuItemsRef} />
-      <ItemDetailsDialog onDetailsButtonClicked={onDetailsButtonClicked} />
+      <ItemDetailsDialog onDetailsButtonClicked={onDetailsButtonClicked} isTrash={isTrash} />
       {editNameItem && (
         <EditItemNameDialog
           item={editNameItem}
