@@ -274,7 +274,7 @@
       },
       "renewalTitle": {
         "month": "monthly",
-        "year": "annually",
+        "year": "annual",
         "lifetime": "lifetime"
       },
       "pcMobileRenews": "* Renews at 50€ first year after trial period",
@@ -365,7 +365,7 @@
     },
     "renewalPeriod": {
       "monthly": "monthly",
-      "annually": "annually",
+      "annually": "annual",
       "lifetime": "Lifetime"
     },
     "renewal": {
