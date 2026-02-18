@@ -1940,10 +1940,10 @@
               "Antivirus"
             ]
           },
-          "3TB": {
+          "2TB": {
             "title": "Premium",
             "features": [
-              "3TB verschlüsselter Speicher",
+              "2TB verschlüsselter Speicher",
               "Post-Quanten-Verschlüsselung",
               "Zero-Knowledge-Verschlüsselung",
               "Zwei-Faktor-Authentifizierung",
@@ -1956,10 +1956,10 @@
             ],
             "comingSoonFeatures": ["Dateiversionierung"]
           },
-          "5TB": {
+          "3TB": {
             "title": "Ultimate (Ultimativ)",
             "features": [
-              "5TB verschlüsselter Speicher",
+              "3TB verschlüsselter Speicher",
               "Post-Quanten-Verschlüsselung",
               "Zero-Knowledge-Verschlüsselung",
               "Zwei-Faktor-Authentifizierung",

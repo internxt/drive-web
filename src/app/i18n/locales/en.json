@@ -2024,10 +2024,10 @@
               "Antivirus"
             ]
           },
-          "3TB": {
+          "2TB": {
             "title": "Premium",
             "features": [
-              "3TB of encrypted storage",
+              "2TB of encrypted storage",
               "Post-Quantum Encryption",
               "Zero-Knowledge Encryption",
               "Two-Factor Authentication",
@@ -2040,10 +2040,10 @@
             ],
             "comingSoonFeatures": ["File Versioning"]
           },
-          "5TB": {
+          "3TB": {
             "title": "Ultimate",
             "features": [
-              "5TB of encrypted storage",
+              "3TB of encrypted storage",
               "Post-Quantum Encryption",
               "Zero-Knowledge Encryption",
               "Two-Factor Authentication",
