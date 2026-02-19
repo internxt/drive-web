@@ -238,6 +238,10 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     actionDispatch(setShowStopSharingConfirmation(true));
   }, [actionDispatch]);
 
+  const onCloseStopSharingDialog = useCallback(() => {
+    actionDispatch(setShowStopSharingConfirmation(false));
+  }, [actionDispatch]);
+
   const View = (viewProps: ViewProps): JSX.Element => {
     const view = {
       general: (
@@ -333,7 +337,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
           <StopSharingItemDialog
             showStopSharingConfirmation={showStopSharingConfirmation}
-            onClose={() => actionDispatch(setShowStopSharingConfirmation(false))}
+            onClose={onCloseStopSharingDialog}
             itemToShareName={itemToShare?.item.name ?? ''}
             isLoading={isLoading}
             onStopSharing={onStopSharing}
