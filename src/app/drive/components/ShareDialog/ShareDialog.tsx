@@ -5,7 +5,7 @@ import { Button, Modal } from '@internxt/ui';
 import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
-import { MouseEvent, useEffect, useRef } from 'react';
+import { MouseEvent, useCallback, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import errorService from 'services/error.service';
 import shareService, { getSharingRoles } from 'app/share/services/share.service';
@@ -234,6 +234,14 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     }
   };
 
+  const onOpenStopSharingDialog = useCallback(() => {
+    actionDispatch(setShowStopSharingConfirmation(true));
+  }, [actionDispatch]);
+
+  const onCloseStopSharingDialog = useCallback(() => {
+    actionDispatch(setShowStopSharingConfirmation(false));
+  }, [actionDispatch]);
+
   const View = (viewProps: ViewProps): JSX.Element => {
     const view = {
       general: (
@@ -294,7 +302,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
             isLoading={isLoading}
             onCopyLink={onCopyLink}
             changeAccess={changeAccess}
-            setShowStopSharingConfirmation={setShowStopSharingConfirmation}
+            setShowStopSharingConfirmation={onOpenStopSharingDialog}
           />
 
           <SharePasswordInputDialog
@@ -329,7 +337,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
           <StopSharingItemDialog
             showStopSharingConfirmation={showStopSharingConfirmation}
-            onClose={() => setShowStopSharingConfirmation(false)}
+            onClose={onCloseStopSharingDialog}
             itemToShareName={itemToShare?.item.name ?? ''}
             isLoading={isLoading}
             onStopSharing={onStopSharing}
