@@ -11,7 +11,8 @@ import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
 import { STORAGE_KEYS } from 'services/storage-keys';
-import AppError, { AppView, IFormValues } from 'app/core/types';
+import { AppError } from '@internxt/sdk';
+import { AppView, IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import ChangePlanDialog from 'views/NewSettings/components/Sections/Account/Plans/components/ChangePlanDialog';
 import longNotificationsService from 'app/notifications/services/longNotification.service';
@@ -221,11 +222,13 @@ const CheckoutViewWrapper = () => {
       notificationsService.show({
         text: defaultErrorMessage,
         type: ToastType.Error,
+        requestId: error?.requestId,
       });
     } else {
       longNotificationsService.show({
         type: ToastType.Error,
         text: error?.message,
+        requestId: error?.requestId,
       });
     }
   };

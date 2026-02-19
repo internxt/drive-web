@@ -1,6 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { workspaceThunks } from './workspacesStore';
-const { setupWorkspace } = workspaceThunks;
 import { PendingWorkspace } from '@internxt/sdk/dist/workspaces';
 import { generateNewKeys, hybridDecryptMessageWithPrivateKey } from '../../../crypto/services/pgp.service';
 import localStorageService from 'services/local-storage.service';
@@ -10,6 +9,7 @@ import { RootState } from '../..';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Buffer } from 'buffer';
 import notificationsService from 'app/notifications/services/notifications.service';
+const { setupWorkspace } = workspaceThunks;
 
 vi.mock('i18next', () => ({
   t: vi.fn((key, params) => `${key} ${params?.reason ?? ''}`),
@@ -63,6 +63,12 @@ vi.mock('services/local-storage.service', () => ({
   default: {
     set: vi.fn(),
     getB2BWorkspace: vi.fn(),
+  },
+}));
+vi.mock('services', () => ({
+  errorService: {
+    reportError: vi.fn(),
+    castError: vi.fn((err) => ({ message: err?.message || 'Unknown error', requestId: 'test-request-id' })),
   },
 }));
 
@@ -167,8 +173,9 @@ describe('Encryption and Decryption', () => {
     expect(mockWorkspaceService.setupWorkspace).not.toHaveBeenCalled();
 
     expect(showSpy).toHaveBeenCalledWith({
-      text: 'Error setting up workspace',
+      text: expect.any(String),
       type: 'error',
+      requestId: 'test-request-id',
     });
   });
 });

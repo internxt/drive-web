@@ -52,9 +52,11 @@ export const useShareItemUserRoles = ({ isRestrictedSharingAvailable, itemToShar
         actionDispatch(setAccessMode(mode));
       } catch (error) {
         errorService.reportError(error);
+        const castedError = errorService.castError(error);
         notificationsService.show({
           text: translate('modals.shareModal.errors.update-sharing-access'),
           type: ToastType.Error,
+          requestId: castedError.requestId,
         });
       }
       actionDispatch(setIsLoading(false));
@@ -83,7 +85,12 @@ export const useShareItemUserRoles = ({ isRestrictedSharingAvailable, itemToShar
       }
     } catch (error) {
       errorService.reportError(error);
-      notificationsService.show({ text: translate('modals.shareModal.errors.updatingRole'), type: ToastType.Error });
+      const castedError = errorService.castError(error);
+      notificationsService.show({
+        text: translate('modals.shareModal.errors.updatingRole'),
+        type: ToastType.Error,
+        requestId: castedError.requestId,
+      });
     }
   };
 

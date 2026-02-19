@@ -872,6 +872,34 @@
         "location": "Ubicación"
       }
     },
+    "versionHistory": {
+      "title": "Historial de versiones",
+      "current": "Actual",
+      "expiresInDays": "Expira en {{days}} días",
+      "autosaveVersions": "{{count}}/{{total}} versiones de autoguardado",
+      "restoreVersion": "Restaurar versión",
+      "downloadVersion": "Descargar versión",
+      "deleteVersion": "Eliminar versión",
+      "deleteVersionTitle": "Eliminar versión",
+      "deleteButton": "Eliminar",
+      "restoreButton": "Restaurar",
+      "downloadError": "Error al descargar la versión",
+      "deleteVersionAdvice": "Esta versión será eliminada permanentemente. \nEsta acción no se puede deshacer.",
+      "deletingVersion": "Eliminando",
+      "restoreVersionTitle": "Restaurar versión",
+      "restoreVersionAdvice": "Restaurar esta versión reemplazará el archivo actual y eliminará todas las versiones más recientes. \nUna vez restaurada, esta acción no se puede deshacer.\n\nPuedes descargar una copia de las versiones más recientes antes de restaurar.",
+      "restoringVersion": "Restaurando",
+      "restoreSuccess": "Versión restaurada exitosamente",
+      "restoreError": "Error al restaurar la versión",
+      "deleteSuccess": "Versión eliminada exitosamente",
+      "deleteError": "Error al eliminar la versión",
+      "lockedFeature": {
+        "title": "Función bloqueada",
+        "description": "Restaura versiones anteriores de tus archivos y realiza un seguimiento de los cambios a lo largo del tiempo.",
+        "supportedFormats": "Disponible para archivos PDF, Word, Excel y CSV en planes de pago.",
+        "upgradeButton": "Mejorar plan"
+      }
+    },
     "shareModal": {
       "title": "Compartir \"{{name}}\"",
       "list": {
@@ -1139,7 +1167,8 @@
     "connectionLostError": "Conexión a internet perdida",
     "errorLoadingTrashItems": "Error al cargar items de la papelera",
     "updateAvatarError": "Error al actualizar el avatar",
-    "featuresUnavailable": "Algunas funciones pueden no estar disponibles"
+    "featuresUnavailable": "Algunas funciones pueden no estar disponibles",
+    "errorSettingWorkspace": "Error al configurar el espacio de trabajo"
   },
   "backups": {
     "backups-from": "Copias de seguridad de {{deviceName}}",
@@ -1486,6 +1515,9 @@
     "logOut": "Cerrar sesión",
     "locked": "Bloqueado"
   },
+  "toastNotification": {
+    "textCopied": "Texto copiado al portapapeles"
+  },
   "drive": {
     "usage": "Uso",
     "currentPlan": "Actual plan",
@@ -1516,6 +1548,7 @@
       "manageLinkAccess": "Gestionar acceso",
       "manageAccess": "Gestionar acceso",
       "download": "Descargar",
+      "versionHistory": "Historial de versiones",
       "moveToTrash": "Mover a la papelera",
       "copyLink": "Copiar enlace",
       "linkSettings": "Ajustes del enlace",

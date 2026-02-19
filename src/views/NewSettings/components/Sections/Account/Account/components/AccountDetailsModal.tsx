@@ -20,7 +20,7 @@ const AccountDetailsModal = ({
   lastname: string;
   email: string;
   onUpdateUserProfileData: ({ name, lastname }: { name: string; lastname: string }) => Promise<void>;
-  onErrorUpdatingUserProfileData: () => void;
+  onErrorUpdatingUserProfileData: (err) => void;
 }) => {
   const { translate } = useTranslationContext();
 
@@ -62,9 +62,9 @@ const AccountDetailsModal = ({
       setStatus({ tag: 'loading' });
       await onUpdateUserProfileData({ name: nameValue, lastname: lastnameValue });
       onClose();
-    } catch {
+    } catch (err) {
       setStatus({ tag: 'error', type: 'UNKNOWN' });
-      onErrorUpdatingUserProfileData();
+      onErrorUpdatingUserProfileData(err);
     }
   };
 

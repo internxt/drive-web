@@ -11,7 +11,7 @@ import { createFilesIterator, createFoldersIterator } from 'app/drive/services/f
 import { DriveFileData, DriveFolderData, DriveItemData } from 'app/drive/types';
 import tasksService from 'app/tasks/services/tasks.service';
 import { QueueUtilsService } from 'utils/queueUtils';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { DownloadManager } from './DownloadManager';
 import { EncryptionVersion, FileStatus } from '@internxt/sdk/dist/drive/storage/types';
 import { ConnectionLostError } from './requests';
@@ -26,22 +26,6 @@ vi.mock('app/drive/services/folder.service', () => ({
   default: {},
   createFilesIterator: vi.fn(),
   createFoldersIterator: vi.fn(),
-}));
-
-vi.mock('services/error.service', () => ({
-  default: {
-    castError: vi.fn().mockImplementation((e) => ({ message: e.message ?? 'Default error message' })),
-    reportError: vi.fn(),
-  },
-}));
-
-vi.mock('app/tasks/services/tasks.service', () => ({
-  default: {
-    updateTask: vi.fn(),
-    findTask: vi.fn(),
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
-  },
 }));
 
 vi.mock('i18next', () => ({ t: () => MOCK_TRANSLATION_MESSAGE }));
@@ -63,6 +47,10 @@ describe('downloadManager', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it('should generate task for a folder and download it using the queue', async () => {
@@ -113,7 +101,7 @@ describe('downloadManager', () => {
     };
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
-    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerfomance').mockReturnValue(6);
+    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(6);
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
@@ -130,7 +118,7 @@ describe('downloadManager', () => {
     await DownloadManager.downloadItem(downloadItem);
 
     expect(downloadFolderSpy).toHaveBeenCalledOnce();
-    expect(downloadFolderSpy).toHaveBeenCalledWith(mockTask, expect.anything(), expect.anything());
+    expect(downloadFolderSpy).toHaveBeenCalledWith(mockTask, expect.anything(), expect.anything(), expect.anything());
     expect(downloadFileSpy).not.toHaveBeenCalled();
     expect(downloadItemsSpy).not.toHaveBeenCalled();
   });
@@ -185,7 +173,7 @@ describe('downloadManager', () => {
     };
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
-    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerfomance').mockReturnValue(6);
+    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(6);
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
@@ -278,7 +266,7 @@ describe('downloadManager', () => {
     };
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
-    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerfomance').mockReturnValue(6);
+    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(6);
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
@@ -295,7 +283,7 @@ describe('downloadManager', () => {
     await DownloadManager.downloadItem(downloadItem);
 
     expect(downloadItemsSpy).toHaveBeenCalledOnce();
-    expect(downloadItemsSpy).toHaveBeenCalledWith(mockTask, expect.anything(), expect.anything());
+    expect(downloadItemsSpy).toHaveBeenCalledWith(mockTask, expect.anything(), expect.anything(), expect.anything());
     expect(downloadFolderSpy).not.toHaveBeenCalled();
     expect(downloadFileSpy).not.toHaveBeenCalled();
   });
@@ -350,7 +338,7 @@ describe('downloadManager', () => {
     };
     const newConcurrency = DownloadManager.downloadQueue.concurrency + 1;
 
-    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerfomance').mockReturnValue(newConcurrency);
+    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(newConcurrency);
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
@@ -420,7 +408,7 @@ describe('downloadManager', () => {
     };
     const newConcurrency = DownloadManager.downloadQueue.concurrency + 1;
 
-    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerfomance').mockReturnValue(newConcurrency);
+    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(newConcurrency);
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
@@ -494,7 +482,7 @@ describe('downloadManager', () => {
     };
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
-    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerfomance').mockReturnValue(6);
+    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(6);
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
@@ -573,7 +561,7 @@ describe('downloadManager', () => {
     };
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
-    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerfomance').mockReturnValue(6);
+    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(6);
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
@@ -651,7 +639,7 @@ describe('downloadManager', () => {
     };
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
-    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerfomance').mockReturnValue(6);
+    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(6);
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
@@ -677,7 +665,7 @@ describe('downloadManager', () => {
 
     expect(errorServiceSpy).toHaveBeenCalledWith(testError);
     expect(downloadFileSpy).not.toHaveBeenCalled();
-    expect(downloadFolderSpy).toHaveBeenCalledWith(mockTask, expect.anything(), expect.anything());
+    expect(downloadFolderSpy).toHaveBeenCalledWith(mockTask, expect.anything(), expect.anything(), expect.anything());
     expect(downloadItemsSpy).not.toHaveBeenCalled();
   });
 
@@ -806,6 +794,95 @@ describe('downloadManager', () => {
       });
       expect(downloadItemsSpy).toHaveBeenCalled();
     });
+
+    it('When downloading a folder, then the task should be updated with the downloaded progress', async () => {
+      vi.spyOn(tasksService, 'findTask').mockReturnValue({
+        id: 'task-folder',
+        status: TaskStatus.InProcess,
+      } as TaskData);
+      vi.spyOn(DownloadManagerService.instance, 'downloadFolder').mockImplementation(
+        async (_task, _updateStatusProgress, updateDownloadedProgress) => {
+          updateDownloadedProgress(100);
+          updateDownloadedProgress(200);
+          updateDownloadedProgress(150);
+        },
+      );
+      const updateTaskSpy = vi.spyOn(tasksService, 'updateTask');
+
+      const downloadTask = {
+        items: [{ id: 1, isFolder: true }] as DownloadItemType[],
+        taskId: 'task-folder',
+        abortController: new AbortController(),
+        options: { downloadName: 'test', areSharedItems: false, showErrors: true },
+        credentials: { credentials: { user: 'test', pass: 'test' }, mnemonic: 'test' },
+        createFilesIterator,
+        createFoldersIterator,
+        failedItems: [],
+      } as DownloadTask;
+
+      await DownloadManager['downloadTask'](downloadTask);
+
+      expect(updateTaskSpy).toHaveBeenCalledWith({ taskId: 'task-folder', merge: { downloadedProgress: 100 } });
+      expect(updateTaskSpy).toHaveBeenCalledWith({ taskId: 'task-folder', merge: { downloadedProgress: 300 } });
+      expect(updateTaskSpy).toHaveBeenCalledWith({ taskId: 'task-folder', merge: { downloadedProgress: 450 } });
+    });
+
+    it('When downloading multiple items, then the task should be updated with the downloaded progress', async () => {
+      vi.spyOn(tasksService, 'findTask').mockReturnValue({
+        id: 'task-items',
+        status: TaskStatus.InProcess,
+      } as TaskData);
+      vi.spyOn(DownloadManagerService.instance, 'downloadItems').mockImplementation(
+        async (_task, _updateStatusProgress, updateDownloadedProgress) => {
+          updateDownloadedProgress(50);
+          updateDownloadedProgress(75);
+        },
+      );
+      const updateTaskSpy = vi.spyOn(tasksService, 'updateTask');
+
+      const downloadTask = {
+        items: [
+          { id: 1, isFolder: false },
+          { id: 2, isFolder: true },
+        ] as DownloadItemType[],
+        taskId: 'task-items',
+        abortController: new AbortController(),
+        options: { downloadName: 'test', areSharedItems: false, showErrors: true },
+        credentials: { credentials: { user: 'test', pass: 'test' }, mnemonic: 'test' },
+        createFilesIterator,
+        createFoldersIterator,
+        failedItems: [],
+      } as DownloadTask;
+
+      await DownloadManager['downloadTask'](downloadTask);
+
+      expect(updateTaskSpy).toHaveBeenCalledWith({ taskId: 'task-items', merge: { downloadedProgress: 50 } });
+      expect(updateTaskSpy).toHaveBeenCalledWith({ taskId: 'task-items', merge: { downloadedProgress: 125 } });
+    });
+
+    it('When the task is cancelled, then the task should not be updated with the downloaded progress', async () => {
+      vi.spyOn(tasksService, 'findTask').mockReturnValue({ id: 'task-4', status: TaskStatus.Cancelled } as TaskData);
+      const downloadFolderSpy = vi.spyOn(DownloadManagerService.instance, 'downloadFolder');
+      const updateTaskSpy = vi.spyOn(tasksService, 'updateTask');
+
+      const downloadTask = {
+        items: [{ id: 1, isFolder: true }] as DownloadItemType[],
+        taskId: 'task-4',
+        abortController: new AbortController(),
+        options: { downloadName: 'test', areSharedItems: false, showErrors: true },
+        credentials: { credentials: { user: 'test', pass: 'test' }, mnemonic: 'test' },
+        createFilesIterator,
+        createFoldersIterator,
+        failedItems: [],
+      } as DownloadTask;
+
+      await DownloadManager['downloadTask'](downloadTask);
+
+      expect(downloadFolderSpy).not.toHaveBeenCalled();
+      expect(updateTaskSpy).not.toHaveBeenCalledWith(
+        expect.objectContaining({ merge: expect.objectContaining({ downloadedProgress: expect.anything() }) }),
+      );
+    });
   });
 
   describe('removeRetryItems', () => {
@@ -920,6 +997,10 @@ describe('downloadManager', () => {
         options: { showErrors: true },
       } as DownloadTask;
 
+      vi.spyOn(tasksService, 'findTask').mockReturnValue({
+        id: mockTaskId,
+        status: TaskStatus.InProcess,
+      } as TaskData);
       const updateTaskSpy = vi.spyOn(tasksService, 'updateTask');
       const retryTaskSpy = vi.spyOn(retryManager, 'getTasksById').mockReturnValueOnce([]);
 
@@ -942,6 +1023,10 @@ describe('downloadManager', () => {
         options: { showErrors: true },
       } as DownloadTask;
 
+      vi.spyOn(tasksService, 'findTask').mockReturnValue({
+        id: mockTaskId,
+        status: TaskStatus.InProcess,
+      } as TaskData);
       const updateTaskSpy = vi.spyOn(tasksService, 'updateTask');
       const retryTaskSpy = vi.spyOn(retryManager, 'getTasksById').mockReturnValueOnce([
         {
@@ -1025,6 +1110,11 @@ describe('downloadManager', () => {
         items: mockItems,
         options: { showErrors: true },
       } as DownloadTask;
+
+      vi.spyOn(tasksService, 'findTask').mockReturnValue({
+        id: mockTaskId,
+        status: TaskStatus.InProcess,
+      } as TaskData);
       const notificationsServiceSpy = vi.spyOn(notificationsService, 'show');
 
       DownloadManager['reportError'](mockError, mockDownloadTask);

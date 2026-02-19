@@ -23,6 +23,7 @@ import { STORAGE_KEYS } from 'services/storage-keys';
 import workspacesService from 'services/workspace.service';
 import { useHistory } from 'react-router-dom';
 import envService from 'services/env.service';
+import { fetchVersionLimitsThunk } from 'app/store/slices/fileVersions';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -47,6 +48,7 @@ const DriveView = (props: DriveViewProps) => {
     dispatch(uiActions.setIsGlobalSearch(false));
     dispatch(storageThunks.resetNamePathThunk());
     dispatch(storageActions.clearSelectedItems());
+    dispatch(fetchVersionLimitsThunk());
   }, []);
 
   useEffect(() => {

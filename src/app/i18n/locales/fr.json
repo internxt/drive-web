@@ -814,6 +814,34 @@
         "location": "Emplacement"
       }
     },
+    "versionHistory": {
+      "title": "Historique des versions",
+      "current": "Actuelle",
+      "expiresInDays": "Expire dans {{days}} jours",
+      "autosaveVersions": "{{count}}/{{total}} versions de sauvegarde automatique",
+      "restoreVersion": "Restaurer la version",
+      "downloadVersion": "Télécharger la version",
+      "deleteVersion": "Supprimer la version",
+      "deleteVersionTitle": "Supprimer la version",
+      "deleteButton": "Supprimer",
+      "restoreButton": "Restaurer",
+      "downloadError": "Échec du téléchargement de la version",
+      "deleteVersionAdvice": "Cette version sera définitivement supprimée. \nCette action ne peut pas être annulée.",
+      "deletingVersion": "Suppression",
+      "restoreVersionTitle": "Restaurer la version",
+      "restoreVersionAdvice": "La restauration de cette version remplacera le fichier actuel et supprimera toutes les versions plus récentes. \nUne fois restaurée, cette action ne peut pas être annulée.\n\nVous pouvez télécharger une copie des versions plus récentes avant de restaurer.",
+      "restoringVersion": "Restauration",
+      "restoreSuccess": "Version restaurée avec succès",
+      "restoreError": "Échec de la restauration de la version",
+      "deleteSuccess": "Version supprimée avec succès",
+      "deleteError": "Échec de la suppression de la version",
+      "lockedFeature": {
+        "title": "Fonctionnalité verrouillée",
+        "description": "Restaurez les versions précédentes de vos fichiers et suivez les modifications au fil du temps.",
+        "supportedFormats": "Disponible pour les fichiers PDF, Word, Excel et CSV dans les forfaits payants.",
+        "upgradeButton": "Mettre à niveau"
+      }
+    },
     "newFolderModal": {
       "title": "Nouveau dossier",
       "label": "Nom",
@@ -1090,7 +1118,8 @@
     "connectionLostError": "Lost Internet connection",
     "errorLoadingTrashItems": "Erreur de chargement des éléments de la corbeille",
     "updateAvatarError": "Erreur lors de la mise à jour de l'avatar",
-    "featuresUnavailable": "Certaines fonctionnalités peuvent être indisponibles"
+    "featuresUnavailable": "Certaines fonctionnalités peuvent être indisponibles",
+    "errorSettingWorkspace": "Erreur lors de la configuration de l'espace de travail"
   },
   "backups": {
     "backups-from": "Sauvagardes de {{deviceName}}",
@@ -1432,6 +1461,9 @@
     "logOut": "Se déconnecter",
     "locked": "Verrouillé"
   },
+  "toastNotification": {
+    "textCopied": "Texte copié dans le presse-papiers"
+  },
   "drive": {
     "usage": "Usage",
     "currentPlan": "Plan actuel",
@@ -1462,6 +1494,7 @@
       "manageLinkAccess": "Gestion de l'accès",
       "manageAccess": "Gestion de l'accès",
       "download": "Télécharger",
+      "versionHistory": "Historique des versions",
       "moveToTrash": "Déplacer vers la corbeille",
       "copyLink": "Copier le lien",
       "linkSettings": "Paramètres du lien",

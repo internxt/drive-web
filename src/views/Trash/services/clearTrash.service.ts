@@ -33,9 +33,11 @@ const clearTrash = async (workspaceId?: string): Promise<void> => {
     });
   } catch (error) {
     notificationsService.dismiss(deletingItemsToastId);
+    const castedError = errorService.castError(error);
     notificationsService.show({
       text: t('error.errorDeletingFromTrash'),
       type: ToastType.Error,
+      requestId: castedError.requestId,
     });
 
     errorService.reportError(error);

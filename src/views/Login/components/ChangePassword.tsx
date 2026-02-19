@@ -30,22 +30,25 @@ export default function ChangePassword(props: Readonly<ChangePasswordProps>): JS
     try {
       const backupData = JSON.parse(uploadedBackupKeyContent);
 
-      if (backupData.mnemonic && validateMnemonic(backupData.mnemonic)) {
-        setBackupKeyContent(uploadedBackupKeyContent);
-        return;
+      if (!backupData.mnemonic || !validateMnemonic(backupData.mnemonic)) {
+        throw new Error('Invalid mnemonic in backup key');
       }
+
+      setBackupKeyContent(uploadedBackupKeyContent);
     } catch (err) {
       errorService.reportError(err);
+      const castedError = errorService.castError(err);
       if (validateMnemonic(uploadedBackupKeyContent)) {
         setBackupKeyContent(uploadedBackupKeyContent);
         return;
       }
-    }
 
-    notificationsService.show({
-      text: translate('auth.recoverAccount.changePassword.backupKeyError'),
-      type: ToastType.Error,
-    });
+      notificationsService.show({
+        text: translate('auth.recoverAccount.changePassword.backupKeyError'),
+        type: ToastType.Error,
+        requestId: castedError.requestId,
+      });
+    }
   };
 
   const onSendNewPassword = async (password: string) => {
@@ -68,9 +71,11 @@ export default function ChangePassword(props: Readonly<ChangePasswordProps>): JS
       localStorageService.clear();
       setIsEmailSent(true);
     } catch (error) {
+      const castedError = errorService.castError(error);
       notificationsService.show({
         text: translate('auth.recoverAccount.changePassword.serverError'),
         type: ToastType.Error,
+        requestId: castedError.requestId,
       });
       errorService.reportError(error);
     }
