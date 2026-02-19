@@ -2001,10 +2001,10 @@
               "Antivirus"
             ]
           },
-          "3TB": {
+          "2TB": {
             "title": "Premium",
             "features": [
-              "3TB de almacenamiento cifrado",
+              "2TB de almacenamiento cifrado",
               "Criptografía postcuántica",
               "Cifrado de conocimiento cero",
               "Autenticación de dos factores",
@@ -2017,10 +2017,10 @@
             ],
             "comingSoonFeatures": ["Versionado de archivos"]
           },
-          "5TB": {
+          "3TB": {
             "title": "Ultimate",
             "features": [
-              "5TB de almacenamiento cifrado",
+              "3TB de almacenamiento cifrado",
               "Criptografía postcuántica",
               "Cifrado de conocimiento cero",
               "Autenticación de dos factores",

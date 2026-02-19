@@ -2054,10 +2054,10 @@
               "Antivirus"
             ]
           },
-          "3TB": {
+          "2TB": {
             "title": "Premium",
             "features": [
-              "3TB di spazio di archiviazione crittografato",
+              "2TB di spazio di archiviazione crittografato",
               "Crittografia Post-Quantistica",
               "Crittografia Zero-Knowledge",
               "Autenticazione a Due Fattori",
@@ -2070,10 +2070,10 @@
             ],
             "comingSoonFeatures": ["Versionamento dei File"]
           },
-          "5TB": {
+          "3TB": {
             "title": "Ultimate (Definitivo)",
             "features": [
-              "5TB di spazio di archiviazione crittografato",
+              "3TB di spazio di archiviazione crittografato",
               "Crittografia Post-Quantistica",
               "Crittografia Zero-Knowledge",
               "Autenticazione a Due Fattori",

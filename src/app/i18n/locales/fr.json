@@ -1947,10 +1947,10 @@
               "Antivirus"
             ]
           },
-          "3TB": {
+          "2TB": {
             "title": "Premium",
             "features": [
-              "3To de stockage chiffré",
+              "2To de stockage chiffré",
               "Chiffrement Post-Quantique",
               "Chiffrement Zéro-Connaissance",
               "Authentification à Deux Facteurs",
@@ -1963,10 +1963,10 @@
             ],
             "comingSoonFeatures": ["Historique des versions de fichiers"]
           },
-          "5TB": {
+          "3TB": {
             "title": "Ultimate (Ultime)",
             "features": [
-              "5To de stockage chiffré",
+              "3To de stockage chiffré",
               "Chiffrement Post-Quantique",
               "Chiffrement Zéro-Connaissance",
               "Authentification à Deux Facteurs",
