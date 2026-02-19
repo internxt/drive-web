@@ -992,7 +992,8 @@
           "errorInviting": "Error al enviar la invitación a {{email}}",
           "userAlreadyInvited": "El usuario {{email}} ya ha sido invitado",
           "acceptedError": "Error al aceptar la invitación a la carpeta compartida",
-          "declinedError": "Error al rechazar la invitación a la carpeta compartida"
+          "declinedError": "Error al rechazar la invitación a la carpeta compartida",
+          "loadingRoles": "No se pudieron cargar los roles disponibles. Por favor, inténtalo de nuevo más tarde."
         }
       },
       "requestAccess": {
@@ -2007,14 +2008,14 @@
               "Criptografía postcuántica",
               "Cifrado de conocimiento cero",
               "Autenticación de dos factores",
+              "Versionado de archivos",
               "Copia de seguridad",
               "Comparte archivos con contraseña",
               "Invitar, compartir y colaborar",
               "VPN Cifrada",
               "Antivirus",
               "Cleaner"
-            ],
-            "comingSoonFeatures": ["Versionado de archivos"]
+            ]
           },
           "5TB": {
             "title": "Ultimate",
@@ -2023,6 +2024,7 @@
               "Criptografía postcuántica",
               "Cifrado de conocimiento cero",
               "Autenticación de dos factores",
+              "Versionado de archivos",
               "Copia de seguridad",
               "Comparte archivos con contraseña",
               "Invitar, compartir y colaborar",
@@ -2033,7 +2035,7 @@
               "Cleaner",
               "Meet"
             ],
-            "comingSoonFeatures": ["Versionado de archivos", "Mail", "Fotos"]
+            "comingSoonFeatures": ["Mail", "Fotos"]
           },
           "1GB": {
             "title": "Gratis",
@@ -2068,6 +2070,7 @@
               "Cifrado poscuántico",
               "Cifrado de conocimiento cero",
               "Autenticación de dos factores",
+              "Versionado de archivos",
               "Copia de seguridad del ordenador",
               "Intercambio de archivos protegido por contraseña",
               "Invitar, compartir y colaborar",
@@ -2079,8 +2082,7 @@
               "Limpiador",
               "Meet",
               "Correo"
-            ],
-            "comingSoonFeatures": ["Versionado de archivos"]
+            ]
           }
         },
         "user": "usuario"
