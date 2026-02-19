@@ -1,18 +1,18 @@
 import { Listbox } from '@headlessui/react';
 import isValidEmail from '@internxt/lib/dist/src/auth/isValidEmail';
 import { Avatar, Button, Checkbox, Input } from '@internxt/ui';
-import { CaretDown, Check } from '@phosphor-icons/react';
+import { CaretDown, Check, WarningCircle } from '@phosphor-icons/react';
 import { AsyncThunkAction } from '@reduxjs/toolkit';
+import { IFormValues } from 'app/core/types';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { RootState } from 'app/store';
+import { ShareFileWithUserPayload, sharedThunks } from 'app/store/slices/sharedLinks';
+import { Role } from 'app/store/slices/sharedLinks/types';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
-import { IFormValues } from 'app/core/types';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { RootState } from 'app/store';
-import { ShareFileWithUserPayload, sharedThunks } from 'app/store/slices/sharedLinks';
-import { Role } from 'app/store/slices/sharedLinks/types';
 import ShareUserNotRegistered from '../ShareUserNotRegistered/ShareUserNotRegistered';
 import './ShareInviteDialog.scss';
 
@@ -35,12 +35,13 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
   const [email, setEmail] = useState<string>('');
   const [emailAccent, setEmailAccent] = useState<string>('');
   const [openNewUsersModal, setOpenNewUsersModal] = useState<boolean>(false);
-  const [userRole, setUserRole] = useState<string>(props.roles[0]?.name);
+  const [userRole, setUserRole] = useState<string>(props.roles[0]?.name ?? '');
   const [usersToInvite, setUsersToInvite] = useState<Array<UsersToInvite>>([]);
   const [notifyUser, setNotifyUser] = useState<boolean>(false);
   const [messageText, setMessageText] = useState<string>('');
   const [isInviteButtonDisabled, setIsInviteButtonDisabled] = useState<boolean>(true);
   const [isAnyInviteLoading, setIsAnyInviteLoading] = useState<boolean>(false);
+  const hasRoles = props.roles.length > 0;
 
   useEffect(() => {
     isValidEmail(email) || usersToInvite.length > 0
@@ -137,42 +138,59 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
           <Input
             className="mr-2 w-full"
             required
+            disabled={!hasRoles}
             variant="email"
             onChange={(e) => setEmail(e)}
             accent={emailAccent === 'error' ? 'error' : undefined}
             name="email"
             value={email}
           />
-          <Listbox value={userRole} onChange={setUserRole}>
-            <div className="relative">
-              <Listbox.Button value={userRole} name="userRole">
-                <Button variant="secondary">
-                  <span>{translate(`modals.shareModal.invite.${userRole?.toLowerCase()}`)}</span>
-                  <CaretDown size={24} />
-                </Button>
-              </Listbox.Button>
-              <Listbox.Options className="absolute right-0 z-10 mt-1 w-40 transform whitespace-nowrap rounded-lg border border-gray-10 bg-surface p-1 shadow-subtle transition-all duration-50 ease-out dark:bg-gray-5">
-                {props.roles.map((role) => (
-                  <Listbox.Option
-                    key={role.id}
-                    value={role.name}
-                    className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg px-3 py-2 text-base font-medium hover:bg-gray-5 dark:hover:bg-gray-10"
-                  >
-                    {({ selected }) => (
-                      <>
-                        <span>{translate(`modals.shareModal.invite.${role.name?.toLowerCase()}`)}</span>
-                        {selected ? <Check size={20} /> : null}
-                      </>
-                    )}
-                  </Listbox.Option>
-                ))}
-              </Listbox.Options>
-            </div>
-          </Listbox>
+          {hasRoles ? (
+            <Listbox value={userRole} onChange={setUserRole}>
+              <div className="relative">
+                <Listbox.Button value={userRole} name="userRole">
+                  <Button variant="secondary">
+                    <span>{userRole ? translate(`modals.shareModal.invite.${userRole.toLowerCase()}`) : ''}</span>
+                    <CaretDown size={24} />
+                  </Button>
+                </Listbox.Button>
+                <Listbox.Options className="absolute right-0 z-10 mt-1 w-40 transform whitespace-nowrap rounded-lg border border-gray-10 bg-surface p-1 shadow-subtle transition-all duration-50 ease-out dark:bg-gray-5">
+                  {props.roles.map((role) => (
+                    <Listbox.Option
+                      key={role.id}
+                      value={role.name}
+                      className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg px-3 py-2 text-base font-medium hover:bg-gray-5 dark:hover:bg-gray-10"
+                    >
+                      {({ selected }) => (
+                        <>
+                          <span>
+                            {role.name ? translate(`modals.shareModal.invite.${role.name.toLowerCase()}`) : ''}
+                          </span>
+                          {selected ? <Check size={20} /> : null}
+                        </>
+                      )}
+                    </Listbox.Option>
+                  ))}
+                </Listbox.Options>
+              </div>
+            </Listbox>
+          ) : (
+            <Button variant="secondary" disabled>
+              <span className="text-gray-50">—</span>
+              <CaretDown size={24} className="text-gray-30" />
+            </Button>
+          )}
         </form>
-        <div className="font-regular mt-1.5 text-xs text-gray-100">
-          {translate('modals.shareModal.invite.instructions')}
-        </div>
+        {hasRoles ? (
+          <div className="font-regular mt-1.5 text-xs text-gray-100">
+            {translate('modals.shareModal.invite.instructions')}
+          </div>
+        ) : (
+          <div className="mt-1.5 flex items-center gap-1 text-red">
+            <WarningCircle size={14} weight="fill" />
+            <span className="text-xs">{translate('modals.shareModal.invite.error.loadingRoles')}</span>
+          </div>
+        )}
         {usersToInvite.length != 0 && (
           <div className="mt-4">
             <h5 className="mb-2.5 text-lg font-medium">{translate('modals.shareModal.invite.listUsers')}</h5>
@@ -191,7 +209,9 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
                       <Listbox.Button value={user.userRole} name={user.email}>
                         <Button variant="secondary">
                           <span>
-                            {translate(`modals.shareModal.list.userItem.roles.${user.userRole?.toLowerCase()}`)}
+                            {user.userRole
+                              ? translate(`modals.shareModal.list.userItem.roles.${user.userRole.toLowerCase()}`)
+                              : ''}
                           </span>
                           <CaretDown size={24} />
                         </Button>
@@ -206,7 +226,9 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
                             {({ selected }) => (
                               <>
                                 <span>
-                                  {translate(`modals.shareModal.list.userItem.roles.${role.name?.toLowerCase()}`)}
+                                  {role.name
+                                    ? translate(`modals.shareModal.list.userItem.roles.${role.name.toLowerCase()}`)
+                                    : ''}
                                 </span>
                                 {selected ? <Check size={20} /> : null}
                               </>
@@ -247,7 +269,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
               onClick={() => {
                 setOpenNewUsersModal(true);
               }}
-              disabled={isInviteButtonDisabled}
+              disabled={isInviteButtonDisabled || !hasRoles}
               loading={isAnyInviteLoading}
             >
               <span>{translate('modals.shareModal.invite.invite')}</span>

@@ -917,7 +917,8 @@
           "errorInviting": "Fehler beim Senden der Einladung an {{email}}",
           "userAlreadyInvited": "Der Benutzer {{email}} wurde bereits eingeladen",
           "acceptedError": "Fehler beim Akzeptieren der Einladung zum gemeinsamen Ordner",
-          "declinedError": "Fehler beim Ablehnen der Einladung zu einem gemeinsamen Ordner"
+          "declinedError": "Fehler beim Ablehnen der Einladung zu einem gemeinsamen Ordner",
+          "loadingRoles": "Die verfügbaren Rollen konnten nicht geladen werden. Bitte versuchen Sie es später erneut."
         }
       },
       "requestAccess": {

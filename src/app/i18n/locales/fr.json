@@ -944,7 +944,8 @@
           "errorInviting": "Erreur lors de l'envoi de l'invitation à {{email}}",
           "userAlreadyInvited": "L'utilisateur {{email}} a déjà été invité",
           "acceptedError": "Erreur lors de l'acceptation de l'invitation au dossier partagé",
-          "declinedError": "Erreur lors du refus de l'invitation au dossier partagé"
+          "declinedError": "Erreur lors du refus de l'invitation au dossier partagé",
+          "loadingRoles": "Impossible de charger les rôles disponibles. Veuillez réessayer plus tard."
         }
       },
       "requestAccess": {
