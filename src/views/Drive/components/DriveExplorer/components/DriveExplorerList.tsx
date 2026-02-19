@@ -320,12 +320,14 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
 
   const folderSharedTrashMenu = contextMenuTrashFolder({
     restoreItem: restoreItem,
+    showDetails: showDetails,
     deletePermanently: deletePermanently,
   });
 
   const fileSharedTrashMenu = contextMenuTrashItems({
     openPreview: openPreview,
     restoreItem: restoreItem,
+    showDetails: showDetails,
     deletePermanently: deletePermanently,
   });
 
