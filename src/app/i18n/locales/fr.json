@@ -1954,14 +1954,14 @@
               "Chiffrement Post-Quantique",
               "Chiffrement Zéro-Connaissance",
               "Authentification à Deux Facteurs",
+              "Historique des versions de fichiers",
               "Sauvegarde de votre ordinateur",
               "Partage de fichiers protégé par mot de passe",
               "Inviter, partager et collaborer",
               "VPN Chiffré",
               "Antivirus",
               "Nettoyeur"
-            ],
-            "comingSoonFeatures": ["Historique des versions de fichiers"]
+            ]
           },
           "5TB": {
             "title": "Ultimate (Ultime)",
@@ -1970,6 +1970,7 @@
               "Chiffrement Post-Quantique",
               "Chiffrement Zéro-Connaissance",
               "Authentification à Deux Facteurs",
+              "Historique des versions de fichiers",
               "Sauvegarde de votre ordinateur",
               "Partage de fichiers protégé par mot de passe",
               "Inviter, partager et collaborer",
@@ -1980,7 +1981,7 @@
               "Nettoyeur",
               "Meet (Réunion)"
             ],
-            "comingSoonFeatures": ["Historique des versions de fichiers", "Mail", "Photos"]
+            "comingSoonFeatures": ["Mail", "Photos"]
           },
           "1GB": {
             "title": "Gratuit",
@@ -2015,6 +2016,7 @@
               "Chiffrement post-quantique",
               "Chiffrement à connaissance nulle",
               "Authentification à deux facteurs",
+              "Historique des versions de fichiers",
               "Sauvegarde de l'ordinateur",
               "Partage de fichiers protégé par mot de passe",
               "Inviter, partager et collaborer",
@@ -2026,8 +2028,7 @@
               "Nettoyeur",
               "Meet",
               "Mail"
-            ],
-            "comingSoonFeatures": ["Historique des versions de fichiers"]
+            ]
           }
         },
         "user": "Utilisateur"

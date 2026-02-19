@@ -1948,14 +1948,14 @@
               "Post-Quanten-Verschlüsselung",
               "Zero-Knowledge-Verschlüsselung",
               "Zwei-Faktor-Authentifizierung",
+              "Dateiversionierung",
               "Computer-Backup",
               "Passwortgeschütztes Teilen von Dateien",
               "Einladen, teilen & zusammenarbeiten",
               "Verschlüsseltes VPN",
               "Antivirus",
               "Cleaner (Bereinigungstool)"
-            ],
-            "comingSoonFeatures": ["Dateiversionierung"]
+            ]
           },
           "5TB": {
             "title": "Ultimate (Ultimativ)",
@@ -1964,6 +1964,7 @@
               "Post-Quanten-Verschlüsselung",
               "Zero-Knowledge-Verschlüsselung",
               "Zwei-Faktor-Authentifizierung",
+              "Dateiversionierung",
               "Computer-Backup",
               "Passwortgeschütztes Teilen von Dateien",
               "Einladen, teilen & zusammenarbeiten",
@@ -1974,7 +1975,7 @@
               "Cleaner (Bereinigungstool)",
               "Meet (Videokonferenz)"
             ],
-            "comingSoonFeatures": ["Dateiversionierung", "Mail", "Fotos"]
+            "comingSoonFeatures": ["Mail", "Fotos"]
           },
           "1GB": {
             "title": "Kostenlos",
@@ -2009,6 +2010,7 @@
               "Post-Quanten-Verschlüsselung",
               "Zero-Knowledge-Verschlüsselung",
               "Zwei-Faktor-Authentifizierung",
+              "Dateiversionierung",
               "Computer-Backup",
               "Passwortgeschützte Dateifreigabe",
               "Einladen, teilen & zusammenarbeiten",
@@ -2020,8 +2022,7 @@
               "Cleaner",
               "Meet",
               "Mail"
-            ],
-            "comingSoonFeatures": ["Dateiversionierung"]
+            ]
           }
         },
         "user": "Benutzer"
