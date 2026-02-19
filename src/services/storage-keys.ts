@@ -5,6 +5,7 @@ export const STORAGE_KEYS = {
   FOLDER_ACCESS_TOKEN: 'folderAccessToken',
   FILE_ACCESS_TOKEN: 'fileAccessToken',
   GCLID: 'gclid',
+  HAS_SEEN_TRASH_DISPOSAL_DIALOG: 'hasSeenTrashDisposalDialog',
   THEMES: {
     MANAGEMENTID_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'managementid_theme_enabled',
     ID_MANAGEMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'id_management_theme_enabled',
