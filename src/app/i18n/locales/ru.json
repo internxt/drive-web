@@ -824,9 +824,15 @@
         "uploadedBy": "Загружено",
         "shared": "Общий",
         "size": "Размер",
+        "numberOfFiles": "Количество файлов",
         "modified": "Изменено",
         "location": "Расположение"
-      }
+      },
+      "fileCount_one": "{{count}} файл",
+      "fileCount_few": "{{count}} файла",
+      "fileCount_many": "{{count}} файлов",
+      "fileCount_other": "{{count}} файлов",
+      "fileCountMoreThan1000": "Более 1000 файлов"
     },
     "shareModal": {
       "title": "Поделиться \"{{name}}\"",
