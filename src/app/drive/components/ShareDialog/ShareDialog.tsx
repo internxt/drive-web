@@ -294,7 +294,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
             isLoading={isLoading}
             onCopyLink={onCopyLink}
             changeAccess={changeAccess}
-            setShowStopSharingConfirmation={setShowStopSharingConfirmation}
+            setShowStopSharingConfirmation={() => actionDispatch(setShowStopSharingConfirmation(true))}
           />
 
           <SharePasswordInputDialog
@@ -329,7 +329,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
           <StopSharingItemDialog
             showStopSharingConfirmation={showStopSharingConfirmation}
-            onClose={() => setShowStopSharingConfirmation(false)}
+            onClose={() => actionDispatch(setShowStopSharingConfirmation(false))}
             itemToShareName={itemToShare?.item.name ?? ''}
             isLoading={isLoading}
             onStopSharing={onStopSharing}
