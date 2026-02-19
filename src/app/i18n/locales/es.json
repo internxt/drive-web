@@ -992,7 +992,8 @@
           "errorInviting": "Error al enviar la invitación a {{email}}",
           "userAlreadyInvited": "El usuario {{email}} ya ha sido invitado",
           "acceptedError": "Error al aceptar la invitación a la carpeta compartida",
-          "declinedError": "Error al rechazar la invitación a la carpeta compartida"
+          "declinedError": "Error al rechazar la invitación a la carpeta compartida",
+          "loadingRoles": "No se pudieron cargar los roles disponibles. Por favor, inténtalo de nuevo más tarde."
         }
       },
       "requestAccess": {
