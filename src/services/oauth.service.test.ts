@@ -254,6 +254,106 @@ describe('OAuth authentication service', () => {
       expect(httpOpener.postMessage).not.toHaveBeenCalled();
     });
 
+    it('when parent window matches Cloudflare Workers preview pattern, then transmission is allowed', () => {
+      const workersPreviewOpener = {
+        postMessage: vi.fn(),
+        location: {
+          origin: 'https://0930e143-meet-web.storageinternxt.workers.dev',
+        },
+      };
+
+      Object.defineProperty(window, 'opener', {
+        value: workersPreviewOpener,
+        writable: true,
+        configurable: true,
+      });
+
+      const result = oauthService.sendAuthSuccess(mockUserSettings, mockNewToken);
+
+      expect(result).toBe(true);
+      expect(workersPreviewOpener.postMessage).toHaveBeenCalledWith(
+        {
+          type: OAuthMessageType.SUCCESS,
+          payload: {
+            mnemonic: btoa(mockUserSettings.mnemonic),
+            newToken: btoa(mockNewToken),
+          },
+        },
+        'https://0930e143-meet-web.storageinternxt.workers.dev',
+      );
+    });
+
+    it('when referrer matches Cloudflare Workers preview pattern, then transmission is allowed', () => {
+      const crossOriginOpener = {
+        postMessage: vi.fn(),
+        get location() {
+          throw new Error('Cross-origin access denied');
+        },
+      };
+
+      Object.defineProperty(document, 'referrer', {
+        value: 'https://abc12345-meet-web.storageinternxt.workers.dev/login',
+        writable: true,
+        configurable: true,
+      });
+
+      Object.defineProperty(window, 'opener', {
+        value: crossOriginOpener,
+        writable: true,
+        configurable: true,
+      });
+
+      const result = oauthService.sendAuthSuccess(mockUserSettings, mockNewToken);
+
+      expect(result).toBe(true);
+      expect(crossOriginOpener.postMessage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: OAuthMessageType.SUCCESS,
+        }),
+        'https://abc12345-meet-web.storageinternxt.workers.dev',
+      );
+    });
+
+    it('when parent window uses HTTP on Workers preview, then transmission is blocked', () => {
+      const httpWorkersOpener = {
+        postMessage: vi.fn(),
+        location: {
+          origin: 'http://0930e143-meet-web.storageinternxt.workers.dev',
+        },
+      };
+
+      Object.defineProperty(window, 'opener', {
+        value: httpWorkersOpener,
+        writable: true,
+        configurable: true,
+      });
+
+      const result = oauthService.sendAuthSuccess(mockUserSettings, mockNewToken);
+
+      expect(result).toBe(false);
+      expect(httpWorkersOpener.postMessage).not.toHaveBeenCalled();
+    });
+
+    it('when parent window is a non-meet Workers preview, then transmission is blocked', () => {
+      const otherWorkersOpener = {
+        postMessage: vi.fn(),
+        location: {
+          origin: 'https://0930e143-other-app.storageinternxt.workers.dev',
+        },
+      };
+
+      Object.defineProperty(window, 'opener', {
+        value: otherWorkersOpener,
+        writable: true,
+        configurable: true,
+      });
+
+      const result = oauthService.sendAuthSuccess(mockUserSettings, mockNewToken);
+
+      expect(result).toBe(false);
+      expect(otherWorkersOpener.postMessage).not.toHaveBeenCalled();
+    });
+
     it('when parent window does not match allowed domain patterns, then transmission is blocked', () => {
       const disallowedPatternOpener = {
         postMessage: vi.fn(),
