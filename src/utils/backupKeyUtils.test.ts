@@ -65,7 +65,68 @@ describe('backupKeyUtils', () => {
   });
 
   describe('handleExportBackupKey', () => {
-    it('should export backup key successfully', () => {
+    it('When user has valid public keys, then backup should include publicKeys', async () => {
+      const mockMnemonic =
+        'whip pipe sphere rail witness sting hawk project east return unhappy focus shop dry midnight frog critic lion horror slide luxury consider vibrant timber';
+      const mockUser = {
+        privateKey: 'test-private-key',
+        keys: {
+          ecc: {
+            privateKey: 'test-ecc-private-key',
+            publicKey: 'test-ecc-public-key',
+          },
+          kyber: {
+            privateKey: 'test-kyber-private-key',
+            publicKey: 'test-kyber-public-key',
+          },
+        },
+        userId: 'test-user-id',
+        uuid: 'test-uuid',
+        email: 'test@example.com',
+        name: 'Test User',
+        lastname: 'User',
+        username: 'testuser',
+        bridgeUser: 'test-bridge-user',
+        bucket: 'test-bucket',
+        backupsBucket: null,
+        root_folder_id: 0,
+        rootFolderId: 'test-root-folder-id',
+        rootFolderUuid: 'test-root-folder-uuid',
+        sharedWorkspace: false,
+        credit: 0,
+        publicKey: 'test-public-key',
+        revocationKey: 'test-revocation-key',
+        appSumoDetails: null,
+        registerCompleted: false,
+        hasReferralsProgram: false,
+        createdAt: new Date(),
+        avatar: null,
+        emailVerified: false,
+      } as UserSettings;
+
+      vi.mocked(localStorageService.get).mockReturnValue(mockMnemonic);
+      vi.mocked(localStorageService.getUser).mockReturnValue(mockUser);
+
+      handleExportBackupKey(mockTranslate);
+
+      expect(saveAs).toHaveBeenCalledWith(expect.any(Blob), 'INTERNXT-BACKUP-KEY.txt');
+
+      const blobCall = vi.mocked(saveAs).mock.calls[0][0] as Blob;
+      const blobContent = await blobCall.text();
+      const parsedBackup = JSON.parse(blobContent);
+
+      expect(parsedBackup.publicKeys).toEqual({
+        ecc: 'test-ecc-public-key',
+        kyber: 'test-kyber-public-key',
+      });
+
+      expect(notificationsService.show).toHaveBeenCalledWith({
+        text: mockTranslate('views.account.tabs.security.backupKey.success'),
+        type: ToastType.Success,
+      });
+    });
+
+    it('When user has no public keys, then backup should not include publicKeys', async () => {
       const mockMnemonic =
         'whip pipe sphere rail witness sting hawk project east return unhappy focus shop dry midnight frog critic lion horror slide luxury consider vibrant timber';
       const mockUser = {
@@ -107,18 +168,68 @@ describe('backupKeyUtils', () => {
 
       handleExportBackupKey(mockTranslate);
 
-      expect(localStorageService.get).toHaveBeenCalledWith('xMnemonic');
-      expect(localStorageService.getUser).toHaveBeenCalled();
-
       expect(saveAs).toHaveBeenCalledWith(expect.any(Blob), 'INTERNXT-BACKUP-KEY.txt');
 
       const blobCall = vi.mocked(saveAs).mock.calls[0][0] as Blob;
-      expect(blobCall.type).toBe('text/plain');
+      const blobContent = await blobCall.text();
+      const parsedBackup = JSON.parse(blobContent);
+
+      expect(parsedBackup.publicKeys).toBeUndefined();
 
       expect(notificationsService.show).toHaveBeenCalledWith({
         text: mockTranslate('views.account.tabs.security.backupKey.success'),
         type: ToastType.Success,
       });
+    });
+
+    it('When user has only ecc public key, then backup should not include publicKeys', async () => {
+      const mockMnemonic =
+        'whip pipe sphere rail witness sting hawk project east return unhappy focus shop dry midnight frog critic lion horror slide luxury consider vibrant timber';
+      const mockUser = {
+        privateKey: 'test-private-key',
+        keys: {
+          ecc: {
+            privateKey: 'test-ecc-private-key',
+            publicKey: 'test-ecc-public-key',
+          },
+          kyber: {
+            privateKey: 'test-kyber-private-key',
+          },
+        },
+        userId: 'test-user-id',
+        uuid: 'test-uuid',
+        email: 'test@example.com',
+        name: 'Test User',
+        lastname: 'User',
+        username: 'testuser',
+        bridgeUser: 'test-bridge-user',
+        bucket: 'test-bucket',
+        backupsBucket: null,
+        root_folder_id: 0,
+        rootFolderId: 'test-root-folder-id',
+        rootFolderUuid: 'test-root-folder-uuid',
+        sharedWorkspace: false,
+        credit: 0,
+        publicKey: 'test-public-key',
+        revocationKey: 'test-revocation-key',
+        appSumoDetails: null,
+        registerCompleted: false,
+        hasReferralsProgram: false,
+        createdAt: new Date(),
+        avatar: null,
+        emailVerified: false,
+      } as UserSettings;
+
+      vi.mocked(localStorageService.get).mockReturnValue(mockMnemonic);
+      vi.mocked(localStorageService.getUser).mockReturnValue(mockUser);
+
+      handleExportBackupKey(mockTranslate);
+
+      const blobCall = vi.mocked(saveAs).mock.calls[0][0] as Blob;
+      const blobContent = await blobCall.text();
+      const parsedBackup = JSON.parse(blobContent);
+
+      expect(parsedBackup.publicKeys).toBeUndefined();
     });
 
     it('should handle missing mnemonic', () => {
@@ -192,6 +303,88 @@ describe('backupKeyUtils', () => {
   });
 
   describe('detectBackupKeyFormat', () => {
+    it('When backup has valid publicKeys, then result should include publicKeys', () => {
+      const mockBackupData = {
+        mnemonic: 'test mnemonic',
+        privateKey: 'test-private-key',
+        keys: {
+          ecc: 'test-ecc-key',
+          kyber: 'test-kyber-key',
+        },
+        publicKeys: {
+          ecc: 'test-ecc-public-key',
+          kyber: 'test-kyber-public-key',
+        },
+      };
+
+      const backupKeyContent = JSON.stringify(mockBackupData);
+
+      const result = detectBackupKeyFormat(backupKeyContent);
+
+      expect(result.backupData?.publicKeys).toEqual({
+        ecc: 'test-ecc-public-key',
+        kyber: 'test-kyber-public-key',
+      });
+    });
+
+    it('When backup has no publicKeys, then result should not include publicKeys', () => {
+      const mockBackupData: BackupData = {
+        mnemonic: 'test mnemonic',
+        privateKey: 'test-private-key',
+        keys: {
+          ecc: 'test-ecc-key',
+          kyber: 'test-kyber-key',
+        },
+      };
+
+      const backupKeyContent = JSON.stringify(mockBackupData);
+
+      const result = detectBackupKeyFormat(backupKeyContent);
+
+      expect(result.backupData?.publicKeys).toBeUndefined();
+    });
+
+    it('When backup has only ecc publicKey, then result should not include publicKeys', () => {
+      const mockBackupData = {
+        mnemonic: 'test mnemonic',
+        privateKey: 'test-private-key',
+        keys: {
+          ecc: 'test-ecc-key',
+          kyber: 'test-kyber-key',
+        },
+        publicKeys: {
+          ecc: 'test-ecc-public-key',
+        },
+      };
+
+      const backupKeyContent = JSON.stringify(mockBackupData);
+
+      const result = detectBackupKeyFormat(backupKeyContent);
+
+      expect(result.backupData?.publicKeys).toBeUndefined();
+    });
+
+    it('When backup has empty publicKeys, then result should not include publicKeys', () => {
+      const mockBackupData = {
+        mnemonic: 'test mnemonic',
+        privateKey: 'test-private-key',
+        keys: {
+          ecc: 'test-ecc-key',
+          kyber: 'test-kyber-key',
+        },
+        publicKeys: {
+          ecc: '',
+          kyber: '',
+        },
+      };
+
+      const backupKeyContent = JSON.stringify(mockBackupData);
+
+      const result = detectBackupKeyFormat(backupKeyContent);
+
+      expect(result.backupData?.publicKeys).toBeUndefined();
+    });
+
     it('should detect new backup key format with full data', () => {
       const mockBackupData: BackupData = {
         mnemonic: 'test mnemonic',
