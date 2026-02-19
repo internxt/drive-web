@@ -1190,6 +1190,10 @@
       "restore": "Восстановить",
       "delete-permanently": "Удалить навсегда"
     },
+    "autoDelete": {
+      "inDays_one": "Через {{count}} день",
+      "inDays_other": "Через {{count}} дней"
+    },
     "automaticDisposal": {
       "badge": "Новое обновление",
       "title": "Автоматическая очистка Корзины",
@@ -1473,7 +1477,8 @@
         "name": "Имя",
         "modified": "Изменено",
         "size": "Размер",
-        "actions": "Действия"
+        "actions": "Действия",
+        "autoDelete": "Автоматическое удаление"
       }
     },
     "viewMode": {

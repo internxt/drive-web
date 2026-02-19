@@ -28,6 +28,15 @@ export const formatDefaultDate = (date: Date | string | number, translate: (key:
   return dayjs(date).format(`D MMM, YYYY [${translatedAt}] HH:mm`);
 };
 
+function calculateDaysUntilDate(targetDate?: string | Date): number {
+  if (!targetDate) return 0;
+
+  const target = dayjs(targetDate).startOf('day');
+  const now = dayjs().startOf('day');
+  const diffDays = target.diff(now, 'day');
+  return Math.max(diffDays, 0);
+}
+
 const dateService = {
   format,
   fromNow,
@@ -35,6 +44,7 @@ const dateService = {
   getCurrentDate,
   getExpirationDate,
   formatDefaultDate,
+  calculateDaysUntilDate,
 };
 
 export default dateService;
