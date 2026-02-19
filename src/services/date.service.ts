@@ -31,8 +31,8 @@ export const formatDefaultDate = (date: Date | string | number, translate: (key:
 function calculateDaysUntilDate(targetDate?: string | Date): number {
   if (!targetDate) return 0;
 
-  const target = dayjs(targetDate);
-  const now = dayjs();
+  const target = dayjs(targetDate).startOf('day');
+  const now = dayjs().startOf('day');
   const diffDays = target.diff(now, 'day');
   return Math.max(diffDays, 0);
 }
