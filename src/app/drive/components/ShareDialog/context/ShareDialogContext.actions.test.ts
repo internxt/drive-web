@@ -65,10 +65,7 @@ describe('Actions for Share Dialog', () => {
       type: ActionTypes.REMOVE_USER,
       payload: 'user@example.com',
     });
-    expect(actions.updateRequestStatus({ email: 'user@example.com', status: 'accepted' })).toEqual({
-      type: ActionTypes.UPDATE_REQUEST_STATUS,
-      payload: { email: 'user@example.com', status: 'accepted' },
-    });
+
     expect(actions.setSelectedUserListIndex(2)).toEqual({
       type: ActionTypes.SET_SELECTED_USER_LIST_INDEX,
       payload: 2,

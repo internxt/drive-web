@@ -957,7 +957,8 @@
           "errorInviting": "Ошибка при отправке приглашения на {{email}}",
           "userAlreadyInvited": "Пользователь {{email}} уже был приглашен",
           "acceptedError": "Ошибка при принятии приглашения к общей папке",
-          "declinedError": "Ошибка при отклонении приглашения к общей папке"
+          "declinedError": "Ошибка при отклонении приглашения к общей папке",
+          "loadingRoles": "Не удалось загрузить доступные роли. Пожалуйста, попробуйте позже."
         }
       },
       "requestAccess": {
@@ -1966,14 +1967,14 @@
               "Постквантовая криптография",
               "Шифрование с нулевым разглашением (Zero-Knowledge)",
               "Двухфакторная аутентификация",
+              "Версионирование файлов",
               "Резервное копирование вашего компьютера",
               "Обмен файлами с защитой паролем",
               "Приглашение, обмен и совместная работа",
               "Зашифрованный VPN",
               "Антивирус",
               "Cleaner (Очиститель)"
-            ],
-            "comingSoonFeatures": ["Версионирование файлов"]
+            ]
           },
           "5TB": {
             "title": "Ultimate (Максимальный)",
@@ -1982,6 +1983,7 @@
               "Постквантовая криптография",
               "Шифрование с нулевым разглашением (Zero-Knowledge)",
               "Двухфакторная аутентификация",
+              "Версионирование файлов",
               "Резервное копирование вашего компьютера",
               "Обмен файлами с защитой паролем",
               "Приглашение, обмен и совместная работа",
@@ -1992,7 +1994,7 @@
               "Cleaner (Очиститель)",
               "Meet (Видеоконференции)"
             ],
-            "comingSoonFeatures": ["Версионирование файлов", "Mail (Почта)", "Фотографии"]
+            "comingSoonFeatures": ["Mail (Почта)", "Фотографии"]
           },
           "1GB": {
             "title": "Free (Бесплатный)",
@@ -2003,43 +2005,43 @@
           "title": "Детали плана",
           "storage": " хранилища",
           "1TB": {
-            "title": "Standard",
+            "title": "Стандартный",
             "features": [
-              "1 TB di spazio di archiviazione crittografato per utente",
-              "Crittografia post-quantistica",
-              "Crittografia zero-knowledge",
-              "Autenticazione a due fattori",
-              "Backup del computer",
-              "Condivisione file protetta da password",
-              "Invita, condividi e collabora",
-              "Conformità GDPR",
-              "CLI e WebDAV",
-              "Gestione dell'organizzazione",
-              "VPN crittografata",
-              "Antivirus",
-              "Pulizia"
+              "1 ТБ зашифрованного хранилища для каждого пользователя",
+              "Постквантовое шифрование",
+              "Шифрование с нулевым разглашением",
+              "Двухфакторная аутентификация",
+              "Резервное копирование компьютера",
+              "Обмен файлами, защищенный паролем",
+              "Приглашение, обмен и совместная работа",
+              "Соответствие GDPR",
+              "CLI и WebDAV",
+              "Управление организацией",
+              "Зашифрованный VPN",
+              "Антивирус",
+              "Очистка"
             ]
           },
           "2TB": {
-            "title": "Pro",
+            "title": "Профессиональный",
             "features": [
-              "2 TB di spazio di archiviazione crittografato per utente",
-              "Crittografia post-quantistica",
-              "Crittografia zero-knowledge",
-              "Autenticazione a due fattori",
-              "Backup del computer",
-              "Condivisione file protetta da password",
-              "Invita, condividi e collabora",
-              "Conformità GDPR",
-              "Supporto per CLI, WebDAV, Rclone e NAS",
-              "Gestione dell'organizzazione",
-              "VPN crittografata",
-              "Antivirus",
-              "Pulizia",
+              "2 ТБ зашифрованного хранилища для каждого пользователя",
+              "Постквантовое шифрование",
+              "Шифрование с нулевым разглашением",
+              "Двухфакторная аутентификация",
+              "Версионность файлов",
+              "Резервное копирование компьютера",
+              "Обмен файлами, защищенный паролем",
+              "Приглашение, обмен и совместная работа",
+              "Соответствие GDPR",
+              "Поддержка CLI, WebDAV, Rclone и NAS",
+              "Управление организацией",
+              "Зашифрованный VPN",
+              "Антивирус",
+              "Очистка",
               "Meet",
               "Mail"
-            ],
-            "comingSoonFeatures": ["Versionamento dei file"]
+            ]
           }
         },
         "user": "Пользователь"
