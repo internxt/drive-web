@@ -10,8 +10,6 @@ interface PlanSelectionCardProps {
   isSelected: boolean;
   onClick: () => void;
   isCurrentPlan?: boolean;
-  displayBillingSlash?: boolean;
-  isBusiness?: boolean;
 }
 
 const PlanSelectionCard = ({
@@ -22,21 +20,14 @@ const PlanSelectionCard = ({
   isSelected,
   onClick,
   isCurrentPlan,
-  displayBillingSlash,
-  isBusiness = false,
 }: PlanSelectionCardProps) => {
   const selectedValidation = (isSelected && isCurrentPlan) || isSelected;
   const isSelectedOutsideBorderStyle = selectedValidation ? 'border-transparent' : '';
   const isSelectedInsideBorderStyle = selectedValidation
     ? '!border-primary ring ring-primary/10 bg-primary/3 dark:bg-primary/10 dark:ring-primary/30'
     : '';
-  let userText = isBusiness ? '/' + t('preferences.account.plans.user') : '';
-  if (isBusiness && !displayBillingSlash) {
-    userText = ' ' + t('preferences.account.plans.user');
-  }
-  const displayText = displayBillingSlash
-    ? `${amount} ${currency}/${billing}${userText}`
-    : `${amount} ${currency} ${billing}${userText}`;
+
+  const displayText = `${amount} ${currency} ${billing}`;
 
   return (
     <div
@@ -50,7 +41,7 @@ const PlanSelectionCard = ({
       >
         <div className="flex w-full flex-col justify-between space-y-2">
           <div className="flex flex-row justify-between">
-            <RoleBadge roleText={getPlan(capacity, isBusiness)} role={'planType'} size={'small'} />
+            <RoleBadge roleText={getPlan(capacity)} role={'planType'} size={'small'} />
             {isCurrentPlan && (
               <RoleBadge roleText={t('preferences.account.plans.current')} role={'current'} size={'small'} />
             )}
