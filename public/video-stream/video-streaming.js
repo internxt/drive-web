@@ -119,7 +119,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  if (url.pathname.endsWith('.html') || url.pathname.endsWith('.js')) {
+  if (url.pathname.endsWith('.html') || url.pathname.endsWith('.js') || url.pathname === '/video-stream/player') {
     return;
   }
 
