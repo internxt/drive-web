@@ -1,13 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { localStorageService } from 'services';
-import { VideoStreamingSession } from 'app/drive/services/video-streaming.service/VideoStreamingSession';
 import { FormatFileViewerProps } from '../../FileViewer';
-import { generateThumbnailBlob } from 'app/drive/services/thumbnail.service';
+import { VideoStreamingSession } from 'app/drive/services/video-streaming.service/VideoStreamingSession';
 
 const PROGRESS_INCREMENT = 0.2;
 const PROGRESS_INTERVAL_MS = 500;
 const MAX_SIMULATED_PROGRESS = 0.95;
-const VIDEO_READY_STATE_FOR_FRAME = 2;
 
 const FileVideoViewer = ({
   file,
@@ -16,8 +14,8 @@ const FileVideoViewer = ({
   setIsPreviewAvailable,
   handlersForSpecialItems,
 }: FormatFileViewerProps): JSX.Element => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const sessionRef = useRef<VideoStreamingSession | null>(null);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [canPlay, setCanPlay] = useState(false);
   const [simulatedProgress, setSimulatedProgress] = useState(0);
@@ -53,7 +51,6 @@ const FileVideoViewer = ({
     }
   }, [simulatedProgress, canPlay, disableVideoStream, handlersForSpecialItems]);
 
-  // Handle shared items
   useEffect(() => {
     if (!disableVideoStream || !videoRef.current || !blob) return;
 
@@ -66,9 +63,8 @@ const FileVideoViewer = ({
     };
   }, [disableVideoStream, blob]);
 
-  // Handle streaming playback
   useEffect(() => {
-    if (disableVideoStream) return;
+    if (disableVideoStream || !containerRef.current) return;
 
     const user = localStorageService.getUser();
     const mnemonic = user?.mnemonic ?? '';
@@ -77,11 +73,12 @@ const FileVideoViewer = ({
 
     if (!bridgeUser || !userId || !mnemonic) {
       console.error('[FileVideoViewer] Missing credentials');
+      handleOnError('Missing credentials');
       return;
     }
 
     const session = new VideoStreamingSession({
-      fileId: file.fileId,
+      fileId: file.fileId ?? '',
       bucketId: file.bucket,
       fileSize: file.size,
       fileType: file.type,
@@ -91,84 +88,57 @@ const FileVideoViewer = ({
         : { user: bridgeUser, pass: userId },
     });
 
-    sessionRef.current = session;
-
-    session
-      .init()
-      .then((success) => {
-        // If init returned false, session was destroyed during init - just ignore
-        if (!success) return;
-
-        const url = session.getVideoUrl();
-        if (videoRef.current && url) {
-          videoRef.current.src = url;
-          videoRef.current.load();
-        }
-      })
-      .catch((error) => {
-        console.error('[FileVideoViewer] Error initializing session:', error);
-        setIsPreviewAvailable(false);
-      });
+    session.init(containerRef.current, handleOnReady, handleOnError);
 
     return () => {
       session.destroy();
-      sessionRef.current = null;
       setCanPlay(false);
-      if (videoRef.current) {
-        videoRef.current.pause();
-        videoRef.current.removeAttribute('src');
-      }
     };
-  }, [file.fileId, file.bucket, file.size, file.type, disableVideoStream, setIsPreviewAvailable]);
+  }, [file.fileId, file.bucket, file.size, file.type, disableVideoStream]);
 
-  // Video event listeners
   useEffect(() => {
+    if (!disableVideoStream) return;
     const video = videoRef.current;
     if (!video) return;
 
-    const handleError = (event: Event) => {
-      console.error('[FileVideoViewer] Video error:', event);
-      const error = video.error;
-      if (error) {
-        console.error('[FileVideoViewer] Error code:', error.code, 'message:', error.message);
-      }
-      setIsPreviewAvailable(false);
-    };
-
-    const handleCanPlay = () => {
-      handlersForSpecialItems?.handleUpdateProgress(1);
-      setCanPlay(true);
-
-      const video = videoRef.current;
-      if (video && video.readyState >= VIDEO_READY_STATE_FOR_FRAME) {
-        generateThumbnailBlob(video, async (blob) => {
-          if (!blob) return;
-          await handlersForSpecialItems?.handleUpdateThumbnail(file, blob);
-        });
-      }
-    };
-
-    video.addEventListener('error', handleError);
-    video.addEventListener('canplay', handleCanPlay);
+    video.addEventListener('error', (error) => handleOnError(error.message));
+    video.addEventListener('canplay', handleOnReady);
 
     return () => {
-      video.removeEventListener('error', handleError);
-      video.removeEventListener('canplay', handleCanPlay);
+      video.removeEventListener('error', () => handleOnError);
+      video.removeEventListener('canplay', handleOnReady);
     };
-  }, [setIsPreviewAvailable, handlersForSpecialItems, file]);
+  }, [disableVideoStream]);
 
-  return (
-    <video
-      ref={videoRef}
-      controls
-      autoPlay
-      preload="metadata"
-      style={{ width: '100%', maxHeight: '80vh', backgroundColor: '#000' }}
-      className={canPlay ? 'flex' : 'hidden'}
-    >
-      <track kind="captions" />
-    </video>
-  );
+  const handleOnReady = () => {
+    handlersForSpecialItems?.handleUpdateProgress(1);
+    setCanPlay(true);
+    setIsPreviewAvailable(true);
+  };
+
+  const handleOnError = (errorMessage?: string) => {
+    console.error(`[FileVideoViewer] Video error: ${errorMessage}`);
+    setIsPreviewAvailable(false);
+  };
+
+  // Blob
+  if (disableVideoStream) {
+    return (
+      <video
+        ref={videoRef}
+        controls
+        autoPlay
+        preload="metadata"
+        style={{ width: '100%', maxHeight: '80vh', backgroundColor: '#000' }}
+        className={canPlay ? 'flex' : 'hidden'}
+      >
+        <track kind="captions" />
+      </video>
+    );
+  }
+
+  // Stream
+  return <div ref={containerRef} className={canPlay ? 'flex items-center justify-center' : 'hidden'} />;
 };
 
 export default FileVideoViewer;

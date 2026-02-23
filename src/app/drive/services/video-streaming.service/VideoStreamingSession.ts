@@ -1,7 +1,4 @@
-import { downloadChunkFile } from 'app/network/download/v2';
-import { binaryStreamToUint8Array } from 'services/stream.service';
-import { getVideoMimeType } from 'services';
-import { VideoStreamingService, ChunkRequestPayload } from './index';
+import { VideoStreamingService } from './index';
 
 export interface VideoStreamingSessionConfig {
   fileId: string;
@@ -15,45 +12,148 @@ export interface VideoStreamingSessionConfig {
   };
 }
 
-const CACHE_SIZE_LIMIT = 20;
+const PLAYER_URL = '/video-stream/player.html';
+
+type EVENTS = 'PLAYER_LOADED' | 'READY' | 'ERROR' | 'CHUNK_REQUEST';
 
 export class VideoStreamingSession {
   private service: VideoStreamingService | null = null;
-  private readonly abortController = new AbortController();
-  private readonly chunkCache = new Map<string, Uint8Array>();
-  private readonly pendingRequests = new Map<string, Promise<Uint8Array>>();
   private isDestroyed = false;
-  private videoUrl: string | null = null;
+  private iframe: HTMLIFrameElement | null = null;
+  private messageHandler: ((event: MessageEvent) => void | Promise<void>) | null = null;
 
   constructor(private readonly config: VideoStreamingSessionConfig) {}
 
-  async init(): Promise<boolean> {
-    if (this.isDestroyed) {
-      return false;
-    }
+  async init(container: HTMLElement, onReady: () => void, onError: (error: string) => void): Promise<boolean> {
+    this.service = new VideoStreamingService(this.config);
 
-    const service = new VideoStreamingService(
-      {
-        fileSize: this.config.fileSize,
-        mimeType: getVideoMimeType(this.config.fileType),
-      },
-      this.handleChunkRequest.bind(this),
-    );
+    this.setupMessageListener(onReady, onError);
 
-    this.service = service;
+    await this.generateIframe(container);
 
-    await service.init();
-
-    if (this.isDestroyed) {
-      return false;
-    }
-
-    this.videoUrl = service.getVideoUrl();
     return true;
   }
 
-  getVideoUrl(): string | null {
-    return this.videoUrl;
+  private generateIframe(container: HTMLElement): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (document.getElementById('video-iframe')) {
+        this.iframe = document.getElementById('video-iframe') as HTMLIFrameElement;
+        resolve();
+      }
+
+      this.iframe = document.createElement('iframe');
+      this.iframe.id = 'video-iframe';
+      this.iframe.src = PLAYER_URL;
+      this.iframe.style.cssText = `
+        background: transparent;
+        border: none;
+        display: block;
+        max-width: 90vw;
+        max-height: 80vh;
+      `;
+      this.iframe.allow = 'autoplay';
+
+      this.iframe.onload = () => {
+        console.log('[IframeVideoService] Iframe loaded, waiting for player ready...');
+      };
+
+      this.iframe.onerror = () => {
+        reject(new Error('Failed to load video player iframe'));
+      };
+
+      container.appendChild(this.iframe);
+      resolve();
+    });
+  }
+
+  // Set up the message listener
+  private setupMessageListener(onReady: () => void, onError: (error: string) => void): void {
+    this.messageHandler = async (event: MessageEvent) => {
+      if (this.iframe && event.source !== this.iframe.contentWindow) {
+        return;
+      }
+
+      const eventType = event.data.type as EVENTS;
+      const payload = event.data.payload;
+
+      switch (eventType) {
+        case 'PLAYER_LOADED':
+          console.log('[IframeVideoService] Player loaded, initializing video...');
+          this.sendToIframe('INIT_VIDEO', {
+            sessionId: this.config.fileId,
+            fileSize: this.config.fileSize,
+            mimeType: this.config.fileType,
+          });
+          break;
+
+        case 'READY':
+          console.log('[IframeVideoService] Video ready to play');
+          if (payload.videoWidth && payload.videoHeight && this.iframe) {
+            this.resizeIframeToVideo(payload.videoWidth, payload.videoHeight);
+          }
+          onReady();
+          break;
+
+        case 'ERROR':
+          console.error('[IframeVideoService] Error:', payload.message);
+          onError(payload.message);
+          break;
+
+        case 'CHUNK_REQUEST': {
+          console.log('[IframeVideoService] Chunk request received: ', payload);
+
+          if (this.isDestroyed) {
+            return this.sendToIframe('CHUNK_RESPONSE', {
+              requestId: payload.requestId,
+              error: 'Session destroyed',
+            });
+          }
+
+          const chunkData = await this.service?.handleChunkRequest(payload);
+
+          if (chunkData) {
+            this.sendToIframe('CHUNK_RESPONSE', {
+              requestId: payload.requestId,
+              data: chunkData,
+            });
+          }
+          break;
+        }
+      }
+    };
+
+    window.addEventListener('message', this.messageHandler);
+  }
+
+  private sendToIframe(type: string, payload: unknown): void {
+    if (this.iframe) {
+      this.iframe.contentWindow?.postMessage({ type, payload }, globalThis.location.origin);
+    }
+  }
+
+  private resizeIframeToVideo(videoWidth: number, videoHeight: number): void {
+    if (!this.iframe) return;
+
+    const maxWidth = window.innerWidth * 0.9;
+    const maxHeight = window.innerHeight * 0.8;
+
+    const aspectRatio = videoWidth / videoHeight;
+
+    let width = videoWidth;
+    let height = videoHeight;
+
+    if (width > maxWidth) {
+      width = maxWidth;
+      height = width / aspectRatio;
+    }
+
+    if (height > maxHeight) {
+      height = maxHeight;
+      width = height * aspectRatio;
+    }
+
+    this.iframe.style.width = `${width}px`;
+    this.iframe.style.height = `${height}px`;
   }
 
   destroy(): void {
@@ -61,80 +161,22 @@ export class VideoStreamingSession {
       return;
     }
 
+    if (this.iframe) {
+      this.iframe.remove();
+      this.iframe = null;
+      this.sendToIframe('DESTROY', {});
+    }
+
     this.isDestroyed = true;
 
-    this.abortController.abort();
-
-    this.chunkCache.clear();
-    this.pendingRequests.clear();
+    if (this.messageHandler) {
+      window.removeEventListener('message', this.messageHandler);
+      this.messageHandler = null;
+    }
 
     if (this.service) {
-      this.service.destroy().catch((error) => {
-        console.error('[VideoStreamingSession] Error destroying service:', error);
-      });
+      this.service.cleanup();
       this.service = null;
-    }
-  }
-
-  private async handleChunkRequest(request: ChunkRequestPayload): Promise<Uint8Array> {
-    if (this.isDestroyed) {
-      throw new Error('Session destroyed');
-    }
-
-    const { start, end } = request;
-    const cacheKey = `${start}-${end}`;
-
-    const cached = this.chunkCache.get(cacheKey);
-    if (cached) {
-      return cached;
-    }
-
-    const pending = this.pendingRequests.get(cacheKey);
-    if (pending) {
-      return pending;
-    }
-
-    const downloadPromise = this.downloadChunk(start, end, cacheKey);
-    this.pendingRequests.set(cacheKey, downloadPromise);
-
-    return downloadPromise;
-  }
-
-  private async downloadChunk(start: number, end: number, cacheKey: string): Promise<Uint8Array> {
-    try {
-      const stream = await downloadChunkFile({
-        bucketId: this.config.bucketId,
-        fileId: this.config.fileId,
-        mnemonic: this.config.mnemonic,
-        creds: this.config.credentials,
-        chunkStart: start,
-        chunkEnd: end,
-        options: {
-          notifyProgress: () => {},
-          abortController: this.abortController,
-        },
-      });
-
-      const result = await binaryStreamToUint8Array(stream);
-
-      if (this.isDestroyed) {
-        throw new Error('Session destroyed during download');
-      }
-
-      if (this.chunkCache.size > CACHE_SIZE_LIMIT) {
-        const firstKey = this.chunkCache.keys().next().value;
-        if (firstKey) {
-          this.chunkCache.delete(firstKey);
-        }
-      }
-
-      this.chunkCache.set(cacheKey, result);
-      this.pendingRequests.delete(cacheKey);
-
-      return result;
-    } catch (error) {
-      this.pendingRequests.delete(cacheKey);
-      throw error;
     }
   }
 }
