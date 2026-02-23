@@ -20,6 +20,15 @@ const createConfig = (): VideoStreamingSessionConfig => ({
   credentials: { user: 'user', pass: 'pass' },
 });
 
+const dispatchIframeMessage = (iframe: HTMLIFrameElement, type: string, payload: unknown = {}) => {
+  window.dispatchEvent(
+    new MessageEvent('message', {
+      data: { type, payload },
+      source: iframe.contentWindow,
+    }),
+  );
+};
+
 describe('Video Streaming Session', () => {
   let mockContainer: HTMLElement;
 
@@ -65,15 +74,6 @@ describe('Video Streaming Session', () => {
   });
 
   describe('Handling messages', () => {
-    const dispatchIframeMessage = (iframe: HTMLIFrameElement, type: string, payload: unknown = {}) => {
-      window.dispatchEvent(
-        new MessageEvent('message', {
-          data: { type, payload },
-          source: iframe.contentWindow,
-        }),
-      );
-    };
-
     test('When READY message is received, then the state is handled correctly', async () => {
       const onReady = vi.fn();
       const session = new VideoStreamingSession(createConfig());
@@ -157,15 +157,6 @@ describe('Video Streaming Session', () => {
   });
 
   describe('Resizing iframe', () => {
-    const dispatchIframeMessage = (iframe: HTMLIFrameElement, type: string, payload: unknown = {}) => {
-      window.dispatchEvent(
-        new MessageEvent('message', {
-          data: { type, payload },
-          source: iframe.contentWindow,
-        }),
-      );
-    };
-
     test('When READY message includes video dimensions, then resizes iframe maintaining aspect ratio', async () => {
       Object.defineProperty(window, 'innerWidth', { value: 1920, writable: true });
       Object.defineProperty(window, 'innerHeight', { value: 1080, writable: true });
@@ -178,6 +169,32 @@ describe('Video Streaming Session', () => {
 
       expect(iframe.style.width).toStrictEqual('1280px');
       expect(iframe.style.height).toStrictEqual('720px');
+    });
+
+    test('When video width exceeds max width, then scales down width', async () => {
+      Object.defineProperty(window, 'innerWidth', { value: 1000, writable: true, configurable: true });
+      Object.defineProperty(window, 'innerHeight', { value: 1000, writable: true, configurable: true });
+
+      const session = new VideoStreamingSession(createConfig());
+      await session.init(mockContainer, vi.fn(), vi.fn());
+      const iframe = mockContainer.querySelector('iframe')!;
+
+      dispatchIframeMessage(iframe, 'READY', { videoWidth: 2000, videoHeight: 1000 });
+
+      expect(Number.parseFloat(iframe.style.width)).toBeLessThan(2000);
+    });
+
+    test('When video height exceeds max height, then scales down height', async () => {
+      Object.defineProperty(window, 'innerWidth', { value: 2000, writable: true, configurable: true });
+      Object.defineProperty(window, 'innerHeight', { value: 500, writable: true, configurable: true });
+
+      const session = new VideoStreamingSession(createConfig());
+      await session.init(mockContainer, vi.fn(), vi.fn());
+      const iframe = mockContainer.querySelector('iframe')!;
+
+      dispatchIframeMessage(iframe, 'READY', { videoWidth: 800, videoHeight: 600 });
+
+      expect(Number.parseFloat(iframe.style.height)).toBeLessThan(600);
     });
   });
 });

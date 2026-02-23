@@ -1,3 +1,4 @@
+import { VideoSessionDestroyedError } from '../errors/video-streaming.errors';
 import { VideoStreamingService } from './index';
 
 export interface VideoStreamingSessionConfig {
@@ -103,10 +104,7 @@ export class VideoStreamingSession {
           console.log('[IframeVideoService] Chunk request received: ', payload);
 
           if (this.isDestroyed) {
-            return this.sendToIframe('CHUNK_RESPONSE', {
-              requestId: payload.requestId,
-              error: 'Session destroyed',
-            });
+            throw new VideoSessionDestroyedError('Session destroyed during chunk request');
           }
 
           const chunkData = await this.service?.handleChunkRequest(payload);
