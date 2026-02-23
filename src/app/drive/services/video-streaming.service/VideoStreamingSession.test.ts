@@ -155,4 +155,29 @@ describe('Video Streaming Session', () => {
       removeEventListenerSpy.mockRestore();
     });
   });
+
+  describe('Resizing iframe', () => {
+    const dispatchIframeMessage = (iframe: HTMLIFrameElement, type: string, payload: unknown = {}) => {
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          data: { type, payload },
+          source: iframe.contentWindow,
+        }),
+      );
+    };
+
+    test('When READY message includes video dimensions, then resizes iframe maintaining aspect ratio', async () => {
+      Object.defineProperty(window, 'innerWidth', { value: 1920, writable: true });
+      Object.defineProperty(window, 'innerHeight', { value: 1080, writable: true });
+
+      const session = new VideoStreamingSession(createConfig());
+      await session.init(mockContainer, vi.fn(), vi.fn());
+      const iframe = mockContainer.querySelector('iframe')!;
+
+      dispatchIframeMessage(iframe, 'READY', { videoWidth: 1280, videoHeight: 720 });
+
+      expect(iframe.style.width).toStrictEqual('1280px');
+      expect(iframe.style.height).toStrictEqual('720px');
+    });
+  });
 });

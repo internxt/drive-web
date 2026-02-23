@@ -87,5 +87,16 @@ describe('Video Streaming Service', () => {
 
       await expect(service.handleChunkRequest({ start: 0, end: 1024 })).rejects.toThrow(VideoSessionDestroyedError);
     });
+
+    test('When session is destroyed during download, then an error indicating so is thrown', async () => {
+      const service = new VideoStreamingService(createConfig());
+
+      vi.mocked(binaryStreamToUint8Array).mockImplementation(async () => {
+        service.cleanup();
+        return new Uint8Array([1, 2, 3]);
+      });
+
+      await expect(service.handleChunkRequest({ start: 0, end: 1024 })).rejects.toThrow(VideoSessionDestroyedError);
+    });
   });
 });
