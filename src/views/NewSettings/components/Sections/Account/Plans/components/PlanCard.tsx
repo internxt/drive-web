@@ -10,16 +10,15 @@ interface PlanCardProps {
   capacity: string;
   currency: string;
   price: string;
-  billing: string;
+  showBilling?: boolean;
   onClick: () => void;
   changePlanType: ChangePlanType;
   isCurrentPlan?: boolean;
   isLoading: boolean;
   disableActionButton: boolean;
-  isBusiness?: boolean;
 }
 
-export const getPlan = (capacity, isBusiness) => {
+export const getPlan = (capacity) => {
   const PLAN_TYPES = {
     FREE: t('preferences.account.plans.types.free'),
     ESSENTIAL: t('preferences.account.plans.types.essential'),
@@ -29,12 +28,8 @@ export const getPlan = (capacity, isBusiness) => {
     ULTIMATE: t('preferences.account.plans.types.ultimate'),
   };
 
-  if (capacity === '1TB') {
-    return isBusiness ? PLAN_TYPES.STANDARD : PLAN_TYPES.ESSENTIAL;
-  }
-
   const capacityToFeaturePath = {
-    '2TB': PLAN_TYPES.PRO,
+    '1TB': PLAN_TYPES.ESSENTIAL,
     '3TB': PLAN_TYPES.PREMIUM,
     '5TB': PLAN_TYPES.ULTIMATE,
   };
@@ -46,54 +41,28 @@ const PlanCard = ({
   capacity,
   currency,
   price,
-  billing,
+  showBilling = false,
   onClick,
   changePlanType,
   isCurrentPlan,
   isLoading,
   disableActionButton,
-  isBusiness = false,
 }: PlanCardProps) => {
-  const userText = isBusiness
-    ? '/' + t('preferences.account.plans.user')
-    : ' ' + t('preferences.account.plans.billedAnnually');
-
-  const getPlanFeaturePath = () => {
-    const PLAN_TYPES = {
-      FREE: 'freeFeatures',
-      ESSENTIAL: 'essentialFeatures',
-      STANDARD: 'standardFeatures',
-      PRO: 'proFeatures',
-      PREMIUM: 'premiumFeatures',
-      ULTIMATE: 'ultimateFeatures',
-    };
-
-    if (capacity === '1TB') {
-      return isBusiness ? PLAN_TYPES.STANDARD : PLAN_TYPES.ESSENTIAL;
-    }
-
-    const capacityToFeaturePath = {
-      '2TB': PLAN_TYPES.PRO,
-      '3TB': PLAN_TYPES.PREMIUM,
-      '5TB': PLAN_TYPES.ULTIMATE,
-    };
-
-    return capacityToFeaturePath[capacity] || PLAN_TYPES.FREE;
-  };
+  const userText = ' ' + t('preferences.account.plans.billedAnnually');
 
   return (
     <div className={'flex w-80 flex-col rounded-xl border border-gray-10 bg-gray-5 p-4 '}>
       <div className="flex flex-col space-y-3">
         <div>
           <div className="flex w-full flex-row justify-between">
-            <span className="text-2xl font-medium leading-7 text-gray-100">{getPlan(capacity, isBusiness)}</span>
+            <span className="text-2xl font-medium leading-7 text-gray-100">{getPlan(capacity)}</span>
             {isCurrentPlan && (
               <RoleBadge roleText={t('preferences.account.plans.current')} role={'current'} size={'small'} />
             )}
           </div>
           <span className=" text-base font-normal leading-5 text-gray-60">
             {currency + price}
-            {billing && '/' + billing + userText}
+            {showBilling && userText}
           </span>
         </div>
         <ChangePlanButton
@@ -104,7 +73,7 @@ const PlanCard = ({
         />
       </div>
       <Divider />
-      <PlanDetailsList planSpace={capacity} isBusiness={isBusiness} planTypeTextPath={getPlanFeaturePath()} />
+      <PlanDetailsList planSpace={capacity} />
     </div>
   );
 };
@@ -115,17 +84,9 @@ const Divider = () => (
   </div>
 );
 
-const PlanDetailsList = ({
-  planSpace,
-  isBusiness,
-  planTypeTextPath,
-}: {
-  planSpace: string;
-  isBusiness: boolean;
-  planTypeTextPath: string;
-}) => {
+const PlanDetailsList = ({ planSpace }: { planSpace: string }) => {
   const { translateList } = useTranslationContext();
-  const planType = isBusiness ? 'businessPlanFeaturesList' : 'planFeaturesList';
+  const planType = 'planFeaturesList';
 
   const featureKeys = translateList(`preferences.account.plans.${planType}.${planSpace ?? 'freeFeatures'}.features`);
 

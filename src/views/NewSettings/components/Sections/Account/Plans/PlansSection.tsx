@@ -64,12 +64,10 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   const [isLoadingCheckout, setIsLoadingCheckout] = useState(false);
 
   const [individualPrices, setIndividualPrices] = useState<DisplayPrice[]>([]);
-  const [businessPrices, setBusinessPrices] = useState<DisplayPrice[]>([]);
 
   const [selectedSubscriptionType, setSelectedSubscriptionType] = useState<UserType>(UserType.Individual);
 
   const isIndividualSubscriptionSelected = selectedSubscriptionType == UserType.Individual;
-  const isBusinessSubscriptionSelected = selectedSubscriptionType == UserType.Business;
 
   const defaultInterval = plan.individualPlan?.renewalPeriod === 'monthly' ? 'month' : 'year';
   const [selectedInterval, setSelectedInterval] = useState<DisplayPrice['interval']>(defaultInterval);
@@ -92,13 +90,14 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     currentPlanRenewalInterval: getRenewalPeriod(currentRenewalInterval),
   });
 
-  const pricesFilteredAndSorted = (userType: UserType) =>
-    userType == UserType.Individual
-      ? individualPrices?.filter((price) => price.interval === selectedInterval).sort((a, b) => a.amount - b.amount)
-      : businessPrices?.filter((price) => price.interval === selectedInterval).sort((a, b) => a.amount - b.amount);
+  const pricesFilteredAndSorted = () =>
+    individualPrices?.filter((price) => price.interval === selectedInterval).sort((a, b) => a.amount - b.amount);
 
   useEffect(() => {
     fetchDataAndSetPrices();
+
+    const price = getDefaultPlanPrice();
+    if (price) setPriceSelected(price);
 
     stripe = getStripe(stripe);
   }, []);
@@ -165,12 +164,10 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   const fetchDataAndSetPrices = useCallback(async () => {
     try {
       const individualPrices = await fetchPlanPrices(UserType.Individual);
-      const businessPrices = await fetchPlanPrices(UserType.Business);
 
       selectUserSubscriptionPlan(individualPrices);
 
       setIndividualPrices(individualPrices);
-      setBusinessPrices(businessPrices);
     } catch (error) {
       const errorCasted = errorService.castError(error);
       errorService.reportError(errorCasted);
@@ -286,39 +283,23 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   }
 
   const shouldDisplayChangePlanDialog = () =>
-    (isIndividualSubscriptionSelected &&
-      plan.individualPlan?.planId != priceSelected.id &&
-      individualPrices.find((p) => p.id == priceSelected.id)) ||
-    (!isIndividualSubscriptionSelected &&
-      plan.businessPlan?.planId != priceSelected.id &&
-      businessPrices.find((p) => p.id == priceSelected.id));
+    isIndividualSubscriptionSelected &&
+    plan.individualPlan?.planId != priceSelected.id &&
+    individualPrices.find((p) => p.id == priceSelected.id);
 
-  const getDefaultPlanPrice = (userType: UserType): DisplayPrice | undefined => {
-    const planId = userType === UserType.Individual ? plan.individualPlan?.planId : plan.businessPlan?.planId;
+  const getDefaultPlanPrice = (): DisplayPrice | undefined => {
+    const planId = plan.individualPlan?.planId;
 
-    const price =
-      userType === UserType.Individual
-        ? individualPrices.find((i) => i.id == planId)
-        : businessPrices.find((i) => i.id == planId);
+    const price = individualPrices.find((i) => i.id == planId);
     if (price) return price;
 
-    const intervalPrice =
-      userType === UserType.Individual
-        ? individualPrices.find((p) => p.interval == selectedInterval)
-        : businessPrices.find((p) => p.interval == selectedInterval);
+    const intervalPrice = individualPrices.find((p) => p.interval == selectedInterval);
+
     if (intervalPrice) return intervalPrice;
 
-    const firstPrice = userType === UserType.Individual ? individualPrices[0] : businessPrices[0];
+    const firstPrice = individualPrices[0];
     if (firstPrice) setSelectedInterval(firstPrice.interval);
     return firstPrice;
-  };
-
-  const handleSubscriptionInterval = (userType: UserType) => {
-    if (userType !== selectedSubscriptionType) {
-      setSelectedSubscriptionType(userType);
-      const price = getDefaultPlanPrice(userType);
-      if (price) setPriceSelected(price);
-    }
   };
 
   const handleIndividualUserCurrentSubscription = (plan: DisplayPrice) => {
@@ -338,14 +319,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   };
 
   const isCurrentSubscriptionPlan = (plan: DisplayPrice) => {
-    const isBusinessCurrentPlanSelected =
-      businessSubscription?.type === 'subscription' &&
-      businessSubscription?.productId === plan.productId &&
-      businessSubscription.interval === plan.interval;
-
-    return isIndividualSubscriptionSelected
-      ? handleIndividualUserCurrentSubscription(plan)
-      : isBusinessCurrentPlanSelected;
+    return handleIndividualUserCurrentSubscription(plan);
   };
 
   return (
@@ -362,41 +336,18 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
         />
       )}
       <div className="flex flex-col">
-        <div className="mb-2 flex justify-center">
-          <div className="flex flex-row rounded-lg bg-gray-5 p-0.5 text-sm">
-            <IntervalSwitch
-              active={isIndividualSubscriptionSelected}
-              text={translate('general.workspaces.personal')}
-              onClick={() => handleSubscriptionInterval(UserType.Individual)}
-            />
-            <IntervalSwitch
-              active={!isIndividualSubscriptionSelected}
-              text={translate('general.workspaces.business')}
-              onClick={() => handleSubscriptionInterval(UserType.Business)}
-            />
-          </div>
-        </div>
         <div className="flex justify-center">
           <div className="flex flex-row rounded-lg bg-gray-5 p-0.5 text-sm">
-            {!isIndividualSubscriptionSelected && (
-              <IntervalSwitch
-                active={selectedInterval === 'month'}
-                text={translate('general.renewal.monthly')}
-                onClick={() => setSelectedInterval('month')}
-              />
-            )}
             <IntervalSwitch
               active={selectedInterval === 'year'}
               text={translate('general.renewal.annually')}
               onClick={() => setSelectedInterval('year')}
             />
-            {isIndividualSubscriptionSelected && (
-              <IntervalSwitch
-                active={selectedInterval === 'lifetime'}
-                text={translate('general.renewal.lifetime')}
-                onClick={() => setSelectedInterval('lifetime')}
-              />
-            )}
+            <IntervalSwitch
+              active={selectedInterval === 'lifetime'}
+              text={translate('general.renewal.lifetime')}
+              onClick={() => setSelectedInterval('lifetime')}
+            />
           </div>
         </div>
       </div>
@@ -405,13 +356,9 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
           onPriceSelected={setPriceSelected}
           priceSelected={priceSelected}
           freePlanData={FREE_PLAN_DATA}
-          pricesToRender={pricesFilteredAndSorted(selectedSubscriptionType)}
+          pricesToRender={pricesFilteredAndSorted()}
           showFreePriceCard={isIndividualSubscriptionSelected}
           isFreePlan={FREE_PLAN_DATA.id === individualSubscription?.type}
-          subscriptionSelected={{
-            individual: isIndividualSubscriptionSelected,
-            business: isBusinessSubscriptionSelected,
-          }}
           isCurrentSubscriptionPlan={isCurrentSubscriptionPlan}
           translate={translate}
         />
@@ -423,9 +370,8 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
           isLoadingCheckout={isLoadingCheckout}
           onCancelSubscription={setIsCancelSubscriptionModalOpen}
           priceSelected={priceSelected}
-          pricesToRender={pricesFilteredAndSorted(selectedSubscriptionType)}
+          pricesToRender={pricesFilteredAndSorted()}
           isCurrentPlan={isCurrentSubscriptionPlan(priceSelected)}
-          isBusinessPlan={isBusinessSubscriptionSelected}
           translate={translate}
           handleOnPlanSelected={handleOnPlanSelected}
         />

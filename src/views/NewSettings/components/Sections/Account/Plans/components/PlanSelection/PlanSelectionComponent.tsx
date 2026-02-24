@@ -11,10 +11,6 @@ interface PlanSelectionComponentProps {
   freePlanData: DisplayPrice;
   showFreePriceCard: boolean;
   isFreePlan: boolean;
-  subscriptionSelected: {
-    individual: boolean;
-    business: boolean;
-  };
   isCurrentSubscriptionPlan: (plan: DisplayPrice) => boolean;
   translate: (key: string, props?: Record<string, unknown>) => string;
   onPriceSelected: (plan) => void;
@@ -24,7 +20,6 @@ export const PlanSelectionComponent = ({
   pricesToRender,
   freePlanData,
   priceSelected,
-  subscriptionSelected,
   showFreePriceCard,
   isFreePlan,
   isCurrentSubscriptionPlan,
@@ -36,9 +31,7 @@ export const PlanSelectionComponent = ({
     BUSINESS: 2,
   };
 
-  const skeletonItems = subscriptionSelected.individual
-    ? TOTAL_SKELETON_ITEMS.INDIVIDUAL
-    : TOTAL_SKELETON_ITEMS.BUSINESS;
+  const skeletonItems = TOTAL_SKELETON_ITEMS.INDIVIDUAL;
 
   const skeletonKeys = Array.from({ length: skeletonItems }, (_, i) => `plan-skeleton-${i}`);
 
@@ -53,11 +46,9 @@ export const PlanSelectionComponent = ({
               isSelected={priceSelected?.id === plan.id}
               capacity={bytesToString(plan.bytes)}
               currency={currencyService.getCurrencySymbol(plan.currency.toUpperCase())}
-              amount={displayAmount(plan.interval === 'year' ? plan.amount / 12 : plan.amount).replace(/\.00$/, '')}
-              billing={plan.interval === 'lifetime' ? '' : translate('preferences.account.plans.month')?.toLowerCase()}
+              amount={displayAmount(plan.amount).replace(/\.00$/, '')}
+              billing={plan.interval === 'lifetime' ? '' : translate('preferences.account.plans.year')?.toLowerCase()}
               isCurrentPlan={isCurrentSubscriptionPlan(plan)}
-              displayBillingSlash={plan.interval !== 'lifetime'}
-              isBusiness={subscriptionSelected.business}
             />
           ))}
           {showFreePriceCard && (
