@@ -77,8 +77,14 @@ const FileVideoViewer = ({
       return;
     }
 
+    if (!file.fileId) {
+      console.error('[FileVideoViewer] Missing fileId');
+      handleOnError('Missing fileId');
+      return;
+    }
+
     const session = new VideoStreamingSession({
-      fileId: file.fileId ?? '',
+      fileId: file.fileId,
       bucketId: file.bucket,
       fileSize: file.size,
       fileType: file.type,
@@ -96,20 +102,6 @@ const FileVideoViewer = ({
     };
   }, [file.fileId, file.bucket, file.size, file.type, disableVideoStream]);
 
-  useEffect(() => {
-    if (!disableVideoStream) return;
-    const video = videoRef.current;
-    if (!video) return;
-
-    video.addEventListener('error', (error) => handleOnError(error.message));
-    video.addEventListener('canplay', handleOnReady);
-
-    return () => {
-      video.removeEventListener('error', () => handleOnError);
-      video.removeEventListener('canplay', handleOnReady);
-    };
-  }, [disableVideoStream]);
-
   const handleOnReady = () => {
     handlersForSpecialItems?.handleUpdateProgress(1);
     setCanPlay(true);
@@ -120,6 +112,25 @@ const FileVideoViewer = ({
     console.error(`[FileVideoViewer] Video error: ${errorMessage}`);
     setIsPreviewAvailable(false);
   };
+
+  const handleVideoErrorEvent = (event: Event) => {
+    const errorMessage = (event.target as HTMLVideoElement)?.error?.message;
+    handleOnError(errorMessage);
+  };
+
+  useEffect(() => {
+    if (!disableVideoStream) return;
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.addEventListener('error', handleVideoErrorEvent);
+    video.addEventListener('canplay', handleOnReady);
+
+    return () => {
+      video.removeEventListener('error', handleVideoErrorEvent);
+      video.removeEventListener('canplay', handleOnReady);
+    };
+  }, [disableVideoStream]);
 
   // Blob
   if (disableVideoStream) {

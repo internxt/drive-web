@@ -40,6 +40,7 @@ export class VideoStreamingSession {
       if (document.getElementById('video-iframe')) {
         this.iframe = document.getElementById('video-iframe') as HTMLIFrameElement;
         resolve();
+        return;
       }
 
       this.iframe = document.createElement('iframe');
@@ -160,9 +161,9 @@ export class VideoStreamingSession {
     }
 
     if (this.iframe) {
+      this.sendToIframe('DESTROY', {});
       this.iframe.remove();
       this.iframe = null;
-      this.sendToIframe('DESTROY', {});
     }
 
     this.isDestroyed = true;
