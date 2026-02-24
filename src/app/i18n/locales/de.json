@@ -2072,5 +2072,8 @@
       "todayAt": "heute um "
     },
     "sharedWorkspace": "Gemeinsamer Arbeitsbereich"
+  },
+  "sdk": {
+    "rateLimitToast": "Dies dauert länger als erwartet. Bitte warten..."
   }
 }
