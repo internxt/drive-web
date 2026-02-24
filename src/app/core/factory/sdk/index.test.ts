@@ -8,6 +8,7 @@ import { Share, Users } from '@internxt/sdk/dist/drive';
 import packageJson from '../../../../../package.json';
 import { Auth } from '@internxt/sdk/dist/auth';
 import { Location } from '@internxt/sdk';
+import { HttpClient } from '@internxt/sdk/dist/shared/http/client';
 
 const MOCKED_NEW_API = 'https://api.internxt.com';
 const MOCKED_PAYMENTS = 'https://payments.internxt.com';
@@ -32,6 +33,16 @@ vi.mock('@internxt/sdk', () => ({
   Location: {
     client: vi.fn(),
   },
+}));
+
+vi.mock('@internxt/sdk/dist/shared/http/client', () => ({
+  HttpClient: {
+    enableGlobalRetry: vi.fn(),
+  },
+}));
+
+vi.mock('i18next', () => ({
+  t: vi.fn((key: string) => key),
 }));
 
 vi.mock('services/env.service', () => ({
@@ -64,6 +75,14 @@ describe('SdkFactory', () => {
     } as any;
 
     SdkFactory.initialize(mockDispatch, mockLocalStorage);
+  });
+
+  describe('initialize', () => {
+    it('When initialized, then the global retry is set to silent', () => {
+      expect(HttpClient.enableGlobalRetry).toHaveBeenCalledWith(
+        expect.objectContaining({ maxRetries: 2, onRetry: expect.any(Function) }),
+      );
+    });
   });
 
   describe('getNewApiSecurity', () => {
