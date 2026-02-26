@@ -1,6 +1,6 @@
 import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
 import { Role } from 'app/store/slices/sharedLinks/types';
-import { AccessMode, InvitedUserProps, RequestProps, Views } from '../types';
+import { AccessMode, InvitedUserProps, Views } from '../types';
 import { ShareDialogAction, ActionTypes } from './ShareDialogContext';
 
 export const setView = (payload: Views): ShareDialogAction => ({
@@ -55,11 +55,6 @@ export const updateUserRole = (payload: { email: string; roleId: string; roleNam
 
 export const removeUser = (payload: string): ShareDialogAction => ({
   type: ActionTypes.REMOVE_USER,
-  payload,
-});
-
-export const updateRequestStatus = (payload: { email: string; status: RequestProps['status'] }): ShareDialogAction => ({
-  type: ActionTypes.UPDATE_REQUEST_STATUS,
   payload,
 });
 

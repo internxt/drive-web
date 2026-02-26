@@ -1,7 +1,7 @@
 import { createContext, Dispatch } from 'react';
 import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
 import { Role } from 'app/store/slices/sharedLinks/types';
-import { AccessMode, InvitedUserProps, RequestProps, Views } from '../types';
+import { AccessMode, InvitedUserProps, Views } from '../types';
 
 export interface ShareDialogState {
   view: Views;
@@ -35,7 +35,6 @@ export type ShareDialogAction =
   | { type: 'SET_CURRENT_USER_FOLDER_ROLE'; payload?: string }
   | { type: 'UPDATE_USER_ROLE'; payload: { email: string; roleId: string; roleName: string } }
   | { type: 'REMOVE_USER'; payload: string }
-  | { type: 'UPDATE_REQUEST_STATUS'; payload: { email: string; status: RequestProps['status'] } }
   | { type: 'SET_SELECTED_USER_LIST_INDEX'; payload: number | null }
   | { type: 'SET_USER_OPTIONS_EMAIL'; payload?: InvitedUserProps }
   | { type: 'SET_USER_OPTIONS_Y'; payload: number }
@@ -58,7 +57,6 @@ export const ActionTypes = {
   SET_CURRENT_USER_FOLDER_ROLE: 'SET_CURRENT_USER_FOLDER_ROLE',
   UPDATE_USER_ROLE: 'UPDATE_USER_ROLE',
   REMOVE_USER: 'REMOVE_USER',
-  UPDATE_REQUEST_STATUS: 'UPDATE_REQUEST_STATUS',
   SET_SELECTED_USER_LIST_INDEX: 'SET_SELECTED_USER_LIST_INDEX',
   SET_USER_OPTIONS_EMAIL: 'SET_USER_OPTIONS_EMAIL',
   SET_USER_OPTIONS_Y: 'SET_USER_OPTIONS_Y',

@@ -926,6 +926,34 @@
         "location": "Posizione"
       }
     },
+    "versionHistory": {
+      "title": "Cronologia versioni",
+      "current": "Attuale",
+      "expiresInDays": "Scade tra {{days}} giorni",
+      "autosaveVersions": "{{count}}/{{total}} versioni di salvataggio automatico",
+      "restoreVersion": "Ripristina versione",
+      "downloadVersion": "Scarica versione",
+      "deleteVersion": "Elimina versione",
+      "deleteVersionTitle": "Elimina versione",
+      "deleteButton": "Elimina",
+      "restoreButton": "Ripristina",
+      "downloadError": "Impossibile scaricare la versione",
+      "deleteVersionAdvice": "Questa versione sarà eliminata in modo permanente. \nQuesta azione non può essere annullata.",
+      "deletingVersion": "Eliminazione",
+      "restoreVersionTitle": "Ripristina versione",
+      "restoreVersionAdvice": "Il ripristino di questa versione sostituirà il file corrente e rimuoverà tutte le versioni più recenti. \nUna volta ripristinata, questa azione non può essere annullata.\n\nPuoi scaricare una copia delle versioni più recenti prima del ripristino.",
+      "restoringVersion": "Ripristino",
+      "restoreSuccess": "Versione ripristinata con successo",
+      "restoreError": "Impossibile ripristinare la versione",
+      "deleteSuccess": "Versione eliminata con successo",
+      "deleteError": "Impossibile eliminare la versione",
+      "lockedFeature": {
+        "title": "Funzione bloccata",
+        "description": "Ripristina le versioni precedenti dei tuoi file e monitora le modifiche nel tempo.",
+        "supportedFormats": "Disponibile per file PDF, Word, Excel e CSV nei piani a pagamento.",
+        "upgradeButton": "Aggiorna"
+      }
+    },
     "shareModal": {
       "title": "Condividi \"{{name}}\"",
       "list": {
@@ -1022,7 +1050,8 @@
           "errorInviting": "Errore durante l'invio dell'invito a {{email}}",
           "userAlreadyInvited": "L'utente {{email}} è già stato invitato",
           "acceptedError": "Errore nell'accettazione dell'invito alla cartella condivisa",
-          "declinedError": "Errore nel rifiuto dell'invito alla cartella condivisa"
+          "declinedError": "Errore nel rifiuto dell'invito alla cartella condivisa",
+          "loadingRoles": "Impossibile caricare i ruoli disponibili. Riprova più tardi."
         }
       },
       "requestAccess": {
@@ -1579,7 +1608,8 @@
       "restore": "Ripristinare",
       "deletePermanently": "Eliminare definitivamente",
       "move": "Sposta",
-      "delete": "Elimina"
+      "delete": "Elimina",
+      "versionHistory": "Cronologia versioni"
     },
     "deleteItems": {
       "title": "Eliminare definitivamente?",
@@ -2031,14 +2061,14 @@
               "Crittografia Post-Quantistica",
               "Crittografia Zero-Knowledge",
               "Autenticazione a Due Fattori",
+              "Versionamento dei File",
               "Backup del computer",
               "Condivisione file protetta da password",
               "Invita, condividi e collabora",
               "VPN Crittografata",
               "Antivirus",
               "Cleaner (Pulitore)"
-            ],
-            "comingSoonFeatures": ["Versionamento dei File"]
+            ]
           },
           "5TB": {
             "title": "Ultimate (Definitivo)",
@@ -2047,6 +2077,7 @@
               "Crittografia Post-Quantistica",
               "Crittografia Zero-Knowledge",
               "Autenticazione a Due Fattori",
+              "Versionamento dei File",
               "Backup del computer",
               "Condivisione file protetta da password",
               "Invita, condividi e collabora",
@@ -2057,7 +2088,7 @@
               "Cleaner (Pulitore)",
               "Meet (Videoconferenza)"
             ],
-            "comingSoonFeatures": ["Versionamento dei File", "Mail", "Foto"]
+            "comingSoonFeatures": ["Mail", "Foto"]
           },
           "1GB": {
             "title": "Gratuito",
@@ -2092,6 +2123,7 @@
               "Crittografia post-quantistica",
               "Crittografia zero-knowledge",
               "Autenticazione a due fattori",
+              "Cronologia versioni file",
               "Backup del computer",
               "Condivisione file protetta da password",
               "Invita, condividi e collabora",
@@ -2103,8 +2135,7 @@
               "Pulizia",
               "Meet",
               "Email"
-            ],
-            "comingSoonFeatures": ["Cronologia versioni file"]
+            ]
           }
         },
         "user": "Utente",

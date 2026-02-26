@@ -132,6 +132,7 @@ const topDropdownBarActionsMenu = ({
     return contextMenuTrashItems({
       restoreItem: onRestoreItemButtonClicked,
       deletePermanently: onDeletePermanentlyButtonClicked,
+      showDetails: onShowDetailsButtonClicked,
     });
   };
 
