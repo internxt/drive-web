@@ -103,7 +103,7 @@
     "login": {
       "title": "Login",
       "forgotPwd": "Forgot your password?",
-      "dontHaveAccount": "Don't have an account?",
+      "dontHaveAccount": "Don’t have an account?",
       "dontHaveAccountMobile": "Don't have an Internxt account?",
       "createAccount": "Create account",
       "2FA": "Two factor code",
