@@ -2071,11 +2071,11 @@
         "planFeaturesList": {
           "title": "Dettagli del Piano",
           "comingSoon": "Prossimamente",
-          "storage": " spazio di archiviazione crittografato",
+          "storage": " spazio di archiviazione cloud crittografato",
           "1TB": {
             "title": "Essential (Essenziale)",
             "features": [
-              "1TB di spazio di archiviazione crittografato",
+              "1TB di spazio di archiviazione cloud crittografato",
               "Crittografia Post-Quantistica",
               "Crittografia Zero-Knowledge",
               "Autenticazione a Due Fattori",
@@ -2088,7 +2088,7 @@
           "3TB": {
             "title": "Premium",
             "features": [
-              "3TB di spazio di archiviazione crittografato",
+              "3TB di spazio di archiviazione cloud crittografato",
               "Crittografia Post-Quantistica",
               "Crittografia Zero-Knowledge",
               "Autenticazione a Due Fattori",
@@ -2104,7 +2104,7 @@
           "5TB": {
             "title": "Ultimate (Definitivo)",
             "features": [
-              "5TB di spazio di archiviazione crittografato",
+              "5TB di spazio di archiviazione cloud crittografato",
               "Crittografia Post-Quantistica",
               "Crittografia Zero-Knowledge",
               "Autenticazione a Due Fattori",
@@ -2123,7 +2123,7 @@
           },
           "1GB": {
             "title": "Gratuito",
-            "features": ["1GB di spazio di archiviazione crittografato", "VPN Crittografata"]
+            "features": ["1GB di spazio di archiviazione cloud crittografato", "VPN Crittografata"]
           }
         },
         "businessPlanFeaturesList": {

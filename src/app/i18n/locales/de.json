@@ -1958,11 +1958,11 @@
         "planFeaturesList": {
           "title": "Plandetails",
           "comingSoon": "Demnächst verfügbar",
-          "storage": " verschlüsselter Speicher",
+          "storage": " verschlüsselter Cloud-Speicher",
           "1TB": {
             "title": "Essential (Basis)",
             "features": [
-              "1TB verschlüsselter Speicher",
+              "1TB verschlüsselter Cloud-Speicher",
               "Post-Quanten-Verschlüsselung",
               "Zero-Knowledge-Verschlüsselung",
               "Zwei-Faktor-Authentifizierung",
@@ -1975,7 +1975,7 @@
           "3TB": {
             "title": "Premium",
             "features": [
-              "3TB verschlüsselter Speicher",
+              "3TB verschlüsselter Cloud-Speicher",
               "Post-Quanten-Verschlüsselung",
               "Zero-Knowledge-Verschlüsselung",
               "Zwei-Faktor-Authentifizierung",
@@ -1991,7 +1991,7 @@
           "5TB": {
             "title": "Ultimate (Ultimativ)",
             "features": [
-              "5TB verschlüsselter Speicher",
+              "5TB verschlüsselter Cloud-Speicher",
               "Post-Quanten-Verschlüsselung",
               "Zero-Knowledge-Verschlüsselung",
               "Zwei-Faktor-Authentifizierung",
@@ -2010,7 +2010,7 @@
           },
           "1GB": {
             "title": "Kostenlos",
-            "features": ["1GB verschlüsselter Speicher", "Verschlüsseltes VPN"]
+            "features": ["1GB verschlüsselter Cloud-Speicher", "Verschlüsseltes VPN"]
           }
         },
         "businessPlanFeaturesList": {
@@ -2019,7 +2019,7 @@
           "1TB": {
             "title": "Standard",
             "features": [
-              "1 TB verschlüsselter Speicherplatz pro Benutzer",
+              "1 TB verschlüsselter Cloud-Speicherplatz pro Benutzer",
               "Post-Quanten-Verschlüsselung",
               "Zero-Knowledge-Verschlüsselung",
               "Zwei-Faktor-Authentifizierung",
@@ -2037,7 +2037,7 @@
           "2TB": {
             "title": "Pro",
             "features": [
-              "2 TB verschlüsselter Speicherplatz pro Benutzer",
+              "2 TB verschlüsselter Cloud-Speicherplatz pro Benutzer",
               "Post-Quanten-Verschlüsselung",
               "Zero-Knowledge-Verschlüsselung",
               "Zwei-Faktor-Authentifizierung",
