@@ -945,7 +945,8 @@
           "errorInviting": "向{{email}}發送邀請時出錯",
           "userAlreadyInvited": "使用者 {{email}} 已被邀請",
           "acceptedError": "接受共享文件夾邀請時出錯",
-          "declinedError": "拒絕共享文件夾邀請時出錯"
+          "declinedError": "拒絕共享文件夾邀請時出錯",
+          "loadingRoles": "無法載入可用角色，請稍後再試。"
         }
       },
       "requestAccess": {

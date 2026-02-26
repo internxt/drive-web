@@ -1050,7 +1050,8 @@
           "errorInviting": "Errore durante l'invio dell'invito a {{email}}",
           "userAlreadyInvited": "L'utente {{email}} è già stato invitato",
           "acceptedError": "Errore nell'accettazione dell'invito alla cartella condivisa",
-          "declinedError": "Errore nel rifiuto dell'invito alla cartella condivisa"
+          "declinedError": "Errore nel rifiuto dell'invito alla cartella condivisa",
+          "loadingRoles": "Impossibile caricare i ruoli disponibili. Riprova più tardi."
         }
       },
       "requestAccess": {

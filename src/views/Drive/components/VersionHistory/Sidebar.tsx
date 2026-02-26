@@ -109,7 +109,7 @@ const Sidebar = () => {
     if (!item || !isOpen) return;
 
     if (!limits) {
-      dispatch(fetchVersionLimitsThunk());
+      dispatch(fetchVersionLimitsThunk({}));
     }
 
     const hasCachedVersions = versions && versions.length > 0;

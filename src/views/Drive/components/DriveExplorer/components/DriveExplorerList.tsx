@@ -166,10 +166,6 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
         resetDriveOrder({ dispatch, orderType: 'updatedAt', direction, currentFolderId });
       }
     }
-
-    if (value.field === 'size') {
-      resetDriveOrder({ dispatch, orderType: 'size', direction, currentFolderId });
-    }
   };
 
   function handleMouseEnter() {
@@ -320,12 +316,14 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
 
   const folderSharedTrashMenu = contextMenuTrashFolder({
     restoreItem: restoreItem,
+    showDetails: showDetails,
     deletePermanently: deletePermanently,
   });
 
   const fileSharedTrashMenu = contextMenuTrashItems({
     openPreview: openPreview,
     restoreItem: restoreItem,
+    showDetails: showDetails,
     deletePermanently: deletePermanently,
   });
 
@@ -490,8 +488,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
             },
             {
               label: translate('drive.list.columns.size'),
-              orderable: !isRecents && !isTrash,
-              defaultDirection: 'ASC',
+              orderable: false,
               width: 'w-size',
               name: 'size',
             },

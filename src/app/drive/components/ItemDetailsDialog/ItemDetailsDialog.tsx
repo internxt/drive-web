@@ -71,8 +71,10 @@ const ItemsDetails = ({ item, translate }: { item: ItemDetailsProps; translate: 
 
 const ItemDetailsDialog = ({
   onDetailsButtonClicked,
+  isTrash,
 }: {
   onDetailsButtonClicked: (item: AdvancedSharedItem | DriveItemData) => void;
+  isTrash?: boolean;
 }) => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isItemDetailsDialogOpen);
@@ -87,6 +89,7 @@ const ItemDetailsDialog = ({
   const isFolder = item?.isFolder;
   const workspaceSelected = useSelector(workspacesSelectors.getSelectedWorkspace);
   const isWorkspaceSelected = !!workspaceSelected;
+  const hideButton = (isTrash && isFolder) || isFileViewerOpen;
 
   useEffect(() => {
     if (isOpen && item && user) {
@@ -182,7 +185,7 @@ const ItemDetailsDialog = ({
           <p title={itemName} className="line-clamp-2 w-full flex-1 text-center text-base font-semibold text-gray-100">
             {itemName}
           </p>
-          {!isFileViewerOpen && (
+          {!hideButton && (
             <Button onClick={handleButtonItemClick} variant="secondary">
               {item?.isFolder
                 ? translate('modals.itemDetailsModal.folderCta')

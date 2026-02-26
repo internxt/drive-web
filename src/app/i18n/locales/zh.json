@@ -980,7 +980,8 @@
           "errorInviting": "傳送邀請至 {{email}} 時出錯",
           "userAlreadyInvited": "用户 {{email}} 已被邀请",
           "acceptedError": "接受共享文件夹邀请时出错",
-          "declinedError": "拒绝共享文件夹邀请时出错"
+          "declinedError": "拒绝共享文件夹邀请时出错",
+          "loadingRoles": "无法加载可用角色，请稍后重试。"
         }
       },
       "requestAccess": {
