@@ -816,13 +816,9 @@
         "uploadedBy": "上傳者",
         "shared": "已共享",
         "size": "大小",
-        "numberOfFiles": "文件數量",
         "modified": "修改時間",
         "location": "位置"
-      },
-      "fileCount_one": "{{count}} 個文件",
-      "fileCount_other": "{{count}} 個文件",
-      "fileCountMoreThan1000": "超過 1000 個文件"
+      }
     },
     "versionHistory": {
       "title": "版本歷史",
@@ -1217,32 +1213,6 @@
     "item-menu": {
       "restore": "還原",
       "delete-permanently": "永久刪除"
-    },
-    "autoDelete": {
-      "inDays_one": "{{count}} 天後",
-      "inDays_other": "{{count}} 天後"
-    },
-    "automaticDisposal": {
-      "badge": "新更新",
-      "title": "自動清空垃圾桶",
-      "close": "關閉",
-      "description": "現在所有移至垃圾桶的項目將在以下時間後\n自動永久刪除：",
-      "freeUsers": {
-        "duration": "1天",
-        "label": "免費用戶"
-      },
-      "essentialUsers": {
-        "duration": "7天",
-        "label": "基礎用戶"
-      },
-      "premiumUsers": {
-        "duration": "15天",
-        "label": "高級用戶"
-      },
-      "ultimateUsers": {
-        "duration": "30天",
-        "label": "終極用戶"
-      }
     }
   },
   "tasks": {
@@ -1512,8 +1482,7 @@
         "name": "名稱",
         "modified": "修改日期",
         "size": "大小",
-        "actions": "操作",
-        "autoDelete": "自動刪除"
+        "actions": "操作"
       }
     },
     "viewMode": {

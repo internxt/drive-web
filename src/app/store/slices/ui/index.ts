@@ -39,7 +39,6 @@ interface UISliceState {
   currentEditingNameDirty: string;
   isGlobalSearch: boolean;
   isShareWhithTeamDialogOpen: boolean;
-  isAutomaticTrashDisposalDialogOpen: boolean;
 }
 
 const initialState: UISliceState = {
@@ -78,7 +77,6 @@ const initialState: UISliceState = {
   currentEditingNameDirty: '',
   isGlobalSearch: false,
   isShareWhithTeamDialogOpen: false,
-  isAutomaticTrashDisposalDialogOpen: false,
 };
 
 export const uiSlice = createSlice({
@@ -199,9 +197,6 @@ export const uiSlice = createSlice({
     setIsShareWhithTeamDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isShareWhithTeamDialogOpen = action.payload;
     },
-    setIsAutomaticTrashDisposalDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
-      state.isAutomaticTrashDisposalDialogOpen = action.payload;
-    },
   },
 });
 
@@ -228,7 +223,6 @@ export const {
   setIsGlobalSearch,
   setIsItemDetailsDialogOpen,
   setIsShareWhithTeamDialogOpen,
-  setIsAutomaticTrashDisposalDialogOpen,
 } = uiSlice.actions;
 
 export const uiActions = uiSlice.actions;
