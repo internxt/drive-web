@@ -1271,7 +1271,7 @@
         "label": "基础用户"
       },
       "premiumUsers": {
-        "duration": "14天",
+        "duration": "15天",
         "label": "高级用户"
       },
       "ultimateUsers": {

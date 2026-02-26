@@ -1234,7 +1234,7 @@
         "label": "pour les utilisateurs essentiels"
       },
       "premiumUsers": {
-        "duration": "14 jours",
+        "duration": "15 jours",
         "label": "pour les utilisateurs premium"
       },
       "ultimateUsers": {

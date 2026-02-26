@@ -45,7 +45,7 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
   const { connectDropTarget, isDraggingOverThisItem } = useDriveItemDrop(item);
   const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
 
-  const daysUntilDelete = isTrash ? dateService.calculateDaysUntilDate(item.caducityDate) : 0;
+  const daysUntilDelete = isTrash && item.caducityDate ? dateService.getDaysUntilExpiration(item.caducityDate) : 0;
   const autoDeleteStatusInfo = useMemo(
     () => (isTrash && daysUntilDelete > 0 ? getAutoDeleteStatusInfo(daysUntilDelete, translate) : null),
     [isTrash, daysUntilDelete, translate],
