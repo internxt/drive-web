@@ -6,7 +6,6 @@ import {
   FolderAncestor,
   FolderMeta,
   FolderAncestorWorkspace,
-  FolderStatsResponse,
 } from '@internxt/sdk/dist/drive/storage/types';
 import { SdkFactory } from 'app/core/factory/sdk';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
@@ -36,11 +35,6 @@ export async function getFolderAncestorsInWorkspace(
 export async function getFolderMeta(uuid: string, workspaceId?: string, resourcesToken?: string): Promise<FolderMeta> {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
   return storageClient.getFolderMeta(uuid, workspaceId, resourcesToken);
-}
-
-export async function getFolderStats(uuid: string): Promise<FolderStatsResponse> {
-  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-  return storageClient.getFolderStats(uuid);
 }
 
 export async function checkDuplicatedFiles(
@@ -98,7 +92,6 @@ const newStorageService = {
   getFolderAncestors,
   getFolderAncestorsInWorkspace,
   getFolderMeta,
-  getFolderStats,
   checkDuplicatedFiles,
   checkDuplicatedFolders,
   getFolderContentByUuid,

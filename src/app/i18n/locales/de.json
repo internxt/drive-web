@@ -789,13 +789,9 @@
         "uploadedBy": "Hochgeladen von",
         "shared": "Freigegeben",
         "size": "Größe",
-        "numberOfFiles": "Anzahl der Dateien",
         "modified": "Geändert",
-        "location": "Ort"
-      },
-      "fileCount_one": "{{count}} Datei",
-      "fileCount_other": "{{count}} Dateien",
-      "fileCountMoreThan1000": "Mehr als 1000 Dateien"
+        "Ort": "Ort"
+      }
     },
     "versionHistory": {
       "title": "Versionsverlauf",
@@ -1202,32 +1198,6 @@
     "item-menu": {
       "restore": "Wiederherstellen",
       "delete-permanently": "Lösche dauerhaft"
-    },
-    "autoDelete": {
-      "inDays_one": "In {{count}} Tag",
-      "inDays_other": "In {{count}} Tagen"
-    },
-    "automaticDisposal": {
-      "badge": "Neues Update",
-      "title": "Automatische Papierkorb-Entsorgung",
-      "close": "Schließen",
-      "description": "Alle in den Papierkorb verschobenen Elemente werden nun\nautomatisch dauerhaft gelöscht nach:",
-      "freeUsers": {
-        "duration": "1 Tag",
-        "label": "für kostenlose Benutzer"
-      },
-      "essentialUsers": {
-        "duration": "7 Tage",
-        "label": "für Essential-Benutzer"
-      },
-      "premiumUsers": {
-        "duration": "15 Tage",
-        "label": "für Premium-Benutzer"
-      },
-      "ultimateUsers": {
-        "duration": "30 Tage",
-        "label": "für Ultimate-Benutzer"
-      }
     }
   },
   "tasks": {
@@ -1500,8 +1470,7 @@
         "name": "Name",
         "modified": "Modifiziert",
         "size": "Größe",
-        "actions": "Aktionen",
-        "autoDelete": "Automatisches Löschen"
+        "actions": "Aktionen"
       }
     },
     "viewMode": {
