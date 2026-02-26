@@ -2010,11 +2010,11 @@
         "planFeaturesList": {
           "title": "Plan Details",
           "comingSoon": "Coming Soon",
-          "storage": " encrypted storage",
+          "storage": " encrypted cloud storage",
           "1TB": {
             "title": "Essential",
             "features": [
-              "1TB of encrypted storage",
+              "1TB of encrypted cloud storage",
               "Post-Quantum Encryption",
               "Zero-Knowledge Encryption",
               "Two-Factor Authentication",
@@ -2027,7 +2027,7 @@
           "3TB": {
             "title": "Premium",
             "features": [
-              "3TB of encrypted storage",
+              "3TB of encrypted cloud storage",
               "Post-Quantum Encryption",
               "Zero-Knowledge Encryption",
               "Two-Factor Authentication",
@@ -2043,7 +2043,7 @@
           "5TB": {
             "title": "Ultimate",
             "features": [
-              "5TB of encrypted storage",
+              "5TB of encrypted cloud storage",
               "Post-Quantum Encryption",
               "Zero-Knowledge Encryption",
               "Two-Factor Authentication",
@@ -2071,7 +2071,7 @@
           "1TB": {
             "title": "Standard",
             "features": [
-              "1TB encrypted storage per user",
+              "1TB encrypted cloud storage per user",
               "Post-quantum encryption",
               "Zero-knowledge encryption",
               "Two-factor authentication",
@@ -2089,7 +2089,7 @@
           "2TB": {
             "title": "Pro",
             "features": [
-              "2TB encrypted storage per user",
+              "2TB encrypted cloud storage per user",
               "Post-quantum encryption",
               "Zero-knowledge encryption",
               "Two-factor authentication",

@@ -1986,11 +1986,11 @@
         "planFeaturesList": {
           "title": "Detalles del plan",
           "comingSoon": "Muy pronto",
-          "storage": " almacenamiento cifrado",
+          "storage": " almacenamiento en la nube cifrado",
           "1TB": {
             "title": "Esencial",
             "features": [
-              "1TB de almacenamiento cifrado",
+              "1TB de almacenamiento en la nube cifrado",
               "Criptografía postcuántica",
               "Cifrado de conocimiento cero",
               "Autenticación de dos factores",
@@ -2003,7 +2003,7 @@
           "3TB": {
             "title": "Premium",
             "features": [
-              "3TB de almacenamiento cifrado",
+              "3TB de almacenamiento en la nube cifrado",
               "Criptografía postcuántica",
               "Cifrado de conocimiento cero",
               "Autenticación de dos factores",
@@ -2019,7 +2019,7 @@
           "5TB": {
             "title": "Ultimate",
             "features": [
-              "5TB de almacenamiento cifrado",
+              "5TB de almacenamiento en la nube cifrado",
               "Criptografía postcuántica",
               "Cifrado de conocimiento cero",
               "Autenticación de dos factores",
@@ -2038,7 +2038,7 @@
           },
           "1GB": {
             "title": "Gratis",
-            "features": ["1GB de almacenamiento cifrado", "VPN cifrada"]
+            "features": ["1GB de almacenamiento en la nube cifrado", "VPN cifrada"]
           }
         },
         "businessPlanFeaturesList": {
@@ -2047,7 +2047,7 @@
           "1TB": {
             "title": "Estándar",
             "features": [
-              "1TB de almacenamiento cifrado por usuario",
+              "1TB de almacenamiento en la nube cifrado por usuario",
               "Cifrado poscuántico",
               "Cifrado de conocimiento cero",
               "Autenticación de dos factores",
@@ -2065,7 +2065,7 @@
           "2TB": {
             "title": "Pro",
             "features": [
-              "2TB de almacenamiento cifrado por usuario",
+              "2TB de almacenamiento en la nube cifrado por usuario",
               "Cifrado poscuántico",
               "Cifrado de conocimiento cero",
               "Autenticación de dos factores",
