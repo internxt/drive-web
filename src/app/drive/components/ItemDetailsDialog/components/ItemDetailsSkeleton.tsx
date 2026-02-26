@@ -13,8 +13,11 @@ const ItemDetailsSkeleton = ({
     shared: '',
     ...(!isFolder && {
       type: '',
-      size: '',
     }),
+    ...(isFolder && {
+      numberOfFiles: '',
+    }),
+    size: '',
     uploaded: '',
     modified: '',
     uploadedBy: '',
