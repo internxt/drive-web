@@ -1,39 +1,23 @@
 import { RetryOptions } from '@internxt/sdk/dist/shared';
-import dayjs, { Dayjs } from 'dayjs';
-import { hasElapsed } from 'services/date.service';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { t } from 'i18next';
 
-const RATE_LIMIT_TOAST_COOLDOWN_MINUTES = 1;
-let lastRateLimitToastShownAt: Dayjs | null = null;
+export const SILENT_MAX_RETRIES = 2;
+export const USER_NOTIFICATION_MAX_RETRIES = 5;
 
-export const resetToastCooldown = (): void => {
-  lastRateLimitToastShownAt = null;
-};
+export type NotifyUserCallback = () => void;
 
 export const retryStrategies = {
   silent: (label = 'Global'): RetryOptions => ({
-    maxRetries: 2,
+    maxRetries: SILENT_MAX_RETRIES,
     onRetry(attempt, delay) {
       console.warn(`[SDK] ${label} retry attempt ${attempt}, waiting ${delay}ms`);
     },
   }),
 
-  withUserNotification: (label: string): RetryOptions => ({
-    maxRetries: 5,
+  withUserNotification: (label: string, notifyUser: NotifyUserCallback): RetryOptions => ({
+    maxRetries: USER_NOTIFICATION_MAX_RETRIES,
     onRetry(attempt, delay) {
-      console.warn(`[SDK] ${label} rate limited. Retry attempt ${attempt}, waiting ${delay}ms`);
-      const isToastOnCooldown =
-        lastRateLimitToastShownAt &&
-        !hasElapsed(lastRateLimitToastShownAt, RATE_LIMIT_TOAST_COOLDOWN_MINUTES, 'minute');
-      if (!isToastOnCooldown) {
-        lastRateLimitToastShownAt = dayjs();
-        notificationsService.show({
-          text: t('sdk.rateLimitToast'),
-          type: ToastType.Warning,
-          duration: 60000,
-        });
-      }
+      console.warn(`[SDK] ${label} retry attempt ${attempt}, waiting ${delay}ms`);
+      notifyUser();
     },
   }),
 };
