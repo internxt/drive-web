@@ -9,6 +9,7 @@ import packageJson from '../../../../../package.json';
 import { Auth } from '@internxt/sdk/dist/auth';
 import { Location } from '@internxt/sdk';
 import { HttpClient } from '@internxt/sdk/dist/shared/http/client';
+import { SILENT_MAX_RETRIES } from './retryStrategies';
 
 const MOCKED_NEW_API = 'https://api.internxt.com';
 const MOCKED_PAYMENTS = 'https://payments.internxt.com';
@@ -80,8 +81,14 @@ describe('SdkFactory', () => {
   describe('initialize', () => {
     it('When initialized, then the global retry is set to silent', () => {
       expect(HttpClient.enableGlobalRetry).toHaveBeenCalledWith(
-        expect.objectContaining({ maxRetries: 2, onRetry: expect.any(Function) }),
+        expect.objectContaining({ maxRetries: SILENT_MAX_RETRIES, onRetry: expect.any(Function) }),
       );
+    });
+
+    it('When not initialized, then the global retry is not enabled', () => {
+      vi.clearAllMocks();
+
+      expect(HttpClient.enableGlobalRetry).not.toHaveBeenCalled();
     });
   });
 

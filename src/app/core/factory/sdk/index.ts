@@ -12,7 +12,28 @@ import envService from 'services/env.service';
 import { STORAGE_KEYS } from 'services/storage-keys';
 import { Location } from '@internxt/sdk';
 import { HttpClient } from '@internxt/sdk/dist/shared/http/client';
-import { retryStrategies } from './retryStrategies';
+import dayjs, { Dayjs } from 'dayjs';
+import { hasElapsed } from 'services/date.service';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { t } from 'i18next';
+import { retryStrategies, NotifyUserCallback } from './retryStrategies';
+
+const RETRY_TOAST_DURATION_MS = 60000;
+const RETRY_TOAST_COOLDOWN_MINUTES = 1;
+let lastRetryToastShownAt: Dayjs | null = null;
+
+const notifyUserWithCooldown: NotifyUserCallback = () => {
+  const isToastOnCooldown =
+    lastRetryToastShownAt && !hasElapsed(lastRetryToastShownAt, RETRY_TOAST_COOLDOWN_MINUTES, 'minute');
+  if (!isToastOnCooldown) {
+    lastRetryToastShownAt = dayjs();
+    notificationsService.show({
+      text: t('sdk.rateLimitToast'),
+      type: ToastType.Warning,
+      duration: RETRY_TOAST_DURATION_MS,
+    });
+  }
+};
 
 const SdkClient = {
   Storage: 'Storage',
@@ -68,7 +89,7 @@ export class SdkFactory {
     const apiSecurity = this.getNewApiSecurity();
     return Storage.client(apiUrl, appDetails, {
       ...apiSecurity,
-      retryOptions: retryStrategies.withUserNotification(SdkClient.Storage),
+      retryOptions: retryStrategies.withUserNotification(SdkClient.Storage, notifyUserWithCooldown),
     });
   }
 
@@ -85,7 +106,7 @@ export class SdkFactory {
     const apiSecurity = this.getNewApiSecurity();
     return Share.client(apiUrl, appDetails, {
       ...apiSecurity,
-      retryOptions: retryStrategies.withUserNotification(SdkClient.Share),
+      retryOptions: retryStrategies.withUserNotification(SdkClient.Share, notifyUserWithCooldown),
     });
   }
 
