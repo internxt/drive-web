@@ -19,6 +19,7 @@ import WorkspaceSelectorContainer from 'views/Home/components/WorkspaceSelectorC
 import WorkspaceSelectorSkeleton from 'views/Home/components/WorkspaceSelectorSkeleton';
 import { useSuiteLauncher } from 'hooks/useSuiteLauncher';
 import { useSidenavNavigation } from 'hooks/useSidenavNavigation';
+import { uiActions } from 'app/store/slices/ui';
 
 interface SidenavWrapperProps {
   user: UserSettings | undefined;
@@ -68,7 +69,12 @@ const SidenavWrapper = ({
   };
 
   const handleUpgradeClick = () => {
-    navigationService.push(AppView.Preferences, { tab: 'account', section: 'plans' });
+    navigationService.openPreferencesDialog({
+      section: 'account',
+      subsection: 'plans',
+      workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId,
+    });
+    dispatch(uiActions.setIsPreferencesDialogOpen(true));
   };
 
   const handleToggleCollapse = () => {
@@ -80,39 +86,41 @@ const SidenavWrapper = ({
   };
 
   return (
-    <Sidenav
-      header={{
-        logo: logo,
-        title: translate('sideNav.drive'),
-        onClick: onLogoClicked,
-        className: `!pt-0 pb-3 ${isCollapsed ? 'justify-center !pt-2' : ''}`,
-      }}
-      primaryAction={
-        user && !isLoadingCredentials ? <WorkspaceSelectorContainer user={user} /> : <WorkspaceSelectorSkeleton />
-      }
-      suiteLauncher={{
-        suiteArray: suiteArray,
-        soonText: translate('modals.upgradePlanDialog.soonBadge'),
-      }}
-      options={itemsNavigation}
-      isCollapsed={isCollapsed}
-      onToggleCollapse={handleToggleCollapse}
-      collapsedPrimaryAction={
-        user && !isLoadingCredentials ? (
-          <WorkspaceSelectorContainer user={user} isCollapsed />
-        ) : (
-          <WorkspaceSelectorSkeleton isCollapsed />
-        )
-      }
-      storage={{
-        usage: bytesToString(planUsage),
-        limit: bytesToString(planLimit),
-        percentage: Math.min((planUsage / planLimit) * 100, 100),
-        onUpgradeClick: handleUpgradeClick,
-        upgradeLabel: isUpgradeAvailable() ? translate('preferences.account.plans.upgrade') : undefined,
-        isLoading: isLoadingPlanUsage && isLoadingPlanLimit && isLoadingBusinessLimitAndUsage,
-      }}
-    />
+    <div className="flex flex-col h-screen">
+      <Sidenav
+        header={{
+          logo: logo,
+          title: translate('sideNav.drive'),
+          onClick: onLogoClicked,
+          className: `!pt-0 pb-3 ${isCollapsed ? 'justify-center !pt-2' : ''}`,
+        }}
+        primaryAction={
+          user && !isLoadingCredentials ? <WorkspaceSelectorContainer user={user} /> : <WorkspaceSelectorSkeleton />
+        }
+        suiteLauncher={{
+          suiteArray: suiteArray,
+          soonText: translate('modals.upgradePlanDialog.soonBadge'),
+        }}
+        options={itemsNavigation}
+        isCollapsed={isCollapsed}
+        onToggleCollapse={handleToggleCollapse}
+        collapsedPrimaryAction={
+          user && !isLoadingCredentials ? (
+            <WorkspaceSelectorContainer user={user} isCollapsed />
+          ) : (
+            <WorkspaceSelectorSkeleton isCollapsed />
+          )
+        }
+        storage={{
+          usage: bytesToString(planUsage),
+          limit: bytesToString(planLimit),
+          percentage: Math.min((planUsage / planLimit) * 100, 100),
+          onUpgradeClick: handleUpgradeClick,
+          upgradeLabel: isUpgradeAvailable() ? translate('preferences.account.plans.upgrade') : undefined,
+          isLoading: isLoadingPlanUsage && isLoadingPlanLimit && isLoadingBusinessLimitAndUsage,
+        }}
+      />
+    </div>
   );
 };
 
