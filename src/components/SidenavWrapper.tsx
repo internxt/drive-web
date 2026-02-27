@@ -109,7 +109,7 @@ const SidenavWrapper = ({
         limit: bytesToString(planLimit),
         percentage: Math.min((planUsage / planLimit) * 100, 100),
         onUpgradeClick: handleUpgradeClick,
-        upgradeLabel: isUpgradeAvailable() ? translate('preferences.account.plan.upgrade') : undefined,
+        upgradeLabel: isUpgradeAvailable() ? translate('preferences.account.plans.upgrade') : undefined,
         isLoading: isLoadingPlanUsage && isLoadingPlanLimit && isLoadingBusinessLimitAndUsage,
       }}
     />
