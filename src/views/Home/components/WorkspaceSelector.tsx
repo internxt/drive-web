@@ -113,14 +113,14 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
     <div className="relative mb-2 inline-block w-full" ref={dropdownRef}>
       {/* TOGGLE BUTTON */}
       <button
-        className={`w-full justify-center rounded-lg border border-gray-10 ${
+        className={`w-full rounded-lg border border-gray-10 ${
           isWorkspaceSelectorOpen ? 'bg-gray-1' : 'bg-surface'
-        } ${isCollapsed ? 'p-2' : 'p-3'} text-left dark:bg-gray-5`}
+        } ${isCollapsed ? 'py-3 px-1.5' : 'p-3'} text-left dark:bg-gray-5`}
         onClick={toggleDropdown}
         title={isCollapsed ? selectedWorkspace?.name : undefined}
       >
         {isCollapsed ? (
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-start">
             {selectedWorkspace?.type === 'Personal' ? (
               <AvatarWrapper
                 avatarSrcURL={userWorkspace.avatar ?? null}

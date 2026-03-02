@@ -92,7 +92,7 @@ const SidenavWrapper = ({
           logo: logo,
           title: translate('sideNav.drive'),
           onClick: onLogoClicked,
-          className: `!pt-0 pb-3 ${isCollapsed ? 'justify-center !pt-2' : ''}`,
+          className: `!pt-0 pb-3 ${isCollapsed ? 'justify-center' : ''}`,
         }}
         primaryAction={
           user && !isLoadingCredentials ? <WorkspaceSelectorContainer user={user} /> : <WorkspaceSelectorSkeleton />
