@@ -39,7 +39,7 @@
     "js-file-download": "^0.4.12",
     "lint-staged": "^13.1.0",
     "lodash": "^4.17.23",
-    "openpgp": "^5.11.3",
+    "openpgp": "^6.3.0",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
     "pdfjs-dist": "=4.8.69",
