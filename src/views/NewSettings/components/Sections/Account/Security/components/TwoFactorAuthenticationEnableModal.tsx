@@ -69,7 +69,7 @@ const TwoFactorAuthenticationEnableModal = ({
           </div>
           <p className="mx-4 text-gray-50">{translate('views.account.tabs.security.2FA.modal.or')}</p>
           <div className="flex flex-col items-center">
-            <Copyable className="w-60" text={qr.key} />
+            <Copyable className="w-60" classText="select-text truncate text-gray-80" text={qr.key} />
             <p className="mt-2 px-2 text-center text-sm text-gray-60">
               {translate('views.account.tabs.security.2FA.modal.steps.qr.description')}
             </p>
