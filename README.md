@@ -117,7 +117,7 @@ src/
 │   └── global.css
 ├── types/                # Global and component-specific types
 │   └── global.d.ts       # Global types (e.g., user, environment)
-├── App.jsx               # Main application entry point
+├── App.tsx               # Main application entry point
 └── index.ts
 ```
 
@@ -171,20 +171,15 @@ This structure ensures **modularity**, **scalability**, and **maintainability** 
 
 ## Config Tailwind CSS purge option
 
-It is important to add in the tailwind.config.js file, within the purge property, the list of classes that we are overriding within a Tailwind layer (components, utilities or base) for third-party packages (such as react-bootstrap)
+It is important to add in the `tailwind.config.ts` file, within the `safelist` property, the list of classes that we are overriding within a Tailwind layer (components, utilities or base) for third-party packages (such as react-bootstrap).
 
-For example, with this snippet we are telling to purge that we are overriding the react-bootstrap Dropdown and Tabs classes:
+For example, with this snippet we are telling Tailwind to keep the react-bootstrap Dropdown and Tabs classes:
 
-```javascript
-  purge: {
-    content: ["./src/**/*.tsx"],
-    options: {
-      safelist: [
-        'dropdown-menu', 'dropdown-item',
-        'nav-item', 'nav-link', 'tab-content', 'tab-pane'
-      ]
-    }
-  }
+```typescript
+  safelist: [
+    'dropdown-menu', 'dropdown-item',
+    'nav-item', 'nav-link', 'tab-content', 'tab-pane'
+  ]
 ```
 
 ## Recommended IDE extensions (Visual Studio Code)
