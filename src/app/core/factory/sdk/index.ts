@@ -11,6 +11,34 @@ import { Checkout } from '@internxt/sdk/dist/payments';
 import envService from 'services/env.service';
 import { STORAGE_KEYS } from 'services/storage-keys';
 import { Location } from '@internxt/sdk';
+import { HttpClient } from '@internxt/sdk/dist/shared/http/client';
+import dayjs, { Dayjs } from 'dayjs';
+import { hasElapsed } from 'services/date.service';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { t } from 'i18next';
+import { retryStrategies, NotifyUserCallback } from './retryStrategies';
+
+const RETRY_TOAST_DURATION_MS = 60000;
+const RETRY_TOAST_COOLDOWN_MINUTES = 1;
+let lastRetryToastShownAt: Dayjs | null = null;
+
+const notifyUserWithCooldown: NotifyUserCallback = () => {
+  const isToastOnCooldown =
+    lastRetryToastShownAt && !hasElapsed(lastRetryToastShownAt, RETRY_TOAST_COOLDOWN_MINUTES, 'minute');
+  if (!isToastOnCooldown) {
+    lastRetryToastShownAt = dayjs();
+    notificationsService.show({
+      text: t('sdk.rateLimitToast'),
+      type: ToastType.Warning,
+      duration: RETRY_TOAST_DURATION_MS,
+    });
+  }
+};
+
+const SdkClient = {
+  Storage: 'Storage',
+  Share: 'Share',
+} as const;
 
 export class SdkFactory {
   private static sdk: {
@@ -30,6 +58,8 @@ export class SdkFactory {
       localStorage,
       newApiInstance: new SdkFactory(envService.getVariable('newApi')),
     };
+
+    HttpClient.enableGlobalRetry(retryStrategies.silent());
   }
 
   public static getNewApiInstance(): SdkFactory {
@@ -57,7 +87,10 @@ export class SdkFactory {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
     const apiSecurity = this.getNewApiSecurity();
-    return Storage.client(apiUrl, appDetails, apiSecurity);
+    return Storage.client(apiUrl, appDetails, {
+      ...apiSecurity,
+      retryOptions: retryStrategies.withUserNotification(SdkClient.Storage, notifyUserWithCooldown),
+    });
   }
 
   public createWorkspacesClient(): Workspaces {
@@ -71,7 +104,10 @@ export class SdkFactory {
     const apiUrl = this.getApiUrl();
     const appDetails = this.getAppDetailsWithHeaders(captchaToken);
     const apiSecurity = this.getNewApiSecurity();
-    return Share.client(apiUrl, appDetails, apiSecurity);
+    return Share.client(apiUrl, appDetails, {
+      ...apiSecurity,
+      retryOptions: retryStrategies.withUserNotification(SdkClient.Share, notifyUserWithCooldown),
+    });
   }
 
   public createTrashClient(): Trash {

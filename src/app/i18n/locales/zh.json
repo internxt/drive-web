@@ -2117,5 +2117,8 @@
       "todayAt": "今天在 "
     },
     "sharedWorkspace": "共享工作区"
+  },
+  "sdk": {
+    "rateLimitToast": "这花费的时间比预期的长，请稍候..."
   }
 }

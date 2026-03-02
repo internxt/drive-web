@@ -4,10 +4,14 @@ import { LocalStorageService } from 'services/local-storage.service';
 import { userThunks } from '../../../store/slices/user';
 import { Workspace } from '../../types';
 import { STORAGE_KEYS } from 'services/storage-keys';
-import { Share, Users } from '@internxt/sdk/dist/drive';
+import { Share, Storage, Users } from '@internxt/sdk/dist/drive';
 import packageJson from '../../../../../package.json';
 import { Auth } from '@internxt/sdk/dist/auth';
 import { Location } from '@internxt/sdk';
+import { HttpClient } from '@internxt/sdk/dist/shared/http/client';
+import { SILENT_MAX_RETRIES } from './retryStrategies';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { hasElapsed } from 'services/date.service';
 
 const MOCKED_NEW_API = 'https://api.internxt.com';
 const MOCKED_PAYMENTS = 'https://payments.internxt.com';
@@ -19,6 +23,18 @@ vi.mock('@internxt/sdk/dist/drive', () => ({
   },
   Share: {
     client: vi.fn(),
+  },
+  Storage: {
+    client: vi.fn(),
+  },
+}));
+
+vi.mock('app/notifications/services/notifications.service', () => ({
+  default: {
+    show: vi.fn(),
+  },
+  ToastType: {
+    Warning: 'WARNING',
   },
 }));
 
@@ -32,6 +48,20 @@ vi.mock('@internxt/sdk', () => ({
   Location: {
     client: vi.fn(),
   },
+}));
+
+vi.mock('@internxt/sdk/dist/shared/http/client', () => ({
+  HttpClient: {
+    enableGlobalRetry: vi.fn(),
+  },
+}));
+
+vi.mock('i18next', () => ({
+  t: vi.fn((key: string) => key),
+}));
+
+vi.mock('services/date.service', () => ({
+  hasElapsed: vi.fn().mockReturnValue(true),
 }));
 
 vi.mock('services/env.service', () => ({
@@ -55,6 +85,21 @@ describe('SdkFactory', () => {
   let mockDispatch: any;
   let mockLocalStorage: LocalStorageService;
 
+  const getNotifyCallback = () => {
+    vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(Workspace.Individuals);
+    vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
+      if (key === 'xNewToken') return 'test-token';
+      return null;
+    });
+
+    const instance = SdkFactory.getNewApiInstance();
+    instance.createNewStorageClient();
+
+    const callArgs = vi.mocked(Storage.client).mock.calls[0];
+    const onRetry = callArgs[2]?.retryOptions?.onRetry as (attempt: number, delay: number) => void;
+    return onRetry;
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
     mockDispatch = vi.fn();
@@ -64,6 +109,20 @@ describe('SdkFactory', () => {
     } as any;
 
     SdkFactory.initialize(mockDispatch, mockLocalStorage);
+  });
+
+  describe('initialize', () => {
+    it('When initialized, then the global retry is set to silent', () => {
+      expect(HttpClient.enableGlobalRetry).toHaveBeenCalledWith(
+        expect.objectContaining({ maxRetries: SILENT_MAX_RETRIES, onRetry: expect.any(Function) }),
+      );
+    });
+
+    it('When not initialized, then the global retry is not enabled', () => {
+      vi.clearAllMocks();
+
+      expect(HttpClient.enableGlobalRetry).not.toHaveBeenCalled();
+    });
   });
 
   describe('getNewApiSecurity', () => {
@@ -363,6 +422,42 @@ describe('SdkFactory', () => {
         instance.createLocationClient();
 
         expect(Location.client).toHaveBeenCalledWith(MOCKED_LOCATION);
+      });
+    });
+
+    describe('notifyUserWithCooldown', () => {
+      it('When notifyUserWithCooldown is called for the first time, then it shows a toast notification', () => {
+        const onRetry = getNotifyCallback();
+
+        onRetry(1, 1000);
+
+        expect(notificationsService.show).toHaveBeenCalledWith({
+          text: 'sdk.rateLimitToast',
+          type: ToastType.Warning,
+          duration: 60000,
+        });
+      });
+
+      it('When notifyUserWithCooldown is called again within cooldown, then it does not show a second toast', () => {
+        const onRetry = getNotifyCallback();
+
+        onRetry(1, 1000);
+        expect(notificationsService.show).toHaveBeenCalledTimes(1);
+
+        vi.mocked(hasElapsed).mockReturnValueOnce(false);
+        onRetry(2, 2000);
+        expect(notificationsService.show).toHaveBeenCalledTimes(1);
+      });
+
+      it('When notifyUserWithCooldown is called after cooldown has elapsed, then it shows the toast again', () => {
+        const onRetry = getNotifyCallback();
+
+        onRetry(1, 1000);
+        expect(notificationsService.show).toHaveBeenCalledTimes(1);
+
+        vi.mocked(hasElapsed).mockReturnValueOnce(true);
+        onRetry(2, 2000);
+        expect(notificationsService.show).toHaveBeenCalledTimes(2);
       });
     });
   });
