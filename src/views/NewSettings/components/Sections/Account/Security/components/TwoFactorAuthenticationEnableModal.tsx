@@ -83,7 +83,7 @@ const TwoFactorAuthenticationEnableModal = ({
 
   const backupKeyStep = (
     <div className="py-5">
-      {qr && <Copyable className="mx-auto w-60" text={qr.key} />}
+      {qr && <Copyable className="mx-auto w-60" classText="select-text truncate" text={qr.key} />}
       <div className="mt-2 flex items-center">
         <Warning size={24} className="text-yellow" style={{ marginLeft: '83px' }} weight="fill" />
         <p className="ml-2 w-64 text-sm text-gray-60">
