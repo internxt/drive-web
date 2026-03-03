@@ -82,6 +82,7 @@ const processInvitation = async (
     notificationsService.show({
       text: castedError.message,
       type: ToastType.Error,
+      requestId: castedError.requestId,
     });
   }
 };

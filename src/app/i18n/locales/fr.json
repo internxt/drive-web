@@ -814,6 +814,34 @@
         "location": "Emplacement"
       }
     },
+    "versionHistory": {
+      "title": "Historique des versions",
+      "current": "Actuelle",
+      "expiresInDays": "Expire dans {{days}} jours",
+      "autosaveVersions": "{{count}}/{{total}} versions de sauvegarde automatique",
+      "restoreVersion": "Restaurer la version",
+      "downloadVersion": "Télécharger la version",
+      "deleteVersion": "Supprimer la version",
+      "deleteVersionTitle": "Supprimer la version",
+      "deleteButton": "Supprimer",
+      "restoreButton": "Restaurer",
+      "downloadError": "Échec du téléchargement de la version",
+      "deleteVersionAdvice": "Cette version sera définitivement supprimée. \nCette action ne peut pas être annulée.",
+      "deletingVersion": "Suppression",
+      "restoreVersionTitle": "Restaurer la version",
+      "restoreVersionAdvice": "La restauration de cette version remplacera le fichier actuel et supprimera toutes les versions plus récentes. \nUne fois restaurée, cette action ne peut pas être annulée.\n\nVous pouvez télécharger une copie des versions plus récentes avant de restaurer.",
+      "restoringVersion": "Restauration",
+      "restoreSuccess": "Version restaurée avec succès",
+      "restoreError": "Échec de la restauration de la version",
+      "deleteSuccess": "Version supprimée avec succès",
+      "deleteError": "Échec de la suppression de la version",
+      "lockedFeature": {
+        "title": "Fonctionnalité verrouillée",
+        "description": "Restaurez les versions précédentes de vos fichiers et suivez les modifications au fil du temps.",
+        "supportedFormats": "Disponible pour les fichiers PDF, Word, Excel et CSV dans les forfaits payants.",
+        "upgradeButton": "Mettre à niveau"
+      }
+    },
     "newFolderModal": {
       "title": "Nouveau dossier",
       "label": "Nom",
@@ -916,7 +944,8 @@
           "errorInviting": "Erreur lors de l'envoi de l'invitation à {{email}}",
           "userAlreadyInvited": "L'utilisateur {{email}} a déjà été invité",
           "acceptedError": "Erreur lors de l'acceptation de l'invitation au dossier partagé",
-          "declinedError": "Erreur lors du refus de l'invitation au dossier partagé"
+          "declinedError": "Erreur lors du refus de l'invitation au dossier partagé",
+          "loadingRoles": "Impossible de charger les rôles disponibles. Veuillez réessayer plus tard."
         }
       },
       "requestAccess": {
@@ -1089,7 +1118,8 @@
     "connectionLostError": "Lost Internet connection",
     "errorLoadingTrashItems": "Erreur de chargement des éléments de la corbeille",
     "updateAvatarError": "Erreur lors de la mise à jour de l'avatar",
-    "featuresUnavailable": "Certaines fonctionnalités peuvent être indisponibles"
+    "featuresUnavailable": "Certaines fonctionnalités peuvent être indisponibles",
+    "errorSettingWorkspace": "Erreur lors de la configuration de l'espace de travail"
   },
   "backups": {
     "backups-from": "Sauvagardes de {{deviceName}}",
@@ -1431,6 +1461,9 @@
     "logOut": "Se déconnecter",
     "locked": "Verrouillé"
   },
+  "toastNotification": {
+    "textCopied": "Texte copié dans le presse-papiers"
+  },
   "drive": {
     "usage": "Usage",
     "currentPlan": "Plan actuel",
@@ -1461,6 +1494,7 @@
       "manageLinkAccess": "Gestion de l'accès",
       "manageAccess": "Gestion de l'accès",
       "download": "Télécharger",
+      "versionHistory": "Historique des versions",
       "moveToTrash": "Déplacer vers la corbeille",
       "copyLink": "Copier le lien",
       "linkSettings": "Paramètres du lien",
@@ -1899,11 +1933,11 @@
         "planFeaturesList": {
           "title": "Détails du Plan",
           "comingSoon": "Bientôt disponible",
-          "storage": " stockage chiffré",
+          "storage": " stockage cloud chiffré",
           "1TB": {
             "title": "Essential (Essentiel)",
             "features": [
-              "1To de stockage chiffré",
+              "1To de stockage cloud chiffré",
               "Chiffrement Post-Quantique",
               "Chiffrement Zéro-Connaissance",
               "Authentification à Deux Facteurs",
@@ -1911,32 +1945,32 @@
               "Partage de fichiers protégé par mot de passe",
               "VPN Chiffré",
               "Antivirus"
-            ],
-            "comingSoonFeatures": ["Historique des versions de fichiers"]
+            ]
           },
           "3TB": {
             "title": "Premium",
             "features": [
-              "3To de stockage chiffré",
+              "3To de stockage cloud chiffré",
               "Chiffrement Post-Quantique",
               "Chiffrement Zéro-Connaissance",
               "Authentification à Deux Facteurs",
+              "Historique des versions de fichiers",
               "Sauvegarde de votre ordinateur",
               "Partage de fichiers protégé par mot de passe",
               "Inviter, partager et collaborer",
               "VPN Chiffré",
               "Antivirus",
               "Nettoyeur"
-            ],
-            "comingSoonFeatures": ["Historique des versions de fichiers"]
+            ]
           },
           "5TB": {
             "title": "Ultimate (Ultime)",
             "features": [
-              "5To de stockage chiffré",
+              "5To de stockage cloud chiffré",
               "Chiffrement Post-Quantique",
               "Chiffrement Zéro-Connaissance",
               "Authentification à Deux Facteurs",
+              "Historique des versions de fichiers",
               "Sauvegarde de votre ordinateur",
               "Partage de fichiers protégé par mot de passe",
               "Inviter, partager et collaborer",
@@ -1947,11 +1981,11 @@
               "Nettoyeur",
               "Meet (Réunion)"
             ],
-            "comingSoonFeatures": ["Historique des versions de fichiers", "Mail"]
+            "comingSoonFeatures": ["Mail", "Photos"]
           },
           "1GB": {
             "title": "Gratuit",
-            "features": ["1Go de stockage chiffré", "VPN Chiffré"]
+            "features": ["1Go de stockage cloud chiffré", "VPN Chiffré"]
           }
         },
         "businessPlanFeaturesList": {
@@ -1960,36 +1994,41 @@
           "1TB": {
             "title": "Standard",
             "features": [
-              "1TB de stockage chiffré à connaissance zéro par utilisateur",
+              "1 To de stockage cloud chiffré par utilisateur",
               "Chiffrement post-quantique",
-              "VPN illimité ultra rapide (FR, DE, PL)",
-              "Antivirus",
-              "Sauvegarde de vos fichiers",
-              "Partage de fichiers protégés par mot de passe",
+              "Chiffrement à connaissance nulle",
+              "Authentification à deux facteurs",
+              "Sauvegarde de l'ordinateur",
+              "Partage de fichiers protégé par mot de passe",
               "Inviter, partager et collaborer",
-              "Conformité au RGPD",
-              "Authentification à deux facteurs (2FA)",
-              "Support CLI et WebDav",
-              "Gérer la facturation et les paiements du compte"
-            ],
-            "comingSoonFeatures": ["Nettoyage de l'appareil", "Surveillance du dark web"]
+              "Conformité RGPD",
+              "CLI et WebDAV",
+              "Gestion de l'organisation",
+              "VPN chiffré",
+              "Antivirus",
+              "Nettoyeur"
+            ]
           },
           "2TB": {
             "title": "Pro",
             "features": [
-              "2TB de stockage chiffré à connaissance zéro par utilisateur",
+              "2 To de stockage cloud chiffré par utilisateur",
               "Chiffrement post-quantique",
-              "VPN illimité ultra rapide (FR, DE, PL, CA, UK)",
-              "Antivirus",
-              "Sauvegarde de vos fichiers",
-              "Partage de fichiers protégés par mot de passe",
+              "Chiffrement à connaissance nulle",
+              "Authentification à deux facteurs",
+              "Historique des versions de fichiers",
+              "Sauvegarde de l'ordinateur",
+              "Partage de fichiers protégé par mot de passe",
               "Inviter, partager et collaborer",
-              "Conformité au RGPD",
-              "Authentification à deux facteurs (2FA)",
-              "Support CLI, WebDav, Rclone et NAS",
-              "Gérer la facturation et les paiements du compte"
-            ],
-            "comingSoonFeatures": ["Nettoyage de l'appareil", "Surveillance du dark web", "Meet", "Mail"]
+              "Conformité RGPD",
+              "Prise en charge CLI, WebDAV, Rclone et NAS",
+              "Gestion de l'organisation",
+              "VPN chiffré",
+              "Antivirus",
+              "Nettoyeur",
+              "Meet",
+              "Mail"
+            ]
           }
         },
         "user": "Utilisateur"

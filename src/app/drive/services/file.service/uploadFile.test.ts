@@ -153,6 +153,51 @@ describe('Create File Entry', () => {
       ownerToken,
     );
   });
+
+  test('When creating a file entry for personal storage and a resources token is present, then the file entry for personal storage should be created using that token', async () => {
+    const file: FileToUpload = {
+      name: 'personal-file',
+      size: 2048,
+      type: 'txt',
+      content: new File(['content'], 'personal-file.txt'),
+      parentFolderId: 'folder-uuid-456',
+    };
+    const bucketId = 'personal-bucket';
+    const fileId = 'personal-file-id';
+    const resourcesToken = 'resources-token';
+    const ownerToken = 'owner-token';
+
+    const expectedResponse = { id: 'personal-created-id', name: file.name };
+    const mockCreateFileEntryByUuid = vi.fn().mockResolvedValue(expectedResponse);
+    mockSdkFactory.getNewApiInstance.mockReturnValue({
+      createNewStorageClient: vi.fn(() => ({
+        createFileEntryByUuid: mockCreateFileEntryByUuid,
+      })),
+    } as any);
+
+    const result = await createFileEntry({
+      bucketId,
+      fileId,
+      file,
+      isWorkspaceUpload: false,
+      resourcesToken,
+      ownerToken,
+    });
+
+    expect(result).toEqual(expectedResponse);
+    expect(mockCreateFileEntryByUuid).toHaveBeenCalledWith(
+      expect.objectContaining({
+        fileId: fileId,
+        type: file.type,
+        size: file.size,
+        plainName: file.name,
+        bucket: bucketId,
+        folderUuid: file.parentFolderId,
+        encryptVersion: StorageTypes.EncryptionVersion.Aes03,
+      }),
+      resourcesToken,
+    );
+  });
 });
 
 describe('Uploading a file', () => {

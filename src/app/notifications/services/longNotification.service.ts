@@ -16,10 +16,11 @@ export type ToastShowProps = {
   action?: { text: string; to?: string; onClick: () => void };
   duration?: number;
   closable?: boolean;
+  requestId?: string;
 };
 
 const longNotificationsService = {
-  show: ({ text, type, action, duration = 5000, closable = true }: ToastShowProps): string => {
+  show: ({ text, type, action, duration = 5000, closable = true, requestId }: ToastShowProps): string => {
     const id = toast.custom(
       (t) =>
         createElement(LongNotificationToast, {
@@ -28,6 +29,7 @@ const longNotificationsService = {
           visible: t.visible,
           action,
           closable,
+          requestId,
           onClose() {
             toast.dismiss(id);
           },

@@ -405,6 +405,7 @@ function SharedView({
         encryptionKey: currentUser?.mnemonic,
         bucketId: currentUser.bucket,
         token,
+        resourcesToken: token,
       };
     } else {
       const mnemonicDecrypted =
@@ -416,6 +417,7 @@ function SharedView({
           encryptionKey: mnemonicDecrypted,
           bucketId: ownerBucket,
           token,
+          resourcesToken: token,
         };
       }
     }

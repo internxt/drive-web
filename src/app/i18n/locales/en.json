@@ -103,7 +103,7 @@
     "login": {
       "title": "Login",
       "forgotPwd": "Forgot your password?",
-      "dontHaveAccount": "Don't have an account?",
+      "dontHaveAccount": "Don’t have an account?",
       "dontHaveAccountMobile": "Don't have an Internxt account?",
       "createAccount": "Create account",
       "2FA": "Two factor code",
@@ -274,7 +274,7 @@
       },
       "renewalTitle": {
         "month": "monthly",
-        "year": "annually",
+        "year": "annual",
         "lifetime": "lifetime"
       },
       "pcMobileRenews": "* Renews at 50€ first year after trial period",
@@ -365,7 +365,7 @@
     },
     "renewalPeriod": {
       "monthly": "monthly",
-      "annually": "annually",
+      "annually": "annual",
       "lifetime": "Lifetime"
     },
     "renewal": {
@@ -890,6 +890,34 @@
         "location": "Location"
       }
     },
+    "versionHistory": {
+      "title": "Version history",
+      "current": "Current",
+      "expiresInDays": "Expires in {{days}} days",
+      "autosaveVersions": "{{count}}/{{total}} autosave versions",
+      "restoreVersion": "Restore version",
+      "downloadVersion": "Download version",
+      "deleteVersion": "Delete version",
+      "deleteVersionTitle": "Delete version",
+      "deleteButton": "Delete",
+      "restoreButton": "Restore",
+      "downloadError": "Failed to download version",
+      "deleteVersionAdvice": "This version will be permanently deleted. \nThis action cannot be undone.",
+      "deletingVersion": "Deleting",
+      "restoreVersionTitle": "Restore version",
+      "restoreVersionAdvice": "Restoring this version will replace the current file and remove all newer versions. \nOnce restored, this action cannot be undone.\n\nYou can download a copy of newer versions before restoring.",
+      "restoringVersion": "Restoring",
+      "restoreSuccess": "Version restored successfully",
+      "restoreError": "Failed to restore version",
+      "deleteSuccess": "Version deleted successfully",
+      "deleteError": "Failed to delete version",
+      "lockedFeature": {
+        "title": "Locked feature",
+        "description": "Restore previous versions of your files and track changes over time.",
+        "supportedFormats": "Available for PDF, Word, Excel, and CSV files in paid plans.",
+        "upgradeButton": "Upgrade"
+      }
+    },
     "shareModal": {
       "title": "Share \"{{name}}\"",
       "list": {
@@ -987,7 +1015,8 @@
           "errorInviting": "Error sending invitation to {{email}}",
           "userAlreadyInvited": "The user {{email}} has already been invited",
           "acceptedError": "Error accepting invitation to shared folder",
-          "declinedError": "Error declining invitation to shared folder"
+          "declinedError": "Error declining invitation to shared folder",
+          "loadingRoles": "Could not load available roles. Please try again later."
         }
       },
       "requestAccess": {
@@ -1161,7 +1190,8 @@
     "connectionLostError": "Internet connection lost",
     "errorLoadingTrashItems": "Error loading trash items",
     "updateAvatarError": "Error updating avatar",
-    "featuresUnavailable": "Some features may be unavailable"
+    "featuresUnavailable": "Some features may be unavailable",
+    "errorSettingWorkspace": "Error setting up workspace"
   },
   "backups": {
     "backups-from": "Backups from {{deviceName}}",
@@ -1507,6 +1537,9 @@
     "logOut": "Log out",
     "locked": "Locked"
   },
+  "toastNotification": {
+    "textCopied": "Text copied to clipboard"
+  },
   "drive": {
     "usage": "Usage",
     "currentPlan": "Current plan",
@@ -1538,6 +1571,7 @@
       "share": "Share",
       "manageAccess": "Manage access",
       "download": "Download",
+      "versionHistory": "Version history",
       "moveToTrash": "Move to trash",
       "copyLink": "Copy link",
       "linkSettings": "Link settings",
@@ -1977,11 +2011,11 @@
         "planFeaturesList": {
           "title": "Plan Details",
           "comingSoon": "Coming Soon",
-          "storage": " encrypted storage",
+          "storage": " encrypted cloud storage",
           "1TB": {
             "title": "Essential",
             "features": [
-              "1TB of encrypted storage",
+              "1TB of encrypted cloud storage",
               "Post-Quantum Encryption",
               "Zero-Knowledge Encryption",
               "Two-Factor Authentication",
@@ -1989,32 +2023,32 @@
               "Password-protected file sharing",
               "Encrypted VPN",
               "Antivirus"
-            ],
-            "comingSoonFeatures": ["File Versioning"]
+            ]
           },
           "3TB": {
             "title": "Premium",
             "features": [
-              "3TB of encrypted storage",
+              "3TB of encrypted cloud storage",
               "Post-Quantum Encryption",
               "Zero-Knowledge Encryption",
               "Two-Factor Authentication",
+              "File Versioning",
               "Backup your computer",
               "Password-protected file sharing",
               "Invite, share & collaborate",
               "Encrypted VPN",
               "Antivirus",
               "Cleaner"
-            ],
-            "comingSoonFeatures": ["File Versioning"]
+            ]
           },
           "5TB": {
             "title": "Ultimate",
             "features": [
-              "5TB of encrypted storage",
+              "5TB of encrypted cloud storage",
               "Post-Quantum Encryption",
               "Zero-Knowledge Encryption",
               "Two-Factor Authentication",
+              "File Versioning",
               "Backup your computer",
               "Password-protected file sharing",
               "Invite, share & collaborate",
@@ -2025,7 +2059,7 @@
               "Cleaner",
               "Meet"
             ],
-            "comingSoonFeatures": ["File Versioning", "Mail"]
+            "comingSoonFeatures": ["Mail", "Photos"]
           },
           "1GB": {
             "title": "Free",
@@ -2038,36 +2072,41 @@
           "1TB": {
             "title": "Standard",
             "features": [
-              "1TB zero-knowledge encrypted storage per user",
+              "1TB encrypted cloud storage per user",
               "Post-quantum encryption",
-              "Ultra fast unlimited VPN (FR, DE, PL)",
-              "Antivirus",
-              "Backup your files",
+              "Zero-knowledge encryption",
+              "Two-factor authentication",
+              "Backup your computer",
               "Password-protected file sharing",
               "Invite, share & collaborate",
               "GDPR compliance",
-              "Two-factor authentication (2FA)",
-              "CLI & WebDav support",
-              "Manage account billing & payments"
-            ],
-            "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor"]
+              "CLI & WebDav",
+              "Organization management",
+              "Encrypted VPN",
+              "Antivirus",
+              "Cleaner"
+            ]
           },
           "2TB": {
             "title": "Pro",
             "features": [
-              "2TB zero-knowledge encrypted storage per user",
+              "2TB encrypted cloud storage per user",
               "Post-quantum encryption",
-              "Ultra fast unlimited VPN (FR, DE, PL, CA, UK)",
-              "Antivirus",
-              "Backup your files",
+              "Zero-knowledge encryption",
+              "Two-factor authentication",
+              "Backup your computer",
+              "File Versioning",
               "Password-protected file sharing",
               "Invite, share & collaborate",
               "GDPR compliance",
-              "Two-factor authentication (2FA)",
               "CLI, WebDav, Rclone & NAS support",
-              "Manage account billing & payments"
-            ],
-            "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor", "Meet", "Mail"]
+              "Organization management",
+              "Encrypted VPN",
+              "Antivirus",
+              "Cleaner",
+              "Meet",
+              "Mail"
+            ]
           }
         },
         "user": "user"

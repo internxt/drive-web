@@ -22,7 +22,12 @@ vi.mock('app/drive/services/new-storage.service', () => ({
 vi.mock('services/error.service', () => ({
   default: {
     reportError: vi.fn(),
+    castError: vi.fn((err) => ({ message: err?.message || 'Unknown error', requestId: 'test-request-id' })),
   },
+}));
+
+vi.mock('i18next', () => ({
+  t: vi.fn((key: string) => key),
 }));
 
 describe('useBackupsPagination', () => {
@@ -173,6 +178,8 @@ describe('useBackupsPagination', () => {
     await waitFor(() => {
       expect(notificationsServiceSpy).toHaveBeenCalledWith({
         type: ToastType.Error,
+        text: 'notificationMessages.errorWhileFetchingMoreItems',
+        requestId: 'test-request-id',
       });
     });
   });

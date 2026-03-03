@@ -1,7 +1,7 @@
 export class QueueUtilsService {
   public static readonly instance: QueueUtilsService = new QueueUtilsService();
 
-  public readonly getConcurrencyUsingPerfomance = (currentConcurrency: number, maxConcurrency: number): number => {
+  public readonly getConcurrencyUsingPerformance = (currentConcurrency: number, maxConcurrency: number): number => {
     let newConcurrency = currentConcurrency;
     try {
       const memory = window?.performance?.memory;

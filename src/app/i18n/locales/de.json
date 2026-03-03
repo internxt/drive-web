@@ -793,6 +793,34 @@
         "Ort": "Ort"
       }
     },
+    "versionHistory": {
+      "title": "Versionsverlauf",
+      "current": "Aktuell",
+      "expiresInDays": "Läuft in {{days}} Tagen ab",
+      "autosaveVersions": "{{count}}/{{total}} automatisch gespeicherte Versionen",
+      "restoreVersion": "Version wiederherstellen",
+      "downloadVersion": "Version herunterladen",
+      "deleteVersion": "Version löschen",
+      "deleteVersionTitle": "Version löschen",
+      "deleteButton": "Löschen",
+      "restoreButton": "Wiederherstellen",
+      "downloadError": "Fehler beim Herunterladen der Version",
+      "deleteVersionAdvice": "Diese Version wird dauerhaft gelöscht. \nDiese Aktion kann nicht rückgängig gemacht werden.",
+      "deletingVersion": "Lösche",
+      "restoreVersionTitle": "Version wiederherstellen",
+      "restoreVersionAdvice": "Das Wiederherstellen dieser Version ersetzt die aktuelle Datei und entfernt alle neueren Versionen. \nSobald wiederhergestellt, kann diese Aktion nicht rückgängig gemacht werden.\n\nSie können eine Kopie neuerer Versionen herunterladen, bevor Sie wiederherstellen.",
+      "restoringVersion": "Wiederherstellung",
+      "restoreSuccess": "Version erfolgreich wiederhergestellt",
+      "restoreError": "Fehler beim Wiederherstellen der Version",
+      "deleteSuccess": "Version erfolgreich gelöscht",
+      "deleteError": "Fehler beim Löschen der Version",
+      "lockedFeature": {
+        "title": "Gesperrte Funktion",
+        "description": "Stellen Sie frühere Versionen Ihrer Dateien wieder her und verfolgen Sie Änderungen im Laufe der Zeit.",
+        "supportedFormats": "Verfügbar für PDF-, Word-, Excel- und CSV-Dateien in kostenpflichtigen Plänen.",
+        "upgradeButton": "Upgrade"
+      }
+    },
     "shareModal": {
       "title": "\"{{name}}\" teilen",
       "list": {
@@ -889,7 +917,8 @@
           "errorInviting": "Fehler beim Senden der Einladung an {{email}}",
           "userAlreadyInvited": "Der Benutzer {{email}} wurde bereits eingeladen",
           "acceptedError": "Fehler beim Akzeptieren der Einladung zum gemeinsamen Ordner",
-          "declinedError": "Fehler beim Ablehnen der Einladung zu einem gemeinsamen Ordner"
+          "declinedError": "Fehler beim Ablehnen der Einladung zu einem gemeinsamen Ordner",
+          "loadingRoles": "Die verfügbaren Rollen konnten nicht geladen werden. Bitte versuchen Sie es später erneut."
         }
       },
       "requestAccess": {
@@ -1086,7 +1115,8 @@
     "maxSizeUploadLimitError": "Datei zu groß (größer als 40 GB)",
     "braveNotSupportMultiplePhotosDowload": "Brave unterstützt nicht das Herunterladen mehrerer Fotos.",
     "updateAvatarError": "Fehler beim Aktualisieren des Avatars",
-    "featuresUnavailable": "Einige Funktionen sind möglicherweise nicht verfügbar"
+    "featuresUnavailable": "Einige Funktionen sind möglicherweise nicht verfügbar",
+    "errorSettingWorkspace": "Fehler beim Konfigurieren des Arbeitsbereichs"
   },
   "backups": {
     "backups-from": "Backups von {{deviceName}}",
@@ -1425,6 +1455,9 @@
     "logOut": "Abmelden",
     "locked": "Gesperrt"
   },
+  "toastNotification": {
+    "textCopied": "Text in die Zwischenablage kopiert"
+  },
   "drive": {
     "usage": "Verwendung",
     "currentPlan": "Derzeitiger Plan",
@@ -1462,7 +1495,8 @@
       "restore": "Wiederherstellen",
       "deletePermanently": "Lösche dauerhaft",
       "move": "Verschiebe",
-      "delete": "Lösche"
+      "delete": "Lösche",
+      "versionHistory": "Versionsverlauf"
     },
     "deleteItems": {
       "title": "Dauerhaft löschen?",
@@ -1893,11 +1927,11 @@
         "planFeaturesList": {
           "title": "Plandetails",
           "comingSoon": "Demnächst verfügbar",
-          "storage": " verschlüsselter Speicher",
+          "storage": " verschlüsselter Cloud-Speicher",
           "1TB": {
             "title": "Essential (Basis)",
             "features": [
-              "1TB verschlüsselter Speicher",
+              "1TB verschlüsselter Cloud-Speicher",
               "Post-Quanten-Verschlüsselung",
               "Zero-Knowledge-Verschlüsselung",
               "Zwei-Faktor-Authentifizierung",
@@ -1905,32 +1939,32 @@
               "Passwortgeschütztes Teilen von Dateien",
               "Verschlüsseltes VPN",
               "Antivirus"
-            ],
-            "comingSoonFeatures": ["Dateiversionierung"]
+            ]
           },
           "3TB": {
             "title": "Premium",
             "features": [
-              "3TB verschlüsselter Speicher",
+              "3TB verschlüsselter Cloud-Speicher",
               "Post-Quanten-Verschlüsselung",
               "Zero-Knowledge-Verschlüsselung",
               "Zwei-Faktor-Authentifizierung",
+              "Dateiversionierung",
               "Computer-Backup",
               "Passwortgeschütztes Teilen von Dateien",
               "Einladen, teilen & zusammenarbeiten",
               "Verschlüsseltes VPN",
               "Antivirus",
               "Cleaner (Bereinigungstool)"
-            ],
-            "comingSoonFeatures": ["Dateiversionierung"]
+            ]
           },
           "5TB": {
             "title": "Ultimate (Ultimativ)",
             "features": [
-              "5TB verschlüsselter Speicher",
+              "5TB verschlüsselter Cloud-Speicher",
               "Post-Quanten-Verschlüsselung",
               "Zero-Knowledge-Verschlüsselung",
               "Zwei-Faktor-Authentifizierung",
+              "Dateiversionierung",
               "Computer-Backup",
               "Passwortgeschütztes Teilen von Dateien",
               "Einladen, teilen & zusammenarbeiten",
@@ -1941,11 +1975,11 @@
               "Cleaner (Bereinigungstool)",
               "Meet (Videokonferenz)"
             ],
-            "comingSoonFeatures": ["Dateiversionierung", "Mail"]
+            "comingSoonFeatures": ["Mail", "Fotos"]
           },
           "1GB": {
             "title": "Kostenlos",
-            "features": ["1GB verschlüsselter Speicher", "Verschlüsseltes VPN"]
+            "features": ["1GB verschlüsselter Cloud-Speicher", "Verschlüsseltes VPN"]
           }
         },
         "businessPlanFeaturesList": {
@@ -1954,36 +1988,41 @@
           "1TB": {
             "title": "Standard",
             "features": [
-              "1TB Zero-Knowledge verschlüsselter Speicher pro Benutzer",
+              "1 TB verschlüsselter Cloud-Speicherplatz pro Benutzer",
               "Post-Quanten-Verschlüsselung",
-              "Ultraschnelles unbegrenztes VPN (FR, DE, PL)",
-              "Antivirus",
-              "Sicherung Ihrer Dateien",
-              "Passwortgeschützter Dateiaustausch",
-              "Einladen, Teilen & Zusammenarbeiten",
+              "Zero-Knowledge-Verschlüsselung",
+              "Zwei-Faktor-Authentifizierung",
+              "Computer-Backup",
+              "Passwortgeschützte Dateifreigabe",
+              "Einladen, teilen & zusammenarbeiten",
               "DSGVO-Konformität",
-              "Zwei-Faktor-Authentifizierung (2FA)",
-              "CLI & WebDav Unterstützung",
-              "Kontoverwaltung für Abrechnung & Zahlungen"
-            ],
-            "comingSoonFeatures": ["Gerätereiniger", "Dark Web Monitor"]
+              "CLI & WebDAV",
+              "Organisationsverwaltung",
+              "Verschlüsseltes VPN",
+              "Antivirus",
+              "Cleaner"
+            ]
           },
           "2TB": {
             "title": "Pro",
             "features": [
-              "2TB Zero-Knowledge verschlüsselter Speicher pro Benutzer",
+              "2 TB verschlüsselter Cloud-Speicherplatz pro Benutzer",
               "Post-Quanten-Verschlüsselung",
-              "Ultraschnelles unbegrenztes VPN (FR, DE, PL, CA, UK)",
-              "Antivirus",
-              "Sicherung Ihrer Dateien",
-              "Passwortgeschützter Dateiaustausch",
-              "Einladen, Teilen & Zusammenarbeiten",
+              "Zero-Knowledge-Verschlüsselung",
+              "Zwei-Faktor-Authentifizierung",
+              "Dateiversionierung",
+              "Computer-Backup",
+              "Passwortgeschützte Dateifreigabe",
+              "Einladen, teilen & zusammenarbeiten",
               "DSGVO-Konformität",
-              "Zwei-Faktor-Authentifizierung (2FA)",
-              "CLI, WebDav, Rclone & NAS Unterstützung",
-              "Kontoverwaltung für Abrechnung & Zahlungen"
-            ],
-            "comingSoonFeatures": ["Gerätereiniger", "Dark Web Monitor", "Meet", "Mail"]
+              "Unterstützung für CLI, WebDAV, Rclone & NAS",
+              "Organisationsverwaltung",
+              "Verschlüsseltes VPN",
+              "Antivirus",
+              "Cleaner",
+              "Meet",
+              "Mail"
+            ]
           }
         },
         "user": "Benutzer"
