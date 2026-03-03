@@ -13,7 +13,7 @@ import { STORAGE_KEYS } from 'services/storage-keys';
 import { Location } from '@internxt/sdk';
 import { HttpClient } from '@internxt/sdk/dist/shared/http/client';
 import dayjs, { Dayjs } from 'dayjs';
-import { hasElapsed } from 'services/date.service';
+import dateService from 'services/date.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { t } from 'i18next';
 import { retryStrategies, NotifyUserCallback } from './retryStrategies';
@@ -24,7 +24,7 @@ let lastRetryToastShownAt: Dayjs | null = null;
 
 const notifyUserWithCooldown: NotifyUserCallback = () => {
   const isToastOnCooldown =
-    lastRetryToastShownAt && !hasElapsed(lastRetryToastShownAt, RETRY_TOAST_COOLDOWN_MINUTES, 'minute');
+    lastRetryToastShownAt && !dateService.hasElapsed(lastRetryToastShownAt, RETRY_TOAST_COOLDOWN_MINUTES, 'minute');
   if (!isToastOnCooldown) {
     lastRetryToastShownAt = dayjs();
     notificationsService.show({
