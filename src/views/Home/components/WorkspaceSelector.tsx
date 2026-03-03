@@ -23,6 +23,7 @@ interface WorkspaceSelectorProps {
   pendingWorkspacesInvitesLength: number;
   isWorkspaceSelectorOpen: boolean;
   setIsWorkspaceSelectorOpen: (isWorkspaceSelectorOpen) => void;
+  isCollapsed?: boolean;
 }
 
 const WorkspaceCard = ({
@@ -77,6 +78,7 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
   selectedWorkspace,
   isWorkspaceSelectorOpen,
   setIsWorkspaceSelectorOpen,
+  isCollapsed = false,
 }) => {
   const dropdownRef = useRef<HTMLInputElement>(null);
 
@@ -111,36 +113,56 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
     <div className="relative mb-2 inline-block w-full" ref={dropdownRef}>
       {/* TOGGLE BUTTON */}
       <button
-        className={`w-full justify-center rounded-lg border border-gray-10 ${
+        className={`w-full rounded-lg border border-gray-10 ${
           isWorkspaceSelectorOpen ? 'bg-gray-1' : 'bg-surface'
-        } p-3 text-left dark:bg-gray-5`}
+        } ${isCollapsed ? 'py-3 px-1.5' : 'p-3'} text-left dark:bg-gray-5`}
         onClick={toggleDropdown}
+        title={isCollapsed ? selectedWorkspace?.name : undefined}
       >
-        <div className="flex w-full flex-row items-center justify-between space-x-2">
-          {selectedWorkspace?.type === 'Personal' ? (
-            <AvatarWrapper
-              avatarSrcURL={userWorkspace.avatar ?? null}
-              fullName={userWorkspace.name ?? ''}
-              diameter={28}
-            />
-          ) : (
-            <WorkspaceAvatarWrapper
-              diameter={28}
-              workspaceId={selectedWorkspace?.uuid ?? ''}
-              fullName={selectedWorkspace?.name ?? ''}
-              avatarSrcURL={selectedWorkspace?.avatar ?? null}
-            />
-          )}
-          <div className="flex grow flex-col truncate">
-            <p className="truncate text-sm font-medium leading-4 text-gray-100">{selectedWorkspace?.name}</p>
-            <p className="truncate text-xs font-medium leading-3 text-gray-60">
-              {translate(`workspaces.workspaceTypes.${selectedWorkspace?.type?.toLocaleLowerCase()}`)}
-            </p>
+        {isCollapsed ? (
+          <div className="flex items-center justify-start">
+            {selectedWorkspace?.type === 'Personal' ? (
+              <AvatarWrapper
+                avatarSrcURL={userWorkspace.avatar ?? null}
+                fullName={userWorkspace.name ?? ''}
+                diameter={28}
+              />
+            ) : (
+              <WorkspaceAvatarWrapper
+                diameter={28}
+                workspaceId={selectedWorkspace?.uuid ?? ''}
+                fullName={selectedWorkspace?.name ?? ''}
+                avatarSrcURL={selectedWorkspace?.avatar ?? null}
+              />
+            )}
           </div>
-          <div className="w-4">
-            <CaretUpDown colorRendering="bg-gray-100" weight="bold" size={16} />
+        ) : (
+          <div className="flex w-full flex-row items-center justify-between space-x-2">
+            {selectedWorkspace?.type === 'Personal' ? (
+              <AvatarWrapper
+                avatarSrcURL={userWorkspace.avatar ?? null}
+                fullName={userWorkspace.name ?? ''}
+                diameter={28}
+              />
+            ) : (
+              <WorkspaceAvatarWrapper
+                diameter={28}
+                workspaceId={selectedWorkspace?.uuid ?? ''}
+                fullName={selectedWorkspace?.name ?? ''}
+                avatarSrcURL={selectedWorkspace?.avatar ?? null}
+              />
+            )}
+            <div className="flex grow flex-col truncate">
+              <p className="truncate text-sm font-medium leading-4 text-gray-100">{selectedWorkspace?.name}</p>
+              <p className="truncate text-xs font-medium leading-3 text-gray-60">
+                {translate(`workspaces.workspaceTypes.${selectedWorkspace?.type?.toLocaleLowerCase()}`)}
+              </p>
+            </div>
+            <div className="w-4">
+              <CaretUpDown colorRendering="bg-gray-100" weight="bold" size={16} />
+            </div>
           </div>
-        </div>
+        )}
       </button>
       {/* DROPDOWN LIST */}
       <div

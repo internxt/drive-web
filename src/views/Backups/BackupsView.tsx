@@ -251,7 +251,7 @@ export default function BackupsView(): JSX.Element {
           contextMenu={contextMenuForFileViewer}
         />
       )}
-      <div className="z-50 flex h-14 shrink-0 items-center px-5">
+      <div className="z-40 flex h-14 shrink-0 items-center px-5">
         {currentDevice ? (
           <BreadcrumbsBackupsView
             backupsAsFoldersPath={foldersInBreadcrumbs}

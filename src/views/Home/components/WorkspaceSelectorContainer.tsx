@@ -12,7 +12,12 @@ import WorkspaceSelector, { Workspace } from './WorkspaceSelector';
 import localStorageService from 'services/local-storage.service';
 import { STORAGE_KEYS } from 'services/storage-keys';
 
-const WorkspaceSelectorContainer = ({ user }: { user: UserSettings | undefined }) => {
+interface WorkspaceSelectorContainerProps {
+  user: UserSettings | undefined;
+  isCollapsed?: boolean;
+}
+
+const WorkspaceSelectorContainer = ({ user, isCollapsed }: WorkspaceSelectorContainerProps) => {
   const dispatch = useDispatch();
   const workspaces = useSelector((state: RootState) => state.workspaces.workspaces);
   const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
@@ -86,6 +91,7 @@ const WorkspaceSelectorContainer = ({ user }: { user: UserSettings | undefined }
         setIsDialogOpen={setIsDialogOpen}
         isWorkspaceSelectorOpen={isWorkspaceSelectorOpen}
         setIsWorkspaceSelectorOpen={setIsWorkspaceSelectorOpen}
+        isCollapsed={isCollapsed}
       />
     </>
   );
