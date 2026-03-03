@@ -25,7 +25,9 @@ const isAllowedOrigin = (origin: string): boolean => {
     const url = new URL(origin);
     if (
       url.protocol === 'https:' &&
-      (url.hostname === 'meet-web.pages.dev' || url.hostname.endsWith('.meet-web.pages.dev'))
+      (url.hostname === 'meet-web.pages.dev' ||
+        url.hostname.endsWith('.meet-web.pages.dev') ||
+        url.hostname.endsWith('-meet-web.storageinternxt.workers.dev'))
     ) {
       return true;
     }
