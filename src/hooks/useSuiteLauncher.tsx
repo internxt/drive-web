@@ -1,26 +1,26 @@
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import {
-  FolderSimple,
-  VideoCamera,
   EnvelopeSimple,
-  PaperPlaneTilt,
+  FolderSimple,
   Gauge,
+  PaperPlaneTilt,
   Shield,
   Sparkle,
+  VideoCamera,
 } from '@phosphor-icons/react';
-import { SuiteLauncher, SuiteLauncherProps } from '@internxt/ui';
-import desktopService from 'services/desktop.service';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { SuiteLauncherProps } from '@internxt/ui';
 import { Service } from '@internxt/sdk/dist/drive/payments/types/tiers';
+import { useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import desktopService from 'services/desktop.service';
+import { store } from 'app/store';
+import { envService } from 'services';
 
-interface SuitePopoverProps {
-  className?: string;
-}
+const MEET_URL = 'https://meet.internxt.com';
+const SEND_URL = 'https://send.internxt.com';
 
-export default function SuitePopover({ className = '' }: Readonly<SuitePopoverProps>): JSX.Element {
+export const useSuiteLauncher = () => {
   const { translate } = useTranslationContext();
-  const dispatch = useAppDispatch();
   const userFeatures = useAppSelector((state) => state.user.userTierFeatures);
 
   const openSuite = (suite: {
@@ -32,13 +32,13 @@ export default function SuitePopover({ className = '' }: Readonly<SuitePopoverPr
     if (suite.enabled) {
       suite.onOpenSuite();
     } else {
-      dispatch(
+      store.dispatch(
         uiActions.setCurrentUpgradePlanDialogInfo({
           title: suite.upgradeTitle,
           description: suite.upgradeDescription,
         }),
       );
-      dispatch(uiActions.setIsUpgradePlanDialogOpen(true));
+      store.dispatch(uiActions.setIsUpgradePlanDialogOpen(true));
     }
   };
 
@@ -47,7 +47,7 @@ export default function SuitePopover({ className = '' }: Readonly<SuitePopoverPr
       icon: <FolderSimple />,
       title: 'Drive',
       onClick: () => {
-        window.open('https://drive.internxt.com', '_self', 'noopener');
+        window.open(envService.getVariable('hostname'), '_self', 'noopener');
       },
       isMain: true,
     },
@@ -57,7 +57,7 @@ export default function SuitePopover({ className = '' }: Readonly<SuitePopoverPr
       onClick: () =>
         openSuite({
           enabled: userFeatures?.[Service.Meet].enabled ?? false,
-          onOpenSuite: () => window.open('https://meet.internxt.com', '_blank', 'noopener'),
+          onOpenSuite: () => window.open(MEET_URL, '_blank', 'noopener'),
           upgradeTitle: translate('modals.upgradePlanDialog.meet.title'),
           upgradeDescription: translate('modals.upgradePlanDialog.meet.description'),
         }),
@@ -74,7 +74,7 @@ export default function SuitePopover({ className = '' }: Readonly<SuitePopoverPr
       icon: <PaperPlaneTilt />,
       title: 'Send',
       onClick: () => {
-        window.open('https://send.internxt.com', '_blank', 'noopener');
+        window.open(SEND_URL, '_blank', 'noopener');
       },
     },
     {
@@ -124,11 +124,7 @@ export default function SuitePopover({ className = '' }: Readonly<SuitePopoverPr
     },
   ];
 
-  return (
-    <SuiteLauncher
-      className={className}
-      suiteArray={suiteArray}
-      soonText={translate('modals.upgradePlanDialog.soonBadge')}
-    />
-  );
-}
+  return {
+    suiteArray,
+  };
+};

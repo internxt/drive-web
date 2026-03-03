@@ -1914,10 +1914,10 @@
     axios "1.13.5"
     uuid "13.0.0"
 
-"@internxt/ui@=0.1.4":
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/@internxt/ui/-/ui-0.1.4.tgz#e866d97ed7b9472389afdb65920d0ea2c43104a1"
-  integrity sha512-lKGqddZwaKkuXYHOWtUXA/afGsTlfZjFkE3gmNzoHM4ASPZ1tHYAXf8eX5zx8rErHncdV82RWEURPGZfkN6ZRA==
+"@internxt/ui@=0.1.8":
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/@internxt/ui/-/ui-0.1.8.tgz#563e266b431b9817a2dd6dd3a39d356a54c081db"
+  integrity sha512-h60suo8azArfm9/sTNQ0pzstPgu802z00gPXE/bnqhE8SyxYeIg3cUlmUAc8avuVOmErSqI5BcNN40JdVRj9NA==
   dependencies:
     "@internxt/css-config" "1.1.0"
     "@phosphor-icons/react" "^2.1.10"
@@ -3911,7 +3911,7 @@ asn1.js@^4.10.1:
     inherits "^2.0.1"
     minimalistic-assert "^1.0.0"
 
-asn1.js@^5.0.0, asn1.js@^5.2.0:
+asn1.js@^5.2.0:
   version "5.4.1"
   resolved "https://registry.yarnpkg.com/asn1.js/-/asn1.js-5.4.1.tgz#11a980b84ebb91781ce35b0fdc2ee294e3783f07"
   integrity sha512-+I//4cYPccV8LdmBLiX8CYvf9Sp3vQsrqu2QNXRcrbiWvcx/UdlFiqUJJzxRQxgsZmvhXhn4cSKeSmoFjVdupA==
@@ -4132,7 +4132,12 @@ bluebird@~3.4.1:
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.4.7.tgz#f72d760be09b7f76d08ed8fae98b289a8d05fab3"
   integrity sha512-iD3898SR7sWVRHbiQv+sHUtHnMvC1o3nW5rAcqnq3uOn07DSAppZYUkIGslDz6gXC7HfunPe7YVBgoEJASPcHA==
 
-bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.11.9:
+bn.js@^4.0.0:
+  version "4.12.3"
+  resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.12.3.tgz#2cc2c679188eb35b006f2d0d4710bed8437a769e"
+  integrity sha512-fGTi3gxV/23FTYdAoUtLYp6qySe2KE3teyZitipKNRuVYcBkoP/bB3guXN/XVKUe9mxCHXnc9C4ocyz8OmgN0g==
+
+bn.js@^4.1.0, bn.js@^4.11.9:
   version "4.12.0"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.12.0.tgz#775b3f278efbb9718eec7361f483fb36fbbfea88"
   integrity sha512-c98Bf3tPniI+scsdk237ku1Dc3ujXQTSgyiPUDEOe7tRkhrqridvh8klBv0HCEso1OLOYcHuCv/cS6DNxKH+ZA==
@@ -7380,12 +7385,10 @@ opener@^1.5.2:
   resolved "https://registry.yarnpkg.com/opener/-/opener-1.5.2.tgz#5d37e1f35077b9dcac4301372271afdeb2a13598"
   integrity sha512-ur5UIdyw5Y7yEj9wLzhqXiy6GZ3Mwx0yGI+5sMn2r0N0v3cKJvUmFH5yPP+WXh9e0xfyzyJX95D8l088DNFj7A==
 
-openpgp@^5.11.3:
-  version "5.11.3"
-  resolved "https://registry.yarnpkg.com/openpgp/-/openpgp-5.11.3.tgz#a2532aa973f1f6413556eaf328b97a6955b1d8a3"
-  integrity sha512-jXOPfIteBUQ2zSmRG4+Y6PNntIIDEAvoM/lOYCnvpXAByJEruzrHQZWE/0CGOKHbubwUuty2HoPHsqBzyKHOpA==
-  dependencies:
-    asn1.js "^5.0.0"
+openpgp@^6.3.0:
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/openpgp/-/openpgp-6.3.0.tgz#e5f72f3f10dd8bb43660225e421c4fda80bafd6e"
+  integrity sha512-pLzCU8IgyKXPSO11eeharQkQ4GzOKNWhXq79pQarIRZEMt1/ssyr+MIuWBv1mNoenJLg04gvPx+fi4gcKZ4bag==
 
 optionator@^0.8.1:
   version "0.8.3"
