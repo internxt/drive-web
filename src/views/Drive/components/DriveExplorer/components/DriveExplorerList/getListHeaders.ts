@@ -1,7 +1,7 @@
 interface ListHeaderItem {
   label: string;
   width: string;
-  name: 'type' | 'name' | 'updatedAt' | 'size' | 'caducityDate';
+  name: 'type' | 'name' | 'updatedAt' | 'size' | 'expiresAt';
   orderable: boolean;
   defaultDirection: 'ASC' | 'DESC';
   buttonDataCy?: string;
@@ -29,7 +29,7 @@ export const getListHeaders = (
     headers.push({
       label: translate('drive.list.columns.autoDelete'),
       width: 'w-date',
-      name: 'caducityDate',
+      name: 'expiresAt',
       orderable: true,
       defaultDirection: 'ASC',
     });

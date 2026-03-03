@@ -18,7 +18,7 @@ describe('List column headers', () => {
 
     expect(headers).toHaveLength(4);
 
-    const caducityHeader = headers.find((h) => h.name === 'caducityDate');
+    const caducityHeader = headers.find((h) => h.name === 'expiresAt');
     expect(caducityHeader?.label).toBe('drive.list.columns.autoDelete');
     expect(caducityHeader?.orderable).toBe(true);
 

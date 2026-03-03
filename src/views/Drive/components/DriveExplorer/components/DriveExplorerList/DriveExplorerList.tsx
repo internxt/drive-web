@@ -59,7 +59,7 @@ interface DriveExplorerListProps {
 
 type ObjectWithId = { id: string | number };
 
-type SortField = 'type' | 'name' | 'updatedAt' | 'size' | 'caducityDate';
+type SortField = 'type' | 'name' | 'updatedAt' | 'size' | 'expiresAt';
 
 type ContextMenuDriveItem = DriveItemData | Pick<DriveItemData, SortField> | (ListShareLinksItem & { code: string });
 
@@ -169,7 +169,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
       }
     }
 
-    if (value.field === 'caducityDate') {
+    if (value.field === 'expiresAt') {
       if (isTrash) {
         props.resetPaginationState();
       }
@@ -476,7 +476,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           />
         )}
         <ShareWithTeamDialog item={props.selectedItems[0]} roles={roles} />
-        <List<DriveItemData, 'type' | 'name' | 'updatedAt' | 'size' | 'caducityDate'>
+        <List<DriveItemData, 'type' | 'name' | 'updatedAt' | 'size' | 'expiresAt'>
           header={getListHeaders(translate, isRecents, isTrash)}
           checkboxDataCy="driveListHeaderCheckbox"
           disableKeyboardShortcuts={props.disableKeyboardShortcuts || props.showStopSharingConfirmation}
