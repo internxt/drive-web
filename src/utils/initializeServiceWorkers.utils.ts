@@ -1,6 +1,13 @@
 export async function initializeServiceWorkers() {
   if ('serviceWorker' in navigator) {
     try {
+      // Remove existing service worker in the main scope (/) to avoid conflicts
+      const mainScopeRegistration = await navigator.serviceWorker.getRegistration('/');
+      if (mainScopeRegistration) {
+        await mainScopeRegistration.unregister();
+        console.log('[ServiceWorkers] Removed service worker from main scope (/)');
+      }
+
       console.log('[ServiceWorkers] Registering StreamSaver worker...');
       await navigator.serviceWorker.register('/streamsaver/stream-saver.js', {
         scope: '/streamsaver/',
@@ -8,8 +15,8 @@ export async function initializeServiceWorkers() {
       console.log('[ServiceWorkers] StreamSaver worker registered');
 
       console.log('[ServiceWorkers] Registering video streaming worker...');
-      await navigator.serviceWorker.register('/video-streaming.js', {
-        scope: '/',
+      await navigator.serviceWorker.register('/video-stream/video-streaming.js', {
+        scope: '/video-stream/',
       });
       console.log('[ServiceWorkers] Video streaming worker registered');
 

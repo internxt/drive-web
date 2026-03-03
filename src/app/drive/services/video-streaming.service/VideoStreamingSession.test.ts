@@ -1,227 +1,200 @@
-import { describe, expect, vi, beforeEach, test } from 'vitest';
+import { describe, expect, vi, beforeEach, afterEach, test } from 'vitest';
 import { VideoStreamingSession, VideoStreamingSessionConfig } from './VideoStreamingSession';
-import { VideoStreamingService, ChunkRequestPayload } from './index';
-import { downloadChunkFile } from 'app/network/download/v2';
-import { binaryStreamToUint8Array } from 'services/stream.service';
+
+const mockCleanup = vi.fn();
+const mockHandleChunkRequest = vi.fn();
 
 vi.mock('./index', () => ({
-  VideoStreamingService: vi.fn(),
+  VideoStreamingService: class {
+    cleanup = mockCleanup;
+    handleChunkRequest = mockHandleChunkRequest;
+  },
 }));
 
-vi.mock('app/network/download/v2', () => ({
-  downloadChunkFile: vi.fn(),
-}));
-
-vi.mock('services/stream.service', () => ({
-  binaryStreamToUint8Array: vi.fn(),
-}));
-
-vi.mock('services', () => ({
-  getVideoMimeType: vi.fn(() => 'video/mp4'),
-}));
-
-const createMockConfig = (overrides?: Partial<VideoStreamingSessionConfig>): VideoStreamingSessionConfig => ({
-  fileId: 'test-file-id',
-  bucketId: 'test-bucket-id',
+const createConfig = (): VideoStreamingSessionConfig => ({
+  fileId: 'file-123',
+  bucketId: 'bucket-456',
   fileSize: 1000000,
-  fileType: 'mp4',
-  mnemonic: 'test-mnemonic',
-  credentials: { user: 'test-user', pass: 'test-pass' },
-  ...overrides,
+  fileType: 'video/mp4',
+  mnemonic: 'test mnemonic',
+  credentials: { user: 'user', pass: 'pass' },
 });
 
-describe('VideoStreamingSession', () => {
-  let mockServiceInstance: {
-    init: ReturnType<typeof vi.fn>;
-    getVideoUrl: ReturnType<typeof vi.fn>;
-    destroy: ReturnType<typeof vi.fn>;
-  };
+const dispatchIframeMessage = (iframe: HTMLIFrameElement, type: string, payload: unknown = {}) => {
+  window.dispatchEvent(
+    new MessageEvent('message', {
+      data: { type, payload },
+      source: iframe.contentWindow,
+    }),
+  );
+};
+
+describe('Video Streaming Session', () => {
+  let mockContainer: HTMLElement;
 
   beforeEach(() => {
     vi.clearAllMocks();
-
-    mockServiceInstance = {
-      init: vi.fn().mockResolvedValue(undefined),
-      getVideoUrl: vi.fn().mockReturnValue('/video-stream/test-session-id'),
-      destroy: vi.fn().mockResolvedValue(undefined),
-    };
-
-    (VideoStreamingService as unknown as ReturnType<typeof vi.fn>).mockImplementation(() => mockServiceInstance);
+    mockContainer = document.createElement('div');
   });
 
-  describe('init', () => {
-    test('When initializing the session, then should return video URL after successful init', async () => {
-      const config = createMockConfig();
-      const session = new VideoStreamingSession(config);
+  afterEach(() => {
+    document.getElementById('video-iframe')?.remove();
+  });
 
-      await session.init();
-      const url = session.getVideoUrl();
+  describe('Initializing', () => {
+    test('When init is called, then creates iframe and returns true', async () => {
+      const session = new VideoStreamingSession(createConfig());
 
-      expect(url).toBe('/video-stream/test-session-id');
+      const result = await session.init(mockContainer, vi.fn(), vi.fn());
+
+      expect(result).toBe(true);
+      expect(mockContainer.querySelector('iframe')).not.toBeNull();
     });
 
-    test('When initializing the session, then should return false if already destroyed before init', async () => {
-      const config = createMockConfig();
-      const session = new VideoStreamingSession(config);
+    test('When init is called, then iframe has correct attributes', async () => {
+      const session = new VideoStreamingSession(createConfig());
 
-      session.destroy();
-      const result = await session.init();
+      await session.init(mockContainer, vi.fn(), vi.fn());
 
-      expect(result).toBe(false);
-      expect(VideoStreamingService).not.toHaveBeenCalled();
+      const iframe = mockContainer.querySelector('iframe');
+      expect(iframe?.src).toContain('/video-stream/player.html');
+      expect(iframe?.id).toBe('video-iframe');
+      expect(iframe?.allow).toBe('autoplay');
     });
 
-    test('When initializing the session, then should return false if destroyed during init', async () => {
-      const config = createMockConfig();
-      const session = new VideoStreamingSession(config);
+    test('When init is called, then registers message listener', async () => {
+      const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
+      const session = new VideoStreamingSession(createConfig());
 
-      mockServiceInstance.init.mockImplementation(async () => {
-        session.destroy();
-      });
+      await session.init(mockContainer, vi.fn(), vi.fn());
 
-      const result = await session.init();
-
-      expect(result).toBe(false);
+      expect(addEventListenerSpy).toHaveBeenCalledWith('message', expect.any(Function));
+      addEventListenerSpy.mockRestore();
     });
   });
 
-  describe('Get the video URL', () => {
-    test('When getting the video URL, then should return null before init', () => {
-      const config = createMockConfig();
-      const session = new VideoStreamingSession(config);
+  describe('Handling messages', () => {
+    test('When READY message is received, then the state is handled correctly', async () => {
+      const onReady = vi.fn();
+      const session = new VideoStreamingSession(createConfig());
+      await session.init(mockContainer, onReady, vi.fn());
+      const iframe = mockContainer.querySelector('iframe')!;
 
-      expect(session.getVideoUrl()).toBeNull();
+      dispatchIframeMessage(iframe, 'READY', {});
+
+      expect(onReady).toHaveBeenCalled();
     });
 
-    test('When getting the video URL, then should return URL after init', async () => {
-      const config = createMockConfig();
-      const session = new VideoStreamingSession(config);
+    test('When ERROR message is received, then calls the error is handled correctly', async () => {
+      const onError = vi.fn();
+      const session = new VideoStreamingSession(createConfig());
+      await session.init(mockContainer, vi.fn(), onError);
+      const iframe = mockContainer.querySelector('iframe')!;
 
-      await session.init();
+      dispatchIframeMessage(iframe, 'ERROR', { message: 'Playback failed' });
 
-      expect(session.getVideoUrl()).toBe('/video-stream/test-session-id');
+      expect(onError).toHaveBeenCalledWith('Playback failed');
     });
-  });
 
-  describe('destroy', () => {
-    test('When destroying the session, then should be idempotent and destroy the service only once', async () => {
-      const config = createMockConfig();
-      const session = new VideoStreamingSession(config);
+    test('When CHUNK_REQUEST message is received, then the chunk is handled correctly', async () => {
+      const chunkData = new Uint8Array([1, 2, 3]);
+      mockHandleChunkRequest.mockResolvedValue(chunkData);
+      const session = new VideoStreamingSession(createConfig());
+      await session.init(mockContainer, vi.fn(), vi.fn());
+      const iframe = mockContainer.querySelector('iframe')!;
 
-      await session.init();
-      session.destroy();
-      session.destroy();
-      session.destroy();
+      dispatchIframeMessage(iframe, 'CHUNK_REQUEST', { requestId: 'req-1', start: 0, end: 1024 });
 
-      expect(mockServiceInstance.destroy).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('Handle Chunk Request', () => {
-    let chunkRequestHandler: (request: ChunkRequestPayload) => Promise<Uint8Array>;
-
-    beforeEach(() => {
-      (VideoStreamingService as unknown as ReturnType<typeof vi.fn>).mockImplementation((_config, handler) => {
-        chunkRequestHandler = handler;
-        return mockServiceInstance;
+      await vi.waitFor(() => {
+        expect(mockHandleChunkRequest).toHaveBeenCalledWith({
+          requestId: 'req-1',
+          start: 0,
+          end: 1024,
+        });
       });
     });
+  });
 
-    test('When requesting a chunk, then should download and return the chunk data', async () => {
-      const config = createMockConfig();
-      const session = new VideoStreamingSession(config);
-      const mockChunkData = new Uint8Array([1, 2, 3, 4, 5]);
+  describe('Destroying the session', () => {
+    test('When destroy is called, then cleans up service', async () => {
+      const session = new VideoStreamingSession(createConfig());
+      await session.init(mockContainer, vi.fn(), vi.fn());
 
-      vi.mocked(downloadChunkFile).mockResolvedValue({} as ReadableStream);
-      vi.mocked(binaryStreamToUint8Array).mockResolvedValue(mockChunkData);
-
-      await session.init();
-
-      const request: ChunkRequestPayload = {
-        sessionId: 'test-session',
-        requestId: 'test-request',
-        start: 0,
-        end: 1000,
-        fileSize: 1000000,
-      };
-
-      const result = await chunkRequestHandler(request);
-
-      expect(result).toBe(mockChunkData);
-      expect(downloadChunkFile).toHaveBeenCalledWith({
-        bucketId: config.bucketId,
-        fileId: config.fileId,
-        mnemonic: config.mnemonic,
-        creds: config.credentials,
-        chunkStart: 0,
-        chunkEnd: 1000,
-        options: expect.objectContaining({
-          abortController: expect.any(AbortController),
-        }),
-      });
-    });
-
-    test('When requesting the same chunk twice, then should return cached data', async () => {
-      const config = createMockConfig();
-      const session = new VideoStreamingSession(config);
-      const mockChunkData = new Uint8Array([1, 2, 3, 4, 5]);
-
-      vi.mocked(downloadChunkFile).mockResolvedValue({} as ReadableStream);
-      vi.mocked(binaryStreamToUint8Array).mockResolvedValue(mockChunkData);
-
-      await session.init();
-
-      const request: ChunkRequestPayload = {
-        sessionId: 'test-session',
-        requestId: 'test-request',
-        start: 0,
-        end: 1000,
-        fileSize: 1000000,
-      };
-
-      await chunkRequestHandler(request);
-      await chunkRequestHandler(request);
-
-      expect(downloadChunkFile).toHaveBeenCalledTimes(1);
-    });
-
-    test('When session is destroyed, then an error indicating so is thrown', async () => {
-      const config = createMockConfig();
-      const session = new VideoStreamingSession(config);
-      const sessionDestroyedError = new Error('Session destroyed');
-
-      await session.init();
       session.destroy();
 
-      const request: ChunkRequestPayload = {
-        sessionId: 'test-session',
-        requestId: 'test-request',
-        start: 0,
-        end: 1000,
-        fileSize: 1000000,
-      };
-
-      await expect(chunkRequestHandler(request)).rejects.toThrow(sessionDestroyedError);
+      expect(mockCleanup).toHaveBeenCalled();
     });
 
-    test('When download fails, then should clean up pending request and propagate error', async () => {
-      const config = createMockConfig();
-      const session = new VideoStreamingSession(config);
-      const networkError = new Error('Network error');
+    test('When destroy is called multiple times, then only cleans up once', async () => {
+      const session = new VideoStreamingSession(createConfig());
+      await session.init(mockContainer, vi.fn(), vi.fn());
 
-      vi.mocked(downloadChunkFile).mockRejectedValue(networkError);
+      session.destroy();
+      session.destroy();
 
-      await session.init();
+      expect(mockCleanup).toHaveBeenCalledTimes(1);
+    });
 
-      const request: ChunkRequestPayload = {
-        sessionId: 'test-session',
-        requestId: 'test-request',
-        start: 0,
-        end: 1000,
-        fileSize: 1000000,
-      };
+    test('When destroy is called, then removes iframe from DOM', async () => {
+      const session = new VideoStreamingSession(createConfig());
+      await session.init(mockContainer, vi.fn(), vi.fn());
 
-      await expect(chunkRequestHandler(request)).rejects.toThrow(networkError);
+      session.destroy();
+
+      expect(mockContainer.querySelector('iframe')).toBeNull();
+    });
+
+    test('When destroy is called, then removes message listener', async () => {
+      const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
+      const session = new VideoStreamingSession(createConfig());
+      await session.init(mockContainer, vi.fn(), vi.fn());
+
+      session.destroy();
+
+      expect(removeEventListenerSpy).toHaveBeenCalledWith('message', expect.any(Function));
+      removeEventListenerSpy.mockRestore();
+    });
+  });
+
+  describe('Resizing iframe', () => {
+    test('When READY message includes video dimensions, then resizes iframe maintaining aspect ratio', async () => {
+      Object.defineProperty(window, 'innerWidth', { value: 1920, writable: true });
+      Object.defineProperty(window, 'innerHeight', { value: 1080, writable: true });
+
+      const session = new VideoStreamingSession(createConfig());
+      await session.init(mockContainer, vi.fn(), vi.fn());
+      const iframe = mockContainer.querySelector('iframe')!;
+
+      dispatchIframeMessage(iframe, 'READY', { videoWidth: 1280, videoHeight: 720 });
+
+      expect(iframe.style.width).toStrictEqual('1280px');
+      expect(iframe.style.height).toStrictEqual('720px');
+    });
+
+    test('When video width exceeds max width, then scales down width', async () => {
+      Object.defineProperty(window, 'innerWidth', { value: 1000, writable: true, configurable: true });
+      Object.defineProperty(window, 'innerHeight', { value: 1000, writable: true, configurable: true });
+
+      const session = new VideoStreamingSession(createConfig());
+      await session.init(mockContainer, vi.fn(), vi.fn());
+      const iframe = mockContainer.querySelector('iframe')!;
+
+      dispatchIframeMessage(iframe, 'READY', { videoWidth: 2000, videoHeight: 1000 });
+
+      expect(Number.parseFloat(iframe.style.width)).toBeLessThan(2000);
+    });
+
+    test('When video height exceeds max height, then scales down height', async () => {
+      Object.defineProperty(window, 'innerWidth', { value: 2000, writable: true, configurable: true });
+      Object.defineProperty(window, 'innerHeight', { value: 500, writable: true, configurable: true });
+
+      const session = new VideoStreamingSession(createConfig());
+      await session.init(mockContainer, vi.fn(), vi.fn());
+      const iframe = mockContainer.querySelector('iframe')!;
+
+      dispatchIframeMessage(iframe, 'READY', { videoWidth: 800, videoHeight: 600 });
+
+      expect(Number.parseFloat(iframe.style.height)).toBeLessThan(600);
     });
   });
 });
