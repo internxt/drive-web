@@ -11,7 +11,7 @@ import { Location } from '@internxt/sdk';
 import { HttpClient } from '@internxt/sdk/dist/shared/http/client';
 import { SILENT_MAX_RETRIES } from './retryStrategies';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { hasElapsed } from 'services/date.service';
+import dateService from 'services/date.service';
 
 const MOCKED_NEW_API = 'https://api.internxt.com';
 const MOCKED_PAYMENTS = 'https://payments.internxt.com';
@@ -61,7 +61,9 @@ vi.mock('i18next', () => ({
 }));
 
 vi.mock('services/date.service', () => ({
-  hasElapsed: vi.fn().mockReturnValue(true),
+  default: {
+    hasElapsed: vi.fn().mockReturnValue(true),
+  },
 }));
 
 vi.mock('services/env.service', () => ({
@@ -444,7 +446,7 @@ describe('SdkFactory', () => {
         onRetry(1, 1000);
         expect(notificationsService.show).toHaveBeenCalledTimes(1);
 
-        vi.mocked(hasElapsed).mockReturnValueOnce(false);
+        vi.mocked(dateService.hasElapsed).mockReturnValueOnce(false);
         onRetry(2, 2000);
         expect(notificationsService.show).toHaveBeenCalledTimes(1);
       });
@@ -455,7 +457,7 @@ describe('SdkFactory', () => {
         onRetry(1, 1000);
         expect(notificationsService.show).toHaveBeenCalledTimes(1);
 
-        vi.mocked(hasElapsed).mockReturnValueOnce(true);
+        vi.mocked(dateService.hasElapsed).mockReturnValueOnce(true);
         onRetry(2, 2000);
         expect(notificationsService.show).toHaveBeenCalledTimes(2);
       });
