@@ -86,7 +86,7 @@ const SidenavWrapper = ({
   };
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen z-50">
       <Sidenav
         header={{
           logo: logo,
