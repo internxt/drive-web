@@ -114,14 +114,25 @@ describe('SdkFactory', () => {
   });
 
   describe('initialize', () => {
-    it('When initialized, then the global retry is set to silent', () => {
+    it('When initialized, then the global retry is enabled with silent strategy', () => {
+      expect(HttpClient.enableGlobalRetry).toHaveBeenCalledTimes(1);
       expect(HttpClient.enableGlobalRetry).toHaveBeenCalledWith(
         expect.objectContaining({ maxRetries: SILENT_MAX_RETRIES, onRetry: expect.any(Function) }),
       );
     });
 
-    it('When not initialized, then the global retry is not enabled', () => {
-      vi.clearAllMocks();
+    it('When SDK clients are created without calling initialize, then enableGlobalRetry is not called again', () => {
+      vi.mocked(HttpClient.enableGlobalRetry).mockClear();
+
+      vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(Workspace.Individuals);
+      vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
+        if (key === 'xNewToken') return 'test-token';
+        return null;
+      });
+
+      const instance = SdkFactory.getNewApiInstance();
+      instance.createNewStorageClient();
+      instance.createShareClient();
 
       expect(HttpClient.enableGlobalRetry).not.toHaveBeenCalled();
     });
