@@ -30,6 +30,7 @@ import { CRYPTO_PAYMENT_DIALOG_KEY, CryptoPaymentDialog } from 'views/Checkout/c
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 import { generateCaptchaToken } from 'utils/generateCaptchaToken';
 import gaService from 'app/analytics/ga.service';
+import metaService from 'app/analytics/meta.service';
 import { useCheckoutQueryParams } from '../hooks/useCheckoutQueryParams';
 import { useInitializeCheckout } from '../hooks/useInitializeCheckout';
 import { useProducts } from '../hooks/useProducts';
@@ -162,6 +163,12 @@ const CheckoutViewWrapper = () => {
         promoCodeId: promotionCode ?? undefined,
         couponCodeData: promoCodeData,
         seats: selectedPlan.price.type === 'business' ? businessSeats : 1,
+      });
+
+      metaService.trackCheckoutStart({
+        value: selectedPlan.price.decimalAmount,
+        currency: selectedPlan.price.currency ?? 'eur',
+        content_ids: [selectedPlan.price.id],
       });
     }
   }, [isCheckoutReady]);
