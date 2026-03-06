@@ -2,8 +2,7 @@
 import localStorageService from 'services/local-storage.service';
 
 const canTrack = () => {
-  return globalThis.window?.dataLayer && 
-         globalThis.window?.fbq;
+  return globalThis.window?.dataLayer && globalThis.window?.fbq;
 };
 
 export const trackLead = (email: string, userID: string) => {
@@ -52,9 +51,37 @@ export const trackPurchase = () => {
   });
 };
 
+export const trackCheckoutStart = (data?: { value?: number; currency?: string; content_ids?: string[] }) => {
+  if (!canTrack()) return;
+
+  globalThis.window.dataLayer.push({
+    event: 'initiateCheckout',
+    eventCategory: 'User',
+    eventAction: 'checkout_start',
+  });
+
+  const fbqPayload: any = {
+    content_type: 'product',
+    eventref: 'fb_oea',
+  };
+
+  if (data?.value !== undefined) {
+    fbqPayload.value = data.value;
+  }
+  if (data?.currency) {
+    fbqPayload.currency = data.currency;
+  }
+  if (data?.content_ids) {
+    fbqPayload.content_ids = data.content_ids;
+  }
+
+  (globalThis.window as any).fbq('track', 'InitiateCheckout', fbqPayload);
+};
+
 const metaService = {
   trackLead,
   trackPurchase,
+  trackCheckoutStart,
 };
 
 export default metaService;
