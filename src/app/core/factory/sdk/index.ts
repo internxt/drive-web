@@ -59,7 +59,7 @@ export class SdkFactory {
       newApiInstance: new SdkFactory(envService.getVariable('newApi')),
     };
 
-    HttpClient.enableGlobalRetry(retryStrategies.silent());
+    HttpClient.enableGlobalRetry(retryStrategies.withUserNotification(SdkClient.Storage, notifyUserWithCooldown));
   }
 
   public static getNewApiInstance(): SdkFactory {
@@ -87,10 +87,7 @@ export class SdkFactory {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
     const apiSecurity = this.getNewApiSecurity();
-    return Storage.client(apiUrl, appDetails, {
-      ...apiSecurity,
-      retryOptions: retryStrategies.withUserNotification(SdkClient.Storage, notifyUserWithCooldown),
-    });
+    return Storage.client(apiUrl, appDetails, apiSecurity);
   }
 
   public createWorkspacesClient(): Workspaces {
@@ -104,10 +101,7 @@ export class SdkFactory {
     const apiUrl = this.getApiUrl();
     const appDetails = this.getAppDetailsWithHeaders(captchaToken);
     const apiSecurity = this.getNewApiSecurity();
-    return Share.client(apiUrl, appDetails, {
-      ...apiSecurity,
-      retryOptions: retryStrategies.withUserNotification(SdkClient.Share, notifyUserWithCooldown),
-    });
+    return Share.client(apiUrl, appDetails, apiSecurity);
   }
 
   public createTrashClient(): Trash {

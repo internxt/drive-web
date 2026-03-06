@@ -4,12 +4,12 @@ import { LocalStorageService } from 'services/local-storage.service';
 import { userThunks } from '../../../store/slices/user';
 import { Workspace } from '../../types';
 import { STORAGE_KEYS } from 'services/storage-keys';
-import { Share, Storage, Users } from '@internxt/sdk/dist/drive';
+import { Share, Users } from '@internxt/sdk/dist/drive';
 import packageJson from '../../../../../package.json';
 import { Auth } from '@internxt/sdk/dist/auth';
 import { Location } from '@internxt/sdk';
 import { HttpClient } from '@internxt/sdk/dist/shared/http/client';
-import { SILENT_MAX_RETRIES } from './retryStrategies';
+import { USER_NOTIFICATION_MAX_RETRIES } from './retryStrategies';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import dateService from 'services/date.service';
 
@@ -88,18 +88,9 @@ describe('SdkFactory', () => {
   let mockLocalStorage: LocalStorageService;
 
   const getNotifyCallback = () => {
-    vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(Workspace.Individuals);
-    vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-      if (key === 'xNewToken') return 'test-token';
-      return null;
-    });
-
-    const instance = SdkFactory.getNewApiInstance();
-    instance.createNewStorageClient();
-
-    const callArgs = vi.mocked(Storage.client).mock.calls[0];
-    const onRetry = callArgs[2]?.retryOptions?.onRetry as (attempt: number, delay: number) => void;
-    return onRetry;
+    const callArgs = vi.mocked(HttpClient.enableGlobalRetry).mock.calls[0];
+    const retryOptions = callArgs[0] as { onRetry: (attempt: number, delay: number) => void };
+    return retryOptions.onRetry;
   };
 
   beforeEach(() => {
@@ -114,10 +105,10 @@ describe('SdkFactory', () => {
   });
 
   describe('initialize', () => {
-    it('When initialized, then the global retry is enabled with silent strategy', () => {
+    it('When initialized, then the global retry is enabled with user notification strategy', () => {
       expect(HttpClient.enableGlobalRetry).toHaveBeenCalledTimes(1);
       expect(HttpClient.enableGlobalRetry).toHaveBeenCalledWith(
-        expect.objectContaining({ maxRetries: SILENT_MAX_RETRIES, onRetry: expect.any(Function) }),
+        expect.objectContaining({ maxRetries: USER_NOTIFICATION_MAX_RETRIES, onRetry: expect.any(Function) }),
       );
     });
 
