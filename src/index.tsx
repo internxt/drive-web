@@ -77,6 +77,7 @@ store.dispatch(taskManagerThunks.initializeThunk());
 store.dispatch(referralsThunks.initializeThunk());
 
 const container = document.getElementById('root') as HTMLElement;
+container.setAttribute('translate', 'no');
 const root = createRoot(container);
 root.render(
   <React.StrictMode>
