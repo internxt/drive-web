@@ -341,13 +341,20 @@ export const updateCredentialsWithToken = async (
 
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
 
-  const keys =
+  const privateKeys =
     encryptedEccPrivateKey || encryptedKyberPrivateKey
       ? {
           ecc: encryptedEccPrivateKey,
           kyber: encryptedKyberPrivateKey,
         }
       : undefined;
+
+  const keys = privateKeys
+    ? {
+        private: privateKeys,
+        ...(backupData?.publicKeys && { public: backupData.publicKeys }),
+      }
+    : undefined;
 
   return authClient.changePasswordWithLinkV2(
     token,
