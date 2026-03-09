@@ -1219,6 +1219,8 @@
       "delete-permanently": "永久刪除"
     },
     "autoDelete": {
+      "inHours_one": "{{count}} 小時後",
+      "inHours_other": "{{count}} 小時後",
       "inDays_one": "{{count}} 天後",
       "inDays_other": "{{count}} 天後"
     },

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { connect, useSelector } from 'react-redux';
 
@@ -14,6 +14,7 @@ import { uiActions } from 'app/store/slices/ui';
 import { useAppSelector } from 'app/store/hooks';
 import AutomaticTrashDisposalDialog from './components/AutomaticTrashDisposalDialog';
 import { userSelectors } from 'app/store/slices/user';
+import dateService from 'services/date.service';
 import localStorageService from 'services/local-storage.service';
 import { STORAGE_KEYS } from 'services/storage-keys';
 
@@ -35,6 +36,11 @@ const markTrashDisposalDialogAsSeen = (): void => {
 const TrashView = (props: TrashViewProps) => {
   const { items, isLoadingItemsOnTrash } = props;
   const { translate } = useTranslationContext();
+
+  const nonExpiredItems = useMemo(
+    () => items.filter((item) => !item.expiresAt || dateService.getHoursUntilExpiration(item.expiresAt) > 0),
+    [items],
+  );
 
   const workspaceSelected = useSelector(workspacesSelectors.getSelectedWorkspace);
   const hasSignedToday = useAppSelector(userSelectors.hasSignedToday);
@@ -59,7 +65,7 @@ const TrashView = (props: TrashViewProps) => {
       <DriveExplorer
         title={translate('trash.trash')}
         isLoading={isLoadingItemsOnTrash}
-        items={items}
+        items={nonExpiredItems}
         getTrashPaginated={getTrash}
       />
       <AutomaticTrashDisposalDialog />

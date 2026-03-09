@@ -1204,6 +1204,8 @@
       "delete-permanently": "Lösche dauerhaft"
     },
     "autoDelete": {
+      "inHours_one": "In {{count}} Stunde",
+      "inHours_other": "In {{count}} Stunden",
       "inDays_one": "In {{count}} Tag",
       "inDays_other": "In {{count}} Tagen"
     },

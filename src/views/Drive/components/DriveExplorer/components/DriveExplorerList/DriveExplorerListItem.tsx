@@ -22,16 +22,27 @@ const isItemInteractive = (item: DriveExplorerItemProps['item']): boolean => {
   return (item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS');
 };
 
+const HOURS_IN_A_DAY = 24;
 const URGENT_AUTO_DELETE_THRESHOLD_DAYS = 2;
 
 const getAutoDeleteStatusInfo = (
   days: number,
+  expiresAt: string,
   translate: (key: string, options?: { count?: number }) => string,
 ): { text: string; isUrgent: boolean } => {
-  const isUrgent = days <= URGENT_AUTO_DELETE_THRESHOLD_DAYS;
+  const hours = dateService.getHoursUntilExpiration(expiresAt);
+  const isLessThanADay = hours < HOURS_IN_A_DAY;
+
+  if (isLessThanADay) {
+    return {
+      text: translate('trash.autoDelete.inHours', { count: hours }),
+      isUrgent: true,
+    };
+  }
+
   return {
     text: translate('trash.autoDelete.inDays', { count: days }),
-    isUrgent,
+    isUrgent: days <= URGENT_AUTO_DELETE_THRESHOLD_DAYS,
   };
 };
 
@@ -45,10 +56,13 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
   const { connectDropTarget, isDraggingOverThisItem } = useDriveItemDrop(item);
   const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
 
-  const daysUntilDelete = isTrash && item.expiresAt ? dateService.getDaysUntilExpiration(item.expiresAt) : 0;
+  const daysUntilDelete = isTrash && item.expiresAt ? dateService.getDaysUntilExpiration(item.expiresAt) : null;
   const autoDeleteStatusInfo = useMemo(
-    () => (isTrash && daysUntilDelete > 0 ? getAutoDeleteStatusInfo(daysUntilDelete, translate) : null),
-    [isTrash, daysUntilDelete, translate],
+    () =>
+      isTrash && daysUntilDelete !== null && item.expiresAt
+        ? getAutoDeleteStatusInfo(daysUntilDelete, item.expiresAt, translate)
+        : null,
+    [isTrash, daysUntilDelete, item.expiresAt, translate],
   );
 
   useEffect(() => {

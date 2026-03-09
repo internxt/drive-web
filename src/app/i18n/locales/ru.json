@@ -1232,6 +1232,8 @@
       "delete-permanently": "Удалить навсегда"
     },
     "autoDelete": {
+      "inHours_one": "Через {{count}} час",
+      "inHours_other": "Через {{count}} часов",
       "inDays_one": "Через {{count}} день",
       "inDays_other": "Через {{count}} дней"
     },

@@ -1266,6 +1266,8 @@
       "delete-permanently": "Eliminar permanentemente"
     },
     "autoDelete": {
+      "inHours_one": "En {{count}} hora",
+      "inHours_other": "En {{count}} horas",
       "inDays_one": "En {{count}} día",
       "inDays_other": "En {{count}} días"
     },

@@ -1324,6 +1324,8 @@
       "delete-permanently": "Elimina definitivamente"
     },
     "autoDelete": {
+      "inHours_one": "Tra {{count}} ora",
+      "inHours_other": "Tra {{count}} ore",
       "inDays_one": "Tra {{count}} giorno",
       "inDays_other": "Tra {{count}} giorni"
     },
