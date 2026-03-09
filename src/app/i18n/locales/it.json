@@ -1333,7 +1333,7 @@
       "close": "Chiudi",
       "description": "Ora tutti gli elementi spostati nel Cestino verranno\neliminati definitivamente automaticamente dopo:",
       "freeUsers": {
-        "duration": "1 giorno",
+        "duration": "2 giorni",
         "label": "per utenti gratuiti"
       },
       "essentialUsers": {

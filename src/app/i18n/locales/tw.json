@@ -1228,7 +1228,7 @@
       "close": "關閉",
       "description": "現在所有移至垃圾桶的項目將在以下時間後\n自動永久刪除：",
       "freeUsers": {
-        "duration": "1天",
+        "duration": "2天",
         "label": "免費用戶"
       },
       "essentialUsers": {

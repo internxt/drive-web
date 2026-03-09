@@ -1213,7 +1213,7 @@
       "close": "Schließen",
       "description": "Alle in den Papierkorb verschobenen Elemente werden nun\nautomatisch dauerhaft gelöscht nach:",
       "freeUsers": {
-        "duration": "1 Tag",
+        "duration": "2 Tage",
         "label": "für kostenlose Benutzer"
       },
       "essentialUsers": {

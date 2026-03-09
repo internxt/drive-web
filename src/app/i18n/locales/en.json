@@ -1298,7 +1298,7 @@
       "close": "Close",
       "description": "Now all the items moved to Trash will be\npermanently deleted automatically after:",
       "freeUsers": {
-        "duration": "1 day",
+        "duration": "2 days",
         "label": "for free users"
       },
       "essentialUsers": {

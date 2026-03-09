@@ -1275,7 +1275,7 @@
       "close": "Cerrar",
       "description": "Ahora todos los elementos movidos a la Papelera se eliminarán\npermanentemente de forma automática después de:",
       "freeUsers": {
-        "duration": "1 día",
+        "duration": "2 días",
         "label": "para usuarios gratuitos"
       },
       "essentialUsers": {

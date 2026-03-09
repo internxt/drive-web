@@ -1226,7 +1226,7 @@
       "close": "Fermer",
       "description": "Désormais, tous les éléments déplacés dans la Corbeille seront\nsupprimés définitivement automatiquement après:",
       "freeUsers": {
-        "duration": "1 jour",
+        "duration": "2 jours",
         "label": "pour les utilisateurs gratuits"
       },
       "essentialUsers": {

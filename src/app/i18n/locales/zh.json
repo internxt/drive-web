@@ -1263,7 +1263,7 @@
       "close": "关闭",
       "description": "现在所有移至垃圾箱的项目将在以下时间后\n自动永久删除：",
       "freeUsers": {
-        "duration": "1天",
+        "duration": "2天",
         "label": "免费用户"
       },
       "essentialUsers": {
