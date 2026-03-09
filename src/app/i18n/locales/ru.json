@@ -9,7 +9,10 @@
     "cta": "Получить скидку"
   },
   "featuresBanner": {
-    "label": { "blueText": "Получите скидку 87%", "text": "на все Premium планы" },
+    "label": {
+      "blueText": "Получите скидку 85%",
+      "text": "на все Premium планы"
+    },
     "title": "Получите эксклюзивную скидку!",
     "subTitle": {
       "blueText": "Специальное предложение:",
