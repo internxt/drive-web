@@ -152,9 +152,12 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
       {/* AUTO-DELETE (only for trash) */}
       {isTrash && autoDeleteStatusInfo && (
         <div className="block shrink-0 w-date items-center whitespace-nowrap">
-          <div className={`flex items-center gap-1 ${autoDeleteStatusInfo.isUrgent ? 'text-red-dark' : ''}`}>
+          <div
+            title={autoDeleteStatusInfo.expiresAt}
+            className={`flex items-center gap-1 ${autoDeleteStatusInfo.isUrgent ? 'text-red-dark' : ''}`}
+          >
             <WarningCircle size={20} className="shrink-0" />
-            <span title={autoDeleteStatusInfo.expiresAt}>{autoDeleteStatusInfo.text}</span>
+            <span>{autoDeleteStatusInfo.text}</span>
           </div>
         </div>
       )}
