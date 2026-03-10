@@ -29,20 +29,23 @@ const getAutoDeleteStatusInfo = (
   days: number,
   expiresAt: string,
   translate: (key: string, options?: { count?: number }) => string,
-): { text: string; isUrgent: boolean } => {
+): { text: string; isUrgent: boolean; expiresAt: string } => {
   const hours = dateService.getHoursUntilExpiration(expiresAt);
   const isLessThanADay = hours < HOURS_IN_A_DAY;
+  const expiresAtDate = dateService.formatDefaultDate(expiresAt, translate);
 
   if (isLessThanADay) {
     return {
       text: translate('trash.autoDelete.inHours', { count: hours }),
       isUrgent: true,
+      expiresAt: expiresAtDate,
     };
   }
 
   return {
     text: translate('trash.autoDelete.inDays', { count: days }),
     isUrgent: days <= URGENT_AUTO_DELETE_THRESHOLD_DAYS,
+    expiresAt: expiresAtDate,
   };
 };
 
@@ -151,7 +154,7 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
         <div className="block lg:pl-4 shrink-0 w-date items-center whitespace-nowrap">
           <div className={`flex items-center gap-1 ${autoDeleteStatusInfo.isUrgent ? 'text-red-dark' : ''}`}>
             <WarningCircle size={20} className="shrink-0" />
-            <span>{autoDeleteStatusInfo.text}</span>
+            <span title={autoDeleteStatusInfo.expiresAt}>{autoDeleteStatusInfo.text}</span>
           </div>
         </div>
       )}
