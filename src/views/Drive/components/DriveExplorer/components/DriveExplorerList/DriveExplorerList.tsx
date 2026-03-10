@@ -3,12 +3,13 @@ import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import React, { memo, useCallback, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
+import { getListHeaders } from './getListHeaders';
 
 import { ListShareLinksItem, Role } from '@internxt/sdk/dist/drive/share/types';
 import navigationService from 'services/navigation.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { skinSkeleton } from 'components/Skeleton';
-import { moveItemsToTrash } from '../../../../../views/Trash/services';
+import { skinSkeleton, skinSkeletonTrash } from 'components/Skeleton';
+import { moveItemsToTrash } from 'views/Trash/services';
 import { OrderDirection, OrderSettings } from 'app/core/types';
 import shareService from 'app/share/services/share.service';
 import { AppDispatch, RootState } from 'app/store';
@@ -31,7 +32,7 @@ import {
   contextMenuTrashItems,
   contextMenuWorkspaceFile,
   contextMenuWorkspaceFolder,
-} from './DriveItemContextMenu';
+} from '../DriveItemContextMenu';
 import { List } from '@internxt/ui';
 import { DownloadManager } from 'app/network/DownloadManager';
 import { useVersionHistoryMenuConfig } from 'views/Drive/hooks/useVersionHistoryMenuConfig';
@@ -58,7 +59,7 @@ interface DriveExplorerListProps {
 
 type ObjectWithId = { id: string | number };
 
-type SortField = 'type' | 'name' | 'updatedAt' | 'size';
+type SortField = 'type' | 'name' | 'updatedAt' | 'size' | 'expiresAt';
 
 type ContextMenuDriveItem = DriveItemData | Pick<DriveItemData, SortField> | (ListShareLinksItem & { code: string });
 
@@ -142,6 +143,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const currentFolderId = useAppSelector(storageSelectors.currentFolderId);
   const isRecents = props.title === translate('views.recents.head');
   const isTrash = props.title === translate('trash.trash');
+  const skeleton = isTrash ? skinSkeletonTrash : skinSkeleton;
 
   const sortBy = (value: { field: SortField; direction: 'ASC' | 'DESC' }) => {
     let direction = OrderDirection.Asc;
@@ -164,6 +166,12 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
         props.resetPaginationState();
       } else {
         resetDriveOrder({ dispatch, orderType: 'updatedAt', direction, currentFolderId });
+      }
+    }
+
+    if (value.field === 'expiresAt') {
+      if (isTrash) {
+        props.resetPaginationState();
       }
     }
   };
@@ -468,31 +476,8 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           />
         )}
         <ShareWithTeamDialog item={props.selectedItems[0]} roles={roles} />
-        <List<DriveItemData, 'type' | 'name' | 'updatedAt' | 'size'>
-          header={[
-            {
-              label: translate('drive.list.columns.name'),
-              width: 'flex grow items-center min-w-driveNameHeader',
-              name: 'name',
-              orderable: !isRecents,
-              defaultDirection: 'ASC',
-              buttonDataCy: 'driveListHeaderNameButton',
-              textDataCy: 'driveListHeaderNameButtonText',
-            },
-            {
-              label: translate('drive.list.columns.modified'),
-              width: 'w-date',
-              name: 'updatedAt',
-              orderable: !isRecents,
-              defaultDirection: 'ASC',
-            },
-            {
-              label: translate('drive.list.columns.size'),
-              orderable: false,
-              width: 'w-size',
-              name: 'size',
-            },
-          ]}
+        <List<DriveItemData, 'type' | 'name' | 'updatedAt' | 'size' | 'expiresAt'>
+          header={getListHeaders(translate, isRecents, isTrash)}
           checkboxDataCy="driveListHeaderCheckbox"
           disableKeyboardShortcuts={props.disableKeyboardShortcuts || props.showStopSharingConfirmation}
           items={props.items}
@@ -501,7 +486,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           itemComposition={[(item) => createDriveListItem(item, props.isTrash)]}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
-          skinSkeleton={skinSkeleton}
+          skinSkeleton={skeleton}
           emptyState={<></>}
           onNextPage={onEndOfScroll}
           onEnterPressed={(driveItem) => {

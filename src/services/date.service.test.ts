@@ -52,5 +52,26 @@ describe('dateService', () => {
       const expiresAt = '2023-01-01T12:00:00Z';
       expect(dateService.getDaysUntilExpiration(expiresAt)).toBe(1);
     });
+
+    test('when the expiration is in 5 hours, then 5 remaining hours are returned', () => {
+      const expiresAt = '2023-01-01T05:00:00Z';
+      expect(dateService.getHoursUntilExpiration(expiresAt)).toBe(5);
+    });
+
+    test('when the expiration has passed, then zero remaining hours are returned', () => {
+      const expiresAt = '2022-12-31T23:00:00Z';
+      expect(dateService.getHoursUntilExpiration(expiresAt)).toBe(0);
+    });
+
+    test('when the expiration is in 30 minutes, then remaining hours round up to 1', () => {
+      const expiresAt = '2023-01-01T00:30:00Z';
+      expect(dateService.getHoursUntilExpiration(expiresAt)).toBe(1);
+    });
+
+    test('when the expiration is in 25 hours, then 25 remaining hours and 2 remaining days are returned', () => {
+      const expiresAt = '2023-01-02T01:00:00Z';
+      expect(dateService.getHoursUntilExpiration(expiresAt)).toBe(25);
+      expect(dateService.getDaysUntilExpiration(expiresAt)).toBe(2);
+    });
   });
 });
