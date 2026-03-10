@@ -29,20 +29,23 @@ const getAutoDeleteStatusInfo = (
   days: number,
   expiresAt: string,
   translate: (key: string, options?: { count?: number }) => string,
-): { text: string; isUrgent: boolean } => {
+): { text: string; isUrgent: boolean; expiresAt: string } => {
   const hours = dateService.getHoursUntilExpiration(expiresAt);
   const isLessThanADay = hours < HOURS_IN_A_DAY;
+  const expiresAtDate = dateService.formatDefaultDate(expiresAt, translate);
 
   if (isLessThanADay) {
     return {
       text: translate('trash.autoDelete.inHours', { count: hours }),
       isUrgent: true,
+      expiresAt: expiresAtDate,
     };
   }
 
   return {
     text: translate('trash.autoDelete.inDays', { count: days }),
     isUrgent: days <= URGENT_AUTO_DELETE_THRESHOLD_DAYS,
+    expiresAt: expiresAtDate,
   };
 };
 
@@ -148,8 +151,11 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
 
       {/* AUTO-DELETE (only for trash) */}
       {isTrash && autoDeleteStatusInfo && (
-        <div className="block lg:pl-4 shrink-0 w-date items-center whitespace-nowrap">
-          <div className={`flex items-center gap-1 ${autoDeleteStatusInfo.isUrgent ? 'text-red-dark' : ''}`}>
+        <div className="block shrink-0 w-date items-center whitespace-nowrap">
+          <div
+            title={autoDeleteStatusInfo.expiresAt}
+            className={`flex items-center gap-1 ${autoDeleteStatusInfo.isUrgent ? 'text-red-dark' : ''}`}
+          >
             <WarningCircle size={20} className="shrink-0" />
             <span>{autoDeleteStatusInfo.text}</span>
           </div>
@@ -157,12 +163,12 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
       )}
 
       {/* DATE */}
-      <div className="block lg:pl-4 shrink-0 w-date items-center whitespace-nowrap">
+      <div className="block shrink-0 w-date items-center whitespace-nowrap">
         {dateService.formatDefaultDate(item.updatedAt, translate)}
       </div>
 
       {/* SIZE */}
-      <div className="w-size  shrink-0 items-center whitespace-nowrap">
+      <div className="w-size shrink-0 items-center whitespace-nowrap">
         {sizeService.bytesToString(item.size, false) === '' || item.isFolder ? (
           <span className="opacity-25">—</span>
         ) : (
