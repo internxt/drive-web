@@ -151,7 +151,7 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
 
       {/* AUTO-DELETE (only for trash) */}
       {isTrash && autoDeleteStatusInfo && (
-        <div className="block lg:pl-4 shrink-0 w-date items-center whitespace-nowrap">
+        <div className="block shrink-0 w-date items-center whitespace-nowrap">
           <div className={`flex items-center gap-1 ${autoDeleteStatusInfo.isUrgent ? 'text-red-dark' : ''}`}>
             <WarningCircle size={20} className="shrink-0" />
             <span title={autoDeleteStatusInfo.expiresAt}>{autoDeleteStatusInfo.text}</span>
@@ -160,12 +160,12 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
       )}
 
       {/* DATE */}
-      <div className="block lg:pl-4 shrink-0 w-date items-center whitespace-nowrap">
+      <div className="block shrink-0 w-date items-center whitespace-nowrap">
         {dateService.formatDefaultDate(item.updatedAt, translate)}
       </div>
 
       {/* SIZE */}
-      <div className="w-size  shrink-0 items-center whitespace-nowrap">
+      <div className="w-size shrink-0 items-center whitespace-nowrap">
         {sizeService.bytesToString(item.size, false) === '' || item.isFolder ? (
           <span className="opacity-25">—</span>
         ) : (
