@@ -4,7 +4,10 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "label": { "blueText": "87% Rabatt erhalten", "text": "auf alle Premium-Pläne" },
+    "label": {
+      "blueText": "85% Rabatt erhalten",
+      "text": "auf alle Premium-Pläne"
+    },
     "title": "Erhalten Sie einen exklusiven Rabatt!",
     "subTitle": {
       "blueText": "Sonderangebot:",

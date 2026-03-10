@@ -9,7 +9,10 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": { "blueText": "Ottieni l'87% di sconto", "text": "su tutti i Piani Premium" },
+    "label": {
+      "blueText": "Ottieni l'85% di sconto",
+      "text": "su tutti i Piani Premium"
+    },
     "title": "Ottieni uno sconto esclusivo!",
     "subTitle": {
       "blueText": "Offerta speciale:",

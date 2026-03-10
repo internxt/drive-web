@@ -1914,10 +1914,10 @@
     axios "1.13.5"
     uuid "13.0.0"
 
-"@internxt/ui@=0.1.4":
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/@internxt/ui/-/ui-0.1.4.tgz#e866d97ed7b9472389afdb65920d0ea2c43104a1"
-  integrity sha512-lKGqddZwaKkuXYHOWtUXA/afGsTlfZjFkE3gmNzoHM4ASPZ1tHYAXf8eX5zx8rErHncdV82RWEURPGZfkN6ZRA==
+"@internxt/ui@=0.1.8":
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/@internxt/ui/-/ui-0.1.8.tgz#563e266b431b9817a2dd6dd3a39d356a54c081db"
+  integrity sha512-h60suo8azArfm9/sTNQ0pzstPgu802z00gPXE/bnqhE8SyxYeIg3cUlmUAc8avuVOmErSqI5BcNN40JdVRj9NA==
   dependencies:
     "@internxt/css-config" "1.1.0"
     "@phosphor-icons/react" "^2.1.10"
@@ -3204,11 +3204,6 @@
   version "14.5.2"
   resolved "https://registry.yarnpkg.com/@testing-library/user-event/-/user-event-14.5.2.tgz#db7257d727c891905947bd1c1a99da20e03c2ebd"
   integrity sha512-YAh82Wh4TIrxYLmfGcixwD18oIjyC1pFQC2Y01F2lzV2HTMiYrI0nze0FD0ocB//CKS/7jIUgae+adPqxK5yCQ==
-
-"@trysound/sax@0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@trysound/sax/-/sax-0.2.0.tgz#cccaab758af56761eb7bf37af6f03f326dd798ad"
-  integrity sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==
 
 "@typeform/embed-react@^1.19.0":
   version "1.21.0"
@@ -6276,9 +6271,9 @@ immer@^9.0.21:
   integrity sha512-bc4NBHqOqSfRW7POMkHd51LvClaeMXpm8dx0e8oE2GORbq5aRK7Bxl4FyzVLdGtLmvLKL7BTDBG5ACQm4HWjTA==
 
 immutable@^4.0.0:
-  version "4.3.4"
-  resolved "https://registry.yarnpkg.com/immutable/-/immutable-4.3.4.tgz#2e07b33837b4bb7662f288c244d1ced1ef65a78f"
-  integrity sha512-fsXeu4J4i6WNWSikpI88v/PcVflZz+6kMhUfIwc5SY+poQRPnaf5V7qds6SUyUN3cVxEzuCab7QIoLOQ+DQ1wA==
+  version "4.3.8"
+  resolved "https://registry.yarnpkg.com/immutable/-/immutable-4.3.8.tgz#02d183c7727fb2bb1d5d0380da0d779dce9296a7"
+  integrity sha512-d/Ld9aLbKpNwyl0KiM2CT1WYvkitQ1TSvmRtkcV8FKStiDoA7Slzgjmb/1G2yhKM1p0XeNOieaTbFZmU1d3Xuw==
 
 import-fresh@^3.0.0:
   version "3.3.1"
@@ -7079,10 +7074,10 @@ minimalistic-crypto-utils@^1.0.1:
   resolved "https://registry.yarnpkg.com/minimalistic-crypto-utils/-/minimalistic-crypto-utils-1.0.1.tgz#f6c00c1c0b082246e5c4d99dfb8c7c083b2b582a"
   integrity sha512-JIYlbt6g8i5jKfJ3xz7rF0LXmv2TkDxBLUkiBeZ7bAx4GnnNMr8xFpGnOxn6GhTEHx3SjRrZEoU+j04prX1ktg==
 
-minimatch@5.1.7:
-  version "5.1.7"
-  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-5.1.7.tgz#9bce540b26998f278d34784a3dd25d96f5054d6d"
-  integrity sha512-FjiwU9HaHW6YB3H4a1sFudnv93lvydNjz2lmyUXR6IwKhGI+bgL3SOZrBGn6kvvX2pJvhEkGSGjyTHN47O4rqA==
+minimatch@5.1.8, minimatch@^5.1.0:
+  version "5.1.8"
+  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-5.1.8.tgz#32a16ebcccd6421c674430acb199b8806c68169b"
+  integrity sha512-7RN35vit8DeBclkofOVmBY0eDAZZQd1HzmukRdSyz95CRh8FT54eqnbj0krQr3mrHR6sfRyYkyhwBWjoV5uqlQ==
   dependencies:
     brace-expansion "^2.0.1"
 
@@ -7092,13 +7087,6 @@ minimatch@^3.0.4:
   integrity sha512-twmL+S8+7yIsE9wsqgzU3E8/LumN3M3QELrBZ20OdmQ9jB2JvW5oZtBEmft84k/Gs5CG9mqtWc6Y9vW+JEzGxw==
   dependencies:
     brace-expansion "^1.1.7"
-
-minimatch@^5.1.0:
-  version "5.1.8"
-  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-5.1.8.tgz#32a16ebcccd6421c674430acb199b8806c68169b"
-  integrity sha512-7RN35vit8DeBclkofOVmBY0eDAZZQd1HzmukRdSyz95CRh8FT54eqnbj0krQr3mrHR6sfRyYkyhwBWjoV5uqlQ==
-  dependencies:
-    brace-expansion "^2.0.1"
 
 minimatch@^9.0.4:
   version "9.0.7"
@@ -8525,6 +8513,11 @@ sass@^1.32.4:
     immutable "^4.0.0"
     source-map-js ">=0.6.2 <2.0.0"
 
+sax@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/sax/-/sax-1.5.0.tgz#b5549b671069b7aa392df55ec7574cf411179eb8"
+  integrity sha512-21IYA3Q5cQf089Z6tgaUTr7lDAyzoTPx5HRtbhsME8Udispad8dC/+sziTNugOEx54ilvatQ9YCzl4KQLPcRHA==
+
 saxes@^5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/saxes/-/saxes-5.0.1.tgz#eebab953fa3b7608dbe94e5dadb15c888fa6696d"
@@ -9042,17 +9035,17 @@ svg-tags@^1.0.0:
   integrity sha512-ovssysQTa+luh7A5Weu3Rta6FJlFBBbInjOh722LIt6klpU2/HtdUbszju/G4devcvk8PGt7FCLv5wftu3THUA==
 
 svgo@^3.0.2:
-  version "3.3.2"
-  resolved "https://registry.yarnpkg.com/svgo/-/svgo-3.3.2.tgz#ad58002652dffbb5986fc9716afe52d869ecbda8"
-  integrity sha512-OoohrmuUlBs8B8o6MB2Aevn+pRIH9zDALSR+6hhqVfa6fRwG/Qw9VUMSMW9VNg2CFc/MTIfabtdOVl9ODIJjpw==
+  version "3.3.3"
+  resolved "https://registry.yarnpkg.com/svgo/-/svgo-3.3.3.tgz#8246aee0b08791fde3b0ed22b5661b471fadf58e"
+  integrity sha512-+wn7I4p7YgJhHs38k2TNjy1vCfPIfLIJWR5MnCStsN8WuuTcBnRKcMHQLMM2ijxGZmDoZwNv8ipl5aTTen62ng==
   dependencies:
-    "@trysound/sax" "0.2.0"
     commander "^7.2.0"
     css-select "^5.1.0"
     css-tree "^2.3.1"
     css-what "^6.1.0"
     csso "^5.0.5"
     picocolors "^1.0.0"
+    sax "^1.5.0"
 
 table@^6.0.9:
   version "6.9.0"

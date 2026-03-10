@@ -4,7 +4,10 @@
     "logOut": "Cerrar sesión"
   },
   "featuresBanner": {
-    "label": { "blueText": "Obtén 87% de descuento", "text": "en todos los Planes" },
+    "label": {
+      "blueText": "Obtén 85% de descuento",
+      "text": "en todos los Planes"
+    },
     "title": "¡Obtén un descuento exclusivo!",
     "subTitle": {
       "blueText": "Oferta especial:",

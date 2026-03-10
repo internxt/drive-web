@@ -4,7 +4,10 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": { "blueText": "Get 87% off", "text": "in all  Plans" },
+    "label": {
+      "blueText": "Get 85% off",
+      "text": "in all  Plans"
+    },
     "title": " Claim your exclusive discount!",
     "subTitle": {
       "blueText": "Special offer:",

@@ -22,7 +22,6 @@ import FilterItem from './FilterItem';
 import { getItemPlainName } from 'app/crypto/services/utils';
 import navigationService from 'services/navigation.service';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-import SuitePopover from './SuitePopover';
 import { UpgradeDialog } from 'app/drive/components/UpgradeDialog/UpgradeDialog';
 
 interface NavbarProps {
@@ -291,7 +290,7 @@ const Navbar = (props: NavbarProps) => {
         {hideSearch ? (
           <div />
         ) : (
-          <form className="relative flex h-full w-full items-center" onSubmitCapture={handleSubmit}>
+          <form className="relative flex h-full w-full pl-4 items-center" onSubmitCapture={handleSubmit}>
             <label className={getSearchBoxClassName(openSearchBox)} htmlFor="globalSearchInput">
               <MagnifyingGlass
                 className="pointer-events-none absolute left-2.5 top-1/2 z-1 -translate-y-1/2 text-gray-60 focus-within:text-gray-80"
@@ -415,12 +414,6 @@ const Navbar = (props: NavbarProps) => {
         >
           <Gear size={24} />
         </button>
-        <SuitePopover
-          className={
-            'z-40 mr-5 h-10 w-10 items-center justify-center rounded-lg ' +
-            'text-gray-80 hover:bg-gray-5 hover:text-gray-80 active:bg-gray-10'
-          }
-        />
         <AccountPopover
           className="z-40 mr-5"
           user={user}
