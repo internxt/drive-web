@@ -31,6 +31,9 @@ export const getDaysUntilExpiration = (expiresAt: Date | string): number => {
   return Math.max(0, Math.ceil(diffInDays));
 };
 
+const hasElapsed = (since: Dayjs, amount: number, unit: dayjs.ManipulateType): boolean =>
+  dayjs().diff(since, unit) >= amount;
+
 const dateService = {
   format,
   isDateOneBefore,
@@ -38,6 +41,7 @@ const dateService = {
   getExpirationDate,
   formatDefaultDate,
   getDaysUntilExpiration,
+  hasElapsed,
 };
 
 export default dateService;

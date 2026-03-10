@@ -1,4 +1,7 @@
 import { uploadFile } from 'app/network/upload';
+import { HttpClient } from '@internxt/sdk/dist/shared';
+
+HttpClient.enableGlobalRetry();
 
 self.addEventListener('message', async (event) => {
   console.log('[WORKER]: Event received -->', event);
