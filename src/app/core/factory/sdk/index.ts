@@ -11,6 +11,7 @@ import { Checkout } from '@internxt/sdk/dist/payments';
 import envService from 'services/env.service';
 import { STORAGE_KEYS } from 'services/storage-keys';
 import { Location } from '@internxt/sdk';
+import { HttpClient } from '@internxt/sdk/dist/shared/http/client';
 import dayjs, { Dayjs } from 'dayjs';
 import dateService from 'services/date.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
@@ -57,6 +58,8 @@ export class SdkFactory {
       localStorage,
       newApiInstance: new SdkFactory(envService.getVariable('newApi')),
     };
+
+    HttpClient.enableGlobalRetry(retryStrategies.withUserNotification(SdkClient.Storage, notifyUserWithCooldown));
   }
 
   public static getNewApiInstance(): SdkFactory {
@@ -155,7 +158,6 @@ export class SdkFactory {
     return {
       token: this.getNewToken(workspace),
       workspaceToken,
-      retryOptions: retryStrategies.withUserNotification(SdkClient.Storage, notifyUserWithCooldown),
       unauthorizedCallback:
         unauthorizedCallback ??
         (() => {
@@ -168,7 +170,6 @@ export class SdkFactory {
     const token = this.getNewToken(Workspace.Individuals);
     return {
       token,
-      retryOptions: retryStrategies.withUserNotification(SdkClient.Storage, notifyUserWithCooldown),
       unauthorizedCallback: () => {
         SdkFactory.sdk.dispatch(userThunks.logoutThunk());
       },

@@ -4,10 +4,11 @@ import { LocalStorageService } from 'services/local-storage.service';
 import { userThunks } from '../../../store/slices/user';
 import { Workspace } from '../../types';
 import { STORAGE_KEYS } from 'services/storage-keys';
-import { Share, Storage, Users } from '@internxt/sdk/dist/drive';
+import { Share, Users } from '@internxt/sdk/dist/drive';
 import packageJson from '../../../../../package.json';
 import { Auth } from '@internxt/sdk/dist/auth';
 import { Location } from '@internxt/sdk';
+import { HttpClient } from '@internxt/sdk/dist/shared/http/client';
 import { USER_NOTIFICATION_MAX_RETRIES } from './retryStrategies';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import dateService from 'services/date.service';
@@ -49,6 +50,12 @@ vi.mock('@internxt/sdk', () => ({
   },
 }));
 
+vi.mock('@internxt/sdk/dist/shared/http/client', () => ({
+  HttpClient: {
+    enableGlobalRetry: vi.fn(),
+  },
+}));
+
 vi.mock('i18next', () => ({
   t: vi.fn((key: string) => key),
 }));
@@ -81,18 +88,9 @@ describe('SdkFactory', () => {
   let mockLocalStorage: LocalStorageService;
 
   const getNotifyCallback = () => {
-    vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(Workspace.Individuals);
-    vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-      if (key === 'xNewToken') return 'test-token';
-      return null;
-    });
-
-    const instance = SdkFactory.getNewApiInstance();
-    instance.createNewStorageClient();
-
-    const callArgs = vi.mocked(Storage.client).mock.calls[0];
-    const apiSecurity = callArgs[2] as { retryOptions: { onRetry: (attempt: number, delay: number) => void } };
-    return apiSecurity.retryOptions.onRetry;
+    const callArgs = vi.mocked(HttpClient.enableGlobalRetry).mock.calls[0];
+    const retryOptions = callArgs[0] as { onRetry: (attempt: number, delay: number) => void };
+    return retryOptions.onRetry;
   };
 
   beforeEach(() => {
@@ -107,7 +105,16 @@ describe('SdkFactory', () => {
   });
 
   describe('initialize', () => {
-    it('When a storage client is created, then retryOptions with user notification strategy is passed', () => {
+    it('When initialized, then the global retry is enabled with user notification strategy', () => {
+      expect(HttpClient.enableGlobalRetry).toHaveBeenCalledTimes(1);
+      expect(HttpClient.enableGlobalRetry).toHaveBeenCalledWith(
+        expect.objectContaining({ maxRetries: USER_NOTIFICATION_MAX_RETRIES, onRetry: expect.any(Function) }),
+      );
+    });
+
+    it('When SDK clients are created without calling initialize, then enableGlobalRetry is not called again', () => {
+      vi.mocked(HttpClient.enableGlobalRetry).mockClear();
+
       vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(Workspace.Individuals);
       vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
         if (key === 'xNewToken') return 'test-token';
@@ -116,12 +123,9 @@ describe('SdkFactory', () => {
 
       const instance = SdkFactory.getNewApiInstance();
       instance.createNewStorageClient();
+      instance.createShareClient();
 
-      const callArgs = vi.mocked(Storage.client).mock.calls[0];
-      const apiSecurity = callArgs[2];
-      expect(apiSecurity.retryOptions).toEqual(
-        expect.objectContaining({ maxRetries: USER_NOTIFICATION_MAX_RETRIES, onRetry: expect.any(Function) }),
-      );
+      expect(HttpClient.enableGlobalRetry).not.toHaveBeenCalled();
     });
   });
 
