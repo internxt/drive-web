@@ -1232,7 +1232,7 @@
       "description": "Désormais, tous les éléments déplacés dans la Corbeille seront\nsupprimés définitivement automatiquement après:",
       "freeUsers": {
         "duration": "2 jours",
-        "label": "pour les utilisateurs gratuits"
+        "label": "pour les utilisateurs gratuits et les autres"
       },
       "essentialUsers": {
         "duration": "7 jours",

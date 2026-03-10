@@ -1339,7 +1339,7 @@
       "description": "Ora tutti gli elementi spostati nel Cestino verranno\neliminati definitivamente automaticamente dopo:",
       "freeUsers": {
         "duration": "2 giorni",
-        "label": "per utenti gratuiti"
+        "label": "per utenti gratuiti e altri"
       },
       "essentialUsers": {
         "duration": "7 giorni",

@@ -1304,7 +1304,7 @@
       "description": "Now all the items moved to Trash will be\npermanently deleted automatically after:",
       "freeUsers": {
         "duration": "2 days",
-        "label": "for free users"
+        "label": "for free users and others"
       },
       "essentialUsers": {
         "duration": "7 days",

@@ -1219,7 +1219,7 @@
       "description": "Alle in den Papierkorb verschobenen Elemente werden nun\nautomatisch dauerhaft gelöscht nach:",
       "freeUsers": {
         "duration": "2 Tage",
-        "label": "für kostenlose Benutzer"
+        "label": "für kostenlose Nutzer und andere"
       },
       "essentialUsers": {
         "duration": "7 Tage",

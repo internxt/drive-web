@@ -1269,7 +1269,7 @@
       "description": "现在所有移至垃圾箱的项目将在以下时间后\n自动永久删除：",
       "freeUsers": {
         "duration": "2天",
-        "label": "免费用户"
+        "label": "适用于免费用户及其他用户"
       },
       "essentialUsers": {
         "duration": "7天",
