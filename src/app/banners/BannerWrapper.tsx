@@ -8,7 +8,7 @@ import { userSelectors } from 'app/store/slices/user';
 import FeaturesBanner from './FeaturesBanner';
 import newStorageService from 'app/drive/services/new-storage.service';
 
-const OFFER_END_DAY = new Date('2026-01-26');
+const OFFER_END_DAY = new Date('2026-04-26');
 const TIMEOUT = 90000;
 
 const BannerWrapper = (): JSX.Element => {
