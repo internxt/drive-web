@@ -38,9 +38,9 @@ describe('dateService', () => {
       vi.useRealTimers();
     });
 
-    test('when the expiration is in the future, then remaining days round up', () => {
+    test('when the expiration is in the future, then remaining days round to nearest', () => {
       const expiresAt = '2023-01-02T06:00:00Z';
-      expect(dateService.getDaysUntilExpiration(expiresAt)).toBe(2);
+      expect(dateService.getDaysUntilExpiration(expiresAt)).toBe(1);
     });
 
     test('when the expiration has passed, then zero days remain', () => {
@@ -68,10 +68,10 @@ describe('dateService', () => {
       expect(dateService.getHoursUntilExpiration(expiresAt)).toBe(1);
     });
 
-    test('when the expiration is in 25 hours, then 25 remaining hours and 2 remaining days are returned', () => {
+    test('when the expiration is in 25 hours, then 25 remaining hours and 1 remaining day are returned', () => {
       const expiresAt = '2023-01-02T01:00:00Z';
       expect(dateService.getHoursUntilExpiration(expiresAt)).toBe(25);
-      expect(dateService.getDaysUntilExpiration(expiresAt)).toBe(2);
+      expect(dateService.getDaysUntilExpiration(expiresAt)).toBe(1);
     });
   });
 });

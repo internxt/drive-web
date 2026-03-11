@@ -28,7 +28,7 @@ export const getDaysUntilExpiration = (expiresAt: Date | string): number => {
   const expirationDate = dayjs(expiresAt);
   const now = dayjs();
   const diffInDays = expirationDate.diff(now, 'day', true);
-  return Math.max(0, Math.ceil(diffInDays));
+  return Math.max(0, Math.round(diffInDays));
 };
 
 const getHoursUntilExpiration = (expiresAt: Date | string): number => {
