@@ -377,7 +377,11 @@
     "shared": "Partagé",
     "recents": "Récent",
     "trash": "Corbeille",
-    "desktop": "App de bureau"
+    "desktop": "App de bureau",
+    "referralBanner": {
+      "message": "N'oubliez pas ! Gagnez jusqu'à 1 000 € en parrainant un ami",
+      "cta": "Parrainez et gagnez"
+    }
   },
   "views": {
     "recents": {
@@ -408,6 +412,8 @@
         "downloadApp": "Télécharger l'app",
         "settings": "Paramètres",
         "logout": "Déconnexion",
+        "referAndEarn": "Parrainez et gagnez",
+        "earnReferral": "Gagnez 1 000 €",
         "spaceUsed": "{{space}}% d'espace utilisé"
       },
       "tabs": {
