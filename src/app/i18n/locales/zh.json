@@ -388,7 +388,11 @@
     "shared": "共享的",
     "recents": "最近",
     "trash": "垃圾箱",
-    "desktop": "桌面应用程序"
+    "desktop": "桌面应用程序",
+    "referralBanner": {
+      "message": "别忘了！推荐朋友最高可赚取 €1,000",
+      "cta": "推荐赚取"
+    }
   },
   "views": {
     "recents": {
@@ -419,6 +423,8 @@
         "downloadApp": "桌面应用程序",
         "settings": "设置",
         "logout": "登出",
+        "referAndEarn": "推荐赚取",
+        "earnReferral": "赚取 €1,000",
         "spaceUsed": "已使用储存空间的{{space}}%"
       },
       "tabs": {

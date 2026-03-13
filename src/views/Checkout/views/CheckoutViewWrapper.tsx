@@ -18,7 +18,7 @@ import ChangePlanDialog from 'views/NewSettings/components/Sections/Account/Plan
 import longNotificationsService from 'app/notifications/services/longNotification.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { paymentService, checkoutService } from 'views/Checkout/services';
-import { RootState } from 'app/store';
+import { RootState, store } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { planThunks } from 'app/store/slices/plan';
 import { useThemeContext } from 'app/theme/ThemeProvider';
@@ -30,6 +30,7 @@ import { CRYPTO_PAYMENT_DIALOG_KEY, CryptoPaymentDialog } from 'views/Checkout/c
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 import { generateCaptchaToken } from 'utils/generateCaptchaToken';
 import gaService from 'app/analytics/ga.service';
+import referralService from 'services/referral.service';
 import { useCheckoutQueryParams } from '../hooks/useCheckoutQueryParams';
 import { useInitializeCheckout } from '../hooks/useInitializeCheckout';
 import { useProducts } from '../hooks/useProducts';
@@ -126,6 +127,7 @@ const CheckoutViewWrapper = () => {
       document.cookie = `gclid=${gclid}; expires=${expiryDate.toUTCString()}; path=/`;
       localStorageService.set(STORAGE_KEYS.GCLID, gclid);
     }
+    referralService.captureUccFromUrl();
   }, []);
 
   useEffect(() => {
@@ -309,6 +311,16 @@ const CheckoutViewWrapper = () => {
       }
 
       const customerToken = await generateCaptchaToken();
+      const ucc = referralService.getStoredUcc();
+      const currentUser = store.getState().user.user;
+      const hasMetadata = ucc || currentUser?.uuid;
+      const metadata = hasMetadata
+        ? {
+            ...(ucc && { cello_ucc: ucc }),
+            ...(currentUser?.uuid && { new_user_id: currentUser.uuid }),
+          }
+        : undefined;
+
       const { customerId, token } = await checkoutService.createCustomer({
         customerName,
         lineAddress1: address?.line1,
@@ -318,6 +330,7 @@ const CheckoutViewWrapper = () => {
         city: address?.city,
         companyVatId,
         captchaToken: customerToken,
+        metadata,
       });
 
       if (paramMobileToken) {

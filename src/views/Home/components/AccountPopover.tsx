@@ -1,12 +1,14 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { Desktop, SignOut, Gear } from '@phosphor-icons/react';
+import { Desktop, SignOut, Gear, Gift } from '@phosphor-icons/react';
+import i18next from 'i18next';
 import { ReactNode } from 'react';
 import { Popover } from '@internxt/ui';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
 import { userThunks } from 'app/store/slices/user';
 import desktopService from 'services/desktop.service';
+import referralService from 'services/referral.service';
 import AvatarWrapper from '../../NewSettings/components/Sections/Account/Account/components/AvatarWrapper';
 import navigationService from 'services/navigation.service';
 import { RootState } from 'app/store';
@@ -106,6 +108,22 @@ export default function AccountPopover({ className = '', user, plan }: Readonly<
         <Gear size={20} />
         <p className="ml-3">{translate('views.account.popover.settings')}</p>
       </button>
+      <Item
+        onClick={() => {
+          referralService.openPanel(
+            {
+              name: user.name,
+              lastname: user.lastname,
+              email: user.email,
+            },
+            i18next.language,
+          );
+        }}
+      >
+        <Gift size={20} />
+        <p className="ml-3 truncate">{translate('views.account.popover.referAndEarn')}</p>
+      </Item>
+      {separator}
       <Item onClick={onLogout}>
         <SignOut size={20} />
         <p className="ml-3 truncate" data-test="logout">

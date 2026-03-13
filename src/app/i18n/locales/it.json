@@ -465,7 +465,11 @@
     "shared": "Condiviso",
     "recents": "Recenti",
     "trash": "Cestino",
-    "desktop": "Applicazione desktop"
+    "desktop": "Applicazione desktop",
+    "referralBanner": {
+      "message": "Ricorda! Guadagna fino a 1.000 € invitando un amico",
+      "cta": "Invita e guadagna"
+    }
   },
   "views": {
     "recents": {
@@ -496,6 +500,8 @@
         "downloadApp": "Scarica l'app",
         "settings": "Impostazioni",
         "logout": "Disconnettersi",
+        "referAndEarn": "Invita e guadagna",
+        "earnReferral": "Guadagna 1.000 €",
         "spaceUsed": "{{space}}% spazio usato"
       },
       "tabs": {

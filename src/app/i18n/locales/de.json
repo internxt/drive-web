@@ -356,7 +356,11 @@
     "shared": "Geteilt",
     "recents": "Neueste",
     "trash": "Papierkorb",
-    "desktop": "Desktop"
+    "desktop": "Desktop",
+    "referralBanner": {
+      "message": "Denk daran! Verdiene bis zu 1.000 €, indem du einen Freund empfiehlst",
+      "cta": "Empfehlen und verdienen"
+    }
   },
   "views": {
     "recents": {
@@ -393,6 +397,8 @@
         "downloadApp": "Download App",
         "settings": "Einstellungen",
         "logout": "Log-out",
+        "referAndEarn": "Empfehlen und verdienen",
+        "earnReferral": "Verdiene 1.000 €",
         "spaceUsed": "{{space}}% Platz verbraucht"
       },
       "tabs": {
