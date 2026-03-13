@@ -4,7 +4,10 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": { "blueText": "獲得87%折扣", "text": "所有高級方案" },
+    "label": {
+      "blueText": "獲得85%折扣",
+      "text": "所有高級方案"
+    },
     "title": "獲得專屬折扣！",
     "subTitle": {
       "blueText": "特別優惠：",
@@ -822,9 +825,13 @@
         "uploadedBy": "上傳者",
         "shared": "已共享",
         "size": "大小",
+        "numberOfFiles": "文件數量",
         "modified": "修改時間",
         "location": "位置"
-      }
+      },
+      "fileCount_one": "{{count}} 個文件",
+      "fileCount_other": "{{count}} 個文件",
+      "fileCountMoreThan1000": "超過 1000 個文件"
     },
     "versionHistory": {
       "title": "版本歷史",
@@ -1219,6 +1226,34 @@
     "item-menu": {
       "restore": "還原",
       "delete-permanently": "永久刪除"
+    },
+    "autoDelete": {
+      "inHours_one": "{{count}} 小時後",
+      "inHours_other": "{{count}} 小時後",
+      "inDays_one": "{{count}} 天後",
+      "inDays_other": "{{count}} 天後"
+    },
+    "automaticDisposal": {
+      "badge": "新更新",
+      "title": "自動清空垃圾桶",
+      "close": "關閉",
+      "description": "現在所有移至垃圾桶的項目將在以下時間後\n自動永久刪除：",
+      "freeUsers": {
+        "duration": "2天",
+        "label": "適用於免費使用者及其他使用者"
+      },
+      "essentialUsers": {
+        "duration": "7天",
+        "label": "基礎用戶"
+      },
+      "premiumUsers": {
+        "duration": "15天",
+        "label": "高級用戶"
+      },
+      "ultimateUsers": {
+        "duration": "30天",
+        "label": "終極用戶"
+      }
     }
   },
   "tasks": {
@@ -1488,7 +1523,8 @@
         "name": "名稱",
         "modified": "修改日期",
         "size": "大小",
-        "actions": "操作"
+        "actions": "操作",
+        "autoDelete": "自動刪除"
       }
     },
     "viewMode": {

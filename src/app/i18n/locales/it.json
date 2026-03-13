@@ -9,7 +9,10 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": { "blueText": "Ottieni l'87% di sconto", "text": "su tutti i Piani Premium" },
+    "label": {
+      "blueText": "Ottieni l'85% di sconto",
+      "text": "su tutti i Piani Premium"
+    },
     "title": "Ottieni uno sconto esclusivo!",
     "subTitle": {
       "blueText": "Offerta speciale:",
@@ -929,8 +932,12 @@
         "uploaded": "Caricato",
         "uploadedBy": "Caricato da",
         "shared": "Condiviso",
+        "numberOfFiles": "Numero di file",
         "location": "Posizione"
-      }
+      },
+      "fileCount_one": "{{count}} file",
+      "fileCount_other": "{{count}} file",
+      "fileCountMoreThan1000": "Più di 1000 file"
     },
     "versionHistory": {
       "title": "Cronologia versioni",
@@ -1324,6 +1331,34 @@
     "item-menu": {
       "restore": "Ripristino",
       "delete-permanently": "Elimina definitivamente"
+    },
+    "autoDelete": {
+      "inHours_one": "Tra {{count}} ora",
+      "inHours_other": "Tra {{count}} ore",
+      "inDays_one": "Tra {{count}} giorno",
+      "inDays_other": "Tra {{count}} giorni"
+    },
+    "automaticDisposal": {
+      "badge": "Nuovo aggiornamento",
+      "title": "Eliminazione automatica del Cestino",
+      "close": "Chiudi",
+      "description": "Ora tutti gli elementi spostati nel Cestino verranno\neliminati definitivamente automaticamente dopo:",
+      "freeUsers": {
+        "duration": "2 giorni",
+        "label": "per utenti gratuiti e altri"
+      },
+      "essentialUsers": {
+        "duration": "7 giorni",
+        "label": "per utenti essenziali"
+      },
+      "premiumUsers": {
+        "duration": "15 giorni",
+        "label": "per utenti premium"
+      },
+      "ultimateUsers": {
+        "duration": "30 giorni",
+        "label": "per utenti ultimate"
+      }
     }
   },
   "tasks": {
@@ -1589,7 +1624,8 @@
         "name": "Nome",
         "modified": "Ultima modifica",
         "size": "Dimensione",
-        "actions": "Azioni"
+        "actions": "Azioni",
+        "autoDelete": "Eliminazione automatica"
       }
     },
     "viewMode": {

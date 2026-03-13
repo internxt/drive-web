@@ -4,7 +4,10 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": { "blueText": "Obtenez 87% de réduction", "text": "sur tous les Plans Premium" },
+    "label": {
+      "blueText": "Obtenez 85% de réduction",
+      "text": "sur tous les Plans Premium"
+    },
     "title": "Obtenez une remise exclusive !",
     "subTitle": {
       "blueText": "Offre spéciale :",
@@ -816,9 +819,13 @@
         "uploadedBy": "Téléchargé par",
         "shared": "Partagé",
         "size": "Taille",
+        "numberOfFiles": "Nombre de fichiers",
         "modified": "Modifié",
         "location": "Emplacement"
-      }
+      },
+      "fileCount_one": "{{count}} fichier",
+      "fileCount_other": "{{count}} fichiers",
+      "fileCountMoreThan1000": "Plus de 1000 fichiers"
     },
     "versionHistory": {
       "title": "Historique des versions",
@@ -1217,6 +1224,34 @@
     "item-menu": {
       "restore": "Restaurer",
       "delete-permanently": "Supprimer définitivement"
+    },
+    "autoDelete": {
+      "inHours_one": "Dans {{count}} heure",
+      "inHours_other": "Dans {{count}} heures",
+      "inDays_one": "Dans {{count}} jour",
+      "inDays_other": "Dans {{count}} jours"
+    },
+    "automaticDisposal": {
+      "badge": "Nouvelle mise à jour",
+      "title": "Élimination automatique de la Corbeille",
+      "close": "Fermer",
+      "description": "Désormais, tous les éléments déplacés dans la Corbeille seront\nsupprimés définitivement automatiquement après:",
+      "freeUsers": {
+        "duration": "2 jours",
+        "label": "pour les utilisateurs gratuits et les autres"
+      },
+      "essentialUsers": {
+        "duration": "7 jours",
+        "label": "pour les utilisateurs essentiels"
+      },
+      "premiumUsers": {
+        "duration": "15 jours",
+        "label": "pour les utilisateurs premium"
+      },
+      "ultimateUsers": {
+        "duration": "30 jours",
+        "label": "pour les utilisateurs ultimate"
+      }
     }
   },
   "tasks": {
@@ -1482,7 +1517,8 @@
         "name": "Nom",
         "modified": "Modifié",
         "size": "Taille",
-        "actions": "Actions"
+        "actions": "Actions",
+        "autoDelete": "Suppression automatique"
       }
     },
     "viewMode": {

@@ -9,7 +9,10 @@
     "cta": "Получить скидку"
   },
   "featuresBanner": {
-    "label": { "blueText": "Получите скидку 87%", "text": "на все Premium планы" },
+    "label": {
+      "blueText": "Получите скидку 85%",
+      "text": "на все Premium планы"
+    },
     "title": "Получите эксклюзивную скидку!",
     "subTitle": {
       "blueText": "Специальное предложение:",
@@ -835,9 +838,15 @@
         "uploadedBy": "Загружено",
         "shared": "Общий",
         "size": "Размер",
+        "numberOfFiles": "Количество файлов",
         "modified": "Изменено",
         "location": "Расположение"
-      }
+      },
+      "fileCount_one": "{{count}} файл",
+      "fileCount_few": "{{count}} файла",
+      "fileCount_many": "{{count}} файлов",
+      "fileCount_other": "{{count}} файлов",
+      "fileCountMoreThan1000": "Более 1000 файлов"
     },
     "versionHistory": {
       "title": "История версий",
@@ -1230,6 +1239,34 @@
     "item-menu": {
       "restore": "Восстановить",
       "delete-permanently": "Удалить навсегда"
+    },
+    "autoDelete": {
+      "inHours_one": "Через {{count}} час",
+      "inHours_other": "Через {{count}} часов",
+      "inDays_one": "Через {{count}} день",
+      "inDays_other": "Через {{count}} дней"
+    },
+    "automaticDisposal": {
+      "badge": "Новое обновление",
+      "title": "Автоматическая очистка Корзины",
+      "close": "Закрыть",
+      "description": "Теперь все элементы, перемещенные в Корзину, будут\nавтоматически удалены навсегда после:",
+      "freeUsers": {
+        "duration": "2 дня",
+        "label": "для бесплатных пользователей и других"
+      },
+      "essentialUsers": {
+        "duration": "7 дней",
+        "label": "для пользователей Essential"
+      },
+      "premiumUsers": {
+        "duration": "15 дней",
+        "label": "для пользователей Premium"
+      },
+      "ultimateUsers": {
+        "duration": "30 дней",
+        "label": "для пользователей Ultimate"
+      }
     }
   },
   "tasks": {
@@ -1495,7 +1532,8 @@
         "name": "Имя",
         "modified": "Изменено",
         "size": "Размер",
-        "actions": "Действия"
+        "actions": "Действия",
+        "autoDelete": "Автоматическое удаление"
       }
     },
     "viewMode": {

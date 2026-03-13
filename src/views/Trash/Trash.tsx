@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { connect, useSelector } from 'react-redux';
 
@@ -10,6 +10,13 @@ import { storageActions } from 'app/store/slices/storage';
 import { getTrashPaginated, getWorkspaceTrashPaginated } from './services';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import { uiActions } from 'app/store/slices/ui';
+import { useAppSelector } from 'app/store/hooks';
+import AutomaticTrashDisposalDialog from './components/AutomaticTrashDisposalDialog';
+import { userSelectors } from 'app/store/slices/user';
+import dateService from 'services/date.service';
+import localStorageService from 'services/local-storage.service';
+import { STORAGE_KEYS } from 'services/storage-keys';
 
 export interface TrashViewProps {
   isLoadingItemsOnTrash: boolean;
@@ -17,17 +24,37 @@ export interface TrashViewProps {
   dispatch: AppDispatch;
 }
 
+const shouldShowTrashDisposalDialog = (hasSignedToday: boolean): boolean => {
+  const hasSeenDialog = localStorageService.get(STORAGE_KEYS.HAS_SEEN_TRASH_DISPOSAL_DIALOG);
+  return !hasSignedToday && !hasSeenDialog;
+};
+
+const markTrashDisposalDialogAsSeen = (): void => {
+  localStorageService.set(STORAGE_KEYS.HAS_SEEN_TRASH_DISPOSAL_DIALOG, 'true');
+};
+
 const TrashView = (props: TrashViewProps) => {
   const { items, isLoadingItemsOnTrash } = props;
   const { translate } = useTranslationContext();
 
+  const nonExpiredItems = useMemo(
+    () => items.filter((item) => !item.expiresAt || dateService.getHoursUntilExpiration(item.expiresAt) > 0),
+    [items],
+  );
+
   const workspaceSelected = useSelector(workspacesSelectors.getSelectedWorkspace);
+  const hasSignedToday = useAppSelector(userSelectors.hasSignedToday);
   const getTrash = workspaceSelected ? getWorkspaceTrashPaginated : getTrashPaginated;
 
   useEffect(() => {
     const { dispatch } = props;
     dispatch(storageThunks.resetNamePathThunk());
     dispatch(storageActions.clearSelectedItems());
+
+    if (shouldShowTrashDisposalDialog(hasSignedToday)) {
+      dispatch(uiActions.setIsAutomaticTrashDisposalDialogOpen(true));
+      markTrashDisposalDialogAsSeen();
+    }
   }, []);
 
   return (
@@ -38,9 +65,10 @@ const TrashView = (props: TrashViewProps) => {
       <DriveExplorer
         title={translate('trash.trash')}
         isLoading={isLoadingItemsOnTrash}
-        items={items}
+        items={nonExpiredItems}
         getTrashPaginated={getTrash}
       />
+      <AutomaticTrashDisposalDialog />
     </>
   );
 };

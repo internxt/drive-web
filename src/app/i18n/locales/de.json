@@ -4,7 +4,10 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "label": { "blueText": "87% Rabatt erhalten", "text": "auf alle Premium-Pläne" },
+    "label": {
+      "blueText": "85% Rabatt erhalten",
+      "text": "auf alle Premium-Pläne"
+    },
     "title": "Erhalten Sie einen exklusiven Rabatt!",
     "subTitle": {
       "blueText": "Sonderangebot:",
@@ -795,9 +798,13 @@
         "uploadedBy": "Hochgeladen von",
         "shared": "Freigegeben",
         "size": "Größe",
+        "numberOfFiles": "Anzahl der Dateien",
         "modified": "Geändert",
-        "Ort": "Ort"
-      }
+        "location": "Ort"
+      },
+      "fileCount_one": "{{count}} Datei",
+      "fileCount_other": "{{count}} Dateien",
+      "fileCountMoreThan1000": "Mehr als 1000 Dateien"
     },
     "versionHistory": {
       "title": "Versionsverlauf",
@@ -1204,6 +1211,34 @@
     "item-menu": {
       "restore": "Wiederherstellen",
       "delete-permanently": "Lösche dauerhaft"
+    },
+    "autoDelete": {
+      "inHours_one": "In {{count}} Stunde",
+      "inHours_other": "In {{count}} Stunden",
+      "inDays_one": "In {{count}} Tag",
+      "inDays_other": "In {{count}} Tagen"
+    },
+    "automaticDisposal": {
+      "badge": "Neues Update",
+      "title": "Automatische Papierkorb-Entsorgung",
+      "close": "Schließen",
+      "description": "Alle in den Papierkorb verschobenen Elemente werden nun\nautomatisch dauerhaft gelöscht nach:",
+      "freeUsers": {
+        "duration": "2 Tage",
+        "label": "für kostenlose Nutzer und andere"
+      },
+      "essentialUsers": {
+        "duration": "7 Tage",
+        "label": "für Essential-Benutzer"
+      },
+      "premiumUsers": {
+        "duration": "15 Tage",
+        "label": "für Premium-Benutzer"
+      },
+      "ultimateUsers": {
+        "duration": "30 Tage",
+        "label": "für Ultimate-Benutzer"
+      }
     }
   },
   "tasks": {
@@ -1476,7 +1511,8 @@
         "name": "Name",
         "modified": "Modifiziert",
         "size": "Größe",
-        "actions": "Aktionen"
+        "actions": "Aktionen",
+        "autoDelete": "Automatisches Löschen"
       }
     },
     "viewMode": {
