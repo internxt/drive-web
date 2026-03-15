@@ -18,6 +18,7 @@ import { TaskData, TaskEvent, TaskStatus, TaskType, UploadFolderTask } from '../
 import { QueueUtilsService } from 'utils/queueUtils';
 import { wait } from 'utils/timeUtils';
 import { ConnectionLostError } from './requests';
+import referralService from 'services/referral.service';
 
 interface UploadFolderPayload {
   root: IRoot;
@@ -401,6 +402,7 @@ export class UploadFoldersManager {
         });
 
         options.onSuccess?.();
+        referralService.trackFolderUpload();
 
         setTimeout(() => {
           this.dispatch(planThunks.fetchUsageThunk());
