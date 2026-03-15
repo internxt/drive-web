@@ -9,29 +9,6 @@ interface ReferralUser {
   email: string;
 }
 
-interface ReferralBootOptions {
-  productId: string;
-  token: string;
-  language?: string;
-  productUserDetails: {
-    firstName: string;
-    lastName?: string;
-    fullName?: string;
-    email: string;
-  };
-  hideDefaultLauncher?: boolean;
-  themeMode?: 'light' | 'dark';
-}
-
-declare global {
-  interface Window {
-    cello?: {
-      cmd: Array<(cello: { boot: (options: ReferralBootOptions) => Promise<void> }) => void>;
-    };
-    Cello?: (command: string, ...args: unknown[]) => Promise<unknown>;
-  }
-}
-
 const UCC_STORAGE_KEY = 'cello_ucc';
 
 let booted = false;
