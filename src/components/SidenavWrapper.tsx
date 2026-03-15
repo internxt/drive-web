@@ -20,6 +20,9 @@ import WorkspaceSelectorSkeleton from 'views/Home/components/WorkspaceSelectorSk
 import { useSuiteLauncher } from 'hooks/useSuiteLauncher';
 import { useSidenavNavigation } from 'hooks/useSidenavNavigation';
 import { uiActions } from 'app/store/slices/ui';
+import ReferralBanner from './ReferralBanner';
+import referralService from 'services/referral.service';
+import i18next from 'i18next';
 
 interface SidenavWrapperProps {
   user: UserSettings | undefined;
@@ -56,7 +59,14 @@ const SidenavWrapper = ({
 
   useEffect(() => {
     dispatch(sharedThunks.getPendingInvitations());
+    referralService.trackAppOpenDay();
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      referralService.boot({ name: user.name, lastname: user.lastname, email: user.email }, i18next.language);
+    }
+  }, [user]);
 
   const onLogoClicked = () => {
     navigationService.push(AppView.Drive, {}, workspaceUuid);
@@ -85,8 +95,14 @@ const SidenavWrapper = ({
     });
   };
 
+  const handleReferralClick = () => {
+    if (user) {
+      referralService.openPanel({ name: user.name, lastname: user.lastname, email: user.email }, i18next.language);
+    }
+  };
+
   return (
-    <div className="flex flex-col h-screen z-50">
+    <div className="relative flex flex-col h-screen z-50">
       <Sidenav
         header={{
           logo: logo,
@@ -120,6 +136,9 @@ const SidenavWrapper = ({
           isLoading: isLoadingPlanUsage && isLoadingPlanLimit && isLoadingBusinessLimitAndUsage,
         }}
       />
+      <div className="absolute bottom-24 left-0 right-0">
+        <ReferralBanner onCtaClick={handleReferralClick} isCollapsed={isCollapsed} />
+      </div>
     </div>
   );
 };
