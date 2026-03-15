@@ -49,6 +49,7 @@ const createCustomer = async ({
   postalCode,
   captchaToken,
   companyVatId,
+  metadata,
 }: CreateCustomerPayload): Promise<{
   customerId: string;
   token: string;
@@ -63,6 +64,7 @@ const createCustomer = async ({
     postalCode,
     captchaToken,
     companyVatId,
+    metadata,
   });
 };
 

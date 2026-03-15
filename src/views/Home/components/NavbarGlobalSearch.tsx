@@ -4,8 +4,10 @@ import { RootState } from 'app/store';
 import { storageSelectors } from 'app/store/slices/storage';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SearchResult } from '@internxt/sdk/dist/drive/storage/types';
-import { ArrowSquareOut, Gear, MagnifyingGlass, X } from '@phosphor-icons/react';
+import { ArrowSquareOut, Gear, Gift, MagnifyingGlass, X } from '@phosphor-icons/react';
 import AccountPopover from './AccountPopover';
+import referralService from 'services/referral.service';
+import i18next from 'i18next';
 import { PlanState } from 'app/store/slices/plan';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import iconService from 'app/drive/services/icon.service';
@@ -397,7 +399,21 @@ const Navbar = (props: NavbarProps) => {
         )}
       </div>
 
-      <div className="flex shrink-0">
+      <div className="flex shrink-0 items-center">
+        <button
+          onClick={() => {
+            referralService.openPanel(
+              { name: user.name, lastname: user.lastname, email: user.email },
+              i18next.language,
+            );
+          }}
+          className="flex h-10 cursor-pointer items-center gap-2 border-none bg-transparent px-3"
+        >
+          <Gift size={20} className="text-primary" />
+          <span className="text-sm font-medium whitespace-nowrap text-primary">
+            {translate('views.account.popover.earnReferral')}
+          </span>
+        </button>
         <button
           onClick={() => {
             navigationService.openPreferencesDialog({
