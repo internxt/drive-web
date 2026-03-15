@@ -128,7 +128,7 @@ const CheckoutViewWrapper = () => {
       document.cookie = `gclid=${gclid}; expires=${expiryDate.toUTCString()}; path=/`;
       localStorageService.set(STORAGE_KEYS.GCLID, gclid);
     }
-    referralService.captureUccFromUrl();
+    referralService.captureUcc();
   }, []);
 
   useEffect(() => {
