@@ -253,11 +253,13 @@ export default function BackupsView(): JSX.Element {
       )}
       <div className="flex h-14 shrink-0 items-center px-5">
         {currentDevice ? (
-          <BreadcrumbsBackupsView
-            backupsAsFoldersPath={foldersInBreadcrumbs}
-            goToFolder={goToFolder}
-            goToRootFolder={goToRootFolder}
-          />
+          <div className="flex z-10">
+            <BreadcrumbsBackupsView
+              backupsAsFoldersPath={foldersInBreadcrumbs}
+              goToFolder={goToFolder}
+              goToRootFolder={goToRootFolder}
+            />
+          </div>
         ) : (
           <p className="text-lg">{translate('backups.your-devices')}</p>
         )}
