@@ -4,7 +4,10 @@
     "logOut": "Cerrar sesión"
   },
   "featuresBanner": {
-    "label": { "blueText": "Obtén 87% de descuento", "text": "en todos los Planes" },
+    "label": {
+      "blueText": "Obtén 85% de descuento",
+      "text": "en todos los Planes"
+    },
     "title": "¡Obtén un descuento exclusivo!",
     "subTitle": {
       "blueText": "Oferta especial:",
@@ -868,8 +871,40 @@
         "uploadedBy": "Subido por",
         "shared": "Compartido",
         "size": "Tamaño",
+        "numberOfFiles": "Número de archivos",
         "modified": "Modificado",
         "location": "Ubicación"
+      },
+      "fileCount_one": "{{count}} archivo",
+      "fileCount_other": "{{count}} archivos",
+      "fileCountMoreThan1000": "Más de 1000 archivos"
+    },
+    "versionHistory": {
+      "title": "Historial de versiones",
+      "current": "Actual",
+      "expiresInDays": "Expira en {{days}} días",
+      "autosaveVersions": "{{count}}/{{total}} versiones de autoguardado",
+      "restoreVersion": "Restaurar versión",
+      "downloadVersion": "Descargar versión",
+      "deleteVersion": "Eliminar versión",
+      "deleteVersionTitle": "Eliminar versión",
+      "deleteButton": "Eliminar",
+      "restoreButton": "Restaurar",
+      "downloadError": "Error al descargar la versión",
+      "deleteVersionAdvice": "Esta versión será eliminada permanentemente. \nEsta acción no se puede deshacer.",
+      "deletingVersion": "Eliminando",
+      "restoreVersionTitle": "Restaurar versión",
+      "restoreVersionAdvice": "Restaurar esta versión reemplazará el archivo actual y eliminará todas las versiones más recientes. \nUna vez restaurada, esta acción no se puede deshacer.\n\nPuedes descargar una copia de las versiones más recientes antes de restaurar.",
+      "restoringVersion": "Restaurando",
+      "restoreSuccess": "Versión restaurada exitosamente",
+      "restoreError": "Error al restaurar la versión",
+      "deleteSuccess": "Versión eliminada exitosamente",
+      "deleteError": "Error al eliminar la versión",
+      "lockedFeature": {
+        "title": "Función bloqueada",
+        "description": "Restaura versiones anteriores de tus archivos y realiza un seguimiento de los cambios a lo largo del tiempo.",
+        "supportedFormats": "Disponible para archivos PDF, Word, Excel y CSV en planes de pago.",
+        "upgradeButton": "Mejorar plan"
       }
     },
     "shareModal": {
@@ -964,7 +999,8 @@
           "errorInviting": "Error al enviar la invitación a {{email}}",
           "userAlreadyInvited": "El usuario {{email}} ya ha sido invitado",
           "acceptedError": "Error al aceptar la invitación a la carpeta compartida",
-          "declinedError": "Error al rechazar la invitación a la carpeta compartida"
+          "declinedError": "Error al rechazar la invitación a la carpeta compartida",
+          "loadingRoles": "No se pudieron cargar los roles disponibles. Por favor, inténtalo de nuevo más tarde."
         }
       },
       "requestAccess": {
@@ -1138,7 +1174,8 @@
     "connectionLostError": "Conexión a internet perdida",
     "errorLoadingTrashItems": "Error al cargar items de la papelera",
     "updateAvatarError": "Error al actualizar el avatar",
-    "featuresUnavailable": "Algunas funciones pueden no estar disponibles"
+    "featuresUnavailable": "Algunas funciones pueden no estar disponibles",
+    "errorSettingWorkspace": "Error al configurar el espacio de trabajo"
   },
   "backups": {
     "backups-from": "Copias de seguridad de {{deviceName}}",
@@ -1230,6 +1267,34 @@
     "item-menu": {
       "restore": "Restaurar",
       "delete-permanently": "Eliminar permanentemente"
+    },
+    "autoDelete": {
+      "inHours_one": "En {{count}} hora",
+      "inHours_other": "En {{count}} horas",
+      "inDays_one": "En {{count}} día",
+      "inDays_other": "En {{count}} días"
+    },
+    "automaticDisposal": {
+      "badge": "Nueva actualización",
+      "title": "Eliminación automática de la Papelera",
+      "close": "Cerrar",
+      "description": "Ahora todos los elementos movidos a la Papelera se eliminarán\npermanentemente de forma automática después de:",
+      "freeUsers": {
+        "duration": "2 días",
+        "label": "para usuarios gratuitos y otros"
+      },
+      "essentialUsers": {
+        "duration": "7 días",
+        "label": "para usuarios esenciales"
+      },
+      "premiumUsers": {
+        "duration": "15 días",
+        "label": "para usuarios premium"
+      },
+      "ultimateUsers": {
+        "duration": "30 días",
+        "label": "para usuarios ultimate"
+      }
     }
   },
   "tasks": {
@@ -1485,6 +1550,9 @@
     "logOut": "Cerrar sesión",
     "locked": "Bloqueado"
   },
+  "toastNotification": {
+    "textCopied": "Texto copiado al portapapeles"
+  },
   "drive": {
     "usage": "Uso",
     "currentPlan": "Actual plan",
@@ -1497,7 +1565,8 @@
         "name": "Nombre",
         "modified": "Modificado",
         "size": "Tamaño",
-        "actions": "Acciones"
+        "actions": "Acciones",
+        "autoDelete": "Eliminación automática"
       }
     },
     "viewMode": {
@@ -1515,6 +1584,7 @@
       "manageLinkAccess": "Gestionar acceso",
       "manageAccess": "Gestionar acceso",
       "download": "Descargar",
+      "versionHistory": "Historial de versiones",
       "moveToTrash": "Mover a la papelera",
       "copyLink": "Copiar enlace",
       "linkSettings": "Ajustes del enlace",
@@ -1953,11 +2023,11 @@
         "planFeaturesList": {
           "title": "Detalles del plan",
           "comingSoon": "Muy pronto",
-          "storage": " almacenamiento cifrado",
+          "storage": " almacenamiento en la nube cifrado",
           "1TB": {
             "title": "Esencial",
             "features": [
-              "1TB de almacenamiento cifrado",
+              "1TB de almacenamiento en la nube cifrado",
               "Criptografía postcuántica",
               "Cifrado de conocimiento cero",
               "Autenticación de dos factores",
@@ -1970,26 +2040,27 @@
           "3TB": {
             "title": "Premium",
             "features": [
-              "3TB de almacenamiento cifrado",
+              "3TB de almacenamiento en la nube cifrado",
               "Criptografía postcuántica",
               "Cifrado de conocimiento cero",
               "Autenticación de dos factores",
+              "Versionado de archivos",
               "Copia de seguridad",
               "Comparte archivos con contraseña",
               "Invitar, compartir y colaborar",
               "VPN Cifrada",
               "Antivirus",
               "Cleaner"
-            ],
-            "comingSoonFeatures": ["Versionado de archivos"]
+            ]
           },
           "5TB": {
             "title": "Ultimate",
             "features": [
-              "5TB de almacenamiento cifrado",
+              "5TB de almacenamiento en la nube cifrado",
               "Criptografía postcuántica",
               "Cifrado de conocimiento cero",
               "Autenticación de dos factores",
+              "Versionado de archivos",
               "Copia de seguridad",
               "Comparte archivos con contraseña",
               "Invitar, compartir y colaborar",
@@ -2000,11 +2071,11 @@
               "Cleaner",
               "Meet"
             ],
-            "comingSoonFeatures": ["Versionado de archivos", "Mail", "Fotos"]
+            "comingSoonFeatures": ["Mail", "Fotos"]
           },
           "1GB": {
             "title": "Gratis",
-            "features": ["1GB de almacenamiento cifrado", "VPN cifrada"]
+            "features": ["1GB de almacenamiento en la nube cifrado", "VPN cifrada"]
           }
         },
         "businessPlanFeaturesList": {
@@ -2013,7 +2084,7 @@
           "1TB": {
             "title": "Estándar",
             "features": [
-              "1TB de almacenamiento cifrado por usuario",
+              "1TB de almacenamiento en la nube cifrado por usuario",
               "Cifrado poscuántico",
               "Cifrado de conocimiento cero",
               "Autenticación de dos factores",
@@ -2031,10 +2102,11 @@
           "2TB": {
             "title": "Pro",
             "features": [
-              "2TB de almacenamiento cifrado por usuario",
+              "2TB de almacenamiento en la nube cifrado por usuario",
               "Cifrado poscuántico",
               "Cifrado de conocimiento cero",
               "Autenticación de dos factores",
+              "Versionado de archivos",
               "Copia de seguridad del ordenador",
               "Intercambio de archivos protegido por contraseña",
               "Invitar, compartir y colaborar",
@@ -2046,8 +2118,7 @@
               "Limpiador",
               "Meet",
               "Correo"
-            ],
-            "comingSoonFeatures": ["Versionado de archivos"]
+            ]
           }
         },
         "user": "usuario"

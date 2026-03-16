@@ -47,6 +47,7 @@ export type DownloadItem = {
   downloadOptions?: {
     areSharedItems?: boolean;
     showErrors?: boolean;
+    downloadName?: string;
   };
   createFoldersIterator?: FolderIterator | SharedFolderIterator;
   createFilesIterator?: FileIterator | SharedFileIterator;
@@ -92,6 +93,13 @@ export type DownloadTask = {
 export class DownloadManagerService {
   public static readonly instance: DownloadManagerService = new DownloadManagerService();
 
+  private getSingleItemName(item: DownloadItem['payload'][0]): string {
+    if (item.isFolder) {
+      return item.name;
+    }
+    return item.type ? `${item.name}.${item.type}` : item.name;
+  }
+
   readonly getDownloadCredentialsFromWorkspace = (
     selectedWorkspace: WorkspaceData | null,
     workspaceCredentials: WorkspaceCredentialsDetails | null,
@@ -119,14 +127,11 @@ export class DownloadManagerService {
     const abort = () => Promise.resolve(uploadFolderAbortController.abort('Download cancelled'));
 
     const formattedDate = date.format(new Date(), 'YYYY-MM-DD_HHmmss');
-    let downloadName = `Internxt (${formattedDate})`;
-    if (itemsPayload.length === 1) {
-      const item = itemsPayload[0];
-      if (itemsPayload[0].isFolder) {
-        downloadName = item.name;
-      } else {
-        downloadName = item.type ? `${item.name}.${item.type}` : item.name;
-      }
+    let downloadName = downloadItem.downloadOptions?.downloadName;
+
+    if (!downloadName) {
+      downloadName =
+        itemsPayload.length === 1 ? this.getSingleItemName(itemsPayload[0]) : `Internxt (${formattedDate})`;
     }
 
     let taskId = downloadItem.taskId;
@@ -214,6 +219,7 @@ export class DownloadManagerService {
   readonly downloadFolder = async (
     downloadTask: DownloadTask,
     updateProgressCallback: (progress: number) => void,
+    updateDownloadedProgress: (progress: number) => void,
     incrementItemCount: () => void,
   ) => {
     const { connectionLost, cleanup } = this.handleConnectionLost(5000);
@@ -226,7 +232,6 @@ export class DownloadManagerService {
       merge: {
         status: TaskStatus.InProcess,
         progress: Infinity,
-        nItems: 0,
       },
     });
 
@@ -237,6 +242,7 @@ export class DownloadManagerService {
         foldersIterator: createFoldersIterator,
         filesIterator: createFilesIterator,
         updateProgress: updateProgressCallback,
+        downloadProgress: updateDownloadedProgress,
         updateNumItems: incrementItemCount,
         options: {
           closeWhenFinished: true,
@@ -295,6 +301,7 @@ export class DownloadManagerService {
           updateProgressCallback,
           abortController,
           sharingOptions: credentials,
+          downloadName: options.downloadName,
         });
 
         console.timeEnd(`download-file-${file.uuid}`);
@@ -312,6 +319,7 @@ export class DownloadManagerService {
   readonly downloadItems = async (
     downloadTask: DownloadTask,
     updateProgressCallback: (progress: number) => void,
+    updateDownloadedProgress: (progress: number) => void,
     incrementItemCount: () => void,
   ) => {
     const { connectionLost, cleanup } = this.handleConnectionLost(5000);
@@ -320,10 +328,13 @@ export class DownloadManagerService {
 
       const folderZip = new FlatFolderZip(options.downloadName, { abortController });
       const downloadProgress: number[] = [];
+      const lastReportedBytes: number[] = [];
       const failedItems: DownloadItemType[] = [];
+      let downloadedProgress = 0;
 
       items.forEach((_, index) => {
         downloadProgress[index] = 0;
+        lastReportedBytes[index] = 0;
       });
 
       const calculateProgress = () => {
@@ -356,6 +367,18 @@ export class DownloadManagerService {
           return;
         }
 
+        const notifyProgressCallback = (totalBytes: number, downloadedBytes: number) => {
+          const progress = downloadedBytes / totalBytes;
+          downloadProgress[index] = progress;
+
+          const bytesDelta = downloadedBytes - lastReportedBytes[index];
+          downloadedProgress += bytesDelta;
+          lastReportedBytes[index] = downloadedBytes;
+
+          updateDownloadedProgress(bytesDelta);
+          updateProgressCallback(calculateProgress());
+        };
+
         const downloadedFileStream = await downloadFile({
           fileId: (driveItem as DriveFileData).fileId,
           bucketId: (driveItem as DriveFileData).bucket,
@@ -366,13 +389,7 @@ export class DownloadManagerService {
           mnemonic: (driveItem as AdvancedSharedItem).credentials?.mnemonic ?? credentials.mnemonic,
           options: {
             abortController,
-            notifyProgress: (totalBytes, downloadedBytes) => {
-              const progress = downloadedBytes / totalBytes;
-
-              downloadProgress[index] = progress;
-
-              updateProgressCallback(calculateProgress());
-            },
+            notifyProgress: notifyProgressCallback,
           },
         });
 
@@ -398,6 +415,7 @@ export class DownloadManagerService {
             downloadProgress[index] = progress;
             updateProgressCallback(calculateProgress());
           },
+          downloadProgress: updateDownloadedProgress,
           updateNumItems: incrementItemCount,
           options: {
             destination: folderZip,
@@ -508,6 +526,7 @@ export class DownloadManagerService {
     updateProgressCallback: (progress: number) => void;
     abortController?: AbortController;
     sharingOptions: { credentials: { user: string; pass: string }; mnemonic: string };
+    downloadName?: string;
   }) => {
     const shouldDownloadUsingBlob =
       !!(navigator.brave && (await navigator.brave.isBrave())) ||
@@ -531,6 +550,7 @@ export class DownloadManagerService {
       itemData: payload.file,
       updateProgressCallback: payload.updateProgressCallback,
       abortController: payload.abortController,
+      downloadName: payload.downloadName,
     });
   };
 }

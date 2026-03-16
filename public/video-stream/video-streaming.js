@@ -31,10 +31,7 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(self.clients.claim());
 });
 
-/**
- * Receiving messages from the client (our app)
- */
-self.addEventListener('message', (event) => {
+function clientMessagesHandler(event) {
   const eventData = event.data;
 
   switch (eventData.type) {
@@ -97,9 +94,15 @@ self.addEventListener('message', (event) => {
       break;
     }
     default:
+      console.warn('[video-sw] Unknown message type:', eventData.type);
       break;
   }
-});
+}
+
+/**
+ * Receiving messages from the client (our app)
+ */
+self.addEventListener('message', clientMessagesHandler);
 
 function getSession(sessionId) {
   return currentSession.get(sessionId);
@@ -113,6 +116,10 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
   if (!url.pathname.startsWith(STREAM_PREFIX)) {
+    return;
+  }
+
+  if (url.pathname.endsWith('.html') || url.pathname.endsWith('.js') || url.pathname === '/video-stream/player') {
     return;
   }
 

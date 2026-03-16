@@ -95,6 +95,7 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
           ? t('modals.shareModal.invite.error.userAlreadyInvited', { email: payload.sharedWith })
           : t('modals.shareModal.invite.error.errorInviting', { email: payload.sharedWith }),
         type: ToastType.Error,
+        requestId: castedError.requestId,
       });
     }
   },
@@ -118,15 +119,15 @@ export const stopSharingItem = createAsyncThunk<void, StopSharingItemPayload, { 
         }),
         type: ToastType.Success,
       });
-      return;
     } catch (error) {
       errorService.reportError(error);
+      const castedError = errorService.castError(error);
+      notificationsService.show({
+        text: t('modals.shareModal.stopSharing.notification.error'),
+        type: ToastType.Error,
+        requestId: castedError.requestId,
+      });
     }
-
-    notificationsService.show({
-      text: t('modals.shareModal.stopSharing.notification.error'),
-      type: ToastType.Error,
-    });
   },
 );
 
@@ -152,12 +153,14 @@ export const removeUserFromSharedFolder = createAsyncThunk<
     return true;
   } catch (error) {
     errorService.reportError(error);
+    const castedError = errorService.castError(error);
+    notificationsService.show({
+      text: t('modals.shareModal.removeUser.notification.error', { name: userEmail }),
+      type: ToastType.Error,
+      requestId: castedError.requestId,
+    });
   }
 
-  notificationsService.show({
-    text: t('modals.shareModal.removeUser.notification.error', { name: userEmail }),
-    type: ToastType.Error,
-  });
   return false;
 });
 

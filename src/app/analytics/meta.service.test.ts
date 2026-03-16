@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
-import { trackLead, trackPurchase } from './meta.service';
+import { trackLead, trackPurchase, trackCheckoutStart } from './meta.service';
 import localStorageService from 'services/local-storage.service';
 
 describe('Meta Tracking Service', () => {
@@ -158,12 +158,59 @@ describe('Meta Tracking Service', () => {
 
       expect(mockDataLayer[0].ecommerce.value).toBe(123.45);
       expect(typeof mockDataLayer[0].ecommerce.value).toBe('number');
-      
+
       expect(mockFbq).toHaveBeenCalledWith('track', 'Purchase', {
         value: 123.45,
         currency: 'EUR',
         content_type: 'product',
       });
+    });
+  });
+
+  describe('trackCheckoutStart', () => {
+    it('When valid data is provided, then checkout start event is pushed to dataLayer and fbq is called with InitiateCheckout', () => {
+      trackCheckoutStart({ value: 100, currency: 'EUR', content_ids: ['plan_1'] });
+
+      expect(mockDataLayer).toHaveLength(1);
+      expect(mockDataLayer[0]).toMatchObject({
+        event: 'initiateCheckout',
+        eventCategory: 'User',
+        eventAction: 'checkout_start',
+      });
+
+      expect(mockFbq).toHaveBeenCalledWith('track', 'InitiateCheckout', {
+        content_type: 'product',
+        eventref: 'fb_oea',
+        value: 100,
+        currency: 'EUR',
+        content_ids: ['plan_1'],
+      });
+    });
+
+    it('When no data is provided, it still fires InitiateCheckout with default payload', () => {
+      trackCheckoutStart();
+
+      expect(mockDataLayer).toHaveLength(1);
+      expect(mockFbq).toHaveBeenCalledWith('track', 'InitiateCheckout', {
+        content_type: 'product',
+        eventref: 'fb_oea',
+      });
+    });
+
+    it('When dataLayer is not available, then no event is pushed', () => {
+      (globalThis.window as any).dataLayer = undefined;
+
+      trackCheckoutStart();
+
+      expect(mockFbq).not.toHaveBeenCalled();
+    });
+
+    it('When fbq is not available, then no event is pushed', () => {
+      (globalThis.window as any).fbq = undefined;
+
+      trackCheckoutStart();
+
+      expect(mockDataLayer).toHaveLength(0);
     });
   });
 });

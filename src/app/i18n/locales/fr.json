@@ -4,7 +4,10 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": { "blueText": "Obtenez 87% de réduction", "text": "sur tous les Plans Premium" },
+    "label": {
+      "blueText": "Obtenez 85% de réduction",
+      "text": "sur tous les Plans Premium"
+    },
     "title": "Obtenez une remise exclusive !",
     "subTitle": {
       "blueText": "Offre spéciale :",
@@ -810,8 +813,40 @@
         "uploadedBy": "Téléchargé par",
         "shared": "Partagé",
         "size": "Taille",
+        "numberOfFiles": "Nombre de fichiers",
         "modified": "Modifié",
         "location": "Emplacement"
+      },
+      "fileCount_one": "{{count}} fichier",
+      "fileCount_other": "{{count}} fichiers",
+      "fileCountMoreThan1000": "Plus de 1000 fichiers"
+    },
+    "versionHistory": {
+      "title": "Historique des versions",
+      "current": "Actuelle",
+      "expiresInDays": "Expire dans {{days}} jours",
+      "autosaveVersions": "{{count}}/{{total}} versions de sauvegarde automatique",
+      "restoreVersion": "Restaurer la version",
+      "downloadVersion": "Télécharger la version",
+      "deleteVersion": "Supprimer la version",
+      "deleteVersionTitle": "Supprimer la version",
+      "deleteButton": "Supprimer",
+      "restoreButton": "Restaurer",
+      "downloadError": "Échec du téléchargement de la version",
+      "deleteVersionAdvice": "Cette version sera définitivement supprimée. \nCette action ne peut pas être annulée.",
+      "deletingVersion": "Suppression",
+      "restoreVersionTitle": "Restaurer la version",
+      "restoreVersionAdvice": "La restauration de cette version remplacera le fichier actuel et supprimera toutes les versions plus récentes. \nUne fois restaurée, cette action ne peut pas être annulée.\n\nVous pouvez télécharger une copie des versions plus récentes avant de restaurer.",
+      "restoringVersion": "Restauration",
+      "restoreSuccess": "Version restaurée avec succès",
+      "restoreError": "Échec de la restauration de la version",
+      "deleteSuccess": "Version supprimée avec succès",
+      "deleteError": "Échec de la suppression de la version",
+      "lockedFeature": {
+        "title": "Fonctionnalité verrouillée",
+        "description": "Restaurez les versions précédentes de vos fichiers et suivez les modifications au fil du temps.",
+        "supportedFormats": "Disponible pour les fichiers PDF, Word, Excel et CSV dans les forfaits payants.",
+        "upgradeButton": "Mettre à niveau"
       }
     },
     "newFolderModal": {
@@ -916,7 +951,8 @@
           "errorInviting": "Erreur lors de l'envoi de l'invitation à {{email}}",
           "userAlreadyInvited": "L'utilisateur {{email}} a déjà été invité",
           "acceptedError": "Erreur lors de l'acceptation de l'invitation au dossier partagé",
-          "declinedError": "Erreur lors du refus de l'invitation au dossier partagé"
+          "declinedError": "Erreur lors du refus de l'invitation au dossier partagé",
+          "loadingRoles": "Impossible de charger les rôles disponibles. Veuillez réessayer plus tard."
         }
       },
       "requestAccess": {
@@ -1089,7 +1125,8 @@
     "connectionLostError": "Lost Internet connection",
     "errorLoadingTrashItems": "Erreur de chargement des éléments de la corbeille",
     "updateAvatarError": "Erreur lors de la mise à jour de l'avatar",
-    "featuresUnavailable": "Certaines fonctionnalités peuvent être indisponibles"
+    "featuresUnavailable": "Certaines fonctionnalités peuvent être indisponibles",
+    "errorSettingWorkspace": "Erreur lors de la configuration de l'espace de travail"
   },
   "backups": {
     "backups-from": "Sauvagardes de {{deviceName}}",
@@ -1181,6 +1218,34 @@
     "item-menu": {
       "restore": "Restaurer",
       "delete-permanently": "Supprimer définitivement"
+    },
+    "autoDelete": {
+      "inHours_one": "Dans {{count}} heure",
+      "inHours_other": "Dans {{count}} heures",
+      "inDays_one": "Dans {{count}} jour",
+      "inDays_other": "Dans {{count}} jours"
+    },
+    "automaticDisposal": {
+      "badge": "Nouvelle mise à jour",
+      "title": "Élimination automatique de la Corbeille",
+      "close": "Fermer",
+      "description": "Désormais, tous les éléments déplacés dans la Corbeille seront\nsupprimés définitivement automatiquement après:",
+      "freeUsers": {
+        "duration": "2 jours",
+        "label": "pour les utilisateurs gratuits et les autres"
+      },
+      "essentialUsers": {
+        "duration": "7 jours",
+        "label": "pour les utilisateurs essentiels"
+      },
+      "premiumUsers": {
+        "duration": "15 jours",
+        "label": "pour les utilisateurs premium"
+      },
+      "ultimateUsers": {
+        "duration": "30 jours",
+        "label": "pour les utilisateurs ultimate"
+      }
     }
   },
   "tasks": {
@@ -1431,6 +1496,9 @@
     "logOut": "Se déconnecter",
     "locked": "Verrouillé"
   },
+  "toastNotification": {
+    "textCopied": "Texte copié dans le presse-papiers"
+  },
   "drive": {
     "usage": "Usage",
     "currentPlan": "Plan actuel",
@@ -1443,7 +1511,8 @@
         "name": "Nom",
         "modified": "Modifié",
         "size": "Taille",
-        "actions": "Actions"
+        "actions": "Actions",
+        "autoDelete": "Suppression automatique"
       }
     },
     "viewMode": {
@@ -1461,6 +1530,7 @@
       "manageLinkAccess": "Gestion de l'accès",
       "manageAccess": "Gestion de l'accès",
       "download": "Télécharger",
+      "versionHistory": "Historique des versions",
       "moveToTrash": "Déplacer vers la corbeille",
       "copyLink": "Copier le lien",
       "linkSettings": "Paramètres du lien",
@@ -1899,11 +1969,11 @@
         "planFeaturesList": {
           "title": "Détails du Plan",
           "comingSoon": "Bientôt disponible",
-          "storage": " stockage chiffré",
+          "storage": " stockage cloud chiffré",
           "1TB": {
             "title": "Essential (Essentiel)",
             "features": [
-              "1To de stockage chiffré",
+              "1To de stockage cloud chiffré",
               "Chiffrement Post-Quantique",
               "Chiffrement Zéro-Connaissance",
               "Authentification à Deux Facteurs",
@@ -1916,26 +1986,27 @@
           "3TB": {
             "title": "Premium",
             "features": [
-              "3To de stockage chiffré",
+              "3To de stockage cloud chiffré",
               "Chiffrement Post-Quantique",
               "Chiffrement Zéro-Connaissance",
               "Authentification à Deux Facteurs",
+              "Historique des versions de fichiers",
               "Sauvegarde de votre ordinateur",
               "Partage de fichiers protégé par mot de passe",
               "Inviter, partager et collaborer",
               "VPN Chiffré",
               "Antivirus",
               "Nettoyeur"
-            ],
-            "comingSoonFeatures": ["Historique des versions de fichiers"]
+            ]
           },
           "5TB": {
             "title": "Ultimate (Ultime)",
             "features": [
-              "5To de stockage chiffré",
+              "5To de stockage cloud chiffré",
               "Chiffrement Post-Quantique",
               "Chiffrement Zéro-Connaissance",
               "Authentification à Deux Facteurs",
+              "Historique des versions de fichiers",
               "Sauvegarde de votre ordinateur",
               "Partage de fichiers protégé par mot de passe",
               "Inviter, partager et collaborer",
@@ -1946,11 +2017,11 @@
               "Nettoyeur",
               "Meet (Réunion)"
             ],
-            "comingSoonFeatures": ["Historique des versions de fichiers", "Mail", "Photos"]
+            "comingSoonFeatures": ["Mail", "Photos"]
           },
           "1GB": {
             "title": "Gratuit",
-            "features": ["1Go de stockage chiffré", "VPN Chiffré"]
+            "features": ["1Go de stockage cloud chiffré", "VPN Chiffré"]
           }
         },
         "businessPlanFeaturesList": {
@@ -1959,7 +2030,7 @@
           "1TB": {
             "title": "Standard",
             "features": [
-              "1 To de stockage chiffré par utilisateur",
+              "1 To de stockage cloud chiffré par utilisateur",
               "Chiffrement post-quantique",
               "Chiffrement à connaissance nulle",
               "Authentification à deux facteurs",
@@ -1977,10 +2048,11 @@
           "2TB": {
             "title": "Pro",
             "features": [
-              "2 To de stockage chiffré par utilisateur",
+              "2 To de stockage cloud chiffré par utilisateur",
               "Chiffrement post-quantique",
               "Chiffrement à connaissance nulle",
               "Authentification à deux facteurs",
+              "Historique des versions de fichiers",
               "Sauvegarde de l'ordinateur",
               "Partage de fichiers protégé par mot de passe",
               "Inviter, partager et collaborer",
@@ -1992,8 +2064,7 @@
               "Nettoyeur",
               "Meet",
               "Mail"
-            ],
-            "comingSoonFeatures": ["Historique des versions de fichiers"]
+            ]
           }
         },
         "user": "Utilisateur"

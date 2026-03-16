@@ -124,9 +124,11 @@ export default function BackupsView(): JSX.Element {
       return true;
     } catch (error) {
       errorService.reportError(error);
+      const castedError = errorService.castError(error);
       notificationsService.show({
         text: translate('notificationMessages.errorDeletingItems'),
         type: ToastType.Error,
+        requestId: castedError.requestId,
       });
       return false;
     } finally {
@@ -249,7 +251,7 @@ export default function BackupsView(): JSX.Element {
           contextMenu={contextMenuForFileViewer}
         />
       )}
-      <div className="z-50 flex h-14 shrink-0 items-center px-5">
+      <div className="z-40 flex h-14 shrink-0 items-center px-5">
         {currentDevice ? (
           <BreadcrumbsBackupsView
             backupsAsFoldersPath={foldersInBreadcrumbs}

@@ -132,7 +132,7 @@ const OverviewSection = ({ onClosePreferences, changeSection }: OverviewSectionP
     } catch (error) {
       errorService.reportError(error);
       const castedError = errorService.castError(error);
-      notificationsService.show({ type: ToastType.Error, text: castedError.message });
+      notificationsService.show({ type: ToastType.Error, text: castedError.message, requestId: castedError.requestId });
     } finally {
       setIsEditingDetails(false);
       setIsSavingProfileDetails(false);
@@ -150,7 +150,12 @@ const OverviewSection = ({ onClosePreferences, changeSection }: OverviewSectionP
       notificationsService.show({ type: ToastType.Success, text: t('views.account.avatar.success') });
     } catch (err) {
       errorService.reportError(err);
-      notificationsService.show({ type: ToastType.Error, text: t('views.account.avatar.error') });
+      const castedError = errorService.castError(err);
+      notificationsService.show({
+        type: ToastType.Error,
+        text: t('views.account.avatar.error'),
+        requestId: castedError.requestId,
+      });
     }
   };
 

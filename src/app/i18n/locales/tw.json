@@ -4,7 +4,10 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": { "blueText": "獲得87%折扣", "text": "所有高級方案" },
+    "label": {
+      "blueText": "獲得85%折扣",
+      "text": "所有高級方案"
+    },
     "title": "獲得專屬折扣！",
     "subTitle": {
       "blueText": "特別優惠：",
@@ -816,8 +819,40 @@
         "uploadedBy": "上傳者",
         "shared": "已共享",
         "size": "大小",
+        "numberOfFiles": "文件數量",
         "modified": "修改時間",
         "location": "位置"
+      },
+      "fileCount_one": "{{count}} 個文件",
+      "fileCount_other": "{{count}} 個文件",
+      "fileCountMoreThan1000": "超過 1000 個文件"
+    },
+    "versionHistory": {
+      "title": "版本歷史",
+      "current": "目前",
+      "expiresInDays": "{{days}} 天後過期",
+      "autosaveVersions": "{{count}}/{{total}} 自動儲存版本",
+      "restoreVersion": "復原版本",
+      "downloadVersion": "下載版本",
+      "deleteVersion": "刪除版本",
+      "deleteVersionTitle": "刪除版本",
+      "deleteButton": "刪除",
+      "restoreButton": "復原",
+      "downloadError": "下載版本失敗",
+      "deleteVersionAdvice": "此版本將被永久刪除。\n此操作無法復原。",
+      "deletingVersion": "刪除中",
+      "restoreVersionTitle": "復原版本",
+      "restoreVersionAdvice": "復原此版本將取代目前檔案並刪除所有較新的版本。\n一旦復原，此操作無法撤銷。\n\n您可以在復原之前下載較新版本的副本。",
+      "restoringVersion": "復原中",
+      "restoreSuccess": "版本復原成功",
+      "restoreError": "復原版本失敗",
+      "deleteSuccess": "版本刪除成功",
+      "deleteError": "刪除版本失敗",
+      "lockedFeature": {
+        "title": "功能已鎖定",
+        "description": "復原檔案的先前版本並追蹤隨時間的變化。",
+        "supportedFormats": "適用於付費方案中的PDF、Word、Excel和CSV檔案。",
+        "upgradeButton": "升級"
       }
     },
     "shareModal": {
@@ -917,7 +952,8 @@
           "errorInviting": "向{{email}}發送邀請時出錯",
           "userAlreadyInvited": "使用者 {{email}} 已被邀請",
           "acceptedError": "接受共享文件夾邀請時出錯",
-          "declinedError": "拒絕共享文件夾邀請時出錯"
+          "declinedError": "拒絕共享文件夾邀請時出錯",
+          "loadingRoles": "無法載入可用角色，請稍後再試。"
         }
       },
       "requestAccess": {
@@ -1091,7 +1127,8 @@
     "connectionLostError": "網絡連接已丟失",
     "errorLoadingTrashItems": "加載垃圾桶項目時出錯",
     "updateAvatarError": "更新頭像時發生錯誤",
-    "featuresUnavailable": "某些功能可能無法使用"
+    "featuresUnavailable": "某些功能可能無法使用",
+    "errorSettingWorkspace": "設定工作區時出錯"
   },
   "backups": {
     "backups-from": "來自{{deviceName}}的備份",
@@ -1183,6 +1220,34 @@
     "item-menu": {
       "restore": "還原",
       "delete-permanently": "永久刪除"
+    },
+    "autoDelete": {
+      "inHours_one": "{{count}} 小時後",
+      "inHours_other": "{{count}} 小時後",
+      "inDays_one": "{{count}} 天後",
+      "inDays_other": "{{count}} 天後"
+    },
+    "automaticDisposal": {
+      "badge": "新更新",
+      "title": "自動清空垃圾桶",
+      "close": "關閉",
+      "description": "現在所有移至垃圾桶的項目將在以下時間後\n自動永久刪除：",
+      "freeUsers": {
+        "duration": "2天",
+        "label": "適用於免費使用者及其他使用者"
+      },
+      "essentialUsers": {
+        "duration": "7天",
+        "label": "基礎用戶"
+      },
+      "premiumUsers": {
+        "duration": "15天",
+        "label": "高級用戶"
+      },
+      "ultimateUsers": {
+        "duration": "30天",
+        "label": "終極用戶"
+      }
     }
   },
   "tasks": {
@@ -1437,6 +1502,9 @@
     "logOut": "登出",
     "locked": "已鎖定"
   },
+  "toastNotification": {
+    "textCopied": "文字已複製到剪貼簿"
+  },
   "drive": {
     "usage": "使用量",
     "currentPlan": "當前計劃",
@@ -1449,7 +1517,8 @@
         "name": "名稱",
         "modified": "修改日期",
         "size": "大小",
-        "actions": "操作"
+        "actions": "操作",
+        "autoDelete": "自動刪除"
       }
     },
     "viewMode": {
@@ -1458,6 +1527,7 @@
     },
     "dropdown": {
       "openPreview": "打開預覽",
+      "versionHistory": "版本歷史",
       "details": "詳細信息",
       "shareLink": "分享",
       "shareTeam": "与团队分享",
@@ -1903,11 +1973,11 @@
         "planFeaturesList": {
           "title": "方案詳情",
           "comingSoon": "即將推出",
-          "storage": " 加密儲存空間",
+          "storage": " 加密雲端儲存空間",
           "1TB": {
             "title": "Essential (基本版)",
             "features": [
-              "1TB 加密儲存空間",
+              "1TB 加密雲端儲存空間",
               "後量子密碼學",
               "零知識加密",
               "雙重身份驗證",
@@ -1920,10 +1990,11 @@
           "3TB": {
             "title": "Premium (進階版)",
             "features": [
-              "3TB 加密儲存空間",
+              "3TB 加密雲端儲存空間",
               "後量子密碼學",
               "零知識加密",
               "雙重身份驗證",
+              "檔案版本控制",
               "電腦備份",
               "密碼保護的檔案共享",
               "邀請、共享和協作",
@@ -1931,15 +2002,16 @@
               "防毒軟體",
               "清理工具 (Cleaner)"
             ],
-            "comingSoonFeatures": ["檔案版本控制"]
+            "comingSoonFeatures": []
           },
           "5TB": {
             "title": "Ultimate (旗艦版)",
             "features": [
-              "5TB 加密儲存空間",
+              "5TB 加密雲端儲存空間",
               "後量子密碼學",
               "零知識加密",
               "雙重身份驗證",
+              "檔案版本控制",
               "電腦備份",
               "密碼保護的檔案共享",
               "邀請、共享和協作",
@@ -1950,11 +2022,11 @@
               "清理工具 (Cleaner)",
               "會議 (Meet)"
             ],
-            "comingSoonFeatures": ["檔案版本控制", "郵件 (Mail)", "照片(Photos)"]
+            "comingSoonFeatures": ["郵件 (Mail)", "照片(Photos)"]
           },
           "1GB": {
             "title": "Free (免費版)",
-            "features": ["1GB 加密儲存空間", "加密 VPN"]
+            "features": ["1GB 加密雲端儲存空間", "加密 VPN"]
           }
         },
         "businessPlanFeaturesList": {
@@ -1963,7 +2035,7 @@
           "1TB": {
             "title": "標準版",
             "features": [
-              "每個使用者 1TB 加密儲存空間",
+              "每個使用者 1TB 加密雲端儲存空間",
               "後量子加密",
               "零知識加密",
               "雙重身份驗證",
@@ -1981,10 +2053,11 @@
           "2TB": {
             "title": "專業版",
             "features": [
-              "每個使用者 2TB 加密儲存空間",
+              "每個使用者 2TB 加密雲端儲存空間",
               "後量子加密",
               "零知識加密",
               "雙重身份驗證",
+              "檔案版本控制",
               "備份您的電腦",
               "受密碼保護的檔案分享",
               "邀請、分享與協作",
@@ -1996,8 +2069,7 @@
               "清理工具",
               "Meet",
               "郵件"
-            ],
-            "comingSoonFeatures": ["檔案版本控制"]
+            ]
           }
         },
         "user": "用戶"

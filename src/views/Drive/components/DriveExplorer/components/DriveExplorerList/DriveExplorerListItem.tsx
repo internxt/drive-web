@@ -1,14 +1,15 @@
 import { items } from '@internxt/lib';
 import usersIcon from 'assets/icons/users.svg';
-import { useEffect } from 'react';
-import { DriveExplorerItemProps } from '../types';
+import { useEffect, useMemo } from 'react';
+import { DriveExplorerItemProps } from '../../types';
 import dateService from 'services/date.service';
 import transformItemService from 'app/drive/services/item-transform.service';
 import sizeService from 'app/drive/services/size.service';
 import iconService from 'app/drive/services/icon.service';
-import { useDriveItemActions, useDriveItemDrag, useDriveItemDrop, useDriveItemStoreProps } from '../../../hooks';
+import { useDriveItemActions, useDriveItemDrag, useDriveItemDrop, useDriveItemStoreProps } from '../../../../hooks';
 import './DriveExplorerListItem.scss';
-import { t } from 'i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { WarningCircle } from '@phosphor-icons/react';
 
 const getItemClassNames = (isSelected: boolean, isDraggingOver: boolean, isDragging: boolean): string => {
   const selectedClass = isSelected ? 'selected' : '';
@@ -21,7 +22,35 @@ const isItemInteractive = (item: DriveExplorerItemProps['item']): boolean => {
   return (item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS');
 };
 
-const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element => {
+const HOURS_IN_A_DAY = 24;
+const URGENT_AUTO_DELETE_THRESHOLD_DAYS = 2;
+
+const getAutoDeleteStatusInfo = (
+  days: number,
+  expiresAt: string,
+  translate: (key: string, options?: { count?: number }) => string,
+): { text: string; isUrgent: boolean; expiresAt: string } => {
+  const hours = dateService.getHoursUntilExpiration(expiresAt);
+  const isLessThanADay = hours < HOURS_IN_A_DAY;
+  const expiresAtDate = dateService.formatDefaultDate(expiresAt, translate);
+
+  if (isLessThanADay) {
+    return {
+      text: translate('trash.autoDelete.inHours', { count: hours }),
+      isUrgent: true,
+      expiresAt: expiresAtDate,
+    };
+  }
+
+  return {
+    text: translate('trash.autoDelete.inDays', { count: days }),
+    isUrgent: days <= URGENT_AUTO_DELETE_THRESHOLD_DAYS,
+    expiresAt: expiresAtDate,
+  };
+};
+
+const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.Element => {
+  const { translate } = useTranslationContext();
   const { isItemSelected, isEditingName } = useDriveItemStoreProps();
   const { nameInputRef, onNameClicked, onItemClicked, onItemDoubleClicked, downloadAndSetThumbnail } =
     useDriveItemActions(item);
@@ -29,6 +58,15 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
   const { connectDragSource, isDraggingThisItem } = useDriveItemDrag(item);
   const { connectDropTarget, isDraggingOverThisItem } = useDriveItemDrop(item);
   const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
+
+  const daysUntilDelete = isTrash && item.expiresAt ? dateService.getDaysUntilExpiration(item.expiresAt) : null;
+  const autoDeleteStatusInfo = useMemo(
+    () =>
+      isTrash && daysUntilDelete !== null && item.expiresAt
+        ? getAutoDeleteStatusInfo(daysUntilDelete, item.expiresAt, translate)
+        : null,
+    [isTrash, daysUntilDelete, item.expiresAt, translate],
+  );
 
   useEffect(() => {
     if (isEditingName(item)) {
@@ -111,13 +149,26 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
         isInteractive && connectDropTarget(<div className="absolute top-0 h-full w-1/2 group-hover:invisible"></div>)
       }
 
+      {/* AUTO-DELETE (only for trash) */}
+      {isTrash && autoDeleteStatusInfo && (
+        <div className="block shrink-0 w-date cursor-pointer items-center whitespace-nowrap">
+          <div
+            title={autoDeleteStatusInfo.expiresAt}
+            className={`flex items-center gap-1 ${autoDeleteStatusInfo.isUrgent ? 'text-red-dark' : ''}`}
+          >
+            <WarningCircle size={20} className="shrink-0" />
+            <span>{autoDeleteStatusInfo.text}</span>
+          </div>
+        </div>
+      )}
+
       {/* DATE */}
-      <div className="block  shrink-0 w-date items-center whitespace-nowrap">
-        {dateService.formatDefaultDate(item.updatedAt, t)}
+      <div className="block shrink-0 w-date items-center whitespace-nowrap">
+        {dateService.formatDefaultDate(item.updatedAt, translate)}
       </div>
 
       {/* SIZE */}
-      <div className="w-size  shrink-0 items-center whitespace-nowrap">
+      <div className="w-size shrink-0 items-center whitespace-nowrap">
         {sizeService.bytesToString(item.size, false) === '' || item.isFolder ? (
           <span className="opacity-25">—</span>
         ) : (

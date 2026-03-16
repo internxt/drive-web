@@ -13,6 +13,7 @@ import CancelSubscription from './components/CancelSubscription';
 import BillingAccountOverview from './containers/BillingAccountOverview';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { getCurrentUsage, getPlanInfo, getPlanName } from '../../../../utils/planUtils';
+import { errorService } from 'services';
 
 interface BillingAccountSectionProps {
   changeSection: ({ section, subsection }) => void;
@@ -44,10 +45,11 @@ const BillingAccountSection = ({ changeSection, onClosePreferences }: BillingAcc
       notificationsService.show({ text: t('notificationMessages.successCancelSubscription') });
       setIsCancelSubscriptionModalOpen(false);
     } catch (err) {
-      console.error(err);
+      const castedError = errorService.castError(err);
       notificationsService.show({
         text: t('notificationMessages.errorCancelSubscription'),
         type: ToastType.Error,
+        requestId: castedError.requestId,
       });
     } finally {
       setCancellingSubscription(false);

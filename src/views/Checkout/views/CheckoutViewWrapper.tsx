@@ -11,7 +11,8 @@ import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
 import { STORAGE_KEYS } from 'services/storage-keys';
-import AppError, { AppView, IFormValues } from 'app/core/types';
+import { AppError } from '@internxt/sdk';
+import { AppView, IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import ChangePlanDialog from 'views/NewSettings/components/Sections/Account/Plans/components/ChangePlanDialog';
 import longNotificationsService from 'app/notifications/services/longNotification.service';
@@ -29,6 +30,7 @@ import { CRYPTO_PAYMENT_DIALOG_KEY, CryptoPaymentDialog } from 'views/Checkout/c
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 import { generateCaptchaToken } from 'utils/generateCaptchaToken';
 import gaService from 'app/analytics/ga.service';
+import metaService from 'app/analytics/meta.service';
 import { useCheckoutQueryParams } from '../hooks/useCheckoutQueryParams';
 import { useInitializeCheckout } from '../hooks/useInitializeCheckout';
 import { useProducts } from '../hooks/useProducts';
@@ -162,6 +164,12 @@ const CheckoutViewWrapper = () => {
         couponCodeData: promoCodeData,
         seats: selectedPlan.price.type === 'business' ? businessSeats : 1,
       });
+
+      metaService.trackCheckoutStart({
+        value: selectedPlan.price.decimalAmount,
+        currency: selectedPlan.price.currency ?? 'eur',
+        content_ids: [selectedPlan.price.id],
+      });
     }
   }, [isCheckoutReady]);
 
@@ -221,11 +229,13 @@ const CheckoutViewWrapper = () => {
       notificationsService.show({
         text: defaultErrorMessage,
         type: ToastType.Error,
+        requestId: error?.requestId,
       });
     } else {
       longNotificationsService.show({
         type: ToastType.Error,
         text: error?.message,
+        requestId: error?.requestId,
       });
     }
   };

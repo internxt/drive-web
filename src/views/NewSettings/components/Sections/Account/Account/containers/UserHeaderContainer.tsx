@@ -32,8 +32,13 @@ const UserHeaderContainer = () => {
       await dispatch(updateUserAvatarThunk({ avatar })).unwrap();
       notificationsService.show({ type: ToastType.Success, text: translate('views.account.avatar.success') });
     } catch (err) {
+      const castedError = errorService.castError(err);
       errorService.reportError(err);
-      notificationsService.show({ type: ToastType.Error, text: translate('views.account.avatar.error') });
+      notificationsService.show({
+        type: ToastType.Error,
+        text: translate('views.account.avatar.error'),
+        requestId: castedError.requestId,
+      });
     }
   };
 

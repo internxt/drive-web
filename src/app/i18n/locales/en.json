@@ -4,7 +4,10 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": { "blueText": "Get 87% off", "text": "in all  Plans" },
+    "label": {
+      "blueText": "Get 85% off",
+      "text": "in all  Plans"
+    },
     "title": " Claim your exclusive discount!",
     "subTitle": {
       "blueText": "Special offer:",
@@ -103,7 +106,7 @@
     "login": {
       "title": "Login",
       "forgotPwd": "Forgot your password?",
-      "dontHaveAccount": "Don't have an account?",
+      "dontHaveAccount": "Don’t have an account?",
       "dontHaveAccountMobile": "Don't have an Internxt account?",
       "createAccount": "Create account",
       "2FA": "Two factor code",
@@ -274,7 +277,7 @@
       },
       "renewalTitle": {
         "month": "monthly",
-        "year": "annually",
+        "year": "annual",
         "lifetime": "lifetime"
       },
       "pcMobileRenews": "* Renews at 50€ first year after trial period",
@@ -365,7 +368,7 @@
     },
     "renewalPeriod": {
       "monthly": "monthly",
-      "annually": "annually",
+      "annually": "annual",
       "lifetime": "Lifetime"
     },
     "renewal": {
@@ -886,8 +889,40 @@
         "uploadedBy": "Uploaded by",
         "shared": "Shared",
         "size": "Size",
+        "numberOfFiles": "Number of files",
         "modified": "Modified",
         "location": "Location"
+      },
+      "fileCount_one": "{{count}} file",
+      "fileCount_other": "{{count}} files",
+      "fileCountMoreThan1000": "1000+ files"
+    },
+    "versionHistory": {
+      "title": "Version history",
+      "current": "Current",
+      "expiresInDays": "Expires in {{days}} days",
+      "autosaveVersions": "{{count}}/{{total}} autosave versions",
+      "restoreVersion": "Restore version",
+      "downloadVersion": "Download version",
+      "deleteVersion": "Delete version",
+      "deleteVersionTitle": "Delete version",
+      "deleteButton": "Delete",
+      "restoreButton": "Restore",
+      "downloadError": "Failed to download version",
+      "deleteVersionAdvice": "This version will be permanently deleted. \nThis action cannot be undone.",
+      "deletingVersion": "Deleting",
+      "restoreVersionTitle": "Restore version",
+      "restoreVersionAdvice": "Restoring this version will replace the current file and remove all newer versions. \nOnce restored, this action cannot be undone.\n\nYou can download a copy of newer versions before restoring.",
+      "restoringVersion": "Restoring",
+      "restoreSuccess": "Version restored successfully",
+      "restoreError": "Failed to restore version",
+      "deleteSuccess": "Version deleted successfully",
+      "deleteError": "Failed to delete version",
+      "lockedFeature": {
+        "title": "Locked feature",
+        "description": "Restore previous versions of your files and track changes over time.",
+        "supportedFormats": "Available for PDF, Word, Excel, and CSV files in paid plans.",
+        "upgradeButton": "Upgrade"
       }
     },
     "shareModal": {
@@ -987,7 +1022,8 @@
           "errorInviting": "Error sending invitation to {{email}}",
           "userAlreadyInvited": "The user {{email}} has already been invited",
           "acceptedError": "Error accepting invitation to shared folder",
-          "declinedError": "Error declining invitation to shared folder"
+          "declinedError": "Error declining invitation to shared folder",
+          "loadingRoles": "Could not load available roles. Please try again later."
         }
       },
       "requestAccess": {
@@ -1161,7 +1197,8 @@
     "connectionLostError": "Internet connection lost",
     "errorLoadingTrashItems": "Error loading trash items",
     "updateAvatarError": "Error updating avatar",
-    "featuresUnavailable": "Some features may be unavailable"
+    "featuresUnavailable": "Some features may be unavailable",
+    "errorSettingWorkspace": "Error setting up workspace"
   },
   "backups": {
     "backups-from": "Backups from {{deviceName}}",
@@ -1253,6 +1290,34 @@
     "item-menu": {
       "restore": "Restore",
       "delete-permanently": "Delete permanently"
+    },
+    "autoDelete": {
+      "inHours_one": "In {{count}} hour",
+      "inHours_other": "In {{count}} hours",
+      "inDays_one": "In {{count}} day",
+      "inDays_other": "In {{count}} days"
+    },
+    "automaticDisposal": {
+      "badge": "New update",
+      "title": "Automatic Trash disposal",
+      "close": "Close",
+      "description": "Now all the items moved to Trash will be\npermanently deleted automatically after:",
+      "freeUsers": {
+        "duration": "2 days",
+        "label": "for free users and others"
+      },
+      "essentialUsers": {
+        "duration": "7 days",
+        "label": "for essential users"
+      },
+      "premiumUsers": {
+        "duration": "15 days",
+        "label": "for premium users"
+      },
+      "ultimateUsers": {
+        "duration": "30 days",
+        "label": "for ultimate users"
+      }
     }
   },
   "tasks": {
@@ -1507,6 +1572,9 @@
     "logOut": "Log out",
     "locked": "Locked"
   },
+  "toastNotification": {
+    "textCopied": "Text copied to clipboard"
+  },
   "drive": {
     "usage": "Usage",
     "currentPlan": "Current plan",
@@ -1519,7 +1587,8 @@
         "name": "Name",
         "modified": "Modified",
         "size": "Size",
-        "actions": "Actions"
+        "actions": "Actions",
+        "autoDelete": "Auto-delete"
       }
     },
     "viewMode": {
@@ -1538,6 +1607,7 @@
       "share": "Share",
       "manageAccess": "Manage access",
       "download": "Download",
+      "versionHistory": "Version history",
       "moveToTrash": "Move to trash",
       "copyLink": "Copy link",
       "linkSettings": "Link settings",
@@ -1977,11 +2047,11 @@
         "planFeaturesList": {
           "title": "Plan Details",
           "comingSoon": "Coming Soon",
-          "storage": " encrypted storage",
+          "storage": " encrypted cloud storage",
           "1TB": {
             "title": "Essential",
             "features": [
-              "1TB of encrypted storage",
+              "1TB of encrypted cloud storage",
               "Post-Quantum Encryption",
               "Zero-Knowledge Encryption",
               "Two-Factor Authentication",
@@ -1994,26 +2064,27 @@
           "3TB": {
             "title": "Premium",
             "features": [
-              "3TB of encrypted storage",
+              "3TB of encrypted cloud storage",
               "Post-Quantum Encryption",
               "Zero-Knowledge Encryption",
               "Two-Factor Authentication",
+              "File Versioning",
               "Backup your computer",
               "Password-protected file sharing",
               "Invite, share & collaborate",
               "Encrypted VPN",
               "Antivirus",
               "Cleaner"
-            ],
-            "comingSoonFeatures": ["File Versioning"]
+            ]
           },
           "5TB": {
             "title": "Ultimate",
             "features": [
-              "5TB of encrypted storage",
+              "5TB of encrypted cloud storage",
               "Post-Quantum Encryption",
               "Zero-Knowledge Encryption",
               "Two-Factor Authentication",
+              "File Versioning",
               "Backup your computer",
               "Password-protected file sharing",
               "Invite, share & collaborate",
@@ -2024,7 +2095,7 @@
               "Cleaner",
               "Meet"
             ],
-            "comingSoonFeatures": ["File Versioning", "Mail", "Photos"]
+            "comingSoonFeatures": ["Mail", "Photos"]
           },
           "1GB": {
             "title": "Free",
@@ -2037,7 +2108,7 @@
           "1TB": {
             "title": "Standard",
             "features": [
-              "1TB encrypted storage per user",
+              "1TB encrypted cloud storage per user",
               "Post-quantum encryption",
               "Zero-knowledge encryption",
               "Two-factor authentication",
@@ -2055,11 +2126,12 @@
           "2TB": {
             "title": "Pro",
             "features": [
-              "2TB encrypted storage per user",
+              "2TB encrypted cloud storage per user",
               "Post-quantum encryption",
               "Zero-knowledge encryption",
               "Two-factor authentication",
               "Backup your computer",
+              "File Versioning",
               "Password-protected file sharing",
               "Invite, share & collaborate",
               "GDPR compliance",
@@ -2070,8 +2142,7 @@
               "Cleaner",
               "Meet",
               "Mail"
-            ],
-            "comingSoonFeatures": ["File Versioning"]
+            ]
           }
         },
         "user": "user"

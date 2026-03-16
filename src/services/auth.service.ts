@@ -16,7 +16,8 @@ import { getCookie, setCookie } from 'app/analytics/utils';
 import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
 import RealtimeService from 'services/sockets/socket.service';
-import AppError, { AppView } from 'app/core/types';
+import { AppError } from '@internxt/sdk';
+import { AppView } from 'app/core/types';
 import {
   assertPrivateKeyIsValid,
   assertValidateKeys,

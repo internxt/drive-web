@@ -4,8 +4,8 @@ import { CreateFolderResponse, EncryptionVersion } from '@internxt/sdk/dist/driv
 import folderService from 'app/drive/services/folder.service';
 import tasksService from '../../../../tasks/services/tasks.service';
 import errorService from 'services/error.service';
-import AppError from '../../../../core/types';
 import { DriveFolderData } from 'app/drive/types';
+import { AppError } from '@internxt/sdk';
 
 vi.mock('..', () => ({
   default: {

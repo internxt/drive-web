@@ -24,7 +24,7 @@ import errorService from 'services/error.service';
 import { binaryStreamToBlob } from 'services/stream.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { HTTP_CODES } from 'app/core/constants';
-import AppError from 'app/core/types';
+import { AppError } from '@internxt/sdk';
 import { Button, Loader } from '@internxt/ui';
 import { stringUtils } from '@internxt/lib';
 import { SendBanner, ShareItemPwdView } from './components';
