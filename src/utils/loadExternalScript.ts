@@ -1,6 +1,9 @@
 const loadedScripts = new Map<string, Promise<void>>();
 
-export const loadExternalScript = (src: string): Promise<void> => {
+export const loadExternalScript = (
+  src: string,
+  options?: { dataAttributes?: Record<string, string> },
+): Promise<void> => {
   const existing = loadedScripts.get(src);
   if (existing) return existing;
 
@@ -9,6 +12,11 @@ export const loadExternalScript = (src: string): Promise<void> => {
     script.type = 'module';
     script.src = src;
     script.async = true;
+    if (options?.dataAttributes) {
+      Object.entries(options.dataAttributes).forEach(([key, value]) => {
+        script.dataset[key] = value;
+      });
+    }
     script.onload = () => resolve();
     script.onerror = () => {
       loadedScripts.delete(src);

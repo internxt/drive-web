@@ -122,17 +122,45 @@ const openPanel = async (user: ReferralUser, language?: string): Promise<void> =
   await globalThis.Cello('open');
 };
 
+const ATTRIBUTION_POLL_INTERVAL_MS = 100;
+const ATTRIBUTION_TIMEOUT_MS = 5000;
+
+const waitForCelloAttribution = (): Promise<NonNullable<typeof globalThis.CelloAttribution>> => {
+  return new Promise((resolve, reject) => {
+    if (typeof globalThis.CelloAttribution === 'function') {
+      resolve(globalThis.CelloAttribution);
+      return;
+    }
+
+    const intervalId = setInterval(() => {
+      if (typeof globalThis.CelloAttribution === 'function') {
+        clearInterval(intervalId);
+        resolve(globalThis.CelloAttribution);
+      }
+    }, ATTRIBUTION_POLL_INTERVAL_MS);
+
+    setTimeout(() => {
+      clearInterval(intervalId);
+      reject(new Error('[Cello Attribution] Timed out waiting for CelloAttribution'));
+    }, ATTRIBUTION_TIMEOUT_MS);
+  });
+};
+
 const captureUccFromAttribution = async (): Promise<string | null> => {
   try {
     const assetsUrl = envService.getVariable('celloAssetsUrl');
-    await loadExternalScript(`${assetsUrl}/attribution/latest/cello-attribution.js`);
-    const ucc = await globalThis.CelloAttribution?.('getUcc');
+    const productId = envService.getVariable('celloProductId');
+    await loadExternalScript(`${assetsUrl}/attribution/latest/cello-attribution.js`, {
+      dataAttributes: { productId: productId },
+    });
+    const celloAttribution = await waitForCelloAttribution();
+    const ucc = await celloAttribution('getUcc');
     if (ucc) {
       localStorageService.set(UCC_STORAGE_KEY, ucc);
       return ucc;
     }
   } catch (error) {
-    console.warn('Attribution script unavailable, falling back to URL param', error);
+    console.warn('[Cello Attribution] Script unavailable, falling back to URL param', error);
   }
   return null;
 };
