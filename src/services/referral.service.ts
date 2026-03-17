@@ -234,6 +234,11 @@ const onTrigger = (listener: () => void): (() => void) => {
   return () => triggerListeners.delete(listener);
 };
 
+const changeLanguage = async (language: string): Promise<void> => {
+  if (!globalThis.Cello) return;
+  await globalThis.Cello('changeLanguage', language);
+};
+
 const boot = async (user: ReferralUser, language?: string): Promise<void> => {
   try {
     await loadAndBoot(user, language);
@@ -244,6 +249,7 @@ const boot = async (user: ReferralUser, language?: string): Promise<void> => {
 
 const referralService = {
   boot,
+  changeLanguage,
   openPanel,
   captureUcc,
   getStoredUcc,

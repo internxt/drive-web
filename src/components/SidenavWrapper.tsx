@@ -9,6 +9,7 @@ import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types/types'
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Sidenav } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { HUNDRED_TB } from 'app/core/constants';
@@ -22,7 +23,6 @@ import { useSidenavNavigation } from 'hooks/useSidenavNavigation';
 import { uiActions } from 'app/store/slices/ui';
 import ReferralBanner from './ReferralBanner';
 import referralService from 'services/referral.service';
-import i18next from 'i18next';
 
 interface SidenavWrapperProps {
   user: UserSettings | undefined;
@@ -42,6 +42,7 @@ const SidenavWrapper = ({
   isLoadingPlanUsage,
 }: SidenavWrapperProps) => {
   const { translate } = useTranslationContext();
+  const { i18n } = useTranslation();
   const dispatch = useAppDispatch();
   const isLoadingCredentials = useAppSelector((state: RootState) => state.workspaces.isLoadingCredentials);
   const isLoadingBusinessLimitAndUsage = useAppSelector(
@@ -64,9 +65,13 @@ const SidenavWrapper = ({
 
   useEffect(() => {
     if (user) {
-      referralService.boot({ name: user.name, lastname: user.lastname, email: user.email }, i18next.language);
+      referralService.boot({ name: user.name, lastname: user.lastname, email: user.email }, i18n.language);
     }
   }, [user]);
+
+  useEffect(() => {
+    referralService.changeLanguage(i18n.language);
+  }, [i18n.language]);
 
   const onLogoClicked = () => {
     navigationService.push(AppView.Drive, {}, workspaceUuid);
@@ -97,7 +102,7 @@ const SidenavWrapper = ({
 
   const handleReferralClick = () => {
     if (user) {
-      referralService.openPanel({ name: user.name, lastname: user.lastname, email: user.email }, i18next.language);
+      referralService.openPanel({ name: user.name, lastname: user.lastname, email: user.email }, i18n.language);
     }
   };
 
