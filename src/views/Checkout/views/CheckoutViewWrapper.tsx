@@ -18,7 +18,7 @@ import ChangePlanDialog from 'views/NewSettings/components/Sections/Account/Plan
 import longNotificationsService from 'app/notifications/services/longNotification.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { paymentService, checkoutService } from 'views/Checkout/services';
-import { RootState, store } from 'app/store';
+import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { planThunks } from 'app/store/slices/plan';
 import { useThemeContext } from 'app/theme/ThemeProvider';
@@ -284,8 +284,10 @@ const CheckoutViewWrapper = () => {
 
     const captchaToken = await generateCaptchaToken();
 
+    let authenticatedUser = user;
+
     if (authMethod !== 'userIsSignedIn') {
-      await onAuthenticateUser({
+      const result = await onAuthenticateUser({
         email,
         password,
         authMethod,
@@ -297,6 +299,10 @@ const CheckoutViewWrapper = () => {
           setIsUserPaying(false);
         },
       });
+
+      if (result) {
+        authenticatedUser = result;
+      }
     }
 
     try {
@@ -319,15 +325,14 @@ const CheckoutViewWrapper = () => {
 
       const customerToken = await generateCaptchaToken();
       const ucc = referralService.getStoredUcc();
-      const currentUser = store.getState().user.user;
-      const hasMetadata = ucc || currentUser?.uuid;
+      const userUuid = authenticatedUser?.uuid;
+      const hasMetadata = ucc || userUuid;
       const metadata = hasMetadata
         ? {
             ...(ucc && { cello_ucc: ucc }),
-            ...(currentUser?.uuid && { new_user_id: currentUser.uuid }),
+            ...(userUuid && { new_user_id: userUuid }),
           }
         : undefined;
-
       const { customerId, token } = await checkoutService.createCustomer({
         customerName,
         lineAddress1: address?.line1,

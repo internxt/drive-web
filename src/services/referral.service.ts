@@ -85,12 +85,10 @@ const captureUccFromUrl = (): string | null => {
   const params = new URLSearchParams(globalThis.location.search);
   const uccFromUrl = params.get('ucc');
 
-  if (uccFromUrl) {
-    localStorageService.set(UCC_STORAGE_KEY, uccFromUrl);
-    return uccFromUrl;
-  }
+  if (!uccFromUrl) return null;
 
-  return localStorageService.get(UCC_STORAGE_KEY) ?? null;
+  localStorageService.set(UCC_STORAGE_KEY, uccFromUrl);
+  return uccFromUrl;
 };
 
 const getStoredUcc = (): string | null => {
