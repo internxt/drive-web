@@ -73,5 +73,20 @@ describe('dateService', () => {
       expect(dateService.getHoursUntilExpiration(expiresAt)).toBe(25);
       expect(dateService.getDaysUntilExpiration(expiresAt)).toBe(1);
     });
+
+    test('when the date is 30 days in the past, then 30 days since are returned', () => {
+      const pastDate = '2022-12-02T00:00:00Z';
+      expect(dateService.getDaysSince(pastDate)).toBe(30);
+    });
+
+    test('when the date is in the future, then zero days since are returned', () => {
+      const futureDate = '2023-01-02T00:00:00Z';
+      expect(dateService.getDaysSince(futureDate)).toBe(0);
+    });
+
+    test('when the date is earlier today, then zero days since are returned', () => {
+      const earlierToday = '2023-01-01T00:00:00Z';
+      expect(dateService.getDaysSince(earlierToday)).toBe(0);
+    });
   });
 });

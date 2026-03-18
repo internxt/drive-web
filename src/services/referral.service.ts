@@ -1,9 +1,9 @@
 import localStorageService from './local-storage.service';
 import envService from './env.service';
+import dateService from './date.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 import { loadExternalScript } from 'utils/loadExternalScript';
 
-const FREE_SUBSCRIPTION_TYPE = 'free';
 const MAX_BANNER_SHOW_COUNT = 2;
 const MIN_FILE_UPLOADS_FOR_BANNER = 3;
 const MIN_APP_OPEN_DAYS_FOR_BANNER = 3;
@@ -252,9 +252,12 @@ const boot = async (user: ReferralUser, language?: string): Promise<void> => {
   }
 };
 
+const MIN_ACCOUNT_AGE_DAYS = 30;
+
 // TODO: Add feature flag check for production rollout
-const isEligibleForReferral = (subscriptionType?: string): boolean => {
-  return subscriptionType !== FREE_SUBSCRIPTION_TYPE;
+const isEligibleForReferral = (accountCreatedAt?: Date): boolean => {
+  if (!accountCreatedAt) return true;
+  return dateService.getDaysSince(accountCreatedAt) >= MIN_ACCOUNT_AGE_DAYS;
 };
 
 const referralService = {

@@ -8,7 +8,7 @@ import { ArrowSquareOut, Gear, Gift, MagnifyingGlass, X } from '@phosphor-icons/
 import AccountPopover from './AccountPopover';
 import referralService from 'services/referral.service';
 import i18next from 'i18next';
-import { PlanState, planSelectors } from 'app/store/slices/plan';
+import { PlanState } from 'app/store/slices/plan';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import iconService from 'app/drive/services/icon.service';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -100,7 +100,6 @@ const Navbar = (props: NavbarProps) => {
   if (!user) throw new Error('User is not defined');
 
   const dispatch = useAppDispatch();
-  const subscription = useAppSelector(planSelectors.subscriptionToShow);
   const searchInput = useRef<HTMLInputElement>(null);
   const searchResultList = useRef<HTMLUListElement>(null);
   const [preventBlur, setPreventBlur] = useState<boolean>(false);
@@ -401,7 +400,7 @@ const Navbar = (props: NavbarProps) => {
       </div>
 
       <div className="flex shrink-0 items-center">
-        {referralService.isEligibleForReferral(subscription?.type) && (
+        {referralService.isEligibleForReferral(user?.createdAt) && (
           <button
             onClick={() => {
               referralService.openPanel(

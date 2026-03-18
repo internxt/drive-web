@@ -141,7 +141,7 @@ const SidenavWrapper = ({
           isLoading: isLoadingPlanUsage && isLoadingPlanLimit && isLoadingBusinessLimitAndUsage,
         }}
       />
-      {referralService.isEligibleForReferral(subscription?.type) && (
+      {referralService.isEligibleForReferral(user?.createdAt) && (
         <div className="absolute bottom-24 left-0 right-0">
           <ReferralBanner onCtaClick={handleReferralClick} isCollapsed={isCollapsed} />
         </div>
