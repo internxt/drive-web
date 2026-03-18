@@ -120,7 +120,7 @@ export default function AccountPopover({ className = '', user, plan }: Readonly<
           );
         }}
       >
-        <Gift size={20} />
+        <Gift className="shrink-0" size={20} />
         <p className="ml-3 truncate">{translate('views.account.popover.referAndEarn')}</p>
       </Item>
       {separator}
