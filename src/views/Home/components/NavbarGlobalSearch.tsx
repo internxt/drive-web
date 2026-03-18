@@ -8,7 +8,7 @@ import { ArrowSquareOut, Gear, Gift, MagnifyingGlass, X } from '@phosphor-icons/
 import AccountPopover from './AccountPopover';
 import referralService from 'services/referral.service';
 import i18next from 'i18next';
-import { PlanState } from 'app/store/slices/plan';
+import { PlanState, planSelectors } from 'app/store/slices/plan';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import iconService from 'app/drive/services/icon.service';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -100,6 +100,7 @@ const Navbar = (props: NavbarProps) => {
   if (!user) throw new Error('User is not defined');
 
   const dispatch = useAppDispatch();
+  const subscription = useAppSelector(planSelectors.subscriptionToShow);
   const searchInput = useRef<HTMLInputElement>(null);
   const searchResultList = useRef<HTMLUListElement>(null);
   const [preventBlur, setPreventBlur] = useState<boolean>(false);
@@ -400,20 +401,22 @@ const Navbar = (props: NavbarProps) => {
       </div>
 
       <div className="flex shrink-0 items-center">
-        <button
-          onClick={() => {
-            referralService.openPanel(
-              { name: user.name, lastname: user.lastname, email: user.email },
-              i18next.language,
-            );
-          }}
-          className="flex h-10 cursor-pointer items-center gap-2 border-none bg-transparent px-3"
-        >
-          <Gift size={20} className="text-primary" />
-          <span className="text-sm font-medium whitespace-nowrap text-primary">
-            {translate('views.account.popover.earnReferral')}
-          </span>
-        </button>
+        {referralService.isEligibleForReferral(subscription?.type) && (
+          <button
+            onClick={() => {
+              referralService.openPanel(
+                { name: user.name, lastname: user.lastname, email: user.email },
+                i18next.language,
+              );
+            }}
+            className="flex h-10 cursor-pointer items-center gap-2 border-none bg-transparent px-3"
+          >
+            <Gift size={20} className="text-primary" />
+            <span className="text-sm font-medium whitespace-nowrap text-primary">
+              {translate('views.account.popover.earnReferral')}
+            </span>
+          </button>
+        )}
         <button
           onClick={() => {
             navigationService.openPreferencesDialog({

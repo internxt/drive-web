@@ -5,6 +5,7 @@ import i18next from 'i18next';
 import { ReactNode } from 'react';
 import { Popover } from '@internxt/ui';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { planSelectors } from 'app/store/slices/plan';
 import { uiActions } from 'app/store/slices/ui';
 import { userThunks } from 'app/store/slices/user';
 import desktopService from 'services/desktop.service';
@@ -28,6 +29,7 @@ interface AccountPopoverProps {
 export default function AccountPopover({ className = '', user, plan }: Readonly<AccountPopoverProps>): JSX.Element {
   const dispatch = useAppDispatch();
   const { selectedWorkspace } = useAppSelector((state: RootState) => state.workspaces);
+  const subscription = useAppSelector(planSelectors.subscriptionToShow);
   const memberId = selectedWorkspace?.workspaceUser?.memberId;
   const usage = memberId ? plan.businessPlanUsage : plan.planUsage;
   const limit = memberId ? plan.businessPlanLimit : plan.planLimit;
@@ -108,21 +110,23 @@ export default function AccountPopover({ className = '', user, plan }: Readonly<
         <Gear size={20} />
         <p className="ml-3">{translate('views.account.popover.settings')}</p>
       </button>
-      <Item
-        onClick={() => {
-          referralService.openPanel(
-            {
-              name: user.name,
-              lastname: user.lastname,
-              email: user.email,
-            },
-            i18next.language,
-          );
-        }}
-      >
-        <Gift className="shrink-0" size={20} />
-        <p className="ml-3 truncate">{translate('views.account.popover.referAndEarn')}</p>
-      </Item>
+      {referralService.isEligibleForReferral(subscription?.type) && (
+        <Item
+          onClick={() => {
+            referralService.openPanel(
+              {
+                name: user.name,
+                lastname: user.lastname,
+                email: user.email,
+              },
+              i18next.language,
+            );
+          }}
+        >
+          <Gift className="shrink-0" size={20} />
+          <p className="ml-3 truncate">{translate('views.account.popover.referAndEarn')}</p>
+        </Item>
+      )}
       {separator}
       <Item onClick={onLogout}>
         <SignOut size={20} />

@@ -3,6 +3,7 @@ import envService from './env.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 import { loadExternalScript } from 'utils/loadExternalScript';
 
+const FREE_SUBSCRIPTION_TYPE = 'free';
 const MAX_BANNER_SHOW_COUNT = 3;
 const MIN_FILE_UPLOADS_FOR_BANNER = 3;
 const MIN_APP_OPEN_DAYS_FOR_BANNER = 3;
@@ -251,6 +252,11 @@ const boot = async (user: ReferralUser, language?: string): Promise<void> => {
   }
 };
 
+// TODO: Add feature flag check for production rollout
+const isEligibleForReferral = (subscriptionType?: string): boolean => {
+  return subscriptionType !== FREE_SUBSCRIPTION_TYPE;
+};
+
 const referralService = {
   boot,
   changeLanguage,
@@ -266,6 +272,7 @@ const referralService = {
   incrementBannerShowCount,
   shouldShowBanner,
   onTrigger,
+  isEligibleForReferral,
 };
 
 export default referralService;
