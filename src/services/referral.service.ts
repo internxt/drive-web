@@ -4,7 +4,7 @@ import { SdkFactory } from 'app/core/factory/sdk';
 import { loadExternalScript } from 'utils/loadExternalScript';
 
 const FREE_SUBSCRIPTION_TYPE = 'free';
-const MAX_BANNER_SHOW_COUNT = 3;
+const MAX_BANNER_SHOW_COUNT = 2;
 const MIN_FILE_UPLOADS_FOR_BANNER = 3;
 const MIN_APP_OPEN_DAYS_FOR_BANNER = 3;
 const BANNER_SESSION_COUNTED_KEY = 'referral_banner_session_counted';
