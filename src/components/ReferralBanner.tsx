@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { X } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import referralService from 'services/referral.service';
@@ -10,12 +10,10 @@ interface ReferralBannerProps {
 
 const ReferralBanner = ({ onCtaClick, isCollapsed }: ReferralBannerProps) => {
   const { translate } = useTranslationContext();
-  const hasCountedShow = useRef(false);
   const [isVisible, setIsVisible] = useState(() => {
     const isVisible = referralService.shouldShowBanner();
     if (isVisible) {
       referralService.incrementBannerShowCount();
-      hasCountedShow.current = true;
     }
     return isVisible;
   });
@@ -24,9 +22,8 @@ const ReferralBanner = ({ onCtaClick, isCollapsed }: ReferralBannerProps) => {
     if (isVisible) return;
 
     return referralService.onTrigger(() => {
-      if (!hasCountedShow.current && referralService.shouldShowBanner()) {
+      if (referralService.shouldShowBanner()) {
         referralService.incrementBannerShowCount();
-        hasCountedShow.current = true;
         setIsVisible(true);
       }
     });

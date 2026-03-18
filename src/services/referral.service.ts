@@ -3,9 +3,10 @@ import envService from './env.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 import { loadExternalScript } from 'utils/loadExternalScript';
 
-const MAX_BANNER_SHOW_COUNT = 2;
+const MAX_BANNER_SHOW_COUNT = 3;
 const MIN_FILE_UPLOADS_FOR_BANNER = 3;
 const MIN_APP_OPEN_DAYS_FOR_BANNER = 3;
+const BANNER_SESSION_COUNTED_KEY = 'referral_banner_session_counted';
 
 interface ReferralUser {
   name: string;
@@ -212,8 +213,11 @@ const markReferralModalOpened = (): void => {
 };
 
 const incrementBannerShowCount = (): void => {
+  if (sessionStorage.getItem(BANNER_SESSION_COUNTED_KEY)) return;
+
   const state = getBannerState();
   updateBannerState({ showCount: state.showCount + 1 });
+  sessionStorage.setItem(BANNER_SESSION_COUNTED_KEY, 'true');
 };
 
 const shouldShowBanner = (): boolean => {
