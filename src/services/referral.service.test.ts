@@ -36,6 +36,7 @@ vi.mock('utils/loadExternalScript', () => ({
 import localStorageService from './local-storage.service';
 import envService from './env.service';
 import dateService from './date.service';
+import { loadExternalScript } from 'utils/loadExternalScript';
 import referralService from './referral.service';
 
 const BANNER_STATE_KEY = 'referral_banner_state';
@@ -66,12 +67,34 @@ const expectBannerStateSaved = (fragment: string) => {
   expect(localStorageService.set).toHaveBeenCalledWith(BANNER_STATE_KEY, expect.stringContaining(fragment));
 };
 
+const mockUser = { name: 'John', lastname: 'Doe', email: 'john@example.com' };
+
+const setupCelloBootFlow = () => {
+  vi.mocked(envService.getVariable).mockImplementation((key: string) => {
+    if (key === 'celloAssetsUrl') return 'https://assets.example.com';
+    if (key === 'celloProductId') return 'test-product-id';
+    return '';
+  });
+
+  const mockBoot = vi.fn().mockResolvedValue(undefined);
+
+  vi.mocked(loadExternalScript).mockImplementation(async () => {
+    const autoExecCmd = {
+      push: (fn: (cello: { boot: typeof mockBoot }) => void) => fn({ boot: mockBoot }),
+    };
+    globalThis.cello = { cmd: autoExecCmd as unknown as typeof globalThis.cello.cmd };
+  });
+
+  return { mockBoot };
+};
+
 describe('referralService', () => {
   beforeEach(() => {
     vi.mocked(localStorageService.get).mockReturnValue(null as unknown as string);
     vi.mocked(localStorageService.set).mockReturnValue(undefined);
     vi.mocked(envService.getVariable).mockReturnValue('');
     vi.mocked(dateService.getDaysSince).mockReturnValue(0);
+    vi.mocked(loadExternalScript).mockResolvedValue(undefined);
   });
 
   afterEach(() => {
@@ -287,15 +310,85 @@ describe('referralService', () => {
     });
   });
 
-  describe('boot', () => {
-    it('when the referral widget fails to load, then the error is handled gracefully', async () => {
+  describe('captureUcc', () => {
+    it('when the attribution script returns a UCC, then it is stored and returned', async () => {
       vi.mocked(envService.getVariable).mockReturnValue('https://assets.example.com');
-      const { loadExternalScript } = await import('utils/loadExternalScript');
+      globalThis.CelloAttribution = vi.fn().mockResolvedValue('attribution-ucc');
+
+      const result = await referralService.captureUcc();
+
+      expect(result).toBe('attribution-ucc');
+      expect(localStorageService.set).toHaveBeenCalledWith('cello_ucc', 'attribution-ucc');
+    });
+
+    it('when the attribution fails, then null is returned', async () => {
+      vi.mocked(loadExternalScript).mockRejectedValueOnce(new Error('unavailable'));
+
+      const result = await referralService.captureUcc();
+
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('boot', () => {
+    it('when the referral widget loads successfully, then the SDK is initialized with user details', async () => {
+      const { mockBoot } = setupCelloBootFlow();
+
+      await referralService.boot(mockUser, 'fr');
+
+      expect(mockBoot).toHaveBeenCalledWith(
+        expect.objectContaining({
+          productId: 'test-product-id',
+          token: 'mock-token',
+          language: 'fr',
+          productUserDetails: expect.objectContaining({
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'john@example.com',
+          }),
+          hideDefaultLauncher: true,
+        }),
+      );
+    });
+
+    it('when the external script fails to load, then the error is handled gracefully', async () => {
       vi.mocked(loadExternalScript).mockRejectedValueOnce(new Error('network error'));
 
-      await expect(
-        referralService.boot({ name: 'John', lastname: 'Doe', email: 'john@example.com' }),
-      ).resolves.toBeUndefined();
+      await expect(referralService.boot(mockUser)).resolves.toBeUndefined();
+    });
+
+    it('when the product ID is not configured, then boot stops without calling the SDK', async () => {
+      vi.mocked(envService.getVariable).mockImplementation((key: string) => {
+        if (key === 'celloAssetsUrl') return 'https://assets.example.com';
+        return '';
+      });
+
+      await referralService.boot(mockUser);
+
+      expect(globalThis.cello).toBeUndefined();
+    });
+  });
+
+  describe('openPanel', () => {
+    it('when the panel is opened, then the referral modal is marked as opened', async () => {
+      setupCelloBootFlow();
+      const mockCello = vi.fn().mockResolvedValue(undefined);
+      globalThis.Cello = mockCello;
+      mockBannerState();
+
+      await referralService.openPanel(mockUser);
+
+      expect(mockCello).toHaveBeenCalledWith('open');
+      expectBannerStateSaved('"isModalOpened":true');
+    });
+
+    it('when the Cello widget is not available after boot, then the panel does not open', async () => {
+      setupCelloBootFlow();
+      delete globalThis.Cello;
+
+      await referralService.openPanel(mockUser);
+
+      expect(localStorageService.set).not.toHaveBeenCalled();
     });
   });
 });
