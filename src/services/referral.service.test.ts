@@ -1,4 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import envService from './env.service';
+import dateService from './date.service';
+import { loadExternalScript } from 'utils/loadExternalScript';
+import type referralServiceType from './referral.service';
 
 vi.mock('./env.service', () => ({
   default: {
@@ -25,11 +29,6 @@ vi.mock('app/core/factory/sdk', () => ({
 vi.mock('utils/loadExternalScript', () => ({
   loadExternalScript: vi.fn().mockResolvedValue(undefined),
 }));
-
-import envService from './env.service';
-import dateService from './date.service';
-import { loadExternalScript } from 'utils/loadExternalScript';
-import type referralServiceType from './referral.service';
 
 const BANNER_STATE_KEY = 'referral_banner_state';
 const UCC_STORAGE_KEY = 'cello_ucc';
