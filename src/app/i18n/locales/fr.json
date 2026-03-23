@@ -819,7 +819,7 @@
       },
       "fileCount_one": "{{count}} fichier",
       "fileCount_other": "{{count}} fichiers",
-      "fileCountMoreThan1000": "Plus de 1000 fichiers"
+      "fileCountMoreThan": "{{count}}+ fichiers"
     },
     "versionHistory": {
       "title": "Historique des versions",

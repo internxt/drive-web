@@ -931,7 +931,7 @@
       },
       "fileCount_one": "{{count}} file",
       "fileCount_other": "{{count}} file",
-      "fileCountMoreThan1000": "Più di 1000 file"
+      "fileCountMoreThan": "{{count}}+ file"
     },
     "versionHistory": {
       "title": "Cronologia versioni",

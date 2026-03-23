@@ -895,7 +895,7 @@
       },
       "fileCount_one": "{{count}} file",
       "fileCount_other": "{{count}} files",
-      "fileCountMoreThan1000": "1000+ files"
+      "fileCountMoreThan": "{{count}}+ files"
     },
     "versionHistory": {
       "title": "Version history",

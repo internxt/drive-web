@@ -861,7 +861,7 @@
       },
       "fileCount_one": "{{count}} 个文件",
       "fileCount_other": "{{count}} 个文件",
-      "fileCountMoreThan1000": "超过 1000 个文件"
+      "fileCountMoreThan": "{{count}}+ 个文件"
     },
     "versionHistory": {
       "title": "版本历史",
