@@ -1,12 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('./local-storage.service', () => ({
-  default: {
-    get: vi.fn(),
-    set: vi.fn(),
-  },
-}));
-
 vi.mock('./env.service', () => ({
   default: {
     getVariable: vi.fn(),
@@ -33,11 +26,10 @@ vi.mock('utils/loadExternalScript', () => ({
   loadExternalScript: vi.fn().mockResolvedValue(undefined),
 }));
 
-import localStorageService from './local-storage.service';
 import envService from './env.service';
 import dateService from './date.service';
 import { loadExternalScript } from 'utils/loadExternalScript';
-import referralService from './referral.service';
+import type referralServiceType from './referral.service';
 
 const BANNER_STATE_KEY = 'referral_banner_state';
 const UCC_STORAGE_KEY = 'cello_ucc';
@@ -55,16 +47,16 @@ const buildBannerState = (overrides: Record<string, unknown> = {}) =>
     ...overrides,
   });
 
-const mockBannerState = (overrides: Record<string, unknown> = {}, uccValue: string | null = null) => {
-  vi.mocked(localStorageService.get).mockImplementation((key: string) => {
-    if (key === BANNER_STATE_KEY) return buildBannerState(overrides);
-    if (key === UCC_STORAGE_KEY) return uccValue;
-    return null;
-  });
+const seedBannerState = (overrides: Record<string, unknown> = {}, uccValue: string | null = null) => {
+  localStorage.setItem(BANNER_STATE_KEY, buildBannerState(overrides));
+  if (uccValue) {
+    localStorage.setItem(UCC_STORAGE_KEY, uccValue);
+  }
 };
 
 const expectBannerStateSaved = (fragment: string) => {
-  expect(localStorageService.set).toHaveBeenCalledWith(BANNER_STATE_KEY, expect.stringContaining(fragment));
+  const saved = localStorage.getItem(BANNER_STATE_KEY);
+  expect(saved).toContain(fragment);
 };
 
 const mockUser = { name: 'John', lastname: 'Doe', email: 'john@example.com' };
@@ -88,17 +80,26 @@ const setupCelloBootFlow = () => {
   return { mockBoot };
 };
 
+const importFreshReferralService = async (): Promise<typeof referralServiceType> => {
+  vi.resetModules();
+  const module = await import('./referral.service');
+  return module.default;
+};
+
 describe('referralService', () => {
-  beforeEach(() => {
-    vi.mocked(localStorageService.get).mockReturnValue(null as unknown as string);
-    vi.mocked(localStorageService.set).mockReturnValue(undefined);
+  let referralService: typeof referralServiceType;
+
+  beforeEach(async () => {
+    localStorage.clear();
     vi.mocked(envService.getVariable).mockReturnValue('');
     vi.mocked(dateService.getDaysSince).mockReturnValue(0);
     vi.mocked(loadExternalScript).mockResolvedValue(undefined);
+    referralService = await importFreshReferralService();
   });
 
   afterEach(() => {
     vi.clearAllMocks();
+    localStorage.clear();
     sessionStorage.clear();
     delete globalThis.cello;
     delete globalThis.Cello;
@@ -162,7 +163,7 @@ describe('referralService', () => {
         expected: true,
       },
     ])('$scenario', ({ state, ucc, expected }) => {
-      mockBannerState(state, ucc);
+      seedBannerState(state, ucc);
 
       expect(referralService.shouldShowBanner()).toBe(expected);
     });
@@ -173,37 +174,37 @@ describe('referralService', () => {
       {
         scenario: 'when a file is uploaded, then the upload count is incremented',
         initialState: { fileUploadCount: 2 },
-        action: () => referralService.trackFileUpload(),
+        action: 'trackFileUpload' as const,
         expectedFragment: '"fileUploadCount":3',
       },
       {
         scenario: 'when a folder is uploaded, then the folder upload is recorded',
         initialState: {},
-        action: () => referralService.trackFolderUpload(),
+        action: 'trackFolderUpload' as const,
         expectedFragment: '"hasFolderUploaded":true',
       },
       {
         scenario: 'when a share is created, then the share activity is recorded',
         initialState: {},
-        action: () => referralService.trackShareCreated(),
+        action: 'trackShareCreated' as const,
         expectedFragment: '"hasShareCreated":true',
       },
       {
         scenario: 'when the user dismisses the banner, then the dismissal is saved',
         initialState: {},
-        action: () => referralService.dismissBanner(),
+        action: 'dismissBanner' as const,
         expectedFragment: '"isDismissed":true',
       },
       {
         scenario: 'when the referral modal is opened, then the interaction is saved',
         initialState: {},
-        action: () => referralService.markReferralModalOpened(),
+        action: 'markReferralModalOpened' as const,
         expectedFragment: '"isModalOpened":true',
       },
     ])('$scenario', ({ initialState, action, expectedFragment }) => {
-      mockBannerState(initialState);
+      seedBannerState(initialState);
 
-      action();
+      referralService[action]();
 
       expectBannerStateSaved(expectedFragment);
     });
@@ -220,7 +221,7 @@ describe('referralService', () => {
     });
 
     it('when the user opens the app on a new day, then that day is recorded', () => {
-      mockBannerState({ appOpenDays: ['2026-03-18'] });
+      seedBannerState({ appOpenDays: ['2026-03-18'] });
 
       referralService.trackAppOpenDay();
 
@@ -228,17 +229,18 @@ describe('referralService', () => {
     });
 
     it('when the user opens the app again on the same day, then no duplicate is added', () => {
-      mockBannerState({ appOpenDays: ['2026-03-19'] });
+      seedBannerState({ appOpenDays: ['2026-03-19'] });
 
       referralService.trackAppOpenDay();
 
-      expect(localStorageService.set).not.toHaveBeenCalled();
+      const saved = JSON.parse(localStorage.getItem(BANNER_STATE_KEY) ?? '{}');
+      expect(saved.appOpenDays).toEqual(['2026-03-19']);
     });
   });
 
   describe('incrementBannerShowCount', () => {
     it('when the banner is shown for the first time in a session, then the show count increases', () => {
-      mockBannerState({ showCount: 0 });
+      seedBannerState({ showCount: 0 });
 
       referralService.incrementBannerShowCount();
 
@@ -247,18 +249,20 @@ describe('referralService', () => {
     });
 
     it('when the banner has already been counted in this session, then the count does not increase again', () => {
+      seedBannerState({ showCount: 1 });
       sessionStorage.setItem(BANNER_SESSION_COUNTED_KEY, 'true');
 
       referralService.incrementBannerShowCount();
 
-      expect(localStorageService.set).not.toHaveBeenCalled();
+      const saved = JSON.parse(localStorage.getItem(BANNER_STATE_KEY) ?? '{}');
+      expect(saved.showCount).toBe(1);
     });
   });
 
   describe('onTrigger', () => {
     it('when an engagement event occurs, then registered listeners are notified', () => {
       const listener = vi.fn();
-      mockBannerState();
+      seedBannerState();
 
       const unsubscribe = referralService.onTrigger(listener);
       referralService.trackShareCreated();
@@ -269,7 +273,7 @@ describe('referralService', () => {
 
     it('when a listener unsubscribes, then it is no longer notified of events', () => {
       const listener = vi.fn();
-      mockBannerState();
+      seedBannerState();
 
       const unsubscribe = referralService.onTrigger(listener);
       unsubscribe();
@@ -318,7 +322,7 @@ describe('referralService', () => {
       const result = await referralService.captureUcc();
 
       expect(result).toBe('attribution-ucc');
-      expect(localStorageService.set).toHaveBeenCalledWith('cello_ucc', 'attribution-ucc');
+      expect(localStorage.getItem(UCC_STORAGE_KEY)).toBe('attribution-ucc');
     });
 
     it('when the attribution fails, then null is returned', async () => {
@@ -374,7 +378,6 @@ describe('referralService', () => {
       setupCelloBootFlow();
       const mockCello = vi.fn().mockResolvedValue(undefined);
       globalThis.Cello = mockCello;
-      mockBannerState();
 
       await referralService.openPanel(mockUser);
 
@@ -388,7 +391,8 @@ describe('referralService', () => {
 
       await referralService.openPanel(mockUser);
 
-      expect(localStorageService.set).not.toHaveBeenCalled();
+      const saved = localStorage.getItem(BANNER_STATE_KEY);
+      expect(saved).toBeNull();
     });
   });
 });
