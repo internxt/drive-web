@@ -283,8 +283,8 @@ describe('referralService', () => {
   });
 
   describe('isEligibleForReferral', () => {
-    it('when no account creation date is provided, then the user is eligible', () => {
-      expect(referralService.isEligibleForReferral()).toBe(true);
+    it('when no account creation date is provided, then the user is eligible', async () => {
+      expect(await referralService.isEligibleForReferral()).toBe(true);
     });
 
     it.each([
@@ -295,10 +295,10 @@ describe('referralService', () => {
         days: 15,
         expected: false,
       },
-    ])('$scenario', ({ days, expected }) => {
+    ])('$scenario', async ({ days, expected }) => {
       vi.mocked(dateService.getDaysSince).mockReturnValue(days);
 
-      expect(referralService.isEligibleForReferral(new Date())).toBe(expected);
+      expect(await referralService.isEligibleForReferral(new Date())).toBe(expected);
     });
   });
 
