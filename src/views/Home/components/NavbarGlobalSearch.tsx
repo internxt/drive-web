@@ -114,6 +114,8 @@ const Navbar = (props: NavbarProps) => {
   const [typingTimerID, setTypingTimerID] = useState<NodeJS.Timeout | null>(null);
   const doneTypingInterval = 200;
 
+  const isReferralEligible = useAppSelector((state: RootState) => state.referrals.isEligible);
+
   const isGlobalSearch = useAppSelector((state: RootState) => state.ui.isGlobalSearch);
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const isUpgradePlanDialogOpen = useAppSelector((state) => state.ui.isUpgradePlanDialogOpen);
@@ -400,8 +402,9 @@ const Navbar = (props: NavbarProps) => {
       </div>
 
       <div className="flex shrink-0 items-center">
-        {referralService.isEligibleForReferral(user?.createdAt) && (
+        {isReferralEligible && (
           <button
+            cello-launcher
             onClick={() => {
               referralService.openPanel(
                 { name: user.name, lastname: user.lastname, email: user.email },

@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import desktopService from 'services/desktop.service';
 import navigationService from 'services/navigation.service';
 import usersReferralsService from 'app/referrals/services/users-referrals.service';
+import referralService from 'services/referral.service';
 
 import { ReferralKey, UserReferral } from '@internxt/sdk/dist/drive/referrals/types';
 import { t as translate } from 'i18next';
@@ -13,11 +14,13 @@ import { userSelectors } from '../user';
 interface ReferralsState {
   isLoading: boolean;
   list: UserReferral[];
+  isEligible: boolean;
 }
 
 const initialState: ReferralsState = {
   isLoading: false,
   list: [],
+  isEligible: false,
 };
 
 const initializeThunk = createAsyncThunk<void, void, { state: RootState }>(
@@ -44,6 +47,13 @@ const refreshUserReferrals = createAsyncThunk<void, void, { state: RootState }>(
   (payload, { dispatch }) => {
     dispatch(referralsThunks.fetchUserReferralsThunk());
     dispatch(planThunks.fetchUsageThunk());
+  },
+);
+
+const fetchIsEligibleThunk = createAsyncThunk<boolean, { accountCreatedAt?: Date }, { state: RootState }>(
+  'referrals/fetchIsEligible',
+  async ({ accountCreatedAt }) => {
+    return referralService.isEligibleForReferral(accountCreatedAt);
   },
 );
 
@@ -102,6 +112,9 @@ export const referralsSlice = createSlice({
       })
       .addCase(fetchUserReferralsThunk.rejected, (state) => {
         state.isLoading = false;
+      })
+      .addCase(fetchIsEligibleThunk.fulfilled, (state, action) => {
+        state.isEligible = action.payload;
       });
   },
 });
@@ -111,6 +124,7 @@ export const referralsActions = referralsSlice.actions;
 export const referralsThunks = {
   initializeThunk,
   fetchUserReferralsThunk,
+  fetchIsEligibleThunk,
   refreshUserReferrals,
   executeUserReferralActionThunk,
 };

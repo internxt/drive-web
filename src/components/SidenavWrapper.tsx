@@ -23,6 +23,7 @@ import { useSidenavNavigation } from 'hooks/useSidenavNavigation';
 import { uiActions } from 'app/store/slices/ui';
 import ReferralBanner from './ReferralBanner';
 import referralService from 'services/referral.service';
+import { referralsThunks } from 'app/store/slices/referrals';
 
 interface SidenavWrapperProps {
   user: UserSettings | undefined;
@@ -57,6 +58,7 @@ const SidenavWrapper = ({
     const savedState = sessionStorage.getItem('sidenav-collapsed');
     return savedState === 'true';
   });
+  const isReferralEligible = useAppSelector((state: RootState) => state.referrals.isEligible);
 
   useEffect(() => {
     dispatch(sharedThunks.getPendingInvitations());
@@ -66,6 +68,11 @@ const SidenavWrapper = ({
   useEffect(() => {
     if (user) {
       referralService.boot({ name: user.name, lastname: user.lastname, email: user.email }, i18n.language);
+      dispatch(
+        referralsThunks.fetchIsEligibleThunk({
+          accountCreatedAt: user.createdAt ? new Date(user.createdAt) : undefined,
+        }),
+      );
     }
   }, [user]);
 
@@ -141,7 +148,7 @@ const SidenavWrapper = ({
           isLoading: isLoadingPlanUsage && isLoadingPlanLimit && isLoadingBusinessLimitAndUsage,
         }}
       />
-      {referralService.isEligibleForReferral(user?.createdAt) && (
+      {isReferralEligible && (
         <div className="absolute bottom-24 left-0 right-0">
           <ReferralBanner onCtaClick={handleReferralClick} isCollapsed={isCollapsed} />
         </div>

@@ -60,9 +60,10 @@ const trackAndEmit = (update: Partial<BannerState>): void => {
   emitTriggerEvent();
 };
 
+const getReferralsClient = () => SdkFactory.getNewApiInstance().createReferralsClient();
+
 const fetchReferralToken = async (): Promise<string> => {
-  const referralsClient = SdkFactory.getNewApiInstance().createReferralsClient();
-  const { token } = await referralsClient.createReferralToken();
+  const { token } = await getReferralsClient().createReferralToken();
   return token;
 };
 
@@ -254,10 +255,22 @@ const boot = async (user: ReferralUser, language?: string): Promise<void> => {
 
 const MIN_ACCOUNT_AGE_DAYS = 30;
 
-// TODO: Add feature flag check for production rollout
-const isEligibleForReferral = (accountCreatedAt?: Date): boolean => {
-  if (!accountCreatedAt) return true;
-  return dateService.getDaysSince(accountCreatedAt) >= MIN_ACCOUNT_AGE_DAYS;
+const isEligibleForReferral = async (accountCreatedAt?: Date): Promise<boolean> => {
+  const isAccountTooNew = accountCreatedAt && dateService.getDaysSince(accountCreatedAt) < MIN_ACCOUNT_AGE_DAYS;
+  console.log(
+    `[Referral] Checking eligibility: accountCreatedAt=${accountCreatedAt}, isAccountTooNew=${isAccountTooNew}`,
+  );
+  if (isAccountTooNew) {
+    return false;
+  }
+  return true;
+
+  // try {
+  //   const { isEnabled } = await getReferralsClient().isReferralEnabled();
+  //   return isEnabled;
+  // } catch {
+  //   return false;
+  // }
 };
 
 const referralService = {

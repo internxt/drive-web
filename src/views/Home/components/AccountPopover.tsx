@@ -32,6 +32,7 @@ export default function AccountPopover({ className = '', user, plan }: Readonly<
   const usage = memberId ? plan.businessPlanUsage : plan.planUsage;
   const limit = memberId ? plan.businessPlanLimit : plan.planLimit;
 
+  const isReferralEligible = useAppSelector((state: RootState) => state.referrals.isEligible);
   const { translate } = useTranslationContext();
   const name = user?.name ?? '';
   const lastName = user?.lastname ?? '';
@@ -108,8 +109,9 @@ export default function AccountPopover({ className = '', user, plan }: Readonly<
         <Gear size={20} />
         <p className="ml-3">{translate('views.account.popover.settings')}</p>
       </button>
-      {referralService.isEligibleForReferral(user?.createdAt) && (
+      {isReferralEligible && (
         <Item
+          cello-launcher
           onClick={() => {
             referralService.openPanel(
               {
