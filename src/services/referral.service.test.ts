@@ -283,27 +283,6 @@ describe('referralService', () => {
     });
   });
 
-  // TODO: Uncomment this when cello team finishes testing
-  // describe('isEligibleForReferral', () => {
-  //   it('when no account creation date is provided, then the user is eligible', async () => {
-  //     expect(await referralService.isEligibleForReferral()).toBe(true);
-  //   });
-
-  //   it.each([
-  //     { scenario: 'when the account is older than 30 days, then the user is eligible', days: 31, expected: true },
-  //     { scenario: 'when the account is exactly 30 days old, then the user is eligible', days: 30, expected: true },
-  //     {
-  //       scenario: 'when the account is younger than 30 days, then the user is not eligible',
-  //       days: 15,
-  //       expected: false,
-  //     },
-  //   ])('$scenario', async ({ days, expected }) => {
-  //     vi.mocked(dateService.getDaysSince).mockReturnValue(days);
-
-  //     expect(await referralService.isEligibleForReferral(new Date())).toBe(expected);
-  //   });
-  // });
-
   describe('changeLanguage', () => {
     it('when the referral widget is loaded, then the language is updated', async () => {
       const mockCello = vi.fn().mockResolvedValue(undefined);
