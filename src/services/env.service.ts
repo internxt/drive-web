@@ -53,6 +53,8 @@ const variableList = {
   vpnId: 'REACT_APP_VPN_ID',
   impactApiUrl: 'REACT_APP_IMPACT_API',
   dontRedirect: 'REACT_APP_DONT_REDIRECT',
+  celloProductId: 'REACT_APP_CELLO_PRODUCT_ID',
+  celloAssetsUrl: 'REACT_APP_CELLO_ASSETS_URL',
 };
 
 function getVariable(variable: keyof typeof variableList): string {

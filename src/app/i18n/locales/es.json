@@ -408,7 +408,11 @@
     "shared": "Compartido",
     "recents": "Recientes",
     "trash": "Papelera",
-    "desktop": "Escritorio"
+    "desktop": "Escritorio",
+    "referralBanner": {
+      "message": "¡Recuerda! Gana hasta 1.000 € recomendando a un amigo",
+      "cta": "Recomienda y gana"
+    }
   },
   "views": {
     "recents": {
@@ -439,6 +443,8 @@
         "downloadApp": "Descargar app",
         "settings": "Ajustes",
         "logout": "Cerrar sesión",
+        "referAndEarn": "Recomienda y gana",
+        "earnReferral": "Gana 1.000 €",
         "spaceUsed": "{{space}}% espacio usado"
       },
       "tabs": {

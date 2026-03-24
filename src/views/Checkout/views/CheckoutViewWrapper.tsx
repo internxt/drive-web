@@ -30,6 +30,7 @@ import { CRYPTO_PAYMENT_DIALOG_KEY, CryptoPaymentDialog } from 'views/Checkout/c
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 import { generateCaptchaToken } from 'utils/generateCaptchaToken';
 import gaService from 'app/analytics/ga.service';
+import referralService from 'services/referral.service';
 import metaService from 'app/analytics/meta.service';
 import { useCheckoutQueryParams } from '../hooks/useCheckoutQueryParams';
 import { useInitializeCheckout } from '../hooks/useInitializeCheckout';
@@ -127,6 +128,7 @@ const CheckoutViewWrapper = () => {
       document.cookie = `gclid=${gclid}; expires=${expiryDate.toUTCString()}; path=/`;
       localStorageService.set(STORAGE_KEYS.GCLID, gclid);
     }
+    referralService.captureUcc();
   }, []);
 
   useEffect(() => {
@@ -282,8 +284,10 @@ const CheckoutViewWrapper = () => {
 
     const captchaToken = await generateCaptchaToken();
 
+    let authenticatedUser = user;
+
     if (authMethod !== 'userIsSignedIn') {
-      await onAuthenticateUser({
+      const result = await onAuthenticateUser({
         email,
         password,
         authMethod,
@@ -295,6 +299,10 @@ const CheckoutViewWrapper = () => {
           setIsUserPaying(false);
         },
       });
+
+      if (result) {
+        authenticatedUser = result;
+      }
     }
 
     try {
@@ -316,6 +324,15 @@ const CheckoutViewWrapper = () => {
       }
 
       const customerToken = await generateCaptchaToken();
+      const ucc = referralService.getStoredUcc();
+      const userUuid = authenticatedUser?.uuid;
+      const hasMetadata = ucc || userUuid;
+      const metadata = hasMetadata
+        ? {
+            ...(ucc && { cello_ucc: ucc }),
+            ...(userUuid && { new_user_id: userUuid }),
+          }
+        : undefined;
       const { customerId, token } = await checkoutService.createCustomer({
         customerName,
         lineAddress1: address?.line1,
@@ -325,6 +342,7 @@ const CheckoutViewWrapper = () => {
         city: address?.city,
         companyVatId,
         captchaToken: customerToken,
+        metadata,
       });
 
       if (paramMobileToken) {

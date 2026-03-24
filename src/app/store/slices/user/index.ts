@@ -73,10 +73,10 @@ export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean 
       if (isExpired || forceRefresh) {
         const { user, newToken } = await userService.refreshUserData(currentUser.uuid);
 
-        const { emailVerified, name, lastname, uuid } = user;
+        const { emailVerified, name, lastname, uuid, createdAt } = user;
         const avatar = await refreshAvatar(uuid);
 
-        dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname }));
+        dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname, createdAt }));
         dispatch(userActions.setToken(newToken));
       }
     } catch (err) {

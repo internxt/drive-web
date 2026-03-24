@@ -425,7 +425,11 @@
     "shared": "Shared",
     "recents": "Recents",
     "trash": "Trash",
-    "desktop": "Desktop"
+    "desktop": "Desktop",
+    "referralBanner": {
+      "message": "Remember! Earn up to €1,000 by referring a friend",
+      "cta": "Refer and Earn"
+    }
   },
   "views": {
     "recents": {
@@ -456,6 +460,8 @@
         "downloadApp": "Download app",
         "settings": "Settings",
         "logout": "Log out",
+        "referAndEarn": "Refer and Earn",
+        "earnReferral": "Earn €1,000",
         "spaceUsed": "{{space}}% space used"
       },
       "tabs": {

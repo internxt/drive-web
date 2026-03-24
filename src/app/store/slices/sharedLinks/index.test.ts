@@ -47,6 +47,11 @@ describe('Encryption and Decryption', () => {
       generateCaptchaToken: vi.fn().mockResolvedValue('mock-captcha-token'),
     }));
 
+    vi.mock('services/referral.service', () => ({
+      default: {
+        trackShareCreated: vi.fn(),
+      },
+    }));
     vi.mock('services/error.service', () => ({
       default: {
         castError: vi
