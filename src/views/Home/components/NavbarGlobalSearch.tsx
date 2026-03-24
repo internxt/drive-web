@@ -402,23 +402,22 @@ const Navbar = (props: NavbarProps) => {
       </div>
 
       <div className="flex shrink-0 items-center">
-        {isReferralEligible && (
-          <button
-            cello-launcher
-            onClick={() => {
-              referralService.openPanel(
-                { name: user.name, lastname: user.lastname, email: user.email },
-                i18next.language,
-              );
-            }}
-            className="flex h-10 cursor-pointer items-center gap-2 border-none bg-transparent px-3"
-          >
-            <Gift size={20} className="text-primary" />
-            <span className="text-sm font-medium whitespace-nowrap text-primary">
-              {translate('views.account.popover.earnReferral')}
-            </span>
-          </button>
-        )}
+        <button
+          id="cello-launcher"
+          onClick={() => {
+            referralService.openPanel(
+              { name: user.name, lastname: user.lastname, email: user.email, emailVerified: user.emailVerified },
+              i18next.language,
+            );
+          }}
+          style={{ display: isReferralEligible ? 'flex' : 'none', position: 'relative' }}
+          className="flex h-10 cursor-pointer items-center gap-2 border-none bg-transparent px-3"
+        >
+          <Gift size={20} className="text-primary" />
+          <span className="text-sm font-medium whitespace-nowrap text-primary">
+            {translate('views.account.popover.earnReferral')}
+          </span>
+        </button>
         <button
           onClick={() => {
             navigationService.openPreferencesDialog({

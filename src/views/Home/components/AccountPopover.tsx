@@ -118,6 +118,7 @@ export default function AccountPopover({ className = '', user, plan }: Readonly<
                 name: user.name,
                 lastname: user.lastname,
                 email: user.email,
+                emailVerified: user.emailVerified,
               },
               i18next.language,
             );

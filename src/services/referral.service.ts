@@ -3,6 +3,8 @@ import envService from './env.service';
 import dateService from './date.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 import { loadExternalScript } from 'utils/loadExternalScript';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { userService } from 'services';
 
 const MAX_BANNER_SHOW_COUNT = 2;
 const MIN_FILE_UPLOADS_FOR_BANNER = 3;
@@ -13,6 +15,7 @@ interface ReferralUser {
   name: string;
   lastname: string;
   email: string;
+  emailVerified: boolean;
 }
 
 const UCC_STORAGE_KEY = 'cello_ucc';
@@ -119,6 +122,24 @@ const loadAndBoot = async (user: ReferralUser, language?: string): Promise<void>
 };
 
 const openPanel = async (user: ReferralUser, language?: string): Promise<void> => {
+  // TODO: Uncomment this when cello team finishes testing
+  // if (!user.emailVerified) {
+  //   const toastId = notificationsService.show({
+  //     text: 'Verify your email to be elegible to referrals. Check your inbox or',
+  //     type: ToastType.Info,
+  //     duration: Infinity,
+  //     containerClassName: 'w-100 border-primary/30 bg-primary/5 dark:bg-primary/10',
+  //     action: {
+  //       text: 'resend verification',
+  //       onClick: () => {
+  //         userService.sendVerificationEmail();
+  //         notificationsService.dismiss(toastId);
+  //       },
+  //     },
+  //   });
+  //   return;
+  // }
+
   await loadAndBoot(user, language);
   if (!globalThis.Cello) return;
   markReferralModalOpened();
@@ -246,6 +267,8 @@ const changeLanguage = async (language: string): Promise<void> => {
 };
 
 const boot = async (user: ReferralUser, language?: string): Promise<void> => {
+  if (!user.emailVerified) return;
+
   try {
     await loadAndBoot(user, language);
   } catch (error) {
@@ -253,24 +276,24 @@ const boot = async (user: ReferralUser, language?: string): Promise<void> => {
   }
 };
 
-const MIN_ACCOUNT_AGE_DAYS = 30;
+//const MIN_ACCOUNT_AGE_DAYS = 30;
 
 const isEligibleForReferral = async (accountCreatedAt?: Date): Promise<boolean> => {
-  const isAccountTooNew = accountCreatedAt && dateService.getDaysSince(accountCreatedAt) < MIN_ACCOUNT_AGE_DAYS;
-  console.log(
-    `[Referral] Checking eligibility: accountCreatedAt=${accountCreatedAt}, isAccountTooNew=${isAccountTooNew}`,
-  );
-  if (isAccountTooNew) {
-    return false;
-  }
-  return true;
-
-  // try {
-  //   const { isEnabled } = await getReferralsClient().isReferralEnabled();
-  //   return isEnabled;
-  // } catch {
+  // TODO: Uncomment this when cello team finishes testing
+  // const isAccountTooNew = accountCreatedAt && dateService.getDaysSince(accountCreatedAt) < MIN_ACCOUNT_AGE_DAYS;
+  // console.log(
+  //   `[Referral] Checking eligibility: accountCreatedAt=${accountCreatedAt}, isAccountTooNew=${isAccountTooNew}`,
+  // );
+  // if (isAccountTooNew) {
   //   return false;
   // }
+
+  try {
+    const { isEnabled } = await getReferralsClient().isReferralEnabled();
+    return isEnabled;
+  } catch {
+    return false;
+  }
 };
 
 const referralService = {

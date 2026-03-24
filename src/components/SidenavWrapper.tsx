@@ -67,7 +67,10 @@ const SidenavWrapper = ({
 
   useEffect(() => {
     if (user) {
-      referralService.boot({ name: user.name, lastname: user.lastname, email: user.email }, i18n.language);
+      referralService.boot(
+        { name: user.name, lastname: user.lastname, email: user.email, emailVerified: user.emailVerified },
+        i18n.language,
+      );
       dispatch(
         referralsThunks.fetchIsEligibleThunk({
           accountCreatedAt: user.createdAt ? new Date(user.createdAt) : undefined,
@@ -109,7 +112,10 @@ const SidenavWrapper = ({
 
   const handleReferralClick = () => {
     if (user) {
-      referralService.openPanel({ name: user.name, lastname: user.lastname, email: user.email }, i18n.language);
+      referralService.openPanel(
+        { name: user.name, lastname: user.lastname, email: user.email, emailVerified: user.emailVerified },
+        i18n.language,
+      );
     }
   };
 
