@@ -9,6 +9,7 @@ import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types/types'
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Sidenav } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { HUNDRED_TB } from 'app/core/constants';
@@ -20,6 +21,9 @@ import WorkspaceSelectorSkeleton from 'views/Home/components/WorkspaceSelectorSk
 import { useSuiteLauncher } from 'hooks/useSuiteLauncher';
 import { useSidenavNavigation } from 'hooks/useSidenavNavigation';
 import { uiActions } from 'app/store/slices/ui';
+import ReferralBanner from './ReferralBanner';
+import referralService from 'services/referral.service';
+import { referralsThunks } from 'app/store/slices/referrals';
 
 interface SidenavWrapperProps {
   user: UserSettings | undefined;
@@ -39,6 +43,7 @@ const SidenavWrapper = ({
   isLoadingPlanUsage,
 }: SidenavWrapperProps) => {
   const { translate } = useTranslationContext();
+  const { i18n } = useTranslation();
   const dispatch = useAppDispatch();
   const isLoadingCredentials = useAppSelector((state: RootState) => state.workspaces.isLoadingCredentials);
   const isLoadingBusinessLimitAndUsage = useAppSelector(
@@ -53,10 +58,30 @@ const SidenavWrapper = ({
     const savedState = sessionStorage.getItem('sidenav-collapsed');
     return savedState === 'true';
   });
+  const isReferralEligible = useAppSelector((state: RootState) => state.referrals.isEligible);
 
   useEffect(() => {
     dispatch(sharedThunks.getPendingInvitations());
+    referralService.trackAppOpenDay();
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      referralService.boot(
+        { name: user.name, lastname: user.lastname, email: user.email, emailVerified: user.emailVerified },
+        i18n.language,
+      );
+      dispatch(
+        referralsThunks.fetchIsEligibleThunk({
+          accountCreatedAt: user.createdAt ? new Date(user.createdAt) : undefined,
+        }),
+      );
+    }
+  }, [user]);
+
+  useEffect(() => {
+    referralService.changeLanguage(i18n.language);
+  }, [i18n.language]);
 
   const onLogoClicked = () => {
     navigationService.push(AppView.Drive, {}, workspaceUuid);
@@ -85,8 +110,17 @@ const SidenavWrapper = ({
     });
   };
 
+  const handleReferralClick = () => {
+    if (user) {
+      referralService.openPanel(
+        { name: user.name, lastname: user.lastname, email: user.email, emailVerified: user.emailVerified },
+        i18n.language,
+      );
+    }
+  };
+
   return (
-    <div className="flex flex-col h-screen z-20">
+    <div className="relative flex flex-col h-screen z-20">
       <Sidenav
         header={{
           logo: logo,
@@ -120,6 +154,11 @@ const SidenavWrapper = ({
           isLoading: isLoadingPlanUsage && isLoadingPlanLimit && isLoadingBusinessLimitAndUsage,
         }}
       />
+      {isReferralEligible && (
+        <div className="absolute bottom-24 left-0 right-0">
+          <ReferralBanner onCtaClick={handleReferralClick} isCollapsed={isCollapsed} />
+        </div>
+      )}
     </div>
   );
 };

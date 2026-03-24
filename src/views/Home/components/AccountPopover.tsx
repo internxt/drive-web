@@ -32,6 +32,7 @@ export default function AccountPopover({ className = '', user, plan }: Readonly<
   const usage = memberId ? plan.businessPlanUsage : plan.planUsage;
   const limit = memberId ? plan.businessPlanLimit : plan.planLimit;
 
+  const isReferralEligible = useAppSelector((state: RootState) => state.referrals.isEligible);
   const { translate } = useTranslationContext();
   const name = user?.name ?? '';
   const lastName = user?.lastname ?? '';
@@ -108,21 +109,25 @@ export default function AccountPopover({ className = '', user, plan }: Readonly<
         <Gear size={20} />
         <p className="ml-3">{translate('views.account.popover.settings')}</p>
       </button>
-      <Item
-        onClick={() => {
-          referralService.openPanel(
-            {
-              name: user.name,
-              lastname: user.lastname,
-              email: user.email,
-            },
-            i18next.language,
-          );
-        }}
-      >
-        <Gift size={20} />
-        <p className="ml-3 truncate">{translate('views.account.popover.referAndEarn')}</p>
-      </Item>
+      {isReferralEligible && (
+        <Item
+          cello-launcher
+          onClick={() => {
+            referralService.openPanel(
+              {
+                name: user.name,
+                lastname: user.lastname,
+                email: user.email,
+                emailVerified: user.emailVerified,
+              },
+              i18next.language,
+            );
+          }}
+        >
+          <Gift className="shrink-0" size={20} />
+          <p className="ml-3 truncate">{translate('views.account.popover.referAndEarn')}</p>
+        </Item>
+      )}
       {separator}
       <Item onClick={onLogout}>
         <SignOut size={20} />

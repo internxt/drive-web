@@ -8,6 +8,7 @@ import navigationService from 'services/navigation.service';
 import { AppView } from 'app/core/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { UserRoles } from 'app/share/types';
+import referralService from 'services/referral.service';
 import { t } from 'i18next';
 import userService from 'services/user.service';
 import { hybridEncryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
@@ -79,6 +80,7 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
         persistPreviousSharing: true,
       });
 
+      referralService.trackShareCreated();
       notificationsService.show({
         text: t('modals.shareModal.invite.successSentInvitation', { email: payload.sharedWith }),
         type: ToastType.Success,
