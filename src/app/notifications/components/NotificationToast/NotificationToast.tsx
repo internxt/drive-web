@@ -59,7 +59,7 @@ const NotificationToast = ({
       show={visible}
     >
       <div
-        className={`flex items-center rounded-lg border p-3 ${containerClassName ? containerClassName : 'max-w-xl border-gray-10 bg-surface dark:bg-gray-5'}`}
+        className={`flex items-center rounded-lg border p-3 ${containerClassName || 'max-w-xl border-gray-10 bg-surface dark:bg-gray-5'}`}
         style={{ minWidth: '300px' }}
       >
         {type === ToastType.Loading && <Loader classNameLoader="mr-1.5 h-6 w-6" />}
@@ -79,9 +79,9 @@ const NotificationToast = ({
                   {action.text}
                 </NavLink>
               ) : (
-                <span role="button" onClick={action.onClick} className="ml-1 cursor-pointer font-medium text-primary">
+                <button onClick={action.onClick} className="ml-1 cursor-pointer font-medium text-primary">
                   {action.text}
-                </span>
+                </button>
               ))}
           </p>
           {requestId && type === ToastType.Error && (
