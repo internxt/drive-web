@@ -35,11 +35,16 @@ const initializeThunk = createAsyncThunk<void, void, { state: RootState }>(
 
     const user = userSelectors.getUser(getState());
     if (isAuthenticated && user) {
-      referralService.boot(
-        { name: user.name, lastname: user.lastname, email: user.email, emailVerified: user.emailVerified },
-        i18next.language,
+      const result = await dispatch(
+        fetchIsEligibleThunk({ accountCreatedAt: user.createdAt ? new Date(user.createdAt) : undefined }),
       );
-      await dispatch(fetchIsEligibleThunk({ accountCreatedAt: user.createdAt ? new Date(user.createdAt) : undefined }));
+      const isEligible = result.payload as boolean;
+      if (isEligible) {
+        await referralService.boot(
+          { name: user.name, lastname: user.lastname, email: user.email, emailVerified: user.emailVerified },
+          i18next.language,
+        );
+      }
     }
   },
 );
@@ -124,6 +129,9 @@ export const referralsSlice = createSlice({
       })
       .addCase(fetchIsEligibleThunk.fulfilled, (state, action) => {
         state.isEligible = action.payload;
+      })
+      .addCase(fetchIsEligibleThunk.rejected, (state) => {
+        state.isEligible = false;
       });
   },
 });
