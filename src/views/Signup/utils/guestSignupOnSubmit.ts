@@ -7,7 +7,6 @@ import { parseAndDecryptUserKeys } from 'app/crypto/services/keys.service';
 import { userActions, userThunks } from 'app/store/slices/user';
 import { productsThunks } from 'app/store/slices/products';
 import { planThunks } from 'app/store/slices/plan';
-import { referralsThunks } from 'app/store/slices/referrals';
 import { AppDispatch } from 'app/store';
 
 interface GuestSignupOnSubmitParams {
@@ -77,7 +76,6 @@ export const guestSignupOnSubmit = async ({
     await dispatch(userThunks.initializeUserThunk());
     dispatch(productsThunks.initializeThunk());
     dispatch(planThunks.initializeThunk());
-    dispatch(referralsThunks.initializeThunk());
 
     return navigationService.push(redirectTo);
   } catch (err: unknown) {
