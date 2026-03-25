@@ -393,7 +393,7 @@
     "trash": "垃圾箱",
     "desktop": "桌面应用程序",
     "referralBanner": {
-      "message": "别忘了！推荐朋友最高可赚取 €100",
+      "message": "每次推荐可赚取10%佣金！",
       "cta": "推荐赚取"
     }
   },

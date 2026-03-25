@@ -395,7 +395,7 @@
     "trash": "垃圾桶",
     "desktop": "桌面",
     "referralBanner": {
-      "message": "別忘了！推薦朋友最高可賺取 €100",
+      "message": "每次推薦可賺取10%佣金！",
       "cta": "推薦賺取"
     }
   },
