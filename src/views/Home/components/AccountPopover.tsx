@@ -111,7 +111,6 @@ export default function AccountPopover({ className = '', user, plan }: Readonly<
       </button>
       {isReferralEligible && (
         <Item
-          cello-launcher
           onClick={() => {
             referralService.openPanel(
               {

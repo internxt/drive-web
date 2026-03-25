@@ -16,12 +16,17 @@ vi.mock('./date.service', () => ({
   },
 }));
 
+const mockRefreshUser = vi.fn().mockResolvedValue({ user: { emailVerified: true } });
+
 vi.mock('app/core/factory/sdk', () => ({
   SdkFactory: {
     getNewApiInstance: vi.fn(() => ({
       createReferralsClient: vi.fn(() => ({
         createReferralToken: vi.fn().mockResolvedValue({ token: 'mock-token' }),
         isReferralEnabled: vi.fn().mockResolvedValue({ isEnabled: true }),
+      })),
+      createUsersClient: vi.fn(() => ({
+        refreshUser: mockRefreshUser,
       })),
     })),
   },
@@ -169,6 +174,25 @@ describe('referralService', () => {
     });
   });
 
+  describe('isEligibleForReferral', () => {
+    it('when no account creation date is provided, then the user is eligible', async () => {
+      expect(await referralService.isEligibleForReferral()).toBe(true);
+    });
+
+    it.each([
+      { scenario: 'when the account is older than 30 days, then the user is eligible', days: 31, expected: true },
+      { scenario: 'when the account is exactly 30 days old, then the user is eligible', days: 30, expected: true },
+      {
+        scenario: 'when the account is younger than 30 days, then the user is not eligible',
+        days: 15,
+        expected: false,
+      },
+    ])('$scenario', async ({ days, expected }) => {
+      vi.mocked(dateService.getDaysSince).mockReturnValue(days);
+
+      expect(await referralService.isEligibleForReferral(new Date())).toBe(expected);
+    });
+  });
   describe('tracking events', () => {
     it.each([
       {
@@ -373,6 +397,38 @@ describe('referralService', () => {
 
       const saved = localStorage.getItem(BANNER_STATE_KEY);
       expect(saved).toBeNull();
+    });
+
+    it('when the API returns emailVerified true but the passed-in value is false, then the panel opens', async () => {
+      setupCelloBootFlow();
+      const mockCello = vi.fn().mockResolvedValue(undefined);
+      globalThis.Cello = mockCello;
+      mockRefreshUser.mockResolvedValueOnce({ user: { emailVerified: true } });
+
+      const unverifiedUser = { ...mockUser, emailVerified: false };
+      await referralService.openPanel(unverifiedUser);
+
+      expect(mockCello).toHaveBeenCalledWith('open');
+    });
+
+    it('when the API call fails, then it falls back to the passed-in emailVerified value', async () => {
+      mockRefreshUser.mockRejectedValueOnce(new Error('network error'));
+
+      const unverifiedUser = { ...mockUser, emailVerified: false };
+      await referralService.openPanel(unverifiedUser);
+
+      expect(globalThis.Cello).toBeUndefined();
+    });
+
+    it('when the email is not verified and the referral widget is loaded, then the panel is closed', async () => {
+      const mockCello = vi.fn().mockResolvedValue(undefined);
+      globalThis.Cello = mockCello;
+      mockRefreshUser.mockResolvedValueOnce({ user: { emailVerified: false } });
+
+      await referralService.openPanel(mockUser);
+
+      expect(mockCello).toHaveBeenCalledWith('close');
+      expect(mockCello).not.toHaveBeenCalledWith('open');
     });
   });
 });

@@ -410,7 +410,7 @@
     "trash": "Papelera",
     "desktop": "Escritorio",
     "referralBanner": {
-      "message": "¡Recuerda! Gana hasta 1.000 € recomendando a un amigo",
+      "message": "¡Recuerda! Gana hasta 100 € recomendando a un amigo",
       "cta": "Recomienda y gana"
     }
   },
@@ -444,7 +444,7 @@
         "settings": "Ajustes",
         "logout": "Cerrar sesión",
         "referAndEarn": "Recomienda y gana",
-        "earnReferral": "Gana 1.000 €",
+        "earnReferral": "Gana 100 €",
         "spaceUsed": "{{space}}% espacio usado"
       },
       "tabs": {

@@ -379,7 +379,7 @@
     "trash": "Corbeille",
     "desktop": "App de bureau",
     "referralBanner": {
-      "message": "N'oubliez pas ! Gagnez jusqu'à 1 000 € en parrainant un ami",
+      "message": "N'oubliez pas ! Gagnez jusqu'à 100 € en parrainant un ami",
       "cta": "Parrainez et gagnez"
     }
   },
@@ -413,7 +413,7 @@
         "settings": "Paramètres",
         "logout": "Déconnexion",
         "referAndEarn": "Parrainez et gagnez",
-        "earnReferral": "Gagnez 1 000 €",
+        "earnReferral": "Gagnez 100 €",
         "spaceUsed": "{{space}}% d'espace utilisé"
       },
       "tabs": {
