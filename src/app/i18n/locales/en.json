@@ -1671,6 +1671,10 @@
     }
   },
   "referrals": {
+    "emailVerification": {
+      "message": "Verify your email to be eligible to referrals. Check your inbox or",
+      "resendVerification": "resend verification"
+    },
     "items": {
       "create-account": "Create an account",
       "install-mobile-app": "Install mobile app and upload a file",

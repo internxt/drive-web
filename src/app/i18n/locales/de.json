@@ -1588,6 +1588,10 @@
     }
   },
   "referrals": {
+    "emailVerification": {
+      "message": "Bestätige deine E-Mail-Adresse, um für Empfehlungen berechtigt zu sein. Überprüfe deinen Posteingang oder",
+      "resendVerification": "Bestätigung erneut senden"
+    },
     "items": {
       "create-account": "Erstelle ein Konto",
       "install-mobile-app": "Installiere die mobile App und lade eine Datei hoch",

@@ -420,15 +420,16 @@ describe('referralService', () => {
       expect(globalThis.Cello).toBeUndefined();
     });
 
-    it('when the email is not verified and the referral widget is loaded, then the panel is closed', async () => {
+    it('when email is already verified, then the panel opens', async () => {
       const mockCello = vi.fn().mockResolvedValue(undefined);
       globalThis.Cello = mockCello;
       mockRefreshUser.mockResolvedValueOnce({ user: { emailVerified: false } });
 
       await referralService.openPanel(mockUser);
 
-      expect(mockCello).toHaveBeenCalledWith('close');
-      expect(mockCello).not.toHaveBeenCalledWith('open');
+      expect(mockRefreshUser).not.toHaveBeenCalled();
+      expect(mockCello).toHaveBeenCalledWith('open');
+      expect(mockCello).not.toHaveBeenCalledWith('close');
     });
   });
 });

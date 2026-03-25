@@ -5,6 +5,7 @@ import { SdkFactory } from 'app/core/factory/sdk';
 import { loadExternalScript } from 'utils/loadExternalScript';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { userService } from 'services';
+import { t } from 'i18next';
 
 const MAX_BANNER_SHOW_COUNT = 2;
 const MIN_FILE_UPLOADS_FOR_BANNER = 3;
@@ -132,16 +133,15 @@ const loadAndBoot = async (user: ReferralUser, language?: string): Promise<void>
 };
 
 const openPanel = async (user: ReferralUser, language?: string): Promise<void> => {
-  const isEmailVerified = await fetchEmailVerifiedStatus(user.emailVerified);
+  const isEmailVerified = user.emailVerified || (await fetchEmailVerifiedStatus(user.emailVerified));
 
   if (!isEmailVerified) {
     const toastId = notificationsService.show({
-      text: 'Verify your email to be elegible to referrals. Check your inbox or',
+      text: t('referrals.emailVerification.message'),
       type: ToastType.Info,
-      duration: Infinity,
       containerClassName: 'w-100 border-primary/30 bg-primary/5 dark:bg-primary/10',
       action: {
-        text: 'resend verification',
+        text: t('referrals.emailVerification.resendVerification'),
         onClick: () => {
           userService.sendVerificationEmail();
           notificationsService.dismiss(toastId);

@@ -1701,6 +1701,10 @@
     }
   },
   "referrals": {
+    "emailVerification": {
+      "message": "Verifica la tua email per essere idoneo ai referral. Controlla la tua casella di posta o",
+      "resendVerification": "rinvia verifica"
+    },
     "items": {
       "create-account": "Creazione dell’account",
       "install-mobile-app": "Installa l’app mobile e carica un file",

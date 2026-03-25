@@ -1648,6 +1648,10 @@
     }
   },
   "referrals": {
+    "emailVerification": {
+      "message": "Verifica tu correo electrónico para ser elegible para referidos. Revisa tu bandeja de entrada o",
+      "resendVerification": "reenviar verificación"
+    },
     "items": {
       "create-account": "Crea una cuenta",
       "install-mobile-app": "Instala la app móvil y sube un archivo",

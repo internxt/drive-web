@@ -1636,6 +1636,10 @@
     }
   },
   "referrals": {
+    "emailVerification": {
+      "message": "请验证您的电子邮件以获得推荐资格。请检查您的收件箱或",
+      "resendVerification": "重新发送验证"
+    },
     "items": {
       "create-account": "创建一个账户",
       "install-mobile-app": "安装移动应用程序并上传一个文件",

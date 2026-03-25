@@ -1601,6 +1601,10 @@
     }
   },
   "referrals": {
+    "emailVerification": {
+      "message": "請驗證您的電子郵件以獲得推薦資格。請檢查您的收件匣或",
+      "resendVerification": "重新發送驗證"
+    },
     "items": {
       "create-account": "創建帳戶",
       "install-mobile-app": "安裝移動應用程序並上傳文件",
