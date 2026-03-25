@@ -246,8 +246,6 @@ const changeLanguage = async (language: string): Promise<void> => {
 };
 
 const boot = async (user: ReferralUser, language?: string): Promise<void> => {
-  if (!user.emailVerified) return;
-
   try {
     await loadAndBoot(user, language);
   } catch (error) {
