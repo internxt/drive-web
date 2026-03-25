@@ -1906,13 +1906,13 @@
   version "1.0.2"
   resolved "https://codeload.github.com/internxt/prettier-config/tar.gz/9fa74e9a2805e1538b50c3809324f1c9d0f3e4f9"
 
-"@internxt/sdk@=1.15.1":
-  version "1.15.1"
-  resolved "https://registry.yarnpkg.com/@internxt/sdk/-/sdk-1.15.1.tgz#69ad13a3c8cacbd929f025f24adc6fd2d1faf8ef"
-  integrity sha512-CEH/fNjDWenmFAl8NHaykb85AY4uEZDO5pA2ap8/GD4SXmxC3rcWsKnMsYO9jc8R2vpOPxmE3oBlNqOVcI/llQ==
+"@internxt/sdk@=1.15.6":
+  version "1.15.6"
+  resolved "https://registry.yarnpkg.com/@internxt/sdk/-/sdk-1.15.6.tgz#f895cf12b160fd23c386e6d4d007ec29e51d9158"
+  integrity sha512-DRGlj2XArmBNa9wM55MbR9E4scNPDer+emtrugG1MSZvP/YOSv5XOes5j/df5ZUgMyRs9G0O7hwCtjn9XvW9YA==
   dependencies:
-    axios "1.13.5"
-    internxt-crypto "0.0.13"
+    axios "1.13.6"
+    internxt-crypto "0.0.14"
 
 "@internxt/ui@=0.1.8":
   version "0.1.8"
@@ -2039,6 +2039,11 @@
     is-node-process "^1.2.0"
     outvariant "^1.4.3"
     strict-event-emitter "^0.5.1"
+
+"@noble/ciphers@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@noble/ciphers/-/ciphers-2.1.1.tgz#c8c74fcda8c3d1f88797d0ecda24f9fc8b92b052"
+  integrity sha512-bysYuiVfhxNJuldNXlFEitTVdNnYUc+XNJZd7Qm2a5j1vZHgY+fazadNFWFaMK/2vye0JVlxV3gHmC0WDfAOQw==
 
 "@noble/curves@~2.0.0":
   version "2.0.1"
@@ -4009,7 +4014,16 @@ available-typed-arrays@^1.0.7:
   dependencies:
     possible-typed-array-names "^1.0.0"
 
-axios@1.13.5, axios@^1.13.5:
+axios@1.13.6:
+  version "1.13.6"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.13.6.tgz#c3f92da917dc209a15dd29936d20d5089b6b6c98"
+  integrity sha512-ChTCHMouEe2kn713WHbQGcuYrr6fXTBiu460OTwWrWob16g1bXn4vtz07Ope7ewMozJAnEquLk5lWQWtBig9DQ==
+  dependencies:
+    follow-redirects "^1.15.11"
+    form-data "^4.0.5"
+    proxy-from-env "^1.1.0"
+
+axios@^1.13.5:
   version "1.13.5"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.13.5.tgz#5e464688fa127e11a660a2c49441c009f6567a43"
   integrity sha512-cz4ur7Vb0xS4/KUN0tPWe44eqxrIu31me+fbang3ijiNscE129POzipJJA6zniq2C/Z6sJCjMimjS8Lc/GAs8Q==
@@ -6349,11 +6363,12 @@ ini@^1.3.5, ini@~1.3.0:
   resolved "https://registry.yarnpkg.com/ini/-/ini-1.3.8.tgz#a29da425b48806f34767a4efce397269af28432c"
   integrity sha512-JV/yugV2uzW5iMRSiZAyDtQd+nxtUnjeLt0acNdw98kKLrvuRVyB80tsREOE7yvGVgalhZ6RNXCmEHkUKBKxew==
 
-internxt-crypto@0.0.13:
-  version "0.0.13"
-  resolved "https://registry.yarnpkg.com/internxt-crypto/-/internxt-crypto-0.0.13.tgz#90c83828a34667ecf6938ad7c22d94c9f0d9808b"
-  integrity sha512-V8Epf4oFZQZwMyIt8mcw7w36M+tryQ9VcfaiKtcruNW/129bawZnPXEeoOfLvAV+9OYlY2ZAwIYP0EtOD2ec6g==
+internxt-crypto@0.0.14:
+  version "0.0.14"
+  resolved "https://registry.yarnpkg.com/internxt-crypto/-/internxt-crypto-0.0.14.tgz#1290b2a70190c23d25b83483de8200d9eafae00f"
+  integrity sha512-gIvqgou0r86kSk6x2t6pxAh9dJiob/sQ1Y3TdGnAF4Qq2RD++4Aq1b6NY2UqfUYV4vPhWsd2BkFS71jAyVrXpA==
   dependencies:
+    "@noble/ciphers" "^2.1.1"
     "@noble/hashes" "^2.0.1"
     "@noble/post-quantum" "^0.5.2"
     "@scure/bip39" "^2.0.1"
