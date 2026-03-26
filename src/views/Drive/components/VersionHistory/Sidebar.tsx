@@ -28,7 +28,7 @@ import {
   VersionItem,
 } from './components';
 
-type VersionInfo = { id: string; updatedAt: string };
+type VersionInfo = { updatedAt: string };
 
 const EMPTY_ARRAY: FileVersion[] = [];
 
@@ -56,7 +56,6 @@ const Sidebar = () => {
   const [selectedAutosaveVersions, setSelectedAutosaveVersions] = useState<Set<string>>(new Set());
   const [isBatchDeleteMode, setIsBatchDeleteMode] = useState(false);
   const [currentVersion, setCurrentVersion] = useState<VersionInfo>({
-    id: '',
     updatedAt: '',
   });
 
@@ -88,7 +87,6 @@ const Sidebar = () => {
   useEffect(() => {
     if (item) {
       setCurrentVersion({
-        id: item.uuid,
         updatedAt: item.updatedAt,
       });
     }
@@ -191,10 +189,9 @@ const Sidebar = () => {
     if (!versionToRestore || !item) return;
 
     try {
-      const restoredVersion = await fileVersionService.restoreVersion(item.uuid, versionToRestore.id);
+      await fileVersionService.restoreVersion(item.uuid, versionToRestore.id);
 
       setCurrentVersion({
-        id: restoredVersion.fileId as string,
         updatedAt: new Date().toISOString(),
       });
 
@@ -263,12 +260,7 @@ const Sidebar = () => {
               <VersionHistorySkeleton />
             ) : (
               <>
-                <CurrentVersionItem
-                  key={currentVersion.id}
-                  createdAt={currentVersion.updatedAt}
-                  userName={userName}
-                  userAvatar={userAvatar}
-                />
+                <CurrentVersionItem createdAt={currentVersion.updatedAt} userName={userName} userAvatar={userAvatar} />
 
                 <AutosaveSection
                   totalVersionsCount={totalVersionsCount}
