@@ -5,7 +5,7 @@ import UilDesktop from '@iconscout/react-unicons/icons/uil-desktop';
 import dateService from 'services/date.service';
 import sizeService from '../../../app/drive/services/size.service';
 import { Device } from '@internxt/sdk/dist/drive/backups/types';
-import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
+import { DriveFolderData } from 'app/drive/types';
 
 type Item = (Device & { name: string; size: number }) | (DriveFolderData & { size: number });
 

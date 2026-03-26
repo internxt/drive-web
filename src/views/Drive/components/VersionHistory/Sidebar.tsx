@@ -1,32 +1,32 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { FileVersion } from '@internxt/sdk/dist/drive/storage/types';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { uiActions } from 'app/store/slices/ui';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import storageSelectors from 'app/store/slices/storage/storage.selectors';
-import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
-import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-import navigationService from 'services/navigation.service';
-import {
-  Header,
-  CurrentVersionItem,
-  VersionItem,
-  AutosaveSection,
-  VersionActionDialog,
-  VersionHistorySkeleton,
-  LockedFeatureModal,
-} from './components';
-import fileVersionService from 'views/Drive/services/fileVersion.service';
-import errorService from 'services/error.service';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import {
   fetchFileVersionsThunk,
   fetchVersionLimitsThunk,
   fileVersionsActions,
   fileVersionsSelectors,
 } from 'app/store/slices/fileVersions';
+import storageSelectors from 'app/store/slices/storage/storage.selectors';
+import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
+import { uiActions } from 'app/store/slices/ui';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getDaysUntilExpiration } from 'services/date.service';
-import { FileVersion } from '@internxt/sdk/dist/drive/storage/types';
+import errorService from 'services/error.service';
+import navigationService from 'services/navigation.service';
+import fileVersionService from 'views/Drive/services/fileVersion.service';
+import {
+  AutosaveSection,
+  CurrentVersionItem,
+  Header,
+  LockedFeatureModal,
+  VersionActionDialog,
+  VersionHistorySkeleton,
+  VersionItem,
+} from './components';
 
 type VersionInfo = { id: string; updatedAt: string };
 
@@ -88,7 +88,7 @@ const Sidebar = () => {
   useEffect(() => {
     if (item) {
       setCurrentVersion({
-        id: item.fileId,
+        id: item.uuid,
         updatedAt: item.updatedAt,
       });
     }

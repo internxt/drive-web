@@ -1,6 +1,5 @@
-import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import backupsService from '../services/backups.service';
-import { DriveItemData, DriveFolderData as DriveWebFolderData } from 'app/drive/types';
+import { DriveItemData, DriveFolderData } from 'app/drive/types';
 import { AppDispatch } from 'app/store';
 import { useAppSelector } from 'app/store/hooks';
 import { backupsActions, backupsThunks } from '../store/backupsSlice';
@@ -87,7 +86,7 @@ export const useBackupDeviceActions = (
           await dispatch(backupsThunks.deleteDeviceThunk(selectedDevice)).unwrap();
         } else {
           await dispatch(deleteItemsThunk([selectedDevice as DriveItemData])).unwrap();
-          await backupsService.deleteBackupDeviceAsFolder((selectedDevice as DriveWebFolderData).uuid);
+          await backupsService.deleteBackupDeviceAsFolder((selectedDevice as DriveFolderData).uuid);
           await dispatch(backupsThunks.fetchDevicesThunk());
         }
       }

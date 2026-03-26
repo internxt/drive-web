@@ -5,7 +5,7 @@ import { RootState } from 'app/store';
 import { DriveFolderData as DriveWebFolderData, DriveItemData } from 'app/drive/types';
 import { deleteItemsThunk } from 'app/store/slices/storage/storage.thunks/deleteItemsThunk';
 import { backupsThunks } from '../store/backupsSlice';
-import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
+import { DriveFolderData } from 'app/drive/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useState } from 'react';
 import { Dialog } from '@internxt/ui';

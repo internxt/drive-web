@@ -3,7 +3,7 @@ import { DriveItemData } from 'app/drive/types';
 import { AppDispatch } from 'app/store';
 import { backupsActions } from '../store/backupsSlice';
 import { PreviewFileItem } from 'app/share/types';
-import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
+import { DriveFolderData } from 'app/drive/types';
 
 export const useBackupListActions = (
   onBreadcrumbFolderChanges: Dispatch<SetStateAction<DriveFolderData[]>>,

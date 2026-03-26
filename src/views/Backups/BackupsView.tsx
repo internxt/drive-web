@@ -12,7 +12,7 @@ import newStorageService from 'app/drive/services/new-storage.service';
 import { deleteFile } from 'app/drive/services/file.service';
 import { deleteItemsThunk } from 'app/store/slices/storage/storage.thunks/deleteItemsThunk';
 import { DriveItemData } from 'app/drive/types';
-import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
+import { DriveFolderData } from 'app/drive/types';
 import { contextMenuSelectedBackupItems } from 'views/Drive/components/DriveExplorer/components';
 import { useBackupListActions } from './hooks/useBackupListActions';
 import { useBackupDeviceActions } from './hooks/useBackupDeviceActions';
