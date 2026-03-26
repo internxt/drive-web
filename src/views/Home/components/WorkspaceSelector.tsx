@@ -16,7 +16,6 @@ export interface Workspace {
 interface WorkspaceSelectorProps {
   userWorkspace: Workspace;
   workspaces: Workspace[];
-  onCreateWorkspaceButtonClicked: () => void;
   onChangeWorkspace: (workspaceId: string | null) => void;
   selectedWorkspace: Workspace | null;
   setIsDialogOpen: (boolean) => void;
@@ -71,7 +70,6 @@ const WorkspaceCard = ({
 const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
   userWorkspace,
   workspaces,
-  onCreateWorkspaceButtonClicked,
   onChangeWorkspace,
   setIsDialogOpen,
   pendingWorkspacesInvitesLength,
@@ -81,10 +79,12 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
   isCollapsed = false,
 }) => {
   const dropdownRef = useRef<HTMLInputElement>(null);
+  const isWorkspaceDropdownDisabled = workspaces.length === 0;
 
   const { translate } = useTranslationContext();
 
   const toggleDropdown = () => {
+    if (isWorkspaceDropdownDisabled) return;
     setIsWorkspaceSelectorOpen(!isWorkspaceSelectorOpen);
   };
 
@@ -115,7 +115,7 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
       <button
         className={`w-full rounded-lg border border-gray-10 ${
           isWorkspaceSelectorOpen ? 'bg-gray-1' : 'bg-surface'
-        } ${isCollapsed ? 'py-3 px-1.5' : 'p-3'} text-left dark:bg-gray-5`}
+        } ${isCollapsed ? 'py-3 px-1.5' : 'p-3'} ${isWorkspaceDropdownDisabled ? 'cursor-default' : 'cursor-pointer'} text-left dark:bg-gray-5`}
         onClick={toggleDropdown}
         title={isCollapsed ? selectedWorkspace?.name : undefined}
       >
@@ -159,7 +159,7 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
               </p>
             </div>
             <div className="w-4">
-              <CaretUpDown colorRendering="bg-gray-100" weight="bold" size={16} />
+              {!isWorkspaceDropdownDisabled && <CaretUpDown colorRendering="bg-gray-100" weight="bold" size={16} />}
             </div>
           </div>
         )}
