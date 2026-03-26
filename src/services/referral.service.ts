@@ -1,7 +1,11 @@
 import localStorageService from './local-storage.service';
 import envService from './env.service';
+import dateService from './date.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 import { loadExternalScript } from 'utils/loadExternalScript';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { userService } from 'services';
+import { t } from 'i18next';
 
 const MAX_BANNER_SHOW_COUNT = 2;
 const MIN_FILE_UPLOADS_FOR_BANNER = 3;
@@ -62,6 +66,16 @@ const trackAndEmit = (update: Partial<BannerState>): void => {
 
 const getReferralsClient = () => SdkFactory.getNewApiInstance().createReferralsClient();
 
+const fetchEmailVerifiedStatus = async (fallback: boolean): Promise<boolean> => {
+  try {
+    const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
+    const { user } = await usersClient.refreshUser();
+    return user.emailVerified;
+  } catch {
+    return fallback;
+  }
+};
+
 const fetchReferralToken = async (): Promise<string> => {
   const { token } = await getReferralsClient().createReferralToken();
   return token;
@@ -119,6 +133,27 @@ const loadAndBoot = async (user: ReferralUser, language?: string): Promise<void>
 };
 
 const openPanel = async (user: ReferralUser, language?: string): Promise<void> => {
+  const isEmailVerified = user.emailVerified || (await fetchEmailVerifiedStatus(user.emailVerified));
+
+  if (!isEmailVerified) {
+    const toastId = notificationsService.show({
+      text: t('referrals.emailVerification.message'),
+      type: ToastType.Info,
+      containerClassName: 'w-100 border-primary/30 bg-primary/5 dark:bg-primary/10',
+      action: {
+        text: t('referrals.emailVerification.resendVerification'),
+        onClick: () => {
+          userService.sendVerificationEmail();
+          notificationsService.dismiss(toastId);
+        },
+      },
+    });
+    if (globalThis.Cello) {
+      await globalThis.Cello('close');
+    }
+    return;
+  }
+
   await loadAndBoot(user, language);
   if (!globalThis.Cello) return;
   markReferralModalOpened();
@@ -240,6 +275,12 @@ const onTrigger = (listener: () => void): (() => void) => {
   return () => triggerListeners.delete(listener);
 };
 
+const getCustomLauncherLabel = async (): Promise<string | undefined> => {
+  if (!globalThis.Cello) return undefined;
+  const labels = (await globalThis.Cello('getLabels')) as { customLauncher?: string };
+  return labels.customLauncher;
+};
+
 const changeLanguage = async (language: string): Promise<void> => {
   if (!globalThis.Cello) return;
   await globalThis.Cello('changeLanguage', language);
@@ -253,9 +294,14 @@ const boot = async (user: ReferralUser, language?: string): Promise<void> => {
   }
 };
 
-//const MIN_ACCOUNT_AGE_DAYS = 30;
+const MIN_ACCOUNT_AGE_DAYS = 30;
 
 const isEligibleForReferral = async (accountCreatedAt?: Date): Promise<boolean> => {
+  const isAccountTooNew = accountCreatedAt && dateService.getDaysSince(accountCreatedAt) < MIN_ACCOUNT_AGE_DAYS;
+  if (isAccountTooNew) {
+    return false;
+  }
+
   try {
     const { isEnabled } = await getReferralsClient().isReferralEnabled();
     return isEnabled;
@@ -266,6 +312,7 @@ const isEligibleForReferral = async (accountCreatedAt?: Date): Promise<boolean> 
 
 const referralService = {
   boot,
+  getCustomLauncherLabel,
   changeLanguage,
   openPanel,
   captureUcc,

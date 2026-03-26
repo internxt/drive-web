@@ -470,7 +470,7 @@
     "trash": "Cestino",
     "desktop": "Applicazione desktop",
     "referralBanner": {
-      "message": "Ricorda! Guadagna fino a 1.000 € invitando un amico",
+      "message": "Guadagna il 10% di commissione per ogni referral!",
       "cta": "Invita e guadagna"
     }
   },
@@ -504,7 +504,7 @@
         "settings": "Impostazioni",
         "logout": "Disconnettersi",
         "referAndEarn": "Invita e guadagna",
-        "earnReferral": "Guadagna 1.000 €",
+        "earnReferral": "Guadagna 100 €",
         "spaceUsed": "{{space}}% spazio usato"
       },
       "tabs": {
@@ -937,7 +937,7 @@
       },
       "fileCount_one": "{{count}} file",
       "fileCount_other": "{{count}} file",
-      "fileCountMoreThan1000": "Più di 1000 file"
+      "fileCountMoreThan": "{{count}}+ file"
     },
     "versionHistory": {
       "title": "Cronologia versioni",
@@ -1701,6 +1701,10 @@
     }
   },
   "referrals": {
+    "emailVerification": {
+      "message": "Verifica la tua email per essere idoneo ai referral. Controlla la tua casella di posta o",
+      "resendVerification": "rinvia verifica"
+    },
     "items": {
       "create-account": "Creazione dell’account",
       "install-mobile-app": "Installa l’app mobile e carica un file",

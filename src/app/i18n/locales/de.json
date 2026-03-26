@@ -361,7 +361,7 @@
     "trash": "Papierkorb",
     "desktop": "Desktop",
     "referralBanner": {
-      "message": "Denk daran! Verdiene bis zu 1.000 €, indem du einen Freund empfiehlst",
+      "message": "Verdiene 10% Provision für jede Empfehlung!",
       "cta": "Empfehlen und verdienen"
     }
   },
@@ -401,7 +401,7 @@
         "settings": "Einstellungen",
         "logout": "Log-out",
         "referAndEarn": "Empfehlen und verdienen",
-        "earnReferral": "Verdiene 1.000 €",
+        "earnReferral": "Verdiene 100 €",
         "spaceUsed": "{{space}}% Platz verbraucht"
       },
       "tabs": {
@@ -804,7 +804,7 @@
       },
       "fileCount_one": "{{count}} Datei",
       "fileCount_other": "{{count}} Dateien",
-      "fileCountMoreThan1000": "Mehr als 1000 Dateien"
+      "fileCountMoreThan": "{{count}}+ Dateien"
     },
     "versionHistory": {
       "title": "Versionsverlauf",
@@ -1588,6 +1588,10 @@
     }
   },
   "referrals": {
+    "emailVerification": {
+      "message": "Bestätige deine E-Mail-Adresse, um für Empfehlungen berechtigt zu sein. Überprüfe deinen Posteingang oder",
+      "resendVerification": "Bestätigung erneut senden"
+    },
     "items": {
       "create-account": "Erstelle ein Konto",
       "install-mobile-app": "Installiere die mobile App und lade eine Datei hoch",

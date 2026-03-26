@@ -364,6 +364,12 @@ code {
   }
 }
 
+#cello-launcher > div {
+  position: absolute !important;
+  top: 2px;
+  right: 2px;
+}
+
 /* RECAPTCHA */
 .grecaptcha-badge {
   visibility: hidden;
