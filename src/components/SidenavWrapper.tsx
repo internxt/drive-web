@@ -52,6 +52,7 @@ const SidenavWrapper = ({
   const workspaceUuid = selectedWorkspace?.workspaceUser.workspaceId;
   const { itemsNavigation } = useSidenavNavigation();
   const { suiteArray } = useSuiteLauncher();
+  const userUsage = planUsage > 0 ? bytesToString(planUsage) : '0GB';
 
   const [isCollapsed, setIsCollapsed] = useState(() => {
     const savedState = sessionStorage.getItem('sidenav-collapsed');
@@ -131,7 +132,7 @@ const SidenavWrapper = ({
           )
         }
         storage={{
-          usage: bytesToString(planUsage),
+          usage: userUsage,
           limit: bytesToString(planLimit),
           percentage: Math.min((planUsage / planLimit) * 100, 100),
           onUpgradeClick: handleUpgradeClick,
