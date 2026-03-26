@@ -53,7 +53,7 @@ export function parseUserSettingsEnsureKyberKeysAdded(user: UserSettings): UserS
     appSumoDetails: user.appSumoDetails ?? null,
     registerCompleted: user.registerCompleted,
     hasReferralsProgram: user.hasReferralsProgram,
-    createdAt: user.createdAt,
+    createdAt: user.createdAt ?? new Date().toISOString(),
     avatar: user.avatar,
     emailVerified: user.emailVerified,
 

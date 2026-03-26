@@ -4,8 +4,10 @@ import { RootState } from 'app/store';
 import { storageSelectors } from 'app/store/slices/storage';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SearchResult } from '@internxt/sdk/dist/drive/storage/types';
-import { ArrowSquareOut, Gear, MagnifyingGlass, X } from '@phosphor-icons/react';
+import { ArrowSquareOut, Gear, Gift, MagnifyingGlass, X } from '@phosphor-icons/react';
 import AccountPopover from './AccountPopover';
+import referralService from 'services/referral.service';
+import i18next from 'i18next';
 import { PlanState } from 'app/store/slices/plan';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import iconService from 'app/drive/services/icon.service';
@@ -111,6 +113,24 @@ const Navbar = (props: NavbarProps) => {
   const [loadingSearch, setLoadingSearch] = useState<boolean>(false);
   const [typingTimerID, setTypingTimerID] = useState<NodeJS.Timeout | null>(null);
   const doneTypingInterval = 200;
+
+  const isReferralEligible = useAppSelector((state: RootState) => state.referrals.isEligible);
+  const [customLauncherLabel, setCustomLauncherLabel] = useState<string>('');
+
+  useEffect(() => {
+    const fetchLabel = async () => {
+      const label = await referralService.getCustomLauncherLabel();
+      if (label) {
+        setCustomLauncherLabel(label);
+      }
+    };
+
+    if (isReferralEligible) {
+      fetchLabel();
+    }
+  }, [isReferralEligible]);
+
+  const referralLauncherLabel = customLauncherLabel || translate('views.account.popover.earnReferral');
 
   const isGlobalSearch = useAppSelector((state: RootState) => state.ui.isGlobalSearch);
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
@@ -397,7 +417,22 @@ const Navbar = (props: NavbarProps) => {
         )}
       </div>
 
-      <div className="flex shrink-0">
+      <div className="flex shrink-0 items-center">
+        <button
+          id="cello-launcher"
+          data-cello-click="false"
+          onClick={() => {
+            referralService.openPanel(
+              { name: user.name, lastname: user.lastname, email: user.email, emailVerified: user.emailVerified },
+              i18next.language,
+            );
+          }}
+          style={{ display: isReferralEligible ? 'flex' : 'none', position: 'relative' }}
+          className="flex h-10 cursor-pointer items-center gap-2 border-none bg-transparent px-3"
+        >
+          <Gift size={20} className="text-primary" />
+          <span className="text-sm font-medium whitespace-nowrap text-primary">{referralLauncherLabel}</span>
+        </button>
         <button
           onClick={() => {
             navigationService.openPreferencesDialog({

@@ -468,7 +468,11 @@
     "shared": "Condiviso",
     "recents": "Recenti",
     "trash": "Cestino",
-    "desktop": "Applicazione desktop"
+    "desktop": "Applicazione desktop",
+    "referralBanner": {
+      "message": "Guadagna il 10% di commissione per ogni referral!",
+      "cta": "Invita e guadagna"
+    }
   },
   "views": {
     "recents": {
@@ -499,6 +503,8 @@
         "downloadApp": "Scarica l'app",
         "settings": "Impostazioni",
         "logout": "Disconnettersi",
+        "referAndEarn": "Invita e guadagna",
+        "earnReferral": "Guadagna 100 €",
         "spaceUsed": "{{space}}% spazio usato"
       },
       "tabs": {
@@ -1695,6 +1701,10 @@
     }
   },
   "referrals": {
+    "emailVerification": {
+      "message": "Verifica la tua email per essere idoneo ai referral. Controlla la tua casella di posta o",
+      "resendVerification": "rinvia verifica"
+    },
     "items": {
       "create-account": "Creazione dell’account",
       "install-mobile-app": "Installa l’app mobile e carica un file",

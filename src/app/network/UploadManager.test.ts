@@ -49,7 +49,7 @@ vi.mock('app/repositories/DatabaseUploadRepository', () => {
   };
 });
 
-vi.mock('i18next', () => ({ t: () => 'Translation message' }));
+vi.mock('i18next', () => ({ default: { language: 'en' }, t: () => 'Translation message' }));
 
 const openMaxSpaceOccupiedDialogMock = vi.fn();
 

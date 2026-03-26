@@ -359,7 +359,11 @@
     "shared": "Geteilt",
     "recents": "Neueste",
     "trash": "Papierkorb",
-    "desktop": "Desktop"
+    "desktop": "Desktop",
+    "referralBanner": {
+      "message": "Verdiene 10% Provision für jede Empfehlung!",
+      "cta": "Empfehlen und verdienen"
+    }
   },
   "views": {
     "recents": {
@@ -396,6 +400,8 @@
         "downloadApp": "Download App",
         "settings": "Einstellungen",
         "logout": "Log-out",
+        "referAndEarn": "Empfehlen und verdienen",
+        "earnReferral": "Verdiene 100 €",
         "spaceUsed": "{{space}}% Platz verbraucht"
       },
       "tabs": {
@@ -836,7 +842,7 @@
         "userItem": {
           "roles": {
             "owner": "Besitzer",
-            "editor": "Herausgeber",
+            "editor": "Bearbeiter",
             "reader": "Betrachter"
           },
           "remove": "Entfernen"
@@ -870,7 +876,7 @@
           "accept": "Akzeptieren",
           "deny": "Ablehnen",
           "roles": {
-            "editor": "Redakteur",
+            "editor": "Bearbeiter",
             "reader": "Betrachter"
           }
         }
@@ -910,7 +916,7 @@
         "duplicatedEmail": "Die E-Mail-Adresse existiert bereits",
         "email": "E-Mail eingeben",
         "invite": "Einladen",
-        "editor": "Redakteur",
+        "editor": "Bearbeiter",
         "reader": "Betrachter",
         "listUsers": "einzuladende Benutzer",
         "successSentInvitation": "Erfolgreiche Freigabe mit {{email}}",
@@ -1582,6 +1588,10 @@
     }
   },
   "referrals": {
+    "emailVerification": {
+      "message": "Bestätige deine E-Mail-Adresse, um für Empfehlungen berechtigt zu sein. Überprüfe deinen Posteingang oder",
+      "resendVerification": "Bestätigung erneut senden"
+    },
     "items": {
       "create-account": "Erstelle ein Konto",
       "install-mobile-app": "Installiere die mobile App und lade eine Datei hoch",

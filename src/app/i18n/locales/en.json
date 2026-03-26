@@ -425,7 +425,11 @@
     "shared": "Shared",
     "recents": "Recents",
     "trash": "Trash",
-    "desktop": "Desktop"
+    "desktop": "Desktop",
+    "referralBanner": {
+      "message": "Earn 10% commission for every referral!",
+      "cta": "Refer and Earn"
+    }
   },
   "views": {
     "recents": {
@@ -456,6 +460,8 @@
         "downloadApp": "Download app",
         "settings": "Settings",
         "logout": "Log out",
+        "referAndEarn": "Refer and Earn",
+        "earnReferral": "Earn €100",
         "spaceUsed": "{{space}}% space used"
       },
       "tabs": {
@@ -1665,6 +1671,10 @@
     }
   },
   "referrals": {
+    "emailVerification": {
+      "message": "Verify your email to be eligible to referrals. Check your inbox or",
+      "resendVerification": "resend verification"
+    },
     "items": {
       "create-account": "Create an account",
       "install-mobile-app": "Install mobile app and upload a file",

@@ -17,10 +17,19 @@ export type ToastShowProps = {
   duration?: number;
   closable?: boolean;
   requestId?: string;
+  containerClassName?: string;
 };
 
 const notificationsService = {
-  show: ({ text, type, action, duration = 5000, closable = true, requestId }: ToastShowProps): string => {
+  show: ({
+    text,
+    type,
+    action,
+    duration = 5000,
+    closable = true,
+    requestId,
+    containerClassName,
+  }: ToastShowProps): string => {
     const id = toast.custom(
       (t) =>
         createElement(NotificationToast, {
@@ -30,6 +39,7 @@ const notificationsService = {
           action,
           closable,
           requestId,
+          containerClassName,
           onClose() {
             toast.dismiss(id);
           },
