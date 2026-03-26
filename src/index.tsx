@@ -11,7 +11,6 @@ import { planThunks } from './app/store/slices/plan';
 import storageThunks from './app/store/slices/storage/storage.thunks';
 import { taskManagerThunks } from './app/store/slices/taskManager';
 import { sessionActions } from './app/store/slices/session';
-import { referralsThunks } from 'app/store/slices/referrals';
 
 import 'react-tooltip/dist/react-tooltip.css';
 import './index.scss';
@@ -74,9 +73,9 @@ store.dispatch(sessionActions.initialize());
 store.dispatch(storageThunks.initializeThunk());
 store.dispatch(planThunks.initializeThunk());
 store.dispatch(taskManagerThunks.initializeThunk());
-store.dispatch(referralsThunks.initializeThunk());
 
 const container = document.getElementById('root') as HTMLElement;
+document.documentElement.setAttribute('translate', 'no');
 const root = createRoot(container);
 root.render(
   <React.StrictMode>

@@ -41,7 +41,11 @@ const TwoFactorAuthenticationDisableModal = ({
     } catch (err) {
       setStatus('error');
       const castedError = errorService.castError(err);
-      notificationsService.show({ text: castedError.message || translate('error.serverError'), type: ToastType.Error });
+      notificationsService.show({
+        text: castedError.message || translate('error.serverError'),
+        type: ToastType.Error,
+        requestId: castedError.requestId,
+      });
     }
   }
 

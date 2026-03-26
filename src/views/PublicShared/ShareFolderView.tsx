@@ -14,7 +14,7 @@ import { useEffect, useState } from 'react';
 import { match } from 'react-router';
 import { Link } from 'react-router-dom';
 import { HTTP_CODES } from 'app/core/constants';
-import AppError from 'app/core/types';
+import { AppError } from '@internxt/sdk';
 import { useAppSelector } from 'app/store/hooks';
 import { SendBanner, ShareItemPwdView } from './components';
 import './components/ShareView.scss';

@@ -4,6 +4,7 @@ import { UserSubscription, UserType, StoragePlan, RenewalPeriod } from '@internx
 import { PlanState } from 'app/store/slices/plan';
 
 vi.mock('i18next', () => ({
+  default: { language: 'en' },
   t: (key: string) => {
     if (key === 'views.account.tabs.billing.cancelSubscriptionModal.infoBox.month') return 'month';
     if (key === 'views.account.tabs.billing.cancelSubscriptionModal.infoBox.year') return 'year';

@@ -16,8 +16,7 @@ export { default as PasswordStrengthIndicator } from './PasswordStrengthIndicato
 export { default as Popover } from './Popover';
 export { default as PreparingWorkspaceAnimation } from './PreparingWorkspaceAnimation';
 export { ScrollableTable } from './ScrollableTable';
-export { default as Sidenav } from './Sidenav';
-export { default as SidenavItem } from './SidenavItem';
+export { default as Sidenav } from './SidenavWrapper';
 export { skinSkeleton } from './Skeleton';
 export { default as TextInput } from './TextInput';
 export { default as Tooltip } from './Tooltip';

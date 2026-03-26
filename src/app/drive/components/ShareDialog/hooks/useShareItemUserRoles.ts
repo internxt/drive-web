@@ -11,7 +11,7 @@ import {
 import { AccessMode, UserRole } from '../types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { useShareDialogContext } from '../context/ShareDialogContextProvider';
+import { useShareDialogContext } from '../context';
 import { ItemToShare } from 'app/store/slices/storage/types';
 import errorService from 'services/error.service';
 
@@ -52,9 +52,11 @@ export const useShareItemUserRoles = ({ isRestrictedSharingAvailable, itemToShar
         actionDispatch(setAccessMode(mode));
       } catch (error) {
         errorService.reportError(error);
+        const castedError = errorService.castError(error);
         notificationsService.show({
           text: translate('modals.shareModal.errors.update-sharing-access'),
           type: ToastType.Error,
+          requestId: castedError.requestId,
         });
       }
       actionDispatch(setIsLoading(false));
@@ -83,7 +85,12 @@ export const useShareItemUserRoles = ({ isRestrictedSharingAvailable, itemToShar
       }
     } catch (error) {
       errorService.reportError(error);
-      notificationsService.show({ text: translate('modals.shareModal.errors.updatingRole'), type: ToastType.Error });
+      const castedError = errorService.castError(error);
+      notificationsService.show({
+        text: translate('modals.shareModal.errors.updatingRole'),
+        type: ToastType.Error,
+        requestId: castedError.requestId,
+      });
     }
   };
 

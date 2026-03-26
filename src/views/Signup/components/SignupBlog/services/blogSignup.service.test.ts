@@ -4,7 +4,7 @@ import { authenticateUser } from 'services/auth.service';
 import envService from 'services/env.service';
 import errorService from 'services/error.service';
 import { AppDispatch } from 'app/store';
-import AppError from 'app/core/types';
+import { AppError } from '@internxt/sdk';
 
 vi.mock('services/auth.service', () => ({
   authenticateUser: vi.fn(),

@@ -19,7 +19,7 @@ export const usePaginationState = ({ isTrash, hasMoreFiles, hasMoreFolders }: Us
   }, [hasMoreFiles, isTrash]);
 
   useEffect(() => {
-    if (hasMoreFiles && hasMoreFolders) {
+    if (!isTrash && hasMoreFiles && hasMoreFolders) {
       setHasMoreItems(true);
     }
   }, [hasMoreFiles, hasMoreFolders]);

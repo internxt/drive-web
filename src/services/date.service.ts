@@ -24,12 +24,27 @@ export const formatDefaultDate = (date: Date | string | number, translate: (key:
   return dayjs(date).format(`D MMM, YYYY [${translatedAt}] HH:mm`);
 };
 
+const getDaysBetween = (from: Date | string, to: Date | string): number => {
+  return Math.max(0, Math.round(dayjs(to).diff(dayjs(from), 'day', true)));
+};
+
+export const getDaysUntilExpiration = (expiresAt: Date | string): number => getDaysBetween(dayjs().toDate(), expiresAt);
+
+const getDaysSince = (date: Date | string): number => getDaysBetween(date, dayjs().toDate());
+
+const getHoursUntilExpiration = (expiresAt: Date | string): number => {
+  return Math.max(0, Math.ceil(dayjs(expiresAt).diff(dayjs(), 'hour', true)));
+};
+
 const dateService = {
   format,
   isDateOneBefore,
   getCurrentDate,
   getExpirationDate,
   formatDefaultDate,
+  getDaysUntilExpiration,
+  getDaysSince,
+  getHoursUntilExpiration,
 };
 
 export default dateService;

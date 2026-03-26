@@ -33,7 +33,7 @@ describe('Authentication Checkout Custom hook', () => {
   });
 
   test('When the user is not logged in, then the user is logged in correctly', async () => {
-    (authenticateUser as Mock).mockResolvedValue(undefined);
+    (authenticateUser as Mock).mockResolvedValue(mockProfile);
 
     const changeAuthMethod = vi.fn();
     const { result: hookState } = renderHook(() =>
@@ -57,6 +57,43 @@ describe('Authentication Checkout Custom hook', () => {
     });
     expect(hookState.current.authError).toBeUndefined();
     expect(mockedAuthenticateUserProps.onAuthenticationFail).not.toHaveBeenCalled();
+  });
+
+  test('When authentication succeeds, then the user object from profileInfo is returned', async () => {
+    const mockUser = { id: '123', email: 'test@inxt.com' };
+    (authenticateUser as Mock).mockResolvedValue({ ...mockProfile, user: mockUser });
+
+    const changeAuthMethod = vi.fn();
+    const { result: hookState } = renderHook(() =>
+      useAuthCheckout({
+        changeAuthMethod,
+      }),
+    );
+
+    let returnedUser: any;
+    await act(async () => {
+      returnedUser = await hookState.current.onAuthenticateUser(mockedAuthenticateUserProps);
+    });
+
+    expect(returnedUser).toBe(mockUser);
+  });
+
+  test('When authentication fails, then undefined is returned', async () => {
+    (authenticateUser as Mock).mockRejectedValue(new Error('Authentication failed'));
+
+    const changeAuthMethod = vi.fn();
+    const { result: hookState } = renderHook(() =>
+      useAuthCheckout({
+        changeAuthMethod,
+      }),
+    );
+
+    let returnedUser: any;
+    await act(async () => {
+      returnedUser = await hookState.current.onAuthenticateUser(mockedAuthenticateUserProps);
+    });
+
+    expect(returnedUser).toBeUndefined();
   });
 
   test('When authentication fails, then the error is set and the error is handled correctly', async () => {

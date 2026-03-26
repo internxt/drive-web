@@ -4,8 +4,10 @@ import { RootState } from 'app/store';
 import { storageSelectors } from 'app/store/slices/storage';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SearchResult } from '@internxt/sdk/dist/drive/storage/types';
-import { ArrowSquareOut, Gear, MagnifyingGlass, X } from '@phosphor-icons/react';
+import { ArrowSquareOut, Gear, Gift, MagnifyingGlass, X } from '@phosphor-icons/react';
 import AccountPopover from './AccountPopover';
+import referralService from 'services/referral.service';
+import i18next from 'i18next';
 import { PlanState } from 'app/store/slices/plan';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import iconService from 'app/drive/services/icon.service';
@@ -22,7 +24,6 @@ import FilterItem from './FilterItem';
 import { getItemPlainName } from 'app/crypto/services/utils';
 import navigationService from 'services/navigation.service';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-import SuitePopover from './SuitePopover';
 import { UpgradeDialog } from 'app/drive/components/UpgradeDialog/UpgradeDialog';
 
 interface NavbarProps {
@@ -112,6 +113,8 @@ const Navbar = (props: NavbarProps) => {
   const [loadingSearch, setLoadingSearch] = useState<boolean>(false);
   const [typingTimerID, setTypingTimerID] = useState<NodeJS.Timeout | null>(null);
   const doneTypingInterval = 200;
+
+  const isReferralEligible = useAppSelector((state: RootState) => state.referrals.isEligible);
 
   const isGlobalSearch = useAppSelector((state: RootState) => state.ui.isGlobalSearch);
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
@@ -291,7 +294,7 @@ const Navbar = (props: NavbarProps) => {
         {hideSearch ? (
           <div />
         ) : (
-          <form className="relative flex h-full w-full items-center" onSubmitCapture={handleSubmit}>
+          <form className="relative flex h-full w-full pl-4 items-center" onSubmitCapture={handleSubmit}>
             <label className={getSearchBoxClassName(openSearchBox)} htmlFor="globalSearchInput">
               <MagnifyingGlass
                 className="pointer-events-none absolute left-2.5 top-1/2 z-1 -translate-y-1/2 text-gray-60 focus-within:text-gray-80"
@@ -398,7 +401,23 @@ const Navbar = (props: NavbarProps) => {
         )}
       </div>
 
-      <div className="flex shrink-0">
+      <div className="flex shrink-0 items-center">
+        <button
+          id="cello-launcher"
+          onClick={() => {
+            referralService.openPanel(
+              { name: user.name, lastname: user.lastname, email: user.email, emailVerified: user.emailVerified },
+              i18next.language,
+            );
+          }}
+          style={{ display: isReferralEligible ? 'flex' : 'none', position: 'relative' }}
+          className="flex h-10 cursor-pointer items-center gap-2 border-none bg-transparent px-3"
+        >
+          <Gift size={20} className="text-primary" />
+          <span className="text-sm font-medium whitespace-nowrap text-primary">
+            {translate('views.account.popover.earnReferral')}
+          </span>
+        </button>
         <button
           onClick={() => {
             navigationService.openPreferencesDialog({
@@ -415,12 +434,6 @@ const Navbar = (props: NavbarProps) => {
         >
           <Gear size={24} />
         </button>
-        <SuitePopover
-          className={
-            'z-40 mr-5 h-10 w-10 items-center justify-center rounded-lg ' +
-            'text-gray-80 hover:bg-gray-5 hover:text-gray-80 active:bg-gray-10'
-          }
-        />
         <AccountPopover
           className="z-40 mr-5"
           user={user}

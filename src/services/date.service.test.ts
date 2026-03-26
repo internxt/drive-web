@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { describe, expect, test } from 'vitest';
+import { beforeEach, afterEach, describe, expect, test, vi } from 'vitest';
 import dateService from './date.service';
 
 describe('dateService', () => {
@@ -26,5 +26,67 @@ describe('dateService', () => {
     const isBefore = dateService.isDateOneBefore({ dateOne, dateTwo });
 
     expect(isBefore).toBe(false);
+  });
+
+  describe('Expiration countdown', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2023-01-01T00:00:00Z'));
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    test('when the expiration is in the future, then remaining days round to nearest', () => {
+      const expiresAt = '2023-01-02T06:00:00Z';
+      expect(dateService.getDaysUntilExpiration(expiresAt)).toBe(1);
+    });
+
+    test('when the expiration has passed, then zero days remain', () => {
+      const expiresAt = '2022-12-31T23:59:59Z';
+      expect(dateService.getDaysUntilExpiration(expiresAt)).toBe(0);
+    });
+
+    test('when the expiration is later today, then it counts as one day remaining', () => {
+      const expiresAt = '2023-01-01T12:00:00Z';
+      expect(dateService.getDaysUntilExpiration(expiresAt)).toBe(1);
+    });
+
+    test('when the expiration is in 5 hours, then 5 remaining hours are returned', () => {
+      const expiresAt = '2023-01-01T05:00:00Z';
+      expect(dateService.getHoursUntilExpiration(expiresAt)).toBe(5);
+    });
+
+    test('when the expiration has passed, then zero remaining hours are returned', () => {
+      const expiresAt = '2022-12-31T23:00:00Z';
+      expect(dateService.getHoursUntilExpiration(expiresAt)).toBe(0);
+    });
+
+    test('when the expiration is in 30 minutes, then remaining hours round up to 1', () => {
+      const expiresAt = '2023-01-01T00:30:00Z';
+      expect(dateService.getHoursUntilExpiration(expiresAt)).toBe(1);
+    });
+
+    test('when the expiration is in 25 hours, then 25 remaining hours and 1 remaining day are returned', () => {
+      const expiresAt = '2023-01-02T01:00:00Z';
+      expect(dateService.getHoursUntilExpiration(expiresAt)).toBe(25);
+      expect(dateService.getDaysUntilExpiration(expiresAt)).toBe(1);
+    });
+
+    test('when the date is 30 days in the past, then 30 days since are returned', () => {
+      const pastDate = '2022-12-02T00:00:00Z';
+      expect(dateService.getDaysSince(pastDate)).toBe(30);
+    });
+
+    test('when the date is in the future, then zero days since are returned', () => {
+      const futureDate = '2023-01-02T00:00:00Z';
+      expect(dateService.getDaysSince(futureDate)).toBe(0);
+    });
+
+    test('when the date is earlier today, then zero days since are returned', () => {
+      const earlierToday = '2023-01-01T00:00:00Z';
+      expect(dateService.getDaysSince(earlierToday)).toBe(0);
+    });
   });
 });

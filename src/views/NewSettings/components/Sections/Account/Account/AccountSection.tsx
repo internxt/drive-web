@@ -59,9 +59,11 @@ const AccountSection = ({ changeSection, onClosePreferences }: AccountSectionPro
   };
 
   const onChangeEmailError = (error: unknown) => {
+    const castedError = errorService.castError(error);
     notificationsService.show({
       text: translate('views.account.tabs.account.accountDetails.changeEmail.errorSendingVerification'),
       type: ToastType.Error,
+      requestId: castedError.requestId,
     });
     errorService.reportError(error);
   };
@@ -104,12 +106,14 @@ const AccountSection = ({ changeSection, onClosePreferences }: AccountSectionPro
         lastname={user.lastname}
         email={user.email}
         onUpdateUserProfileData={updateUserProfile}
-        onErrorUpdatingUserProfileData={() =>
+        onErrorUpdatingUserProfileData={(err) => {
+          const castedError = errorService.castError(err);
           notificationsService.show({
             text: translate('views.account.tabs.account.accountDetails.editProfile.errorUpdatingProfile'),
             type: ToastType.Error,
-          })
-        }
+            requestId: castedError.requestId,
+          });
+        }}
       />
       <ChangeEmailModal
         isOpen={isEmailModalOpen}

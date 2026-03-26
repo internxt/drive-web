@@ -9,7 +9,10 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": { "blueText": "Ottieni l'87% di sconto", "text": "su tutti i Piani Premium" },
+    "label": {
+      "blueText": "Ottieni l'85% di sconto",
+      "text": "su tutti i Piani Premium"
+    },
     "title": "Ottieni uno sconto esclusivo!",
     "subTitle": {
       "blueText": "Offerta speciale:",
@@ -465,7 +468,11 @@
     "shared": "Condiviso",
     "recents": "Recenti",
     "trash": "Cestino",
-    "desktop": "Applicazione desktop"
+    "desktop": "Applicazione desktop",
+    "referralBanner": {
+      "message": "Ricorda! Guadagna fino a 1.000 € invitando un amico",
+      "cta": "Invita e guadagna"
+    }
   },
   "views": {
     "recents": {
@@ -496,6 +503,8 @@
         "downloadApp": "Scarica l'app",
         "settings": "Impostazioni",
         "logout": "Disconnettersi",
+        "referAndEarn": "Invita e guadagna",
+        "earnReferral": "Guadagna 1.000 €",
         "spaceUsed": "{{space}}% spazio usato"
       },
       "tabs": {
@@ -923,7 +932,39 @@
         "uploaded": "Caricato",
         "uploadedBy": "Caricato da",
         "shared": "Condiviso",
+        "numberOfFiles": "Numero di file",
         "location": "Posizione"
+      },
+      "fileCount_one": "{{count}} file",
+      "fileCount_other": "{{count}} file",
+      "fileCountMoreThan1000": "Più di 1000 file"
+    },
+    "versionHistory": {
+      "title": "Cronologia versioni",
+      "current": "Attuale",
+      "expiresInDays": "Scade tra {{days}} giorni",
+      "autosaveVersions": "{{count}}/{{total}} versioni di salvataggio automatico",
+      "restoreVersion": "Ripristina versione",
+      "downloadVersion": "Scarica versione",
+      "deleteVersion": "Elimina versione",
+      "deleteVersionTitle": "Elimina versione",
+      "deleteButton": "Elimina",
+      "restoreButton": "Ripristina",
+      "downloadError": "Impossibile scaricare la versione",
+      "deleteVersionAdvice": "Questa versione sarà eliminata in modo permanente. \nQuesta azione non può essere annullata.",
+      "deletingVersion": "Eliminazione",
+      "restoreVersionTitle": "Ripristina versione",
+      "restoreVersionAdvice": "Il ripristino di questa versione sostituirà il file corrente e rimuoverà tutte le versioni più recenti. \nUna volta ripristinata, questa azione non può essere annullata.\n\nPuoi scaricare una copia delle versioni più recenti prima del ripristino.",
+      "restoringVersion": "Ripristino",
+      "restoreSuccess": "Versione ripristinata con successo",
+      "restoreError": "Impossibile ripristinare la versione",
+      "deleteSuccess": "Versione eliminata con successo",
+      "deleteError": "Impossibile eliminare la versione",
+      "lockedFeature": {
+        "title": "Funzione bloccata",
+        "description": "Ripristina le versioni precedenti dei tuoi file e monitora le modifiche nel tempo.",
+        "supportedFormats": "Disponibile per file PDF, Word, Excel e CSV nei piani a pagamento.",
+        "upgradeButton": "Aggiorna"
       }
     },
     "shareModal": {
@@ -1022,7 +1063,8 @@
           "errorInviting": "Errore durante l'invio dell'invito a {{email}}",
           "userAlreadyInvited": "L'utente {{email}} è già stato invitato",
           "acceptedError": "Errore nell'accettazione dell'invito alla cartella condivisa",
-          "declinedError": "Errore nel rifiuto dell'invito alla cartella condivisa"
+          "declinedError": "Errore nel rifiuto dell'invito alla cartella condivisa",
+          "loadingRoles": "Impossibile caricare i ruoli disponibili. Riprova più tardi."
         }
       },
       "requestAccess": {
@@ -1196,7 +1238,8 @@
     "connectionLostError": "Connessione Internet persa",
     "errorLoadingTrashItems": "Errore nel caricamento degli elementi del cestino",
     "updateAvatarError": "Errore nell'aggiornamento dell'avatar",
-    "featuresUnavailable": "Alcune funzionalità potrebbero non essere disponibili"
+    "featuresUnavailable": "Alcune funzionalità potrebbero non essere disponibili",
+    "errorSettingWorkspace": "Errore nella configurazione dello spazio di lavoro"
   },
   "backups": {
     "backups-from": "Backup da {{deviceName}}",
@@ -1288,6 +1331,34 @@
     "item-menu": {
       "restore": "Ripristino",
       "delete-permanently": "Elimina definitivamente"
+    },
+    "autoDelete": {
+      "inHours_one": "Tra {{count}} ora",
+      "inHours_other": "Tra {{count}} ore",
+      "inDays_one": "Tra {{count}} giorno",
+      "inDays_other": "Tra {{count}} giorni"
+    },
+    "automaticDisposal": {
+      "badge": "Nuovo aggiornamento",
+      "title": "Eliminazione automatica del Cestino",
+      "close": "Chiudi",
+      "description": "Ora tutti gli elementi spostati nel Cestino verranno\neliminati definitivamente automaticamente dopo:",
+      "freeUsers": {
+        "duration": "2 giorni",
+        "label": "per utenti gratuiti e altri"
+      },
+      "essentialUsers": {
+        "duration": "7 giorni",
+        "label": "per utenti essenziali"
+      },
+      "premiumUsers": {
+        "duration": "15 giorni",
+        "label": "per utenti premium"
+      },
+      "ultimateUsers": {
+        "duration": "30 giorni",
+        "label": "per utenti ultimate"
+      }
     }
   },
   "tasks": {
@@ -1538,6 +1609,9 @@
     "logOut": "Disconnettersi",
     "locked": "Bloccato"
   },
+  "toastNotification": {
+    "textCopied": "Testo copiato negli appunti"
+  },
   "drive": {
     "usage": "Utilizzo",
     "currentPlan": "Piano attuale",
@@ -1550,7 +1624,8 @@
         "name": "Nome",
         "modified": "Ultima modifica",
         "size": "Dimensione",
-        "actions": "Azioni"
+        "actions": "Azioni",
+        "autoDelete": "Eliminazione automatica"
       }
     },
     "viewMode": {
@@ -1575,7 +1650,8 @@
       "restore": "Ripristinare",
       "deletePermanently": "Eliminare definitivamente",
       "move": "Sposta",
-      "delete": "Elimina"
+      "delete": "Elimina",
+      "versionHistory": "Cronologia versioni"
     },
     "deleteItems": {
       "title": "Eliminare definitivamente?",
@@ -2006,11 +2082,11 @@
         "planFeaturesList": {
           "title": "Dettagli del Piano",
           "comingSoon": "Prossimamente",
-          "storage": " spazio di archiviazione crittografato",
+          "storage": " spazio di archiviazione cloud crittografato",
           "1TB": {
             "title": "Essential (Essenziale)",
             "features": [
-              "1TB di spazio di archiviazione crittografato",
+              "1TB di spazio di archiviazione cloud crittografato",
               "Crittografia Post-Quantistica",
               "Crittografia Zero-Knowledge",
               "Autenticazione a Due Fattori",
@@ -2018,32 +2094,32 @@
               "Condivisione file protetta da password",
               "VPN Crittografata",
               "Antivirus"
-            ],
-            "comingSoonFeatures": ["Versionamento dei File"]
+            ]
           },
           "3TB": {
             "title": "Premium",
             "features": [
-              "3TB di spazio di archiviazione crittografato",
+              "3TB di spazio di archiviazione cloud crittografato",
               "Crittografia Post-Quantistica",
               "Crittografia Zero-Knowledge",
               "Autenticazione a Due Fattori",
+              "Versionamento dei File",
               "Backup del computer",
               "Condivisione file protetta da password",
               "Invita, condividi e collabora",
               "VPN Crittografata",
               "Antivirus",
               "Cleaner (Pulitore)"
-            ],
-            "comingSoonFeatures": ["Versionamento dei File"]
+            ]
           },
           "5TB": {
             "title": "Ultimate (Definitivo)",
             "features": [
-              "5TB di spazio di archiviazione crittografato",
+              "5TB di spazio di archiviazione cloud crittografato",
               "Crittografia Post-Quantistica",
               "Crittografia Zero-Knowledge",
               "Autenticazione a Due Fattori",
+              "Versionamento dei File",
               "Backup del computer",
               "Condivisione file protetta da password",
               "Invita, condividi e collabora",
@@ -2054,11 +2130,11 @@
               "Cleaner (Pulitore)",
               "Meet (Videoconferenza)"
             ],
-            "comingSoonFeatures": ["Versionamento dei File", "Mail"]
+            "comingSoonFeatures": ["Mail", "Foto"]
           },
           "1GB": {
             "title": "Gratuito",
-            "features": ["1GB di spazio di archiviazione crittografato", "VPN Crittografata"]
+            "features": ["1GB di spazio di archiviazione cloud crittografato", "VPN Crittografata"]
           }
         },
         "businessPlanFeaturesList": {
@@ -2067,36 +2143,41 @@
           "1TB": {
             "title": "Standard",
             "features": [
-              "1TB di archiviazione criptata a conoscenza zero per utente",
+              "1TB di archiviazione crittografata per utente",
               "Crittografia post-quantistica",
-              "VPN illimitata ultraveloce (FR, DE, PL)",
-              "Antivirus",
-              "Backup dei tuoi file",
+              "Crittografia zero-knowledge",
+              "Autenticazione a due fattori",
+              "Backup del computer",
               "Condivisione file protetta da password",
               "Invita, condividi e collabora",
-              "Conformità GDPR",
-              "Autenticazione a due fattori (2FA)",
-              "Supporto CLI e WebDav",
-              "Gestisci fatturazione e pagamenti dell'account"
-            ],
-            "comingSoonFeatures": ["Pulitore dispositivi", "Monitoraggio Dark Web"]
+              "Conformità al GDPR",
+              "CLI e WebDAV",
+              "Gestione dell'organizzazione",
+              "VPN crittografata",
+              "Antivirus",
+              "Pulizia"
+            ]
           },
           "2TB": {
             "title": "Pro",
             "features": [
-              "2TB di archiviazione criptata a conoscenza zero per utente",
+              "2TB di archiviazione crittografata per utente",
               "Crittografia post-quantistica",
-              "VPN illimitata ultraveloce (FR, DE, PL, CA, UK)",
-              "Antivirus",
-              "Backup dei tuoi file",
+              "Crittografia zero-knowledge",
+              "Autenticazione a due fattori",
+              "Cronologia versioni file",
+              "Backup del computer",
               "Condivisione file protetta da password",
               "Invita, condividi e collabora",
-              "Conformità GDPR",
-              "Autenticazione a due fattori (2FA)",
-              "Supporto CLI, WebDav, Rclone e NAS",
-              "Gestisci fatturazione e pagamenti dell'account"
-            ],
-            "comingSoonFeatures": ["Pulitore dispositivi", "Monitoraggio Dark Web", "Meet", "Mail"]
+              "Conformità al GDPR",
+              "Supporto per CLI, WebDAV, Rclone e NAS",
+              "Gestione dell'organizzazione",
+              "VPN crittografata",
+              "Antivirus",
+              "Pulizia",
+              "Meet",
+              "Email"
+            ]
           }
         },
         "user": "Utente",

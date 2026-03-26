@@ -16,7 +16,8 @@ import { getCookie, setCookie } from 'app/analytics/utils';
 import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
 import RealtimeService from 'services/sockets/socket.service';
-import AppError, { AppView } from 'app/core/types';
+import { AppError } from '@internxt/sdk';
+import { AppView } from 'app/core/types';
 import {
   assertPrivateKeyIsValid,
   assertValidateKeys,
@@ -35,7 +36,6 @@ import { AuthMethodTypes } from 'views/Checkout/types';
 import { AppDispatch } from 'app/store';
 import { planThunks } from 'app/store/slices/plan';
 import { productsThunks } from 'app/store/slices/products';
-import { referralsThunks } from 'app/store/slices/referrals';
 import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/user';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { BackupData, detectBackupKeyFormat, prepareOldBackupRecoverPayloadForBackend } from 'utils/backupKeyUtils';
@@ -585,7 +585,6 @@ export const signUp = async (params: SignUpParams) => {
   dispatch(productsThunks.initializeThunk());
 
   if (!redeemCodeObject) dispatch(planThunks.initializeThunk());
-  dispatch(referralsThunks.initializeThunk());
   await trackSignUp(xUser.uuid);
   trackLead(xUser.email, xUser.userId);
 
@@ -600,7 +599,6 @@ export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
   try {
     dispatch(productsThunks.initializeThunk());
     dispatch(planThunks.initializeThunk());
-    dispatch(referralsThunks.initializeThunk());
     await dispatch(initializeUserThunk())?.unwrap();
     dispatch(workspaceThunks.fetchWorkspaces());
     dispatch(workspaceThunks.checkAndSetLocalWorkspace());

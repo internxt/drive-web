@@ -14,6 +14,7 @@ import RetryManager, { RetryableTask } from './RetryManager';
 import { ErrorMessages } from 'app/core/constants';
 import { MAX_UPLOAD_ATTEMPTS, TWENTY_MEGABYTES, USE_MULTIPART_THRESHOLD_BYTES } from './networkConstants';
 import { OwnerUserAuthenticationData } from './types';
+import referralService from 'services/referral.service';
 
 enum FileSizeType {
   Big = 'big',
@@ -178,7 +179,7 @@ class UploadManager {
             }
           },
           {
-            isTeam: false,
+            isTeam: !!this.options?.ownerUserAuthenticationData?.workspaceId,
             abortController: this.abortController ?? fileData.abortController,
             ownerUserAuthenticationData: this.options?.ownerUserAuthenticationData,
             abortCallback: (abort?: () => void) => {
@@ -227,6 +228,7 @@ class UploadManager {
             });
 
             fileData.onFinishUploadFile?.(driveFileDataWithNameParsed, taskId);
+            referralService.trackFileUpload();
 
             if (this.onFileUploadCallback) {
               this.onFileUploadCallback(driveFileDataWithNameParsed);

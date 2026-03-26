@@ -56,6 +56,25 @@ interface Window {
   opera?: {
     version?: () => string;
   };
+  cello?: {
+    cmd: Array<(cello: { boot: (options: ReferralBootOptions) => Promise<void> }) => void>;
+  };
+  Cello?: (command: string, ...args: unknown[]) => Promise<unknown>;
+  CelloAttribution?: (command: string) => Promise<string | null>;
+}
+
+interface ReferralBootOptions {
+  productId: string;
+  token: string;
+  language?: string;
+  productUserDetails: {
+    firstName: string;
+    lastName?: string;
+    fullName?: string;
+    email: string;
+  };
+  hideDefaultLauncher?: boolean;
+  themeMode?: 'light' | 'dark';
 }
 
 interface Navigator {

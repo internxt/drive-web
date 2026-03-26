@@ -1,5 +1,5 @@
 import errorService from 'services/error.service';
-import AppError from 'app/core/types';
+import { AppError } from '@internxt/sdk';
 import { DriveFolderData } from 'app/drive/types';
 import { createFolder } from 'app/store/slices/storage/folderUtils/createFolder';
 import { checkFolderDuplicated } from 'app/store/slices/storage/folderUtils/checkFolderDuplicated';
@@ -60,6 +60,12 @@ vi.mock('../store/slices/storage/storage.thunks/uploadItemsThunk', () => ({
 
 vi.mock('app/store/slices/storage/folderUtils/getUniqueFolderName', () => ({
   getUniqueFolderName: vi.fn(),
+}));
+
+vi.mock('services/referral.service', () => ({
+  default: {
+    trackFolderUpload: vi.fn(),
+  },
 }));
 
 vi.mock('services/error.service', () => ({

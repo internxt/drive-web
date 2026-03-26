@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Video Player</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        background: black;
+        overflow: hidden;
+      }
+      video {
+        display: block;
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+      }
+    </style>
+  </head>
+  <body>
+    <video id="iframe-video-streaming" controls autoplay preload="metadata"></video>
+
+    <script>
+      const video = document.getElementById('iframe-video-streaming');
+      let sessionData = null;
+      const pendingRequests = new Map();
+
+      async function handleParentMessage(event) {
+        const { type, payload } = event.data;
+
+        console.log('[VideoPlayer] Message from parent:', type);
+
+        switch (type) {
+          case 'INIT_VIDEO':
+            console.log('[VideoPlayer] Initializing video...');
+            await initVideo(payload);
+            break;
+
+          case 'CHUNK_RESPONSE': {
+            const { requestId, data, error } = event.data.payload;
+            const port = pendingRequests.get(requestId);
+
+            if (port) {
+              if (error) {
+                port.postMessage({ requestId, error });
+              } else {
+                port.postMessage({ requestId, data });
+              }
+              pendingRequests.delete(requestId);
+            }
+
+            break;
+          }
+          case 'DESTROY':
+            destroyVideo();
+            break;
+
+          default:
+            console.warn('[VideoPlayer] Unknown message type:', type);
+            break;
+        }
+      }
+
+      // Listen for messages from parent window
+      window.addEventListener('message', handleParentMessage);
+
+      async function initVideo(payload) {
+        const { sessionId, fileSize, mimeType } = payload;
+        sessionData = { sessionId, fileSize, mimeType };
+
+        console.log('[VideoPlayer] Initializing video, session:', sessionId);
+
+        const registration = await navigator.serviceWorker.ready;
+        console.log('[VideoPlayer] SW ready:', registration.scope);
+
+        const sw = registration.active;
+        if (!sw) {
+          notifyParent('ERROR', { message: 'Service worker not active' });
+          return;
+        }
+
+        navigator.serviceWorker.addEventListener('message', handleSWMessage);
+
+        const registered = await registerSession(sw, sessionData);
+        if (!registered) {
+          notifyParent('ERROR', { message: 'Failed to register session' });
+          return;
+        }
+
+        video.src = `/video-stream/${sessionId}`;
+
+        video.addEventListener('canplay', () => {
+          console.log('[VideoPlayer] Video can play');
+          notifyParent('READY', {
+            videoWidth: video.videoWidth,
+            videoHeight: video.videoHeight,
+          });
+        });
+
+        video.addEventListener('error', (e) => {
+          console.error('[VideoPlayer] Video error:', e);
+          notifyParent('ERROR', { message: video.error?.message || 'Video error' });
+        });
+      }
+
+      function handleSWMessage(event) {
+        if (event.data.type === 'CHUNK_REQUEST') {
+          // Forward the chunk request to the parent window
+          // The parent will handle downloading and decrypting the chunk
+          const port = event.ports[0];
+          const request = event.data.payload;
+
+          console.log('[VideoPlayer] Chunk request from SW:', request.requestId);
+
+          // Store the port so we can respond later
+          pendingRequests.set(request.requestId, port);
+
+          console.log('[VideoPlayer] Forwarding chunk request to parent...', request);
+
+          // Forward to parent
+          notifyParent('CHUNK_REQUEST', request);
+        }
+      }
+
+      function registerSession(sw, session) {
+        return new Promise((resolve) => {
+          const channel = new MessageChannel();
+          const timeout = setTimeout(() => {
+            resolve(false);
+          }, 5000);
+
+          channel.port1.onmessage = (event) => {
+            if (event.data.type === 'SESSION_REGISTERED') {
+              clearTimeout(timeout);
+              resolve(true);
+            }
+          };
+
+          sw.postMessage(
+            {
+              type: 'REGISTER_VIDEO_SESSION',
+              sessionId: session.sessionId,
+              fileSize: session.fileSize,
+              mimeType: session.mimeType,
+            },
+            [channel.port2],
+          );
+        });
+      }
+
+      function unregisterSession(sw, sessionId) {
+        return new Promise((resolve) => {
+          const channel = new MessageChannel();
+          const timeout = setTimeout(() => resolve(false), 3000);
+
+          channel.port1.onmessage = (event) => {
+            if (event.data.type === 'SESSION_UNREGISTERED') {
+              clearTimeout(timeout);
+              resolve(true);
+            }
+          };
+
+          sw.postMessage(
+            {
+              type: 'UNREGISTER_VIDEO_SESSION',
+              sessionId,
+            },
+            [channel.port2],
+          );
+        });
+      }
+
+      async function destroyVideo() {
+        console.log('[VideoPlayer] Destroying video');
+
+        video.pause();
+        video.src = '';
+
+        if (sessionData) {
+          const registration = await navigator.serviceWorker.getRegistration();
+          if (registration?.active) {
+            await unregisterSession(registration.active, sessionData.sessionId);
+            await registration.unregister();
+          }
+        }
+
+        navigator.serviceWorker.removeEventListener('message', handleSWMessage);
+        pendingRequests.clear();
+        sessionData = null;
+      }
+
+      function notifyParent(type, payload) {
+        window.parent.postMessage({ type, payload }, '*');
+      }
+
+      // Notify parent that the player is loaded so the client can send the video data to start playing
+      notifyParent('PLAYER_LOADED', {});
+    </script>
+  </body>
+</html>

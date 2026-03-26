@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { uploadFileWithManager } from './UploadManager';
 import tasksService from 'app/tasks/services/tasks.service';
 import errorService from 'services/error.service';
-import AppError from 'app/core/types';
+import { AppError } from '@internxt/sdk';
 import uploadFile from 'app/drive/services/file.service/uploadFile';
 import DatabaseUploadRepository from 'app/repositories/DatabaseUploadRepository';
 import { DriveFileData } from 'app/drive/types';
@@ -49,7 +49,7 @@ vi.mock('app/repositories/DatabaseUploadRepository', () => {
   };
 });
 
-vi.mock('i18next', () => ({ t: () => 'Translation message' }));
+vi.mock('i18next', () => ({ default: { language: 'en' }, t: () => 'Translation message' }));
 
 const openMaxSpaceOccupiedDialogMock = vi.fn();
 
@@ -557,5 +557,117 @@ describe('checkUploadFiles', () => {
       taskId: 'taskId',
       merge: { status: TaskStatus.Error, subtitle: expect.any(String) },
     });
+  });
+
+  it('When uploading a file to a workspace, then it uses workspace credentials and same bucket for file and thumbnail', async () => {
+    const workspaceBucket = 'workspace-bucket-123';
+    const workspaceId = 'workspace-id-456';
+    const uploadFileSpy = (uploadFile as Mock).mockResolvedValueOnce(mockFile1);
+
+    vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
+    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
+    vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
+
+    await uploadFileWithManager(
+      [
+        {
+          taskId: 'taskId',
+          filecontent: {
+            content: 'file-content' as unknown as File,
+            type: 'text/plain',
+            name: 'file.txt',
+            size: 1024,
+            parentFolderId: 'folder-1',
+          },
+          userEmail: 'user@test.com',
+          parentFolderId: '',
+        },
+      ],
+      openMaxSpaceOccupiedDialogMock,
+      DatabaseUploadRepository.getInstance(),
+      undefined,
+      {
+        ownerUserAuthenticationData: {
+          bucketId: workspaceBucket,
+          workspaceId: workspaceId,
+          bridgeUser: 'bridge-user',
+          bridgePass: 'bridge-pass',
+          encryptionKey: 'encryption-key',
+          token: 'token',
+          workspacesToken: 'workspaces-token',
+          resourcesToken: 'resources-token',
+        },
+        sharedItemData: {
+          isDeepFolder: false,
+          currentFolderId: 'parentFolderId',
+        },
+        isUploadedFromFolder: true,
+      },
+    );
+
+    expect(uploadFileSpy).toHaveBeenCalledWith(
+      'user@test.com',
+      expect.any(Object),
+      expect.any(Function),
+      expect.objectContaining({
+        isTeam: true,
+        ownerUserAuthenticationData: expect.objectContaining({
+          bucketId: workspaceBucket,
+          workspaceId: workspaceId,
+        }),
+      }),
+      expect.any(Object),
+    );
+  });
+
+  it('When uploading a personal file, then it uses personal credentials', async () => {
+    const uploadFileSpy = (uploadFile as Mock).mockResolvedValueOnce(mockFile1);
+
+    vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
+    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
+    vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
+
+    await uploadFileWithManager(
+      [
+        {
+          taskId: 'taskId',
+          filecontent: {
+            content: 'file-content' as unknown as File,
+            type: 'text/plain',
+            name: 'file.txt',
+            size: 1024,
+            parentFolderId: 'folder-1',
+          },
+          userEmail: 'user@test.com',
+          parentFolderId: '',
+        },
+      ],
+      openMaxSpaceOccupiedDialogMock,
+      DatabaseUploadRepository.getInstance(),
+      undefined,
+      {
+        ownerUserAuthenticationData: undefined,
+        sharedItemData: {
+          isDeepFolder: false,
+          currentFolderId: 'parentFolderId',
+        },
+        isUploadedFromFolder: true,
+      },
+    );
+
+    expect(uploadFileSpy).toHaveBeenCalledWith(
+      'user@test.com',
+      expect.any(Object),
+      expect.any(Function),
+      expect.objectContaining({
+        isTeam: false,
+        ownerUserAuthenticationData: undefined,
+      }),
+      expect.any(Object),
+    );
   });
 });

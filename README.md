@@ -66,39 +66,7 @@ It correctly bundles React in production mode and optimizes the build for the be
 The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
 
-## Directory structure (old)
-
-- [.github](./.github)
-- [.husky](./.husky)
-- [public](./public)
-- [scripts](./scripts)
-- [src](./src)
-  - [app](./src/app)
-  - [assets](./src/assets)
-  - [App.tsx](./src/App.tsx)
-  - [index.scss](./src/index.scss)
-  - [index.tsx](./src/index.tsx)
-  - [react-app-env.d.ts](./src/react-app-env.d.ts)
-  - [reportWebVitals.ts](./src/reportWebVitals.ts)
-  - [setupTests.ts](./src/setupTests.ts)
-- [test](./test)
-- [.env.example](./.env.example)
-- [.eslintrc.json](./eslintrc.json)
-- [.gitignore](./.gitignore)
-- [.npmrc.template](./.npmrc.template)
-- [.pretierrc.json](./.pretierrc.json)
-- [.stylelintignore](./.stylelintignore)
-- [.stylelintrc.json](./.stylelintrc.json)
-- [craco.config.js](./craco.config.js)
-- [package.json](./package.json)
-- [README.md](./README.md)
-- [tailwind.config.js](./tailwind.config.js)
-- [tsconfig.json](./tsconfig.json)
-- [yarn.lock](./yarn.lock)
-
-The [/src](./src) folder contains the source code.
-
-# New Project Structure
+# Project Structure
 
 This project is organized following a **visual and functional hierarchy** approach. Each view (or page) has its own folder containing its specific components, styles, and logic. Additionally, reusable components, custom hooks, utilities, and global styles are stored in separate directories to enhance reusability and maintainability.
 
@@ -149,7 +117,7 @@ src/
 │   └── global.css
 ├── types/                # Global and component-specific types
 │   └── global.d.ts       # Global types (e.g., user, environment)
-├── App.jsx               # Main application entry point
+├── App.tsx               # Main application entry point
 └── index.ts
 ```
 
@@ -203,20 +171,15 @@ This structure ensures **modularity**, **scalability**, and **maintainability** 
 
 ## Config Tailwind CSS purge option
 
-It is important to add in the tailwind.config.js file, within the purge property, the list of classes that we are overriding within a Tailwind layer (components, utilities or base) for third-party packages (such as react-bootstrap)
+It is important to add in the `tailwind.config.ts` file, within the `safelist` property, the list of classes that we are overriding within a Tailwind layer (components, utilities or base) for third-party packages (such as react-bootstrap).
 
-For example, with this snippet we are telling to purge that we are overriding the react-bootstrap Dropdown and Tabs classes:
+For example, with this snippet we are telling Tailwind to keep the react-bootstrap Dropdown and Tabs classes:
 
-```javascript
-  purge: {
-    content: ["./src/**/*.tsx"],
-    options: {
-      safelist: [
-        'dropdown-menu', 'dropdown-item',
-        'nav-item', 'nav-link', 'tab-content', 'tab-pane'
-      ]
-    }
-  }
+```typescript
+  safelist: [
+    'dropdown-menu', 'dropdown-item',
+    'nav-item', 'nav-link', 'tab-content', 'tab-pane'
+  ]
 ```
 
 ## Recommended IDE extensions (Visual Studio Code)

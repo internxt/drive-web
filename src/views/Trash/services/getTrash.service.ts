@@ -46,9 +46,11 @@ function processTrashItems(
 }
 
 function handleTrashError(error: unknown): { finished: boolean; itemsRetrieved: number } {
+  const castedError = errorService.castError(error);
   notificationsService.show({
     text: t('error.errorLoadingTrashItems'),
     type: ToastType.Error,
+    requestId: castedError.requestId,
   });
 
   errorService.reportError(error);

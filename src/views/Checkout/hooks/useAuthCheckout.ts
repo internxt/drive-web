@@ -28,7 +28,7 @@ export const useAuthCheckout = ({ changeAuthMethod }: Pick<AuthCheckoutProps, 'c
     onAuthenticationFail,
   }: Omit<AuthCheckoutProps, 'changeAuthMethod'>) => {
     try {
-      await authenticateUser({
+      const profileInfo = await authenticateUser({
         email,
         password,
         authMethod,
@@ -37,6 +37,7 @@ export const useAuthCheckout = ({ changeAuthMethod }: Pick<AuthCheckoutProps, 'c
         token: authCaptcha,
         doSignUp: doRegister,
       });
+      return profileInfo.user;
     } catch (err) {
       const error = err as Error;
       setAuthError(error.message);

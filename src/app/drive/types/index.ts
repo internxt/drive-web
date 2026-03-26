@@ -30,6 +30,7 @@ export interface DriveFolderData {
   uuid: string;
   type?: string;
   user?: UserResumeData;
+  expiresAt?: string;
 }
 
 export interface DriveFolderMetadataPayload {
@@ -63,6 +64,7 @@ export interface DriveFileData {
   sharings?: { type: string; id: string }[];
   uuid: string;
   user?: UserResumeData;
+  expiresAt?: string;
 }
 
 interface Thumbnail {
@@ -169,4 +171,5 @@ export type ItemDetailsProps = {
   shared: string;
   type?: string;
   size?: string;
+  numberOfFiles?: string;
 };

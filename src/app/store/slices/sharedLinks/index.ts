@@ -8,6 +8,7 @@ import navigationService from 'services/navigation.service';
 import { AppView } from 'app/core/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { UserRoles } from 'app/share/types';
+import referralService from 'services/referral.service';
 import { t } from 'i18next';
 import userService from 'services/user.service';
 import { hybridEncryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
@@ -79,6 +80,7 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
         persistPreviousSharing: true,
       });
 
+      referralService.trackShareCreated();
       notificationsService.show({
         text: t('modals.shareModal.invite.successSentInvitation', { email: payload.sharedWith }),
         type: ToastType.Success,
@@ -95,6 +97,7 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
           ? t('modals.shareModal.invite.error.userAlreadyInvited', { email: payload.sharedWith })
           : t('modals.shareModal.invite.error.errorInviting', { email: payload.sharedWith }),
         type: ToastType.Error,
+        requestId: castedError.requestId,
       });
     }
   },
@@ -118,15 +121,15 @@ export const stopSharingItem = createAsyncThunk<void, StopSharingItemPayload, { 
         }),
         type: ToastType.Success,
       });
-      return;
     } catch (error) {
       errorService.reportError(error);
+      const castedError = errorService.castError(error);
+      notificationsService.show({
+        text: t('modals.shareModal.stopSharing.notification.error'),
+        type: ToastType.Error,
+        requestId: castedError.requestId,
+      });
     }
-
-    notificationsService.show({
-      text: t('modals.shareModal.stopSharing.notification.error'),
-      type: ToastType.Error,
-    });
   },
 );
 
@@ -152,12 +155,14 @@ export const removeUserFromSharedFolder = createAsyncThunk<
     return true;
   } catch (error) {
     errorService.reportError(error);
+    const castedError = errorService.castError(error);
+    notificationsService.show({
+      text: t('modals.shareModal.removeUser.notification.error', { name: userEmail }),
+      type: ToastType.Error,
+      requestId: castedError.requestId,
+    });
   }
 
-  notificationsService.show({
-    text: t('modals.shareModal.removeUser.notification.error', { name: userEmail }),
-    type: ToastType.Error,
-  });
   return false;
 });
 

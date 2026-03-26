@@ -18,6 +18,7 @@ import { TaskData, TaskEvent, TaskStatus, TaskType, UploadFolderTask } from '../
 import { QueueUtilsService } from 'utils/queueUtils';
 import { wait } from 'utils/timeUtils';
 import { ConnectionLostError } from './requests';
+import referralService from 'services/referral.service';
 
 interface UploadFolderPayload {
   root: IRoot;
@@ -163,7 +164,7 @@ export class UploadFoldersManager {
     (task, next: (err: Error | null, res?: DriveFolderData) => void) => {
       if (this.abortController?.signal.aborted) return;
 
-      const newConcurrency = QueueUtilsService.instance.getConcurrencyUsingPerfomance(
+      const newConcurrency = QueueUtilsService.instance.getConcurrencyUsingPerformance(
         this.uploadFoldersQueue.concurrency,
         UploadFoldersManager.MAX_CONCURRENT_UPLOADS,
       );
@@ -401,6 +402,7 @@ export class UploadFoldersManager {
         });
 
         options.onSuccess?.();
+        referralService.trackFolderUpload();
 
         setTimeout(() => {
           this.dispatch(planThunks.fetchUsageThunk());

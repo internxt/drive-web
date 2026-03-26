@@ -9,7 +9,6 @@ import { parseAndDecryptUserKeys } from 'app/crypto/services/keys.service';
 import { userActions, userThunks } from 'app/store/slices/user';
 import { productsThunks } from 'app/store/slices/products';
 import { planThunks } from 'app/store/slices/plan';
-import { referralsThunks } from 'app/store/slices/referrals';
 
 vi.mock(import('services/error.service'));
 vi.mock(import('services/local-storage.service'));
@@ -71,7 +70,6 @@ describe('guestSignupOnSubmit', () => {
     vi.mocked(userThunks.initializeUserThunk).mockReturnValue({} as any);
     vi.mocked(productsThunks.initializeThunk).mockReturnValue({} as any);
     vi.mocked(planThunks.initializeThunk).mockReturnValue({} as any);
-    vi.mocked(referralsThunks.initializeThunk).mockReturnValue({} as any);
   });
 
   it('should successfully register user and navigate to redirect page', async () => {
@@ -106,7 +104,6 @@ describe('guestSignupOnSubmit', () => {
     expect(mockDispatch).toHaveBeenCalledWith(userThunks.initializeUserThunk());
     expect(mockDispatch).toHaveBeenCalledWith(productsThunks.initializeThunk());
     expect(mockDispatch).toHaveBeenCalledWith(planThunks.initializeThunk());
-    expect(mockDispatch).toHaveBeenCalledWith(referralsThunks.initializeThunk());
     expect(navigationService.push).toHaveBeenCalledWith(AppView.Drive);
     expect(mockSetShowError).toHaveBeenCalledWith(true);
   });

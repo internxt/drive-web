@@ -9,7 +9,7 @@ import { deleteDatabaseProfileAvatar } from '../../../drive/services/database.se
 import { saveAvatarToDatabase } from '../../../../views/NewSettings/components/Sections/Account/Account/components/AvatarWrapper';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import tasksService from '../../../tasks/services/tasks.service';
-import { referralsActions } from '../referrals';
+import { referralsActions, referralsThunks } from '../referrals';
 import { sessionActions } from '../session';
 import { storageActions } from '../storage';
 import { uiActions } from '../ui';
@@ -54,6 +54,7 @@ export const initializeUserThunk = createAsyncThunk<
     dispatch(refreshUserThunk());
     dispatch(getUserTierFeaturesThunk());
     dispatch(refreshAvatarThunk());
+    await dispatch(referralsThunks.initializeThunk());
     dispatch(setIsUserInitialized(true));
   } else if (payload.redirectToLogin) {
     navigationService.push(AppView.Login);
@@ -73,10 +74,10 @@ export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean 
       if (isExpired || forceRefresh) {
         const { user, newToken } = await userService.refreshUserData(currentUser.uuid);
 
-        const { emailVerified, name, lastname, uuid } = user;
+        const { emailVerified, name, lastname, uuid, createdAt } = user;
         const avatar = await refreshAvatar(uuid);
 
-        dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname }));
+        dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname, createdAt }));
         dispatch(userActions.setToken(newToken));
       }
     } catch (err) {
@@ -262,6 +263,7 @@ export const userSelectors = {
     const { user } = state.user;
     return dayjs(user?.createdAt).isSame(new Date(), 'day');
   },
+  getUser: (state: RootState) => state.user.user,
   isFromAppSumo: (state: RootState): boolean => !!state.user.user?.appSumoDetails,
   hasReferralsProgram: (state: RootState): boolean => !!state.user.user?.hasReferralsProgram,
 };

@@ -66,9 +66,11 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
         setAvailableCryptoCurrencies(availableCryptoCurrencies);
       } catch (error) {
         console.error('Error fetching available crypto currencies', error);
+        const castedError = errorService.castError(error);
         notificationsService.show({
           text: translate('checkout.error.fetchingCryptoCurrencies'),
           type: ToastType.Error,
+          requestId: castedError.requestId,
         });
       }
     }

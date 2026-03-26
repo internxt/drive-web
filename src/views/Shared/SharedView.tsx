@@ -405,6 +405,7 @@ function SharedView({
         encryptionKey: currentUser?.mnemonic,
         bucketId: currentUser.bucket,
         token,
+        resourcesToken: token,
       };
     } else {
       const mnemonicDecrypted =
@@ -416,6 +417,7 @@ function SharedView({
           encryptionKey: mnemonicDecrypted,
           bucketId: ownerBucket,
           token,
+          resourcesToken: token,
         };
       }
     }
@@ -518,7 +520,7 @@ function SharedView({
       <Helmet>
         <title>{translate('sideNav.shared')} - Internxt Drive</title>
       </Helmet>
-      <div className="z-30 flex h-14 w-full shrink-0 flex-row items-center px-5">
+      <div className="flex z-10 h-14 w-full shrink-0 flex-row items-center px-5">
         <div className="flex w-full flex-row items-center">
           <BreadcrumbsSharedView resetSharedItems={resetSharedItems} sharedNamePath={sharedNamePath} />
         </div>
