@@ -1,12 +1,12 @@
-import backupsService from '../services/backups.service';
-import { DriveItemData, DriveFolderData } from 'app/drive/types';
+import { Device } from '@internxt/sdk/dist/drive/backups/types';
+import { DriveFolderData, DriveItemData } from 'app/drive/types';
 import { AppDispatch } from 'app/store';
 import { useAppSelector } from 'app/store/hooks';
-import { backupsActions, backupsThunks } from '../store/backupsSlice';
 import { deleteItemsThunk } from 'app/store/slices/storage/storage.thunks/deleteItemsThunk';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { Device } from '@internxt/sdk/dist/drive/backups/types';
 import errorService from 'services/error.service';
+import backupsService from '../services/backups.service';
+import { backupsActions, backupsThunks } from '../store/backupsSlice';
 
 export const useBackupDeviceActions = (
   onFolderUuidChanges: (folderUuid?: string) => void,
@@ -86,7 +86,7 @@ export const useBackupDeviceActions = (
           await dispatch(backupsThunks.deleteDeviceThunk(selectedDevice)).unwrap();
         } else {
           await dispatch(deleteItemsThunk([selectedDevice as DriveItemData])).unwrap();
-          await backupsService.deleteBackupDeviceAsFolder((selectedDevice as DriveFolderData).uuid);
+          await backupsService.deleteBackupDeviceAsFolder(selectedDevice.uuid);
           await dispatch(backupsThunks.fetchDevicesThunk());
         }
       }

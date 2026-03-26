@@ -66,6 +66,7 @@ const FileImageViewer = ({
         {fileUrl && (
           <img
             src={fileUrl}
+            alt={file.name}
             className="relative max-h-screen object-contain"
             draggable={false}
             onError={() => setIsPreviewAvailable(false)}

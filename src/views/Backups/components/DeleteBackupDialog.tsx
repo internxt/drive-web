@@ -1,15 +1,14 @@
-import errorService from 'services/error.service';
-import { uiActions } from 'app/store/slices/ui';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { RootState } from 'app/store';
-import { DriveFolderData as DriveWebFolderData, DriveItemData } from 'app/drive/types';
-import { deleteItemsThunk } from 'app/store/slices/storage/storage.thunks/deleteItemsThunk';
-import { backupsThunks } from '../store/backupsSlice';
-import { DriveFolderData } from 'app/drive/types';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { useState } from 'react';
 import { Dialog } from '@internxt/ui';
+import { DriveFolderData, DriveItemData } from 'app/drive/types';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { RootState } from 'app/store';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { deleteItemsThunk } from 'app/store/slices/storage/storage.thunks/deleteItemsThunk';
+import { uiActions } from 'app/store/slices/ui';
+import { useState } from 'react';
+import errorService from 'services/error.service';
 import backupsService from '../services/backups.service';
+import { backupsThunks } from '../store/backupsSlice';
 
 interface DeleteBackupDialogProps {
   backupsAsFoldersPath: DriveFolderData[];
@@ -38,7 +37,7 @@ const DeleteBackupDialog = (props: DeleteBackupDialogProps): JSX.Element => {
       dispatch(backupsThunks.deleteDeviceThunk(currentDevice));
     } else {
       await dispatch(deleteItemsThunk([currentDevice as DriveItemData])).unwrap();
-      await backupsService.deleteBackupDeviceAsFolder((currentDevice as DriveWebFolderData).uuid);
+      await backupsService.deleteBackupDeviceAsFolder((currentDevice as DriveFolderData).uuid);
       await dispatch(backupsThunks.fetchDevicesThunk());
     }
   };
