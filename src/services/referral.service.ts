@@ -275,14 +275,18 @@ const onTrigger = (listener: () => void): (() => void) => {
   return () => triggerListeners.delete(listener);
 };
 
+const getCustomLauncherLabel = async (): Promise<string | undefined> => {
+  if (!globalThis.Cello) return undefined;
+  const labels = (await globalThis.Cello('getLabels')) as { customLauncher?: string };
+  return labels.customLauncher;
+};
+
 const changeLanguage = async (language: string): Promise<void> => {
   if (!globalThis.Cello) return;
   await globalThis.Cello('changeLanguage', language);
 };
 
 const boot = async (user: ReferralUser, language?: string): Promise<void> => {
-  if (!user.emailVerified) return;
-
   try {
     await loadAndBoot(user, language);
   } catch (error) {
@@ -308,6 +312,7 @@ const isEligibleForReferral = async (accountCreatedAt?: Date): Promise<boolean> 
 
 const referralService = {
   boot,
+  getCustomLauncherLabel,
   changeLanguage,
   openPanel,
   captureUcc,

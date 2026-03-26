@@ -115,6 +115,22 @@ const Navbar = (props: NavbarProps) => {
   const doneTypingInterval = 200;
 
   const isReferralEligible = useAppSelector((state: RootState) => state.referrals.isEligible);
+  const [customLauncherLabel, setCustomLauncherLabel] = useState<string>('');
+
+  useEffect(() => {
+    const fetchLabel = async () => {
+      const label = await referralService.getCustomLauncherLabel();
+      if (label) {
+        setCustomLauncherLabel(label);
+      }
+    };
+
+    if (isReferralEligible) {
+      fetchLabel();
+    }
+  }, [isReferralEligible]);
+
+  const referralLauncherLabel = customLauncherLabel || translate('views.account.popover.earnReferral');
 
   const isGlobalSearch = useAppSelector((state: RootState) => state.ui.isGlobalSearch);
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
@@ -404,6 +420,7 @@ const Navbar = (props: NavbarProps) => {
       <div className="flex shrink-0 items-center">
         <button
           id="cello-launcher"
+          data-cello-click="false"
           onClick={() => {
             referralService.openPanel(
               { name: user.name, lastname: user.lastname, email: user.email, emailVerified: user.emailVerified },
@@ -414,9 +431,7 @@ const Navbar = (props: NavbarProps) => {
           className="flex h-10 cursor-pointer items-center gap-2 border-none bg-transparent px-3"
         >
           <Gift size={20} className="text-primary" />
-          <span className="text-sm font-medium whitespace-nowrap text-primary">
-            {translate('views.account.popover.earnReferral')}
-          </span>
+          <span className="text-sm font-medium whitespace-nowrap text-primary">{referralLauncherLabel}</span>
         </button>
         <button
           onClick={() => {

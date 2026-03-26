@@ -307,6 +307,26 @@ describe('referralService', () => {
     });
   });
 
+  describe('getCustomLauncherLabel', () => {
+    it('when the Cello widget is loaded, then the custom launcher label is returned', async () => {
+      const mockCello = vi.fn().mockResolvedValue({ customLauncher: 'Give 85% off' });
+      globalThis.Cello = mockCello;
+
+      const label = await referralService.getCustomLauncherLabel();
+
+      expect(mockCello).toHaveBeenCalledWith('getLabels');
+      expect(label).toBe('Give 85% off');
+    });
+
+    it('when the Cello widget is not available, then undefined is returned', async () => {
+      delete globalThis.Cello;
+
+      const label = await referralService.getCustomLauncherLabel();
+
+      expect(label).toBeUndefined();
+    });
+  });
+
   describe('changeLanguage', () => {
     it('when the referral widget is loaded, then the language is updated', async () => {
       const mockCello = vi.fn().mockResolvedValue(undefined);
