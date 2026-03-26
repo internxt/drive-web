@@ -139,7 +139,7 @@ const openPanel = async (user: ReferralUser, language?: string): Promise<void> =
     const toastId = notificationsService.show({
       text: t('referrals.emailVerification.message'),
       type: ToastType.Info,
-      containerClassName: 'w-100 border-primary/30 bg-primary/5 dark:bg-primary/10',
+      containerClassName: 'w-100 border-[#E5EFFF] dark:border-[#082D66] bg-[#F4F8FF] dark:bg-[#031632]',
       action: {
         text: t('referrals.emailVerification.resendVerification'),
         onClick: () => {
