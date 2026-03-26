@@ -379,7 +379,7 @@
     "trash": "Corbeille",
     "desktop": "App de bureau",
     "referralBanner": {
-      "message": "N'oubliez pas ! Gagnez jusqu'à 1 000 € en parrainant un ami",
+      "message": "Gagnez 10% de commission pour chaque parrainage !",
       "cta": "Parrainez et gagnez"
     }
   },
@@ -413,7 +413,7 @@
         "settings": "Paramètres",
         "logout": "Déconnexion",
         "referAndEarn": "Parrainez et gagnez",
-        "earnReferral": "Gagnez 1 000 €",
+        "earnReferral": "Gagnez 100 €",
         "spaceUsed": "{{space}}% d'espace utilisé"
       },
       "tabs": {
@@ -1594,6 +1594,10 @@
     }
   },
   "referrals": {
+    "emailVerification": {
+      "message": "Vérifiez votre e-mail pour être éligible aux parrainages. Consultez votre boîte de réception ou",
+      "resendVerification": "renvoyer la vérification"
+    },
     "items": {
       "create-account": "Créer un compte",
       "install-mobile-app": "Installer l'app mobile et télécharger un fichier",
