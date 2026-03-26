@@ -25,10 +25,7 @@ const FileImageViewer = ({
           const updatedFile = { ...file };
           handlersForSpecialItems?.handleUpdateProgress(PROGRESS_BAR_STATUS.PENDING);
 
-          if (!blob) {
-            return;
-          }
-          const convertedBlob = await heic2any({ blob: blob });
+          const convertedBlob = await heic2any({ blob: blob as Blob });
           updatedFile.type = 'png';
 
           setImageBlob(convertedBlob as Blob);
@@ -36,6 +33,10 @@ const FileImageViewer = ({
 
           await handlersForSpecialItems?.handleUpdateThumbnail(updatedFile, convertedBlob as Blob);
         } else {
+          if (!blob) {
+            setIsPreviewAvailable(false);
+            return;
+          }
           setImageBlob(blob);
         }
       } catch (error) {
