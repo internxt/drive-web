@@ -242,6 +242,7 @@ export class NetworkFacade {
       file.size,
       encryptFile,
       uploadFileMultipart,
+      uploadsAbortController?.signal,
       options.parts,
     );
   }

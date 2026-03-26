@@ -842,7 +842,7 @@
         "userItem": {
           "roles": {
             "owner": "Besitzer",
-            "editor": "Herausgeber",
+            "editor": "Bearbeiter",
             "reader": "Betrachter"
           },
           "remove": "Entfernen"
@@ -876,7 +876,7 @@
           "accept": "Akzeptieren",
           "deny": "Ablehnen",
           "roles": {
-            "editor": "Redakteur",
+            "editor": "Bearbeiter",
             "reader": "Betrachter"
           }
         }
@@ -916,7 +916,7 @@
         "duplicatedEmail": "Die E-Mail-Adresse existiert bereits",
         "email": "E-Mail eingeben",
         "invite": "Einladen",
-        "editor": "Redakteur",
+        "editor": "Bearbeiter",
         "reader": "Betrachter",
         "listUsers": "einzuladende Benutzer",
         "successSentInvitation": "Erfolgreiche Freigabe mit {{email}}",
