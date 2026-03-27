@@ -427,7 +427,7 @@
     "trash": "Trash",
     "desktop": "Desktop",
     "referralBanner": {
-      "message": "Remember! Earn up to €1,000 by referring a friend",
+      "message": "Earn 10% commission for every referral!",
       "cta": "Refer and Earn"
     }
   },
@@ -461,7 +461,7 @@
         "settings": "Settings",
         "logout": "Log out",
         "referAndEarn": "Refer and Earn",
-        "earnReferral": "Earn €1,000",
+        "earnReferral": "Earn €100",
         "spaceUsed": "{{space}}% space used"
       },
       "tabs": {
@@ -901,7 +901,7 @@
       },
       "fileCount_one": "{{count}} file",
       "fileCount_other": "{{count}} files",
-      "fileCountMoreThan1000": "1000+ files"
+      "fileCountMoreThan": "{{count}}+ files"
     },
     "versionHistory": {
       "title": "Version history",
@@ -1671,6 +1671,10 @@
     }
   },
   "referrals": {
+    "emailVerification": {
+      "message": "Verify your email to be eligible to referrals. Check your inbox or",
+      "resendVerification": "resend verification"
+    },
     "items": {
       "create-account": "Create an account",
       "install-mobile-app": "Install mobile app and upload a file",

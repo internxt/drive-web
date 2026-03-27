@@ -393,7 +393,7 @@
     "trash": "垃圾箱",
     "desktop": "桌面应用程序",
     "referralBanner": {
-      "message": "别忘了！推荐朋友最高可赚取 €1,000",
+      "message": "每次推荐可赚取10%佣金！",
       "cta": "推荐赚取"
     }
   },
@@ -427,7 +427,7 @@
         "settings": "设置",
         "logout": "登出",
         "referAndEarn": "推荐赚取",
-        "earnReferral": "赚取 €1,000",
+        "earnReferral": "赚取 €100",
         "spaceUsed": "已使用储存空间的{{space}}%"
       },
       "tabs": {
@@ -867,7 +867,7 @@
       },
       "fileCount_one": "{{count}} 个文件",
       "fileCount_other": "{{count}} 个文件",
-      "fileCountMoreThan1000": "超过 1000 个文件"
+      "fileCountMoreThan": "{{count}}+ 个文件"
     },
     "versionHistory": {
       "title": "版本历史",
@@ -1636,6 +1636,10 @@
     }
   },
   "referrals": {
+    "emailVerification": {
+      "message": "请验证您的电子邮件以获得推荐资格。请检查您的收件箱或",
+      "resendVerification": "重新发送验证"
+    },
     "items": {
       "create-account": "创建一个账户",
       "install-mobile-app": "安装移动应用程序并上传一个文件",
