@@ -20,6 +20,7 @@ import WorkspaceSelectorSkeleton from 'views/Home/components/WorkspaceSelectorSk
 import { useSuiteLauncher } from 'hooks/useSuiteLauncher';
 import { useSidenavNavigation } from 'hooks/useSidenavNavigation';
 import { uiActions } from 'app/store/slices/ui';
+import RateLimitThrottler from './RateLimitThrottler';
 
 interface SidenavWrapperProps {
   user: UserSettings | undefined;
@@ -120,6 +121,7 @@ const SidenavWrapper = ({
           isLoading: isLoadingPlanUsage && isLoadingPlanLimit && isLoadingBusinessLimitAndUsage,
         }}
       />
+      <RateLimitThrottler />
     </div>
   );
 };
