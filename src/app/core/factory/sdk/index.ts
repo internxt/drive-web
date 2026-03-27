@@ -6,7 +6,7 @@ import packageJson from '../../../../../package.json';
 import { AppDispatch } from '../../../store';
 import { userThunks } from '../../../store/slices/user';
 import { LocalStorageService } from 'services/local-storage.service';
-import { Workspace } from '../../types';
+import { LocalStorageItem, Workspace } from '../../types';
 import { Checkout } from '@internxt/sdk/dist/payments';
 import envService from 'services/env.service';
 import { STORAGE_KEYS } from 'services/storage-keys';
@@ -172,7 +172,7 @@ export class SdkFactory {
 
   private getNewToken(workspace: string): Token {
     const tokenByWorkspace: { [key in Workspace]: string } = {
-      [Workspace.Individuals]: SdkFactory.sdk.localStorage.get('xNewToken') || '',
+      [Workspace.Individuals]: SdkFactory.sdk.localStorage.get(LocalStorageItem.NewToken) || '',
       [Workspace.Business]: SdkFactory.sdk.localStorage.get('xTokenTeam') || '',
     };
     return tokenByWorkspace[workspace];

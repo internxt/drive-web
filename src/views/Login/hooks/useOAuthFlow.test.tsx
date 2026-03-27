@@ -1,7 +1,7 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { renderHook } from '@testing-library/react';
 import { localStorageService, navigationService } from 'services';
-import { AppView } from 'app/core/types';
+import { AppView, LocalStorageItem } from 'app/core/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import oauthService from 'services/oauth.service';
 import { useOAuthFlow } from './useOAuthFlow';
@@ -79,7 +79,7 @@ describe('OAuth custom hook', () => {
 
       vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUserSettings);
       vi.spyOn(localStorageService, 'get').mockImplementation((key: string) => {
-        if (key === 'xNewToken') return mockNewToken;
+        if (key === LocalStorageItem.NewToken) return mockNewToken;
         return null;
       });
       vi.mocked(navigationService.push).mockImplementation(mockPush);
@@ -87,7 +87,7 @@ describe('OAuth custom hook', () => {
       renderHook(() => useOAuthFlow({ authOrigin: 'https://meet.internxt.com' }));
 
       expect(localStorageService.getUser).toHaveBeenCalled();
-      expect(localStorageService.get).toHaveBeenCalledWith('xNewToken');
+      expect(localStorageService.get).toHaveBeenCalledWith(LocalStorageItem.NewToken);
       expect(mockPush).toHaveBeenCalledWith(AppView.OAuthLink, expect.any(Object));
       expect(mockSendAuthSuccess).not.toHaveBeenCalled();
     });
@@ -97,7 +97,7 @@ describe('OAuth custom hook', () => {
 
       vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUserSettings);
       vi.spyOn(localStorageService, 'get').mockImplementation((key: string) => {
-        if (key === 'xNewToken') return mockNewToken;
+        if (key === LocalStorageItem.NewToken) return mockNewToken;
         return null;
       });
 
