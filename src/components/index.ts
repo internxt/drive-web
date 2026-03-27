@@ -20,7 +20,6 @@ export { ScrollableTable } from './ScrollableTable';
 export { default as Sidenav } from './SidenavWrapper';
 export { skinSkeleton } from './Skeleton';
 export { default as TextInput } from './TextInput';
-export { default as Tooltip } from './Tooltip';
 export { default as TooltipElement, DELAY_SHOW_MS } from './TooltipElement';
 export { Tutorial } from './Tutorial';
 export type { Step } from './Tutorial';
