@@ -23,6 +23,7 @@ import { useSidenavNavigation } from 'hooks/useSidenavNavigation';
 import { uiActions } from 'app/store/slices/ui';
 import ReferralBanner from './ReferralBanner';
 import referralService from 'services/referral.service';
+import RateLimitThrottler from './RateLimitThrottler';
 
 interface SidenavWrapperProps {
   user: UserSettings | undefined;
@@ -140,6 +141,7 @@ const SidenavWrapper = ({
           isLoading: isLoadingPlanUsage && isLoadingPlanLimit && isLoadingBusinessLimitAndUsage,
         }}
       />
+      <RateLimitThrottler />
       {isReferralEligible && (
         <div className="absolute bottom-24 left-0 right-0">
           <ReferralBanner onCtaClick={handleReferralClick} isCollapsed={isCollapsed} />
