@@ -45,10 +45,9 @@ const ChangePlanDialog = ({
   const selectedPlanSize = priceSelected?.bytes;
   const selectedPlanAmount = priceSelected?.amount;
   const selectedPlanInterval = priceSelected?.interval;
-  const selectedPlanSizeString =
-    userHasLifetimeSub && selectedPlanInterval === 'lifetime'
-      ? bytesToString(selectedPlanSize + planLimit)
-      : bytesToString(selectedPlanSize);
+  const planSize =
+    userHasLifetimeSub && selectedPlanInterval === 'lifetime' ? selectedPlanSize + planLimit : selectedPlanSize;
+  const selectedPlanSizeString = bytesToString(planSize);
   const currentPlanSizeString = bytesToString(
     isIndividualSubscription ? planLimit : (businessPlan?.storageLimit ?? businessPlanLimit),
   );
@@ -133,7 +132,7 @@ const ChangePlanDialog = ({
           )}
         </div>
       </div>
-      {selectedPlanSize < currentPlanUsage && (
+      {selectedPlanSize < planSize && (
         <div className="mb-5 flex flex-col items-center rounded-xl border border-red/20 bg-red/10 px-4 py-5 text-red">
           <h4 className="mb-1.5 text-center text-xl font-semibold">
             {translate('views.account.tabs.plans.dialog.alert.title')}
