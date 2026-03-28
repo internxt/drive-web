@@ -35,8 +35,6 @@ const RateLimitThrottler = () => {
     stopRef.current = true;
   }, []);
 
-  if (envService.isProduction()) return null;
-
   return (
     <button
       onClick={isRunning ? stop : start}
