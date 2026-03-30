@@ -1,7 +1,7 @@
 import { Invoice, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { Card } from '@internxt/ui';
 import Section from '../Sections/General/components/Section';
-import Card from 'components/Card';
 import InvoicesList from '../../components/Invoices/InvoicesList';
 import { useEffect, useState } from 'react';
 import { paymentService } from 'views/Checkout/services';

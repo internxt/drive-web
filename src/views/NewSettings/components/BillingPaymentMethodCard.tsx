@@ -1,6 +1,5 @@
 import { PaymentMethod, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
-import { Button, Loader } from '@internxt/ui';
-import Card from 'components/Card';
+import { Button, Card, Loader } from '@internxt/ui';
 import { t } from 'i18next';
 import { useEffect, useState } from 'react';
 

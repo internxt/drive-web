@@ -4,7 +4,7 @@ import i18next from 'i18next';
 import React, { useEffect } from 'react';
 import localStorageService from 'services/local-storage.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import Card from 'components/Card';
+import { Card } from '@internxt/ui';
 import ItemsDropdown from './ItemsDropdown';
 import MenuItem from './MenuItem';
 import Section from './Section';
