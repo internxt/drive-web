@@ -1,6 +1,6 @@
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { WorkspaceTeam, WorkspaceUser } from '@internxt/sdk/dist/workspaces';
-import { Button, Dropdown, Loader, Modal } from '@internxt/ui';
+import { Button, Card, Dropdown, Loader, Modal } from '@internxt/ui';
 import { PencilSimple } from '@phosphor-icons/react';
 import { t } from 'i18next';
 import { useEffect, useState } from 'react';
@@ -20,7 +20,6 @@ import UsageContainer from '../../../containers/UsageContainer';
 import { getProductCaptions, getSubscriptionData } from '../../../../utils';
 import UploadAvatarModal from '../../Account/Account/components/UploadAvatarModal';
 import WorkspaceAvatarWrapper from './components/WorkspaceAvatarWrapper';
-import { Card } from '@internxt/ui';
 
 const MIN_NAME_LENGTH = 3;
 
