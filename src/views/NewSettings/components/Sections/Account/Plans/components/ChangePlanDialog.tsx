@@ -45,13 +45,14 @@ const ChangePlanDialog = ({
   const selectedPlanSize = priceSelected?.bytes;
   const selectedPlanAmount = priceSelected?.amount;
   const selectedPlanInterval = priceSelected?.interval;
-  const planSize =
+  const newPlanTotalSize =
     userHasLifetimeSub && selectedPlanInterval === 'lifetime' ? selectedPlanSize + planLimit : selectedPlanSize;
-  const selectedPlanSizeString = bytesToString(planSize);
+  const selectedPlanSizeString = bytesToString(newPlanTotalSize);
   const currentPlanSizeString = bytesToString(
     isIndividualSubscription ? planLimit : (businessPlan?.storageLimit ?? businessPlanLimit),
   );
   const currentPlanUsage = isIndividualSubscription ? planUsage : businessPlanUsage;
+  const isStorageExceeded = currentPlanUsage > newPlanTotalSize;
   let amountMonthly: number | null = null;
   let currentAmountMonthly: number | null = null;
   let subscriptionCurrencySymbol: string | null = null;
@@ -112,7 +113,7 @@ const ChangePlanDialog = ({
           <p className="mb-2.5 rounded-xl border border-gray-10 bg-gray-5 px-2 py-1 text-xs font-medium text-gray-80">
             {translate('views.account.tabs.plans.dialog.plan.new')}
           </p>
-          <p className={`text-2xl font-medium ${selectedPlanSize < currentPlanUsage ? 'text-red' : 'text-primary'}`}>
+          <p className={`text-2xl font-medium ${isStorageExceeded ? 'text-red' : 'text-primary'}`}>
             {selectedPlanSizeString}
           </p>
           {selectedPlanInterval === 'lifetime' ? (
@@ -132,7 +133,7 @@ const ChangePlanDialog = ({
           )}
         </div>
       </div>
-      {selectedPlanSize < planSize && (
+      {isStorageExceeded && (
         <div className="mb-5 flex flex-col items-center rounded-xl border border-red/20 bg-red/10 px-4 py-5 text-red">
           <h4 className="mb-1.5 text-center text-xl font-semibold">
             {translate('views.account.tabs.plans.dialog.alert.title')}
