@@ -7,9 +7,7 @@ import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
 import { bytesToString } from 'app/drive/services/size.service';
 
-import Card from 'components/Card';
-
-import { Button } from '@internxt/ui';
+import { Button, Card } from '@internxt/ui';
 import { PlanState } from 'app/store/slices/plan';
 import { getNextBillingDate, getSubscriptionData } from '../../../../../utils';
 

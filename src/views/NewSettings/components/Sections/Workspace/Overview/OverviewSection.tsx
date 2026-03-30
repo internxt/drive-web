@@ -12,7 +12,6 @@ import { UsageDetailsProps } from 'app/drive/services/usage.service';
 import Section from '../../../Section';
 import DetailsInput from '../../../DetailsInput';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import Card from 'components/Card';
 import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { PlanState } from 'app/store/slices/plan';
@@ -21,6 +20,7 @@ import UsageContainer from '../../../containers/UsageContainer';
 import { getProductCaptions, getSubscriptionData } from '../../../../utils';
 import UploadAvatarModal from '../../Account/Account/components/UploadAvatarModal';
 import WorkspaceAvatarWrapper from './components/WorkspaceAvatarWrapper';
+import { Card } from '@internxt/ui';
 
 const MIN_NAME_LENGTH = 3;
 
