@@ -23,7 +23,6 @@ import { useSidenavNavigation } from 'hooks/useSidenavNavigation';
 import { uiActions } from 'app/store/slices/ui';
 import ReferralBanner from './ReferralBanner';
 import referralService from 'services/referral.service';
-import { referralsThunks } from 'app/store/slices/referrals';
 
 interface SidenavWrapperProps {
   user: UserSettings | undefined;
@@ -53,6 +52,7 @@ const SidenavWrapper = ({
   const workspaceUuid = selectedWorkspace?.workspaceUser.workspaceId;
   const { itemsNavigation } = useSidenavNavigation();
   const { suiteArray } = useSuiteLauncher();
+  const userUsage = planUsage > 0 ? bytesToString(planUsage) : '0GB';
 
   const [isCollapsed, setIsCollapsed] = useState(() => {
     const savedState = sessionStorage.getItem('sidenav-collapsed');
@@ -64,20 +64,6 @@ const SidenavWrapper = ({
     dispatch(sharedThunks.getPendingInvitations());
     referralService.trackAppOpenDay();
   }, []);
-
-  useEffect(() => {
-    if (user) {
-      referralService.boot(
-        { name: user.name, lastname: user.lastname, email: user.email, emailVerified: user.emailVerified },
-        i18n.language,
-      );
-      dispatch(
-        referralsThunks.fetchIsEligibleThunk({
-          accountCreatedAt: user.createdAt ? new Date(user.createdAt) : undefined,
-        }),
-      );
-    }
-  }, [user]);
 
   useEffect(() => {
     referralService.changeLanguage(i18n.language);
@@ -146,7 +132,7 @@ const SidenavWrapper = ({
           )
         }
         storage={{
-          usage: bytesToString(planUsage),
+          usage: userUsage,
           limit: bytesToString(planLimit),
           percentage: Math.min((planUsage / planLimit) * 100, 100),
           onUpgradeClick: handleUpgradeClick,

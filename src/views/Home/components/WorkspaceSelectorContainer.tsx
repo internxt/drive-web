@@ -85,7 +85,6 @@ const WorkspaceSelectorContainer = ({ user, isCollapsed }: WorkspaceSelectorCont
         userWorkspace={userWorkspace}
         workspaces={allParsedWorkspaces}
         onChangeWorkspace={handleWorkspaceChange}
-        onCreateWorkspaceButtonClicked={() => undefined}
         selectedWorkspace={selectedWorkspace ? parseWorkspaces([selectedWorkspace])[0] : userWorkspace}
         pendingWorkspacesInvitesLength={pendingWorkspacesInvites.length}
         setIsDialogOpen={setIsDialogOpen}

@@ -5,7 +5,7 @@ import usersReferralsService from 'app/referrals/services/users-referrals.servic
 import referralService from 'services/referral.service';
 
 import { ReferralKey, UserReferral } from '@internxt/sdk/dist/drive/referrals/types';
-import { t as translate } from 'i18next';
+import i18next, { t as translate } from 'i18next';
 import { RootState } from 'app/store';
 import { planThunks } from '../plan';
 import { uiActions } from '../ui';
@@ -31,6 +31,20 @@ const initializeThunk = createAsyncThunk<void, void, { state: RootState }>(
 
     if (isAuthenticated && hasReferralsProgram) {
       await dispatch(fetchUserReferralsThunk());
+    }
+
+    const user = userSelectors.getUser(getState());
+    if (isAuthenticated && user) {
+      const result = await dispatch(
+        fetchIsEligibleThunk({ accountCreatedAt: user.createdAt ? new Date(user.createdAt) : undefined }),
+      );
+      const isEligible = result.payload as boolean;
+      if (isEligible) {
+        await referralService.boot(
+          { name: user.name, lastname: user.lastname, email: user.email, emailVerified: user.emailVerified },
+          i18next.language,
+        );
+      }
     }
   },
 );
@@ -115,6 +129,9 @@ export const referralsSlice = createSlice({
       })
       .addCase(fetchIsEligibleThunk.fulfilled, (state, action) => {
         state.isEligible = action.payload;
+      })
+      .addCase(fetchIsEligibleThunk.rejected, (state) => {
+        state.isEligible = false;
       });
   },
 });
