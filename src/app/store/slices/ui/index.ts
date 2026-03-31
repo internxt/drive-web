@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { DriveItemData, DriveItemDetails, FileInfoMenuItem, UpgradePlanDialogInfo } from 'app/drive/types';
 import { PreviewFileItem } from '../../../share/types';
-import { FileVersion } from 'views/Drive/components/VersionHistory/types';
+import { FileVersion } from '@internxt/sdk/dist/drive/storage/types';
 
 interface UISliceState {
   isSidenavCollapsed: boolean;
