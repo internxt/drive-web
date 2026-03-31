@@ -4,7 +4,6 @@ import { RootState } from 'app/store';
 import { planSelectors } from 'app/store/slices/plan';
 import navigationService from 'services/navigation.service';
 import { AppView } from 'app/core/types';
-import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Sidenav } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -23,15 +22,6 @@ import { uiActions } from 'app/store/slices/ui';
 import ReferralBanner from './ReferralBanner';
 import referralService from 'services/referral.service';
 import { useSidenavCollapsed } from 'hooks/useSidenavCollapsed';
-
-interface SidenavWrapperProps {
-  user: UserSettings | undefined;
-  subscription: UserSubscription | null;
-  planUsage: number;
-  planLimit: number;
-  isLoadingPlanLimit: boolean;
-  isLoadingPlanUsage: boolean;
-}
 
 const SidenavPrimaryAction = ({
   user,
