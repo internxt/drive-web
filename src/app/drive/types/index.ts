@@ -46,7 +46,7 @@ export interface DriveFileData {
   deleted: boolean;
   deletedAt: null;
   encrypt_version: string;
-  fileId: string;
+  fileId: string | null;
   folderId: number;
   folder_id: number;
   folderUuid: string;

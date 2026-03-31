@@ -1,9 +1,11 @@
 import { Buffer } from 'buffer';
-import { Data, MaybeStream, WebStream, PrivateKey, PublicKey, Message } from 'openpgp';
+import { MaybeStream, Message, PrivateKey, PublicKey, WebStream } from 'openpgp';
+
 import kemBuilder from '@dashlane/pqc-kem-kyber512-browser';
 import { extendSecret } from './utils';
 
 const WORDS_HYBRID_MODE_IN_BASE64 = 'SHlicmlkTW9kZQ=='; // 'HybridMode' in BASE64 format
+type Data = Uint8Array | string;
 
 export async function getOpenpgp(): Promise<typeof import('openpgp')> {
   return import('openpgp');
@@ -32,7 +34,7 @@ export async function generateNewKeys(): Promise<{
 
   const { privateKey, publicKey, revocationCertificate } = await openpgp.generateKey({
     userIDs: [{ email: 'inxt@inxt.com' }],
-    curve: 'ed25519',
+    curve: 'ed25519Legacy',
   });
 
   const kem = await kemBuilder();

@@ -2,8 +2,8 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from 'app/store';
 
 import { Device, DeviceBackup } from '@internxt/sdk/dist/drive/backups/types';
+import { DriveFolderData } from 'app/drive/types';
 import backupsService from '../services/backups.service';
-import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 
 type BackupDevice = Device | DriveFolderData;
 

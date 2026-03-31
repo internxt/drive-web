@@ -7,7 +7,7 @@ export interface StreamSaverOptions {
 export interface MitmTransporter {
   frame?: Window | HTMLIFrameElement | null;
   loaded: boolean;
-  postMessage: (...args: any[]) => void;
+  postMessage: (message: ServiceWorkerMessage, targetOrigin: string, transfer: Transferable[]) => void;
   remove: () => void;
   addEventListener: (type: string, listener: EventListener, options?: AddEventListenerOptions) => void;
   removeEventListener: (type: string, listener: EventListener) => void;
