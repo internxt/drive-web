@@ -1,29 +1,29 @@
 import { useEffect, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 
-import errorService from 'services/error.service';
-import navigationService from 'services/navigation.service';
 import { AppView } from 'app/core/types';
 import fileService from 'app/drive/services/file.service';
 import newStorageService from 'app/drive/services/new-storage.service';
-import BreadcrumbsDriveView from 'components/BreadcrumbsDriveView';
+import { DriveItemData, FolderPath } from 'app/drive/types';
+import useDriveNavigation from 'app/routes/hooks/Drive/useDrive';
 import { AppDispatch, RootState } from 'app/store';
+import { useAppSelector } from 'app/store/hooks';
+import { fetchVersionLimitsThunk } from 'app/store/slices/fileVersions';
 import { storageActions, storageSelectors } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { uiActions } from 'app/store/slices/ui';
-import { Helmet } from 'react-helmet-async';
-import useDriveNavigation from 'app/routes/hooks/Drive/useDrive';
-import { useAppSelector } from 'app/store/hooks';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-import DriveExplorer from 'views/Drive/components/DriveExplorer/DriveExplorer';
-import { DriveItemData, FolderPath } from 'app/drive/types';
 import { workspacesActions, workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
-import localStorageService from 'services/local-storage.service';
-import { STORAGE_KEYS } from 'services/storage-keys';
-import workspacesService from 'services/workspace.service';
+import BreadcrumbsDriveView from 'components/BreadcrumbsDriveView';
+import { Helmet } from 'react-helmet-async';
 import { useHistory } from 'react-router-dom';
 import envService from 'services/env.service';
-import { fetchVersionLimitsThunk } from 'app/store/slices/fileVersions';
+import errorService from 'services/error.service';
+import localStorageService from 'services/local-storage.service';
+import navigationService from 'services/navigation.service';
+import { STORAGE_KEYS } from 'services/storage-keys';
+import workspacesService from 'services/workspace.service';
+import DriveExplorer from 'views/Drive/components/DriveExplorer/DriveExplorer';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -48,7 +48,7 @@ const DriveView = (props: DriveViewProps) => {
     dispatch(uiActions.setIsGlobalSearch(false));
     dispatch(storageThunks.resetNamePathThunk());
     dispatch(storageActions.clearSelectedItems());
-    dispatch(fetchVersionLimitsThunk());
+    dispatch(fetchVersionLimitsThunk({}));
   }, []);
 
   useEffect(() => {

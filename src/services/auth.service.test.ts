@@ -727,8 +727,8 @@ describe('updateCredentialsWithToken', () => {
     expect(encryptedMnemonic).toBeDefined();
     expect(keys).toBeDefined();
 
-    expect(keys.ecc).toBe('mock-encrypted-data');
-    expect(keys.kyber).toBeUndefined();
+    expect(keys.private.ecc).toBe('mock-encrypted-data');
+    expect(keys.private.kyber).toBeUndefined();
   });
 
   it('should successfully update credentials with token and with backup data (ECC and Kyber)', async () => {
@@ -767,8 +767,8 @@ describe('updateCredentialsWithToken', () => {
     expect(encryptedMnemonic).toBeDefined();
     expect(keys).toBeDefined();
 
-    expect(keys.ecc).toBe('mock-encrypted-data');
-    expect(keys.kyber).toBe('mock-encrypted-data');
+    expect(keys.private.ecc).toBe('mock-encrypted-data');
+    expect(keys.private.kyber).toBe('mock-encrypted-data');
   });
 
   it('should throw an error when mnemonic is invalid', async () => {

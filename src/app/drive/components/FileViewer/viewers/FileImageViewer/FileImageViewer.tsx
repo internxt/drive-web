@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
 import heic2any from 'heic2any';
+import { useEffect, useState } from 'react';
 
 import { FormatFileViewerProps } from '../../FileViewer';
 
@@ -25,19 +25,23 @@ const FileImageViewer = ({
           const updatedFile = { ...file };
           handlersForSpecialItems?.handleUpdateProgress(PROGRESS_BAR_STATUS.PENDING);
 
-          const convertedBlob = await heic2any({ blob: blob });
+          const convertedBlob = await heic2any({ blob: blob as Blob });
           updatedFile.type = 'png';
 
           setImageBlob(convertedBlob as Blob);
+          handlersForSpecialItems?.handleUpdateProgress(PROGRESS_BAR_STATUS.COMPLETED);
 
           await handlersForSpecialItems?.handleUpdateThumbnail(updatedFile, convertedBlob as Blob);
         } else {
+          if (!blob) {
+            setIsPreviewAvailable(false);
+            return;
+          }
           setImageBlob(blob);
         }
       } catch (error) {
         console.error('Error converting HEIC to another format:', error);
         setIsPreviewAvailable(false);
-      } finally {
         handlersForSpecialItems?.handleUpdateProgress(PROGRESS_BAR_STATUS.COMPLETED);
       }
     };
@@ -59,7 +63,15 @@ const FileImageViewer = ({
   return (
     <div className="flex max-h-screen max-w-full flex-col items-center justify-center text-white">
       <div className="relative max-h-screen max-w-full">
-        <img src={fileUrl} className="relative max-h-screen object-contain" draggable={false} />
+        {fileUrl && (
+          <img
+            src={fileUrl}
+            alt={file.name}
+            className="relative max-h-screen object-contain"
+            draggable={false}
+            onError={() => setIsPreviewAvailable(false)}
+          />
+        )}
       </div>
     </div>
   );

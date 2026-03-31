@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, vi, test } from 'vitest';
 import { EventHandler } from './event-handler.service';
 import { SOCKET_EVENTS, EventData } from './types/socket.types';
+import { DriveItemData } from 'app/drive/types';
 import { store } from 'app/store';
 import { planActions, planThunks } from 'app/store/slices/plan';
 import { storageActions } from 'app/store/slices/storage';
@@ -103,6 +104,9 @@ describe('Event Handler', () => {
       removed: false,
       removed_at: null,
       status: 'EXISTS' as const,
+      plain_name: 'test.txt',
+      thumbnails: [],
+      currentThumbnail: null,
     };
 
     test('When a file is created, then it should push item to storage', () => {
@@ -111,7 +115,7 @@ describe('Event Handler', () => {
         email: 'test@example.com',
         clientId: 'client-123',
         userId: 'user-123',
-        payload: mockFileItem,
+        payload: mockFileItem as unknown as DriveItemData,
       };
 
       eventHandler.onFileCreated(eventData, 'folder-123');
@@ -137,7 +141,7 @@ describe('Event Handler', () => {
         email: 'test@example.com',
         clientId: 'client-123',
         userId: 'user-123',
-        payload: mockFileItem,
+        payload: mockFileItem as unknown as DriveItemData,
       };
 
       eventHandler.onFileCreated(eventData, 'different-folder-123');

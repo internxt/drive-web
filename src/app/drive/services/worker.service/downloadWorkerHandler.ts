@@ -42,7 +42,7 @@ export class DownloadWorkerHandler {
   }: HandleWorkerMessagesPayload) {
     const fileName = itemData.plainName ?? itemData.name;
     const completeFilename = downloadName || (itemData.type ? `${fileName}.${itemData.type}` : fileName);
-    const downloadId = itemData.fileId;
+    const downloadId = itemData.fileId as string;
     const fileSize = itemData.size;
 
     return new Promise((resolve, reject) => {
