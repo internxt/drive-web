@@ -12,28 +12,7 @@ import envService from 'services/env.service';
 import { STORAGE_KEYS } from 'services/storage-keys';
 import { Location } from '@internxt/sdk';
 import { HttpClient } from '@internxt/sdk/dist/shared/http/client';
-import dayjs, { Dayjs } from 'dayjs';
-import dateService from 'services/date.service';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { t } from 'i18next';
-import { retryStrategies, NotifyUserCallback } from './retryStrategies';
-
-const RETRY_TOAST_DURATION_MS = 60000;
-const RETRY_TOAST_COOLDOWN_MINUTES = 1;
-let lastRetryToastShownAt: Dayjs | null = null;
-
-const notifyUserWithCooldown: NotifyUserCallback = () => {
-  const isToastOnCooldown =
-    lastRetryToastShownAt && !dateService.hasElapsed(lastRetryToastShownAt, RETRY_TOAST_COOLDOWN_MINUTES, 'minute');
-  if (!isToastOnCooldown) {
-    lastRetryToastShownAt = dayjs();
-    notificationsService.show({
-      text: t('sdk.rateLimitToast'),
-      type: ToastType.Warning,
-      duration: RETRY_TOAST_DURATION_MS,
-    });
-  }
-};
+import { retryStrategies, notifyUserWithCooldown } from './retryStrategies';
 
 const SdkClient = {
   Storage: 'Storage',
