@@ -1,34 +1,34 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { FileVersion } from '@internxt/sdk/dist/drive/storage/types';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { uiActions } from 'app/store/slices/ui';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import storageSelectors from 'app/store/slices/storage/storage.selectors';
-import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
-import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-import navigationService from 'services/navigation.service';
-import {
-  Header,
-  CurrentVersionItem,
-  VersionItem,
-  AutosaveSection,
-  VersionActionDialog,
-  VersionHistorySkeleton,
-  LockedFeatureModal,
-} from './components';
-import fileVersionService from 'views/Drive/services/fileVersion.service';
-import errorService from 'services/error.service';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import {
   fetchFileVersionsThunk,
   fetchVersionLimitsThunk,
   fileVersionsActions,
   fileVersionsSelectors,
 } from 'app/store/slices/fileVersions';
+import storageSelectors from 'app/store/slices/storage/storage.selectors';
+import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
+import { uiActions } from 'app/store/slices/ui';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getDaysUntilExpiration } from 'services/date.service';
-import { FileVersion } from '@internxt/sdk/dist/drive/storage/types';
+import errorService from 'services/error.service';
+import navigationService from 'services/navigation.service';
+import fileVersionService from 'views/Drive/services/fileVersion.service';
+import {
+  AutosaveSection,
+  CurrentVersionItem,
+  Header,
+  LockedFeatureModal,
+  VersionActionDialog,
+  VersionHistorySkeleton,
+  VersionItem,
+} from './components';
 
-type VersionInfo = { id: string; updatedAt: string };
+type VersionInfo = { updatedAt: string };
 
 const EMPTY_ARRAY: FileVersion[] = [];
 
@@ -56,7 +56,6 @@ const Sidebar = () => {
   const [selectedAutosaveVersions, setSelectedAutosaveVersions] = useState<Set<string>>(new Set());
   const [isBatchDeleteMode, setIsBatchDeleteMode] = useState(false);
   const [currentVersion, setCurrentVersion] = useState<VersionInfo>({
-    id: '',
     updatedAt: '',
   });
 
@@ -88,7 +87,6 @@ const Sidebar = () => {
   useEffect(() => {
     if (item) {
       setCurrentVersion({
-        id: item.fileId,
         updatedAt: item.updatedAt,
       });
     }
@@ -191,10 +189,9 @@ const Sidebar = () => {
     if (!versionToRestore || !item) return;
 
     try {
-      const restoredVersion = await fileVersionService.restoreVersion(item.uuid, versionToRestore.id);
+      await fileVersionService.restoreVersion(item.uuid, versionToRestore.id);
 
       setCurrentVersion({
-        id: restoredVersion.fileId as string,
         updatedAt: new Date().toISOString(),
       });
 
@@ -263,12 +260,7 @@ const Sidebar = () => {
               <VersionHistorySkeleton />
             ) : (
               <>
-                <CurrentVersionItem
-                  key={currentVersion.id}
-                  createdAt={currentVersion.updatedAt}
-                  userName={userName}
-                  userAvatar={userAvatar}
-                />
+                <CurrentVersionItem createdAt={currentVersion.updatedAt} userName={userName} userAvatar={userAvatar} />
 
                 <AutosaveSection
                   totalVersionsCount={totalVersionsCount}

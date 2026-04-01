@@ -49,7 +49,7 @@ export class DownloadWorker {
         await this.downloadUsingChunks(streamReader, callbacks.onChunk);
       }
 
-      callbacks.onSuccess(file.fileId);
+      callbacks.onSuccess(file.fileId as string);
     } catch (err) {
       console.log('[DOWNLOAD-WORKER] ERROR -->', err);
       callbacks.onError(err);
