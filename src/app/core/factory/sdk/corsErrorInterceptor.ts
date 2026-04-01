@@ -23,7 +23,7 @@ const isCORSMaskedError = (error: AxiosError): boolean => {
     error.message === 'Network Error' &&
     error.code !== 'ECONNABORTED' &&
     error.code !== 'ERR_CANCELED' &&
-    self.navigator.onLine
+    (self.navigator?.onLine ?? true)
   );
 };
 
@@ -37,13 +37,18 @@ export const corsMaskedErrorInterceptor: CustomInterceptor = {
       const axiosError = error as AxiosError;
 
       if (isCORSMaskedError(axiosError)) {
+        const headers = { 'retry-after': RETRY_AFTER_SECONDS };
+
         axiosError.response = {
           status: 429,
           data: { message: 'Rate limited (CORS masked)' },
-          headers: { 'retry-after': RETRY_AFTER_SECONDS },
+          headers,
           statusText: 'Too Many Requests',
           config: axiosError.config!,
         };
+
+        axiosError.status = 429;
+        Object.assign(axiosError, { headers });
       }
 
       return Promise.reject(error);

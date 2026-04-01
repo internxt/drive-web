@@ -26,6 +26,8 @@ describe('corsMaskedErrorInterceptor', () => {
     const error = createAxiosError();
 
     await expect(onRejected(error)).rejects.toMatchObject({
+      status: 429,
+      headers: { 'retry-after': '60' },
       response: {
         status: 429,
         headers: { 'retry-after': '60' },
