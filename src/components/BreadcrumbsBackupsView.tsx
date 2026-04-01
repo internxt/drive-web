@@ -1,4 +1,4 @@
-import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
+import { DriveFolderData } from 'app/drive/types';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { backupsActions } from 'views/Backups/store/backupsSlice';
 import { t } from 'i18next';
