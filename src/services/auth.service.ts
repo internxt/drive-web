@@ -1,4 +1,5 @@
 import { aes } from '@internxt/lib';
+import { AppError } from '@internxt/sdk';
 import {
   CryptoProvider,
   Keys,
@@ -13,10 +14,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { trackSignUp } from 'app/analytics/impact.service';
 import { trackLead } from 'app/analytics/meta.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
-import localStorageService from 'services/local-storage.service';
-import navigationService from 'services/navigation.service';
-import RealtimeService from 'services/sockets/socket.service';
-import { AppError } from '@internxt/sdk';
+import { SdkFactory } from 'app/core/factory/sdk';
 import { AppView } from 'app/core/types';
 import {
   assertPrivateKeyIsValid,
@@ -32,18 +30,20 @@ import {
   passToHash,
 } from 'app/crypto/services/utils';
 import databaseService from 'app/database/services/database.service';
-import { AuthMethodTypes } from 'views/Checkout/types';
 import { AppDispatch } from 'app/store';
 import { planThunks } from 'app/store/slices/plan';
 import { productsThunks } from 'app/store/slices/products';
 import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/user';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
-import { BackupData, detectBackupKeyFormat, prepareOldBackupRecoverPayloadForBackend } from 'utils/backupKeyUtils';
 import { generateMnemonic, validateMnemonic } from 'bip39';
-import { SdkFactory } from 'app/core/factory/sdk';
 import errorService from 'services/error.service';
-import vpnAuthService from './vpnAuth.service';
+import localStorageService from 'services/local-storage.service';
+import navigationService from 'services/navigation.service';
+import RealtimeService from 'services/sockets/socket.service';
 import { generateCaptchaToken } from 'utils';
+import { BackupData, detectBackupKeyFormat, prepareOldBackupRecoverPayloadForBackend } from 'utils/backupKeyUtils';
+import { AuthMethodTypes } from 'views/Checkout/types';
+import vpnAuthService from './vpnAuth.service';
 
 type ProfileInfo = {
   user: UserSettings;
@@ -343,8 +343,7 @@ export const updateCredentialsWithToken = async (
   const keys =
     encryptedEccPrivateKey || encryptedKyberPrivateKey
       ? {
-          ecc: encryptedEccPrivateKey,
-          kyber: encryptedKyberPrivateKey,
+          private: { ecc: encryptedEccPrivateKey, kyber: encryptedKyberPrivateKey },
         }
       : undefined;
 

@@ -1,11 +1,11 @@
-import streamSaver from '../../../../libs/streamSaver';
-import { isFirefox } from 'react-device-detect';
+import { ErrorMessages } from 'app/core/constants';
 import { ConnectionLostError } from 'app/network/requests';
+import { isFirefox } from 'react-device-detect';
+import streamSaver from '../../../../libs/streamSaver';
 import { DriveFileData } from '../../types';
+import { BlobWritable, downloadFileAsBlob } from './downloadFileAsBlob';
 import fetchFileStream from './fetchFileStream';
 import fetchFileStreamUsingCredentials from './fetchFileStreamUsingCredentials';
-import { ErrorMessages } from 'app/core/constants';
-import { BlobWritable, downloadFileAsBlob } from './downloadFileAsBlob';
 
 async function pipe(readable: ReadableStream, writable: BlobWritable): Promise<void> {
   const reader = readable.getReader();
