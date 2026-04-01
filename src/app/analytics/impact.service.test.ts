@@ -1,14 +1,13 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { savePaymentDataInLocalStorage, trackPaymentConversion, trackSignUp } from './impact.service';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
-import { getProductAmount } from 'views/Checkout/utils';
-import axios from 'axios';
-import localStorageService from 'services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { bytesToString } from 'app/drive/services/size.service';
-import errorService from 'services/error.service';
-import dayjs from 'dayjs';
+import axios from 'axios';
 import envService from 'services/env.service';
+import errorService from 'services/error.service';
+import localStorageService from 'services/local-storage.service';
+import { getProductAmount } from 'views/Checkout/utils';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { savePaymentDataInLocalStorage, trackPaymentConversion, trackSignUp } from './impact.service';
 
 vi.mock('services/local-storage.service', () => ({
   default: {
@@ -201,7 +200,7 @@ describe('Testing Impact Service', () => {
 
         await trackSignUp(mockedUserUuid);
 
-        const callArgs = axiosSpy.mock.calls[0][1];
+        const callArgs = axiosSpy.mock.calls[0][1] as { messageId: string };
         expect(callArgs).toHaveProperty('messageId');
         expect(callArgs.messageId).toBe(mockedUserUuid);
       });
@@ -259,7 +258,7 @@ describe('Testing Impact Service', () => {
 
         await trackPaymentConversion();
 
-        const callArgs = axiosSpy.mock.calls[0][1];
+        const callArgs = axiosSpy.mock.calls[0][1] as { messageId: string; properties: Record<string, unknown> };
         expect(callArgs.properties.impact_value).toBe(0.01);
       });
 
@@ -268,7 +267,7 @@ describe('Testing Impact Service', () => {
 
         await trackPaymentConversion();
 
-        const callArgs = axiosSpy.mock.calls[0][1];
+        const callArgs = axiosSpy.mock.calls[0][1] as { messageId: string; properties: Record<string, unknown> };
         expect(callArgs.properties).toHaveProperty('order_promo_code', promoCode.codeName);
       });
 

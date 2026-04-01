@@ -142,12 +142,10 @@ const ItemDetailsDialog = ({
     onClose();
   };
 
-  const MAX_DISPLAYABLE_FILE_COUNT = 1000;
-
-  const formatFileCount = (count: number | undefined) => {
-    if (count === undefined) return undefined;
-    if (count > MAX_DISPLAYABLE_FILE_COUNT) return translate('modals.itemDetailsModal.fileCountMoreThan1000');
-    return translate('modals.itemDetailsModal.fileCount', { count });
+  const formatFileCount = (folderStats?: FolderStatsResponse) => {
+    if (folderStats?.fileCount === undefined) return undefined;
+    const key = folderStats.isFileCountExact ? 'fileCount' : 'fileCountMoreThan';
+    return translate(`modals.itemDetailsModal.${key}`, { count: folderStats.fileCount });
   };
 
   const getFolderStats = (item: DriveItemDetails, itemUuid: string) => {
@@ -205,7 +203,7 @@ const ItemDetailsDialog = ({
       name: item.name,
       shared: isShared,
       type: item.isFolder ? undefined : item.type,
-      numberOfFiles: item.isFolder ? formatFileCount(folderStats?.fileCount) : undefined,
+      numberOfFiles: item.isFolder ? formatFileCount(folderStats) : undefined,
       size,
       uploaded,
       modified,

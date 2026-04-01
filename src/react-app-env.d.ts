@@ -77,6 +77,13 @@ interface ReferralBootOptions {
   themeMode?: 'light' | 'dark';
 }
 
+interface Array<T> {
+  toSorted(compareFn?: (a: T, b: T) => number): T[];
+  toReversed(): T[];
+  toSpliced(start: number, deleteCount?: number, ...items: T[]): T[];
+  with(index: number, value: T): T[];
+}
+
 interface Navigator {
   brave?: { isBrave: () => Promise<boolean> };
 

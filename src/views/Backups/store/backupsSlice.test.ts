@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import backupsReducer, { backupsActions, backupsThunks } from './backupsSlice';
 import backupsService from '../services/backups.service';
 import { Device } from '@internxt/sdk/dist/drive/backups/types';
-import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
+import { DriveFolderData } from 'app/drive/types';
 
 vi.mock('../services/backups.service', () => ({
   default: {
