@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { useBackupListActions } from './useBackupListActions';
 import { backupsActions } from '../store/backupsSlice';
 import { DriveItemData } from 'app/drive/types';
-import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
+import { DriveFolderData } from 'app/drive/types';
 
 vi.mock('../store/backupsSlice', () => ({
   backupsActions: {
