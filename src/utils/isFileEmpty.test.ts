@@ -9,6 +9,12 @@ describe('Is file empty check', () => {
     expect(isFileEmpty(emptyFile)).toBe(true);
   });
 
+  test('When the file has no fileId, then it should indicate it is empty', () => {
+    const emptyFile = { size: 0, fileId: null } as DriveFileData;
+
+    expect(isFileEmpty(emptyFile)).toBe(true);
+  });
+
   test('When the file size is not 0, then it should indicate so', () => {
     const nonEmptyFile = new File(['content'], 'file.txt');
 

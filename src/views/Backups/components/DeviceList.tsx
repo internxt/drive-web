@@ -5,7 +5,7 @@ import { DownloadSimple } from '@phosphor-icons/react';
 import { List, Empty } from '@internxt/ui';
 import { useTranslationContext } from '../../../app/i18n/provider/TranslationProvider';
 import { contextMenuBackupItems } from 'views/Drive/components/DriveExplorer/components';
-import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
+import { DriveFolderData } from 'app/drive/types';
 import { skinSkeleton } from 'components/Skeleton';
 import { Device } from '@internxt/sdk/dist/drive/backups/types';
 import { DeviceNameCell, DeviceDateCell, DeviceSizeCell } from './DeviceListItem';

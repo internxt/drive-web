@@ -6,23 +6,23 @@ import { validateMnemonic } from 'bip39';
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 
 import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/dist/network';
+import { queue, QueueObject } from 'async';
 import envService from 'services/env.service';
 import { buildProgressStream, decryptStream } from 'services/stream.service';
-import { queue, QueueObject } from 'async';
 
+import { WORKER_MESSAGE_STATES } from 'app/drive/services/worker.service/types/upload';
 import { waitForContinueUploadSignal } from 'app/drive/services/worker.service/uploadWorkerUtils';
 import { TaskStatus } from '../tasks/types';
 import { encryptStreamInParts, generateFileKey, getEncryptedFile, processEveryFileBlobReturnHash } from './crypto';
 import { DownloadProgressCallback, getDecryptedStream } from './download';
-import { uploadFileUint8Array, UploadProgressCallback } from './upload-utils';
-import { UPLOAD_CHUNK_SIZE, ALLOWED_CHUNK_OVERHEAD } from './networkConstants';
-import { WORKER_MESSAGE_STATES } from 'app/drive/services/worker.service/types/upload';
 import {
   DownloadAbortedByUserError,
   DownloadFailedWithUnknownError,
   NoContentReceivedError,
 } from './errors/download.errors';
+import { ALLOWED_CHUNK_OVERHEAD, UPLOAD_CHUNK_SIZE } from './networkConstants';
 import { DownloadChunkPayload } from './types/index';
+import { uploadFileUint8Array, UploadProgressCallback } from './upload-utils';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;

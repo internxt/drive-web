@@ -1,9 +1,9 @@
-import { describe, expect, test, vi, beforeEach, Mock } from 'vitest';
-import { AuthCheckoutProps, useAuthCheckout } from './useAuthCheckout';
 import { act, renderHook } from '@testing-library/react';
-import { authenticateUser } from 'services/auth.service';
 import databaseService from 'app/database/services/database.service';
 import { localStorageService, RealtimeService } from 'services';
+import { authenticateUser } from 'services/auth.service';
+import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import { AuthCheckoutProps, useAuthCheckout } from './useAuthCheckout';
 
 vi.mock('services/auth.service', () => ({
   authenticateUser: vi.fn(),
@@ -115,7 +115,7 @@ describe('Authentication Checkout Custom hook', () => {
     expect(mockedAuthenticateUserProps.onAuthenticationFail).toHaveBeenCalled();
   });
 
-  test("When the user wants to log out, then all services are cleared and the auth method is set to 'sign up'", async () => {
+  test('When the user wants to log out, then all services are cleared and the auth method is set to \'sign up\'', async () => {
     const changeAuthMethod = vi.fn();
 
     const stopRealTimeServiceSpy = vi.spyOn(RealtimeService.prototype, 'stop').mockResolvedValue();
