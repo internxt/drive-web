@@ -1,7 +1,6 @@
 import { createDecipheriv, Decipher } from 'crypto';
 
 import { buildProgressStream, joinReadableBinaryStreams } from 'services/stream.service';
-import { Abortable } from './Abortable';
 import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from './requests';
 
 import { FileVersionOneError } from '@internxt/sdk/dist/network/download';
@@ -11,28 +10,7 @@ import { generateFileKey } from './crypto';
 import downloadFileV2, { multipartDownload } from './download/v2';
 
 export type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
-export type Downloadable = { fileId: string; bucketId: string };
-
-type BinaryStream = ReadableStream<Uint8Array>;
-
-export async function binaryStreamToBlob(stream: BinaryStream): Promise<Blob> {
-  const reader = stream.getReader();
-  const slices: Uint8Array[] = [];
-
-  let finish = false;
-
-  while (!finish) {
-    const { done, value } = await reader.read();
-
-    if (!done) {
-      slices.push(value as Uint8Array);
-    }
-
-    finish = done;
-  }
-
-  return new Blob(slices);
-}
+export type Downloadable = { fileId: string | null; bucketId: string };
 
 interface FileInfo {
   bucket: string;
@@ -115,7 +93,7 @@ export interface NetworkCredentials {
 
 export interface IDownloadParams {
   bucketId: string;
-  fileId: string;
+  fileId: string | null;
   creds?: NetworkCredentials;
   mnemonic?: string;
   encryptionKey?: Buffer;
@@ -169,7 +147,8 @@ export function downloadFile(params: IDownloadParams): Promise<ReadableStream<Ui
 export async function multipartDownloadFile(
   params: IDownloadParams & { fileSize?: number },
 ): Promise<ReadableStream<Uint8Array>> {
-  const downloadMultipartPromise = multipartDownload(params);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const downloadMultipartPromise = multipartDownload(params as any);
 
   return downloadMultipartPromise.catch((err) => {
     if (err instanceof FileVersionOneError) {
@@ -186,9 +165,9 @@ export async function _downloadFile(params: IDownloadParams): Promise<ReadableSt
   let metadata: MetadataRequiredForDownload;
 
   if (creds) {
-    metadata = await getRequiredFileMetadataWithAuth(bucketId, fileId, creds);
+    metadata = await getRequiredFileMetadataWithAuth(bucketId, fileId ?? '', creds);
   } else if (token) {
-    metadata = await getRequiredFileMetadataWithToken(bucketId, fileId, token);
+    metadata = await getRequiredFileMetadataWithToken(bucketId, fileId ?? '', token);
   } else {
     throw new Error('Download error 1');
   }
@@ -217,12 +196,4 @@ export async function _downloadFile(params: IDownloadParams): Promise<ReadableSt
   return buildProgressStream(downloadStream, (readBytes) => {
     params.options?.notifyProgress(metadata.fileMeta.size, readBytes);
   });
-}
-
-export function downloadFileToFileSystem(
-  params: IDownloadParams & { destination: WritableStream },
-): [Promise<void>, Abortable] {
-  const downloadStreamPromise = downloadFile(params);
-
-  return [downloadStreamPromise.then((readable) => readable.pipeTo(params.destination)), { abort: () => null }];
 }

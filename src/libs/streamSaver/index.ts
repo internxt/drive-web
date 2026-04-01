@@ -1,5 +1,5 @@
 /* eslint-disable quotes */
-import { StreamSaverOptions, MitmTransporter, ServiceWorkerMessage, ServiceWorkerResponse } from './types';
+import { MitmTransporter, ServiceWorkerMessage, ServiceWorkerResponse, StreamSaverOptions } from './types';
 
 export const STREAM_SAVER_MITM = '/streamsaver/mitm.html?version=2.0.0';
 
@@ -40,7 +40,8 @@ export class StreamSaver {
     const transport: MitmTransporter = {
       frame: iframe,
       loaded: false,
-      postMessage: (...args: any[]) => iframe.contentWindow?.postMessage(...args),
+      postMessage: (message: ServiceWorkerMessage, targetOrigin: string, transfer?: Transferable[]) =>
+        iframe.contentWindow?.postMessage(message, targetOrigin, transfer),
       remove: () => iframe.remove(),
       addEventListener: (type: string, listener: EventListener, options?: AddEventListenerOptions) =>
         iframe.addEventListener(type, listener, options),

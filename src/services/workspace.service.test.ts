@@ -509,7 +509,7 @@ describe('workspace service', () => {
           activity: [WorkspaceLogType.ShareFile, WorkspaceLogType.ShareFolder],
           lastDays: 7,
           summary: true,
-          orderBy: 'createdAt:ASC',
+          orderBy: 'createdAt:ASC' as const,
         },
         expectedCall: [
           mockIds.workspaceId,

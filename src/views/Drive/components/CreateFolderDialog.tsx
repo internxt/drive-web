@@ -1,15 +1,15 @@
+import { Button, Input, Modal } from '@internxt/ui';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { RootState } from 'app/store';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { storageActions } from 'app/store/slices/storage';
+import storageSelectors from 'app/store/slices/storage/storage.selectors';
+import storageThunks from 'app/store/slices/storage/storage.thunks';
+import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
+import { uiActions } from 'app/store/slices/ui';
 import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { RootState } from 'app/store';
-import { uiActions } from 'app/store/slices/ui';
-import storageThunks from 'app/store/slices/storage/storage.thunks';
-import storageSelectors from 'app/store/slices/storage/storage.selectors';
-import { Button, Modal, Input } from '@internxt/ui';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import errorService from 'services/error.service';
-import { storageActions } from 'app/store/slices/storage';
-import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 
 interface CreateFolderDialogProps {
   onFolderCreated?: () => void;
@@ -62,7 +62,7 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }
           }, 500);
         })
         .catch((e) => {
-          errorService.reportError(e, { extra: { folderName, parentFolderId: currentFolderId } });
+          errorService.reportError(e);
           setHasError(true);
           setIsLoading(false);
           return e;

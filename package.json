@@ -1,6 +1,6 @@
 {
   "name": "drive-web",
-  "version": "v1.0.732",
+  "version": "v1.0.734",
   "private": true,
   "packageManager": "yarn@1.22.22",
   "dependencies": {
@@ -100,6 +100,7 @@
     "lint:scss:fix": "yarn run lint:scss --fix",
     "lint": "yarn run lint:ts && yarn run lint:scss",
     "lint:fix": "yarn run lint:ts:fix && yarn run lint:scss:fix",
+    "typecheck": "tsc --noEmit",
     "analyze": "cross-env ANALYZE=true yarn build",
     "add:npmrc": "echo \"registry=https://registry.yarnpkg.com/\" >> .npmrc && echo \"@internxt:registry=https://npm.pkg.github.com\" >> .npmrc && echo \"//npm.pkg.github.com/:_authToken=$NPM_TOKEN\" >> .npmrc && echo \"always-auth=true\" >> .npmrc"
   },
@@ -137,7 +138,7 @@
     "@types/react-redux": "^7.1.17",
     "@types/react-router-dom": "^5.3.3",
     "@types/react-window": "^1.8.8",
-    "@types/wicg-file-system-access": "^2020.9.4",
+    "@types/wicg-file-system-access": "^2023.10.7",
     "@vitejs/plugin-react": "=4.5.1",
     "@vitest/coverage-istanbul": "2.1.9",
     "autoprefixer": "^10.4.16",
