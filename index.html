@@ -66,17 +66,6 @@
     </script>
 
     <script src="https://www.google.com/recaptcha/api.js?render=%REACT_APP_RECAPTCHA_V3%"></script>
-    <script src="https://www.googletagmanager.com/gtag/js?id=%REACT_APP_GA_ID%"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag('js', new Date());
-      gtag('config', '%REACT_APP_GA_ID%', { debug_mode: '%NODE_ENV%' === 'development' });
-      gtag('config', '%REACT_APP_GA_BLOG_ID%', { debug_mode: '%NODE_ENV%' === 'development', groups: 'Blog' });
-    </script>
-
     <!-- MailerLite Universal -->
     <script>
       if ('%NODE_ENV%' === 'production') {
@@ -97,20 +86,13 @@
     </script>
     <!-- < !--End MailerLite Universal-->
 
-    <!-- Google Tag Manager -->
-    <script>
-      (function (w, d, s, l, i) {
-        w[l] = w[l] || [];
-        w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
-        var f = d.getElementsByTagName(s)[0],
-          j = d.createElement(s),
-          dl = l != 'dataLayer' ? '&l=' + l : '';
-        j.async = true;
-        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-        f.parentNode.insertBefore(j, f);
-      })(window, document, 'script', 'dataLayer', '%REACT_APP_GOOGLE_TAG_MANAGER%');
+    <!-- Google Tag Manager (First-Party) -->
+    <script type="text/javascript">
+      (function(w,i,g){w[g]=w[g]||[];if(typeof w[g].push=='function')w[g].push(i)})
+      (window,'GTM-P7N7LW5G','google_tags_first_party');
     </script>
-    <!-- End Google Tag Manager -->
+    <script type="text/javascript" async src="https://drive.internxt.com/gc5y/?id=GTM-P7N7LW5G"></script>
+    <!-- End Google Tag Manager (First-Party) -->
 
     <!-- Meta Pixel Code -->
     <script>
@@ -1699,16 +1681,9 @@
 
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <!-- Google Tag Manager (noscript) -->
-    <noscript
-      ><iframe
-        src="https://www.googletagmanager.com/ns.html?id=%REACT_APP_GOOGLE_TAG_MANAGER%"
-        height="0"
-        width="0"
-        style="display: none; visibility: hidden"
-      ></iframe
-    ></noscript>
-    <!-- End Google Tag Manager (noscript) -->
+    <!-- Google Tag Manager (noscript, First-Party) -->
+    <noscript><iframe src="https://drive.internxt.com/ns.html?id=GTM-P7N7LW5G" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript, First-Party) -->
 
     <!-- Meta Pixel (noscript) -->
     <noscript>
