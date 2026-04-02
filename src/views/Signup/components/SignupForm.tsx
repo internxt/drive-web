@@ -167,9 +167,9 @@ function SignUpForm(): JSX.Element {
         doSignUp: doRegister,
       };
 
-      const { token: xToken, newToken: xNewToken } = await authenticateUser(authParams);
+      const { newToken: xNewToken } = await authenticateUser(authParams);
 
-      await redirectTheUserAfterRegistration(xToken, xNewToken, redeemCodeObject);
+      await redirectTheUserAfterRegistration(xNewToken, redeemCodeObject);
     } catch (err: unknown) {
       handleSubmitError(err);
     } finally {
@@ -195,7 +195,6 @@ function SignUpForm(): JSX.Element {
   };
 
   const redirectTheUserAfterRegistration = async (
-    xToken: string,
     xNewToken: string,
     redeemCodeObject?: {
       code: string;
@@ -204,7 +203,7 @@ function SignUpForm(): JSX.Element {
   ) => {
     const urlParams = new URLSearchParams(globalThis.location.search);
     const isUniversalLinkMode = urlParams.get('universalLink') == 'true';
-    const redirectUrl = authService.getRedirectUrl(urlParams, xToken);
+    const redirectUrl = authService.getRedirectUrl(urlParams, xNewToken);
     const isVPNAuth = urlParams.get('vpnAuth');
 
     handleVPNAuth(isVPNAuth, xNewToken);

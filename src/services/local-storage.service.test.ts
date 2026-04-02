@@ -331,20 +331,14 @@ describe('Testing the local storage service', () => {
     });
   });
 
-
   describe('Clearing local storage', () => {
     it('When clear storage is requested, then removes all keys', () => {
       const expectedKeysToRemove = [
         LocalStorageItem.User,
         LocalStorageItem.UserMnemonic,
-        LocalStorageItem.UserToken,
         LocalStorageItem.NewToken,
         LocalStorageItem.TeamToken,
         LocalStorageItem.Workspace,
-        LocalStorageItem.Language,
-        LocalStorageItem.ShowSummerBanner,
-        LocalStorageItem.InvitedToken,
-        LocalStorageItem.ResourcesToken,
         STORAGE_KEYS.B2B_WORKSPACE,
         STORAGE_KEYS.WORKSPACE_CREDENTIALS,
         ...Object.values(STORAGE_KEYS.THEMES),

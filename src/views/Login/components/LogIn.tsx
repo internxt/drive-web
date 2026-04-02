@@ -148,8 +148,8 @@ export default function LogIn(): JSX.Element {
     }
   };
 
-  const handleSuccessfulAuth = (token: string, user: UserSettings, mnemonic: string): void => {
-    const newToken = localStorageService.get(LocalStorageItem.NewToken);
+  const handleSuccessfulAuth = (user: UserSettings, mnemonic: string): void => {
+    const newToken = localStorageService.get(LocalStorageItem.NewToken) ?? '';
 
     if (isOAuthFlow && newToken) {
       const success = handleOAuthSuccess(user, newToken);
@@ -162,7 +162,7 @@ export default function LogIn(): JSX.Element {
       return;
     }
 
-    const redirectUrl = authService.getRedirectUrl(urlParams, token);
+    const redirectUrl = authService.getRedirectUrl(urlParams, newToken);
 
     if (redirectUrl && !isUniversalLinkMode && !isSharingInvitation) {
       globalThis.location.replace(redirectUrl);
@@ -195,8 +195,8 @@ export default function LogIn(): JSX.Element {
           loginType,
         };
 
-        const { token, user, mnemonic } = await authenticateUser(authParams);
-        handleSuccessfulAuth(token, user, mnemonic);
+        const { user, mnemonic } = await authenticateUser(authParams);
+        handleSuccessfulAuth(user, mnemonic);
       } else {
         setShowTwoFactor(true);
         setLoginError([]);

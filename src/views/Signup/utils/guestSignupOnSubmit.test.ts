@@ -96,7 +96,6 @@ describe('guestSignupOnSubmit', () => {
       'recaptcha-token',
     );
     expect(localStorageService.clear).toHaveBeenCalled();
-    expect(localStorageService.set).toHaveBeenCalledWith(LocalStorageItem.UserToken, 'access-token');
     expect(localStorageService.set).toHaveBeenCalledWith(LocalStorageItem.UserMnemonic, 'test mnemonic');
     expect(localStorageService.set).toHaveBeenCalledWith(LocalStorageItem.NewToken, 'refresh-token');
     expect(parseAndDecryptUserKeys).toHaveBeenCalledWith(mockRegistrationResponse.xUser, 'password123');
