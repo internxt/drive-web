@@ -2126,5 +2126,8 @@
       "todayAt": "今天在 "
     },
     "sharedWorkspace": "共用工作區"
+  },
+  "sdk": {
+    "rateLimitToast": "這花費的時間比預期的長，請稍候..."
   }
 }

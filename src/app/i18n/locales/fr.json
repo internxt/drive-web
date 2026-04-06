@@ -2121,5 +2121,8 @@
       "todayAt": "aujourd'hui à "
     },
     "sharedWorkspace": "Espace de travail partagé"
+  },
+  "sdk": {
+    "rateLimitToast": "Cela prend plus de temps que prévu. Veuillez patienter..."
   }
 }
