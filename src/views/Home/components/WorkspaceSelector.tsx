@@ -79,12 +79,10 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
   isCollapsed = false,
 }) => {
   const dropdownRef = useRef<HTMLInputElement>(null);
-  const isWorkspaceDropdownDisabled = workspaces.length === 0;
 
   const { translate } = useTranslationContext();
 
   const toggleDropdown = () => {
-    if (isWorkspaceDropdownDisabled) return;
     setIsWorkspaceSelectorOpen(!isWorkspaceSelectorOpen);
   };
 
@@ -115,7 +113,7 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
       <button
         className={`w-full rounded-lg border border-gray-10 ${
           isWorkspaceSelectorOpen ? 'bg-gray-1' : 'bg-surface'
-        } ${isCollapsed ? 'py-3 px-1.5' : 'p-3'} ${isWorkspaceDropdownDisabled ? 'cursor-default' : 'cursor-pointer'} text-left dark:bg-gray-5`}
+        } ${isCollapsed ? 'py-3 px-1.5' : 'p-3'} text-left dark:bg-gray-5`}
         onClick={toggleDropdown}
         title={isCollapsed ? selectedWorkspace?.name : undefined}
       >
@@ -159,7 +157,7 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
               </p>
             </div>
             <div className="w-4">
-              {!isWorkspaceDropdownDisabled && <CaretUpDown colorRendering="bg-gray-100" weight="bold" size={16} />}
+              <CaretUpDown colorRendering="bg-gray-100" weight="bold" size={16} />
             </div>
           </div>
         )}
@@ -207,12 +205,6 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
           ))}
           {/* NOT USING FOR THE MOMENT */}
           <div className="mx-3 h-px bg-gray-10"></div>
-          {/* <button
-            className="w-full rounded-b-lg px-2 py-3 text-left text-sm font-medium leading-4 text-gray-100 hover:bg-gray-5 dark:hover:bg-gray-10"
-            onClick={onCreateWorkspaceButtonClicked}
-          >
-            {translate('workspaces.createWorkspace')}
-          </button> */}
           {pendingWorkspacesInvitesLength > 0 && (
             <button
               className="flex w-full items-center space-x-2 rounded-b-lg px-2 py-3 text-left text-sm font-medium leading-4 text-gray-100 hover:bg-gray-5 dark:hover:bg-gray-10"

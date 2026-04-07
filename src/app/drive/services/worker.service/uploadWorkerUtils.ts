@@ -3,6 +3,7 @@ import DatabaseUploadRepository from 'app/repositories/DatabaseUploadRepository'
 import { TaskStatus } from 'app/tasks/types';
 import { IUploadParams } from '../network.service/types';
 import { WORKER_MESSAGE_STATES } from './types/upload';
+import { notifyUserWithCooldown } from 'app/core/factory/sdk/retryStrategies';
 
 /**
  * Checks the upload progress for the specified task.
@@ -88,6 +89,7 @@ const messageResultHandlers = {
   [WORKER_MESSAGE_STATES.ERROR]: handleError,
   [WORKER_MESSAGE_STATES.ABORT]: handleAbort,
   [WORKER_MESSAGE_STATES.CHECK_UPLOAD_STATUS]: handleCheckUploadStatus,
+  [WORKER_MESSAGE_STATES.RATE_LIMITED]: notifyUserWithCooldown,
 };
 
 /**
