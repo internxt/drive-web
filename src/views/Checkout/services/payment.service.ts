@@ -18,6 +18,7 @@ import envService from 'services/env.service';
 import localStorageService from 'services/local-storage.service';
 import errorService from 'services/error.service';
 import { LifetimeTier, StripeSessionMode } from '../types';
+import { LocalStorageItem } from 'app/core/types';
 
 export interface CreatePaymentSessionPayload {
   test?: boolean;
@@ -211,7 +212,7 @@ const paymentService = {
     currency?: string,
   ): Promise<CreatedSubscriptionData> {
     try {
-      const newToken = localStorageService.get('xNewToken');
+      const newToken = localStorageService.get(LocalStorageItem.NewToken);
 
       if (!newToken) {
         throw new Error('No authentication token available');

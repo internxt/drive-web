@@ -3,6 +3,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useSelector } from 'react-redux';
 import { RootState } from 'app/store';
 import localStorageService from 'services/local-storage.service';
+import { LocalStorageItem } from 'app/core/types';
 
 export interface PasswordState {
   tag: 'error' | 'warning' | 'success';
@@ -19,7 +20,7 @@ export const useGuestSignupState = () => {
   const [showPasswordIndicator, setShowPasswordIndicator] = useState(false);
 
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
-  const mnemonic = localStorageService.get('xMnemonic');
+  const mnemonic = localStorageService.get(LocalStorageItem.UserMnemonic);
 
   return {
     isValidPassword,

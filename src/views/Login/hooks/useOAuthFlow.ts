@@ -1,5 +1,5 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { AppView } from 'app/core/types';
+import { AppView, LocalStorageItem } from 'app/core/types';
 import { useEffect } from 'react';
 import { oauthService, localStorageService, navigationService } from 'services';
 
@@ -18,7 +18,7 @@ export const useOAuthFlow = ({ authOrigin }: UseOAuthFlowParams): UseOAuthFlowRe
   useEffect(() => {
     if (isOAuthFlow) {
       const user = localStorageService.getUser();
-      const newToken = localStorageService.get('xNewToken');
+      const newToken = localStorageService.get(LocalStorageItem.NewToken);
 
       if (user && newToken) {
         const params = new URLSearchParams(globalThis.location.search);

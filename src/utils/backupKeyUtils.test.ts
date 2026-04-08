@@ -13,6 +13,7 @@ import {
   handleExportBackupKey,
   prepareOldBackupRecoverPayloadForBackend,
 } from './backupKeyUtils';
+import { LocalStorageItem } from 'app/core/types';
 
 vi.mock('file-saver', async () => {
   const actual = await vi.importActual<typeof import('file-saver')>('file-saver');
@@ -107,7 +108,7 @@ describe('backupKeyUtils', () => {
 
       handleExportBackupKey(mockTranslate);
 
-      expect(localStorageService.get).toHaveBeenCalledWith('xMnemonic');
+      expect(localStorageService.get).toHaveBeenCalledWith(LocalStorageItem.UserMnemonic);
       expect(localStorageService.getUser).toHaveBeenCalled();
 
       expect(saveAs).toHaveBeenCalledWith(expect.any(Blob), 'INTERNXT-BACKUP-KEY.txt');

@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, test } from 'vitest';
 import { SdkFactory } from './index';
 import { LocalStorageService } from 'services/local-storage.service';
 import { userThunks } from '../../../store/slices/user';
-import { Workspace } from '../../types';
+import { LocalStorageItem, Workspace } from '../../types';
 import { STORAGE_KEYS } from 'services/storage-keys';
 import { Share, Users } from '@internxt/sdk/dist/drive';
 import packageJson from '../../../../../package.json';
@@ -136,7 +136,7 @@ describe('SdkFactory', () => {
 
       vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
       vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-        if (key === 'xNewToken') return mockToken;
+        if (key === LocalStorageItem.NewToken) return mockToken;
         return null;
       });
 
@@ -155,7 +155,7 @@ describe('SdkFactory', () => {
 
       vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
       vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-        if (key === 'xNewToken') return mockToken;
+        if (key === LocalStorageItem.NewToken) return mockToken;
         return null;
       });
 
@@ -176,7 +176,7 @@ describe('SdkFactory', () => {
 
       vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
       vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-        if (key === 'xNewToken') return mockToken;
+        if (key === LocalStorageItem.NewToken) return mockToken;
         if (key === STORAGE_KEYS.B2B_WORKSPACE) return mockWorkspaceId;
         if (key === STORAGE_KEYS.WORKSPACE_CREDENTIALS) return JSON.stringify(mockCredentials);
         return null;
@@ -195,7 +195,7 @@ describe('SdkFactory', () => {
 
       vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
       vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-        if (key === 'xNewToken') return mockToken;
+        if (key === LocalStorageItem.NewToken) return mockToken;
         return null;
       });
 
@@ -213,7 +213,7 @@ describe('SdkFactory', () => {
 
       vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
       vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-        if (key === 'xTokenTeam') return mockToken;
+        if (key === LocalStorageItem.TeamToken) return mockToken;
         return null;
       });
 
@@ -242,7 +242,7 @@ describe('SdkFactory', () => {
 
       vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
       vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-        if (key === 'xNewToken') return mockToken;
+        if (key === LocalStorageItem.NewToken) return mockToken;
         if (key === STORAGE_KEYS.B2B_WORKSPACE) return mockWorkspaceId;
         if (key === STORAGE_KEYS.WORKSPACE_CREDENTIALS) return null;
         return null;
@@ -262,7 +262,7 @@ describe('SdkFactory', () => {
 
         vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
         vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-          if (key === 'xNewToken') return mockToken;
+          if (key === LocalStorageItem.NewToken) return mockToken;
           return null;
         });
 
@@ -286,7 +286,7 @@ describe('SdkFactory', () => {
 
         vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
         vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-          if (key === 'xNewToken') return mockToken;
+          if (key === LocalStorageItem.NewToken) return mockToken;
           return null;
         });
 
@@ -314,7 +314,7 @@ describe('SdkFactory', () => {
 
         vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
         vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-          if (key === 'xNewToken') return mockToken;
+          if (key === LocalStorageItem.NewToken) return mockToken;
           return null;
         });
 
@@ -338,7 +338,7 @@ describe('SdkFactory', () => {
 
         vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
         vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-          if (key === 'xNewToken') return mockToken;
+          if (key === LocalStorageItem.NewToken) return mockToken;
           return null;
         });
 
@@ -366,7 +366,7 @@ describe('SdkFactory', () => {
 
         vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
         vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-          if (key === 'xNewToken') return mockToken;
+          if (key === LocalStorageItem.NewToken) return mockToken;
           return null;
         });
 
@@ -390,7 +390,7 @@ describe('SdkFactory', () => {
 
         vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
         vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-          if (key === 'xNewToken') return mockToken;
+          if (key === LocalStorageItem.NewToken) return mockToken;
           return null;
         });
 
@@ -418,7 +418,7 @@ describe('SdkFactory', () => {
 
         vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
         vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-          if (key === 'xNewToken') return mockToken;
+          if (key === LocalStorageItem.NewToken) return mockToken;
           return null;
         });
 
