@@ -1,14 +1,13 @@
 import React, { FC, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
-
 import { useAppDispatch } from 'app/store/hooks';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { DriveItemData } from 'app/drive/types';
+import { Grid } from '@internxt/ui';
 import DriveGridItemSkeleton from '../../DriveGridItemSkeleton';
 import EditItemNameDialog from 'app/drive/components/EditItemNameDialog/EditItemNameDialog';
 import DriveExplorerGridItem from './DriveExplorerGridItem';
-import './DriveExplorerGrid.scss';
 
 interface DriveExplorerGridProps {
   folderId: string;
@@ -93,7 +92,7 @@ const DriveExplorerGrid: FC<DriveExplorerGridProps> = (props: DriveExplorerGridP
   return (
     <>
       {isLoading && isFirstLoad.current ? (
-        <div className="files-grid grow">{loadingSkeleton()}</div>
+        <Grid className="grow">{loadingSkeleton()}</Grid>
       ) : (
         <div
           id="scrollableList"
@@ -116,14 +115,16 @@ const DriveExplorerGrid: FC<DriveExplorerGridProps> = (props: DriveExplorerGridP
             dataLength={itemsList().length}
             next={onEndOfScroll}
             hasMore={hasMoreItems}
-            loader={loadingSkeleton()}
+            loader={<Grid>{loadingSkeleton()}</Grid>}
             scrollableTarget="scrollableList"
-            className="files-grid z-0 grow"
+            className="z-0 grow"
             style={{ overflow: 'visible' }}
             scrollThreshold={0.6}
           >
-            {itemsFolderList()}
-            {itemsFileList()}
+            <Grid>
+              {itemsFolderList()}
+              {itemsFileList()}
+            </Grid>
           </InfiniteScroll>
         </div>
       )}
