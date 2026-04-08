@@ -11,6 +11,13 @@ import { Checkout } from '@internxt/sdk/dist/payments';
 import envService from 'services/env.service';
 import { STORAGE_KEYS } from 'services/storage-keys';
 import { Location } from '@internxt/sdk';
+import { HttpClient } from '@internxt/sdk/dist/shared/http/client';
+import { retryStrategies, notifyUserWithCooldown } from './retryStrategies';
+
+const SdkClient = {
+  Storage: 'Storage',
+  Share: 'Share',
+} as const;
 
 export class SdkFactory {
   private static sdk: {
@@ -30,6 +37,8 @@ export class SdkFactory {
       localStorage,
       newApiInstance: new SdkFactory(envService.getVariable('newApi')),
     };
+
+    HttpClient.enableGlobalRetry(retryStrategies.withUserNotification(SdkClient.Storage, notifyUserWithCooldown));
   }
 
   public static getNewApiInstance(): SdkFactory {

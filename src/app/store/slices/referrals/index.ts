@@ -40,7 +40,7 @@ const initializeThunk = createAsyncThunk<void, void, { state: RootState }>(
       );
       const isEligible = result.payload as boolean;
       if (isEligible) {
-        await referralService.boot(
+        referralService.boot(
           { name: user.name, lastname: user.lastname, email: user.email, emailVerified: user.emailVerified },
           i18next.language,
         );
