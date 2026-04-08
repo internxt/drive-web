@@ -1,5 +1,5 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { IFormValues, AppView } from 'app/core/types';
+import { IFormValues, AppView, LocalStorageItem } from 'app/core/types';
 import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
@@ -51,9 +51,9 @@ export const guestSignupOnSubmit = async ({
 
     localStorageService.clear();
 
-    localStorageService.set('xToken', xToken);
-    localStorageService.set('xMnemonic', mnemonic);
-    localStorageService.set('xNewToken', xNewToken);
+    localStorageService.set(LocalStorageItem.UserToken, xToken);
+    localStorageService.set(LocalStorageItem.UserMnemonic, mnemonic);
+    localStorageService.set(LocalStorageItem.NewToken, xNewToken);
 
     const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(xUser, password);
 

@@ -136,6 +136,11 @@ export enum LocalStorageItem {
   UserToken = 'xToken',
   Team = 'xTeam',
   TeamToken = 'xTokenTeam',
+  NewToken = 'xNewToken',
+  Language = 'language',
+  ShowSummerBanner = 'showSummerBanner',
+  InvitedToken = 'xInvitedToken',
+  ResourcesToken = 'xResourcesToken',
 }
 
 export enum OrderDirection {
