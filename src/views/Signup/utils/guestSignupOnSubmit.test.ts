@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { guestSignupOnSubmit } from './guestSignupOnSubmit';
-import { AppView, IFormValues } from 'app/core/types';
+import { AppView, IFormValues, LocalStorageItem } from 'app/core/types';
 import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
@@ -96,9 +96,9 @@ describe('guestSignupOnSubmit', () => {
       'recaptcha-token',
     );
     expect(localStorageService.clear).toHaveBeenCalled();
-    expect(localStorageService.set).toHaveBeenCalledWith('xToken', 'access-token');
-    expect(localStorageService.set).toHaveBeenCalledWith('xMnemonic', 'test mnemonic');
-    expect(localStorageService.set).toHaveBeenCalledWith('xNewToken', 'refresh-token');
+    expect(localStorageService.set).toHaveBeenCalledWith(LocalStorageItem.UserToken, 'access-token');
+    expect(localStorageService.set).toHaveBeenCalledWith(LocalStorageItem.UserMnemonic, 'test mnemonic');
+    expect(localStorageService.set).toHaveBeenCalledWith(LocalStorageItem.NewToken, 'refresh-token');
     expect(parseAndDecryptUserKeys).toHaveBeenCalledWith(mockRegistrationResponse.xUser, 'password123');
     expect(mockDispatch).toHaveBeenCalledWith(userActions.setUser(expect.objectContaining({ uuid: 'user-uuid' })));
     expect(mockDispatch).toHaveBeenCalledWith(userThunks.initializeUserThunk());

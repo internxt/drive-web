@@ -8,7 +8,7 @@ import { Portal } from '@headlessui/react';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { ActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.context';
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
-import { AppView } from 'app/core/types';
+import { AppView, LocalStorageItem } from 'app/core/types';
 import { FolderPath } from 'app/drive/types';
 import { ModifyStorageModal } from './views/NewSettings/components/Sections/Workspace/Members/components/ModifyStorageModal';
 import { useAppSelector } from 'app/store/hooks';
@@ -66,8 +66,8 @@ const App = (props: AppProps): JSX.Element => {
 
   const { isDialogOpen } = useActionDialog();
   const isOpen = isDialogOpen(ActionDialog.ModifyStorage);
-  const token = localStorageService.get('xToken');
-  const newToken = localStorageService.get('xNewToken');
+  const token = localStorageService.get(LocalStorageItem.UserToken);
+  const newToken = localStorageService.get(LocalStorageItem.NewToken);
   const params = new URLSearchParams(window.location.search);
   const isVpnAuth = params.get('vpnAuth') === 'true';
   const skipSignupIfLoggedIn = params.get('skipSignupIfLoggedIn') === 'true';

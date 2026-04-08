@@ -193,8 +193,8 @@ const updateUserEmailCredentialsThunk = createAsyncThunk<
     bridgeUser: newUserData.email,
     username: newUserData.email,
   };
-  localStorageService.set('xToken', token);
-  localStorageService.set('xNewToken', newToken);
+  localStorageService.set(LocalStorageItem.UserToken, token);
+  localStorageService.set(LocalStorageItem.NewToken, newToken);
   dispatch(userActions.setUser(user));
 });
 

@@ -15,6 +15,7 @@ import { Buffer } from 'node:buffer';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SdkFactory } from 'app/core/factory/sdk';
 import * as authService from './auth.service';
+import { LocalStorageItem } from 'app/core/types';
 
 const mockSecret = '123456789QWERTY';
 const mockApi = 'https://mock';
@@ -384,7 +385,7 @@ describe('signUp', () => {
 
     const result = await authService.signUp(params);
 
-    expect(localStorageService.set).toHaveBeenCalledWith('xNewToken', mockNewToken);
+    expect(localStorageService.set).toHaveBeenCalledWith(LocalStorageItem.NewToken, mockNewToken);
 
     const plainPrivateKeyInBase64 = Buffer.from(
       keysService.decryptPrivateKey(mockUser.keys.ecc.privateKey, mockPassword),
@@ -495,7 +496,7 @@ describe('signUp', () => {
 
     const result = await authService.signUp(params);
 
-    expect(localStorageService.set).toHaveBeenCalledWith('xNewToken', mockNewToken);
+    expect(localStorageService.set).toHaveBeenCalledWith(LocalStorageItem.NewToken, mockNewToken);
 
     const plainPrivateKeyInBase64 = Buffer.from(
       keysService.decryptPrivateKey(mockUser.privateKey, mockPassword),
@@ -902,7 +903,7 @@ describe('areCredentialsCorrect', () => {
     const mockCreateAuthClient = vi.fn();
 
     vi.spyOn(localStorageService, 'get').mockImplementation((key: string) => {
-      if (key === 'xNewToken') return mockToken;
+      if (key === LocalStorageItem.NewToken) return mockToken;
       return null;
     });
 

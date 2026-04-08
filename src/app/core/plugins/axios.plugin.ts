@@ -11,8 +11,8 @@ const axiosPlugin: AppPlugin = {
 
     axios.interceptors.request.use((requestConfig) => {
       const tokenByWorkspace: { [key in Workspace]: string } = {
-        [Workspace.Individuals]: localStorageService.get('xToken') || '',
-        [Workspace.Business]: localStorageService.get('xTokenTeam') || '',
+        [Workspace.Individuals]: localStorageService.get(LocalStorageItem.UserToken) || '',
+        [Workspace.Business]: localStorageService.get(LocalStorageItem.TeamToken) || '',
       };
 
       const workspace =

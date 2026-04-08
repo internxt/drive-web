@@ -1,6 +1,6 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Button } from '@internxt/ui';
-import { AppView } from 'app/core/types';
+import { AppView, LocalStorageItem } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import { useEffect, useMemo } from 'react';
@@ -25,8 +25,8 @@ export default function UniversalLinkView(): JSX.Element {
   }, [user]);
 
   const getUniversalLinkAuthUrl = (user: UserSettings) => {
-    const token = localStorageService.get('xToken');
-    const newToken = localStorageService.get('xNewToken');
+    const token = localStorageService.get(LocalStorageItem.UserToken);
+    const newToken = localStorageService.get(LocalStorageItem.NewToken);
     if (!token) return AppView.Login;
     if (!newToken) return AppView.Login;
 

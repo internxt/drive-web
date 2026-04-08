@@ -10,6 +10,7 @@ import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import dayjs from 'dayjs';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { wait } from 'utils/timeUtils';
+import { LocalStorageItem } from 'app/core/types';
 
 const WORKSPACE_INVITATION_BAD_REQUEST = 400;
 
@@ -28,7 +29,7 @@ const PendingInvitationsDialog = ({
 }) => {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
-  const token = localStorageService.get('xNewToken');
+  const token = localStorageService.get(LocalStorageItem.NewToken);
 
   function formatDate(dateString) {
     const date = dayjs(dateString);

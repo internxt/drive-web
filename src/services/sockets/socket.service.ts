@@ -3,6 +3,7 @@ import localStorageService from '../local-storage.service';
 import envService from '../env.service';
 import { SocketNotConnectedError } from './errors/socket.errors';
 import { EventData } from './types/socket.types';
+import { LocalStorageItem } from 'app/core/types';
 
 export default class RealtimeService {
   private socket?: Socket;
@@ -101,5 +102,5 @@ export default class RealtimeService {
 }
 
 function getToken(): string {
-  return localStorageService.get('xNewToken') as string;
+  return localStorageService.get(LocalStorageItem.NewToken) as string;
 }
