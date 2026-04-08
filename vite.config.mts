@@ -92,7 +92,7 @@ export default defineConfig({
     open: true,
   },
   resolve: {
-    preserveSymlinks: process.env.NODE_ENV === 'development',
+    preserveSymlinks: true,
     alias: {
       app: path.resolve(__dirname, 'src/app'),
       components: path.resolve(__dirname, 'src/components'),
