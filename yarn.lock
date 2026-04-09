@@ -1914,10 +1914,10 @@
     axios "1.13.6"
     internxt-crypto "0.0.14"
 
-"@internxt/ui@=0.1.8":
-  version "0.1.8"
-  resolved "https://registry.yarnpkg.com/@internxt/ui/-/ui-0.1.8.tgz#563e266b431b9817a2dd6dd3a39d356a54c081db"
-  integrity sha512-h60suo8azArfm9/sTNQ0pzstPgu802z00gPXE/bnqhE8SyxYeIg3cUlmUAc8avuVOmErSqI5BcNN40JdVRj9NA==
+"@internxt/ui@=0.1.14":
+  version "0.1.14"
+  resolved "https://registry.yarnpkg.com/@internxt/ui/-/ui-0.1.14.tgz#a318afb79bd0af3cdb1d0eacd5aa64ce25dc0e44"
+  integrity sha512-wNx4cBxyEj9Gsx+1isYyi71df1Rum5dlFyKpP2z6MVFHaLkjW869ssFQM+2SCDxKwTXGrLvX6r/lNmtmwDQVWw==
   dependencies:
     "@internxt/css-config" "1.1.0"
     "@phosphor-icons/react" "^2.1.10"
@@ -6903,10 +6903,10 @@ lodash.uniqby@^4.7.0:
   resolved "https://registry.yarnpkg.com/lodash.uniqby/-/lodash.uniqby-4.7.0.tgz#d99c07a669e9e6d24e1362dfe266c67616af1302"
   integrity sha512-e/zcLx6CSbmaEgFHCA7BnoQKyCtKMxnuWrJygbwPs/AIn+IMKl66L8/s+wBUn5LRw2pZx3bUHibiV1b6aTWIww==
 
-lodash@^4.17.21, lodash@^4.17.23:
-  version "4.17.23"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.23.tgz#f113b0378386103be4f6893388c73d0bde7f2c5a"
-  integrity sha512-LgVTMpQtIopCi79SJeDiP0TfWi5CNEc/L/aRdTh3yIvmZXTnheWpKjSZhnvMl8iXbC1tFg9gdHHDMLoV7CnG+w==
+lodash@^4.17.21, lodash@^4.18.1:
+  version "4.18.1"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.18.1.tgz#ff2b66c1f6326d59513de2407bf881439812771c"
+  integrity sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==
 
 log-update@^5.0.1:
   version "5.0.1"
@@ -9666,10 +9666,10 @@ vite@5.4.21, vite@^5.0.0:
   optionalDependencies:
     fsevents "~2.3.3"
 
-vite@=6.4.1:
-  version "6.4.1"
-  resolved "https://registry.yarnpkg.com/vite/-/vite-6.4.1.tgz#afbe14518cdd6887e240a4b0221ab6d0ce733f96"
-  integrity sha512-+Oxm7q9hDoLMyJOYfUYBuHQo+dkAloi33apOPP56pzj+vsdJDzr+j1NISE5pyaAuKL4A3UD34qd0lx5+kfKp2g==
+vite@=6.4.2:
+  version "6.4.2"
+  resolved "https://registry.yarnpkg.com/vite/-/vite-6.4.2.tgz#a4e548ca3a90ca9f3724582cab35e1ba15efc6f2"
+  integrity sha512-2N/55r4JDJ4gdrCvGgINMy+HH3iRpNIz8K6SFwVsA+JbQScLiC+clmAxBgwiSPgcG9U15QmvqCGWzMbqda5zGQ==
   dependencies:
     esbuild "^0.25.0"
     fdir "^6.4.4"

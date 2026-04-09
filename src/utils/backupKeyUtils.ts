@@ -7,6 +7,7 @@ import { getKeys } from 'app/crypto/services/keys.service';
 import { encryptText, encryptTextWithKey, passToHash } from 'app/crypto/services/utils';
 import { validateMnemonic } from 'bip39';
 import { encryptMessageWithPublicKey, hybridEncryptMessageWithPublicKey } from 'app/crypto/services/pgp.service';
+import { LocalStorageItem } from 'app/core/types';
 
 /**
  * Interface representing the backup data structure
@@ -33,7 +34,7 @@ export interface BackupData {
  * @throws {Error} Implicitly throws if file saving fails
  */
 export function handleExportBackupKey(translate) {
-  const mnemonic = localStorageService.get('xMnemonic');
+  const mnemonic = localStorageService.get(LocalStorageItem.UserMnemonic);
   const user = localStorageService.getUser();
 
   if (!mnemonic || !user) {

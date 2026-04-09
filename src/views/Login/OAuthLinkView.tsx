@@ -1,6 +1,6 @@
 import { Button } from '@internxt/ui';
 import { authService, oauthService, navigationService, localStorageService } from 'services';
-import { AppView } from 'app/core/types';
+import { AppView, LocalStorageItem } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import { useEffect, useMemo } from 'react';
@@ -29,7 +29,7 @@ const OAuthLinkView = (): JSX.Element => {
   };
 
   const handleContinueWithCurrentUser = () => {
-    const newToken = localStorageService.get('xNewToken');
+    const newToken = localStorageService.get(LocalStorageItem.NewToken);
     if (!newToken) {
       navigationService.history.replace(AppView.Login);
       return;

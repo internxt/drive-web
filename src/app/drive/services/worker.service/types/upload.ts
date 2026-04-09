@@ -4,4 +4,5 @@ export const WORKER_MESSAGE_STATES = {
   ABORT: 'abort',
   CHECK_UPLOAD_STATUS: 'checkUploadStatus',
   UPLOAD_STATUS: 'uploadStatus',
+  RATE_LIMITED: 'rateLimited',
 };

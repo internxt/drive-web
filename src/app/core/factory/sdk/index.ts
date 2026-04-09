@@ -6,11 +6,18 @@ import packageJson from '../../../../../package.json';
 import { AppDispatch } from '../../../store';
 import { userThunks } from '../../../store/slices/user';
 import { LocalStorageService } from 'services/local-storage.service';
-import { Workspace } from '../../types';
+import { LocalStorageItem, Workspace } from '../../types';
 import { Checkout } from '@internxt/sdk/dist/payments';
 import envService from 'services/env.service';
 import { STORAGE_KEYS } from 'services/storage-keys';
 import { Location } from '@internxt/sdk';
+import { HttpClient } from '@internxt/sdk/dist/shared/http/client';
+import { retryStrategies, notifyUserWithCooldown } from './retryStrategies';
+
+const SdkClient = {
+  Storage: 'Storage',
+  Share: 'Share',
+} as const;
 
 export class SdkFactory {
   private static sdk: {
@@ -30,6 +37,8 @@ export class SdkFactory {
       localStorage,
       newApiInstance: new SdkFactory(envService.getVariable('newApi')),
     };
+
+    HttpClient.enableGlobalRetry(retryStrategies.withUserNotification(SdkClient.Storage, notifyUserWithCooldown));
   }
 
   public static getNewApiInstance(): SdkFactory {
@@ -172,8 +181,8 @@ export class SdkFactory {
 
   private getNewToken(workspace: string): Token {
     const tokenByWorkspace: { [key in Workspace]: string } = {
-      [Workspace.Individuals]: SdkFactory.sdk.localStorage.get('xNewToken') || '',
-      [Workspace.Business]: SdkFactory.sdk.localStorage.get('xTokenTeam') || '',
+      [Workspace.Individuals]: SdkFactory.sdk.localStorage.get(LocalStorageItem.NewToken) || '',
+      [Workspace.Business]: SdkFactory.sdk.localStorage.get(LocalStorageItem.TeamToken) || '',
     };
     return tokenByWorkspace[workspace];
   }
