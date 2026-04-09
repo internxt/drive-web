@@ -14,7 +14,6 @@ export { LoadingRowSkeleton } from './LoadingRowSkeleton';
 export { OnboardingModal } from './OnBoardingModal';
 export { default as PasswordInput } from './PasswordInput';
 export { default as PasswordStrengthIndicator } from './PasswordStrengthIndicator';
-export { default as Popover } from './Popover';
 export { default as PreparingWorkspaceAnimation } from './PreparingWorkspaceAnimation';
 export { ScrollableTable } from './ScrollableTable';
 export { default as Sidenav } from './SidenavWrapper';
