@@ -32,7 +32,7 @@ const BillingPaymentMethodCard = ({
 
   useEffect(() => {
     (defaultPaymentMethod.tag === 'ready' && defaultPaymentMethod.card) ||
-      (defaultPaymentMethod.tag === 'ready' && defaultPaymentMethod.type)
+    (defaultPaymentMethod.tag === 'ready' && defaultPaymentMethod.type)
       ? setExistsPaymentMethod(true)
       : setExistsPaymentMethod(false);
   }, [defaultPaymentMethod]);

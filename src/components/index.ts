@@ -5,7 +5,6 @@ export { default as BreadcrumbsMenuBackups } from './BreadcrumbsMenuBackups';
 export { default as BreadcrumbsMenuDrive } from './BreadcrumbsMenuDrive';
 export { default as BreadcrumbsMoveItemsDialogView } from './BreadcrumbsMoveItemsDialogView';
 export * from './BreadcrumbsHelper';
-export { default as Copyable } from './Copyable';
 export { default as ExpiredLinkView } from './ExpiredLinkView';
 export { LoadingRowSkeleton } from './LoadingRowSkeleton';
 export { OnboardingModal } from './OnBoardingModal';
