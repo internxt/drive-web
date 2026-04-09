@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { DriveItemData } from '../../../../app/drive/types';
 import { uiActions } from '../../../../app/store/slices/ui';
-import BaseDialog from 'components/BaseDialog';
+import { BaseDialog } from '@internxt/ui';
 import './ShareItemDialog.scss';
 import { storageActions } from '../../../../app/store/slices/storage';
 import notificationsService, { ToastType } from '../../../../app/notifications/services/notifications.service';
