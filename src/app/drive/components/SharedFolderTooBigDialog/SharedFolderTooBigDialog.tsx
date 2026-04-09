@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import BaseDialog from 'components/BaseDialog';
+import { BaseDialog } from '@internxt/ui';
 import BaseButton from 'components/BaseButton';
 import { uiActions } from 'app/store/slices/ui';
 import './SharedFolderTooBigDialog.scss';
