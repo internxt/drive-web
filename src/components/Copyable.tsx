@@ -1,6 +1,6 @@
 import { Copy } from '@phosphor-icons/react';
 import { useState } from 'react';
-import Tooltip from './Tooltip';
+import { Tooltip } from '@internxt/ui';
 import { copyTextToClipboard } from 'utils/copyToClipboard.utils';
 
 interface CopyableProps {
