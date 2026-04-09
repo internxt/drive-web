@@ -7,8 +7,7 @@ import { bytesToString } from 'app/drive/services/size.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import UsageBar from '../../../Usage/UsageBar';
 import { getMemberRole, searchMembers } from '../../../../utils';
-import { Button, Input } from '@internxt/ui';
-import Card from 'components/Card';
+import { Button, Card, Input } from '@internxt/ui';
 import { RootState } from 'app/store';
 import { useAppSelector } from 'app/store/hooks';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
@@ -154,9 +153,8 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
                   return (
                     <button
                       key={id}
-                      className={`flex h-14 flex-row justify-between border-l border-gray-10 px-5 py-2 text-base  font-medium text-gray-100 dark:bg-gray-1 ${
-                        members && i === members.length - 1 ? 'rounded-bl-xl border-b' : ' border-b'
-                      }
+                      className={`flex h-14 flex-row justify-between border-l border-gray-10 px-5 py-2 text-base  font-medium text-gray-100 dark:bg-gray-1 ${members && i === members.length - 1 ? 'rounded-bl-xl border-b' : ' border-b'
+                        }
               ${hoverItemIndex === id ? 'bg-gray-5 dark:bg-gray-5' : 'bg-surface'}`}
                       onMouseEnter={() => setHoverItemIndex(id)}
                       onMouseLeave={() => setHoverItemIndex(null)}
@@ -185,9 +183,8 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
                   return (
                     <button
                       key={id}
-                      className={`flex h-14 items-center justify-between border-gray-10 px-5 py-2 text-base font-normal text-gray-60 dark:bg-gray-1 ${
-                        members && i === members.length - 1 ? 'border-b' : ' border-b'
-                      } ${hoverItemIndex === id ? 'bg-gray-5 dark:bg-gray-5' : 'bg-surface'}`}
+                      className={`flex h-14 items-center justify-between border-gray-10 px-5 py-2 text-base font-normal text-gray-60 dark:bg-gray-1 ${members && i === members.length - 1 ? 'border-b' : ' border-b'
+                        } ${hoverItemIndex === id ? 'bg-gray-5 dark:bg-gray-5' : 'bg-surface'}`}
                       onMouseEnter={() => setHoverItemIndex(id)}
                       onMouseLeave={() => setHoverItemIndex(null)}
                       onClick={() => setSelectedMember(member)}
@@ -220,9 +217,8 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
                   return (
                     <button
                       key={id}
-                      className={`flex h-14 flex-row items-center justify-between border-r border-gray-10 py-2 pl-5 text-base font-normal text-gray-60 dark:bg-gray-1 ${
-                        members && i === members.length - 1 ? 'rounded-br-xl border-b' : 'border-b'
-                      } ${hoverItemIndex === id ? 'bg-gray-5 dark:bg-gray-5' : ''}`}
+                      className={`flex h-14 flex-row items-center justify-between border-r border-gray-10 py-2 pl-5 text-base font-normal text-gray-60 dark:bg-gray-1 ${members && i === members.length - 1 ? 'rounded-br-xl border-b' : 'border-b'
+                        } ${hoverItemIndex === id ? 'bg-gray-5 dark:bg-gray-5' : ''}`}
                       onMouseEnter={() => setHoverItemIndex(id)}
                       onMouseLeave={() => setHoverItemIndex(null)}
                     >

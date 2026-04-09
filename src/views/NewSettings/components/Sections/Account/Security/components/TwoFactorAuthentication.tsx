@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { userHas2FAStored } from 'services/auth.service';
+import { Button, Card, Loader } from '@internxt/ui';
 import Section from '../../../General/components/Section';
-import Card from 'components/Card';
-import { Button, Loader } from '@internxt/ui';
 import TwoFactorAuthenticationEnableModal from './TwoFactorAuthenticationEnableModal';
 import TwoFactorAuthenticationDisableModal from './TwoFactorAuthenticationDisableModal';
 
