@@ -1914,10 +1914,10 @@
     axios "1.13.6"
     internxt-crypto "0.0.14"
 
-"@internxt/ui@=0.1.14":
-  version "0.1.14"
-  resolved "https://registry.yarnpkg.com/@internxt/ui/-/ui-0.1.14.tgz#a318afb79bd0af3cdb1d0eacd5aa64ce25dc0e44"
-  integrity sha512-wNx4cBxyEj9Gsx+1isYyi71df1Rum5dlFyKpP2z6MVFHaLkjW869ssFQM+2SCDxKwTXGrLvX6r/lNmtmwDQVWw==
+"@internxt/ui@=0.1.15":
+  version "0.1.15"
+  resolved "https://registry.yarnpkg.com/@internxt/ui/-/ui-0.1.15.tgz#305e846837a8519bdea63eb17900bbf3aed2b09c"
+  integrity sha512-dxJlZSecIR67aEGI76CLHQ60GUkUjrMJfHeIVdd+528gm8Lz9yx7mr/bWCKfbpmbv5j9Oyvp5wBuFUfx/bxRLw==
   dependencies:
     "@internxt/css-config" "1.1.0"
     "@phosphor-icons/react" "^2.1.10"
