@@ -1,13 +1,17 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import Resizer from 'react-image-file-resizer';
-import { ErrorLoadingVideoFileError } from './errors/thumbnail.service.errors';
-import { getVideoFrame, getImageThumbnail, downloadThumbnail } from './thumbnail.service';
-import localStorageService from 'services/local-storage.service';
-import fetchFileBlob from './download.service/fetchFileBlob';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
+import Resizer from 'react-image-file-resizer';
+import localStorageService from 'services/local-storage.service';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import fetchFileBlob from './download.service/fetchFileBlob';
+import { ErrorLoadingVideoFileError } from './errors/thumbnail.service.errors';
+import { downloadThumbnail, getImageThumbnail, getVideoFrame } from './thumbnail.service';
 
-vi.mock('react-image-file-resizer');
-vi.mock('services/local-storage.service');
+vi.mock('react-image-file-resizer', () => ({
+  default: { imageFileResizer: vi.fn() },
+}));
+vi.mock('services/local-storage.service', () => ({
+  default: { getUser: vi.fn() },
+}));
 vi.mock('./download.service/fetchFileBlob');
 
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0));
@@ -196,14 +200,11 @@ describe('Thumbnail Service', () => {
 
     beforeEach(() => {
       vi.clearAllMocks();
+      (Resizer as any).imageFileResizer = vi.fn();
       URL.createObjectURL = vi.fn(() => 'blob:mock-url');
 
       mockImage = { onload: null, onerror: null };
       globalThis.Image = vi.fn(() => mockImage) as any;
-    });
-
-    afterEach(() => {
-      vi.restoreAllMocks();
     });
 
     test('When image is valid, then it should return a resized thumbnail', async () => {

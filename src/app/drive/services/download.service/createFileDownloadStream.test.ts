@@ -1,5 +1,11 @@
 import { describe, expect, vi, beforeEach, test } from 'vitest';
 import { DriveFileData } from '../../types';
+import createFileDownloadStream from './createFileDownloadStream';
+import fetchFileStream from './fetchFileStream';
+import fetchFileStreamUsingCredentials from './fetchFileStreamUsingCredentials';
+
+vi.mock('./fetchFileStream', () => ({ default: vi.fn() }));
+vi.mock('./fetchFileStreamUsingCredentials', () => ({ default: vi.fn() }));
 
 const mockReadableStream = new ReadableStream();
 
@@ -13,23 +19,13 @@ const baseFile: DriveFileData = {
 describe('createFileDownloadStream', () => {
   const mockProgress = vi.fn();
 
-  beforeEach(async () => {
+  beforeEach(() => {
     vi.clearAllMocks();
-    vi.resetModules();
+    vi.mocked(fetchFileStream).mockResolvedValue(mockReadableStream);
+    vi.mocked(fetchFileStreamUsingCredentials).mockResolvedValue(mockReadableStream);
   });
 
   test('When sharing options (credentials) are not provided, then fetchFileStream is called', async () => {
-    vi.doMock('./fetchFileStream', () => ({
-      default: vi.fn().mockResolvedValue(mockReadableStream),
-    }));
-
-    vi.doMock('./fetchFileStreamUsingCredentials', () => ({
-      default: vi.fn().mockResolvedValue(mockReadableStream),
-    }));
-    const createFileDownloadStream = (await import('./createFileDownloadStream')).default;
-    const fetchFileStream = (await import('./fetchFileStream')).default;
-    const fetchFileStreamUsingCredentials = (await import('./fetchFileStreamUsingCredentials')).default;
-
     const result = await createFileDownloadStream(baseFile, true, mockProgress);
 
     expect(fetchFileStream).toHaveBeenCalledWith(
@@ -40,22 +36,23 @@ describe('createFileDownloadStream', () => {
     expect(result).toBe(mockReadableStream);
   });
 
+  test('When an abortController is provided without sharing options, then it is passed through to fetchFileStream', async () => {
+    const abortController = new AbortController();
+
+    await createFileDownloadStream(baseFile, false, mockProgress, abortController);
+
+    expect(fetchFileStream).toHaveBeenCalledWith(
+      { ...baseFile, bucketId: baseFile.bucket },
+      { isWorkspace: false, updateProgressCallback: mockProgress, abortController },
+    );
+  });
+
   test('When sharing options (credentials) are provided, then fetchFileStreamUsingCredentials is called', async () => {
     const abortController = new AbortController();
     const sharingOptions = {
       credentials: { user: 'test-user', pass: 'test-pass' },
       mnemonic: 'test-mnemonic',
     };
-    vi.doMock('./fetchFileStream', () => ({
-      default: vi.fn().mockResolvedValue(mockReadableStream),
-    }));
-
-    vi.doMock('./fetchFileStreamUsingCredentials', () => ({
-      default: vi.fn().mockResolvedValue(mockReadableStream),
-    }));
-    const createFileDownloadStream = (await import('./createFileDownloadStream')).default;
-    const fetchFileStream = (await import('./fetchFileStream')).default;
-    const fetchFileStreamUsingCredentials = (await import('./fetchFileStreamUsingCredentials')).default;
 
     const result = await createFileDownloadStream(baseFile, false, mockProgress, abortController, sharingOptions);
 

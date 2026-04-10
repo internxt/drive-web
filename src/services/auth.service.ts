@@ -139,7 +139,7 @@ export function cancelAccount(): Promise<void> {
 export const is2FANeeded = async (email: string): Promise<boolean> => {
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(email).catch((error) => {
-    throw new AppError(error.message ?? 'Login error', error.status ?? 500);
+    throw errorService.castError(error);
   });
 
   return securityDetails.tfaEnabled;
@@ -422,10 +422,11 @@ export const changePassword = async (newPassword: string, currentPassword: strin
       if (newToken) localStorageService.set('xNewToken', newToken);
     })
     .catch((error) => {
-      if (error.status === 500) {
+      const appErr = errorService.castError(error);
+      if (appErr.status === 500) {
         throw new Error('The password you introduced does not match your current password');
       }
-      throw error;
+      throw appErr;
     });
 };
 
