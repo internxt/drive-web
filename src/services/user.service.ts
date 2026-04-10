@@ -10,6 +10,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import localStorageService from 'services/local-storage.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 import { generateCaptchaToken } from 'utils';
+import { LocalStorageItem } from 'app/core/types';
 
 const preCreateUser = (email: string): Promise<PreCreateUserResponse> => {
   const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
@@ -36,7 +37,7 @@ const refreshAvatarUser = async (): Promise<{
 
 const updateUserProfile = (payload: Required<UpdateProfilePayload>): Promise<void> => {
   const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
-  const token = localStorageService.get('xNewToken') ?? undefined;
+  const token = localStorageService.get(LocalStorageItem.NewToken) ?? undefined;
   return usersClient.updateUserProfile(payload, token);
 };
 
@@ -47,14 +48,14 @@ const updateUserAvatar = (payload: { avatar: Blob }): Promise<{ avatar: string }
 
 const deleteUserAvatar = (): Promise<void> => {
   const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
-  const token = localStorageService.get('xNewToken') ?? undefined;
+  const token = localStorageService.get(LocalStorageItem.NewToken) ?? undefined;
   return usersClient.deleteUserAvatar(token);
 };
 
 const sendVerificationEmail = async (): Promise<void> => {
   const captchaToken = await generateCaptchaToken();
   const usersClient = SdkFactory.getNewApiInstance().createUsersClient(captchaToken);
-  const token = localStorageService.get('xNewToken') ?? undefined;
+  const token = localStorageService.get(LocalStorageItem.NewToken) ?? undefined;
   return usersClient.sendVerificationEmail(token);
 };
 
