@@ -75,6 +75,13 @@ export default defineConfig({
               isolate: true,
             },
           },
+          deps: {
+            optimizer: {
+              web: {
+                exclude: ['openpgp'],
+              },
+            },
+          },
         },
       },
       {
