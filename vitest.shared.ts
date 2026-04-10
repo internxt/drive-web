@@ -22,6 +22,7 @@ export default {
   },
   optimizeDeps: {
     include: ['@internxt/sdk/dist/shared/types/userSettings'],
+    exclude: ['openpgp'],
     esbuildOptions: {
       define: {
         global: 'globalThis',
