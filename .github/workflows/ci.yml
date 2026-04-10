@@ -50,11 +50,11 @@ jobs:
       - name: Install
         run: yarn
       - name: Clear Vite / Vitest cache
-        run: rm -rf node_modules/.vite
+        run: rm -rf node_modules/.vite .vite
       - name: Install Playwright Browsers
         run: yarn playwright install
       - name: Unit test run
-        run: yarn test
+        run: yarn test --no-cache
   typecheck:
     runs-on: ubuntu-22.04
     strategy:
