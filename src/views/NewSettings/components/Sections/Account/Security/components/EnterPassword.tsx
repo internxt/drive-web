@@ -4,8 +4,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { areCredentialsCorrect } from 'services/auth.service';
 import errorService from 'services/error.service';
 
-import { Button, Input } from '@internxt/ui';
-import Card from 'components/Card';
+import { Button, Card, Input } from '@internxt/ui';
 
 const EnterPassword = ({
   onUnlock,

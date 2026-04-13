@@ -4,8 +4,7 @@ import { UserPlus, X } from '@phosphor-icons/react';
 import { useForm } from 'react-hook-form';
 import { IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { Button, Modal, Checkbox, Input } from '@internxt/ui';
-import Card from 'components/Card';
+import { Button, Card, Modal, Checkbox, Input } from '@internxt/ui';
 import TextArea from '../../Account/Account/components/TextArea';
 import UserCard from './components/UserCard';
 

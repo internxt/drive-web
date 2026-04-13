@@ -1,6 +1,6 @@
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { WorkspaceTeam, WorkspaceUser } from '@internxt/sdk/dist/workspaces';
-import { Button, Dropdown, Loader, Modal } from '@internxt/ui';
+import { Button, Card, Dropdown, Loader, Modal } from '@internxt/ui';
 import { PencilSimple } from '@phosphor-icons/react';
 import { t } from 'i18next';
 import { useEffect, useState } from 'react';
@@ -12,7 +12,6 @@ import { UsageDetailsProps } from 'app/drive/services/usage.service';
 import Section from '../../../Section';
 import DetailsInput from '../../../DetailsInput';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import Card from 'components/Card';
 import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { PlanState } from 'app/store/slices/plan';

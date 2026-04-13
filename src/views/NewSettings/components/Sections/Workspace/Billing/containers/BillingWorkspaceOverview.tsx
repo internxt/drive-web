@@ -2,8 +2,7 @@ import { t } from 'i18next';
 
 import localStorageService from 'services/local-storage.service';
 import { bytesToString } from 'app/drive/services/size.service';
-
-import Card from 'components/Card';
+import { Card } from '@internxt/ui';
 
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { PlanState } from 'app/store/slices/plan';
