@@ -38,7 +38,6 @@
     "i18next-browser-languagedetector": "^7.2.0",
     "idb": "^6.1.5",
     "js-file-download": "^0.4.12",
-    "knip": "^6.3.1",
     "lint-staged": "^13.1.0",
     "lodash": "^4.18.1",
     "openpgp": "^6.3.0",
