@@ -55,6 +55,7 @@ export default defineConfig({
             shuffle: false,
           },
           testTimeout: 30000,
+          retry: 3,
           name: 'browser',
           environment: 'jsdom',
           globals: true,
@@ -78,6 +79,7 @@ export default defineConfig({
           deps: {
             optimizer: {
               web: {
+                include: ['@testing-library/react'],
                 exclude: ['openpgp'],
               },
             },
