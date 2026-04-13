@@ -8,8 +8,10 @@ export default {
   server: {
     warmup: {
       clientFiles: [
-        'src/services/auth.service.ts',
-        'src/app/drive/services/downloadManager.service.ts',
+        'src/services/*.ts',
+        'src/app/network/*.ts',
+        'src/app/crypto/**/*.ts',
+        'src/app/drive/services/*.ts',
       ],
     },
   },
