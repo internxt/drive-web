@@ -5,6 +5,14 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 export default {
   plugins: [react(), nodePolyfills(), svgr()],
+  server: {
+    warmup: {
+      clientFiles: [
+        'src/services/auth.service.ts',
+        'src/app/drive/services/downloadManager.service.ts',
+      ],
+    },
+  },
   resolve: {
     alias: {
       app: path.resolve(__dirname, './src/app'),
