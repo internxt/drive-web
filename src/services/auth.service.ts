@@ -1,5 +1,4 @@
 import { aes } from '@internxt/lib';
-import { AppError } from '@internxt/sdk';
 import {
   CryptoProvider,
   Keys,
@@ -560,7 +559,7 @@ export const signUp = async (params: SignUpParams) => {
   localStorageService.clear();
 
   localStorageService.set(LocalStorageItem.UserToken, xToken);
-  localStorageService.set(LocalStorageItem.UserMnemonic , mnemonic);
+  localStorageService.set(LocalStorageItem.UserMnemonic, mnemonic);
   localStorageService.set(LocalStorageItem.NewToken, xNewToken);
 
   const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(xUser, password);
