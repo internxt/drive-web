@@ -1,7 +1,7 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useEffect, useRef, useState } from 'react';
 import { bytesToString } from 'app/drive/services/size.service';
-import Tooltip from './Tooltip';
+import { Tooltip } from '@internxt/ui';
 import { RootState } from 'app/store';
 import { useAppSelector } from 'app/store/hooks';
 

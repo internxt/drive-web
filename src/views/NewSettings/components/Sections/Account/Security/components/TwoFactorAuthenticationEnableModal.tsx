@@ -1,11 +1,10 @@
 import { Warning } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import authService, { generateNew2FA } from 'services/auth.service';
-import { Button, Input, Loader, Modal } from '@internxt/ui';
+import { Button, Copyable, Input, Loader, Modal } from '@internxt/ui';
 import appStoreIcon from 'app/../assets/icons/app-store.svg';
 import playStoreIcon from 'app/../assets/icons/play-store.svg';
 import useEffectAsync from 'hooks/useEffectAsync';
-import Copyable from 'components/Copyable';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import errorService from 'services/error.service';
@@ -70,7 +69,7 @@ const TwoFactorAuthenticationEnableModal = ({
           </div>
           <p className="mx-4 text-gray-50">{translate('views.account.tabs.security.2FA.modal.or')}</p>
           <div className="flex flex-col items-center">
-            <Copyable className="w-60" text={qr.key} />
+            <Copyable className="w-60" classText="select-text truncate text-gray-80" text={qr.key} />
             <p className="mt-2 px-2 text-center text-sm text-gray-60">
               {translate('views.account.tabs.security.2FA.modal.steps.qr.description')}
             </p>
@@ -84,7 +83,7 @@ const TwoFactorAuthenticationEnableModal = ({
 
   const backupKeyStep = (
     <div className="py-5">
-      {qr && <Copyable className="mx-auto w-60" text={qr.key} />}
+      {qr && <Copyable className="mx-auto w-60" classText="select-text truncate" text={qr.key} />}
       <div className="mt-2 flex items-center">
         <Warning size={24} className="text-yellow" style={{ marginLeft: '83px' }} weight="fill" />
         <p className="ml-2 w-64 text-sm text-gray-60">

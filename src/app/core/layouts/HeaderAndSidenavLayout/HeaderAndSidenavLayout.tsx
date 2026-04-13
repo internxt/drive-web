@@ -8,7 +8,6 @@ import { AppView } from '../../types';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import TaskLogger from 'app/tasks/components/TaskLogger/TaskLogger';
 import DriveItemInfoMenu from 'app/drive/components/DriveItemInfoMenu/DriveItemInfoMenu';
-import SharedFolderTooBigDialog from '../../../drive/components/SharedFolderTooBigDialog/SharedFolderTooBigDialog';
 import { getAppConfig } from 'services/config.service';
 import ShareItemDialog from '../../../../views/Shared/components/ShareItemDialog/ShareItemDialog';
 import { Sidebar as VersionHistorySidebar } from '../../../../views/Drive/components/VersionHistory';
@@ -24,7 +23,6 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
   const isShareItemDialogOpen = useAppSelector((state) => state.ui.isShareItemDialogOpen);
   const isReachedPlanLimitDialogOpen = useAppSelector((state) => state.ui.isReachedPlanLimitDialogOpen);
-  const isSharedFolderTooBigDialogOpen = useAppSelector((state) => state.ui.isSharedFolderTooBigDialogOpen);
   const isDriveItemInfoMenuOpen = useAppSelector((state) => state.ui.isDriveItemInfoMenuOpen);
   const driveItemInfo = useAppSelector((state) => state.ui.currentFileInfoMenuItem);
   const onDriveItemInfoMenuClosed = () => {
@@ -42,7 +40,6 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
     <div className="flex h-auto min-h-full flex-col">
       {isShareItemDialogOpen && itemToShare && <ShareItemDialog share={itemToShare?.share} item={itemToShare.item} />}
       {isReachedPlanLimitDialogOpen && <ReachedPlanLimitDialog />}
-      {isSharedFolderTooBigDialogOpen && <SharedFolderTooBigDialog />}
 
       <div className="flex h-1 grow">
         <Sidenav />
