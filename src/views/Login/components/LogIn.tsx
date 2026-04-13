@@ -149,9 +149,12 @@ export default function LogIn(): JSX.Element {
   };
 
   const handleSuccessfulAuth = (user: UserSettings, mnemonic: string): void => {
-    const newToken = localStorageService.get(LocalStorageItem.NewToken) ?? '';
+    const newToken = localStorageService.get(LocalStorageItem.NewToken);
 
-    if (isOAuthFlow && newToken) {
+    if (!newToken) {
+      throw new Error('No authentication token available');
+    }
+    if (isOAuthFlow) {
       const success = handleOAuthSuccess(user, newToken);
       if (!success) {
         setIsLoggingIn(false);
