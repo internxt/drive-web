@@ -176,10 +176,7 @@ It is important to add in the `tailwind.config.ts` file, within the `safelist` p
 For example, with this snippet we are telling Tailwind to keep the react-bootstrap Dropdown and Tabs classes:
 
 ```typescript
-  safelist: [
-    'dropdown-menu', 'dropdown-item',
-    'nav-item', 'nav-link', 'tab-content', 'tab-pane'
-  ]
+safelist: ['dropdown-menu', 'dropdown-item', 'nav-item', 'nav-link', 'tab-content', 'tab-pane'];
 ```
 
 ## Recommended IDE extensions (Visual Studio Code)
