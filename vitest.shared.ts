@@ -7,12 +7,7 @@ export default {
   plugins: [react(), nodePolyfills(), svgr()],
   server: {
     warmup: {
-      clientFiles: [
-        'src/services/*.ts',
-        'src/app/network/*.ts',
-        'src/app/crypto/**/*.ts',
-        'src/app/drive/services/*.ts',
-      ],
+      clientFiles: ['src/**/*.{ts,tsx}'],
     },
   },
   resolve: {
