@@ -249,9 +249,6 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
     const teamId = selectedWorkspace?.workspace.defaultTeamId;
     const options = { ...DEFAULT_OPTIONS, ...payloadOptions };
 
-    const continueWithUpload = isUploadAllowed({ state: state, files, dispatch, isWorkspaceSelected: !!workspaceId });
-    if (!continueWithUpload) return;
-
     let zeroLengthFilesNumber = 0;
     for (const file of files) {
       if (file.size === 0) {
