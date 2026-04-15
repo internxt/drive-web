@@ -105,6 +105,7 @@ export interface DriveItemPatch {
 export interface ReachedPlanLimitDialogInfo {
   title: string;
   description: string;
+  hidePrimaryAction?: boolean;
 }
 
 export interface UpgradePlanDialogInfo {

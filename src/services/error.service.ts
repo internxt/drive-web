@@ -43,6 +43,7 @@ const errorService = {
       castedError = new AppError(err);
     } else if (err instanceof Error) {
       const headers = (err as ErrorWithStatus).headers;
+
       castedError = new AppError(err.message || 'Unknown error', (err as ErrorWithStatus).status, undefined, headers);
     } else {
       const map = err as Record<string, unknown>;

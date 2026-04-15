@@ -350,17 +350,17 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
       abortController: new AbortController(),
     }));
 
-    const openMaxSpaceOccupiedDialog = () => {
+    const openMaxSpaceOccupiedDialog = () =>
       dispatch(
         uiActions.setOpenReachedPlanLimitDialog({
           open: true,
           info: {
             title: t('error.ownerStorageIsFull'),
             description: t('error.ownerStorageIsFullDescription'),
+            hidePrimaryAction: true,
           },
         }),
       );
-    };
 
     try {
       await uploadFileWithManager(

@@ -57,9 +57,11 @@ const ReachedPlanLimitDialog = (): JSX.Element => {
           <Button variant="secondary" className="mr-2" onClick={() => onClose()}>
             {translate('actions.cancel')}
           </Button>
-          <Button variant="primary" onClick={() => onAccept()}>
-            {translate('actions.buyStorage')}
-          </Button>
+          {!reachedPlanLimitInfo?.hidePrimaryAction && (
+            <Button variant="primary" onClick={() => onAccept()}>
+              {translate('actions.buyStorage')}
+            </Button>
+          )}
         </div>
       </div>
     </BaseDialog>
