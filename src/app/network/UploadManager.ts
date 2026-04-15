@@ -47,15 +47,19 @@ export type UploadManagerFileParams = {
   isUploadedFromFolder?: boolean;
 };
 
+export type UploadFileWithManagerCallbacks = {
+  relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number };
+  onFileUploadCallback?: (driveFileData: DriveFileData) => void;
+  emptyFileNotAllowedCallback?: (fileName: string) => void;
+};
+
 export const uploadFileWithManager = (
   files: UploadManagerFileParams[],
   maxSpaceOccupiedCallback: () => void,
   uploadRepository: PersistUploadRepository,
   abortController?: AbortController,
   options?: Options,
-  relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number },
-  onFileUploadCallback?: (driveFileData: DriveFileData) => void,
-  emptyFileNotAllowedCallback?: (fileName: string) => void,
+  callbacks?: UploadFileWithManagerCallbacks,
 ): Promise<{ uploadedFiles: DriveFileData[] }> => {
   const uploadManager = new UploadManager(
     files,
@@ -63,9 +67,7 @@ export const uploadFileWithManager = (
     uploadRepository,
     abortController,
     options,
-    relatedTaskProgress,
-    onFileUploadCallback,
-    emptyFileNotAllowedCallback,
+    callbacks,
   );
   return uploadManager.run();
 };
@@ -292,18 +294,16 @@ class UploadManager {
     uploadRepository?: PersistUploadRepository,
     abortController?: AbortController,
     options?: Options,
-    relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number },
-    onFileUploadCallback?: (driveFileData: DriveFileData) => void,
-    emptyFileNotAllowedCallback?: (fileName: string) => void,
+    callbacks?: UploadFileWithManagerCallbacks,
   ) {
     this.items = items;
     this.abortController = abortController;
     this.options = options;
-    this.relatedTaskProgress = relatedTaskProgress;
+    this.relatedTaskProgress = callbacks?.relatedTaskProgress;
     this.maxSpaceOccupiedCallback = maxSpaceOccupiedCallback;
-    this.emptyFileNotAllowedCallback = emptyFileNotAllowedCallback;
+    this.emptyFileNotAllowedCallback = callbacks?.emptyFileNotAllowedCallback;
     this.uploadRepository = uploadRepository;
-    this.onFileUploadCallback = onFileUploadCallback;
+    this.onFileUploadCallback = callbacks?.onFileUploadCallback;
   }
 
   private handleUploadErrors({

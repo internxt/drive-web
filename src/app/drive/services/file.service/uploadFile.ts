@@ -112,7 +112,8 @@ export async function uploadFile(
         ownerToken: workspacesToken,
       });
     } catch (err) {
-      if (errorService.castError(err).status === HTTP_CODES.PAYMENT_REQUIRED) {
+      const error = errorService.castError(err);
+      if (error.status === HTTP_CODES.PAYMENT_REQUIRED) {
         throw new EmptyFileNotAllowedError(file.name);
       }
       throw err;

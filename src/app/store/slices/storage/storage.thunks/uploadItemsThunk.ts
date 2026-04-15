@@ -186,9 +186,9 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
           },
           isUploadedFromFolder: isRetry,
         },
-        undefined,
-        undefined,
-        notifyEmptyFileSkipped,
+        {
+          emptyFileNotAllowedCallback: notifyEmptyFileSkipped,
+        },
       );
     } catch (error) {
       if (taskId && isRetry) RetryManager.changeStatus(taskId, 'failed');
@@ -462,9 +462,11 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
             currentFolderId: parentFolderId,
           },
         },
-        filesProgress,
-        onFileUploadCallback,
-        notifyEmptyFileSkipped,
+        {
+          relatedTaskProgress: filesProgress,
+          onFileUploadCallback,
+          emptyFileNotAllowedCallback: notifyEmptyFileSkipped,
+        },
       );
     } catch (error) {
       errors.push(errorService.castError(error));
