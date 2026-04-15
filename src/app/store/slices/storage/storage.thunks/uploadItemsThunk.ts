@@ -95,6 +95,12 @@ const isUploadAllowed = ({
   return true;
 };
 
+const notifyEmptyFileSkipped = (fileName: string) =>
+  notificationsService.show({
+    text: t('error.emptyFileNotAllowed', { fileName }),
+    type: ToastType.Warning,
+  });
+
 /**
  * @description
  *  1. Prepare files to upload
@@ -166,12 +172,6 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     }));
 
     const openMaxSpaceOccupiedDialog = () => dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
-    const notifyEmptyFileSkipped = (fileName: string) =>
-      notificationsService.show({
-        text: t('error.emptyFileNotAllowed', { fileName }),
-        type: ToastType.Warning,
-      });
-
     try {
       await uploadFileWithManager(
         filesToUploadData,
@@ -448,12 +448,6 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
     }));
 
     const openMaxSpaceOccupiedDialog = () => dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
-    const notifyEmptyFileSkipped = (fileName: string) =>
-      notificationsService.show({
-        text: t('error.emptyFileNotAllowed', { fileName }),
-        type: ToastType.Warning,
-      });
-
     try {
       await uploadFileWithManager(
         filesToUploadData,

@@ -1143,6 +1143,7 @@
     "errorMovingToTrash": "При перемещении элементов в корзину произошла ошибка.",
     "errorDeletingFromTrash": "При удалении элементов из корзины произошла ошибка.",
     "maxSizeUploadLimitError": "Слишком большой файл (более 40 ГБ)",
+    "emptyFileNotAllowed": "\"{{fileName}}\" пропущен: обновите тарифный план, чтобы загружать пустые файлы",
     "connectionLostError": "Потеряно подключение к Интернету",
     "errorLoadingTrashItems": "Ошибка при загрузке элементов корзины",
     "updateAvatarError": "Ошибка при обновлении аватара",

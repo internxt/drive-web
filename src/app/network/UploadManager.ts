@@ -79,7 +79,7 @@ class UploadManager {
   private options?: Options;
   private relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number };
   private maxSpaceOccupiedCallback: () => void;
-  private emptyFileNotAllowedCallback?: (fileName: string) => void;
+  private readonly emptyFileNotAllowedCallback?: (fileName: string) => void;
   private onFileUploadCallback?: (driveFileData: DriveFileData) => void;
   private uploadRepository?: PersistUploadRepository;
   private filesUploadedList: (DriveFileData & { taskId: string })[] = [];

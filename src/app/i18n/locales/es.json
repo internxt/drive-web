@@ -1177,6 +1177,7 @@
     "errorMovingToTrash": "Ha ocurrido un error mientras se movian los items a la basura.",
     "errorDeletingFromTrash": "Ha ocurrido un error mientras se eliminaban los items de la basura.",
     "maxSizeUploadLimitError": "Archivo demasiado grande (mayor de 40GB)",
+    "emptyFileNotAllowed": "\"{{fileName}}\" fue omitido: actualiza tu plan para subir archivos vacíos",
     "connectionLostError": "Conexión a internet perdida",
     "errorLoadingTrashItems": "Error al cargar items de la papelera",
     "updateAvatarError": "Error al actualizar el avatar",
