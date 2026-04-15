@@ -252,7 +252,7 @@ class UploadManager {
               this.emptyFileNotAllowedCallback?.(error.fileName);
               tasksService.updateTask({
                 taskId,
-                merge: { status: TaskStatus.Cancelled },
+                merge: { status: TaskStatus.Error, subtitle: t('tasks.subtitles.upload-failed') as string },
               });
               next(null);
               return;

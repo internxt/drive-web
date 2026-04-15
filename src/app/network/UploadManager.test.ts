@@ -715,7 +715,7 @@ describe('checkUploadFiles', () => {
     expect(emptyFileNotAllowedCallback).toHaveBeenCalledWith(fileName);
     expect(updateTaskSpy).toHaveBeenCalledWith({
       taskId: 'taskId',
-      merge: { status: TaskStatus.Cancelled },
+      merge: { status: TaskStatus.Error, subtitle: expect.any(String) },
     });
     expect(reportErrorSpy).not.toHaveBeenCalled();
   });

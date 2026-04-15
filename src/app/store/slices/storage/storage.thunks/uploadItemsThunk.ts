@@ -98,7 +98,7 @@ const isUploadAllowed = ({
 const notifyEmptyFileSkipped = (fileName: string) =>
   notificationsService.show({
     text: t('error.emptyFileNotAllowed', { fileName }),
-    type: ToastType.Warning,
+    type: ToastType.Error,
   });
 
 /**
