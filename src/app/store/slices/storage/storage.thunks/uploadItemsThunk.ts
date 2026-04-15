@@ -166,6 +166,11 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     }));
 
     const openMaxSpaceOccupiedDialog = () => dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
+    const notifyEmptyFileSkipped = (fileName: string) =>
+      notificationsService.show({
+        text: t('error.emptyFileNotAllowed', { fileName }),
+        type: ToastType.Warning,
+      });
 
     try {
       await uploadFileWithManager(
@@ -181,6 +186,9 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
           },
           isUploadedFromFolder: isRetry,
         },
+        undefined,
+        undefined,
+        notifyEmptyFileSkipped,
       );
     } catch (error) {
       if (taskId && isRetry) RetryManager.changeStatus(taskId, 'failed');
@@ -440,6 +448,11 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
     }));
 
     const openMaxSpaceOccupiedDialog = () => dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
+    const notifyEmptyFileSkipped = (fileName: string) =>
+      notificationsService.show({
+        text: t('error.emptyFileNotAllowed', { fileName }),
+        type: ToastType.Warning,
+      });
 
     try {
       await uploadFileWithManager(
@@ -457,6 +470,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
         },
         filesProgress,
         onFileUploadCallback,
+        notifyEmptyFileSkipped,
       );
     } catch (error) {
       errors.push(errorService.castError(error));

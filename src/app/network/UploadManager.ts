@@ -4,6 +4,7 @@ import { t } from 'i18next';
 import errorService from 'services/error.service';
 import { HTTP_CODES } from '../core/constants';
 import uploadFile from 'app/drive/services/file.service/uploadFile';
+import { EmptyFileNotAllowedError } from 'app/drive/services/file.service/upload.errors';
 import { DriveFileData } from 'app/drive/types';
 import { PersistUploadRepository } from '../repositories/DatabaseUploadRepository';
 import tasksService from '../tasks/services/tasks.service';
@@ -54,6 +55,7 @@ export const uploadFileWithManager = (
   options?: Options,
   relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number },
   onFileUploadCallback?: (driveFileData: DriveFileData) => void,
+  emptyFileNotAllowedCallback?: (fileName: string) => void,
 ): Promise<{ uploadedFiles: DriveFileData[] }> => {
   const uploadManager = new UploadManager(
     files,
@@ -63,6 +65,7 @@ export const uploadFileWithManager = (
     options,
     relatedTaskProgress,
     onFileUploadCallback,
+    emptyFileNotAllowedCallback,
   );
   return uploadManager.run();
 };
@@ -76,6 +79,7 @@ class UploadManager {
   private options?: Options;
   private relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number };
   private maxSpaceOccupiedCallback: () => void;
+  private emptyFileNotAllowedCallback?: (fileName: string) => void;
   private onFileUploadCallback?: (driveFileData: DriveFileData) => void;
   private uploadRepository?: PersistUploadRepository;
   private filesUploadedList: (DriveFileData & { taskId: string })[] = [];
@@ -240,6 +244,17 @@ class UploadManager {
               !!this.abortController?.signal.aborted || !!fileData.abortController?.signal.aborted || error === 'abort';
             const isLostConnectionError =
               error instanceof ConnectionLostError || error.message === ErrorMessages.NetworkError;
+            const isEmptyFileNotAllowed = error instanceof EmptyFileNotAllowedError;
+
+            if (isEmptyFileNotAllowed) {
+              this.emptyFileNotAllowedCallback?.(error.fileName);
+              tasksService.updateTask({
+                taskId,
+                merge: { status: TaskStatus.Cancelled },
+              });
+              next(null);
+              return;
+            }
 
             if (uploadAttempts < MAX_UPLOAD_ATTEMPTS && !isUploadAborted && !isLostConnectionError) {
               upload();
@@ -279,12 +294,14 @@ class UploadManager {
     options?: Options,
     relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number },
     onFileUploadCallback?: (driveFileData: DriveFileData) => void,
+    emptyFileNotAllowedCallback?: (fileName: string) => void,
   ) {
     this.items = items;
     this.abortController = abortController;
     this.options = options;
     this.relatedTaskProgress = relatedTaskProgress;
     this.maxSpaceOccupiedCallback = maxSpaceOccupiedCallback;
+    this.emptyFileNotAllowedCallback = emptyFileNotAllowedCallback;
     this.uploadRepository = uploadRepository;
     this.onFileUploadCallback = onFileUploadCallback;
   }

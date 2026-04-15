@@ -11,7 +11,8 @@ import { generateThumbnailFromFile } from '../thumbnail.service';
 import { OwnerUserAuthenticationData } from 'app/network/types';
 import { FileToUpload } from './types';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
-import { BucketNotFoundError, FileIdRequiredError } from './upload.errors';
+import { BucketNotFoundError, EmptyFileNotAllowedError, FileIdRequiredError } from './upload.errors';
+import { HTTP_CODES } from 'app/core/constants';
 import { isFileEmpty } from 'utils/isFileEmpty';
 import { FileEntry } from '@internxt/sdk/dist/workspaces';
 
@@ -101,13 +102,23 @@ export async function uploadFile(
   const isWorkspacesUpload = workspaceId && workspacesToken;
 
   if (isFileEmpty(file.content) && !isWorkspacesUpload) {
-    return createFileEntry({
-      bucketId: bucketId,
-      file,
-      resourcesToken: resourcesToken,
-      workspaceId: workspaceId,
-      ownerToken: workspacesToken,
-    });
+    try {
+      return await createFileEntry({
+        bucketId: bucketId,
+        file,
+        resourcesToken: resourcesToken,
+        workspaceId: workspaceId,
+        ownerToken: workspacesToken,
+      });
+    } catch (err) {
+      const status =
+        (err as { status?: number; response?: { status?: number } })?.status ??
+        (err as { response?: { status?: number } })?.response?.status;
+      if (status === HTTP_CODES.PAYMENT_REQUIRED) {
+        throw new EmptyFileNotAllowedError(file.name);
+      }
+      throw err;
+    }
   }
 
   if (!bucketId) {

@@ -255,10 +255,8 @@ export class UploadFoldersManager {
       }),
     )
       .unwrap()
-      .catch(() => {
-        this.stopUploadTask(taskId, abortController);
-        this.killQueueAndNotifyError(taskId);
-        return;
+      .catch((error) => {
+        errorService.reportError(error);
       });
   };
 
