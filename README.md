@@ -54,7 +54,7 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 - Runs unit tests with [Vitest](https://vitest.dev/)
 
-### `test:playwright` (`yarn playwright test`)
+### `yarn test:playwright` (`yarn playwright test`)
 
 - Runs end to end tests with [Playwright](https://playwright.dev/)
 
