@@ -3,6 +3,7 @@ import { authService, oauthService, navigationService, localStorageService } fro
 import { AppView, LocalStorageItem } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
+import { isMobile } from 'react-device-detect';
 import { useEffect, useMemo } from 'react';
 
 const OAuthLinkView = (): JSX.Element => {
@@ -71,13 +72,15 @@ const OAuthLinkView = (): JSX.Element => {
         </div>
       </div>
       <div className="flex shrink-0 flex-row justify-center py-8">
-        <a
-          href="https://internxt.com/legal"
-          target="_blank"
-          className="font-regular mr-4 mt-6 text-base text-gray-80 no-underline hover:text-gray-100"
-        >
-          {translate('general.terms')}
-        </a>
+        {!isMobile && (
+          <a
+            href="https://internxt.com/legal"
+            target="_blank"
+            className="font-regular mr-4 mt-6 text-base text-gray-80 no-underline hover:text-gray-100"
+          >
+            {translate('general.terms')}
+          </a>
+        )}
         <a
           href="https://help.internxt.com"
           target="_blank"

@@ -1,6 +1,7 @@
 import TextInput from 'components/TextInput';
 import { Button } from '@internxt/ui';
 import InternxtLogo from '../../../assets/icons/big-logo.svg?react';
+import { isMobile } from 'react-device-detect';
 import PasswordFieldWithInfo from './PasswordFieldWithInfo';
 import { Helmet } from 'react-helmet-async';
 import envService from 'services/env.service';
@@ -91,13 +92,17 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
               </div>
               <span className="mt-2 w-full text-xs text-gray-50">
                 {translate('auth.terms1')}{' '}
-                <a
-                  href="https://internxt.com/legal"
-                  target="_blank"
-                  className="text-xs text-gray-50 hover:text-gray-60"
-                >
-                  {translate('auth.terms2')}
-                </a>
+                {isMobile ? (
+                  <span className="text-xs text-gray-50">{translate('auth.terms2')}</span>
+                ) : (
+                  <a
+                    href="https://internxt.com/legal"
+                    target="_blank"
+                    className="text-xs text-gray-50 hover:text-gray-60"
+                  >
+                    {translate('auth.terms2')}
+                  </a>
+                )}
               </span>
             </form>
           </div>
@@ -105,13 +110,15 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
       </div>
 
       <div className="flex flex-shrink-0 flex-row justify-center py-8">
-        <a
-          href="https://internxt.com/legal"
-          target="_blank"
-          className="font-regular mr-4 mt-6 text-base text-gray-80 no-underline hover:text-gray-100"
-        >
-          {translate('general.terms')}
-        </a>
+        {!isMobile && (
+          <a
+            href="https://internxt.com/legal"
+            target="_blank"
+            className="font-regular mr-4 mt-6 text-base text-gray-80 no-underline hover:text-gray-100"
+          >
+            {translate('general.terms')}
+          </a>
+        )}
         <a
           href="https://help.internxt.com"
           target="_blank"
