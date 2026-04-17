@@ -1,6 +1,7 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import SuccessCheckIcon from 'assets/icons/universal-link/success-check.svg?react';
+import { isMobile } from 'react-device-detect';
 
 export default function UniversalLinkOkView(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -24,13 +25,15 @@ export default function UniversalLinkOkView(): JSX.Element {
         </div>
       </div>
       <div className="flex shrink-0 flex-row justify-center py-8">
-        <a
-          href="https://internxt.com/legal"
-          target="_blank"
-          className="font-regular mr-4 mt-6 text-base text-gray-80 no-underline hover:text-gray-100"
-        >
-          {translate('general.terms')}
-        </a>
+        {!isMobile && (
+          <a
+            href="https://internxt.com/legal"
+            target="_blank"
+            className="font-regular mr-4 mt-6 text-base text-gray-80 no-underline hover:text-gray-100"
+          >
+            {translate('general.terms')}
+          </a>
+        )}
         <a
           href="https://help.internxt.com"
           target="_blank"
