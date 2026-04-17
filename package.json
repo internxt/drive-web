@@ -1,6 +1,6 @@
 {
   "name": "drive-web",
-  "version": "v1.0.742",
+  "version": "v1.0.743",
   "private": true,
   "packageManager": "yarn@1.22.22",
   "dependencies": {
