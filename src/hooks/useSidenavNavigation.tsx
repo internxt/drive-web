@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useAppSelector } from 'app/store/hooks';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-import { SidenavOption } from '@internxt/ui/dist/components/sidenav/SidenavOptions';
+import { SidenavOption } from '@internxt/ui/dist/components/navigation/sidenav/SidenavOptions';
 import { AppView } from 'app/core/types';
 import { RootState } from 'app/store';
 import localStorageService from 'services/local-storage.service';
