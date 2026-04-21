@@ -39,6 +39,7 @@ export function savePaymentDataInLocalStorage(
   selectedPlan: PriceWithTax | undefined,
   users: number,
   couponCodeData: CouponCodeData | undefined,
+  isFirstPurchase: boolean,
 ) {
   if (subscriptionId && selectedPlan?.price.interval !== 'lifetime') {
     localStorageService.set('subscriptionId', subscriptionId);
@@ -61,6 +62,8 @@ export function savePaymentDataInLocalStorage(
   if (couponCodeData?.codeName) {
     localStorageService.set('couponCode', couponCodeData.codeName);
   }
+
+  localStorageService.set('isFirstPurchase', String(isFirstPurchase));
 }
 
 export async function trackSignUp(uuid: string): Promise<void> {
@@ -106,6 +109,7 @@ export async function trackPaymentConversion(): Promise<void> {
     const amountPaidStr = localStorageService.get('amountPaid');
     const amount = Number.parseFloat(amountPaidStr ?? '0');
     const couponCode = localStorageService.get('couponCode');
+    const isFirstPurchase = localStorageService.get('isFirstPurchase') === 'true';
 
     try {
       sendAddShoppersConversion({
@@ -123,7 +127,7 @@ export async function trackPaymentConversion(): Promise<void> {
     const anonymousID = getCookie('impactAnonymousId');
     const source = getCookie('impactSource');
 
-    if ((source && source !== 'direct') || couponCode) {
+    if (isFirstPurchase && ((source && source !== 'direct') || couponCode)) {
       try {
         await axios.post(IMPACT_API, {
           anonymousId: anonymousID,

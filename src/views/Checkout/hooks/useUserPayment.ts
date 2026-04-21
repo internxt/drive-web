@@ -5,6 +5,7 @@ import checkoutService from '../services/checkout.service';
 import envService from 'services/env.service';
 import { sendConversionToAPI } from 'app/analytics/googleSheet.service';
 import navigationService from 'services/navigation.service';
+import errorService from 'services/error.service';
 import { AppView } from 'app/core/types';
 import {
   CreatePaymentIntentPayload,
@@ -17,6 +18,19 @@ import {
 import { ActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.context';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { CreateSubscriptionPayload } from '@internxt/sdk/dist/payments/types';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
+import { paymentService } from '../services';
+
+export const checkIsFirstPurchase = async (): Promise<boolean> => {
+  try {
+    const invoices = await paymentService.getInvoices({ userType: UserType.Individual, limit: 1 });
+    return invoices.length === 0;
+  } catch (error) {
+    const castedError = errorService.castError(error);
+    errorService.reportError(castedError);
+    return false;
+  }
+};
 
 export const useUserPayment = () => {
   const getSubscriptionPaymentIntent = async ({
@@ -140,6 +154,7 @@ export const useUserPayment = () => {
     translate,
     confirmPayment,
     confirmSetupIntent,
+    isFirstPurchase,
   }: ProcessPurchasePayload) => {
     const subscription = await getSubscriptionPaymentIntent({
       customerId,
@@ -157,6 +172,7 @@ export const useUserPayment = () => {
       currentSelectedPlan,
       seatsForBusinessSubscription,
       couponCodeData,
+      isFirstPurchase ?? false,
     );
 
     switch (subscription.type) {
@@ -189,6 +205,7 @@ export const useUserPayment = () => {
     userAddress,
     confirmPayment,
     openCryptoPaymentDialog,
+    isFirstPurchase,
   }: ProcessPurchasePayload) => {
     const {
       id: paymentIntentId,
@@ -207,7 +224,14 @@ export const useUserPayment = () => {
       currency,
     });
 
-    savePaymentDataInLocalStorage(undefined, paymentIntentId, currentSelectedPlan, 1, couponCodeData);
+    savePaymentDataInLocalStorage(
+      undefined,
+      paymentIntentId,
+      currentSelectedPlan,
+      1,
+      couponCodeData,
+      isFirstPurchase ?? false,
+    );
 
     // !DO NOT REMOVE THIS
     // If there is a one time payment with a 100% OFF coupon code, the invoice will be marked as 'paid' by Stripe and
@@ -257,6 +281,7 @@ export const useUserPayment = () => {
     confirmSetupIntent,
   }: UseUserPaymentPayload) => {
     const planInterval = selectedPlan.price.interval;
+    const isFirstPurchase = await checkIsFirstPurchase();
 
     if (gclidStored) {
       await sendConversionToAPI({
@@ -287,6 +312,7 @@ export const useUserPayment = () => {
           translate,
           confirmPayment,
           confirmSetupIntent,
+          isFirstPurchase,
         });
         break;
 
@@ -305,6 +331,7 @@ export const useUserPayment = () => {
           confirmPayment,
           openCryptoPaymentDialog,
           confirmSetupIntent,
+          isFirstPurchase,
         });
         break;
 
