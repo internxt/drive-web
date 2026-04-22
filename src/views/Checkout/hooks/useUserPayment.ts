@@ -166,14 +166,14 @@ export const useUserPayment = () => {
       currency,
     });
 
-    savePaymentDataInLocalStorage(
-      subscription.subscriptionId,
-      subscription.paymentIntentId,
-      currentSelectedPlan,
-      seatsForBusinessSubscription,
+    savePaymentDataInLocalStorage({
+      subscriptionId: subscription.subscriptionId,
+      paymentIntentId: subscription.paymentIntentId,
+      selectedPlan: currentSelectedPlan,
+      users: seatsForBusinessSubscription,
       couponCodeData,
-      isFirstPurchase ?? false,
-    );
+      isFirstPurchase: isFirstPurchase ?? false,
+    });
 
     switch (subscription.type) {
       case 'payment':
@@ -224,14 +224,14 @@ export const useUserPayment = () => {
       currency,
     });
 
-    savePaymentDataInLocalStorage(
-      undefined,
+    savePaymentDataInLocalStorage({
+      subscriptionId: undefined,
       paymentIntentId,
-      currentSelectedPlan,
-      1,
+      selectedPlan: currentSelectedPlan,
+      users: 1,
       couponCodeData,
-      isFirstPurchase ?? false,
-    );
+      isFirstPurchase: isFirstPurchase ?? false,
+    });
 
     // !DO NOT REMOVE THIS
     // If there is a one time payment with a 100% OFF coupon code, the invoice will be marked as 'paid' by Stripe and
