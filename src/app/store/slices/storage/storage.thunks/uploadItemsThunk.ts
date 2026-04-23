@@ -95,6 +95,12 @@ const isUploadAllowed = ({
   return true;
 };
 
+const notifyEmptyFileSkipped = (fileName: string) =>
+  notificationsService.show({
+    text: t('error.emptyFileNotAllowed', { fileName }),
+    type: ToastType.Error,
+  });
+
 /**
  * @description
  *  1. Prepare files to upload
@@ -166,7 +172,6 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     }));
 
     const openMaxSpaceOccupiedDialog = () => dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
-
     try {
       await uploadFileWithManager(
         filesToUploadData,
@@ -180,6 +185,9 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
             currentFolderId: parentFolderId,
           },
           isUploadedFromFolder: isRetry,
+        },
+        {
+          emptyFileNotAllowedCallback: notifyEmptyFileSkipped,
         },
       );
     } catch (error) {
@@ -440,7 +448,6 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
     }));
 
     const openMaxSpaceOccupiedDialog = () => dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
-
     try {
       await uploadFileWithManager(
         filesToUploadData,
@@ -455,8 +462,11 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
             currentFolderId: parentFolderId,
           },
         },
-        filesProgress,
-        onFileUploadCallback,
+        {
+          relatedTaskProgress: filesProgress,
+          onFileUploadCallback,
+          emptyFileNotAllowedCallback: notifyEmptyFileSkipped,
+        },
       );
     } catch (error) {
       errors.push(errorService.castError(error));

@@ -14,3 +14,14 @@ export class BucketNotFoundError extends Error {
     Object.setPrototypeOf(this, BucketNotFoundError.prototype);
   }
 }
+
+export class EmptyFileNotAllowedError extends Error {
+  readonly fileName: string;
+
+  constructor(fileName: string) {
+    super('Empty files are not allowed by current plan');
+    this.name = 'EmptyFileNotAllowedError';
+    this.fileName = fileName;
+    Object.setPrototypeOf(this, EmptyFileNotAllowedError.prototype);
+  }
+}

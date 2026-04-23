@@ -1128,6 +1128,7 @@
     "emptyPassword": "Le mot de passe précédent ne doit pas être vide",
     "errorMovingToTrash": "Error lors du déplacement des éléments.",
     "maxSizeUploadLimitError": "Fichier trop volumineux (plus de 40GB)",
+    "emptyFileNotAllowed": "\"{{fileName}}\" a été ignoré : améliorez votre forfait pour téléverser des fichiers vides",
     "connectionLostError": "Lost Internet connection",
     "errorLoadingTrashItems": "Erreur de chargement des éléments de la corbeille",
     "updateAvatarError": "Erreur lors de la mise à jour de l'avatar",

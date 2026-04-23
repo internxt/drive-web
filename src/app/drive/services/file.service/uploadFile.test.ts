@@ -37,7 +37,7 @@ vi.mock('services/navigation.service', () => ({
 import { SdkFactory } from 'app/core/factory/sdk';
 import workspacesService from 'services/workspace.service';
 import { Network, getEnvironmentConfig } from 'app/drive/services/network.service';
-import { BucketNotFoundError, FileIdRequiredError } from './upload.errors';
+import { BucketNotFoundError, EmptyFileNotAllowedError, FileIdRequiredError } from './upload.errors';
 import { DriveFileData } from 'app/drive/types';
 
 const mockSdkFactory = vi.mocked(SdkFactory);
@@ -338,6 +338,79 @@ describe('Uploading a file', () => {
 
     expect(result).toEqual(expectedResponse);
     expect(mockNetwork).not.toHaveBeenCalled();
+  });
+
+  test('When the plan does not allow empty files, then the user is informed', async () => {
+    const file: FileToUpload = {
+      name: 'empty-file.txt',
+      size: 0,
+      type: 'txt',
+      content: new File([], 'empty-file.txt'),
+      parentFolderId: 'folder-123',
+    };
+    const bucketId = 'bucket-123';
+
+    mockGetEnvironmentConfig.mockReturnValue({
+      bridgeUser: 'user',
+      bridgePass: 'pass',
+      encryptionKey: 'key',
+      bucketId,
+    } as any);
+
+    const paymentRequiredError = Object.assign(new Error('Payment required'), { status: 402 });
+    const mockCreateFileEntryByUuid = vi.fn().mockRejectedValue(paymentRequiredError);
+    mockSdkFactory.getNewApiInstance.mockReturnValue({
+      createNewStorageClient: vi.fn(() => ({
+        createFileEntryByUuid: mockCreateFileEntryByUuid,
+      })),
+    } as any);
+
+    await expect(
+      uploadFile(
+        'user@test.com',
+        file,
+        vi.fn(),
+        { isTeam: false },
+        { taskId: 'task-1', isPaused: false, isRetriedUpload: false },
+      ),
+    ).rejects.toThrow(EmptyFileNotAllowedError);
+    expect(mockNetwork).not.toHaveBeenCalled();
+  });
+
+  test('When uploading an empty file fails unexpectedly, then the original error is shown', async () => {
+    const file: FileToUpload = {
+      name: 'empty-file.txt',
+      size: 0,
+      type: 'txt',
+      content: new File([], 'empty-file.txt'),
+      parentFolderId: 'folder-123',
+    };
+    const bucketId = 'bucket-123';
+
+    mockGetEnvironmentConfig.mockReturnValue({
+      bridgeUser: 'user',
+      bridgePass: 'pass',
+      encryptionKey: 'key',
+      bucketId,
+    } as any);
+
+    const serverError = Object.assign(new Error('Server error'), { status: 500 });
+    const mockCreateFileEntryByUuid = vi.fn().mockRejectedValue(serverError);
+    mockSdkFactory.getNewApiInstance.mockReturnValue({
+      createNewStorageClient: vi.fn(() => ({
+        createFileEntryByUuid: mockCreateFileEntryByUuid,
+      })),
+    } as any);
+
+    await expect(
+      uploadFile(
+        'user@test.com',
+        file,
+        vi.fn(),
+        { isTeam: false },
+        { taskId: 'task-1', isPaused: false, isRetriedUpload: false },
+      ),
+    ).rejects.toThrow('Server error');
   });
 
   test('When uploading a file without bucket id, then an error indicating so is thrown', async () => {

@@ -1200,6 +1200,7 @@
     "errorMovingToTrash": "An error occurred while moving the items to trash.",
     "errorDeletingFromTrash": "An error occurred while deleting the items from trash.",
     "maxSizeUploadLimitError": "File too large (greater than 40GB)",
+    "emptyFileNotAllowed": "\"{{fileName}}\" was skipped: upgrade your plan to upload empty files",
     "connectionLostError": "Internet connection lost",
     "errorLoadingTrashItems": "Error loading trash items",
     "updateAvatarError": "Error updating avatar",

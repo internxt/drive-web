@@ -9,6 +9,7 @@ import { DriveFileData } from 'app/drive/types';
 import RetryManager from './RetryManager';
 import { TaskStatus } from 'app/tasks/types';
 import { ErrorMessages } from 'app/core/constants';
+import { EmptyFileNotAllowedError } from 'app/drive/services/file.service/upload.errors';
 
 vi.mock('app/drive/services/file.service/uploadFile', () => ({
   default: vi.fn(() => Promise.resolve({} as DriveFileData)),
@@ -669,5 +670,53 @@ describe('checkUploadFiles', () => {
       }),
       expect.any(Object),
     );
+  });
+
+  it('When the plan does not allow empty files, then the upload is skipped and the user is informed', async () => {
+    const fileName = 'empty-file.txt';
+    (uploadFile as Mock).mockRejectedValueOnce(new EmptyFileNotAllowedError(fileName));
+
+    const updateTaskSpy = vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
+    const reportErrorSpy = vi.spyOn(errorService, 'reportError').mockReturnValue();
+    const emptyFileNotAllowedCallback = vi.fn();
+
+    await uploadFileWithManager(
+      [
+        {
+          taskId: 'taskId',
+          filecontent: {
+            content: 'file-content' as unknown as File,
+            type: 'text/plain',
+            name: fileName,
+            size: 0,
+            parentFolderId: 'folder-1',
+          },
+          userEmail: '',
+          parentFolderId: '',
+        },
+      ],
+      openMaxSpaceOccupiedDialogMock,
+      DatabaseUploadRepository.getInstance(),
+      undefined,
+      {
+        ownerUserAuthenticationData: undefined,
+        sharedItemData: {
+          isDeepFolder: false,
+          currentFolderId: 'parentFolderId',
+        },
+        isUploadedFromFolder: true,
+      },
+      { emptyFileNotAllowedCallback },
+    );
+
+    expect(emptyFileNotAllowedCallback).toHaveBeenCalledWith(fileName);
+    expect(updateTaskSpy).toHaveBeenCalledWith({
+      taskId: 'taskId',
+      merge: { status: TaskStatus.Error, subtitle: expect.any(String) },
+    });
+    expect(reportErrorSpy).not.toHaveBeenCalled();
   });
 });

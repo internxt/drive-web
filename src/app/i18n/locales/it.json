@@ -1235,6 +1235,7 @@
     "errorMovingToTrash": "Si è verificato un errore durante lo spostamento degli elementi nel cestino.",
     "errorDeletingFromTrash": "Si è verificato un errore durante l'eliminazione degli elementi dal cestino.",
     "maxSizeUploadLimitError": "File troppo grande (superiore a 40GB)",
+    "emptyFileNotAllowed": "\"{{fileName}}\" è stato ignorato: aggiorna il tuo piano per caricare file vuoti",
     "connectionLostError": "Connessione Internet persa",
     "errorLoadingTrashItems": "Errore nel caricamento degli elementi del cestino",
     "updateAvatarError": "Errore nell'aggiornamento dell'avatar",
