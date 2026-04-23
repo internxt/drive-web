@@ -131,7 +131,10 @@ export async function trackPaymentConversion(): Promise<void> {
     const anonymousID = getCookie('impactAnonymousId') || uuidV4();
     const source = getCookie('impactSource');
 
-    if (isFirstPurchase && ((source && source !== 'direct') || couponCode)) {
+    const IMPACT_COUPON_WHITELIST = ['CNINTERNXT', 'CNINTERNXTL'];
+    const isImpactCoupon = couponCode && IMPACT_COUPON_WHITELIST.includes(couponCode.toUpperCase());
+
+    if (isFirstPurchase && ((source && source !== 'direct') || isImpactCoupon)) {
       try {
         await axios.post(IMPACT_API, {
           anonymousId: anonymousID,
