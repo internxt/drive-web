@@ -140,7 +140,7 @@ export async function trackPaymentConversion(): Promise<void> {
             impact_value: amount === 0 ? 0.01 : amount,
             subscription_id: subscription,
             payment_intent: paymentIntent,
-            ...(couponCode && { order_promo_code: couponCode.toUpperCase() }),
+            ...(couponCode && { order_promo_code: couponCode }),
           },
           userId: uuid,
           type: 'track',
