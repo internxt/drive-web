@@ -128,7 +128,7 @@ export async function trackPaymentConversion(): Promise<void> {
     }
 
     const IMPACT_API = envService.getVariable('impactApiUrl');
-    const anonymousID = getCookie('impactAnonymousId');
+    const anonymousID = getCookie('impactAnonymousId') || uuidV4();
     const source = getCookie('impactSource');
 
     if (isFirstPurchase && ((source && source !== 'direct') || couponCode)) {
@@ -140,7 +140,7 @@ export async function trackPaymentConversion(): Promise<void> {
             impact_value: amount === 0 ? 0.01 : amount,
             subscription_id: subscription,
             payment_intent: paymentIntent,
-            ...(couponCode && { order_promo_code: couponCode }),
+            ...(couponCode && { order_promo_code: couponCode.toUpperCase() }),
           },
           userId: uuid,
           type: 'track',
