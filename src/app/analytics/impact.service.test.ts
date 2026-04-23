@@ -353,6 +353,49 @@ describe('Testing Impact Service', () => {
         expect(axiosSpy).not.toHaveBeenCalled();
       });
 
+      it('should not send to Impact when source is direct and coupon code is not in whitelist', async () => {
+        const getCookieMock = await import('./utils');
+        vi.mocked(getCookieMock.getCookie).mockImplementation((key) => {
+          if (key === 'impactSource') return 'direct';
+          return '';
+        });
+        vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
+          if (key === 'couponCode') return 'NOT_WHITELISTED';
+          if (key === 'amountPaid') return expectedAmount;
+          if (key === 'isFirstPurchase') return 'true';
+          return null;
+        });
+        const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
+
+        await trackPaymentConversion();
+
+        expect(axiosSpy).not.toHaveBeenCalled();
+      });
+
+      it('should send to Impact when source is direct but coupon code is in whitelist', async () => {
+        const getCookieMock = await import('./utils');
+        vi.mocked(getCookieMock.getCookie).mockImplementation((key) => {
+          if (key === 'impactSource') return 'direct';
+          if (key === 'impactAnonymousId') return ''; // Empty, so it uses uuidV4
+          return '';
+        });
+        vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
+          if (key === 'couponCode') return 'CNINTERNXT'; // In whitelist
+          if (key === 'amountPaid') return expectedAmount;
+          if (key === 'subscriptionId') return subId;
+          if (key === 'isFirstPurchase') return 'true';
+          return null;
+        });
+        const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
+
+        await trackPaymentConversion();
+
+        expect(axiosSpy).toHaveBeenCalledTimes(1);
+        const callArgs = axiosSpy.mock.calls[0][1] as { properties: Record<string, unknown>; anonymousId: string };
+        expect(callArgs.properties).toHaveProperty('order_promo_code', 'CNINTERNXT');
+        expect(callArgs.anonymousId).toBe(mockedUserUuid); // Fallback to uuidV4
+      });
+
       it('should not send to Impact when isFirstPurchase is false', async () => {
         vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
           if (key === 'isFirstPurchase') return 'false';
