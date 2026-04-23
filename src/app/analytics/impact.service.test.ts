@@ -51,7 +51,7 @@ const promoCode = {
   amountOff: undefined,
   codeId: 'promo_123',
   percentOff: 99,
-  codeName: 'PROMO',
+  codeName: 'CNINTERNXTL',
 };
 
 const product = {
