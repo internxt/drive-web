@@ -1,5 +1,5 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-yarn run lint:fix; npx lint-staged; yarn run test
+yarn run lint:fix; npx lint-staged; yarn run typecheck; yarn run test
 

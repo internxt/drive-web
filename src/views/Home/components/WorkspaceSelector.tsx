@@ -16,7 +16,6 @@ export interface Workspace {
 interface WorkspaceSelectorProps {
   userWorkspace: Workspace;
   workspaces: Workspace[];
-  onCreateWorkspaceButtonClicked: () => void;
   onChangeWorkspace: (workspaceId: string | null) => void;
   selectedWorkspace: Workspace | null;
   setIsDialogOpen: (boolean) => void;
@@ -71,7 +70,6 @@ const WorkspaceCard = ({
 const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
   userWorkspace,
   workspaces,
-  onCreateWorkspaceButtonClicked,
   onChangeWorkspace,
   setIsDialogOpen,
   pendingWorkspacesInvitesLength,
@@ -207,12 +205,6 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
           ))}
           {/* NOT USING FOR THE MOMENT */}
           <div className="mx-3 h-px bg-gray-10"></div>
-          {/* <button
-            className="w-full rounded-b-lg px-2 py-3 text-left text-sm font-medium leading-4 text-gray-100 hover:bg-gray-5 dark:hover:bg-gray-10"
-            onClick={onCreateWorkspaceButtonClicked}
-          >
-            {translate('workspaces.createWorkspace')}
-          </button> */}
           {pendingWorkspacesInvitesLength > 0 && (
             <button
               className="flex w-full items-center space-x-2 rounded-b-lg px-2 py-3 text-left text-sm font-medium leading-4 text-gray-100 hover:bg-gray-5 dark:hover:bg-gray-10"

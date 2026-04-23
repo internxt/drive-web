@@ -56,6 +56,32 @@ interface Window {
   opera?: {
     version?: () => string;
   };
+  cello?: {
+    cmd: Array<(cello: { boot: (options: ReferralBootOptions) => Promise<void> }) => void>;
+  };
+  Cello?: (command: string, ...args: unknown[]) => Promise<unknown>;
+  CelloAttribution?: (command: string) => Promise<string | null>;
+}
+
+interface ReferralBootOptions {
+  productId: string;
+  token: string;
+  language?: string;
+  productUserDetails: {
+    firstName: string;
+    lastName?: string;
+    fullName?: string;
+    email: string;
+  };
+  hideDefaultLauncher?: boolean;
+  themeMode?: 'light' | 'dark';
+}
+
+interface Array<T> {
+  toSorted(compareFn?: (a: T, b: T) => number): T[];
+  toReversed(): T[];
+  toSpliced(start: number, deleteCount?: number, ...items: T[]): T[];
+  with(index: number, value: T): T[];
 }
 
 interface Navigator {

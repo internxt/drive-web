@@ -7,7 +7,7 @@ import notificationsService, { ToastType } from '../../../notifications/services
 
 const MOCK_TRANSLATION_MESSAGE = 'Some features may be unavailable';
 
-vi.mock('i18next', () => ({ t: () => MOCK_TRANSLATION_MESSAGE }));
+vi.mock('i18next', () => ({ default: { language: 'en' }, t: () => MOCK_TRANSLATION_MESSAGE }));
 
 describe('User reducer', () => {
   let store: ReturnType<typeof createTestStore>;

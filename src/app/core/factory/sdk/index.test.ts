@@ -2,12 +2,16 @@ import { describe, it, expect, vi, beforeEach, test } from 'vitest';
 import { SdkFactory } from './index';
 import { LocalStorageService } from 'services/local-storage.service';
 import { userThunks } from '../../../store/slices/user';
-import { Workspace } from '../../types';
+import { LocalStorageItem, Workspace } from '../../types';
 import { STORAGE_KEYS } from 'services/storage-keys';
 import { Share, Users } from '@internxt/sdk/dist/drive';
 import packageJson from '../../../../../package.json';
 import { Auth } from '@internxt/sdk/dist/auth';
 import { Location } from '@internxt/sdk';
+import { HttpClient } from '@internxt/sdk/dist/shared/http/client';
+import { USER_NOTIFICATION_MAX_RETRIES } from './retryStrategies';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import dateService from 'services/date.service';
 
 const MOCKED_NEW_API = 'https://api.internxt.com';
 const MOCKED_PAYMENTS = 'https://payments.internxt.com';
@@ -20,6 +24,18 @@ vi.mock('@internxt/sdk/dist/drive', () => ({
   Share: {
     client: vi.fn(),
   },
+  Storage: {
+    client: vi.fn(),
+  },
+}));
+
+vi.mock('app/notifications/services/notifications.service', () => ({
+  default: {
+    show: vi.fn(),
+  },
+  ToastType: {
+    Warning: 'WARNING',
+  },
 }));
 
 vi.mock('@internxt/sdk/dist/auth', () => ({
@@ -31,6 +47,22 @@ vi.mock('@internxt/sdk/dist/auth', () => ({
 vi.mock('@internxt/sdk', () => ({
   Location: {
     client: vi.fn(),
+  },
+}));
+
+vi.mock('@internxt/sdk/dist/shared/http/client', () => ({
+  HttpClient: {
+    enableGlobalRetry: vi.fn(),
+  },
+}));
+
+vi.mock('i18next', () => ({
+  t: vi.fn((key: string) => key),
+}));
+
+vi.mock('services/date.service', () => ({
+  default: {
+    hasElapsed: vi.fn().mockReturnValue(true),
   },
 }));
 
@@ -55,6 +87,12 @@ describe('SdkFactory', () => {
   let mockDispatch: any;
   let mockLocalStorage: LocalStorageService;
 
+  const getNotifyCallback = () => {
+    const callArgs = vi.mocked(HttpClient.enableGlobalRetry).mock.calls[0];
+    const retryOptions = callArgs[0] as { onRetry: (attempt: number, delay: number) => void };
+    return retryOptions.onRetry;
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
     mockDispatch = vi.fn();
@@ -66,6 +104,31 @@ describe('SdkFactory', () => {
     SdkFactory.initialize(mockDispatch, mockLocalStorage);
   });
 
+  describe('initialize', () => {
+    it('When initialized, then the global retry is enabled with user notification strategy', () => {
+      expect(HttpClient.enableGlobalRetry).toHaveBeenCalledTimes(1);
+      expect(HttpClient.enableGlobalRetry).toHaveBeenCalledWith(
+        expect.objectContaining({ maxRetries: USER_NOTIFICATION_MAX_RETRIES, onRetry: expect.any(Function) }),
+      );
+    });
+
+    it('When SDK clients are created without calling initialize, then enableGlobalRetry is not called again', () => {
+      vi.mocked(HttpClient.enableGlobalRetry).mockClear();
+
+      vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(Workspace.Individuals);
+      vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
+        if (key === 'xNewToken') return 'test-token';
+        return null;
+      });
+
+      const instance = SdkFactory.getNewApiInstance();
+      instance.createNewStorageClient();
+      instance.createShareClient();
+
+      expect(HttpClient.enableGlobalRetry).not.toHaveBeenCalled();
+    });
+  });
+
   describe('getNewApiSecurity', () => {
     it('should return ApiSecurity with token and default unauthorized callback', () => {
       const mockToken = 'test-token';
@@ -73,7 +136,7 @@ describe('SdkFactory', () => {
 
       vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
       vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-        if (key === 'xNewToken') return mockToken;
+        if (key === LocalStorageItem.NewToken) return mockToken;
         return null;
       });
 
@@ -92,7 +155,7 @@ describe('SdkFactory', () => {
 
       vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
       vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-        if (key === 'xNewToken') return mockToken;
+        if (key === LocalStorageItem.NewToken) return mockToken;
         return null;
       });
 
@@ -113,7 +176,7 @@ describe('SdkFactory', () => {
 
       vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
       vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-        if (key === 'xNewToken') return mockToken;
+        if (key === LocalStorageItem.NewToken) return mockToken;
         if (key === STORAGE_KEYS.B2B_WORKSPACE) return mockWorkspaceId;
         if (key === STORAGE_KEYS.WORKSPACE_CREDENTIALS) return JSON.stringify(mockCredentials);
         return null;
@@ -132,7 +195,7 @@ describe('SdkFactory', () => {
 
       vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
       vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-        if (key === 'xNewToken') return mockToken;
+        if (key === LocalStorageItem.NewToken) return mockToken;
         return null;
       });
 
@@ -150,7 +213,7 @@ describe('SdkFactory', () => {
 
       vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
       vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-        if (key === 'xTokenTeam') return mockToken;
+        if (key === LocalStorageItem.TeamToken) return mockToken;
         return null;
       });
 
@@ -179,7 +242,7 @@ describe('SdkFactory', () => {
 
       vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
       vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-        if (key === 'xNewToken') return mockToken;
+        if (key === LocalStorageItem.NewToken) return mockToken;
         if (key === STORAGE_KEYS.B2B_WORKSPACE) return mockWorkspaceId;
         if (key === STORAGE_KEYS.WORKSPACE_CREDENTIALS) return null;
         return null;
@@ -199,7 +262,7 @@ describe('SdkFactory', () => {
 
         vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
         vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-          if (key === 'xNewToken') return mockToken;
+          if (key === LocalStorageItem.NewToken) return mockToken;
           return null;
         });
 
@@ -223,7 +286,7 @@ describe('SdkFactory', () => {
 
         vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
         vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-          if (key === 'xNewToken') return mockToken;
+          if (key === LocalStorageItem.NewToken) return mockToken;
           return null;
         });
 
@@ -251,7 +314,7 @@ describe('SdkFactory', () => {
 
         vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
         vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-          if (key === 'xNewToken') return mockToken;
+          if (key === LocalStorageItem.NewToken) return mockToken;
           return null;
         });
 
@@ -275,7 +338,7 @@ describe('SdkFactory', () => {
 
         vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
         vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-          if (key === 'xNewToken') return mockToken;
+          if (key === LocalStorageItem.NewToken) return mockToken;
           return null;
         });
 
@@ -303,7 +366,7 @@ describe('SdkFactory', () => {
 
         vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
         vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-          if (key === 'xNewToken') return mockToken;
+          if (key === LocalStorageItem.NewToken) return mockToken;
           return null;
         });
 
@@ -327,7 +390,7 @@ describe('SdkFactory', () => {
 
         vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
         vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-          if (key === 'xNewToken') return mockToken;
+          if (key === LocalStorageItem.NewToken) return mockToken;
           return null;
         });
 
@@ -355,7 +418,7 @@ describe('SdkFactory', () => {
 
         vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
         vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-          if (key === 'xNewToken') return mockToken;
+          if (key === LocalStorageItem.NewToken) return mockToken;
           return null;
         });
 
@@ -363,6 +426,42 @@ describe('SdkFactory', () => {
         instance.createLocationClient();
 
         expect(Location.client).toHaveBeenCalledWith(MOCKED_LOCATION);
+      });
+    });
+
+    describe('notifyUserWithCooldown', () => {
+      it('When notifyUserWithCooldown is called for the first time, then it shows a toast notification', () => {
+        const onRetry = getNotifyCallback();
+
+        onRetry(1, 1000);
+
+        expect(notificationsService.show).toHaveBeenCalledWith({
+          text: 'sdk.rateLimitToast',
+          type: ToastType.Warning,
+          duration: 60000,
+        });
+      });
+
+      it('When notifyUserWithCooldown is called again within cooldown, then it does not show a second toast', () => {
+        const onRetry = getNotifyCallback();
+
+        onRetry(1, 1000);
+        expect(notificationsService.show).toHaveBeenCalledTimes(1);
+
+        vi.mocked(dateService.hasElapsed).mockReturnValueOnce(false);
+        onRetry(2, 2000);
+        expect(notificationsService.show).toHaveBeenCalledTimes(1);
+      });
+
+      it('When notifyUserWithCooldown is called after cooldown has elapsed, then it shows the toast again', () => {
+        const onRetry = getNotifyCallback();
+
+        onRetry(1, 1000);
+        expect(notificationsService.show).toHaveBeenCalledTimes(1);
+
+        vi.mocked(dateService.hasElapsed).mockReturnValueOnce(true);
+        onRetry(2, 2000);
+        expect(notificationsService.show).toHaveBeenCalledTimes(2);
       });
     });
   });

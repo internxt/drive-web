@@ -62,6 +62,12 @@ vi.mock('app/store/slices/storage/folderUtils/getUniqueFolderName', () => ({
   getUniqueFolderName: vi.fn(),
 }));
 
+vi.mock('services/referral.service', () => ({
+  default: {
+    trackFolderUpload: vi.fn(),
+  },
+}));
+
 vi.mock('services/error.service', () => ({
   default: {
     castError: vi.fn().mockImplementation((e) => e),

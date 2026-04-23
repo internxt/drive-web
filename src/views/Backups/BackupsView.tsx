@@ -1,27 +1,26 @@
-import { useState } from 'react';
+import { Dialog, MenuItemType } from '@internxt/ui';
+import FileViewerWrapper from 'app/drive/components/FileViewer/FileViewerWrapper';
+import { deleteFile } from 'app/drive/services/file.service';
+import newStorageService from 'app/drive/services/new-storage.service';
+import { DriveFolderData, DriveItemData } from 'app/drive/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import BreadcrumbsBackupsView from 'components/BreadcrumbsBackupsView';
+import { DownloadManager } from 'app/network/DownloadManager';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { deleteItemsThunk } from 'app/store/slices/storage/storage.thunks/deleteItemsThunk';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import BreadcrumbsBackupsView from 'components/BreadcrumbsBackupsView';
+import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { DeleteBackupDialog } from './components';
+import errorService from 'services/error.service';
+import { contextMenuSelectedBackupItems } from 'views/Drive/components/DriveExplorer/components';
 import WarningMessageWrapper from 'views/Home/components/WarningMessageWrapper';
+import { DeleteBackupDialog } from './components';
 import BackupsAsFoldersList from './components/BackupsAsFoldersList';
 import DeviceList from './components/DeviceList';
-import FileViewerWrapper from 'app/drive/components/FileViewer/FileViewerWrapper';
-import newStorageService from 'app/drive/services/new-storage.service';
-import { deleteFile } from 'app/drive/services/file.service';
-import { deleteItemsThunk } from 'app/store/slices/storage/storage.thunks/deleteItemsThunk';
-import { DriveItemData } from 'app/drive/types';
-import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
-import { contextMenuSelectedBackupItems } from 'views/Drive/components/DriveExplorer/components';
-import { useBackupListActions } from './hooks/useBackupListActions';
 import { useBackupDeviceActions } from './hooks/useBackupDeviceActions';
+import { useBackupListActions } from './hooks/useBackupListActions';
 import { useBackupsPagination } from './hooks/useBackupsPagination';
-import errorService from 'services/error.service';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { Dialog, MenuItemType } from '@internxt/ui';
-import { DownloadManager } from 'app/network/DownloadManager';
-import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 
 export default function BackupsView(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -251,13 +250,15 @@ export default function BackupsView(): JSX.Element {
           contextMenu={contextMenuForFileViewer}
         />
       )}
-      <div className="z-40 flex h-14 shrink-0 items-center px-5">
+      <div className="flex h-14 shrink-0 items-center px-5">
         {currentDevice ? (
-          <BreadcrumbsBackupsView
-            backupsAsFoldersPath={foldersInBreadcrumbs}
-            goToFolder={goToFolder}
-            goToRootFolder={goToRootFolder}
-          />
+          <div className="flex z-10">
+            <BreadcrumbsBackupsView
+              backupsAsFoldersPath={foldersInBreadcrumbs}
+              goToFolder={goToFolder}
+              goToRootFolder={goToRootFolder}
+            />
+          </div>
         ) : (
           <p className="text-lg">{translate('backups.your-devices')}</p>
         )}

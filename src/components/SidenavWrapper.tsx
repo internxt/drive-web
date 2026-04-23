@@ -1,14 +1,13 @@
-import { connect } from 'react-redux';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import { RootState } from 'app/store';
 import { planSelectors } from 'app/store/slices/plan';
 import navigationService from 'services/navigation.service';
 import { AppView } from 'app/core/types';
-import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Sidenav } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { HUNDRED_TB } from 'app/core/constants';
@@ -20,43 +19,58 @@ import WorkspaceSelectorSkeleton from 'views/Home/components/WorkspaceSelectorSk
 import { useSuiteLauncher } from 'hooks/useSuiteLauncher';
 import { useSidenavNavigation } from 'hooks/useSidenavNavigation';
 import { uiActions } from 'app/store/slices/ui';
+import ReferralBanner from './ReferralBanner';
+import referralService from 'services/referral.service';
+import { useSidenavCollapsed } from 'hooks/useSidenavCollapsed';
 
-interface SidenavWrapperProps {
-  user: UserSettings | undefined;
-  subscription: UserSubscription | null;
-  planUsage: number;
-  planLimit: number;
-  isLoadingPlanLimit: boolean;
-  isLoadingPlanUsage: boolean;
-}
-
-const SidenavWrapper = ({
+const SidenavPrimaryAction = ({
   user,
-  subscription,
-  planUsage,
-  planLimit,
-  isLoadingPlanLimit,
-  isLoadingPlanUsage,
-}: SidenavWrapperProps) => {
+  isLoadingCredentials,
+  isCollapsed,
+}: {
+  user?: UserSettings;
+  isLoadingCredentials?: boolean;
+  isCollapsed?: boolean;
+}) => {
+  if (user && !isLoadingCredentials) {
+    return <WorkspaceSelectorContainer user={user} isCollapsed={isCollapsed} />;
+  }
+  return <WorkspaceSelectorSkeleton isCollapsed={isCollapsed} />;
+};
+
+const SidenavWrapper = () => {
   const { translate } = useTranslationContext();
+  const { i18n } = useTranslation();
   const dispatch = useAppDispatch();
+  const user = useAppSelector((state: RootState) => state.user.user);
+  const subscription = useAppSelector(planSelectors.subscriptionToShow);
+  const planUsage = useAppSelector(planSelectors.planUsageToShow);
+  const planLimit = useAppSelector(planSelectors.planLimitToShow);
+  const isLoadingPlanLimit = useAppSelector((state: RootState) => state.plan.isLoadingPlanLimit);
+  const isLoadingPlanUsage = useAppSelector((state: RootState) => state.plan.isLoadingPlanUsage);
   const isLoadingCredentials = useAppSelector((state: RootState) => state.workspaces.isLoadingCredentials);
   const isLoadingBusinessLimitAndUsage = useAppSelector(
     (state: RootState) => state.plan.isLoadingBusinessLimitAndUsage,
   );
+  const workspaces = useAppSelector((state: RootState) => state.workspaces.workspaces);
+  const isWorkspaceDropdownAvailable = workspaces.length > 0;
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const workspaceUuid = selectedWorkspace?.workspaceUser.workspaceId;
   const { itemsNavigation } = useSidenavNavigation();
   const { suiteArray } = useSuiteLauncher();
+  const { isCollapsed, handleToggleCollapse } = useSidenavCollapsed();
 
-  const [isCollapsed, setIsCollapsed] = useState(() => {
-    const savedState = sessionStorage.getItem('sidenav-collapsed');
-    return savedState === 'true';
-  });
+  const userUsage = planUsage > 0 ? bytesToString(planUsage) : '0GB';
+  const isReferralEligible = useAppSelector((state: RootState) => state.referrals.isEligible);
 
   useEffect(() => {
     dispatch(sharedThunks.getPendingInvitations());
+    referralService.trackAppOpenDay();
   }, []);
+
+  useEffect(() => {
+    referralService.changeLanguage(i18n.language);
+  }, [i18n.language]);
 
   const onLogoClicked = () => {
     navigationService.push(AppView.Drive, {}, workspaceUuid);
@@ -77,16 +91,17 @@ const SidenavWrapper = ({
     dispatch(uiActions.setIsPreferencesDialogOpen(true));
   };
 
-  const handleToggleCollapse = () => {
-    setIsCollapsed((prev) => {
-      const newValue = !prev;
-      sessionStorage.setItem('sidenav-collapsed', String(newValue));
-      return newValue;
-    });
+  const handleReferralClick = () => {
+    if (user) {
+      referralService.openPanel(
+        { name: user.name, lastname: user.lastname, email: user.email, emailVerified: user.emailVerified },
+        i18n.language,
+      );
+    }
   };
 
   return (
-    <div className="flex flex-col h-screen z-50">
+    <div className="relative flex flex-col h-screen z-20">
       <Sidenav
         header={{
           logo: logo,
@@ -95,7 +110,9 @@ const SidenavWrapper = ({
           className: `!pt-0 pb-3 ${isCollapsed ? 'justify-center' : ''}`,
         }}
         primaryAction={
-          user && !isLoadingCredentials ? <WorkspaceSelectorContainer user={user} /> : <WorkspaceSelectorSkeleton />
+          isWorkspaceDropdownAvailable ? (
+            <SidenavPrimaryAction user={user} isLoadingCredentials={isLoadingCredentials} />
+          ) : undefined
         }
         suiteLauncher={{
           suiteArray: suiteArray,
@@ -105,14 +122,12 @@ const SidenavWrapper = ({
         isCollapsed={isCollapsed}
         onToggleCollapse={handleToggleCollapse}
         collapsedPrimaryAction={
-          user && !isLoadingCredentials ? (
-            <WorkspaceSelectorContainer user={user} isCollapsed />
-          ) : (
-            <WorkspaceSelectorSkeleton isCollapsed />
-          )
+          isWorkspaceDropdownAvailable ? (
+            <SidenavPrimaryAction user={user} isLoadingCredentials={isLoadingCredentials} isCollapsed />
+          ) : undefined
         }
         storage={{
-          usage: bytesToString(planUsage),
+          usage: userUsage,
           limit: bytesToString(planLimit),
           percentage: Math.min((planUsage / planLimit) * 100, 100),
           onUpgradeClick: handleUpgradeClick,
@@ -120,15 +135,13 @@ const SidenavWrapper = ({
           isLoading: isLoadingPlanUsage && isLoadingPlanLimit && isLoadingBusinessLimitAndUsage,
         }}
       />
+      {isReferralEligible && (
+        <div className="absolute bottom-24 left-0 right-0">
+          <ReferralBanner onCtaClick={handleReferralClick} isCollapsed={isCollapsed} />
+        </div>
+      )}
     </div>
   );
 };
 
-export default connect((state: RootState) => ({
-  user: state.user.user,
-  subscription: planSelectors.subscriptionToShow(state),
-  planUsage: planSelectors.planUsageToShow(state),
-  planLimit: planSelectors.planLimitToShow(state),
-  isLoadingPlanLimit: state.plan.isLoadingPlanLimit,
-  isLoadingPlanUsage: state.plan.isLoadingPlanUsage,
-}))(SidenavWrapper);
+export default SidenavWrapper;

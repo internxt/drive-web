@@ -1,5 +1,6 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
+import { isMobile } from 'react-device-detect';
 import { LogIn } from './components';
 
 interface SignInProps {
@@ -23,9 +24,11 @@ export default function SignInView(props: Readonly<SignInProps>): JSX.Element {
 
       {!props.displayIframe && (
         <div className="flex shrink-0 flex-col items-center justify-center space-x-0 space-y-2 py-8 sm:flex-row sm:space-x-8 sm:space-y-0">
-          <a href="https://internxt.com/legal" target="_blank" className="auth-footer-link">
-            {translate('general.terms')}
-          </a>
+          {!isMobile && (
+            <a href="https://internxt.com/legal" target="_blank" className="auth-footer-link">
+              {translate('general.terms')}
+            </a>
+          )}
           <a href="https://help.internxt.com" target="_blank" className="auth-footer-link">
             {translate('general.help')}
           </a>

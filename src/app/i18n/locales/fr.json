@@ -377,7 +377,11 @@
     "shared": "Partagé",
     "recents": "Récent",
     "trash": "Corbeille",
-    "desktop": "App de bureau"
+    "desktop": "App de bureau",
+    "referralBanner": {
+      "message": "Gagnez 10% de commission pour chaque parrainage !",
+      "cta": "Parrainez et gagnez"
+    }
   },
   "views": {
     "recents": {
@@ -408,6 +412,8 @@
         "downloadApp": "Télécharger l'app",
         "settings": "Paramètres",
         "logout": "Déconnexion",
+        "referAndEarn": "Parrainez et gagnez",
+        "earnReferral": "Gagnez 100 €",
         "spaceUsed": "{{space}}% d'espace utilisé"
       },
       "tabs": {
@@ -819,7 +825,7 @@
       },
       "fileCount_one": "{{count}} fichier",
       "fileCount_other": "{{count}} fichiers",
-      "fileCountMoreThan1000": "Plus de 1000 fichiers"
+      "fileCountMoreThan": "{{count}}+ fichiers"
     },
     "versionHistory": {
       "title": "Historique des versions",
@@ -1588,6 +1594,10 @@
     }
   },
   "referrals": {
+    "emailVerification": {
+      "message": "Vérifiez votre e-mail pour être éligible aux parrainages. Consultez votre boîte de réception ou",
+      "resendVerification": "renvoyer la vérification"
+    },
     "items": {
       "create-account": "Créer un compte",
       "install-mobile-app": "Installer l'app mobile et télécharger un fichier",
@@ -2111,5 +2121,8 @@
       "todayAt": "aujourd'hui à "
     },
     "sharedWorkspace": "Espace de travail partagé"
+  },
+  "sdk": {
+    "rateLimitToast": "Cela prend plus de temps que prévu. Veuillez patienter..."
   }
 }

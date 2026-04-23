@@ -37,6 +37,7 @@ import { AdvancedSharedItem } from '../types';
 import { domainManager } from './DomainManager';
 import { generateCaptchaToken } from 'utils';
 import { copyTextToClipboard } from 'utils/copyToClipboard.utils';
+import referralService from 'services/referral.service';
 
 interface CreateShareResponse {
   created: boolean;
@@ -344,6 +345,7 @@ export const getPublicShareLink = async (
     await copyTextToClipboard(publicShareLink);
 
     notificationsService.show({ text: t('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
+    referralService.trackShareCreated();
     return publicSharingItemData;
   } catch (error) {
     const castedError = errorService.castError(error);

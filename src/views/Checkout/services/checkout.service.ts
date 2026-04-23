@@ -16,6 +16,7 @@ import envService from 'services/env.service';
 import errorService from 'services/error.service';
 import { bytesToString } from 'app/drive/services/size.service';
 import userService from 'services/user.service';
+import { LocalStorageItem } from 'app/core/types';
 
 const BORDER_SHADOW = 'rgb(0 102 255)';
 
@@ -49,6 +50,7 @@ const createCustomer = async ({
   postalCode,
   captchaToken,
   companyVatId,
+  metadata,
 }: CreateCustomerPayload): Promise<{
   customerId: string;
   token: string;
@@ -63,6 +65,7 @@ const createCustomer = async ({
     postalCode,
     captchaToken,
     companyVatId,
+    metadata,
   });
 };
 
@@ -143,7 +146,7 @@ const fetchPrices = async (userType: UserType, currency: string): Promise<Displa
 
 const checkoutSetupIntent = async (customerId: string) => {
   try {
-    const newToken = localStorageService.get('xNewToken');
+    const newToken = localStorageService.get(LocalStorageItem.NewToken);
 
     if (!newToken) {
       throw new Error('No authentication token available');

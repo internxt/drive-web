@@ -1,6 +1,6 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
-import { Workspace } from 'app/core/types';
+import { LocalStorageItem, Workspace } from 'app/core/types';
 import { STORAGE_KEYS } from './storage-keys';
 
 function get(key: string): string | null {
@@ -12,7 +12,7 @@ function set(key: string, value: string): void {
 }
 
 function getUser(): UserSettings | null {
-  const stringUser: string | null = localStorage.getItem('xUser');
+  const stringUser: string | null = localStorage.getItem(LocalStorageItem.User);
 
   return stringUser ? JSON.parse(stringUser) : null;
 }
@@ -55,17 +55,8 @@ function clear(): void {
   localStorage.setItem('theme', 'system');
 
   Object.values(STORAGE_KEYS.THEMES).forEach((key) => localStorage.removeItem(key));
-  localStorage.removeItem('xUser');
-  localStorage.removeItem('xMnemonic');
-  localStorage.removeItem('xToken');
-  localStorage.removeItem('xNewToken');
-  localStorage.removeItem('xTokenTeam');
-  localStorage.removeItem('workspace');
-  localStorage.removeItem('language');
-  localStorage.removeItem('showSummerBanner');
+  Object.values(LocalStorageItem).forEach((key) => localStorage.removeItem(key));
   localStorage.removeItem('theme:isDark');
-  localStorage.removeItem('xInvitedToken');
-  localStorage.removeItem('xResourcesToken');
   localStorage.removeItem(STORAGE_KEYS.B2B_WORKSPACE);
   localStorage.removeItem(STORAGE_KEYS.WORKSPACE_CREDENTIALS);
   localStorage.removeItem(STORAGE_KEYS.GCLID);

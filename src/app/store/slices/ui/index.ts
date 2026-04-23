@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { DriveItemData, DriveItemDetails, FileInfoMenuItem, UpgradePlanDialogInfo } from 'app/drive/types';
 import { PreviewFileItem } from '../../../share/types';
-import { FileVersion } from 'views/Drive/components/VersionHistory/types';
+import { FileVersion } from '@internxt/sdk/dist/drive/storage/types';
 
 interface UISliceState {
   isSidenavCollapsed: boolean;
@@ -22,7 +22,6 @@ interface UISliceState {
   isReachedPlanLimitDialogOpen: boolean;
   isUpgradePlanDialogOpen: boolean;
   currentUpgradePlanDialogInfo: UpgradePlanDialogInfo | null;
-  isSharedFolderTooBigDialogOpen: boolean;
   isShareItemDialogOpen: boolean;
   isShareItemDialogOpenInPreviewView: boolean;
   isUploadItemsFailsDialogOpen: boolean;
@@ -61,7 +60,6 @@ const initialState: UISliceState = {
   isReachedPlanLimitDialogOpen: false,
   isUpgradePlanDialogOpen: false,
   currentUpgradePlanDialogInfo: null,
-  isSharedFolderTooBigDialogOpen: false,
   isShareItemDialogOpen: false,
   isShareItemDialogOpenInPreviewView: false,
   isUploadItemsFailsDialogOpen: false,
@@ -148,9 +146,6 @@ export const uiSlice = createSlice({
     setCurrentUpgradePlanDialogInfo: (state: UISliceState, action: PayloadAction<UpgradePlanDialogInfo | null>) => {
       state.currentUpgradePlanDialogInfo = action.payload;
     },
-    setIsSharedFolderTooBigDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
-      state.isSharedFolderTooBigDialogOpen = action.payload;
-    },
     setIsShareItemDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isShareItemDialogOpen = action.payload;
     },
@@ -214,7 +209,6 @@ export const {
   setIsReachedPlanLimitDialogOpen,
   setIsUpgradePlanDialogOpen,
   setCurrentUpgradePlanDialogInfo,
-  setIsSharedFolderTooBigDialogOpen,
   setIsShareItemDialogOpen,
   setIsDeleteBackupDialog,
   setIsUploadItemsFailsDialogOpen,

@@ -34,6 +34,8 @@ jobs:
       - run: echo REACT_APP_PAYMENTS_API_URL=${{ secrets.REACT_APP_PAYMENTS_API_URL }} >> ./.env
       - run: echo REACT_APP_DRIVE_NEW_API_URL=${{ secrets.REACT_APP_DRIVE_NEW_API_URL }} >> ./.env
       - run: echo REACT_APP_LOCATION_API_URL=${{ secrets.REACT_APP_LOCATION_API_URL }} >> ./.env
+      - run: echo REACT_APP_CELLO_PRODUCT_ID=${{ secrets.REACT_APP_CELLO_PRODUCT_ID }} >> ./.env
+      - run: echo REACT_APP_CELLO_ASSETS_URL=${{ secrets.REACT_APP_CELLO_ASSETS_URL }} >> ./.env
       - run: echo REACT_APP_NODE_ENV=production >> ./.env
       - run: echo "registry=https://registry.yarnpkg.com/" > .npmrc
       - run: echo "@internxt:registry=https://npm.pkg.github.com" >> .npmrc

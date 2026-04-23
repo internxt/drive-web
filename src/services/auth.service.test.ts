@@ -3,17 +3,18 @@
  */
 import { aes } from '@internxt/lib';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import envService from 'services/env.service';
-import localStorageService from 'services/local-storage.service';
+import { SdkFactory } from 'app/core/factory/sdk';
+import { LocalStorageItem } from 'app/core/types';
 import * as keysService from 'app/crypto/services/keys.service';
 import * as pgpService from 'app/crypto/services/pgp.service';
 import { encryptText, encryptTextWithKey } from 'app/crypto/services/utils';
 import { userActions } from 'app/store/slices/user';
-import { BackupData } from 'utils/backupKeyUtils';
 import { validateMnemonic } from 'bip39';
 import { Buffer } from 'node:buffer';
+import envService from 'services/env.service';
+import localStorageService from 'services/local-storage.service';
+import { BackupData } from 'utils/backupKeyUtils';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { SdkFactory } from 'app/core/factory/sdk';
 import * as authService from './auth.service';
 
 const mockSecret = '123456789QWERTY';
@@ -384,7 +385,7 @@ describe('signUp', () => {
 
     const result = await authService.signUp(params);
 
-    expect(localStorageService.set).toHaveBeenCalledWith('xNewToken', mockNewToken);
+    expect(localStorageService.set).toHaveBeenCalledWith(LocalStorageItem.NewToken, mockNewToken);
 
     const plainPrivateKeyInBase64 = Buffer.from(
       keysService.decryptPrivateKey(mockUser.keys.ecc.privateKey, mockPassword),
@@ -495,7 +496,7 @@ describe('signUp', () => {
 
     const result = await authService.signUp(params);
 
-    expect(localStorageService.set).toHaveBeenCalledWith('xNewToken', mockNewToken);
+    expect(localStorageService.set).toHaveBeenCalledWith(LocalStorageItem.NewToken, mockNewToken);
 
     const plainPrivateKeyInBase64 = Buffer.from(
       keysService.decryptPrivateKey(mockUser.privateKey, mockPassword),
@@ -728,6 +729,7 @@ describe('updateCredentialsWithToken', () => {
 
     expect(keys.private.ecc).toBe('mock-encrypted-data');
     expect(keys.public).toBeUndefined();
+    expect(keys.private.kyber).toBeUndefined();
   });
 
   it('should send both private and public keys when backup data has publicKeys', async () => {
@@ -910,7 +912,7 @@ describe('areCredentialsCorrect', () => {
     const mockCreateAuthClient = vi.fn();
 
     vi.spyOn(localStorageService, 'get').mockImplementation((key: string) => {
-      if (key === 'xNewToken') return mockToken;
+      if (key === LocalStorageItem.NewToken) return mockToken;
       return null;
     });
 

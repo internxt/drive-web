@@ -54,7 +54,7 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 - Runs unit tests with [Vitest](https://vitest.dev/)
 
-### `test:playwright` (`yarn playwright test`)
+### `yarn test:playwright` (`yarn playwright test`)
 
 - Runs end to end tests with [Playwright](https://playwright.dev/)
 
@@ -176,10 +176,7 @@ It is important to add in the `tailwind.config.ts` file, within the `safelist` p
 For example, with this snippet we are telling Tailwind to keep the react-bootstrap Dropdown and Tabs classes:
 
 ```typescript
-  safelist: [
-    'dropdown-menu', 'dropdown-item',
-    'nav-item', 'nav-link', 'tab-content', 'tab-pane'
-  ]
+safelist: ['dropdown-menu', 'dropdown-item', 'nav-item', 'nav-link', 'tab-content', 'tab-pane'];
 ```
 
 ## Recommended IDE extensions (Visual Studio Code)

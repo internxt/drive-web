@@ -12,6 +12,7 @@ const NotificationToast = ({
   visible,
   closable,
   requestId,
+  containerClassName,
   onClose,
 }: Omit<ToastShowProps, 'duration'> & { visible: boolean; onClose: () => void }): JSX.Element => {
   const { translate } = useTranslationContext();
@@ -58,14 +59,31 @@ const NotificationToast = ({
       show={visible}
     >
       <div
-        className="flex max-w-xl items-center rounded-lg border border-gray-10 bg-surface p-3 dark:bg-gray-5"
+        className={`flex items-center rounded-lg border p-3 ${containerClassName || 'max-w-xl border-gray-10 bg-surface dark:bg-gray-5'}`}
         style={{ minWidth: '300px' }}
       >
         {type === ToastType.Loading && <Loader classNameLoader="mr-1.5 h-6 w-6" />}
-        {Icon && <Icon weight="fill" className={`${IconColor} mr-1.5`} size={24} />}
+        {Icon && <Icon weight="fill" className={`${IconColor} mr-1.5 shrink-0`} size={24} />}
 
         <div className="flex-1">
-          <p className="line-clamp-2 whitespace-pre break-words text-gray-80">{text}</p>
+          <p className="line-clamp-2 whitespace-pre break-words text-gray-80">
+            {text}
+            {action &&
+              (action.to ? (
+                <NavLink
+                  className="ml-1 font-medium text-primary no-underline"
+                  exact
+                  to={action.to}
+                  onClick={action.onClick}
+                >
+                  {action.text}
+                </NavLink>
+              ) : (
+                <button onClick={action.onClick} className="ml-1 cursor-pointer font-medium text-primary">
+                  {action.text}
+                </button>
+              ))}
+          </p>
           {requestId && type === ToastType.Error && (
             <button
               onClick={handleCopyRequestId}
@@ -76,21 +94,6 @@ const NotificationToast = ({
             </button>
           )}
         </div>
-        {action &&
-          (action.to ? (
-            <NavLink
-              className="ml-3 truncate font-medium text-primary no-underline"
-              exact
-              to={action.to}
-              onClick={action.onClick}
-            >
-              {action.text}
-            </NavLink>
-          ) : (
-            <button onClick={action.onClick} className="ml-3 truncate font-medium text-primary">
-              {action.text}
-            </button>
-          ))}
 
         {closable && (
           <button

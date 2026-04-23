@@ -408,7 +408,11 @@
     "shared": "Compartido",
     "recents": "Recientes",
     "trash": "Papelera",
-    "desktop": "Escritorio"
+    "desktop": "Escritorio",
+    "referralBanner": {
+      "message": "¡Gana un 10% de comisión por cada referido!",
+      "cta": "Recomienda y gana"
+    }
   },
   "views": {
     "recents": {
@@ -439,6 +443,8 @@
         "downloadApp": "Descargar app",
         "settings": "Ajustes",
         "logout": "Cerrar sesión",
+        "referAndEarn": "Recomienda y gana",
+        "earnReferral": "Gana 100 €",
         "spaceUsed": "{{space}}% espacio usado"
       },
       "tabs": {
@@ -877,7 +883,7 @@
       },
       "fileCount_one": "{{count}} archivo",
       "fileCount_other": "{{count}} archivos",
-      "fileCountMoreThan1000": "Más de 1000 archivos"
+      "fileCountMoreThan": "{{count}}+ archivos"
     },
     "versionHistory": {
       "title": "Historial de versiones",
@@ -1642,6 +1648,10 @@
     }
   },
   "referrals": {
+    "emailVerification": {
+      "message": "Verifica tu correo electrónico para ser elegible para referidos. Revisa tu bandeja de entrada o",
+      "resendVerification": "reenviar verificación"
+    },
     "items": {
       "create-account": "Crea una cuenta",
       "install-mobile-app": "Instala la app móvil y sube un archivo",
@@ -2165,5 +2175,8 @@
       "todayAt": "hoy a las "
     },
     "sharedWorkspace": "Espacio de trabajo compartido"
+  },
+  "sdk": {
+    "rateLimitToast": "Esto está tardando más de lo esperado. Por favor, espere..."
   }
 }

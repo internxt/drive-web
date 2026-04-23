@@ -1,4 +1,5 @@
 import { aes } from '@internxt/lib';
+import { AppError } from '@internxt/sdk';
 import {
   CryptoProvider,
   Keys,
@@ -7,17 +8,15 @@ import {
   SecurityDetails,
   TwoFactorAuthQR,
 } from '@internxt/sdk/dist/auth';
+import { RecoveryKeys } from '@internxt/sdk/dist/auth/types';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { ChangePasswordPayloadNew } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { trackSignUp } from 'app/analytics/impact.service';
 import { trackLead } from 'app/analytics/meta.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
-import localStorageService from 'services/local-storage.service';
-import navigationService from 'services/navigation.service';
-import RealtimeService from 'services/sockets/socket.service';
-import { AppError } from '@internxt/sdk';
-import { AppView } from 'app/core/types';
+import { SdkFactory } from 'app/core/factory/sdk';
+import { AppView, LocalStorageItem } from 'app/core/types';
 import {
   assertPrivateKeyIsValid,
   assertValidateKeys,
@@ -32,19 +31,20 @@ import {
   passToHash,
 } from 'app/crypto/services/utils';
 import databaseService from 'app/database/services/database.service';
-import { AuthMethodTypes } from 'views/Checkout/types';
 import { AppDispatch } from 'app/store';
 import { planThunks } from 'app/store/slices/plan';
 import { productsThunks } from 'app/store/slices/products';
-import { referralsThunks } from 'app/store/slices/referrals';
 import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/user';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
-import { BackupData, detectBackupKeyFormat, prepareOldBackupRecoverPayloadForBackend } from 'utils/backupKeyUtils';
 import { generateMnemonic, validateMnemonic } from 'bip39';
-import { SdkFactory } from 'app/core/factory/sdk';
 import errorService from 'services/error.service';
-import vpnAuthService from './vpnAuth.service';
+import localStorageService from 'services/local-storage.service';
+import navigationService from 'services/navigation.service';
+import RealtimeService from 'services/sockets/socket.service';
 import { generateCaptchaToken } from 'utils';
+import { BackupData, detectBackupKeyFormat, prepareOldBackupRecoverPayloadForBackend } from 'utils/backupKeyUtils';
+import { AuthMethodTypes } from 'views/Checkout/types';
+import vpnAuthService from './vpnAuth.service';
 
 type ProfileInfo = {
   user: UserSettings;
@@ -110,7 +110,7 @@ const getCurrentUrlParams = (): Record<string, string> => {
 
 export async function logOut(loginParams?: Record<string, string>): Promise<void> {
   try {
-    const token = localStorageService.get('xNewToken') ?? undefined;
+    const token = localStorageService.get(LocalStorageItem.NewToken) ?? undefined;
     if (token) {
       const authClient = SdkFactory.getNewApiInstance().createAuthClient();
       await authClient.logout(token);
@@ -133,7 +133,7 @@ export async function logOut(loginParams?: Record<string, string>): Promise<void
 
 export function cancelAccount(): Promise<void> {
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
-  const token = localStorageService.get('xNewToken') ?? undefined;
+  const token = localStorageService.get(LocalStorageItem.NewToken) ?? undefined;
   return authClient.sendUserDeactivationEmail(token);
 }
 
@@ -212,9 +212,9 @@ export const doLogin = async (
         },
       };
 
-      localStorageService.set('xToken', token);
-      localStorageService.set('xMnemonic', clearMnemonic);
-      localStorageService.set('xNewToken', newToken);
+      localStorageService.set(LocalStorageItem.UserToken, token);
+      localStorageService.set(LocalStorageItem.UserMnemonic, clearMnemonic);
+      localStorageService.set(LocalStorageItem.NewToken, newToken);
 
       return {
         user: clearUser,
@@ -341,18 +341,11 @@ export const updateCredentialsWithToken = async (
 
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
 
-  const privateKeys =
-    encryptedEccPrivateKey || encryptedKyberPrivateKey
-      ? {
-          ecc: encryptedEccPrivateKey,
-          kyber: encryptedKyberPrivateKey,
-        }
-      : undefined;
-
-  const keys = privateKeys
+  const hasPrivateKeys = encryptedEccPrivateKey || encryptedKyberPrivateKey;
+  const keys: RecoveryKeys | undefined = hasPrivateKeys
     ? {
-        private: privateKeys,
-        ...(backupData?.publicKeys && { public: backupData.publicKeys }),
+        private: { ecc: encryptedEccPrivateKey, kyber: encryptedKyberPrivateKey },
+        public: backupData?.publicKeys,
       }
     : undefined;
 
@@ -427,8 +420,8 @@ export const changePassword = async (newPassword: string, currentPassword: strin
     })
     .then((res) => {
       const { token, newToken } = res;
-      if (token) localStorageService.set('xToken', token);
-      if (newToken) localStorageService.set('xNewToken', newToken);
+      if (token) localStorageService.set(LocalStorageItem.UserToken, token);
+      if (newToken) localStorageService.set(LocalStorageItem.NewToken, newToken);
     })
     .catch((error) => {
       if (error.status === 500) {
@@ -445,7 +438,7 @@ export const userHas2FAStored = (): Promise<SecurityDetails> => {
 };
 
 export const generateNew2FA = (): Promise<TwoFactorAuthQR> => {
-  const token = localStorageService.get('xNewToken') || undefined;
+  const token = localStorageService.get(LocalStorageItem.NewToken) || undefined;
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   return authClient.generateTwoFactorAuthQR(token);
 };
@@ -458,7 +451,7 @@ export const deactivate2FA = (
   const salt = decryptText(passwordSalt);
   const hashObj = passToHash({ password: deactivationPassword, salt });
   const encPass = encryptText(hashObj.hash);
-  const token = localStorageService.get('xNewToken') || undefined;
+  const token = localStorageService.get(LocalStorageItem.NewToken) || undefined;
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   return authClient.disableTwoFactorAuth(encPass, deactivationCode, token);
 };
@@ -469,7 +462,7 @@ export async function areCredentialsCorrect(password: string): Promise<boolean> 
   const authClient = SdkFactory.getNewApiInstance().createAuthClient({
     unauthorizedCallback: () => undefined,
   });
-  const token = localStorageService.get('xNewToken') ?? undefined;
+  const token = localStorageService.get(LocalStorageItem.NewToken) ?? undefined;
   return authClient.areCredentialsCorrect(hashedPassword, token);
 }
 
@@ -494,7 +487,7 @@ export const getRedirectUrl = (urlSearchParams: URLSearchParams, token: string):
 };
 
 const store2FA = async (code: string, twoFactorCode: string): Promise<void> => {
-  const token = localStorageService.get('xNewToken') || undefined;
+  const token = localStorageService.get(LocalStorageItem.NewToken) || undefined;
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   return authClient.storeTwoFactorAuthKey(code, twoFactorCode, token);
 };
@@ -567,9 +560,9 @@ export const signUp = async (params: SignUpParams) => {
 
   localStorageService.clear();
 
-  localStorageService.set('xToken', xToken);
-  localStorageService.set('xMnemonic', mnemonic);
-  localStorageService.set('xNewToken', xNewToken);
+  localStorageService.set(LocalStorageItem.UserToken, xToken);
+  localStorageService.set(LocalStorageItem.UserMnemonic, mnemonic);
+  localStorageService.set(LocalStorageItem.NewToken, xNewToken);
 
   const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(xUser, password);
 
@@ -593,7 +586,6 @@ export const signUp = async (params: SignUpParams) => {
   dispatch(productsThunks.initializeThunk());
 
   if (!redeemCodeObject) dispatch(planThunks.initializeThunk());
-  dispatch(referralsThunks.initializeThunk());
   await trackSignUp(xUser.uuid);
   trackLead(xUser.email, xUser.userId);
 
@@ -608,7 +600,6 @@ export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
   try {
     dispatch(productsThunks.initializeThunk());
     dispatch(planThunks.initializeThunk());
-    dispatch(referralsThunks.initializeThunk());
     await dispatch(initializeUserThunk())?.unwrap();
     dispatch(workspaceThunks.fetchWorkspaces());
     dispatch(workspaceThunks.checkAndSetLocalWorkspace());

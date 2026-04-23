@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { guestSignupOnSubmit } from './guestSignupOnSubmit';
-import { AppView, IFormValues } from 'app/core/types';
+import { AppView, IFormValues, LocalStorageItem } from 'app/core/types';
 import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
@@ -9,7 +9,6 @@ import { parseAndDecryptUserKeys } from 'app/crypto/services/keys.service';
 import { userActions, userThunks } from 'app/store/slices/user';
 import { productsThunks } from 'app/store/slices/products';
 import { planThunks } from 'app/store/slices/plan';
-import { referralsThunks } from 'app/store/slices/referrals';
 
 vi.mock(import('services/error.service'));
 vi.mock(import('services/local-storage.service'));
@@ -71,7 +70,6 @@ describe('guestSignupOnSubmit', () => {
     vi.mocked(userThunks.initializeUserThunk).mockReturnValue({} as any);
     vi.mocked(productsThunks.initializeThunk).mockReturnValue({} as any);
     vi.mocked(planThunks.initializeThunk).mockReturnValue({} as any);
-    vi.mocked(referralsThunks.initializeThunk).mockReturnValue({} as any);
   });
 
   it('should successfully register user and navigate to redirect page', async () => {
@@ -98,15 +96,14 @@ describe('guestSignupOnSubmit', () => {
       'recaptcha-token',
     );
     expect(localStorageService.clear).toHaveBeenCalled();
-    expect(localStorageService.set).toHaveBeenCalledWith('xToken', 'access-token');
-    expect(localStorageService.set).toHaveBeenCalledWith('xMnemonic', 'test mnemonic');
-    expect(localStorageService.set).toHaveBeenCalledWith('xNewToken', 'refresh-token');
+    expect(localStorageService.set).toHaveBeenCalledWith(LocalStorageItem.UserToken, 'access-token');
+    expect(localStorageService.set).toHaveBeenCalledWith(LocalStorageItem.UserMnemonic, 'test mnemonic');
+    expect(localStorageService.set).toHaveBeenCalledWith(LocalStorageItem.NewToken, 'refresh-token');
     expect(parseAndDecryptUserKeys).toHaveBeenCalledWith(mockRegistrationResponse.xUser, 'password123');
     expect(mockDispatch).toHaveBeenCalledWith(userActions.setUser(expect.objectContaining({ uuid: 'user-uuid' })));
     expect(mockDispatch).toHaveBeenCalledWith(userThunks.initializeUserThunk());
     expect(mockDispatch).toHaveBeenCalledWith(productsThunks.initializeThunk());
     expect(mockDispatch).toHaveBeenCalledWith(planThunks.initializeThunk());
-    expect(mockDispatch).toHaveBeenCalledWith(referralsThunks.initializeThunk());
     expect(navigationService.push).toHaveBeenCalledWith(AppView.Drive);
     expect(mockSetShowError).toHaveBeenCalledWith(true);
   });

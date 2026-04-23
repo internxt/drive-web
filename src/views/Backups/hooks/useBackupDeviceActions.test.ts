@@ -5,7 +5,7 @@ import { backupsActions, backupsThunks } from '../store/backupsSlice';
 import { deleteItemsThunk } from 'app/store/slices/storage/storage.thunks/deleteItemsThunk';
 import backupsService from '../services/backups.service';
 import { Device } from '@internxt/sdk/dist/drive/backups/types';
-import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
+import { DriveFolderData } from 'app/drive/types';
 import { useAppSelector } from 'app/store/hooks';
 
 vi.mock('app/store/hooks', () => ({

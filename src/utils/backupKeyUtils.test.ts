@@ -1,12 +1,13 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import localStorageService from 'services/local-storage.service';
+import { LocalStorageItem } from 'app/core/types';
 import { getKeys } from 'app/crypto/services/keys.service';
+import { encryptMessageWithPublicKey, hybridEncryptMessageWithPublicKey } from 'app/crypto/services/pgp.service';
 import { encryptText, encryptTextWithKey, passToHash } from 'app/crypto/services/utils';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { validateMnemonic } from 'bip39';
 import { saveAs } from 'file-saver';
+import localStorageService from 'services/local-storage.service';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { encryptMessageWithPublicKey, hybridEncryptMessageWithPublicKey } from 'app/crypto/services/pgp.service';
 import {
   BackupData,
   detectBackupKeyFormat,
@@ -167,6 +168,9 @@ describe('backupKeyUtils', () => {
       vi.mocked(localStorageService.getUser).mockReturnValue(mockUser);
 
       handleExportBackupKey(mockTranslate);
+
+      expect(localStorageService.get).toHaveBeenCalledWith(LocalStorageItem.UserMnemonic);
+      expect(localStorageService.getUser).toHaveBeenCalled();
 
       expect(saveAs).toHaveBeenCalledWith(expect.any(Blob), 'INTERNXT-BACKUP-KEY.txt');
 

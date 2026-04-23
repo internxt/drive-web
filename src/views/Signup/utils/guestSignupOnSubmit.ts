@@ -1,5 +1,5 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { IFormValues, AppView } from 'app/core/types';
+import { IFormValues, AppView, LocalStorageItem } from 'app/core/types';
 import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
@@ -7,7 +7,6 @@ import { parseAndDecryptUserKeys } from 'app/crypto/services/keys.service';
 import { userActions, userThunks } from 'app/store/slices/user';
 import { productsThunks } from 'app/store/slices/products';
 import { planThunks } from 'app/store/slices/plan';
-import { referralsThunks } from 'app/store/slices/referrals';
 import { AppDispatch } from 'app/store';
 
 interface GuestSignupOnSubmitParams {
@@ -52,9 +51,9 @@ export const guestSignupOnSubmit = async ({
 
     localStorageService.clear();
 
-    localStorageService.set('xToken', xToken);
-    localStorageService.set('xMnemonic', mnemonic);
-    localStorageService.set('xNewToken', xNewToken);
+    localStorageService.set(LocalStorageItem.UserToken, xToken);
+    localStorageService.set(LocalStorageItem.UserMnemonic, mnemonic);
+    localStorageService.set(LocalStorageItem.NewToken, xNewToken);
 
     const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(xUser, password);
 
@@ -77,7 +76,6 @@ export const guestSignupOnSubmit = async ({
     await dispatch(userThunks.initializeUserThunk());
     dispatch(productsThunks.initializeThunk());
     dispatch(planThunks.initializeThunk());
-    dispatch(referralsThunks.initializeThunk());
 
     return navigationService.push(redirectTo);
   } catch (err: unknown) {

@@ -1,7 +1,7 @@
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import localStorageService from './local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { Workspace } from 'app/core/types';
+import { LocalStorageItem, Workspace } from 'app/core/types';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { STORAGE_KEYS } from './storage-keys';
 
@@ -334,16 +334,16 @@ describe('Testing the local storage service', () => {
   describe('Clearing local storage', () => {
     it('When clear storage is requested, then removes all keys', () => {
       const expectedKeysToRemove = [
-        'xUser',
-        'xMnemonic',
-        'xToken',
-        'xNewToken',
-        'xTokenTeam',
-        'workspace',
-        'language',
-        'showSummerBanner',
-        'xInvitedToken',
-        'xResourcesToken',
+        LocalStorageItem.User,
+        LocalStorageItem.UserMnemonic,
+        LocalStorageItem.UserToken,
+        LocalStorageItem.NewToken,
+        LocalStorageItem.TeamToken,
+        LocalStorageItem.Workspace,
+        LocalStorageItem.Language,
+        LocalStorageItem.ShowSummerBanner,
+        LocalStorageItem.InvitedToken,
+        LocalStorageItem.ResourcesToken,
         STORAGE_KEYS.B2B_WORKSPACE,
         STORAGE_KEYS.WORKSPACE_CREDENTIALS,
         ...Object.values(STORAGE_KEYS.THEMES),

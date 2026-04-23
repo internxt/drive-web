@@ -1,7 +1,6 @@
 import { t } from 'i18next';
 
-import { Button } from '@internxt/ui';
-import Card from 'components/Card';
+import { Button, Card } from '@internxt/ui';
 import { BillingDetailsCardProps } from '../../../../types/types';
 import Detail from './Detail';
 
