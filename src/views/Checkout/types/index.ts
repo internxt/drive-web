@@ -118,6 +118,7 @@ export interface ProcessPurchasePayload {
   currentSelectedPlan: PriceWithTax;
   seatsForBusinessSubscription?: number;
   couponCodeData?: CouponCodeData;
+  isFirstPurchase?: boolean;
 }
 
 export interface UseUserPaymentPayload {
