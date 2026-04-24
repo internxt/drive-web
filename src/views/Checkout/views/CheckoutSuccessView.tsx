@@ -9,7 +9,6 @@ import gaService from 'app/analytics/ga.service';
 import metaService from 'app/analytics/meta.service';
 
 export function removePaymentsStorage() {
-  localStorageService.removeItem('subscriptionId');
   localStorageService.removeItem('paymentIntentId');
   localStorageService.removeItem('amountPaid');
   localStorageService.removeItem('productName');

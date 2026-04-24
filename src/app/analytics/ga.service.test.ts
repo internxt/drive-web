@@ -211,7 +211,6 @@ describe('Testing GA Service', () => {
 
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           const store: Record<string, string> = {
-            subscriptionId: 'sub_12345',
             paymentIntentId: '',
             priceId: 'price_yearly_2tb',
             currency: 'EUR',
@@ -236,7 +235,7 @@ describe('Testing GA Service', () => {
         expect(event).toMatchObject({
           event: 'purchase',
           ecommerce: {
-            transaction_id: 'sub_12345',
+            transaction_id: 'user_uuid_123',
             currency: 'EUR',
             value: 95.9,
             items: [
@@ -260,7 +259,6 @@ describe('Testing GA Service', () => {
         vi.mocked(localStorageService.getUser).mockReturnValue({ uuid: 'user_uuid' } as any);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'paymentIntentId') return 'pi_999';
-          if (key === 'subscriptionId') return 'sub_888';
           if (key === 'amountPaid') return '100';
           if (key === 'itemOriginalPrice') return '119.88';
           if (key === 'checkout_item_data')
@@ -279,34 +277,10 @@ describe('Testing GA Service', () => {
         expect(event.ecommerce.transaction_id).toBe('pi_999');
       });
 
-      it('should use subscription ID when payment intent is not available', () => {
-        vi.mocked(localStorageService.getUser).mockReturnValue({ uuid: 'user_uuid' } as any);
-        vi.mocked(localStorageService.get).mockImplementation((key) => {
-          if (key === 'paymentIntentId') return null;
-          if (key === 'subscriptionId') return 'sub_888';
-          if (key === 'amountPaid') return '100';
-          if (key === 'itemOriginalPrice') return '119.88';
-          if (key === 'checkout_item_data')
-            return JSON.stringify({
-              item_name: '2TB Year Plan',
-              item_category: 'Individual',
-              item_variant: 'year',
-              discount: 0,
-            });
-          return '';
-        });
-
-        gaService.trackPurchase();
-
-        const event = globalThis.window.dataLayer[0] as any;
-        expect(event.ecommerce.transaction_id).toBe('sub_888');
-      });
-
-      it('should fallback to user UUID when neither payment intent nor subscription ID are available', () => {
+      it('should fallback to user UUID when payment intent is not available', () => {
         vi.mocked(localStorageService.getUser).mockReturnValue({ uuid: 'user_fallback_uuid' } as any);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'paymentIntentId') return null;
-          if (key === 'subscriptionId') return null;
           if (key === 'amountPaid') return '100';
           if (key === 'itemOriginalPrice') return '119.88';
           if (key === 'checkout_item_data')

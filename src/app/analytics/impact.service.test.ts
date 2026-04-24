@@ -42,7 +42,6 @@ vi.mock('services/error.service', () => ({
   },
 }));
 
-const subId = 'sub_123';
 const paymentIntentId = 'py_123';
 const mockedUserUuid = '00000000-0000-0000-0000-0000000000';
 const mockImpactApiUrl = 'mock-impact-api-url';
@@ -93,7 +92,6 @@ beforeEach(() => {
 
   vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
     if (key === 'paymentIntentId') return paymentIntentId;
-    if (key === 'subscriptionId') return subId;
     if (key === 'productName') return planName;
     if (key === 'priceId') return product.price.id;
     if (key === 'currency') return product.price.currency;
@@ -110,7 +108,6 @@ describe('Testing Impact Service', () => {
       const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
 
       savePaymentDataInLocalStorage({
-        subscriptionId: subId,
         paymentIntentId,
         selectedPlan: product as PriceWithTax,
         users: 1,
@@ -121,32 +118,12 @@ describe('Testing Impact Service', () => {
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('amountPaid', expectedAmount);
     });
 
-    it('should save subscription ID when plan is not lifetime', () => {
+    it('should save payment intent ID if provided', () => {
       const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
 
       savePaymentDataInLocalStorage({
-        subscriptionId: subId,
-        paymentIntentId: undefined,
-        selectedPlan: product as PriceWithTax,
-        users: 1,
-        couponCodeData: promoCode,
-        isFirstPurchase: true,
-      });
-
-      expect(setToLocalStorageSpy).toHaveBeenCalledWith('subscriptionId', subId);
-    });
-
-    it('should save payment intent ID when plan is lifetime', () => {
-      const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
-      const lifetimeProduct = {
-        ...product,
-        price: { ...product.price, interval: 'lifetime' },
-      };
-
-      savePaymentDataInLocalStorage({
-        subscriptionId: undefined,
         paymentIntentId,
-        selectedPlan: lifetimeProduct as PriceWithTax,
+        selectedPlan: product as PriceWithTax,
         users: 1,
         couponCodeData: promoCode,
         isFirstPurchase: true,
@@ -159,7 +136,6 @@ describe('Testing Impact Service', () => {
       const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
 
       savePaymentDataInLocalStorage({
-        subscriptionId: subId,
         paymentIntentId,
         selectedPlan: product as PriceWithTax,
         users: 1,
@@ -176,7 +152,6 @@ describe('Testing Impact Service', () => {
       const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
 
       savePaymentDataInLocalStorage({
-        subscriptionId: subId,
         paymentIntentId,
         selectedPlan: product as PriceWithTax,
         users: 1,
@@ -191,7 +166,6 @@ describe('Testing Impact Service', () => {
       const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
 
       savePaymentDataInLocalStorage({
-        subscriptionId: subId,
         paymentIntentId,
         selectedPlan: product as PriceWithTax,
         users: 1,
@@ -287,7 +261,6 @@ describe('Testing Impact Service', () => {
             timestamp: expect.any(String),
             properties: expect.objectContaining({
               impact_value: parseFloat(expectedAmount),
-              subscription_id: subId,
               payment_intent: paymentIntentId,
               order_promo_code: promoCode.codeName,
             }),
@@ -301,7 +274,6 @@ describe('Testing Impact Service', () => {
       it('should use minimum value of 0.01 when amount is 0 (free purchase)', async () => {
         vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
           if (key === 'amountPaid') return '0';
-          if (key === 'subscriptionId') return subId;
           if (key === 'couponCode') return promoCode.codeName;
           if (key === 'isFirstPurchase') return 'true';
           return null;
@@ -351,6 +323,29 @@ describe('Testing Impact Service', () => {
         await trackPaymentConversion();
 
         expect(axiosSpy).not.toHaveBeenCalled();
+      });
+
+      it('should send to Impact when source is direct but coupon code is present', async () => {
+        const getCookieMock = await import('./utils');
+        vi.mocked(getCookieMock.getCookie).mockImplementation((key) => {
+          if (key === 'impactSource') return 'direct';
+          if (key === 'impactAnonymousId') return '';
+          return '';
+        });
+        vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
+          if (key === 'couponCode') return 'CNINTERNXT';
+          if (key === 'amountPaid') return expectedAmount;
+          if (key === 'isFirstPurchase') return 'true';
+          return null;
+        });
+        const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
+
+        await trackPaymentConversion();
+
+        expect(axiosSpy).toHaveBeenCalledTimes(1);
+        const callArgs = axiosSpy.mock.calls[0][1] as { properties: Record<string, unknown>; anonymousId: string };
+        expect(callArgs.properties).toHaveProperty('order_promo_code', 'CNINTERNXT');
+        expect(callArgs.anonymousId).toBe('');
       });
 
       it('should not send to Impact when isFirstPurchase is false', async () => {

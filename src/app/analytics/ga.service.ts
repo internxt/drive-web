@@ -138,7 +138,7 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
   }
 }
 
- function trackPurchase(): void {
+function trackPurchase(): void {
   try {
     const userSettings = localStorageService.getUser() as UserSettings;
     if (!userSettings) {
@@ -154,7 +154,6 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
       return;
     }
 
-    const subscriptionId = localStorageService.get('subscriptionId');
     const paymentIntentId = localStorageService.get('paymentIntentId');
     const priceId = localStorageService.get('priceId');
     const currency = localStorageService.get('currency');
@@ -173,7 +172,7 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
       console.error('[GA Service] Error parsing checkout_item_data:', parseError);
     }
 
-    const transactionId = paymentIntentId || subscriptionId || uuid;
+    const transactionId = paymentIntentId || uuid;
     const currencyCode = currency ?? 'EUR';
 
     const itemName = checkoutItemData?.item_name || 'Unknown Plan';
