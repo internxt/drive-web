@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { Link } from 'react-router-dom';
+import { isMobile } from 'react-device-detect';
 import PasswordFieldWithInfo from './PasswordFieldWithInfo';
 
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
@@ -283,9 +284,13 @@ function SignUpForm(): JSX.Element {
 
         <span className="mt-2 w-full text-xs text-gray-50">
           {translate('auth.terms1')}{' '}
-          <a href="https://internxt.com/legal" target="_blank" className="text-xs text-gray-50 hover:text-gray-60">
-            {translate('auth.terms2')}
-          </a>
+          {isMobile ? (
+            <span className="text-xs text-gray-50">{translate('auth.terms2')}</span>
+          ) : (
+            <a href="https://internxt.com/legal" target="_blank" className="text-xs text-gray-50 hover:text-gray-60">
+              {translate('auth.terms2')}
+            </a>
+          )}
         </span>
 
         <div className="w-full border-b border-gray-10" />

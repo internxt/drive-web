@@ -3,6 +3,7 @@ import { Button } from '@internxt/ui';
 import { AppView, LocalStorageItem } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
+import { isMobile } from 'react-device-detect';
 import { useEffect, useMemo } from 'react';
 import authService from 'services/auth.service';
 import localStorageService from 'services/local-storage.service';
@@ -82,9 +83,11 @@ export default function UniversalLinkView(): JSX.Element {
         </div>
       </div>
       <div className="flex shrink-0 flex-col items-center justify-center space-x-0 space-y-2 py-8 sm:flex-row sm:space-x-8 sm:space-y-0">
-        <a href="https://internxt.com/legal" target="_blank" rel="noopener noreferrer" className="auth-footer-link">
-          {translate('general.terms')}
-        </a>
+        {!isMobile && (
+          <a href="https://internxt.com/legal" target="_blank" rel="noopener noreferrer" className="auth-footer-link">
+            {translate('general.terms')}
+          </a>
+        )}
         <a href="https://help.internxt.com" target="_blank" rel="noopener noreferrer" className="auth-footer-link">
           {translate('general.help')}
         </a>
