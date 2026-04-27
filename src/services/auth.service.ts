@@ -8,6 +8,7 @@ import {
   SecurityDetails,
   TwoFactorAuthQR,
 } from '@internxt/sdk/dist/auth';
+import { RecoveryKeys } from '@internxt/sdk/dist/auth/types';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { ChangePasswordPayloadNew } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
@@ -340,12 +341,13 @@ export const updateCredentialsWithToken = async (
 
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
 
-  const keys =
-    encryptedEccPrivateKey || encryptedKyberPrivateKey
-      ? {
-          private: { ecc: encryptedEccPrivateKey, kyber: encryptedKyberPrivateKey },
-        }
-      : undefined;
+  const hasPrivateKeys = encryptedEccPrivateKey || encryptedKyberPrivateKey;
+  const keys: RecoveryKeys | undefined = hasPrivateKeys
+    ? {
+        private: { ecc: encryptedEccPrivateKey, kyber: encryptedKyberPrivateKey },
+        public: backupData?.publicKeys,
+      }
+    : undefined;
 
   return authClient.changePasswordWithLinkV2(
     token,
@@ -559,7 +561,7 @@ export const signUp = async (params: SignUpParams) => {
   localStorageService.clear();
 
   localStorageService.set(LocalStorageItem.UserToken, xToken);
-  localStorageService.set(LocalStorageItem.UserMnemonic , mnemonic);
+  localStorageService.set(LocalStorageItem.UserMnemonic, mnemonic);
   localStorageService.set(LocalStorageItem.NewToken, xNewToken);
 
   const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(xUser, password);

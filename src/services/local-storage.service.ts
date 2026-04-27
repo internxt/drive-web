@@ -51,7 +51,6 @@ function hasCompletedTutorial(id?: string): boolean {
   return localStorage.getItem(STORAGE_KEYS.TUTORIAL_COMPLETED_ID) === id;
 }
 
-
 function clear(): void {
   localStorage.setItem('theme', 'system');
 

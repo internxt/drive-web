@@ -3,19 +3,19 @@
  */
 import { aes } from '@internxt/lib';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import envService from 'services/env.service';
-import localStorageService from 'services/local-storage.service';
+import { SdkFactory } from 'app/core/factory/sdk';
+import { LocalStorageItem } from 'app/core/types';
 import * as keysService from 'app/crypto/services/keys.service';
 import * as pgpService from 'app/crypto/services/pgp.service';
 import { encryptText, encryptTextWithKey } from 'app/crypto/services/utils';
 import { userActions } from 'app/store/slices/user';
-import { BackupData } from 'utils/backupKeyUtils';
 import { validateMnemonic } from 'bip39';
 import { Buffer } from 'node:buffer';
+import envService from 'services/env.service';
+import localStorageService from 'services/local-storage.service';
+import { BackupData } from 'utils/backupKeyUtils';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { SdkFactory } from 'app/core/factory/sdk';
 import * as authService from './auth.service';
-import { LocalStorageItem } from 'app/core/types';
 
 const mockSecret = '123456789QWERTY';
 const mockApi = 'https://mock';
@@ -691,7 +691,7 @@ describe('updateCredentialsWithToken', () => {
     expect(keys).toBeUndefined();
   });
 
-  it('should successfully update credentials with token and with backup data (ECC only)', async () => {
+  it('When backup data has no publicKeys (legacy backup), then it should send only privateKeys', async () => {
     const mockToken = 'test-reset-token';
     const mockNewPassword = 'newPassword123';
     const mockMnemonic =
@@ -728,10 +728,11 @@ describe('updateCredentialsWithToken', () => {
     expect(keys).toBeDefined();
 
     expect(keys.private.ecc).toBe('mock-encrypted-data');
+    expect(keys.public).toBeUndefined();
     expect(keys.private.kyber).toBeUndefined();
   });
 
-  it('should successfully update credentials with token and with backup data (ECC and Kyber)', async () => {
+  it('should send both private and public keys when backup data has publicKeys', async () => {
     const mockToken = 'test-reset-token';
     const mockNewPassword = 'newPassword123';
     const mockMnemonic =
@@ -742,6 +743,10 @@ describe('updateCredentialsWithToken', () => {
       keys: {
         ecc: 'test-ecc-private-key',
         kyber: 'test-kyber-private-key',
+      },
+      publicKeys: {
+        ecc: 'test-ecc-public-key',
+        kyber: 'test-kyber-public-key',
       },
     };
 
@@ -769,6 +774,10 @@ describe('updateCredentialsWithToken', () => {
 
     expect(keys.private.ecc).toBe('mock-encrypted-data');
     expect(keys.private.kyber).toBe('mock-encrypted-data');
+    expect(keys.public).toEqual({
+      ecc: 'test-ecc-public-key',
+      kyber: 'test-kyber-public-key',
+    });
   });
 
   it('should throw an error when mnemonic is invalid', async () => {
