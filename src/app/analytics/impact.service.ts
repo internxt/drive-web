@@ -29,7 +29,6 @@ import { sendAddShoppersConversion } from './addShoppers.services';
  *
  */
 export interface SavePaymentDataParams {
-  subscriptionId: string | undefined;
   paymentIntentId: string | undefined;
   selectedPlan: PriceWithTax | undefined;
   users: number;
@@ -38,18 +37,13 @@ export interface SavePaymentDataParams {
 }
 
 export function savePaymentDataInLocalStorage({
-  subscriptionId,
   paymentIntentId,
   selectedPlan,
   users,
   couponCodeData,
   isFirstPurchase,
 }: SavePaymentDataParams) {
-  if (subscriptionId && selectedPlan?.price.interval !== 'lifetime') {
-    localStorageService.set('subscriptionId', subscriptionId);
-  }
-
-  if (paymentIntentId && selectedPlan?.price.interval === 'lifetime') {
+  if (paymentIntentId) {
     localStorageService.set('paymentIntentId', paymentIntentId);
   }
 
@@ -107,7 +101,6 @@ export async function trackPaymentConversion(): Promise<void> {
     }
 
     const { uuid, email: userEmail } = userSettings;
-    const subscription = localStorageService.get('subscriptionId');
     const paymentIntent = localStorageService.get('paymentIntentId');
     const currency = localStorageService.get('currency');
     const amountPaidStr = localStorageService.get('amountPaid');
@@ -138,7 +131,6 @@ export async function trackPaymentConversion(): Promise<void> {
           timestamp: dayjs().format('YYYY-MM-DDTHH:mm:ss.sssZ'),
           properties: {
             impact_value: amount === 0 ? 0.01 : amount,
-            subscription_id: subscription,
             payment_intent: paymentIntent,
             ...(couponCode && { order_promo_code: couponCode }),
           },

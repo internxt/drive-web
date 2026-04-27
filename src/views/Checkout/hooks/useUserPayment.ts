@@ -167,7 +167,6 @@ export const useUserPayment = () => {
     });
 
     savePaymentDataInLocalStorage({
-      subscriptionId: subscription.subscriptionId,
       paymentIntentId: subscription.paymentIntentId,
       selectedPlan: currentSelectedPlan,
       users: seatsForBusinessSubscription,
@@ -225,7 +224,6 @@ export const useUserPayment = () => {
     });
 
     savePaymentDataInLocalStorage({
-      subscriptionId: undefined,
       paymentIntentId,
       selectedPlan: currentSelectedPlan,
       users: 1,
