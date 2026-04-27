@@ -241,7 +241,6 @@ describe('logIn', () => {
     };
 
     expect(result).toEqual({
-      token: mockToken,
       newToken: mockNewToken,
       user: mockClearUser,
       mnemonic: mockMnemonic,
@@ -252,7 +251,6 @@ describe('logIn', () => {
     const mockToken = 'test-token';
     const mockNewToken = 'test-new-token';
     const mockLoginType = 'web';
-
     const mockPassword = 'password123';
     const mockMnemonic =
       'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
@@ -329,7 +327,6 @@ describe('logIn', () => {
     };
 
     expect(result).toEqual({
-      token: mockToken,
       newToken: mockNewToken,
       user: mockClearUser,
       mnemonic: mockMnemonic,
@@ -410,7 +407,6 @@ describe('signUp', () => {
     expect(spy).toBeCalledWith(mockClearUser);
 
     expect(result).toEqual({
-      token: mockToken,
       newToken: mockNewToken,
       user: {
         ...mockUser,
@@ -520,7 +516,6 @@ describe('signUp', () => {
     expect(spy).toBeCalledWith(mockClearUser);
 
     expect(result).toEqual({
-      token: mockToken,
       newToken: mockNewToken,
       user: {
         ...mockUser,
