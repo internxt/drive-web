@@ -76,7 +76,11 @@ const isUploadAllowed = ({
     const isPlanSizeLimitExceeded = planLimit && totalItemsSize >= planLimit;
 
     if (isPlanSizeLimitExceeded) {
-      dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
+      dispatch(
+        uiActions.setOpenReachedPlanLimitDialog({
+          open: true,
+        }),
+      );
       return false;
     }
   } catch (err: unknown) {
@@ -165,7 +169,12 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       abortController: new AbortController(),
     }));
 
-    const openMaxSpaceOccupiedDialog = () => dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
+    const openMaxSpaceOccupiedDialog = () =>
+      dispatch(
+        uiActions.setOpenReachedPlanLimitDialog({
+          open: true,
+        }),
+      );
 
     try {
       await uploadFileWithManager(
@@ -249,15 +258,11 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
     const teamId = selectedWorkspace?.workspace.defaultTeamId;
     const options = { ...DEFAULT_OPTIONS, ...payloadOptions };
 
-    const continueWithUpload = isUploadAllowed({ state: state, files, dispatch, isWorkspaceSelected: !!workspaceId });
-    if (!continueWithUpload) return;
-
-    let zeroLengthFilesNumber = 0;
     for (const file of files) {
       if (file.size === 0) {
-        zeroLengthFilesNumber = zeroLengthFilesNumber + 1;
         continue;
       }
+
       const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
 
       let page = 0;
@@ -345,7 +350,17 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
       abortController: new AbortController(),
     }));
 
-    const openMaxSpaceOccupiedDialog = () => dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
+    const openMaxSpaceOccupiedDialog = () =>
+      dispatch(
+        uiActions.setOpenReachedPlanLimitDialog({
+          open: true,
+          info: {
+            title: t('error.ownerStorageIsFull'),
+            description: t('error.ownerStorageIsFullDescription'),
+            hidePrimaryAction: true,
+          },
+        }),
+      );
 
     try {
       await uploadFileWithManager(
@@ -439,7 +454,12 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
       },
     }));
 
-    const openMaxSpaceOccupiedDialog = () => dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
+    const openMaxSpaceOccupiedDialog = () =>
+      dispatch(
+        uiActions.setOpenReachedPlanLimitDialog({
+          open: true,
+        }),
+      );
 
     try {
       await uploadFileWithManager(
