@@ -3,6 +3,7 @@ import errorService from 'services/error.service';
 import validationService from 'services/validation.service';
 
 import iconService from 'app/drive/services/icon.service';
+import { HTTP_CODES } from 'app/core/constants';
 import transformItemService from 'app/drive/services/item-transform.service';
 import sizeService from 'app/drive/services/size.service';
 import { DriveItemData } from 'app/drive/types';
@@ -41,7 +42,7 @@ const ShareItemPwdView = (props: ShareItemPwdViewProps) => {
       await onPasswordSubmitted(encodedPassword);
     } catch (error) {
       const appErr = errorService.castError(error);
-      if (appErr.status === 403) {
+      if (appErr.status === HTTP_CODES.FORBIDDEN) {
         setOnPasswordError(true);
       } else {
         errorService.reportError(appErr);

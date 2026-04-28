@@ -15,6 +15,7 @@ import { trackLead } from 'app/analytics/meta.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
 import { SdkFactory } from 'app/core/factory/sdk';
 import { AppView, LocalStorageItem } from 'app/core/types';
+import { HTTP_CODES } from 'app/core/constants';
 import {
   assertPrivateKeyIsValid,
   assertValidateKeys,
@@ -422,7 +423,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
     })
     .catch((error) => {
       const appErr = errorService.castError(error);
-      if (appErr.status === 500) {
+      if (appErr.status === HTTP_CODES.INTERNAL_SERVER_ERROR) {
         throw new Error('The password you introduced does not match your current password');
       }
       throw appErr;

@@ -25,7 +25,7 @@ describe('createFileDownloadStream', () => {
     vi.mocked(fetchFileStreamUsingCredentials).mockResolvedValue(mockReadableStream);
   });
 
-  test('When sharing options (credentials) are not provided, then fetchFileStream is called', async () => {
+  test('When sharing options are not provided, then the file is downloaded using the default method', async () => {
     const result = await createFileDownloadStream(baseFile, true, mockProgress);
 
     expect(fetchFileStream).toHaveBeenCalledWith(
@@ -36,7 +36,7 @@ describe('createFileDownloadStream', () => {
     expect(result).toBe(mockReadableStream);
   });
 
-  test('When an abortController is provided without sharing options, then it is passed through to fetchFileStream', async () => {
+  test('When a cancellation signal is provided without sharing options, then it is forwarded to the download', async () => {
     const abortController = new AbortController();
 
     await createFileDownloadStream(baseFile, false, mockProgress, abortController);
@@ -47,7 +47,7 @@ describe('createFileDownloadStream', () => {
     );
   });
 
-  test('When sharing options (credentials) are provided, then fetchFileStreamUsingCredentials is called', async () => {
+  test('When sharing options with credentials are provided, then the file is downloaded using those credentials', async () => {
     const abortController = new AbortController();
     const sharingOptions = {
       credentials: { user: 'test-user', pass: 'test-pass' },

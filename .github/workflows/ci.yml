@@ -49,8 +49,6 @@ jobs:
       - run: echo "always-auth=true" >> .npmrc
       - name: Install
         run: yarn
-      - name: Clear Vite / Vitest cache
-        run: rm -rf node_modules/.vite .vite
       - name: Install Playwright Browsers
         run: yarn playwright install
       - name: Unit test run

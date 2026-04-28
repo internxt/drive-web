@@ -1,7 +1,7 @@
 import { AppError } from '@internxt/sdk';
 import { AxiosResponseError, AxiosUnknownError } from '@internxt/sdk/dist/shared/types/errors';
 import { AxiosError, AxiosResponse } from 'axios';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import envService from './env.service';
 import errorService from './error.service';
 
@@ -45,7 +45,7 @@ describe('Error Service', () => {
   };
 
   describe('reportError', () => {
-    it('displays errors in the console', () => {
+    test('When an error occurs in development, then it is printed to the console', () => {
       const error = new Error('Test error');
       mockEnvService.mockReturnValue('development');
       errorService.reportError(error);
@@ -56,19 +56,19 @@ describe('Error Service', () => {
 
   describe('castError', () => {
     describe('Null and undefined inputs', () => {
-      it('returns Unknown error for null', () => {
+      test('When null is provided, then it returns an Unknown error', () => {
         const result = errorService.castError(null);
         expect(result.message).toBe('Unknown error');
       });
 
-      it('returns Unknown error for undefined', () => {
+      test('When undefined is provided, then it returns an Unknown error', () => {
         const result = errorService.castError(undefined);
         expect(result.message).toBe('Unknown error');
       });
     });
 
     describe('AppError instance', () => {
-      it('returns the same error when the instance is already an AppError', () => {
+      test('When the error is already in the expected format, then it is returned without changes', () => {
         const original = new AppError('Original error', 418, 'ERR_CODE');
         const result = errorService.castError(original);
         expect(result).toStrictEqual(original);
@@ -76,49 +76,49 @@ describe('Error Service', () => {
     });
 
     describe('AxiosResponseError handling', () => {
-      it('uses the message field from response data', () => {
+      test('When the server response includes a message, then it uses that as the error message', () => {
         const result = errorService.castError(createAxiosResponseError({ message: 'Backend message' }, 400));
         expect(result.message).toBe('Backend message');
         expect(result.status).toBe(400);
       });
 
-      it('prefers message over error when both are present', () => {
+      test('When the server response includes both a message and an error, then the message takes priority', () => {
         const result = errorService.castError(
           createAxiosResponseError({ error: 'Unauthorized', message: 'Wrong login credentials' }, 401),
         );
         expect(result.message).toBe('Wrong login credentials');
       });
 
-      it('falls back to the error field when message is absent', () => {
+      test('When the server response includes only an error description, then it uses that as the error message', () => {
         const result = errorService.castError(createAxiosResponseError({ error: 'Backend error' }, 422));
         expect(result.message).toBe('Backend error');
         expect(result.status).toBe(422);
       });
 
-      it('falls back to the HTTP error message when data has no parseable fields', () => {
+      test('When the server response has no readable error information, then it falls back to the default error message', () => {
         const result = errorService.castError(createAxiosResponseError({}, 503));
         expect(result.message).toBe('Request failed with status code 503');
         expect(result.status).toBe(503);
       });
 
-      it('maps xRequestId to requestId', () => {
+      test('When the server response includes a request identifier, then it is preserved in the error', () => {
         const result = errorService.castError(createAxiosResponseError({ error: 'Fail' }, 500, 'req-abc'));
         expect(result.requestId).toBe('req-abc');
         expect(result.status).toBe(500);
       });
 
-      it('produces undefined requestId when xRequestId is absent', () => {
+      test('When the server response has no request identifier, then none is set in the error', () => {
         const result = errorService.castError(createAxiosResponseError({ error: 'Fail' }, 500));
         expect(result.requestId).toBeUndefined();
       });
 
-      it('falls back to err.message when data is null', () => {
+      test('When the server response body is empty, then it falls back to the default error message', () => {
         const result = errorService.castError(createAxiosResponseError(null, 400));
         expect(result.message).toBe('Request failed with status code 400');
         expect(result.status).toBe(400);
       });
 
-      it('falls back to err.message when data is a plain string', () => {
+      test('When the server response body is unstructured text, then it falls back to the default error message', () => {
         const result = errorService.castError(createAxiosResponseError('Forbidden', 403));
         expect(result.message).toBe('Request failed with status code 403');
         expect(result.status).toBe(403);
@@ -126,58 +126,58 @@ describe('Error Service', () => {
     });
 
     describe('AxiosUnknownError handling', () => {
-      it('uses status 500 when the error has a request (server unreachable)', () => {
+      test('When the server cannot be reached, then it is treated as an internal server error', () => {
         const result = errorService.castError(createAxiosUnknownError('Network Error', true));
         expect(result.message).toBe('Network Error');
         expect(result.status).toBe(500);
       });
 
-      it('uses status 400 when the error has no request (config error)', () => {
+      test('When the request could not be sent due to a configuration issue, then it is treated as a bad request', () => {
         const result = errorService.castError(createAxiosUnknownError('Timeout', false, 'ECONNABORTED'));
         expect(result.message).toBe('Timeout');
         expect(result.status).toBe(400);
         expect(result.code).toBe('ECONNABORTED');
       });
 
-      it('falls back to Unknown error when message is empty', () => {
+      test('When the error message is empty, then it returns an Unknown error', () => {
         const result = errorService.castError(createAxiosUnknownError('', false));
         expect(result.message).toBe('Unknown error');
       });
     });
 
     describe('AxiosError handling', () => {
-      it('uses the error field from API responses when only error is present', () => {
+      test('When the server responds with only an error description, then it uses that as the error message', () => {
         const result = errorService.castError(createAxiosError({ error: 'Custom error message' }, 400));
         expect(result.message).toBe('Custom error message');
         expect(result.status).toBe(400);
       });
 
-      it('prefers the message field over error field when both are present', () => {
+      test('When the server responds with both a message and an error description, then the message takes priority', () => {
         const result = errorService.castError(
           createAxiosError({ error: 'Unauthorized', message: 'Wrong login credentials' }, 401),
         );
         expect(result.message).toBe('Wrong login credentials');
       });
 
-      it('falls back to the message field from API responses when error field is missing', () => {
+      test('When the server responds with only a message, then it uses that as the error message', () => {
         const result = errorService.castError(createAxiosError({ message: 'Custom message' }, 404));
         expect(result.message).toBe('Custom message');
         expect(result.status).toBe(404);
       });
 
-      it('shows a generic message when API responses contain no error details', () => {
+      test('When the server responds with no error details, then it shows a generic message', () => {
         const result1 = errorService.castError(createAxiosError({}, 503));
         expect(result1.message).toBe('Request failed');
         expect(result1.status).toBe(503);
       });
 
-      it('falls back to the axios error message when there is no response', () => {
+      test('When the server does not respond at all, then it falls back to the connection error message', () => {
         const result = errorService.castError(new AxiosError('Network error'));
         expect(result.message).toBe('Network error');
         expect(result.status).toBeUndefined();
       });
 
-      it('extracts requestId from response headers', () => {
+      test('When the server includes a request identifier in the response headers, then it is preserved in the error', () => {
         const result = errorService.castError(createAxiosError({ error: 'Fail' }, 500, { 'x-request-id': 'req-123' }));
         expect(result.requestId).toBe('req-123');
         expect(result.status).toBe(500);
@@ -185,13 +185,13 @@ describe('Error Service', () => {
     });
 
     describe('String and Error instance handling', () => {
-      it('converts simple text error messages into standardized error objects', () => {
+      test('When a plain text message is provided, then it wraps it into a proper error', () => {
         const result = errorService.castError('Simple error message');
         expect(result.message).toBe('Simple error message');
         expect(result.status).toBeUndefined();
       });
 
-      it('converts standard errors into application errors and preserves status codes', () => {
+      test('When a native error is provided, then it is converted preserving its original status', () => {
         const result1 = errorService.castError(new Error('Standard error'));
         expect(result1.message).toBe('Standard error');
         expect(result1.status).toBeUndefined();
@@ -202,12 +202,12 @@ describe('Error Service', () => {
         expect(result2.status).toBe(401);
       });
 
-      it('provides a default message when errors have no description', () => {
+      test('When an error has no description, then it returns a default unknown error message', () => {
         const result = errorService.castError(new Error(''));
         expect(result.message).toBe('Unknown error');
       });
 
-      it('extracts requestId from headers when Error has them', () => {
+      test('When an error carries response headers with a request identifier, then it is preserved in the error', () => {
         const errorWithHeaders = Object.assign(new Error('Error with headers'), {
           status: 500,
           headers: { 'x-request-id': 'req-456' },
@@ -219,13 +219,13 @@ describe('Error Service', () => {
     });
 
     describe('Object and edge cases', () => {
-      it('extracts error information from objects containing message and status', () => {
+      test('When an object with error information is provided, then the message and status are extracted', () => {
         const result = errorService.castError({ message: 'Object error', status: 422 });
         expect(result.message).toBe('Object error');
         expect(result.status).toBe(422);
       });
 
-      it('treats unrecognized error formats as unknown errors', () => {
+      test('When the error format is unrecognized, then it returns an Unknown error', () => {
         const testCases = [{ foo: 'bar' }, { status: 403 }, 404, false, [1, 2, 3]];
 
         for (const error of testCases) {
