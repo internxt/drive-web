@@ -52,7 +52,7 @@ jobs:
       - name: Install Playwright Browsers
         run: yarn playwright install
       - name: Unit test run
-        run: yarn test --no-cache
+        run: yarn test
   typecheck:
     runs-on: ubuntu-22.04
     strategy:
