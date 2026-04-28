@@ -21,7 +21,7 @@ export const DownloadBackupKeysDialog = () => {
   return (
     <BaseDialog
       isOpen={isBackupKeysDialogOpen}
-      title={translate('modals.downloadBackupsKey.title')}
+      title={translate('modals.downloadBackupKeys.title')}
       dialogRounded={true}
       panelClasses="w-screen max-w-lg"
       titleClasses="font-medium text-left"
@@ -31,12 +31,12 @@ export const DownloadBackupKeysDialog = () => {
       dataTest="backup-keys-dialog"
     >
       <div className="flex flex-col w-full p-5 gap-5">
-        <p className="text-gray-80">{translate('modals.downloadBackupsKey.description')}</p>
+        <p className="text-gray-80">{translate('modals.downloadBackupKeys.description')}</p>
 
         {/* Download backup key */}
         <div className="flex flex-col items-center">
           <Button variant="secondary" onClick={onDownloadBackupKeysButtonClicked}>
-            {translate('modals.downloadBackupsKey.download')}
+            {translate('modals.downloadBackupKeys.download')}
             <DownloadSimple size={24} className="ml-2" />
           </Button>
         </div>
@@ -45,8 +45,8 @@ export const DownloadBackupKeysDialog = () => {
         <div className="flex flex-row items-center justify-center gap-3">
           <Info size={24} className="text-primary" />
           <div className="flex flex-col">
-            <p className="text-gray-60">{translate('modals.downloadBackupsKey.info.text')}</p>
-            <p className="text-gray-60 font-semibold">{translate('modals.downloadBackupsKey.info.path')}</p>
+            <p className="text-gray-60">{translate('modals.downloadBackupKeys.info.text')}</p>
+            <p className="text-gray-60 font-semibold">{translate('modals.downloadBackupKeys.info.path')}</p>
           </div>
         </div>
         <div className="flex flex-row gap-3 items-center justify-end pt-5">

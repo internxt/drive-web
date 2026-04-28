@@ -1,6 +1,7 @@
 import { ActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.context';
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 import { Translate } from 'app/i18n/types';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useState } from 'react';
 import { localStorageService, STORAGE_KEYS } from 'services';
 import { handleExportBackupKey } from 'utils';
@@ -33,6 +34,7 @@ export const useDownloadBackupKeys = (translate: Translate) => {
   const onBackupSavedButtonClicked = () => {
     localStorageService.setBackupKeysAcknowledged();
     if (backupKeysLocalStorage?.remindMeLater) localStorageService.removeItem(STORAGE_KEYS.BACKUP_KEY.REMIND_LATER_AT);
+    notificationsService.show({ text: translate('modals.downloadBackupKeys.success'), type: ToastType.Success });
     closeDialog(ActionDialog.DownloadBackupKey, { closeAllDialogsFirst: true });
   };
 

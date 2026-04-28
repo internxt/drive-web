@@ -822,6 +822,16 @@
     "itemsSelected": "个文件 已选择 "
   },
   "modals": {
+    "downloadBackupKeys": {
+      "title": "请记得下载您的备份密钥",
+      "description": "您的备份密钥是恢复加密数据的必要凭证。Internxt 不会存储它——只有您自己拥有它。",
+      "info": {
+        "text": "您可以随时在以下位置找到您的备份密钥：",
+        "path": "设置 → 账户 → 安全"
+      },
+      "download": "下载备份密钥",
+      "success": "您已拥有备份密钥。请务必将其存储在安全的地方。"
+    },
     "renameItemDialog": {
       "title": "重命名",
       "label": "名称"
@@ -1543,7 +1553,9 @@
     "continue": "继续",
     "keepCurrent": "保持当前",
     "logOut": "登出",
-    "locked": "已锁定"
+    "locked": "已锁定",
+    "remindMeLater": "稍后提醒我",
+    "backupKeySaved": "我已保存我的密钥"
   },
   "toastNotification": {
     "textCopied": "文本已复制到剪贴板"
