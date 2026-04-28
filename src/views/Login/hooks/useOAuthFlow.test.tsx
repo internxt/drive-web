@@ -6,7 +6,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import oauthService from 'services/oauth.service';
 import { useOAuthFlow } from './useOAuthFlow';
 
-vi.mock('services/navigation.service');
+vi.mock('services/navigation.service', () => ({
+  default: { push: vi.fn() },
+}));
 
 const mockUserSettings: UserSettings = {
   userId: 'user_123',
@@ -45,7 +47,9 @@ const mockUserSettings: UserSettings = {
   emailVerified: true,
 };
 
-vi.mock('services/oauth.service');
+vi.mock('services/oauth.service', () => ({
+  default: { sendAuthSuccess: vi.fn() },
+}));
 
 const mockSendAuthSuccess = vi.mocked(oauthService.sendAuthSuccess);
 

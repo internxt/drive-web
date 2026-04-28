@@ -1,11 +1,7 @@
 import { AxiosError } from 'axios';
 import { AppError } from '@internxt/sdk';
+import { AxiosResponseError, AxiosUnknownError } from '@internxt/sdk/dist/shared/types/errors';
 import envService from './env.service';
-
-interface AxiosErrorResponse {
-  error?: string;
-  message?: string;
-}
 
 interface ErrorWithStatus extends Error {
   status?: number;
@@ -26,31 +22,44 @@ const errorService = {
   },
 
   castError(err: unknown): AppError {
-    let castedError: AppError = new AppError('Unknown error');
+    if (err === null || err === undefined) {
+      return new AppError('Unknown error');
+    }
 
     if (err instanceof AppError) {
       return err;
     }
 
-    if (err instanceof AxiosError) {
-      const axiosError = err as AxiosError<AxiosErrorResponse>;
-      const responseData = axiosError.response?.data;
-      const headers = axiosError.response?.headers as Record<string, string>;
-      const message = responseData?.error || responseData?.message || axiosError.message || 'Unknown error';
-
-      castedError = new AppError(message, axiosError.response?.status, undefined, headers);
-    } else if (typeof err === 'string') {
-      castedError = new AppError(err);
-    } else if (err instanceof Error) {
-      const headers = (err as ErrorWithStatus).headers;
-
-      castedError = new AppError(err.message || 'Unknown error', (err as ErrorWithStatus).status, undefined, headers);
-    } else {
-      const map = err as Record<string, unknown>;
-      castedError = map.message ? new AppError(map.message as string, map.status as number) : castedError;
+    if (err instanceof AxiosResponseError) {
+      const data = err.data as { error?: string; message?: string } | undefined;
+      const message = data?.message || data?.error || err.message || 'Unknown error';
+      const headers = err.xRequestId ? { 'x-request-id': err.xRequestId } : undefined;
+      return new AppError(message, err.status, undefined, headers);
     }
 
-    return castedError;
+    if (err instanceof AxiosUnknownError) {
+      return new AppError(err.message || 'Unknown error', err.status, err.code);
+    }
+
+    if (err instanceof AxiosError) {
+      const axiosError = err as AxiosError<{ error?: string; message?: string }>;
+      const responseData = axiosError.response?.data;
+      const headers = axiosError.response?.headers as Record<string, string>;
+      const message = responseData?.message || responseData?.error || axiosError.message || 'Unknown error';
+      return new AppError(message, axiosError.response?.status, undefined, headers);
+    }
+
+    if (typeof err === 'string') {
+      return new AppError(err);
+    }
+
+    if (err instanceof Error) {
+      const headers = (err as ErrorWithStatus).headers;
+      return new AppError(err.message || 'Unknown error', (err as ErrorWithStatus).status, undefined, headers);
+    }
+
+    const map = err as Record<string, unknown>;
+    return map.message ? new AppError(map.message as string, map.status as number) : new AppError('Unknown error');
   },
 };
 

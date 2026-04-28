@@ -1,5 +1,9 @@
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import path from 'path';
 import { defineConfig } from 'vitest/config';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   resolve: {
@@ -30,7 +34,6 @@ export default defineConfig({
     mockReset: true,
     restoreMocks: true,
     testTimeout: 30000,
-    workspace: './vitest.workspace.ts',
     coverage: {
       provider: 'istanbul',
       reporter: ['text', 'lcov'],
@@ -42,9 +45,60 @@ export default defineConfig({
         'test/unit/**/*.{js,ts,jsx,tsx}',
       ],
     },
+    projects: [
+      {
+        extends: './vitest.shared.ts',
+        test: {
+          isolate: true,
+          sequence: {
+            concurrent: false,
+            shuffle: false,
+          },
+          testTimeout: 30000,
+          retry: 3,
+          name: 'browser',
+          environment: 'jsdom',
+          globals: true,
+          setupFiles: resolve(__dirname, 'src/setupTests.ts'),
+          include: ['src/**/*.test.{ts,tsx,js,jsx}', 'test/unit/**/*.test.{ts,tsx,js,jsx}'],
+          exclude: ['node_modules', 'dist', 'src/**/*.node.test.ts'],
+          browser: {
+            provider: 'playwright',
+            enabled: true,
+            headless: true,
+            fileParallelism: false,
+            instances: [{ browser: 'chromium' }],
+          },
+          pool: 'forks',
+          poolOptions: {
+            forks: {
+              singleFork: false,
+              isolate: true,
+            },
+          },
+          deps: {
+            optimizer: {
+              web: {
+                include: ['@testing-library/react'],
+                exclude: ['openpgp'],
+              },
+            },
+          },
+        },
+      },
+      {
+        extends: './vitest.shared.ts',
+        test: {
+          name: 'node',
+          environment: 'node',
+          include: ['src/**/*.node.test.ts'],
+        },
+      },
+    ],
   },
   optimizeDeps: {
     include: ['@internxt/sdk/dist/shared/types/userSettings'],
+    exclude: ['openpgp'],
     esbuildOptions: {
       define: {
         global: 'globalThis',

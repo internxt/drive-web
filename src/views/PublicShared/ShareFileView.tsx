@@ -24,7 +24,7 @@ import errorService from 'services/error.service';
 import { binaryStreamToBlob } from 'services/stream.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { HTTP_CODES } from 'app/core/constants';
-import { AppError } from '@internxt/sdk';
+
 import { Button, Loader } from '@internxt/ui';
 import { stringUtils } from '@internxt/lib';
 import { SendBanner, ShareItemPwdView } from './components';
@@ -64,7 +64,8 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
 
   useEffect(() => {
     loadInfo().catch((err) => {
-      if (err.status !== HTTP_CODES.FORBIDDEN) {
+      const appErr = errorService.castError(err);
+      if (appErr.status !== HTTP_CODES.FORBIDDEN) {
         setIsLoaded(true);
         setIsError(true);
         throw new Error(translate('error.linkExpired'));
@@ -141,12 +142,13 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
         });
       })
       .catch(async (err) => {
-        if (err.status === HTTP_CODES.FORBIDDEN) {
+        const appErr = errorService.castError(err);
+        if (appErr.status === HTTP_CODES.FORBIDDEN) {
           await getSharedItemInfo(sharingId);
           setRequiresPassword(true);
           setIsLoaded(true);
         }
-        throw new AppError(err.message, err.status);
+        throw appErr;
       });
   }
 

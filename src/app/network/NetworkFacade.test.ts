@@ -10,7 +10,9 @@ import {
   NoContentReceivedError,
 } from './errors/download.errors';
 
-vi.mock('@internxt/sdk/dist/network/download');
+vi.mock('@internxt/sdk/dist/network/download', () => ({
+  downloadFile: vi.fn(),
+}));
 vi.mock('services/stream.service', () => ({
   binaryStreamToBlob: vi.fn(),
   buildProgressStream: vi.fn(),

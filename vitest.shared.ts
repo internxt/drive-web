@@ -5,6 +5,11 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 export default {
   plugins: [react(), nodePolyfills(), svgr()],
+  server: {
+    warmup: {
+      clientFiles: ['src/**/*.{ts,tsx}'],
+    },
+  },
   resolve: {
     alias: {
       app: path.resolve(__dirname, './src/app'),
@@ -22,6 +27,7 @@ export default {
   },
   optimizeDeps: {
     include: ['@internxt/sdk/dist/shared/types/userSettings'],
+    exclude: ['openpgp'],
     esbuildOptions: {
       define: {
         global: 'globalThis',

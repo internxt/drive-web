@@ -2,7 +2,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import axios, { AxiosError } from 'axios';
 import { uploadFileUint8Array } from './upload-utils';
 
-vi.mock('axios');
+vi.mock('axios', async () => {
+  const { AxiosError } = await vi.importActual<typeof import('axios')>('axios');
+  return {
+    default: { isCancel: vi.fn(), create: vi.fn() },
+    AxiosError,
+  };
+});
 
 describe('uploadFileUint8Array error handling', () => {
   let mockAxiosInstance: any;
