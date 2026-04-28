@@ -1723,6 +1723,14 @@
 
     <div id="root"></div>
     <script type="module" src="./src/index.tsx"></script>
+    <script>window.$ujq=window.$ujq||[];window.uj=window.uj||new Proxy({},{get:(_,p)=>(...a)=>window.$ujq.push([p,...a])});document.head.appendChild(Object.assign(document.createElement('script'),{src:'https://cdn.userjot.com/sdk/v2/uj.js',type:'module',async:!0}));</script>   
+    <script>
+      window.uj.init('%REACT_APP_USERJOT_PROJECT_ID%', {
+        widget: true,
+        position: 'right',
+        theme: 'auto'
+      });
+    </script>   
     <!--
         This HTML file is a template.
         If you open it directly in the browser, you will see an empty page.
