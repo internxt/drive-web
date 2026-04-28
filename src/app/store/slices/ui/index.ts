@@ -1,5 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { DriveItemData, DriveItemDetails, FileInfoMenuItem, UpgradePlanDialogInfo } from 'app/drive/types';
+import {
+  DriveItemData,
+  DriveItemDetails,
+  FileInfoMenuItem,
+  ReachedPlanLimitDialogInfo,
+  UpgradePlanDialogInfo,
+} from 'app/drive/types';
 import { PreviewFileItem } from '../../../share/types';
 import { FileVersion } from '@internxt/sdk/dist/drive/storage/types';
 
@@ -20,6 +26,7 @@ interface UISliceState {
   isEditFolderNameDialog: boolean;
   isPreferencesDialogOpen: boolean;
   isReachedPlanLimitDialogOpen: boolean;
+  reachedPlanLimitDialogInfo?: ReachedPlanLimitDialogInfo;
   isUpgradePlanDialogOpen: boolean;
   currentUpgradePlanDialogInfo: UpgradePlanDialogInfo | null;
   isShareItemDialogOpen: boolean;
@@ -137,8 +144,15 @@ export const uiSlice = createSlice({
     setIsPreferencesDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isPreferencesDialogOpen = action.payload;
     },
-    setIsReachedPlanLimitDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
-      state.isReachedPlanLimitDialogOpen = action.payload;
+    setOpenReachedPlanLimitDialog: (
+      state: UISliceState,
+      action: PayloadAction<{
+        open: boolean;
+        info?: ReachedPlanLimitDialogInfo;
+      }>,
+    ) => {
+      state.isReachedPlanLimitDialogOpen = action.payload.open;
+      state.reachedPlanLimitDialogInfo = action.payload.info;
     },
     setIsUpgradePlanDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isUpgradePlanDialogOpen = action.payload;
@@ -206,7 +220,7 @@ export const {
   setIsMoveItemsDialogOpen,
   setIsPreferencesDialogOpen,
   setIsFileLoggerOpen,
-  setIsReachedPlanLimitDialogOpen,
+  setOpenReachedPlanLimitDialog,
   setIsUpgradePlanDialogOpen,
   setCurrentUpgradePlanDialogInfo,
   setIsShareItemDialogOpen,
