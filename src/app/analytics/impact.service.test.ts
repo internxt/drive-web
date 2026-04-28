@@ -99,6 +99,7 @@ beforeEach(() => {
     if (key === 'currency') return product.price.currency;
     if (key === 'amountPaid') return expectedAmount;
     if (key === 'couponCode') return promoCode.codeName;
+    if (key === 'isFirstPurchase') return 'true';
     return null;
   });
 });
@@ -108,7 +109,14 @@ describe('Testing Impact Service', () => {
     it('should save the correct amount to localStorage after applying coupon', () => {
       const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
 
-      savePaymentDataInLocalStorage(subId, paymentIntentId, product as PriceWithTax, 1, promoCode);
+      savePaymentDataInLocalStorage({
+        subscriptionId: subId,
+        paymentIntentId,
+        selectedPlan: product as PriceWithTax,
+        users: 1,
+        couponCodeData: promoCode,
+        isFirstPurchase: true,
+      });
 
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('amountPaid', expectedAmount);
     });
@@ -116,7 +124,14 @@ describe('Testing Impact Service', () => {
     it('should save subscription ID when plan is not lifetime', () => {
       const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
 
-      savePaymentDataInLocalStorage(subId, undefined, product as PriceWithTax, 1, promoCode);
+      savePaymentDataInLocalStorage({
+        subscriptionId: subId,
+        paymentIntentId: undefined,
+        selectedPlan: product as PriceWithTax,
+        users: 1,
+        couponCodeData: promoCode,
+        isFirstPurchase: true,
+      });
 
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('subscriptionId', subId);
     });
@@ -128,7 +143,14 @@ describe('Testing Impact Service', () => {
         price: { ...product.price, interval: 'lifetime' },
       };
 
-      savePaymentDataInLocalStorage(undefined, paymentIntentId, lifetimeProduct as PriceWithTax, 1, promoCode);
+      savePaymentDataInLocalStorage({
+        subscriptionId: undefined,
+        paymentIntentId,
+        selectedPlan: lifetimeProduct as PriceWithTax,
+        users: 1,
+        couponCodeData: promoCode,
+        isFirstPurchase: true,
+      });
 
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('paymentIntentId', paymentIntentId);
     });
@@ -136,7 +158,14 @@ describe('Testing Impact Service', () => {
     it('should save product metadata including name, price ID, and currency', () => {
       const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
 
-      savePaymentDataInLocalStorage(subId, paymentIntentId, product as PriceWithTax, 1, promoCode);
+      savePaymentDataInLocalStorage({
+        subscriptionId: subId,
+        paymentIntentId,
+        selectedPlan: product as PriceWithTax,
+        users: 1,
+        couponCodeData: promoCode,
+        isFirstPurchase: true,
+      });
 
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('productName', planName);
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('priceId', product.price.id);
@@ -146,9 +175,31 @@ describe('Testing Impact Service', () => {
     it('should save coupon code when provided', () => {
       const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
 
-      savePaymentDataInLocalStorage(subId, paymentIntentId, product as PriceWithTax, 1, promoCode);
+      savePaymentDataInLocalStorage({
+        subscriptionId: subId,
+        paymentIntentId,
+        selectedPlan: product as PriceWithTax,
+        users: 1,
+        couponCodeData: promoCode,
+        isFirstPurchase: true,
+      });
 
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('couponCode', promoCode.codeName);
+    });
+
+    it('should save isFirstPurchase flag to localStorage', () => {
+      const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
+
+      savePaymentDataInLocalStorage({
+        subscriptionId: subId,
+        paymentIntentId,
+        selectedPlan: product as PriceWithTax,
+        users: 1,
+        couponCodeData: promoCode,
+        isFirstPurchase: true,
+      });
+
+      expect(setToLocalStorageSpy).toHaveBeenCalledWith('isFirstPurchase', 'true');
     });
   });
 
@@ -252,6 +303,7 @@ describe('Testing Impact Service', () => {
           if (key === 'amountPaid') return '0';
           if (key === 'subscriptionId') return subId;
           if (key === 'couponCode') return promoCode.codeName;
+          if (key === 'isFirstPurchase') return 'true';
           return null;
         });
         const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
@@ -291,6 +343,21 @@ describe('Testing Impact Service', () => {
         vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
           if (key === 'couponCode') return null;
           if (key === 'amountPaid') return expectedAmount;
+          if (key === 'isFirstPurchase') return 'true';
+          return null;
+        });
+        const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
+
+        await trackPaymentConversion();
+
+        expect(axiosSpy).not.toHaveBeenCalled();
+      });
+
+      it('should not send to Impact when isFirstPurchase is false', async () => {
+        vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
+          if (key === 'isFirstPurchase') return 'false';
+          if (key === 'amountPaid') return expectedAmount;
+          if (key === 'couponCode') return promoCode.codeName;
           return null;
         });
         const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
