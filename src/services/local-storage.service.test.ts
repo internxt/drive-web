@@ -1,4 +1,4 @@
-import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeEach, describe, expect, it, test, vi } from 'vitest';
 import localStorageService from './local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { LocalStorageItem, Workspace } from 'app/core/types';
@@ -331,6 +331,68 @@ describe('Testing the local storage service', () => {
     });
   });
 
+  describe('Backup key acknowledgment', () => {
+    const userId = mockUserSettings.uuid;
+    const remindLaterKey = `backup_key_remind_later_at_${userId}`;
+    const acknowledgedKey = `backup_key_acknowledged_at_${userId}`;
+
+    describe('Get backup keys', () => {
+      test('When neither saved nor remind me later are set, then both are returned as empty', () => {
+        const { saved, remindMeLater } = localStorageService.getBackupKeys();
+
+        expect(saved).toBe(false);
+        expect(remindMeLater).toBeNull();
+      });
+
+      test('When the user has acknowledged the backup key, then saved is true', () => {
+        localStorage.setItem(acknowledgedKey, 'true');
+
+        const { saved } = localStorageService.getBackupKeys();
+
+        expect(saved).toBe(true);
+      });
+
+      test('When the user set a remind me later date, then the date is returned', () => {
+        const date = new Date().toISOString();
+        localStorage.setItem(remindLaterKey, date);
+
+        const { remindMeLater } = localStorageService.getBackupKeys();
+
+        expect(remindMeLater).toBe(date);
+      });
+    });
+
+    describe('Set backup key saved', () => {
+      test('When the user saves the backup key, then the acknowledged flag is persisted for that user', () => {
+        localStorageService.setBackupKeysAcknowledged();
+
+        expect(localStorage.getItem(acknowledgedKey)).toBe('true');
+      });
+    });
+
+    describe('setBackupKeysRemindLater', () => {
+      test('When the user sets remind me later, then the date is persisted for that user', () => {
+        const date = new Date().toISOString();
+
+        localStorageService.setBackupKeysRemindLater(date);
+
+        expect(localStorage.getItem(remindLaterKey)).toBe(date);
+      });
+    });
+
+    describe('clear', () => {
+      test('When the user logs out, then the remind me later date is removed but the acknowledged flag is kept', () => {
+        const date = new Date().toISOString();
+        localStorage.setItem(remindLaterKey, date);
+        localStorage.setItem(acknowledgedKey, 'true');
+
+        localStorageService.clear();
+
+        expect(localStorage.getItem(remindLaterKey)).toBeNull();
+        expect(localStorage.getItem(acknowledgedKey)).toBe('true');
+      });
+    });
+  });
 
   describe('Clearing local storage', () => {
     it('When clear storage is requested, then removes all keys', () => {

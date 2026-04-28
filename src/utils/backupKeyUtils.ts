@@ -21,9 +21,12 @@ import { LocalStorageItem } from 'app/core/types';
 export interface BackupData {
   mnemonic: string;
   privateKey: string;
+  publicKey?: string;
   keys: {
     ecc: string;
+    eccPublicKey?: string;
     kyber: string;
+    kyberPublicKey?: string;
   };
 }
 
@@ -46,9 +49,12 @@ export function handleExportBackupKey(translate) {
     const backupData: BackupData = {
       mnemonic,
       privateKey: user.privateKey,
+      publicKey: user.publicKey,
       keys: {
         ecc: user.keys?.ecc?.privateKey || user.privateKey,
+        eccPublicKey: user.keys?.ecc?.publicKey || user.publicKey,
         kyber: user.keys?.kyber?.privateKey || '',
+        kyberPublicKey: user.keys?.kyber?.publicKey || '',
       },
     };
 
@@ -81,9 +87,12 @@ export const detectBackupKeyFormat = (
       const backupData: BackupData = {
         mnemonic: parsedData.mnemonic,
         privateKey: parsedData.privateKey,
+        publicKey: parsedData.publicKey,
         keys: {
           ecc: parsedData.keys.ecc,
+          eccPublicKey: parsedData.keys.eccPublicKey,
           kyber: parsedData.keys.kyber,
+          kyberPublicKey: parsedData.keys.kyberPublicKey,
         },
       };
       return {

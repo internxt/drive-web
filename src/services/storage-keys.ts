@@ -6,6 +6,10 @@ export const STORAGE_KEYS = {
   FILE_ACCESS_TOKEN: 'fileAccessToken',
   GCLID: 'gclid',
   HAS_SEEN_TRASH_DISPOSAL_DIALOG: 'hasSeenTrashDisposalDialog',
+  BACKUP_KEY: {
+    REMIND_LATER_AT: 'backup_key_remind_later_at',
+    ACKNOWLEDGED_AT: 'backup_key_acknowledged_at',
+  },
   THEMES: {
     MANAGEMENTID_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'managementid_theme_enabled',
     ID_MANAGEMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'id_management_theme_enabled',
