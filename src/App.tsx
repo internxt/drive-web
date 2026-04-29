@@ -45,8 +45,8 @@ import useBeforeUnload from './hooks/useBeforeUnload';
 import useVpnAuth from './hooks/useVpnAuth';
 
 import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?raw';
-import { eventHandler } from 'services/sockets/event-handler.service';
 import RealtimeService from 'services/sockets/socket.service';
+import { EventHandler } from 'services/sockets/event-handler.service';
 const blob = new Blob([workerUrl], { type: 'application/javascript' });
 pdfjs.GlobalWorkerOptions.workerSrc = URL.createObjectURL(blob);
 
@@ -91,17 +91,6 @@ const App = (props: AppProps): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    try {
-      const realtimeService = RealtimeService.getInstance();
-      const cleanup = realtimeService.onEvent(eventHandler.onPlanUpdated);
-
-      return cleanup;
-    } catch (err) {
-      errorService.reportError(err);
-    }
-  }, []);
-
-  useEffect(() => {
     if (!isWorkspaceIdParam) {
       navigationService.resetB2BWorkspaceCredentials(dispatch);
     }
@@ -132,8 +121,6 @@ const App = (props: AppProps): JSX.Element => {
 
       await domainManager.fetchDomains();
 
-      RealtimeService.getInstance().init();
-
       dispatch(workspaceThunks.fetchWorkspaces());
       navigationService.setWorkspaceFromParams(workspaceThunks, dispatch, false);
 
@@ -142,6 +129,8 @@ const App = (props: AppProps): JSX.Element => {
           redirectToLogin: !!currentRouteConfig?.auth,
         }),
       );
+
+      RealtimeService.getInstance().init(EventHandler.instance);
     } catch (err: unknown) {
       const error = errorService.castError(err);
       errorService.reportError(error);

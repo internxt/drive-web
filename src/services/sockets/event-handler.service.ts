@@ -2,8 +2,10 @@ import { planActions, planThunks } from 'app/store/slices/plan';
 import { EventData, SOCKET_EVENTS } from './types/socket.types';
 import { store } from 'app/store';
 import { storageActions } from 'app/store/slices/storage';
+import storageSelectors from 'app/store/slices/storage/storage.selectors';
 
 export class EventHandler {
+  static readonly instance: EventHandler = new EventHandler();
   public onPlanUpdated(data: EventData) {
     if (data.event !== SOCKET_EVENTS.PLAN_UPDATED) return;
     const newLimit = data.payload?.maxSpaceBytes;
@@ -16,9 +18,10 @@ export class EventHandler {
     }
   }
 
-  public onFileCreated(data: EventData, currentFolderId: string) {
+  public onFileCreated(data: EventData) {
     if (data.event !== SOCKET_EVENTS.FILE_CREATED) return;
     const item = data.payload;
+    const currentFolderId = storageSelectors.currentFolderId(store.getState());
 
     console.log('[Event Handler] Handling created file:', {
       itemFolderId: item.folderUuid,
@@ -37,5 +40,3 @@ export class EventHandler {
     );
   }
 }
-
-export const eventHandler = new EventHandler();

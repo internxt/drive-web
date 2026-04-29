@@ -1,14 +1,14 @@
 import io, { Socket } from 'socket.io-client';
 import localStorageService from '../local-storage.service';
 import envService from '../env.service';
-import { SocketNotConnectedError } from './errors/socket.errors';
-import { EventData } from './types/socket.types';
+import { SOCKET_EVENTS } from './types/socket.types';
 import { LocalStorageItem } from 'app/core/types';
+
+import type { EventHandler } from './event-handler.service';
 
 export default class RealtimeService {
   private socket?: Socket;
   private static instance: RealtimeService;
-  private readonly eventHandlers: Set<(data: EventData) => void> = new Set();
   private readonly isProduction = envService.isProduction();
 
   static getInstance(): RealtimeService {
@@ -19,12 +19,16 @@ export default class RealtimeService {
     return this.instance;
   }
 
-  init(onConnected?: () => void): void {
+  init(eventHandler: EventHandler, onConnected?: () => void): void {
+    if (this.socket?.connected || this.socket?.active) return;
+
     if (!this.isProduction) {
       console.log('[REALTIME]: CONNECTING...');
     }
 
-    this.socket = io(envService.getVariable('notifications'), {
+    const notificationsUrl = envService.getVariable('notifications');
+
+    this.socket = io(notificationsUrl, {
       auth: {
         token: getToken(),
       },
@@ -33,22 +37,21 @@ export default class RealtimeService {
     });
 
     this.socket.on('connect', () => {
-      if (!this.isProduction) {
-        console.log('[REALTIME]: CONNECTED WITH ID', this.socket?.id);
-      }
+      console.log('[REALTIME]: CONNECTED WITH ID', this.socket?.id);
       onConnected?.();
     });
 
     this.socket.on('event', (data) => {
       console.log('[REALTIME] EVENT RECEIVED:', JSON.stringify(data, null, 2));
 
-      this.eventHandlers.forEach((handler) => {
-        try {
-          handler(data);
-        } catch (error) {
-          console.error('[REALTIME] Error in event handler:', error);
-        }
-      });
+      switch (data.event) {
+        case SOCKET_EVENTS.PLAN_UPDATED:
+          eventHandler.onPlanUpdated(data);
+          break;
+        case SOCKET_EVENTS.FILE_CREATED:
+          eventHandler.onFileCreated(data);
+          break;
+      }
     });
 
     this.socket.on('disconnect', (reason) => {
@@ -58,45 +61,20 @@ export default class RealtimeService {
     });
 
     this.socket.on('connect_error', (error) => {
+      if (error.message === 'Session ID unknown') {
+        this.socket?.disconnect();
+        this.socket?.connect();
+      }
       if (!this.isProduction) console.error('[REALTIME] CONNECTION ERROR:', error);
     });
   }
 
-  getClientId(): string | undefined {
-    if (!this.socket) {
-      throw new SocketNotConnectedError();
-    }
-    return this.socket.id;
-  }
-
-  onEvent(cb: (data: any) => void): () => void {
-    if (!this.isProduction) {
-      console.log('[REALTIME] Registering event handler. Total handlers:', this.eventHandlers.size + 1);
-    }
-
-    this.eventHandlers.add(cb);
-
-    return () => {
-      if (!this.isProduction) {
-        console.log('[REALTIME] Removing event handler. Remaining handlers:', this.eventHandlers.size - 1);
-      }
-      this.eventHandlers.delete(cb);
-    };
-  }
-
-  removeAllListeners() {
-    if (!this.isProduction) {
-      console.log('[REALTIME] Clearing all event handlers');
-    }
-    this.eventHandlers.clear();
-  }
-
   stop(): void {
-    console.log('[REALTIME] STOPING...');
+    console.log('[REALTIME] STOPPING...');
 
     if (this.socket?.connected) {
       console.log('[REALTIME] SOCKET CLOSED.');
-      this.socket.close();
+      this.socket.disconnect();
     }
   }
 }

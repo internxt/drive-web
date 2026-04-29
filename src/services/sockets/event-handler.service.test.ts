@@ -5,10 +5,12 @@ import { DriveItemData } from 'app/drive/types';
 import { store } from 'app/store';
 import { planActions, planThunks } from 'app/store/slices/plan';
 import { storageActions } from 'app/store/slices/storage';
+import storageSelectors from 'app/store/slices/storage/storage.selectors';
 
 vi.mock('app/store', () => ({
   store: {
     dispatch: vi.fn(),
+    getState: vi.fn(),
   },
 }));
 
@@ -18,15 +20,18 @@ vi.mock('app/store/slices/plan', () => ({
   },
   planThunks: {
     fetchLimitThunk: vi.fn(() => ({ type: 'plan/fetchLimitThunk' })),
-    fetchUsageThunk: vi.fn(() => ({ type: 'plan/fetchUsageThunk' })),
-    fetchSubscriptionThunk: vi.fn(() => ({ type: 'plan/fetchSubscriptionThunk' })),
-    fetchBusinessLimitUsageThunk: vi.fn(() => ({ type: 'plan/fetchBusinessLimitUsageThunk' })),
   },
 }));
 
 vi.mock('app/store/slices/storage', () => ({
   storageActions: {
     pushItems: vi.fn((payload) => ({ type: 'storage/pushItems', payload })),
+  },
+}));
+
+vi.mock('app/store/slices/storage/storage.selectors', () => ({
+  default: {
+    currentFolderId: vi.fn(),
   },
 }));
 
@@ -110,6 +115,8 @@ describe('Event Handler', () => {
     };
 
     test('When a file is created, then it should push item to storage', () => {
+      vi.mocked(storageSelectors.currentFolderId).mockReturnValue('folder-123');
+
       const eventData: EventData = {
         event: SOCKET_EVENTS.FILE_CREATED,
         email: 'test@example.com',
@@ -118,7 +125,7 @@ describe('Event Handler', () => {
         payload: mockFileItem as unknown as DriveItemData,
       };
 
-      eventHandler.onFileCreated(eventData, 'folder-123');
+      eventHandler.onFileCreated(eventData);
 
       expect(storageActions.pushItems).toHaveBeenCalledWith({
         updateRecents: true,
@@ -136,6 +143,8 @@ describe('Event Handler', () => {
     });
 
     test('When a file is created but the folder id does not match, then should not push the item', () => {
+      vi.mocked(storageSelectors.currentFolderId).mockReturnValue('different-folder-123');
+
       const eventData: EventData = {
         event: SOCKET_EVENTS.FILE_CREATED,
         email: 'test@example.com',
@@ -144,7 +153,7 @@ describe('Event Handler', () => {
         payload: mockFileItem as unknown as DriveItemData,
       };
 
-      eventHandler.onFileCreated(eventData, 'different-folder-123');
+      eventHandler.onFileCreated(eventData);
 
       expect(consoleLogSpy).toHaveBeenCalledWith('[Event Handler] Handling created file:', {
         itemFolderId: 'folder-123',
