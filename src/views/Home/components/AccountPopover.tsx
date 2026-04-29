@@ -32,7 +32,7 @@ export default function AccountPopover({ className = '', user, plan }: Readonly<
   const usage = memberId ? plan.businessPlanUsage : plan.planUsage;
   const limit = memberId ? plan.businessPlanLimit : plan.planLimit;
 
-  const isReferralEligible = true;
+  const isReferralEligible = useAppSelector((state: RootState) => state.referrals.isEligible);
   const { translate } = useTranslationContext();
   const name = user?.name ?? '';
   const lastName = user?.lastname ?? '';
