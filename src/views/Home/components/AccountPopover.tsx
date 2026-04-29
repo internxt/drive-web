@@ -53,7 +53,7 @@ export default function AccountPopover({ className = '', user, plan }: Readonly<
   }
 
   const panel = (
-    <div className="w-52">
+    <div className="w-56">
       <div className="flex items-center p-3">
         {avatarWrapper}
         <div className="ml-2 min-w-0">
@@ -78,7 +78,7 @@ export default function AccountPopover({ className = '', user, plan }: Readonly<
         </p>
 
         <button
-          className="w-full cursor-pointer  text-sm font-medium text-primary no-underline"
+          className="w-min whitespace-nowrap cursor-pointer  text-sm font-medium text-primary no-underline"
           onClick={() => {
             navigationService.openPreferencesDialog({
               section: 'account',
