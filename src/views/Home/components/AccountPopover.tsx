@@ -78,7 +78,7 @@ export default function AccountPopover({ className = '', user, plan }: Readonly<
         </p>
 
         <button
-          className="w-min cursor-pointer  text-sm font-medium text-primary no-underline"
+          className="w-full cursor-pointer  text-sm font-medium text-primary no-underline"
           onClick={() => {
             navigationService.openPreferencesDialog({
               section: 'account',
