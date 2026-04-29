@@ -414,7 +414,9 @@
         "logout": "Déconnexion",
         "referAndEarn": "Parrainez et gagnez",
         "earnReferral": "Gagnez 100 €",
-        "spaceUsed": "{{space}}% d'espace utilisé"
+        "spaceUsed": "{{space}}% d'espace utilisé",
+        "account": "Compte",
+        "giveFeedback": "Donner votre avis"
       },
       "tabs": {
         "account": {
