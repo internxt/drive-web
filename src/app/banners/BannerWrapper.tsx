@@ -7,6 +7,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { userSelectors } from 'app/store/slices/user';
 import FeaturesBanner from './FeaturesBanner';
 import newStorageService from 'app/drive/services/new-storage.service';
+import { ActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.context';
+import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 
 const OFFER_END_DAY = new Date('2026-04-26');
 const TIMEOUT = 90000;
@@ -15,6 +17,8 @@ const BannerWrapper = (): JSX.Element => {
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const isNewAccount = useSelector((state: RootState) => userSelectors.hasSignedToday(state));
+  const { isDialogOpen } = useActionDialog();
+  const isBackupKeysDialogOpen = isDialogOpen(ActionDialog.DownloadBackupKey);
   const bannerManager = useMemo(() => new BannerManager(user, plan, OFFER_END_DAY), [user, plan, isNewAccount]);
   const [bannersToShow, setBannersToShow] = useState({ showFreeBanner: false, showSubscriptionBanner: false });
   const [showDelayedBanner, setShowDelayedBanner] = useState(false);
@@ -50,7 +54,7 @@ const BannerWrapper = (): JSX.Element => {
 
   return (
     <>
-      {bannersToShow.showFreeBanner && showDelayedBanner && (
+      {bannersToShow.showFreeBanner && showDelayedBanner && !isBackupKeysDialogOpen && (
         <FeaturesBanner onClose={() => onCloseBanner('showFreeBanner')} showBanner />
       )}
     </>

@@ -47,6 +47,8 @@ import useVpnAuth from './hooks/useVpnAuth';
 import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?raw';
 import { eventHandler } from 'services/sockets/event-handler.service';
 import RealtimeService from 'services/sockets/socket.service';
+import { DownloadBackupKeysDialog } from 'app/drive/components/DownloadBackupKeysDialog';
+import { useDownloadBackupKeys } from 'app/drive/components/DownloadBackupKeysDialog/hooks/useDownloadBackupKeys';
 const blob = new Blob([workerUrl], { type: 'application/javascript' });
 pdfjs.GlobalWorkerOptions.workerSrc = URL.createObjectURL(blob);
 
@@ -66,6 +68,7 @@ const App = (props: AppProps): JSX.Element => {
 
   const { isDialogOpen } = useActionDialog();
   const isOpen = isDialogOpen(ActionDialog.ModifyStorage);
+  const { openBackupKeysDialog } = useDownloadBackupKeys(t);
   const token = localStorageService.get(LocalStorageItem.UserToken);
   const newToken = localStorageService.get(LocalStorageItem.NewToken);
   const params = new URLSearchParams(window.location.search);
@@ -89,6 +92,12 @@ const App = (props: AppProps): JSX.Element => {
     initializeInitialAppState();
     i18next.changeLanguage();
   }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      openBackupKeysDialog();
+    }
+  }, [isAuthenticated]);
 
   useEffect(() => {
     try {
@@ -229,6 +238,7 @@ const App = (props: AppProps): JSX.Element => {
           />
 
           {isOpen && <ModifyStorageModal />}
+          {isAuthenticated && <DownloadBackupKeysDialog />}
 
           {isFileViewerOpen && fileViewerItem && (
             <FileViewerWrapper file={fileViewerItem} onClose={onCloseFileViewer} showPreview={isFileViewerOpen} />

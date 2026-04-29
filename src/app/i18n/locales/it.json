@@ -892,6 +892,16 @@
     "itemsSelected": "elementi selezionati"
   },
   "modals": {
+    "downloadBackupKeys": {
+      "title": "Ricordati di scaricare la tua chiave di backup",
+      "description": "La tua chiave di backup è necessaria per recuperare i tuoi dati crittografati. Internxt non la conserva — solo tu ce l'hai.",
+      "info": {
+        "text": "Puoi trovare la tua chiave di backup in qualsiasi momento in ",
+        "path": "Impostazioni → Account → Sicurezza"
+      },
+      "download": "Scarica le chiavi di backup",
+      "success": "Hai la tua chiave di backup. Assicurati di conservarla in un posto sicuro."
+    },
     "renameItemDialog": {
       "title": "Rinominare",
       "label": "Nome"
@@ -1609,7 +1619,9 @@
     "continue": "Continua",
     "keepCurrent": "Mantieni attuale",
     "logOut": "Disconnettersi",
-    "locked": "Bloccato"
+    "locked": "Bloccato",
+    "remindMeLater": "Ricordamelo più tardi",
+    "backupKeySaved": "Ho salvato la mia chiave"
   },
   "toastNotification": {
     "textCopied": "Testo copiato negli appunti"

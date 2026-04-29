@@ -786,6 +786,16 @@
     "itemsSelected": "Éléments sélectionnés"
   },
   "modals": {
+    "downloadBackupKeys": {
+      "title": "N'oubliez pas de télécharger votre clé de sauvegarde",
+      "description": "Votre clé de sauvegarde est nécessaire pour récupérer vos données chiffrées. Internxt ne la stocke pas — seul vous la possédez.",
+      "info": {
+        "text": "Vous pouvez retrouver votre clé de sauvegarde à tout moment dans ",
+        "path": "Paramètres → Compte → Sécurité"
+      },
+      "download": "Télécharger les clés de sauvegarde",
+      "success": "Vous avez votre clé de sauvegarde. Assurez-vous de la conserver dans un endroit sûr."
+    },
     "renameItemDialog": {
       "title": "Renommer",
       "label": "Nom"
@@ -1502,7 +1512,9 @@
     "continue": "Continuer",
     "keepCurrent": "Garder actuel",
     "logOut": "Se déconnecter",
-    "locked": "Verrouillé"
+    "locked": "Verrouillé",
+    "remindMeLater": "Me le rappeler plus tard",
+    "backupKeySaved": "J'ai sauvegardé ma clé"
   },
   "toastNotification": {
     "textCopied": "Texte copié dans le presse-papiers"

@@ -856,6 +856,16 @@
     "itemsSelected": "items selected"
   },
   "modals": {
+    "downloadBackupKeys": {
+      "title": "Remember to download your backup key",
+      "description": "Your backup key is needed to recover your encrypted data. Internxt doesn’t store it — only you have it.",
+      "info": {
+        "text": "You can find your backup key anytime in ",
+        "path": "Settings → Account → Security"
+      },
+      "download": "Download backup keys",
+      "success": "You have your backup key. Make sure to store it somewhere safe."
+    },
     "renameItemDialog": {
       "title": "Rename",
       "label": "Name"
@@ -1578,7 +1588,9 @@
     "continue": "Continue",
     "keepCurrent": "Keep current",
     "logOut": "Log out",
-    "locked": "Locked"
+    "locked": "Locked",
+    "remindMeLater": "Remind me later",
+    "backupKeySaved": "I've saved my key"
   },
   "toastNotification": {
     "textCopied": "Text copied to clipboard"

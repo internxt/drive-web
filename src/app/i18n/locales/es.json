@@ -838,6 +838,16 @@
     "itemsSelected": "archivos seleccionados"
   },
   "modals": {
+    "downloadBackupKeys": {
+      "title": "Recuerda descargar tu clave de copia de seguridad",
+      "description": "Tu clave de copia de seguridad es necesaria para recuperar tus datos cifrados. Internxt no la almacena — solo tú la tienes.",
+      "info": {
+        "text": "Puedes encontrar tu clave de copia de seguridad en cualquier momento en ",
+        "path": "Ajustes → Cuenta → Seguridad"
+      },
+      "download": "Descargar claves de copia de seguridad",
+      "success": "Tienes tu clave de copia de seguridad. Asegúrate de guardarla en un lugar seguro."
+    },
     "renameItemDialog": {
       "title": "Renombrar",
       "label": "Nombre"
@@ -1556,7 +1566,9 @@
     "continue": "Continuar",
     "keepCurrent": "Mantener actual",
     "logOut": "Cerrar sesión",
-    "locked": "Bloqueado"
+    "locked": "Bloqueado",
+    "remindMeLater": "Recordármelo más tarde",
+    "backupKeySaved": "Ya he guardado mi clave"
   },
   "toastNotification": {
     "textCopied": "Texto copiado al portapapeles"
