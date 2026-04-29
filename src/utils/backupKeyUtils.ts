@@ -51,10 +51,10 @@ export function handleExportBackupKey(translate) {
       privateKey: user.privateKey,
       publicKey: user.publicKey,
       keys: {
-        ecc: user.keys?.ecc?.privateKey || user.privateKey,
-        eccPublicKey: user.keys?.ecc?.publicKey || user.publicKey,
-        kyber: user.keys?.kyber?.privateKey || '',
-        kyberPublicKey: user.keys?.kyber?.publicKey || '',
+        ecc: user.keys?.ecc?.privateKey ?? user.privateKey,
+        eccPublicKey: user.keys?.ecc?.publicKey ?? user.publicKey,
+        kyber: user.keys?.kyber?.privateKey ?? '',
+        kyberPublicKey: user.keys?.kyber?.publicKey ?? '',
       },
     };
 

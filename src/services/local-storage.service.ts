@@ -13,7 +13,7 @@ function set(key: string, value: string): void {
 
 function getBackupKeyStorageKeys() {
   const user = getUser();
-  const userId = user?.uuid ?? 'anonymous';
+  const userId = user?.uuid;
   return {
     remindLaterAt: `${STORAGE_KEYS.BACKUP_KEY.REMIND_LATER_AT}_${userId}`,
     acknowledgedAt: `${STORAGE_KEYS.BACKUP_KEY.ACKNOWLEDGED_AT}_${userId}`,
