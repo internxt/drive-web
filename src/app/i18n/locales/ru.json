@@ -414,7 +414,9 @@
         "logout": "Выйти",
         "referAndEarn": "Приглашайте и зарабатывайте",
         "earnReferral": "Заработайте 100 €",
-        "spaceUsed": "{{space}}% памяти использовано"
+        "spaceUsed": "{{space}}% памяти использовано",
+        "account": "Аккаунт",
+        "giveFeedback": "Оставить отзыв"
       },
       "tabs": {
         "account": {
