@@ -76,20 +76,21 @@ export default function AccountPopover({ className = '', user, plan }: Readonly<
         <p className="text-sm text-gray-50">
           {translate('views.account.popover.spaceUsed', { space: percentageUsed })}
         </p>
-
-        <button
-          className="w-min whitespace-nowrap cursor-pointer  text-sm font-medium text-primary no-underline"
-          onClick={() => {
-            navigationService.openPreferencesDialog({
-              section: 'account',
-              subsection: 'billing',
-              workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId,
-            });
-            dispatch(uiActions.setIsPreferencesDialogOpen(true));
-          }}
-        >
-          {translate('actions.upgrade')}
-        </button>
+        {plan.showUpgrade && (
+          <button
+            className="w-min whitespace-nowrap cursor-pointer  text-sm font-medium text-primary no-underline"
+            onClick={() => {
+              navigationService.openPreferencesDialog({
+                section: 'account',
+                subsection: 'billing',
+                workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId,
+              });
+              dispatch(uiActions.setIsPreferencesDialogOpen(true));
+            }}
+          >
+            {translate('actions.upgrade')}
+          </button>
+        )}
       </div>
       {separator}
       <button
