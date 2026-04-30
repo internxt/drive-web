@@ -6,7 +6,19 @@ import storageSelectors from 'app/store/slices/storage/storage.selectors';
 
 export class EventHandler {
   static readonly instance: EventHandler = new EventHandler();
-  public onPlanUpdated(data: EventData) {
+
+  public handleEvent(data: EventData) {
+    switch (data.event) {
+      case SOCKET_EVENTS.PLAN_UPDATED:
+        this.onPlanUpdated(data);
+        break;
+      case SOCKET_EVENTS.FILE_CREATED:
+        this.onFileCreated(data);
+        break;
+    }
+  }
+
+  private onPlanUpdated(data: EventData) {
     if (data.event !== SOCKET_EVENTS.PLAN_UPDATED) return;
     const newLimit = data.payload?.maxSpaceBytes;
     console.log('[Event Handler] Updating plan limit: ', newLimit);
@@ -18,7 +30,7 @@ export class EventHandler {
     }
   }
 
-  public onFileCreated(data: EventData) {
+  private onFileCreated(data: EventData) {
     if (data.event !== SOCKET_EVENTS.FILE_CREATED) return;
     const item = data.payload;
     const currentFolderId = storageSelectors.currentFolderId(store.getState());

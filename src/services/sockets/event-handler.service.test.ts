@@ -57,7 +57,7 @@ describe('Event Handler', () => {
         },
       };
 
-      eventHandler.onPlanUpdated(eventData);
+      eventHandler.handleEvent(eventData);
 
       expect(planActions.updatePlanLimit).toHaveBeenCalledWith(eventData.payload.maxSpaceBytes);
       expect(store.dispatch).toHaveBeenCalledWith({
@@ -77,7 +77,7 @@ describe('Event Handler', () => {
         },
       };
 
-      eventHandler.onPlanUpdated(eventData);
+      eventHandler.handleEvent(eventData);
 
       expect(store.dispatch).toHaveBeenCalledWith(planThunks.fetchLimitThunk());
     });
@@ -125,7 +125,7 @@ describe('Event Handler', () => {
         payload: mockFileItem as unknown as DriveItemData,
       };
 
-      eventHandler.onFileCreated(eventData);
+      eventHandler.handleEvent(eventData);
 
       expect(storageActions.pushItems).toHaveBeenCalledWith({
         updateRecents: true,
@@ -153,7 +153,7 @@ describe('Event Handler', () => {
         payload: mockFileItem as unknown as DriveItemData,
       };
 
-      eventHandler.onFileCreated(eventData);
+      eventHandler.handleEvent(eventData);
 
       expect(consoleLogSpy).toHaveBeenCalledWith('[Event Handler] Handling created file:', {
         itemFolderId: 'folder-123',

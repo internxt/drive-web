@@ -29,16 +29,12 @@ vi.mock('socket.io-client', () => ({
 vi.mock('./event-handler.service', () => ({
   EventHandler: {
     instance: {
-      onPlanUpdated: vi.fn(),
-      onFileCreated: vi.fn(),
+      handleEvent: vi.fn(),
     },
   },
 }));
 
-const mockEventHandler = EventHandler.instance as {
-  onPlanUpdated: ReturnType<typeof vi.fn>;
-  onFileCreated: ReturnType<typeof vi.fn>;
-};
+const mockEventHandler = EventHandler.instance as unknown as { handleEvent: ReturnType<typeof vi.fn> };
 
 describe('RealtimeService', () => {
   let service: RealtimeService;
@@ -93,14 +89,14 @@ describe('RealtimeService', () => {
     test.each(['connect', 'event', 'disconnect', 'connect_error'])(
       'When init is called, then it monitors connection lifecycle through %s events',
       (eventName) => {
-        service.init(mockEventHandler);
+        service.init(mockEventHandler as unknown as EventHandler);
         expect(mockSocket.on).toHaveBeenCalledWith(eventName, expect.any(Function));
       },
     );
 
     test('When connection is successfully established, then it notifies the application via callback', () => {
       const onConnectedCallback = vi.fn();
-      service.init(mockEventHandler, onConnectedCallback);
+      service.init(mockEventHandler as unknown as EventHandler, onConnectedCallback);
 
       const connectHandler = mockSocket.on.mock.calls.find((call) => call[0] === 'connect')?.[1];
       connectHandler?.();
@@ -118,7 +114,7 @@ describe('RealtimeService', () => {
         (RealtimeService as unknown as { instance: RealtimeService | undefined }).instance = undefined;
         service = RealtimeService.getInstance();
 
-        service.init(mockEventHandler);
+        service.init(mockEventHandler as unknown as EventHandler);
 
         expect(ioMock).toHaveBeenCalledWith('https://notifications.example.com', {
           auth: { token: 'mock-token-123' },
@@ -144,18 +140,18 @@ describe('RealtimeService', () => {
 
     test('When not in production, then it logs connecting on init', () => {
       service = resetServiceWithProduction(false);
-      service.init(mockEventHandler);
+      service.init(mockEventHandler as unknown as EventHandler);
       expect(consoleLogSpy).toHaveBeenCalledWith('[REALTIME]: CONNECTING...');
     });
 
     test('When in production, then it does not log connecting on init', () => {
       service = resetServiceWithProduction(true);
-      service.init(mockEventHandler);
+      service.init(mockEventHandler as unknown as EventHandler);
       expect(consoleLogSpy).not.toHaveBeenCalledWith('[REALTIME]: CONNECTING...');
     });
 
     test('When connected, then it logs the socket id', () => {
-      service.init(mockEventHandler);
+      service.init(mockEventHandler as unknown as EventHandler);
       const connectHandler = mockSocket.on.mock.calls.find((call) => call[0] === 'connect')?.[1];
       connectHandler?.();
       expect(consoleLogSpy).toHaveBeenCalledWith('[REALTIME]: CONNECTED WITH ID', mockSocket.id);
@@ -163,7 +159,7 @@ describe('RealtimeService', () => {
 
     test('When not in production, then it logs on disconnect event', () => {
       service = resetServiceWithProduction(false);
-      service.init(mockEventHandler);
+      service.init(mockEventHandler as unknown as EventHandler);
       const disconnectHandler = mockSocket.on.mock.calls.find((call) => call[0] === 'disconnect')?.[1];
       disconnectHandler?.('transport close');
       expect(consoleLogSpy).toHaveBeenCalledWith('[REALTIME] DISCONNECTED:', 'transport close');
@@ -171,7 +167,7 @@ describe('RealtimeService', () => {
 
     test('When in production, then it does not log on disconnect event', () => {
       service = resetServiceWithProduction(true);
-      service.init(mockEventHandler);
+      service.init(mockEventHandler as unknown as EventHandler);
       const disconnectHandler = mockSocket.on.mock.calls.find((call) => call[0] === 'disconnect')?.[1];
       disconnectHandler?.('transport close');
       expect(consoleLogSpy).not.toHaveBeenCalledWith('[REALTIME] DISCONNECTED:', 'transport close');
@@ -179,7 +175,7 @@ describe('RealtimeService', () => {
 
     test('When not in production, then it logs errors on connect_error event', () => {
       service = resetServiceWithProduction(false);
-      service.init(mockEventHandler);
+      service.init(mockEventHandler as unknown as EventHandler);
       const connectErrorHandler = mockSocket.on.mock.calls.find((call) => call[0] === 'connect_error')?.[1];
       const error = new Error('connection refused');
       connectErrorHandler?.(error);
@@ -188,7 +184,7 @@ describe('RealtimeService', () => {
 
     test('When in production, then it does not log errors on connect_error event', () => {
       service = resetServiceWithProduction(true);
-      service.init(mockEventHandler);
+      service.init(mockEventHandler as unknown as EventHandler);
       const connectErrorHandler = mockSocket.on.mock.calls.find((call) => call[0] === 'connect_error')?.[1];
       const error = new Error('connection refused');
       connectErrorHandler?.(error);
@@ -197,24 +193,24 @@ describe('RealtimeService', () => {
   });
 
   describe('Receiving realtime notifications', () => {
-    test('When a PLAN_UPDATED event is received, then it calls onPlanUpdated on the event handler', () => {
-      service.init(mockEventHandler);
+    test('When a PLAN_UPDATED event is received, then it calls handleEvent on the event handler', () => {
+      service.init(mockEventHandler as unknown as EventHandler);
       const eventData = { event: SOCKET_EVENTS.PLAN_UPDATED, payload: { maxSpaceBytes: 2000 } };
 
       const eventHandler = mockSocket.on.mock.calls.find((call) => call[0] === 'event')?.[1];
       eventHandler?.(eventData);
 
-      expect(mockEventHandler.onPlanUpdated).toHaveBeenCalledWith(eventData);
+      expect(mockEventHandler.handleEvent).toHaveBeenCalledWith(eventData);
     });
 
-    test('When a FILE_CREATED event is received, then it calls onFileCreated on the event handler', () => {
-      service.init(mockEventHandler);
+    test('When a FILE_CREATED event is received, then it calls handleEvent on the event handler', () => {
+      service.init(mockEventHandler as unknown as EventHandler);
       const eventData = { event: SOCKET_EVENTS.FILE_CREATED, payload: { fileId: '123' } };
 
       const eventHandler = mockSocket.on.mock.calls.find((call) => call[0] === 'event')?.[1];
       eventHandler?.(eventData);
 
-      expect(mockEventHandler.onFileCreated).toHaveBeenCalledWith(eventData);
+      expect(mockEventHandler.handleEvent).toHaveBeenCalledWith(eventData);
     });
   });
 
@@ -223,7 +219,7 @@ describe('RealtimeService', () => {
       { connected: true, closes: true },
       { connected: false, closes: false },
     ])('When the socket is connected=$connected, then closes=$closes', ({ connected, closes }) => {
-      service.init(mockEventHandler);
+      service.init(mockEventHandler as unknown as EventHandler);
       mockSocket.connected = connected;
 
       service.stop();
@@ -239,7 +235,7 @@ describe('RealtimeService', () => {
   describe('Complete workflow', () => {
     test('When the socket is connected, then receives notifications and disconnects successfully', () => {
       const onConnected = vi.fn();
-      service.init(mockEventHandler, onConnected);
+      service.init(mockEventHandler as unknown as EventHandler, onConnected);
 
       const connectHandler = mockSocket.on.mock.calls.find((call) => call[0] === 'connect')?.[1];
       connectHandler?.();
@@ -250,7 +246,7 @@ describe('RealtimeService', () => {
       service.stop();
 
       expect(onConnected).toHaveBeenCalled();
-      expect(mockEventHandler.onFileCreated).toHaveBeenCalled();
+      expect(mockEventHandler.handleEvent).toHaveBeenCalled();
       expect(mockSocket.disconnect).toHaveBeenCalled();
     });
   });

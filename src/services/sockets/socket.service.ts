@@ -1,7 +1,6 @@
 import io, { Socket } from 'socket.io-client';
 import localStorageService from '../local-storage.service';
 import envService from '../env.service';
-import { SOCKET_EVENTS } from './types/socket.types';
 import { LocalStorageItem } from 'app/core/types';
 
 import type { EventHandler } from './event-handler.service';
@@ -44,14 +43,7 @@ export default class RealtimeService {
     this.socket.on('event', (data) => {
       console.log('[REALTIME] EVENT RECEIVED:', JSON.stringify(data, null, 2));
 
-      switch (data.event) {
-        case SOCKET_EVENTS.PLAN_UPDATED:
-          eventHandler.onPlanUpdated(data);
-          break;
-        case SOCKET_EVENTS.FILE_CREATED:
-          eventHandler.onFileCreated(data);
-          break;
-      }
+      eventHandler.handleEvent(data);
     });
 
     this.socket.on('disconnect', (reason) => {
@@ -61,7 +53,7 @@ export default class RealtimeService {
     });
 
     this.socket.on('connect_error', (error) => {
-      if (error.message === 'Session ID unknown') {
+      if (error.message.includes('ID unknown')) {
         this.socket?.disconnect();
         this.socket?.connect();
       }
