@@ -9,7 +9,6 @@ import { Sidenav } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { HUNDRED_TB } from 'app/core/constants';
 import { sharedThunks } from 'app/store/slices/sharedLinks';
 import logo from 'assets/icons/small-logo.svg';
@@ -22,6 +21,8 @@ import { uiActions } from 'app/store/slices/ui';
 import ReferralBanner from './ReferralBanner';
 import referralService from 'services/referral.service';
 import { useSidenavCollapsed } from 'hooks/useSidenavCollapsed';
+import { useSelector } from 'react-redux';
+import { parsePendingWorkspaces, parseWorkspaces } from 'utils/workspaces/parseWorkspaces.utils';
 
 const SidenavPrimaryAction = ({
   user,
@@ -52,9 +53,13 @@ const SidenavWrapper = () => {
   const isLoadingBusinessLimitAndUsage = useAppSelector(
     (state: RootState) => state.plan.isLoadingBusinessLimitAndUsage,
   );
-  const workspaces = useAppSelector((state: RootState) => state.workspaces.workspaces);
-  const isWorkspaceDropdownAvailable = workspaces.length > 0;
-  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
+  const workspaces = useSelector((state: RootState) => state.workspaces.workspaces);
+  const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
+  const pendingWorkspaces = useSelector((state: RootState) => state.workspaces.pendingWorkspaces);
+  const parsedWorkspaces = parseWorkspaces(workspaces);
+  const parsedPendingWorkspaces = parsePendingWorkspaces(pendingWorkspaces);
+  const allParsedWorkspaces = [...parsedWorkspaces, ...parsedPendingWorkspaces];
+  const isWorkspaceDropdownAvailable = allParsedWorkspaces.length > 0;
   const workspaceUuid = selectedWorkspace?.workspaceUser.workspaceId;
   const { itemsNavigation } = useSidenavNavigation();
   const { suiteArray } = useSuiteLauncher();
