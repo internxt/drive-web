@@ -144,7 +144,7 @@ export default function AccountPopover({ className = '', user, plan }: Readonly<
         </Item>
       )}
       <Item onClick={() => window.open(FEEDBACK_URL, '_blank', 'noopener,noreferrer')}>
-        <Megaphone size={20} />
+        <Megaphone size={20} className="-scale-x-100" />
         <p className="ml-3 truncate">{translate('views.account.popover.giveFeedback')}</p>
       </Item>
       {separator}
