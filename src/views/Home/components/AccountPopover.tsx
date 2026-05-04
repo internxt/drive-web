@@ -93,8 +93,7 @@ export default function AccountPopover({ className = '', user, plan }: Readonly<
         )}
       </div>
       {separator}
-      <button
-        className="flex w-full cursor-pointer items-center px-3 py-2 text-gray-80 no-underline hover:bg-gray-1 hover:text-gray-80 dark:hover:bg-gray-10"
+      <Item
         onClick={() => {
           navigationService.openPreferencesDialog({
             section: 'account',
@@ -106,9 +105,8 @@ export default function AccountPopover({ className = '', user, plan }: Readonly<
       >
         <User size={20} />
         <p className="ml-3">{translate('views.account.popover.account')}</p>
-      </button>
-      <button
-        className="flex w-full cursor-pointer items-center px-3 py-2 text-gray-80 no-underline hover:bg-gray-1 hover:text-gray-80 dark:hover:bg-gray-10"
+      </Item>
+      <Item
         onClick={() => {
           navigationService.openPreferencesDialog({
             section: 'general',
@@ -120,7 +118,7 @@ export default function AccountPopover({ className = '', user, plan }: Readonly<
       >
         <Gear size={20} />
         <p className="ml-3">{translate('views.account.popover.settings')}</p>
-      </button>
+      </Item>
       <Item onClick={() => desktopService.openDownloadAppUrl(translate)}>
         <Desktop size={20} />
         <p className="ml-3 truncate">{translate('views.account.popover.downloadApp')}</p>
