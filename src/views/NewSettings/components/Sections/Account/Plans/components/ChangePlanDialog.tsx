@@ -60,7 +60,7 @@ const ChangePlanDialog = ({
   if (selectedPlanInterval === 'month') {
     amountMonthly = selectedPlanAmount;
   } else if (selectedPlanInterval === 'year') {
-    amountMonthly = selectedPlanAmount / 12;
+    amountMonthly = selectedPlanAmount;
   }
 
   if (subscription?.type === 'subscription') {
@@ -68,7 +68,7 @@ const ChangePlanDialog = ({
     if (subscription.interval === 'month') {
       currentAmountMonthly = subscription.amount;
     } else if (subscription.interval === 'year') {
-      currentAmountMonthly = subscription.amount / 12;
+      currentAmountMonthly = subscription.amount;
     }
   }
 

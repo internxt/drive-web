@@ -231,7 +231,7 @@
         "lifetime": "à vie"
       },
       "renewalTitle": {
-        "month": "mensuel",
+        "month": "annuel",
         "year": "annuel",
         "lifetime": "à vie"
       },
@@ -256,7 +256,8 @@
         "inputText": "Code de coupon"
       },
       "apply": "Appliquer",
-      "taxes": "Taxes"
+      "taxes": "Taxes",
+      "annualBillingTemplate": "Plan annuel, facturé mensuellement à {{price}}{{currency}}/mois pendant 12 mois"
     },
     "confirmCryptoPayment": {
       "title": "Confirmer le paiement",
@@ -1996,6 +1997,7 @@
             "title": "Essential (Essentiel)",
             "features": [
               "1To de stockage cloud chiffré",
+              "Essayez sans risque pendant 30 jours",
               "Chiffrement Post-Quantique",
               "Chiffrement Zéro-Connaissance",
               "Authentification à Deux Facteurs",
@@ -2009,6 +2011,7 @@
             "title": "Premium",
             "features": [
               "3To de stockage cloud chiffré",
+              "Essayez sans risque pendant 30 jours",
               "Chiffrement Post-Quantique",
               "Chiffrement Zéro-Connaissance",
               "Authentification à Deux Facteurs",
@@ -2025,6 +2028,7 @@
             "title": "Ultimate (Ultime)",
             "features": [
               "5To de stockage cloud chiffré",
+              "Essayez sans risque pendant 30 jours",
               "Chiffrement Post-Quantique",
               "Chiffrement Zéro-Connaissance",
               "Authentification à Deux Facteurs",
