@@ -1,5 +1,6 @@
 import { AxiosError } from 'axios';
 import { AppError } from '@internxt/sdk';
+import { AxiosResponseError } from '@internxt/sdk/dist/shared/types/errors';
 import envService from './env.service';
 
 interface AxiosErrorResponse {
@@ -30,6 +31,13 @@ const errorService = {
 
     if (err instanceof AppError) {
       return err;
+    }
+
+    if (err instanceof AxiosResponseError) {
+      const data = err.data as AxiosErrorResponse | undefined;
+      const message = data?.message || data?.error || err.message || 'Unknown error';
+      castedError = new AppError(message, err.status, undefined, { 'x-request-id': err.xRequestId ?? '' });
+      return castedError;
     }
 
     if (err instanceof AxiosError) {

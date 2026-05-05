@@ -414,7 +414,9 @@
         "logout": "Déconnexion",
         "referAndEarn": "Parrainez et gagnez",
         "earnReferral": "Gagnez 100 €",
-        "spaceUsed": "{{space}}% d'espace utilisé"
+        "spaceUsed": "{{space}}% d'espace utilisé",
+        "account": "Compte",
+        "giveFeedback": "Donner votre avis"
       },
       "tabs": {
         "account": {
@@ -500,6 +502,13 @@
             "description": {
               "individual": "Vous êtes sur le point d’annuler votre abonnement Internxt {{currentPlanName}}. En annulant votre abonnement, vous serez rétrogradé(e) à l’abonnement gratuit Internxt {{freePlanName}}. Veuillez confirmer votre choix pour continuer.",
               "business": "En annulant votre abonnement, l’espace de travail sera supprimé ainsi que toutes les données. Veuillez confirmer votre choix pour continuer."
+            },
+            "commitment": {
+              "firstMonthDescription": "Comme vous êtes encore dans votre période d'essai de 30 jours, votre annulation sera immédiate. Vous ne serez plus facturé et votre compte reviendra au plan gratuit de 1 Go maintenant.",
+              "description": "Vous avez un abonnement annuel facturé mensuellement. Si vous annulez maintenant, votre abonnement restera actif jusqu’au {{end_date}}, et vous continuerez à être facturé mensuellement jusqu’à cette date.",
+              "monthsRemaining": "Paiements restants : {{monthsRemaining}}",
+              "amountPerMonth": "Montant par mois : €{{amount}}",
+              "afterLabel": "Après le {{monthsRemaining}}"
             },
             "keepSubscription": "Conserver l’abonnement",
             "continue": "Continuer",
@@ -1967,6 +1976,7 @@
         "manageBilling": "Gérer la facturation",
         "freeForever": "Gratuit à vie",
         "billedAnnually": "facturé annuellement",
+        "billedMonthly": "facturé mensuellement",
         "year": "Année",
         "month": "Mois",
         "lifetime": "À vie",

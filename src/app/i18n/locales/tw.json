@@ -430,7 +430,9 @@
         "logout": "登出",
         "referAndEarn": "推薦賺取",
         "earnReferral": "賺取 €100",
-        "spaceUsed": "已使用 {{space}}% 的空間"
+        "spaceUsed": "已使用 {{space}}% 的空間",
+        "account": "帳戶",
+        "giveFeedback": "提供意見回饋"
       },
       "tabs": {
         "account": {
@@ -516,6 +518,13 @@
             "description": {
               "individual": "您即將取消您的 Internxt {{currentPlanName}} 方案。取消方案後，您將降級為免費的 Internxt {{freePlanName}} 方案。請確認您的選擇以繼續。",
               "business": "取消方案後，工作區以及所有資料將被刪除。請確認您的選擇以繼續。"
+            },
+            "commitment": {
+              "firstMonthDescription": "由於您仍在 30 天試用期內，您的取消將立即生效。您將不再被收費，您的帳戶現在將恢復為免費的 1GB 方案。",
+              "description": "您擁有按月計費的年度訂閱。如果您現在取消，您的訂閱將保持有效至 {{end_date}}，且在該日期之前您將繼續被按月收費。",
+              "monthsRemaining": "剩餘付款次數：{{monthsRemaining}}",
+              "amountPerMonth": "每月金額：€{{amount}}",
+              "afterLabel": "{{monthsRemaining}} 之後"
             },
             "keepSubscription": "保留訂閱",
             "continue": "繼續",
@@ -1971,6 +1980,7 @@
         "manageBilling": "管理帳單",
         "freeForever": "永久免費",
         "billedAnnually": "按年計費",
+        "billedMonthly": "按月計費",
         "year": "年",
         "month": "月",
         "lifetime": "終身",

@@ -379,6 +379,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
 
       <CancelSubscriptionModal
         isOpen={isCancelSubscriptionModalOpen}
+        individualPlan={plan.individualPlan}
         onClose={() => {
           setIsCancelSubscriptionModalOpen(false);
         }}
