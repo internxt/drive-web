@@ -1,7 +1,6 @@
-import { useState, useCallback, useRef } from 'react';
 import { Lightning } from '@phosphor-icons/react';
 import { SdkFactory } from 'app/core/factory/sdk';
-import envService from 'services/env.service';
+import { useCallback, useRef, useState } from 'react';
 
 const BATCH_SIZE = 1000;
 
@@ -19,9 +18,7 @@ const RateLimitThrottler = () => {
     let count = 0;
 
     while (!stopRef.current) {
-      const promises = Array.from({ length: BATCH_SIZE }, () =>
-        storageClient.hasUploadedFiles().catch(() => {}),
-      );
+      const promises = Array.from({ length: BATCH_SIZE }, () => storageClient.hasUploadedFiles().catch(() => {}));
       await Promise.allSettled(promises);
       count += BATCH_SIZE;
       setTotalSent(count);
@@ -33,8 +30,6 @@ const RateLimitThrottler = () => {
   const stop = useCallback(() => {
     stopRef.current = true;
   }, []);
-
-  if (envService.isProduction()) return null;
 
   return (
     <button
