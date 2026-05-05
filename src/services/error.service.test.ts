@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { AxiosError, AxiosResponse } from 'axios';
 import { AppError } from '@internxt/sdk';
+import { AxiosResponseError } from '@internxt/sdk/dist/shared/types/errors';
 import errorService from './error.service';
 import envService from './env.service';
 
@@ -20,6 +21,17 @@ describe('Error Service', () => {
     vi.restoreAllMocks();
   });
 
+  const createAxiosResponseError = (data: unknown, status: number, xRequestId?: string): AxiosResponseError => {
+    const response = {
+      data,
+      status,
+      statusText: '',
+      headers: { 'x-request-id': xRequestId },
+      config: {} as never,
+    } as AxiosResponse;
+    return new AxiosResponseError('Request failed', 'POST /auth/login', response);
+  };
+
   const createAxiosError = (data: unknown, status?: number, headers?: Record<string, string>): AxiosError => {
     const error = new AxiosError('Request failed');
     if (status !== undefined) {
@@ -38,7 +50,33 @@ describe('Error Service', () => {
     });
   });
 
-  describe('castError', () => {
+  describe('Cast Error', () => {
+    describe('AxiosResponseError handling', () => {
+      it('when response body has a message field, then uses it as the error message', () => {
+        const result = errorService.castError(createAxiosResponseError({ message: 'Wrong login credentials' }, 400));
+        expect(result.message).toBe('Wrong login credentials');
+        expect(result.status).toBe(400);
+      });
+
+      it('when response body has only an error field, then uses it as the error message', () => {
+        const result = errorService.castError(createAxiosResponseError({ error: 'Wrong login credentials' }, 400));
+        expect(result.message).toBe('Wrong login credentials');
+        expect(result.status).toBe(400);
+      });
+
+      it('when response body has no message or error fields, then falls back to the axios error message', () => {
+        const result = errorService.castError(createAxiosResponseError({}, 400));
+        expect(result.message).toBe('Request failed');
+        expect(result.status).toBe(400);
+      });
+
+      it('when response includes the id request in the header, then it is extracted correctly', () => {
+        const result = errorService.castError(createAxiosResponseError({ message: 'Fail' }, 500, 'req-789'));
+        expect(result.requestId).toBe('req-789');
+        expect(result.status).toBe(500);
+      });
+    });
+
     describe('AxiosError handling', () => {
       it('uses the error field from API responses when both error and message are present', () => {
         const result1 = errorService.castError(createAxiosError({ error: 'Custom error message' }, 400));

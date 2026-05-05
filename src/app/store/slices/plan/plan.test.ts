@@ -17,6 +17,7 @@ const mockIndividualPlan: StoragePlan = {
   renewalPeriod: RenewalPeriod.Monthly,
   storageLimit: 1000000000,
   amountOfSeats: 1,
+  commitment: { enabled: false },
 };
 
 const mockBusinessPlan: StoragePlan = {
@@ -33,6 +34,7 @@ const mockBusinessPlan: StoragePlan = {
   renewalPeriod: RenewalPeriod.Monthly,
   storageLimit: 5000000000,
   amountOfSeats: 5,
+  commitment: { enabled: false },
 };
 
 const createMockState = (planState: Partial<PlanState>, hasSelectedWorkspace = false): Partial<RootState> => ({
