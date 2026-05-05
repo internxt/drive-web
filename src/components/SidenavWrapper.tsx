@@ -19,6 +19,7 @@ import { useSuiteLauncher } from 'hooks/useSuiteLauncher';
 import { useSidenavNavigation } from 'hooks/useSidenavNavigation';
 import { uiActions } from 'app/store/slices/ui';
 import ReferralBanner from './ReferralBanner';
+import RateLimitThrottler from './RateLimitThrottler';
 import referralService from 'services/referral.service';
 import { useSidenavCollapsed } from 'hooks/useSidenavCollapsed';
 import { useSelector } from 'react-redux';
@@ -140,6 +141,7 @@ const SidenavWrapper = () => {
           isLoading: isLoadingPlanUsage && isLoadingPlanLimit && isLoadingBusinessLimitAndUsage,
         }}
       />
+      <RateLimitThrottler />
       {isReferralEligible && (
         <div className="absolute bottom-24 left-0 right-0">
           <ReferralBanner onCtaClick={handleReferralClick} isCollapsed={isCollapsed} />
