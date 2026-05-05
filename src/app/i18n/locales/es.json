@@ -445,7 +445,9 @@
         "logout": "Cerrar sesión",
         "referAndEarn": "Recomienda y gana",
         "earnReferral": "Gana 100 €",
-        "spaceUsed": "{{space}}% espacio usado"
+        "spaceUsed": "{{space}}% espacio usado",
+        "account": "Cuenta",
+        "giveFeedback": "Enviar comentarios"
       },
       "tabs": {
         "account": {
