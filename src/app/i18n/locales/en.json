@@ -551,6 +551,13 @@
               "individual": "You are about to cancel your {{currentPlanName}} Internxt plan. By cancelling your plan, you will be downgraded to free Internxt {{freePlanName}} plan. Confirm your choice to proceed, please.",
               "business": "By cancelling your plan, the workspace will be deleted along with all data. Confirm your choice to proceed, please."
             },
+            "commitment": {
+              "firstMonthDescription": "As you're still in your 30 day trial period, your cancellation will be immediate. You will no longer be billed and your account will revert to a free 1GB plan now.",
+              "description": "You have an annual subscription billed monthly. If you cancel now, your subscription will remain active until {{end_date}}, and you will continue to be charged monthly until that date.",
+              "monthsRemaining": "Remaining payments: {{monthsRemaining}}",
+              "amountPerMonth": "Amount per month: €{{amount}}",
+              "afterLabel": "After {{monthsRemaining}}"
+            },
             "keepSubscription": "Keep subscription",
             "continue": "Continue",
             "cancelSubscription": "Cancel subscription",
@@ -2047,6 +2054,7 @@
         "manageBilling": "Manage billing",
         "freeForever": "Free forever",
         "billedAnnually": "billed annually",
+        "billedMonthly": "billed monthly",
         "year": "Year",
         "month": "Month",
         "lifetime": "Lifetime",

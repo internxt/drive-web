@@ -1,6 +1,6 @@
-import { AxiosError } from 'axios';
 import { AppError } from '@internxt/sdk';
 import { AxiosResponseError, AxiosUnknownError } from '@internxt/sdk/dist/shared/types/errors';
+import { AxiosError } from 'axios';
 import envService from './env.service';
 
 interface ErrorWithStatus extends Error {
