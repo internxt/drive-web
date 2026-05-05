@@ -505,7 +505,9 @@
         "logout": "Disconnettersi",
         "referAndEarn": "Invita e guadagna",
         "earnReferral": "Guadagna 100 €",
-        "spaceUsed": "{{space}}% spazio usato"
+        "spaceUsed": "{{space}}% spazio usato",
+        "account": "Account",
+        "giveFeedback": "Invia feedback"
       },
       "tabs": {
         "account": {
