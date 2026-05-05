@@ -23,7 +23,6 @@ interface BillingAccountSectionProps {
 const BillingAccountSection = ({ changeSection, onClosePreferences }: BillingAccountSectionProps) => {
   const dispatch = useAppDispatch();
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
-  console.log('PLAN: ', plan);
   const [isSubscription, setIsSubscription] = useState<boolean>(false);
   const [cancellingSubscription, setCancellingSubscription] = useState<boolean>(false);
   const [isCancelSubscriptionModalOpen, setIsCancelSubscriptionModalOpen] = useState<boolean>(false);
