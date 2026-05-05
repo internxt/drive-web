@@ -1,9 +1,10 @@
 import { t } from 'i18next';
 import { Button } from '@internxt/ui';
 import CancelSubscriptionModal from '../../../Workspace/Billing/CancelSubscriptionModal';
-import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
+import { StoragePlan, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 
 interface CancelSubscriptionProps {
+  individualPlan: StoragePlan | null;
   isCancelSubscriptionModalOpen: boolean;
   setIsCancelSubscriptionModalOpen: (isCancelSubscriptionModalOpen: boolean) => void;
   cancellingSubscription: boolean;
@@ -15,6 +16,7 @@ interface CancelSubscriptionProps {
 }
 
 const CancelSubscription = ({
+  individualPlan,
   isCancelSubscriptionModalOpen,
   setIsCancelSubscriptionModalOpen,
   cancellingSubscription,
@@ -39,6 +41,7 @@ const CancelSubscription = ({
         {t('preferences.workspace.billing.cancelSubscription.button')}
       </Button>
       <CancelSubscriptionModal
+        individualPlan={individualPlan}
         isOpen={isCancelSubscriptionModalOpen}
         onClose={() => {
           setIsCancelSubscriptionModalOpen(false);
