@@ -231,7 +231,7 @@
         "lifetime": "lebenslang"
       },
       "renewalTitle": {
-        "month": "monatlich",
+        "month": "jährlich",
         "year": "jährlich",
         "lifetime": "lebenslang"
       },
@@ -256,7 +256,8 @@
         "inputText": "Gutscheincode"
       },
       "apply": "Anwenden",
-      "taxes": "Steuern"
+      "taxes": "Steuern",
+      "annualBillingTemplate": "Jahresplan, monatlich abgerechnet mit {{price}}{{currency}}/Monat für 12 Monate"
     },
     "confirmCryptoPayment": {
       "title": "Zahlung bestätigen",
@@ -1990,6 +1991,7 @@
             "title": "Essential (Basis)",
             "features": [
               "1TB verschlüsselter Cloud-Speicher",
+              "30 Tage risikofrei testen",
               "Post-Quanten-Verschlüsselung",
               "Zero-Knowledge-Verschlüsselung",
               "Zwei-Faktor-Authentifizierung",
@@ -2003,6 +2005,7 @@
             "title": "Premium",
             "features": [
               "3TB verschlüsselter Cloud-Speicher",
+              "30 Tage risikofrei testen",
               "Post-Quanten-Verschlüsselung",
               "Zero-Knowledge-Verschlüsselung",
               "Zwei-Faktor-Authentifizierung",
@@ -2019,6 +2022,7 @@
             "title": "Ultimate (Ultimativ)",
             "features": [
               "5TB verschlüsselter Cloud-Speicher",
+              "30 Tage risikofrei testen",
               "Post-Quanten-Verschlüsselung",
               "Zero-Knowledge-Verschlüsselung",
               "Zwei-Faktor-Authentifizierung",

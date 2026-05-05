@@ -248,7 +248,7 @@
         "lifetime": "a vita"
       },
       "renewalTitle": {
-        "month": "mensile",
+        "month": "annuale",
         "year": "annuale",
         "lifetime": "a vita"
       },
@@ -347,7 +347,8 @@
         "inputText": "Codice coupon"
       },
       "apply": "Applica",
-      "taxes": "Tasse"
+      "taxes": "Tasse",
+      "annualBillingTemplate": "Piano annuale, fatturato mensilmente a {{price}}{{currency}}/mese per 12 mesi"
     },
     "confirmCryptoPayment": {
       "title": "Conferma il pagamento",
@@ -2103,6 +2104,7 @@
             "title": "Essential (Essenziale)",
             "features": [
               "1TB di spazio di archiviazione cloud crittografato",
+              "Provalo senza rischi per 30 giorni",
               "Crittografia Post-Quantistica",
               "Crittografia Zero-Knowledge",
               "Autenticazione a Due Fattori",
@@ -2116,6 +2118,7 @@
             "title": "Premium",
             "features": [
               "3TB di spazio di archiviazione cloud crittografato",
+              "Provalo senza rischi per 30 giorni",
               "Crittografia Post-Quantistica",
               "Crittografia Zero-Knowledge",
               "Autenticazione a Due Fattori",
@@ -2132,6 +2135,7 @@
             "title": "Ultimate (Definitivo)",
             "features": [
               "5TB di spazio di archiviazione cloud crittografato",
+              "Provalo senza rischi per 30 giorni",
               "Crittografia Post-Quantistica",
               "Crittografia Zero-Knowledge",
               "Autenticazione a Due Fattori",

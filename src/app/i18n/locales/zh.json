@@ -245,7 +245,7 @@
         "lifetime": "终身"
       },
       "renewalTitle": {
-        "month": "每月",
+        "month": "每年",
         "year": "每年",
         "lifetime": "终身"
       },
@@ -270,7 +270,8 @@
         "inputText": "优惠券代码"
       },
       "apply": "应用",
-      "taxes": "税费"
+      "taxes": "税费",
+      "annualBillingTemplate": "年度计划，每月 {{price}}{{currency}}/月，持续 12 个月"
     },
     "confirmCryptoPayment": {
       "title": "确认付款",
@@ -2038,6 +2039,7 @@
             "title": "Essential (基础版)",
             "features": [
               "1TB 加密云存储空间",
+              "30 天无风险试用",
               "后量子密码学",
               "零知识加密",
               "两步验证",
@@ -2051,6 +2053,7 @@
             "title": "Premium (高级版)",
             "features": [
               "3TB 加密云存储空间",
+              "30 天无风险试用",
               "后量子密码学",
               "零知识加密",
               "两步验证",
@@ -2067,6 +2070,7 @@
             "title": "Ultimate (旗舰版)",
             "features": [
               "5TB 加密云存储空间",
+              "30 天无风险试用",
               "后量子密码学",
               "零知识加密",
               "两步验证",
