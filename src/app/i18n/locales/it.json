@@ -248,7 +248,7 @@
         "lifetime": "a vita"
       },
       "renewalTitle": {
-        "month": "mensile",
+        "month": "annuale",
         "year": "annuale",
         "lifetime": "a vita"
       },
@@ -347,7 +347,8 @@
         "inputText": "Codice coupon"
       },
       "apply": "Applica",
-      "taxes": "Tasse"
+      "taxes": "Tasse",
+      "annualBillingTemplate": "Piano annuale, fatturato mensilmente a {{price}}{{currency}}/mese per 12 mesi"
     },
     "confirmCryptoPayment": {
       "title": "Conferma il pagamento",
@@ -593,6 +594,13 @@
             "description": {
               "individual": "Stai per annullare il tuo piano Internxt {{currentPlanName}}. Annullando il tuo piano, verrai retrocesso al piano gratuito di Internxt {{freePlanName}}. Conferma la tua scelta per procedere, per favore.",
               "business": "Annullando il tuo piano, lo spazio di lavoro verrà eliminato insieme a tutti i dati. Per favore, conferma la tua scelta per procedere."
+            },
+            "commitment": {
+              "firstMonthDescription": "Poiché sei ancora nel tuo periodo di prova di 30 giorni, la tua cancellazione sarà immediata. Non ti verrà più addebitato nulla e il tuo account tornerà ora al piano gratuito da 1 GB.",
+              "description": "Hai un abbonamento annuale fatturato mensilmente. Se annulli ora, il tuo abbonamento rimarrà attivo fino al {{end_date}} e continuerai a essere addebitato mensilmente fino a quella data.",
+              "monthsRemaining": "Pagamenti rimanenti: {{monthsRemaining}}",
+              "amountPerMonth": "Importo al mese: €{{amount}}",
+              "afterLabel": "Dopo il {{monthsRemaining}}"
             },
             "keepSubscription": "Mantieni l'abbonamento",
             "continua": "Continua",
@@ -2076,6 +2084,7 @@
         "manageBilling": "Gestisci la fatturazione",
         "freeForever": "Gratis per sempre",
         "billedAnnually": "fatturato annualmente",
+        "billedMonthly": "fatturato mensilmente",
         "year": "Anno",
         "month": "Mese",
         "lifetime": "A vita",
@@ -2095,6 +2104,7 @@
             "title": "Essential (Essenziale)",
             "features": [
               "1TB di spazio di archiviazione cloud crittografato",
+              "Provalo senza rischi per 30 giorni",
               "Crittografia Post-Quantistica",
               "Crittografia Zero-Knowledge",
               "Autenticazione a Due Fattori",
@@ -2108,6 +2118,7 @@
             "title": "Premium",
             "features": [
               "3TB di spazio di archiviazione cloud crittografato",
+              "Provalo senza rischi per 30 giorni",
               "Crittografia Post-Quantistica",
               "Crittografia Zero-Knowledge",
               "Autenticazione a Due Fattori",
@@ -2124,6 +2135,7 @@
             "title": "Ultimate (Definitivo)",
             "features": [
               "5TB di spazio di archiviazione cloud crittografato",
+              "Provalo senza rischi per 30 giorni",
               "Crittografia Post-Quantistica",
               "Crittografia Zero-Knowledge",
               "Autenticazione a Due Fattori",

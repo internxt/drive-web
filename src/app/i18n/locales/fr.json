@@ -231,7 +231,7 @@
         "lifetime": "à vie"
       },
       "renewalTitle": {
-        "month": "mensuel",
+        "month": "annuel",
         "year": "annuel",
         "lifetime": "à vie"
       },
@@ -256,7 +256,8 @@
         "inputText": "Code de coupon"
       },
       "apply": "Appliquer",
-      "taxes": "Taxes"
+      "taxes": "Taxes",
+      "annualBillingTemplate": "Plan annuel, facturé mensuellement à {{price}}{{currency}}/mois pendant 12 mois"
     },
     "confirmCryptoPayment": {
       "title": "Confirmer le paiement",
@@ -502,6 +503,13 @@
             "description": {
               "individual": "Vous êtes sur le point d’annuler votre abonnement Internxt {{currentPlanName}}. En annulant votre abonnement, vous serez rétrogradé(e) à l’abonnement gratuit Internxt {{freePlanName}}. Veuillez confirmer votre choix pour continuer.",
               "business": "En annulant votre abonnement, l’espace de travail sera supprimé ainsi que toutes les données. Veuillez confirmer votre choix pour continuer."
+            },
+            "commitment": {
+              "firstMonthDescription": "Comme vous êtes encore dans votre période d'essai de 30 jours, votre annulation sera immédiate. Vous ne serez plus facturé et votre compte reviendra au plan gratuit de 1 Go maintenant.",
+              "description": "Vous avez un abonnement annuel facturé mensuellement. Si vous annulez maintenant, votre abonnement restera actif jusqu’au {{end_date}}, et vous continuerez à être facturé mensuellement jusqu’à cette date.",
+              "monthsRemaining": "Paiements restants : {{monthsRemaining}}",
+              "amountPerMonth": "Montant par mois : €{{amount}}",
+              "afterLabel": "Après le {{monthsRemaining}}"
             },
             "keepSubscription": "Conserver l’abonnement",
             "continue": "Continuer",
@@ -1969,6 +1977,7 @@
         "manageBilling": "Gérer la facturation",
         "freeForever": "Gratuit à vie",
         "billedAnnually": "facturé annuellement",
+        "billedMonthly": "facturé mensuellement",
         "year": "Année",
         "month": "Mois",
         "lifetime": "À vie",
@@ -1988,6 +1997,7 @@
             "title": "Essential (Essentiel)",
             "features": [
               "1To de stockage cloud chiffré",
+              "Essayez sans risque pendant 30 jours",
               "Chiffrement Post-Quantique",
               "Chiffrement Zéro-Connaissance",
               "Authentification à Deux Facteurs",
@@ -2001,6 +2011,7 @@
             "title": "Premium",
             "features": [
               "3To de stockage cloud chiffré",
+              "Essayez sans risque pendant 30 jours",
               "Chiffrement Post-Quantique",
               "Chiffrement Zéro-Connaissance",
               "Authentification à Deux Facteurs",
@@ -2017,6 +2028,7 @@
             "title": "Ultimate (Ultime)",
             "features": [
               "5To de stockage cloud chiffré",
+              "Essayez sans risque pendant 30 jours",
               "Chiffrement Post-Quantique",
               "Chiffrement Zéro-Connaissance",
               "Authentification à Deux Facteurs",
