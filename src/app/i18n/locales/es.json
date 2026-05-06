@@ -258,7 +258,7 @@
         "lifetime": "lifetime"
       },
       "renewalTitle": {
-        "month": "mensual",
+        "month": "anual",
         "year": "anual",
         "lifetime": "pago único"
       },
@@ -283,7 +283,8 @@
         "inputText": "Código de cupón"
       },
       "apply": "Aplicar",
-      "taxes": "Impuestos"
+      "taxes": "Impuestos",
+      "annualBillingTemplate": "Plan anual, facturado mensualmente a {{price}}{{currency}}/mes durante 12 meses"
     },
     "confirmCryptoPayment": {
       "title": "Confirmar el pago",
@@ -2050,6 +2051,7 @@
             "title": "Esencial",
             "features": [
               "1TB de almacenamiento en la nube cifrado",
+              "Pruébalo sin riesgo durante 30 días",
               "Criptografía postcuántica",
               "Cifrado de conocimiento cero",
               "Autenticación de dos factores",
@@ -2063,6 +2065,7 @@
             "title": "Premium",
             "features": [
               "3TB de almacenamiento en la nube cifrado",
+              "Pruébalo sin riesgo durante 30 días",
               "Criptografía postcuántica",
               "Cifrado de conocimiento cero",
               "Autenticación de dos factores",
@@ -2079,6 +2082,7 @@
             "title": "Ultimate",
             "features": [
               "5TB de almacenamiento en la nube cifrado",
+              "Pruébalo sin riesgo durante 30 días",
               "Criptografía postcuántica",
               "Cifrado de conocimiento cero",
               "Autenticación de dos factores",

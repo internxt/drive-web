@@ -277,6 +277,14 @@ export const CheckoutProductCard = ({
       </div>
       {couponCodeData && priceData.interval !== 'lifetime' && <p className="text-gray-60">{renewalPeriodLabel}</p>}
       {showHardcodedRenewal && <p className="text-gray-60">{showHardcodedRenewal}</p>}
+      {priceData.interval === 'month' && (
+        <p className="text-gray-60">
+          {translate('checkout.productCard.annualBillingTemplate', {
+            price: normalPriceAmount,
+            currency: currencySymbol,
+          })}
+        </p>
+      )}
     </div>
   );
 };

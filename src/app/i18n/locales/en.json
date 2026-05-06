@@ -276,7 +276,7 @@
         "lifetime": "lifetime"
       },
       "renewalTitle": {
-        "month": "monthly",
+        "month": "annual",
         "year": "annual",
         "lifetime": "lifetime"
       },
@@ -304,7 +304,8 @@
         "inputText": "Coupon code"
       },
       "apply": "Apply",
-      "taxes": "Taxes"
+      "taxes": "Taxes",
+      "annualBillingTemplate": "Annual plan, billed monthly at {{price}}{{currency}}/month for 12 months"
     },
     "confirmCryptoPayment": {
       "title": "Confirm the payment",
@@ -2074,6 +2075,7 @@
             "title": "Essential",
             "features": [
               "1TB of encrypted cloud storage",
+              "Try risk-free for 30 days",
               "Post-Quantum Encryption",
               "Zero-Knowledge Encryption",
               "Two-Factor Authentication",
@@ -2087,6 +2089,7 @@
             "title": "Premium",
             "features": [
               "3TB of encrypted cloud storage",
+              "Try risk-free for 30 days",
               "Post-Quantum Encryption",
               "Zero-Knowledge Encryption",
               "Two-Factor Authentication",
@@ -2103,6 +2106,7 @@
             "title": "Ultimate",
             "features": [
               "5TB of encrypted cloud storage",
+              "Try risk-free for 30 days",
               "Post-Quantum Encryption",
               "Zero-Knowledge Encryption",
               "Two-Factor Authentication",
