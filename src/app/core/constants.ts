@@ -3,6 +3,7 @@ export const HTTP_CODES = {
   MAX_SPACE_USED: 420,
   FORBIDDEN: 403,
   NOT_FOUND: 404,
+  INTERNAL_SERVER_ERROR: 500,
 };
 export enum ErrorMessages {
   ServerUnavailable = 'Server Unavailable',

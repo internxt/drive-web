@@ -1,28 +1,28 @@
 import { useEffect } from 'react';
 
-import { RootState } from 'app/store';
-import { planSelectors } from 'app/store/slices/plan';
-import navigationService from 'services/navigation.service';
-import { AppView } from 'app/core/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Sidenav } from '@internxt/ui';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { useTranslation } from 'react-i18next';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { HUNDRED_TB } from 'app/core/constants';
-import { sharedThunks } from 'app/store/slices/sharedLinks';
-import logo from 'assets/icons/small-logo.svg';
+import { AppView } from 'app/core/types';
 import { bytesToString } from 'app/drive/services/size.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { RootState } from 'app/store';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { planSelectors } from 'app/store/slices/plan';
+import { sharedThunks } from 'app/store/slices/sharedLinks';
+import { uiActions } from 'app/store/slices/ui';
+import logo from 'assets/icons/small-logo.svg';
+import { useSidenavCollapsed } from 'hooks/useSidenavCollapsed';
+import { useSidenavNavigation } from 'hooks/useSidenavNavigation';
+import { useSuiteLauncher } from 'hooks/useSuiteLauncher';
+import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
+import navigationService from 'services/navigation.service';
+import referralService from 'services/referral.service';
+import { parsePendingWorkspaces, parseWorkspaces } from 'utils/workspaces/parseWorkspaces.utils';
 import WorkspaceSelectorContainer from 'views/Home/components/WorkspaceSelectorContainer';
 import WorkspaceSelectorSkeleton from 'views/Home/components/WorkspaceSelectorSkeleton';
-import { useSuiteLauncher } from 'hooks/useSuiteLauncher';
-import { useSidenavNavigation } from 'hooks/useSidenavNavigation';
-import { uiActions } from 'app/store/slices/ui';
 import ReferralBanner from './ReferralBanner';
-import referralService from 'services/referral.service';
-import { useSidenavCollapsed } from 'hooks/useSidenavCollapsed';
-import { useSelector } from 'react-redux';
-import { parsePendingWorkspaces, parseWorkspaces } from 'utils/workspaces/parseWorkspaces.utils';
 
 const SidenavPrimaryAction = ({
   user,
