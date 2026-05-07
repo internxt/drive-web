@@ -56,8 +56,8 @@ export function handleExportBackupKey(translate) {
       mnemonic,
       privateKey: user.privateKey,
       keys: {
-        ecc: user.keys?.ecc?.privateKey || user.privateKey,
-        kyber: user.keys?.kyber?.privateKey || '',
+        ecc: user.keys?.ecc?.privateKey ?? user.privateKey,
+        kyber: user.keys?.kyber?.privateKey ?? '',
       },
       ...(hasPublicKeys && {
         publicKeys: {
