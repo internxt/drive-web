@@ -2051,9 +2051,10 @@
             ],
             "comingSoonFeatures": ["Mail", "Fotos"]
           },
-          "1GB": {
-            "title": "Kostenlos",
-            "features": ["1GB verschlüsselter Cloud-Speicher", "Verschlüsseltes VPN"]
+          "default": {
+            "freeTitle": "Kostenlos",
+            "bytesTitle": "{{bytes}}",
+            "features": ["{{bytes}} verschlüsselter Cloud-Speicher", "Verschlüsseltes VPN"]
           }
         },
         "businessPlanFeaturesList": {

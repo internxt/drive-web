@@ -2062,9 +2062,10 @@
             ],
             "comingSoonFeatures": ["郵件 (Mail)", "照片(Photos)"]
           },
-          "1GB": {
-            "title": "Free (免費版)",
-            "features": ["1GB 加密雲端儲存空間", "加密 VPN"]
+          "default": {
+            "freeTitle": "Free (免費版)",
+            "bytesTitle": "{{bytes}}",
+            "features": ["{{bytes}} 加密雲端儲存空間", "加密 VPN"]
           }
         },
         "businessPlanFeaturesList": {

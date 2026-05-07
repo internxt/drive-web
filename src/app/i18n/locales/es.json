@@ -2111,9 +2111,10 @@
             ],
             "comingSoonFeatures": ["Mail", "Fotos"]
           },
-          "1GB": {
-            "title": "Gratis",
-            "features": ["1GB de almacenamiento en la nube cifrado", "VPN cifrada"]
+          "default": {
+            "freeTitle": "Gratis",
+            "bytesTitle": "{{bytes}}",
+            "features": ["{{bytes}} de almacenamiento en la nube cifrado", "VPN cifrada"]
           }
         },
         "businessPlanFeaturesList": {

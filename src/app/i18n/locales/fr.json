@@ -2057,9 +2057,10 @@
             ],
             "comingSoonFeatures": ["Mail", "Photos"]
           },
-          "1GB": {
-            "title": "Gratuit",
-            "features": ["1Go de stockage cloud chiffré", "VPN Chiffré"]
+          "default": {
+            "freeTitle": "Gratuit",
+            "bytesTitle": "{{bytes}}",
+            "features": ["{{bytes}} de stockage cloud chiffré", "VPN Chiffré"]
           }
         },
         "businessPlanFeaturesList": {

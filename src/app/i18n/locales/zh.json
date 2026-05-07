@@ -2099,9 +2099,10 @@
             ],
             "comingSoonFeatures": ["邮件 (Mail)", "照片 (Photos)"]
           },
-          "1GB": {
-            "title": "Free (免费版)",
-            "features": ["1GB 加密云存储空间", "加密 VPN"]
+          "default": {
+            "freeTitle": "Free (免费版)",
+            "bytesTitle": "{{bytes}}",
+            "features": ["{{bytes}} 加密云存储空间", "加密 VPN"]
           }
         },
         "businessPlanFeaturesList": {

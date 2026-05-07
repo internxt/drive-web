@@ -2135,9 +2135,10 @@
             ],
             "comingSoonFeatures": ["Mail", "Photos"]
           },
-          "1GB": {
-            "title": "Free",
-            "features": ["1GB of encrypted storage", "Encrypted VPN"]
+          "default": {
+            "freeTitle": "Free",
+            "bytesTitle": "{{bytes}}",
+            "features": ["{{bytes}} of encrypted storage", "Encrypted VPN"]
           }
         },
         "businessPlanFeaturesList": {

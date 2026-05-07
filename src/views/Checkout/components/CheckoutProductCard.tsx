@@ -79,11 +79,18 @@ export const CheckoutProductCard = ({
 
   const planType = isBusiness ? 'businessPlanFeaturesList' : 'planFeaturesList';
 
-  const productLabel = translate(`preferences.account.plans.${planType}.${bytes}.title`) ?? bytes;
-  const featureKeys =
-    translateList(`preferences.account.plans.${planType}.${bytes ?? 'freeFeatures'}.features`, {
-      returnObjects: true,
-    }) ?? translateList('preferences.account.plans.planFeaturesList.1GB.features');
+  const specificTitleKey = `preferences.account.plans.${planType}.${bytes}.title`;
+  const productLabel =
+    translate(specificTitleKey) !== specificTitleKey
+      ? translate(specificTitleKey)
+      : translate('preferences.account.plans.planFeaturesList.default.bytesTitle', { bytes });
+
+  const specificFeatures = translateList(`preferences.account.plans.${planType}.${bytes}.features`, {
+    returnObjects: true,
+  });
+  const featureKeys = Array.isArray(specificFeatures)
+    ? specificFeatures
+    : translateList('preferences.account.plans.planFeaturesList.default.features', { bytes, returnObjects: true });
 
   const featuresList = Array.isArray(
     translateList(`preferences.account.plans.${planType}.${bytes}.comingSoonFeatures`),
