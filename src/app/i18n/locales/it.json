@@ -248,7 +248,7 @@
         "lifetime": "a vita"
       },
       "renewalTitle": {
-        "month": "mensile",
+        "month": "annuale",
         "year": "annuale",
         "lifetime": "a vita"
       },
@@ -347,7 +347,8 @@
         "inputText": "Codice coupon"
       },
       "apply": "Applica",
-      "taxes": "Tasse"
+      "taxes": "Tasse",
+      "annualBillingTemplate": "Piano annuale, fatturato mensilmente a {{price}}{{currency}}/mese per 12 mesi"
     },
     "confirmCryptoPayment": {
       "title": "Conferma il pagamento",
@@ -902,6 +903,16 @@
     "itemsSelected": "elementi selezionati"
   },
   "modals": {
+    "downloadBackupKeys": {
+      "title": "Ricordati di scaricare la tua chiave di backup",
+      "description": "La tua chiave di backup è necessaria per recuperare i tuoi dati crittografati. Internxt non la conserva — solo tu ce l'hai.",
+      "info": {
+        "text": "Puoi trovare la tua chiave di backup in qualsiasi momento in ",
+        "path": "Impostazioni → Account → Sicurezza"
+      },
+      "download": "Scarica le chiavi di backup",
+      "success": "Hai la tua chiave di backup. Assicurati di conservarla in un posto sicuro."
+    },
     "renameItemDialog": {
       "title": "Rinominare",
       "label": "Nome"
@@ -1619,7 +1630,9 @@
     "continue": "Continua",
     "keepCurrent": "Mantieni attuale",
     "logOut": "Disconnettersi",
-    "locked": "Bloccato"
+    "locked": "Bloccato",
+    "remindMeLater": "Ricordamelo più tardi",
+    "backupKeySaved": "Ho salvato la mia chiave"
   },
   "toastNotification": {
     "textCopied": "Testo copiato negli appunti"
@@ -2104,6 +2117,7 @@
             "title": "Essential (Essenziale)",
             "features": [
               "1TB di spazio di archiviazione cloud crittografato",
+              "Provalo senza rischi per 30 giorni",
               "Crittografia Post-Quantistica",
               "Crittografia Zero-Knowledge",
               "Autenticazione a Due Fattori",
@@ -2117,6 +2131,7 @@
             "title": "Premium",
             "features": [
               "3TB di spazio di archiviazione cloud crittografato",
+              "Provalo senza rischi per 30 giorni",
               "Crittografia Post-Quantistica",
               "Crittografia Zero-Knowledge",
               "Autenticazione a Due Fattori",
@@ -2133,6 +2148,7 @@
             "title": "Ultimate (Definitivo)",
             "features": [
               "5TB di spazio di archiviazione cloud crittografato",
+              "Provalo senza rischi per 30 giorni",
               "Crittografia Post-Quantistica",
               "Crittografia Zero-Knowledge",
               "Autenticazione a Due Fattori",

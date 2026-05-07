@@ -115,7 +115,7 @@ describe('Authentication Checkout Custom hook', () => {
     expect(mockedAuthenticateUserProps.onAuthenticationFail).toHaveBeenCalled();
   });
 
-  test('When the user wants to log out, then all services are cleared and the auth method is set to \'sign up\'', async () => {
+  test("When the user wants to log out, then all services are cleared and the auth method is set to 'sign up'", async () => {
     const changeAuthMethod = vi.fn();
 
     const stopRealTimeServiceSpy = vi.spyOn(RealtimeService.prototype, 'stop').mockResolvedValue();

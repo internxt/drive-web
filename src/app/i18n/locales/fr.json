@@ -231,7 +231,7 @@
         "lifetime": "à vie"
       },
       "renewalTitle": {
-        "month": "mensuel",
+        "month": "annuel",
         "year": "annuel",
         "lifetime": "à vie"
       },
@@ -256,7 +256,8 @@
         "inputText": "Code de coupon"
       },
       "apply": "Appliquer",
-      "taxes": "Taxes"
+      "taxes": "Taxes",
+      "annualBillingTemplate": "Plan annuel, facturé mensuellement à {{price}}{{currency}}/mois pendant 12 mois"
     },
     "confirmCryptoPayment": {
       "title": "Confirmer le paiement",
@@ -796,6 +797,16 @@
     "itemsSelected": "Éléments sélectionnés"
   },
   "modals": {
+    "downloadBackupKeys": {
+      "title": "N'oubliez pas de télécharger votre clé de sauvegarde",
+      "description": "Votre clé de sauvegarde est nécessaire pour récupérer vos données chiffrées. Internxt ne la stocke pas — seul vous la possédez.",
+      "info": {
+        "text": "Vous pouvez retrouver votre clé de sauvegarde à tout moment dans ",
+        "path": "Paramètres → Compte → Sécurité"
+      },
+      "download": "Télécharger les clés de sauvegarde",
+      "success": "Vous avez votre clé de sauvegarde. Assurez-vous de la conserver dans un endroit sûr."
+    },
     "renameItemDialog": {
       "title": "Renommer",
       "label": "Nom"
@@ -1512,7 +1523,9 @@
     "continue": "Continuer",
     "keepCurrent": "Garder actuel",
     "logOut": "Se déconnecter",
-    "locked": "Verrouillé"
+    "locked": "Verrouillé",
+    "remindMeLater": "Me le rappeler plus tard",
+    "backupKeySaved": "J'ai sauvegardé ma clé"
   },
   "toastNotification": {
     "textCopied": "Texte copié dans le presse-papiers"
@@ -1997,6 +2010,7 @@
             "title": "Essential (Essentiel)",
             "features": [
               "1To de stockage cloud chiffré",
+              "Essayez sans risque pendant 30 jours",
               "Chiffrement Post-Quantique",
               "Chiffrement Zéro-Connaissance",
               "Authentification à Deux Facteurs",
@@ -2010,6 +2024,7 @@
             "title": "Premium",
             "features": [
               "3To de stockage cloud chiffré",
+              "Essayez sans risque pendant 30 jours",
               "Chiffrement Post-Quantique",
               "Chiffrement Zéro-Connaissance",
               "Authentification à Deux Facteurs",
@@ -2026,6 +2041,7 @@
             "title": "Ultimate (Ultime)",
             "features": [
               "5To de stockage cloud chiffré",
+              "Essayez sans risque pendant 30 jours",
               "Chiffrement Post-Quantique",
               "Chiffrement Zéro-Connaissance",
               "Authentification à Deux Facteurs",

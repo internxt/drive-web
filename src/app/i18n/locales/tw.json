@@ -247,7 +247,7 @@
         "lifetime": "終身"
       },
       "renewalTitle": {
-        "month": "每月",
+        "month": "每年",
         "year": "每年",
         "lifetime": "終身"
       },
@@ -272,7 +272,8 @@
         "inputText": "優惠券代碼"
       },
       "apply": "應用",
-      "taxes": "稅金"
+      "taxes": "稅金",
+      "annualBillingTemplate": "年度計劃，每月 {{price}}{{currency}}/月，持續 12 個月"
     },
     "confirmCryptoPayment": {
       "title": "確認付款",
@@ -796,6 +797,16 @@
     "itemsSelected": "已選擇項目"
   },
   "modals": {
+    "downloadBackupKeys": {
+      "title": "請記得下載您的備份金鑰",
+      "description": "您的備份金鑰是恢復加密資料的必要憑證。Internxt 不會儲存它——只有您自己擁有它。",
+      "info": {
+        "text": "您可以隨時在以下位置找到您的備份金鑰：",
+        "path": "設定 → 帳戶 → 安全性"
+      },
+      "download": "下載備份金鑰",
+      "success": "您已擁有備份金鑰。請務必將其儲存在安全的地方。"
+    },
     "renameItemDialog": {
       "title": "重命名",
       "label": "名稱"
@@ -1518,7 +1529,9 @@
     "continue": "繼續",
     "keepCurrent": "保持目前",
     "logOut": "登出",
-    "locked": "已鎖定"
+    "locked": "已鎖定",
+    "remindMeLater": "稍後提醒我",
+    "backupKeySaved": "我已儲存我的金鑰"
   },
   "toastNotification": {
     "textCopied": "文字已複製到剪貼簿"
@@ -2001,6 +2014,7 @@
             "title": "Essential (基本版)",
             "features": [
               "1TB 加密雲端儲存空間",
+              "30 天無風險試用",
               "後量子密碼學",
               "零知識加密",
               "雙重身份驗證",
@@ -2014,6 +2028,7 @@
             "title": "Premium (進階版)",
             "features": [
               "3TB 加密雲端儲存空間",
+              "30 天無風險試用",
               "後量子密碼學",
               "零知識加密",
               "雙重身份驗證",
@@ -2031,6 +2046,7 @@
             "title": "Ultimate (旗艦版)",
             "features": [
               "5TB 加密雲端儲存空間",
+              "30 天無風險試用",
               "後量子密碼學",
               "零知識加密",
               "雙重身份驗證",
