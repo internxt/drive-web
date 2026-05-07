@@ -225,6 +225,62 @@ describe('Initialize checkout custom hook', () => {
     });
   });
 
+  describe('Business plan restriction', () => {
+    const mockBusinessPriceWithTax: PriceWithTax = {
+      ...mockPriceWithTax,
+      price: {
+        ...mockPriceWithTax.price,
+        type: UserType.Business,
+      },
+    };
+
+    test('When the selected plan is a business plan, then a warning notification is shown', async () => {
+      const props = {
+        checkoutTheme: 'light',
+        price: mockBusinessPriceWithTax,
+        translate: mockTranslate,
+      };
+
+      renderHook(() => useInitializeCheckout(props));
+
+      await waitFor(() => {
+        expect(notificationsService.show).toHaveBeenCalledWith({
+          text: 'checkout.error.businessPlan',
+          type: ToastType.Warning,
+        });
+      });
+    });
+
+    test('When the selected plan is a business plan and the user is not logged in, then the user is redirected to the signup page', async () => {
+      const props = {
+        checkoutTheme: 'light',
+        price: mockBusinessPriceWithTax,
+        translate: mockTranslate,
+      };
+
+      renderHook(() => useInitializeCheckout(props));
+
+      await waitFor(() => {
+        expect(navigationService.push).toHaveBeenCalledWith(AppView.Signup);
+      });
+    });
+
+    test('When the selected plan is a business plan and the user is logged in, then the user is redirected to the drive page', async () => {
+      const props = {
+        checkoutTheme: 'light',
+        price: mockBusinessPriceWithTax,
+        user: mockUser,
+        translate: mockTranslate,
+      };
+
+      renderHook(() => useInitializeCheckout(props));
+
+      await waitFor(() => {
+        expect(navigationService.push).toHaveBeenCalledWith(AppView.Drive);
+      });
+    });
+  });
+
   describe('Checkout ready state', () => {
     test('When all initialization is complete, then the checkout is ready', async () => {
       const props = {

@@ -1,9 +1,4 @@
-import {
-  CouponCodeData,
-  CreatedSubscriptionData,
-  DisplayPrice,
-  UserType,
-} from '@internxt/sdk/dist/drive/payments/types/types';
+import { CouponCodeData, CreatedSubscriptionData } from '@internxt/sdk/dist/drive/payments/types/types';
 import axios from 'axios';
 import localStorageService from 'services/local-storage.service';
 import { SdkFactory } from 'app/core/factory/sdk';
@@ -115,20 +110,6 @@ export const createPaymentIntent = async ({
     userAddress,
     promoCodeId,
   });
-};
-
-const fetchPrices = async (userType: UserType, currency: string): Promise<DisplayPrice[]> => {
-  const PAYMENTS_API_URL = envService.getVariable('payments');
-  const response = await fetch(`${PAYMENTS_API_URL}/prices?userType=${userType}&currency=${currency}`);
-
-  if (response.status !== 200) {
-    const message = await response.text();
-    throw new Error(message);
-  }
-
-  const dataJson = await response.json();
-
-  return dataJson;
 };
 
 const checkoutSetupIntent = async (customerId: string) => {
@@ -258,7 +239,6 @@ const checkoutService = {
   getPriceById,
   createSubscription,
   loadStripeElements,
-  fetchPrices,
   checkoutSetupIntent,
   verifyCryptoPayment,
   trackIncompleteCheckout,
