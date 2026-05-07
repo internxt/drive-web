@@ -333,15 +333,15 @@ describe('Testing the local storage service', () => {
 
   describe('Backup key acknowledgment', () => {
     const userId = mockUserSettings.uuid;
-    const remindLaterKey = `backup_key_remind_later_at_${userId}`;
+    const seenAtKey = `backup_key_seen_at_${userId}`;
     const acknowledgedKey = `backup_key_acknowledged_at_${userId}`;
 
     describe('Get backup keys', () => {
-      test('When neither saved nor remind me later are set, then both are returned as empty', () => {
-        const { saved, remindMeLater } = localStorageService.getBackupKeys();
+      test('When the user has never interacted with the backup keys dialog, then nothing is returned', () => {
+        const { saved, seenAt } = localStorageService.getBackupKeys();
 
         expect(saved).toBe(false);
-        expect(remindMeLater).toBeNull();
+        expect(seenAt).toBeNull();
       });
 
       test('When the user has acknowledged the backup key, then saved is true', () => {
@@ -352,13 +352,13 @@ describe('Testing the local storage service', () => {
         expect(saved).toBe(true);
       });
 
-      test('When the user set a remind me later date, then the date is returned', () => {
+      test('When the user has already been shown the dialog before, then the date is returned', () => {
         const date = new Date().toISOString();
-        localStorage.setItem(remindLaterKey, date);
+        localStorage.setItem(seenAtKey, date);
 
-        const { remindMeLater } = localStorageService.getBackupKeys();
+        const { seenAt } = localStorageService.getBackupKeys();
 
-        expect(remindMeLater).toBe(date);
+        expect(seenAt).toBe(date);
       });
     });
 
@@ -370,25 +370,35 @@ describe('Testing the local storage service', () => {
       });
     });
 
-    describe('setBackupKeysRemindLater', () => {
-      test('When the user sets remind me later, then the date is persisted for that user', () => {
+    describe('Track when the dialog was last shown', () => {
+      test('When the dialog is shown, then the date is persisted for that user', () => {
         const date = new Date().toISOString();
 
-        localStorageService.setBackupKeysRemindLater(date);
+        localStorageService.setBackupKeysSeenAt(date);
 
-        expect(localStorage.getItem(remindLaterKey)).toBe(date);
+        expect(localStorage.getItem(seenAtKey)).toBe(date);
+      });
+    });
+
+    describe('Remove when the dialog was last shown', () => {
+      test('When the backup key is acknowledged, then the last seen date is removed for that user', () => {
+        localStorage.setItem(seenAtKey, new Date().toISOString());
+
+        localStorageService.removeBackupKeysSeenAt();
+
+        expect(localStorage.getItem(seenAtKey)).toBeNull();
       });
     });
 
     describe('clear', () => {
-      test('When the user logs out, then the remind me later date is removed but the acknowledged flag is kept', () => {
+      test('When the user logs out, then the last seen date is removed but the acknowledged flag is kept', () => {
         const date = new Date().toISOString();
-        localStorage.setItem(remindLaterKey, date);
+        localStorage.setItem(seenAtKey, date);
         localStorage.setItem(acknowledgedKey, 'true');
 
         localStorageService.clear();
 
-        expect(localStorage.getItem(remindLaterKey)).toBeNull();
+        expect(localStorage.getItem(seenAtKey)).toBeNull();
         expect(localStorage.getItem(acknowledgedKey)).toBe('true');
       });
     });

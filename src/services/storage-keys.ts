@@ -7,7 +7,7 @@ export const STORAGE_KEYS = {
   GCLID: 'gclid',
   HAS_SEEN_TRASH_DISPOSAL_DIALOG: 'hasSeenTrashDisposalDialog',
   BACKUP_KEY: {
-    REMIND_LATER_AT: 'backup_key_remind_later_at',
+    SEEN_AT: 'backup_key_seen_at',
     ACKNOWLEDGED_AT: 'backup_key_acknowledged_at',
   },
   THEMES: {

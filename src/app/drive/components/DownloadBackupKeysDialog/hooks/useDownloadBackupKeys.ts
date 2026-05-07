@@ -2,11 +2,12 @@ import { ActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.co
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 import { Translate } from 'app/i18n/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import dayjs from 'dayjs';
 import { useState } from 'react';
-import { localStorageService, STORAGE_KEYS } from 'services';
+import { localStorageService } from 'services';
 import { handleExportBackupKey } from 'utils';
 
-export const FOURTEEN_DAYS = 14 * 24 * 60 * 60 * 1000;
+export const THIRTY_DAYS = 30;
 
 export const useDownloadBackupKeys = (translate: Translate) => {
   const [isDownloadedKeys, setIsDownloadedKeys] = useState(false);
@@ -15,25 +16,31 @@ export const useDownloadBackupKeys = (translate: Translate) => {
   const isBackupKeysDialogOpen = isDialogOpen(ActionDialog.DownloadBackupKey);
 
   const openBackupKeysDialog = () => {
-    const remindMeLater = backupKeysLocalStorage.remindMeLater;
-    const remindTimestamp = remindMeLater ? new Date(remindMeLater).getTime() : 0;
+    if (backupKeysLocalStorage.saved) return;
 
-    const hasExpired = !remindTimestamp || Date.now() - remindTimestamp >= FOURTEEN_DAYS;
+    const { seenAt } = backupKeysLocalStorage;
 
-    if (backupKeysLocalStorage.saved || !hasExpired) return;
+    if (!seenAt) {
+      localStorageService.setBackupKeysSeenAt(dayjs().toISOString());
+      return;
+    }
 
+    const hasExpired = dayjs().diff(dayjs(seenAt), 'day') >= THIRTY_DAYS;
+
+    if (!hasExpired) return;
+
+    localStorageService.setBackupKeysSeenAt(dayjs().toISOString());
     openDialog(ActionDialog.DownloadBackupKey);
   };
 
   const onRemindMeLaterButtonClicked = () => {
-    const now = new Date();
-    localStorageService.setBackupKeysRemindLater(now.toISOString());
+    localStorageService.setBackupKeysSeenAt(dayjs().toISOString());
     closeDialog(ActionDialog.DownloadBackupKey, { closeAllDialogsFirst: true });
   };
 
   const onBackupSavedButtonClicked = () => {
     localStorageService.setBackupKeysAcknowledged();
-    if (backupKeysLocalStorage?.remindMeLater) localStorageService.removeItem(STORAGE_KEYS.BACKUP_KEY.REMIND_LATER_AT);
+    if (backupKeysLocalStorage?.seenAt) localStorageService.removeBackupKeysSeenAt();
     notificationsService.show({ text: translate('modals.downloadBackupKeys.success'), type: ToastType.Success });
     closeDialog(ActionDialog.DownloadBackupKey, { closeAllDialogsFirst: true });
   };

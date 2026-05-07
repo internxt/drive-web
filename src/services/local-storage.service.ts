@@ -15,7 +15,7 @@ function getBackupKeyStorageKeys() {
   const user = getUser();
   const userId = user?.uuid;
   return {
-    remindLaterAt: `${STORAGE_KEYS.BACKUP_KEY.REMIND_LATER_AT}_${userId}`,
+    seenAt: `${STORAGE_KEYS.BACKUP_KEY.SEEN_AT}_${userId}`,
     acknowledgedAt: `${STORAGE_KEYS.BACKUP_KEY.ACKNOWLEDGED_AT}_${userId}`,
   };
 }
@@ -25,19 +25,24 @@ function setBackupKeysAcknowledged(): void {
   localStorage.setItem(acknowledgedAt, 'true');
 }
 
-function setBackupKeysRemindLater(date: string): void {
-  const { remindLaterAt } = getBackupKeyStorageKeys();
-  localStorage.setItem(remindLaterAt, date);
+function setBackupKeysSeenAt(date: string): void {
+  const { seenAt } = getBackupKeyStorageKeys();
+  localStorage.setItem(seenAt, date);
+}
+
+function removeBackupKeysSeenAt(): void {
+  const { seenAt } = getBackupKeyStorageKeys();
+  localStorage.removeItem(seenAt);
 }
 
 function getBackupKeys(): {
-  remindMeLater: string | null;
+  seenAt: string | null;
   saved: boolean;
 } {
-  const { remindLaterAt, acknowledgedAt } = getBackupKeyStorageKeys();
+  const { seenAt, acknowledgedAt } = getBackupKeyStorageKeys();
   const isAcknowledged = localStorage.getItem(acknowledgedAt) === 'true';
   return {
-    remindMeLater: localStorage.getItem(remindLaterAt),
+    seenAt: localStorage.getItem(seenAt),
     saved: isAcknowledged,
   };
 }
@@ -85,7 +90,7 @@ function hasCompletedTutorial(id?: string): boolean {
 function clear(): void {
   localStorage.setItem('theme', 'system');
 
-  localStorage.removeItem(getBackupKeyStorageKeys().remindLaterAt);
+  localStorage.removeItem(getBackupKeyStorageKeys().seenAt);
   Object.values(STORAGE_KEYS.THEMES).forEach((key) => localStorage.removeItem(key));
   Object.values(LocalStorageItem).forEach((key) => localStorage.removeItem(key));
   localStorage.removeItem('theme:isDark');
@@ -98,7 +103,8 @@ const localStorageService = {
   set,
   get,
   setBackupKeysAcknowledged,
-  setBackupKeysRemindLater,
+  setBackupKeysSeenAt,
+  removeBackupKeysSeenAt,
   getBackupKeys,
   getUser,
   getWorkspace,
@@ -116,9 +122,10 @@ export interface LocalStorageService {
   set: (key: string, value: string) => void;
   get: (key: string) => string | null;
   setBackupKeysAcknowledged: () => void;
-  setBackupKeysRemindLater: (date: string) => void;
+  setBackupKeysSeenAt: (date: string) => void;
+  removeBackupKeysSeenAt: () => void;
   getBackupKeys: () => {
-    remindMeLater: string | null;
+    seenAt: string | null;
     saved: boolean;
   };
   getUser: () => UserSettings | null;
