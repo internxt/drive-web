@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { useUserPayment } from './useUserPayment';
+import { checkIsFirstPurchase, useUserPayment } from './useUserPayment';
 import checkoutService from '../services/checkout.service';
 import localStorageService from 'services/local-storage.service';
 import envService from 'services/env.service';
@@ -9,6 +9,8 @@ import { AppView } from 'app/core/types';
 import { PaymentType, ProcessPurchasePayload, UseUserPaymentPayload } from '../types';
 import { CreateSubscriptionPayload } from '@internxt/sdk/dist/payments/types';
 import notificationsService from 'app/notifications/services/notifications.service';
+import { paymentService } from '../services';
+import errorService from 'services/error.service';
 
 const mockHostname = 'https://hostname.com';
 
@@ -24,6 +26,8 @@ describe('Custom hook to handle payments', () => {
       if (key === 'hostname') return mockHostname;
       else return 'no mock implementation';
     });
+
+    vi.spyOn(paymentService, 'getInvoices').mockResolvedValue([]);
   });
 
   describe('Get subscription data to do the payment', () => {
@@ -190,7 +194,7 @@ describe('Custom hook to handle payments', () => {
         captchaToken: subscriptionPaymentPayload.captchaToken,
       });
 
-      expect(localStorageServiceSpy).toHaveBeenCalledTimes(5);
+      expect(localStorageServiceSpy).toHaveBeenCalledTimes(6);
 
       expect(setupIntent).toHaveBeenCalledWith({
         elements: subscriptionPaymentPayload.elements,
@@ -248,7 +252,7 @@ describe('Custom hook to handle payments', () => {
         captchaToken: subscriptionPaymentPayload.captchaToken,
       });
 
-      expect(localStorageServiceSpy).toHaveBeenCalledTimes(5);
+      expect(localStorageServiceSpy).toHaveBeenCalledTimes(6);
 
       expect(confirmPayment).toHaveBeenCalledWith({
         elements: subscriptionPaymentPayload.elements,
@@ -307,7 +311,7 @@ describe('Custom hook to handle payments', () => {
         captchaToken: subscriptionPaymentPayload.captchaToken,
       });
 
-      expect(localStorageServiceSpy).toHaveBeenCalledTimes(5);
+      expect(localStorageServiceSpy).toHaveBeenCalledTimes(6);
 
       expect(notificationsServiceSpy).toHaveBeenCalled();
       expect(confirmPayment).not.toHaveBeenCalled();
@@ -356,7 +360,7 @@ describe('Custom hook to handle payments', () => {
         promoCodeId: undefined,
       });
 
-      expect(localStorageServiceSpy).toHaveBeenCalledTimes(5);
+      expect(localStorageServiceSpy).toHaveBeenCalledTimes(6);
 
       expect(confirmPayment).toHaveBeenCalledWith({
         elements: lifetimePaymentPayload.elements,
@@ -408,10 +412,41 @@ describe('Custom hook to handle payments', () => {
         promoCodeId: undefined,
       });
 
-      expect(localStorageServiceSpy).toHaveBeenCalledTimes(5);
+      expect(localStorageServiceSpy).toHaveBeenCalledTimes(6);
       expect(navigationServiceSpy).toHaveBeenCalledWith(AppView.CheckoutSuccess);
 
       expect(confirmPayment).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('checkIsFirstPurchase', () => {
+    test('When the user has no prior invoices, then it is a first purchase', async () => {
+      vi.spyOn(paymentService, 'getInvoices').mockResolvedValue([]);
+
+      const result = await checkIsFirstPurchase();
+
+      expect(result).toBe(true);
+      expect(paymentService.getInvoices).toHaveBeenCalledWith({ userType: UserType.Individual, limit: 1 });
+    });
+
+    test('When the user has prior invoices, then it is not a first purchase', async () => {
+      vi.spyOn(paymentService, 'getInvoices').mockResolvedValue([{ id: 'inv_123' } as any]);
+
+      const result = await checkIsFirstPurchase();
+
+      expect(result).toBe(false);
+    });
+
+    test('When getInvoices fails, then it returns false and reports the error', async () => {
+      const error = new Error('Network error');
+      vi.spyOn(paymentService, 'getInvoices').mockRejectedValue(error);
+      const reportErrorSpy = vi.spyOn(errorService, 'reportError').mockImplementation(() => {});
+      vi.spyOn(errorService, 'castError').mockReturnValue(error as any);
+
+      const result = await checkIsFirstPurchase();
+
+      expect(result).toBe(false);
+      expect(reportErrorSpy).toHaveBeenCalledWith(error);
     });
   });
 

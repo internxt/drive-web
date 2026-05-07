@@ -66,6 +66,7 @@ const BillingAccountSection = ({ changeSection, onClosePreferences }: BillingAcc
       <Invoices userType={UserType.Individual} />
       {isSubscription && (
         <CancelSubscription
+          individualPlan={plan.individualPlan}
           isCancelSubscriptionModalOpen={isCancelSubscriptionModalOpen}
           setIsCancelSubscriptionModalOpen={setIsCancelSubscriptionModalOpen}
           cancellingSubscription={cancellingSubscription}

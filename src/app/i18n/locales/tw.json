@@ -247,7 +247,7 @@
         "lifetime": "終身"
       },
       "renewalTitle": {
-        "month": "每月",
+        "month": "每年",
         "year": "每年",
         "lifetime": "終身"
       },
@@ -272,7 +272,8 @@
         "inputText": "優惠券代碼"
       },
       "apply": "應用",
-      "taxes": "稅金"
+      "taxes": "稅金",
+      "annualBillingTemplate": "年度計劃，每月 {{price}}{{currency}}/月，持續 12 個月"
     },
     "confirmCryptoPayment": {
       "title": "確認付款",
@@ -430,7 +431,9 @@
         "logout": "登出",
         "referAndEarn": "推薦賺取",
         "earnReferral": "賺取 €100",
-        "spaceUsed": "已使用 {{space}}% 的空間"
+        "spaceUsed": "已使用 {{space}}% 的空間",
+        "account": "帳戶",
+        "giveFeedback": "提供意見回饋"
       },
       "tabs": {
         "account": {
@@ -516,6 +519,13 @@
             "description": {
               "individual": "您即將取消您的 Internxt {{currentPlanName}} 方案。取消方案後，您將降級為免費的 Internxt {{freePlanName}} 方案。請確認您的選擇以繼續。",
               "business": "取消方案後，工作區以及所有資料將被刪除。請確認您的選擇以繼續。"
+            },
+            "commitment": {
+              "firstMonthDescription": "由於您仍在 30 天試用期內，您的取消將立即生效。您將不再被收費，您的帳戶現在將恢復為免費的 1GB 方案。",
+              "description": "您擁有按月計費的年度訂閱。如果您現在取消，您的訂閱將保持有效至 {{end_date}}，且在該日期之前您將繼續被按月收費。",
+              "monthsRemaining": "剩餘付款次數：{{monthsRemaining}}",
+              "amountPerMonth": "每月金額：€{{amount}}",
+              "afterLabel": "{{monthsRemaining}} 之後"
             },
             "keepSubscription": "保留訂閱",
             "continue": "繼續",
@@ -1115,7 +1125,9 @@
     "renamingItem": "重命名項目時出錯",
     "linkExpired": "此安全鏈接已過期",
     "teamInvitation": "無法發送邀請郵件",
+    "ownerStorageIsFull": "擁有者的儲存空間已滿",
     "storageIsFull": "您的存儲空間已滿",
+    "ownerStorageIsFullDescription": "您無法在此共享資料夾中上傳檔案。",
     "storageIsFullDescription": "您無法上傳、同步或備份文件。",
     "noSpaceAvailable": "您已達到當前計劃的限制，同步已停止。立即升級以保持文件的安全同步。",
     "sharedFolderTooBig": "Internxt Drive不支持共享超過1GB的文件夾。",
@@ -1969,6 +1981,7 @@
         "manageBilling": "管理帳單",
         "freeForever": "永久免費",
         "billedAnnually": "按年計費",
+        "billedMonthly": "按月計費",
         "year": "年",
         "month": "月",
         "lifetime": "終身",
@@ -1988,6 +2001,7 @@
             "title": "Essential (基本版)",
             "features": [
               "1TB 加密雲端儲存空間",
+              "30 天無風險試用",
               "後量子密碼學",
               "零知識加密",
               "雙重身份驗證",
@@ -2001,6 +2015,7 @@
             "title": "Premium (進階版)",
             "features": [
               "3TB 加密雲端儲存空間",
+              "30 天無風險試用",
               "後量子密碼學",
               "零知識加密",
               "雙重身份驗證",
@@ -2018,6 +2033,7 @@
             "title": "Ultimate (旗艦版)",
             "features": [
               "5TB 加密雲端儲存空間",
+              "30 天無風險試用",
               "後量子密碼學",
               "零知識加密",
               "雙重身份驗證",

@@ -37,7 +37,7 @@ self.addEventListener('message', async (event) => {
       postMessage({ result: 'success', fileId });
     } catch (err) {
       console.log('[WORKER] ERROR -->', err);
-      const errorCloned = JSON.parse(JSON.stringify(err));
+      const errorCloned = { ...JSON.parse(JSON.stringify(err)), message: (err as { message?: string })?.message };
       postMessage({ result: 'error', error: errorCloned });
     }
   } else {

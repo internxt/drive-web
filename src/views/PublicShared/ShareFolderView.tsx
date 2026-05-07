@@ -14,7 +14,7 @@ import { useEffect, useState } from 'react';
 import { match } from 'react-router';
 import { Link } from 'react-router-dom';
 import { HTTP_CODES } from 'app/core/constants';
-import { AppError } from '@internxt/sdk';
+
 import { useAppSelector } from 'app/store/hooks';
 import { SendBanner, ShareItemPwdView } from './components';
 import './components/ShareView.scss';
@@ -64,11 +64,12 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   let body, downloadButton;
 
   const handleLoadFolderError = (err) => {
-    if (err.status !== HTTP_CODES.FORBIDDEN) {
+    const appErr = errorService.castError(err);
+    if (appErr.status !== HTTP_CODES.FORBIDDEN) {
       setIsLoaded(true);
-      if (err.message === CHROME_IOS_ERROR_MESSAGE) {
+      if (appErr.message === CHROME_IOS_ERROR_MESSAGE) {
         notificationsService.show({
-          text: errorService.castError(err).message,
+          text: appErr.message,
           type: ToastType.Warning,
           duration: 50000,
         });
@@ -106,12 +107,13 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
         setSize(folderSize);
       })
       .catch(async (err) => {
-        if (err.status === HTTP_CODES.FORBIDDEN) {
+        const appErr = errorService.castError(err);
+        if (appErr.status === HTTP_CODES.FORBIDDEN) {
           await getSharedFolderInfo(sharingId);
           setRequiresPassword(true);
           setIsLoaded(true);
         }
-        throw new AppError(err.message, err.status);
+        throw appErr;
       });
   }
 

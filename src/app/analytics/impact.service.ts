@@ -27,19 +27,24 @@ import { sendAddShoppersConversion } from './addShoppers.services';
  * - Number of users
  * - Coupon code data (if any)
  *
- * @param subscriptionId - Stripe subscription ID (only for recurring plans)
- * @param paymentIntentId - Stripe payment intent ID (only for lifetime plans)
- * @param selectedPlan - The pricing plan selected by the user
- * @param users - Number of users for the purchase (1 for individual, >1 for B2B)
- * @param couponCodeData - Optional coupon code information applied to the purchase
  */
-export function savePaymentDataInLocalStorage(
-  subscriptionId: string | undefined,
-  paymentIntentId: string | undefined,
-  selectedPlan: PriceWithTax | undefined,
-  users: number,
-  couponCodeData: CouponCodeData | undefined,
-) {
+export interface SavePaymentDataParams {
+  subscriptionId: string | undefined;
+  paymentIntentId: string | undefined;
+  selectedPlan: PriceWithTax | undefined;
+  users: number;
+  couponCodeData: CouponCodeData | undefined;
+  isFirstPurchase: boolean;
+}
+
+export function savePaymentDataInLocalStorage({
+  subscriptionId,
+  paymentIntentId,
+  selectedPlan,
+  users,
+  couponCodeData,
+  isFirstPurchase,
+}: SavePaymentDataParams) {
   if (subscriptionId && selectedPlan?.price.interval !== 'lifetime') {
     localStorageService.set('subscriptionId', subscriptionId);
   }
@@ -61,6 +66,8 @@ export function savePaymentDataInLocalStorage(
   if (couponCodeData?.codeName) {
     localStorageService.set('couponCode', couponCodeData.codeName);
   }
+
+  localStorageService.set('isFirstPurchase', String(isFirstPurchase));
 }
 
 export async function trackSignUp(uuid: string): Promise<void> {
@@ -106,6 +113,7 @@ export async function trackPaymentConversion(): Promise<void> {
     const amountPaidStr = localStorageService.get('amountPaid');
     const amount = Number.parseFloat(amountPaidStr ?? '0');
     const couponCode = localStorageService.get('couponCode');
+    const isFirstPurchase = localStorageService.get('isFirstPurchase') === 'true';
 
     try {
       sendAddShoppersConversion({
@@ -123,7 +131,7 @@ export async function trackPaymentConversion(): Promise<void> {
     const anonymousID = getCookie('impactAnonymousId');
     const source = getCookie('impactSource');
 
-    if ((source && source !== 'direct') || couponCode) {
+    if (isFirstPurchase && ((source && source !== 'direct') || couponCode)) {
       try {
         await axios.post(IMPACT_API, {
           anonymousId: anonymousID,
