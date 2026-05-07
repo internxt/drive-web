@@ -17,6 +17,9 @@ import { LocalStorageItem } from 'app/core/types';
  * @property {Object} keys - The user's encryption keys
  * @property {string} keys.ecc - The user's ECC private key
  * @property {string} keys.kyber - The user's Kyber private key
+ * @property {Object} [publicKeys] - The user's public keys (for backup validation)
+ * @property {string} [publicKeys.ecc] - The user's ECC public key
+ * @property {string} [publicKeys.kyber] - The user's Kyber public key
  */
 export interface BackupData {
   mnemonic: string;
@@ -24,6 +27,10 @@ export interface BackupData {
   keys: {
     ecc: string;
     kyber: string;
+  };
+  publicKeys?: {
+    ecc?: string;
+    kyber?: string;
   };
 }
 
@@ -43,6 +50,8 @@ export function handleExportBackupKey(translate) {
       type: ToastType.Error,
     });
   } else {
+    const hasPublicKeys = user.keys?.ecc?.publicKey && user.keys?.kyber?.publicKey;
+
     const backupData: BackupData = {
       mnemonic,
       privateKey: user.privateKey,
@@ -50,6 +59,12 @@ export function handleExportBackupKey(translate) {
         ecc: user.keys?.ecc?.privateKey || user.privateKey,
         kyber: user.keys?.kyber?.privateKey || '',
       },
+      ...(hasPublicKeys && {
+        publicKeys: {
+          ecc: user.keys.ecc.publicKey,
+          kyber: user.keys.kyber.publicKey,
+        },
+      }),
     };
 
     const backupContent = JSON.stringify(backupData, null, 2);
@@ -78,6 +93,8 @@ export const detectBackupKeyFormat = (
   try {
     const parsedData = JSON.parse(backupKeyContent);
     if (parsedData?.mnemonic && parsedData.privateKey && parsedData?.keys?.ecc && parsedData?.keys?.kyber) {
+      const hasPublicKeys = parsedData.publicKeys?.ecc && parsedData.publicKeys?.kyber;
+
       const backupData: BackupData = {
         mnemonic: parsedData.mnemonic,
         privateKey: parsedData.privateKey,
@@ -85,6 +102,12 @@ export const detectBackupKeyFormat = (
           ecc: parsedData.keys.ecc,
           kyber: parsedData.keys.kyber,
         },
+        ...(hasPublicKeys && {
+          publicKeys: {
+            ecc: parsedData.publicKeys.ecc,
+            kyber: parsedData.publicKeys.kyber,
+          },
+        }),
       };
       return {
         type: 'new',
