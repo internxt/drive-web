@@ -116,8 +116,13 @@ describe('handlePrivateSharedFolderAccess', () => {
 
   describe('Error scenarios', () => {
     it('should handle 403 error (access denied) and navigate to request access', async () => {
-      const error403 = new AxiosError('Forbidden');
-      error403.status = 403;
+      const error403 = new AxiosError('Forbidden', undefined, undefined, undefined, {
+        status: 403,
+        data: {},
+        statusText: 'Forbidden',
+        headers: {},
+        config: {} as never,
+      });
       (shareService.getSharedFolderContent as Mock).mockRejectedValue(error403);
 
       await handlePrivateSharedFolderAccess({
@@ -136,8 +141,13 @@ describe('handlePrivateSharedFolderAccess', () => {
     });
 
     it('should handle 404 error (folder not found) and show appropriate error', async () => {
-      const error404 = new AxiosError('Not Found');
-      error404.status = 404;
+      const error404 = new AxiosError('Not Found', undefined, undefined, undefined, {
+        status: 404,
+        data: {},
+        statusText: 'Not Found',
+        headers: {},
+        config: {} as never,
+      });
       (shareService.getSharedFolderContent as Mock).mockRejectedValue(error404);
 
       await handlePrivateSharedFolderAccess({
@@ -154,8 +164,13 @@ describe('handlePrivateSharedFolderAccess', () => {
     });
 
     it('should handle generic error and show default error message', async () => {
-      const genericError = new AxiosError('Server Error');
-      genericError.status = 500;
+      const genericError = new AxiosError('Server Error', undefined, undefined, undefined, {
+        status: 500,
+        data: {},
+        statusText: 'Internal Server Error',
+        headers: {},
+        config: {} as never,
+      });
       (shareService.getSharedFolderContent as Mock).mockRejectedValue(genericError);
 
       await handlePrivateSharedFolderAccess({
@@ -188,9 +203,40 @@ describe('handlePrivateSharedFolderAccess', () => {
       expect(navigateToFolder).not.toHaveBeenCalled();
     });
 
+    it('should handle workspace 403 error and navigate to request access', async () => {
+      const error403 = new AxiosError('Forbidden', undefined, undefined, undefined, {
+        status: 403,
+        data: {},
+        statusText: 'Forbidden',
+        headers: {},
+        config: {} as never,
+      });
+      const mockPromise = Promise.reject(error403);
+      (workspacesService.getAllWorkspaceTeamSharedFolderFiles as Mock).mockReturnValue([mockPromise]);
+
+      await handlePrivateSharedFolderAccess({
+        folderUUID: mockFolderUUID,
+        history,
+        navigateToFolder,
+        onError,
+        workspaceItemData: { workspaceId: mockWorkspaceId },
+      });
+
+      expect(navigationService.push).toHaveBeenCalledWith(AppView.RequestAccess, {
+        folderuuid: mockFolderUUID,
+      });
+      expect(navigateToFolder).not.toHaveBeenCalled();
+      expect(onError).not.toHaveBeenCalled();
+    });
+
     it('should handle workspace generic error', async () => {
-      const workspaceError = new AxiosError('Workspace Error');
-      workspaceError.status = 500;
+      const workspaceError = new AxiosError('Workspace Error', undefined, undefined, undefined, {
+        status: 500,
+        data: {},
+        statusText: 'Internal Server Error',
+        headers: {},
+        config: {} as never,
+      });
       const mockPromise = Promise.reject(workspaceError);
       (workspacesService.getAllWorkspaceTeamSharedFolderFiles as Mock).mockReturnValue([mockPromise]);
 

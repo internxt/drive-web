@@ -331,7 +331,6 @@ describe('Testing the local storage service', () => {
     });
   });
 
-
   describe('Clearing local storage', () => {
     it('When clear storage is requested, then removes all keys', () => {
       const expectedKeysToRemove = [
