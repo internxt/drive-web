@@ -46,9 +46,9 @@ import useVpnAuth from './hooks/useVpnAuth';
 
 import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?raw';
 import RealtimeService from 'services/sockets/socket.service';
-import { EventHandler } from 'services/sockets/event-handler.service';
 import { DownloadBackupKeysDialog } from 'app/drive/components/DownloadBackupKeysDialog';
 import { useDownloadBackupKeys } from 'app/drive/components/DownloadBackupKeysDialog/hooks/useDownloadBackupKeys';
+import { EventHandler } from 'services/sockets/event-handler.service';
 const blob = new Blob([workerUrl], { type: 'application/javascript' });
 pdfjs.GlobalWorkerOptions.workerSrc = URL.createObjectURL(blob);
 
@@ -98,17 +98,6 @@ const App = (props: AppProps): JSX.Element => {
       openBackupKeysDialog();
     }
   }, [isAuthenticated]);
-
-  useEffect(() => {
-    try {
-      const realtimeService = RealtimeService.getInstance();
-      const cleanup = realtimeService.onEvent(eventHandler.onPlanUpdated);
-
-      return cleanup;
-    } catch (err) {
-      errorService.reportError(err);
-    }
-  }, []);
 
   useEffect(() => {
     if (!isWorkspaceIdParam) {
