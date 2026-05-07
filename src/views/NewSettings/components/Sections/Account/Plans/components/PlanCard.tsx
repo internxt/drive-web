@@ -48,7 +48,7 @@ const PlanCard = ({
   isLoading,
   disableActionButton,
 }: PlanCardProps) => {
-  const userText = ' ' + t('preferences.account.plans.billedMonthly');
+  const userText = ' ' + t('preferences.account.plans.billedAnnually');
 
   return (
     <div className={'flex w-80 flex-col rounded-xl border border-gray-10 bg-gray-5 p-4 '}>
