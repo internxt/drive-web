@@ -397,3 +397,11 @@ describe('Testing Impact Service', () => {
     });
   });
 });
+
+describe('uuid library', () => {
+  it('v4 generates a valid UUID', async () => {
+    const { v4 } = await vi.importActual<typeof import('uuid')>('uuid');
+    const id = v4();
+    expect(id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
+  });
+});

@@ -258,7 +258,7 @@
         "lifetime": "lifetime"
       },
       "renewalTitle": {
-        "month": "mensual",
+        "month": "anual",
         "year": "anual",
         "lifetime": "pago único"
       },
@@ -283,7 +283,8 @@
         "inputText": "Código de cupón"
       },
       "apply": "Aplicar",
-      "taxes": "Impuestos"
+      "taxes": "Impuestos",
+      "annualBillingTemplate": "Plan anual, facturado mensualmente a {{price}}{{currency}}/mes durante 12 meses"
     },
     "confirmCryptoPayment": {
       "title": "Confirmar el pago",
@@ -445,7 +446,9 @@
         "logout": "Cerrar sesión",
         "referAndEarn": "Recomienda y gana",
         "earnReferral": "Gana 100 €",
-        "spaceUsed": "{{space}}% espacio usado"
+        "spaceUsed": "{{space}}% espacio usado",
+        "account": "Cuenta",
+        "giveFeedback": "Enviar comentarios"
       },
       "tabs": {
         "account": {
@@ -530,6 +533,13 @@
             "description": {
               "individual": "Estás a punto de cancelar tu plan de Internxt {{currentPlanName}}. Al cancelar tu plan, pasarás al plan gratuito de Internxt {{freePlanName}}. Por favor, confirma tu elección para continuar.",
               "business": "Al cancelar tu plan, el espacio de trabajo se eliminará junto con todos los datos. Por favor, confirma tu elección para continuar."
+            },
+            "commitment": {
+              "firstMonthDescription": "Como todavía estás en tu período de prueba de 30 días, tu cancelación será inmediata. Ya no se te cobrará y tu cuenta volverá al plan gratuito de 1 GB ahora.",
+              "description": "Tienes una suscripción anual facturada mensualmente. Si cancelas ahora, tu suscripción permanecerá activa hasta el {{end_date}}, y seguirás siendo cobrado mensualmente hasta esa fecha.",
+              "monthsRemaining": "Pagos restantes: {{monthsRemaining}}",
+              "amountPerMonth": "Importe por mes: €{{amount}}",
+              "afterLabel": "Después del {{monthsRemaining}}"
             },
             "keepSubscription": "Mantener suscripción",
             "continue": "Continuar",
@@ -2036,6 +2046,7 @@
         "month": "Mes",
         "lifetime": "Lifetime",
         "billedAnnually": "facturado anualmente",
+        "billedMonthly": "facturado mensualmente",
         "types": {
           "essential": "Essential",
           "premium": "Premium",
@@ -2052,6 +2063,7 @@
             "title": "Esencial",
             "features": [
               "1TB de almacenamiento en la nube cifrado",
+              "Pruébalo sin riesgo durante 30 días",
               "Criptografía postcuántica",
               "Cifrado de conocimiento cero",
               "Autenticación de dos factores",
@@ -2065,6 +2077,7 @@
             "title": "Premium",
             "features": [
               "3TB de almacenamiento en la nube cifrado",
+              "Pruébalo sin riesgo durante 30 días",
               "Criptografía postcuántica",
               "Cifrado de conocimiento cero",
               "Autenticación de dos factores",
@@ -2081,6 +2094,7 @@
             "title": "Ultimate",
             "features": [
               "5TB de almacenamiento en la nube cifrado",
+              "Pruébalo sin riesgo durante 30 días",
               "Criptografía postcuántica",
               "Cifrado de conocimiento cero",
               "Autenticación de dos factores",

@@ -57,18 +57,14 @@ const ChangePlanDialog = ({
   let currentAmountMonthly: number | null = null;
   let subscriptionCurrencySymbol: string | null = null;
 
-  if (selectedPlanInterval === 'month') {
+  if (selectedPlanInterval === 'month' || selectedPlanInterval === 'year') {
     amountMonthly = selectedPlanAmount;
-  } else if (selectedPlanInterval === 'year') {
-    amountMonthly = selectedPlanAmount / 12;
   }
 
   if (subscription?.type === 'subscription') {
     subscriptionCurrencySymbol = moneyService.getCurrencySymbol(subscription?.currency.toUpperCase());
-    if (subscription.interval === 'month') {
+    if (subscription.interval === 'month' || subscription.interval === 'year') {
       currentAmountMonthly = subscription.amount;
-    } else if (subscription.interval === 'year') {
-      currentAmountMonthly = subscription.amount / 12;
     }
   }
 
