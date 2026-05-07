@@ -38,7 +38,6 @@ export const useUserPayment = () => {
     priceId,
     token,
     currency,
-    quantity,
     captchaToken,
     promoCodeId,
   }: CreateSubscriptionPayload) => {
@@ -54,7 +53,6 @@ export const useUserPayment = () => {
       currency,
       captchaToken,
       promoCodeId,
-      quantity,
     });
 
     return {
@@ -146,7 +144,6 @@ export const useUserPayment = () => {
     priceId,
     token,
     currency,
-    seatsForBusinessSubscription = 1,
     currentSelectedPlan,
     couponCodeData,
     elements,
@@ -160,7 +157,6 @@ export const useUserPayment = () => {
       customerId,
       priceId,
       token,
-      quantity: seatsForBusinessSubscription,
       captchaToken,
       promoCodeId: couponCodeData?.codeId,
       currency,
@@ -170,7 +166,7 @@ export const useUserPayment = () => {
       subscriptionId: subscription.subscriptionId,
       paymentIntentId: subscription.paymentIntentId,
       selectedPlan: currentSelectedPlan,
-      users: seatsForBusinessSubscription,
+      users: 1,
       couponCodeData,
       isFirstPurchase: isFirstPurchase ?? false,
     });
@@ -272,7 +268,6 @@ export const useUserPayment = () => {
     couponCodeData,
     elements,
     gclidStored,
-    seatsForBusinessSubscription = 1,
     captchaToken,
     userAddress,
     translate,
@@ -290,7 +285,7 @@ export const useUserPayment = () => {
         value: selectedPlan,
         currency,
         timestamp: new Date(),
-        users: seatsForBusinessSubscription,
+        users: 1,
         couponCodeData: couponCodeData,
       });
     }
@@ -306,7 +301,6 @@ export const useUserPayment = () => {
           priceId,
           token,
           couponCodeData,
-          seatsForBusinessSubscription,
           captchaToken,
           userAddress,
           translate,

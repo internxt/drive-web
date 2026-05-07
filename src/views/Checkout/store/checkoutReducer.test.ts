@@ -2,9 +2,9 @@ import { describe, it, expect } from 'vitest';
 import { checkoutReducer, initialStateForCheckout } from './checkoutReducer';
 import { State } from './types';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
-import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
-import { CouponCodeData, PartialErrorState } from '../types';
+import { DisplayPrice, UserType, CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
 import { StripeElementsOptions } from '@stripe/stripe-js';
+import { PartialErrorState } from '../types';
 
 describe('checkoutReducer', () => {
   const createMockPlan = (id: string, currency: string, amount: number, type: UserType): PriceWithTax => ({
@@ -25,7 +25,6 @@ describe('checkoutReducer', () => {
     expect(initialStateForCheckout.plan).toBeNull();
     expect(initialStateForCheckout.isPaying).toBe(false);
     expect(initialStateForCheckout.authMethod).toBe('signUp');
-    expect(initialStateForCheckout.seatsForBusinessSubscription).toBe(1);
   });
 
   it('changes selected plans without affecting other information', () => {
@@ -45,13 +44,11 @@ describe('checkoutReducer', () => {
           codeId: 'code-id',
           codeName: 'PROMO123',
         },
-        seatsForBusinessSubscription: 5,
       },
       { type: 'SET_CURRENT_PLAN_SELECTED', payload: mockPlan },
     );
     expect(setCurrentPlanResult.currentSelectedPlan).toEqual(mockPlan);
     expect(setCurrentPlanResult.couponCodeData?.codeName).toBe('PROMO123');
-    expect(setCurrentPlanResult.seatsForBusinessSubscription).toBe(5);
   });
 
   it('updates user avatar, country, and prices without losing other data', () => {
@@ -83,12 +80,11 @@ describe('checkoutReducer', () => {
       },
     ];
     const pricesResult = checkoutReducer(
-      { ...initialStateForCheckout, country: 'GB', seatsForBusinessSubscription: 3 },
+      { ...initialStateForCheckout, country: 'GB' },
       { type: 'SET_PRICES', payload: mockPrices },
     );
     expect(pricesResult.prices).toEqual(mockPrices);
     expect(pricesResult.country).toBe('GB');
-    expect(pricesResult.seatsForBusinessSubscription).toBe(3);
   });
 
   it('tracks payment and loading status without erasing existing information', () => {
@@ -123,12 +119,11 @@ describe('checkoutReducer', () => {
     expect(readyResult.couponCodeData?.codeName).toBe('WELCOME');
 
     const dialogResult = checkoutReducer(
-      { ...initialStateForCheckout, isUpdatingSubscription: true, seatsForBusinessSubscription: 10 },
+      { ...initialStateForCheckout, isUpdatingSubscription: true },
       { type: 'SET_IS_UPDATE_SUBSCRIPTION_DIALOG_OPEN', payload: true },
     );
     expect(dialogResult.isUpdateSubscriptionDialogOpen).toBe(true);
     expect(dialogResult.isUpdatingSubscription).toBe(true);
-    expect(dialogResult.seatsForBusinessSubscription).toBe(10);
 
     const updatingResult = checkoutReducer(
       { ...initialStateForCheckout, isUpdateSubscriptionDialogOpen: true, country: 'DE' },
@@ -141,7 +136,7 @@ describe('checkoutReducer', () => {
 
   it('saves promo codes while keeping everything else intact', () => {
     const promoCodeResult = checkoutReducer(
-      { ...initialStateForCheckout, isPaying: true, seatsForBusinessSubscription: 7 },
+      { ...initialStateForCheckout, isPaying: true },
       {
         type: 'SET_COUPON_CODE_DATA',
         payload: {
@@ -152,7 +147,6 @@ describe('checkoutReducer', () => {
     );
     expect(promoCodeResult.couponCodeData?.codeName).toBe('SUMMER2024');
     expect(promoCodeResult.isPaying).toBe(true);
-    expect(promoCodeResult.seatsForBusinessSubscription).toBe(7);
   });
 
   it('handles coupons, payment settings, login method, errors, and seats without losing other details', () => {
@@ -204,18 +198,6 @@ describe('checkoutReducer', () => {
     expect(errorResult.error).toEqual(mockError);
     expect(errorResult.isPaying).toBe(true);
     expect(errorResult.country).toBe('MX');
-
-    const seatsResult = checkoutReducer(
-      {
-        ...initialStateForCheckout,
-        couponCodeData: { codeId: 'code-id', codeName: 'BUSINESS' },
-        isUpdatingSubscription: true,
-      },
-      { type: 'SET_SEATS_FOR_BUSINESS_SUBSCRIPTION', payload: 5 },
-    );
-    expect(seatsResult.seatsForBusinessSubscription).toBe(5);
-    expect(seatsResult.couponCodeData?.codeName).toBe('BUSINESS');
-    expect(seatsResult.isUpdatingSubscription).toBe(true);
   });
 
   it('ignores unknown actions and creates new copies when making changes', () => {

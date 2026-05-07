@@ -1,5 +1,5 @@
 import { Transition } from '@headlessui/react';
-import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
+import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
 import { Check, SealPercent, X } from '@phosphor-icons/react';
 import { useState } from 'react';
 
@@ -13,15 +13,12 @@ import { bytesToString } from 'app/drive/services/size.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import TextInput from 'components/TextInput';
 import { useThemeContext } from 'app/theme/ThemeProvider';
-import { CouponCodeData, Currency } from '../types';
-import { SelectSeatsComponent } from './SelectSeatsComponent';
+import { Currency } from '../types';
 
 interface CheckoutProductCardProps {
   selectedPlan: PriceWithTax;
-  seatsForBusinessSubscription: number;
   showCouponCode: boolean;
   showHardcodedRenewal?: string;
-  onSeatsChange: (users: number) => void;
   onRemoveAppliedCouponCode: () => void;
   onCouponInputChange: (promoCode?: string) => void;
   couponCodeData?: CouponCodeData;
@@ -36,8 +33,6 @@ export const CheckoutProductCard = ({
   showCouponCode,
   showHardcodedRenewal,
   couponError,
-  seatsForBusinessSubscription,
-  onSeatsChange,
   onRemoveAppliedCouponCode,
   onCouponInputChange,
 }: CheckoutProductCardProps) => {
@@ -58,13 +53,7 @@ export const CheckoutProductCard = ({
   const currencySymbol = Currency[priceData.currency];
   const normalPriceAmount = priceData.decimalAmount;
 
-  const isBusiness = priceData.type === UserType.Business;
-  const perUserLabel = isBusiness ? translate('checkout.productCard.perUser') : undefined;
-  const totalLabel = isBusiness
-    ? translate('checkout.productCard.totalForBusiness', {
-        N: seatsForBusinessSubscription,
-      })
-    : translate('checkout.productCard.total');
+  const totalLabel = translate('checkout.productCard.total');
   const renewalPeriodLabel = `${translate('checkout.productCard.renewalPeriod.renewsAt')}
           ${currencySymbol}${normalPriceAmount}/${translate(
             `checkout.productCard.renewalPeriod.${priceData.interval}`,
@@ -77,7 +66,7 @@ export const CheckoutProductCard = ({
       ? ((couponCodeData?.amountOff / taxesData.amountWithTax) * 100).toFixed(2)
       : undefined;
 
-  const planType = isBusiness ? 'businessPlanFeaturesList' : 'planFeaturesList';
+  const planType = 'planFeaturesList';
 
   const productLabel = translate(`preferences.account.plans.${planType}.${bytes}.title`) ?? bytes;
   const featureKeys =
@@ -104,26 +93,8 @@ export const CheckoutProductCard = ({
           <p className="text-2xl font-bold text-gray-100">
             {productLabel + ' - ' + translate(`checkout.productCard.renewalTitle.${priceData.interval}`)}
           </p>
-          {isBusiness && priceData?.maximumSeats && priceData?.minimumSeats ? (
-            <>
-              <p className="text-lg font-medium">
-                {translate('checkout.productCard.numberOfUsers', {
-                  seats: seatsForBusinessSubscription,
-                })}
-              </p>
-              <SelectSeatsComponent
-                maxSeats={priceData.maximumSeats}
-                minSeats={priceData.minimumSeats}
-                seats={seatsForBusinessSubscription}
-                onSeatsChange={onSeatsChange}
-              />
-            </>
-          ) : undefined}
           <div className="flex flex-row items-center justify-between text-gray-100">
-            <p className="font-medium">
-              {translate(`checkout.productCard.billed.${priceData.interval}`)}
-              {perUserLabel}
-            </p>
+            <p className="font-medium">{translate(`checkout.productCard.billed.${priceData.interval}`)}</p>
             <p className="font-semibold">
               {currencySymbol}
               {planAmountWithoutTaxes}
@@ -184,7 +155,7 @@ export const CheckoutProductCard = ({
             <p>{totalLabel}</p>
             <p>
               {currencySymbol}
-              {formatPrice(taxesData.decimalAmountWithTax * seatsForBusinessSubscription)}
+              {formatPrice(taxesData.decimalAmountWithTax)}
             </p>
           </div>
 

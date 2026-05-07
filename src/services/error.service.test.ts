@@ -29,7 +29,7 @@ describe('Error Service', () => {
       headers: { 'x-request-id': xRequestId },
       config: {} as never,
     } as AxiosResponse;
-    return new AxiosResponseError('Request failed', 'POST /auth/login', response);
+    return new AxiosResponseError('Request failed', 'POST /auth/login', response as never);
   };
 
   const createAxiosError = (data: unknown, status?: number, headers?: Record<string, string>): AxiosError => {

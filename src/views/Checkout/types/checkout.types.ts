@@ -30,7 +30,6 @@ export interface CheckoutViewManager {
   ) => Promise<void>;
   onRemoveAppliedCouponCode: () => void;
   handleAuthMethodChange: (method: AuthMethodTypes) => void;
-  onSeatsChange: (seat: number) => void;
   onCurrencyChange: (currency: string) => void;
   onUserNameChanges: (userName: string) => void;
 }

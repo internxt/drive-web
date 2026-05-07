@@ -8,12 +8,6 @@ import {
 } from '@internxt/sdk/dist/payments/types';
 import userService from 'services/user.service';
 
-vi.mock('./payment.service', () => ({
-  default: {
-    createSubscriptionWithTrial: vi.fn(),
-  },
-}));
-
 vi.mock('app/drive/services/size.service', () => ({
   bytesToString: (bytes: number) => `${bytes} B`,
 }));
@@ -192,7 +186,6 @@ describe('Checkout Service tests', () => {
         customerId: 'cus_123',
         priceId: 'price_123',
         token: 'user_mocked_token',
-        quantity: 3,
         captchaToken: 'captcha_token',
       };
 

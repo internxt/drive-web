@@ -45,7 +45,6 @@ import {
 import { usePromotionalCode } from '../hooks/usePromotionalCode';
 import { useAuthCheckout } from '../hooks/useAuthCheckout';
 import { checkoutReducer, initialStateForCheckout } from '../store';
-import { processPcCloudPayment } from '../utils/pcCloud.utils';
 import { CheckoutLoader } from '../components/CheckoutLoader';
 
 const CheckoutViewWrapper = () => {
@@ -54,13 +53,8 @@ const CheckoutViewWrapper = () => {
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
   const [state, dispatchReducer] = useReducer(checkoutReducer, initialStateForCheckout);
   const { authMethod, isPaying, isUpdateSubscriptionDialogOpen, isUpdatingSubscription } = state;
-  const {
-    setAuthMethod,
-    setIsUserPaying,
-    setSeatsForBusinessSubscription,
-    setIsUpdateSubscriptionDialogOpen,
-    setIsUpdatingSubscription,
-  } = useCheckout(dispatchReducer);
+  const { setAuthMethod, setIsUserPaying, setIsUpdateSubscriptionDialogOpen, setIsUpdatingSubscription } =
+    useCheckout(dispatchReducer);
 
   const { planId, promotionCode, currency, paramMobileToken, gclid } = useCheckoutQueryParams();
   const { location: userLocationData } = useUserLocation();
@@ -70,7 +64,7 @@ const CheckoutViewWrapper = () => {
     promoCodeName: promotionCode,
   });
 
-  const { selectedPlan, businessSeats, fetchSelectedPlan } = useProducts({
+  const { selectedPlan, fetchSelectedPlan } = useProducts({
     currency: currency ?? 'eur',
     translate,
     planId,
@@ -107,8 +101,6 @@ const CheckoutViewWrapper = () => {
   const fullName = userAccountName + ' ' + lastName;
 
   const gclidStored = localStorageService.get(STORAGE_KEYS.GCLID);
-
-  const renewsAtPCComp = `${translate('checkout.productCard.pcMobileRenews')}`;
 
   const canChangePlanDialogBeOpened = selectedPlan?.price && isUpdateSubscriptionDialogOpen;
   const isCryptoPaymentDialogOpen = isDialogOpen(CRYPTO_PAYMENT_DIALOG_KEY);
@@ -164,7 +156,7 @@ const CheckoutViewWrapper = () => {
         storage: selectedPlan.price.bytes.toString(),
         promoCodeId: promotionCode ?? undefined,
         couponCodeData: promoCodeData,
-        seats: selectedPlan.price.type === 'business' ? businessSeats : 1,
+        seats: 1,
       });
 
       metaService.trackCheckoutStart({
@@ -345,34 +337,22 @@ const CheckoutViewWrapper = () => {
         metadata,
       });
 
-      if (paramMobileToken) {
-        await processPcCloudPayment({
-          customerId,
-          selectedPlan,
-          token,
-          mobileToken: paramMobileToken,
-          stripeSDK,
-          elements,
-        });
-      } else {
-        await handleUserPayment({
-          confirmPayment: stripeSDK.confirmPayment,
-          confirmSetupIntent: stripeSDK.confirmSetup,
-          couponCodeData: promoCodeData,
-          currency: selectedCurrency ?? selectedPlan.price.currency,
-          priceId: selectedPlan.price.id,
-          customerId,
-          elements,
-          translate,
-          selectedPlan,
-          token,
-          gclidStored,
-          captchaToken,
-          seatsForBusinessSubscription: businessSeats,
-          openCryptoPaymentDialog,
-          userAddress: userLocationData?.ip as string,
-        });
-      }
+      await handleUserPayment({
+        confirmPayment: stripeSDK.confirmPayment,
+        confirmSetupIntent: stripeSDK.confirmSetup,
+        couponCodeData: promoCodeData,
+        currency: selectedCurrency ?? selectedPlan.price.currency,
+        priceId: selectedPlan.price.id,
+        customerId,
+        elements,
+        translate,
+        selectedPlan,
+        token,
+        gclidStored,
+        captchaToken,
+        openCryptoPaymentDialog,
+        userAddress: userLocationData?.ip as string,
+      });
     } catch (err) {
       const statusCode = (err as any).status;
       const castedError = errorService.castError(err);
@@ -400,24 +380,6 @@ const CheckoutViewWrapper = () => {
     setUserName(userName);
   };
 
-  const onSeatsChange = (seats: number) => {
-    if (!selectedPlan?.price) {
-      console.warn('Cannot change seats: no selected plan available');
-      return;
-    }
-
-    const minSeats = selectedPlan.price.minimumSeats;
-    const maxSeats = selectedPlan.price.maximumSeats;
-
-    if (maxSeats && seats > maxSeats) {
-      setSeatsForBusinessSubscription(maxSeats);
-    } else if (minSeats && seats < minSeats) {
-      setSeatsForBusinessSubscription(minSeats);
-    } else {
-      setSeatsForBusinessSubscription(seats);
-    }
-  };
-
   const onCurrencyTypeChanges = (currency: PaymentType) => {
     setCurrencyType(currency);
   };
@@ -429,7 +391,6 @@ const CheckoutViewWrapper = () => {
     onRemoveAppliedCouponCode: removeCouponCode,
     onUserAddressChanges,
     handleAuthMethodChange: setAuthMethod,
-    onSeatsChange,
     onCurrencyChange: setSelectedCurrency,
     onUserNameChanges,
   };
@@ -445,7 +406,6 @@ const CheckoutViewWrapper = () => {
               couponCodeData: promoCodeData,
               couponCodeError: couponError ?? undefined,
               authError: authError ?? undefined,
-              seatsForBusinessSubscription: businessSeats,
               currentSelectedPlan: selectedPlan,
               selectedCurrency: currency ?? selectedPlan.price.currency,
             }}
@@ -453,7 +413,6 @@ const CheckoutViewWrapper = () => {
             showCouponCode={!paramMobileToken}
             userInfo={userInfo}
             isUserAuthenticated={isAuthenticated}
-            showHardcodedRenewal={paramMobileToken ? renewsAtPCComp : undefined}
             checkoutViewManager={checkoutViewManager}
             availableCryptoCurrencies={availableCryptoCurrencies}
             onCurrencyTypeChanges={onCurrencyTypeChanges}
