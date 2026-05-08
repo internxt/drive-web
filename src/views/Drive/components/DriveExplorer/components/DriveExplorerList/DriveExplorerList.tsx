@@ -143,13 +143,13 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const isTrash = props.title === translate('trash.trash');
   const skeleton = isTrash ? skinSkeletonTrash : skinSkeleton;
 
-  const sortBy = (value: { field: Omit<SortField, 'parent'>; direction: 'ASC' | 'DESC' }) => {
+  const sortBy = (value: { field: SortField; direction: 'ASC' | 'DESC' }) => {
     let direction = OrderDirection.Asc;
     if (order.by === value.field) {
       direction = order.direction === OrderDirection.Desc ? OrderDirection.Asc : OrderDirection.Desc;
     }
 
-    dispatch(storageActions.setOrder({ by: value.field as string, direction }));
+    dispatch(storageActions.setOrder({ by: value.field, direction }));
 
     if (value.field === 'name') {
       if (isTrash) {
