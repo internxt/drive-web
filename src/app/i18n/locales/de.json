@@ -1536,7 +1536,8 @@
         "modified": "Modifiziert",
         "size": "Größe",
         "actions": "Aktionen",
-        "autoDelete": "Automatisches Löschen"
+        "autoDelete": "Automatisches Löschen",
+        "originalLocation": "Ursprünglicher Speicherort"
       }
     },
     "viewMode": {

@@ -1649,7 +1649,8 @@
         "modified": "Ultima modifica",
         "size": "Dimensione",
         "actions": "Azioni",
-        "autoDelete": "Eliminazione automatica"
+        "autoDelete": "Eliminazione automatica",
+        "originalLocation": "Posizione originale"
       }
     },
     "viewMode": {

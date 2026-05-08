@@ -1596,7 +1596,8 @@
         "modified": "Modificado",
         "size": "Tamaño",
         "actions": "Acciones",
-        "autoDelete": "Eliminación automática"
+        "autoDelete": "Eliminación automática",
+        "originalLocation": "Ubicación original"
       }
     },
     "viewMode": {

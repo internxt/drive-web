@@ -1,5 +1,6 @@
 import { RenewalPeriod } from '@internxt/sdk/dist/drive/payments/types/types';
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
+import { FileStatus } from '@internxt/sdk/dist/drive/storage/types';
 import { UserResumeData } from '@internxt/sdk/dist/drive/users/types';
 import { AppSumoDetails } from '@internxt/sdk/dist/shared/types/appsumo';
 import { AdvancedSharedItem } from 'app/share/types';
@@ -91,7 +92,13 @@ export interface DriveFileMetadataPayload {
   itemName: string;
 }
 
-export type DriveItemData = DriveFileData & DriveFolderData;
+export type DriveItemData = DriveFileData &
+  DriveFolderData & {
+    parent?: {
+      plainName: string;
+      status: FileStatus;
+    };
+  };
 
 export interface DriveItemPatch {
   name?: string;
@@ -151,6 +158,8 @@ export enum FileViewMode {
   List = 'list',
   Grid = 'grid',
 }
+
+export type ListHeaders = 'type' | 'name' | 'updatedAt' | 'size' | 'expiresAt';
 
 export enum DownloadFolderMethod {
   FileSystemAccessAPI = 'file-system-access-api',

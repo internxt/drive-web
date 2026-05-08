@@ -1542,7 +1542,8 @@
         "modified": "Modifié",
         "size": "Taille",
         "actions": "Actions",
-        "autoDelete": "Suppression automatique"
+        "autoDelete": "Suppression automatique",
+        "originalLocation": "Emplacement d'origine"
       }
     },
     "viewMode": {
