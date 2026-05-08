@@ -159,7 +159,7 @@ export enum FileViewMode {
   Grid = 'grid',
 }
 
-export type ListHeaders = 'type' | 'name' | 'updatedAt' | 'size' | 'expiresAt';
+export type SortField = 'type' | 'name' | 'updatedAt' | 'size' | 'expiresAt';
 
 export enum DownloadFolderMethod {
   FileSystemAccessAPI = 'file-system-access-api',

@@ -17,7 +17,7 @@ import { sharedThunks } from 'app/store/slices/sharedLinks';
 import { storageActions } from 'app/store/slices/storage';
 import { uiActions } from 'app/store/slices/ui';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-import { DriveItemData, DriveItemDetails, ListHeaders } from 'app/drive/types';
+import { DriveItemData, DriveItemDetails, SortField } from 'app/drive/types';
 import EditItemNameDialog from 'app/drive/components/EditItemNameDialog/EditItemNameDialog';
 import ShareWithTeamDialog from 'app/drive/components/ShareWithTeamDialog/ShareWithTeamDialog';
 import DriveExplorerListItem from './DriveExplorerListItem';
@@ -59,7 +59,7 @@ interface DriveExplorerListProps {
 
 type ObjectWithId = { id: string | number };
 
-type ContextMenuDriveItem = DriveItemData | Pick<DriveItemData, ListHeaders> | (ListShareLinksItem & { code: string });
+type ContextMenuDriveItem = DriveItemData | Pick<DriveItemData, SortField> | (ListShareLinksItem & { code: string });
 
 function findUniqueItems<T extends ObjectWithId>(array1: T[], array2: T[]): T[] {
   const result: T[] = [];
@@ -143,7 +143,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const isTrash = props.title === translate('trash.trash');
   const skeleton = isTrash ? skinSkeletonTrash : skinSkeleton;
 
-  const sortBy = (value: { field: Omit<ListHeaders, 'parent'>; direction: 'ASC' | 'DESC' }) => {
+  const sortBy = (value: { field: Omit<SortField, 'parent'>; direction: 'ASC' | 'DESC' }) => {
     let direction = OrderDirection.Asc;
     if (order.by === value.field) {
       direction = order.direction === OrderDirection.Desc ? OrderDirection.Asc : OrderDirection.Desc;
@@ -198,7 +198,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   );
 
   const restoreItem = useCallback(
-    (item: DriveItemData | Pick<DriveItemData, ListHeaders>) => {
+    (item: DriveItemData | Pick<DriveItemData, SortField>) => {
       dispatch(storageActions.setItemsToMove([item as DriveItemData]));
       dispatch(uiActions.setIsMoveItemsDialogOpen(true));
     },
@@ -206,7 +206,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   );
 
   const deletePermanently = useCallback(
-    (item: DriveItemData | Pick<DriveItemData, ListHeaders>) => {
+    (item: DriveItemData | Pick<DriveItemData, SortField>) => {
       dispatch(storageActions.setItemsToDelete([item as DriveItemData]));
       dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
     },
@@ -474,7 +474,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           />
         )}
         <ShareWithTeamDialog item={props.selectedItems[0]} roles={roles} />
-        <List<DriveItemData, ListHeaders>
+        <List<DriveItemData, SortField>
           header={getListHeaders(translate, isRecents, isTrash)}
           checkboxDataCy="driveListHeaderCheckbox"
           disableKeyboardShortcuts={props.disableKeyboardShortcuts || props.showStopSharingConfirmation}
@@ -513,7 +513,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           }}
           onOrderByChanged={sortBy}
           orderBy={{
-            field: props.order.by as ListHeaders,
+            field: props.order.by as SortField,
             direction: props.order.direction,
           }}
           onSelectedItemsChanged={onSelectedItemsChanged}
