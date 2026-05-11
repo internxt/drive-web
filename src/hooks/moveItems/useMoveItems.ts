@@ -58,70 +58,9 @@ export const useMoveItems = () => {
     }
   };
 
-  const restoreItemFromTrash = async (item: DriveItemData) => {
-    if (item.parent?.status === FileStatus.EXISTS) {
-      dispatch(storageActions.setItemsToMove([item]));
-      dispatch(uiActions.setIsMoveItemsDialogOpen(true));
-    } else {
-      try {
-        await processMove({
-          finalDestinationId: item.parent?.uuid as string,
-          items: [item],
-        });
-        const goToDriveId = notificationsService.show({
-          text: t('notificationMessages.restoreItems'),
-          type: ToastType.Success,
-          action: {
-            text: t('notificationMessages.goToDrive'),
-            onClick: () => {
-              goFolder(item[0].parent?.uuid as string);
-              notificationsService.dismiss(goToDriveId);
-            },
-          },
-        });
-        dispatch(storageActions.popItemsToDelete([item]));
-      } catch (error) {
-        const castedError = errorService.castError(error);
-        notificationsService.show({
-          text: t('error.errorRestoringItemFromTrash'),
-          type: ToastType.Error,
-          requestId: castedError.requestId,
-        });
-      }
-    }
-  };
-
-  const restoreItemsFromTrash = async (items: DriveItemData[]) => {
-    const restorable = items.filter((item) => item.parent?.status === FileStatus.EXISTS);
-    const needsDestination = items.filter((item) => item.parent?.status !== FileStatus.EXISTS);
-
-    await Promise.all(
-      restorable.map((item) =>
-        processMove({
-          finalDestinationId: item.parent!.uuid,
-          items: [item],
-        }),
-      ),
-    );
-
-    notificationsService.show({
-      text: t('notificationMessages.restoreItems'),
-      type: ToastType.Success,
-    });
-
-    if (needsDestination.length > 0) {
-      dispatch(storageActions.setItemsToMove(needsDestination));
-      dispatch(uiActions.setIsMoveItemsDialogOpen(true));
-    }
-  };
-
-  const moveItemFromDialog = async ({ finalDestinationId, items }: Omit<ProcessMoveProps, 'displayTaskLogger'>) => {
+  const withErrorHandler = async (fn: () => Promise<void>): Promise<void> => {
     try {
-      await processMove({
-        finalDestinationId,
-        items,
-        displayTaskLogger: true,
-      });
+      await fn();
     } catch (error) {
       const castedError = errorService.castError(error);
       notificationsService.show({
@@ -132,8 +71,54 @@ export const useMoveItems = () => {
     }
   };
 
+  const restoreItemFromTrash = (item: DriveItemData): Promise<void> =>
+    withErrorHandler(async () => {
+      if (item.parent?.status === FileStatus.EXISTS) {
+        await processMove({ finalDestinationId: item.parent.uuid, items: [item] });
+        const goToDriveId = notificationsService.show({
+          text: t('notificationMessages.restoreItems'),
+          type: ToastType.Success,
+          action: {
+            text: t('notificationMessages.goToDrive'),
+            onClick: () => {
+              goFolder(item.parent?.uuid as string);
+              notificationsService.dismiss(goToDriveId);
+            },
+          },
+        });
+        dispatch(storageActions.popItemsToDelete([item]));
+      } else {
+        dispatch(storageActions.setItemsToMove([item]));
+        dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+      }
+    });
+
+  const restoreItemsFromTrash = (items: DriveItemData[]): Promise<void> =>
+    withErrorHandler(async () => {
+      const restorable = items.filter((item) => item.parent?.status === FileStatus.EXISTS);
+      const needsDestination = items.filter((item) => item.parent?.status !== FileStatus.EXISTS);
+
+      await Promise.all(
+        restorable.map((item) => processMove({ finalDestinationId: item.parent!.uuid, items: [item] })),
+      );
+
+      if (restorable.length > 0) {
+        notificationsService.show({ text: t('notificationMessages.restoreItems'), type: ToastType.Success });
+      }
+
+      if (needsDestination.length > 0) {
+        dispatch(storageActions.setItemsToMove(needsDestination));
+        dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+      }
+    });
+
+  const moveItemFromDialog = ({
+    finalDestinationId,
+    items,
+  }: Omit<ProcessMoveProps, 'displayTaskLogger'>): Promise<void> =>
+    withErrorHandler(() => processMove({ finalDestinationId, items, displayTaskLogger: true }));
+
   return {
-    processMove,
     restoreItemFromTrash,
     restoreItemsFromTrash,
     moveItemFromDialog,

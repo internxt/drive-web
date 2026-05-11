@@ -203,7 +203,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     async (item: DriveItemData | Pick<DriveItemData, SortField | 'parent'>) => {
       await restoreItemFromTrash(item as DriveItemData);
     },
-    [dispatch, storageActions, uiActions],
+    [restoreItemFromTrash],
   );
 
   const deletePermanently = useCallback(
