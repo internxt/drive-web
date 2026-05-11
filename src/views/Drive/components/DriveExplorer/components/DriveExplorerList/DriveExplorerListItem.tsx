@@ -165,8 +165,8 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
       )}
 
       {isTrash && (
-        <div className="block shrink-0 w-date items-center whitespace-nowrap">
-          <p>{parentFolderName}</p>
+        <div className="flex shrink-0 w-date items-center whitespace-nowrap pr-3" title={parentFolderName}>
+          <p className="truncate">{parentFolderName}</p>
         </div>
       )}
 
