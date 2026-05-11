@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import gaService from './ga.service';
 import { bytesToString } from 'app/drive/services/size.service';
-import { CouponCodeData } from 'views/Checkout/types';
 import localStorageService from 'services/local-storage.service';
+import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
 
 vi.mock('app/drive/services/size.service', () => ({
   bytesToString: vi.fn((bytes) => {

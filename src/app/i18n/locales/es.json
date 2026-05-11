@@ -258,7 +258,7 @@
         "lifetime": "lifetime"
       },
       "renewalTitle": {
-        "month": "mensual",
+        "month": "anual",
         "year": "anual",
         "lifetime": "pago único"
       },
@@ -283,7 +283,8 @@
         "inputText": "Código de cupón"
       },
       "apply": "Aplicar",
-      "taxes": "Impuestos"
+      "taxes": "Impuestos",
+      "annualBillingTemplate": "Plan anual, facturado mensualmente a {{price}}{{currency}}/mes durante 12 meses"
     },
     "confirmCryptoPayment": {
       "title": "Confirmar el pago",
@@ -307,7 +308,8 @@
     "error": {
       "invalidPlan": "Tipo de plan no soportado. Por favor, selecciona un plan válido.",
       "fetchingCryptoCurrencies": "No pudimos cargar las opciones de criptomonedas disponibles",
-      "addressRequired": "Por favor, completa tu dirección de facturación para continuar"
+      "addressRequired": "Por favor, completa tu dirección de facturación para continuar",
+      "businessPlan": "El plan de empresa no está disponible"
     }
   },
   "general": {
@@ -445,7 +447,9 @@
         "logout": "Cerrar sesión",
         "referAndEarn": "Recomienda y gana",
         "earnReferral": "Gana 100 €",
-        "spaceUsed": "{{space}}% espacio usado"
+        "spaceUsed": "{{space}}% espacio usado",
+        "account": "Cuenta",
+        "giveFeedback": "Enviar comentarios"
       },
       "tabs": {
         "account": {
@@ -530,6 +534,13 @@
             "description": {
               "individual": "Estás a punto de cancelar tu plan de Internxt {{currentPlanName}}. Al cancelar tu plan, pasarás al plan gratuito de Internxt {{freePlanName}}. Por favor, confirma tu elección para continuar.",
               "business": "Al cancelar tu plan, el espacio de trabajo se eliminará junto con todos los datos. Por favor, confirma tu elección para continuar."
+            },
+            "commitment": {
+              "firstMonthDescription": "Como todavía estás en tu período de prueba de 30 días, tu cancelación será inmediata. Ya no se te cobrará y tu cuenta volverá al plan gratuito de 1 GB ahora.",
+              "description": "Tienes una suscripción anual facturada mensualmente. Si cancelas ahora, tu suscripción permanecerá activa hasta el {{end_date}}, y seguirás siendo cobrado mensualmente hasta esa fecha.",
+              "monthsRemaining": "Pagos restantes: {{monthsRemaining}}",
+              "amountPerMonth": "Importe por mes: €{{amount}}",
+              "afterLabel": "Después del {{monthsRemaining}}"
             },
             "keepSubscription": "Mantener suscripción",
             "continue": "Continuar",
@@ -838,6 +849,16 @@
     "itemsSelected": "archivos seleccionados"
   },
   "modals": {
+    "downloadBackupKeys": {
+      "title": "Recuerda descargar tu clave de copia de seguridad",
+      "description": "Tu clave de copia de seguridad es necesaria para recuperar tus datos cifrados. Internxt no la almacena — solo tú la tienes.",
+      "info": {
+        "text": "Puedes encontrar tu clave de copia de seguridad en cualquier momento en ",
+        "path": "Ajustes → Cuenta → Seguridad"
+      },
+      "download": "Descargar claves de copia de seguridad",
+      "success": "Tienes tu clave de copia de seguridad. Asegúrate de guardarla en un lugar seguro."
+    },
     "renameItemDialog": {
       "title": "Renombrar",
       "label": "Nombre"
@@ -1162,7 +1183,9 @@
     "renamingItem": "Error al renombrar ítem/s",
     "linkExpired": "Este enlace seguro ha caducado",
     "teamInvitation": "No se ha podido enviar el correo electrónico de invitación",
+    "ownerStorageIsFull": "El almacenamiento del propietario está lleno",
     "storageIsFull": "Tu almacenamiento está lleno",
+    "ownerStorageIsFullDescription": "No puedes subir archivos en esta carpeta compartida.",
     "storageIsFullDescription": "No puedes subir, sincronizar ni respaldar archivos.",
     "noSpaceAvailable": "Has alcanzado el límite y la sincronización se ha pausado. Mejora tu plan para mantener tus archivos sincronizados y seguros.",
     "sharedFolderTooBig": "Internxt Drive no admite compartir carpetas de más de 1 GB",
@@ -1554,7 +1577,9 @@
     "continue": "Continuar",
     "keepCurrent": "Mantener actual",
     "logOut": "Cerrar sesión",
-    "locked": "Bloqueado"
+    "locked": "Bloqueado",
+    "remindMeLater": "Recordármelo más tarde",
+    "backupKeySaved": "Ya he guardado mi clave"
   },
   "toastNotification": {
     "textCopied": "Texto copiado al portapapeles"
@@ -2022,6 +2047,7 @@
         "month": "Mes",
         "lifetime": "Lifetime",
         "billedAnnually": "facturado anualmente",
+        "billedMonthly": "facturado mensualmente",
         "types": {
           "essential": "Essential",
           "premium": "Premium",
@@ -2038,6 +2064,7 @@
             "title": "Esencial",
             "features": [
               "1TB de almacenamiento en la nube cifrado",
+              "Pruébalo sin riesgo durante 30 días",
               "Criptografía postcuántica",
               "Cifrado de conocimiento cero",
               "Autenticación de dos factores",
@@ -2051,6 +2078,7 @@
             "title": "Premium",
             "features": [
               "3TB de almacenamiento en la nube cifrado",
+              "Pruébalo sin riesgo durante 30 días",
               "Criptografía postcuántica",
               "Cifrado de conocimiento cero",
               "Autenticación de dos factores",
@@ -2067,6 +2095,7 @@
             "title": "Ultimate",
             "features": [
               "5TB de almacenamiento en la nube cifrado",
+              "Pruébalo sin riesgo durante 30 días",
               "Criptografía postcuántica",
               "Cifrado de conocimiento cero",
               "Autenticación de dos factores",

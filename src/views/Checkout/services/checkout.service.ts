@@ -1,5 +1,4 @@
-import { CreatedSubscriptionData, DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
-import { CouponCodeData } from '../types';
+import { CouponCodeData, CreatedSubscriptionData } from '@internxt/sdk/dist/drive/payments/types/types';
 import axios from 'axios';
 import localStorageService from 'services/local-storage.service';
 import { SdkFactory } from 'app/core/factory/sdk';
@@ -21,24 +20,9 @@ import { LocalStorageItem } from 'app/core/types';
 const BORDER_SHADOW = 'rgb(0 102 255)';
 
 const fetchPromotionCodeByName = async (priceId: string, promotionCodeName: string): Promise<CouponCodeData> => {
-  const PAYMENTS_API_URL = envService.getVariable('payments');
-  const response = await fetch(
-    `${PAYMENTS_API_URL}/promo-code-by-name?priceId=${priceId}&promotionCode=${promotionCodeName}`,
-  );
+  const paymentClient = await SdkFactory.getNewApiInstance().createPaymentsClient();
 
-  if (response.status !== 200) {
-    const message = await response.text();
-    throw new Error(message);
-  }
-
-  const dataJson = await response.json();
-
-  return {
-    codeId: dataJson.codeId,
-    codeName: promotionCodeName,
-    amountOff: dataJson.amountOff,
-    percentOff: dataJson.percentOff,
-  };
+  return paymentClient.fetchPromotionCodeByName(priceId, promotionCodeName);
 };
 
 const createCustomer = async ({
@@ -95,7 +79,6 @@ const createSubscription = async ({
   currency,
   captchaToken,
   promoCodeId,
-  quantity,
 }: CreateSubscriptionPayload): Promise<CreatedSubscriptionData> => {
   const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
   return checkoutClient.createSubscription({
@@ -105,7 +88,6 @@ const createSubscription = async ({
     currency,
     captchaToken,
     promoCodeId,
-    quantity,
   });
 };
 
@@ -128,20 +110,6 @@ export const createPaymentIntent = async ({
     userAddress,
     promoCodeId,
   });
-};
-
-const fetchPrices = async (userType: UserType, currency: string): Promise<DisplayPrice[]> => {
-  const PAYMENTS_API_URL = envService.getVariable('payments');
-  const response = await fetch(`${PAYMENTS_API_URL}/prices?userType=${userType}&currency=${currency}`);
-
-  if (response.status !== 200) {
-    const message = await response.text();
-    throw new Error(message);
-  }
-
-  const dataJson = await response.json();
-
-  return dataJson;
 };
 
 const checkoutSetupIntent = async (customerId: string) => {
@@ -271,7 +239,6 @@ const checkoutService = {
   getPriceById,
   createSubscription,
   loadStripeElements,
-  fetchPrices,
   checkoutSetupIntent,
   verifyCryptoPayment,
   trackIncompleteCheckout,

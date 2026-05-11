@@ -248,7 +248,7 @@
         "lifetime": "a vita"
       },
       "renewalTitle": {
-        "month": "mensile",
+        "month": "annuale",
         "year": "annuale",
         "lifetime": "a vita"
       },
@@ -347,7 +347,8 @@
         "inputText": "Codice coupon"
       },
       "apply": "Applica",
-      "taxes": "Tasse"
+      "taxes": "Tasse",
+      "annualBillingTemplate": "Piano annuale, fatturato mensilmente a {{price}}{{currency}}/mese per 12 mesi"
     },
     "confirmCryptoPayment": {
       "title": "Conferma il pagamento",
@@ -371,7 +372,8 @@
     "error": {
       "invalidPlan": "Tipo di piano non supportato. Seleziona un piano valido.",
       "fetchingCryptoCurrencies": "Non siamo riusciti a caricare le opzioni di criptovalute disponibili",
-      "addressRequired": "Completa il tuo indirizzo di fatturazione per continuare"
+      "addressRequired": "Completa il tuo indirizzo di fatturazione per continuare",
+      "businessPlan": "Il piano aziendale non è disponibile"
     }
   },
   "general": {
@@ -505,7 +507,9 @@
         "logout": "Disconnettersi",
         "referAndEarn": "Invita e guadagna",
         "earnReferral": "Guadagna 100 €",
-        "spaceUsed": "{{space}}% spazio usato"
+        "spaceUsed": "{{space}}% spazio usato",
+        "account": "Account",
+        "giveFeedback": "Invia feedback"
       },
       "tabs": {
         "account": {
@@ -591,6 +595,13 @@
             "description": {
               "individual": "Stai per annullare il tuo piano Internxt {{currentPlanName}}. Annullando il tuo piano, verrai retrocesso al piano gratuito di Internxt {{freePlanName}}. Conferma la tua scelta per procedere, per favore.",
               "business": "Annullando il tuo piano, lo spazio di lavoro verrà eliminato insieme a tutti i dati. Per favore, conferma la tua scelta per procedere."
+            },
+            "commitment": {
+              "firstMonthDescription": "Poiché sei ancora nel tuo periodo di prova di 30 giorni, la tua cancellazione sarà immediata. Non ti verrà più addebitato nulla e il tuo account tornerà ora al piano gratuito da 1 GB.",
+              "description": "Hai un abbonamento annuale fatturato mensilmente. Se annulli ora, il tuo abbonamento rimarrà attivo fino al {{end_date}} e continuerai a essere addebitato mensilmente fino a quella data.",
+              "monthsRemaining": "Pagamenti rimanenti: {{monthsRemaining}}",
+              "amountPerMonth": "Importo al mese: €{{amount}}",
+              "afterLabel": "Dopo il {{monthsRemaining}}"
             },
             "keepSubscription": "Mantieni l'abbonamento",
             "continua": "Continua",
@@ -892,6 +903,16 @@
     "itemsSelected": "elementi selezionati"
   },
   "modals": {
+    "downloadBackupKeys": {
+      "title": "Ricordati di scaricare la tua chiave di backup",
+      "description": "La tua chiave di backup è necessaria per recuperare i tuoi dati crittografati. Internxt non la conserva — solo tu ce l'hai.",
+      "info": {
+        "text": "Puoi trovare la tua chiave di backup in qualsiasi momento in ",
+        "path": "Impostazioni → Account → Sicurezza"
+      },
+      "download": "Scarica le chiavi di backup",
+      "success": "Hai la tua chiave di backup. Assicurati di conservarla in un posto sicuro."
+    },
     "renameItemDialog": {
       "title": "Rinominare",
       "label": "Nome"
@@ -1220,7 +1241,9 @@
     "renamingItem": "Errore quando si rinominano gli elementi",
     "linkExpired": "Questo link sicuro è scaduto",
     "teamInvitation": "Non è stato possibile inviare l'e-mail di invito",
+    "ownerStorageIsFull": "Lo spazio di archiviazione del proprietario è pieno",
     "storageIsFull": "Lo spazio di archiviazione è pieno",
+    "ownerStorageIsFullDescription": "Non puoi caricare file in questa cartella condivisa.",
     "storageIsFullDescription": "Non puoi caricare, sincronizzare o eseguire il backup dei file",
     "noSpaceAvailable": "Avete raggiunto i limiti del vostro piano attuale e la sincronizzazione si è interrotta. Effettuate subito l'aggiornamento per continuare a sincronizzare i vostri file in modo sicuro.",
     "sharedFolderTooBig": "Internxt Drive non supporta la condivisione di cartelle di dimensioni superiori a 1 GB.",
@@ -1607,7 +1630,9 @@
     "continue": "Continua",
     "keepCurrent": "Mantieni attuale",
     "logOut": "Disconnettersi",
-    "locked": "Bloccato"
+    "locked": "Bloccato",
+    "remindMeLater": "Ricordamelo più tardi",
+    "backupKeySaved": "Ho salvato la mia chiave"
   },
   "toastNotification": {
     "textCopied": "Testo copiato negli appunti"
@@ -2072,6 +2097,7 @@
         "manageBilling": "Gestisci la fatturazione",
         "freeForever": "Gratis per sempre",
         "billedAnnually": "fatturato annualmente",
+        "billedMonthly": "fatturato mensilmente",
         "year": "Anno",
         "month": "Mese",
         "lifetime": "A vita",
@@ -2091,6 +2117,7 @@
             "title": "Essential (Essenziale)",
             "features": [
               "1TB di spazio di archiviazione cloud crittografato",
+              "Provalo senza rischi per 30 giorni",
               "Crittografia Post-Quantistica",
               "Crittografia Zero-Knowledge",
               "Autenticazione a Due Fattori",
@@ -2104,6 +2131,7 @@
             "title": "Premium",
             "features": [
               "3TB di spazio di archiviazione cloud crittografato",
+              "Provalo senza rischi per 30 giorni",
               "Crittografia Post-Quantistica",
               "Crittografia Zero-Knowledge",
               "Autenticazione a Due Fattori",
@@ -2120,6 +2148,7 @@
             "title": "Ultimate (Definitivo)",
             "features": [
               "5TB di spazio di archiviazione cloud crittografato",
+              "Provalo senza rischi per 30 giorni",
               "Crittografia Post-Quantistica",
               "Crittografia Zero-Knowledge",
               "Autenticazione a Due Fattori",

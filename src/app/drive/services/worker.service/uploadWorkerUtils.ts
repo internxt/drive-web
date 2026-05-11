@@ -3,7 +3,6 @@ import DatabaseUploadRepository from 'app/repositories/DatabaseUploadRepository'
 import { TaskStatus } from 'app/tasks/types';
 import { IUploadParams } from '../network.service/types';
 import { WORKER_MESSAGE_STATES } from './types/upload';
-import { notifyUserWithCooldown } from 'app/core/factory/sdk/retryStrategies';
 
 /**
  * Checks the upload progress for the specified task.
@@ -84,13 +83,13 @@ const handleCheckUploadStatus = async ({ continueUploadOptions, worker }) => {
   });
 };
 
-const messageResultHandlers = {
+const buildMessageResultHandlers = (onRateLimited: () => void) => ({
   [WORKER_MESSAGE_STATES.SUCCESS]: handleSuccess,
   [WORKER_MESSAGE_STATES.ERROR]: handleError,
   [WORKER_MESSAGE_STATES.ABORT]: handleAbort,
   [WORKER_MESSAGE_STATES.CHECK_UPLOAD_STATUS]: handleCheckUploadStatus,
-  [WORKER_MESSAGE_STATES.RATE_LIMITED]: notifyUserWithCooldown,
-};
+  [WORKER_MESSAGE_STATES.RATE_LIMITED]: () => onRateLimited(),
+});
 
 /**
  * Handles messages received from the Web Worker.
@@ -102,13 +101,13 @@ const messageResultHandlers = {
  * @param {Worker} worker - The Web Worker instance.
  * @param {Object} continueUploadOptions - Options for continuing an upload.
  */
-const handleMessage = (msgData, params, resolve, reject, worker, continueUploadOptions) => {
+const handleMessage = (msgData, params, resolve, reject, worker, continueUploadOptions, onRateLimited: () => void) => {
   if (msgData.progress) {
     handleProgress({ msgData, params });
     return;
   }
 
-  const messageHandler = messageResultHandlers[msgData.result];
+  const messageHandler = buildMessageResultHandlers(onRateLimited)[msgData.result];
 
   if (messageHandler) {
     messageHandler({ msgData, params, resolve, reject, worker, continueUploadOptions });
@@ -125,6 +124,7 @@ const handleMessage = (msgData, params, resolve, reject, worker, continueUploadO
  * @param {IUploadParams} params - Upload parameters.
  * @param {Object} continueUploadOptions - Options for continuing an upload.
  * @param {string} continueUploadOptions.taskId - The task ID for continuing the upload.
+ * @param {Function} onRateLimited - Callback invoked when the worker signals a rate limit.
  *
  * @returns {[Promise<string>, Abortable | undefined]} A tuple containing a Promise that resolves to a file ID
  * and an Abortable object for aborting the upload (if applicable).
@@ -135,13 +135,14 @@ const createWorkerMessageHandlerPromise = (
   continueUploadOptions: {
     taskId: string;
   },
+  onRateLimited: () => void,
 ): [Promise<string>, Abortable | undefined] => {
   return [
     new Promise((resolve, reject) => {
       worker.addEventListener('error', reject);
       worker.addEventListener('message', (msg) => {
         console.log('[MAIN_THREAD]: Message received from worker', msg);
-        handleMessage(msg.data, params, resolve, reject, worker, continueUploadOptions);
+        handleMessage(msg.data, params, resolve, reject, worker, continueUploadOptions, onRateLimited);
       });
     }),
     {

@@ -1,5 +1,4 @@
 import { aes } from '@internxt/lib';
-import { AppError } from '@internxt/sdk';
 import {
   CryptoProvider,
   Keys,
@@ -8,6 +7,7 @@ import {
   SecurityDetails,
   TwoFactorAuthQR,
 } from '@internxt/sdk/dist/auth';
+import { RecoveryKeys } from '@internxt/sdk/dist/auth/types';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { ChangePasswordPayloadNew } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
@@ -16,6 +16,7 @@ import { trackLead } from 'app/analytics/meta.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
 import { SdkFactory } from 'app/core/factory/sdk';
 import { AppView, LocalStorageItem } from 'app/core/types';
+import { HTTP_CODES } from 'app/core/constants';
 import {
   assertPrivateKeyIsValid,
   assertValidateKeys,
@@ -32,7 +33,6 @@ import {
 import databaseService from 'app/database/services/database.service';
 import { AppDispatch } from 'app/store';
 import { planThunks } from 'app/store/slices/plan';
-import { productsThunks } from 'app/store/slices/products';
 import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/user';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { generateMnemonic, validateMnemonic } from 'bip39';
@@ -139,7 +139,7 @@ export function cancelAccount(): Promise<void> {
 export const is2FANeeded = async (email: string): Promise<boolean> => {
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(email).catch((error) => {
-    throw new AppError(error.message ?? 'Login error', error.status ?? 500);
+    throw errorService.castError(error);
   });
 
   return securityDetails.tfaEnabled;
@@ -340,12 +340,13 @@ export const updateCredentialsWithToken = async (
 
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
 
-  const keys =
-    encryptedEccPrivateKey || encryptedKyberPrivateKey
-      ? {
-          private: { ecc: encryptedEccPrivateKey, kyber: encryptedKyberPrivateKey },
-        }
-      : undefined;
+  const hasPrivateKeys = encryptedEccPrivateKey || encryptedKyberPrivateKey;
+  const keys: RecoveryKeys | undefined = hasPrivateKeys
+    ? {
+        private: { ecc: encryptedEccPrivateKey, kyber: encryptedKyberPrivateKey },
+        public: backupData?.publicKeys,
+      }
+    : undefined;
 
   return authClient.changePasswordWithLinkV2(
     token,
@@ -422,10 +423,11 @@ export const changePassword = async (newPassword: string, currentPassword: strin
       if (newToken) localStorageService.set(LocalStorageItem.NewToken, newToken);
     })
     .catch((error) => {
-      if (error.status === 500) {
+      const appErr = errorService.castError(error);
+      if (appErr.status === HTTP_CODES.INTERNAL_SERVER_ERROR) {
         throw new Error('The password you introduced does not match your current password');
       }
-      throw error;
+      throw appErr;
     });
 };
 
@@ -559,7 +561,7 @@ export const signUp = async (params: SignUpParams) => {
   localStorageService.clear();
 
   localStorageService.set(LocalStorageItem.UserToken, xToken);
-  localStorageService.set(LocalStorageItem.UserMnemonic , mnemonic);
+  localStorageService.set(LocalStorageItem.UserMnemonic, mnemonic);
   localStorageService.set(LocalStorageItem.NewToken, xNewToken);
 
   const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(xUser, password);
@@ -581,7 +583,6 @@ export const signUp = async (params: SignUpParams) => {
 
   dispatch(userActions.setUser(user));
   await dispatch(userThunks.initializeUserThunk());
-  dispatch(productsThunks.initializeThunk());
 
   if (!redeemCodeObject) dispatch(planThunks.initializeThunk());
   await trackSignUp(xUser.uuid);
@@ -596,7 +597,6 @@ export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
   dispatch(userActions.setUser(user));
 
   try {
-    dispatch(productsThunks.initializeThunk());
     dispatch(planThunks.initializeThunk());
     await dispatch(initializeUserThunk())?.unwrap();
     dispatch(workspaceThunks.fetchWorkspaces());

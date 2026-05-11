@@ -245,7 +245,7 @@
         "lifetime": "终身"
       },
       "renewalTitle": {
-        "month": "每月",
+        "month": "每年",
         "year": "每年",
         "lifetime": "终身"
       },
@@ -270,7 +270,8 @@
         "inputText": "优惠券代码"
       },
       "apply": "应用",
-      "taxes": "税费"
+      "taxes": "税费",
+      "annualBillingTemplate": "年度计划，每月 {{price}}{{currency}}/月，持续 12 个月"
     },
     "confirmCryptoPayment": {
       "title": "确认付款",
@@ -294,7 +295,8 @@
     "error": {
       "invalidPlan": "不支持的套餐类型。请选择有效的套餐。",
       "fetchingCryptoCurrencies": "无法加载可用的加密货币选项",
-      "addressRequired": "请填写您的账单地址以继续"
+      "addressRequired": "请填写您的账单地址以继续",
+      "businessPlan": "企业计划不可用"
     }
   },
   "general": {
@@ -428,7 +430,9 @@
         "logout": "登出",
         "referAndEarn": "推荐赚取",
         "earnReferral": "赚取 €100",
-        "spaceUsed": "已使用储存空间的{{space}}%"
+        "spaceUsed": "已用存储空间{{space}}%",
+        "account": "账户",
+        "giveFeedback": "提供反馈"
       },
       "tabs": {
         "account": {
@@ -514,6 +518,13 @@
             "description": {
               "individual": "您即将取消您的 Internxt {{currentPlanName}} 计划。取消计划后，您将降级为免费的 Internxt {{freePlanName}} 计划。请确认您的选择以继续。",
               "business": "取消计划后，工作区以及所有数据将被删除。请确认您的选择以继续。"
+            },
+            "commitment": {
+              "firstMonthDescription": "由于您仍在 30 天试用期内，您的取消将立即生效。您将不再被收费，您的账户现在将恢复为免费的 1GB 计划。",
+              "description": "您拥有按月计费的年度订阅。如果您现在取消，您的订阅将保持有效至 {{end_date}}，且在该日期之前您将继续被按月收费。",
+              "monthsRemaining": "剩余付款次数：{{monthsRemaining}}",
+              "amountPerMonth": "每月金额：€{{amount}}",
+              "afterLabel": "{{monthsRemaining}} 之后"
             },
             "keepSubscription": "继续订阅",
             "continue": "继续",
@@ -822,6 +833,16 @@
     "itemsSelected": "个文件 已选择 "
   },
   "modals": {
+    "downloadBackupKeys": {
+      "title": "请记得下载您的备份密钥",
+      "description": "您的备份密钥是恢复加密数据的必要凭证。Internxt 不会存储它——只有您自己拥有它。",
+      "info": {
+        "text": "您可以随时在以下位置找到您的备份密钥：",
+        "path": "设置 → 账户 → 安全"
+      },
+      "download": "下载备份密钥",
+      "success": "您已拥有备份密钥。请务必将其存储在安全的地方。"
+    },
     "renameItemDialog": {
       "title": "重命名",
       "label": "名称"
@@ -1150,7 +1171,9 @@
     "renamingItem": "重命名项目时出错",
     "linkExpired": "此安全链接已过期",
     "teamInvitation": "邀请邮件无法发送",
+    "ownerStorageIsFull": "所有者的存储空间已满",
     "storageIsFull": "您的存储空间已满",
+    "ownerStorageIsFullDescription": "您无法在此共享文件夹中上传文件。",
     "storageIsFullDescription": "无法上传同步或备份文件",
     "noSpaceAvailable": "您已达到当前计划的限制，同步已停止。立即升级以确保您的文件安全同步。",
     "sharedFolderTooBig": "Internxt Drive 不支持共享超过 1GB 的文件夹。",
@@ -1541,7 +1564,9 @@
     "continue": "继续",
     "keepCurrent": "保持当前",
     "logOut": "登出",
-    "locked": "已锁定"
+    "locked": "已锁定",
+    "remindMeLater": "稍后提醒我",
+    "backupKeySaved": "我已保存我的密钥"
   },
   "toastNotification": {
     "textCopied": "文本已复制到剪贴板"
@@ -2007,6 +2032,7 @@
         "manageBilling": "管理账单",
         "freeForever": "永久免费",
         "billedAnnually": "按年计费",
+        "billedMonthly": "按月计费",
         "year": "年",
         "month": "月",
         "lifetime": "终身",
@@ -2026,6 +2052,7 @@
             "title": "Essential (基础版)",
             "features": [
               "1TB 加密云存储空间",
+              "30 天无风险试用",
               "后量子密码学",
               "零知识加密",
               "两步验证",
@@ -2039,6 +2066,7 @@
             "title": "Premium (高级版)",
             "features": [
               "3TB 加密云存储空间",
+              "30 天无风险试用",
               "后量子密码学",
               "零知识加密",
               "两步验证",
@@ -2055,6 +2083,7 @@
             "title": "Ultimate (旗舰版)",
             "features": [
               "5TB 加密云存储空间",
+              "30 天无风险试用",
               "后量子密码学",
               "零知识加密",
               "两步验证",
