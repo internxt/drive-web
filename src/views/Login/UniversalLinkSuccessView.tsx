@@ -26,9 +26,7 @@ export default function UniversalLinkView(): JSX.Element {
   }, [user]);
 
   const getUniversalLinkAuthUrl = (user: UserSettings) => {
-    const token = localStorageService.get(LocalStorageItem.UserToken);
     const newToken = localStorageService.get(LocalStorageItem.NewToken);
-    if (!token) return AppView.Login;
     if (!newToken) return AppView.Login;
 
     let baseURL = DEEPLINK_SUCCESS_REDIRECT_BASE;
@@ -36,9 +34,7 @@ export default function UniversalLinkView(): JSX.Element {
       baseURL = Buffer.from(redirectUri, 'base64').toString();
     }
 
-    return `${baseURL}?mnemonic=${btoa(user.mnemonic)}&token=${btoa(token)}&newToken=${btoa(
-      newToken,
-    )}&privateKey=${btoa(user.privateKey)}`;
+    return `${baseURL}?mnemonic=${btoa(user.mnemonic)}&newToken=${btoa(newToken)}&privateKey=${btoa(user.privateKey)}`;
   };
 
   // Should redirect to login in the useEffect
