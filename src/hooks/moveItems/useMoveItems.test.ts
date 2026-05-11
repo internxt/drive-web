@@ -60,80 +60,64 @@ describe('Restore items from trash', () => {
 
   describe('Single item restore', () => {
     test('When the original folder still exists, then the item is moved there directly', async () => {
-      // Arrange
       const item = buildItemWithExistingParent();
       const { result } = renderHook(() => useMoveItems());
 
-      // Act
       await act(async () => {
         await result.current.restoreItemFromTrash(item);
       });
 
-      // Assert
       expect(mockMoveItemsThunk).toHaveBeenCalledWith(expect.objectContaining({ destinationFolderId: 'parent-uuid' }));
     });
 
     test('When the original folder still exists, then the item is removed from the trash list', async () => {
-      // Arrange
       const item = buildItemWithExistingParent();
       const { result } = renderHook(() => useMoveItems());
 
-      // Act
       await act(async () => {
         await result.current.restoreItemFromTrash(item);
       });
 
-      // Assert
       expect(mockPopItemsToDelete).toHaveBeenCalledWith([item]);
     });
 
     test('When the original folder still exists, then a success notification is shown', async () => {
-      // Arrange
       const item = buildItemWithExistingParent();
       const { result } = renderHook(() => useMoveItems());
       const notificationsSpy = vi.spyOn(notificationsService, 'show');
 
-      // Act
       await act(async () => {
         await result.current.restoreItemFromTrash(item);
       });
 
-      // Assert
       expect(notificationsSpy).toHaveBeenCalledWith(expect.objectContaining({ type: ToastType.Success }));
     });
 
     test('When the original folder no longer exists, then the move dialog is opened so the user can pick a destination', async () => {
-      // Arrange
       const item = buildItemWithDeletedParent();
       const { result } = renderHook(() => useMoveItems());
 
-      // Act
       await act(async () => {
         await result.current.restoreItemFromTrash(item);
       });
 
-      // Assert
       expect(mockSetItemsToMove).toHaveBeenCalledWith([item]);
       expect(mockSetIsMoveItemsDialogOpen).toHaveBeenCalledWith(true);
     });
 
     test('When the original folder no longer exists, then no success notification is shown', async () => {
-      // Arrange
       const item = buildItemWithDeletedParent();
       const { result } = renderHook(() => useMoveItems());
       const notificationsSpy = vi.spyOn(notificationsService, 'show');
 
-      // Act
       await act(async () => {
         await result.current.restoreItemFromTrash(item);
       });
 
-      // Assert
       expect(notificationsSpy).not.toHaveBeenCalled();
     });
 
     test('When the restore fails, then an error notification is shown', async () => {
-      // Arrange
       const item = buildItemWithExistingParent();
       mockDispatch.mockImplementation(() => {
         throw new Error('Network error');
@@ -142,66 +126,54 @@ describe('Restore items from trash', () => {
       const notificationsSpy = vi.spyOn(notificationsService, 'show');
       vi.spyOn(errorService, 'castError').mockReturnValue({ message: 'Network error', requestId: undefined } as any);
 
-      // Act
       await act(async () => {
         await result.current.restoreItemFromTrash(item);
       });
 
-      // Assert
       expect(notificationsSpy).toHaveBeenCalledWith(expect.objectContaining({ type: ToastType.Error }));
     });
   });
 
   describe('Multiple items restore', () => {
     test('When all items have their original folder available, then all are restored and a success notification is shown', async () => {
-      // Arrange
       const items = [buildItemWithExistingParent({ uuid: 'item-1' }), buildItemWithExistingParent({ uuid: 'item-2' })];
       const { result } = renderHook(() => useMoveItems());
       const notificationsSpy = vi.spyOn(notificationsService, 'show');
 
-      // Act
       await act(async () => {
         await result.current.restoreItemsFromTrash(items);
       });
 
-      // Assert
       expect(mockMoveItemsThunk).toHaveBeenCalledTimes(2);
       expect(notificationsSpy).toHaveBeenCalledWith(expect.objectContaining({ type: ToastType.Success }));
     });
 
     test('When some items have their folder deleted, then the dialog is opened only for those items', async () => {
-      // Arrange
       const restorable = buildItemWithExistingParent({ uuid: 'item-1' });
       const needsDestination = buildItemWithDeletedParent({ uuid: 'item-2' });
       const { result } = renderHook(() => useMoveItems());
 
-      // Act
       await act(async () => {
         await result.current.restoreItemsFromTrash([restorable, needsDestination]);
       });
 
-      // Assert
       expect(mockSetItemsToMove).toHaveBeenCalledWith([needsDestination]);
       expect(mockSetIsMoveItemsDialogOpen).toHaveBeenCalledWith(true);
     });
 
     test('When all items need a new destination, then no success notification is shown before the user picks one', async () => {
-      // Arrange
       const items = [buildItemWithDeletedParent({ uuid: 'item-1' }), buildItemWithDeletedParent({ uuid: 'item-2' })];
       const { result } = renderHook(() => useMoveItems());
       const notificationsSpy = vi.spyOn(notificationsService, 'show');
 
-      // Act
       await act(async () => {
         await result.current.restoreItemsFromTrash(items);
       });
 
-      // Assert
       expect(notificationsSpy).not.toHaveBeenCalled();
     });
 
     test('When any restore fails, then an error notification is shown', async () => {
-      // Arrange
       const items = [buildItemWithExistingParent({ uuid: 'item-1' }), buildItemWithExistingParent({ uuid: 'item-2' })];
       mockDispatch.mockImplementation(() => {
         throw new Error('Network error');
@@ -210,35 +182,29 @@ describe('Restore items from trash', () => {
       const notificationsSpy = vi.spyOn(notificationsService, 'show');
       vi.spyOn(errorService, 'castError').mockReturnValue({ message: 'Network error', requestId: undefined } as any);
 
-      // Act
       await act(async () => {
         await result.current.restoreItemsFromTrash(items);
       });
 
-      // Assert
       expect(notificationsSpy).toHaveBeenCalledWith(expect.objectContaining({ type: ToastType.Error }));
     });
   });
 
   describe('Move from dialog', () => {
     test('When the user confirms a destination in the dialog, then the item is moved there', async () => {
-      // Arrange
       const item = buildDriveItemData();
       const { result } = renderHook(() => useMoveItems());
 
-      // Act
       await act(async () => {
         await result.current.moveItemFromDialog({ finalDestinationId: 'chosen-folder-uuid', items: [item] });
       });
 
-      // Assert
       expect(mockMoveItemsThunk).toHaveBeenCalledWith(
         expect.objectContaining({ destinationFolderId: 'chosen-folder-uuid' }),
       );
     });
 
     test('When the move from dialog fails, then an error notification is shown', async () => {
-      // Arrange
       const item = buildDriveItemData();
       mockDispatch.mockImplementation(() => {
         throw new Error('Move failed');
@@ -247,12 +213,10 @@ describe('Restore items from trash', () => {
       const notificationsSpy = vi.spyOn(notificationsService, 'show');
       vi.spyOn(errorService, 'castError').mockReturnValue({ message: 'Move failed', requestId: undefined } as any);
 
-      // Act
       await act(async () => {
         await result.current.moveItemFromDialog({ finalDestinationId: 'chosen-folder-uuid', items: [item] });
       });
 
-      // Assert
       expect(notificationsSpy).toHaveBeenCalledWith(expect.objectContaining({ type: ToastType.Error }));
     });
   });
