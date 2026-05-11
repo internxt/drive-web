@@ -104,7 +104,7 @@ beforeEach(() => {
 
 describe('Testing Impact Service', () => {
   describe('savePaymentDataInLocalStorage', () => {
-    it('When coupon is applied, then it saves the correct amount to localStorage', () => {
+    it('When a coupon is applied, then the discounted amount is stored for conversion tracking', () => {
       const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
 
       savePaymentDataInLocalStorage({
@@ -118,7 +118,7 @@ describe('Testing Impact Service', () => {
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('amountPaid', expectedAmount);
     });
 
-    it('When payment intent ID is provided, then it saves payment intent ID', () => {
+    it('When a payment intent is provided, then the payment reference is stored for tracking', () => {
       const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
 
       savePaymentDataInLocalStorage({
@@ -132,7 +132,7 @@ describe('Testing Impact Service', () => {
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('paymentIntentId', paymentIntentId);
     });
 
-    it('When saving payment data, then it saves product metadata including name, price ID, and currency', () => {
+    it('When payment data is saved, then the plan name, price, and currency are all stored', () => {
       const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
 
       savePaymentDataInLocalStorage({
@@ -148,7 +148,7 @@ describe('Testing Impact Service', () => {
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('currency', product.price.currency);
     });
 
-    it('When coupon code is provided, then it saves coupon code', () => {
+    it('When a coupon code is used, then it is stored alongside the payment data', () => {
       const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
 
       savePaymentDataInLocalStorage({
@@ -162,7 +162,7 @@ describe('Testing Impact Service', () => {
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('couponCode', promoCode.codeName);
     });
 
-    it('When saving payment data, then it saves isFirstPurchase flag to localStorage', () => {
+    it('When payment data is saved, then whether it is the first purchase is also stored', () => {
       const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
 
       savePaymentDataInLocalStorage({
@@ -179,7 +179,7 @@ describe('Testing Impact Service', () => {
 
   describe('trackSignUp', () => {
     describe('gtag tracking', () => {
-      it('When trackSignUp is called, then it sends User Signup event to gtag', async () => {
+      it('When a user signs up, then the registration is reported to Google Analytics', async () => {
         const gTagSpy = vi.spyOn(globalThis.window, 'gtag');
 
         await trackSignUp(mockedUserUuid);
@@ -187,7 +187,7 @@ describe('Testing Impact Service', () => {
         expect(gTagSpy).toHaveBeenCalledWith('event', 'User Signup');
       });
 
-      it('When gtag fails, then it reports error but continues execution', async () => {
+      it('When Google Analytics fails, then the error is logged and sign-up tracking continues', async () => {
         const unknownError = new Error('gtag Error');
         const gTagSpy = vi.spyOn(globalThis.window, 'gtag').mockImplementation(() => {
           throw unknownError;
@@ -248,7 +248,7 @@ describe('Testing Impact Service', () => {
 
   describe('trackPaymentConversion', () => {
     describe('Impact API tracking', () => {
-      it('When trackPaymentConversion is called, then it sends payment conversion to Impact API with correct data', async () => {
+      it('When a payment is completed, then the full order details are reported to Impact', async () => {
         const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
 
         await trackPaymentConversion();
@@ -271,7 +271,7 @@ describe('Testing Impact Service', () => {
         );
       });
 
-      it('When amount is 0 (free purchase), then it uses minimum value of 0.01', async () => {
+      it('When the purchase is free, then the minimum trackable amount is used in the conversion report', async () => {
         vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
           if (key === 'amountPaid') return '0';
           if (key === 'couponCode') return promoCode.codeName;
@@ -286,7 +286,7 @@ describe('Testing Impact Service', () => {
         expect(callArgs.properties.impact_value).toBe(0.01);
       });
 
-      it('When coupon code is available, then it includes coupon code in properties', async () => {
+      it('When a promo code was used, then it appears in the conversion data reported to Impact', async () => {
         const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
 
         await trackPaymentConversion();
@@ -295,7 +295,7 @@ describe('Testing Impact Service', () => {
         expect(callArgs.properties).toHaveProperty('order_promo_code', promoCode.codeName);
       });
 
-      it('When Impact API call fails, then it reports error', async () => {
+      it('When reporting to Impact fails, then the error is logged', async () => {
         const unknownError = new Error('API Error');
         const axiosSpy = vi.spyOn(axios, 'post').mockRejectedValue(unknownError);
         const errorServiceSpy = vi.spyOn(errorService, 'reportError');
@@ -306,7 +306,7 @@ describe('Testing Impact Service', () => {
         expect(errorServiceSpy).toHaveBeenCalledWith(unknownError);
       });
 
-      it('When source is direct and no coupon code is present, then it does not send to Impact', async () => {
+      it('When the traffic source is direct and no promo code was used, then the conversion is not sent to Impact', async () => {
         const getCookieMock = await import('./utils');
         vi.mocked(getCookieMock.getCookie).mockImplementation((key) => {
           if (key === 'impactSource') return 'direct';
@@ -325,7 +325,7 @@ describe('Testing Impact Service', () => {
         expect(axiosSpy).not.toHaveBeenCalled();
       });
 
-      it('When source is direct but coupon code is present, then it sends to Impact', async () => {
+      it('When the traffic source is direct but a promo code was used, then the conversion is still sent to Impact', async () => {
         const getCookieMock = await import('./utils');
         vi.mocked(getCookieMock.getCookie).mockImplementation((key) => {
           if (key === 'impactSource') return 'direct';
@@ -348,7 +348,7 @@ describe('Testing Impact Service', () => {
         expect(callArgs.anonymousId).toBe('');
       });
 
-      it('When isFirstPurchase is false, then it does not send to Impact', async () => {
+      it('When the purchase is not the first, then it is not reported as a conversion to Impact', async () => {
         vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
           if (key === 'isFirstPurchase') return 'false';
           if (key === 'amountPaid') return expectedAmount;
@@ -364,7 +364,7 @@ describe('Testing Impact Service', () => {
     });
 
     describe('Error handling', () => {
-      it('When user settings are missing, then it handles them gracefully', async () => {
+      it('When the user profile is not available, then conversion tracking completes without crashing', async () => {
         const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
         vi.spyOn(localStorageService, 'getUser').mockReturnValue(null);
 
@@ -373,13 +373,13 @@ describe('Testing Impact Service', () => {
         consoleWarnSpy.mockRestore();
       });
 
-      it('When gtag is not available, then it continues execution', async () => {
+      it('When Google Analytics is not loaded, then the rest of conversion tracking still runs', async () => {
         globalThis.window.gtag = undefined as any;
 
         await expect(trackPaymentConversion()).resolves.not.toThrow();
       });
 
-      it('When an error occurs in the entire function, then it handles it gracefully', async () => {
+      it('When an unexpected error occurs, then conversion tracking fails silently without crashing', async () => {
         const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
         vi.spyOn(localStorageService, 'getUser').mockImplementation(() => {
           throw new Error('Storage Error');
@@ -394,7 +394,7 @@ describe('Testing Impact Service', () => {
 });
 
 describe('uuid library', () => {
-  it('When calling v4, then it generates a valid UUID', async () => {
+  it('When a UUID is generated, then it follows the expected UUID v4 format', async () => {
     const { v4 } = await vi.importActual<typeof import('uuid')>('uuid');
     const id = v4();
     expect(id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
