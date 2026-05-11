@@ -33,7 +33,6 @@ import {
 import databaseService from 'app/database/services/database.service';
 import { AppDispatch } from 'app/store';
 import { planThunks } from 'app/store/slices/plan';
-import { productsThunks } from 'app/store/slices/products';
 import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/user';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { generateMnemonic, validateMnemonic } from 'bip39';
@@ -584,7 +583,6 @@ export const signUp = async (params: SignUpParams) => {
 
   dispatch(userActions.setUser(user));
   await dispatch(userThunks.initializeUserThunk());
-  dispatch(productsThunks.initializeThunk());
 
   if (!redeemCodeObject) dispatch(planThunks.initializeThunk());
   await trackSignUp(xUser.uuid);
@@ -599,7 +597,6 @@ export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
   dispatch(userActions.setUser(user));
 
   try {
-    dispatch(productsThunks.initializeThunk());
     dispatch(planThunks.initializeThunk());
     await dispatch(initializeUserThunk())?.unwrap();
     dispatch(workspaceThunks.fetchWorkspaces());

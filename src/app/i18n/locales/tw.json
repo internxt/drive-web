@@ -297,7 +297,8 @@
     "error": {
       "invalidPlan": "不支援的方案類型。請選擇有效的方案。",
       "fetchingCryptoCurrencies": "無法載入可用的加密貨幣選項",
-      "addressRequired": "請填寫您的帳單地址以繼續"
+      "addressRequired": "請填寫您的帳單地址以繼續",
+      "businessPlan": "企業計劃不可用"
     }
   },
   "general": {

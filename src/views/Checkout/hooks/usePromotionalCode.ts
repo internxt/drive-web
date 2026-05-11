@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { checkoutService } from '../services';
-import { CouponCodeData } from '../types';
+import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
 import { STATUS_CODE_ERROR } from '../constants';
 import { errorService } from 'services';
 
