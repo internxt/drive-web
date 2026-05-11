@@ -69,6 +69,7 @@ const App = (props: AppProps): JSX.Element => {
   const { isDialogOpen } = useActionDialog();
   const isOpen = isDialogOpen(ActionDialog.ModifyStorage);
   const { openBackupKeysDialog } = useDownloadBackupKeys(t);
+  const token = localStorageService.get(LocalStorageItem.UserToken);
   const newToken = localStorageService.get(LocalStorageItem.NewToken);
   const params = new URLSearchParams(window.location.search);
   const isVpnAuth = params.get('vpnAuth') === 'true';
@@ -104,11 +105,11 @@ const App = (props: AppProps): JSX.Element => {
     }
   }, [params]);
 
-  if ((newToken && skipSignupIfLoggedIn) || (newToken && navigationService.history.location.pathname !== '/new')) {
+  if ((token && skipSignupIfLoggedIn) || (token && navigationService.history.location.pathname !== '/new')) {
     /**
      * In case we receive a valid redirectUrl param, we return to that URL with the current token
      */
-    const redirectUrl = authService.getRedirectUrl(params, newToken);
+    const redirectUrl = authService.getRedirectUrl(params, token);
 
     if (redirectUrl) {
       window.location.replace(redirectUrl);

@@ -148,13 +148,10 @@ export default function LogIn(): JSX.Element {
     }
   };
 
-  const handleSuccessfulAuth = (user: UserSettings, mnemonic: string): void => {
+  const handleSuccessfulAuth = (token: string, user: UserSettings, mnemonic: string): void => {
     const newToken = localStorageService.get(LocalStorageItem.NewToken);
 
-    if (!newToken) {
-      throw new Error('No authentication token available');
-    }
-    if (isOAuthFlow) {
+    if (isOAuthFlow && newToken) {
       const success = handleOAuthSuccess(user, newToken);
       if (!success) {
         setIsLoggingIn(false);
@@ -165,7 +162,7 @@ export default function LogIn(): JSX.Element {
       return;
     }
 
-    const redirectUrl = authService.getRedirectUrl(urlParams, newToken);
+    const redirectUrl = authService.getRedirectUrl(urlParams, token);
 
     if (redirectUrl && !isUniversalLinkMode && !isSharingInvitation) {
       globalThis.location.replace(redirectUrl);
@@ -198,8 +195,8 @@ export default function LogIn(): JSX.Element {
           loginType,
         };
 
-        const { user, mnemonic } = await authenticateUser(authParams);
-        handleSuccessfulAuth(user, mnemonic);
+        const { token, user, mnemonic } = await authenticateUser(authParams);
+        handleSuccessfulAuth(token, user, mnemonic);
       } else {
         setShowTwoFactor(true);
         setLoginError([]);
