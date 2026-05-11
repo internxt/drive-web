@@ -64,7 +64,7 @@ export const initializeUserThunk = createAsyncThunk<
 export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean } | undefined, { state: RootState }>(
   'user/refresh',
   async ({ forceRefresh } = {}, { dispatch, getState }) => {
-    const userToken = localStorageService.get(LocalStorageItem.UserToken);
+    const userToken = localStorageService.get(LocalStorageItem.NewToken);
     const isExpired = isTokenExpired(userToken);
 
     const currentUser = getState().user.user;
@@ -185,7 +185,7 @@ const updateUserEmailCredentialsThunk = createAsyncThunk<
   { state: RootState }
 >('user/updateUser', async (payload, { dispatch, getState }) => {
   const currentUser = getState().user.user as UserSettings;
-  const { newUserData, token, newToken } = payload;
+  const { newUserData, newToken } = payload;
 
   const user = {
     ...currentUser,
@@ -193,7 +193,6 @@ const updateUserEmailCredentialsThunk = createAsyncThunk<
     bridgeUser: newUserData.email,
     username: newUserData.email,
   };
-  localStorageService.set(LocalStorageItem.UserToken, token);
   localStorageService.set(LocalStorageItem.NewToken, newToken);
   dispatch(userActions.setUser(user));
 });
@@ -219,7 +218,7 @@ export const userSlice = createSlice({
       localStorageService.set(LocalStorageItem.User, JSON.stringify(action.payload));
     },
     setToken: (state: UserState, action: PayloadAction<string>) => {
-      localStorageService.set(LocalStorageItem.UserToken, action.payload);
+      localStorageService.set(LocalStorageItem.NewToken, action.payload);
     },
     resetState: (state: UserState) => {
       Object.assign(state, initialState);
