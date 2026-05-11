@@ -1,6 +1,7 @@
 import { History } from 'history';
 import { t } from 'i18next';
 import navigationService from 'services/navigation.service';
+import errorService from 'services/error.service';
 import workspacesService from 'services/workspace.service';
 import { AppView } from '../../core/types';
 import { AdvancedSharedItem } from '../types';
@@ -33,8 +34,9 @@ const handlePrivateSharedFolderAccess = async ({
     const sharedFolderData = await getPrivateSharedFolderAccessData(folderUUID, workspaceItemData?.workspaceId);
     navigateToFolder(sharedFolderData as AdvancedSharedItem);
   } catch (error: any) {
+    const appErr = errorService.castError(error);
     let errorMessage;
-    switch (error.status) {
+    switch (appErr.status) {
       case 403:
         statusError = 403;
         navigationService.push(AppView.RequestAccess, { folderuuid: folderUUID });

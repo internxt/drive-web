@@ -7,7 +7,7 @@ import localStorageService from 'services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import envService from 'services/env.service';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
-import { CouponCodeData } from 'views/Checkout/types';
+import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
 import { bytesToString } from 'app/drive/services/size.service';
 import { getProductAmount } from 'views/Checkout/utils';
 import { sendAddShoppersConversion } from './addShoppers.services';

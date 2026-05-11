@@ -106,7 +106,6 @@ export enum AppView {
   FolderFileNotFound = 'folder-file-not-found',
   Deactivation = 'deactivation',
   CheckoutSuccess = 'checkout-success',
-  PcCloudSuccess = 'pcCloud-success',
   CheckoutCancel = 'checkout-cancel',
   Checkout = 'checkout',
   CheckoutSession = 'checkout-session',

@@ -14,7 +14,6 @@ export const initialStateForCheckout: State = {
   elementsOptions: undefined,
   error: undefined,
   authMethod: 'signUp',
-  seatsForBusinessSubscription: 1,
 };
 
 export const checkoutReducer = (state: State, action: Action): State => {
@@ -45,8 +44,6 @@ export const checkoutReducer = (state: State, action: Action): State => {
       return { ...state, authMethod: action.payload };
     case 'SET_ERROR':
       return { ...state, error: action.payload };
-    case 'SET_SEATS_FOR_BUSINESS_SUBSCRIPTION':
-      return { ...state, seatsForBusinessSubscription: action.payload };
     default:
       return state;
   }

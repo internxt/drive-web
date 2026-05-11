@@ -4,6 +4,7 @@ import { Abortable } from 'app/network/Abortable';
 import { createUploadWebWorker } from '../../../../WebWorker';
 import localStorageService from 'services/local-storage.service';
 import { createWorkerMessageHandlerPromise } from '../worker.service/uploadWorkerUtils';
+import { notifyUserWithCooldown } from 'app/core/factory/sdk/retryStrategies';
 import { EnvironmentConfig, IUploadParams } from './types';
 
 export const MAX_ALLOWED_UPLOAD_SIZE = 40 * 1024 * 1024 * 1024;
@@ -77,7 +78,7 @@ export class Network {
 
     worker.postMessage({ bucketId, params: payload, type: 'upload' });
 
-    return createWorkerMessageHandlerPromise(worker, params, continueUploadOptions);
+    return createWorkerMessageHandlerPromise(worker, params, continueUploadOptions, notifyUserWithCooldown);
   }
 }
 

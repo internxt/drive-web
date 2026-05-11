@@ -48,7 +48,6 @@ describe('Custom hook to handle payments', () => {
         currency: 'eur',
         captchaToken: 'captcha_token',
         promoCodeId: 'promo_code_id',
-        quantity: 1,
       };
 
       const response = await getSubscriptionPaymentIntent(subscriptionPaymentIntentPayload);
@@ -60,7 +59,6 @@ describe('Custom hook to handle payments', () => {
         currency: subscriptionPaymentIntentPayload.currency,
         promoCodeId: subscriptionPaymentIntentPayload.promoCodeId,
         captchaToken: subscriptionPaymentIntentPayload.captchaToken,
-        quantity: subscriptionPaymentIntentPayload.quantity,
       });
       expect(response).toStrictEqual({
         type: 'payment',
@@ -167,7 +165,6 @@ describe('Custom hook to handle payments', () => {
         priceId: 'price_id',
         token: 'token',
         currency: 'currency',
-        seatsForBusinessSubscription: 1,
         elements: vi.fn() as any,
         currentSelectedPlan: {
           price: {
@@ -190,7 +187,6 @@ describe('Custom hook to handle payments', () => {
         token: subscriptionPaymentPayload.token,
         currency: subscriptionPaymentPayload.currency,
         promoCodeId: undefined,
-        quantity: subscriptionPaymentPayload.seatsForBusinessSubscription,
         captchaToken: subscriptionPaymentPayload.captchaToken,
       });
 
@@ -225,7 +221,6 @@ describe('Custom hook to handle payments', () => {
         priceId: 'price_id',
         token: 'token',
         currency: 'currency',
-        seatsForBusinessSubscription: 1,
         elements: vi.fn() as any,
         currentSelectedPlan: {
           price: {
@@ -248,7 +243,6 @@ describe('Custom hook to handle payments', () => {
         token: subscriptionPaymentPayload.token,
         currency: subscriptionPaymentPayload.currency,
         promoCodeId: undefined,
-        quantity: subscriptionPaymentPayload.seatsForBusinessSubscription,
         captchaToken: subscriptionPaymentPayload.captchaToken,
       });
 
@@ -284,7 +278,6 @@ describe('Custom hook to handle payments', () => {
         priceId: 'price_id',
         token: 'token',
         currency: 'currency',
-        seatsForBusinessSubscription: 1,
         elements: vi.fn() as any,
         currentSelectedPlan: {
           price: {
@@ -307,7 +300,6 @@ describe('Custom hook to handle payments', () => {
         token: subscriptionPaymentPayload.token,
         currency: subscriptionPaymentPayload.currency,
         promoCodeId: undefined,
-        quantity: subscriptionPaymentPayload.seatsForBusinessSubscription,
         captchaToken: subscriptionPaymentPayload.captchaToken,
       });
 
@@ -472,7 +464,6 @@ describe('Custom hook to handle payments', () => {
         token: 'token',
         translate: vi.fn(),
         currency: 'currency',
-        seatsForBusinessSubscription: 1,
         elements: {
           create: vi.fn(),
           fetchUpdates: vi.fn(),
@@ -520,7 +511,6 @@ describe('Custom hook to handle payments', () => {
         token: 'token',
         translate: vi.fn(),
         currency: 'currency',
-        seatsForBusinessSubscription: 1,
         elements: {
           create: vi.fn(),
           fetchUpdates: vi.fn(),
@@ -564,7 +554,6 @@ describe('Custom hook to handle payments', () => {
         token: 'token',
         translate: vi.fn(),
         currency: 'currency',
-        seatsForBusinessSubscription: 1,
         elements: {
           create: vi.fn(),
           fetchUpdates: vi.fn(),

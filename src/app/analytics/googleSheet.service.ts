@@ -1,6 +1,6 @@
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import envService from 'services/env.service';
-import { CouponCodeData } from 'views/Checkout/types';
+import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
 import { getProductAmount } from 'views/Checkout/utils';
 const WINTER_OFFSET_HOUR = 1;
 const TWO_EXTRA_HOURS_IN_MS = 2 * 60 * 60 * 1000;

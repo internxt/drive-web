@@ -231,7 +231,7 @@
         "lifetime": "lebenslang"
       },
       "renewalTitle": {
-        "month": "monatlich",
+        "month": "jährlich",
         "year": "jährlich",
         "lifetime": "lebenslang"
       },
@@ -256,7 +256,8 @@
         "inputText": "Gutscheincode"
       },
       "apply": "Anwenden",
-      "taxes": "Steuern"
+      "taxes": "Steuern",
+      "annualBillingTemplate": "Jahresplan, monatlich abgerechnet mit {{price}}{{currency}}/Monat für 12 Monate"
     },
     "confirmCryptoPayment": {
       "title": "Zahlung bestätigen",
@@ -280,7 +281,8 @@
     "error": {
       "invalidPlan": "Nicht unterstützter Plantyp. Bitte wählen Sie einen gültigen Plan.",
       "fetchingCryptoCurrencies": "Die verfügbaren Kryptowährungsoptionen konnten nicht geladen werden",
-      "addressRequired": "Bitte vervollständigen Sie Ihre Rechnungsadresse, um fortzufahren"
+      "addressRequired": "Bitte vervollständigen Sie Ihre Rechnungsadresse, um fortzufahren",
+      "businessPlan": "Der Unternehmensplan ist nicht verfügbar"
     }
   },
   "general": {
@@ -402,7 +404,9 @@
         "logout": "Log-out",
         "referAndEarn": "Empfehlen und verdienen",
         "earnReferral": "Verdiene 100 €",
-        "spaceUsed": "{{space}}% Platz verbraucht"
+        "spaceUsed": "{{space}}% Platz verbraucht",
+        "account": "Konto",
+        "giveFeedback": "Feedback geben"
       },
       "tabs": {
         "account": {
@@ -488,6 +492,13 @@
             "description": {
               "individual": "Sie sind dabei, Ihren Internxt-Tarif {{currentPlanName}} zu kündigen. Durch die Kündigung Ihres Tarifs werden Sie auf den kostenlosen Internxt-Tarif {{freePlanName}} herabgestuft. Bitte bestätigen Sie Ihre Wahl, um fortzufahren.",
               "business": "Durch die Kündigung Ihres Tarifs wird der Workspace zusammen mit allen Daten gelöscht. Bitte bestätigen Sie Ihre Wahl, um fortzufahren."
+            },
+            "commitment": {
+              "firstMonthDescription": "Da Sie sich noch in Ihrer 30-tägigen Testphase befinden, wird Ihre Kündigung sofort wirksam. Sie werden nicht mehr belastet und Ihr Konto wird jetzt auf den kostenlosen 1-GB-Plan zurückgesetzt.",
+              "description": "Sie haben ein Jahresabonnement, das monatlich abgerechnet wird. Wenn Sie jetzt kündigen, bleibt Ihr Abonnement bis zum {{end_date}} aktiv, und Sie werden bis zu diesem Datum weiterhin monatlich belastet.",
+              "monthsRemaining": "Verbleibende Zahlungen: {{monthsRemaining}}",
+              "amountPerMonth": "Betrag pro Monat: €{{amount}}",
+              "afterLabel": "Nach dem {{monthsRemaining}}"
             },
             "keepSubscription": "Abonnement behalten",
             "continue": "Weiter",
@@ -759,6 +770,16 @@
     "itemsSelected": "Elemente ausgewählt"
   },
   "modals": {
+    "downloadBackupKeys": {
+      "title": "Denk daran, deinen Backup-Schlüssel herunterzuladen",
+      "description": "Dein Backup-Schlüssel wird benötigt, um deine verschlüsselten Daten wiederherzustellen. Internxt speichert ihn nicht — nur du hast ihn.",
+      "info": {
+        "text": "Du kannst deinen Backup-Schlüssel jederzeit unter ",
+        "path": "Einstellungen → Konto → Sicherheit"
+      },
+      "download": "Backup-Schlüssel herunterladen",
+      "success": "Du hast deinen Backup-Schlüssel. Bewahre ihn an einem sicheren Ort auf."
+    },
     "renameItemDialog": {
       "title": "Umbenennen",
       "label": "Name"
@@ -1496,7 +1517,9 @@
     "continue": "Fortsetzen",
     "keepCurrent": "Aktuell behalten",
     "logOut": "Abmelden",
-    "locked": "Gesperrt"
+    "locked": "Gesperrt",
+    "remindMeLater": "Später erinnern",
+    "backupKeySaved": "Ich habe meinen Schlüssel gespeichert"
   },
   "toastNotification": {
     "textCopied": "Text in die Zwischenablage kopiert"
@@ -1961,6 +1984,7 @@
         "manageBilling": "Abrechnung verwalten",
         "freeForever": "Für immer kostenlos",
         "billedAnnually": "jährlich abgerechnet",
+        "billedMonthly": "monatlich abgerechnet",
         "year": "Jahr",
         "month": "Monat",
         "lifetime": "Lebenslang",
@@ -1980,6 +2004,7 @@
             "title": "Essential (Basis)",
             "features": [
               "1TB verschlüsselter Cloud-Speicher",
+              "30 Tage risikofrei testen",
               "Post-Quanten-Verschlüsselung",
               "Zero-Knowledge-Verschlüsselung",
               "Zwei-Faktor-Authentifizierung",
@@ -1993,6 +2018,7 @@
             "title": "Premium",
             "features": [
               "3TB verschlüsselter Cloud-Speicher",
+              "30 Tage risikofrei testen",
               "Post-Quanten-Verschlüsselung",
               "Zero-Knowledge-Verschlüsselung",
               "Zwei-Faktor-Authentifizierung",
@@ -2009,6 +2035,7 @@
             "title": "Ultimate (Ultimativ)",
             "features": [
               "5TB verschlüsselter Cloud-Speicher",
+              "30 Tage risikofrei testen",
               "Post-Quanten-Verschlüsselung",
               "Zero-Knowledge-Verschlüsselung",
               "Zwei-Faktor-Authentifizierung",

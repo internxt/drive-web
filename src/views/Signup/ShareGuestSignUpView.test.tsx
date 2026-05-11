@@ -239,11 +239,6 @@ describe('onSubmit', () => {
         initializeThunk: vi.fn(),
       },
     }));
-    vi.mock('app/store/slices/products', () => ({
-      productsThunks: {
-        initializeThunk: vi.fn(),
-      },
-    }));
 
     vi.mock('app/store/slices/referrals', () => ({
       referralsThunks: {
