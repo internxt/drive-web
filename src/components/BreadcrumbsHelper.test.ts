@@ -14,6 +14,7 @@ import { DropTargetMonitor } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { storageActions } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
+import { transformDraggedItems } from 'services/drag-and-drop.service';
 
 vi.mock('app/store/slices/storage', () => ({
   storageActions: {
@@ -171,9 +172,7 @@ describe('onItemDropped', () => {
       getItem: () => draggedItem,
     } as unknown as DropTargetMonitor;
 
-    vi.mock('services/drag-and-drop.service', () => ({
-      transformDraggedItems: vi.fn().mockResolvedValue({ rootList: [], files: ['file1'] }),
-    }));
+    vi.mocked(transformDraggedItems).mockResolvedValue({ rootList: [], files: ['file1'] } as any);
 
     await onItemDropped(item, namePath, false, [], mockDispatch)(draggedItem, monitor);
 

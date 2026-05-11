@@ -102,6 +102,12 @@ export interface DriveItemPatch {
   shares?: ShareLink[];
 }
 
+export interface ReachedPlanLimitDialogInfo {
+  title: string;
+  description: string;
+  hidePrimaryAction?: boolean;
+}
+
 export interface UpgradePlanDialogInfo {
   title: string;
   description: string;

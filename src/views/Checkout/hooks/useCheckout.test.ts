@@ -15,7 +15,6 @@ describe('useCheckout hook actions', () => {
     setPlan,
     setSelectedPlan,
     setStripeElementsOptions,
-    setSeatsForBusinessSubscription,
     setIsCheckoutReadyToRender,
     setIsUpdateSubscriptionDialogOpen,
     setIsUpdatingSubscription,
@@ -70,11 +69,6 @@ describe('useCheckout hook actions', () => {
     const options = { mode: 'subscription' } as StripeElementsOptions;
     setStripeElementsOptions(options);
     expect(dispatch).toHaveBeenCalledWith({ type: 'SET_ELEMENTS_OPTIONS', payload: options });
-  });
-
-  it('When setSeatsForBusinessSubscription is called, then it dispatches SET_SEATS_FOR_BUSINESS_SUBSCRIPTION with the given seat count', () => {
-    setSeatsForBusinessSubscription(5);
-    expect(dispatch).toHaveBeenCalledWith({ type: 'SET_SEATS_FOR_BUSINESS_SUBSCRIPTION', payload: 5 });
   });
 
   it('When setIsCheckoutReadyToRender is called, then it dispatches SET_IS_CHECKOUT_READY_TO_RENDER with the boolean value', () => {

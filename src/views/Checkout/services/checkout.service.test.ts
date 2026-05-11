@@ -8,12 +8,6 @@ import {
 } from '@internxt/sdk/dist/payments/types';
 import userService from 'services/user.service';
 
-vi.mock('./payment.service', () => ({
-  default: {
-    createSubscriptionWithTrial: vi.fn(),
-  },
-}));
-
 vi.mock('app/drive/services/size.service', () => ({
   bytesToString: (bytes: number) => `${bytes} B`,
 }));
@@ -41,6 +35,14 @@ vi.mock('app/core/factory/sdk', () => ({
     getNewApiInstance: vi.fn().mockReturnValue({
       createUsersClient: vi.fn().mockResolvedValue({
         handleIncompleteCheckout: vi.fn(),
+      }),
+      createPaymentsClient: vi.fn().mockResolvedValue({
+        fetchPromotionCodeByName: vi.fn().mockResolvedValue({
+          codeId: 'promo_123',
+          codeName: 'PROMO10',
+          amountOff: undefined,
+          percentOff: 10,
+        }),
       }),
       createCheckoutClient: vi.fn().mockResolvedValue({
         createCustomer: vi.fn().mockResolvedValue({
@@ -76,7 +78,6 @@ vi.mock('app/core/factory/sdk', () => ({
           id: 'py_id',
           invoiceStatus: 'paid',
         }),
-        fetchPrices: vi.fn().mockResolvedValue([{ id: 'price_1', currency: 'eur', amount: 1000 }]),
         verifyCryptoPayment: vi.fn().mockResolvedValue(true),
       }),
     }),
@@ -192,7 +193,6 @@ describe('Checkout Service tests', () => {
         customerId: 'cus_123',
         priceId: 'price_123',
         token: 'user_mocked_token',
-        quantity: 3,
         captchaToken: 'captcha_token',
       };
 
@@ -249,19 +249,17 @@ describe('Checkout Service tests', () => {
   });
 
   describe('Fetch promotion code by name', () => {
-    it('When a valid promo code is passed, then it returns correct promo data', async () => {
-      vi.spyOn(checkoutService, 'fetchPromotionCodeByName').mockResolvedValue({
-        codeId: 'promo_123',
-        codeName: 'PROMO',
-        amountOff: 500,
-        percentOff: undefined,
-      });
-      const result = await checkoutService.fetchPromotionCodeByName('price_123', 'PROMO');
+    test('When a valid promotion code name is provided, then the promotion code details are returned', async () => {
+      const priceId = 'price_123';
+      const promotionCodeName = 'PROMO10';
+
+      const result = await checkoutService.fetchPromotionCodeByName(priceId, promotionCodeName);
+
       expect(result).toEqual({
         codeId: 'promo_123',
-        codeName: 'PROMO',
-        amountOff: 500,
-        percentOff: undefined,
+        codeName: 'PROMO10',
+        amountOff: undefined,
+        percentOff: 10,
       });
     });
   });

@@ -257,6 +257,7 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
           planInfo={planInfo}
           currentUsage={currentUsage}
           userType={UserType.Business}
+          individualPlan={null}
         />
       )}
     </Section>

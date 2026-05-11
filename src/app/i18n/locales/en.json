@@ -276,7 +276,7 @@
         "lifetime": "lifetime"
       },
       "renewalTitle": {
-        "month": "monthly",
+        "month": "annual",
         "year": "annual",
         "lifetime": "lifetime"
       },
@@ -304,7 +304,8 @@
         "inputText": "Coupon code"
       },
       "apply": "Apply",
-      "taxes": "Taxes"
+      "taxes": "Taxes",
+      "annualBillingTemplate": "Annual plan, billed monthly at {{price}}{{currency}}/month for 12 months"
     },
     "confirmCryptoPayment": {
       "title": "Confirm the payment",
@@ -328,7 +329,8 @@
     "error": {
       "invalidPlan": "Unsupported plan type. Please select a valid plan.",
       "fetchingCryptoCurrencies": "We couldn't load the available cryptocurrency options",
-      "addressRequired": "Please complete your billing address to continue"
+      "addressRequired": "Please complete your billing address to continue",
+      "businessPlan": "Business plan is not available"
     }
   },
   "general": {
@@ -462,7 +464,9 @@
         "logout": "Log out",
         "referAndEarn": "Refer and Earn",
         "earnReferral": "Earn €100",
-        "spaceUsed": "{{space}}% space used"
+        "spaceUsed": "{{space}}% space used",
+        "account": "Account",
+        "giveFeedback": "Give Feedback"
       },
       "tabs": {
         "account": {
@@ -548,6 +552,13 @@
             "description": {
               "individual": "You are about to cancel your {{currentPlanName}} Internxt plan. By cancelling your plan, you will be downgraded to free Internxt {{freePlanName}} plan. Confirm your choice to proceed, please.",
               "business": "By cancelling your plan, the workspace will be deleted along with all data. Confirm your choice to proceed, please."
+            },
+            "commitment": {
+              "firstMonthDescription": "As you're still in your 30 day trial period, your cancellation will be immediate. You will no longer be billed and your account will revert to a free 1GB plan now.",
+              "description": "You have an annual subscription billed monthly. If you cancel now, your subscription will remain active until {{end_date}}, and you will continue to be charged monthly until that date.",
+              "monthsRemaining": "Remaining payments: {{monthsRemaining}}",
+              "amountPerMonth": "Amount per month: €{{amount}}",
+              "afterLabel": "After {{monthsRemaining}}"
             },
             "keepSubscription": "Keep subscription",
             "continue": "Continue",
@@ -856,6 +867,16 @@
     "itemsSelected": "items selected"
   },
   "modals": {
+    "downloadBackupKeys": {
+      "title": "Remember to download your backup key",
+      "description": "Your backup key is needed to recover your encrypted data. Internxt doesn’t store it — only you have it.",
+      "info": {
+        "text": "You can find your backup key anytime in ",
+        "path": "Settings → Account → Security"
+      },
+      "download": "Download backup keys",
+      "success": "You have your backup key. Make sure to store it somewhere safe."
+    },
     "renameItemDialog": {
       "title": "Rename",
       "label": "Name"
@@ -1185,7 +1206,9 @@
     "renamingItem": "Error when renaming item/s",
     "linkExpired": "This secure link has expired",
     "teamInvitation": "The invitation email could not be sent",
+    "ownerStorageIsFull": "Owner storage is full",
     "storageIsFull": "Your storage is full",
+    "ownerStorageIsFullDescription": "You can’t upload files in this shared folder.",
     "storageIsFullDescription": "You can’t upload, sync or backup files.",
     "noSpaceAvailable": "You’ve reached the limits of your current plan and sync has stopped. Upgrade now to keep your files synced securely.",
     "sharedFolderTooBig": "Internxt Drive does not support sharing folders of more than 1GB.",
@@ -1576,7 +1599,9 @@
     "continue": "Continue",
     "keepCurrent": "Keep current",
     "logOut": "Log out",
-    "locked": "Locked"
+    "locked": "Locked",
+    "remindMeLater": "Remind me later",
+    "backupKeySaved": "I've saved my key"
   },
   "toastNotification": {
     "textCopied": "Text copied to clipboard"
@@ -2043,6 +2068,7 @@
         "manageBilling": "Manage billing",
         "freeForever": "Free forever",
         "billedAnnually": "billed annually",
+        "billedMonthly": "billed monthly",
         "year": "Year",
         "month": "Month",
         "lifetime": "Lifetime",
@@ -2062,6 +2088,7 @@
             "title": "Essential",
             "features": [
               "1TB of encrypted cloud storage",
+              "Try risk-free for 30 days",
               "Post-Quantum Encryption",
               "Zero-Knowledge Encryption",
               "Two-Factor Authentication",
@@ -2075,6 +2102,7 @@
             "title": "Premium",
             "features": [
               "3TB of encrypted cloud storage",
+              "Try risk-free for 30 days",
               "Post-Quantum Encryption",
               "Zero-Knowledge Encryption",
               "Two-Factor Authentication",
@@ -2091,6 +2119,7 @@
             "title": "Ultimate",
             "features": [
               "5TB of encrypted cloud storage",
+              "Try risk-free for 30 days",
               "Post-Quantum Encryption",
               "Zero-Knowledge Encryption",
               "Two-Factor Authentication",

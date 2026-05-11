@@ -18,7 +18,6 @@ describe('Products custom hook', () => {
       amount: 10,
       interval: 'year',
       type: UserType.Individual,
-      minimumSeats: undefined,
     },
     taxes: {
       amountWithTax: 1210,
@@ -128,31 +127,6 @@ describe('Products custom hook', () => {
       expect((result.current.selectedPlan as any)?.decimalAmount).toBe(0);
     });
 
-    test('When fetching a plan returns a plan with seats, then the they are updated', async () => {
-      const planWithMinimumSeats = {
-        ...mockPriceWithTax,
-        price: {
-          ...mockPriceWithTax.price,
-          minimumSeats: 5,
-        },
-      };
-      vi.spyOn(checkoutService, 'getPriceById').mockResolvedValue(planWithMinimumSeats);
-      const props = {
-        planId: null,
-        promotionCode: undefined,
-        currency: 'eur',
-        translate: mockTranslate,
-      };
-
-      const { result } = renderHook(() => useProducts(props));
-
-      await act(async () => {
-        await result.current.fetchSelectedPlan({ priceId: 'price_business', currency: 'eur' });
-      });
-
-      expect(result.current.businessSeats).toBe(5);
-    });
-
     test('When fetching a plan without currency, then eur is used as default', async () => {
       vi.spyOn(checkoutService, 'getPriceById').mockResolvedValue(mockPriceWithTax);
       const props = {
@@ -187,7 +161,6 @@ describe('Products custom hook', () => {
       const { result } = renderHook(() => useProducts(props));
 
       expect(result.current).toHaveProperty('selectedPlan');
-      expect(result.current).toHaveProperty('businessSeats');
       expect(result.current).toHaveProperty('fetchSelectedPlan');
       expect(typeof result.current.fetchSelectedPlan).toBe('function');
     });

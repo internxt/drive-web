@@ -1,4 +1,4 @@
-import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeEach, describe, expect, it, test, vi } from 'vitest';
 import localStorageService from './local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { LocalStorageItem, Workspace } from 'app/core/types';
@@ -327,6 +327,79 @@ describe('Testing the local storage service', () => {
         expect(getFromLocalStorageSpy).toHaveBeenCalled();
         expect(getFromLocalStorageSpy).toHaveBeenCalledWith(STORAGE_KEYS.B2B_WORKSPACE);
         expect(workspaceCredentials).toBeNull();
+      });
+    });
+  });
+
+  describe('Backup key acknowledgment', () => {
+    const userId = mockUserSettings.uuid;
+    const seenAtKey = `backup_key_seen_at_${userId}`;
+    const acknowledgedKey = `backup_key_acknowledged_at_${userId}`;
+
+    describe('Get backup keys', () => {
+      test('When the user has never interacted with the backup keys dialog, then nothing is returned', () => {
+        const { saved, seenAt } = localStorageService.getBackupKeys();
+
+        expect(saved).toBe(false);
+        expect(seenAt).toBeNull();
+      });
+
+      test('When the user has acknowledged the backup key, then saved is true', () => {
+        localStorage.setItem(acknowledgedKey, 'true');
+
+        const { saved } = localStorageService.getBackupKeys();
+
+        expect(saved).toBe(true);
+      });
+
+      test('When the user has already been shown the dialog before, then the date is returned', () => {
+        const date = new Date().toISOString();
+        localStorage.setItem(seenAtKey, date);
+
+        const { seenAt } = localStorageService.getBackupKeys();
+
+        expect(seenAt).toBe(date);
+      });
+    });
+
+    describe('Set backup key saved', () => {
+      test('When the user saves the backup key, then the acknowledged flag is persisted for that user', () => {
+        localStorageService.setBackupKeysAcknowledged();
+
+        expect(localStorage.getItem(acknowledgedKey)).toBe('true');
+      });
+    });
+
+    describe('Track when the dialog was last shown', () => {
+      test('When the dialog is shown, then the date is persisted for that user', () => {
+        const date = new Date().toISOString();
+
+        localStorageService.setBackupKeysSeenAt(date);
+
+        expect(localStorage.getItem(seenAtKey)).toBe(date);
+      });
+    });
+
+    describe('Remove when the dialog was last shown', () => {
+      test('When the backup key is acknowledged, then the last seen date is removed for that user', () => {
+        localStorage.setItem(seenAtKey, new Date().toISOString());
+
+        localStorageService.removeBackupKeysSeenAt();
+
+        expect(localStorage.getItem(seenAtKey)).toBeNull();
+      });
+    });
+
+    describe('clear', () => {
+      test('When the user logs out, then the last seen date is removed but the acknowledged flag is kept', () => {
+        const date = new Date().toISOString();
+        localStorage.setItem(seenAtKey, date);
+        localStorage.setItem(acknowledgedKey, 'true');
+
+        localStorageService.clear();
+
+        expect(localStorage.getItem(seenAtKey)).toBeNull();
+        expect(localStorage.getItem(acknowledgedKey)).toBe('true');
       });
     });
   });

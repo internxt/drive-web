@@ -1,8 +1,8 @@
 import { Dispatch } from 'react';
 import { Action } from '../store';
-import { AuthMethodTypes, CouponCodeData, ErrorType } from '../types';
+import { AuthMethodTypes, ErrorType } from '../types';
+import { CouponCodeData, DisplayPrice } from '@internxt/sdk/dist/drive/payments/types/types';
 import { StripeElementsOptions } from '@stripe/stripe-js';
-import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types/types';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 
 export const useCheckout = (dispatchReducer: Dispatch<Action>) => {
@@ -34,10 +34,6 @@ export const useCheckout = (dispatchReducer: Dispatch<Action>) => {
 
   const setPlan = (plan: PriceWithTax) => {
     dispatchReducer({ type: 'SET_PLAN', payload: plan });
-  };
-
-  const setSeatsForBusinessSubscription = (seats: number) => {
-    dispatchReducer({ type: 'SET_SEATS_FOR_BUSINESS_SUBSCRIPTION', payload: seats });
   };
 
   const setSelectedPlan = (selectedPlan: PriceWithTax) => {
@@ -95,7 +91,6 @@ export const useCheckout = (dispatchReducer: Dispatch<Action>) => {
     setPromoCodeData,
     setSelectedPlan,
     setStripeElementsOptions,
-    setSeatsForBusinessSubscription,
     setPrices,
     setIsCheckoutReadyToRender,
     setIsUpdateSubscriptionDialogOpen,

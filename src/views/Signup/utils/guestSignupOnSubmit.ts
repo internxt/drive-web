@@ -5,7 +5,6 @@ import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
 import { parseAndDecryptUserKeys } from 'app/crypto/services/keys.service';
 import { userActions, userThunks } from 'app/store/slices/user';
-import { productsThunks } from 'app/store/slices/products';
 import { planThunks } from 'app/store/slices/plan';
 import { AppDispatch } from 'app/store';
 
@@ -68,7 +67,6 @@ export const guestSignupOnSubmit = async ({
 
     dispatch(userActions.setUser(user));
     await dispatch(userThunks.initializeUserThunk());
-    dispatch(productsThunks.initializeThunk());
     dispatch(planThunks.initializeThunk());
 
     return navigationService.push(redirectTo);

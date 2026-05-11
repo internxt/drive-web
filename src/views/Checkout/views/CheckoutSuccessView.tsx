@@ -7,6 +7,7 @@ import localStorageService from 'services/local-storage.service';
 import { trackPaymentConversion } from 'app/analytics/impact.service';
 import gaService from 'app/analytics/ga.service';
 import metaService from 'app/analytics/meta.service';
+import { userStoragePolling } from 'utils/userStoragePolling.utils';
 
 export function removePaymentsStorage() {
   localStorageService.removeItem('subscriptionId');
@@ -41,6 +42,8 @@ const CheckoutSuccessView = (): JSX.Element => {
     } catch (err) {
       console.error('Analytics error:', err);
     }
+
+    userStoragePolling();
 
     navigationService.push(AppView.Drive);
   }, [dispatch]);

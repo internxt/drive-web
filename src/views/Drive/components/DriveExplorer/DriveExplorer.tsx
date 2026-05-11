@@ -21,7 +21,6 @@ import { ContextMenu, Empty } from '@internxt/ui';
 import { t } from 'i18next';
 import BannerWrapper from 'app/banners/BannerWrapper';
 import deviceService from 'services/device.service';
-import errorService from 'services/error.service';
 import navigationService from 'services/navigation.service';
 import { ClearTrashDialog } from 'views/Trash/components';
 import { CreateFolderDialog } from 'views/Drive/components';
@@ -60,8 +59,6 @@ import WarningMessageWrapper from 'views/Home/components/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import { ShareDialogWrapper } from 'app/drive/components/ShareDialog/ShareDialogWrapper';
-import RealtimeService from 'services/sockets/socket.service';
-import { eventHandler } from 'services/sockets/event-handler.service';
 
 const MenuItemToGetSize = ({
   isTrash,
@@ -307,23 +304,11 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     },
   );
 
-  const realtimeService = RealtimeService.getInstance();
-
   useEffect(() => {
     if (itemToRename) {
       setEditNameItem(itemToRename);
     }
   }, [itemToRename]);
-
-  useEffect(() => {
-    try {
-      const cleanup = realtimeService.onEvent((data) => eventHandler.onFileCreated(data, currentFolderId));
-
-      return cleanup;
-    } catch (err) {
-      errorService.reportError(err);
-    }
-  }, [currentFolderId]);
 
   useEffect(() => {
     deviceService.redirectForMobile();
