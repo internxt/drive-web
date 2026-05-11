@@ -2053,7 +2053,6 @@
             "comingSoonFeatures": ["Mail", "Fotos"]
           },
           "default": {
-            "freeTitle": "Kostenlos",
             "bytesTitle": "{{bytes}}",
             "features": ["{{bytes}} verschlüsselter Cloud-Speicher", "Verschlüsseltes VPN"]
           }

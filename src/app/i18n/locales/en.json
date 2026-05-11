@@ -2137,7 +2137,6 @@
             "comingSoonFeatures": ["Mail", "Photos"]
           },
           "default": {
-            "freeTitle": "Free",
             "bytesTitle": "{{bytes}}",
             "features": ["{{bytes}} of encrypted storage", "Encrypted VPN"]
           }

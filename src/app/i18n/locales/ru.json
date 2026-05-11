@@ -2074,7 +2074,6 @@
             "comingSoonFeatures": ["Mail (Почта)", "Фотографии"]
           },
           "default": {
-            "freeTitle": "Free (Бесплатный)",
             "bytesTitle": "{{bytes}}",
             "features": ["{{bytes}} зашифрованного облачного хранилища", "Зашифрованный VPN"]
           }

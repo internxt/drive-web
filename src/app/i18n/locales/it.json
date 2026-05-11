@@ -2166,7 +2166,6 @@
             "comingSoonFeatures": ["Mail", "Foto"]
           },
           "default": {
-            "freeTitle": "Gratuito",
             "bytesTitle": "{{bytes}}",
             "features": ["{{bytes}} di spazio di archiviazione cloud crittografato", "VPN Crittografata"]
           }

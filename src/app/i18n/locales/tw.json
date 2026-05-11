@@ -2064,7 +2064,6 @@
             "comingSoonFeatures": ["郵件 (Mail)", "照片(Photos)"]
           },
           "default": {
-            "freeTitle": "Free (免費版)",
             "bytesTitle": "{{bytes}}",
             "features": ["{{bytes}} 加密雲端儲存空間", "加密 VPN"]
           }

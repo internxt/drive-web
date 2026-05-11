@@ -2059,7 +2059,6 @@
             "comingSoonFeatures": ["Mail", "Photos"]
           },
           "default": {
-            "freeTitle": "Gratuit",
             "bytesTitle": "{{bytes}}",
             "features": ["{{bytes}} de stockage cloud chiffré", "VPN Chiffré"]
           }

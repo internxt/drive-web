@@ -69,10 +69,11 @@ export const CheckoutProductCard = ({
   const planType = 'planFeaturesList';
 
   const specificTitleKey = `preferences.account.plans.${planType}.${bytes}.title`;
+  const specificTransalatedKey = translate(specificTitleKey);
   const productLabel =
-    translate(specificTitleKey) === specificTitleKey
+    specificTransalatedKey === specificTitleKey
       ? translate('preferences.account.plans.planFeaturesList.default.bytesTitle', { bytes })
-      : translate(specificTitleKey);
+      : specificTransalatedKey;
 
   const specificFeatures = translateList(`preferences.account.plans.${planType}.${bytes}.features`, {
     returnObjects: true,

@@ -2113,7 +2113,6 @@
             "comingSoonFeatures": ["Mail", "Fotos"]
           },
           "default": {
-            "freeTitle": "Gratis",
             "bytesTitle": "{{bytes}}",
             "features": ["{{bytes}} de almacenamiento en la nube cifrado", "VPN cifrada"]
           }
