@@ -1,5 +1,5 @@
-import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types/types';
-import { AuthMethodTypes, CouponCodeData, PartialErrorState } from '../types';
+import { CouponCodeData, DisplayPrice } from '@internxt/sdk/dist/drive/payments/types/types';
+import { AuthMethodTypes, PartialErrorState } from '../types';
 import { StripeElementsOptions } from '@stripe/stripe-js';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 
@@ -13,7 +13,6 @@ export interface State {
   isUpdatingSubscription: boolean;
   prices: DisplayPrice[];
   country: string;
-  seatsForBusinessSubscription: number;
   authMethod: AuthMethodTypes;
   couponCodeData?: CouponCodeData;
   elementsOptions?: StripeElementsOptions;
@@ -30,7 +29,6 @@ export type Action =
   | { type: 'SET_IS_UPDATING_SUBSCRIPTION'; payload: boolean }
   | { type: 'SET_PRICES'; payload: DisplayPrice[] }
   | { type: 'SET_COUNTRY'; payload: string }
-  | { type: 'SET_SEATS_FOR_BUSINESS_SUBSCRIPTION'; payload: number }
   | { type: 'SET_COUPON_CODE_DATA'; payload: CouponCodeData | undefined }
   | { type: 'SET_ELEMENTS_OPTIONS'; payload: StripeElementsOptions }
   | { type: 'SET_AUTH_METHOD'; payload: AuthMethodTypes }

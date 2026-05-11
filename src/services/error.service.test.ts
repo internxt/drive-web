@@ -35,13 +35,13 @@ describe('Error Service', () => {
       status,
       headers: xRequestId ? { 'x-request-id': xRequestId } : {},
     } as AxiosResponse;
-    return new AxiosResponseError('Request failed with status code ' + status, 'GET /api/test', response);
+    return new AxiosResponseError('Request failed with status code ' + status, 'GET /api/test', response as any);
   };
 
   const createAxiosUnknownError = (message: string, hasRequest: boolean, code?: string): AxiosUnknownError => {
     const axiosErr = new AxiosError(message, code);
     if (hasRequest) (axiosErr as any).request = {};
-    return new AxiosUnknownError(message, 'GET /api/test', axiosErr);
+    return new AxiosUnknownError(message, 'GET /api/test', axiosErr as any);
   };
 
   describe('reportError', () => {

@@ -24,7 +24,6 @@ vi.mock('views/Checkout/services', () => ({
   paymentService: {},
   authCheckoutService: {},
   checkoutService: {},
-  fetchProducts: vi.fn(),
   ProductService: {},
 }));
 

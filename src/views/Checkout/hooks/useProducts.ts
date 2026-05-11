@@ -26,7 +26,6 @@ interface FetchSelectedPlanPayload {
 
 export const useProducts = ({ currency, planId, promotionCode, userLocation, userAddress }: UseProductsProps) => {
   const [selectedPlan, setSelectedPlan] = useState<PriceWithTax>();
-  const [businessSeats, setBusinessSeats] = useState<number>(1);
 
   useEffect(() => {
     if (!planId || !userAddress) return;
@@ -56,16 +55,12 @@ export const useProducts = ({ currency, planId, promotionCode, userLocation, use
 
     const amount = mobileToken ? { amount: 0, decimalAmount: 0 } : {};
     setSelectedPlan({ ...plan, ...amount });
-    if (plan?.price?.minimumSeats) {
-      setBusinessSeats(plan.price.minimumSeats);
-    }
 
     return plan;
   };
 
   return {
     selectedPlan,
-    businessSeats,
     fetchSelectedPlan,
   };
 };

@@ -1,4 +1,4 @@
-import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
+import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { Stripe, StripeElements } from '@stripe/stripe-js';
 import { ActionDialog, DialogActionConfig } from 'app/contexts/dialog-manager/ActionDialogManager.context';
@@ -72,21 +72,7 @@ export enum RenewalPeriod {
   Annually = 'annually',
 }
 
-export type RequestedPlanData = DisplayPrice & {
-  decimalAmount: number;
-  type: UserType;
-  minimumSeats?: number;
-  maximumSeats?: number;
-};
-
 export type AuthMethodTypes = 'signUp' | 'signIn' | 'userIsSignedIn';
-
-export interface CouponCodeData {
-  codeId: string;
-  codeName: string;
-  amountOff?: number;
-  percentOff?: number;
-}
 
 export type ErrorType = 'auth' | 'stripe' | 'coupon';
 
@@ -99,7 +85,6 @@ export interface CreatePaymentIntentPayload {
   currency: string;
   captchaToken: string;
   userAddress: string;
-  seatsForBusinessSubscription?: number;
   promoCodeId?: string;
 }
 
@@ -116,7 +101,6 @@ export interface ProcessPurchasePayload {
   openCryptoPaymentDialog?: (key: ActionDialog, config?: DialogActionConfig) => void;
   translate: (key: string) => string;
   currentSelectedPlan: PriceWithTax;
-  seatsForBusinessSubscription?: number;
   couponCodeData?: CouponCodeData;
   isFirstPurchase?: boolean;
 }
@@ -136,7 +120,6 @@ export interface UseUserPaymentPayload {
   captchaToken: string;
   translate: (key: string) => string;
   couponCodeData?: CouponCodeData;
-  seatsForBusinessSubscription?: number;
 }
 
 export enum PlanInterval {
