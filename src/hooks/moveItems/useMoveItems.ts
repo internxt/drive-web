@@ -1,4 +1,5 @@
 import { FileStatus } from '@internxt/sdk/dist/drive/storage/types';
+import { AppView } from 'app/core/types';
 import { DriveFileData, DriveFolderData, DriveItemData } from 'app/drive/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { RootState } from 'app/store';
@@ -13,7 +14,7 @@ import { IRoot } from 'app/store/slices/storage/types';
 import { uiActions } from 'app/store/slices/ui';
 import { t } from 'i18next';
 import { useSelector } from 'react-redux';
-import { errorService } from 'services';
+import { errorService, navigationService } from 'services';
 
 interface ProcessMoveProps {
   finalDestinationId: string;
@@ -48,21 +49,45 @@ export const useMoveItems = () => {
     }
   };
 
-  const restoreItemFromTrash = async ({ finalDestinationId, items }: Omit<ProcessMoveProps, 'displayTaskLogger'>) => {
+  const goFolder = async (folderUuid: string, workspacesToken?: string) => {
     try {
-      await processMove({
-        finalDestinationId,
-        items,
-      });
-
-      dispatch(storageActions.popItemsToDelete(items));
+      navigationService.pushFolder(folderUuid, workspacesToken);
     } catch (error) {
-      const castedError = errorService.castError(error);
-      notificationsService.show({
-        text: t('error.errorRestoringItemFromTrash'),
-        type: ToastType.Error,
-        requestId: castedError.requestId,
-      });
+      navigationService.push(AppView.FolderFileNotFound, { itemType: 'folder' });
+      errorService.reportError(error);
+    }
+  };
+
+  const restoreItemFromTrash = async (item: DriveItemData) => {
+    if (item.parent?.status === FileStatus.EXISTS) {
+      dispatch(storageActions.setItemsToMove([item]));
+      dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+    } else {
+      try {
+        await processMove({
+          finalDestinationId: item.parent?.uuid as string,
+          items: [item],
+        });
+        const goToDriveId = notificationsService.show({
+          text: t('notificationMessages.restoreItems'),
+          type: ToastType.Success,
+          action: {
+            text: t('notificationMessages.goToDrive'),
+            onClick: () => {
+              goFolder(item[0].parent?.uuid as string);
+              notificationsService.dismiss(goToDriveId);
+            },
+          },
+        });
+        dispatch(storageActions.popItemsToDelete([item]));
+      } catch (error) {
+        const castedError = errorService.castError(error);
+        notificationsService.show({
+          text: t('error.errorRestoringItemFromTrash'),
+          type: ToastType.Error,
+          requestId: castedError.requestId,
+        });
+      }
     }
   };
 
@@ -72,12 +97,17 @@ export const useMoveItems = () => {
 
     await Promise.all(
       restorable.map((item) =>
-        restoreItemFromTrash({
+        processMove({
           finalDestinationId: item.parent!.uuid,
           items: [item],
         }),
       ),
     );
+
+    notificationsService.show({
+      text: t('notificationMessages.restoreItems'),
+      type: ToastType.Success,
+    });
 
     if (needsDestination.length > 0) {
       dispatch(storageActions.setItemsToMove(needsDestination));
