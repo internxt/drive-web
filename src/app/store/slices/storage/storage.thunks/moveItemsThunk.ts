@@ -16,12 +16,13 @@ import { StorageState } from '../storage.model';
 export interface MoveItemsPayload {
   items: DriveItemData[];
   destinationFolderId: string;
+  displayTaskLogger?: boolean;
 }
 
 export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: RootState }>(
   'storage/moveItems',
   async (payload: MoveItemsPayload, { dispatch }) => {
-    const { items, destinationFolderId } = payload;
+    const { items, destinationFolderId, displayTaskLogger } = payload;
     const promises: Promise<void>[] = [];
 
     if (items.some((item) => item.isFolder && item.uuid === destinationFolderId)) {
@@ -33,34 +34,38 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
       const fromFolderId = item.folderUuid || item.parentUuid;
       let taskId: string;
 
-      if (item.isFolder) {
-        taskId = tasksService.create<MoveFolderTask>({
-          action: TaskType.MoveFolder,
-          showNotification: true,
-          folder: item,
-          destinationFolderId,
-          cancellable: false,
-        });
-      } else {
-        taskId = tasksService.create<MoveFileTask>({
-          action: TaskType.MoveFile,
-          showNotification: true,
-          file: item,
-          destinationFolderId,
-          cancellable: false,
-        });
+      if (displayTaskLogger) {
+        if (item.isFolder) {
+          taskId = tasksService.create<MoveFolderTask>({
+            action: TaskType.MoveFolder,
+            showNotification: true,
+            folder: item,
+            destinationFolderId,
+            cancellable: false,
+          });
+        } else {
+          taskId = tasksService.create<MoveFileTask>({
+            action: TaskType.MoveFile,
+            showNotification: true,
+            file: item,
+            destinationFolderId,
+            cancellable: false,
+          });
+        }
       }
 
       promises.push(storageService.moveItem(item, destinationFolderId));
 
       promises[index]
         .then(async () => {
-          tasksService.updateTask({
-            taskId,
-            merge: {
-              status: TaskStatus.Success,
-            },
-          });
+          if (displayTaskLogger) {
+            tasksService.updateTask({
+              taskId,
+              merge: {
+                status: TaskStatus.Success,
+              },
+            });
+          }
 
           dispatch(
             storageActions.popItems({

@@ -10,7 +10,7 @@ import navigationService from 'services/navigation.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { skinSkeleton, skinSkeletonTrash } from 'components/Skeleton';
 import { moveItemsToTrash } from 'views/Trash/services';
-import { OrderDirection, OrderSettings } from 'app/core/types';
+import { AppView, OrderDirection, OrderSettings } from 'app/core/types';
 import shareService from 'app/share/services/share.service';
 import { AppDispatch, RootState } from 'app/store';
 import { sharedThunks } from 'app/store/slices/sharedLinks';
@@ -36,6 +36,10 @@ import {
 import { List } from '@internxt/ui';
 import { DownloadManager } from 'app/network/DownloadManager';
 import { useVersionHistoryMenuConfig } from 'views/Drive/hooks/useVersionHistoryMenuConfig';
+import { FileStatus } from '@internxt/sdk/dist/drive/storage/types';
+import { useMoveItems } from 'hooks/moveItems/useMoveItems';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { errorService } from 'services';
 
 interface DriveExplorerListProps {
   folderId: string;
@@ -90,7 +94,7 @@ const resetDriveOrder = ({
   direction,
   currentFolderId,
 }: {
-  dispatch;
+  dispatch: AppDispatch;
   orderType: string;
   direction: string;
   currentFolderId: string;
@@ -108,6 +112,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
   const workspaceCredentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
+  const { restoreItemFromTrash, restoreItemsFromTrash } = useMoveItems();
 
   const isWorkspaceSelected = !!selectedWorkspace;
   const isSelectedMultipleItemsAndNotTrash = props.selectedItems.length > 1 && !props.isTrash;
@@ -198,9 +203,35 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   );
 
   const restoreItem = useCallback(
-    (item: DriveItemData | Pick<DriveItemData, SortField>) => {
-      dispatch(storageActions.setItemsToMove([item as DriveItemData]));
-      dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+    async (item: DriveItemData | Pick<DriveItemData, SortField | 'parent'>) => {
+      if (item.parent?.status === FileStatus.EXISTS) {
+        await restoreItemFromTrash({
+          finalDestinationId: item.parent?.uuid,
+          items: [item as DriveItemData],
+        });
+
+        const goToDriveId = notificationsService.show({
+          text: translate('notificationMessages.restoreItems'),
+          type: ToastType.Success,
+          action: {
+            text: translate('notificationMessages.goToDrive'),
+            onClick: () => {
+              if (props.selectedItems.length === 1) {
+                try {
+                  navigationService.pushFolder(props.selectedItems[0].parent?.uuid);
+                } catch (error) {
+                  navigationService.push(AppView.FolderFileNotFound, { itemType: 'folder' });
+                  errorService.reportError(error);
+                }
+              }
+              notificationsService.dismiss(goToDriveId);
+            },
+          },
+        });
+      } else {
+        dispatch(storageActions.setItemsToMove([item as DriveItemData]));
+        dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+      }
     },
     [dispatch, storageActions, uiActions],
   );
@@ -310,9 +341,12 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   });
 
   const multipleSelectedTrashItemsContextMenu = contextMenuMultipleSelectedTrashItems({
-    restoreItem: () => {
-      dispatch(storageActions.setItemsToMove(props.selectedItems));
-      dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+    restoreItem: async () => {
+      await restoreItemsFromTrash(props.selectedItems);
+      notificationsService.show({
+        text: translate('notificationMessages.restoreItems'),
+        type: ToastType.Success,
+      });
     },
     deletePermanently: () => {
       dispatch(storageActions.setItemsToDelete(props.selectedItems));

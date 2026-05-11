@@ -87,7 +87,7 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
   const isItemShared = (item.sharings?.length ?? 0) > 0;
   const isInteractive = isItemInteractive(item);
   const itemClassNames = getItemClassNames(isItemSelected(item), isDraggingOverThisItem, isDraggingThisItem);
-  const parentFolderName = item.parent?.status === FileStatus.EXISTS ? (item.parent?.plainName ?? 'Drive') : '-';
+  const parentFolderName = item.parent?.plainName ?? 'Drive';
 
   const template = (
     <div
@@ -166,7 +166,11 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
 
       {isTrash && (
         <div className="flex shrink-0 w-date items-center whitespace-nowrap pr-3" title={parentFolderName}>
-          <p className="truncate">{parentFolderName}</p>
+          {item.parent?.status === FileStatus.EXISTS ? (
+            <p className="truncate">{parentFolderName}</p>
+          ) : (
+            <span className="opacity-25">—</span>
+          )}
         </div>
       )}
 

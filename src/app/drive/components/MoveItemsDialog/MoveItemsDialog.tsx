@@ -11,23 +11,18 @@ import { RootState, store } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { setItemsToMove, storageActions } from 'app/store/slices/storage';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
-import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { fetchDialogContentThunk } from 'app/store/slices/storage/storage.thunks/fetchDialogContentThunk';
 import { getAncestorsAndSetNamePath } from 'app/store/slices/storage/storage.thunks/goToFolderThunk';
 import { uiActions } from 'app/store/slices/ui';
 import folderImage from 'assets/icons/light/folder.svg';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import {
-  handleRepeatedUploadingFiles,
-  handleRepeatedUploadingFolders,
-} from 'app/store/slices/storage/storage.thunks/renameItemsThunk';
-import { IRoot } from 'app/store/slices/storage/types';
-import { DriveFileData, DriveFolderData, DriveItemData, FolderPathDialog } from 'app/drive/types';
+import { DriveItemData, FolderPathDialog } from 'app/drive/types';
 import { CreateFolderDialog } from 'views/Drive/components';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import localStorageService from 'services/local-storage.service';
 import { STORAGE_KEYS } from 'services/storage-keys';
+import { useMoveItems } from 'hooks/moveItems/useMoveItems';
 
 interface MoveItemsDialogProps {
   onItemsMoved?: () => void;
@@ -54,6 +49,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const isDriveAndCurrentFolder = !props.isTrash && itemParentId === destinationId;
   const workspaceSelected = useSelector(workspacesSelectors.getSelectedWorkspace);
   const isWorkspaceSelected = !!workspaceSelected;
+  const { moveItemFromDialog } = useMoveItems();
 
   const onCreateFolderButtonClicked = () => {
     dispatch(uiActions.setIsCreateFolderDialogOpen(true));
@@ -167,32 +163,6 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     }
   };
 
-  const prepareDestinationFolder = (destinationFolderId: string, namePaths: FolderPathDialog[]) => {
-    if (destinationFolderId !== currentFolderId) {
-      namePaths.push({ uuid: destinationId, name: selectedFolderName });
-    }
-    return destinationFolderId || currentFolderId;
-  };
-
-  const processItemsMove = async (finalDestinationId: string) => {
-    const files = itemsToMove.filter((item) => item.type !== 'folder') as DriveFileData[];
-    const folders = itemsToMove.filter((item) => item.type === 'folder') as (IRoot | DriveFolderData)[];
-
-    const filesWithoutDuplicates = await handleRepeatedUploadingFiles(files, dispatch, finalDestinationId);
-    const foldersWithoutDuplicates = await handleRepeatedUploadingFolders(folders, dispatch, finalDestinationId);
-
-    const itemsToMoveWithoutDuplicates = [...filesWithoutDuplicates, ...foldersWithoutDuplicates];
-
-    if (itemsToMoveWithoutDuplicates.length > 0) {
-      await dispatch(
-        storageThunks.moveItemsThunk({
-          items: itemsToMoveWithoutDuplicates as DriveItemData[],
-          destinationFolderId: finalDestinationId,
-        }),
-      );
-    }
-  };
-
   const finalizeMove = () => {
     props.onItemsMoved?.();
     setIsLoading(false);
@@ -203,7 +173,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     store.dispatch(storageActions.popItemsToDelete(itemsToMove));
   };
 
-  const onAccept = async (destinationFolderId: string, _: string, namePaths: FolderPathDialog[]): Promise<void> => {
+  const onAccept = async (destinationFolderId: string): Promise<void> => {
     try {
       dispatch(storageActions.setMoveDestinationFolderId(destinationFolderId));
       setIsLoading(true);
@@ -213,8 +183,10 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
         return;
       }
 
-      const finalDestinationId = prepareDestinationFolder(destinationFolderId, namePaths);
-      await processItemsMove(finalDestinationId);
+      await moveItemFromDialog({
+        finalDestinationId: destinationFolderId,
+        items: itemsToMove,
+      });
       finalizeMove();
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
@@ -261,11 +233,11 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
               </div>
             ) : (
               shownFolders
-                .sort((a, b) => a.name.localeCompare(b.name))
+                .toSorted((a, b) => a.name.localeCompare(b.name))
                 .map((folder) => {
                   return (
-                    <div
-                      className={`cursor-pointer ${
+                    <button
+                      className={`cursor-pointer w-full justify-between ${
                         destinationId === folder.uuid
                           ? 'bg-primary/10 text-primary dark:bg-primary/20'
                           : 'hover:bg-gray-1 dark:hover:bg-gray-5'
@@ -274,15 +246,17 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
                       onClick={() => onFolderClicked(folder.uuid, folder.name)}
                       key={folder.id}
                     >
-                      <img className="flex h-8 w-8" alt="Folder icon" src={folderImage} />
-                      <span className="w-full flex-1 truncate text-base" title={folder.name}>
-                        {folder.name}
-                      </span>
+                      <div className="flex flex-row gap-3 items-center">
+                        <img className="flex h-8 w-8" alt="Folder icon" src={folderImage} />
+                        <span className="w-full flex-1 truncate text-base" title={folder.name}>
+                          {folder.name}
+                        </span>
+                      </div>
                       <CaretRight
                         onClick={() => onShowFolderContentClicked(folder.uuid, folder.name)}
                         className="h-6 w-6"
                       />
-                    </div>
+                    </button>
                   );
                 })
             )}
@@ -303,9 +277,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
             <Button
               disabled={isLoading || isDriveAndCurrentFolder}
               variant="primary"
-              onClick={() =>
-                onAccept(destinationId ? destinationId : currentFolderId, currentFolderName, currentNamePaths)
-              }
+              onClick={() => onAccept(destinationId ?? currentFolderId)}
             >
               {!props.isTrash ? translate('actions.move') : translate('actions.restoreHere')}
             </Button>
