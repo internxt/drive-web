@@ -41,10 +41,16 @@ export const guestSignupOnSubmit = async ({
 
   try {
     const { email, password, token } = formData;
-    const { xUser, xNewToken, mnemonic } = await doRegisterPreCreatedUser(email, password, invitationId, token || '');
+    const { xUser, xToken, xNewToken, mnemonic } = await doRegisterPreCreatedUser(
+      email,
+      password,
+      invitationId,
+      token || '',
+    );
 
     localStorageService.clear();
 
+    localStorageService.set(LocalStorageItem.UserToken, xToken);
     localStorageService.set(LocalStorageItem.UserMnemonic, mnemonic);
     localStorageService.set(LocalStorageItem.NewToken, xNewToken);
 
