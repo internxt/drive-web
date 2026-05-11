@@ -21,13 +21,7 @@ import FolderFileNotFound from 'app/drive/views/FolderFileNotFound/FolderFileNot
 import RecentsView from 'views/Recents';
 import RequestAccess from 'app/drive/views/RequestAccess/RequestAccess';
 import TrashView from 'views/Trash';
-import {
-  CheckoutCancelView,
-  CheckoutSessionId,
-  CheckoutSuccessView,
-  CheckoutViewWrapper,
-  PcCloudSuccess,
-} from 'views/Checkout';
+import { CheckoutCancelView, CheckoutSessionId, CheckoutSuccessView, CheckoutViewWrapper } from 'views/Checkout';
 import { ShareFileView, ShareFolderView } from 'views/PublicShared';
 import RedirectToAppView from '../../core/views/RedirectToAppView/RedirectToAppView';
 import SharedViewWrapper from 'views/Shared/SharedViewWrapper';
@@ -58,7 +52,6 @@ const views: Array<{
   { id: AppView.FolderFileNotFound, component: FolderFileNotFound },
   { id: AppView.Deactivation, component: DeactivationView },
   { id: AppView.CheckoutSuccess, component: CheckoutSuccessView },
-  { id: AppView.PcCloudSuccess, component: PcCloudSuccess },
   { id: AppView.CheckoutCancel, component: CheckoutCancelView },
   { id: AppView.CheckoutSession, component: CheckoutSessionId },
   { id: AppView.Checkout, component: CheckoutViewWrapper },

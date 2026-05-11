@@ -8,6 +8,7 @@ import { CryptoCurrency, PriceWithTax } from '@internxt/sdk/dist/payments/types'
 import { IS_CRYPTO_PAYMENT_ENABLED, THEME_STYLES } from '../constants';
 import { PlanInterval } from '../types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 
 interface UseInitializeCheckoutProps {
   checkoutTheme: string;
@@ -27,6 +28,14 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
   }, []);
 
   useEffect(() => {
+    if (price?.price.type === UserType.Business) {
+      notificationsService.show({
+        text: translate('checkout.error.businessPlan'),
+        type: ToastType.Warning,
+      });
+      return redirectToFallbackPage();
+    }
+
     if (stripeSdk && price) {
       loadStripeAndCrypto();
     }

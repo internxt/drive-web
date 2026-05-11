@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { getProductAmount } from './getProductAmount';
-import { CouponCodeData } from '../types';
+import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
 
 describe('Calculating final price of a product', () => {
   it('When there is no coupon, returns base amount multiplied by users', () => {

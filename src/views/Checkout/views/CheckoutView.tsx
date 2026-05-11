@@ -1,16 +1,15 @@
-import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
+import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
 import { Button, Loader } from '@internxt/ui';
 import { AddressElement, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { StripePaymentElementOptions } from '@stripe/stripe-js';
 import { IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { OptionalB2BDropdown } from '../components/OptionalB2BDropdown';
 import { LegacyRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { CheckoutProductCard } from '../components/CheckoutProductCard';
 import { CheckoutUserAuth } from '../components/CheckoutUserAuth';
 import { HeaderComponent } from '../components/Header';
-import { AuthMethodTypes, CouponCodeData, PaymentType } from '../types';
+import { AuthMethodTypes, PaymentType } from '../types';
 import { CheckoutViewManager, UserInfoProps } from '../types/checkout.types';
 import { CryptoCurrency, PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { AvailableCryptoCurrenciesDropdown } from '../components/AvailableCryptoCurrenciesDropdown';
@@ -30,7 +29,6 @@ export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
 interface CheckoutViewProps {
   userInfo: UserInfoProps;
   isUserAuthenticated: boolean;
-  showHardcodedRenewal?: string;
   showCouponCode: boolean;
   userAuthComponentRef: LegacyRef<HTMLDivElement>;
   checkoutViewVariables: {
@@ -39,7 +37,6 @@ interface CheckoutViewProps {
     authError?: string;
     couponCodeError?: string;
     couponCodeData?: CouponCodeData;
-    seatsForBusinessSubscription: number;
     currentSelectedPlan: PriceWithTax | null;
     selectedCurrency: string;
   };
@@ -56,7 +53,6 @@ const CheckoutView = ({
   userInfo,
   isUserAuthenticated,
   showCouponCode,
-  showHardcodedRenewal,
   userAuthComponentRef,
   checkoutViewVariables,
   checkoutViewManager,
@@ -69,16 +65,8 @@ const CheckoutView = ({
   const stripeSDK = useStripe();
   const elements = useElements();
   const [isCryptoDropdownOpen, setIsCryptoDropdownOpen] = useState<boolean>(false);
-  const {
-    isPaying,
-    couponCodeError,
-    authError,
-    authMethod,
-    couponCodeData,
-    seatsForBusinessSubscription,
-    currentSelectedPlan,
-    selectedCurrency,
-  } = checkoutViewVariables;
+  const { isPaying, couponCodeError, authError, authMethod, couponCodeData, currentSelectedPlan, selectedCurrency } =
+    checkoutViewVariables;
 
   const onCryptoDropdownToggle = () => {
     if (!isCryptoDropdownOpen) {
@@ -127,8 +115,6 @@ const CheckoutView = ({
     checkoutViewManager.onCheckoutButtonClicked(formData, event, stripeSDK, elements);
   };
 
-  const isBusinessPlan = currentSelectedPlan.price.type === UserType.Business;
-
   return (
     <form
       className="flex h-full overflow-y-scroll bg-gray-1 lg:w-screen xl:px-16"
@@ -168,9 +154,6 @@ const CheckoutView = ({
                       }}
                     />
                   </div>
-                  {isBusinessPlan ? (
-                    <OptionalB2BDropdown errors={errors} register={register} translate={translate} />
-                  ) : undefined}
                 </div>
                 <p className="text-2xl font-semibold text-gray-100">3. {translate('checkout.paymentTitle')}</p>
                 <div className="flex flex-col w-full gap-2">
@@ -201,11 +184,8 @@ const CheckoutView = ({
               <CheckoutProductCard
                 selectedPlan={currentSelectedPlan}
                 couponCodeData={couponCodeData}
-                showHardcodedRenewal={showHardcodedRenewal}
                 showCouponCode={showCouponCode}
                 couponError={couponCodeError}
-                seatsForBusinessSubscription={seatsForBusinessSubscription}
-                onSeatsChange={checkoutViewManager.onSeatsChange}
                 onCouponInputChange={checkoutViewManager.onCouponInputChange}
                 onRemoveAppliedCouponCode={checkoutViewManager.onRemoveAppliedCouponCode}
               />
