@@ -17,7 +17,7 @@ import { sharedThunks } from 'app/store/slices/sharedLinks';
 import { storageActions } from 'app/store/slices/storage';
 import { uiActions } from 'app/store/slices/ui';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-import { DriveItemData, DriveItemDetails } from 'app/drive/types';
+import { DriveItemData, DriveItemDetails, SortField } from 'app/drive/types';
 import EditItemNameDialog from 'app/drive/components/EditItemNameDialog/EditItemNameDialog';
 import ShareWithTeamDialog from 'app/drive/components/ShareWithTeamDialog/ShareWithTeamDialog';
 import DriveExplorerListItem from './DriveExplorerListItem';
@@ -58,8 +58,6 @@ interface DriveExplorerListProps {
 }
 
 type ObjectWithId = { id: string | number };
-
-type SortField = 'type' | 'name' | 'updatedAt' | 'size' | 'expiresAt';
 
 type ContextMenuDriveItem = DriveItemData | Pick<DriveItemData, SortField> | (ListShareLinksItem & { code: string });
 
@@ -476,7 +474,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           />
         )}
         <ShareWithTeamDialog item={props.selectedItems[0]} roles={roles} />
-        <List<DriveItemData, 'type' | 'name' | 'updatedAt' | 'size' | 'expiresAt'>
+        <List<DriveItemData, SortField>
           header={getListHeaders(translate, isRecents, isTrash)}
           checkboxDataCy="driveListHeaderCheckbox"
           disableKeyboardShortcuts={props.disableKeyboardShortcuts || props.showStopSharingConfirmation}
