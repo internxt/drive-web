@@ -2166,9 +2166,9 @@
             ],
             "comingSoonFeatures": ["Mail", "Foto"]
           },
-          "1GB": {
-            "title": "Gratuito",
-            "features": ["1GB di spazio di archiviazione cloud crittografato", "VPN Crittografata"]
+          "default": {
+            "bytesTitle": "{{bytes}}",
+            "features": ["{{bytes}} di spazio di archiviazione cloud crittografato", "VPN Crittografata"]
           }
         },
         "businessPlanFeaturesList": {
