@@ -118,30 +118,10 @@ describe('Testing Impact Service', () => {
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('amountPaid', expectedAmount);
     });
 
-    it('When the plan is not lifetime, then it saves the subscription ID to localStorage', () => {
-      const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
-
-      savePaymentDataInLocalStorage({
-        subscriptionId: subId,
-        paymentIntentId: undefined,
-        selectedPlan: product as PriceWithTax,
-        users: 1,
-        couponCodeData: promoCode,
-        isFirstPurchase: true,
-      });
-
-      expect(setToLocalStorageSpy).toHaveBeenCalledWith('subscriptionId', subId);
-    });
-
     it('When the plan is lifetime, then it saves the payment intent ID to localStorage', () => {
       const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
-      const lifetimeProduct = {
-        ...product,
-        price: { ...product.price, interval: 'lifetime' },
-      };
 
       savePaymentDataInLocalStorage({
-        subscriptionId: undefined,
         paymentIntentId,
         selectedPlan: product as PriceWithTax,
         users: 1,
@@ -374,7 +354,6 @@ describe('Testing Impact Service', () => {
         vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
           if (key === 'couponCode') return 'CNINTERNXT'; // In whitelist
           if (key === 'amountPaid') return expectedAmount;
-          if (key === 'subscriptionId') return subId;
           if (key === 'isFirstPurchase') return 'true';
           return null;
         });
