@@ -87,8 +87,8 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
   const isItemShared = (item.sharings?.length ?? 0) > 0;
   const isInteractive = isItemInteractive(item);
   const itemClassNames = getItemClassNames(isItemSelected(item), isDraggingOverThisItem, isDraggingThisItem);
-  const isItemParentExist = item.parent?.status === FileStatus.EXISTS;
-  const parentFolderName = isItemParentExist ? (item.parent?.plainName ?? 'Drive') : undefined;
+  const hasExistingParent = item.parent?.status === FileStatus.EXISTS;
+  const parentFolderName = hasExistingParent ? (item.parent?.plainName ?? 'Drive') : undefined;
   const basicFileDataTest = `file-list-${item.isFolder ? 'folder' : 'file'}-${transformItemService.getItemPlainNameWithExtension(item)}`;
   const itemName = transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item);
 
@@ -160,7 +160,7 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
 
       {isTrash && (
         <div className="flex shrink-0 w-date items-center whitespace-nowrap pr-3" title={parentFolderName}>
-          {isItemParentExist ? <p className="truncate">{parentFolderName}</p> : <span className="opacity-25">—</span>}
+          {hasExistingParent ? <p className="truncate">{parentFolderName}</p> : <span className="opacity-25">—</span>}
         </div>
       )}
 
