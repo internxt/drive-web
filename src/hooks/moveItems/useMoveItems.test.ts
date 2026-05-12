@@ -7,14 +7,21 @@ import { DriveItemData } from 'app/drive/types';
 import { useMoveItems } from './useMoveItems';
 import { buildDriveItemData } from '../../../test/unit/fixtures/drive.fixtures';
 
-const { mockDispatch, mockMoveItemsThunk, mockPopItemsToDelete, mockSetItemsToMove, mockSetIsMoveItemsDialogOpen } =
-  vi.hoisted(() => ({
-    mockDispatch: vi.fn(),
-    mockMoveItemsThunk: vi.fn((payload: unknown) => ({ type: 'moveItemsThunk', payload })),
-    mockPopItemsToDelete: vi.fn((items: unknown) => ({ type: 'popItemsToDelete', payload: items })),
-    mockSetItemsToMove: vi.fn((items: unknown) => ({ type: 'setItemsToMove', payload: items })),
-    mockSetIsMoveItemsDialogOpen: vi.fn((val: unknown) => ({ type: 'setIsMoveItemsDialogOpen', payload: val })),
-  }));
+const {
+  mockDispatch,
+  mockMoveItemsThunk,
+  mockPopItemsToDelete,
+  mockSetItemsToMove,
+  mockSetIsMoveItemsDialogOpen,
+  mockSetMoveDestinationFolderId,
+} = vi.hoisted(() => ({
+  mockDispatch: vi.fn(),
+  mockMoveItemsThunk: vi.fn((payload: unknown) => ({ type: 'moveItemsThunk', payload })),
+  mockPopItemsToDelete: vi.fn((items: unknown) => ({ type: 'popItemsToDelete', payload: items })),
+  mockSetItemsToMove: vi.fn((items: unknown) => ({ type: 'setItemsToMove', payload: items })),
+  mockSetIsMoveItemsDialogOpen: vi.fn((val: unknown) => ({ type: 'setIsMoveItemsDialogOpen', payload: val })),
+  mockSetMoveDestinationFolderId: vi.fn((id: unknown) => ({ type: 'setMoveDestinationFolderId', payload: id })),
+}));
 
 vi.mock('app/store/hooks', () => ({ useAppDispatch: () => mockDispatch }));
 vi.mock('react-redux', () => ({
@@ -27,7 +34,11 @@ vi.mock('app/store/slices/storage/storage.thunks/renameItemsThunk', () => ({
   handleRepeatedUploadingFolders: vi.fn(async (folders: unknown[]) => folders),
 }));
 vi.mock('app/store/slices/storage', () => ({
-  storageActions: { popItemsToDelete: mockPopItemsToDelete, setItemsToMove: mockSetItemsToMove },
+  storageActions: {
+    popItemsToDelete: mockPopItemsToDelete,
+    setItemsToMove: mockSetItemsToMove,
+    setMoveDestinationFolderId: mockSetMoveDestinationFolderId,
+  },
   storageSelectors: {},
   setItemsToMove: mockSetItemsToMove,
   default: {},

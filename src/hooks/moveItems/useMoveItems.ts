@@ -27,11 +27,8 @@ export const useMoveItems = () => {
   const itemsToMove: DriveItemData[] = useSelector((state: RootState) => state.storage.itemsToMove);
   const processMove = async ({ finalDestinationId, items, displayTaskLogger }: ProcessMoveProps) => {
     const processItems = items ?? itemsToMove;
-    const files = processItems.filter((item) => item.type !== 'folder' || !item.isFolder) as DriveFileData[];
-    const folders = processItems.filter((item) => item.type === 'folder' || item.isFolder) as (
-      | IRoot
-      | DriveFolderData
-    )[];
+    const files = processItems.filter((item) => !item.isFolder) as DriveFileData[];
+    const folders = processItems.filter((item) => item.isFolder) as (IRoot | DriveFolderData)[];
 
     const filesWithoutDuplicates = await handleRepeatedUploadingFiles(files, dispatch, finalDestinationId);
     const foldersWithoutDuplicates = await handleRepeatedUploadingFolders(folders, dispatch, finalDestinationId);
@@ -47,6 +44,10 @@ export const useMoveItems = () => {
         }),
       );
     }
+
+    return {
+      itemsMoved: itemsToMoveWithoutDuplicates.length > 0,
+    };
   };
 
   const goFolder = async (folderUuid: string, workspacesToken?: string) => {
@@ -64,7 +65,7 @@ export const useMoveItems = () => {
     } catch (error) {
       const castedError = errorService.castError(error);
       notificationsService.show({
-        text: t('error.errorMovingItem'),
+        text: t('error.movingItem'),
         type: ToastType.Error,
         requestId: castedError.requestId,
       });
@@ -74,7 +75,11 @@ export const useMoveItems = () => {
   const restoreItemFromTrash = (item: DriveItemData): Promise<void> =>
     withErrorHandler(async () => {
       if (item.parent?.status === FileStatus.EXISTS) {
-        await processMove({ finalDestinationId: item.parent.uuid, items: [item] });
+        dispatch(storageActions.setMoveDestinationFolderId(item.parent.uuid));
+        const { itemsMoved } = await processMove({ finalDestinationId: item.parent.uuid, items: [item] });
+
+        if (!itemsMoved) return;
+
         const goToDriveId = notificationsService.show({
           text: t('notificationMessages.restoreItems'),
           type: ToastType.Success,
@@ -99,11 +104,15 @@ export const useMoveItems = () => {
       const needsDestination = items.filter((item) => item.parent?.status !== FileStatus.EXISTS);
 
       await Promise.all(
-        restorable.map((item) => processMove({ finalDestinationId: item.parent!.uuid, items: [item] })),
+        restorable.map((item) => {
+          dispatch(storageActions.setMoveDestinationFolderId(item.parent?.uuid as string));
+          return processMove({ finalDestinationId: item.parent!.uuid, items: [item] });
+        }),
       );
 
       if (restorable.length > 0) {
         notificationsService.show({ text: t('notificationMessages.restoreItems'), type: ToastType.Success });
+        dispatch(storageActions.popItemsToDelete(restorable));
       }
 
       if (needsDestination.length > 0) {
@@ -116,7 +125,9 @@ export const useMoveItems = () => {
     finalDestinationId,
     items,
   }: Omit<ProcessMoveProps, 'displayTaskLogger'>): Promise<void> =>
-    withErrorHandler(() => processMove({ finalDestinationId, items, displayTaskLogger: true }));
+    withErrorHandler(async () => {
+      await processMove({ finalDestinationId, items, displayTaskLogger: true });
+    });
 
   return {
     restoreItemFromTrash,

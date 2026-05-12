@@ -230,6 +230,10 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     });
   };
 
+  const popMovedItemsFromTrash = (movedItems: DriveItemData[]) => {
+    dispatch(storageActions.popItemsToDelete(movedItems));
+  };
+
   const triggerSelectedOptinsOnSubmit = async ({
     operationType,
     operation,
@@ -239,12 +243,14 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     switch (operationType + operation) {
       case 'move' + 'keep':
         await keepAndMoveItem(itemsToUpload as DriveItemData[]);
+        popMovedItemsFromTrash(itemsToUpload as DriveItemData[]);
         break;
       case 'move' + 'replace':
         await replaceAndMoveItem({
           itemsToReplace: itemsToReplace as DriveItemData[],
           itemsToMove: itemsToUpload as DriveItemData[],
         });
+        popMovedItemsFromTrash(itemsToUpload as DriveItemData[]);
         break;
       case 'upload' + 'keep':
         await keepAndUploadItem(itemsToUpload as (File | IRoot)[]);

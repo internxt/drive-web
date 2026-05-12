@@ -38,7 +38,6 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const [currentFolderId, setCurrentFolderId] = useState('');
   const [shownFolders, setShownFolders] = useState(props.items);
   const [currentFolderName, setCurrentFolderName] = useState('');
-  const [selectedFolderName, setSelectedFolderName] = useState('');
   const arrayOfPaths: FolderPathDialog[] = [];
   const [currentNamePaths, setCurrentNamePaths] = useState(arrayOfPaths);
   const dispatch = useAppDispatch();
@@ -120,7 +119,6 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     } else {
       setDestinationId(currentFolderId);
     }
-    name && setSelectedFolderName(name);
   };
 
   const onClose = (): void => {
