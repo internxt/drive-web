@@ -1549,7 +1549,8 @@
         "modified": "修改日期",
         "size": "大小",
         "actions": "操作",
-        "autoDelete": "自動刪除"
+        "autoDelete": "自動刪除",
+        "originalLocation": "原始位置"
       }
     },
     "viewMode": {

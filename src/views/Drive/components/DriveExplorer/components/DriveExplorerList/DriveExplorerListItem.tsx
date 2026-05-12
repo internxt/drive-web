@@ -10,6 +10,7 @@ import { useDriveItemActions, useDriveItemDrag, useDriveItemDrop, useDriveItemSt
 import './DriveExplorerListItem.scss';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { WarningCircle } from '@phosphor-icons/react';
+import { FileStatus } from '@internxt/sdk/dist/drive/storage/types';
 
 const getItemClassNames = (isSelected: boolean, isDraggingOver: boolean, isDragging: boolean): string => {
   const selectedClass = isSelected ? 'selected' : '';
@@ -86,6 +87,7 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
   const isItemShared = (item.sharings?.length ?? 0) > 0;
   const isInteractive = isItemInteractive(item);
   const itemClassNames = getItemClassNames(isItemSelected(item), isDraggingOverThisItem, isDraggingThisItem);
+  const parentFolderName = item.parent?.status === FileStatus.EXISTS ? (item.parent?.plainName ?? 'Drive') : '-';
 
   const template = (
     <div
@@ -162,10 +164,18 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
         </div>
       )}
 
+      {isTrash && (
+        <div className="flex shrink-0 w-date items-center whitespace-nowrap pr-3" title={parentFolderName}>
+          <p className="truncate">{parentFolderName}</p>
+        </div>
+      )}
+
       {/* DATE */}
-      <div className="block shrink-0 w-date items-center whitespace-nowrap">
-        {dateService.formatDefaultDate(item.updatedAt, translate)}
-      </div>
+      {!isTrash && (
+        <div className="block shrink-0 w-date items-center whitespace-nowrap">
+          {dateService.formatDefaultDate(item.updatedAt, translate)}
+        </div>
+      )}
 
       {/* SIZE */}
       <div className="w-size shrink-0 items-center whitespace-nowrap">
