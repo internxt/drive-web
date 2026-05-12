@@ -2074,9 +2074,9 @@
             ],
             "comingSoonFeatures": ["Mail (Почта)", "Фотографии"]
           },
-          "1GB": {
-            "title": "Free (Бесплатный)",
-            "features": ["1 ГБ зашифрованного облачного хранилища", "Зашифрованный VPN"]
+          "default": {
+            "bytesTitle": "{{bytes}}",
+            "features": ["{{bytes}} зашифрованного облачного хранилища", "Зашифрованный VPN"]
           }
         },
         "businessPlanFeaturesList": {
