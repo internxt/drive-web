@@ -88,7 +88,15 @@ const PlanDetailsList = ({ planSpace }: { planSpace: string }) => {
   const { translateList } = useTranslationContext();
   const planType = 'planFeaturesList';
 
-  const featureKeys = translateList(`preferences.account.plans.${planType}.${planSpace ?? 'freeFeatures'}.features`);
+  const specificFeatures = translateList(`preferences.account.plans.${planType}.${planSpace}.features`, {
+    returnObjects: true,
+  });
+  const featureKeys = Array.isArray(specificFeatures)
+    ? specificFeatures
+    : translateList('preferences.account.plans.planFeaturesList.default.features', {
+        bytes: planSpace,
+        returnObjects: true,
+      });
 
   const comingSoonFeatureKeys = translateList(`preferences.account.plans.${planType}.${planSpace}.comingSoonFeatures`);
 
