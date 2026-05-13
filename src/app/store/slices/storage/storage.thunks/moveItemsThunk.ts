@@ -16,13 +16,14 @@ import { StorageState } from '../storage.model';
 export interface MoveItemsPayload {
   items: DriveItemData[];
   destinationFolderId: string;
+  newItemName?: string;
   displayTaskLogger?: boolean;
 }
 
 export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: RootState }>(
   'storage/moveItems',
   async (payload: MoveItemsPayload, { dispatch }) => {
-    const { items, destinationFolderId, displayTaskLogger } = payload;
+    const { items, destinationFolderId, newItemName, displayTaskLogger } = payload;
     const promises: Promise<void>[] = [];
 
     if (items.some((item) => item.isFolder && item.uuid === destinationFolderId)) {
@@ -54,7 +55,7 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
         }
       }
 
-      promises.push(storageService.moveItem(item, destinationFolderId));
+      promises.push(storageService.moveItem(item, destinationFolderId, newItemName));
 
       promises[index]
         .then(async () => {

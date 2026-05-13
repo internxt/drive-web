@@ -16,6 +16,10 @@ import replaceFileService from 'views/Drive/services/replaceFile.service';
 import { Network, getEnvironmentConfig } from 'app/drive/services/network.service';
 import { fileVersionsActions, fileVersionsSelectors } from 'app/store/slices/fileVersions';
 import { isVersioningExtensionAllowed } from 'views/Drive/components/VersionHistory/utils';
+import { checkFolderDuplicated } from 'app/store/slices/storage/folderUtils/checkFolderDuplicated';
+import { getUniqueFolderName } from 'app/store/slices/storage/folderUtils/getUniqueFolderName';
+import { getUniqueFilename } from 'app/store/slices/storage/fileUtils/getUniqueFilename';
+import { checkDuplicatedFiles } from 'app/store/slices/storage/fileUtils/checkDuplicatedFiles';
 
 type NameCollisionContainerProps = {
   currentFolderId: string;
@@ -107,25 +111,40 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     dispatch(
       storageThunks.moveItemsThunk({
         items: itemsToMove,
-        destinationFolderId: moveDestinationFolderId as string,
+        destinationFolderId: folderId,
       }),
     );
   };
 
   const keepAndMoveItem = async (itemsToUpload: DriveItemData[]) => {
-    await dispatch(
-      storageThunks.renameItemsThunk({
-        items: itemsToUpload,
-        destinationFolderId: folderId,
-        onRenameSuccess: (itemToUpload: DriveItemData) =>
-          dispatch(
-            storageThunks.moveItemsThunk({
-              items: [itemToUpload],
-              destinationFolderId: moveDestinationFolderId as string,
-            }),
-          ),
-      }),
-    );
+    for (const item of itemsToUpload) {
+      let itemParsed: DriveItemData;
+      let finalItemName = item.plainName ?? item.name;
+
+      if (item.isFolder) {
+        const { duplicatedFoldersResponse } = await checkFolderDuplicated([item], folderId);
+
+        finalItemName = await getUniqueFolderName(
+          item.plainName ?? item.name,
+          duplicatedFoldersResponse as DriveItemData[],
+          folderId,
+        );
+        itemParsed = { ...item, name: finalItemName, plain_name: finalItemName };
+      } else {
+        const { duplicatedFilesResponse } = await checkDuplicatedFiles([item], folderId);
+
+        finalItemName = await getUniqueFilename(item.name, item.type, duplicatedFilesResponse, folderId);
+        itemParsed = { ...item, name: finalItemName, plain_name: finalItemName };
+      }
+
+      await dispatch(
+        storageThunks.moveItemsThunk({
+          items: [itemParsed],
+          destinationFolderId: folderId,
+          newItemName: finalItemName,
+        }),
+      );
+    }
   };
 
   const uploadFileAndGetFileId = async (file: File, itemToReplace: DriveItemData) => {

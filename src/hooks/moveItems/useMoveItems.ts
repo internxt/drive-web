@@ -2,7 +2,6 @@ import { FileStatus } from '@internxt/sdk/dist/drive/storage/types';
 import { AppView } from 'app/core/types';
 import { DriveFileData, DriveFolderData, DriveItemData } from 'app/drive/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
 import { storageActions } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
@@ -13,7 +12,6 @@ import {
 import { IRoot } from 'app/store/slices/storage/types';
 import { uiActions } from 'app/store/slices/ui';
 import { t } from 'i18next';
-import { useSelector } from 'react-redux';
 import { errorService, navigationService } from 'services';
 
 interface ProcessMoveProps {
@@ -24,11 +22,14 @@ interface ProcessMoveProps {
 
 export const useMoveItems = () => {
   const dispatch = useAppDispatch();
-  const itemsToMove: DriveItemData[] = useSelector((state: RootState) => state.storage.itemsToMove);
   const processMove = async ({ finalDestinationId, items, displayTaskLogger }: ProcessMoveProps) => {
-    const processItems = items ?? itemsToMove;
-    const files = processItems.filter((item) => !item.isFolder) as DriveFileData[];
-    const folders = processItems.filter((item) => item.isFolder) as (IRoot | DriveFolderData)[];
+    console.log('[MOVE ITEMS]: Processing move items', {
+      finalDestinationId,
+      items,
+      displayTaskLogger,
+    });
+    const files = items.filter((item) => !item.isFolder) as DriveFileData[];
+    const folders = items.filter((item) => item.isFolder) as (IRoot | DriveFolderData)[];
 
     const filesWithoutDuplicates = await handleRepeatedUploadingFiles(files, dispatch, finalDestinationId);
     const foldersWithoutDuplicates = await handleRepeatedUploadingFolders(folders, dispatch, finalDestinationId);
@@ -75,7 +76,6 @@ export const useMoveItems = () => {
   const restoreItemFromTrash = (item: DriveItemData): Promise<void> =>
     withErrorHandler(async () => {
       if (item.parent?.status === FileStatus.EXISTS) {
-        dispatch(storageActions.setMoveDestinationFolderId(item.parent.uuid));
         const { itemsMoved } = await processMove({ finalDestinationId: item.parent.uuid, items: [item] });
 
         if (!itemsMoved) return;
@@ -100,19 +100,23 @@ export const useMoveItems = () => {
 
   const restoreItemsFromTrash = (items: DriveItemData[]): Promise<void> =>
     withErrorHandler(async () => {
-      const restorable = items.filter((item) => item.parent?.status === FileStatus.EXISTS);
+      const restorableItems = items.filter((item) => item.parent?.status === FileStatus.EXISTS);
       const needsDestination = items.filter((item) => item.parent?.status !== FileStatus.EXISTS);
 
+      const restorableByDestination = restorableItems.reduce((map, item) => {
+        const key = item.parent?.uuid;
+        map.set(key, [...(map.get(key) ?? []), item]);
+        return map;
+      }, new Map<string | undefined, DriveItemData[]>());
       await Promise.all(
-        restorable.map((item) => {
-          dispatch(storageActions.setMoveDestinationFolderId(item.parent?.uuid as string));
-          return processMove({ finalDestinationId: item.parent!.uuid, items: [item] });
-        }),
+        [...restorableByDestination.entries()].map(([destinationId, items]) =>
+          processMove({ finalDestinationId: destinationId as string, items }),
+        ),
       );
 
-      if (restorable.length > 0) {
+      if (restorableItems.length > 0) {
         notificationsService.show({ text: t('notificationMessages.restoreItems'), type: ToastType.Success });
-        dispatch(storageActions.popItemsToDelete(restorable));
+        dispatch(storageActions.popItemsToDelete(restorableItems));
       }
 
       if (needsDestination.length > 0) {

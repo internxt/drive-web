@@ -3,7 +3,6 @@ import { transformDraggedItems } from 'services/drag-and-drop.service';
 import { DragAndDropType } from 'app/core/types';
 import { FolderPath, DriveItemData } from 'app/drive/types';
 import { AppDispatch } from 'app/store';
-import { storageActions } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import {
   handleRepeatedUploadingFiles,
@@ -52,15 +51,9 @@ export const handleDriveItemDrop = async (
     return i.isFolder;
   });
 
-  dispatch(storageActions.setMoveDestinationFolderId(item.uuid));
-
   const unrepeatedFiles = await handleRepeatedUploadingFiles(filesToMove, dispatch, item.uuid);
   const unrepeatedFolders = await handleRepeatedUploadingFolders(foldersToMove, dispatch, item.uuid);
   const unrepeatedItems: DriveItemData[] = [...unrepeatedFiles, ...unrepeatedFolders] as DriveItemData[];
-
-  if (unrepeatedItems.length === itemsToMove.length) {
-    dispatch(storageActions.setMoveDestinationFolderId(null));
-  }
 
   dispatch(
     storageThunks.moveItemsThunk({

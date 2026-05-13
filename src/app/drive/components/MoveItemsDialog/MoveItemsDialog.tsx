@@ -173,7 +173,6 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
   const onAccept = async (destinationFolderId: string): Promise<void> => {
     try {
-      dispatch(storageActions.setMoveDestinationFolderId(destinationFolderId));
       setIsLoading(true);
 
       if (itemsToMove.length === 0) {

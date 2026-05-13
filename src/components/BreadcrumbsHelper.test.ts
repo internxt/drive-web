@@ -12,7 +12,6 @@ import { AppDispatch } from 'app/store';
 import { DragAndDropType } from 'app/core/types';
 import { DropTargetMonitor } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
-import { storageActions } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { transformDraggedItems } from 'services/drag-and-drop.service';
 
@@ -159,7 +158,6 @@ describe('onItemDropped', () => {
 
     await onItemDropped(item, namePath, true, selectedItems, mockDispatch)(draggedItem, monitor);
 
-    expect(storageActions.setMoveDestinationFolderId).toHaveBeenCalledWith(item.uuid);
     expect(storageThunks.moveItemsThunk).toHaveBeenCalled();
   });
 

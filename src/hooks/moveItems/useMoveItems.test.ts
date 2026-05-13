@@ -147,7 +147,34 @@ describe('Restore items from trash', () => {
 
   describe('Multiple items restore', () => {
     test('When all items have their original folder available, then all are restored and a success notification is shown', async () => {
-      const items = [buildItemWithExistingParent({ uuid: 'item-1' }), buildItemWithExistingParent({ uuid: 'item-2' })];
+      const items = [
+        buildItemWithExistingParent({
+          parent: { uuid: 'parent-uuid-1', status: FileStatus.EXISTS, plainName: 'My First Folder' },
+        }),
+        buildItemWithExistingParent({
+          parent: { uuid: 'parent-uuid-1', status: FileStatus.EXISTS, plainName: 'My Second Folder' },
+        }),
+      ];
+      const { result } = renderHook(() => useMoveItems());
+      const notificationsSpy = vi.spyOn(notificationsService, 'show');
+
+      await act(async () => {
+        await result.current.restoreItemsFromTrash(items);
+      });
+
+      expect(mockMoveItemsThunk).toHaveBeenCalledTimes(1);
+      expect(notificationsSpy).toHaveBeenCalledWith(expect.objectContaining({ type: ToastType.Success }));
+    });
+
+    test('When all items have their original folders available, then all are restored in the correct folder and a success notification is shown', async () => {
+      const items = [
+        buildItemWithExistingParent({
+          parent: { uuid: 'parent-uuid-1', status: FileStatus.EXISTS, plainName: 'My First Folder' },
+        }),
+        buildItemWithExistingParent({
+          parent: { uuid: 'parent-uuid-2', status: FileStatus.EXISTS, plainName: 'My Second Folder' },
+        }),
+      ];
       const { result } = renderHook(() => useMoveItems());
       const notificationsSpy = vi.spyOn(notificationsService, 'show');
 
