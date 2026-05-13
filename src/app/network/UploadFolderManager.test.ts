@@ -7,6 +7,7 @@ import { getUniqueFolderName } from 'app/store/slices/storage/folderUtils/getUni
 import tasksService from 'app/tasks/services/tasks.service';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { TaskFolder, UploadFoldersManager, uploadFoldersWithManager } from './UploadFolderManager';
+import * as networkInformation from './networkInformation';
 
 vi.mock('app/drive/services/new-storage.service', () => ({
   default: {
@@ -66,6 +67,10 @@ vi.mock('services/referral.service', () => ({
   default: {
     trackFolderUpload: vi.fn(),
   },
+}));
+
+vi.mock('./networkInformation', () => ({
+  logNetworkInfoForUpload: vi.fn(),
 }));
 
 vi.mock('services/error.service', () => ({
@@ -298,6 +303,64 @@ describe('checkUploadFolders', () => {
 
     expect(createFolderSpy).toHaveBeenCalledTimes(2);
     expect(renameFolderSpy).not.toHaveBeenCalled();
+  });
+
+  it('should log network information on successful folder upload', async () => {
+    const logNetworkInfoMock = networkInformation.logNetworkInfoForUpload as Mock;
+    const mockFolder: DriveFolderData = {
+      id: 0,
+      uuid: 'uuid',
+      name: 'MyFolder',
+      bucket: 'bucket',
+      parentId: 0,
+      parent_id: 0,
+      parentUuid: 'parentUuid',
+      userId: 0,
+      user_id: 0,
+      icon: null,
+      iconId: null,
+      icon_id: null,
+      isFolder: true,
+      color: null,
+      encrypt_version: null,
+      plain_name: 'MyFolder',
+      deleted: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    const taskId = 'task-id';
+
+    (createFolder as Mock).mockResolvedValueOnce(mockFolder);
+    (checkFolderDuplicated as Mock).mockResolvedValueOnce({
+      duplicatedFoldersResponse: [],
+      foldersWithDuplicates: [],
+      foldersWithoutDuplicates: [mockFolder],
+    });
+    vi.spyOn(tasksService, 'create').mockReturnValue(taskId);
+    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
+
+    await uploadFoldersWithManager({
+      payload: [
+        {
+          currentFolderId: 'currentFolderId',
+          root: {
+            folderId: mockFolder.uuid,
+            childrenFiles: [],
+            childrenFolders: [],
+            name: mockFolder.name,
+            fullPathEdited: 'path1',
+          },
+          options: { taskId },
+        },
+      ],
+      selectedWorkspace: null,
+      dispatch: mockDispatch,
+    });
+
+    expect(logNetworkInfoMock).toHaveBeenCalledOnce();
+    expect(logNetworkInfoMock).toHaveBeenCalledWith({ folderName: 'MyFolder' });
   });
 
   it('should abort the upload if abortController is called', async () => {
