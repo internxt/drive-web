@@ -22,6 +22,7 @@ export const handleRepeatedUploadingFiles = async (
   files: (DriveFileData | File)[],
   dispatch: Dispatch,
   destinationFolderUuid: string,
+  isMoveOperation = false,
 ): Promise<(DriveFileData | File)[]> => {
   const batchs = getFilesByBatchs(files);
   const promises = batchs.map((batch) =>
@@ -58,7 +59,7 @@ export const handleRepeatedUploadingFiles = async (
   if (hasRepeatedNameFiles) {
     dispatch(storageActions.setFilesToRename(filesRepeated as DriveItemData[]));
     dispatch(storageActions.setDriveFilesToRename(duplicatedFilesResponse as DriveItemData[]));
-    dispatch(storageActions.setMoveDestinationFolderId(destinationFolderUuid));
+    if (isMoveOperation) dispatch(storageActions.setMoveDestinationFolderId(destinationFolderUuid));
     dispatch(uiActions.setIsNameCollisionDialogOpen(true));
   }
   return unrepeatedFiles;
@@ -68,6 +69,7 @@ export const handleRepeatedUploadingFolders = async (
   folders: (DriveFolderData | IRoot)[],
   dispatch: Dispatch,
   destinationFolderUuid: string,
+  isMoveOperation = false,
 ): Promise<(DriveFolderData | IRoot)[]> => {
   const batchs = getFilesByBatchs(folders as (IRoot | DriveFolderData)[]);
   const promises = batchs.map((batch) =>
@@ -104,7 +106,7 @@ export const handleRepeatedUploadingFolders = async (
   if (hasRepeatedNameFolders) {
     dispatch(storageActions.setFoldersToRename(foldersRepeated as DriveItemData[]));
     dispatch(storageActions.setDriveFoldersToRename(duplicatedFoldersResponse as DriveItemData[]));
-    dispatch(storageActions.setMoveDestinationFolderId(destinationFolderUuid));
+    if (isMoveOperation) dispatch(storageActions.setMoveDestinationFolderId(destinationFolderUuid));
     dispatch(uiActions.setIsNameCollisionDialogOpen(true));
   }
 

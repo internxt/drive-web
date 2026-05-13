@@ -13,17 +13,20 @@ import { RootState } from '../../..';
 import errorService from 'services/error.service';
 import { StorageState } from '../storage.model';
 
-export interface MoveItemsPayload {
-  items: DriveItemData[];
-  destinationFolderId: string;
+export interface MoveItemPayload extends DriveItemData {
   newItemName?: string;
+}
+
+export interface MoveItemsPayload {
+  items: MoveItemPayload[];
+  destinationFolderId: string;
   displayTaskLogger?: boolean;
 }
 
 export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: RootState }>(
   'storage/moveItems',
   async (payload: MoveItemsPayload, { dispatch }) => {
-    const { items, destinationFolderId, newItemName, displayTaskLogger } = payload;
+    const { items, destinationFolderId, displayTaskLogger } = payload;
     const promises: Promise<void>[] = [];
 
     if (items.some((item) => item.isFolder && item.uuid === destinationFolderId)) {
@@ -55,7 +58,7 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
         }
       }
 
-      promises.push(storageService.moveItem(item, destinationFolderId, newItemName));
+      promises.push(storageService.moveItem(item, destinationFolderId, item.newItemName));
 
       promises[index]
         .then(async () => {

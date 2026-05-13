@@ -23,16 +23,11 @@ interface ProcessMoveProps {
 export const useMoveItems = () => {
   const dispatch = useAppDispatch();
   const processMove = async ({ finalDestinationId, items, displayTaskLogger }: ProcessMoveProps) => {
-    console.log('[MOVE ITEMS]: Processing move items', {
-      finalDestinationId,
-      items,
-      displayTaskLogger,
-    });
     const files = items.filter((item) => !item.isFolder) as DriveFileData[];
     const folders = items.filter((item) => item.isFolder) as (IRoot | DriveFolderData)[];
 
-    const filesWithoutDuplicates = await handleRepeatedUploadingFiles(files, dispatch, finalDestinationId);
-    const foldersWithoutDuplicates = await handleRepeatedUploadingFolders(folders, dispatch, finalDestinationId);
+    const filesWithoutDuplicates = await handleRepeatedUploadingFiles(files, dispatch, finalDestinationId, true);
+    const foldersWithoutDuplicates = await handleRepeatedUploadingFolders(folders, dispatch, finalDestinationId, true);
 
     const itemsToMoveWithoutDuplicates = [...filesWithoutDuplicates, ...foldersWithoutDuplicates];
 
@@ -47,7 +42,8 @@ export const useMoveItems = () => {
     }
 
     return {
-      itemsMoved: itemsToMoveWithoutDuplicates.length > 0,
+      areItemsMoved: itemsToMoveWithoutDuplicates.length > 0,
+      totalItemsMoved: itemsToMoveWithoutDuplicates as DriveItemData[],
     };
   };
 
@@ -76,9 +72,9 @@ export const useMoveItems = () => {
   const restoreItemFromTrash = (item: DriveItemData): Promise<void> =>
     withErrorHandler(async () => {
       if (item.parent?.status === FileStatus.EXISTS) {
-        const { itemsMoved } = await processMove({ finalDestinationId: item.parent.uuid, items: [item] });
+        const { areItemsMoved } = await processMove({ finalDestinationId: item.parent.uuid, items: [item] });
 
-        if (!itemsMoved) return;
+        if (!areItemsMoved) return;
 
         const goToDriveId = notificationsService.show({
           text: t('notificationMessages.restoreItems'),
@@ -108,15 +104,17 @@ export const useMoveItems = () => {
         map.set(key, [...(map.get(key) ?? []), item]);
         return map;
       }, new Map<string | undefined, DriveItemData[]>());
-      await Promise.all(
+      const restoredItems = await Promise.all(
         [...restorableByDestination.entries()].map(([destinationId, items]) =>
           processMove({ finalDestinationId: destinationId as string, items }),
         ),
       );
 
-      if (restorableItems.length > 0) {
+      const totalItemsMovedConcat = restoredItems.flatMap((item) => item.totalItemsMoved);
+
+      if (totalItemsMovedConcat.length > 0) {
         notificationsService.show({ text: t('notificationMessages.restoreItems'), type: ToastType.Success });
-        dispatch(storageActions.popItemsToDelete(restorableItems));
+        dispatch(storageActions.popItemsToDelete(totalItemsMovedConcat));
       }
 
       if (needsDestination.length > 0) {

@@ -242,6 +242,21 @@ describe('Restore items from trash', () => {
       );
     });
 
+    test('When the item has a new name, then the move is called with that new name', async () => {
+      const item = buildDriveItemData({ newItemName: 'renamed-file' } as any);
+      const { result } = renderHook(() => useMoveItems());
+
+      await act(async () => {
+        await result.current.moveItemFromDialog({ finalDestinationId: 'chosen-folder-uuid', items: [item] });
+      });
+
+      expect(mockMoveItemsThunk).toHaveBeenCalledWith(
+        expect.objectContaining({
+          items: expect.arrayContaining([expect.objectContaining({ newItemName: 'renamed-file' })]),
+        }),
+      );
+    });
+
     test('When the move from dialog fails, then an error notification is shown', async () => {
       const item = buildDriveItemData();
       mockDispatch.mockImplementation(() => {

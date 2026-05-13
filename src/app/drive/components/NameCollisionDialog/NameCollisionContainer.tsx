@@ -20,6 +20,7 @@ import { checkFolderDuplicated } from 'app/store/slices/storage/folderUtils/chec
 import { getUniqueFolderName } from 'app/store/slices/storage/folderUtils/getUniqueFolderName';
 import { getUniqueFilename } from 'app/store/slices/storage/fileUtils/getUniqueFilename';
 import { checkDuplicatedFiles } from 'app/store/slices/storage/fileUtils/checkDuplicatedFiles';
+import { MoveItemPayload } from 'app/store/slices/storage/storage.thunks/moveItemsThunk';
 
 type NameCollisionContainerProps = {
   currentFolderId: string;
@@ -118,7 +119,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
 
   const keepAndMoveItem = async (itemsToUpload: DriveItemData[]) => {
     for (const item of itemsToUpload) {
-      let itemParsed: DriveItemData;
+      let itemParsed: MoveItemPayload;
       let finalItemName = item.plainName ?? item.name;
 
       if (item.isFolder) {
@@ -129,19 +130,24 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
           duplicatedFoldersResponse as DriveItemData[],
           folderId,
         );
-        itemParsed = { ...item, name: finalItemName, plain_name: finalItemName };
+        itemParsed = { ...item, name: finalItemName, plain_name: finalItemName, newItemName: finalItemName };
       } else {
         const { duplicatedFilesResponse } = await checkDuplicatedFiles([item], folderId);
 
         finalItemName = await getUniqueFilename(item.name, item.type, duplicatedFilesResponse, folderId);
-        itemParsed = { ...item, name: finalItemName, plain_name: finalItemName };
+        itemParsed = {
+          ...item,
+          name: finalItemName,
+          plainName: finalItemName,
+          plain_name: finalItemName,
+          newItemName: finalItemName,
+        };
       }
 
       await dispatch(
         storageThunks.moveItemsThunk({
           items: [itemParsed],
           destinationFolderId: folderId,
-          newItemName: finalItemName,
         }),
       );
     }
