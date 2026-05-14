@@ -1209,6 +1209,21 @@
     "ownerStorageIsFull": "Owner storage is full",
     "storageIsFull": "Your storage is full",
     "ownerStorageIsFullDescription": "You can’t upload files in this shared folder.",
+    "fileSizeLimitExceeded": {
+      "title": {
+        "singleFile": "This file is too large for your current plan",
+        "multipleFiles": "Some files are too large for your current plan"
+      },
+      "description": {
+        "singleFile": "Your plan allows uploads up to {{maxFileSize}}. This file is {{fileSize}}. Upgrade your plan to upload larger files.",
+        "multipleFiles": "Your plan allows uploads up to {{maxFileSize}}. Upgrade your plan to upload larger files."
+      },
+      "planList": {
+        "essential": "Essential → up to 10GB",
+        "premium": "Premium → up to 50GB",
+        "ultimate": "Ultimate → up to 100GB"
+      }
+    },
     "storageIsFullDescription": "You can’t upload, sync or backup files.",
     "noSpaceAvailable": "You’ve reached the limits of your current plan and sync has stopped. Upgrade now to keep your files synced securely.",
     "sharedFolderTooBig": "Internxt Drive does not support sharing folders of more than 1GB.",
@@ -1601,7 +1616,8 @@
     "logOut": "Log out",
     "locked": "Locked",
     "remindMeLater": "Remind me later",
-    "backupKeySaved": "I've saved my key"
+    "backupKeySaved": "I've saved my key",
+    "upgradePlan": "Upgrade plan"
   },
   "toastNotification": {
     "textCopied": "Text copied to clipboard"

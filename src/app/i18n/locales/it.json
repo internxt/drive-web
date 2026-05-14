@@ -1243,6 +1243,21 @@
     "teamInvitation": "Non è stato possibile inviare l'e-mail di invito",
     "ownerStorageIsFull": "Lo spazio di archiviazione del proprietario è pieno",
     "storageIsFull": "Lo spazio di archiviazione è pieno",
+    "fileSizeLimitExceeded": {
+      "title": {
+        "singleFile": "Questo file è troppo grande per il tuo piano attuale",
+        "multipleFiles": "Alcuni file sono troppo grandi per il tuo piano attuale"
+      },
+      "description": {
+        "singleFile": "Il tuo piano consente upload fino a {{maxFileSize}}. Questo file è {{fileSize}}. Passa a un piano superiore per caricare file più grandi.",
+        "multipleFiles": "Il tuo piano consente upload fino a {{maxFileSize}}. Passa a un piano superiore per caricare file più grandi."
+      },
+      "planList": {
+        "essential": "Essential → fino a 10GB",
+        "premium": "Premium → fino a 50GB",
+        "ultimate": "Ultimate → fino a 100GB"
+      }
+    },
     "ownerStorageIsFullDescription": "Non puoi caricare file in questa cartella condivisa.",
     "storageIsFullDescription": "Non puoi caricare, sincronizzare o eseguire il backup dei file",
     "noSpaceAvailable": "Avete raggiunto i limiti del vostro piano attuale e la sincronizzazione si è interrotta. Effettuate subito l'aggiornamento per continuare a sincronizzare i vostri file in modo sicuro.",
@@ -1632,7 +1647,8 @@
     "logOut": "Disconnettersi",
     "locked": "Bloccato",
     "remindMeLater": "Ricordamelo più tardi",
-    "backupKeySaved": "Ho salvato la mia chiave"
+    "backupKeySaved": "Ho salvato la mia chiave",
+    "upgradePlan": "Aggiorna piano"
   },
   "toastNotification": {
     "textCopied": "Testo copiato negli appunti"

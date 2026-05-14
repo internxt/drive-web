@@ -47,16 +47,27 @@ export type UploadManagerFileParams = {
   isUploadedFromFolder?: boolean;
 };
 
-export const uploadFileWithManager = (
-  files: UploadManagerFileParams[],
-  maxSpaceOccupiedCallback: () => void,
-  uploadRepository: PersistUploadRepository,
-  abortController?: AbortController,
-  options?: Options,
-  relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number },
-  onFileUploadCallback?: (driveFileData: DriveFileData) => void,
-  fileSizeExceededCallback?: () => void,
-): Promise<{ uploadedFiles: DriveFileData[] }> => {
+interface UploadFileWithManagerProps {
+  files: UploadManagerFileParams[];
+  maxSpaceOccupiedCallback: () => void;
+  uploadRepository: PersistUploadRepository;
+  abortController?: AbortController;
+  options?: Options;
+  relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number };
+  onFileUploadCallback?: (driveFileData: DriveFileData) => void;
+  fileSizeExceededCallback?: () => void;
+}
+
+export const uploadFileWithManager = ({
+  files,
+  maxSpaceOccupiedCallback,
+  uploadRepository,
+  abortController,
+  fileSizeExceededCallback,
+  onFileUploadCallback,
+  options,
+  relatedTaskProgress,
+}: UploadFileWithManagerProps): Promise<{ uploadedFiles: DriveFileData[] }> => {
   const uploadManager = new UploadManager(
     files,
     maxSpaceOccupiedCallback,
@@ -344,8 +355,8 @@ class UploadManager {
       });
       errorService.reportError(castedError);
 
+      // Handle file size exceeded
       if (castedError.code === HTTP_CODE_ERRORS.FILE_UPLOAD_SIZE_EXCEEDED) {
-        // Open file size exceeded dialog
         this.fileSizeExceededCallback?.();
       }
 

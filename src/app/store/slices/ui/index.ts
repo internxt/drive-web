@@ -3,6 +3,7 @@ import {
   DriveItemData,
   DriveItemDetails,
   FileInfoMenuItem,
+  ReachedFileSizeLimitDialogInfo,
   ReachedPlanLimitDialogInfo,
   UpgradePlanDialogInfo,
 } from 'app/drive/types';
@@ -26,6 +27,8 @@ interface UISliceState {
   isEditFolderNameDialog: boolean;
   isPreferencesDialogOpen: boolean;
   isReachedPlanLimitDialogOpen: boolean;
+  isReachedFileSizeLimitDialogOpen: boolean;
+  reachedFileSizeLimitDialogInfo?: ReachedFileSizeLimitDialogInfo;
   reachedPlanLimitDialogInfo?: ReachedPlanLimitDialogInfo;
   isUpgradePlanDialogOpen: boolean;
   currentUpgradePlanDialogInfo: UpgradePlanDialogInfo | null;
@@ -65,6 +68,7 @@ const initialState: UISliceState = {
   isEditFolderNameDialog: false,
   isPreferencesDialogOpen: false,
   isReachedPlanLimitDialogOpen: false,
+  isReachedFileSizeLimitDialogOpen: false,
   isUpgradePlanDialogOpen: false,
   currentUpgradePlanDialogInfo: null,
   isShareItemDialogOpen: false,
@@ -153,6 +157,16 @@ export const uiSlice = createSlice({
     ) => {
       state.isReachedPlanLimitDialogOpen = action.payload.open;
       state.reachedPlanLimitDialogInfo = action.payload.info;
+    },
+    setOpenFileSizeLimitReachedDialog: (
+      state: UISliceState,
+      action: PayloadAction<{
+        open: boolean;
+        info?: ReachedFileSizeLimitDialogInfo;
+      }>,
+    ) => {
+      state.isReachedFileSizeLimitDialogOpen = action.payload.open;
+      state.reachedFileSizeLimitDialogInfo = action.payload.info;
     },
     setIsUpgradePlanDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isUpgradePlanDialogOpen = action.payload;

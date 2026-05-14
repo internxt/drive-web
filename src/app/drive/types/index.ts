@@ -115,6 +115,15 @@ export interface ReachedPlanLimitDialogInfo {
   hidePrimaryAction?: boolean;
 }
 
+export interface ExceededFile {
+  name: string;
+  size: number;
+}
+
+export interface ReachedFileSizeLimitDialogInfo {
+  exceededFiles: ExceededFile[];
+}
+
 export interface UpgradePlanDialogInfo {
   title: string;
   description: string;
