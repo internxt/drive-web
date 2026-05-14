@@ -15,6 +15,7 @@ import { ErrorMessages } from 'app/core/constants';
 import { MAX_UPLOAD_ATTEMPTS, TWENTY_MEGABYTES, USE_MULTIPART_THRESHOLD_BYTES } from './networkConstants';
 import { OwnerUserAuthenticationData } from './types';
 import referralService from 'services/referral.service';
+import { logNetworkInfoForUpload } from './networkInformation';
 
 enum FileSizeType {
   Big = 'big',
@@ -229,6 +230,7 @@ class UploadManager {
 
             fileData.onFinishUploadFile?.(driveFileDataWithNameParsed, taskId);
             referralService.trackFileUpload();
+            logNetworkInfoForUpload({ fileName: file.name, fileSize: file.size });
 
             if (this.onFileUploadCallback) {
               this.onFileUploadCallback(driveFileDataWithNameParsed);

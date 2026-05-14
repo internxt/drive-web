@@ -9,6 +9,7 @@ import { DriveFileData } from 'app/drive/types';
 import RetryManager from './RetryManager';
 import { TaskStatus } from 'app/tasks/types';
 import { ErrorMessages } from 'app/core/constants';
+import * as networkInformation from './networkInformation';
 
 vi.mock('app/drive/services/file.service/uploadFile', () => ({
   default: vi.fn(() => Promise.resolve({} as DriveFileData)),
@@ -50,6 +51,16 @@ vi.mock('app/repositories/DatabaseUploadRepository', () => {
 });
 
 vi.mock('i18next', () => ({ default: { language: 'en' }, t: () => 'Translation message' }));
+
+vi.mock('./networkInformation', () => ({
+  logNetworkInfoForUpload: vi.fn(),
+}));
+
+vi.mock('services/referral.service', () => ({
+  default: {
+    trackFileUpload: vi.fn(),
+  },
+}));
 
 const openMaxSpaceOccupiedDialogMock = vi.fn();
 
@@ -620,6 +631,70 @@ describe('checkUploadFiles', () => {
       }),
       expect.any(Object),
     );
+  });
+
+  it('should log network information on successful file upload', async () => {
+    const logNetworkInfoMock = networkInformation.logNetworkInfoForUpload as Mock;
+    (uploadFile as Mock).mockResolvedValueOnce(mockFile1);
+    vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
+    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
+
+    await uploadFileWithManager(
+      [
+        {
+          taskId: 'taskId',
+          filecontent: {
+            content: 'file-content' as unknown as File,
+            type: 'text/plain',
+            name: 'file.txt',
+            size: 1024,
+            parentFolderId: 'folder-1',
+          },
+          userEmail: '',
+          parentFolderId: '',
+        },
+      ],
+      openMaxSpaceOccupiedDialogMock,
+      DatabaseUploadRepository.getInstance(),
+    );
+
+    expect(logNetworkInfoMock).toHaveBeenCalledOnce();
+    expect(logNetworkInfoMock).toHaveBeenCalledWith({ fileName: 'file.txt', fileSize: 1024 });
+  });
+
+  it('should not log network information when upload fails', async () => {
+    const logNetworkInfoMock = networkInformation.logNetworkInfoForUpload as Mock;
+    (uploadFile as Mock).mockRejectedValue(new AppError('Upload failed'));
+    vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
+    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
+    vi.spyOn(errorService, 'reportError').mockReturnValue();
+
+    await expect(
+      uploadFileWithManager(
+        [
+          {
+            taskId: 'taskId',
+            filecontent: {
+              content: 'file-content' as unknown as File,
+              type: 'text/plain',
+              name: 'file.txt',
+              size: 1024,
+              parentFolderId: 'folder-1',
+            },
+            userEmail: '',
+            parentFolderId: '',
+          },
+        ],
+        openMaxSpaceOccupiedDialogMock,
+        DatabaseUploadRepository.getInstance(),
+      ),
+    ).rejects.toThrow();
+
+    expect(logNetworkInfoMock).not.toHaveBeenCalled();
   });
 
   it('When uploading a personal file, then it uses personal credentials', async () => {
