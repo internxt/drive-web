@@ -76,7 +76,7 @@ vi.mock('../../workspaces/workspaces.selectors', () => ({
 describe('uploadItemsThunk', () => {
   const dispatch = vi.fn();
   const getState = () => {
-    return { user: { user: { email: 'test@test.com' } } };
+    return { user: { user: { email: 'test@test.com' } }, fileVersions: { limits: null } };
   };
   const mockFile = new File(['content'], 'file.txt', { type: 'text/plain' });
 

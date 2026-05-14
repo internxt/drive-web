@@ -1,8 +1,8 @@
 import { queue, QueueObject } from 'async';
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 import { t } from 'i18next';
 import errorService from 'services/error.service';
-import { HTTP_CODES } from '../core/constants';
+import { HTTP_CODE_ERRORS, HTTP_STATUS_CODES } from '../core/constants';
 import uploadFile from 'app/drive/services/file.service/uploadFile';
 import { DriveFileData } from 'app/drive/types';
 import { PersistUploadRepository } from '../repositories/DatabaseUploadRepository';
@@ -55,6 +55,7 @@ export const uploadFileWithManager = (
   options?: Options,
   relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number },
   onFileUploadCallback?: (driveFileData: DriveFileData) => void,
+  fileSizeExceededCallback?: () => void,
 ): Promise<{ uploadedFiles: DriveFileData[] }> => {
   const uploadManager = new UploadManager(
     files,
@@ -63,6 +64,7 @@ export const uploadFileWithManager = (
     abortController,
     options,
     relatedTaskProgress,
+    fileSizeExceededCallback,
     onFileUploadCallback,
   );
   return uploadManager.run();
@@ -72,15 +74,16 @@ class UploadManager {
   private currentGroupBeingUploaded: FileSizeType = FileSizeType.Small;
   private errored = false;
   private uploadsProgress: Record<string, number> = {};
-  private abortController?: AbortController;
-  private items: UploadManagerFileParams[];
-  private options?: Options;
-  private relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number };
-  private maxSpaceOccupiedCallback: () => void;
-  private onFileUploadCallback?: (driveFileData: DriveFileData) => void;
-  private uploadRepository?: PersistUploadRepository;
-  private filesUploadedList: (DriveFileData & { taskId: string })[] = [];
-  private filesGroups: Record<
+  private readonly abortController?: AbortController;
+  private readonly items: UploadManagerFileParams[];
+  private readonly options?: Options;
+  private readonly relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number };
+  private readonly maxSpaceOccupiedCallback: () => void;
+  private readonly fileSizeExceededCallback?: () => void;
+  private readonly onFileUploadCallback?: (driveFileData: DriveFileData) => void;
+  private readonly uploadRepository?: PersistUploadRepository;
+  private readonly filesUploadedList: (DriveFileData & { taskId: string })[] = [];
+  private readonly filesGroups: Record<
     FileSizeType,
     {
       upperBound: number;
@@ -280,6 +283,7 @@ class UploadManager {
     abortController?: AbortController,
     options?: Options,
     relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number },
+    fileSizeExceededCallback?: () => void,
     onFileUploadCallback?: (driveFileData: DriveFileData) => void,
   ) {
     this.items = items;
@@ -287,6 +291,7 @@ class UploadManager {
     this.options = options;
     this.relatedTaskProgress = relatedTaskProgress;
     this.maxSpaceOccupiedCallback = maxSpaceOccupiedCallback;
+    this.fileSizeExceededCallback = fileSizeExceededCallback;
     this.uploadRepository = uploadRepository;
     this.onFileUploadCallback = onFileUploadCallback;
   }
@@ -310,21 +315,22 @@ class UploadManager {
     task: TaskData | undefined;
     uploadId: string;
   }) {
+    const castedError = errorService.castError(error);
     // Handle retry error
-    if (error.message === 'Retryable file') {
+    if (castedError.message === 'Retryable file') {
       next(null);
       return;
     }
 
     // Handle lost connection error
     if (isLostConnectionError) {
-      errorService.reportError(error);
+      errorService.reportError(castedError);
       tasksService.updateTask({
         taskId,
         merge: { status: TaskStatus.Error, subtitle: t('error.connectionLostError') ?? undefined },
       });
       this.errored = true;
-      next(error);
+      next(castedError);
       return;
     }
 
@@ -336,10 +342,15 @@ class UploadManager {
         taskId: taskId,
         merge: { status: TaskStatus.Error, subtitle: t('tasks.subtitles.upload-failed') as string },
       });
-      errorService.reportError(error);
+      errorService.reportError(castedError);
+
+      if (castedError.code === HTTP_CODE_ERRORS.FILE_UPLOAD_SIZE_EXCEEDED) {
+        // Open file size exceeded dialog
+        this.fileSizeExceededCallback?.();
+      }
 
       // Handle max space used error
-      if (error?.status === HTTP_CODES.MAX_SPACE_USED) {
+      if (castedError?.status === HTTP_STATUS_CODES.MAX_SPACE_USED) {
         this.maxSpaceOccupiedCallback();
       }
 
@@ -365,7 +376,7 @@ class UploadManager {
       this.uploadQueue.kill();
     }
 
-    next(error);
+    next(castedError);
   }
 
   private getMemoryUsagePercentage(): number | null {

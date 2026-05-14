@@ -1,5 +1,5 @@
 export const HUNDRED_TB = 109951162777600;
-export const HTTP_CODES = {
+export const HTTP_STATUS_CODES = {
   MAX_SPACE_USED: 420,
   FORBIDDEN: 403,
   NOT_FOUND: 404,
@@ -13,3 +13,7 @@ export enum ErrorMessages {
   ConnectionLost = 'Connection lost',
   FilePickerCancelled = 'File picker was canceled or failed',
 }
+
+export const HTTP_CODE_ERRORS = {
+  FILE_UPLOAD_SIZE_EXCEEDED: 'FILE_UPLOAD_SIZE_EXCEEDED',
+};

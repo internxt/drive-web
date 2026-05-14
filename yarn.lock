@@ -1955,10 +1955,10 @@
   version "1.0.2"
   resolved "https://codeload.github.com/internxt/prettier-config/tar.gz/9fa74e9a2805e1538b50c3809324f1c9d0f3e4f9"
 
-"@internxt/sdk@=1.16.1":
-  version "1.16.1"
-  resolved "https://registry.yarnpkg.com/@internxt/sdk/-/sdk-1.16.1.tgz#6f93847ec72237b491f33dbcf128766d76cdc25a"
-  integrity sha512-twO5fvqBk5vuhX4SR+SUwq7nPg+Cq6JkxIpAaATBWGWk0TUaCKSgDx9gw8rl3IGy+DmHw6p85eDC6hQjRbjiKw==
+"@internxt/sdk@=1.16.4":
+  version "1.16.4"
+  resolved "https://registry.yarnpkg.com/@internxt/sdk/-/sdk-1.16.4.tgz#1dad7c3fe1581cfb62f9720b6a6470b7c52d7f34"
+  integrity sha512-L4UG7SvNAlldCqx43f5EWt/oVOleqssBb67y1ZUqCcGh3h/wC9mpvkuz80lsGmkzO/ZSZZ0beUzWFlk0LmWM6g==
   dependencies:
     axios "^1.16.0"
 

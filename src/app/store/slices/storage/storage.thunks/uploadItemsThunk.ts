@@ -2,7 +2,7 @@ import { items as itemUtils } from '@internxt/lib';
 import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
-import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
+import { ActionReducerMapBuilder, AnyAction, createAsyncThunk, ThunkDispatch } from '@reduxjs/toolkit';
 
 import { renameFile } from 'app/crypto/services/utils';
 import { MAX_ALLOWED_UPLOAD_SIZE } from 'app/drive/services/network.service';
@@ -57,6 +57,20 @@ const DEFAULT_OPTIONS: Partial<UploadItemsThunkOptions> = {
   showErrors: true,
 };
 
+const validateFileSize = (files: File[], maxUploadFileSize: number): File[] => {
+  const allowedFilesToUpload = files.filter((file) => file.size <= maxUploadFileSize);
+  const exceededFiles = files.filter((file) => file.size > maxUploadFileSize);
+
+  if (exceededFiles.length > 0) {
+    notificationsService.show({
+      text: 'Mostrar dialog pa que pague mas el usuario',
+      type: ToastType.Warning,
+    });
+  }
+
+  return allowedFilesToUpload;
+};
+
 const isUploadAllowed = ({
   state,
   files,
@@ -65,13 +79,14 @@ const isUploadAllowed = ({
 }: {
   state: RootState;
   files: File[];
-  dispatch;
+  dispatch: ThunkDispatch<RootState, unknown, AnyAction>;
   isWorkspaceSelected: boolean;
 }): boolean => {
   try {
     const planLimit = isWorkspaceSelected ? state.plan.businessPlanLimit : state.plan.planLimit;
     const planUsage = isWorkspaceSelected ? state.plan.businessPlanUsage : state.plan.planUsage;
     const uploadItemsSize = Object.values(files).reduce((acum, file) => acum + file.size, 0);
+
     const totalItemsSize = uploadItemsSize + planUsage;
     const isPlanSizeLimitExceeded = planLimit && totalItemsSize >= planLimit;
 
@@ -111,6 +126,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     { getState, dispatch },
   ) => {
     const user = getState().user.user as UserSettings;
+    const maxFileSize = getState().fileVersions.limits?.maxUploadFileSize ?? 1024 * 1024 * 1024;
     const errors: AppError[] = [];
     const options = { ...DEFAULT_OPTIONS, ...payloadOptions };
 
@@ -132,16 +148,22 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       };
     }
 
+    const allowedFilesToUpload = validateFileSize(files, maxFileSize);
+
+    if (allowedFilesToUpload.length === 0) {
+      return;
+    }
+
     const continueWithUpload = isUploadAllowed({
       state: getState(),
-      files,
+      files: files,
       dispatch,
       isWorkspaceSelected: !!workspaceId,
     });
     if (!continueWithUpload) return;
 
     const { filesToUpload } = await prepareFilesToUpload({
-      files,
+      files: files,
       parentFolderId,
       disableDuplicatedNamesCheck: options.disableDuplicatedNamesCheck,
       fileType,
