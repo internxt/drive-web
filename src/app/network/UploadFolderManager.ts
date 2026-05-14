@@ -19,6 +19,7 @@ import { QueueUtilsService } from 'utils/queueUtils';
 import { wait } from 'utils/timeUtils';
 import { ConnectionLostError } from './requests';
 import referralService from 'services/referral.service';
+import { logNetworkInfoForUpload } from './networkInformation';
 
 interface UploadFolderPayload {
   root: IRoot;
@@ -403,6 +404,7 @@ export class UploadFoldersManager {
 
         options.onSuccess?.();
         referralService.trackFolderUpload();
+        logNetworkInfoForUpload({ folderName: root.name });
 
         setTimeout(() => {
           this.dispatch(planThunks.fetchUsageThunk());

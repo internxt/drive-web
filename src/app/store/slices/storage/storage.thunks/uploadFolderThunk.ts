@@ -12,6 +12,7 @@ import { planThunks } from '../../plan';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
 
 import referralService from 'services/referral.service';
+import { logNetworkInfoForUpload } from 'app/network/networkInformation';
 import { checkFolderDuplicated } from '../folderUtils/checkFolderDuplicated';
 import { getUniqueFolderName } from '../folderUtils/getUniqueFolderName';
 import { StorageState } from '../storage.model';
@@ -206,6 +207,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
 
       options.onSuccess?.();
       referralService.trackFolderUpload();
+      logNetworkInfoForUpload({ folderName: renamedRoot.name });
       setTimeout(() => {
         dispatch(planThunks.fetchUsageThunk());
         if (memberId) dispatch(planThunks.fetchBusinessLimitUsageThunk());
