@@ -257,7 +257,7 @@
       },
       "apply": "Применить",
       "taxes": "Налоги",
-      "annualBillingTemplate": "Годовой план, оплата {{priceNow}} за первый месяц, далее продлевается за {{price}}/мес."
+      "annualBillingTemplate": "Годовой план, оплата {{priceNow}}{{currency}} за первый месяц, далее продлевается за {{price}}{{currency}}/мес."
     },
     "confirmCryptoPayment": {
       "title": "Подтвердить платеж",

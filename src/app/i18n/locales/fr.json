@@ -257,7 +257,7 @@
       },
       "apply": "Appliquer",
       "taxes": "Taxes",
-      "annualBillingTemplate": "Plan annuel, facturé {{priceNow}} le premier mois, puis renouvelé à {{price}}/mois"
+      "annualBillingTemplate": "Plan annuel, facturé {{priceNow}}{{currency}} le premier mois, puis renouvelé à {{price}}{{currency}}/mois"
     },
     "confirmCryptoPayment": {
       "title": "Confirmer le paiement",

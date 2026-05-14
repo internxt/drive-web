@@ -284,7 +284,7 @@
       },
       "apply": "Aplicar",
       "taxes": "Impuestos",
-      "annualBillingTemplate": "Plan anual, facturado a {{priceNow}} el primer mes, luego se renueva a {{price}}/mes"
+      "annualBillingTemplate": "Plan anual, facturado a {{priceNow}}{{currency}} el primer mes, luego se renueva a {{price}}{{currency}}/mes"
     },
     "confirmCryptoPayment": {
       "title": "Confirmar el pago",

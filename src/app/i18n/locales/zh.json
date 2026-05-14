@@ -271,7 +271,7 @@
       },
       "apply": "应用",
       "taxes": "税费",
-      "annualBillingTemplate": "年度计划，第一个月费用为 {{priceNow}}，之后以 {{price}}/月续订"
+      "annualBillingTemplate": "年度计划，第一个月费用为 {{priceNow}}{{currency}}，之后以 {{price}}{{currency}}/月续订"
     },
     "confirmCryptoPayment": {
       "title": "确认付款",

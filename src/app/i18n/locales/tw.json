@@ -273,7 +273,7 @@
       },
       "apply": "應用",
       "taxes": "稅金",
-      "annualBillingTemplate": "年度計劃，第一個月費用為 {{priceNow}}，之後以 {{price}}/月續訂"
+      "annualBillingTemplate": "年度計劃，第一個月費用為 {{priceNow}}{{currency}}，之後以 {{price}}{{currency}}/月續訂"
     },
     "confirmCryptoPayment": {
       "title": "確認付款",
