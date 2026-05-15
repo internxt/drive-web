@@ -48,6 +48,9 @@ vi.mock('app/store/slices/storage/fileUtils/getFilesByBatchs', () => ({
 }));
 vi.mock('app/store/slices/storage/storage.thunks', () => ({ default: {} }));
 vi.mock('i18next', () => ({ default: { t: (key: string) => key }, t: (key: string) => key }));
+vi.mock('app/store/slices/storage/nameCollisionPromise', () => ({
+  nameCollisionPromise: { wait: vi.fn().mockResolvedValue(undefined), resolve: vi.fn() },
+}));
 
 import { handleRepeatedUploadingFiles, handleRepeatedUploadingFolders } from './renameItemsThunk';
 

@@ -21,6 +21,7 @@ import { getUniqueFolderName } from 'app/store/slices/storage/folderUtils/getUni
 import { getUniqueFilename } from 'app/store/slices/storage/fileUtils/getUniqueFilename';
 import { checkDuplicatedFiles } from 'app/store/slices/storage/fileUtils/checkDuplicatedFiles';
 import { MoveItemPayload } from 'app/store/slices/storage/storage.thunks/moveItemsThunk';
+import { nameCollisionPromise } from 'app/store/slices/storage/nameCollisionPromise';
 
 type NameCollisionContainerProps = {
   currentFolderId: string;
@@ -89,6 +90,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     dispatch(uiActions.setIsNameCollisionDialogOpen(false));
     resetPendingToRenameFolders();
     resetPendingToRenameItems();
+    nameCollisionPromise.resolve();
   };
 
   const resetPendingToRenameItems = () => {
@@ -287,6 +289,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
         });
         break;
     }
+    nameCollisionPromise.resolve();
   };
 
   return (

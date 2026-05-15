@@ -104,11 +104,12 @@ export const useMoveItems = () => {
         map.set(key, [...(map.get(key) ?? []), item]);
         return map;
       }, new Map<string | undefined, DriveItemData[]>());
-      const restoredItems = await Promise.all(
-        [...restorableByDestination.entries()].map(([destinationId, items]) =>
-          processMove({ finalDestinationId: destinationId as string, items }),
-        ),
-      );
+
+      const restoredItems: Awaited<ReturnType<typeof processMove>>[] = [];
+      for (const [destinationId, groupItems] of restorableByDestination.entries()) {
+        const result = await processMove({ finalDestinationId: destinationId as string, items: groupItems });
+        restoredItems.push(result);
+      }
 
       const totalItemsMovedConcat = restoredItems.flatMap((item) => item.totalItemsMoved);
 

@@ -15,6 +15,7 @@ import { getFilesByBatchs } from '../fileUtils/getFilesByBatchs';
 import { getUniqueFilename } from '../fileUtils/getUniqueFilename';
 import { checkFolderDuplicated } from '../folderUtils/checkFolderDuplicated';
 import { getUniqueFolderName } from '../folderUtils/getUniqueFolderName';
+import { nameCollisionPromise } from '../nameCollisionPromise';
 import { StorageState } from '../storage.model';
 import { IRoot } from '../types';
 
@@ -61,6 +62,7 @@ export const handleRepeatedUploadingFiles = async (
     dispatch(storageActions.setDriveFilesToRename(duplicatedFilesResponse as DriveItemData[]));
     if (isMoveOperation) dispatch(storageActions.setMoveDestinationFolderId(destinationFolderUuid));
     dispatch(uiActions.setIsNameCollisionDialogOpen(true));
+    await nameCollisionPromise.wait();
   }
   return unrepeatedFiles;
 };
@@ -108,6 +110,7 @@ export const handleRepeatedUploadingFolders = async (
     dispatch(storageActions.setDriveFoldersToRename(duplicatedFoldersResponse as DriveItemData[]));
     if (isMoveOperation) dispatch(storageActions.setMoveDestinationFolderId(destinationFolderUuid));
     dispatch(uiActions.setIsNameCollisionDialogOpen(true));
+    await nameCollisionPromise.wait();
   }
 
   return unrepeatedFolders as DriveItemData[];
