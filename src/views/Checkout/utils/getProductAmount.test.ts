@@ -4,7 +4,7 @@ import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
 
 describe('Calculating final price of a product', () => {
   it('When there is no coupon, returns base amount multiplied by users', () => {
-    expect(getProductAmount(10, 2)).toBe('20');
+    expect(getProductAmount(10, 2)).toBe('20.00');
   });
 
   describe('When amountOff coupon is applied', () => {
@@ -16,7 +16,7 @@ describe('Calculating final price of a product', () => {
         codeName: 'DISCOUNT',
       };
 
-      expect(getProductAmount(10, 2, coupon)).toBe('18');
+      expect(getProductAmount(10, 2, coupon)).toBe('18.00');
     });
   });
 
@@ -29,7 +29,7 @@ describe('Calculating final price of a product', () => {
         codeName: 'HALFOFF',
       };
 
-      expect(getProductAmount(10, 3, coupon)).toBe('15');
+      expect(getProductAmount(10, 3, coupon)).toBe('15.00');
     });
 
     it('Supports non-integer results rounded to 2 decimals', () => {
@@ -44,8 +44,8 @@ describe('Calculating final price of a product', () => {
     });
   });
 
-  it('Handles case with 0 users gracefully (should return 0)', () => {
-    expect(getProductAmount(10, 0)).toBe('0');
+  it('Handles case with 0 users gracefully (should return 0.00)', () => {
+    expect(getProductAmount(10, 0)).toBe('0.00');
   });
 
   describe('When discount results in negative price', () => {
@@ -57,7 +57,7 @@ describe('Calculating final price of a product', () => {
         codeName: 'BIGDISCOUNT',
       };
 
-      expect(getProductAmount(10, 1, coupon)).toBe('0');
+      expect(getProductAmount(10, 1, coupon)).toBe('0.00');
     });
 
     it('Returns 0 if percentOff is 100% or more', () => {
@@ -68,7 +68,7 @@ describe('Calculating final price of a product', () => {
         codeName: 'FREE',
       };
 
-      expect(getProductAmount(10, 2, coupon)).toBe('0');
+      expect(getProductAmount(10, 2, coupon)).toBe('0.00');
     });
   });
 });
