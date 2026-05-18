@@ -61,6 +61,8 @@ export const CheckoutProductCard = ({
 
   const planAmountWithoutTaxes = getProductAmount(priceData.decimalAmount, 1, couponCodeData);
 
+  const isHiddenCoupon = couponCodeData?.codeName === 'SPECIAL';
+
   const discountPercentage =
     couponCodeData?.amountOff && couponCodeData?.amountOff < taxesData.amountWithTax
       ? ((couponCodeData?.amountOff / taxesData.amountWithTax) * 100).toFixed(2)
@@ -118,7 +120,7 @@ export const CheckoutProductCard = ({
               </p>
             </div>
           )}
-          {couponCodeData && (
+          {couponCodeData && !isHiddenCoupon && (
             <div className="flex flex-row items-center justify-between font-semibold">
               <div className="flex flex-row items-center space-x-2 text-green-dark">
                 <SealPercent weight="fill" size={24} />
@@ -167,7 +169,7 @@ export const CheckoutProductCard = ({
             </p>
           </div>
 
-          {showCouponCode && (
+          {showCouponCode && !isHiddenCoupon && (
             <>
               {couponCodeData?.codeName ? (
                 <div className="flex w-full flex-row justify-between">
