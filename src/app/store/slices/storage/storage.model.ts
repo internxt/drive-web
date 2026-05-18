@@ -30,10 +30,6 @@ export interface StorageState {
   itemsOnTrash: DriveItemData[];
   folderOnTrashLength: number;
   filesOnTrashLength: number;
-  filesToRename: (File | DriveItemData)[];
-  driveFilesToRename: DriveItemData[];
-  foldersToRename: (DriveItemData | IRoot)[];
-  driveFoldersToRename: DriveItemData[];
   moveDestinationFolderId: string | null;
   viewMode: FileViewMode;
   namePath: FolderPath[];
@@ -46,6 +42,13 @@ export interface StorageState {
 
 export interface StorageSetFiltersPayload {
   text?: string;
+}
+
+export interface CollisionGroup {
+  destinationUuid: string;
+  duplicatedItems: (File | IRoot | DriveItemData)[];
+  existingItems: DriveItemData[];
+  unrepeatedItems: DriveItemData[];
 }
 
 export function filtersFactory(): StorageFilters {

@@ -13,8 +13,12 @@ import { RootState } from '../../..';
 import errorService from 'services/error.service';
 import { StorageState } from '../storage.model';
 
+export interface MoveItemPayload extends DriveItemData {
+  newItemName?: string;
+}
+
 export interface MoveItemsPayload {
-  items: DriveItemData[];
+  items: MoveItemPayload[];
   destinationFolderId: string;
 }
 

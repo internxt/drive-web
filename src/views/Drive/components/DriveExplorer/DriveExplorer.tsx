@@ -729,45 +729,71 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
   const { dispatch, currentFolderId, onDragAndDropEnd } = props;
 
   if (files.length <= UPLOAD_ITEMS_LIMIT) {
-    if (files.length) {
-      const unrepeatedUploadedFiles = (await handleRepeatedUploadingFiles(files, dispatch, currentFolderId)) as File[];
-      // files where dragged directly
-      await dispatch(
+    const [filesResult, foldersResult] = await Promise.all([
+      files.length > 0 ? handleRepeatedUploadingFiles(Array.from(files), currentFolderId) : null,
+      rootList.length > 0 ? handleRepeatedUploadingFolders(rootList, currentFolderId) : null,
+    ]);
+
+    const repeatedFiles =
+      filesResult && filesResult?.repeatedItems?.length > 0
+        ? [
+            {
+              destinationUuid: currentFolderId,
+              duplicatedItems: filesResult?.repeatedItems as any,
+              existingItems: filesResult?.existingItems as any,
+              unrepeatedItems: filesResult?.unrepeatedItems as any,
+            },
+          ]
+        : [];
+
+    const repeatedFolders =
+      foldersResult && foldersResult.repeatedItems?.length > 0
+        ? [
+            {
+              destinationUuid: currentFolderId,
+              duplicatedItems: foldersResult?.repeatedItems as any,
+              existingItems: foldersResult?.existingItems as any,
+              unrepeatedItems: foldersResult?.unrepeatedItems as any,
+            },
+          ]
+        : [];
+
+    const collisionGroups = [...repeatedFiles, ...repeatedFolders];
+
+    if (collisionGroups.length > 0) {
+      dispatch(
+        uiActions.setIsNameCollisionDialogOpen({ open: true, info: { groups: collisionGroups, operation: 'upload' } }),
+      );
+    }
+
+    const areUnrepeatedFiles = filesResult && filesResult.unrepeatedItems.length > 0;
+    const areUnrepeatedFolders = foldersResult && foldersResult.unrepeatedItems.length > 0;
+
+    if (areUnrepeatedFiles) {
+      dispatch(
         storageThunks.uploadItemsThunk({
-          files: unrepeatedUploadedFiles,
+          files: filesResult.unrepeatedItems as File[],
           parentFolderId: currentFolderId,
-          options: {
-            onSuccess: onDragAndDropEnd,
-            disableDuplicatedNamesCheck: true,
-          },
         }),
       ).then(() => {
         dispatch(fetchSortedFolderContentThunk(currentFolderId));
       });
     }
-    if (rootList.length) {
-      const unrepeatedUploadedFolders = (await handleRepeatedUploadingFolders(
-        rootList,
-        dispatch,
+
+    if (areUnrepeatedFolders) {
+      const folderDataToUpload = (foldersResult.unrepeatedItems as IRoot[]).map((root) => ({
+        root,
         currentFolderId,
-      )) as IRoot[];
+        options: { onSuccess: onDragAndDropEnd },
+      }));
 
-      if (unrepeatedUploadedFolders.length > 0) {
-        const folderDataToUpload = unrepeatedUploadedFolders.map((root) => ({
-          root,
-          currentFolderId,
-          options: {
-            onSuccess: onDragAndDropEnd,
-          },
-        }));
+      await uploadFoldersWithManager({
+        payload: folderDataToUpload,
+        selectedWorkspace: props.selectedWorkspace,
+        dispatch,
+      });
 
-        await uploadFoldersWithManager({
-          payload: folderDataToUpload,
-          selectedWorkspace: props.selectedWorkspace,
-          dispatch,
-        });
-        dispatch(fetchSortedFolderContentThunk(currentFolderId));
-      }
+      dispatch(fetchSortedFolderContentThunk(currentFolderId));
     }
   } else {
     dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));

@@ -3,13 +3,10 @@ import { NativeTypes } from 'react-dnd-html5-backend';
 import { transformDraggedItems } from 'services/drag-and-drop.service';
 import { DragAndDropType } from 'app/core/types';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { storageActions } from 'app/store/slices/storage';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
-import {
-  handleRepeatedUploadingFiles,
-  handleRepeatedUploadingFolders,
-} from 'app/store/slices/storage/storage.thunks/renameItemsThunk';
+import { getCollisionGroups } from 'app/store/slices/storage/storage.thunks/renameItemsThunk';
+import { uiActions } from 'app/store/slices/ui';
 import { DriveItemData } from 'app/drive/types';
 import { uploadFoldersWithManager } from 'app/network/UploadFolderManager';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
@@ -59,28 +56,16 @@ const handleDriveItemDrop = async (
       )
     : [droppedData];
 
-  const filesToMove: DriveItemData[] = [];
-  const foldersToMove = itemsToMove?.filter((i) => {
-    if (!i.isFolder) filesToMove.push(i);
-    return i.isFolder;
-  });
+  const groups = await getCollisionGroups([{ destinationUuid: item.uuid, items: itemsToMove }]);
+  const [group] = groups;
 
-  dispatch(storageActions.setMoveDestinationFolderId(item.uuid));
-
-  const unrepeatedFiles = await handleRepeatedUploadingFiles(filesToMove, dispatch, item.uuid);
-  const unrepeatedFolders = await handleRepeatedUploadingFolders(foldersToMove, dispatch, item.uuid);
-  const unrepeatedItems: DriveItemData[] = [...unrepeatedFiles, ...unrepeatedFolders] as DriveItemData[];
-
-  if (unrepeatedItems.length === itemsToMove.length) {
-    dispatch(storageActions.setMoveDestinationFolderId(item.uuid));
+  if (group.duplicatedItems.length > 0) {
+    dispatch(uiActions.setIsNameCollisionDialogOpen({ open: true, info: { groups, operation: 'move' } }));
   }
 
-  dispatch(
-    storageThunks.moveItemsThunk({
-      items: unrepeatedItems,
-      destinationFolderId: item.uuid,
-    }),
-  );
+  if (group.unrepeatedItems.length > 0) {
+    dispatch(storageThunks.moveItemsThunk({ items: group.unrepeatedItems, destinationFolderId: item.uuid }));
+  }
 };
 
 const handleFileDrop = async (
