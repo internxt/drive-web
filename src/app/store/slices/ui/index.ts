@@ -168,16 +168,6 @@ export const uiSlice = createSlice({
       state.isReachedPlanLimitDialogOpen = action.payload.open;
       state.reachedPlanLimitDialogInfo = action.payload.info;
     },
-    setOpenFileSizeLimitReachedDialog: (
-      state: UISliceState,
-      action: PayloadAction<{
-        open: boolean;
-        info?: ReachedFileSizeLimitDialogInfo;
-      }>,
-    ) => {
-      state.isReachedFileSizeLimitDialogOpen = action.payload.open;
-      state.reachedFileSizeLimitDialogInfo = action.payload.info;
-    },
     setIsUpgradePlanDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isUpgradePlanDialogOpen = action.payload;
     },
