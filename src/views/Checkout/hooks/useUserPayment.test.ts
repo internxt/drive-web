@@ -196,7 +196,7 @@ describe('Custom hook to handle payments', () => {
         elements: subscriptionPaymentPayload.elements,
         clientSecret: 'client_secret',
         confirmParams: {
-          return_url: `https://926cca74.drive-web.pages.dev/checkout/success`,
+          return_url: `${envService.getVariable('hostname')}/checkout/success`,
         },
       });
     });
@@ -252,7 +252,7 @@ describe('Custom hook to handle payments', () => {
         elements: subscriptionPaymentPayload.elements,
         clientSecret: 'client_secret',
         confirmParams: {
-          return_url: `https://926cca74.drive-web.pages.dev/checkout/success`,
+          return_url: `${envService.getVariable('hostname')}/checkout/success`,
         },
       });
     });
@@ -358,7 +358,7 @@ describe('Custom hook to handle payments', () => {
         elements: lifetimePaymentPayload.elements,
         clientSecret: 'client_secret',
         confirmParams: {
-          return_url: `https://926cca74.drive-web.pages.dev/checkout/success`,
+          return_url: `${envService.getVariable('hostname')}/checkout/success`,
         },
       });
     });
