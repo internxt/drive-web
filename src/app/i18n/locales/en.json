@@ -305,7 +305,7 @@
       },
       "apply": "Apply",
       "taxes": "Taxes",
-      "annualBillingTemplate": "Annual plan, billed monthly at {{price}}{{currency}}/month for 12 months"
+      "annualBillingTemplate": "Annual plan, billed at {{priceNow}}{{currency}} for the first month, then renews at {{price}}{{currency}}/month"
     },
     "confirmCryptoPayment": {
       "title": "Confirm the payment",

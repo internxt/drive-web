@@ -348,7 +348,7 @@
       },
       "apply": "Applica",
       "taxes": "Tasse",
-      "annualBillingTemplate": "Piano annuale, fatturato mensilmente a {{price}}{{currency}}/mese per 12 mesi"
+      "annualBillingTemplate": "Piano annuale, fatturato a {{priceNow}}{{currency}} per il primo mese, poi si rinnova a {{price}}{{currency}}/mese"
     },
     "confirmCryptoPayment": {
       "title": "Conferma il pagamento",
