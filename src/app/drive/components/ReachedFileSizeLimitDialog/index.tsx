@@ -8,7 +8,7 @@ import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selector
 import { useEffect, useState } from 'react';
 import { fetchPlanPrices } from 'views/NewSettings/services/plansApi';
 import { Translate } from 'app/i18n/types';
-import { bytesToString } from '../services/size.service';
+import { bytesToString } from '../../services/size.service';
 
 const ReachedFileSizeLimitDialog = (): JSX.Element | null => {
   const dispatch = useAppDispatch();
