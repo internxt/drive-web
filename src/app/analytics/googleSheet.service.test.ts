@@ -62,7 +62,7 @@ describe('Google Sheets Conversion Logger', () => {
         body: JSON.stringify({
           gclid: 'test-gclid',
           name: 'test-name',
-          value: '5.00',
+          value: '5',
           currency: 'USD',
           timestamp: expectedTimestamp,
           captcha: 'mocked-token',
