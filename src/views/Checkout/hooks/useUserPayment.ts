@@ -106,7 +106,8 @@ export const useUserPayment = () => {
     clientSecret: string,
     confirmPayment: Stripe['confirmPayment'],
   ) => {
-    const RETURN_URL_DOMAIN = envService.getVariable('hostname');
+    // TODO: remove before merging — temporary override for Cloudflare preview testing
+    const RETURN_URL_DOMAIN = 'https://926cca74.drive-web.pages.dev';
     const { error: confirmIntentError } = await confirmPayment({
       elements,
       clientSecret: clientSecret,
@@ -125,7 +126,8 @@ export const useUserPayment = () => {
     clientSecret: string,
     setupIntent: Stripe['confirmSetup'],
   ) => {
-    const RETURN_URL_DOMAIN = envService.getVariable('hostname');
+    // TODO: remove before merging — temporary override for Cloudflare preview testing
+    const RETURN_URL_DOMAIN = 'https://926cca74.drive-web.pages.dev';
     const { error: confirmIntentError } = await setupIntent({
       elements,
       clientSecret: clientSecret,
