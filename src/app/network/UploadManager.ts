@@ -2,7 +2,7 @@ import { queue, QueueObject } from 'async';
 import { randomBytes } from 'crypto';
 import { t } from 'i18next';
 import errorService from 'services/error.service';
-import { HTTP_CODES } from '../core/constants';
+import { HTTP_STATUS_CODES } from '../core/constants';
 import uploadFile from 'app/drive/services/file.service/uploadFile';
 import { DriveFileData } from 'app/drive/types';
 import { PersistUploadRepository } from '../repositories/DatabaseUploadRepository';
@@ -339,7 +339,7 @@ class UploadManager {
       errorService.reportError(error);
 
       // Handle max space used error
-      if (error?.status === HTTP_CODES.MAX_SPACE_USED) {
+      if (error?.status === HTTP_STATUS_CODES.MAX_SPACE_USED) {
         this.maxSpaceOccupiedCallback();
       }
 
