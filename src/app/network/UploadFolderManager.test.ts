@@ -5,9 +5,11 @@ import { createFolder } from 'app/store/slices/storage/folderUtils/createFolder'
 import { checkFolderDuplicated } from 'app/store/slices/storage/folderUtils/checkFolderDuplicated';
 import { getUniqueFolderName } from 'app/store/slices/storage/folderUtils/getUniqueFolderName';
 import tasksService from 'app/tasks/services/tasks.service';
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import { beforeEach, describe, expect, it, Mock, test, vi } from 'vitest';
 import { TaskFolder, UploadFoldersManager, uploadFoldersWithManager } from './UploadFolderManager';
 import * as networkInformation from './networkInformation';
+import { FilesExceedsSizeLimitError } from 'app/drive/services/file.service/upload.errors';
+import { uploadItemsParallelThunk } from 'app/store/slices/storage/storage.thunks/uploadItemsThunk';
 
 vi.mock('app/drive/services/new-storage.service', () => ({
   default: {
@@ -361,6 +363,70 @@ describe('checkUploadFolders', () => {
 
     expect(logNetworkInfoMock).toHaveBeenCalledOnce();
     expect(logNetworkInfoMock).toHaveBeenCalledWith({ folderName: 'MyFolder' });
+  });
+
+  describe('Handle File Uploads', () => {
+    const taskId = 'task-id';
+    const mockCreatedFolder: DriveFolderData = {
+      id: 0,
+      uuid: 'folder-uuid',
+      name: 'Folder1',
+      bucket: 'bucket',
+      parentId: 0,
+      parent_id: 0,
+      parentUuid: 'parentUuid',
+      userId: 0,
+      user_id: 0,
+      icon: null,
+      iconId: null,
+      icon_id: null,
+      isFolder: true,
+      color: null,
+      encrypt_version: null,
+      plain_name: 'Folder1',
+      deleted: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    const buildManager = (maxUploadFileSize?: number) => {
+      const manager = new UploadFoldersManager([], null, mockDispatch, maxUploadFileSize);
+      manager['tasksInfo'][taskId] = { progress: { itemsUploaded: 0, totalItems: 1 } };
+      return manager;
+    };
+
+    test('When all files exceed the size limit and there are no subfolders, then an error indicating so is thrown', async () => {
+      const bigFile = new File([new ArrayBuffer(200)], 'big.mp4');
+      vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+      vi.spyOn(tasksService, 'getTasks').mockReturnValue([]);
+      const manager = buildManager(100);
+      const level = { childrenFiles: [bigFile], childrenFolders: [], folderId: 'f', name: 'F', fullPathEdited: '' };
+
+      await expect(
+        manager['handleFileUploads'](level, mockCreatedFolder, taskId, new AbortController()),
+      ).rejects.toThrow(FilesExceedsSizeLimitError);
+    });
+
+    test('When a folder has files exceeding the size limit but also has subfolders, then it dispatches the upload', async () => {
+      const bigFile = new File([new ArrayBuffer(200)], 'big.mp4');
+      const dispatchWithUnwrap = vi.fn().mockReturnValue({ unwrap: () => Promise.resolve() });
+      vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+      const manager = new UploadFoldersManager([], null, dispatchWithUnwrap, 100);
+      manager['tasksInfo'][taskId] = { progress: { itemsUploaded: 0, totalItems: 1 } };
+      const level = {
+        childrenFiles: [bigFile],
+        childrenFolders: [{ folderId: 'c', childrenFiles: [], childrenFolders: [], name: 'Child', fullPathEdited: '' }],
+        folderId: 'f',
+        name: 'F',
+        fullPathEdited: '',
+      };
+
+      await manager['handleFileUploads'](level, mockCreatedFolder, taskId, new AbortController());
+
+      expect(uploadItemsParallelThunk).toHaveBeenCalledWith(
+        expect.objectContaining({ files: level.childrenFiles, parentFolderId: mockCreatedFolder.uuid }),
+      );
+    });
   });
 
   it('should abort the upload if abortController is called', async () => {

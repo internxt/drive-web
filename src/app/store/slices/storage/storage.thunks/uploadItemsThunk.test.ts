@@ -200,7 +200,7 @@ describe('upload shared items thunk', () => {
 describe('Upload items in parallel thunk', () => {
   const dispatch = vi.fn();
   const getState = () => {
-    return { user: { user: { email: 'test@test.com' } } };
+    return { user: { user: { email: 'test@test.com' } }, fileVersions: { limits: null } };
   };
   const mockFile = new File(['content'], 'file.txt', { type: 'text/plain' });
 
@@ -231,6 +231,45 @@ describe('Upload items in parallel thunk', () => {
         requestId: 'test-request-id',
       }),
     );
+  });
+
+  test('When all files exceed the size limit, then the thunk throws without attempting the upload', async () => {
+    // Arrange
+    const bigFile = new File([new ArrayBuffer(200)], 'big.mp4');
+    const getStateWithLimit = () => ({
+      user: { user: { email: 'test@test.com' } },
+      fileVersions: { limits: { maxUploadFileSize: 100 } },
+    });
+
+    // Act
+    await uploadItemsParallelThunk({
+      files: [bigFile],
+      parentFolderId: 'parent1',
+    })(dispatch, getStateWithLimit as () => RootState, {});
+
+    // Assert
+    expect(prepareFilesToUpload).not.toHaveBeenCalled();
+    expect(uploadFileWithManager).not.toHaveBeenCalled();
+  });
+
+  test('When some files exceed the size limit and some do not, then only the allowed files are uploaded', async () => {
+    // Arrange
+    const smallFile = new File(['x'], 'small.txt');
+    const bigFile = new File([new ArrayBuffer(200)], 'big.mp4');
+    const getStateWithLimit = () => ({
+      user: { user: { email: 'test@test.com' } },
+      fileVersions: { limits: { maxUploadFileSize: 100 } },
+    });
+    (prepareFilesToUpload as Mock).mockResolvedValue({ filesToUpload: [smallFile] });
+
+    // Act
+    await uploadItemsParallelThunk({
+      files: [smallFile, bigFile],
+      parentFolderId: 'parent1',
+    })(dispatch, getStateWithLimit as () => RootState, {});
+
+    // Assert
+    expect(prepareFilesToUpload).toHaveBeenCalledWith(expect.objectContaining({ files: [smallFile] }));
   });
 });
 

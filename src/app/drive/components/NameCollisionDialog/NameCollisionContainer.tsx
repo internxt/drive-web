@@ -191,6 +191,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
           ],
           selectedWorkspace,
           dispatch,
+          maxUploadFileSize: limits?.maxUploadFileSize ?? undefined,
         });
       } else {
         const file = itemToUpload as File;
@@ -214,6 +215,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
           ],
           selectedWorkspace,
           dispatch,
+          maxUploadFileSize: limits?.maxUploadFileSize ?? undefined,
         }).then(() => {
           dispatch(fetchSortedFolderContentThunk(folderId));
         });

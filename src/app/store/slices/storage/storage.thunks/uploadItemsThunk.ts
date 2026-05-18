@@ -26,6 +26,7 @@ import { FileToUpload } from 'app/drive/services/file.service/types';
 import { prepareFilesToUpload } from '../fileUtils/prepareFilesToUpload';
 import { StorageState } from '../storage.model';
 import { AppError } from '@internxt/sdk';
+import { filterFilesByMaxSize } from '../fileUtils/filterFilesByMaxSize';
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;
@@ -61,10 +62,7 @@ const validateFileSize = (
   files: File[],
   maxUploadFileSize?: number,
 ): File[] => {
-  if (!maxUploadFileSize) return files;
-
-  const allowedFilesToUpload = files.filter((file) => file.size <= maxUploadFileSize);
-  const exceededFiles = files.filter((file) => file.size > maxUploadFileSize);
+  const { allowedFilesToUpload, exceededFiles } = filterFilesByMaxSize({ files, maxUploadFileSize });
 
   if (exceededFiles.length > 0) {
     dispatch(
@@ -439,6 +437,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
   ) => {
     const state = getState();
     const user = state.user.user as UserSettings;
+    const maxFileSize = getState().fileVersions.limits?.maxUploadFileSize ?? undefined;
     const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
     const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
     const errors: AppError[] = [];
@@ -459,8 +458,15 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
         workspacesToken: workspaceCredentials?.tokenHeader,
       };
     }
+
+    const allowedFilesToUpload = validateFileSize(dispatch, files, maxFileSize);
+
+    if (allowedFilesToUpload.length === 0) {
+      return;
+    }
+
     const { filesToUpload } = await prepareFilesToUpload({
-      files,
+      files: allowedFilesToUpload,
       parentFolderId,
       disableDuplicatedNamesCheck: options.disableDuplicatedNamesCheck,
       disableExistenceCheck: options.disableExistenceCheck,
@@ -491,10 +497,22 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
         }),
       );
 
+    const openReachedPlanLimitDialog = () => {
+      dispatch(
+        uiActions.setOpenFileSizeLimitReachedDialog({
+          open: true,
+          info: {
+            exceededFiles: allowedFilesToUpload,
+          },
+        }),
+      );
+    };
+
     try {
       await uploadFileWithManager({
         files: filesToUploadData,
         maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialog,
+        fileSizeExceededCallback: openReachedPlanLimitDialog,
         uploadRepository: DatabaseUploadRepository.getInstance(),
         abortController,
         options: {

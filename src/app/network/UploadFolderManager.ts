@@ -20,6 +20,9 @@ import { wait } from 'utils/timeUtils';
 import { ConnectionLostError } from './requests';
 import referralService from 'services/referral.service';
 import { logNetworkInfoForUpload } from './networkInformation';
+import { uiActions } from 'app/store/slices/ui';
+import { FilesExceedsSizeLimitError } from 'app/drive/services/file.service/upload.errors';
+import { filterFilesByMaxSize } from 'app/store/slices/storage/fileUtils/filterFilesByMaxSize';
 
 interface UploadFolderPayload {
   root: IRoot;
@@ -131,12 +134,14 @@ export const uploadFoldersWithManager = ({
   payload,
   selectedWorkspace,
   dispatch,
+  maxUploadFileSize,
 }: {
   payload: UploadFolderPayload[];
   selectedWorkspace: WorkspaceData | null;
   dispatch: ThunkDispatch<RootState, unknown, AnyAction>;
+  maxUploadFileSize?: number;
 }): Promise<void> => {
-  const uploadFoldersManager = new UploadFoldersManager(payload, selectedWorkspace, dispatch);
+  const uploadFoldersManager = new UploadFoldersManager(payload, selectedWorkspace, dispatch, maxUploadFileSize);
   return uploadFoldersManager.run();
 };
 
@@ -148,6 +153,7 @@ export class UploadFoldersManager {
   private readonly selectedWorkspace: WorkspaceData | null;
   private readonly dispatch: ThunkDispatch<RootState, unknown, AnyAction>;
   private readonly abortController?: AbortController;
+  private readonly maxUploadFileSize?: number;
 
   private tasksInfo: Record<string, TaskInfo> = {};
 
@@ -155,10 +161,12 @@ export class UploadFoldersManager {
     payload: UploadFolderPayload[],
     selectedWorkspace: WorkspaceData | null,
     dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
+    maxUploadFileSize?: number,
   ) {
     this.payload = payload;
     this.selectedWorkspace = selectedWorkspace;
     this.dispatch = dispatch;
+    this.maxUploadFileSize = maxUploadFileSize;
   }
 
   private readonly uploadFoldersQueue: QueueObject<TaskFolder> = queue<TaskFolder>(
@@ -238,6 +246,23 @@ export class UploadFoldersManager {
     if (level.childrenFiles.length === 0) return;
     if (abortController.signal.aborted) return;
 
+    const hasNoChildFolders = level.childrenFolders.length === 0;
+    const { exceededFiles } = filterFilesByMaxSize({
+      files: level.childrenFiles,
+      maxUploadFileSize: this.maxUploadFileSize,
+    });
+    const allFilesExceedSizeLimit =
+      exceededFiles.length === level.childrenFiles.length && level.childrenFiles.length > 0;
+
+    if (allFilesExceedSizeLimit && hasNoChildFolders) {
+      await this.stopUploadTask(taskId, abortController);
+      this.killQueueAndNotifyError(taskId);
+      this.dispatch(
+        uiActions.setOpenFileSizeLimitReachedDialog({ open: true, info: { exceededFiles: level.childrenFiles } }),
+      );
+      throw new FilesExceedsSizeLimitError();
+    }
+
     await this.dispatch(
       uploadItemsParallelThunk({
         files: level.childrenFiles,
@@ -314,8 +339,10 @@ export class UploadFoldersManager {
     // Deletes the root folder
     const rootFolderItem = this.tasksInfo[taskId].rootFolderItem;
     if (rootFolderItem) {
-      promises.push(this.dispatch(deleteItemsThunk([rootFolderItem as DriveItemData])).unwrap());
-      promises.push(newStorageService.deleteFolderByUuid(rootFolderItem.uuid));
+      promises.push(
+        this.dispatch(deleteItemsThunk([rootFolderItem as DriveItemData])).unwrap(),
+        newStorageService.deleteFolderByUuid(rootFolderItem.uuid),
+      );
     }
     await Promise.allSettled(promises);
   };

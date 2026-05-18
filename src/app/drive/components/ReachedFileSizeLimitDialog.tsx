@@ -1,44 +1,14 @@
 import { Button } from '@internxt/ui';
+import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { Translate } from 'app/i18n/types';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
 import { navigationService } from 'services';
-import { bytesToString } from '../services/size.service';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-
-const getText = (
-  translate: Translate,
-  maxFileSize: number,
-  exceededFiles?: {
-    size: number;
-  }[],
-): {
-  title: string;
-  description: string;
-} => {
-  const isOnlyOneFile = exceededFiles?.length === 1;
-  const fileSize = exceededFiles?.[0].size;
-  const parsedFileSize = bytesToString(fileSize as number);
-  const parsedMaxFileSize = bytesToString(maxFileSize);
-
-  if (isOnlyOneFile) {
-    return {
-      title: translate('error.fileSizeLimitExceeded.title.singleFile'),
-      description: translate('error.fileSizeLimitExceeded.description.singleFile', {
-        maxFileSize: parsedMaxFileSize,
-        fileSize: parsedFileSize,
-      }),
-    };
-  }
-
-  return {
-    title: translate('error.fileSizeLimitExceeded.title.multipleFiles'),
-    description: translate('error.fileSizeLimitExceeded.description.multipleFiles', {
-      maxFileSize: parsedMaxFileSize,
-    }),
-  };
-};
+import { useEffect, useState } from 'react';
+import { fetchPlanPrices } from 'views/NewSettings/services/plansApi';
+import { Translate } from 'app/i18n/types';
+import { bytesToString } from '../services/size.service';
 
 const ReachedFileSizeLimitDialog = (): JSX.Element | null => {
   const dispatch = useAppDispatch();
@@ -48,6 +18,48 @@ const ReachedFileSizeLimitDialog = (): JSX.Element | null => {
   const exceededFiles = reachedFileSizeLImitInfo?.exceededFiles;
   const maxFileSize = useAppSelector((state) => state.fileVersions.limits?.maxUploadFileSize) ?? 0;
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
+  const individualSubscription = useAppSelector((state) => state.plan.individualSubscription);
+  const [availablePlans, setAvailablePlans] = useState<DisplayPrice[]>([]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    fetchPlanPrices(UserType.Individual)
+      .then(setAvailablePlans)
+      .catch(() => setAvailablePlans([]));
+  }, [isOpen]);
+
+  const getText = (
+    translate: Translate,
+    maxFileSize: number,
+    exceededFiles?: {
+      size: number;
+    }[],
+  ): {
+    title: string;
+    description: string;
+  } => {
+    const isOnlyOneFile = exceededFiles?.length === 1;
+    const fileSize = exceededFiles?.[0].size;
+    const parsedFileSize = bytesToString(fileSize as number);
+    const parsedMaxFileSize = bytesToString(maxFileSize);
+
+    if (isOnlyOneFile) {
+      return {
+        title: translate('error.fileSizeLimitExceeded.title.singleFile'),
+        description: translate('error.fileSizeLimitExceeded.description.singleFile', {
+          maxFileSize: parsedMaxFileSize,
+          fileSize: parsedFileSize,
+        }),
+      };
+    }
+
+    return {
+      title: translate('error.fileSizeLimitExceeded.title.multipleFiles'),
+      description: translate('error.fileSizeLimitExceeded.description.multipleFiles', {
+        maxFileSize: parsedMaxFileSize,
+      }),
+    };
+  };
 
   const text = getText(translate, maxFileSize, exceededFiles);
 
@@ -69,11 +81,17 @@ const ReachedFileSizeLimitDialog = (): JSX.Element | null => {
     onClose();
   };
 
-  // Map it to the plans so we can highlight the next plan in the list
-  const list = [
-    translate('error.fileSizeLimitExceeded.planList.essential'),
-    translate('error.fileSizeLimitExceeded.planList.premium'),
-    translate('error.fileSizeLimitExceeded.planList.ultimate'),
+  const currentProductId =
+    individualSubscription?.type === 'subscription' ? individualSubscription.productId : undefined;
+  const individualPlans = availablePlans.filter((p) => p.userType === UserType.Individual);
+  const currentPlanBytes = individualPlans.find((p) => p.productId === currentProductId)?.bytes ?? 0;
+  const sortedPlans = [...individualPlans].sort((a, b) => a.bytes - b.bytes);
+  const nextPlanProductId = sortedPlans.find((p) => p.bytes > currentPlanBytes)?.bytes;
+
+  const planList = [
+    { label: translate('error.fileSizeLimitExceeded.planList.essential'), productBytes: sortedPlans[0]?.bytes },
+    { label: translate('error.fileSizeLimitExceeded.planList.premium'), productBytes: sortedPlans[1]?.bytes },
+    { label: translate('error.fileSizeLimitExceeded.planList.ultimate'), productBytes: sortedPlans[2]?.bytes },
   ];
 
   if (!isOpen) return null;
@@ -89,9 +107,12 @@ const ReachedFileSizeLimitDialog = (): JSX.Element | null => {
 
             <div className="flex px-5">
               <ul className="flex flex-col gap-2">
-                {list.map((item) => (
-                  <li key={item} className="list-disc leading-tight text-gray-80">
-                    {item}
+                {planList.map((plan) => (
+                  <li
+                    key={plan.label}
+                    className={`list-disc leading-tight ${plan.productBytes === nextPlanProductId ? 'font-semibold text-gray-100' : 'text-gray-80'}`}
+                  >
+                    {plan.label}
                   </li>
                 ))}
               </ul>

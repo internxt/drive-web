@@ -1,7 +1,7 @@
 import react from '@vitejs/plugin-react';
 import dotenv from 'dotenv';
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import { defineConfig } from 'vite';
 import obfuscator from 'vite-plugin-bundle-obfuscator';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';

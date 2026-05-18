@@ -135,6 +135,7 @@ interface DriveExplorerProps {
   namePath: FolderPath[];
   dispatch: AppDispatch;
   selectedWorkspace: WorkspaceData | null;
+  maxUploadFileSize?: number;
   isOver: boolean;
   connectDropTarget: ConnectDropTarget;
   folderOnTrashLength: number;
@@ -726,7 +727,7 @@ declare module 'react' {
 }
 
 const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: File[]) => {
-  const { dispatch, currentFolderId, onDragAndDropEnd } = props;
+  const { dispatch, currentFolderId, maxUploadFileSize, onDragAndDropEnd } = props;
 
   if (files.length <= UPLOAD_ITEMS_LIMIT) {
     if (files.length) {
@@ -765,6 +766,7 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
           payload: folderDataToUpload,
           selectedWorkspace: props.selectedWorkspace,
           dispatch,
+          maxUploadFileSize: maxUploadFileSize,
         });
         dispatch(fetchSortedFolderContentThunk(currentFolderId));
       }
@@ -818,6 +820,7 @@ export default connect((state: RootState) => {
 
   return {
     isAuthenticated: state.user.isAuthenticated,
+    maxUploadFileSize: state.fileVersions.limits?.maxUploadFileSize ?? undefined,
     user: state.user.user,
     currentFolderId,
     selectedItems: state.storage.selectedItems,
