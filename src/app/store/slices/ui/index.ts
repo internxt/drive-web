@@ -112,6 +112,16 @@ export const uiSlice = createSlice({
     setIsItemDetailsDialogOpen(state: UISliceState, action: PayloadAction<boolean>) {
       state.isItemDetailsDialogOpen = action.payload;
     },
+    setOpenFileSizeLimitReachedDialog: (
+      state: UISliceState,
+      action: PayloadAction<{
+        open: boolean;
+        info?: ReachedFileSizeLimitDialogInfo;
+      }>,
+    ) => {
+      state.isReachedFileSizeLimitDialogOpen = action.payload.open;
+      state.reachedFileSizeLimitDialogInfo = action.payload.info;
+    },
     setIsVersionHistorySidebarOpen(state: UISliceState, action: PayloadAction<boolean>) {
       state.isVersionHistorySidebarOpen = action.payload;
     },

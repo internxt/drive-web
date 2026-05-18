@@ -361,7 +361,7 @@ class UploadManager {
       }
 
       // Handle max space used error
-      if (castedError?.status === HTTP_STATUS_CODES.MAX_SPACE_USED) {
+      if (error?.status === HTTP_STATUS_CODES.MAX_SPACE_USED) {
         this.maxSpaceOccupiedCallback();
       }
 

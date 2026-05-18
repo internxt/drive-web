@@ -1,4 +1,5 @@
 export const formatPrice = (price: number) => {
-  const formattedAmount = Number(price.toFixed(2));
-  return Number.isInteger(formattedAmount) ? formattedAmount.toString() : price.toFixed(2);
+  const truncated = Math.floor(Number(price.toFixed(8)) * 100) / 100;
+  const formatted = truncated.toFixed(2);
+  return formatted.endsWith('.00') ? String(truncated) : formatted;
 };
