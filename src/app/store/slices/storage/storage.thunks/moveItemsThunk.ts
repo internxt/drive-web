@@ -55,7 +55,7 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
         });
       }
 
-      promises.push(storageService.moveItem(item, destinationFolderId));
+      promises.push(storageService.moveItem(item, destinationFolderId, item.newItemName));
 
       promises[index]
         .then(async () => {
