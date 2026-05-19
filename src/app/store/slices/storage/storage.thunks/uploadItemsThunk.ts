@@ -27,6 +27,7 @@ import { prepareFilesToUpload } from '../fileUtils/prepareFilesToUpload';
 import { StorageState } from '../storage.model';
 import { AppError } from '@internxt/sdk';
 import { filterFilesByMaxSize } from '../fileUtils/filterFilesByMaxSize';
+import { MAX_ALLOWED_UPLOAD_SIZE } from 'app/drive/services/network.service';
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;
@@ -57,20 +58,29 @@ const DEFAULT_OPTIONS: Partial<UploadItemsThunkOptions> = {
   showErrors: true,
 };
 
+const openReachedFileSizeLimitDIalog = (
+  exceededFiles: ExceededFile[],
+  dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
+) => {
+  dispatch(
+    uiActions.setOpenFileSizeLimitReachedDialog({
+      open: true,
+      info: {
+        exceededFiles,
+      },
+    }),
+  );
+};
+
 const validateFileSize = (
   dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
   files: File[],
-  maxUploadFileSize?: number,
+  maxUploadFileSize = MAX_ALLOWED_UPLOAD_SIZE,
 ): File[] => {
   const { allowedFilesToUpload, exceededFiles } = filterFilesByMaxSize({ files, maxUploadFileSize });
 
   if (exceededFiles.length > 0) {
-    dispatch(
-      uiActions.setOpenFileSizeLimitReachedDialog({
-        open: true,
-        info: { exceededFiles: exceededFiles.map((f): ExceededFile => ({ name: f.name, size: f.size })) },
-      }),
-    );
+    openReachedFileSizeLimitDIalog(exceededFiles, dispatch);
   }
 
   return allowedFilesToUpload;
@@ -187,17 +197,6 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       abortController: new AbortController(),
     }));
 
-    const openReachedPlanLimitDialog = () => {
-      dispatch(
-        uiActions.setOpenFileSizeLimitReachedDialog({
-          open: true,
-          info: {
-            exceededFiles: allowedFilesToUpload,
-          },
-        }),
-      );
-    };
-
     const openMaxSpaceOccupiedDialog = () =>
       dispatch(
         uiActions.setOpenReachedPlanLimitDialog({
@@ -205,11 +204,13 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
         }),
       );
 
+    const openFileSizeLimitDialog = () => openReachedFileSizeLimitDIalog(allowedFilesToUpload, dispatch);
+
     try {
       await uploadFileWithManager({
         files: filesToUploadData,
         maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialog,
-        fileSizeExceededCallback: openReachedPlanLimitDialog,
+        fileSizeExceededCallback: openFileSizeLimitDialog,
         uploadRepository: DatabaseUploadRepository.getInstance(),
         options: {
           ownerUserAuthenticationData: ownerUserAuthenticationData ?? undefined,
@@ -437,7 +438,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
   ) => {
     const state = getState();
     const user = state.user.user as UserSettings;
-    const maxFileSize = getState().fileVersions.limits?.maxUploadFileSize ?? undefined;
+    const maxFileSize = getState().fileVersions.limits?.maxUploadFileSize;
     const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
     const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
     const errors: AppError[] = [];
@@ -459,7 +460,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
       };
     }
 
-    const allowedFilesToUpload = validateFileSize(dispatch, files, maxFileSize);
+    const allowedFilesToUpload = validateFileSize(dispatch, files, maxFileSize as number);
 
     if (allowedFilesToUpload.length === 0) {
       return;
@@ -497,22 +498,13 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
         }),
       );
 
-    const openReachedPlanLimitDialog = () => {
-      dispatch(
-        uiActions.setOpenFileSizeLimitReachedDialog({
-          open: true,
-          info: {
-            exceededFiles: allowedFilesToUpload,
-          },
-        }),
-      );
-    };
+    const openFileSizeLimitDialog = () => openReachedFileSizeLimitDIalog(allowedFilesToUpload, dispatch);
 
     try {
       await uploadFileWithManager({
         files: filesToUploadData,
         maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialog,
-        fileSizeExceededCallback: openReachedPlanLimitDialog,
+        fileSizeExceededCallback: openFileSizeLimitDialog,
         uploadRepository: DatabaseUploadRepository.getInstance(),
         abortController,
         options: {
