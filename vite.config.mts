@@ -102,6 +102,7 @@ export default defineConfig({
       utils: path.resolve(__dirname, 'src/utils'),
       use_cases: path.resolve(__dirname, 'src/use_cases'),
       views: path.resolve(__dirname, 'src/views'),
+      testUtils: path.resolve(__dirname, 'src/testUtils'),
       assert: 'assert',
       buffer: 'buffer',
       path: 'path-browserify',
