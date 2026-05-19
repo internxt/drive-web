@@ -259,7 +259,7 @@
       },
       "apply": "Anwenden",
       "taxes": "Steuern",
-      "annualBillingTemplate": "Jahresplan, monatlich abgerechnet mit {{price}}{{currency}}/Monat für 12 Monate"
+      "annualBillingTemplate": "Jahresplan, Abrechnung von {{priceNow}}{{currency}} für den ersten Monat, dann Verlängerung für {{price}}{{currency}}/Monat"
     },
     "confirmCryptoPayment": {
       "title": "Zahlung bestätigen",

@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { formatPrice } from './formatPrice';
 
 describe('Formatting the price to have 2 decimals', () => {
-  it('When the price does not have decimals, the function returns it again', () => {
+  it('When the price does not have decimals, the function returns it without .00', () => {
     expect(formatPrice(10)).toBe('10');
   });
 
@@ -16,14 +16,15 @@ describe('Formatting the price to have 2 decimals', () => {
     });
   });
 
-  it('When the price is just 1 decimal and it is a 0, then the function returns an integer (without 0s)', () => {
+  it('When the price is just 1 decimal and it is a 0, then the function returns without .00', () => {
     expect(formatPrice(20.0)).toBe('20');
   });
 
   describe('The price has more than 2 decimals', () => {
-    it('When the price has more than 2 decimals, then the function returns the price with 2 decimals (rounded, 10.456 -> 10.46 - 10.001 -> 10)', () => {
-      expect(formatPrice(10.456)).toBe('10.46');
+    it('When the price has more than 2 decimals, then the function returns the price with 2 decimals (truncated with high precision, 10.456 -> 10.45 - 10.001 -> 10 - 1.999 -> 1.99)', () => {
+      expect(formatPrice(10.456)).toBe('10.45');
       expect(formatPrice(10.001)).toBe('10');
+      expect(formatPrice(1.999)).toBe('1.99');
     });
   });
 
