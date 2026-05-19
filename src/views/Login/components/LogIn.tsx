@@ -216,16 +216,20 @@ export default function LogIn(): JSX.Element {
   };
 
   return (
-    <>
+    <div
+      className="bg-white dark:bg-gray-1 dark:border-gray-5 rounded-2xl "
+      style={{ boxShadow: '0 32px 40px 0 rgba(0, 0, 0, 0.08)' }}
+    >
       <Helmet>
         <link rel="canonical" href={`${envService.getVariable('hostname')}/login`} />
       </Helmet>
-      <div className="flex h-fit w-96 flex-col items-start justify-center space-y-5 px-8 py-10">
-        <h1 data-cy="loginTitle" className="text-3xl font-medium">
+      <div className="flex h-fit w-96 flex-col items-center justify-center space-y-5 px-8 py-10">
+        <h1 data-cy="loginTitle" className="text-3xl font-medium dark:text-white">
           {translate('auth.login.title')}
         </h1>
 
         <form data-cy="loginWrapper" className="flex w-full flex-col space-y-2" onSubmit={handleSubmit(onSubmit)}>
+          <p> {translate('auth.emailFloatingLabel')}</p>
           <TextInput
             placeholder={translate('auth.email')}
             inputDataCy="emailInput"
@@ -234,8 +238,9 @@ export default function LogIn(): JSX.Element {
             register={register}
             minLength={{ value: 1, message: 'Email must not be empty' }}
             error={errors.email}
+            hasError={showErrors && loginError.length > 0}
           />
-
+          <p> {translate('auth.passwordFloatingLabel')}</p>
           <PasswordInput
             placeholder={translate('auth.password')}
             inputDataCy="passwordInput"
@@ -244,6 +249,7 @@ export default function LogIn(): JSX.Element {
             required={true}
             minLength={{ value: 1, message: 'Password must not be empty' }}
             error={errors.password}
+            passwordError={showErrors && loginError.length > 0}
           />
 
           {showTwoFactor && (
@@ -271,7 +277,7 @@ export default function LogIn(): JSX.Element {
             loading={isLoggingIn}
             buttonDataCy="loginButton"
             variant="primary"
-            disabled={isLoggingIn}
+            className="disabled:!bg-primary"
           >
             {isLoggingIn && isValid ? translate('auth.decrypting') : translate('auth.button.loginAction')}
           </Button>
@@ -313,6 +319,6 @@ export default function LogIn(): JSX.Element {
           </Link>
         </div>
       </div>
-    </>
+    </div>
   );
 }
