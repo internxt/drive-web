@@ -16,7 +16,7 @@ import { trackLead } from 'app/analytics/meta.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
 import { SdkFactory } from 'app/core/factory/sdk';
 import { AppView, LocalStorageItem } from 'app/core/types';
-import { HTTP_CODES } from 'app/core/constants';
+import { HTTP_STATUS_CODES } from 'app/core/constants';
 import {
   assertPrivateKeyIsValid,
   assertValidateKeys,
@@ -44,6 +44,7 @@ import { generateCaptchaToken } from 'utils';
 import { BackupData, detectBackupKeyFormat, prepareOldBackupRecoverPayloadForBackend } from 'utils/backupKeyUtils';
 import { AuthMethodTypes } from 'views/Checkout/types';
 import vpnAuthService from './vpnAuth.service';
+import { PasswordMismatchError } from './errors/auth.errors';
 
 type ProfileInfo = {
   user: UserSettings;
@@ -424,8 +425,8 @@ export const changePassword = async (newPassword: string, currentPassword: strin
     })
     .catch((error) => {
       const appErr = errorService.castError(error);
-      if (appErr.status === HTTP_CODES.INTERNAL_SERVER_ERROR) {
-        throw new Error('The password you introduced does not match your current password');
+      if (appErr.status === HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR) {
+        throw new PasswordMismatchError();
       }
       throw appErr;
     });

@@ -13,7 +13,7 @@ import { TaskProgress } from 'app/tasks/types';
 import { useEffect, useState } from 'react';
 import { match } from 'react-router';
 import { Link } from 'react-router-dom';
-import { HTTP_CODES } from 'app/core/constants';
+import { HTTP_STATUS_CODES } from 'app/core/constants';
 
 import { useAppSelector } from 'app/store/hooks';
 import { SendBanner, ShareItemPwdView } from './components';
@@ -65,7 +65,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
 
   const handleLoadFolderError = (err) => {
     const appErr = errorService.castError(err);
-    if (appErr.status !== HTTP_CODES.FORBIDDEN) {
+    if (appErr.status !== HTTP_STATUS_CODES.FORBIDDEN) {
       setIsLoaded(true);
       if (appErr.message === CHROME_IOS_ERROR_MESSAGE) {
         notificationsService.show({
@@ -108,7 +108,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
       })
       .catch(async (err) => {
         const appErr = errorService.castError(err);
-        if (appErr.status === HTTP_CODES.FORBIDDEN) {
+        if (appErr.status === HTTP_STATUS_CODES.FORBIDDEN) {
           await getSharedFolderInfo(sharingId);
           setRequiresPassword(true);
           setIsLoaded(true);

@@ -189,3 +189,12 @@ export type ItemDetailsProps = {
   size?: string;
   numberOfFiles?: string;
 };
+
+export interface ExceededFile {
+  name: string;
+  size: number;
+}
+
+export interface ReachedFileSizeLimitDialogInfo {
+  exceededFiles: ExceededFile[];
+}

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import { beforeEach, describe, expect, it, Mock, test, vi } from 'vitest';
 import { uploadFileWithManager } from './UploadManager';
 import tasksService from 'app/tasks/services/tasks.service';
 import errorService from 'services/error.service';
@@ -744,5 +744,49 @@ describe('checkUploadFiles', () => {
       }),
       expect.any(Object),
     );
+  });
+
+  test('When upload fails because the user has no storage space left, then the max space occupied callback is invoked', async () => {
+    const err = new AppError('Max space used', 420);
+    // needs to fail twice because MAX_UPLOAD_ATTEMPTS = 2
+    (uploadFile as Mock).mockRejectedValue(err);
+
+    vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
+    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
+    vi.spyOn(errorService, 'reportError').mockReturnValue();
+
+    await expect(
+      uploadFileWithManager(
+        [
+          {
+            taskId: 'taskId',
+            filecontent: {
+              content: 'file-content' as unknown as File,
+              type: 'text/plain',
+              name: 'file.txt',
+              size: 1024,
+              parentFolderId: 'folder-1',
+            },
+            userEmail: '',
+            parentFolderId: '',
+          },
+        ],
+        openMaxSpaceOccupiedDialogMock,
+        DatabaseUploadRepository.getInstance(),
+        undefined,
+        {
+          ownerUserAuthenticationData: undefined,
+          sharedItemData: {
+            isDeepFolder: false,
+            currentFolderId: 'parentFolderId',
+          },
+          isUploadedFromFolder: true,
+        },
+      ),
+    ).rejects.toThrow(err);
+
+    expect(openMaxSpaceOccupiedDialogMock).toHaveBeenCalledOnce();
   });
 });
