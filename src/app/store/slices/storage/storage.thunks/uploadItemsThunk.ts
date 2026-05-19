@@ -461,7 +461,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
       };
     }
 
-    const allowedFilesToUpload = validateFileSize(dispatch, files, maxFileSize as number);
+    const allowedFilesToUpload = validateFileSize(dispatch, files, maxFileSize);
 
     if (allowedFilesToUpload.length === 0) {
       return;

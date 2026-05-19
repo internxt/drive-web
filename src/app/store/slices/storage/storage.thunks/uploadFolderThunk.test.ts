@@ -185,7 +185,7 @@ describe('Upload Folder Thunk', () => {
     expect(uploadItemsParallelThunk).toHaveBeenCalledWith(expect.objectContaining({ files: [smallFile, bigFile] }));
   });
 
-  test('When no size limit is configured, then all files above the default size limit are uploaded', async () => {
+  test('When no size limit is configured, then all files below the default size limit are uploaded', async () => {
     const bigFile = new File([new ArrayBuffer(999_999)], 'huge.mp4');
     const uploadThunkAction = { unwrap: () => Promise.resolve() };
     (uploadItemsParallelThunk as unknown as Mock).mockReturnValue(() => uploadThunkAction);
