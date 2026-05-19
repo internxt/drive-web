@@ -14,8 +14,8 @@ const ReachedFileSizeLimitDialog = (): JSX.Element | null => {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
   const isOpen = useAppSelector((state) => state.ui.isReachedFileSizeLimitDialogOpen);
-  const reachedFileSizeLImitInfo = useAppSelector((state) => state.ui.reachedFileSizeLimitDialogInfo);
-  const exceededFiles = reachedFileSizeLImitInfo?.exceededFiles;
+  const fileSizeLimitInfo = useAppSelector((state) => state.ui.reachedFileSizeLimitDialogInfo);
+  const exceededFiles = fileSizeLimitInfo?.exceededFiles;
   const maxFileSize = useAppSelector((state) => state.fileVersions.limits?.maxUploadFileSize) ?? 0;
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const individualSubscription = useAppSelector((state) => state.plan.individualSubscription);
@@ -81,17 +81,18 @@ const ReachedFileSizeLimitDialog = (): JSX.Element | null => {
     onClose();
   };
 
-  const currentProductId =
-    individualSubscription?.type === 'subscription' ? individualSubscription.productId : undefined;
-  const individualPlans = availablePlans.filter((p) => p.userType === UserType.Individual);
-  const currentPlanBytes = individualPlans.find((p) => p.productId === currentProductId)?.bytes ?? 0;
-  const sortedPlans = [...individualPlans].sort((a, b) => a.bytes - b.bytes);
-  const nextPlanProductId = sortedPlans.find((p) => p.bytes > currentPlanBytes)?.productId;
+  const currentSubscriptionProductId =
+    individualSubscription?.type === 'subscription' || individualSubscription?.type === 'lifetime'
+      ? individualSubscription.productId
+      : undefined;
+  const currentPlanBytes = availablePlans.find((p) => p.productId === currentSubscriptionProductId)?.bytes ?? 0;
+  const nextPlan = [...availablePlans].sort((a, b) => a.bytes - b.bytes).find((p) => p.bytes > currentPlanBytes);
+  const nextPlanFormattedSize = bytesToString(nextPlan?.bytes ?? 0);
 
   const planList = [
-    { label: translate('error.fileSizeLimitExceeded.planList.essential'), productBytes: sortedPlans[0]?.productId },
-    { label: translate('error.fileSizeLimitExceeded.planList.premium'), productBytes: sortedPlans[1]?.productId },
-    { label: translate('error.fileSizeLimitExceeded.planList.ultimate'), productBytes: sortedPlans[2]?.productId },
+    { label: translate('error.fileSizeLimitExceeded.planList.essential'), productBytes: '1TB' },
+    { label: translate('error.fileSizeLimitExceeded.planList.premium'), productBytes: '3TB' },
+    { label: translate('error.fileSizeLimitExceeded.planList.ultimate'), productBytes: '5TB' },
   ];
 
   if (!isOpen) return null;
@@ -110,7 +111,7 @@ const ReachedFileSizeLimitDialog = (): JSX.Element | null => {
                 {planList.map((plan) => (
                   <li
                     key={plan.label}
-                    className={`list-disc leading-tight ${plan.productBytes === nextPlanProductId ? 'font-semibold text-gray-100' : 'text-gray-80'}`}
+                    className={`list-disc leading-tight ${plan.productBytes === nextPlanFormattedSize ? 'font-semibold text-gray-100' : 'text-gray-80'}`}
                   >
                     {plan.label}
                   </li>
