@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import { beforeEach, describe, expect, it, Mock, test, vi } from 'vitest';
 import { uploadFileWithManager } from './UploadManager';
 import tasksService from 'app/tasks/services/tasks.service';
 import errorService from 'services/error.service';
@@ -734,5 +734,52 @@ describe('checkUploadFiles', () => {
       }),
       expect.any(Object),
     );
+  });
+
+  test('When a file upload is rejected because the file exceeds the size limit for the tier, then the file size exceeded callback is called', async () => {
+    const err = new AppError('File too large', undefined, 'FILE_UPLOAD_SIZE_EXCEEDED');
+
+    (uploadFile as Mock).mockRejectedValue(err);
+
+    vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
+    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
+    vi.spyOn(errorService, 'castError').mockImplementation((e) => e as AppError);
+    vi.spyOn(errorService, 'reportError').mockReturnValue();
+
+    const fileSizeExceededCallback = vi.fn();
+
+    await expect(
+      uploadFileWithManager({
+        files: [
+          {
+            taskId: 'taskId',
+            filecontent: {
+              content: 'file-content' as unknown as File,
+              type: 'text/plain',
+              name: 'file.txt',
+              size: 1024,
+              parentFolderId: 'folder-1',
+            },
+            userEmail: '',
+            parentFolderId: '',
+          },
+        ],
+        maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
+        fileSizeExceededCallback,
+        uploadRepository: DatabaseUploadRepository.getInstance(),
+        options: {
+          ownerUserAuthenticationData: undefined,
+          sharedItemData: {
+            isDeepFolder: false,
+            currentFolderId: 'parentFolderId',
+          },
+          isUploadedFromFolder: true,
+        },
+      }),
+    ).rejects.toThrow(err);
+
+    expect(fileSizeExceededCallback).toHaveBeenCalledOnce();
   });
 });
