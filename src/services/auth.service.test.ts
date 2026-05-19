@@ -11,11 +11,13 @@ import { encryptText, encryptTextWithKey } from 'app/crypto/services/utils';
 import { userActions } from 'app/store/slices/user';
 import { validateMnemonic } from 'bip39';
 import { Buffer } from 'node:buffer';
+import errorService from 'services/error.service';
 import envService from 'services/env.service';
 import localStorageService from 'services/local-storage.service';
 import { BackupData } from 'utils/backupKeyUtils';
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it, test, vi } from 'vitest';
 import * as authService from './auth.service';
+import { PasswordMismatchError } from './errors/auth.errors';
 
 const mockSecret = '123456789QWERTY';
 const mockApi = 'https://mock';
@@ -638,6 +640,104 @@ describe('Change password', () => {
 
     const privateKyberKeyEncrypted = inputs.keys.encryptedPrivateKyberKey;
     expect(privateKyberKeyEncrypted).toBe('');
+  });
+
+  test('When the server rejects the password change with an internal server error, then a password mismatch error is raised', async () => {
+    const mockOldPassword = 'password123';
+    const mockNewPassword = 'newPassword123';
+    const mockEmail = 'test@example.com';
+
+    const mockMnemonicNotEnc =
+      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
+    const keys = await pgpService.generateNewKeys();
+    const mockClearUser: Partial<UserSettings> = {
+      mnemonic: mockMnemonicNotEnc,
+      publicKey: keys.publicKeyArmored,
+      revocationKey: keys.revocationCertificate,
+      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      keys: {
+        ecc: {
+          publicKey: keys.publicKeyArmored,
+          privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+        },
+        kyber: {
+          publicKey: keys.publicKyberKeyBase64,
+          privateKey: Buffer.from(keys.privateKyberKeyBase64).toString('base64'),
+        },
+      },
+    };
+
+    const mockUser = mockClearUser as UserSettings;
+    vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUser);
+
+    const encryptedSalt = encryptText('mockSalt');
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue({
+        securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
+      }),
+      createDesktopAuthClient: vi.fn().mockReturnValue({
+        securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
+      }),
+      createUsersClient: vi.fn().mockReturnValue({
+        changePassword: vi.fn().mockRejectedValue(new Error('Server error')),
+      }),
+    } as any);
+
+    vi.spyOn(errorService, 'castError').mockReturnValueOnce({ message: 'Server error', status: 500 } as any);
+
+    const act = authService.changePassword(mockNewPassword, mockOldPassword, mockEmail);
+
+    await expect(act).rejects.toBeInstanceOf(PasswordMismatchError);
+  });
+
+  test('When the server rejects the password change with a non-server error, then the original error is propagated', async () => {
+    const mockOldPassword = 'password123';
+    const mockNewPassword = 'newPassword123';
+    const mockEmail = 'test@example.com';
+
+    const mockMnemonicNotEnc =
+      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
+    const keys = await pgpService.generateNewKeys();
+    const mockClearUser: Partial<UserSettings> = {
+      mnemonic: mockMnemonicNotEnc,
+      publicKey: keys.publicKeyArmored,
+      revocationKey: keys.revocationCertificate,
+      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      keys: {
+        ecc: {
+          publicKey: keys.publicKeyArmored,
+          privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+        },
+        kyber: {
+          publicKey: keys.publicKyberKeyBase64,
+          privateKey: Buffer.from(keys.privateKyberKeyBase64).toString('base64'),
+        },
+      },
+    };
+
+    const mockUser = mockClearUser as UserSettings;
+    vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUser);
+
+    const encryptedSalt = encryptText('mockSalt');
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue({
+        securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
+      }),
+      createDesktopAuthClient: vi.fn().mockReturnValue({
+        securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
+      }),
+      createUsersClient: vi.fn().mockReturnValue({
+        changePassword: vi.fn().mockRejectedValue(new Error('Forbidden')),
+      }),
+    } as any);
+
+    const appErr = { message: 'Forbidden', status: 403 };
+    vi.spyOn(errorService, 'castError').mockReturnValueOnce(appErr as any);
+
+    const act = authService.changePassword(mockNewPassword, mockOldPassword, mockEmail);
+
+    await expect(act).rejects.toBe(appErr);
+    await expect(act).rejects.not.toBeInstanceOf(PasswordMismatchError);
   });
 
   it('should cancel account', async () => {

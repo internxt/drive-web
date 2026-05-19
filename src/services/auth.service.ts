@@ -9,7 +9,6 @@ import {
 } from '@internxt/sdk/dist/auth';
 import { RecoveryKeys } from '@internxt/sdk/dist/auth/types';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
-import { ChangePasswordPayloadNew } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { trackSignUp } from 'app/analytics/impact.service';
 import { trackLead } from 'app/analytics/meta.service';
@@ -44,6 +43,7 @@ import { generateCaptchaToken } from 'utils';
 import { BackupData, detectBackupKeyFormat, prepareOldBackupRecoverPayloadForBackend } from 'utils/backupKeyUtils';
 import { AuthMethodTypes } from 'views/Checkout/types';
 import vpnAuthService from './vpnAuth.service';
+import { PasswordMismatchError } from './errors/auth.errors';
 
 type ProfileInfo = {
   user: UserSettings;
@@ -405,7 +405,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
 
   return usersClient
-    .changePassword(<ChangePasswordPayloadNew>{
+    .changePassword({
       currentEncryptedPassword: encryptedCurrentPassword,
       newEncryptedPassword: encryptedNewPassword,
       newEncryptedSalt: encryptedNewSalt,
@@ -425,7 +425,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
     .catch((error) => {
       const appErr = errorService.castError(error);
       if (appErr.status === HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR) {
-        throw new Error('The password you introduced does not match your current password');
+        throw new PasswordMismatchError();
       }
       throw appErr;
     });
