@@ -28,6 +28,7 @@ import { StorageState } from '../storage.model';
 import { AppError } from '@internxt/sdk';
 import { filterFilesByMaxSize } from '../fileUtils/filterFilesByMaxSize';
 import { MAX_ALLOWED_UPLOAD_SIZE } from 'app/drive/services/network.service';
+import { fileVersionsSelectors } from '../../fileVersions';
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;
@@ -132,7 +133,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     { getState, dispatch },
   ) => {
     const user = getState().user.user as UserSettings;
-    const maxFileSize = getState().fileVersions.limits?.maxUploadFileSize ?? undefined;
+    const maxUploadFileSize = fileVersionsSelectors.getMaxFileSizeLimit(getState());
     const errors: AppError[] = [];
     const options = { ...DEFAULT_OPTIONS, ...payloadOptions };
 
@@ -154,7 +155,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       };
     }
 
-    const allowedFilesToUpload = validateFileSize(dispatch, files, maxFileSize);
+    const allowedFilesToUpload = validateFileSize(dispatch, files, maxUploadFileSize);
 
     if (allowedFilesToUpload.length === 0) {
       return;
@@ -438,7 +439,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
   ) => {
     const state = getState();
     const user = state.user.user as UserSettings;
-    const maxFileSize = getState().fileVersions.limits?.maxUploadFileSize;
+    const maxFileSize = fileVersionsSelectors.getMaxFileSizeLimit(state);
     const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
     const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
     const errors: AppError[] = [];

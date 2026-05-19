@@ -26,7 +26,6 @@ export const fetchFileVersionsThunk = createAsyncThunk(
   async (fileUuid: string, { rejectWithValue }) => {
     try {
       const versions = await fileVersionService.getFileVersions(fileUuid);
-
       return { fileUuid, versions };
     } catch (error) {
       return rejectWithValue((error as Error).message);

@@ -139,7 +139,7 @@ export const uploadFoldersWithManager = ({
   payload: UploadFolderPayload[];
   selectedWorkspace: WorkspaceData | null;
   dispatch: ThunkDispatch<RootState, unknown, AnyAction>;
-  maxUploadFileSize?: number;
+  maxUploadFileSize: number;
 }): Promise<void> => {
   const uploadFoldersManager = new UploadFoldersManager(payload, selectedWorkspace, dispatch, maxUploadFileSize);
   return uploadFoldersManager.run();
@@ -153,7 +153,7 @@ export class UploadFoldersManager {
   private readonly selectedWorkspace: WorkspaceData | null;
   private readonly dispatch: ThunkDispatch<RootState, unknown, AnyAction>;
   private readonly abortController?: AbortController;
-  private readonly maxUploadFileSize?: number;
+  private readonly maxUploadFileSize: number;
 
   private tasksInfo: Record<string, TaskInfo> = {};
 
@@ -161,7 +161,7 @@ export class UploadFoldersManager {
     payload: UploadFolderPayload[],
     selectedWorkspace: WorkspaceData | null,
     dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
-    maxUploadFileSize?: number,
+    maxUploadFileSize: number,
   ) {
     this.payload = payload;
     this.selectedWorkspace = selectedWorkspace;

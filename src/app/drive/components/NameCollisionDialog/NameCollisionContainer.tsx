@@ -48,6 +48,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     [moveDestinationFolderId, currentFolderId],
   );
   const limits = useAppSelector(fileVersionsSelectors.getLimits);
+  const maxUploadFileSize = useAppSelector(fileVersionsSelectors.getMaxFileSizeLimit);
   const isVersioningEnabled = limits?.versioning?.enabled ?? false;
 
   const handleNewItems = (files: (File | DriveItemData)[], folders: (IRoot | DriveItemData)[]) => [
@@ -191,7 +192,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
           ],
           selectedWorkspace,
           dispatch,
-          maxUploadFileSize: limits?.maxUploadFileSize ?? undefined,
+          maxUploadFileSize,
         });
       } else {
         const file = itemToUpload as File;
@@ -215,7 +216,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
           ],
           selectedWorkspace,
           dispatch,
-          maxUploadFileSize: limits?.maxUploadFileSize ?? undefined,
+          maxUploadFileSize,
         }).then(() => {
           dispatch(fetchSortedFolderContentThunk(folderId));
         });

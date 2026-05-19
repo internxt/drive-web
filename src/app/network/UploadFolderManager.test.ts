@@ -145,6 +145,7 @@ describe('checkUploadFolders', () => {
       ],
       selectedWorkspace: null,
       dispatch: mockDispatch,
+      maxUploadFileSize: 100,
     });
 
     expect(createFolderSpy).toHaveBeenCalledOnce();
@@ -208,6 +209,7 @@ describe('checkUploadFolders', () => {
       ],
       selectedWorkspace: null,
       dispatch: mockDispatch,
+      maxUploadFileSize: 100,
     });
 
     expect(createFolderSpy).toHaveBeenCalledOnce();
@@ -301,6 +303,7 @@ describe('checkUploadFolders', () => {
       ],
       selectedWorkspace: null,
       dispatch: mockDispatch,
+      maxUploadFileSize: 100,
     });
 
     expect(createFolderSpy).toHaveBeenCalledTimes(2);
@@ -359,6 +362,7 @@ describe('checkUploadFolders', () => {
       ],
       selectedWorkspace: null,
       dispatch: mockDispatch,
+      maxUploadFileSize: 100,
     });
 
     expect(logNetworkInfoMock).toHaveBeenCalledOnce();
@@ -390,7 +394,7 @@ describe('checkUploadFolders', () => {
     };
 
     const buildManager = (maxUploadFileSize?: number) => {
-      const manager = new UploadFoldersManager([], null, mockDispatch, maxUploadFileSize);
+      const manager = new UploadFoldersManager([], null, mockDispatch, maxUploadFileSize ?? 100);
       manager['tasksInfo'][taskId] = { progress: { itemsUploaded: 0, totalItems: 1 } };
       return manager;
     };
@@ -476,7 +480,7 @@ describe('checkUploadFolders', () => {
     const selectedWorkspace = null;
     const taskId = 'task-id';
 
-    const manager = new UploadFoldersManager(payload, selectedWorkspace, mockDispatch);
+    const manager = new UploadFoldersManager(payload, selectedWorkspace, mockDispatch, 100);
     const abortController = new AbortController();
 
     const taskFolder: TaskFolder = {

@@ -90,7 +90,7 @@ const handleFileDrop = async (
   folderPath: string,
   selectedWorkspace: ReturnType<typeof workspacesSelectors.getSelectedWorkspace>,
   dispatch: ReturnType<typeof useAppDispatch>,
-  maxUploadFileSize: number | undefined,
+  maxUploadFileSize: number,
 ) => {
   const { rootList, files } = await transformDraggedItems(droppedData.items, folderPath);
 
@@ -120,7 +120,7 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
   const { selectedItems } = useAppSelector((state) => state.storage);
   const namePath = useAppSelector((state) => state.storage.namePath);
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
-  const maxUploadFileSize = useAppSelector(fileVersionsSelectors.getLimits)?.maxUploadFileSize ?? undefined;
+  const maxUploadFileSize = useAppSelector(fileVersionsSelectors.getMaxFileSizeLimit);
 
   const [{ isDraggingOverThisItem, canDrop }, connectDropTarget] = useDrop<
     DriveItemData | DriveItemData[],

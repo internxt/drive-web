@@ -24,6 +24,7 @@ import newStorageService from 'app/drive/services/new-storage.service';
 import { uiActions } from '../../ui';
 import { FilesExceedsSizeLimitError } from 'app/drive/services/file.service/upload.errors';
 import { filterFilesByMaxSize } from '../fileUtils/filterFilesByMaxSize';
+import { fileVersionsSelectors } from '../../fileVersions';
 
 interface UploadFolderThunkPayload {
   root: IRoot;
@@ -162,7 +163,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
         }
 
         if (level.childrenFiles) {
-          const maxUploadFileSize = getState().fileVersions.limits?.maxUploadFileSize ?? undefined;
+          const maxUploadFileSize = fileVersionsSelectors.getMaxFileSizeLimit(state);
           const hasNoChildFolders = level.childrenFolders.length === 0;
           const { exceededFiles } = filterFilesByMaxSize({
             files: level.childrenFiles,

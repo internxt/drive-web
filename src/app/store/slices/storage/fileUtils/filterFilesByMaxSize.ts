@@ -1,3 +1,5 @@
+import { MAX_ALLOWED_UPLOAD_SIZE } from 'app/drive/services/network.service';
+
 interface FilterFilesByMaxSizePayload {
   files: File[];
   maxUploadFileSize?: number;
@@ -5,22 +7,21 @@ interface FilterFilesByMaxSizePayload {
 
 export const filterFilesByMaxSize = ({
   files,
-  maxUploadFileSize,
+  maxUploadFileSize = MAX_ALLOWED_UPLOAD_SIZE,
 }: FilterFilesByMaxSizePayload): {
   allowedFilesToUpload: File[];
   exceededFiles: File[];
 } => {
-  if (!maxUploadFileSize)
-    return {
-      allowedFilesToUpload: files,
-      exceededFiles: [],
-    };
+  const allowedFilesToUpload: File[] = [];
+  const exceededFiles: File[] = [];
 
-  const allowedFilesToUpload = files.filter((file) => file.size <= maxUploadFileSize);
-  const exceededFiles = files.filter((file) => file.size > maxUploadFileSize);
+  for (const file of files) {
+    if (file.size <= maxUploadFileSize) {
+      allowedFilesToUpload.push(file);
+    } else {
+      exceededFiles.push(file);
+    }
+  }
 
-  return {
-    allowedFilesToUpload,
-    exceededFiles,
-  };
+  return { allowedFilesToUpload, exceededFiles };
 };

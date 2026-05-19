@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { fetchPlanPrices } from 'views/NewSettings/services/plansApi';
 import { Translate } from 'app/i18n/types';
 import { bytesToString } from '../../services/size.service';
+import { fileVersionsSelectors } from 'app/store/slices/fileVersions';
 
 const ReachedFileSizeLimitDialog = (): JSX.Element | null => {
   const dispatch = useAppDispatch();
@@ -16,7 +17,7 @@ const ReachedFileSizeLimitDialog = (): JSX.Element | null => {
   const isOpen = useAppSelector((state) => state.ui.isReachedFileSizeLimitDialogOpen);
   const fileSizeLimitInfo = useAppSelector((state) => state.ui.reachedFileSizeLimitDialogInfo);
   const exceededFiles = fileSizeLimitInfo?.exceededFiles;
-  const maxFileSize = useAppSelector((state) => state.fileVersions.limits?.maxUploadFileSize) ?? 0;
+  const maxUploadFileSize = useAppSelector(fileVersionsSelectors.getMaxFileSizeLimit);
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const individualSubscription = useAppSelector((state) => state.plan.individualSubscription);
   const [availablePlans, setAvailablePlans] = useState<DisplayPrice[]>([]);
@@ -61,7 +62,7 @@ const ReachedFileSizeLimitDialog = (): JSX.Element | null => {
     };
   };
 
-  const text = getText(translate, maxFileSize, exceededFiles);
+  const text = getText(translate, maxUploadFileSize, exceededFiles);
 
   const onClose = (): void => {
     dispatch(

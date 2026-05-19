@@ -6,6 +6,7 @@ import { uploadItemsParallelThunk } from './uploadItemsThunk';
 import tasksService from '../../../../tasks/services/tasks.service';
 import { TaskStatus } from '../../../../tasks/types';
 import { DriveFolderData } from 'app/drive/types';
+import { MAX_ALLOWED_UPLOAD_SIZE } from 'app/drive/services/network.service';
 
 vi.mock('../folderUtils/checkFolderDuplicated', () => ({
   checkFolderDuplicated: vi.fn(),
@@ -79,6 +80,12 @@ vi.mock('utils/timeUtils', () => ({
   wait: vi.fn().mockResolvedValue(undefined),
 }));
 
+vi.mock('../../fileVersions', () => ({
+  fileVersionsSelectors: {
+    getMaxFileSizeLimit: vi.fn((state) => state.fileVersions.limits?.maxUploadFileSize ?? MAX_ALLOWED_UPLOAD_SIZE),
+  },
+}));
+
 const mockFolder: DriveFolderData = {
   id: 1,
   uuid: 'folder-uuid',
@@ -104,7 +111,7 @@ const mockFolder: DriveFolderData = {
 const buildGetState = (maxUploadFileSize?: number) => () =>
   ({
     user: { user: { email: 'test@test.com' } },
-    fileVersions: { limits: maxUploadFileSize !== undefined ? { maxUploadFileSize } : null },
+    fileVersions: { limits: { maxUploadFileSize: maxUploadFileSize ?? MAX_ALLOWED_UPLOAD_SIZE } },
   }) as unknown as RootState;
 
 describe('Upload Folder Thunk', () => {
@@ -178,7 +185,7 @@ describe('Upload Folder Thunk', () => {
     expect(uploadItemsParallelThunk).toHaveBeenCalledWith(expect.objectContaining({ files: [smallFile, bigFile] }));
   });
 
-  test('When no size limit is configured, then all files are uploaded regardless of size', async () => {
+  test('When no size limit is configured, then all files above the default size limit are uploaded', async () => {
     const bigFile = new File([new ArrayBuffer(999_999)], 'huge.mp4');
     const uploadThunkAction = { unwrap: () => Promise.resolve() };
     (uploadItemsParallelThunk as unknown as Mock).mockReturnValue(() => uploadThunkAction);
@@ -197,7 +204,7 @@ describe('Upload Folder Thunk', () => {
       },
       currentFolderId: 'parent-uuid',
       options: { taskId },
-    })(dispatch, buildGetState(undefined), {});
+    })(dispatch, buildGetState(), {});
 
     expect(uploadItemsParallelThunk).toHaveBeenCalled();
   });

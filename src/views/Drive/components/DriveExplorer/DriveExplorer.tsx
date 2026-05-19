@@ -59,6 +59,7 @@ import WarningMessageWrapper from 'views/Home/components/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import { ShareDialogWrapper } from 'app/drive/components/ShareDialog/ShareDialogWrapper';
+import { fileVersionsSelectors } from 'app/store/slices/fileVersions';
 
 const MenuItemToGetSize = ({
   isTrash,
@@ -135,7 +136,7 @@ interface DriveExplorerProps {
   namePath: FolderPath[];
   dispatch: AppDispatch;
   selectedWorkspace: WorkspaceData | null;
-  maxUploadFileSize?: number;
+  maxUploadFileSize: number;
   isOver: boolean;
   connectDropTarget: ConnectDropTarget;
   folderOnTrashLength: number;
@@ -766,7 +767,7 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
           payload: folderDataToUpload,
           selectedWorkspace: props.selectedWorkspace,
           dispatch,
-          maxUploadFileSize: maxUploadFileSize,
+          maxUploadFileSize,
         });
         dispatch(fetchSortedFolderContentThunk(currentFolderId));
       }
@@ -815,12 +816,13 @@ const dropTargetCollect: DropTargetCollector<
 export default connect((state: RootState) => {
   const currentFolderId: string = storageSelectors.currentFolderId(state);
   const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
+  const maxUploadFileSize = fileVersionsSelectors.getMaxFileSizeLimit(state);
   const hasMoreFolders = state.storage.hasMoreDriveFolders[currentFolderId] ?? true;
   const hasMoreFiles = state.storage.hasMoreDriveFiles[currentFolderId] ?? true;
 
   return {
     isAuthenticated: state.user.isAuthenticated,
-    maxUploadFileSize: state.fileVersions.limits?.maxUploadFileSize ?? undefined,
+    maxUploadFileSize,
     user: state.user.user,
     currentFolderId,
     selectedItems: state.storage.selectedItems,
