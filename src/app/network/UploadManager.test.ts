@@ -736,23 +736,20 @@ describe('checkUploadFiles', () => {
     );
   });
 
-  test('When a file upload is rejected because the file exceeds the size limit for the tier, then the file size exceeded callback is called', async () => {
-    const err = new AppError('File too large', undefined, 'FILE_UPLOAD_SIZE_EXCEEDED');
-
+  test('When upload fails because the user has no storage space left, then the max space occupied callback is invoked', async () => {
+    const err = new AppError('Max space used', 420);
+    // needs to fail twice because MAX_UPLOAD_ATTEMPTS = 2
     (uploadFile as Mock).mockRejectedValue(err);
 
     vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
-    vi.spyOn(errorService, 'castError').mockImplementation((e) => e as AppError);
     vi.spyOn(errorService, 'reportError').mockReturnValue();
 
-    const fileSizeExceededCallback = vi.fn();
-
     await expect(
-      uploadFileWithManager({
-        files: [
+      uploadFileWithManager(
+        [
           {
             taskId: 'taskId',
             filecontent: {
@@ -766,10 +763,10 @@ describe('checkUploadFiles', () => {
             parentFolderId: '',
           },
         ],
-        maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
-        fileSizeExceededCallback,
-        uploadRepository: DatabaseUploadRepository.getInstance(),
-        options: {
+        openMaxSpaceOccupiedDialogMock,
+        DatabaseUploadRepository.getInstance(),
+        undefined,
+        {
           ownerUserAuthenticationData: undefined,
           sharedItemData: {
             isDeepFolder: false,
@@ -777,9 +774,9 @@ describe('checkUploadFiles', () => {
           },
           isUploadedFromFolder: true,
         },
-      }),
+      ),
     ).rejects.toThrow(err);
 
-    expect(fileSizeExceededCallback).toHaveBeenCalledOnce();
+    expect(openMaxSpaceOccupiedDialogMock).toHaveBeenCalledOnce();
   });
 });
