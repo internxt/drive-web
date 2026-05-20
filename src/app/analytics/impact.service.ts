@@ -70,6 +70,58 @@ export function savePaymentDataInLocalStorage({
   localStorageService.set('isFirstPurchase', String(isFirstPurchase));
 }
 
+export async function handleImpactDTCCheckout({
+  irclickid,
+  utmMedium,
+}: {
+  irclickid: string;
+  utmMedium?: string | null;
+}): Promise<void> {
+  try {
+    const IMPACT_API = envService.getVariable('impactApiUrl');
+    const existingAnonymousId = getCookie('impactAnonymousId');
+    const anonymousId = existingAnonymousId || uuidV4();
+    const cookieDomain = 'internxt.com';
+
+    const sourceExpiration = new Date();
+    sourceExpiration.setHours(sourceExpiration.getHours() + 2);
+
+    const anonymousExpiration = new Date();
+    anonymousExpiration.setFullYear(anonymousExpiration.getFullYear() + 10);
+
+    const trackingExpiration = new Date();
+    trackingExpiration.setDate(trackingExpiration.getDate() + 30);
+
+    document.cookie = `impactSource=Impact;expires=${sourceExpiration.toUTCString()};domain=${cookieDomain};Path=/`;
+    document.cookie = `impactAnonymousId=${anonymousId};expires=${anonymousExpiration.toUTCString()};domain=${cookieDomain};Path=/`;
+    document.cookie = `impactClickId=${irclickid};expires=${trackingExpiration.toUTCString()};domain=${cookieDomain};Path=/`;
+
+    if (utmMedium) {
+      document.cookie = `impactPartnerId=${utmMedium};expires=${trackingExpiration.toUTCString()};domain=${cookieDomain};Path=/`;
+    }
+
+    await axios.post(IMPACT_API, {
+      anonymousId,
+      timestamp: dayjs().format('YYYY-MM-DDTHH:mm:ss.sssZ'),
+      context: {
+        userAgent: navigator.userAgent,
+        page: {
+          url: window.location.href,
+          referrer: document.referrer,
+        },
+      },
+      type: 'page',
+      properties: {
+        irclickid,
+        ...(utmMedium && { partner_id: utmMedium }),
+      },
+    });
+  } catch (error) {
+    const castedError = errorService.castError(error);
+    errorService.reportError(castedError);
+  }
+}
+
 export async function trackSignUp(uuid: string): Promise<void> {
   try {
     const gclid = getCookie('gclid');
