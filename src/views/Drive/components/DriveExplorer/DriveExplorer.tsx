@@ -10,7 +10,7 @@ import { NativeTypes } from 'react-dnd-html5-backend';
 import folderEmptyImage from 'assets/icons/light/folder-open.svg';
 import { transformDraggedItems } from 'services/drag-and-drop.service';
 import { AppDispatch, RootState } from 'app/store';
-import { StorageFilters } from 'app/store/slices/storage/storage.model';
+import { CollisionGroup, StorageFilters } from 'app/store/slices/storage/storage.model';
 import { DriveExplorerGrid, DriveExplorerList, DriveTopBarActions } from './components';
 
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -741,9 +741,9 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
         ? [
             {
               destinationUuid: currentFolderId,
-              duplicatedItems: filesResult?.repeatedItems as any,
-              existingItems: filesResult?.existingItems as any,
-              unrepeatedItems: filesResult?.unrepeatedItems as any,
+              duplicatedItems: filesResult?.repeatedItems,
+              existingItems: filesResult?.existingItems,
+              unrepeatedItems: filesResult?.unrepeatedItems,
             },
           ]
         : [];
@@ -753,14 +753,14 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
         ? [
             {
               destinationUuid: currentFolderId,
-              duplicatedItems: foldersResult?.repeatedItems as any,
-              existingItems: foldersResult?.existingItems as any,
-              unrepeatedItems: foldersResult?.unrepeatedItems as any,
+              duplicatedItems: foldersResult?.repeatedItems,
+              existingItems: foldersResult?.existingItems,
+              unrepeatedItems: foldersResult?.unrepeatedItems,
             },
           ]
         : [];
 
-    const collisionGroups = [...repeatedFiles, ...repeatedFolders];
+    const collisionGroups = [...repeatedFiles, ...repeatedFolders] as CollisionGroup[];
 
     if (collisionGroups.length > 0) {
       dispatch(
