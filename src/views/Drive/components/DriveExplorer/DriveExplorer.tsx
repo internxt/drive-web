@@ -59,6 +59,7 @@ import WarningMessageWrapper from 'views/Home/components/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import { ShareDialogWrapper } from 'app/drive/components/ShareDialog/ShareDialogWrapper';
+import { fileVersionsSelectors } from 'app/store/slices/fileVersions';
 
 const MenuItemToGetSize = ({
   isTrash,
@@ -135,6 +136,7 @@ interface DriveExplorerProps {
   namePath: FolderPath[];
   dispatch: AppDispatch;
   selectedWorkspace: WorkspaceData | null;
+  maxUploadFileSize: number;
   isOver: boolean;
   connectDropTarget: ConnectDropTarget;
   folderOnTrashLength: number;
@@ -726,7 +728,7 @@ declare module 'react' {
 }
 
 const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: File[]) => {
-  const { dispatch, currentFolderId, onDragAndDropEnd } = props;
+  const { dispatch, currentFolderId, maxUploadFileSize, onDragAndDropEnd } = props;
 
   if (files.length <= UPLOAD_ITEMS_LIMIT) {
     const [filesResult, foldersResult] = await Promise.all([
@@ -791,8 +793,8 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
         payload: folderDataToUpload,
         selectedWorkspace: props.selectedWorkspace,
         dispatch,
+        maxUploadFileSize,
       });
-
       dispatch(fetchSortedFolderContentThunk(currentFolderId));
     }
   } else {
@@ -839,11 +841,13 @@ const dropTargetCollect: DropTargetCollector<
 export default connect((state: RootState) => {
   const currentFolderId: string = storageSelectors.currentFolderId(state);
   const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
+  const maxUploadFileSize = fileVersionsSelectors.getMaxFileSizeLimit(state);
   const hasMoreFolders = state.storage.hasMoreDriveFolders[currentFolderId] ?? true;
   const hasMoreFiles = state.storage.hasMoreDriveFiles[currentFolderId] ?? true;
 
   return {
     isAuthenticated: state.user.isAuthenticated,
+    maxUploadFileSize,
     user: state.user.user,
     currentFolderId,
     selectedItems: state.storage.selectedItems,

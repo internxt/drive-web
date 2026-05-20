@@ -9,7 +9,6 @@ import {
 } from '@internxt/sdk/dist/auth';
 import { RecoveryKeys } from '@internxt/sdk/dist/auth/types';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
-import { ChangePasswordPayloadNew } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { trackSignUp } from 'app/analytics/impact.service';
 import { trackLead } from 'app/analytics/meta.service';
@@ -406,7 +405,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
 
   return usersClient
-    .changePassword(<ChangePasswordPayloadNew>{
+    .changePassword({
       currentEncryptedPassword: encryptedCurrentPassword,
       newEncryptedPassword: encryptedNewPassword,
       newEncryptedSalt: encryptedNewSalt,

@@ -34,6 +34,7 @@ const NameCollisionContainer: FC = () => {
 
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const limits = useAppSelector(fileVersionsSelectors.getLimits);
+  const maxUploadFileSize = useAppSelector(fileVersionsSelectors.getMaxFileSizeLimit);
   const isVersioningEnabled = limits?.versioning?.enabled ?? false;
 
   const closeDialog = () => {
@@ -109,6 +110,7 @@ const NameCollisionContainer: FC = () => {
           payload: [{ root: { ...(itemToUpload as IRoot) }, currentFolderId: group.destinationUuid }],
           selectedWorkspace,
           dispatch,
+          maxUploadFileSize,
         });
       } else {
         const file = itemToUpload as File;
@@ -138,6 +140,7 @@ const NameCollisionContainer: FC = () => {
           payload: [{ root: { ...(itemToUpload as IRoot) }, currentFolderId: group.destinationUuid }],
           selectedWorkspace,
           dispatch,
+          maxUploadFileSize,
         });
       } else {
         await dispatch(
