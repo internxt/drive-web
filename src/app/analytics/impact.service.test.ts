@@ -7,7 +7,12 @@ import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
 import { getProductAmount } from 'views/Checkout/utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { savePaymentDataInLocalStorage, trackPaymentConversion, trackSignUp } from './impact.service';
+import {
+  handleImpactDTCCheckout,
+  savePaymentDataInLocalStorage,
+  trackPaymentConversion,
+  trackSignUp,
+} from './impact.service';
 
 vi.mock('services/local-storage.service', () => ({
   default: {
@@ -438,6 +443,93 @@ describe('Testing Impact Service', () => {
         consoleErrorSpy.mockRestore();
       });
     });
+  });
+});
+
+describe('handleImpactDTCCheckout', () => {
+  const irclickid = 'TZr0kB1hUxyZWqOxHoVulWsMUkuRX82pgw77Sk0';
+  const utmMedium = '312695';
+
+  it('When called with irclickid, then it sends a page view event to the Impact API with the correct payload', async () => {
+    const getCookieMock = await import('./utils');
+    vi.mocked(getCookieMock.getCookie).mockImplementation((key) => {
+      if (key === 'impactAnonymousId') return 'anon_id';
+      return '';
+    });
+    const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
+
+    await handleImpactDTCCheckout({ irclickid });
+
+    expect(axiosSpy).toHaveBeenCalledTimes(1);
+    expect(axiosSpy).toHaveBeenCalledWith(
+      mockImpactApiUrl,
+      expect.objectContaining({
+        anonymousId: 'anon_id',
+        type: 'page',
+        timestamp: expect.any(String),
+        properties: expect.objectContaining({ irclickid }),
+      }),
+    );
+  });
+
+  it('When no existing anonymousId cookie, then it generates a new UUID and uses it', async () => {
+    const getCookieMock = await import('./utils');
+    vi.mocked(getCookieMock.getCookie).mockImplementation((key) => {
+      if (key === 'impactAnonymousId') return '';
+      return '';
+    });
+    const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
+
+    await handleImpactDTCCheckout({ irclickid });
+
+    const callArgs = axiosSpy.mock.calls[0][1] as { anonymousId: string };
+    expect(callArgs.anonymousId).toBe(mockedUserUuid);
+  });
+
+  it('When utmMedium is provided, then it includes partner_id in the Impact API payload', async () => {
+    const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
+
+    await handleImpactDTCCheckout({ irclickid, utmMedium });
+
+    const callArgs = axiosSpy.mock.calls[0][1] as { properties: Record<string, unknown> };
+    expect(callArgs.properties).toHaveProperty('partner_id', utmMedium);
+  });
+
+  it('When utmMedium is not provided, then it does not include partner_id in the payload', async () => {
+    const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
+
+    await handleImpactDTCCheckout({ irclickid });
+
+    const callArgs = axiosSpy.mock.calls[0][1] as { properties: Record<string, unknown> };
+    expect(callArgs.properties).not.toHaveProperty('partner_id');
+  });
+
+  it('When called, then it sets the required Impact cookies', async () => {
+    const getCookieMock = await import('./utils');
+    vi.mocked(getCookieMock.getCookie).mockImplementation((key) => {
+      if (key === 'impactAnonymousId') return 'anon_id';
+      return '';
+    });
+    vi.spyOn(axios, 'post').mockResolvedValue({});
+    const cookieSpy = vi.spyOn(document, 'cookie', 'set');
+
+    await handleImpactDTCCheckout({ irclickid, utmMedium });
+
+    const setCookieCalls = cookieSpy.mock.calls.map((c) => c[0]);
+    expect(setCookieCalls.some((c) => c.startsWith('impactSource=Impact'))).toBe(true);
+    expect(setCookieCalls.some((c) => c.startsWith('impactAnonymousId=anon_id'))).toBe(true);
+    expect(setCookieCalls.some((c) => c.startsWith(`impactClickId=${irclickid}`))).toBe(true);
+    expect(setCookieCalls.some((c) => c.startsWith(`impactPartnerId=${utmMedium}`))).toBe(true);
+  });
+
+  it('When the Impact API call fails, then it reports the error', async () => {
+    const unknownError = new Error('API Error');
+    vi.spyOn(axios, 'post').mockRejectedValue(unknownError);
+    const errorServiceSpy = vi.spyOn(errorService, 'reportError');
+
+    await expect(handleImpactDTCCheckout({ irclickid })).resolves.not.toThrow();
+
+    expect(errorServiceSpy).toHaveBeenCalledWith(unknownError);
   });
 });
 
