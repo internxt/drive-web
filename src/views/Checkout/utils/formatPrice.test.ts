@@ -21,14 +21,18 @@ describe('Formatting the price to have 2 decimals', () => {
   });
 
   describe('The price has more than 2 decimals', () => {
-    it('When the price has more than 2 decimals, then the function returns the price with 2 decimals (truncated with high precision, 10.456 -> 10.45 - 10.001 -> 10 - 1.999 -> 1.99)', () => {
-      expect(formatPrice(10.456)).toBe('10.45');
+    it('When the price has more than 2 decimals, then the function returns the price rounded to 2 decimals (10.456 -> 10.46 - 10.001 -> 10 - 1.999 -> 2)', () => {
+      expect(formatPrice(10.456)).toBe('10.46');
       expect(formatPrice(10.001)).toBe('10');
-      expect(formatPrice(1.999)).toBe('1.99');
+      expect(formatPrice(1.999)).toBe('2');
     });
   });
 
   it('Handles edge case where value is nearly integer due to float error', () => {
     expect(formatPrice(10.0000001)).toBe('10');
+  });
+
+  it('Handles floating point precision error (19.99 * 100 = 1998.999... in JS)', () => {
+    expect(formatPrice(19.99)).toBe('19.99');
   });
 });
