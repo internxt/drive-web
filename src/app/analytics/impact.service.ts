@@ -106,7 +106,7 @@ export async function handleImpactDTCCheckout({
       context: {
         userAgent: navigator.userAgent,
         page: {
-          url: window.location.href,
+          url: globalThis.location.href,
           referrer: document.referrer,
         },
       },
