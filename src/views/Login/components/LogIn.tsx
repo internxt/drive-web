@@ -277,7 +277,7 @@ export default function LogIn(): JSX.Element {
             loading={isLoggingIn}
             buttonDataCy="loginButton"
             variant="primary"
-            className="disabled:!bg-primary"
+            className="disabled:!bg-primary disabled:!text-white"
           >
             {isLoggingIn && isValid ? translate('auth.decrypting') : translate('auth.button.loginAction')}
           </Button>
