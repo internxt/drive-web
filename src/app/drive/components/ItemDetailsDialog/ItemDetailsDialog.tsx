@@ -202,9 +202,7 @@ const ItemDetailsDialog = ({
     const size = calculateItemSize(item, folderStats);
 
     const parentUuid = (item as DriveItemData).parentUuid || item.folderUuid;
-    console.log('ITEM: ', item);
     if (isItemFolder && folderStats?.totalSize !== undefined && parentUuid) {
-      console.log('patching folder size');
       dispatch(
         storageActions.patchItem({
           uuid: itemUuid,
