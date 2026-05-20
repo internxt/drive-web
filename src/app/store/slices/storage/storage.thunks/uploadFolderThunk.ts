@@ -21,6 +21,10 @@ import { uploadItemsParallelThunk } from './uploadItemsThunk';
 import { IRoot } from '../types';
 import { wait } from 'utils/timeUtils';
 import newStorageService from 'app/drive/services/new-storage.service';
+import { uiActions } from '../../ui';
+import { FilesExceedsSizeLimitError } from 'app/drive/services/file.service/upload.errors';
+import { filterFilesByMaxSize } from '../fileUtils/filterFilesByMaxSize';
+import { fileVersionsSelectors } from '../../fileVersions';
 
 interface UploadFolderThunkPayload {
   root: IRoot;
@@ -64,8 +68,10 @@ const stopUploadTask = async (
   );
   // Deletes the root folder
   if (rootFolderItem) {
-    promises.push(dispatch(deleteItemsThunk([rootFolderItem as DriveItemData])).unwrap());
-    promises.push(newStorageService.deleteFolderByUuid(rootFolderItem.uuid));
+    promises.push(
+      dispatch(deleteItemsThunk([rootFolderItem as DriveItemData])).unwrap(),
+      newStorageService.deleteFolderByUuid(rootFolderItem.uuid),
+    );
   }
   await Promise.all(promises);
 };
@@ -144,9 +150,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
         //Added wait in order to allow enough time for the server to create the folder
         await wait(500);
 
-        if (!rootFolderItem) {
-          rootFolderItem = createdFolder;
-        }
+        rootFolderItem ??= createdFolder;
 
         if (!rootFolderData) {
           rootFolderData = createdFolder;
@@ -159,6 +163,23 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
         }
 
         if (level.childrenFiles) {
+          const maxUploadFileSize = fileVersionsSelectors.getMaxFileSizeLimit(state);
+          const hasNoChildFolders = level.childrenFolders.length === 0;
+          const { exceededFiles } = filterFilesByMaxSize({
+            files: level.childrenFiles,
+            maxUploadFileSize: maxUploadFileSize,
+          });
+          const allFilesExceedSizeLimit =
+            exceededFiles.length === level.childrenFiles.length && level.childrenFiles.length > 0;
+
+          if (allFilesExceedSizeLimit && hasNoChildFolders) {
+            await stopUploadTask(uploadFolderAbortController, dispatch, taskId, rootFolderItem);
+            dispatch(
+              uiActions.setOpenFileSizeLimitReachedDialog({ open: true, info: { exceededFiles: level.childrenFiles } }),
+            );
+            throw new FilesExceedsSizeLimitError();
+          }
+
           await dispatch(
             uploadItemsParallelThunk({
               files: level.childrenFiles,

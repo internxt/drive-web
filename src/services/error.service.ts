@@ -34,7 +34,7 @@ const errorService = {
       const data = err.data as { error?: string; message?: string } | undefined;
       const message = data?.message || data?.error || err.message || 'Unknown error';
       const headers = err.xRequestId ? { 'x-request-id': err.xRequestId } : undefined;
-      return new AppError(message, err.status, undefined, headers);
+      return new AppError(message, err.status, data?.error, headers);
     }
 
     if (err instanceof AxiosUnknownError) {

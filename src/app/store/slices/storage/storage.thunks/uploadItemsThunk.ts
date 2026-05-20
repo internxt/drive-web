@@ -2,11 +2,10 @@ import { items as itemUtils } from '@internxt/lib';
 import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
-import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
+import { ActionReducerMapBuilder, AnyAction, createAsyncThunk, ThunkDispatch } from '@reduxjs/toolkit';
 
 import { renameFile } from 'app/crypto/services/utils';
-import { MAX_ALLOWED_UPLOAD_SIZE } from 'app/drive/services/network.service';
-import { DriveFileData, DriveItemData } from 'app/drive/types';
+import { DriveFileData, DriveItemData, ExceededFile } from 'app/drive/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 import { t } from 'i18next';
@@ -27,6 +26,9 @@ import { FileToUpload } from 'app/drive/services/file.service/types';
 import { prepareFilesToUpload } from '../fileUtils/prepareFilesToUpload';
 import { StorageState } from '../storage.model';
 import { AppError } from '@internxt/sdk';
+import { filterFilesByMaxSize } from '../fileUtils/filterFilesByMaxSize';
+import { MAX_ALLOWED_UPLOAD_SIZE } from 'app/drive/services/network.service';
+import { fileVersionsSelectors } from '../../fileVersions';
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;
@@ -57,6 +59,34 @@ const DEFAULT_OPTIONS: Partial<UploadItemsThunkOptions> = {
   showErrors: true,
 };
 
+const openReachedFileSizeLimitDIalog = (
+  exceededFiles: ExceededFile[],
+  dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
+) => {
+  dispatch(
+    uiActions.setOpenFileSizeLimitReachedDialog({
+      open: true,
+      info: {
+        exceededFiles,
+      },
+    }),
+  );
+};
+
+const validateFileSize = (
+  dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
+  files: File[],
+  maxUploadFileSize = MAX_ALLOWED_UPLOAD_SIZE,
+): File[] => {
+  const { allowedFilesToUpload, exceededFiles } = filterFilesByMaxSize({ files, maxUploadFileSize });
+
+  if (exceededFiles.length > 0) {
+    openReachedFileSizeLimitDIalog(exceededFiles, dispatch);
+  }
+
+  return allowedFilesToUpload;
+};
+
 const isUploadAllowed = ({
   state,
   files,
@@ -65,13 +95,14 @@ const isUploadAllowed = ({
 }: {
   state: RootState;
   files: File[];
-  dispatch;
+  dispatch: ThunkDispatch<RootState, unknown, AnyAction>;
   isWorkspaceSelected: boolean;
 }): boolean => {
   try {
     const planLimit = isWorkspaceSelected ? state.plan.businessPlanLimit : state.plan.planLimit;
     const planUsage = isWorkspaceSelected ? state.plan.businessPlanUsage : state.plan.planUsage;
     const uploadItemsSize = Object.values(files).reduce((acum, file) => acum + file.size, 0);
+
     const totalItemsSize = uploadItemsSize + planUsage;
     const isPlanSizeLimitExceeded = planLimit && totalItemsSize >= planLimit;
 
@@ -85,15 +116,6 @@ const isUploadAllowed = ({
     }
   } catch (err: unknown) {
     errorService.reportError(err);
-  }
-
-  const isAnyFileExceededSizeLimit = files.some((file) => file.size > MAX_ALLOWED_UPLOAD_SIZE);
-  if (isAnyFileExceededSizeLimit) {
-    notificationsService.show({
-      text: t('error.maxSizeUploadLimitError'),
-      type: ToastType.Warning,
-    });
-    return false;
   }
 
   return true;
@@ -111,6 +133,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     { getState, dispatch },
   ) => {
     const user = getState().user.user as UserSettings;
+    const maxUploadFileSize = fileVersionsSelectors.getMaxFileSizeLimit(getState());
     const errors: AppError[] = [];
     const options = { ...DEFAULT_OPTIONS, ...payloadOptions };
 
@@ -132,16 +155,22 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       };
     }
 
+    const allowedFilesToUpload = validateFileSize(dispatch, files, maxUploadFileSize);
+
+    if (allowedFilesToUpload.length === 0) {
+      return;
+    }
+
     const continueWithUpload = isUploadAllowed({
       state: getState(),
-      files,
+      files: allowedFilesToUpload,
       dispatch,
       isWorkspaceSelected: !!workspaceId,
     });
     if (!continueWithUpload) return;
 
     const { filesToUpload } = await prepareFilesToUpload({
-      files,
+      files: allowedFilesToUpload,
       parentFolderId,
       disableDuplicatedNamesCheck: options.disableDuplicatedNamesCheck,
       fileType,
@@ -176,13 +205,15 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
         }),
       );
 
+    const openFileSizeLimitDialog = () => openReachedFileSizeLimitDIalog(allowedFilesToUpload, dispatch);
+
     try {
-      await uploadFileWithManager(
-        filesToUploadData,
-        openMaxSpaceOccupiedDialog,
-        DatabaseUploadRepository.getInstance(),
-        undefined,
-        {
+      await uploadFileWithManager({
+        files: filesToUploadData,
+        maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialog,
+        fileSizeExceededCallback: openFileSizeLimitDialog,
+        uploadRepository: DatabaseUploadRepository.getInstance(),
+        options: {
           ownerUserAuthenticationData: ownerUserAuthenticationData ?? undefined,
           sharedItemData: {
             isDeepFolder: false,
@@ -190,7 +221,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
           },
           isUploadedFromFolder: isRetry,
         },
-      );
+      });
     } catch (error) {
       if (taskId && isRetry) RetryManager.changeStatus(taskId, 'failed');
       errors.push(errorService.castError(error));
@@ -363,19 +394,18 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
       );
 
     try {
-      await uploadFileWithManager(
-        filesToUploadData,
-        openMaxSpaceOccupiedDialog,
-        DatabaseUploadRepository.getInstance(),
-        undefined,
-        {
+      await uploadFileWithManager({
+        files: filesToUploadData,
+        maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialog,
+        uploadRepository: DatabaseUploadRepository.getInstance(),
+        options: {
           ownerUserAuthenticationData: ownerUserAuthenticationDataForWorkspaces ?? ownerUserAuthenticationData,
           sharedItemData: {
             isDeepFolder,
             currentFolderId,
           },
         },
-      );
+      });
     } catch (error) {
       errors.push(errorService.castError(error));
     }
@@ -409,6 +439,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
   ) => {
     const state = getState();
     const user = state.user.user as UserSettings;
+    const maxFileSize = fileVersionsSelectors.getMaxFileSizeLimit(state);
     const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
     const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
     const errors: AppError[] = [];
@@ -429,8 +460,15 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
         workspacesToken: workspaceCredentials?.tokenHeader,
       };
     }
+
+    const allowedFilesToUpload = validateFileSize(dispatch, files, maxFileSize);
+
+    if (allowedFilesToUpload.length === 0) {
+      return;
+    }
+
     const { filesToUpload } = await prepareFilesToUpload({
-      files,
+      files: allowedFilesToUpload,
       parentFolderId,
       disableDuplicatedNamesCheck: options.disableDuplicatedNamesCheck,
       disableExistenceCheck: options.disableExistenceCheck,
@@ -461,13 +499,16 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
         }),
       );
 
+    const openFileSizeLimitDialog = () => openReachedFileSizeLimitDIalog(allowedFilesToUpload, dispatch);
+
     try {
-      await uploadFileWithManager(
-        filesToUploadData,
-        openMaxSpaceOccupiedDialog,
-        DatabaseUploadRepository.getInstance(),
+      await uploadFileWithManager({
+        files: filesToUploadData,
+        maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialog,
+        fileSizeExceededCallback: openFileSizeLimitDialog,
+        uploadRepository: DatabaseUploadRepository.getInstance(),
         abortController,
-        {
+        options: {
           ...options,
           ownerUserAuthenticationData: ownerUserAuthenticationData ?? undefined,
           sharedItemData: {
@@ -475,9 +516,9 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
             currentFolderId: parentFolderId,
           },
         },
-        filesProgress,
+        relatedTaskProgress: filesProgress,
         onFileUploadCallback,
-      );
+      });
     } catch (error) {
       errors.push(errorService.castError(error));
     }

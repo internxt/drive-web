@@ -14,3 +14,11 @@ export class BucketNotFoundError extends Error {
     Object.setPrototypeOf(this, BucketNotFoundError.prototype);
   }
 }
+
+export class FilesExceedsSizeLimitError extends Error {
+  constructor() {
+    super('Files exceeds the user size limit');
+    this.name = 'FilesExceedsSizeLimitError';
+    Object.setPrototypeOf(this, FilesExceedsSizeLimitError.prototype);
+  }
+}
