@@ -4,6 +4,7 @@ import { isMobile } from 'react-device-detect';
 import SignUpForm from './components/SignupForm';
 import { useMemo } from 'react';
 import authService from 'services/auth.service';
+import AnimatedBackground from 'components/AnimatedBackground';
 
 export interface SignUpViewProps {
   location: {
@@ -21,9 +22,11 @@ export default function SignUpView(props: Readonly<SignUpViewProps>): JSX.Elemen
   const isRegularSignup = !props.displayIframe && !autoSubmit.enabled;
 
   return (
-    <div className={`flex h-full w-full flex-col bg-login-gradient ${props.displayIframe ? '' : 'overflow-auto'}`}>
+    <div className={`flex h-full w-full flex-col dark:bg-[#0A0F1C] ${props.displayIframe ? '' : 'overflow-auto'}`}>
+      <AnimatedBackground />
+
       {isRegularSignup && (
-        <div className="flex shrink-0 flex-row justify-center py-10 sm:justify-start sm:pl-20">
+        <div className="flex shrink-0 flex-row justify-center py-10 ">
           <InternxtLogo className="h-auto w-28 text-gray-100" />
         </div>
       )}
@@ -33,7 +36,7 @@ export default function SignUpView(props: Readonly<SignUpViewProps>): JSX.Elemen
       </div>
 
       {isRegularSignup && (
-        <div className="flex shrink-0 flex-col items-center justify-center space-x-0 space-y-2 py-8 sm:flex-row sm:space-x-8 sm:space-y-0">
+        <div className="flex shrink-0 flex-col items-center justify-center text-gray-80 dark:text-gray-10 space-x-0 space-y-2 py-8 sm:flex-row sm:space-x-8 sm:space-y-0">
           {!isMobile && (
             <a href="https://internxt.com/legal" target="_blank" className="auth-footer-link">
               {translate('general.terms')}

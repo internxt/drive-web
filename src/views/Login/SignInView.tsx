@@ -18,7 +18,7 @@ export default function SignInView(props: Readonly<SignInProps>): JSX.Element {
       <AnimatedBackground />
 
       {!props.displayIframe && (
-        <div className="relative z-10 flex shrink-0 flex-row justify-center py-10 sm:justify-center">
+        <div className="relative z-20 flex shrink-0 flex-row justify-center py-10 sm:justify-center">
           <InternxtLogo className="h-auto w-28 text-gray-100" />
         </div>
       )}

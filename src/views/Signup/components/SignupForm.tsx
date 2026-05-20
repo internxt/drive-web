@@ -324,7 +324,10 @@ function SignUpForm(): JSX.Element {
   };
 
   return (
-    <>
+    <div
+      className="bg-white dark:bg-gray-1 dark:border-gray-5 rounded-2xl z-10"
+      style={{ boxShadow: '0 32px 40px 0 rgba(0, 0, 0, 0.08)' }}
+    >
       <Helmet>
         <link rel="canonical" href={`${envService.getVariable('hostname')}/new`} />
       </Helmet>
@@ -337,7 +340,7 @@ function SignUpForm(): JSX.Element {
       >
         {renderContent()}
       </div>
-    </>
+    </div>
   );
 }
 
