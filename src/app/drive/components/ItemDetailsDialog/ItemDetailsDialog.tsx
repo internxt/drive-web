@@ -100,7 +100,8 @@ const ItemDetailsDialog = ({
   const { translate } = useTranslationContext();
   const [itemProps, setItemProps] = useState<ItemDetailsProps>();
   const [isLoading, setIsLoading] = useState(false);
-  const IconComponent = iconService.getItemIcon(item?.type === 'folder', item?.type);
+  const isItemFolder = item?.type === 'folder' || item?.isFolder;
+  const IconComponent = iconService.getItemIcon(isItemFolder ?? false, item?.type);
   const itemName = `${item?.plainName ?? item?.name}` + `${item?.type && !item.isFolder ? '.' + item?.type : ''}`;
   const user = localStorageService.getUser();
   const isFolder = item?.isFolder;
@@ -200,8 +201,10 @@ const ItemDetailsDialog = ({
     ]);
     const size = calculateItemSize(item, folderStats);
 
-    const parentUuid = item.view === 'Drive' ? (item as DriveItemData).parentUuid : undefined;
-    if (item.isFolder && folderStats?.totalSize !== undefined && parentUuid) {
+    const parentUuid = (item as DriveItemData).parentUuid || item.folderUuid;
+    console.log('ITEM: ', item);
+    if (isItemFolder && folderStats?.totalSize !== undefined && parentUuid) {
+      console.log('patching folder size');
       dispatch(
         storageActions.patchItem({
           uuid: itemUuid,
