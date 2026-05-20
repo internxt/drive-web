@@ -20,6 +20,7 @@ export default {
       services: path.resolve(__dirname, './src/services'),
       utils: path.resolve(__dirname, './src/utils'),
       views: path.resolve(__dirname, './src/views'),
+      testUtils: path.resolve(__dirname, './src/testUtils'),
       crypto: 'crypto-browserify',
       stream: 'stream-browserify',
       path: 'path-browserify',

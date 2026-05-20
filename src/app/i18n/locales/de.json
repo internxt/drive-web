@@ -259,7 +259,7 @@
       },
       "apply": "Anwenden",
       "taxes": "Steuern",
-      "annualBillingTemplate": "Jahresplan, Abrechnung von {{priceNow}}{{currency}} für den ersten Monat, dann Verlängerung für {{price}}{{currency}}/Monat"
+      "annualBillingTemplate": "Jahresplan, monatlich abgerechnet mit {{price}}{{currency}}/Monat für 12 Monate"
     },
     "confirmCryptoPayment": {
       "title": "Zahlung bestätigen",
@@ -1136,6 +1136,21 @@
     "teamInvitation": "Die Einladungs-E-Mail konnte nicht gesendet werden",
     "ownerStorageIsFull": "Der Speicher des Eigentümers ist voll",
     "storageIsFull": "Dein Speicher ist voll",
+    "fileSizeLimitExceeded": {
+      "title": {
+        "singleFile": "Diese Datei ist zu groß für deinen aktuellen Plan",
+        "multipleFiles": "Einige Dateien sind zu groß für deinen aktuellen Plan"
+      },
+      "description": {
+        "singleFile": "Dein Plan erlaubt Uploads bis zu {{maxFileSize}}. Diese Datei ist {{fileSize}} groß. Upgrade deinen Plan, um größere Dateien hochzuladen.",
+        "multipleFiles": "Dein Plan erlaubt Uploads bis zu {{maxFileSize}}. Upgrade deinen Plan, um größere Dateien hochzuladen."
+      },
+      "planList": {
+        "essential": "Essential → bis zu 10GB",
+        "premium": "Premium → bis zu 50GB",
+        "ultimate": "Ultimate → bis zu 100GB"
+      }
+    },
     "ownerStorageIsFullDescription": "Du kannst in diesem geteilten Ordner keine Dateien hochladen.",
     "storageIsFullDescription": "Sie können keine Dateien hochladen, synchronisieren oder sichern.",
     "noSpaceAvailable": "Du hast die Grenzen deines aktuellen Plans erreicht und die Synchronisierung wurde gestoppt. Führe jetzt ein Upgrade durch, damit deine Dateien sicher synchronisiert bleiben.",
@@ -1521,7 +1536,8 @@
     "logOut": "Abmelden",
     "locked": "Gesperrt",
     "remindMeLater": "Später erinnern",
-    "backupKeySaved": "Ich habe meinen Schlüssel gespeichert"
+    "backupKeySaved": "Ich habe meinen Schlüssel gespeichert",
+    "upgradePlan": "Plan upgraden"
   },
   "toastNotification": {
     "textCopied": "Text in die Zwischenablage kopiert"
