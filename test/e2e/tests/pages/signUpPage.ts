@@ -25,7 +25,7 @@ export class SignUpPage {
   constructor(page: Page) {
     this.page = page;
     (this.createAccountTitle = this.page.getByRole('heading', { level: 1 })),
-      (this.emailInput = this.page.getByPlaceholder('Email', { exact: true }));
+      (this.emailInput = this.page.getByPlaceholder('Email address', { exact: true }));
     this.passwordInput = this.page.getByPlaceholder('Password', { exact: true });
     this.passwordWarning = this.page.locator('[class="pt-1"] p');
     this.disclaimer = this.page.locator('[class$="pr-4 dark:bg-primary/20"] p');
@@ -49,7 +49,7 @@ export class SignUpPage {
     const createAccountTitle = await this.createAccountTitle.textContent();
     expect(createAccountTitle).toEqual('Create account');
     const emailPlaceholder = await this.emailInput.getAttribute('placeholder');
-    expect(emailPlaceholder).toEqual('Email');
+    expect(emailPlaceholder).toEqual('Email address');
     await this.emailInput.fill(email);
   }
 
