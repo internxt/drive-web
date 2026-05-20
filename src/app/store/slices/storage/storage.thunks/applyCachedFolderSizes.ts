@@ -9,10 +9,13 @@ export const applyCachedFolderSizes = async (folderId: string, items: DriveItemD
       cachedSizeByUuid.set(item.uuid, item.size);
     }
   });
+
   return items.map((item) => {
     if (!item.isFolder) return item;
+
     const cachedSize = cachedSizeByUuid.get(item.uuid);
     if (cachedSize === undefined) return item;
+
     return { ...item, size: cachedSize, sizeComputed: true };
   });
 };
