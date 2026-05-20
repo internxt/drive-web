@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { storageActions } from 'app/store/slices/storage';
 import { uiActions } from 'app/store/slices/ui';
 import { X } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -198,6 +199,18 @@ const ItemDetailsDialog = ({
       getFolderStats(item, itemUuid),
     ]);
     const size = calculateItemSize(item, folderStats);
+
+    const parentUuid = item.view === 'Drive' ? (item as DriveItemData).parentUuid : undefined;
+    if (item.isFolder && folderStats?.totalSize !== undefined && parentUuid) {
+      dispatch(
+        storageActions.patchItem({
+          uuid: itemUuid,
+          folderId: parentUuid,
+          isFolder: true,
+          patch: { size: folderStats.totalSize, sizeComputed: true },
+        }),
+      );
+    }
 
     return {
       name: item.name,
