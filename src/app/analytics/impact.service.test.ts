@@ -34,6 +34,7 @@ vi.mock('./utils', () => ({
     if (key === 'gclid') return '';
     return '';
   }),
+  setImpactCookies: vi.fn(),
 }));
 
 vi.mock('./addShoppers.services', () => ({
@@ -450,7 +451,7 @@ describe('handleImpactDTCCheckout', () => {
   const irclickid = 'TZr0kB1hUxyZWqOxHoVulWsMUkuRX82pgw77Sk0';
   const utmMedium = '312695';
 
-  it('When called with irclickid, then it sends a page view event to the Impact API with the correct payload', async () => {
+  it('When tracking an affiliate click, then it reports the event to Impact analytics with the click identifier', async () => {
     const getCookieMock = await import('./utils');
     vi.mocked(getCookieMock.getCookie).mockImplementation((key) => {
       if (key === 'impactAnonymousId') return 'anon_id';
@@ -472,7 +473,7 @@ describe('handleImpactDTCCheckout', () => {
     );
   });
 
-  it('When no existing anonymousId cookie, then it generates a new UUID and uses it', async () => {
+  it('When the user has not been tracked before, then it creates a unique identifier for them', async () => {
     const getCookieMock = await import('./utils');
     vi.mocked(getCookieMock.getCookie).mockImplementation((key) => {
       if (key === 'impactAnonymousId') return '';
@@ -486,7 +487,7 @@ describe('handleImpactDTCCheckout', () => {
     expect(callArgs.anonymousId).toBe(mockedUserUuid);
   });
 
-  it('When utmMedium is provided, then it includes partner_id in the Impact API payload', async () => {
+  it('When an affiliate partner is identified, then it includes their information in the tracking event', async () => {
     const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
 
     await handleImpactDTCCheckout({ irclickid, utmMedium });
@@ -495,7 +496,7 @@ describe('handleImpactDTCCheckout', () => {
     expect(callArgs.properties).toHaveProperty('partner_id', utmMedium);
   });
 
-  it('When utmMedium is not provided, then it does not include partner_id in the payload', async () => {
+  it('When no affiliate partner is identified, then the tracking event omits partner information', async () => {
     const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
 
     await handleImpactDTCCheckout({ irclickid });
@@ -504,25 +505,21 @@ describe('handleImpactDTCCheckout', () => {
     expect(callArgs.properties).not.toHaveProperty('partner_id');
   });
 
-  it('When called, then it sets the required Impact cookies', async () => {
+  it('When tracking is initialized, then it persists tracking identifiers for future affiliate attribution', async () => {
     const getCookieMock = await import('./utils');
     vi.mocked(getCookieMock.getCookie).mockImplementation((key) => {
       if (key === 'impactAnonymousId') return 'anon_id';
       return '';
     });
+    const setImpactCookiesSpy = vi.mocked(getCookieMock.setImpactCookies);
     vi.spyOn(axios, 'post').mockResolvedValue({});
-    const cookieSpy = vi.spyOn(document, 'cookie', 'set');
 
     await handleImpactDTCCheckout({ irclickid, utmMedium });
 
-    const setCookieCalls = cookieSpy.mock.calls.map((c) => c[0]);
-    expect(setCookieCalls.some((c) => c.startsWith('impactSource=Impact'))).toBe(true);
-    expect(setCookieCalls.some((c) => c.startsWith('impactAnonymousId=anon_id'))).toBe(true);
-    expect(setCookieCalls.some((c) => c.startsWith(`impactClickId=${irclickid}`))).toBe(true);
-    expect(setCookieCalls.some((c) => c.startsWith(`impactPartnerId=${utmMedium}`))).toBe(true);
+    expect(setImpactCookiesSpy).toHaveBeenCalledWith('anon_id', irclickid, utmMedium);
   });
 
-  it('When the Impact API call fails, then it reports the error', async () => {
+  it('When the tracking service is unavailable, then it handles the failure gracefully and continues', async () => {
     const unknownError = new Error('API Error');
     vi.spyOn(axios, 'post').mockRejectedValue(unknownError);
     const errorServiceSpy = vi.spyOn(errorService, 'reportError');

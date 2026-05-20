@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { v4 as uuidV4 } from 'uuid';
 import dayjs from 'dayjs';
-import { getCookie } from './utils';
+import { getCookie, setImpactCookies } from './utils';
 import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
@@ -81,24 +81,8 @@ export async function handleImpactDTCCheckout({
     const IMPACT_API = envService.getVariable('impactApiUrl');
     const existingAnonymousId = getCookie('impactAnonymousId');
     const anonymousId = existingAnonymousId || uuidV4();
-    const cookieDomain = 'internxt.com';
 
-    const sourceExpiration = new Date();
-    sourceExpiration.setHours(sourceExpiration.getHours() + 2);
-
-    const anonymousExpiration = new Date();
-    anonymousExpiration.setFullYear(anonymousExpiration.getFullYear() + 10);
-
-    const trackingExpiration = new Date();
-    trackingExpiration.setDate(trackingExpiration.getDate() + 30);
-
-    document.cookie = `impactSource=Impact;expires=${sourceExpiration.toUTCString()};domain=${cookieDomain};Path=/`;
-    document.cookie = `impactAnonymousId=${anonymousId};expires=${anonymousExpiration.toUTCString()};domain=${cookieDomain};Path=/`;
-    document.cookie = `impactClickId=${irclickid};expires=${trackingExpiration.toUTCString()};domain=${cookieDomain};Path=/`;
-
-    if (utmMedium) {
-      document.cookie = `impactPartnerId=${utmMedium};expires=${trackingExpiration.toUTCString()};domain=${cookieDomain};Path=/`;
-    }
+    setImpactCookies(anonymousId, irclickid, utmMedium);
 
     await axios.post(IMPACT_API, {
       anonymousId,
