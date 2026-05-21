@@ -72,15 +72,20 @@ export const storageSlice = createSlice({
       state.isLoadingDeleted = action.payload;
     },
     setItems: (state: StorageState, action: PayloadAction<{ folderId: string; items: DriveItemData[] }>) => {
-      state.levels[action.payload.folderId] = action.payload.items;
+      const { folderId, items } = action.payload;
+      state.levels[folderId] = items;
+      databaseService.put(DatabaseCollection.Levels, folderId, items);
     },
     setMoveDialogItems: (state: StorageState, action: PayloadAction<{ folderId: string; items: DriveItemData[] }>) => {
       state.moveDialogLevels[action.payload.folderId] = action.payload.items;
     },
     addItems: (state: StorageState, action: PayloadAction<{ folderId: string; items: DriveItemData[] }>) => {
-      const newFolderContent = (state.levels[action.payload.folderId] ?? []).concat(action.payload.items);
+      const { folderId, items } = action.payload;
+      const previous = state.levels[folderId] ?? [];
+      const newFolderContent = previous.concat(items);
       const removedDuplicates = removeDuplicates(newFolderContent);
-      state.levels[action.payload.folderId] = removedDuplicates;
+      state.levels[folderId] = removedDuplicates;
+      databaseService.put(DatabaseCollection.Levels, folderId, removedDuplicates);
     },
     setFolderFoldersLength: (
       state: StorageState,

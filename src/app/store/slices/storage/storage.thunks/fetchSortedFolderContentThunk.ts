@@ -6,6 +6,7 @@ import { SdkFactory } from '../../../../core/factory/sdk';
 import errorService from 'services/error.service';
 import { DriveItemData } from 'app/drive/types';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
+import { applyCachedFolderSizes } from './applyCachedFolderSizes';
 
 const DEFAULT_LIMIT = 50;
 
@@ -29,7 +30,6 @@ export const fetchSortedFolderContentThunk = createAsyncThunk<void, string, { st
 
     try {
       dispatch(storageActions.setIsLoadingFolder({ folderId, value: true }));
-      dispatch(storageActions.setItems({ folderId, items: [] }));
       const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
       const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
 
@@ -96,8 +96,9 @@ export const fetchSortedFolderContentThunk = createAsyncThunk<void, string, { st
       const areLastFiles = itemsFiles.length < DEFAULT_LIMIT;
       dispatch(storageActions.setHasMoreDriveFiles({ folderId, status: !areLastFiles }));
       const items = parsedItemsFolder.concat(parsedItemsFiles);
+      const itemsWithCachedSizes = await applyCachedFolderSizes(folderId, items);
 
-      dispatch(storageActions.setItems({ folderId, items: items }));
+      dispatch(storageActions.setItems({ folderId, items: itemsWithCachedSizes }));
     } catch (error) {
       errorService.reportError(error);
       throw error;
