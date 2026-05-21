@@ -99,6 +99,7 @@ export type DriveItemData = DriveFileData &
       status: FileStatus;
       uuid: string;
     };
+    sizeComputed?: boolean;
   };
 
 export interface DriveItemPatch {
@@ -108,6 +109,8 @@ export interface DriveItemPatch {
   currentThumbnail?: Thumbnail;
   thumbnails?: Thumbnail[];
   shares?: ShareLink[];
+  size?: number;
+  sizeComputed?: boolean;
 }
 
 export interface ReachedPlanLimitDialogInfo {
