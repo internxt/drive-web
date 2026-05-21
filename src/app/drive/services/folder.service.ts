@@ -527,12 +527,12 @@ export const checkIfCachedSourceIsOlder = ({
 export async function moveFolderByUuid(
   folderUuid: string,
   destinationFolderUuid: string,
-  newFolderName?: string,
+  newName?: string,
 ): Promise<StorageTypes.FolderMeta> {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
   const payload: StorageTypes.MoveFolderUuidPayload = {
     destinationFolder: destinationFolderUuid,
-    name: newFolderName,
+    name: newName,
   };
 
   return storageClient.moveFolderByUuid(folderUuid, payload).catch((err) => {

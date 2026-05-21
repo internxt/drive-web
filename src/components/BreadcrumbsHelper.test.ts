@@ -15,12 +15,6 @@ import { NativeTypes } from 'react-dnd-html5-backend';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { transformDraggedItems } from 'services/drag-and-drop.service';
 
-vi.mock('app/store/slices/storage', () => ({
-  storageActions: {
-    setMoveDestinationFolderId: vi.fn(),
-  },
-}));
-
 vi.mock('app/store/slices/storage/storage.thunks', () => ({
   default: {
     moveItemsThunk: vi.fn(),
@@ -30,8 +24,14 @@ vi.mock('app/store/slices/storage/storage.thunks', () => ({
 }));
 
 vi.mock('app/store/slices/storage/storage.thunks/renameItemsThunk', () => ({
-  handleRepeatedUploadingFiles: vi.fn().mockResolvedValue([]),
-  handleRepeatedUploadingFolders: vi.fn().mockResolvedValue([]),
+  getCollisionGroups: vi.fn(async (groups: { destinationUuid: string; items: unknown[] }[]) =>
+    groups.map(({ destinationUuid, items }) => ({
+      destinationUuid,
+      duplicatedItems: [],
+      existingItems: [],
+      unrepeatedItems: items,
+    })),
+  ),
 }));
 
 vi.mock('services/drag-and-drop.service', () => ({
@@ -158,7 +158,9 @@ describe('onItemDropped', () => {
 
     await onItemDropped(item, namePath, true, selectedItems, mockDispatch)(draggedItem, monitor);
 
-    expect(storageThunks.moveItemsThunk).toHaveBeenCalled();
+    expect(storageThunks.moveItemsThunk).toHaveBeenCalledWith(
+      expect.objectContaining({ destinationFolderId: item.uuid }),
+    );
   });
 
   it('should handle file drop correctly', async () => {

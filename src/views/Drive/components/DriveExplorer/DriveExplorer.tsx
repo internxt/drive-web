@@ -10,7 +10,7 @@ import { NativeTypes } from 'react-dnd-html5-backend';
 import folderEmptyImage from 'assets/icons/light/folder-open.svg';
 import { transformDraggedItems } from 'services/drag-and-drop.service';
 import { AppDispatch, RootState } from 'app/store';
-import { StorageFilters } from 'app/store/slices/storage/storage.model';
+import { CollisionGroup, StorageFilters } from 'app/store/slices/storage/storage.model';
 import { DriveExplorerGrid, DriveExplorerList, DriveTopBarActions } from './components';
 
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -59,6 +59,7 @@ import WarningMessageWrapper from 'views/Home/components/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import { ShareDialogWrapper } from 'app/drive/components/ShareDialog/ShareDialogWrapper';
+import { fileVersionsSelectors } from 'app/store/slices/fileVersions';
 
 const MenuItemToGetSize = ({
   isTrash,
@@ -135,6 +136,7 @@ interface DriveExplorerProps {
   namePath: FolderPath[];
   dispatch: AppDispatch;
   selectedWorkspace: WorkspaceData | null;
+  maxUploadFileSize: number;
   isOver: boolean;
   connectDropTarget: ConnectDropTarget;
   folderOnTrashLength: number;
@@ -726,48 +728,74 @@ declare module 'react' {
 }
 
 const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: File[]) => {
-  const { dispatch, currentFolderId, onDragAndDropEnd } = props;
+  const { dispatch, currentFolderId, maxUploadFileSize, onDragAndDropEnd } = props;
 
   if (files.length <= UPLOAD_ITEMS_LIMIT) {
-    if (files.length) {
-      const unrepeatedUploadedFiles = (await handleRepeatedUploadingFiles(files, dispatch, currentFolderId)) as File[];
-      // files where dragged directly
-      await dispatch(
+    const [filesResult, foldersResult] = await Promise.all([
+      files.length > 0 ? handleRepeatedUploadingFiles(Array.from(files), currentFolderId) : null,
+      rootList.length > 0 ? handleRepeatedUploadingFolders(rootList, currentFolderId) : null,
+    ]);
+
+    const repeatedFiles =
+      filesResult && filesResult?.repeatedItems?.length > 0
+        ? [
+            {
+              destinationUuid: currentFolderId,
+              duplicatedItems: filesResult?.repeatedItems,
+              existingItems: filesResult?.existingItems,
+              unrepeatedItems: filesResult?.unrepeatedItems,
+            },
+          ]
+        : [];
+
+    const repeatedFolders =
+      foldersResult && foldersResult.repeatedItems?.length > 0
+        ? [
+            {
+              destinationUuid: currentFolderId,
+              duplicatedItems: foldersResult?.repeatedItems,
+              existingItems: foldersResult?.existingItems,
+              unrepeatedItems: foldersResult?.unrepeatedItems,
+            },
+          ]
+        : [];
+
+    const collisionGroups = [...repeatedFiles, ...repeatedFolders] as CollisionGroup[];
+
+    if (collisionGroups.length > 0) {
+      dispatch(
+        uiActions.setIsNameCollisionDialogOpen({ open: true, info: { groups: collisionGroups, operation: 'upload' } }),
+      );
+    }
+
+    const areUnrepeatedFiles = filesResult && filesResult.unrepeatedItems.length > 0;
+    const areUnrepeatedFolders = foldersResult && foldersResult.unrepeatedItems.length > 0;
+
+    if (areUnrepeatedFiles) {
+      dispatch(
         storageThunks.uploadItemsThunk({
-          files: unrepeatedUploadedFiles,
+          files: filesResult.unrepeatedItems as File[],
           parentFolderId: currentFolderId,
-          options: {
-            onSuccess: onDragAndDropEnd,
-            disableDuplicatedNamesCheck: true,
-          },
         }),
       ).then(() => {
         dispatch(fetchSortedFolderContentThunk(currentFolderId));
       });
     }
-    if (rootList.length) {
-      const unrepeatedUploadedFolders = (await handleRepeatedUploadingFolders(
-        rootList,
-        dispatch,
+
+    if (areUnrepeatedFolders) {
+      const folderDataToUpload = (foldersResult.unrepeatedItems as IRoot[]).map((root) => ({
+        root,
         currentFolderId,
-      )) as IRoot[];
+        options: { onSuccess: onDragAndDropEnd },
+      }));
 
-      if (unrepeatedUploadedFolders.length > 0) {
-        const folderDataToUpload = unrepeatedUploadedFolders.map((root) => ({
-          root,
-          currentFolderId,
-          options: {
-            onSuccess: onDragAndDropEnd,
-          },
-        }));
-
-        await uploadFoldersWithManager({
-          payload: folderDataToUpload,
-          selectedWorkspace: props.selectedWorkspace,
-          dispatch,
-        });
-        dispatch(fetchSortedFolderContentThunk(currentFolderId));
-      }
+      await uploadFoldersWithManager({
+        payload: folderDataToUpload,
+        selectedWorkspace: props.selectedWorkspace,
+        dispatch,
+        maxUploadFileSize,
+      });
+      dispatch(fetchSortedFolderContentThunk(currentFolderId));
     }
   } else {
     dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
@@ -813,11 +841,13 @@ const dropTargetCollect: DropTargetCollector<
 export default connect((state: RootState) => {
   const currentFolderId: string = storageSelectors.currentFolderId(state);
   const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
+  const maxUploadFileSize = fileVersionsSelectors.getMaxFileSizeLimit(state);
   const hasMoreFolders = state.storage.hasMoreDriveFolders[currentFolderId] ?? true;
   const hasMoreFiles = state.storage.hasMoreDriveFiles[currentFolderId] ?? true;
 
   return {
     isAuthenticated: state.user.isAuthenticated,
+    maxUploadFileSize,
     user: state.user.user,
     currentFolderId,
     selectedItems: state.storage.selectedItems,

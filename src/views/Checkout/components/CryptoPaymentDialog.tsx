@@ -9,6 +9,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import checkoutService from '../services/checkout.service';
 import { Currency } from '../types';
+import { formatPrice } from '../utils/formatPrice';
 import { useEffect, useState } from 'react';
 import { errorService } from 'services';
 
@@ -166,7 +167,7 @@ export const CryptoPaymentDialog = () => {
             </p>
             <div className="flex flex-row gap-3 items-center">
               <p className="text-gray-100 dark:text-white text-lg font-normal">
-                {fiat.amount} {Currency[fiat.currency]}
+                {formatPrice(fiat.amount)} {Currency[fiat.currency]}
               </p>
             </div>
           </div>

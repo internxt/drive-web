@@ -30,8 +30,14 @@ vi.mock('react-redux', () => ({
 vi.mock('i18next', () => ({ default: { t: (key: string) => key }, t: (key: string) => key }));
 vi.mock('app/store/slices/storage/storage.thunks', () => ({ default: { moveItemsThunk: mockMoveItemsThunk } }));
 vi.mock('app/store/slices/storage/storage.thunks/renameItemsThunk', () => ({
-  handleRepeatedUploadingFiles: vi.fn(async (files: unknown[]) => files),
-  handleRepeatedUploadingFolders: vi.fn(async (folders: unknown[]) => folders),
+  getCollisionGroups: vi.fn(async (groups: { destinationUuid: string; items: unknown[] }[]) =>
+    groups.map(({ destinationUuid, items }) => ({
+      destinationUuid,
+      duplicatedItems: [],
+      existingItems: [],
+      unrepeatedItems: items,
+    })),
+  ),
 }));
 vi.mock('app/store/slices/storage', () => ({
   storageActions: {
@@ -234,7 +240,7 @@ describe('Restore items from trash', () => {
       const { result } = renderHook(() => useMoveItems());
 
       await act(async () => {
-        await result.current.moveItemFromDialog({ finalDestinationId: 'chosen-folder-uuid', items: [item] });
+        await result.current.moveItemsFromDialog({ finalDestinationId: 'chosen-folder-uuid', items: [item] });
       });
 
       expect(mockMoveItemsThunk).toHaveBeenCalledWith(
@@ -247,7 +253,7 @@ describe('Restore items from trash', () => {
       const { result } = renderHook(() => useMoveItems());
 
       await act(async () => {
-        await result.current.moveItemFromDialog({ finalDestinationId: 'chosen-folder-uuid', items: [item] });
+        await result.current.moveItemsFromDialog({ finalDestinationId: 'chosen-folder-uuid', items: [item] });
       });
 
       expect(mockMoveItemsThunk).toHaveBeenCalledWith(
@@ -267,7 +273,7 @@ describe('Restore items from trash', () => {
       vi.spyOn(errorService, 'castError').mockReturnValue({ message: 'Move failed', requestId: undefined } as any);
 
       await act(async () => {
-        await result.current.moveItemFromDialog({ finalDestinationId: 'chosen-folder-uuid', items: [item] });
+        await result.current.moveItemsFromDialog({ finalDestinationId: 'chosen-folder-uuid', items: [item] });
       });
 
       expect(notificationsSpy).toHaveBeenCalledWith(expect.objectContaining({ type: ToastType.Error }));

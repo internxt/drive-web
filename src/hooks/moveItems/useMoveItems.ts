@@ -1,15 +1,11 @@
 import { FileStatus } from '@internxt/sdk/dist/drive/storage/types';
 import { AppView } from 'app/core/types';
-import { DriveFileData, DriveFolderData, DriveItemData } from 'app/drive/types';
+import { DriveItemData } from 'app/drive/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useAppDispatch } from 'app/store/hooks';
 import { storageActions } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
-import {
-  handleRepeatedUploadingFiles,
-  handleRepeatedUploadingFolders,
-} from 'app/store/slices/storage/storage.thunks/renameItemsThunk';
-import { IRoot } from 'app/store/slices/storage/types';
+import { getCollisionGroups } from 'app/store/slices/storage/storage.thunks/renameItemsThunk';
 import { uiActions } from 'app/store/slices/ui';
 import { t } from 'i18next';
 import { errorService, navigationService } from 'services';
@@ -22,28 +18,37 @@ interface ProcessMoveProps {
 
 export const useMoveItems = () => {
   const dispatch = useAppDispatch();
-  const processMove = async ({ finalDestinationId, items, displayTaskLogger }: ProcessMoveProps) => {
-    const files = items.filter((item) => !item.isFolder) as DriveFileData[];
-    const folders = items.filter((item) => item.isFolder) as (IRoot | DriveFolderData)[];
 
-    const filesWithoutDuplicates = await handleRepeatedUploadingFiles(files, dispatch, finalDestinationId, true);
-    const foldersWithoutDuplicates = await handleRepeatedUploadingFolders(folders, dispatch, finalDestinationId, true);
+  const processMove = async ({ finalDestinationId, items }: ProcessMoveProps) => {
+    const groups = await getCollisionGroups([{ destinationUuid: finalDestinationId, items }]);
+    const [group] = groups;
 
-    const itemsToMoveWithoutDuplicates = [...filesWithoutDuplicates, ...foldersWithoutDuplicates];
+    if (!group) return { areItemsMoved: false, totalItemsMoved: [] };
 
-    if (itemsToMoveWithoutDuplicates.length > 0) {
+    if (group.duplicatedItems.length > 0) {
+      dispatch(
+        uiActions.setIsNameCollisionDialogOpen({
+          open: true,
+          info: {
+            groups,
+            operation: 'move',
+          },
+        }),
+      );
+    }
+
+    if (group.unrepeatedItems.length > 0) {
       await dispatch(
         storageThunks.moveItemsThunk({
-          items: itemsToMoveWithoutDuplicates as DriveItemData[],
+          items: group.unrepeatedItems,
           destinationFolderId: finalDestinationId,
-          displayTaskLogger,
         }),
       );
     }
 
     return {
-      areItemsMoved: itemsToMoveWithoutDuplicates.length > 0,
-      totalItemsMoved: itemsToMoveWithoutDuplicates as DriveItemData[],
+      areItemsMoved: group.unrepeatedItems.length > 0,
+      totalItemsMoved: group.unrepeatedItems,
     };
   };
 
@@ -100,22 +105,47 @@ export const useMoveItems = () => {
       const needsDestination = items.filter((item) => item.parent?.status !== FileStatus.EXISTS);
 
       const restorableByDestination = restorableItems.reduce((map, item) => {
-        const key = item.parent?.uuid;
+        const key = item.parent?.uuid as string;
         map.set(key, [...(map.get(key) ?? []), item]);
         return map;
-      }, new Map<string | undefined, DriveItemData[]>());
+      }, new Map<string, DriveItemData[]>());
 
-      const restoredItems: Awaited<ReturnType<typeof processMove>>[] = [];
-      for (const [destinationId, groupItems] of restorableByDestination.entries()) {
-        const result = await processMove({ finalDestinationId: destinationId as string, items: groupItems });
-        restoredItems.push(result);
+      const groups = await getCollisionGroups(
+        [...restorableByDestination.entries()].map(([destinationUuid, groupItems]) => ({
+          destinationUuid,
+          items: groupItems,
+        })),
+      );
+
+      const collisionGroups = groups.filter((g) => g.duplicatedItems.length > 0);
+      if (collisionGroups.length > 0) {
+        dispatch(
+          uiActions.setIsNameCollisionDialogOpen({
+            open: true,
+            info: {
+              groups: collisionGroups,
+              operation: 'move',
+            },
+          }),
+        );
       }
 
-      const totalItemsMovedConcat = restoredItems.flatMap((item) => item.totalItemsMoved);
+      const totalItemsMoved: DriveItemData[] = [];
+      for (const group of groups) {
+        if (group.unrepeatedItems.length > 0) {
+          await dispatch(
+            storageThunks.moveItemsThunk({
+              items: group.unrepeatedItems,
+              destinationFolderId: group.destinationUuid,
+            }),
+          );
+          totalItemsMoved.push(...group.unrepeatedItems);
+        }
+      }
 
-      if (totalItemsMovedConcat.length > 0) {
+      if (totalItemsMoved.length > 0) {
         notificationsService.show({ text: t('notificationMessages.restoreItems'), type: ToastType.Success });
-        dispatch(storageActions.popItemsToDelete(totalItemsMovedConcat));
+        dispatch(storageActions.popItemsToDelete(totalItemsMoved));
       }
 
       if (needsDestination.length > 0) {
@@ -124,7 +154,7 @@ export const useMoveItems = () => {
       }
     });
 
-  const moveItemFromDialog = ({
+  const moveItemsFromDialog = ({
     finalDestinationId,
     items,
   }: Omit<ProcessMoveProps, 'displayTaskLogger'>): Promise<void> =>
@@ -135,6 +165,6 @@ export const useMoveItems = () => {
   return {
     restoreItemFromTrash,
     restoreItemsFromTrash,
-    moveItemFromDialog,
+    moveItemsFromDialog,
   };
 };

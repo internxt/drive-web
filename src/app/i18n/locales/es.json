@@ -1185,6 +1185,21 @@
     "teamInvitation": "No se ha podido enviar el correo electrónico de invitación",
     "ownerStorageIsFull": "El almacenamiento del propietario está lleno",
     "storageIsFull": "Tu almacenamiento está lleno",
+    "fileSizeLimitExceeded": {
+      "title": {
+        "singleFile": "Este archivo es demasiado grande para tu plan actual",
+        "multipleFiles": "Algunos archivos son demasiado grandes para tu plan actual"
+      },
+      "description": {
+        "singleFile": "Tu plan permite subir archivos de hasta {{maxFileSize}}. Este archivo ocupa {{fileSize}}. Mejora tu plan para subir archivos más grandes.",
+        "multipleFiles": "Tu plan permite subir archivos de hasta {{maxFileSize}}. Mejora tu plan para subir archivos más grandes."
+      },
+      "planList": {
+        "essential": "Essential → hasta 10GB",
+        "premium": "Premium → hasta 50GB",
+        "ultimate": "Ultimate → hasta 100GB"
+      }
+    },
     "ownerStorageIsFullDescription": "No puedes subir archivos en esta carpeta compartida.",
     "storageIsFullDescription": "No puedes subir, sincronizar ni respaldar archivos.",
     "noSpaceAvailable": "Has alcanzado el límite y la sincronización se ha pausado. Mejora tu plan para mantener tus archivos sincronizados y seguros.",
@@ -1580,7 +1595,8 @@
     "logOut": "Cerrar sesión",
     "locked": "Bloqueado",
     "remindMeLater": "Recordármelo más tarde",
-    "backupKeySaved": "Ya he guardado mi clave"
+    "backupKeySaved": "Ya he guardado mi clave",
+    "upgradePlan": "Mejorar plan"
   },
   "toastNotification": {
     "textCopied": "Texto copiado al portapapeles"

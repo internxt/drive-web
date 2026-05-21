@@ -3,11 +3,13 @@ import {
   DriveItemData,
   DriveItemDetails,
   FileInfoMenuItem,
+  ReachedFileSizeLimitDialogInfo,
   ReachedPlanLimitDialogInfo,
   UpgradePlanDialogInfo,
 } from 'app/drive/types';
 import { PreviewFileItem } from '../../../share/types';
 import { FileVersion } from '@internxt/sdk/dist/drive/storage/types';
+import { CollisionGroup } from '../storage/storage.model';
 
 interface UISliceState {
   isSidenavCollapsed: boolean;
@@ -26,6 +28,8 @@ interface UISliceState {
   isEditFolderNameDialog: boolean;
   isPreferencesDialogOpen: boolean;
   isReachedPlanLimitDialogOpen: boolean;
+  isReachedFileSizeLimitDialogOpen: boolean;
+  reachedFileSizeLimitDialogInfo?: ReachedFileSizeLimitDialogInfo;
   reachedPlanLimitDialogInfo?: ReachedPlanLimitDialogInfo;
   isUpgradePlanDialogOpen: boolean;
   currentUpgradePlanDialogInfo: UpgradePlanDialogInfo | null;
@@ -46,6 +50,10 @@ interface UISliceState {
   isGlobalSearch: boolean;
   isShareWhithTeamDialogOpen: boolean;
   isAutomaticTrashDisposalDialogOpen: boolean;
+  nameCollisionDialogInfo?: {
+    groups: CollisionGroup[];
+    operation: 'move' | 'upload';
+  };
 }
 
 const initialState: UISliceState = {
@@ -65,6 +73,7 @@ const initialState: UISliceState = {
   isEditFolderNameDialog: false,
   isPreferencesDialogOpen: false,
   isReachedPlanLimitDialogOpen: false,
+  isReachedFileSizeLimitDialogOpen: false,
   isUpgradePlanDialogOpen: false,
   currentUpgradePlanDialogInfo: null,
   isShareItemDialogOpen: false,
@@ -96,8 +105,18 @@ export const uiSlice = createSlice({
     setIsFileLoggerOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isFileLoggerOpen = action.payload;
     },
-    setIsNameCollisionDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
-      state.isNameCollisionDialogOpen = action.payload;
+    setIsNameCollisionDialogOpen: (
+      state: UISliceState,
+      action: PayloadAction<{
+        open: boolean;
+        info?: {
+          groups: CollisionGroup[];
+          operation: 'move' | 'upload';
+        };
+      }>,
+    ) => {
+      state.isNameCollisionDialogOpen = action.payload.open;
+      state.nameCollisionDialogInfo = action.payload.info;
     },
     setIsShareDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isShareDialogOpen = action.payload;
@@ -107,6 +126,16 @@ export const uiSlice = createSlice({
     },
     setIsItemDetailsDialogOpen(state: UISliceState, action: PayloadAction<boolean>) {
       state.isItemDetailsDialogOpen = action.payload;
+    },
+    setOpenFileSizeLimitReachedDialog: (
+      state: UISliceState,
+      action: PayloadAction<{
+        open: boolean;
+        info?: ReachedFileSizeLimitDialogInfo;
+      }>,
+    ) => {
+      state.isReachedFileSizeLimitDialogOpen = action.payload.open;
+      state.reachedFileSizeLimitDialogInfo = action.payload.info;
     },
     setIsVersionHistorySidebarOpen(state: UISliceState, action: PayloadAction<boolean>) {
       state.isVersionHistorySidebarOpen = action.payload;

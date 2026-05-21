@@ -1,4 +1,4 @@
-import { ActionReducerMapBuilder, createAsyncThunk, Dispatch } from '@reduxjs/toolkit';
+import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { DriveFileData, DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import { DriveFolderData as DriveFolderDataItem, DriveItemData } from 'app/drive/types';
@@ -9,111 +9,108 @@ import { t } from 'i18next';
 import storageThunks from '.';
 import { storageActions } from '..';
 import { RootState } from '../../..';
-import { uiActions } from '../../ui';
 import { checkDuplicatedFiles } from '../fileUtils/checkDuplicatedFiles';
 import { getFilesByBatchs } from '../fileUtils/getFilesByBatchs';
 import { getUniqueFilename } from '../fileUtils/getUniqueFilename';
 import { checkFolderDuplicated } from '../folderUtils/checkFolderDuplicated';
 import { getUniqueFolderName } from '../folderUtils/getUniqueFolderName';
-import { nameCollisionPromise } from '../nameCollisionPromise';
-import { StorageState } from '../storage.model';
+import { CollisionGroup, StorageState } from '../storage.model';
 import { IRoot } from '../types';
+
+export const getCollisionGroups = async (
+  groups: { destinationUuid: string; items: DriveItemData[] }[],
+): Promise<CollisionGroup[]> => {
+  return Promise.all(
+    groups.map(async ({ destinationUuid, items }) => {
+      const files = items.filter((item) => !item.isFolder) as DriveFileData[];
+      const folders = items.filter((item) => item.isFolder) as DriveFolderData[];
+
+      const [filesResult, foldersResult] = await Promise.all([
+        files.length > 0
+          ? checkDuplicatedFiles(getFilesByBatchs(files).flat() as DriveFileData[], destinationUuid)
+          : { filesWithDuplicates: [], duplicatedFilesResponse: [], filesWithoutDuplicates: files },
+        folders.length > 0
+          ? checkFolderDuplicated(getFilesByBatchs(folders).flat() as DriveFolderData[], destinationUuid)
+          : { foldersWithDuplicates: [], duplicatedFoldersResponse: [], foldersWithoutDuplicates: folders },
+      ]);
+
+      const duplicatedItems = [
+        ...(filesResult.filesWithDuplicates as DriveItemData[]),
+        ...(foldersResult.foldersWithDuplicates as DriveItemData[]),
+      ];
+      const existingItems = [
+        ...(filesResult.duplicatedFilesResponse as DriveItemData[]),
+        ...(foldersResult.duplicatedFoldersResponse as DriveItemData[]),
+      ];
+      const unrepeatedItems = [
+        ...(filesResult.filesWithoutDuplicates as DriveItemData[]),
+        ...(foldersResult.foldersWithoutDuplicates as DriveItemData[]),
+      ];
+
+      return {
+        destinationUuid,
+        duplicatedItems,
+        existingItems,
+        unrepeatedItems,
+      };
+    }),
+  );
+};
 
 export const handleRepeatedUploadingFiles = async (
   files: (DriveFileData | File)[],
-  dispatch: Dispatch,
   destinationFolderUuid: string,
-  isMoveOperation = false,
-): Promise<(DriveFileData | File)[]> => {
+): Promise<{
+  repeatedItems: (DriveFileData | File)[];
+  existingItems: DriveFileData[];
+  unrepeatedItems: (DriveFileData | File)[];
+}> => {
   const batchs = getFilesByBatchs(files);
-  const promises = batchs.map((batch) =>
-    checkDuplicatedFiles(batch as (DriveFileData | File)[], destinationFolderUuid),
+  const results = await Promise.all(
+    batchs.map((batch) => checkDuplicatedFiles(batch as (DriveFileData | File)[], destinationFolderUuid)),
   );
 
-  const duplicatedFiles = await Promise.all(promises);
-
-  const combinedResults = duplicatedFiles.reduce<{
-    filesWithDuplicates: (DriveFileData | File)[];
-    duplicatedFilesResponse: DriveFileData[];
-    filesWithoutDuplicates: (DriveFileData | File)[];
-  }>(
+  return results.reduce(
     (acc, cur) => {
-      acc.filesWithDuplicates = [...acc.filesWithDuplicates, ...cur.filesWithDuplicates];
-      acc.duplicatedFilesResponse = [...acc.duplicatedFilesResponse, ...cur.duplicatedFilesResponse];
-      acc.filesWithoutDuplicates = [...acc.filesWithoutDuplicates, ...cur.filesWithoutDuplicates];
+      acc.repeatedItems.push(...cur.filesWithDuplicates);
+      acc.existingItems.push(...cur.duplicatedFilesResponse);
+      acc.unrepeatedItems.push(...cur.filesWithoutDuplicates);
       return acc;
     },
     {
-      filesWithDuplicates: [],
-      duplicatedFilesResponse: [],
-      filesWithoutDuplicates: [],
+      repeatedItems: [] as (DriveFileData | File)[],
+      existingItems: [] as DriveFileData[],
+      unrepeatedItems: [] as (DriveFileData | File)[],
     },
   );
-
-  const {
-    filesWithDuplicates: filesRepeated,
-    duplicatedFilesResponse,
-    filesWithoutDuplicates: unrepeatedFiles,
-  } = combinedResults;
-
-  const hasRepeatedNameFiles = !!filesRepeated.length;
-  if (hasRepeatedNameFiles) {
-    dispatch(storageActions.setFilesToRename(filesRepeated as DriveItemData[]));
-    dispatch(storageActions.setDriveFilesToRename(duplicatedFilesResponse as DriveItemData[]));
-    if (isMoveOperation) dispatch(storageActions.setMoveDestinationFolderId(destinationFolderUuid));
-    dispatch(uiActions.setIsNameCollisionDialogOpen(true));
-    await nameCollisionPromise.wait();
-  }
-  return unrepeatedFiles;
 };
 
 export const handleRepeatedUploadingFolders = async (
   folders: (DriveFolderData | IRoot)[],
-  dispatch: Dispatch,
   destinationFolderUuid: string,
-  isMoveOperation = false,
-): Promise<(DriveFolderData | IRoot)[]> => {
+): Promise<{
+  repeatedItems: (DriveFolderData | IRoot)[];
+  existingItems: DriveFolderData[];
+  unrepeatedItems: (DriveFolderData | IRoot)[];
+}> => {
   const batchs = getFilesByBatchs(folders as (IRoot | DriveFolderData)[]);
-  const promises = batchs.map((batch) =>
-    checkFolderDuplicated(batch as (DriveFolderData | IRoot)[], destinationFolderUuid),
+  const results = await Promise.all(
+    batchs.map((batch) => checkFolderDuplicated(batch as (DriveFolderData | IRoot)[], destinationFolderUuid)),
   );
 
-  const duplicatedFolders = await Promise.all(promises);
-
-  const combinedResults = duplicatedFolders.reduce<{
-    foldersWithDuplicates: (DriveFolderData | IRoot)[];
-    duplicatedFoldersResponse: DriveFolderData[];
-    foldersWithoutDuplicates: (DriveFolderData | IRoot)[];
-  }>(
+  return results.reduce(
     (acc, cur) => {
-      acc.foldersWithDuplicates = [...acc.foldersWithDuplicates, ...cur.foldersWithDuplicates];
-      acc.duplicatedFoldersResponse = [...acc.duplicatedFoldersResponse, ...cur.duplicatedFoldersResponse];
-      acc.foldersWithoutDuplicates = [...acc.foldersWithoutDuplicates, ...cur.foldersWithoutDuplicates];
+      acc.repeatedItems.push(...cur.foldersWithDuplicates);
+      acc.existingItems.push(...cur.duplicatedFoldersResponse);
+      acc.unrepeatedItems.push(...cur.foldersWithoutDuplicates);
       return acc;
     },
     {
-      foldersWithDuplicates: [],
-      duplicatedFoldersResponse: [],
-      foldersWithoutDuplicates: [],
+      repeatedItems: [] as (DriveFolderData | IRoot)[],
+      existingItems: [] as DriveFolderData[],
+      unrepeatedItems: [] as (DriveFolderData | IRoot)[],
     },
   );
-
-  const {
-    foldersWithDuplicates: foldersRepeated,
-    duplicatedFoldersResponse,
-    foldersWithoutDuplicates: unrepeatedFolders,
-  } = combinedResults;
-
-  const hasRepeatedNameFolders = !!foldersRepeated.length;
-  if (hasRepeatedNameFolders) {
-    dispatch(storageActions.setFoldersToRename(foldersRepeated as DriveItemData[]));
-    dispatch(storageActions.setDriveFoldersToRename(duplicatedFoldersResponse as DriveItemData[]));
-    if (isMoveOperation) dispatch(storageActions.setMoveDestinationFolderId(destinationFolderUuid));
-    dispatch(uiActions.setIsNameCollisionDialogOpen(true));
-    await nameCollisionPromise.wait();
-  }
-
-  return unrepeatedFolders as DriveItemData[];
 };
 
 export interface RenameItemsPayload {
@@ -176,31 +173,17 @@ export const renameItemsThunk = createAsyncThunk<void, RenameItemsPayload, { sta
       promises[index]
         .then(async (result) => {
           if (!result.error) {
-            tasksService.updateTask({
-              taskId,
-              merge: {
-                status: TaskStatus.Success,
-              },
-            });
+            tasksService.updateTask({ taskId, merge: { status: TaskStatus.Success } });
             setTimeout(() => onRenameSuccess?.(itemParsed), 1000);
           } else {
-            tasksService.updateTask({
-              taskId,
-              merge: {
-                status: TaskStatus.Error,
-              },
-            });
+            tasksService.updateTask({ taskId, merge: { status: TaskStatus.Error } });
           }
         })
         .catch(() => {
-          tasksService.updateTask({
-            taskId,
-            merge: {
-              status: TaskStatus.Error,
-            },
-          });
+          tasksService.updateTask({ taskId, merge: { status: TaskStatus.Error } });
         });
     }
+
     return Promise.all(promises).then(() => {
       dispatch(storageActions.clearSelectedItems());
     });

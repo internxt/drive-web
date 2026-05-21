@@ -48,7 +48,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const isDriveAndCurrentFolder = !props.isTrash && itemParentId === destinationId;
   const workspaceSelected = useSelector(workspacesSelectors.getSelectedWorkspace);
   const isWorkspaceSelected = !!workspaceSelected;
-  const { moveItemFromDialog } = useMoveItems();
+  const { moveItemsFromDialog } = useMoveItems();
 
   const onCreateFolderButtonClicked = () => {
     dispatch(uiActions.setIsCreateFolderDialogOpen(true));
@@ -113,14 +113,6 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     handleRetrievedItems(items || [], folderId, name);
   };
 
-  const onFolderClicked = (folderId: string, name?: string): void => {
-    if (destinationId != folderId) {
-      setDestinationId(folderId);
-    } else {
-      setDestinationId(currentFolderId);
-    }
-  };
-
   const onClose = (): void => {
     dispatch(uiActions.setIsMoveItemsDialogOpen(false));
     onShowFolderContentClicked(currentFolderId, currentFolderName);
@@ -180,7 +172,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
         return;
       }
 
-      await moveItemFromDialog({
+      await moveItemsFromDialog({
         finalDestinationId: destinationFolderId,
         items: itemsToMove,
       });
@@ -240,7 +232,6 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
                           : 'hover:bg-gray-1 dark:hover:bg-gray-5'
                       } flex h-12 items-center space-x-4 px-4`}
                       onDoubleClick={() => onShowFolderContentClicked(folder.uuid, folder.name)}
-                      onClick={() => onFolderClicked(folder.uuid, folder.name)}
                       key={folder.id}
                     >
                       <div className="flex flex-row gap-3 items-center">

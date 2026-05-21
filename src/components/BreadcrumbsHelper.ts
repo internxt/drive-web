@@ -4,10 +4,8 @@ import { DragAndDropType } from 'app/core/types';
 import { FolderPath, DriveItemData } from 'app/drive/types';
 import { AppDispatch } from 'app/store';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
-import {
-  handleRepeatedUploadingFiles,
-  handleRepeatedUploadingFolders,
-} from 'app/store/slices/storage/storage.thunks/renameItemsThunk';
+import { getCollisionGroups } from 'app/store/slices/storage/storage.thunks/renameItemsThunk';
+import { uiActions } from 'app/store/slices/ui';
 import { DropTargetMonitor } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 
@@ -45,22 +43,16 @@ export const handleDriveItemDrop = async (
     itemsToMove = getItemsToMoveWhenNotSelected(droppedData);
   }
 
-  const filesToMove: DriveItemData[] = [];
-  const foldersToMove = itemsToMove.filter((i) => {
-    if (!i.isFolder) filesToMove.push(i);
-    return i.isFolder;
-  });
+  const groups = await getCollisionGroups([{ destinationUuid: item.uuid, items: itemsToMove }]);
+  const [group] = groups;
 
-  const unrepeatedFiles = await handleRepeatedUploadingFiles(filesToMove, dispatch, item.uuid);
-  const unrepeatedFolders = await handleRepeatedUploadingFolders(foldersToMove, dispatch, item.uuid);
-  const unrepeatedItems: DriveItemData[] = [...unrepeatedFiles, ...unrepeatedFolders] as DriveItemData[];
+  if (group.duplicatedItems.length > 0) {
+    dispatch(uiActions.setIsNameCollisionDialogOpen({ open: true, info: { groups, operation: 'move' } }));
+  }
 
-  dispatch(
-    storageThunks.moveItemsThunk({
-      items: unrepeatedItems,
-      destinationFolderId: item.uuid,
-    }),
-  );
+  if (group.unrepeatedItems.length > 0) {
+    dispatch(storageThunks.moveItemsThunk({ items: group.unrepeatedItems, destinationFolderId: item.uuid }));
+  }
 };
 
 export const handleFileDrop = async (

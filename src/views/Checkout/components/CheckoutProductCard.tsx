@@ -54,12 +54,13 @@ export const CheckoutProductCard = ({
   const normalPriceAmount = priceData.decimalAmount;
 
   const totalLabel = translate('checkout.productCard.total');
-  const renewalPeriodLabel = `${translate('checkout.productCard.renewalPeriod.renewsAt')}
-          ${currencySymbol}${normalPriceAmount}/${translate(
-            `checkout.productCard.renewalPeriod.${priceData.interval}`,
-          )}`;
 
   const planAmountWithoutTaxes = getProductAmount(priceData.decimalAmount, 1, couponCodeData);
+  const totalAmountFormatted = formatPrice(taxesData.decimalAmountWithTax);
+  const derivedTax = Math.max(0, Number(totalAmountFormatted) - Number(planAmountWithoutTaxes));
+  const derivedTaxFormatted = formatPrice(derivedTax);
+
+  const isHiddenCoupon = couponCodeData?.codeName === 'SPECIAL';
 
   const discountPercentage =
     couponCodeData?.amountOff && couponCodeData?.amountOff < taxesData.amountWithTax
@@ -109,16 +110,16 @@ export const CheckoutProductCard = ({
             </p>
           </div>
 
-          {taxesData.decimalTax > 0 && (
+          {Number(derivedTaxFormatted) > 0 && (
             <div className="flex flex-row items-center justify-between text-gray-100">
               <p className="font-medium">{translate('checkout.productCard.taxes')}</p>
               <p className="font-semibold">
                 {currencySymbol}
-                {taxesData.decimalTax}
+                {derivedTaxFormatted}
               </p>
             </div>
           )}
-          {couponCodeData && (
+          {couponCodeData && !isHiddenCoupon && (
             <div className="flex flex-row items-center justify-between font-semibold">
               <div className="flex flex-row items-center space-x-2 text-green-dark">
                 <SealPercent weight="fill" size={24} />
@@ -163,11 +164,11 @@ export const CheckoutProductCard = ({
             <p>{totalLabel}</p>
             <p>
               {currencySymbol}
-              {formatPrice(taxesData.decimalAmountWithTax)}
+              {totalAmountFormatted}
             </p>
           </div>
 
-          {showCouponCode && (
+          {showCouponCode && !isHiddenCoupon && (
             <>
               {couponCodeData?.codeName ? (
                 <div className="flex w-full flex-row justify-between">
@@ -254,11 +255,10 @@ export const CheckoutProductCard = ({
           )}
         </div>
       </div>
-      {couponCodeData && priceData.interval !== 'lifetime' && <p className="text-gray-60">{renewalPeriodLabel}</p>}
-      {showHardcodedRenewal && <p className="text-gray-60">{showHardcodedRenewal}</p>}
       {priceData.interval === 'month' && (
         <p className="text-gray-60">
           {translate('checkout.productCard.annualBillingTemplate', {
+            priceNow: totalAmountFormatted,
             price: normalPriceAmount,
             currency: currencySymbol,
           })}

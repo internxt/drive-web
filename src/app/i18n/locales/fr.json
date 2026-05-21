@@ -1137,6 +1137,21 @@
     "teamInvitation": "Le courriel d'invitation n'a pas pu être envoyé",
     "ownerStorageIsFull": "Le stockage du propriétaire est plein",
     "storageIsFull": "Votre espace de stockage est plein",
+    "fileSizeLimitExceeded": {
+      "title": {
+        "singleFile": "Ce fichier est trop volumineux pour votre plan actuel",
+        "multipleFiles": "Certains fichiers sont trop volumineux pour votre plan actuel"
+      },
+      "description": {
+        "singleFile": "Votre plan autorise des téléversements jusqu'à {{maxFileSize}}. Ce fichier fait {{fileSize}}. Passez à un plan supérieur pour téléverser des fichiers plus volumineux.",
+        "multipleFiles": "Votre plan autorise des téléversements jusqu'à {{maxFileSize}}. Passez à un plan supérieur pour téléverser des fichiers plus volumineux."
+      },
+      "planList": {
+        "essential": "Essential → jusqu'à 10Go",
+        "premium": "Premium → jusqu'à 50Go",
+        "ultimate": "Ultimate → jusqu'à 100Go"
+      }
+    },
     "ownerStorageIsFullDescription": "Vous ne pouvez pas téléverser de fichiers dans ce dossier partagé.",
     "storageIsFullDescription": "Vous ne pouvez pas télécharger, synchroniser ou sauvegarder des fichiers.",
     "noSpaceAvailable": "Vous avez atteint les limites de votre plan actuel et la synchronisation s'est arrêtée. Mettez-le à jour maintenant pour continuer à synchroniser vos fichiers en toute sécurité.",
@@ -1526,7 +1541,8 @@
     "logOut": "Se déconnecter",
     "locked": "Verrouillé",
     "remindMeLater": "Me le rappeler plus tard",
-    "backupKeySaved": "J'ai sauvegardé ma clé"
+    "backupKeySaved": "J'ai sauvegardé ma clé",
+    "upgradePlan": "Améliorer le plan"
   },
   "toastNotification": {
     "textCopied": "Texte copié dans le presse-papiers"

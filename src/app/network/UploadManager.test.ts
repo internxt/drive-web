@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import { beforeEach, describe, expect, it, Mock, test, vi } from 'vitest';
 import { uploadFileWithManager } from './UploadManager';
 import tasksService from 'app/tasks/services/tasks.service';
 import errorService from 'services/error.service';
@@ -106,10 +106,10 @@ describe('UploadManager memory usage conditions', () => {
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
-    vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
+    vi.spyOn(errorService, 'castError').mockReturnValue(new AppError('error'));
 
-    await uploadFileWithManager(
-      [
+    await uploadFileWithManager({
+      files: [
         {
           taskId: 'taskId',
           filecontent: {
@@ -123,10 +123,9 @@ describe('UploadManager memory usage conditions', () => {
           parentFolderId: '',
         },
       ],
-      openMaxSpaceOccupiedDialogMock,
-      DatabaseUploadRepository.getInstance(),
-      undefined,
-      {
+      maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
+      uploadRepository: DatabaseUploadRepository.getInstance(),
+      options: {
         ownerUserAuthenticationData: undefined,
         sharedItemData: {
           isDeepFolder: false,
@@ -134,7 +133,7 @@ describe('UploadManager memory usage conditions', () => {
         },
         isUploadedFromFolder: true,
       },
-    );
+    });
 
     expect(uploadFileSpy).toHaveBeenCalledOnce();
 
@@ -163,10 +162,10 @@ describe('UploadManager memory usage conditions', () => {
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
-    vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
+    vi.spyOn(errorService, 'castError').mockReturnValue(new AppError('error'));
 
-    await uploadFileWithManager(
-      [
+    await uploadFileWithManager({
+      files: [
         {
           taskId: 'taskId',
           filecontent: {
@@ -180,10 +179,9 @@ describe('UploadManager memory usage conditions', () => {
           parentFolderId: '',
         },
       ],
-      openMaxSpaceOccupiedDialogMock,
-      DatabaseUploadRepository.getInstance(),
-      undefined,
-      {
+      maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
+      uploadRepository: DatabaseUploadRepository.getInstance(),
+      options: {
         ownerUserAuthenticationData: undefined,
         sharedItemData: {
           isDeepFolder: false,
@@ -191,7 +189,7 @@ describe('UploadManager memory usage conditions', () => {
         },
         isUploadedFromFolder: true,
       },
-    );
+    });
 
     expect(uploadFileSpy).toHaveBeenCalledOnce();
 
@@ -207,7 +205,6 @@ describe('checkUploadFiles', () => {
   beforeEach(() => {
     RetryManager.clearTasks();
     vi.clearAllMocks();
-    vi.resetModules();
   });
 
   it('should upload file using an async queue', async () => {
@@ -216,10 +213,10 @@ describe('checkUploadFiles', () => {
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
-    vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
+    vi.spyOn(errorService, 'castError').mockReturnValue(new AppError('error'));
 
-    await uploadFileWithManager(
-      [
+    await uploadFileWithManager({
+      files: [
         {
           taskId: 'taskId',
           filecontent: {
@@ -233,10 +230,9 @@ describe('checkUploadFiles', () => {
           parentFolderId: '',
         },
       ],
-      openMaxSpaceOccupiedDialogMock,
-      DatabaseUploadRepository.getInstance(),
-      undefined,
-      {
+      maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
+      uploadRepository: DatabaseUploadRepository.getInstance(),
+      options: {
         ownerUserAuthenticationData: undefined,
         sharedItemData: {
           isDeepFolder: false,
@@ -244,7 +240,7 @@ describe('checkUploadFiles', () => {
         },
         isUploadedFromFolder: true,
       },
-    );
+    });
 
     expect(uploadFileSpy).toHaveBeenCalledOnce();
   });
@@ -254,10 +250,10 @@ describe('checkUploadFiles', () => {
 
     vi.spyOn(tasksService, 'create').mockReturnValue(taskId);
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
-    vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
+    vi.spyOn(errorService, 'castError').mockReturnValue(new AppError('error'));
 
-    await uploadFileWithManager(
-      [
+    await uploadFileWithManager({
+      files: [
         {
           taskId: 'taskId1',
           filecontent: {
@@ -283,10 +279,9 @@ describe('checkUploadFiles', () => {
           parentFolderId: '',
         },
       ],
-      openMaxSpaceOccupiedDialogMock,
-      DatabaseUploadRepository.getInstance(),
-      undefined,
-      {
+      maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
+      uploadRepository: DatabaseUploadRepository.getInstance(),
+      options: {
         ownerUserAuthenticationData: undefined,
         sharedItemData: {
           isDeepFolder: false,
@@ -294,7 +289,7 @@ describe('checkUploadFiles', () => {
         },
         isUploadedFromFolder: true,
       },
-    );
+    });
 
     expect(uploadFileSpy).toHaveBeenCalledTimes(2);
   });
@@ -302,8 +297,8 @@ describe('checkUploadFiles', () => {
   it('should abort the file upload if abortController is called', async () => {
     const abortController = new AbortController();
 
-    uploadFileWithManager(
-      [
+    uploadFileWithManager({
+      files: [
         {
           taskId: 'taskId',
           filecontent: {
@@ -317,10 +312,10 @@ describe('checkUploadFiles', () => {
           parentFolderId: '',
         },
       ],
-      openMaxSpaceOccupiedDialogMock,
-      DatabaseUploadRepository.getInstance(),
+      maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
+      uploadRepository: DatabaseUploadRepository.getInstance(),
       abortController,
-      {
+      options: {
         ownerUserAuthenticationData: undefined,
         sharedItemData: {
           isDeepFolder: false,
@@ -328,7 +323,7 @@ describe('checkUploadFiles', () => {
         },
         isUploadedFromFolder: true,
       },
-    );
+    });
 
     abortController.abort();
     expect(abortController.signal.aborted).toBe(true);
@@ -344,10 +339,10 @@ describe('checkUploadFiles', () => {
     vi.spyOn(tasksService, 'updateTask').mockReturnValueOnce();
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
-    vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
+    vi.spyOn(errorService, 'castError').mockReturnValue(new AppError('error'));
 
-    await uploadFileWithManager(
-      [
+    await uploadFileWithManager({
+      files: [
         {
           taskId: 'taskId',
           filecontent: {
@@ -361,10 +356,9 @@ describe('checkUploadFiles', () => {
           parentFolderId: '',
         },
       ],
-      openMaxSpaceOccupiedDialogMock,
-      DatabaseUploadRepository.getInstance(),
-      undefined,
-      {
+      maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
+      uploadRepository: DatabaseUploadRepository.getInstance(),
+      options: {
         ownerUserAuthenticationData: undefined,
         sharedItemData: {
           isDeepFolder: false,
@@ -372,7 +366,7 @@ describe('checkUploadFiles', () => {
         },
         isUploadedFromFolder: true,
       },
-    );
+    });
 
     expect(RetryAddFilesSpy).not.toHaveBeenCalled();
     expect(RetrRemoveFileSpy).toHaveBeenCalledWith('taskId');
@@ -391,10 +385,10 @@ describe('checkUploadFiles', () => {
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
-    vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
+    vi.spyOn(errorService, 'castError').mockImplementation((e) => e as AppError);
 
-    await uploadFileWithManager(
-      [
+    await uploadFileWithManager({
+      files: [
         {
           taskId: 'taskId',
           filecontent: {
@@ -420,10 +414,9 @@ describe('checkUploadFiles', () => {
           parentFolderId: '',
         },
       ],
-      openMaxSpaceOccupiedDialogMock,
-      DatabaseUploadRepository.getInstance(),
-      undefined,
-      {
+      maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
+      uploadRepository: DatabaseUploadRepository.getInstance(),
+      options: {
         ownerUserAuthenticationData: undefined,
         sharedItemData: {
           isDeepFolder: false,
@@ -431,7 +424,7 @@ describe('checkUploadFiles', () => {
         },
         isUploadedFromFolder: true,
       },
-    );
+    });
 
     expect(RetryAddFilesSpy).toHaveBeenCalled();
     expect(RetryManager.getTasks().length).toBe(1);
@@ -449,10 +442,10 @@ describe('checkUploadFiles', () => {
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
-    vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
+    vi.spyOn(errorService, 'castError').mockImplementation((e) => e as AppError);
 
-    await uploadFileWithManager(
-      [
+    await uploadFileWithManager({
+      files: [
         {
           taskId: 'taskId',
           filecontent: {
@@ -466,10 +459,9 @@ describe('checkUploadFiles', () => {
           parentFolderId: '',
         },
       ],
-      openMaxSpaceOccupiedDialogMock,
-      DatabaseUploadRepository.getInstance(),
-      undefined,
-      {
+      maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
+      uploadRepository: DatabaseUploadRepository.getInstance(),
+      options: {
         ownerUserAuthenticationData: undefined,
         sharedItemData: {
           isDeepFolder: false,
@@ -477,7 +469,7 @@ describe('checkUploadFiles', () => {
         },
         isUploadedFromFolder: true,
       },
-    );
+    });
 
     expect(RetryChangeStatusSpy).toHaveBeenCalledWith('taskId', 'failed');
   });
@@ -487,11 +479,12 @@ describe('checkUploadFiles', () => {
     (uploadFile as Mock).mockRejectedValueOnce(lostConnectionError);
 
     const updateTaskSpy = vi.spyOn(tasksService, 'updateTask');
+    vi.spyOn(errorService, 'castError').mockImplementation((e) => e as AppError);
     vi.spyOn(errorService, 'reportError').mockReturnValue();
 
     await expect(
-      uploadFileWithManager(
-        [
+      uploadFileWithManager({
+        files: [
           {
             taskId: 'taskId',
             filecontent: {
@@ -505,10 +498,9 @@ describe('checkUploadFiles', () => {
             parentFolderId: '',
           },
         ],
-        openMaxSpaceOccupiedDialogMock,
-        DatabaseUploadRepository.getInstance(),
-        undefined,
-        {
+        maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
+        uploadRepository: DatabaseUploadRepository.getInstance(),
+        options: {
           ownerUserAuthenticationData: undefined,
           sharedItemData: {
             isDeepFolder: false,
@@ -516,7 +508,7 @@ describe('checkUploadFiles', () => {
           },
           isUploadedFromFolder: true,
         },
-      ),
+      }),
     ).rejects.toThrow(lostConnectionError);
 
     expect(errorService.reportError).toHaveBeenCalledWith(lostConnectionError);
@@ -531,11 +523,12 @@ describe('checkUploadFiles', () => {
     (uploadFile as Mock).mockRejectedValue(unexpectedError);
 
     const updateTaskSpy = vi.spyOn(tasksService, 'updateTask');
+    vi.spyOn(errorService, 'castError').mockImplementation((e) => e as AppError);
     const errorServiceSpy = vi.spyOn(errorService, 'reportError').mockReturnValue();
 
     await expect(
-      uploadFileWithManager(
-        [
+      uploadFileWithManager({
+        files: [
           {
             taskId: 'taskId',
             filecontent: {
@@ -549,10 +542,9 @@ describe('checkUploadFiles', () => {
             parentFolderId: '',
           },
         ],
-        openMaxSpaceOccupiedDialogMock,
-        DatabaseUploadRepository.getInstance(),
-        undefined,
-        {
+        maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
+        uploadRepository: DatabaseUploadRepository.getInstance(),
+        options: {
           ownerUserAuthenticationData: undefined,
           sharedItemData: {
             isDeepFolder: false,
@@ -560,7 +552,7 @@ describe('checkUploadFiles', () => {
           },
           isUploadedFromFolder: true,
         },
-      ),
+      }),
     ).rejects.toThrow(unexpectedError);
 
     expect(errorServiceSpy).toHaveBeenCalledWith(unexpectedError);
@@ -579,10 +571,10 @@ describe('checkUploadFiles', () => {
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
-    vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
+    vi.spyOn(errorService, 'castError').mockReturnValue(new AppError('error'));
 
-    await uploadFileWithManager(
-      [
+    await uploadFileWithManager({
+      files: [
         {
           taskId: 'taskId',
           filecontent: {
@@ -596,10 +588,9 @@ describe('checkUploadFiles', () => {
           parentFolderId: '',
         },
       ],
-      openMaxSpaceOccupiedDialogMock,
-      DatabaseUploadRepository.getInstance(),
-      undefined,
-      {
+      maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
+      uploadRepository: DatabaseUploadRepository.getInstance(),
+      options: {
         ownerUserAuthenticationData: {
           bucketId: workspaceBucket,
           workspaceId: workspaceId,
@@ -616,7 +607,7 @@ describe('checkUploadFiles', () => {
         },
         isUploadedFromFolder: true,
       },
-    );
+    });
 
     expect(uploadFileSpy).toHaveBeenCalledWith(
       'user@test.com',
@@ -641,8 +632,8 @@ describe('checkUploadFiles', () => {
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
 
-    await uploadFileWithManager(
-      [
+    await uploadFileWithManager({
+      files: [
         {
           taskId: 'taskId',
           filecontent: {
@@ -656,9 +647,9 @@ describe('checkUploadFiles', () => {
           parentFolderId: '',
         },
       ],
-      openMaxSpaceOccupiedDialogMock,
-      DatabaseUploadRepository.getInstance(),
-    );
+      maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
+      uploadRepository: DatabaseUploadRepository.getInstance(),
+    });
 
     expect(logNetworkInfoMock).toHaveBeenCalledOnce();
     expect(logNetworkInfoMock).toHaveBeenCalledWith({ fileName: 'file.txt', fileSize: 1024 });
@@ -674,8 +665,8 @@ describe('checkUploadFiles', () => {
     vi.spyOn(errorService, 'reportError').mockReturnValue();
 
     await expect(
-      uploadFileWithManager(
-        [
+      uploadFileWithManager({
+        files: [
           {
             taskId: 'taskId',
             filecontent: {
@@ -689,9 +680,9 @@ describe('checkUploadFiles', () => {
             parentFolderId: '',
           },
         ],
-        openMaxSpaceOccupiedDialogMock,
-        DatabaseUploadRepository.getInstance(),
-      ),
+        maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
+        uploadRepository: DatabaseUploadRepository.getInstance(),
+      }),
     ).rejects.toThrow();
 
     expect(logNetworkInfoMock).not.toHaveBeenCalled();
@@ -704,10 +695,10 @@ describe('checkUploadFiles', () => {
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
-    vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
+    vi.spyOn(errorService, 'castError').mockReturnValue(new AppError('error'));
 
-    await uploadFileWithManager(
-      [
+    await uploadFileWithManager({
+      files: [
         {
           taskId: 'taskId',
           filecontent: {
@@ -721,10 +712,9 @@ describe('checkUploadFiles', () => {
           parentFolderId: '',
         },
       ],
-      openMaxSpaceOccupiedDialogMock,
-      DatabaseUploadRepository.getInstance(),
-      undefined,
-      {
+      maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
+      uploadRepository: DatabaseUploadRepository.getInstance(),
+      options: {
         ownerUserAuthenticationData: undefined,
         sharedItemData: {
           isDeepFolder: false,
@@ -732,7 +722,7 @@ describe('checkUploadFiles', () => {
         },
         isUploadedFromFolder: true,
       },
-    );
+    });
 
     expect(uploadFileSpy).toHaveBeenCalledWith(
       'user@test.com',
@@ -744,5 +734,49 @@ describe('checkUploadFiles', () => {
       }),
       expect.any(Object),
     );
+  });
+
+  test('When upload fails because the user has no storage space left, then the max space occupied callback is invoked', async () => {
+    const err = new AppError('Max space used', 420);
+    // needs to fail twice because MAX_UPLOAD_ATTEMPTS = 2
+    (uploadFile as Mock).mockRejectedValue(err);
+
+    vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
+    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
+    vi.spyOn(errorService, 'castError').mockImplementation((e) => e as AppError);
+    vi.spyOn(errorService, 'reportError').mockReturnValue();
+
+    await expect(
+      uploadFileWithManager({
+        files: [
+          {
+            taskId: 'taskId',
+            filecontent: {
+              content: 'file-content' as unknown as File,
+              type: 'text/plain',
+              name: 'file.txt',
+              size: 1024,
+              parentFolderId: 'folder-1',
+            },
+            userEmail: '',
+            parentFolderId: '',
+          },
+        ],
+        maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
+        uploadRepository: DatabaseUploadRepository.getInstance(),
+        options: {
+          ownerUserAuthenticationData: undefined,
+          sharedItemData: {
+            isDeepFolder: false,
+            currentFolderId: 'parentFolderId',
+          },
+          isUploadedFromFolder: true,
+        },
+      }),
+    ).rejects.toThrow(err);
+
+    expect(openMaxSpaceOccupiedDialogMock).toHaveBeenCalledOnce();
   });
 });

@@ -1,70 +1,128 @@
-import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
-import tasksService from 'app/tasks/services/tasks.service';
-import storageService from 'app/drive/services/storage.service';
+import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { buildDriveItemData } from '../../../../../../test/unit/fixtures/drive.fixtures';
 
-const { mockDispatch } = vi.hoisted(() => ({
-  mockDispatch: vi.fn().mockResolvedValue(undefined),
+const mockMoveItem = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
+
+vi.mock('app/drive/services/storage.service', () => ({
+  default: {
+    moveItem: mockMoveItem,
+  },
 }));
 
 vi.mock('app/database/services/database.service', () => ({
-  default: { get: vi.fn().mockResolvedValue(null) },
-  DatabaseCollection: { Levels: 'levels' },
-  DatabaseProvider: {},
-  LRUCacheTypes: {},
+  default: {
+    get: vi.fn().mockResolvedValue(null),
+    put: vi.fn(),
+  },
+  DatabaseCollection: {
+    Levels: 'levels',
+  },
 }));
-vi.mock('app/drive/services/items-list.service', () => ({ default: { pushItems: vi.fn() } }));
-vi.mock('app/notifications/services/notifications.service', () => ({
-  default: { show: vi.fn() },
-  ToastType: { Error: 'error' },
+
+vi.mock('app/drive/services/items-list.service', () => ({
+  default: {
+    pushItems: vi.fn().mockReturnValue([]),
+  },
 }));
+
+vi.mock('i18next', () => ({
+  t: vi.fn((key: string) => key),
+}));
+
 vi.mock('app/store/slices/storage', () => ({
-  storageActions: { popItems: vi.fn(), pushItems: vi.fn(), clearSelectedItems: vi.fn() },
-  storageSelectors: {},
-  default: {},
+  storageActions: {
+    popItems: vi.fn((payload) => ({ type: 'storage/popItems', payload })),
+    pushItems: vi.fn((payload) => ({ type: 'storage/pushItems', payload })),
+    clearSelectedItems: vi.fn(() => ({ type: 'storage/clearSelectedItems' })),
+  },
 }));
-vi.mock('i18next', () => ({ default: { t: (key: string) => key }, t: (key: string) => key }));
-vi.mock('services/error.service', () => ({ default: { reportError: vi.fn() } }));
 
-import { moveItemsThunk } from './moveItemsThunk';
+import { moveItemsThunk, MoveItemPayload } from './moveItemsThunk';
 
-const runThunk = (payload: Parameters<typeof moveItemsThunk>[0]) =>
-  moveItemsThunk(payload)(mockDispatch, () => ({}) as any, undefined);
+function buildMockDispatch() {
+  return vi.fn().mockResolvedValue(undefined);
+}
 
-describe('Move items task logger', () => {
+function buildMockGetState() {
+  return vi.fn();
+}
+
+async function dispatchThunk(
+  payload: Parameters<typeof moveItemsThunk>[0],
+  dispatch = buildMockDispatch(),
+  getState = buildMockGetState(),
+) {
+  const thunk = moveItemsThunk(payload);
+  return thunk(dispatch, getState, undefined);
+}
+
+describe('Moving items - Thunk', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockDispatch.mockResolvedValue(undefined);
-    vi.spyOn(storageService, 'moveItem').mockResolvedValue(undefined as any);
-    vi.spyOn(tasksService, 'create').mockReturnValue('task-id');
-    vi.spyOn(tasksService, 'updateTask').mockReturnValue(undefined as any);
   });
 
-  afterEach(() => {
-    vi.restoreAllMocks();
+  test('When moving a file item that has a new name set, then the storage service receives the new name', async () => {
+    const destinationFolderId = 'dest-folder-uuid';
+    const newItemName = 'renamed-document';
+    const fileItem: MoveItemPayload = {
+      ...buildDriveItemData({ uuid: 'file-uuid-1', isFolder: false, folderUuid: 'source-folder-uuid' }),
+      newItemName,
+    };
+
+    await dispatchThunk({ items: [fileItem], destinationFolderId });
+
+    expect(mockMoveItem).toHaveBeenCalledWith(fileItem, destinationFolderId, newItemName);
   });
 
-  test('When a file is moved and the task logger is enabled, then a task is created for it', async () => {
-    const file = buildDriveItemData({ isFolder: false });
+  test('When moving a file item without a new name, then the storage service receives undefined for the name', async () => {
+    const destinationFolderId = 'dest-folder-uuid';
+    const fileItem: MoveItemPayload = {
+      ...buildDriveItemData({ uuid: 'file-uuid-2', isFolder: false, folderUuid: 'source-folder-uuid' }),
+    };
 
-    await runThunk({ items: [file], destinationFolderId: 'dest-uuid', displayTaskLogger: true });
+    await dispatchThunk({ items: [fileItem], destinationFolderId });
 
-    expect(tasksService.create).toHaveBeenCalledWith(expect.objectContaining({ action: 'move-file' }));
+    expect(mockMoveItem).toHaveBeenCalledWith(fileItem, destinationFolderId, undefined);
   });
 
-  test('When a folder is moved and the task logger is enabled, then a task is created for it', async () => {
-    const folder = buildDriveItemData({ isFolder: true, type: 'folder' });
+  test('When moving a folder item that has a new name set, then the storage service receives the new name', async () => {
+    const destinationFolderId = 'dest-folder-uuid';
+    const newItemName = 'renamed-folder';
+    const folderItem: MoveItemPayload = {
+      ...buildDriveItemData({ uuid: 'folder-uuid-1', isFolder: true, folderUuid: 'source-folder-uuid' }),
+      newItemName,
+    };
 
-    await runThunk({ items: [folder], destinationFolderId: 'dest-uuid', displayTaskLogger: true });
+    await dispatchThunk({ items: [folderItem], destinationFolderId });
 
-    expect(tasksService.create).toHaveBeenCalledWith(expect.objectContaining({ action: 'move-folder' }));
+    expect(mockMoveItem).toHaveBeenCalledWith(folderItem, destinationFolderId, newItemName);
   });
 
-  test('When an item is moved without the task logger, then no task is created', async () => {
-    const file = buildDriveItemData({ isFolder: false });
+  test('When moving a folder item without a new name, then the storage service receives undefined for the name', async () => {
+    const destinationFolderId = 'dest-folder-uuid';
+    const folderItem: MoveItemPayload = {
+      ...buildDriveItemData({ uuid: 'folder-uuid-2', isFolder: true, folderUuid: 'source-folder-uuid' }),
+    };
 
-    await runThunk({ items: [file], destinationFolderId: 'dest-uuid', displayTaskLogger: false });
+    await dispatchThunk({ items: [folderItem], destinationFolderId });
 
-    expect(tasksService.create).not.toHaveBeenCalled();
+    expect(mockMoveItem).toHaveBeenCalledWith(folderItem, destinationFolderId, undefined);
+  });
+
+  test('When moving multiple items each with distinct new names, then each item is moved with its own new name', async () => {
+    const destinationFolderId = 'dest-folder-uuid';
+    const fileItem: MoveItemPayload = {
+      ...buildDriveItemData({ uuid: 'file-uuid-multi', isFolder: false, folderUuid: 'source-folder-uuid' }),
+      newItemName: 'new-file-name',
+    };
+    const folderItem: MoveItemPayload = {
+      ...buildDriveItemData({ uuid: 'folder-uuid-multi', isFolder: true, folderUuid: 'source-folder-uuid' }),
+      newItemName: 'new-folder-name',
+    };
+
+    await dispatchThunk({ items: [fileItem, folderItem], destinationFolderId });
+
+    expect(mockMoveItem).toHaveBeenCalledWith(fileItem, destinationFolderId, 'new-file-name');
+    expect(mockMoveItem).toHaveBeenCalledWith(folderItem, destinationFolderId, 'new-folder-name');
   });
 });
