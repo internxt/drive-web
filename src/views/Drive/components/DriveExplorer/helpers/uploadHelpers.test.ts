@@ -11,7 +11,9 @@ vi.mock('app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk',
   fetchSortedFolderContentThunk: vi.fn(),
 }));
 vi.mock('app/store/slices/storage/storage.thunks/renameItemsThunk', () => ({
-  handleRepeatedUploadingFiles: vi.fn((files) => Promise.resolve(files)),
+  handleRepeatedUploadingFiles: vi.fn((files: File[]) =>
+    Promise.resolve({ repeatedItems: [], existingItems: [], unrepeatedItems: files }),
+  ),
 }));
 vi.mock('app/drive/services/folder.service/uploadFolderInput.service', () => ({
   transformInputFilesToJSON: vi.fn(() => ({})),

@@ -97,6 +97,7 @@ export type DriveItemData = DriveFileData &
     parent?: {
       plainName: string;
       status: FileStatus;
+      uuid: string;
     };
     sizeComputed?: boolean;
   };

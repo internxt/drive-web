@@ -5,6 +5,17 @@ import { LRUFilesCacheManager } from 'app/database/services/database.service/LRU
 import { downloadFile } from 'app/network/download';
 import { binaryStreamToBlob } from 'services/stream.service';
 import { updateDatabaseFileSourceData } from './database.service';
+import { moveFolderByUuid } from './folder.service';
+
+const mockMoveFolderByUuid = vi.hoisted(() => vi.fn());
+const mockCreateNewStorageClient = vi.hoisted(() => vi.fn(() => ({ moveFolderByUuid: mockMoveFolderByUuid })));
+const mockGetNewApiInstance = vi.hoisted(() => vi.fn(() => ({ createNewStorageClient: mockCreateNewStorageClient })));
+
+vi.mock('app/core/factory/sdk', () => ({
+  SdkFactory: {
+    getNewApiInstance: mockGetNewApiInstance,
+  },
+}));
 
 vi.mock('app/network/download', () => ({
   downloadFile: vi.fn(),
@@ -175,6 +186,37 @@ describe('Folder Service', () => {
             abortController: undefined,
           },
         });
+      });
+    });
+  });
+
+  describe('moveFolderByUuid', () => {
+    test('When moving a folder with a new name, then the new name is included in the request payload', async () => {
+      const folderUuid = 'folder-uuid-123';
+      const destinationFolderUuid = 'dest-folder-uuid-456';
+      const newName = 'renamed-folder';
+      const resolvedFolderMeta = { id: 'folder-uuid-123', name: newName };
+      mockMoveFolderByUuid.mockResolvedValue(resolvedFolderMeta);
+
+      await moveFolderByUuid(folderUuid, destinationFolderUuid, newName);
+
+      expect(mockMoveFolderByUuid).toHaveBeenCalledWith(folderUuid, {
+        destinationFolder: destinationFolderUuid,
+        name: newName,
+      });
+    });
+
+    test('When moving a folder without specifying a new name, then the name field in the request payload is undefined', async () => {
+      const folderUuid = 'folder-uuid-123';
+      const destinationFolderUuid = 'dest-folder-uuid-456';
+      const resolvedFolderMeta = { id: 'folder-uuid-123', name: 'original-folder' };
+      mockMoveFolderByUuid.mockResolvedValue(resolvedFolderMeta);
+
+      await moveFolderByUuid(folderUuid, destinationFolderUuid);
+
+      expect(mockMoveFolderByUuid).toHaveBeenCalledWith(folderUuid, {
+        destinationFolder: destinationFolderUuid,
+        name: undefined,
       });
     });
   });

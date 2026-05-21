@@ -25,21 +25,41 @@ export const createFileUploadHandler = (
     if (!files) return;
 
     if (files.length <= UPLOAD_ITEMS_LIMIT) {
-      const unrepeatedUploadedFiles = (await handleRepeatedUploadingFiles(
+      const { unrepeatedItems, repeatedItems, existingItems } = await handleRepeatedUploadingFiles(
         Array.from(files),
-        dispatch,
         currentFolderId,
-      )) as File[];
+      );
 
-      dispatch(
-        storageThunks.uploadItemsThunk({
-          files: Array.from(unrepeatedUploadedFiles),
-          parentFolderId: currentFolderId,
-        }),
-      ).then(() => {
-        onFileUploaded?.();
-        dispatch(fetchSortedFolderContentThunk(currentFolderId));
-      });
+      if (repeatedItems.length > 0) {
+        dispatch(
+          uiActions.setIsNameCollisionDialogOpen({
+            open: true,
+            info: {
+              groups: [
+                {
+                  destinationUuid: currentFolderId,
+                  duplicatedItems: repeatedItems as any,
+                  existingItems: existingItems as any,
+                  unrepeatedItems: unrepeatedItems as any,
+                },
+              ],
+              operation: 'upload',
+            },
+          }),
+        );
+      }
+
+      if (unrepeatedItems.length > 0) {
+        dispatch(
+          storageThunks.uploadItemsThunk({
+            files: unrepeatedItems as File[],
+            parentFolderId: currentFolderId,
+          }),
+        ).then(() => {
+          onFileUploaded?.();
+          dispatch(fetchSortedFolderContentThunk(currentFolderId));
+        });
+      }
 
       resetFileInput?.();
     } else {

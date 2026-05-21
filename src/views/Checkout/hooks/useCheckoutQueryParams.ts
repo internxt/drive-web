@@ -7,5 +7,7 @@ export const useCheckoutQueryParams = () => {
     currency: params.get('currency'),
     paramMobileToken: params.get('mobileToken'),
     gclid: params.get('gclid') ?? '',
+    irclickid: params.get('irclickid'),
+    utmMedium: params.get('utm_medium'),
   };
 };
