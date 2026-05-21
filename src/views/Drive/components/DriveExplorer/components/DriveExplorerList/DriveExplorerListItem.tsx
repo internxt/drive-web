@@ -92,6 +92,9 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
   const basicFileDataTest = `file-list-${item.isFolder ? 'folder' : 'file'}-${transformItemService.getItemPlainNameWithExtension(item)}`;
   const itemName = transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item);
 
+  const hasKnownSize = item.isFolder ? item.sizeComputed === true : item.size >= 0;
+  const formattedSize = hasKnownSize ? sizeService.bytesToString(item.size, false) : '';
+
   const template = (
     <div
       role="none"
@@ -173,11 +176,7 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
 
       {/* SIZE */}
       <div className="w-size shrink-0 items-center whitespace-nowrap">
-        {sizeService.bytesToString(item.size, false) === '' || item.isFolder ? (
-          <span className="opacity-25">—</span>
-        ) : (
-          sizeService.bytesToString(item.size, false)
-        )}
+        {formattedSize !== '' ? formattedSize : <span className="opacity-25">—</span>}
       </div>
     </div>
   );

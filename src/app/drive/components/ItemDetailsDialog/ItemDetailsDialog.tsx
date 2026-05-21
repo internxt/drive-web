@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { storageActions } from 'app/store/slices/storage';
 import { uiActions } from 'app/store/slices/ui';
 import { X } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -99,7 +100,8 @@ const ItemDetailsDialog = ({
   const { translate } = useTranslationContext();
   const [itemProps, setItemProps] = useState<ItemDetailsProps>();
   const [isLoading, setIsLoading] = useState(false);
-  const IconComponent = iconService.getItemIcon(item?.type === 'folder', item?.type);
+  const isItemFolder = item?.type === 'folder' || item?.isFolder;
+  const IconComponent = iconService.getItemIcon(isItemFolder ?? false, item?.type);
   const itemName = `${item?.plainName ?? item?.name}` + `${item?.type && !item.isFolder ? '.' + item?.type : ''}`;
   const user = localStorageService.getUser();
   const isFolder = item?.isFolder;
@@ -198,6 +200,18 @@ const ItemDetailsDialog = ({
       getFolderStats(item, itemUuid),
     ]);
     const size = calculateItemSize(item, folderStats);
+
+    const parentUuid = (item as DriveItemData).parentUuid || item.folderUuid;
+    if (isItemFolder && folderStats?.totalSize !== undefined && parentUuid) {
+      dispatch(
+        storageActions.patchItem({
+          uuid: itemUuid,
+          folderId: parentUuid,
+          isFolder: true,
+          patch: { size: folderStats.totalSize, sizeComputed: true },
+        }),
+      );
+    }
 
     return {
       name: item.name,
