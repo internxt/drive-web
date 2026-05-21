@@ -1715,37 +1715,6 @@ describe('downloadManagerService', () => {
       ).rejects.toThrow('Folder download error');
     });
 
-    // it('should handle errors in downloadFile and rethrow them', async () => {
-    //   const mockTask: DownloadTask = {
-    //     abortController: new AbortController(),
-    //     items: [mockFile as DriveItemData],
-    //     createFilesIterator: createFilesIterator,
-    //     createFoldersIterator: createFoldersIterator,
-    //     credentials: {
-    //       credentials: {
-    //         user: 'any-user',
-    //         pass: 'any-pass',
-    //       },
-    //       mnemonic: 'any-mnemonic',
-    //     },
-    //     options: {
-    //       areSharedItems: false,
-    //       downloadName: `${mockFile.name}.${mockFile.type}`,
-    //       showErrors: true,
-    //     },
-    //     taskId: 'mock-task-id',
-    //     failedItems: [],
-    //   };
-
-    //   const mockUpdateProgress = vi.fn();
-
-    //   vi.spyOn(downloadService, 'downloadFile').mockRejectedValueOnce(new Error('File download error'));
-
-    //   await expect(DownloadManagerService.instance.downloadFile(mockTask, mockUpdateProgress)).rejects.toThrow(
-    //     'File download error',
-    //   );
-    // });
-
     it('should handle connection loss in downloadItems and throw ConnectionLostError', async () => {
       const mockFile2: DriveFileData = { ...mockFile, id: 2, name: 'File2' };
       const mockTask: DownloadTask = {

@@ -9,6 +9,7 @@ import {
 } from 'app/drive/types';
 import { PreviewFileItem } from '../../../share/types';
 import { FileVersion } from '@internxt/sdk/dist/drive/storage/types';
+import { CollisionGroup } from '../storage/storage.model';
 
 interface UISliceState {
   isSidenavCollapsed: boolean;
@@ -49,6 +50,10 @@ interface UISliceState {
   isGlobalSearch: boolean;
   isShareWhithTeamDialogOpen: boolean;
   isAutomaticTrashDisposalDialogOpen: boolean;
+  nameCollisionDialogInfo?: {
+    groups: CollisionGroup[];
+    operation: 'move' | 'upload';
+  };
 }
 
 const initialState: UISliceState = {
@@ -100,8 +105,18 @@ export const uiSlice = createSlice({
     setIsFileLoggerOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isFileLoggerOpen = action.payload;
     },
-    setIsNameCollisionDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
-      state.isNameCollisionDialogOpen = action.payload;
+    setIsNameCollisionDialogOpen: (
+      state: UISliceState,
+      action: PayloadAction<{
+        open: boolean;
+        info?: {
+          groups: CollisionGroup[];
+          operation: 'move' | 'upload';
+        };
+      }>,
+    ) => {
+      state.isNameCollisionDialogOpen = action.payload.open;
+      state.nameCollisionDialogInfo = action.payload.info;
     },
     setIsShareDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isShareDialogOpen = action.payload;

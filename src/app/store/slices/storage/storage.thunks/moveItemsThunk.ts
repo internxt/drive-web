@@ -13,8 +13,12 @@ import { RootState } from '../../..';
 import errorService from 'services/error.service';
 import { StorageState } from '../storage.model';
 
+export interface MoveItemPayload extends DriveItemData {
+  newItemName?: string;
+}
+
 export interface MoveItemsPayload {
-  items: DriveItemData[];
+  items: MoveItemPayload[];
   destinationFolderId: string;
 }
 
@@ -51,7 +55,7 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
         });
       }
 
-      promises.push(storageService.moveItem(item, destinationFolderId));
+      promises.push(storageService.moveItem(item, destinationFolderId, item.newItemName));
 
       promises[index]
         .then(async () => {

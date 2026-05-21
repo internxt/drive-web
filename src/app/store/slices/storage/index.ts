@@ -8,7 +8,6 @@ import { DriveItemData, DriveItemPatch, FileViewMode, FolderPath } from 'app/dri
 import { storageExtraReducers } from '../storage/storage.thunks';
 import { filtersFactory, orderFactory, StorageSetFiltersPayload, StorageState } from './storage.model';
 import selectors from './storage.selectors';
-import { IRoot } from './types';
 
 const initialState: StorageState = {
   loadingFolders: {},
@@ -36,10 +35,6 @@ const initialState: StorageState = {
   viewMode: FileViewMode.List,
   namePath: [],
   currentPath: { uuid: '', name: '' },
-  filesToRename: [],
-  driveFilesToRename: [],
-  foldersToRename: [],
-  driveFoldersToRename: [],
   moveDestinationFolderId: null,
   folderPathDialog: [],
   driveItemsSort: 'plainName',
@@ -150,18 +145,7 @@ export const storageSlice = createSlice({
     addFilesOnTrashLength: (state: StorageState, action: PayloadAction<number>) => {
       state.filesOnTrashLength += action.payload;
     },
-    setFilesToRename: (state: StorageState, action: PayloadAction<(File | DriveItemData)[]>) => {
-      state.filesToRename = action.payload;
-    },
-    setDriveFilesToRename: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
-      state.driveFilesToRename = action.payload;
-    },
-    setFoldersToRename: (state: StorageState, action: PayloadAction<(DriveItemData | IRoot)[]>) => {
-      state.foldersToRename = action.payload;
-    },
-    setDriveFoldersToRename: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
-      state.driveFoldersToRename = action.payload;
-    },
+
     setMoveDestinationFolderId: (state: StorageState, action: PayloadAction<string | null>) => {
       state.moveDestinationFolderId = action.payload;
     },
@@ -303,10 +287,6 @@ export const storageSlice = createSlice({
         }
         return item;
       });
-
-      /* if (state.infoItem?.id === id && state.infoItem?.isFolder === isFolder) {
-        Object.assign(state.infoItem, patch);
-      } */
     },
     clearCurrentThumbnailItems: (state: StorageState, action: PayloadAction<{ folderId: string }>) => {
       const { folderId } = action.payload;
@@ -407,14 +387,11 @@ export const {
   setIsLoadingRecents,
   setIsLoadingDeleted,
   setItems,
-  setFilesToRename,
-  setDriveFilesToRename,
   setRecents,
   setFilters,
   resetFilters,
   selectItems,
   deselectItems,
-  clearSelectedItems,
   setItemToShare,
   setItemsToDelete,
   setItemsToMove,

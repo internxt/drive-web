@@ -25,7 +25,7 @@ export interface NameCollisionDialogProps {
   newItems: (File | IRoot)[];
   onCloseDialog(): void;
   onCancelButtonPressed(): void;
-  onSubmitButtonPressed({ operationType, operation, itemsToUpload, itemsToReplace }: OnSubmitPressed): void;
+  onSubmitButtonPressed({ operationType, operation, itemsToUpload, itemsToReplace }: OnSubmitPressed): Promise<void>;
 }
 
 const NameCollisionDialog: FC<NameCollisionDialogProps> = ({
@@ -56,7 +56,7 @@ const NameCollisionDialog: FC<NameCollisionDialogProps> = ({
   const description =
     newItems?.length > 1
       ? translate('modals.renameModal.multipleDescription')
-      : translate('modals.renameModal.description', { itemName: newItems[0]?.name });
+      : translate('modals.renameModal.description', { itemName: newItems?.[0]?.name });
   const primaryButtonText = useMemo(
     () =>
       operationType === OPERATION_TYPE.MOVE
