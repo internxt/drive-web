@@ -30,6 +30,7 @@ import { CRYPTO_PAYMENT_DIALOG_KEY, CryptoPaymentDialog } from 'views/Checkout/c
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 import { generateCaptchaToken } from 'utils/generateCaptchaToken';
 import gaService from 'app/analytics/ga.service';
+import { handleImpactDTCCheckout } from 'app/analytics/impact.service';
 import referralService from 'services/referral.service';
 import metaService from 'app/analytics/meta.service';
 import { useCheckoutQueryParams } from '../hooks/useCheckoutQueryParams';
@@ -56,7 +57,7 @@ const CheckoutViewWrapper = () => {
   const { setAuthMethod, setIsUserPaying, setIsUpdateSubscriptionDialogOpen, setIsUpdatingSubscription } =
     useCheckout(dispatchReducer);
 
-  const { planId, promotionCode, currency, paramMobileToken, gclid } = useCheckoutQueryParams();
+  const { planId, promotionCode, currency, paramMobileToken, gclid, irclickid, utmMedium } = useCheckoutQueryParams();
   const { location: userLocationData } = useUserLocation();
 
   const { couponError, promoCodeData, onPromoCodeError, removeCouponCode, fetchPromotionCode } = usePromotionalCode({
@@ -119,6 +120,9 @@ const CheckoutViewWrapper = () => {
       expiryDate.setTime(expiryDate.getTime() + GCLID_COOKIE_LIFESPAN_DAYS * MILLISECONDS_PER_DAY);
       document.cookie = `gclid=${gclid}; expires=${expiryDate.toUTCString()}; path=/`;
       localStorageService.set(STORAGE_KEYS.GCLID, gclid);
+    }
+    if (irclickid) {
+      handleImpactDTCCheckout({ irclickid, utmMedium });
     }
     referralService.captureUcc();
   }, []);
