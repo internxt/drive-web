@@ -5,7 +5,7 @@ import AnimatedBackground from 'components/AnimatedBackground';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface AuthShellProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 export default function AuthShell({ children }: AuthShellProps): JSX.Element {
