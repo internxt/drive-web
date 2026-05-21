@@ -100,12 +100,14 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
         })
         .catch((e) => {
           errorService.reportError(e);
-          tasksService.updateTask({
-            taskId,
-            merge: {
-              status: TaskStatus.Error,
-            },
-          });
+          if (displayTaskLogger) {
+            tasksService.updateTask({
+              taskId,
+              merge: {
+                status: TaskStatus.Error,
+              },
+            });
+          }
         });
     }
 

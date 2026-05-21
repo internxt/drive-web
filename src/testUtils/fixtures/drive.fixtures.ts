@@ -1,4 +1,4 @@
-import { ExceededFile, ReachedFileSizeLimitDialogInfo } from 'app/drive/types';
+import { DriveItemData, ExceededFile, ReachedFileSizeLimitDialogInfo } from 'app/drive/types';
 
 export const getExceededFile = (overrides: Partial<ExceededFile> = {}): ExceededFile => ({
   name: 'large-document.pdf',
@@ -12,3 +12,14 @@ export const getReachedFileSizeLimitDialogInfo = (
   exceededFiles: [getExceededFile()],
   ...overrides,
 });
+
+export const getDriveItemData = (overrides: Partial<DriveItemData> = {}): DriveItemData =>
+  ({
+    id: 1,
+    uuid: 'item-uuid',
+    name: 'document',
+    type: 'pdf',
+    isFolder: false,
+    size: 1024,
+    ...overrides,
+  }) as DriveItemData;
