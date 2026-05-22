@@ -1456,7 +1456,7 @@
     "errorModifyingStorage": "Der neue Speicherplatz ist für dieses Mitglied ungültig.",
     "generalErrorWhileModifyingStorage": "Beim Ändern des Speicherplatzes ist ein Fehler aufgetreten.",
     "restoreItems": "Die Elemente wurden wiederhergestellt",
-    "goToDrive": "Zu Drive gehen",
+    "goToDrive": "In Drive anzeigen",
     "itemDeleted": "{{item}} gelöscht",
     "itemsDeleted": "Dateien gelöscht",
     "emailNotEmpty": "E-Mail darf nicht leer sein",

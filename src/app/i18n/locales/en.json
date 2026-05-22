@@ -1529,7 +1529,7 @@
     "linkUpdated": "Link updated",
     "itemsMovedToTrash": "{{item}} moved to trash",
     "restoreItems": "The items have been restored",
-    "goToDrive": "Go to Drive",
+    "goToDrive": "Show in Drive",
     "moveItems": "{{itemsToMove}} moved successfully",
     "storageModified": "Storage modified successfully",
     "membersUpdatedSuccessfully": "Members updated successfully",

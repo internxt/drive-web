@@ -1476,7 +1476,7 @@
     "errorModifyingStorage": "Новый объём хранения недоступен для этого участника.",
     "generalErrorWhileModifyingStorage": "Произошла ошибка при изменении объёма хранения.",
     "restoreItems": "Элементы были восстановлены",
-    "goToDrive": "Перейти к Drive",
+    "goToDrive": "Показать в Drive",
     "itemDeleted": "{{item}} удален",
     "itemsDeleted": "Файлы удалены",
     "emailNotEmpty": "Поле электронной почты не должно быть пустым",

@@ -1457,7 +1457,7 @@
     "linkUpdated": "Lien mis à jour",
     "itemsMovedToTrash": "{{item}} déplacé vers la corbeille",
     "restoreItems": "Les éléments ont été restaurés",
-    "goToDrive": "Aller à Drive",
+    "goToDrive": "Afficher dans Drive",
     "storageModified": "Stockage modifié avec succès",
     "membersUpdatedSuccessfully": "Membres mis à jour avec succès",
     "errorModifyingStorage": "Le nouvel espace de stockage n'est pas valide pour ce membre.",

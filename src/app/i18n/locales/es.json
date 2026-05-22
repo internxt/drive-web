@@ -1492,7 +1492,7 @@
     "linkUpdated": "Enlace actualizado",
     "itemsMovedToTrash": "{{item}} movid{{s}} a la papelera",
     "restoreItems": "Los elementos han sido restaurados",
-    "goToDrive": "Ir a Drive",
+    "goToDrive": "Mostrar en Drive",
     "storageModified": "Almacenamiento modificado con éxito",
     "membersUpdatedSuccessfully": "Miembros actualizados con éxito",
     "errorModifyingStorage": "El nuevo almacenamiento no es válido para este miembro.",
