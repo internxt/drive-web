@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, test, expect } from 'vitest';
 import { formatPrice } from './formatPrice';
 
 describe('Formatting the price to have 2 decimals', () => {
@@ -28,11 +28,11 @@ describe('Formatting the price to have 2 decimals', () => {
     });
   });
 
-  it('Handles edge case where value is nearly integer due to float error', () => {
+  test('When the value is nearly integer due to float error, then it returns without decimals', () => {
     expect(formatPrice(10.0000001)).toBe('10');
   });
 
-  it('Handles floating point precision error (19.99 * 100 = 1998.999... in JS)', () => {
+  test('When there is a floating point precision error (19.99 * 100 = 1998.999... in JS), then it returns 2 decimals', () => {
     expect(formatPrice(19.99)).toBe('19.99');
   });
 });
