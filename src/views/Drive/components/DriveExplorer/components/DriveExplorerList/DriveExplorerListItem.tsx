@@ -89,6 +89,9 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
   const itemClassNames = getItemClassNames(isItemSelected(item), isDraggingOverThisItem, isDraggingThisItem);
   const parentFolderName = item.parent?.status === FileStatus.EXISTS ? (item.parent?.plainName ?? 'Drive') : '-';
 
+  const hasKnownSize = item.isFolder ? item.sizeComputed === true : item.size >= 0;
+  const formattedSize = hasKnownSize ? sizeService.bytesToString(item.size, false) : '';
+
   const template = (
     <div
       role="none"
@@ -179,11 +182,7 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
 
       {/* SIZE */}
       <div className="w-size shrink-0 items-center whitespace-nowrap">
-        {sizeService.bytesToString(item.size, false) === '' || item.isFolder ? (
-          <span className="opacity-25">—</span>
-        ) : (
-          sizeService.bytesToString(item.size, false)
-        )}
+        {formattedSize !== '' ? formattedSize : <span className="opacity-25">—</span>}
       </div>
     </div>
   );

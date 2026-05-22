@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { v4 as uuidV4 } from 'uuid';
 import dayjs from 'dayjs';
-import { getCookie } from './utils';
+import { getCookie, setImpactCookies } from './utils';
 import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
@@ -68,6 +68,42 @@ export function savePaymentDataInLocalStorage({
   }
 
   localStorageService.set('isFirstPurchase', String(isFirstPurchase));
+}
+
+export async function handleImpactDTCCheckout({
+  irclickid,
+  utmMedium,
+}: {
+  irclickid: string;
+  utmMedium?: string | null;
+}): Promise<void> {
+  try {
+    const IMPACT_API = envService.getVariable('impactApiUrl');
+    const existingAnonymousId = getCookie('impactAnonymousId');
+    const anonymousId = existingAnonymousId || uuidV4();
+
+    setImpactCookies(anonymousId, irclickid, utmMedium);
+
+    await axios.post(IMPACT_API, {
+      anonymousId,
+      timestamp: dayjs().format('YYYY-MM-DDTHH:mm:ss.sssZ'),
+      context: {
+        userAgent: navigator.userAgent,
+        page: {
+          url: globalThis.location.href,
+          referrer: document.referrer,
+        },
+      },
+      type: 'page',
+      properties: {
+        irclickid,
+        ...(utmMedium && { partner_id: utmMedium }),
+      },
+    });
+  } catch (error) {
+    const castedError = errorService.castError(error);
+    errorService.reportError(castedError);
+  }
 }
 
 export async function trackSignUp(uuid: string): Promise<void> {
