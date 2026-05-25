@@ -126,7 +126,7 @@ export const useSuiteLauncher = () => {
     },
     {
       icon: <Brain />,
-      title: 'AI',
+      title: 'AI Chatbot',
       onClick: () => {
         window.open(AI_URL, '_blank', 'noopener');
       },
