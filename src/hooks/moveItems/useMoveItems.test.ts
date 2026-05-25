@@ -5,7 +5,7 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { errorService } from 'services';
 import { DriveItemData } from 'app/drive/types';
 import { useMoveItems } from './useMoveItems';
-import { buildDriveItemData } from '../../../test/unit/fixtures/drive.fixtures';
+import { getDriveItemData } from 'testUtils/fixtures/drive.fixtures';
 
 const {
   mockDispatch,
@@ -54,13 +54,13 @@ vi.mock('app/store/slices/ui', () => ({
 }));
 
 const buildItemWithExistingParent = (overrides: Partial<DriveItemData> = {}): DriveItemData =>
-  buildDriveItemData({
+  getDriveItemData({
     parent: { uuid: 'parent-uuid', plainName: 'My Folder', status: FileStatus.EXISTS },
     ...overrides,
   });
 
 const buildItemWithDeletedParent = (overrides: Partial<DriveItemData> = {}): DriveItemData =>
-  buildDriveItemData({
+  getDriveItemData({
     parent: { uuid: 'parent-uuid', plainName: 'Deleted Folder', status: FileStatus.TRASHED },
     ...overrides,
   });
@@ -236,7 +236,7 @@ describe('Restore items from trash', () => {
 
   describe('Move from dialog', () => {
     test('When the user confirms a destination in the dialog, then the item is moved there', async () => {
-      const item = buildDriveItemData();
+      const item = getDriveItemData();
       const { result } = renderHook(() => useMoveItems());
 
       await act(async () => {
@@ -249,7 +249,7 @@ describe('Restore items from trash', () => {
     });
 
     test('When the item has a new name, then the move is called with that new name', async () => {
-      const item = buildDriveItemData({ newItemName: 'renamed-file' } as any);
+      const item = getDriveItemData({ newItemName: 'renamed-file' } as any);
       const { result } = renderHook(() => useMoveItems());
 
       await act(async () => {
@@ -264,7 +264,7 @@ describe('Restore items from trash', () => {
     });
 
     test('When the move from dialog fails, then an error notification is shown', async () => {
-      const item = buildDriveItemData();
+      const item = getDriveItemData();
       mockDispatch.mockImplementation(() => {
         throw new Error('Move failed');
       });

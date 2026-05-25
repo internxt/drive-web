@@ -17,7 +17,7 @@ export const checkDuplicatedFiles = async (
       duplicatedFilesResponse: [],
       filesWithDuplicates: [],
       filesWithoutDuplicates: files,
-    } as DuplicatedFilesResult;
+    };
   }
 
   const parsedFiles = files.map(parseFile);
