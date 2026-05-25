@@ -1,4 +1,5 @@
 import {
+  Brain,
   EnvelopeSimple,
   FolderSimple,
   Gauge,
@@ -18,6 +19,7 @@ import { envService } from 'services';
 
 const MEET_URL = 'https://meet.internxt.com';
 const SEND_URL = 'https://send.internxt.com';
+const AI_URL = 'https://ai.internxt.com';
 
 export const useSuiteLauncher = () => {
   const { translate } = useTranslationContext();
@@ -121,6 +123,13 @@ export const useSuiteLauncher = () => {
           upgradeDescription: translate('modals.upgradePlanDialog.cleaner.description'),
         }),
       isLocked: !userFeatures?.[Service.Cleaner].enabled,
+    },
+    {
+      icon: <Brain />,
+      title: 'AI',
+      onClick: () => {
+        window.open(AI_URL, '_blank', 'noopener');
+      },
     },
   ];
 
