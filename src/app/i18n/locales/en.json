@@ -1083,9 +1083,6 @@
         }
       }
     },
-    "accessRequests": {
-      "pending": ""
-    },
     "sharedInvitationsModal": {
       "empty": "No invitations left",
       "title": "Pending invitations",

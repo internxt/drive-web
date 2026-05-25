@@ -7,8 +7,6 @@ interface RequestAccessUserCardProps {
   onChangeAccount: () => void;
 }
 
-const TEXTAREA_MAX_LENGTH = 1000;
-
 const UserCheapCard = ({ user, onChangeAccount }: Readonly<RequestAccessUserCardProps>): JSX.Element => {
   const { translate } = useTranslationContext();
 
