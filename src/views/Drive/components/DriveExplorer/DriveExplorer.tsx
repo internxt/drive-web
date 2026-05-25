@@ -731,31 +731,34 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
   const { dispatch, currentFolderId, maxUploadFileSize, onDragAndDropEnd } = props;
 
   if (files.length <= UPLOAD_ITEMS_LIMIT) {
+    const emptyFilesResult = { repeatedItems: [], existingItems: [], unrepeatedItems: [] };
+    const emptyFoldersResult = { repeatedItems: [], existingItems: [], unrepeatedItems: [] };
+
     const [filesResult, foldersResult] = await Promise.all([
-      files.length > 0 ? handleRepeatedUploadingFiles(Array.from(files), currentFolderId) : null,
-      rootList.length > 0 ? handleRepeatedUploadingFolders(rootList, currentFolderId) : null,
+      files.length > 0 ? handleRepeatedUploadingFiles(Array.from(files), currentFolderId) : emptyFilesResult,
+      rootList.length > 0 ? handleRepeatedUploadingFolders(rootList, currentFolderId) : emptyFoldersResult,
     ]);
 
     const repeatedFiles =
-      filesResult && filesResult?.repeatedItems?.length > 0
+      filesResult.repeatedItems.length > 0
         ? [
             {
               destinationUuid: currentFolderId,
-              duplicatedItems: filesResult?.repeatedItems,
-              existingItems: filesResult?.existingItems,
-              unrepeatedItems: filesResult?.unrepeatedItems,
+              duplicatedItems: filesResult.repeatedItems,
+              existingItems: filesResult.existingItems,
+              unrepeatedItems: filesResult.unrepeatedItems,
             },
           ]
         : [];
 
     const repeatedFolders =
-      foldersResult && foldersResult.repeatedItems?.length > 0
+      foldersResult.repeatedItems.length > 0
         ? [
             {
               destinationUuid: currentFolderId,
-              duplicatedItems: foldersResult?.repeatedItems,
-              existingItems: foldersResult?.existingItems,
-              unrepeatedItems: foldersResult?.unrepeatedItems,
+              duplicatedItems: foldersResult.repeatedItems,
+              existingItems: foldersResult.existingItems,
+              unrepeatedItems: foldersResult.unrepeatedItems,
             },
           ]
         : [];
@@ -768,10 +771,7 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
       );
     }
 
-    const areUnrepeatedFiles = filesResult && filesResult.unrepeatedItems.length > 0;
-    const areUnrepeatedFolders = foldersResult && foldersResult.unrepeatedItems.length > 0;
-
-    if (areUnrepeatedFiles) {
+    if (filesResult.unrepeatedItems.length > 0) {
       dispatch(
         storageThunks.uploadItemsThunk({
           files: filesResult.unrepeatedItems as File[],
@@ -782,7 +782,7 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
       });
     }
 
-    if (areUnrepeatedFolders) {
+    if (foldersResult.unrepeatedItems.length > 0) {
       const folderDataToUpload = (foldersResult.unrepeatedItems as IRoot[]).map((root) => ({
         root,
         currentFolderId,
