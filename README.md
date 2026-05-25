@@ -165,7 +165,7 @@ Global styles and variables for consistent theming across the application.
 
 ### **`types/`**
 
-This folder contains shared TypeScript types used throughout the project
+This folder contains shared TypeScript types used throughout the project.
 
 This structure ensures **modularity**, **scalability**, and **maintainability** while making the codebase easy to navigate and extend. 🚀
 

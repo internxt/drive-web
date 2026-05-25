@@ -36,6 +36,7 @@ import {
 import { List } from '@internxt/ui';
 import { DownloadManager } from 'app/network/DownloadManager';
 import { useVersionHistoryMenuConfig } from 'views/Drive/hooks/useVersionHistoryMenuConfig';
+import { useMoveItems } from 'hooks/moveItems/useMoveItems';
 
 interface DriveExplorerListProps {
   folderId: string;
@@ -90,7 +91,7 @@ const resetDriveOrder = ({
   direction,
   currentFolderId,
 }: {
-  dispatch;
+  dispatch: AppDispatch;
   orderType: string;
   direction: string;
   currentFolderId: string;
@@ -108,6 +109,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
   const workspaceCredentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
+  const { restoreItemFromTrash, restoreItemsFromTrash } = useMoveItems();
 
   const isWorkspaceSelected = !!selectedWorkspace;
   const isSelectedMultipleItemsAndNotTrash = props.selectedItems.length > 1 && !props.isTrash;
@@ -198,11 +200,10 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   );
 
   const restoreItem = useCallback(
-    (item: DriveItemData | Pick<DriveItemData, SortField>) => {
-      dispatch(storageActions.setItemsToMove([item as DriveItemData]));
-      dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+    async (item: DriveItemData | Pick<DriveItemData, SortField | 'parent'>) => {
+      await restoreItemFromTrash(item as DriveItemData);
     },
-    [dispatch, storageActions, uiActions],
+    [restoreItemFromTrash],
   );
 
   const deletePermanently = useCallback(
@@ -310,9 +311,8 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   });
 
   const multipleSelectedTrashItemsContextMenu = contextMenuMultipleSelectedTrashItems({
-    restoreItem: () => {
-      dispatch(storageActions.setItemsToMove(props.selectedItems));
-      dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+    restoreItem: async () => {
+      await restoreItemsFromTrash(props.selectedItems);
     },
     deletePermanently: () => {
       dispatch(storageActions.setItemsToDelete(props.selectedItems));
