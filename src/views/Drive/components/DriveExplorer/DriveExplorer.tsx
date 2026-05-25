@@ -768,8 +768,8 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
       );
     }
 
-    const areUnrepeatedFiles = filesResult && filesResult.unrepeatedItems.length > 0;
-    const areUnrepeatedFolders = foldersResult && foldersResult.unrepeatedItems.length > 0;
+    const areUnrepeatedFiles = filesResult && filesResult.unrepeatedItems?.length > 0;
+    const areUnrepeatedFolders = foldersResult && foldersResult.unrepeatedItems?.length > 0;
 
     if (areUnrepeatedFiles) {
       dispatch(
