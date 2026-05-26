@@ -1497,7 +1497,8 @@
     "copyLink": "Enlace copiado al portapapeles",
     "linkUpdated": "Enlace actualizado",
     "itemsMovedToTrash": "{{item}} movid{{s}} a la papelera",
-    "restoreItems": "{{itemsToRecover}} restaurad{{s}} con éxito",
+    "restoreItems": "Los elementos han sido restaurados",
+    "goToDrive": "Mostrar en Drive",
     "storageModified": "Almacenamiento modificado con éxito",
     "membersUpdatedSuccessfully": "Miembros actualizados con éxito",
     "errorModifyingStorage": "El nuevo almacenamiento no es válido para este miembro.",
@@ -1528,6 +1529,7 @@
     "errorWhileUpdatingWorkspaceMembers": "Ocurrió un error al actualizar los miembros",
     "errorWhileFetchingCurrentWorkspaceMembers": "Ocurrió un error al obtener los miembros del espacio de trabajo",
     "newMembersCannotBeLessThanTheExistentOnesError": "Los miembros seleccionados no pueden ser menos que los miembros actuales del espacio de trabajo",
+    "reachedFileSizeLimit": "Límite de tamaño de archivo superado",
     "errorAcceptingAccessRequest": "Algo salió mal al aceptar la solicitud de acceso",
     "errorDecliningAccessRequest": "Algo salió mal al rechazar la solicitud de acceso",
     "errorGettingAccessRequests": "Algo salió mal al obtener las solicitudes de acceso"

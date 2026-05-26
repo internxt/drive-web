@@ -1481,7 +1481,8 @@
     "membersUpdatedSuccessfully": "Участники успешно обновлены",
     "errorModifyingStorage": "Новый объём хранения недоступен для этого участника.",
     "generalErrorWhileModifyingStorage": "Произошла ошибка при изменении объёма хранения.",
-    "restoreItems": "{{itemsToRecover}} успешно восстановлено",
+    "restoreItems": "Элементы были восстановлены",
+    "goToDrive": "Показать в Drive",
     "itemDeleted": "{{item}} удален",
     "itemsDeleted": "Файлы удалены",
     "emailNotEmpty": "Поле электронной почты не должно быть пустым",
@@ -1504,6 +1505,7 @@
     "errorWhileUpdatingWorkspaceMembers": "Произошла ошибка при обновлении участников",
     "errorWhileFetchingCurrentWorkspaceMembers": "Произошла ошибка при получении участников рабочего пространства",
     "newMembersCannotBeLessThanTheExistentOnesError": "Выбранных участников не может быть меньше, чем текущих участников рабочего пространства",
+    "reachedFileSizeLimit": "Превышен лимит размера файла",
     "errorAcceptingAccessRequest": "Произошла ошибка при принятии запроса на доступ",
     "errorDecliningAccessRequest": "Произошла ошибка при отклонении запроса на доступ",
     "errorGettingAccessRequests": "Произошла ошибка при получении запросов на доступ"

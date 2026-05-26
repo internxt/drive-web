@@ -1569,7 +1569,8 @@
     "copyLink": "Link condiviso copiato negli appunti",
     "linkUpdated": "Link aggiornato",
     "itemsMovedToTrash": "{{item}} spostati nel cestino",
-    "restoreItems": "{{itemsToRecover}} ripristinato correttamente",
+    "restoreItems": "Gli elementi sono stati ripristinati",
+    "goToDrive": "Mostra in Drive",
     "storageModified": "Archiviazione modificata con successo",
     "membersUpdatedSuccessfully": "Membri aggiornati con successo",
     "errorModifyingStorage": "Il nuovo spazio di archiviazione non è valido per questo membro.",
@@ -1596,6 +1597,7 @@
     "errorWhileUpdatingWorkspaceMembers": "Si è verificato un errore durante l'aggiornamento dei membri",
     "errorWhileFetchingCurrentWorkspaceMembers": "Si è verificato un errore durante il recupero dei membri dello spazio di lavoro",
     "newMembersCannotBeLessThanTheExistentOnesError": "I membri selezionati non possono essere meno dei membri attuali dello spazio di lavoro",
+    "reachedFileSizeLimit": "Limite di dimensione del file superato",
     "errorAcceptingAccessRequest": "Si è verificato un errore durante l'accettazione della richiesta di accesso",
     "errorDecliningAccessRequest": "Si è verificato un errore durante il rifiuto della richiesta di accesso",
     "errorGettingAccessRequests": "Si è verificato un errore durante il recupero delle richieste di accesso"

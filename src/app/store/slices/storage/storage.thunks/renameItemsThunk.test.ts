@@ -1,6 +1,6 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { getCollisionGroups, handleRepeatedUploadingFiles, handleRepeatedUploadingFolders } from './renameItemsThunk';
-import { buildDriveItemData } from '../../../../../../test/unit/fixtures/drive.fixtures';
+import { getDriveItemData } from 'testUtils/fixtures/drive.fixtures';
 
 const { mockCheckDuplicatedFiles, mockCheckFolderDuplicated } = vi.hoisted(() => ({
   mockCheckDuplicatedFiles: vi.fn(),
@@ -26,7 +26,7 @@ describe('Rename items - Thunk', () => {
 
   describe('Resolving collision groups before a move or copy operation', () => {
     test('When a group contains only files, then only the file duplicate checker is consulted', async () => {
-      const file = buildDriveItemData({ isFolder: false, uuid: 'file-uuid-1' });
+      const file = getDriveItemData({ isFolder: false, uuid: 'file-uuid-1' });
       mockCheckDuplicatedFiles.mockResolvedValue({
         filesWithDuplicates: [],
         duplicatedFilesResponse: [],
@@ -41,7 +41,7 @@ describe('Rename items - Thunk', () => {
     });
 
     test('When a group contains only folders, then only the folder duplicate checker is consulted', async () => {
-      const folder = buildDriveItemData({ isFolder: true, uuid: 'folder-uuid-1' });
+      const folder = getDriveItemData({ isFolder: true, uuid: 'folder-uuid-1' });
       mockCheckFolderDuplicated.mockResolvedValue({
         foldersWithDuplicates: [],
         duplicatedFoldersResponse: [],
@@ -56,8 +56,8 @@ describe('Rename items - Thunk', () => {
     });
 
     test('When a group contains both files and folders, then both duplicate checkers are consulted', async () => {
-      const file = buildDriveItemData({ isFolder: false, uuid: 'file-uuid-2' });
-      const folder = buildDriveItemData({ isFolder: true, uuid: 'folder-uuid-2' });
+      const file = getDriveItemData({ isFolder: false, uuid: 'file-uuid-2' });
+      const folder = getDriveItemData({ isFolder: true, uuid: 'folder-uuid-2' });
       mockCheckDuplicatedFiles.mockResolvedValue({
         filesWithDuplicates: [],
         duplicatedFilesResponse: [],
@@ -88,10 +88,10 @@ describe('Rename items - Thunk', () => {
     });
 
     test('When items collide in the destination, then they appear in duplicated items and existing items', async () => {
-      const movingFile = buildDriveItemData({ isFolder: false, uuid: 'file-moving' });
-      const existingFile = buildDriveItemData({ isFolder: false, uuid: 'file-existing' });
-      const movingFolder = buildDriveItemData({ isFolder: true, uuid: 'folder-moving' });
-      const existingFolder = buildDriveItemData({ isFolder: true, uuid: 'folder-existing' });
+      const movingFile = getDriveItemData({ isFolder: false, uuid: 'file-moving' });
+      const existingFile = getDriveItemData({ isFolder: false, uuid: 'file-existing' });
+      const movingFolder = getDriveItemData({ isFolder: true, uuid: 'folder-moving' });
+      const existingFolder = getDriveItemData({ isFolder: true, uuid: 'folder-existing' });
       mockCheckDuplicatedFiles.mockResolvedValue({
         filesWithDuplicates: [movingFile],
         duplicatedFilesResponse: [existingFile],
@@ -113,8 +113,8 @@ describe('Rename items - Thunk', () => {
     });
 
     test('When items do not collide in the destination, then they appear only as an unrepeated item', async () => {
-      const file = buildDriveItemData({ isFolder: false, uuid: 'file-uuid-3' });
-      const folder = buildDriveItemData({ isFolder: true, uuid: 'folder-uuid-3' });
+      const file = getDriveItemData({ isFolder: false, uuid: 'file-uuid-3' });
+      const folder = getDriveItemData({ isFolder: true, uuid: 'folder-uuid-3' });
       mockCheckDuplicatedFiles.mockResolvedValue({
         filesWithDuplicates: [],
         duplicatedFilesResponse: [],
@@ -135,8 +135,8 @@ describe('Rename items - Thunk', () => {
     });
 
     test('When multiple destination groups are provided, then each group is resolved independently', async () => {
-      const fileA = buildDriveItemData({ isFolder: false, uuid: 'file-a' });
-      const fileB = buildDriveItemData({ isFolder: false, uuid: 'file-b' });
+      const fileA = getDriveItemData({ isFolder: false, uuid: 'file-a' });
+      const fileB = getDriveItemData({ isFolder: false, uuid: 'file-b' });
       mockCheckDuplicatedFiles
         .mockResolvedValueOnce({
           filesWithDuplicates: [fileA],
@@ -166,7 +166,7 @@ describe('Rename items - Thunk', () => {
 
   describe('Handling repeated files', () => {
     test('When a file has a duplicate in the destination, it is returned as a repeated item', async () => {
-      const file = buildDriveItemData({ isFolder: false });
+      const file = getDriveItemData({ isFolder: false });
       mockCheckDuplicatedFiles.mockResolvedValue({
         filesWithDuplicates: [file],
         duplicatedFilesResponse: [file],
@@ -181,7 +181,7 @@ describe('Rename items - Thunk', () => {
     });
 
     test('When a file has no duplicate in the destination, it is returned as an unrepeated item', async () => {
-      const file = buildDriveItemData({ isFolder: false });
+      const file = getDriveItemData({ isFolder: false });
       mockCheckDuplicatedFiles.mockResolvedValue({
         filesWithDuplicates: [],
         duplicatedFilesResponse: [],
@@ -196,8 +196,8 @@ describe('Rename items - Thunk', () => {
     });
 
     test('When multiple files are checked, duplicates and non-duplicates are correctly separated', async () => {
-      const duplicate = buildDriveItemData({ isFolder: false });
-      const unique = buildDriveItemData({ isFolder: false });
+      const duplicate = getDriveItemData({ isFolder: false });
+      const unique = getDriveItemData({ isFolder: false });
       mockCheckDuplicatedFiles.mockResolvedValue({
         filesWithDuplicates: [duplicate],
         duplicatedFilesResponse: [duplicate],
@@ -213,7 +213,7 @@ describe('Rename items - Thunk', () => {
 
   describe('Handling repeated folders', () => {
     test('When a folder has a duplicate in the destination, it is returned as a repeated item', async () => {
-      const folder = buildDriveItemData({ isFolder: true });
+      const folder = getDriveItemData({ isFolder: true });
       mockCheckFolderDuplicated.mockResolvedValue({
         foldersWithDuplicates: [folder],
         duplicatedFoldersResponse: [folder],
@@ -228,7 +228,7 @@ describe('Rename items - Thunk', () => {
     });
 
     test('When a folder has no duplicate in the destination, it is returned as an unrepeated item', async () => {
-      const folder = buildDriveItemData({ isFolder: true });
+      const folder = getDriveItemData({ isFolder: true });
       mockCheckFolderDuplicated.mockResolvedValue({
         foldersWithDuplicates: [],
         duplicatedFoldersResponse: [],
@@ -243,8 +243,8 @@ describe('Rename items - Thunk', () => {
     });
 
     test('When multiple folders are checked, duplicates and non-duplicates are correctly separated', async () => {
-      const duplicate = buildDriveItemData({ isFolder: true });
-      const unique = buildDriveItemData({ isFolder: true });
+      const duplicate = getDriveItemData({ isFolder: true });
+      const unique = getDriveItemData({ isFolder: true });
       mockCheckFolderDuplicated.mockResolvedValue({
         foldersWithDuplicates: [duplicate],
         duplicatedFoldersResponse: [duplicate],

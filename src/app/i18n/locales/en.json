@@ -1534,7 +1534,8 @@
     "copyLink": "Shared link copied to clipboard",
     "linkUpdated": "Link updated",
     "itemsMovedToTrash": "{{item}} moved to trash",
-    "restoreItems": "{{itemsToRecover}} restored successfully",
+    "restoreItems": "The items have been restored",
+    "goToDrive": "Show in Drive",
     "moveItems": "{{itemsToMove}} moved successfully",
     "storageModified": "Storage modified successfully",
     "membersUpdatedSuccessfully": "Members updated successfully",
@@ -1565,6 +1566,7 @@
     "errorWhileUpdatingWorkspaceMembers": "Something went wrong while updating the members",
     "errorWhileFetchingCurrentWorkspaceMembers": "Something went wrong while fetching workspace members",
     "newMembersCannotBeLessThanTheExistentOnesError": "Selected members cannot be fewer than current workspace members",
+    "reachedFileSizeLimit": "File size limit exceeded",
     "errorAcceptingAccessRequest": "Something went wrong while accepting the access request",
     "errorDecliningAccessRequest": "Something went wrong while declining the access request",
     "errorGettingAccessRequests": "Something went wrong while getting access requests"

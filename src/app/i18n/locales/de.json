@@ -1461,7 +1461,8 @@
     "membersUpdatedSuccessfully": "Mitglieder erfolgreich aktualisiert",
     "errorModifyingStorage": "Der neue Speicherplatz ist für dieses Mitglied ungültig.",
     "generalErrorWhileModifyingStorage": "Beim Ändern des Speicherplatzes ist ein Fehler aufgetreten.",
-    "restoreItems": "{{itemsToRecover}} verschoben nach {{destination}}",
+    "restoreItems": "Die Elemente wurden wiederhergestellt",
+    "goToDrive": "In Drive anzeigen",
     "itemDeleted": "{{item}} gelöscht",
     "itemsDeleted": "Dateien gelöscht",
     "emailNotEmpty": "E-Mail darf nicht leer sein",
@@ -1484,6 +1485,7 @@
     "errorWhileUpdatingWorkspaceMembers": "Beim Aktualisieren der Mitglieder ist ein Fehler aufgetreten",
     "errorWhileFetchingCurrentWorkspaceMembers": "Beim Abrufen der Mitglieder des Arbeitsbereichs ist ein Fehler aufgetreten",
     "newMembersCannotBeLessThanTheExistentOnesError": "Die ausgewählten Mitglieder dürfen nicht weniger sein als die aktuellen Mitglieder des Arbeitsbereichs",
+    "reachedFileSizeLimit": "Dateigrößenlimit überschritten",
     "errorAcceptingAccessRequest": "Beim Akzeptieren der Zugriffsanfrage ist ein Fehler aufgetreten",
     "errorDecliningAccessRequest": "Beim Ablehnen der Zugriffsanfrage ist ein Fehler aufgetreten",
     "errorGettingAccessRequests": "Beim Abrufen der Zugriffsanfragen ist ein Fehler aufgetreten"

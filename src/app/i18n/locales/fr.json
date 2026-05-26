@@ -1462,7 +1462,8 @@
     "copyLink": "Copier le lien dans le presse-papiers",
     "linkUpdated": "Lien mis à jour",
     "itemsMovedToTrash": "{{item}} déplacé vers la corbeille",
-    "restoreItems": "{{itemsToRecover}} restauré avec succès",
+    "restoreItems": "Les éléments ont été restaurés",
+    "goToDrive": "Afficher dans Drive",
     "storageModified": "Stockage modifié avec succès",
     "membersUpdatedSuccessfully": "Membres mis à jour avec succès",
     "errorModifyingStorage": "Le nouvel espace de stockage n'est pas valide pour ce membre.",
@@ -1489,6 +1490,7 @@
     "errorWhileUpdatingWorkspaceMembers": "Une erreur s'est produite lors de la mise à jour des membres",
     "errorWhileFetchingCurrentWorkspaceMembers": "Une erreur s'est produite lors de la récupération des membres de l'espace de travail",
     "newMembersCannotBeLessThanTheExistentOnesError": "Les membres sélectionnés ne peuvent pas être inférieurs au nombre de membres actuels de l'espace de travail",
+    "reachedFileSizeLimit": "Limite de taille de fichier dépassée",
     "errorAcceptingAccessRequest": "Une erreur s'est produite lors de l'acceptation de la demande d'accès",
     "errorDecliningAccessRequest": "Une erreur s'est produite lors du refus de la demande d'accès",
     "errorGettingAccessRequests": "Une erreur s'est produite lors de la récupération des demandes d'accès"

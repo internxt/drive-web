@@ -1,6 +1,6 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { buildDriveItemData } from '../../../../../test/unit/fixtures/drive.fixtures';
 import { moveItem } from './index';
+import { getDriveItemData } from 'testUtils/fixtures/drive.fixtures';
 
 const mockMoveFileByUuid = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
 const mockMoveFolderByUuid = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
@@ -26,7 +26,7 @@ describe('Storage Service', () => {
       const fileUuid = 'file-uuid-abc';
       const destinationFolderId = 'dest-folder-uuid-xyz';
       const newName = 'renamed-file';
-      const fileItem = buildDriveItemData({ uuid: fileUuid, isFolder: false });
+      const fileItem = getDriveItemData({ uuid: fileUuid, isFolder: false });
 
       await moveItem(fileItem, destinationFolderId, newName);
 
@@ -37,7 +37,7 @@ describe('Storage Service', () => {
     test('When moving a file item without a new name, then the file move operation receives undefined for the name', async () => {
       const fileUuid = 'file-uuid-abc';
       const destinationFolderId = 'dest-folder-uuid-xyz';
-      const fileItem = buildDriveItemData({ uuid: fileUuid, isFolder: false });
+      const fileItem = getDriveItemData({ uuid: fileUuid, isFolder: false });
 
       await moveItem(fileItem, destinationFolderId);
 
@@ -49,7 +49,7 @@ describe('Storage Service', () => {
       const folderUuid = 'folder-uuid-abc';
       const destinationFolderId = 'dest-folder-uuid-xyz';
       const newName = 'renamed-folder';
-      const folderItem = buildDriveItemData({ uuid: folderUuid, isFolder: true });
+      const folderItem = getDriveItemData({ uuid: folderUuid, isFolder: true });
 
       await moveItem(folderItem, destinationFolderId, newName);
 
@@ -60,7 +60,7 @@ describe('Storage Service', () => {
     test('When moving a folder item without a new name, then the folder move operation receives undefined for the name', async () => {
       const folderUuid = 'folder-uuid-abc';
       const destinationFolderId = 'dest-folder-uuid-xyz';
-      const folderItem = buildDriveItemData({ uuid: folderUuid, isFolder: true });
+      const folderItem = getDriveItemData({ uuid: folderUuid, isFolder: true });
 
       await moveItem(folderItem, destinationFolderId);
 

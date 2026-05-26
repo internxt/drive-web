@@ -32,6 +32,7 @@ import {
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { DownloadManager } from 'app/network/DownloadManager';
 import { useVersionHistoryMenuConfig } from 'views/Drive/hooks/useVersionHistoryMenuConfig';
+import { useMoveItems } from 'hooks/moveItems/useMoveItems';
 
 const DriveTopBarActions = ({
   selectedItems,
@@ -57,6 +58,7 @@ const DriveTopBarActions = ({
 
   const { translate } = useTranslationContext();
   const { dirtyName } = useDriveItemStoreProps();
+  const { restoreItemFromTrash, restoreItemsFromTrash } = useMoveItems();
 
   const viewMode = useAppSelector((state) => state.storage.viewMode);
   const separatorV = <div className="mx-3 my-2 border-r border-gray-10" />;
@@ -157,9 +159,12 @@ const DriveTopBarActions = ({
     navigationService.pushFile(selectedItems[0].uuid, selectedWorkspace?.workspaceUser.workspaceId);
   };
 
-  const onRecoverButtonClicked = (): void => {
-    dispatch(storageActions.setItemsToMove(selectedItems));
-    dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+  const onRecoverButtonClicked = async (): Promise<void> => {
+    if (selectedItems.length === 1) {
+      await restoreItemFromTrash(selectedItems[0]);
+    } else {
+      await restoreItemsFromTrash(selectedItems);
+    }
   };
 
   const onDeletePermanentlyButtonClicked = (): void => {

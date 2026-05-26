@@ -59,7 +59,7 @@ const DEFAULT_OPTIONS: Partial<UploadItemsThunkOptions> = {
   showErrors: true,
 };
 
-const openReachedFileSizeLimitDIalog = (
+const openReachedFileSizeLimitDialog = (
   exceededFiles: ExceededFile[],
   dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
 ) => {
@@ -81,7 +81,11 @@ const validateFileSize = (
   const { allowedFilesToUpload, exceededFiles } = filterFilesByMaxSize({ files, maxUploadFileSize });
 
   if (exceededFiles.length > 0) {
-    openReachedFileSizeLimitDIalog(exceededFiles, dispatch);
+    notificationsService.show({
+      text: t('notificationMessages.reachedFileSizeLimit'),
+      type: ToastType.Warning,
+    });
+    openReachedFileSizeLimitDialog(exceededFiles, dispatch);
   }
 
   return allowedFilesToUpload;
@@ -205,7 +209,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
         }),
       );
 
-    const openFileSizeLimitDialog = () => openReachedFileSizeLimitDIalog(allowedFilesToUpload, dispatch);
+    const openFileSizeLimitDialog = () => openReachedFileSizeLimitDialog(allowedFilesToUpload, dispatch);
 
     try {
       await uploadFileWithManager({
@@ -499,7 +503,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
         }),
       );
 
-    const openFileSizeLimitDialog = () => openReachedFileSizeLimitDIalog(allowedFilesToUpload, dispatch);
+    const openFileSizeLimitDialog = () => openReachedFileSizeLimitDialog(allowedFilesToUpload, dispatch);
 
     try {
       await uploadFileWithManager({

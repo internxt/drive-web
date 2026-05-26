@@ -87,7 +87,10 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
   const isItemShared = (item.sharings?.length ?? 0) > 0;
   const isInteractive = isItemInteractive(item);
   const itemClassNames = getItemClassNames(isItemSelected(item), isDraggingOverThisItem, isDraggingThisItem);
-  const parentFolderName = item.parent?.status === FileStatus.EXISTS ? (item.parent?.plainName ?? 'Drive') : '-';
+  const hasExistingParent = item.parent?.status === FileStatus.EXISTS;
+  const parentFolderName = hasExistingParent ? (item.parent?.plainName ?? 'Drive') : undefined;
+  const basicFileDataTest = `file-list-${item.isFolder ? 'folder' : 'file'}-${transformItemService.getItemPlainNameWithExtension(item)}`;
+  const itemName = transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item);
 
   const hasKnownSize = item.isFolder ? item.sizeComputed === true : item.size >= 0;
   const formattedSize = hasKnownSize ? sizeService.bytesToString(item.size, false) : '';
@@ -98,7 +101,7 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
       className={itemClassNames}
       onClick={onItemClicked}
       onDoubleClick={isInteractive ? onItemDoubleClicked : undefined}
-      data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
+      data-test={`${basicFileDataTest}-parent`}
     >
       <div className="flex shrink-0 min-w-activity grow items-center pr-3">
         {/* ICON */}
@@ -110,18 +113,11 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
                   className="aspect-square h-full max-h-full object-contain object-center"
                   src={item.currentThumbnail.urlObject}
                   alt={transformItemService.getItemPlainNameWithExtension(item)}
-                  data-test={`file-list-${
-                    item.isFolder ? 'folder' : 'file'
-                  }-${transformItemService.getItemPlainNameWithExtension(item)}`}
+                  data-test={`${basicFileDataTest}-image`}
                 />
               </div>
             ) : (
-              <ItemIconComponent
-                className="h-full"
-                data-test={`file-list-${
-                  item.isFolder ? 'folder' : 'file'
-                }-${transformItemService.getItemPlainNameWithExtension(item)}`}
-              />
+              <ItemIconComponent className="h-full" data-test={`${basicFileDataTest}-component`} />
             )}
             {isItemShared && (
               <img
@@ -137,14 +133,12 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
         {/* NAME */}
         <div className="flex w-activity grow cursor-pointer items-center truncate pr-2">
           <button
-            data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
+            data-test={`${basicFileDataTest}-action`}
             className="truncate"
-            title={transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
+            title={itemName}
             onClick={isInteractive ? onNameClicked : undefined}
           >
-            <p className="truncate">
-              {transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
-            </p>
+            <p className="truncate">{itemName}</p>
           </button>
         </div>
       </div>
@@ -169,7 +163,7 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
 
       {isTrash && (
         <div className="flex shrink-0 w-date items-center whitespace-nowrap pr-3" title={parentFolderName}>
-          <p className="truncate">{parentFolderName}</p>
+          {hasExistingParent ? <p className="truncate">{parentFolderName}</p> : <span className="opacity-25">—</span>}
         </div>
       )}
 
