@@ -1529,7 +1529,10 @@
     "errorAcceptingWorkspaceInvitation": "接受邀请时出错",
     "errorWhileUpdatingWorkspaceMembers": "更新成员时出了点问题",
     "errorWhileFetchingCurrentWorkspaceMembers": "获取工作区成员时出了点问题",
-    "newMembersCannotBeLessThanTheExistentOnesError": "选择的成员数量不能少于当前工作区的成员数量。"
+    "newMembersCannotBeLessThanTheExistentOnesError": "选择的成员数量不能少于当前工作区的成员数量。",
+    "errorAcceptingAccessRequest": "接受访问请求时发生错误",
+    "errorDecliningAccessRequest": "拒绝访问请求时发生错误",
+    "errorGettingAccessRequests": "获取访问请求时发生错误"
   },
   "actions": {
     "undo": "撤销",

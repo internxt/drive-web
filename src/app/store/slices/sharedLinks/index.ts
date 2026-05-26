@@ -1,13 +1,13 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import shareService from 'app/share/services/share.service';
-import { RootState } from '../..';
+import { AppDispatch, RootState } from '../..';
 
 import { Role, SharedFoldersInvitationsAsInvitedUserResponse } from '@internxt/sdk/dist/drive/share/types';
 import errorService from 'services/error.service';
 import navigationService from 'services/navigation.service';
 import { AppView } from 'app/core/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { UserRoles } from 'app/share/types';
+import { AccessRequest, UserRoles } from 'app/share/types';
 import referralService from 'services/referral.service';
 import { t } from 'i18next';
 import userService from 'services/user.service';
@@ -22,6 +22,7 @@ export interface ShareLinksState {
   pendingInvitations: SharedFoldersInvitationsAsInvitedUserResponse[];
   currentShareId: string | null;
   currentSharingRole: UserRoles | null;
+  accessRequests: AccessRequest[];
 }
 
 const initialState: ShareLinksState = {
@@ -30,6 +31,7 @@ const initialState: ShareLinksState = {
   pendingInvitations: [],
   currentShareId: null,
   currentSharingRole: null,
+  accessRequests: [],
 };
 
 export interface ShareFileWithUserPayload {
@@ -99,6 +101,32 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
         type: ToastType.Error,
         requestId: castedError.requestId,
       });
+    }
+  },
+);
+
+interface GetAccessRequestsFromSharedItemPayload {
+  itemId: string;
+  itemType: 'file' | 'folder';
+}
+
+const getAccessRequestsFromSharedItem = createAsyncThunk<
+  void,
+  GetAccessRequestsFromSharedItemPayload,
+  { state: RootState; dispatch: AppDispatch }
+>(
+  'shareds/getAccessRequestsFromSharedItem',
+  async ({ itemId, itemType }: GetAccessRequestsFromSharedItemPayload, { dispatch }) => {
+    try {
+      const accessRequests = await shareService.getAccessRequestInvitations(itemId, itemType);
+      dispatch(sharedActions.setAccessRequests(accessRequests));
+    } catch (error) {
+      errorService.reportError(error);
+      notificationsService.show({
+        text: t('notificationMessages.errorGettingAccessRequests'),
+        type: ToastType.Error,
+      });
+      throw error;
     }
   },
 );
@@ -211,6 +239,12 @@ export const sharedSlice = createSlice({
     setCurrentSharingRole: (state: ShareLinksState, action: PayloadAction<any>) => {
       state.currentSharingRole = action.payload;
     },
+    setAccessRequests: (state: ShareLinksState, action: PayloadAction<AccessRequest[]>) => {
+      state.accessRequests = action.payload;
+    },
+    popAccessRequest: (state: ShareLinksState, action: PayloadAction<string>) => {
+      state.accessRequests = state.accessRequests.filter((item) => item.id !== action.payload);
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -243,6 +277,7 @@ export const sharedThunks = {
   removeUserFromSharedFolder,
   getSharedFolderRoles,
   getPendingInvitations,
+  getAccessRequestsFromSharedItem,
 };
 
 export default sharedSlice.reducer;

@@ -299,6 +299,76 @@ describe('Inviting user to Shared Folder', () => {
   });
 });
 
+describe('Request access to shared folder', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  test('When a user requests access to a shared item, then a captcha is generated and the request includes the user email', async () => {
+    const { generateCaptchaToken } = await import('utils');
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    const { requestAccessToSharedFolder } = await import('./share.service');
+
+    vi.mocked(localStorageService.getUser).mockReturnValue({ email: 'user@example.com' } as any);
+
+    const requestAccessToSharedFolderFn = vi.fn().mockResolvedValue(undefined);
+    const createShareClientFn = vi.fn(() => ({ requestUserToSharedFolder: requestAccessToSharedFolderFn }));
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({ createShareClient: createShareClientFn } as any);
+
+    await requestAccessToSharedFolder({ uuid: 'item-uuid', itemType: 'folder', notificationMessage: 'Hello' });
+
+    expect(generateCaptchaToken).toHaveBeenCalledTimes(1);
+    expect(createShareClientFn).toHaveBeenCalledWith('mocked-captcha-token');
+    expect(requestAccessToSharedFolderFn).toHaveBeenCalledWith({
+      itemType: 'folder',
+      itemId: 'item-uuid',
+      notifyUser: true,
+      roleId: '',
+      sharedWith: 'user@example.com',
+      notificationMessage: 'Hello',
+    });
+  });
+});
+
+describe('Get Access Request Invitations', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  test('When getting access request invitations for an item, then the item identifier and type are included in the call', async () => {
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    const { getAccessRequestInvitations } = await import('./share.service');
+
+    const mockRequests = [{ id: 'req-1', itemId: 'item-uuid' }];
+    const getSharedFolderInvitationsFn = vi.fn().mockResolvedValue(mockRequests);
+    const createShareClientFn = vi.fn(() => ({ getSharedFolderInvitations: getSharedFolderInvitationsFn }));
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({ createShareClient: createShareClientFn } as any);
+
+    const result = await getAccessRequestInvitations('item-uuid', 'folder');
+
+    expect(createShareClientFn).toHaveBeenCalledWith();
+    expect(getSharedFolderInvitationsFn).toHaveBeenCalledWith({ itemId: 'item-uuid', itemType: 'folder' });
+    expect(result).toEqual(mockRequests);
+  });
+
+  test('When getting access request invitations fails, then the error is handled and propagated to the caller', async () => {
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    const { getAccessRequestInvitations } = await import('./share.service');
+    const errorService = (await import('services/error.service')).default;
+
+    const originalError = new Error('API Error');
+    const getSharedFolderInvitationsFn = vi.fn().mockRejectedValue(originalError);
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
+      createShareClient: vi.fn(() => ({ getSharedFolderInvitations: getSharedFolderInvitationsFn })),
+    } as any);
+
+    await expect(getAccessRequestInvitations('item-uuid', 'folder')).rejects.toEqual(
+      expect.objectContaining({ message: originalError.message }),
+    );
+    expect(errorService.castError).toHaveBeenCalledWith(originalError);
+  });
+});
+
 describe('Get shared link', () => {
   test('When an error occurs fetching a shared link, then a notification is shown', async () => {
     vi.spyOn(shareService, 'createPublicSharingItem').mockRejectedValue(new Error('Unexpected error'));

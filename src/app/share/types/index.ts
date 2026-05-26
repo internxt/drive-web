@@ -1,4 +1,4 @@
-import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
+import { SharedFiles, SharedFolders, SharingInvite } from '@internxt/sdk/dist/drive/share/types';
 import { NetworkCredentials } from '../../network/download';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 
@@ -36,3 +36,14 @@ export enum UserRoles {
   Reader = 'reader',
   Owner = 'owner',
 }
+
+// TODO: Add invited objet to SharingInvite in SDK
+export type AccessRequest = SharingInvite & {
+  invited: {
+    avatar: string | null;
+    email: string;
+    lastname?: string;
+    name: string;
+    uuid: string;
+  };
+};

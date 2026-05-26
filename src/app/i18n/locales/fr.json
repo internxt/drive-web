@@ -1488,7 +1488,10 @@
     "errorAcceptingWorkspaceInvitation": "Une erreur s'est produite lors de l'acceptation de l'invitation",
     "errorWhileUpdatingWorkspaceMembers": "Une erreur s'est produite lors de la mise à jour des membres",
     "errorWhileFetchingCurrentWorkspaceMembers": "Une erreur s'est produite lors de la récupération des membres de l'espace de travail",
-    "newMembersCannotBeLessThanTheExistentOnesError": "Les membres sélectionnés ne peuvent pas être inférieurs au nombre de membres actuels de l'espace de travail"
+    "newMembersCannotBeLessThanTheExistentOnesError": "Les membres sélectionnés ne peuvent pas être inférieurs au nombre de membres actuels de l'espace de travail",
+    "errorAcceptingAccessRequest": "Une erreur s'est produite lors de l'acceptation de la demande d'accès",
+    "errorDecliningAccessRequest": "Une erreur s'est produite lors du refus de la demande d'accès",
+    "errorGettingAccessRequests": "Une erreur s'est produite lors de la récupération des demandes d'accès"
   },
   "actions": {
     "undo": "Annuler",
