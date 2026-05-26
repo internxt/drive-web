@@ -163,7 +163,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     store.dispatch(storageActions.popItemsToDelete(itemsToMove));
   };
 
-  const onAccept = async (destinationFolderId: string, _: string, namePaths: FolderPathDialog[]): Promise<void> => {
+  const onAccept = async (destinationFolderId: string): Promise<void> => {
     try {
       setIsLoading(true);
 
@@ -225,8 +225,8 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
                 .toSorted((a, b) => a.name.localeCompare(b.name))
                 .map((folder) => {
                   return (
-                    <div
-                      className={`cursor-pointer ${
+                    <button
+                      className={`cursor-pointer w-full justify-between ${
                         destinationId === folder.uuid
                           ? 'bg-primary/10 text-primary dark:bg-primary/20'
                           : 'hover:bg-gray-1 dark:hover:bg-gray-5'
@@ -234,15 +234,17 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
                       onDoubleClick={() => onShowFolderContentClicked(folder.uuid, folder.name)}
                       key={folder.id}
                     >
-                      <img className="flex h-8 w-8" alt="Folder icon" src={folderImage} />
-                      <span className="w-full flex-1 truncate text-base" title={folder.name}>
-                        {folder.name}
-                      </span>
+                      <div className="flex flex-row gap-3 items-center">
+                        <img className="flex h-8 w-8" alt="Folder icon" src={folderImage} />
+                        <span className="w-full flex-1 truncate text-base" title={folder.name}>
+                          {folder.name}
+                        </span>
+                      </div>
                       <CaretRight
                         onClick={() => onShowFolderContentClicked(folder.uuid, folder.name)}
                         className="h-6 w-6"
                       />
-                    </div>
+                    </button>
                   );
                 })
             )}
@@ -263,9 +265,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
             <Button
               disabled={isLoading || isDriveAndCurrentFolder}
               variant="primary"
-              onClick={() =>
-                onAccept(destinationId ? destinationId : currentFolderId, currentFolderName, currentNamePaths)
-              }
+              onClick={() => onAccept(destinationId ?? currentFolderId)}
             >
               {!props.isTrash ? translate('actions.move') : translate('actions.restoreHere')}
             </Button>
