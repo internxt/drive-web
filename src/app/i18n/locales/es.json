@@ -1031,14 +1031,20 @@
         }
       },
       "requestAccess": {
-        "title": "No tienes acceso",
+        "title": "No tienes acceso a este archivo/carpeta",
         "description": "Solicita acceso al propietario o cambia a una cuenta con acceso.",
         "textarea": "Mensaje (opcional)",
         "requestButton": "Solicita acceso",
         "logged": "Conectado como",
         "change": "Cambiar",
-        "requestSent": "Solicitud enviada",
-        "confirmation": "Recibirás un correo electrónico si el archivo/carpeta se comparte"
+        "requestSent": {
+          "title": "Solicitud enviada",
+          "description": "Se te notificará cuando se conceda el acceso"
+        },
+        "waitingForApproval": {
+          "title": "Esperando aprobación",
+          "description": "Tu solicitud ya ha sido enviada. Estamos esperando la aprobación del propietario"
+        }
       },
       "protectSharingModal": {
         "protectTooltipText": "La contraseña solo es necesaria para los usuarios sin acceso de visor o editor al elemento compartido.",

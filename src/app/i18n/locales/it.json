@@ -1089,14 +1089,20 @@
         }
       },
       "requestAccess": {
-        "title": "Non hai accesso",
+        "title": "Non hai accesso a questo file/cartella",
         "description": "Richiedi l'accesso al proprietario o passa a un account con accesso.",
         "textarea": "Messaggio (facoltativo)",
         "requestButton": "Richiesta di accesso",
         "logged": "Collegato come",
         "change": "Cambia",
-        "requestSent": "Richiesta inviata",
-        "confirmation": "Riceverai un'e-mail se il file/cartella è condiviso con te"
+        "requestSent": {
+          "title": "Richiesta inviata",
+          "description": "Riceverai una notifica quando l'accesso sarà concesso"
+        },
+        "waitingForApproval": {
+          "title": "In attesa di approvazione",
+          "description": "La tua richiesta è già stata inviata. Stiamo aspettando l'approvazione del proprietario"
+        }
       },
       "protectSharingModal": {
         "protectTooltipText": "La password è richiesta solo per gli utenti senza accesso in lettura o modifica all'elemento condiviso.",
