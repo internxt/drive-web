@@ -1596,7 +1596,8 @@
     "errorAcceptingWorkspaceInvitation": "Si è verificato un errore durante l'accettazione dell'invito",
     "errorWhileUpdatingWorkspaceMembers": "Si è verificato un errore durante l'aggiornamento dei membri",
     "errorWhileFetchingCurrentWorkspaceMembers": "Si è verificato un errore durante il recupero dei membri dello spazio di lavoro",
-    "newMembersCannotBeLessThanTheExistentOnesError": "I membri selezionati non possono essere meno dei membri attuali dello spazio di lavoro"
+    "newMembersCannotBeLessThanTheExistentOnesError": "I membri selezionati non possono essere meno dei membri attuali dello spazio di lavoro",
+    "reachedFileSizeLimit": "Limite di dimensione del file superato"
   },
   "actions": {
     "undo": "Annulla",
