@@ -956,14 +956,20 @@
         }
       },
       "requestAccess": {
-        "title": "Sie haben keinen Zugang",
+        "title": "Sie haben keinen Zugang zu dieser Datei/diesem Ordner",
         "description": "Beantragen Sie den Zugriff auf den Eigentümer oder wechseln Sie zu einem Konto mit Zugriff.",
         "textarea": "Nachricht (optional)",
         "requestButton": "Zugang beantragen",
         "logged": "Eingeloggt als",
         "change": "Ändern",
-        "requestSent": "Anfrage gesendet",
-        "confirmation": "Sie erhalten eine E-Mail, wenn die Datei/der Ordner für Sie freigegeben wurde"
+        "requestSent": {
+          "title": "Anfrage gesendet",
+          "description": "Sie werden benachrichtigt, wenn der Zugriff gewährt wurde"
+        },
+        "waitingForApproval": {
+          "title": "Warten auf Genehmigung",
+          "description": "Ihre Anfrage wurde bereits gesendet. Wir warten auf die Genehmigung des Eigentümers"
+        }
       },
       "protectSharingModal": {
         "protectTooltipText": "Ein Passwort ist nur für Benutzer erforderlich, die keine Viewer- oder Bearbeitungsberechtigungen für das freigegebene Element haben.",
@@ -1478,7 +1484,8 @@
     "errorAcceptingWorkspaceInvitation": "Beim Annehmen der Einladung ist ein Fehler aufgetreten",
     "errorWhileUpdatingWorkspaceMembers": "Beim Aktualisieren der Mitglieder ist ein Fehler aufgetreten",
     "errorWhileFetchingCurrentWorkspaceMembers": "Beim Abrufen der Mitglieder des Arbeitsbereichs ist ein Fehler aufgetreten",
-    "newMembersCannotBeLessThanTheExistentOnesError": "Die ausgewählten Mitglieder dürfen nicht weniger sein als die aktuellen Mitglieder des Arbeitsbereichs"
+    "newMembersCannotBeLessThanTheExistentOnesError": "Die ausgewählten Mitglieder dürfen nicht weniger sein als die aktuellen Mitglieder des Arbeitsbereichs",
+    "reachedFileSizeLimit": "Dateigrößenlimit überschritten"
   },
   "actions": {
     "undo": "Rückgängig machen",

@@ -992,7 +992,7 @@
         "empty": "No requests left",
         "actions": {
           "accept": "Accept",
-          "deny": "Deny",
+          "deny": "Decline",
           "roles": {
             "editor": "Editor",
             "reader": "Viewer"
@@ -1054,14 +1054,20 @@
         }
       },
       "requestAccess": {
-        "title": "You don't have access",
-        "description": "Request access to the owner or switch to an account with access.",
-        "textarea": "Message (optional)",
+        "title": "You don't have access to this file/folder",
+        "description": "Request access to the owner or switch to an account with access",
+        "textarea": "Leave a message (optional)",
         "requestButton": "Request access",
         "logged": "Logged in as",
         "change": "Change",
-        "requestSent": "Request Sent",
-        "confirmation": "You will get an email if the file/folder is shared with you"
+        "requestSent": {
+          "title": "Request Sent",
+          "description": "You’ll be notified when access is granted"
+        },
+        "waitingForApproval": {
+          "title": "Waiting for approval",
+          "description": "Your request has already been sent. We are awaiting approval from the owner"
+        }
       },
       "protectSharingModal": {
         "protectTooltipText": "Password is only required for users without viewer or editor access to the shared item.",
@@ -1559,7 +1565,8 @@
     "errorAcceptingWorkspaceInvitation": "Something went wrong while accepting the invitation",
     "errorWhileUpdatingWorkspaceMembers": "Something went wrong while updating the members",
     "errorWhileFetchingCurrentWorkspaceMembers": "Something went wrong while fetching workspace members",
-    "newMembersCannotBeLessThanTheExistentOnesError": "Selected members cannot be fewer than current workspace members"
+    "newMembersCannotBeLessThanTheExistentOnesError": "Selected members cannot be fewer than current workspace members",
+    "reachedFileSizeLimit": "File size limit exceeded"
   },
   "actions": {
     "undo": "Undo",
