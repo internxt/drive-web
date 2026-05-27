@@ -1,5 +1,5 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { UserPlus } from '@phosphor-icons/react';
+import { CaretRight, UserPlus } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Button, Modal } from '@internxt/ui';
 import { RootState } from 'app/store';
@@ -30,6 +30,7 @@ import { useShareDialogContext } from './context';
 import {
   resetDialogData,
   setAccessMode,
+  setAccessRequests,
   setCurrentUserFolderRole,
   setInviteDialogRoles,
   setIsLoading,
@@ -51,6 +52,7 @@ import { useShareItemActions } from './hooks/useShareItemActions';
 import { useShareItemInvitations } from './hooks/useShareItemInvitations';
 import { useShareItemUserRoles } from './hooks/useShareItemUserRoles';
 import AccessRequests from './components/AccessRequests';
+import { useAccessRequests } from './hooks/useAccessRequests';
 
 export type ShareDialogProps = {
   user: UserSettings;
@@ -70,6 +72,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const isOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
   const isWorkspace = !!useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
+  const accessRequests = useAppSelector((state) => state.shared.accessRequests);
   const userFeatures = useAppSelector((state) => state.user.userTierFeatures);
   const isRestrictedSharingAvailable = userFeatures?.[Service.Drive].restrictedItemsSharing.enabled ?? false;
   const isPasswordSharingAvailable = userFeatures?.[Service.Drive].passwordProtectedSharing.enabled ?? false;
@@ -131,23 +134,31 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     itemToShare,
   });
 
-  useEffect(() => {
-    if (isOpen) {
-      getSharingRoles()
-        .then((roles) => {
-          const parsedRoles = filterEditorAndReader(roles);
-          actionDispatch(setRoles([...parsedRoles, OWNER_ROLE]));
-          actionDispatch(setInviteDialogRoles(parsedRoles));
-        })
-        .catch(() => {
-          actionDispatch(setInviteDialogRoles([]));
-        });
-    }
+  const { onAcceptAccessRequest, onDeclineAccessRequest } = useAccessRequests();
 
+  useEffect(() => {
     if (!isOpen) {
       actionDispatch(resetDialogData());
       onCloseDialog?.();
+      return;
     }
+
+    getSharingRoles()
+      .then((roles) => {
+        const parsedRoles = filterEditorAndReader(roles);
+        actionDispatch(setRoles([...parsedRoles, OWNER_ROLE]));
+        actionDispatch(setInviteDialogRoles(parsedRoles));
+      })
+      .catch(() => {
+        actionDispatch(setInviteDialogRoles([]));
+      });
+
+    dispatch(
+      sharedThunks.getAccessRequestsFromSharedItem({
+        itemId: itemToShare?.item.uuid as string,
+        itemType: itemToShare?.item.isFolder ? 'folder' : 'file',
+      }),
+    );
   }, [isOpen]);
 
   useEffect(() => {
@@ -244,6 +255,11 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     actionDispatch(setShowStopSharingConfirmation(false));
   }, [actionDispatch]);
 
+  const removeAccessRequestFromList = (invitationId: string) => {
+    const filteredRequests = accessRequests.filter((request) => request.id !== invitationId);
+    actionDispatch(setAccessRequests(filteredRequests));
+  };
+
   const View = (viewProps: ViewProps): JSX.Element => {
     const view: Record<ViewProps['view'], JSX.Element> = {
       general: (
@@ -268,19 +284,20 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
               </div>
             </div>
             {/* Pending access requests from users */}
-            {/* <button
-              className="flex bg-gray-5 flex-row w-full justify-between items-center rounded-lg p-3 mt-1.5"
-              onClick={onOpenPendingAccess}
-            >
-              <p className="font-medium text-gray-100">{translate('modals.shareModal.requests.title')}</p>
-              <div className="flex flex-row gap-1 items-center">
-                <div className="flex px-2 py-1 bg-primary rounded-full h-max">
-                  TODO: Add the real notification count
-                  <p className="text-xs font-medium">2</p>
+            {accessRequests?.length > 0 && (
+              <button
+                className="flex bg-gray-5 flex-row w-full justify-between items-center rounded-lg p-3 mt-1.5"
+                onClick={onOpenPendingAccess}
+              >
+                <p className="font-medium text-gray-100">{translate('modals.shareModal.requests.title')}</p>
+                <div className="flex flex-row gap-1 items-center">
+                  <div className="flex px-2 py-1 bg-primary rounded-full h-max">
+                    <p className="text-xs font-medium">{accessRequests.length}</p>
+                  </div>
+                  <CaretRight size={24} />
                 </div>
-                <CaretRight size={24} />
-              </div>
-            </button> */}
+              </button>
+            )}
 
             {/* List of users invited to the shared item */}
             <InvitedUsersList
@@ -360,7 +377,14 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
           />
         </>
       ),
-      requests: <AccessRequests />,
+      requests: (
+        <AccessRequests
+          accessRequests={accessRequests}
+          roles={inviteDialogRoles}
+          onAcceptRequest={onAcceptAccessRequest}
+          onDeclineRequest={onDeclineAccessRequest}
+        />
+      ),
       invite: (
         <ShareInviteDialog
           onClose={() => {

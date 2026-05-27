@@ -45,7 +45,10 @@ export const useShareItemActions = ({
 
   const getPrivateShareLink = async () => {
     try {
-      await copyTextToClipboard(`${envService.getVariable('hostname')}/shared/?folderuuid=${itemToShare?.item.uuid}`);
+      const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
+      await copyTextToClipboard(
+        `${envService.getVariable('hostname')}/shared/?folderuuid=${itemToShare?.item.uuid}&type=${itemType}`,
+      );
       notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
     } catch {
       notificationsService.show({

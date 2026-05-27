@@ -26,6 +26,7 @@ const initialState: ShareDialogState = {
   openPasswordDisableDialog: false,
   isRestrictedSharingDialogOpen: false,
   isRestrictedPasswordDialogOpen: false,
+  accessRequests: [],
 };
 
 const reducer = (state: ShareDialogState, action: ShareDialogAction): ShareDialogState => {
@@ -102,6 +103,12 @@ const reducer = (state: ShareDialogState, action: ShareDialogAction): ShareDialo
         ...initialState,
         roles: state.roles,
         inviteDialogRoles: state.inviteDialogRoles,
+      };
+
+    case ActionTypes.SET_ACCESS_REQUESTS:
+      return {
+        ...state,
+        accessRequests: action.payload,
       };
 
     default:

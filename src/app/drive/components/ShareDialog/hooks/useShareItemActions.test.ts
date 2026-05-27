@@ -83,7 +83,9 @@ describe('Share Item Actions', () => {
 
       await result.current.getPrivateShareLink();
 
-      expect(mockedCopyToClipboard).toHaveBeenCalledWith('https://example.com/shared/?folderuuid=item-uuid-123');
+      expect(mockedCopyToClipboard).toHaveBeenCalledWith(
+        `https://example.com/shared/?folderuuid=item-uuid-123&type=${itemToShare.item.isFolder ? 'folder' : 'file'}`,
+      );
       expect(showNotificationSpy).toHaveBeenCalledWith({
         text: 'shared-links.toast.copy-to-clipboard',
         type: ToastType.Success,

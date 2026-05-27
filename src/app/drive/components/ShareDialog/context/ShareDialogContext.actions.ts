@@ -1,4 +1,4 @@
-import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
+import { SharingInvite, SharingMeta } from '@internxt/sdk/dist/drive/share/types';
 import { Role } from 'app/store/slices/sharedLinks/types';
 import { AccessMode, InvitedUserProps, Views } from '../types';
 import { ShareDialogAction, ActionTypes } from './ShareDialogContext';
@@ -40,6 +40,11 @@ export const setSharingMeta = (payload: SharingMeta | null): ShareDialogAction =
 
 export const setInvitedUsers = (payload: InvitedUserProps[]): ShareDialogAction => ({
   type: ActionTypes.SET_INVITED_USERS,
+  payload,
+});
+
+export const setAccessRequests = (payload: SharingInvite[]): ShareDialogAction => ({
+  type: ActionTypes.SET_ACCESS_REQUESTS,
   payload,
 });
 
