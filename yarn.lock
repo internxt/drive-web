@@ -1962,10 +1962,10 @@
   dependencies:
     axios "^1.16.0"
 
-"@internxt/ui@=0.1.17":
-  version "0.1.17"
-  resolved "https://registry.yarnpkg.com/@internxt/ui/-/ui-0.1.17.tgz#488cc48f6fea08702661f965aaec19d2e71304b0"
-  integrity sha512-UglyqlSjLsLncJZS4Ol/G+EyePegvQ+VEGjrAaZCfPCzKV9EleJCXc0YMvLfdQSzCGXUWhsjJ+RxMcTAOw0c1Q==
+"@internxt/ui@=0.1.18":
+  version "0.1.18"
+  resolved "https://registry.yarnpkg.com/@internxt/ui/-/ui-0.1.18.tgz#3c049b042272ddcd2c6f375f610870e11a8aca3d"
+  integrity sha512-vQvDgBXQzMEDWbEktnnMYKg7UADbq4MKjwQ488ic5nUvjJQETcT7Ckgjyxj+3DoAGnNdmalChH8RduxJLuikUA==
   dependencies:
     "@internxt/css-config" "1.1.0"
     "@phosphor-icons/react" "^2.1.10"
