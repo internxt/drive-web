@@ -8,6 +8,8 @@ import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import './RequestAccess.scss';
 import { logOut } from 'services/auth.service';
 import UserCheapCard from './UserCheapCard';
+import { Button } from '@internxt/ui';
+import shareService from 'app/share/services/share.service';
 
 const TEXTAREA_MAX_LENGTH = 1000;
 type Views = 'requestAccess' | 'requestSent' | 'waitingApproval';
@@ -16,6 +18,7 @@ function RequestAccess(): JSX.Element {
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
   const urlParams = new URLSearchParams(window.location.search);
   const folderuuid = urlParams.get('folderuuid');
+  const itemType = urlParams.get('type');
 
   const { translate } = useTranslationContext();
 
@@ -31,8 +34,13 @@ function RequestAccess(): JSX.Element {
     }
   }, [messageText]);
 
-  const onRequestAccess = (): void => {
+  const onRequestAccess = async (): Promise<void> => {
     // TODO add logic to request access
+    await shareService.requestAccessToSharedFolder({
+      itemType: itemType as 'folder' | 'file',
+      uuid: folderuuid as string,
+      notificationMessage: messageText,
+    });
     setView('requestSent');
   };
 
@@ -52,7 +60,7 @@ function RequestAccess(): JSX.Element {
           </p>
         </div>
 
-        {/* <div className="flex w-full flex-col">
+        <div className="flex w-full flex-col">
           <textarea
             value={messageText}
             placeholder={translate('modals.shareModal.requestAccess.textarea')}
@@ -71,7 +79,7 @@ function RequestAccess(): JSX.Element {
         </div>
         <Button variant="primary" className="cursor-pointer" onClick={onRequestAccess}>
           {translate('modals.shareModal.requestAccess.requestButton')}
-        </Button> */}
+        </Button>
       </div>
     ),
     requestSent: (

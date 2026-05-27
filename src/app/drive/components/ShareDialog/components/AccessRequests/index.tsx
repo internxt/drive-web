@@ -1,21 +1,20 @@
+import { Role } from 'app/store/slices/sharedLinks/types';
 import AccessRequestsEmptyState from './empty';
 import AccessRequestsList from './list';
+import { AcceptInvitationToSharedFolderPayload, SharingInvite } from '@internxt/sdk/dist/drive/share/types';
 
-const AccessRequests = () => {
-  const mockedRequests = [
-    {
-      user: {
-        name: 'John Doe',
-        email: '4V0oX@example.com',
-        avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026024d',
-      },
-      message: 'Hello there',
-      onDecline: () => {},
-      onAccept: () => {},
-    },
-  ];
+interface AccessRequestsProps {
+  accessRequests: SharingInvite[];
+  roles: Role[];
+  onAcceptRequest: (
+    invitationId: string,
+    payload: Pick<AcceptInvitationToSharedFolderPayload, 'roleId'>,
+  ) => Promise<void>;
+  onDeclineRequest: (invitationId: string) => Promise<void>;
+}
 
-  if (mockedRequests.length === 0) {
+const AccessRequests = ({ accessRequests, roles, onAcceptRequest, onDeclineRequest }: AccessRequestsProps) => {
+  if (accessRequests.length === 0) {
     return (
       <div className="flex flex-1 flex-col justify-center">
         <AccessRequestsEmptyState />
@@ -25,7 +24,12 @@ const AccessRequests = () => {
 
   return (
     <div className="flex min-h-[430px] flex-col items-center w-full">
-      <AccessRequestsList accessRequestList={mockedRequests} />
+      <AccessRequestsList
+        accessRequestList={accessRequests}
+        roles={roles}
+        onAccept={onAcceptRequest}
+        onDecline={onDeclineRequest}
+      />
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import { createContext, Dispatch } from 'react';
-import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
+import { SharingInvite, SharingMeta } from '@internxt/sdk/dist/drive/share/types';
 import { Role } from 'app/store/slices/sharedLinks/types';
 import { AccessMode, InvitedUserProps, Views } from '../types';
 
@@ -21,6 +21,7 @@ export interface ShareDialogState {
   openPasswordDisableDialog: boolean;
   isRestrictedSharingDialogOpen: boolean;
   isRestrictedPasswordDialogOpen: boolean;
+  accessRequests: SharingInvite[];
 }
 
 export type ShareDialogAction =
@@ -43,7 +44,8 @@ export type ShareDialogAction =
   | { type: 'SET_OPEN_PASSWORD_DISABLE_DIALOG'; payload: boolean }
   | { type: 'SET_IS_RESTRICTED_SHARING_DIALOG_OPEN'; payload: boolean }
   | { type: 'SET_IS_RESTRICTED_PASSWORD_DIALOG_OPEN'; payload: boolean }
-  | { type: 'RESET_DIALOG_DATA' };
+  | { type: 'RESET_DIALOG_DATA' }
+  | { type: 'SET_ACCESS_REQUESTS'; payload: SharingInvite[] };
 
 export const ActionTypes = {
   SET_VIEW: 'SET_VIEW',
@@ -66,6 +68,7 @@ export const ActionTypes = {
   SET_IS_RESTRICTED_SHARING_DIALOG_OPEN: 'SET_IS_RESTRICTED_SHARING_DIALOG_OPEN',
   SET_IS_RESTRICTED_PASSWORD_DIALOG_OPEN: 'SET_IS_RESTRICTED_PASSWORD_DIALOG_OPEN',
   RESET_DIALOG_DATA: 'RESET_DIALOG_DATA',
+  SET_ACCESS_REQUESTS: 'SET_ACCESS_REQUESTS',
 } as const;
 
 export interface ShareDialogContextProps {
