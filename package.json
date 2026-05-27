@@ -11,7 +11,7 @@
     "@internxt/lib": "1.4.1",
     "@internxt/sdk": "=1.16.4",
     "@phosphor-icons/react": "^2.1.7",
-    "@internxt/ui": "=0.1.18",
+    "@internxt/ui": "=0.1.19",
     "@popperjs/core": "^2.11.6",
     "@reduxjs/toolkit": "^1.6.0",
     "@stripe/react-stripe-js": "^2.7.1",
