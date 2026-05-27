@@ -2,12 +2,16 @@ import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import shareService from 'app/share/services/share.service';
 import { AppDispatch, RootState } from '../..';
 
-import { Role, SharedFoldersInvitationsAsInvitedUserResponse } from '@internxt/sdk/dist/drive/share/types';
+import {
+  Role,
+  SharedFoldersInvitationsAsInvitedUserResponse,
+  SharingInvite,
+} from '@internxt/sdk/dist/drive/share/types';
 import errorService from 'services/error.service';
 import navigationService from 'services/navigation.service';
 import { AppView } from 'app/core/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { AccessRequest, UserRoles } from 'app/share/types';
+import { UserRoles } from 'app/share/types';
 import referralService from 'services/referral.service';
 import { t } from 'i18next';
 import userService from 'services/user.service';
@@ -22,7 +26,7 @@ export interface ShareLinksState {
   pendingInvitations: SharedFoldersInvitationsAsInvitedUserResponse[];
   currentShareId: string | null;
   currentSharingRole: UserRoles | null;
-  accessRequests: AccessRequest[];
+  accessRequests: SharingInvite[];
 }
 
 const initialState: ShareLinksState = {
@@ -239,7 +243,7 @@ export const sharedSlice = createSlice({
     setCurrentSharingRole: (state: ShareLinksState, action: PayloadAction<any>) => {
       state.currentSharingRole = action.payload;
     },
-    setAccessRequests: (state: ShareLinksState, action: PayloadAction<AccessRequest[]>) => {
+    setAccessRequests: (state: ShareLinksState, action: PayloadAction<SharingInvite[]>) => {
       state.accessRequests = action.payload;
     },
     popAccessRequest: (state: ShareLinksState, action: PayloadAction<string>) => {

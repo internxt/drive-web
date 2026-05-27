@@ -33,7 +33,7 @@ import { downloadFolderAsZip } from 'app/drive/services/folder.service';
 import { DriveFolderData } from 'app/drive/types';
 import { DownloadManager } from '../../network/DownloadManager';
 import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
-import { AccessRequest, AdvancedSharedItem } from '../types';
+import { AdvancedSharedItem } from '../types';
 import { domainManager } from './DomainManager';
 import { generateCaptchaToken } from 'utils';
 import { copyTextToClipboard } from 'utils/copyToClipboard.utils';
@@ -195,7 +195,7 @@ export const requestAccessToSharedFolder = async ({
 export const getAccessRequestInvitations = async (
   itemId: string,
   itemType: 'file' | 'folder',
-): Promise<AccessRequest[]> => {
+): Promise<SharingInvite[]> => {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
 
   return shareClient
