@@ -1021,14 +1021,20 @@
         }
       },
       "requestAccess": {
-        "title": "您无权访问",
+        "title": "您无权访问此文件/文件夹",
         "description": "向所有者请求访问权限或切换到具有访问权限的帐户",
         "textarea": "留言（可选）",
         "requestButton": "申请进入",
         "logged": "登录为",
         "change": "改变",
-        "requestSent": "请求已发送",
-        "confirmation": "如果与您共享文件/文件夹 您将收到一封电子邮件"
+        "requestSent": {
+          "title": "请求已发送",
+          "description": "当访问权限被授予时您将收到通知"
+        },
+        "waitingForApproval": {
+          "title": "等待审批",
+          "description": "您的请求已经发送。我们正在等待所有者的批准"
+        }
       },
       "protectSharingModal": {
         "protectTooltipText": "仅对没有查看或编辑访问权限的用户需要密码。",
@@ -1526,7 +1532,8 @@
     "errorAcceptingWorkspaceInvitation": "接受邀请时出错",
     "errorWhileUpdatingWorkspaceMembers": "更新成员时出了点问题",
     "errorWhileFetchingCurrentWorkspaceMembers": "获取工作区成员时出了点问题",
-    "newMembersCannotBeLessThanTheExistentOnesError": "选择的成员数量不能少于当前工作区的成员数量。"
+    "newMembersCannotBeLessThanTheExistentOnesError": "选择的成员数量不能少于当前工作区的成员数量。",
+    "reachedFileSizeLimit": "已超过文件大小限制"
   },
   "actions": {
     "undo": "撤销",

@@ -986,14 +986,20 @@
         }
       },
       "requestAccess": {
-        "title": "您沒有訪問權限",
+        "title": "您沒有訪問此文件/文件夾的權限",
         "description": "請向擁有者申請訪問權限或切換到具有訪問權限的帳戶。",
         "textarea": "消息（選填）",
         "requestButton": "請求訪問權限",
         "logged": "已登錄為",
         "change": "更改",
-        "requestSent": "請求已發送",
-        "confirmation": "如果文件/文件夾與您共享，您將收到一封電子郵件"
+        "requestSent": {
+          "title": "請求已發送",
+          "description": "當訪問被授予時您將收到通知"
+        },
+        "waitingForApproval": {
+          "title": "等待審批",
+          "description": "您的請求已發送。我們正在等待所有者的批准"
+        }
       },
       "protectSharingModal": {
         "protectTooltipText": "僅對沒有查看者或編輯者訪問權限的用戶需要密碼。",
@@ -1491,7 +1497,8 @@
     "errorAcceptingWorkspaceInvitation": "接受邀請時出錯",
     "errorWhileUpdatingWorkspaceMembers": "更新成員時出了點問題",
     "errorWhileFetchingCurrentWorkspaceMembers": "獲取工作區成員時出了點問題",
-    "newMembersCannotBeLessThanTheExistentOnesError": "選擇的成員數量不能少於當前工作區的成員數量。"
+    "newMembersCannotBeLessThanTheExistentOnesError": "選擇的成員數量不能少於當前工作區的成員數量。",
+    "reachedFileSizeLimit": "已超過檔案大小限制"
   },
   "actions": {
     "undo": "撤銷",

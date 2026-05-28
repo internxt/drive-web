@@ -11,7 +11,6 @@ import DriveItemInfoMenu from 'app/drive/components/DriveItemInfoMenu/DriveItemI
 import { getAppConfig } from 'services/config.service';
 import ShareItemDialog from '../../../../views/Shared/components/ShareItemDialog/ShareItemDialog';
 import { Sidebar as VersionHistorySidebar } from '../../../../views/Drive/components/VersionHistory';
-import ReachedFileSizeLimitDialog from 'app/drive/components/ReachedFileSizeLimitDialog';
 
 export interface HeaderAndSidenavLayoutProps {
   children: JSX.Element;
@@ -41,7 +40,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
     <div className="flex h-auto min-h-full flex-col">
       {isShareItemDialogOpen && itemToShare && <ShareItemDialog share={itemToShare?.share} item={itemToShare.item} />}
       {isReachedPlanLimitDialogOpen && <ReachedPlanLimitDialog />}
-      <ReachedFileSizeLimitDialog />
+      {/* <ReachedFileSizeLimitDialog /> */}
 
       <div className="flex h-1 grow">
         <Sidenav />

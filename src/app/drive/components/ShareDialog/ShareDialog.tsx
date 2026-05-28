@@ -50,6 +50,7 @@ import { filterEditorAndReader, isAdvancedShareItem } from './utils';
 import { useShareItemActions } from './hooks/useShareItemActions';
 import { useShareItemInvitations } from './hooks/useShareItemInvitations';
 import { useShareItemUserRoles } from './hooks/useShareItemUserRoles';
+import AccessRequests from './components/AccessRequests';
 
 export type ShareDialogProps = {
   user: UserSettings;
@@ -164,7 +165,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     if (!itemToShare?.item) return;
 
     actionDispatch(setIsLoading(true));
-    // Change object type of itemToShare to AdvancedSharedItem
     let shareAccessMode: AccessMode = 'public';
 
     const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
@@ -234,6 +234,8 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     }
   };
 
+  const onOpenPendingAccess = () => actionDispatch(setView('requests'));
+
   const onOpenStopSharingDialog = useCallback(() => {
     actionDispatch(setShowStopSharingConfirmation(true));
   }, [actionDispatch]);
@@ -243,7 +245,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   }, [actionDispatch]);
 
   const View = (viewProps: ViewProps): JSX.Element => {
-    const view = {
+    const view: Record<ViewProps['view'], JSX.Element> = {
       general: (
         <>
           <div className="relative flex flex-col">
@@ -265,6 +267,20 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                 )}
               </div>
             </div>
+            {/* Pending access requests from users */}
+            {/* <button
+              className="flex bg-gray-5 flex-row w-full justify-between items-center rounded-lg p-3 mt-1.5"
+              onClick={onOpenPendingAccess}
+            >
+              <p className="font-medium text-gray-100">{translate('modals.shareModal.requests.title')}</p>
+              <div className="flex flex-row gap-1 items-center">
+                <div className="flex px-2 py-1 bg-primary rounded-full h-max">
+                  TODO: Add the real notification count
+                  <p className="text-xs font-medium">2</p>
+                </div>
+                <CaretRight size={24} />
+              </div>
+            </button> */}
 
             {/* List of users invited to the shared item */}
             <InvitedUsersList
@@ -344,6 +360,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
           />
         </>
       ),
+      requests: <AccessRequests />,
       invite: (
         <ShareInviteDialog
           onClose={() => {
