@@ -1066,7 +1066,7 @@
         },
         "waitingForApproval": {
           "title": "Waiting for approval",
-          "description": "Your request has already been sent. We are awaiting approval from the owner"
+          "description": "Your request has already been sent. We are awaiting approval from the owner."
         }
       },
       "protectSharingModal": {
