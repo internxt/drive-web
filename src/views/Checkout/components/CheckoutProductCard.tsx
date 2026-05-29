@@ -256,7 +256,7 @@ export const CheckoutProductCard = ({
         </div>
       </div>
       {priceData.interval === 'month' && (
-        <p className="text-gray-60">
+        <p className="text-gray-60 text-sm">
           {translate('checkout.productCard.annualBillingTemplate', {
             priceNow: totalAmountFormatted,
             price: normalPriceAmount,

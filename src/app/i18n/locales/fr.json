@@ -257,7 +257,7 @@
       },
       "apply": "Appliquer",
       "taxes": "Taxes",
-      "annualBillingTemplate": "Plan annuel, facturé mensuellement à {{price}}{{currency}}/mois pendant 12 mois"
+      "annualBillingTemplate": "Plan annuel, facturé {{currency}}{{priceNow}} pour le premier mois, puis renouvelé à {{currency}}{{price}}/mois"
     },
     "confirmCryptoPayment": {
       "title": "Confirmer le paiement",
@@ -2014,7 +2014,7 @@
         "free": "Obtenez jusqu'à 10 Go gratuitement",
         "manageBilling": "Gérer la facturation",
         "freeForever": "Gratuit à vie",
-        "billedAnnually": "facturé annuellement",
+        "billedAnnually": "/mois facturé annuellement",
         "billedMonthly": "facturé mensuellement",
         "year": "Année",
         "month": "Mois",
@@ -2059,7 +2059,8 @@
               "Inviter, partager et collaborer",
               "VPN Chiffré",
               "Antivirus",
-              "Nettoyeur"
+              "Nettoyeur",
+              "Meet"
             ]
           },
           "5TB": {
