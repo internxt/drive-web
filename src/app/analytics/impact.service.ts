@@ -29,7 +29,6 @@ import { sendAddShoppersConversion } from './addShoppers.services';
  *
  */
 export interface SavePaymentDataParams {
-  subscriptionId: string | undefined;
   paymentIntentId: string | undefined;
   selectedPlan: PriceWithTax | undefined;
   users: number;
@@ -38,18 +37,13 @@ export interface SavePaymentDataParams {
 }
 
 export function savePaymentDataInLocalStorage({
-  subscriptionId,
   paymentIntentId,
   selectedPlan,
   users,
   couponCodeData,
   isFirstPurchase,
 }: SavePaymentDataParams) {
-  if (subscriptionId && selectedPlan?.price.interval !== 'lifetime') {
-    localStorageService.set('subscriptionId', subscriptionId);
-  }
-
-  if (paymentIntentId && selectedPlan?.price.interval === 'lifetime') {
+  if (paymentIntentId) {
     localStorageService.set('paymentIntentId', paymentIntentId);
   }
 
@@ -112,12 +106,13 @@ export async function trackSignUp(uuid: string): Promise<void> {
     const IMPACT_API = envService.getVariable('impactApiUrl');
     const anonymousID = getCookie('impactAnonymousId');
     const source = getCookie('impactSource');
+    const irclickid = getCookie('impactClickId');
 
     if (globalThis.window.gtag) {
       window.gtag('event', 'User Signup');
     }
 
-    if (source && source !== 'direct') {
+    if ((source && source !== 'direct') || irclickid) {
       await axios.post(IMPACT_API, {
         anonymousId: anonymousID,
         timestamp: dayjs().format('YYYY-MM-DDTHH:mm:ss.sssZ'),
@@ -126,6 +121,7 @@ export async function trackSignUp(uuid: string): Promise<void> {
         type: 'track',
         event: 'User Signup',
         ...(gclid && { gclid }),
+        ...(irclickid && { properties: { irclickid } }),
       });
     }
   } catch (error) {
@@ -143,7 +139,6 @@ export async function trackPaymentConversion(): Promise<void> {
     }
 
     const { uuid, email: userEmail } = userSettings;
-    const subscription = localStorageService.get('subscriptionId');
     const paymentIntent = localStorageService.get('paymentIntentId');
     const currency = localStorageService.get('currency');
     const amountPaidStr = localStorageService.get('amountPaid');
@@ -166,20 +161,21 @@ export async function trackPaymentConversion(): Promise<void> {
     const IMPACT_API = envService.getVariable('impactApiUrl');
     const anonymousID = getCookie('impactAnonymousId') || uuidV4();
     const source = getCookie('impactSource');
+    const irclickid = getCookie('impactClickId');
 
     const IMPACT_COUPON_WHITELIST = ['CNINTERNXT', 'CNINTERNXTL', 'CLOUDOFF', 'SPECIAL'];
     const isImpactCoupon = couponCode && IMPACT_COUPON_WHITELIST.includes(couponCode.toUpperCase());
 
-    if (isFirstPurchase && ((source && source !== 'direct') || isImpactCoupon)) {
+    if (isFirstPurchase && ((source && source !== 'direct') || isImpactCoupon || irclickid)) {
       try {
         await axios.post(IMPACT_API, {
           anonymousId: anonymousID,
           timestamp: dayjs().format('YYYY-MM-DDTHH:mm:ss.sssZ'),
           properties: {
             impact_value: amount === 0 ? 0.01 : amount,
-            subscription_id: subscription,
             payment_intent: paymentIntent,
             ...(couponCode && { order_promo_code: couponCode }),
+            ...(irclickid && { irclickid }),
           },
           userId: uuid,
           type: 'track',

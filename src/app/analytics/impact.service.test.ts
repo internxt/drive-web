@@ -48,7 +48,6 @@ vi.mock('services/error.service', () => ({
   },
 }));
 
-const subId = 'sub_123';
 const paymentIntentId = 'py_123';
 const mockedUserUuid = '00000000-0000-0000-0000-0000000000';
 const mockImpactApiUrl = 'mock-impact-api-url';
@@ -99,7 +98,6 @@ beforeEach(() => {
 
   vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
     if (key === 'paymentIntentId') return paymentIntentId;
-    if (key === 'subscriptionId') return subId;
     if (key === 'productName') return planName;
     if (key === 'priceId') return product.price.id;
     if (key === 'currency') return product.price.currency;
@@ -116,7 +114,6 @@ describe('Testing Impact Service', () => {
       const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
 
       savePaymentDataInLocalStorage({
-        subscriptionId: subId,
         paymentIntentId,
         selectedPlan: product as PriceWithTax,
         users: 1,
@@ -127,32 +124,12 @@ describe('Testing Impact Service', () => {
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('amountPaid', expectedAmount);
     });
 
-    it('When the plan is not lifetime, then it saves the subscription ID to localStorage', () => {
-      const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
-
-      savePaymentDataInLocalStorage({
-        subscriptionId: subId,
-        paymentIntentId: undefined,
-        selectedPlan: product as PriceWithTax,
-        users: 1,
-        couponCodeData: promoCode,
-        isFirstPurchase: true,
-      });
-
-      expect(setToLocalStorageSpy).toHaveBeenCalledWith('subscriptionId', subId);
-    });
-
     it('When the plan is lifetime, then it saves the payment intent ID to localStorage', () => {
       const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
-      const lifetimeProduct = {
-        ...product,
-        price: { ...product.price, interval: 'lifetime' },
-      };
 
       savePaymentDataInLocalStorage({
-        subscriptionId: undefined,
         paymentIntentId,
-        selectedPlan: lifetimeProduct as PriceWithTax,
+        selectedPlan: product as PriceWithTax,
         users: 1,
         couponCodeData: promoCode,
         isFirstPurchase: true,
@@ -165,7 +142,6 @@ describe('Testing Impact Service', () => {
       const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
 
       savePaymentDataInLocalStorage({
-        subscriptionId: subId,
         paymentIntentId,
         selectedPlan: product as PriceWithTax,
         users: 1,
@@ -182,7 +158,6 @@ describe('Testing Impact Service', () => {
       const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
 
       savePaymentDataInLocalStorage({
-        subscriptionId: subId,
         paymentIntentId,
         selectedPlan: product as PriceWithTax,
         users: 1,
@@ -197,7 +172,6 @@ describe('Testing Impact Service', () => {
       const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
 
       savePaymentDataInLocalStorage({
-        subscriptionId: subId,
         paymentIntentId,
         selectedPlan: product as PriceWithTax,
         users: 1,
@@ -293,7 +267,6 @@ describe('Testing Impact Service', () => {
             timestamp: expect.any(String),
             properties: expect.objectContaining({
               impact_value: parseFloat(expectedAmount),
-              subscription_id: subId,
               payment_intent: paymentIntentId,
               order_promo_code: promoCode.codeName,
             }),
@@ -307,7 +280,6 @@ describe('Testing Impact Service', () => {
       it('When the amount paid is 0, then it uses 0.01 as the minimum impact value', async () => {
         vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
           if (key === 'amountPaid') return '0';
-          if (key === 'subscriptionId') return subId;
           if (key === 'couponCode') return promoCode.codeName;
           if (key === 'isFirstPurchase') return 'true';
           return null;
@@ -388,7 +360,6 @@ describe('Testing Impact Service', () => {
         vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
           if (key === 'couponCode') return 'CNINTERNXT'; // In whitelist
           if (key === 'amountPaid') return expectedAmount;
-          if (key === 'subscriptionId') return subId;
           if (key === 'isFirstPurchase') return 'true';
           return null;
         });

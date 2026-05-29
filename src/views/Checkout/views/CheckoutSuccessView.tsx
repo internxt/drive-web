@@ -10,7 +10,6 @@ import metaService from 'app/analytics/meta.service';
 import { userStoragePolling } from 'utils/userStoragePolling.utils';
 
 export function removePaymentsStorage() {
-  localStorageService.removeItem('subscriptionId');
   localStorageService.removeItem('paymentIntentId');
   localStorageService.removeItem('amountPaid');
   localStorageService.removeItem('productName');
