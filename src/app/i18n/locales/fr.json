@@ -81,7 +81,7 @@
     "password": " Mot de passe ",
     "terms1": "En créant un compte,",
     "terms2": "vous acceptez les termes et conditions",
-    "decrypting": "Décryptage...",
+    "decrypting": "Déchiffrement...",
     "login": {
       "title": " Connexion ",
       "forgotPwd": "Mot de passe oublié?",
@@ -983,14 +983,20 @@
         }
       },
       "requestAccess": {
-        "title": "Vous n'avez pas accès",
+        "title": "Vous n'avez pas accès à ce fichier/dossier",
         "description": "Demandez l'accès au propriétaire ou passez à un compte avec accès.",
         "textarea": "Message (optionnel)",
         "requestButton": "Demande d'accès",
         "logged": "Connecté comme",
         "change": "Changer",
-        "requestSent": "Demande envoyée",
-        "confirmation": "Vous recevrez un e-mail si le fichier/dossier est partagé avec vous"
+        "requestSent": {
+          "title": "Demande envoyée",
+          "description": "Vous serez notifié lorsque l'accès sera accordé"
+        },
+        "waitingForApproval": {
+          "title": "En attente d'approbation",
+          "description": "Votre demande a déjà été envoyée. Nous attendons l'approbation du propriétaire"
+        }
       },
       "protectSharingModal": {
         "protectTooltipText": "Le mot de passe est uniquement requis pour les utilisateurs sans accès en lecture ou en modification à l'élément partagé.",
@@ -1456,7 +1462,8 @@
     "copyLink": "Copier le lien dans le presse-papiers",
     "linkUpdated": "Lien mis à jour",
     "itemsMovedToTrash": "{{item}} déplacé vers la corbeille",
-    "restoreItems": "{{itemsToRecover}} restauré avec succès",
+    "restoreItems": "Les éléments ont été restaurés",
+    "goToDrive": "Afficher dans Drive",
     "storageModified": "Stockage modifié avec succès",
     "membersUpdatedSuccessfully": "Membres mis à jour avec succès",
     "errorModifyingStorage": "Le nouvel espace de stockage n'est pas valide pour ce membre.",
@@ -1482,7 +1489,8 @@
     "errorAcceptingWorkspaceInvitation": "Une erreur s'est produite lors de l'acceptation de l'invitation",
     "errorWhileUpdatingWorkspaceMembers": "Une erreur s'est produite lors de la mise à jour des membres",
     "errorWhileFetchingCurrentWorkspaceMembers": "Une erreur s'est produite lors de la récupération des membres de l'espace de travail",
-    "newMembersCannotBeLessThanTheExistentOnesError": "Les membres sélectionnés ne peuvent pas être inférieurs au nombre de membres actuels de l'espace de travail"
+    "newMembersCannotBeLessThanTheExistentOnesError": "Les membres sélectionnés ne peuvent pas être inférieurs au nombre de membres actuels de l'espace de travail",
+    "reachedFileSizeLimit": "Limite de taille de fichier dépassée"
   },
   "actions": {
     "undo": "Annuler",
