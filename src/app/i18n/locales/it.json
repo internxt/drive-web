@@ -98,7 +98,9 @@
     "environment": "Giornata Mondiale dell'Ambiente"
   },
   "auth": {
+    "emailFloatingLabel": "Indirizzo email",
     "email": "Email",
+    "passwordFloatingLabel": "Password",
     "password": "Password",
     "terms1": "Creando un account, ",
     "terms2": "accetti i termini e le condizioni",

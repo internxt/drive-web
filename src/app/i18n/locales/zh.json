@@ -95,7 +95,9 @@
     "anniversary": "Anniversary"
   },
   "auth": {
+    "emailFloatingLabel": "电子邮件",
     "email": "电子邮件",
+    "passwordFloatingLabel": "密码",
     "password": "密码",
     "terms1": "创建账户后，",
     "terms2": "您接受条款和条件",

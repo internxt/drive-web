@@ -3,6 +3,7 @@ import { Button } from '@internxt/ui';
 import { AppView, LocalStorageItem } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
+import AnimatedBackground from 'components/AnimatedBackground';
 import { isMobile } from 'react-device-detect';
 import { useEffect, useMemo } from 'react';
 import authService from 'services/auth.service';
@@ -53,12 +54,14 @@ export default function UniversalLinkView(): JSX.Element {
   };
 
   return (
-    <div className="flex h-full w-full flex-col overflow-auto bg-login-gradient">
-      <div className="flex shrink-0 flex-row justify-center py-10 sm:justify-start sm:pl-20">
+    <div className="relative flex h-full w-full flex-col overflow-hidden dark:bg-[#0A0F1C]">
+      <AnimatedBackground />
+
+      <div className="relative z-20 flex shrink-0 flex-row justify-center py-10 sm:justify-center">
         <InternxtLogo className="h-auto w-28 text-gray-100" />
       </div>
-      <div className="flex h-full flex-col items-center justify-center px-6">
-        <div className="w-full max-w-sm rounded-2xl border border-[#CCCCCC80] bg-[#FAFAFA40] px-8 py-10 dark:border-[#FFFFFF1A] dark:bg-[#FFFFFF0D] sm:bg-surface sm:shadow-subtle sm:dark:bg-gray-5">
+      <div className="relative z-10 flex h-full flex-col items-center justify-center px-6">
+        <div className="w-full max-w-sm rounded-2xl border border-gray-10 bg-white px-8 py-10 shadow-subtle dark:border-gray-10 dark:bg-gray-5">
           <div className="flex flex-col items-center">
             <h1 className="text-2xl font-medium">{translate('auth.universalLink.loginAs')}</h1>
             <p
@@ -86,7 +89,7 @@ export default function UniversalLinkView(): JSX.Element {
           </div>
         </div>
       </div>
-      <div className="flex shrink-0 flex-col items-center justify-center space-x-0 space-y-2 py-8 sm:flex-row sm:space-x-8 sm:space-y-0">
+      <div className="relative z-10 flex shrink-0 flex-col items-center justify-center space-x-0 space-y-2 py-8 sm:flex-row sm:space-x-8 sm:space-y-0">
         {!isMobile && (
           <a href="https://internxt.com/legal" target="_blank" rel="noopener noreferrer" className="auth-footer-link">
             {translate('general.terms')}

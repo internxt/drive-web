@@ -245,10 +245,11 @@ function SignUpForm(): JSX.Element {
     }
 
     return (
-      <div className="flex flex-col items-start space-y-5">
+      <div className="flex flex-col items-center space-y-5">
         <h1 className="text-3xl font-medium">{translate('auth.signup.title')}</h1>
 
         <form className="flex w-full flex-col space-y-2" onSubmit={handleSubmit(onSubmit)}>
+          <p> {translate('auth.emailFloatingLabel')}</p>
           <TextInput
             placeholder={translate('auth.email')}
             label="email"
@@ -259,7 +260,7 @@ function SignUpForm(): JSX.Element {
             minLength={{ value: 1, message: 'Email must not be empty' }}
             error={errors.email}
           />
-
+          <p> {translate('auth.passwordFloatingLabel')}</p>
           <PasswordFieldWithInfo
             translate={translate}
             register={register}
@@ -324,7 +325,10 @@ function SignUpForm(): JSX.Element {
   };
 
   return (
-    <>
+    <div
+      className="bg-white dark:bg-gray-1 dark:border-gray-5 rounded-2xl z-10"
+      style={{ boxShadow: '0 32px 40px 0 rgba(0, 0, 0, 0.08)' }}
+    >
       <Helmet>
         <link rel="canonical" href={`${envService.getVariable('hostname')}/new`} />
       </Helmet>
@@ -337,7 +341,7 @@ function SignUpForm(): JSX.Element {
       >
         {renderContent()}
       </div>
-    </>
+    </div>
   );
 }
 
