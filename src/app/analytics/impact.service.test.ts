@@ -9,6 +9,7 @@ import { getProductAmount } from 'views/Checkout/utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   handleImpactDTCCheckout,
+  resolvePartnerIdFromUrl,
   savePaymentDataInLocalStorage,
   trackPaymentConversion,
   trackSignUp,
@@ -490,7 +491,7 @@ describe('handleImpactDTCCheckout', () => {
   it('When an affiliate partner is identified, then it includes their information in the tracking event', async () => {
     const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
 
-    await handleImpactDTCCheckout({ irclickid, utmMedium });
+    await handleImpactDTCCheckout({ irclickid, partnerId: utmMedium });
 
     const callArgs = axiosSpy.mock.calls[0][1] as { properties: Record<string, unknown> };
     expect(callArgs.properties).toHaveProperty('partner_id', utmMedium);
@@ -514,7 +515,7 @@ describe('handleImpactDTCCheckout', () => {
     const setImpactCookiesSpy = vi.mocked(getCookieMock.setImpactCookies);
     vi.spyOn(axios, 'post').mockResolvedValue({});
 
-    await handleImpactDTCCheckout({ irclickid, utmMedium });
+    await handleImpactDTCCheckout({ irclickid, partnerId: utmMedium });
 
     expect(setImpactCookiesSpy).toHaveBeenCalledWith('anon_id', irclickid, utmMedium);
   });
@@ -527,6 +528,32 @@ describe('handleImpactDTCCheckout', () => {
     await expect(handleImpactDTCCheckout({ irclickid })).resolves.not.toThrow();
 
     expect(errorServiceSpy).toHaveBeenCalledWith(unknownError);
+  });
+});
+
+describe('resolvePartnerIdFromUrl', () => {
+  it('When utm_content is present, then it returns it as the partner ID', () => {
+    expect(resolvePartnerIdFromUrl('?utm_content=partner_abc')).toBe('partner_abc');
+  });
+
+  it('When utm_medium is a numeric string, then it returns it as the partner ID', () => {
+    expect(resolvePartnerIdFromUrl('?utm_medium=312695')).toBe('312695');
+  });
+
+  it('When both utm_content and utm_medium are present, then utm_content takes priority', () => {
+    expect(resolvePartnerIdFromUrl('?utm_content=partner_abc&utm_medium=312695')).toBe('partner_abc');
+  });
+
+  it('When utm_medium is non-numeric, then it returns null', () => {
+    expect(resolvePartnerIdFromUrl('?utm_medium=google')).toBeNull();
+  });
+
+  it('When neither utm_content nor utm_medium are present, then it returns null', () => {
+    expect(resolvePartnerIdFromUrl('?utm_source=newsletter')).toBeNull();
+  });
+
+  it('When the search string is empty, then it returns null', () => {
+    expect(resolvePartnerIdFromUrl('')).toBeNull();
   });
 });
 
@@ -815,7 +842,7 @@ describe('handleImpactDTCCheckout - additional coverage', () => {
   it('When no affiliate partner is identified, then no partner information is included in the event', async () => {
     const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
 
-    await handleImpactDTCCheckout({ irclickid, utmMedium: null });
+    await handleImpactDTCCheckout({ irclickid, partnerId: null });
 
     const callArgs = axiosSpy.mock.calls[0][1] as { properties: Record<string, unknown> };
     expect(callArgs.properties).not.toHaveProperty('partner_id');

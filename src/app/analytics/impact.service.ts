@@ -70,19 +70,35 @@ export function savePaymentDataInLocalStorage({
   localStorageService.set('isFirstPurchase', String(isFirstPurchase));
 }
 
+export function resolvePartnerIdFromUrl(search: string = globalThis.location.search): string | null {
+  const params = new URLSearchParams(search);
+  const utmContent = params.get('utm_content');
+  const utmMedium = params.get('utm_medium');
+
+  if (utmContent) {
+    return utmContent;
+  }
+
+  if (utmMedium && /^\d+$/.test(utmMedium)) {
+    return utmMedium;
+  }
+
+  return null;
+}
+
 export async function handleImpactDTCCheckout({
   irclickid,
-  utmMedium,
+  partnerId,
 }: {
   irclickid: string;
-  utmMedium?: string | null;
+  partnerId?: string | null;
 }): Promise<void> {
   try {
     const IMPACT_API = envService.getVariable('impactApiUrl');
     const existingAnonymousId = getCookie('impactAnonymousId');
     const anonymousId = existingAnonymousId || uuidV4();
 
-    setImpactCookies(anonymousId, irclickid, utmMedium);
+    setImpactCookies(anonymousId, irclickid, partnerId);
 
     await axios.post(IMPACT_API, {
       anonymousId,
@@ -97,7 +113,7 @@ export async function handleImpactDTCCheckout({
       type: 'page',
       properties: {
         irclickid,
-        ...(utmMedium && { partner_id: utmMedium }),
+        ...(partnerId && { partner_id: partnerId }),
       },
     });
   } catch (error) {
