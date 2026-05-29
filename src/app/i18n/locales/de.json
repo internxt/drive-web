@@ -1485,7 +1485,10 @@
     "errorWhileUpdatingWorkspaceMembers": "Beim Aktualisieren der Mitglieder ist ein Fehler aufgetreten",
     "errorWhileFetchingCurrentWorkspaceMembers": "Beim Abrufen der Mitglieder des Arbeitsbereichs ist ein Fehler aufgetreten",
     "newMembersCannotBeLessThanTheExistentOnesError": "Die ausgewählten Mitglieder dürfen nicht weniger sein als die aktuellen Mitglieder des Arbeitsbereichs",
-    "reachedFileSizeLimit": "Dateigrößenlimit überschritten"
+    "reachedFileSizeLimit": "Dateigrößenlimit überschritten",
+    "errorAcceptingAccessRequest": "Beim Akzeptieren der Zugriffsanfrage ist ein Fehler aufgetreten",
+    "errorDecliningAccessRequest": "Beim Ablehnen der Zugriffsanfrage ist ein Fehler aufgetreten",
+    "errorGettingAccessRequests": "Beim Abrufen der Zugriffsanfragen ist ein Fehler aufgetreten"
   },
   "actions": {
     "undo": "Rückgängig machen",
