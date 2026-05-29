@@ -122,7 +122,7 @@ const CheckoutViewWrapper = () => {
       localStorageService.set(STORAGE_KEYS.GCLID, gclid);
     }
     if (irclickid) {
-      handleImpactDTCCheckout({ irclickid, utmMedium });
+      handleImpactDTCCheckout({ irclickid, partnerId: utmMedium });
     }
     referralService.captureUcc();
   }, []);
