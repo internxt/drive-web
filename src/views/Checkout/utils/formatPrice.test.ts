@@ -6,12 +6,14 @@ describe('Formatting the price to have 2 decimals', () => {
     expect(formatPrice(10)).toBe('10');
   });
 
-  it('When the user has a price with 1 decimal, the function returns 2 decimals (100.5 -> 100.50)', () => {
-    expect(formatPrice(100.5)).toBe('100.50');
-  });
+  describe('The value has less or exactly 2 decimals', () => {
+    test('When the user has a price with 1 decimal, the function returns 2 decimals (100.5 -> 100.50)', () => {
+      expect(formatPrice(100.5)).toBe('100.50');
+    });
 
-  it('When the user has a price with 2 decimals, the function returns 2 decimals (99.99 -> 99.99)', () => {
-    expect(formatPrice(99.99)).toBe('99.99');
+    test('When the user has a price with 2 decimals, the function returns 2 decimals (99.99 -> 99.99)', () => {
+      expect(formatPrice(99.99)).toBe('99.99');
+    });
   });
 
   it('When the price is just 1 decimal and it is a 0, then the function returns without .00', () => {

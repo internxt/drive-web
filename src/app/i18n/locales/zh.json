@@ -2056,7 +2056,7 @@
         "free": "免费获取最多 10GB",
         "manageBilling": "管理账单",
         "freeForever": "永久免费",
-        "billedAnnually": "按年计费",
+        "billedAnnually": "/月 按年计费",
         "billedMonthly": "按月计费",
         "year": "年",
         "month": "月",
@@ -2101,7 +2101,8 @@
               "邀请、共享和协作",
               "加密 VPN",
               "杀毒软件",
-              "清理工具 (Cleaner)"
+              "清理工具 (Cleaner)",
+              "Meet"
             ]
           },
           "5TB": {

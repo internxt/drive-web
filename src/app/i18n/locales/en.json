@@ -2092,7 +2092,7 @@
         "free": "Get up to 10 GB for free",
         "manageBilling": "Manage billing",
         "freeForever": "Free forever",
-        "billedAnnually": "billed annually",
+        "billedAnnually": "/mo billed annually",
         "billedMonthly": "billed monthly",
         "year": "Year",
         "month": "Month",
@@ -2137,7 +2137,8 @@
               "Invite, share & collaborate",
               "Encrypted VPN",
               "Antivirus",
-              "Cleaner"
+              "Cleaner",
+              "Meet"
             ]
           },
           "5TB": {

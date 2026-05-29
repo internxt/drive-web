@@ -2008,7 +2008,7 @@
         "free": "Erhalten Sie bis zu 10 GB kostenlos",
         "manageBilling": "Abrechnung verwalten",
         "freeForever": "Für immer kostenlos",
-        "billedAnnually": "jährlich abgerechnet",
+        "billedAnnually": "/Monat jährlich abgerechnet",
         "billedMonthly": "monatlich abgerechnet",
         "year": "Jahr",
         "month": "Monat",
@@ -2053,7 +2053,8 @@
               "Einladen, teilen & zusammenarbeiten",
               "Verschlüsseltes VPN",
               "Antivirus",
-              "Cleaner (Bereinigungstool)"
+              "Cleaner (Bereinigungstool)",
+              "Meet"
             ]
           },
           "5TB": {

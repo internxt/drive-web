@@ -2121,7 +2121,7 @@
         "free": "Ottieni fino a 10 GB gratis",
         "manageBilling": "Gestisci la fatturazione",
         "freeForever": "Gratis per sempre",
-        "billedAnnually": "fatturato annualmente",
+        "billedAnnually": "/mese fatturato annualmente",
         "billedMonthly": "fatturato mensilmente",
         "year": "Anno",
         "month": "Mese",
@@ -2166,7 +2166,8 @@
               "Invita, condividi e collabora",
               "VPN Crittografata",
               "Antivirus",
-              "Cleaner (Pulitore)"
+              "Cleaner (Pulitore)",
+              "Meet"
             ]
           },
           "5TB": {

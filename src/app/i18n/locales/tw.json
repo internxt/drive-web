@@ -2018,7 +2018,7 @@
         "free": "免費獲取最多 10GB",
         "manageBilling": "管理帳單",
         "freeForever": "永久免費",
-        "billedAnnually": "按年計費",
+        "billedAnnually": "/月 按年計費",
         "billedMonthly": "按月計費",
         "year": "年",
         "month": "月",
@@ -2063,7 +2063,8 @@
               "邀請、共享和協作",
               "加密 VPN",
               "防毒軟體",
-              "清理工具 (Cleaner)"
+              "清理工具 (Cleaner)",
+              "Meet"
             ],
             "comingSoonFeatures": []
           },

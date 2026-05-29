@@ -2071,7 +2071,7 @@
         "year": "Año",
         "month": "Mes",
         "lifetime": "Lifetime",
-        "billedAnnually": "facturado anualmente",
+        "billedAnnually": "/mes facturado anualmente",
         "billedMonthly": "facturado mensualmente",
         "types": {
           "essential": "Essential",
@@ -2113,7 +2113,8 @@
               "Invitar, compartir y colaborar",
               "VPN Cifrada",
               "Antivirus",
-              "Cleaner"
+              "Cleaner",
+              "Meet"
             ]
           },
           "5TB": {
