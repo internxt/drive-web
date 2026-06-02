@@ -307,7 +307,7 @@ const CheckoutViewWrapper = () => {
         return;
       }
 
-      if (!address?.line1 || !address?.city || !address.country || !address?.postal_code) {
+      if (!address?.line1 || !address?.city || !address.country) {
         throw new Error(translate('checkout.error.addressRequired'));
       }
 
