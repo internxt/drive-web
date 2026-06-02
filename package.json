@@ -139,7 +139,7 @@
     "@types/react-window": "^1.8.8",
     "@types/wicg-file-system-access": "^2023.10.7",
     "@vitejs/plugin-react": "=4.5.1",
-    "@vitest/browser": "4.1.0",
+    "@vitest/browser": "4.1.6",
     "@vitest/browser-playwright": "4.1.0",
     "@vitest/coverage-istanbul": "4.1.0",
     "autoprefixer": "^10.4.16",
