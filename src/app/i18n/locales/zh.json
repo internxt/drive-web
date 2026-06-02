@@ -1686,6 +1686,7 @@
     }
   },
   "referrals": {
+    "openError": "打开推荐时出错，请重试。",
     "emailVerification": {
       "message": "请验证您的电子邮件以获得推荐资格。请检查您的收件箱或",
       "resendVerification": "重新发送验证"

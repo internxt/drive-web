@@ -1638,6 +1638,7 @@
     }
   },
   "referrals": {
+    "openError": "Beim Öffnen der Empfehlungen ist ein Fehler aufgetreten. Bitte versuche es erneut.",
     "emailVerification": {
       "message": "Bestätige deine E-Mail-Adresse, um für Empfehlungen berechtigt zu sein. Überprüfe deinen Posteingang oder",
       "resendVerification": "Bestätigung erneut senden"
