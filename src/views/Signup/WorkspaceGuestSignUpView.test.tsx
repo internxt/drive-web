@@ -18,11 +18,6 @@ const mockPassword = 'mock-password';
 const mockEmal = 'mock@email.com';
 const mockToken = 'mock-token';
 const mockValues = { email: mockEmal, token: mockToken, password: mockPassword };
-let callCount = 0;
-
-const createSetStateMock = (initial: Record<string, unknown>) => {
-  return vi.fn().mockImplementation((newState: Record<string, unknown>) => ({ ...initial, ...newState }));
-};
 
 const createHandleSubmitMock = (fn: (values: typeof mockValues) => void) => {
   return (event?: { preventDefault: () => void }) => {
@@ -30,29 +25,6 @@ const createHandleSubmitMock = (fn: (values: typeof mockValues) => void) => {
     fn(mockValues);
   };
 };
-
-vi.mock('react', () => {
-  return {
-    useEffect: vi.fn(),
-    useState: vi.fn().mockImplementation((initial: unknown) => {
-      callCount++;
-      const value = callCount === 1;
-      if (initial === false) initial = value;
-      if (
-        initial &&
-        typeof initial === 'object' &&
-        'isLoading' in initial &&
-        'isValid' in initial &&
-        initial.isLoading === true &&
-        initial.isValid === false
-      ) {
-        initial = { isLoading: false, isValid: true };
-      }
-      return [initial, createSetStateMock(initial as Record<string, unknown>)];
-    }),
-    createElement: vi.fn(),
-  };
-});
 
 vi.mock('react-hook-form', () => ({
   SubmitHandler: vi.fn(),
@@ -63,7 +35,7 @@ vi.mock('react-hook-form', () => ({
     control: vi.fn(),
     watch: vi.fn((name: keyof typeof mockValues) => mockValues[name]),
   }),
-  useWatch: vi.fn(),
+  useWatch: vi.fn().mockReturnValue(''),
 }));
 
 describe('onSubmit', () => {
@@ -76,6 +48,37 @@ describe('onSubmit', () => {
 
     vi.mock('react-helmet-async', () => ({
       Helmet: vi.fn(),
+    }));
+
+    vi.mock('./hooks/useInvitationValidation', () => ({
+      useInvitationValidation: vi.fn().mockReturnValue({
+        invitationValidation: { isLoading: false, isValid: true },
+      }),
+    }));
+
+    vi.mock('./hooks/useGuestSignupState', () => ({
+      useGuestSignupState: vi.fn().mockReturnValue({
+        isValidPassword: true,
+        setIsValidPassword: vi.fn(),
+        signupError: undefined,
+        setSignupError: vi.fn(),
+        showError: false,
+        setShowError: vi.fn(),
+        isLoading: false,
+        setIsLoading: vi.fn(),
+        passwordState: { tag: 'success', label: '' },
+        setPasswordState: vi.fn(),
+        invitationId: 'test-invitation',
+        setInvitationId: vi.fn(),
+        showPasswordIndicator: false,
+        setShowPasswordIndicator: vi.fn(),
+        user: null,
+        mnemonic: null,
+      }),
+    }));
+
+    vi.mock('./hooks/useGuestSignupForm', () => ({
+      useGuestSignupForm: vi.fn().mockReturnValue({ bottomInfoError: undefined }),
     }));
 
     vi.mock('@phosphor-icons/react', () => ({
@@ -265,8 +268,6 @@ describe('onSubmit', () => {
       emailVerified: false,
     };
 
-    callCount = 0;
-
     (useSignUp as Mock).mockImplementation(() => ({
       doRegisterPreCreatedUser: vi.fn().mockResolvedValue({
         xUser: mockUser,
@@ -366,7 +367,6 @@ describe('onSubmit', () => {
       emailVerified: false,
     };
 
-    callCount = 0;
     (useSignUp as Mock).mockImplementation(() => ({
       doRegisterPreCreatedUser: vi.fn().mockResolvedValue({
         xUser: mockUser as UserSettings,
