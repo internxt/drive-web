@@ -37,11 +37,11 @@ describe('Download Worker', () => {
   } as DownloadFilePayload;
 
   let mockCallbacks: {
-    onProgress: ReturnType<typeof vi.fn>;
-    onSuccess: ReturnType<typeof vi.fn>;
-    onError: ReturnType<typeof vi.fn>;
-    onBlob: ReturnType<typeof vi.fn>;
-    onChunk: ReturnType<typeof vi.fn>;
+    onProgress: any;
+    onSuccess: any;
+    onError: any;
+    onBlob: any;
+    onChunk: any;
   };
 
   beforeEach(() => {

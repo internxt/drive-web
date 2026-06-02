@@ -273,7 +273,7 @@
       },
       "apply": "應用",
       "taxes": "稅金",
-      "annualBillingTemplate": "年度計劃，每月 {{price}}{{currency}}/月，持續 12 個月"
+      "annualBillingTemplate": "年度計劃，首月收費 {{currency}}{{priceNow}}，之後每月 {{currency}}{{price}}/月 自動續訂"
     },
     "confirmCryptoPayment": {
       "title": "確認付款",
@@ -2019,7 +2019,7 @@
         "free": "免費獲取最多 10GB",
         "manageBilling": "管理帳單",
         "freeForever": "永久免費",
-        "billedAnnually": "按年計費",
+        "billedAnnually": "/月 按年計費",
         "billedMonthly": "按月計費",
         "year": "年",
         "month": "月",
@@ -2064,7 +2064,8 @@
               "邀請、共享和協作",
               "加密 VPN",
               "防毒軟體",
-              "清理工具 (Cleaner)"
+              "清理工具 (Cleaner)",
+              "Meet"
             ],
             "comingSoonFeatures": []
           },

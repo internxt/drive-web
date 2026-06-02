@@ -204,7 +204,12 @@ describe('Thumbnail Service', () => {
       URL.createObjectURL = vi.fn(() => 'blob:mock-url');
 
       mockImage = { onload: null, onerror: null };
-      globalThis.Image = vi.fn(() => mockImage) as any;
+      vi.stubGlobal(
+        'Image',
+        vi.fn(function () {
+          return mockImage;
+        }),
+      );
     });
 
     test('When image is valid, then it should return a resized thumbnail', async () => {

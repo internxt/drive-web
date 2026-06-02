@@ -284,7 +284,7 @@
       },
       "apply": "Aplicar",
       "taxes": "Impuestos",
-      "annualBillingTemplate": "Plan anual, facturado mensualmente a {{price}}{{currency}}/mes durante 12 meses"
+      "annualBillingTemplate": "Plan anual, facturado a {{currency}}{{priceNow}} el primer mes, luego se renueva a {{currency}}{{price}}/mes"
     },
     "confirmCryptoPayment": {
       "title": "Confirmar el pago",
@@ -2072,7 +2072,7 @@
         "year": "Año",
         "month": "Mes",
         "lifetime": "Lifetime",
-        "billedAnnually": "facturado anualmente",
+        "billedAnnually": "/mes facturado anualmente",
         "billedMonthly": "facturado mensualmente",
         "types": {
           "essential": "Essential",
@@ -2114,7 +2114,8 @@
               "Invitar, compartir y colaborar",
               "VPN Cifrada",
               "Antivirus",
-              "Cleaner"
+              "Cleaner",
+              "Meet"
             ]
           },
           "5TB": {

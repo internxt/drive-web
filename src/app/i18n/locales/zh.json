@@ -271,7 +271,7 @@
       },
       "apply": "应用",
       "taxes": "税费",
-      "annualBillingTemplate": "年度计划，每月 {{price}}{{currency}}/月，持续 12 个月"
+      "annualBillingTemplate": "年度计划，首月收费 {{currency}}{{priceNow}}，之后每月 {{currency}}{{price}}/月 自动续订"
     },
     "confirmCryptoPayment": {
       "title": "确认付款",
@@ -2057,7 +2057,7 @@
         "free": "免费获取最多 10GB",
         "manageBilling": "管理账单",
         "freeForever": "永久免费",
-        "billedAnnually": "按年计费",
+        "billedAnnually": "/月 按年计费",
         "billedMonthly": "按月计费",
         "year": "年",
         "month": "月",
@@ -2102,7 +2102,8 @@
               "邀请、共享和协作",
               "加密 VPN",
               "杀毒软件",
-              "清理工具 (Cleaner)"
+              "清理工具 (Cleaner)",
+              "Meet"
             ]
           },
           "5TB": {
