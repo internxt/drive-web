@@ -1,8 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { onChangePasswordHandler } from './passwordValidation';
-import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
 
-vi.mock(import('@internxt/lib/dist/src/auth/testPasswordStrength'));
+const mockTestPasswordStrength = vi.hoisted(() => vi.fn());
+vi.mock('@internxt/lib/dist/src/auth/testPasswordStrength', () => ({
+  __esModule: true,
+  default: mockTestPasswordStrength,
+}));
 vi.mock('i18next', () => ({
   t: vi.fn((key: string) => key),
 }));
@@ -33,11 +36,11 @@ describe('onChangePasswordHandler', () => {
       tag: 'error',
       label: 'modals.changePasswordModal.errors.longPassword',
     });
-    expect(testPasswordStrength).not.toHaveBeenCalled();
+    expect(mockTestPasswordStrength).not.toHaveBeenCalled();
   });
 
   it('should set error state when password is not complex enough', () => {
-    vi.mocked(testPasswordStrength).mockReturnValue({
+    mockTestPasswordStrength.mockReturnValue({
       valid: false,
       reason: 'NOT_COMPLEX_ENOUGH',
     });
@@ -57,7 +60,7 @@ describe('onChangePasswordHandler', () => {
   });
 
   it('should set error state when password is not long enough', () => {
-    vi.mocked(testPasswordStrength).mockReturnValue({
+    mockTestPasswordStrength.mockReturnValue({
       valid: false,
       reason: 'NOT_LONG_ENOUGH',
     });
@@ -77,7 +80,7 @@ describe('onChangePasswordHandler', () => {
   });
 
   it('should set warning state when password strength is medium', () => {
-    vi.mocked(testPasswordStrength).mockReturnValue({
+    mockTestPasswordStrength.mockReturnValue({
       valid: true,
       strength: 'medium',
     });
@@ -97,7 +100,7 @@ describe('onChangePasswordHandler', () => {
   });
 
   it('should set success state when password is strong', () => {
-    vi.mocked(testPasswordStrength).mockReturnValue({
+    mockTestPasswordStrength.mockReturnValue({
       valid: true,
       strength: 'hard',
     });
@@ -117,7 +120,7 @@ describe('onChangePasswordHandler', () => {
   });
 
   it('should handle empty or null email correctly', () => {
-    vi.mocked(testPasswordStrength).mockReturnValue({
+    mockTestPasswordStrength.mockReturnValue({
       valid: true,
       strength: 'hard',
     });
@@ -129,6 +132,6 @@ describe('onChangePasswordHandler', () => {
       email: undefined,
     });
 
-    expect(testPasswordStrength).toHaveBeenCalledWith('ValidPassword123!', '');
+    expect(mockTestPasswordStrength).toHaveBeenCalledWith('ValidPassword123!', '');
   });
 });

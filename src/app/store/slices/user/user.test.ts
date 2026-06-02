@@ -23,7 +23,7 @@ describe('user thunks', () => {
   };
 
   let getStateWithUser: () => RootState;
-  let dispatchMock: ReturnType<typeof vi.fn>;
+  let dispatchMock: any;
 
   beforeEach(() => {
     const state: Partial<RootState> = {

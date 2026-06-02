@@ -1,10 +1,10 @@
 /**
- * @jest-environment jdom
+ * @jest-environment jsdom
  */
 
 import { Buffer } from 'buffer';
 import crypto from 'crypto';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   generateFileBucketKey,
   generateFileKey,
@@ -16,6 +16,10 @@ import {
 import { mnemonicToSeed } from 'bip39';
 
 describe('Test crypto.ts functions', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   globalThis.Buffer = Buffer;
 
   function createMockFile(name: string, size = 0, type = ''): File {

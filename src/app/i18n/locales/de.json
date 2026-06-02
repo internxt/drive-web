@@ -259,7 +259,7 @@
       },
       "apply": "Anwenden",
       "taxes": "Steuern",
-      "annualBillingTemplate": "Jahresplan, monatlich abgerechnet mit {{price}}{{currency}}/Monat für 12 Monate"
+      "annualBillingTemplate": "Jahresplan, abgerechnet mit {{currency}}{{priceNow}} für den ersten Monat, dann Verlängerung zu {{currency}}{{price}}/Monat"
     },
     "confirmCryptoPayment": {
       "title": "Zahlung bestätigen",
@@ -2010,7 +2010,7 @@
         "free": "Erhalten Sie bis zu 10 GB kostenlos",
         "manageBilling": "Abrechnung verwalten",
         "freeForever": "Für immer kostenlos",
-        "billedAnnually": "jährlich abgerechnet",
+        "billedAnnually": "/Monat jährlich abgerechnet",
         "billedMonthly": "monatlich abgerechnet",
         "year": "Jahr",
         "month": "Monat",
@@ -2055,7 +2055,8 @@
               "Einladen, teilen & zusammenarbeiten",
               "Verschlüsseltes VPN",
               "Antivirus",
-              "Cleaner (Bereinigungstool)"
+              "Cleaner (Bereinigungstool)",
+              "Meet"
             ]
           },
           "5TB": {

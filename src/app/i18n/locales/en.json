@@ -260,7 +260,7 @@
       "emailMustNotBeEmpty": "Email must not be empty",
       "privacyGuarantee": "Privacy guarantee: We do not share your information and will contact you only as needed to provide our service."
     },
-    "addressBillingTitle": "Address Billing",
+    "addressBillingTitle": "Billing Address",
     "crypto": "Crypto",
     "addressBilling": {
       "optional": {
@@ -307,7 +307,7 @@
       },
       "apply": "Apply",
       "taxes": "Taxes",
-      "annualBillingTemplate": "Annual plan, billed monthly at {{price}}{{currency}}/month for 12 months"
+      "annualBillingTemplate": "Annual plan, billed at {{currency}}{{priceNow}} for the first month, then renews at {{currency}}{{price}}/month"
     },
     "confirmCryptoPayment": {
       "title": "Confirm the payment",
@@ -1068,7 +1068,7 @@
         },
         "waitingForApproval": {
           "title": "Waiting for approval",
-          "description": "Your request has already been sent. We are awaiting approval from the owner"
+          "description": "Your request has already been sent. We are awaiting approval from the owner."
         }
       },
       "protectSharingModal": {
@@ -2094,7 +2094,7 @@
         "free": "Get up to 10 GB for free",
         "manageBilling": "Manage billing",
         "freeForever": "Free forever",
-        "billedAnnually": "billed annually",
+        "billedAnnually": "/mo billed annually",
         "billedMonthly": "billed monthly",
         "year": "Year",
         "month": "Month",
@@ -2139,7 +2139,8 @@
               "Invite, share & collaborate",
               "Encrypted VPN",
               "Antivirus",
-              "Cleaner"
+              "Cleaner",
+              "Meet"
             ]
           },
           "5TB": {

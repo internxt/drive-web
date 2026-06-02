@@ -50,12 +50,6 @@ vi.mock('@internxt/sdk', () => ({
   },
 }));
 
-vi.mock('@internxt/sdk/dist/shared/http/client', () => ({
-  HttpClient: {
-    enableGlobalRetry: vi.fn(),
-  },
-}));
-
 vi.mock('i18next', () => ({
   t: vi.fn((key: string) => key),
 }));
@@ -95,6 +89,7 @@ describe('SdkFactory', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(HttpClient, 'enableGlobalRetry').mockImplementation(vi.fn());
     mockDispatch = vi.fn();
     mockLocalStorage = {
       get: vi.fn(),

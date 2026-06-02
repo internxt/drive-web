@@ -1,12 +1,14 @@
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import path from 'path';
+import { playwright } from '@vitest/browser-playwright';
 import { defineConfig } from 'vitest/config';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   resolve: {
+    conditions: ['import', 'module', 'browser', 'default'],
     alias: {
       app: path.resolve(__dirname, './src/app'),
       components: path.resolve(__dirname, './src/components'),
@@ -21,12 +23,6 @@ export default defineConfig({
     },
   },
   test: {
-    pool: 'forks',
-    poolOptions: {
-      forks: {
-        singleFork: true,
-      },
-    },
     isolate: true,
     sequence: {
       concurrent: false,
@@ -64,17 +60,15 @@ export default defineConfig({
           include: ['src/**/*.test.{ts,tsx,js,jsx}', 'test/unit/**/*.test.{ts,tsx,js,jsx}'],
           exclude: ['node_modules', 'dist', 'src/**/*.node.test.ts'],
           browser: {
-            provider: 'playwright',
+            provider: playwright(),
             enabled: true,
             headless: true,
             fileParallelism: false,
             instances: [{ browser: 'chromium' }],
           },
-          pool: 'forks',
-          poolOptions: {
-            forks: {
-              singleFork: false,
-              isolate: true,
+          server: {
+            deps: {
+              inline: [/@internxt\/ui/, /@phosphor-icons\/react/, /@internxt\/sdk/, /react/],
             },
           },
           deps: {
@@ -98,7 +92,12 @@ export default defineConfig({
     ],
   },
   optimizeDeps: {
-    include: ['@internxt/sdk/dist/shared/types/userSettings'],
+    include: [
+      '@internxt/sdk/dist/shared/types/userSettings',
+      '@internxt/ui',
+      '@internxt/ui > @phosphor-icons/react',
+      '@internxt/ui > lodash',
+    ],
     exclude: ['openpgp'],
     esbuildOptions: {
       define: {
