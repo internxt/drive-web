@@ -16,17 +16,6 @@ const mockHostname = 'hostname';
 const mockPassword = 'mock-password';
 const mockEmal = 'mock@email.com';
 const mockToken = 'mock-token';
-let callCount = 0;
-
-const createMockSetState = (initialValue: unknown) => {
-  return vi.fn().mockImplementation((newState) => {
-    if (typeof newState === 'function') {
-      return newState(initialValue);
-    }
-    return newState;
-  });
-};
-
 describe('onSubmit', () => {
   beforeAll(() => {
     globalThis.Buffer = Buffer;
@@ -43,16 +32,6 @@ describe('onSubmit', () => {
         set: vi.fn(),
       },
     }));
-
-    vi.mock('@internxt/lib/dist/src/auth/testPasswordStrength', async () => {
-      const actual = await vi.importActual<typeof import('@internxt/lib/dist/src/auth/testPasswordStrength')>(
-        '@internxt/lib/dist/src/auth/testPasswordStrength',
-      );
-      return {
-        ...actual,
-        default: vi.fn(),
-      };
-    });
 
     vi.mock('react-helmet-async', () => ({
       Helmet: vi.fn(),
@@ -117,6 +96,12 @@ describe('onSubmit', () => {
       })),
     }));
 
+    vi.mock('./hooks/useInvitationValidation', () => ({
+      useInvitationValidation: vi.fn().mockReturnValue({
+        invitationValidation: { isLoading: false, isValid: true },
+      }),
+    }));
+
     vi.mock('components/PasswordStrengthIndicator', () => ({
       default: () => <div>Mocked Password Strength Indicator</div>,
     }));
@@ -163,31 +148,6 @@ describe('onSubmit', () => {
     vi.mock('query-string', () => ({
       parse: vi.fn().mockImplementation((input: string) => input),
     }));
-
-    vi.mock('react', async () => {
-      const actual = await vi.importActual('react');
-      return {
-        ...actual,
-        useEffect: vi.fn(),
-        useState: vi.fn().mockImplementation((initial) => {
-          callCount++;
-          let stateValue = initial;
-
-          if (
-            initial &&
-            typeof initial === 'object' &&
-            'isLoading' in initial &&
-            'isValid' in initial &&
-            initial.isLoading === true &&
-            initial.isValid === false
-          ) {
-            stateValue = { isLoading: false, isValid: true };
-          }
-
-          return [stateValue, createMockSetState(stateValue)];
-        }),
-      };
-    });
 
     vi.mock('react-hook-form', () => {
       const mockEmail = 'mock@email.com';
@@ -311,8 +271,6 @@ describe('onSubmit', () => {
       emailVerified: false,
     };
 
-    callCount = 0;
-
     (useSignUp as Mock).mockImplementation(() => ({
       doRegisterPreCreatedUser: vi.fn().mockResolvedValue({
         xUser: mockUser,
@@ -417,8 +375,6 @@ describe('onSubmit', () => {
       avatar: null,
       emailVerified: false,
     };
-
-    callCount = 0;
 
     (useSignUp as Mock).mockImplementation(() => ({
       doRegisterPreCreatedUser: vi.fn().mockResolvedValue({

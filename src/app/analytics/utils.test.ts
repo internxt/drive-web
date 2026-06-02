@@ -9,6 +9,7 @@ describe('setImpactCookies', () => {
   let cookieSetter: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
+    vi.clearAllMocks();
     cookieSetter = vi.spyOn(document, 'cookie', 'set');
   });
 

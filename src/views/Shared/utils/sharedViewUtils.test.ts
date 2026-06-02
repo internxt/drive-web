@@ -150,7 +150,7 @@ describe('sharedViewUtils', () => {
     });
 
     it('should handle errors and null files', async () => {
-      fileEntry.file = vi.fn((_success: any, error: any) => error(new Error('fail')));
+      fileEntry.file = vi.fn((_success: any, error: any) => error(new Error('fail'))) as any;
       const res = await utils.getDraggedItemsWithoutFolders([fileItem]);
       expect(res).toEqual({ filteredItems: [], hasFolders: false });
       expect(errorService.reportError).toHaveBeenCalled();

@@ -13,16 +13,17 @@ const uploadParams = {
 };
 
 vi.mock('./NetworkFacade', () => ({
-  NetworkFacade: vi.fn().mockImplementation(() => ({
-    uploadMultipart: vi.fn().mockResolvedValue('multipart-upload-success'),
-    upload: uploadMock,
-  })),
+  NetworkFacade: vi.fn().mockImplementation(function () {
+    return {
+      uploadMultipart: vi.fn().mockResolvedValue('multipart-upload-success'),
+      upload: uploadMock,
+    };
+  }),
 }));
 
 describe('uploadFile', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.resetModules();
   });
 
   it('should successfully upload a file', async () => {

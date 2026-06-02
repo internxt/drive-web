@@ -4,11 +4,11 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { useAvatar } from './useAvatar';
 
 describe('Tests for useAvatar custom hook', () => {
-  let deleteDatabaseAvatarMock: ReturnType<typeof vi.fn>;
-  let downloadAvatarMock: ReturnType<typeof vi.fn>;
-  let getDatabaseAvatarMock: ReturnType<typeof vi.fn>;
-  let saveAvatarToDatabaseMock: ReturnType<typeof vi.fn>;
-  let onErrorMock: ReturnType<typeof vi.fn>;
+  let deleteDatabaseAvatarMock: any;
+  let downloadAvatarMock: any;
+  let getDatabaseAvatarMock: any;
+  let saveAvatarToDatabaseMock: any;
+  let onErrorMock: any;
 
   beforeEach(() => {
     vi.resetAllMocks();

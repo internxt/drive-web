@@ -29,7 +29,12 @@ describe('Stream Saver Service', () => {
       } as any,
     } as any;
 
-    global.TransformStream = vi.fn(() => mockTransformStream) as any;
+    vi.stubGlobal(
+      'TransformStream',
+      vi.fn(function () {
+        return mockTransformStream;
+      }),
+    );
 
     mockMessageChannel = {
       port1: {
@@ -42,7 +47,12 @@ describe('Stream Saver Service', () => {
       } as any,
     };
 
-    global.MessageChannel = vi.fn(() => mockMessageChannel) as any;
+    vi.stubGlobal(
+      'MessageChannel',
+      vi.fn(function () {
+        return mockMessageChannel;
+      }),
+    );
 
     originalAppendChild = document.body.appendChild;
     document.body.appendChild = vi.fn((element) => {
@@ -207,10 +217,13 @@ describe('Stream Saver Service', () => {
 
     let capturedTransformFunction: any;
 
-    global.TransformStream = vi.fn((transformer) => {
-      capturedTransformFunction = transformer.transform;
-      return mockTransformStream;
-    }) as any;
+    vi.stubGlobal(
+      'TransformStream',
+      vi.fn(function (transformer) {
+        capturedTransformFunction = transformer.transform;
+        return mockTransformStream;
+      }),
+    );
 
     streamSaver.createWriteStream('test.txt');
 
@@ -231,10 +244,13 @@ describe('Stream Saver Service', () => {
 
     let capturedTransformFunction: any;
 
-    global.TransformStream = vi.fn((transformer) => {
-      capturedTransformFunction = transformer.transform;
-      return mockTransformStream;
-    }) as any;
+    vi.stubGlobal(
+      'TransformStream',
+      vi.fn(function (transformer) {
+        capturedTransformFunction = transformer.transform;
+        return mockTransformStream;
+      }),
+    );
 
     streamSaver.createWriteStream('test.txt');
 
