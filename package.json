@@ -139,9 +139,9 @@
     "@types/react-window": "^1.8.8",
     "@types/wicg-file-system-access": "^2023.10.7",
     "@vitejs/plugin-react": "=4.5.1",
-    "@vitest/browser": "4.1.0",
-    "@vitest/browser-playwright": "4.1.0",
-    "@vitest/coverage-istanbul": "4.1.0",
+    "@vitest/browser": "4.1.8",
+    "@vitest/browser-playwright": "4.1.8",
+    "@vitest/coverage-istanbul": "4.1.8",
     "autoprefixer": "^10.4.16",
     "browserslist": "^4.25.0",
     "buffer": "^6.0.3",
@@ -166,7 +166,7 @@
     "vite-plugin-node-polyfills": "=0.26.0",
     "vite-plugin-static-copy": "^3.1.2",
     "vite-plugin-svgr": "^4.3.0",
-    "vitest": "4.1.0",
+    "vitest": "4.1.8",
     "webpack-bundle-analyzer": "^4.9.1"
   },
   "engines": {
