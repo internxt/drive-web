@@ -1698,6 +1698,7 @@
     }
   },
   "referrals": {
+    "openError": "Algo salió mal al abrir las invitaciones. Inténtalo de nuevo.",
     "emailVerification": {
       "message": "Verifica tu correo electrónico para ser elegible para referidos. Revisa tu bandeja de entrada o",
       "resendVerification": "reenviar verificación"

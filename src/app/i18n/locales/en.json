@@ -1721,6 +1721,7 @@
     }
   },
   "referrals": {
+    "openError": "Something went wrong while opening referrals. Please try again.",
     "emailVerification": {
       "message": "Verify your email to be eligible to referrals. Check your inbox or",
       "resendVerification": "resend verification"
