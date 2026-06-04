@@ -20,6 +20,7 @@ import { useSelector } from 'react-redux';
 import navigationService from 'services/navigation.service';
 import referralService from 'services/referral.service';
 import { parsePendingWorkspaces, parseWorkspaces } from 'utils/workspaces/parseWorkspaces.utils';
+import { useReferralParamsChange } from 'views/Drive/hooks/useReferralParamsChange';
 import WorkspaceSelectorContainer from 'views/Home/components/WorkspaceSelectorContainer';
 import WorkspaceSelectorSkeleton from 'views/Home/components/WorkspaceSelectorSkeleton';
 import ReferralBanner from './ReferralBanner';
@@ -67,6 +68,8 @@ const SidenavWrapper = () => {
 
   const userUsage = planUsage > 0 ? bytesToString(planUsage) : '0GB';
   const isReferralEligible = useAppSelector((state: RootState) => state.referrals.isEligible);
+
+  useReferralParamsChange();
 
   useEffect(() => {
     dispatch(sharedThunks.getPendingInvitations());

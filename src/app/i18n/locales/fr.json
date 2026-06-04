@@ -1646,6 +1646,7 @@
     }
   },
   "referrals": {
+    "openError": "Une erreur s'est produite lors de l'ouverture des parrainages. Veuillez réessayer.",
     "emailVerification": {
       "message": "Vérifiez votre e-mail pour être éligible aux parrainages. Consultez votre boîte de réception ou",
       "resendVerification": "renvoyer la vérification"

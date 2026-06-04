@@ -1753,6 +1753,7 @@
     }
   },
   "referrals": {
+    "openError": "Si è verificato un errore durante l'apertura dei referral. Riprova.",
     "emailVerification": {
       "message": "Verifica la tua email per essere idoneo ai referral. Controlla la tua casella di posta o",
       "resendVerification": "rinvia verifica"
