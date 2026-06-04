@@ -96,6 +96,11 @@ const ReachedFileSizeLimitDialog = (): JSX.Element | null => {
     '5TB': translate('error.fileSizeLimitExceeded.planList.ultimate'),
   };
 
+  if (!nextPlan) {
+    onClose();
+    return null;
+  }
+
   if (!isOpen) return null;
 
   return (
