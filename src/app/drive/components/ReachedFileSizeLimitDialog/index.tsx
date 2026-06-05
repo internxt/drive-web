@@ -10,6 +10,7 @@ import { fetchPlanPrices } from 'views/NewSettings/services/plansApi';
 import { Translate } from 'app/i18n/types';
 import { bytesToString } from '../../services/size.service';
 import { fileVersionsSelectors } from 'app/store/slices/fileVersions';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 const ReachedFileSizeLimitDialog = (): JSX.Element | null => {
   const dispatch = useAppDispatch();
@@ -96,12 +97,17 @@ const ReachedFileSizeLimitDialog = (): JSX.Element | null => {
     '5TB': translate('error.fileSizeLimitExceeded.planList.ultimate'),
   };
 
-  if (!nextPlan) {
-    onClose();
-    return null;
-  }
+  useEffect(() => {
+    if (isOpen && availablePlans.length > 0 && !nextPlan) {
+      notificationsService.show({
+        text: translate('notificationMessages.reachedFileSizeLimit'),
+        type: ToastType.Warning,
+      });
+      onClose();
+    }
+  }, [isOpen, availablePlans.length, nextPlan]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !nextPlan) return null;
 
   return (
     <div className="absolute bottom-0 left-0 right-0 top-0 z-50 flex bg-black/40">
