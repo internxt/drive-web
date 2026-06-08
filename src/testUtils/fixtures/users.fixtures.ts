@@ -1,0 +1,33 @@
+import type { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+
+export const getUser = (overrides: Partial<UserSettings> = {}): UserSettings => ({
+  userId: 'user-id-1234',
+  uuid: 'user-uuid-1234',
+  email: 'user@example.com',
+  name: 'Test',
+  lastname: 'User',
+  username: 'user@example.com',
+  bridgeUser: 'bridge-user',
+  bucket: 'bucket-id',
+  backupsBucket: null,
+  root_folder_id: 1,
+  rootFolderId: 'root-folder-uuid',
+  rootFolderUuid: 'root-folder-uuid',
+  sharedWorkspace: false,
+  credit: 0,
+  mnemonic: 'test mnemonic phrase',
+  privateKey: 'private-key',
+  publicKey: 'public-key',
+  revocationKey: 'revocation-key',
+  keys: {
+    ecc: { publicKey: 'ecc-public-key', privateKey: 'ecc-private-key' },
+    kyber: { publicKey: 'kyber-public-key', privateKey: 'kyber-private-key' },
+  },
+  appSumoDetails: null,
+  registerCompleted: true,
+  hasReferralsProgram: false,
+  createdAt: new Date('2024-01-01T00:00:00.000Z'),
+  avatar: null,
+  emailVerified: true,
+  ...overrides,
+});

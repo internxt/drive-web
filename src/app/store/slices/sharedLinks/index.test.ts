@@ -13,16 +13,17 @@ import {
   generateNewKeys,
   hybridDecryptMessageWithPrivateKey,
 } from '../../../crypto/services/pgp.service';
-import {
+import sharedReducer, {
   HYBRID_ALGORITHM,
   removeUserFromSharedFolder,
+  sharedActions,
   sharedThunks,
   ShareFileWithUserPayload,
   STANDARD_ALGORITHM,
   stopSharingItem,
 } from './index';
 import notificationsService from 'app/notifications/services/notifications.service';
-const { shareItemWithUser } = sharedThunks;
+const { shareItemWithUser, getAccessRequestsFromSharedItem } = sharedThunks;
 
 describe('Encryption and Decryption', () => {
   beforeAll(() => {
@@ -36,6 +37,7 @@ describe('Encryption and Decryption', () => {
         getSharingRoles: vi.fn(),
         stopSharingItem: vi.fn(),
         removeUserRole: vi.fn(),
+        getAccessRequestInvitations: vi.fn(),
       },
     }));
     vi.mock('services/user.service', () => ({
@@ -570,5 +572,83 @@ describe('Encryption and Decryption', () => {
         }),
       );
     });
+  });
+});
+
+describe('Fetching access requests for a shared item', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  test('When access requests are retrieved successfully, then the list is saved in the state', async () => {
+    const mockRequests = [
+      {
+        id: 'req-1',
+        itemId: 'item-uuid',
+        itemType: 'folder',
+        invited: { uuid: 'user-uuid', email: 'a@b.com', name: 'A', lastname: 'B', avatar: null },
+      },
+    ];
+    const getAccessRequestInvitationsSpy = vi
+      .spyOn(shareService, 'getAccessRequestInvitations')
+      .mockResolvedValue(mockRequests as any);
+    const dispatchMock = vi.fn();
+
+    const thunk = getAccessRequestsFromSharedItem({ itemId: 'item-uuid', itemType: 'folder' });
+    await thunk(dispatchMock, vi.fn(), undefined);
+
+    expect(getAccessRequestInvitationsSpy).toHaveBeenCalledWith('item-uuid', 'folder');
+    expect(dispatchMock).toHaveBeenCalledWith(sharedActions.setAccessRequests(mockRequests as any));
+  });
+
+  test('When retrieving access requests fails, then an error notification is shown to the user', async () => {
+    const error = new Error('Network error');
+    vi.spyOn(shareService, 'getAccessRequestInvitations').mockRejectedValue(error);
+    const showNotificationSpy = vi.spyOn(notificationsService, 'show');
+
+    const thunk = getAccessRequestsFromSharedItem({ itemId: 'item-uuid', itemType: 'folder' });
+    await thunk(vi.fn(), vi.fn(), undefined);
+
+    expect(showNotificationSpy).toHaveBeenCalledWith(expect.objectContaining({ type: 'error' }));
+  });
+});
+
+describe('Access requests state management', () => {
+  const baseState = sharedReducer(undefined, { type: 'unknown' });
+
+  const makeRequest = (id: string) => ({
+    id,
+    itemId: 'item-uuid',
+    itemType: 'folder' as const,
+    sharedWith: 'user@example.com',
+    encryptionKey: 'key',
+    encryptionAlgorithm: 'inxt-v2',
+    type: 'SELF' as const,
+    roleId: 'role-id',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    invited: { uuid: 'user-uuid', email: 'user@example.com', name: 'User', lastname: 'Name', avatar: null },
+  });
+
+  test('When a new list of access requests is set, then the previous list is completely replaced', () => {
+    const requests = [makeRequest('req-1'), makeRequest('req-2')];
+    const nextState = sharedReducer(baseState, sharedActions.setAccessRequests(requests));
+    expect(nextState.accessRequests).toEqual(requests);
+  });
+
+  test('When an access request is dismissed by ID, then only that request is removed from the list', () => {
+    const stateWithRequests = sharedReducer(
+      baseState,
+      sharedActions.setAccessRequests([makeRequest('req-1'), makeRequest('req-2')]),
+    );
+    const nextState = sharedReducer(stateWithRequests, sharedActions.popAccessRequest('req-1'));
+    expect(nextState.accessRequests).toHaveLength(1);
+    expect(nextState.accessRequests[0].id).toBe('req-2');
+  });
+
+  test('When dismissing an access request with an ID that does not exist, then the list remains unchanged', () => {
+    const stateWithRequests = sharedReducer(baseState, sharedActions.setAccessRequests([makeRequest('req-1')]));
+    const nextState = sharedReducer(stateWithRequests, sharedActions.popAccessRequest('req-unknown'));
+    expect(nextState.accessRequests).toHaveLength(1);
   });
 });

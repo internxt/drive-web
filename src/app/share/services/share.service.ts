@@ -168,6 +168,46 @@ export async function inviteUserToSharedFolder(props: ShareFolderWithUserPayload
   });
 }
 
+export const requestAccessToSharedFolder = async ({
+  uuid,
+  itemType,
+  notificationMessage,
+}: {
+  uuid: string;
+  itemType: 'folder' | 'file';
+  notificationMessage?: string;
+}): Promise<void> => {
+  const user = localStorageService.getUser() as UserSettings;
+
+  const captchaToken = await generateCaptchaToken();
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient(captchaToken);
+
+  return shareClient.requestUserToSharedFolder({
+    itemType,
+    itemId: uuid,
+    notifyUser: true,
+    roleId: '',
+    sharedWith: user.email,
+    notificationMessage,
+  });
+};
+
+export const getAccessRequestInvitations = async (
+  itemId: string,
+  itemType: 'file' | 'folder',
+): Promise<SharingInvite[]> => {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+
+  return shareClient
+    .getSharedFolderInvitations({
+      itemId,
+      itemType,
+    })
+    .catch((error) => {
+      throw errorService.castError(error);
+    });
+};
+
 export function getUsersOfSharedFolder({
   itemType,
   folderId,
@@ -207,7 +247,7 @@ export function declineSharedFolderInvite({
   });
 }
 
-export function acceptSharedFolderInvite({
+export async function acceptSharedFolderInvite({
   invitationId,
   acceptInvite,
   token,
@@ -843,9 +883,11 @@ const shareService = {
   validateSharingInvitation,
   getPublicSharedItemInfo,
   getSharedFolderSize,
+  requestAccessToSharedFolder,
   inviteUserToSharedFolder,
   getSharedFolderInvitationsAsInvitedUser,
   getSharingRoles,
+  getAccessRequestInvitations,
 };
 
 export default shareService;

@@ -1529,7 +1529,10 @@
     "errorWhileUpdatingWorkspaceMembers": "Ocurrió un error al actualizar los miembros",
     "errorWhileFetchingCurrentWorkspaceMembers": "Ocurrió un error al obtener los miembros del espacio de trabajo",
     "newMembersCannotBeLessThanTheExistentOnesError": "Los miembros seleccionados no pueden ser menos que los miembros actuales del espacio de trabajo",
-    "reachedFileSizeLimit": "Límite de tamaño de archivo superado"
+    "reachedFileSizeLimit": "Límite de tamaño de archivo superado",
+    "errorAcceptingAccessRequest": "Algo salió mal al aceptar la solicitud de acceso",
+    "errorDecliningAccessRequest": "Algo salió mal al rechazar la solicitud de acceso",
+    "errorGettingAccessRequests": "Algo salió mal al obtener las solicitudes de acceso"
   },
   "success": {
     "passwordChanged": "Contraseña actualizada correctamente",
