@@ -2038,10 +2038,10 @@
   dependencies:
     axios "^1.16.0"
 
-"@internxt/ui@=0.1.15":
-  version "0.1.15"
-  resolved "https://registry.yarnpkg.com/@internxt/ui/-/ui-0.1.15.tgz#305e846837a8519bdea63eb17900bbf3aed2b09c"
-  integrity sha512-dxJlZSecIR67aEGI76CLHQ60GUkUjrMJfHeIVdd+528gm8Lz9yx7mr/bWCKfbpmbv5j9Oyvp5wBuFUfx/bxRLw==
+"@internxt/ui@=0.1.19":
+  version "0.1.19"
+  resolved "https://registry.yarnpkg.com/@internxt/ui/-/ui-0.1.19.tgz#8bd657fbd1379985546ac29d42946f9763cfeccc"
+  integrity sha512-MGRuGGSOf6SPAuLCuQa0lJCt9wkmpdVqmk/g/P2PiPZWXRuwLDZxpozQg5lNx5G18xi2zFOiIuhSyyqCbTLq3Q==
   dependencies:
     "@internxt/css-config" "1.1.0"
     "@phosphor-icons/react" "^2.1.10"
