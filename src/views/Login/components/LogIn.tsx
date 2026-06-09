@@ -223,7 +223,7 @@ export default function LogIn(): JSX.Element {
       <Helmet>
         <link rel="canonical" href={`${envService.getVariable('hostname')}/login`} />
       </Helmet>
-      <div className="flex h-fit w-96 flex-col items-center justify-center space-y-5 px-8 py-10">
+      <div className="flex h-fit w-[360px] flex-col items-center justify-center space-y-5 px-8 py-10">
         <h1 data-cy="loginTitle" className="text-3xl font-medium dark:text-white">
           {translate('auth.login.title')}
         </h1>
@@ -231,7 +231,7 @@ export default function LogIn(): JSX.Element {
         <form data-cy="loginWrapper" className="flex w-full flex-col space-y-2" onSubmit={handleSubmit(onSubmit)}>
           <p> {translate('auth.emailFloatingLabel')}</p>
           <TextInput
-            placeholder={translate('auth.email')}
+            placeholder={''}
             inputDataCy="emailInput"
             label="email"
             type="email"
@@ -242,7 +242,7 @@ export default function LogIn(): JSX.Element {
           />
           <p> {translate('auth.passwordFloatingLabel')}</p>
           <PasswordInput
-            placeholder={translate('auth.password')}
+            placeholder={''}
             inputDataCy="passwordInput"
             label="password"
             register={register}

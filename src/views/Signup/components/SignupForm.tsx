@@ -326,7 +326,7 @@ function SignUpForm(): JSX.Element {
 
   return (
     <div
-      className="bg-white dark:bg-gray-1 dark:border-gray-5 rounded-2xl z-10"
+      className="bg-white w-[360px] dark:bg-gray-1 dark:border-gray-5 rounded-2xl z-10"
       style={{ boxShadow: '0 32px 40px 0 rgba(0, 0, 0, 0.08)' }}
     >
       <Helmet>
@@ -334,9 +334,7 @@ function SignUpForm(): JSX.Element {
       </Helmet>
       <div
         className={`flex ${
-          showPreparingWorkspaceAnimation
-            ? 'h-full w-full'
-            : 'h-fit w-96 flex-col items-center justify-center px-8 py-10'
+          showPreparingWorkspaceAnimation ? 'h-full w-full' : 'h-fit  flex-col items-center justify-center px-8 py-10'
         }`}
       >
         {renderContent()}

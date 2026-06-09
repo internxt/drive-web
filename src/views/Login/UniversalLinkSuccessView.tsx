@@ -61,7 +61,7 @@ export default function UniversalLinkView(): JSX.Element {
         <InternxtLogo className="h-auto w-28 text-gray-100" />
       </div>
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-6">
-        <div className="w-full max-w-sm rounded-2xl border border-gray-10 bg-white px-8 py-10 shadow-subtle dark:border-gray-10 dark:bg-gray-5">
+        <div className="w-full max-w-sm rounded-2xl border border-gray-10 bg-white px-8 py-10 shadow-subtle dark:bg-gray-1 dark:border-gray-5 ">
           <div className="flex flex-col items-center">
             <h1 className="text-2xl font-medium">{translate('auth.universalLink.loginAs')}</h1>
             <p
