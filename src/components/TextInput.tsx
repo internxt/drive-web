@@ -25,6 +25,7 @@ interface InputProps {
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   value?: string;
   style?: React.CSSProperties;
+  hasError?: boolean;
 }
 
 export default function TextInput({
@@ -48,6 +49,7 @@ export default function TextInput({
   onKeyDown,
   value,
   style,
+  hasError,
 }: Readonly<InputProps>): JSX.Element {
   return (
     <div className={`${className}`}>
@@ -71,7 +73,7 @@ export default function TextInput({
               pattern,
             })
           : { value, onChange, onKeyDown })}
-        className={`${error ? 'inxt-input input-error' : 'inxt-input input-primary'} ${inputClassName || ''}`}
+        className={`${error || hasError ? 'inxt-input input-error' : 'inxt-input input-primary'} ${inputClassName || ''}`}
       />
     </div>
   );

@@ -97,7 +97,9 @@
     "idManagement": "Identity Management"
   },
   "auth": {
+    "emailFloatingLabel": "電子郵件",
     "email": "電子郵件",
+    "passwordFloatingLabel": "密碼",
     "password": "密碼",
     "terms1": "通過創建帳戶，",
     "terms2": "您接受條款和條件",
