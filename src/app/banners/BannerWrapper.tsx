@@ -10,7 +10,7 @@ import newStorageService from 'app/drive/services/new-storage.service';
 import { ActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.context';
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 
-const OFFER_END_DAY = new Date('2026-04-26');
+const OFFER_END_DAY = new Date('2027-04-26');
 const TIMEOUT = 90000;
 
 const BannerWrapper = (): JSX.Element => {
