@@ -23,12 +23,12 @@ export class LoginPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.loginTitle = this.page.getByRole('heading', { name: 'Login' });
-    this.emailInput = this.page.getByPlaceholder('Email', { exact: true });
-    this.passwordInput = this.page.getByPlaceholder('Password', { exact: true });
+    this.loginTitle = this.page.getByRole('heading', { name: 'Log in' });
+    this.emailInput = this.page.locator('[data-cy="emailInput"]');
+    this.passwordInput = this.page.locator('[data-cy="passwordInput"]');
     this.loginButton = this.page.getByRole('button', { name: 'Log in' });
     this.loginButtonText = this.page.locator('[data-cy="loginButton"] div');
-    this.forgotPassword = this.page.getByText('Forgot your password?');
+    this.forgotPassword = this.page.getByText('I forgot my password');
     this.dontHaveAccountText = this.page.getByText('Don’t have an account?');
     this.createAccount = this.page.getByRole('link', { name: 'Create account' });
     this.termsAndConditions = this.page.getByRole('link', { name: 'Terms and conditions' });
@@ -47,13 +47,10 @@ export class LoginPage {
 
   async typeEmail(user: string | any) {
     await expect(this.emailInput).toBeVisible();
-    const emailPlaceholder = await this.emailInput.getAttribute('placeholder');
-    expect(emailPlaceholder).toEqual('Email');
     await this.emailInput.fill(user);
   }
   async typePassword(password: string | any) {
-    const passPlaceholder = await this.passwordInput.getAttribute('placeholder');
-    expect(passPlaceholder).toEqual('Password');
+    await expect(this.passwordInput).toBeVisible();
     await this.passwordInput.fill(password);
   }
   async clickLogIn() {

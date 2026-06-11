@@ -36,7 +36,10 @@ function RecoveryLink(): JSX.Element {
   return (
     <>
       {step === 1 ? (
-        <div className="flex w-96 flex-col space-y-5 p-8">
+        <div
+          className="flex w-[360px] flex-col space-y-5 p-8 bg-white dark:bg-gray-1 dark:border-gray-5 rounded-2xl text-center"
+          style={{ boxShadow: '0 32px 40px 0 rgba(0, 0, 0, 0.08)' }}
+        >
           <h1 className="text-3xl font-medium text-gray-100">{translate('auth.forgotPassword.title')}</h1>
 
           <form
