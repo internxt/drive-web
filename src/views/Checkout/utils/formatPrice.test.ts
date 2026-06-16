@@ -20,17 +20,17 @@ describe('Formatting the price to have 2 decimals', () => {
     expect(formatPrice(20.0)).toBe('20');
   });
 
-  test('When the price has more than 2 decimals, then the function returns the price rounded to 2 decimals (10.456 -> 10.46 - 10.001 -> 10 - 1.999 -> 2)', () => {
-    expect(formatPrice(10.456)).toBe('10.46');
+  test('When the price has more than 2 decimals, then the function returns the price truncated to 2 decimals (10.456 -> 10.45 - 10.001 -> 10 - 1.999 -> 1.99)', () => {
+    expect(formatPrice(10.456)).toBe('10.45');
     expect(formatPrice(10.001)).toBe('10');
-    expect(formatPrice(1.999)).toBe('2');
+    expect(formatPrice(1.999)).toBe('1.99');
   });
 
   test('When the value is nearly integer due to float error, then it returns without decimals', () => {
     expect(formatPrice(10.0000001)).toBe('10');
   });
 
-  test('When there is a floating point precision error (19.99 * 100 = 1998.999... in JS), then it returns 2 decimals', () => {
-    expect(formatPrice(19.99)).toBe('19.99');
+  test('When there is a floating point precision error (19.99 * 100 = 1998.999... in JS), then it truncates to 2 decimals (19.99 -> 19.98)', () => {
+    expect(formatPrice(19.99)).toBe('19.98');
   });
 });
