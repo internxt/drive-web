@@ -21,7 +21,6 @@ const envService = {
 };
 const variableList = {
   secret: 'REACT_APP_CRYPTO_SECRET',
-  secret2: 'REACT_APP_CRYPTO_SECRET2',
   nodeEnv: 'NODE_ENV',
   mode: 'MODE',
   debug: 'REACT_APP_DEBUG',

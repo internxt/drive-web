@@ -8,7 +8,6 @@ declare namespace NodeJS {
     REACT_APP_DRIVE_NEW_API_URL: string;
     REACT_APP_PAYMENTS_API_URL: string;
     REACT_APP_CRYPTO_SECRET: string;
-    REACT_APP_CRYPTO_SECRET2: string;
     REACT_APP_BRIDGE: string;
     REACT_APP_PROXY: string;
     REACT_APP_NOTIFICATIONS_URL: string;
