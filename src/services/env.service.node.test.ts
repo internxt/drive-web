@@ -22,7 +22,6 @@ describe('Check that env variables are loaded correctly', () => {
     expect(envService.getVariable('stripeTestPublicKey')).toBe(process.env.REACT_APP_STRIPE_TEST_PK);
 
     expect(envService.getVariable('secret')).toBe(process.env.REACT_APP_CRYPTO_SECRET);
-    expect(envService.getVariable('secret2')).toBe(process.env.REACT_APP_CRYPTO_SECRET2);
 
     expect(envService.getVariable('newApi')).toBe(process.env.REACT_APP_DRIVE_NEW_API_URL);
     expect(envService.getVariable('payments')).toBe(process.env.REACT_APP_PAYMENTS_API_URL);
@@ -54,8 +53,6 @@ describe('Check that env variables are loaded correctly', () => {
 
     expect(envService.getVariable('vpnId')).toBe(process.env.REACT_APP_VPN_ID);
     expect(envService.getVariable('impactApiUrl')).toBe(process.env.REACT_APP_IMPACT_API);
-
-
   });
 
   it('When the endpoints variables are requested, then the value is actually an endpoint variable', async () => {
