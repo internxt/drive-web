@@ -5,6 +5,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import { isMobile } from 'react-device-detect';
 import { useEffect, useMemo } from 'react';
+import AnimatedBackground from 'components/AnimatedBackground';
 
 const OAuthLinkView = (): JSX.Element => {
   const { translate } = useTranslationContext();
@@ -43,12 +44,14 @@ const OAuthLinkView = (): JSX.Element => {
   };
 
   return (
-    <main className="flex h-full w-full flex-col bg-gray-5 dark:bg-surface">
-      <div className="flex shrink-0 flex-row justify-center py-10 sm:justify-start sm:pl-20">
+    <div className="relative flex h-full w-full flex-col dark:bg-[#0A0F1C] overflow-hidden z-0">
+      {' '}
+      <AnimatedBackground />
+      <div className="relative z-0 flex shrink-0 flex-row justify-center py-10 sm:justify-center">
         <InternxtLogo className="h-auto w-28 text-gray-100" />
       </div>
-      <div className="flex flex-1 items-center justify-center bg-gray-5 dark:bg-surface">
-        <div className="w-96 rounded-lg px-8 py-10 shadow-soft dark:bg-gray-5">
+      <div className="flex flex-1 items-center justify-center">
+        <div className="w-96 rounded-lg z-50 px-8 py-10 shadow-softbg-white dark:bg-gray-1">
           <div className="mb-6 flex justify-center">
             <InternxtLogo className="h-auto w-52 text-gray-100" />
           </div>
@@ -76,7 +79,7 @@ const OAuthLinkView = (): JSX.Element => {
           <a
             href="https://internxt.com/legal"
             target="_blank"
-            className="font-regular mr-4 mt-6 text-base text-gray-80 no-underline hover:text-gray-100"
+            className="font-regular mr-4 mt-6 text-base text-gray-80 dark:text-gray-100 no-underline hover:text-gray-100"
           >
             {translate('general.terms')}
           </a>
@@ -84,12 +87,12 @@ const OAuthLinkView = (): JSX.Element => {
         <a
           href="https://help.internxt.com"
           target="_blank"
-          className="font-regular mr-4 mt-6 text-base text-gray-80 no-underline hover:text-gray-100"
+          className="font-regular mr-4 mt-6 text-base text-gray-80 no-underline dark:text-gray-100 hover:text-gray-100"
         >
           {translate('general.help')}
         </a>
       </div>
-    </main>
+    </div>
   );
 };
 
