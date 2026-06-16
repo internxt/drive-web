@@ -1,6 +1,6 @@
 {
   "name": "drive-web",
-  "version": "v1.0.788",
+  "version": "v1.0.789",
   "private": true,
   "packageManager": "yarn@1.22.22",
   "dependencies": {
@@ -38,7 +38,6 @@
     "idb": "^6.1.5",
     "js-file-download": "^0.4.12",
     "lint-staged": "^16.0.0",
-    "lodash": "^4.18.1",
     "openpgp": "^6.3.0",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
@@ -128,7 +127,6 @@
     "@types/async": "^3.2.7",
     "@types/file-saver": "^2.0.3",
     "@types/filesystem": "^0.0.36",
-    "@types/lodash": "^4.14.172",
     "@types/node": "^22.9.0",
     "@types/openpgp": "^4.4.22",
     "@types/react": "^18.2.28",
