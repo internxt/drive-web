@@ -33,8 +33,6 @@ const variableList = {
   newApi: 'REACT_APP_DRIVE_NEW_API_URL',
   payments: 'REACT_APP_PAYMENTS_API_URL',
   location: 'REACT_APP_LOCATION_API_URL',
-  authUrl: 'REACT_APP_AUTH_URL',
-  buttonAuthUrl: 'REACT_APP_BUTTON_AUTH_URL',
   storjBridge: 'REACT_APP_STORJ_BRIDGE',
   segmentKey: 'REACT_APP_SEGMENT_KEY',
   intercomProviderKey: 'REACT_APP_INTERCOM_PROVIDER_KEY',

@@ -27,9 +27,6 @@ describe('Check that env variables are loaded correctly', () => {
     expect(envService.getVariable('payments')).toBe(process.env.REACT_APP_PAYMENTS_API_URL);
     expect(envService.getVariable('location')).toBe(process.env.REACT_APP_LOCATION_API_URL);
 
-    expect(envService.getVariable('authUrl')).toBe(process.env.REACT_APP_AUTH_URL);
-    expect(envService.getVariable('buttonAuthUrl')).toBe(process.env.REACT_APP_BUTTON_AUTH_URL);
-
     expect(envService.getVariable('storjBridge')).toBe(process.env.REACT_APP_STORJ_BRIDGE);
     expect(envService.getVariable('segmentKey')).toBe(process.env.REACT_APP_SEGMENT_KEY);
     expect(envService.getVariable('intercomProviderKey')).toBe(process.env.REACT_APP_INTERCOM_PROVIDER_KEY);
