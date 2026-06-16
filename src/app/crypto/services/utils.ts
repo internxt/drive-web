@@ -110,19 +110,8 @@ function renameFile(file: File, newName: string): File {
 }
 
 const getItemPlainName = (item: DriveItemData | AdvancedSharedItem) => {
-  if (item.plainName && item.plainName.length > 0) {
-    return item.plainName;
-  }
-  try {
-    if (item.isFolder || item.type === 'folder') {
-      return aes.decrypt(item.name, `${envService.getVariable('secret2')}-${item.parentId}`);
-    } else {
-      return aes.decrypt(item.name, `${envService.getVariable('secret2')}-${item.folderId}`);
-    }
-  } catch (err) {
-    //Decrypt has failed because item.name is not encrypted
-    return item.name;
-  }
+  if (item.plainName && item.plainName.length > 0) return item.plainName;
+  else return item.name;
 };
 
 export {
