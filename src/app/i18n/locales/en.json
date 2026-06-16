@@ -570,9 +570,7 @@
               "titleNew": "New",
               "year": "year",
               "month": "month",
-              "free": "Free",
-              "reachedFreeLimit": "You are over {{freePlanName}}",
-              "reachedFreeLimitDescription": "As you are currently using {{currentUsage}}, your Internxt Drive will stop syncing your files and you won't be able to add new files"
+              "free": "Free"
             },
             "giveUsFeedback": "Tell us why you want to cancel your {{currentPlanName}} Internxt plan and downgrade to free plan?",
             "feedback": {

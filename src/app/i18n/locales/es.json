@@ -552,9 +552,7 @@
               "titleNew": "Nuevo",
               "year": "año",
               "month": "mes",
-              "free": "Gratis",
-              "reachedFreeLimit": "Has superado el límite de {{freePlanName}}",
-              "reachedFreeLimitDescription": "Como actualmente estás usando {{currentUsage}} de espacio, Internxt Drive dejará de sincronizar tus ficheros, y tampoco serás capaz de añadir nuevos"
+              "free": "Gratis"
             },
             "giveUsFeedback": "Cuéntenos por qué quiere cancelar su plan Internxt de {{currentPlanName}} y cambiar al plan gratuito.",
             "feedback": {
