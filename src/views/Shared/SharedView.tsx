@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _ from 'utils/lodash';
 import { connect, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
