@@ -536,9 +536,7 @@
               "titleNew": "新建",
               "year": "年度",
               "month": "/月",
-              "free": "免费的",
-              "reachedFreeLimit": "你超过了 {{freePlanName}}",
-              "reachedFreeLimitDescription": "由于您目前正在使用 {{currentUsage}}，您的 Internxt Drive 将停止同步您的文件，您将无法添加新文件"
+              "free": "免费的"
             },
             "giveUsFeedback": "能否告诉我们您为什么要取消您的 {{currentPlanName}} Internxt 计划并降级为免费计划？",
             "feedback": {
