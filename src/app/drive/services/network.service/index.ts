@@ -7,7 +7,7 @@ import { createWorkerMessageHandlerPromise } from '../worker.service/uploadWorke
 import { notifyUserWithCooldown } from 'app/core/factory/sdk/retryStrategies';
 import { EnvironmentConfig, IUploadParams } from './types';
 
-export const MAX_ALLOWED_UPLOAD_SIZE = 10 * 1024 * 1024 * 1024;
+export const MAX_ALLOWED_UPLOAD_SIZE = 100 * 1024 * 1024 * 1024;
 
 export class Network {
   private mnemonic: string;
