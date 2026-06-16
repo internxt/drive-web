@@ -1,6 +1,6 @@
 import { items as itemsLib } from '@internxt/lib';
 import EventEmitter from 'events';
-import { uniqueId } from 'lodash';
+import { uniqueId } from 'utils/lodash';
 import { FunctionComponent, SVGProps } from 'react';
 
 import iconService from 'app/drive/services/icon.service';

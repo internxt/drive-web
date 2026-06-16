@@ -1,6 +1,5 @@
 import { StoragePlan, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { ArrowRight } from '@phosphor-icons/react';
-import sizeService from 'app/drive/services/size.service';
 import { FreeStoragePlan } from 'app/drive/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Button, Modal } from '@internxt/ui';
@@ -66,7 +65,6 @@ const CancelPlanModal = ({
 }): JSX.Element => {
   const { translate } = useTranslationContext();
 
-  const isCurrentUsageGreaterThanFreePlan = currentUsage !== -1 && currentUsage >= FreeStoragePlan.storageLimit;
   const monthlyAmount = individualPlan?.monthlyPrice;
   const commitment = individualPlan?.commitment;
   const isCommitmentEnabled = commitment?.enabled;
@@ -143,9 +141,7 @@ const CancelPlanModal = ({
             </p>
           </div>
           <div className="mt-3">
-            <span className={`text-2xl font-bold text-primary ${isCurrentUsageGreaterThanFreePlan ? 'text-red' : ''}`}>
-              {FreeStoragePlan.simpleName}
-            </span>
+            <span className={'text-2xl font-bold text-primary'}>{FreeStoragePlan.simpleName}</span>
           </div>
           <div>
             <span className="font-medium">
@@ -155,24 +151,6 @@ const CancelPlanModal = ({
         </div>
       </div>
 
-      {isCurrentUsageGreaterThanFreePlan && (
-        <div className="mt-5 flex w-full max-w-lg flex-col rounded-xl border border-red/30 bg-red/10 pb-3 pt-3">
-          <div className="flex items-center justify-center p-3">
-            <span className="text-lg font-bold text-red">
-              {translate('views.account.tabs.billing.cancelSubscriptionModal.infoBox.reachedFreeLimit', {
-                freePlanName: FreeStoragePlan.simpleName,
-              })}
-            </span>
-          </div>
-          <div className="flex items-center justify-center p-3">
-            <span className="font-medium text-red">
-              {translate('views.account.tabs.billing.cancelSubscriptionModal.infoBox.reachedFreeLimitDescription', {
-                currentUsage: sizeService.bytesToString(currentUsage),
-              })}
-            </span>
-          </div>
-        </div>
-      )}
       <div className="mt-5 flex justify-end">
         <Button
           className={'shadow-subtle-hard'}
