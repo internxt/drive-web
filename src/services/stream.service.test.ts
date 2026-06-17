@@ -230,6 +230,54 @@ describe('Stream service', () => {
       expect(onRead).not.toHaveBeenCalled();
     });
 
+    it('should call onFinished once when the stream completes', async () => {
+      const sourceStream = new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.enqueue(new Uint8Array([1, 2, 3]));
+          controller.close();
+        },
+      });
+
+      const onFinished = vi.fn().mockResolvedValue(undefined);
+      const progressStream = buildProgressStream(sourceStream, vi.fn(), onFinished);
+      const reader = progressStream.getReader();
+
+      await reader.read();
+      await reader.read();
+
+      expect(onFinished).toHaveBeenCalledOnce();
+    });
+
+    it('should propagate errors thrown by onFinished', async () => {
+      const sourceStream = new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.close();
+        },
+      });
+
+      const onFinished = vi.fn().mockRejectedValue(new Error('integrity check failed'));
+      const progressStream = buildProgressStream(sourceStream, vi.fn(), onFinished);
+      const reader = progressStream.getReader();
+
+      await expect(reader.read()).rejects.toThrow('integrity check failed');
+    });
+
+    it('should not call onFinished if stream is cancelled before completing', async () => {
+      const sourceStream = new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.enqueue(new Uint8Array([1, 2, 3]));
+        },
+      });
+
+      const onFinished = vi.fn().mockResolvedValue(undefined);
+      const progressStream = buildProgressStream(sourceStream, vi.fn(), onFinished);
+      const reader = progressStream.getReader();
+
+      await reader.cancel();
+
+      expect(onFinished).not.toHaveBeenCalled();
+    });
+
     it('should accumulate read bytes across multiple chunks', async () => {
       const mockData = [new Uint8Array([1, 2]), new Uint8Array([3, 4, 5]), new Uint8Array([6])];
       const sourceStream = new ReadableStream<Uint8Array>({
