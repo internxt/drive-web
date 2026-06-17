@@ -17,9 +17,9 @@ jobs:
 
       - name: Get lines changed
         run: |
-          LINES=$(git diff --shortstat "origin/$BASE_REF...HEAD" -- . ':!*.spec*' ':!package.json' ':!package-lock.json' | awk '{print $4 + $6}')
+          LINES=$(git diff --shortstat origin/${{ github.base_ref }}...HEAD -- . ':!*.spec*' ':!package.json' ':!package-lock.json' | awk '{print $4 + $6}')
           echo "Lines changed: $LINES"
-          echo "LINES_CHANGED=$LINES" >> "$GITHUB_ENV"
+          echo "LINES_CHANGED=$LINES" >> $GITHUB_ENV
 
       - name: Fail if PR is too big
         run: |
