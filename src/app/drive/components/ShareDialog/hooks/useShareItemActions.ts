@@ -63,11 +63,9 @@ export const useShareItemActions = ({
     }
 
     if (itemToShare?.item.uuid) {
-      const encryptionKey = isAdvancedShareItem(itemToShare.item) ? itemToShare?.item?.encryptionKey : undefined;
       const sharingInfo = await shareService.getPublicShareLink(
         itemToShare?.item.uuid,
         itemToShare.item.isFolder ? 'folder' : 'file',
-        encryptionKey,
       );
 
       if (sharingInfo) {
@@ -102,7 +100,12 @@ export const useShareItemActions = ({
         } else {
           const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
           const itemId = itemToShare?.item.uuid ?? '';
-          sharingInfo = await shareService.createPublicShareFromOwnerUser(itemId, itemType, plainPassword);
+          const { publicSharingItemData } = await shareService.createPublicShareFromOwnerUser(
+            itemId,
+            itemType,
+            plainPassword,
+          );
+          sharingInfo = publicSharingItemData;
           actionDispatch(setSharingMeta(sharingInfo));
         }
 
