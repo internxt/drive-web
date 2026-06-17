@@ -56,7 +56,11 @@ export async function binaryStreamToUint8Array(
   return result;
 }
 
-export function buildProgressStream(source: BinaryStream, onRead: (readBytes: number) => void): BinaryStream {
+export function buildProgressStream(
+  source: BinaryStream,
+  onRead: (readBytes: number) => void,
+  onFinished?: () => Promise<void>,
+): BinaryStream {
   const reader = source.getReader();
   let readBytes = 0;
 
@@ -65,6 +69,7 @@ export function buildProgressStream(source: BinaryStream, onRead: (readBytes: nu
       const status = await reader.read();
 
       if (status.done) {
+        await onFinished?.();
         controller.close();
       } else {
         readBytes += (status.value as Uint8Array).length;
