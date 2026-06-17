@@ -7,6 +7,7 @@ import errorService from 'services/error.service';
 import { ItemToShare } from 'app/store/slices/storage/types';
 import envService from 'services/env.service';
 import { copyTextToClipboard } from 'utils/copyToClipboard.utils';
+import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
 
 const { mockActionDispatch, mockUseShareDialogContext, mockTranslate, mockDispatch } = vi.hoisted(() => ({
   mockActionDispatch: vi.fn(),
@@ -49,9 +50,8 @@ describe('Share Item Actions', () => {
   const mockSharingMeta = {
     id: 'sharing-id-123',
     encryptedCode: 'encrypted-code',
-    token: 'share-token',
-    code: 'share-code',
-  };
+    itemToken: 'share-token',
+  } as SharingMeta;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -143,9 +143,7 @@ describe('Share Item Actions', () => {
         },
         dispatch: mockActionDispatch,
       });
-      const getPublicShareLinkSpy = vi
-        .spyOn(shareService, 'getPublicShareLink')
-        .mockResolvedValue(mockSharingMeta as any);
+      const getPublicShareLinkSpy = vi.spyOn(shareService, 'getPublicShareLink').mockResolvedValue(mockSharingMeta);
 
       const itemToShare = createItemToShare(false);
       const { result } = renderHook(() =>
@@ -160,7 +158,7 @@ describe('Share Item Actions', () => {
 
       await result.current.onCopyLink();
 
-      expect(getPublicShareLinkSpy).toHaveBeenCalledWith('item-uuid-123', 'file', undefined);
+      expect(getPublicShareLinkSpy).toHaveBeenCalledWith('item-uuid-123', 'file');
       expect(mockActionDispatch).toHaveBeenCalledWith(
         expect.objectContaining({ type: 'SET_SHARING_META', payload: mockSharingMeta }),
       );
@@ -243,9 +241,7 @@ describe('Share Item Actions', () => {
         },
         dispatch: mockActionDispatch,
       });
-      const saveSharingPasswordSpy = vi
-        .spyOn(shareService, 'saveSharingPassword')
-        .mockResolvedValue(mockSharingMeta as any);
+      const saveSharingPasswordSpy = vi.spyOn(shareService, 'saveSharingPassword').mockResolvedValue(mockSharingMeta);
 
       const itemToShare = createItemToShare(true);
       const { result } = renderHook(() =>
@@ -268,9 +264,10 @@ describe('Share Item Actions', () => {
     });
 
     test('When sharing info does not exist, then creates new public share with password', async () => {
+      const plainCode = 'test plain code';
       const createPublicShareFromOwnerUserSpy = vi
         .spyOn(shareService, 'createPublicShareFromOwnerUser')
-        .mockResolvedValue(mockSharingMeta as any);
+        .mockResolvedValue({ publicSharingItemData: mockSharingMeta, plainCode });
 
       const itemToShare = createItemToShare(false);
       const { result } = renderHook(() =>
