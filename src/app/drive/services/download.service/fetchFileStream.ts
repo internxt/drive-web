@@ -1,5 +1,5 @@
 import { Downloadable, downloadFile } from 'app/network/download';
-import { getEnvironmentConfig } from '../network.service';
+import { getEnvironmentConfig } from '../network.service/getEnvironmentConfig';
 
 type FetchFileStreamOptions = {
   updateProgressCallback: (progress: number) => void;
