@@ -13,13 +13,7 @@ import { buildProgressStream, decryptStream } from 'services/stream.service';
 import { WORKER_MESSAGE_STATES } from 'app/drive/services/worker.service/types/upload';
 import { waitForContinueUploadSignal } from 'app/drive/services/worker.service/uploadWorkerUtils';
 import { TaskStatus } from '../tasks/types';
-import {
-  createSha256HashingStream,
-  encryptStreamInParts,
-  generateFileKey,
-  getEncryptedFile,
-  processEveryFileBlobReturnHash,
-} from './crypto';
+import { createSha256HashingStream, encryptStreamInParts, generateFileKey, getEncryptedFile, processEveryFileBlobReturnHash } from './crypto';
 import { DownloadProgressCallback, getDecryptedStream } from './download';
 import {
   DownloadAbortedByUserError,
@@ -294,7 +288,9 @@ export class NetworkFacade {
           });
 
           encryptedContentStreams.push(
-            await createSha256HashingStream(encryptedContentStream, (h) => sha256Hashes.push(h)),
+            await createSha256HashingStream(encryptedContentStream, (digest) => {
+              shardHashes.push(digest);
+            })
           );
         }
       },
@@ -305,14 +301,12 @@ export class NetworkFacade {
         );
 
         fileStream = buildProgressStream(
-          decryptedStream,
+          decryptedStream, 
           (readBytes) => options?.downloadingCallback?.(fileSize, readBytes),
           async () => {
-            const shardHashes = await Promise.all(sha256Hashes.map(getRipemd160FromHex));
-            const hmac = await getFileHmacFromShardHashes(options?.key || (key as Buffer), shardHashes);
-            if (fileInfoRef.hmac?.value && hmac !== fileInfoRef.hmac.value)
-              throw new Error('File integrity check failed');
-          },
+            const hmac = await getFileHmacFromShardHashes(key as Buffer, shardHashes);
+            if (fileInfoRef.hmac?.value && hmac !== fileInfoRef.hmac.value) throw new Error('File integrity check failed');
+          }
         );
       },
       (options?.token && { token: options.token }) || undefined,
