@@ -11,7 +11,7 @@ import {
   setSharingMeta,
   setShowStopSharingConfirmation,
 } from '../context/ShareDialogContext.actions';
-import { cropSharedName, isAdvancedShareItem } from '../utils';
+import { cropSharedName } from '../utils';
 import { sharedThunks } from 'app/store/slices/sharedLinks';
 import { ItemToShare } from 'app/store/slices/storage/types';
 import shareService from 'app/share/services/share.service';
