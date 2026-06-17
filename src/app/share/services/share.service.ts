@@ -38,6 +38,7 @@ import { domainManager } from './DomainManager';
 import { generateCaptchaToken } from 'utils';
 import { copyTextToClipboard } from 'utils/copyToClipboard.utils';
 import referralService from 'services/referral.service';
+import { generateFileBucketKey } from 'app/network/crypto';
 
 interface CreateShareResponse {
   created: boolean;
@@ -275,25 +276,28 @@ export const createPublicShareFromOwnerUser = async (
   uuid: string,
   itemType: 'folder' | 'file',
   plainPassword?: string,
-  encryptionAlgorithm?: string,
-): Promise<SharingMeta> => {
+): Promise<{ publicSharingItemData: SharingMeta; plainCode: string }> => {
   const user = localStorageService.getUser() as UserSettings;
-  const { mnemonic } = user;
-  const code = stringUtils.generateRandomStringUrlSafe(8);
+  const { mnemonic, bucket } = user;
+  const plainCode = stringUtils.generateRandomStringUrlSafe(8);
+  const bucketKey = await generateFileBucketKey(mnemonic, bucket);
+  const bucketKeyHex = Buffer.from(bucketKey.subarray(0, 32)).toString('hex');
 
-  const encryptedMnemonic = aes.encrypt(mnemonic, code);
-  const encryptedCode = aes.encrypt(code, mnemonic);
-  const encryptedPassword = plainPassword ? aes.encrypt(plainPassword, code) : null;
+  const encryptedKey = aes.encrypt(bucketKeyHex, plainCode);
+  const encryptedCode = aes.encrypt(plainCode, bucketKeyHex);
+  const encryptedPassword = plainPassword ? aes.encrypt(plainPassword, plainCode) : null;
 
-  return createPublicSharingItem({
-    encryptionAlgorithm: encryptionAlgorithm ?? 'inxt-v2',
-    encryptionKey: encryptedMnemonic,
+  const publicSharingItemData = await createPublicSharingItem({
+    encryptionAlgorithm: 'inxt-v3',
+    encryptionKey: encryptedKey,
     itemType,
     itemId: uuid,
     encryptedCode,
     persistPreviousSharing: true,
     ...(encryptedPassword && { encryptedPassword }),
   });
+
+  return { publicSharingItemData, plainCode };
 };
 
 export const decryptPublicSharingCodeWithOwner = (encryptedCode: string) => {
@@ -312,24 +316,10 @@ const getRandomElement = (list: string[]) => {
   return list[randomIndex];
 };
 
-export const getPublicShareLink = async (
-  uuid: string,
-  itemType: 'folder' | 'file',
-  encriptedMnemonic?: string,
-): Promise<SharingMeta | void> => {
-  const user = localStorageService.getUser() as UserSettings;
-  let { mnemonic } = user;
-
+export const getPublicShareLink = async (uuid: string, itemType: 'folder' | 'file'): Promise<SharingMeta | void> => {
   try {
-    const publicSharingItemData = await createPublicShareFromOwnerUser(uuid, itemType);
-    const { id: sharingId, encryptedCode: encryptedCodeFromResponse } = publicSharingItemData;
-    const isUserInvited = publicSharingItemData.ownerId !== user.uuid;
-
-    if (isUserInvited && encriptedMnemonic) {
-      const ownerMnemonic = await decryptMnemonic(encriptedMnemonic);
-      if (ownerMnemonic) mnemonic = ownerMnemonic;
-    }
-    const plainCode = aes.decrypt(encryptedCodeFromResponse, mnemonic);
+    const { publicSharingItemData, plainCode } = await createPublicShareFromOwnerUser(uuid, itemType);
+    const { id: sharingId } = publicSharingItemData;
 
     const domains = domainManager.getDomainsList();
     let selectedDomain = getRandomElement(domains);
