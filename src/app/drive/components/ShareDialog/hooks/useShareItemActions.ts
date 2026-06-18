@@ -11,7 +11,7 @@ import {
   setSharingMeta,
   setShowStopSharingConfirmation,
 } from '../context/ShareDialogContext.actions';
-import { cropSharedName } from '../utils';
+import { cropSharedName, isAdvancedShareItem } from '../utils';
 import { sharedThunks } from 'app/store/slices/sharedLinks';
 import { ItemToShare } from 'app/store/slices/storage/types';
 import shareService from 'app/share/services/share.service';
@@ -63,9 +63,11 @@ export const useShareItemActions = ({
     }
 
     if (itemToShare?.item.uuid) {
+      const encryptionKey = isAdvancedShareItem(itemToShare.item) ? itemToShare?.item?.encryptionKey : undefined;
       const sharingInfo = await shareService.getPublicShareLink(
         itemToShare?.item.uuid,
         itemToShare.item.isFolder ? 'folder' : 'file',
+        encryptionKey,
       );
 
       if (sharingInfo) {

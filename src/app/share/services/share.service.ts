@@ -39,6 +39,7 @@ import { generateCaptchaToken } from 'utils';
 import { copyTextToClipboard } from 'utils/copyToClipboard.utils';
 import referralService from 'services/referral.service';
 import { generateFileBucketKey } from 'app/network/crypto';
+import { LocalStorageItem } from 'app/core/types';
 
 interface CreateShareResponse {
   created: boolean;
@@ -279,7 +280,7 @@ export const createPublicShareFromOwnerUser = async (
 ): Promise<{ publicSharingItemData: SharingMeta; plainCode: string }> => {
   const user = localStorageService.getUser() as UserSettings;
   const { mnemonic, bucket } = user;
-  const plainCode = stringUtils.generateRandomStringUrlSafe(8);
+  let plainCode = stringUtils.generateRandomStringUrlSafe(8);
   const bucketKey = await generateFileBucketKey(mnemonic, bucket);
   const bucketKeyHex = Buffer.from(bucketKey.subarray(0, 32)).toString('hex');
 
@@ -296,6 +297,11 @@ export const createPublicShareFromOwnerUser = async (
     persistPreviousSharing: true,
     ...(encryptedPassword && { encryptedPassword }),
   });
+
+  const { encryptedCode: encryptedCodeFromResponse } = publicSharingItemData;
+  if (encryptedCodeFromResponse !== encryptedCode) {
+    plainCode = aes.decrypt(encryptedCodeFromResponse, bucketKeyHex);
+  }
 
   return { publicSharingItemData, plainCode };
 };
@@ -316,8 +322,16 @@ const getRandomElement = (list: string[]) => {
   return list[randomIndex];
 };
 
-export const getPublicShareLink = async (uuid: string, itemType: 'folder' | 'file'): Promise<SharingMeta | void> => {
+export const getPublicShareLink = async (
+  uuid: string,
+  itemType: 'folder' | 'file',
+  encriptedMnemonic?: string,
+): Promise<SharingMeta | void> => {
   try {
+    if (encriptedMnemonic) {
+      const ownerMnemonic = await decryptMnemonic(encriptedMnemonic);
+      if (ownerMnemonic) localStorageService.set(LocalStorageItem.UserMnemonic, ownerMnemonic);
+    }
     const { publicSharingItemData, plainCode } = await createPublicShareFromOwnerUser(uuid, itemType);
     const { id: sharingId } = publicSharingItemData;
 

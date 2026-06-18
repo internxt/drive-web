@@ -158,7 +158,7 @@ describe('Share Item Actions', () => {
 
       await result.current.onCopyLink();
 
-      expect(getPublicShareLinkSpy).toHaveBeenCalledWith('item-uuid-123', 'file');
+      expect(getPublicShareLinkSpy).toHaveBeenCalledWith('item-uuid-123', 'file', undefined);
       expect(mockActionDispatch).toHaveBeenCalledWith(
         expect.objectContaining({ type: 'SET_SHARING_META', payload: mockSharingMeta }),
       );
