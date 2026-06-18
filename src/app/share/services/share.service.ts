@@ -45,7 +45,7 @@ interface CreateShareResponse {
   created: boolean;
   token: string;
 }
-
+const NEW_SHARING_VERSION = 'inxt-v3';
 export async function createShare(params: ShareTypes.GenerateShareLinkPayload): Promise<CreateShareResponse> {
   return await SdkFactory.getNewApiInstance().createShareClient().createShareLink(params);
 }
@@ -289,7 +289,7 @@ export const createPublicShareFromOwnerUser = async (
   const encryptedPassword = plainPassword ? aes.encrypt(plainPassword, plainCode) : null;
 
   const publicSharingItemData = await createPublicSharingItem({
-    encryptionAlgorithm: 'inxt-v3',
+    encryptionAlgorithm: NEW_SHARING_VERSION,
     encryptionKey: encryptedKey,
     itemType,
     itemId: uuid,
@@ -298,9 +298,11 @@ export const createPublicShareFromOwnerUser = async (
     ...(encryptedPassword && { encryptedPassword }),
   });
 
-  const { encryptedCode: encryptedCodeFromResponse } = publicSharingItemData;
+  const { encryptedCode: encryptedCodeFromResponse, encryptionAlgorithm: encryptionAlgorithmFromResponse } =
+    publicSharingItemData;
   if (encryptedCodeFromResponse !== encryptedCode) {
-    plainCode = aes.decrypt(encryptedCodeFromResponse, bucketKeyHex);
+    const key = encryptionAlgorithmFromResponse === NEW_SHARING_VERSION ? bucketKeyHex : mnemonic;
+    plainCode = aes.decrypt(encryptedCodeFromResponse, key);
   }
 
   return { publicSharingItemData, plainCode };
