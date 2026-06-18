@@ -12,8 +12,10 @@ import {
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import shareService, { decryptMnemonic, getPublicShareLink } from './share.service';
-import { stringUtils } from '@internxt/lib';
+import { stringUtils, aes } from '@internxt/lib';
 import notificationsService from 'app/notifications/services/notifications.service';
+import { SharedFiles, SharingMeta } from '@internxt/sdk/dist/drive/share/types';
+import { generateFileBucketKey } from 'app/network/crypto';
 
 vi.mock('utils', () => ({
   generateCaptchaToken: vi.fn(() => 'mocked-captcha-token'),
@@ -302,6 +304,100 @@ describe('Inviting user to Shared Folder', () => {
 describe('Get shared link', () => {
   test('When an error occurs fetching a shared link, then a notification is shown', async () => {
     vi.spyOn(shareService, 'createPublicSharingItem').mockRejectedValue(new Error('Unexpected error'));
+    const showNotificationSpy = vi.spyOn(notificationsService, 'show');
+
+    await getPublicShareLink('uuid', 'file');
+
+    expect(showNotificationSpy).toHaveBeenCalledWith(expect.objectContaining({ requestId: 'test-request-id' }));
+  });
+});
+
+describe('Get public shared link', async () => {
+  beforeAll(() => {
+    vi.restoreAllMocks();
+    vi.clearAllMocks();
+  });
+
+  const bucket = 'test bucket';
+  const mnemonic = 'test mnemonic';
+  const mockPlainCode = 'mock plain code';
+  const bucketKey = await generateFileBucketKey(mnemonic, bucket);
+  const bucketKeyHex = Buffer.from(bucketKey.subarray(0, 32)).toString('hex');
+  const encryptedCode = aes.encrypt(mockPlainCode, bucketKeyHex);
+
+  const mockSharedFile = {
+    bucket,
+  } as SharedFiles;
+
+  const mockSharingMeta = {
+    id: 'mock id',
+    itemId: 'mock item id',
+    itemType: 'file',
+    ownerId: 'mock owner id',
+    sharedWith: 'user id',
+    encryptionKey: 'mock encryption key',
+    encryptedCode: encryptedCode,
+    encryptedPassword: null,
+    encryptionAlgorithm: 'inxt-v3',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    type: 'public',
+    item: mockSharedFile,
+    itemToken: 'mock token',
+  } as SharingMeta;
+
+  test('When encrypted code does no change, do not decrypt code', async () => {
+    vi.spyOn(localStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
+    const spyDecrypt = vi.spyOn(aes, 'decrypt');
+
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    const mockCreatePublicSharingItemFn = vi.fn(async (payload) => {
+      return {
+        ...mockSharingMeta,
+        encryptedCode: payload.encryptedCode,
+      };
+    });
+
+    const mockCreateShareClientFn = vi.fn(() => ({
+      createSharing: mockCreatePublicSharingItemFn,
+    }));
+
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
+      createShareClient: mockCreateShareClientFn,
+    } as any);
+
+    const { createPublicShareFromOwnerUser } = await import('./share.service');
+    const { publicSharingItemData, plainCode } = await createPublicShareFromOwnerUser('uuid', 'file');
+
+    expect(plainCode).toBeDefined();
+    expect(publicSharingItemData).toBeDefined();
+    expect(spyDecrypt).not.toHaveBeenCalled();
+  });
+
+  test('When encrypted code changes, decrypt code', async () => {
+    vi.spyOn(localStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
+    const spyDecrypt = vi.spyOn(aes, 'decrypt');
+
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    const mockCreatePublicSharingItemFn = vi.fn().mockResolvedValue(mockSharingMeta);
+    const mockCreateShareClientFn = vi.fn(() => ({
+      createSharing: mockCreatePublicSharingItemFn,
+    }));
+
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
+      createShareClient: mockCreateShareClientFn,
+    } as any);
+
+    const { createPublicShareFromOwnerUser } = await import('./share.service');
+    const { publicSharingItemData, plainCode } = await createPublicShareFromOwnerUser('uuid', 'file');
+
+    expect(plainCode).toBeDefined();
+    expect(publicSharingItemData).toBeDefined();
+    expect(spyDecrypt).toHaveBeenCalled();
+    expect(plainCode).toBe(mockPlainCode);
+  });
+  test('When an error occurs fetching a shared link, then a notification is shown', async () => {
+    vi.spyOn(shareService, 'createPublicShareFromOwnerUser').mockRejectedValue(new Error('Unexpected error'));
     const showNotificationSpy = vi.spyOn(notificationsService, 'show');
 
     await getPublicShareLink('uuid', 'file');
