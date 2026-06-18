@@ -31,7 +31,7 @@ export default function UniversalLinkOkView(): JSX.Element {
           <a
             href="https://internxt.com/legal"
             target="_blank"
-            className="font-regular mr-4 mt-6 text-base text-gray-80 dark:text-gray-10 no-underline hover:text-gray-100"
+            className="font-regular mr-4 mt-6 text-base text-gray-80 dark:text-gray-100 no-underline hover:text-gray-100"
           >
             {translate('general.terms')}
           </a>

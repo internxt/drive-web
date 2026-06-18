@@ -44,13 +44,13 @@ const OAuthLinkView = (): JSX.Element => {
   };
 
   return (
-    <div className="relative flex h-full w-full flex-col dark:bg-[#0A0F1C] overflow-hidden z-0">
+    <div className="relative flex h-full w-full flex-col bg-white dark:bg-[#0A0F1C] overflow-hidden z-0">
       <AnimatedBackground />
       <div className="relative z-0 flex shrink-0 flex-row justify-center py-10 sm:justify-center">
         <InternxtLogo className="h-auto w-28 text-gray-100" />
       </div>
       <div className="flex flex-1 items-center justify-center">
-        <div className="w-96 rounded-lg z-50 px-8 py-10 shadow-softbg-white dark:bg-gray-1">
+        <div className="w-96 rounded-lg z-50 px-8 py-10 shadow-soft bg-white dark:bg-gray-1">
           <div className="mb-6 flex justify-center">
             <InternxtLogo className="h-auto w-52 text-gray-100" />
           </div>
