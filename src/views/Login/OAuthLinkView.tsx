@@ -45,7 +45,6 @@ const OAuthLinkView = (): JSX.Element => {
 
   return (
     <div className="relative flex h-full w-full flex-col dark:bg-[#0A0F1C] overflow-hidden z-0">
-      {' '}
       <AnimatedBackground />
       <div className="relative z-0 flex shrink-0 flex-row justify-center py-10 sm:justify-center">
         <InternxtLogo className="h-auto w-28 text-gray-100" />
