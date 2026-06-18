@@ -3,7 +3,10 @@ import { describe, it, expect, vi, beforeEach, afterEach, test } from 'vitest';
 import { NetworkFacade } from './NetworkFacade';
 import { Network as NetworkModule } from '@internxt/sdk';
 import { downloadFile } from '@internxt/sdk/dist/network/download';
-import { decryptStream } from 'services/stream.service';
+import { buildProgressStream, decryptStream } from 'services/stream.service';
+import { createSha256HashingStream } from './crypto';
+import { getDecryptedStream } from './download';
+import { getFileHmacFromShardHashes } from 'app/crypto/services/utils';
 import {
   DownloadAbortedByUserError,
   DownloadFailedWithUnknownError,
@@ -18,6 +21,19 @@ vi.mock('services/stream.service', () => ({
   buildProgressStream: vi.fn(),
   decryptStream: vi.fn(),
   joinReadableBinaryStreams: vi.fn(),
+}));
+vi.mock('./crypto', () => ({
+  createSha256HashingStream: vi.fn(),
+  encryptStreamInParts: vi.fn(),
+  generateFileKey: vi.fn(),
+  getEncryptedFile: vi.fn(),
+  processEveryFileBlobReturnHash: vi.fn(),
+}));
+vi.mock('./download', () => ({
+  getDecryptedStream: vi.fn(),
+}));
+vi.mock('app/crypto/services/utils', () => ({
+  getFileHmacFromShardHashes: vi.fn(),
 }));
 
 describe('NetworkFacade', () => {
@@ -36,6 +52,105 @@ describe('NetworkFacade', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+  });
+
+  describe('Downloading a file', () => {
+    const downloadUrl = 'http://s3.inxt.download.com/example';
+    const bucketId = 'test-bucket';
+    const fileId = 'test-file';
+    const mnemonic = 'test-mnemonic';
+    const fakeKey = Buffer.alloc(32);
+    const fakeIv = Buffer.alloc(16);
+    const fakeShardHash = 'aabbcc';
+
+    function mockDownloadFile(fileInfoOverride: object = {}) {
+      (downloadFile as any).mockImplementation(
+        async (_fId, _bId, _mn, _net, _crypto, _buf, downloadCb, decryptCb) => {
+          await downloadCb([{ url: downloadUrl }], { size: 100, ...fileInfoOverride });
+          await decryptCb('AES256CTR', fakeKey, fakeIv, 100);
+        },
+      );
+    }
+
+    beforeEach(() => {
+      const mockHashingStream = new ReadableStream({ start: (c) => c.close() });
+      const mockDecryptedStream = new ReadableStream({ start: (c) => c.close() });
+      const mockProgressStream = new ReadableStream({ start: (c) => c.close() });
+
+      (global.fetch as any).mockResolvedValue({ body: new ReadableStream() });
+      vi.mocked(createSha256HashingStream).mockImplementation(async (_src, onHash) => {
+        onHash(fakeShardHash);
+        return mockHashingStream;
+      });
+      vi.mocked(getDecryptedStream).mockReturnValue(mockDecryptedStream);
+      vi.mocked(buildProgressStream).mockReturnValue(mockProgressStream);
+    });
+
+    test('When fileInfo has no HMAC, the download resolves without integrity check', async () => {
+      mockDownloadFile();
+      vi.mocked(getFileHmacFromShardHashes).mockResolvedValue('any-hmac');
+
+      const result = await networkFacade.download(bucketId, fileId, mnemonic);
+
+      expect(result).toBeDefined();
+      expect(buildProgressStream).toHaveBeenCalledOnce();
+    });
+
+    test('When the computed HMAC matches fileInfo.hmac.value, onFinished resolves without error', async () => {
+      const expectedHmac = 'matching-hmac-value';
+      mockDownloadFile({ hmac: { type: 'sha512', value: expectedHmac } });
+      vi.mocked(getFileHmacFromShardHashes).mockResolvedValue(expectedHmac);
+
+      let capturedOnFinished: (() => Promise<void>) | undefined;
+      vi.mocked(buildProgressStream).mockImplementation((_src, _onRead, onFinished) => {
+        capturedOnFinished = onFinished;
+        return new ReadableStream({ start: (c) => c.close() });
+      });
+
+      await networkFacade.download(bucketId, fileId, mnemonic);
+
+      await expect(capturedOnFinished?.()).resolves.toBeUndefined();
+    });
+
+    test('When the computed HMAC does not match fileInfo.hmac.value, onFinished throws', async () => {
+      mockDownloadFile({ hmac: { type: 'sha512', value: 'expected-hmac' } });
+      vi.mocked(getFileHmacFromShardHashes).mockResolvedValue('different-hmac');
+
+      let capturedOnFinished: (() => Promise<void>) | undefined;
+      vi.mocked(buildProgressStream).mockImplementation((_src, _onRead, onFinished) => {
+        capturedOnFinished = onFinished;
+        return new ReadableStream({ start: (c) => c.close() });
+      });
+
+      await networkFacade.download(bucketId, fileId, mnemonic);
+
+      await expect(capturedOnFinished?.()).rejects.toThrow('File integrity check failed');
+    });
+
+    test('When a shard is downloaded, its SHA256 hash is computed via createSha256HashingStream', async () => {
+      mockDownloadFile();
+      vi.mocked(getFileHmacFromShardHashes).mockResolvedValue('any-hmac');
+
+      await networkFacade.download(bucketId, fileId, mnemonic);
+
+      expect(createSha256HashingStream).toHaveBeenCalledOnce();
+    });
+
+    test('When computing the HMAC, getFileHmacFromShardHashes receives the shard hashes collected during download', async () => {
+      mockDownloadFile({ hmac: { type: 'sha512', value: 'some-hmac' } });
+      vi.mocked(getFileHmacFromShardHashes).mockResolvedValue('some-hmac');
+
+      let capturedOnFinished: (() => Promise<void>) | undefined;
+      vi.mocked(buildProgressStream).mockImplementation((_src, _onRead, onFinished) => {
+        capturedOnFinished = onFinished;
+        return new ReadableStream({ start: (c) => c.close() });
+      });
+
+      await networkFacade.download(bucketId, fileId, mnemonic);
+      await capturedOnFinished?.();
+
+      expect(getFileHmacFromShardHashes).toHaveBeenCalledWith(fakeKey, [fakeShardHash]);
+    });
   });
 
   describe('Downloading a chunk', () => {
@@ -115,7 +230,7 @@ describe('NetworkFacade', () => {
       );
     });
 
-    it('When the download is aborted, then an error indicating so is thrown', async () => {
+    it('When the download is aborted, then an DownloadAbortedByUserError error is thrown', async () => {
       const abortController = new AbortController();
       abortController.abort();
 

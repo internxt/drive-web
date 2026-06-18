@@ -114,6 +114,10 @@ const getItemPlainName = (item: DriveItemData | AdvancedSharedItem) => {
   else return item.name;
 };
 
+async function getFileHmacFromShardHashes(fileKey: Buffer, shardHashes: string[]): Promise<string> {
+  return getSha512Combined(fileKey, Buffer.from(shardHashes.join(''), 'hex'));
+}
+
 export {
   decryptText,
   decryptTextWithKey,
@@ -126,6 +130,7 @@ export {
   getSha256,
   getSha256Hasher,
   getSha512Combined,
+  getFileHmacFromShardHashes,
   passToHash,
   renameFile,
 };
