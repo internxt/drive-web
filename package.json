@@ -1,6 +1,6 @@
 {
   "name": "drive-web",
-  "version": "v1.0.793",
+  "version": "v1.0.794",
   "private": true,
   "packageManager": "yarn@1.22.22",
   "dependencies": {
@@ -18,7 +18,7 @@
     "@stripe/stripe-js": "^3.5.0",
     "@typeform/embed-react": "^1.19.0",
     "assert": "^2.1.0",
-    "axios": "^1.15.2",
+    "axios": "^1.16.0",
     "bip39": "^3.0.3",
     "browserify-zlib": "^0.2.0",
     "copy-to-clipboard": "^3.3.1",
