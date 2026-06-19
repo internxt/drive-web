@@ -100,7 +100,7 @@ const NameCollisionDialog: FC<NameCollisionDialogProps> = ({
         <p className="text-base text-gray-80">{description}</p>
 
         <RadioGroup value={selectedOption} onChange={setSelectedOption} disabled={isLoading}>
-          <Label className="sr-only">Select an option</Label>
+          <Label className="sr-only">{translate('modals.renameModal.selectOption')}</Label>
           <div className="flex flex-col items-start space-y-3">
             {options.map((option) => (
               <Radio value={option} className="rounded-md outline-none" key={option.operation}>

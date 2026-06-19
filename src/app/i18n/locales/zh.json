@@ -854,6 +854,7 @@
       "multipleDescription": "此位置已存在多个元素。 你想替换它们还是想保留所有",
       "replaceItem": "替换当前项目",
       "keepBoth": "保留两者",
+      "selectOption": "选择一个选项",
       "upload": "上传",
       "move": "移动"
     },
