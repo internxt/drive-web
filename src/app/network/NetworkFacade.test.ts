@@ -3,10 +3,11 @@ import { describe, it, expect, vi, beforeEach, afterEach, test } from 'vitest';
 import { NetworkFacade } from './NetworkFacade';
 import { Network as NetworkModule } from '@internxt/sdk';
 import { downloadFile } from '@internxt/sdk/dist/network/download';
+import { uploadFile } from '@internxt/sdk/dist/network/upload';
 import { buildProgressStream, decryptStream } from 'services/stream.service';
 import { createSha256HashingStream } from './crypto';
 import { getDecryptedStream } from './download';
-import { getFileHmacFromShardHashes } from 'app/crypto/services/utils';
+import { getFileHmacFromShardHashes, getRipemd160FromHex } from 'app/crypto/services/utils';
 import {
   DownloadAbortedByUserError,
   DownloadFailedWithUnknownError,
@@ -15,6 +16,10 @@ import {
 
 vi.mock('@internxt/sdk/dist/network/download', () => ({
   downloadFile: vi.fn(),
+}));
+vi.mock('@internxt/sdk/dist/network/upload', () => ({
+  uploadFile: vi.fn(),
+  uploadMultipartFile: vi.fn(),
 }));
 vi.mock('services/stream.service', () => ({
   binaryStreamToBlob: vi.fn(),
@@ -34,6 +39,7 @@ vi.mock('./download', () => ({
 }));
 vi.mock('app/crypto/services/utils', () => ({
   getFileHmacFromShardHashes: vi.fn(),
+  getRipemd160FromHex: vi.fn(),
 }));
 
 describe('NetworkFacade', () => {
@@ -62,6 +68,7 @@ describe('NetworkFacade', () => {
     const fakeKey = Buffer.alloc(32);
     const fakeIv = Buffer.alloc(16);
     const fakeShardHash = 'aabbcc';
+    const fakeRipemd160Hash = 'ddeeff';
 
     function mockDownloadFile(fileInfoOverride: object = {}) {
       (downloadFile as any).mockImplementation(
@@ -82,6 +89,7 @@ describe('NetworkFacade', () => {
         onHash(fakeShardHash);
         return mockHashingStream;
       });
+      vi.mocked(getRipemd160FromHex).mockResolvedValue(fakeRipemd160Hash);
       vi.mocked(getDecryptedStream).mockReturnValue(mockDecryptedStream);
       vi.mocked(buildProgressStream).mockReturnValue(mockProgressStream);
     });
@@ -149,7 +157,7 @@ describe('NetworkFacade', () => {
       await networkFacade.download(bucketId, fileId, mnemonic);
       await capturedOnFinished?.();
 
-      expect(getFileHmacFromShardHashes).toHaveBeenCalledWith(fakeKey, [fakeShardHash]);
+      expect(getFileHmacFromShardHashes).toHaveBeenCalledWith(fakeKey, [fakeRipemd160Hash]);
     });
   });
 
@@ -251,6 +259,51 @@ describe('NetworkFacade', () => {
           },
         }),
       ).rejects.toThrow(DownloadAbortedByUserError);
+    });
+  });
+
+  describe('Uploading a file', () => {
+    const fakeKey = Buffer.alloc(32, 0x01);
+    const fakeShardHash = 'aabbcc';
+
+    test('computeHmac is provided in the cryptoLib passed to the SDK', async () => {
+      let capturedCrypto: NetworkModule.Crypto | undefined;
+      vi.mocked(uploadFile).mockImplementation(async (_net, crypto) => {
+        capturedCrypto = crypto;
+        return 'file-id';
+      });
+
+      await networkFacade.upload('bucket', 'mnemonic', new File([''], 'test.txt'), { uploadingCallback: vi.fn() });
+
+      expect(capturedCrypto?.computeHmac).toBeDefined();
+    });
+
+    test('computeHmac calls getFileHmacFromShardHashes with the file key and shard hashes', async () => {
+      let capturedCrypto: NetworkModule.Crypto | undefined;
+      vi.mocked(uploadFile).mockImplementation(async (_net, crypto) => {
+        capturedCrypto = crypto;
+        return 'file-id';
+      });
+      vi.mocked(getFileHmacFromShardHashes).mockResolvedValue('computed-hmac');
+
+      await networkFacade.upload('bucket', 'mnemonic', new File([''], 'test.txt'), { uploadingCallback: vi.fn() });
+      await capturedCrypto?.computeHmac?.(fakeKey, [fakeShardHash]);
+
+      expect(getFileHmacFromShardHashes).toHaveBeenCalledWith(fakeKey, [fakeShardHash]);
+    });
+
+    test('computeHmac returns the HMAC value with type sha512', async () => {
+      let capturedCrypto: NetworkModule.Crypto | undefined;
+      vi.mocked(uploadFile).mockImplementation(async (_net, crypto) => {
+        capturedCrypto = crypto;
+        return 'file-id';
+      });
+      vi.mocked(getFileHmacFromShardHashes).mockResolvedValue('computed-hmac-value');
+
+      await networkFacade.upload('bucket', 'mnemonic', new File([''], 'test.txt'), { uploadingCallback: vi.fn() });
+      const result = await capturedCrypto?.computeHmac?.(fakeKey, [fakeShardHash]);
+
+      expect(result).toEqual({ type: 'sha512', value: 'computed-hmac-value' });
     });
   });
 });
