@@ -22,6 +22,16 @@ async function hmacSha512(key: Buffer, data: Buffer): Promise<string> {
   return hmac.init().update(data).digest();
 }
 
+async function deriveHmacKey(fileKey: Buffer): Promise<Buffer> {
+  const keyMaterial = await crypto.subtle.importKey('raw', new Uint8Array(fileKey), 'HKDF', false, ['deriveBits']);
+  const derivedBits = await crypto.subtle.deriveBits(
+    { name: 'HKDF', hash: 'SHA-512', salt: new Uint8Array(64), info: new TextEncoder().encode('for hmac') },
+    keyMaterial,
+    512,
+  );
+  return Buffer.from(derivedBits);
+}
+
 interface PassObjectInterface {
   salt?: string | null;
   password: string;
@@ -120,7 +130,8 @@ const getItemPlainName = (item: DriveItemData | AdvancedSharedItem) => {
 };
 
 async function getFileHmacFromShardHashes(fileKey: Buffer, shardHashes: string[]): Promise<string> {
-  return hmacSha512(fileKey, Buffer.from(shardHashes.join(''), 'hex'));
+  const hmacKey = await deriveHmacKey(fileKey);
+  return hmacSha512(hmacKey, Buffer.from(shardHashes.join(''), 'hex'));
 }
 
 export {
@@ -136,6 +147,7 @@ export {
   getSha256Hasher,
   getSha512Combined,
   hmacSha512,
+  deriveHmacKey,
   getFileHmacFromShardHashes,
   passToHash,
   renameFile,

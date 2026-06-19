@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { hmacSha512, getFileHmacFromShardHashes } from './utils';
+import { hmacSha512, deriveHmacKey, getFileHmacFromShardHashes } from './utils';
 
 describe('hmacSha512', () => {
   const key = Buffer.alloc(32, 0x01);
@@ -26,6 +26,32 @@ describe('hmacSha512', () => {
     const r1 = await hmacSha512(key, Buffer.from('data1'));
     const r2 = await hmacSha512(key, Buffer.from('data2'));
     expect(r1).not.toBe(r2);
+  });
+});
+
+describe('deriveHmacKey', () => {
+  it('returns a 64-byte Buffer', async () => {
+    const result = await deriveHmacKey(Buffer.alloc(32, 0x01));
+    expect(result).toHaveLength(64);
+  });
+
+  it('is deterministic', async () => {
+    const fileKey = Buffer.alloc(32, 0x01);
+    const r1 = await deriveHmacKey(fileKey);
+    const r2 = await deriveHmacKey(fileKey);
+    expect(r1.toString('hex')).toBe(r2.toString('hex'));
+  });
+
+  it('produces a different key for different file keys', async () => {
+    const r1 = await deriveHmacKey(Buffer.alloc(32, 0x01));
+    const r2 = await deriveHmacKey(Buffer.alloc(32, 0x02));
+    expect(r1.toString('hex')).not.toBe(r2.toString('hex'));
+  });
+
+  it('derived key is different from the original file key', async () => {
+    const fileKey = Buffer.alloc(32, 0x01);
+    const derived = await deriveHmacKey(fileKey);
+    expect(derived.subarray(0, 32).toString('hex')).not.toBe(fileKey.toString('hex'));
   });
 });
 
@@ -60,7 +86,7 @@ describe('getFileHmacFromShardHashes', () => {
     const hash1 = 'aabbcc';
     const hash2 = 'ddeeff';
     const resultMulti = await getFileHmacFromShardHashes(fileKey, [hash1, hash2]);
-    const resultSingle = await hmacSha512(fileKey, Buffer.from(hash1 + hash2, 'hex'));
+    const resultSingle = await getFileHmacFromShardHashes(fileKey, [hash1 + hash2]);
     expect(resultMulti).toBe(resultSingle);
   });
 });
