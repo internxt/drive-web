@@ -102,11 +102,9 @@ export const useShareItemActions = ({
         } else {
           const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
           const itemId = itemToShare?.item.uuid ?? '';
-          const { publicSharingItemData } = await shareService.createPublicShareFromOwnerUser(
-            itemId,
-            itemType,
+          const { publicSharingItemData } = await shareService.createPublicShareFromOwnerUser(itemId, itemType, {
             plainPassword,
-          );
+          });
           sharingInfo = publicSharingItemData;
           actionDispatch(setSharingMeta(sharingInfo));
         }
