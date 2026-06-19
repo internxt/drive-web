@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useState } from 'react';
-import { Menu, Transition } from '@headlessui/react';
+import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react';
 import Logo from 'assets/icons/logo.svg?react';
 import { Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
@@ -90,7 +90,7 @@ export default function ShareLayout(props: Readonly<ShareLayoutProps>): JSX.Elem
               <>
                 {/* User avatar */}
                 <Menu as="div" className="relative inline-block text-left">
-                  <Menu.Button className="inline-flex w-full justify-center rounded-lg px-4 py-2 font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/10">
+                  <MenuButton className="inline-flex w-full justify-center rounded-lg px-4 py-2 font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/10">
                     <div className="flex flex-row space-x-2.5">
                       <Avatar
                         diameter={36}
@@ -99,7 +99,7 @@ export default function ShareLayout(props: Readonly<ShareLayoutProps>): JSX.Elem
                       />
                       <span className="flex flex-row items-center font-medium">{fullName}</span>
                     </div>
-                  </Menu.Button>
+                  </MenuButton>
 
                   <Transition
                     as={Fragment}
@@ -110,49 +110,49 @@ export default function ShareLayout(props: Readonly<ShareLayoutProps>): JSX.Elem
                     leaveFrom="opacity-100 scale-100"
                     leaveTo="opacity-0 scale-95"
                   >
-                    <Menu.Items className="absolute right-0 origin-top-right whitespace-nowrap rounded-md bg-surface p-1 shadow-lg ring-1 ring-gray-100/5 focus:outline-none dark:bg-gray-5">
-                      <Menu.Item>
-                        {({ active }) => (
+                    <MenuItems className="absolute right-0 origin-top-right whitespace-nowrap rounded-md bg-surface p-1 shadow-lg ring-1 ring-gray-100/5 focus:outline-none dark:bg-gray-5">
+                      <MenuItem>
+                        {({ focus }) => (
                           <Link to="/" className="text-gray-90 no-underline hover:text-gray-90">
                             <button
                               className={`${
-                                active && 'bg-gray-1 dark:bg-gray-10'
+                                focus && 'bg-gray-1 dark:bg-gray-10'
                               } group flex w-full items-center rounded-md px-4 py-2 font-medium`}
                             >
                               {translate('shareLayout.topBar.drive')}
                             </button>
                           </Link>
                         )}
-                      </Menu.Item>
+                      </MenuItem>
 
-                      <Menu.Item>
-                        {({ active }) => (
+                      <MenuItem>
+                        {({ focus }) => (
                           <button
                             onClick={() => desktopService.openDownloadAppUrl(translate)}
                             className={`${
-                              active && 'bg-gray-1 dark:bg-gray-10'
+                              focus && 'bg-gray-1 dark:bg-gray-10'
                             } group flex w-full items-center rounded-md px-4 py-2 font-medium`}
                           >
                             {translate('shareLayout.topBar.downloadApp')}
                           </button>
                         )}
-                      </Menu.Item>
+                      </MenuItem>
 
-                      <Menu.Item>
-                        {({ active }) => (
+                      <MenuItem>
+                        {({ focus }) => (
                           <button
                             onClick={() => {
                               logout();
                             }}
                             className={`${
-                              active && 'bg-gray-1 dark:bg-gray-10'
+                              focus && 'bg-gray-1 dark:bg-gray-10'
                             } group flex w-full items-center rounded-md px-4 py-2 font-medium`}
                           >
                             {translate('shareLayout.topBar.logout')}
                           </button>
                         )}
-                      </Menu.Item>
-                    </Menu.Items>
+                      </MenuItem>
+                    </MenuItems>
                   </Transition>
                 </Menu>
               </>

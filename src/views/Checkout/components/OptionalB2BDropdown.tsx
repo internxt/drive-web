@@ -1,4 +1,4 @@
-import { Menu, Transition } from '@headlessui/react';
+import { Menu, MenuButton, MenuItems, Transition } from '@headlessui/react';
 import { CaretDown, CaretUp } from '@phosphor-icons/react';
 import TextInput from 'components/TextInput';
 import { IFormValues } from 'app/core/types';
@@ -18,7 +18,7 @@ export const OptionalB2BDropdown = ({ errors, translate, register }: OptionalB2B
   return (
     <div className="flex w-full flex-col items-start gap-3 rounded-2xl border border-gray-10 bg-surface p-5">
       <Menu>
-        <Menu.Button
+        <MenuButton
           onKeyDown={(e) => e.preventDefault()}
           className={
             'flex h-full w-full flex-row items-center justify-between rounded-lg text-base transition-all duration-75 ease-in-out hover:underline'
@@ -31,9 +31,8 @@ export const OptionalB2BDropdown = ({ errors, translate, register }: OptionalB2B
           ) : (
             <CaretDown size={24} className="text-gray-60" />
           )}
-        </Menu.Button>
+        </MenuButton>
         <Transition
-          className={'left-0 w-full'}
           enter="transition duration-50 ease-out"
           enterFrom="scale-98 opacity-0"
           enterTo="scale-100 opacity-100"
@@ -41,7 +40,7 @@ export const OptionalB2BDropdown = ({ errors, translate, register }: OptionalB2B
           leaveFrom="scale-98 opacity-100"
           leaveTo="scale-100 opacity-0"
         >
-          <Menu.Items onKeyDown={(e) => e.stopPropagation()} className="flex w-full flex-col gap-5">
+          <MenuItems onKeyDown={(e) => e.stopPropagation()} className="left-0 flex w-full flex-col gap-5">
             <div
               tabIndex={0}
               role="menuitem"
@@ -76,7 +75,7 @@ export const OptionalB2BDropdown = ({ errors, translate, register }: OptionalB2B
                 required={true}
               />
             </div>
-          </Menu.Items>
+          </MenuItems>
         </Transition>
       </Menu>
     </div>

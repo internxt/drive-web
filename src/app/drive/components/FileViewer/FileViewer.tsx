@@ -1,4 +1,4 @@
-import { Dialog, Transition } from '@headlessui/react';
+import { Dialog, DialogBackdrop, Transition } from '@headlessui/react';
 import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 import { isFileSizePreviewable } from 'services/media.service';
@@ -210,7 +210,7 @@ const FileViewer = ({
       >
         <div className="flex h-screen w-screen flex-col items-center justify-center">
           {/* Close overlay */}
-          <Dialog.Overlay className="fixed inset-0 bg-black/85 backdrop-blur-md" />
+          <DialogBackdrop className="fixed inset-0 bg-black/85 backdrop-blur-md" onClick={onClosePreview} />
 
           {/* Content */}
           {file && <ShareItemDialog share={file.shares?.[0]} isPreviewView item={file as DriveItemData} />}

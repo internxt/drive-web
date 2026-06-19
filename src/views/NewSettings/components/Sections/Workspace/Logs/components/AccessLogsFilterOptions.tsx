@@ -1,4 +1,4 @@
-import { Menu, Transition } from '@headlessui/react';
+import { Menu, MenuButton, MenuItems, Transition } from '@headlessui/react';
 import { WorkspaceLogType } from '@internxt/sdk/dist/workspaces';
 import { Button, Checkbox, Input, RadioButton } from '@internxt/ui';
 import { FunnelSimple } from '@phosphor-icons/react/dist/ssr';
@@ -57,7 +57,7 @@ export const AccessLogsFilterOptions = ({
         maxLength={MAX_SEARCH_CHARACTERS}
       />
       <Menu as="div" className="relative z-20 outline-none">
-        <Menu.Button>
+        <MenuButton>
           <Button variant="secondary" className="flex aspect-square flex-row gap-2">
             <p className="text-gray-80">{translate('preferences.workspace.accessLogs.filterActions.title')}</p>
             <div className="relative flex">
@@ -69,10 +69,9 @@ export const AccessLogsFilterOptions = ({
               )}
             </div>
           </Button>
-        </Menu.Button>
+        </MenuButton>
 
         <Transition
-          className={'fixed right-6 z-20 pt-1'}
           enter={'origin-top-right transition duration-100 ease-out'}
           enterFrom="scale-95 opacity-0"
           enterTo="scale-100 opacity-100"
@@ -80,9 +79,9 @@ export const AccessLogsFilterOptions = ({
           leaveFrom="scale-95 opacity-100"
           leaveTo="scale-100 opacity-0"
         >
-          <Menu.Items
+          <MenuItems
             className={
-              'absolute right-0 z-20 mt-0 flex min-w-[256px] flex-col rounded-lg border border-gray-10 bg-surface py-1.5 shadow-subtle-hard dark:bg-gray-5'
+              'fixed right-6 z-20 pt-1 flex min-w-[256px] flex-col rounded-lg border border-gray-10 bg-surface py-1.5 shadow-subtle-hard dark:bg-gray-5'
             }
           >
             <div className="flex w-full flex-col gap-3 rounded-lg">
@@ -151,7 +150,7 @@ export const AccessLogsFilterOptions = ({
                 </div>
               </div>
             </div>
-          </Menu.Items>
+          </MenuItems>
         </Transition>
       </Menu>
     </div>
