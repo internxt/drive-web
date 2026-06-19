@@ -39,7 +39,6 @@ import { generateCaptchaToken } from 'utils';
 import { copyTextToClipboard } from 'utils/copyToClipboard.utils';
 import referralService from 'services/referral.service';
 import { generateFileBucketKey } from 'app/network/crypto';
-import { LocalStorageItem } from 'app/core/types';
 
 interface CreateShareResponse {
   created: boolean;
@@ -276,10 +275,15 @@ export function stopSharingItem(itemType: string, itemId: string): Promise<void>
 export const createPublicShareFromOwnerUser = async (
   uuid: string,
   itemType: 'folder' | 'file',
-  plainPassword?: string,
+  options?: {
+    plainPassword?: string;
+    encryptedMnemonic?: string;
+  },
 ): Promise<{ publicSharingItemData: SharingMeta; plainCode: string }> => {
   const user = localStorageService.getUser() as UserSettings;
   const { mnemonic, bucket } = user;
+  const { plainPassword, encryptedMnemonic } = options ?? {};
+
   let plainCode = stringUtils.generateRandomStringUrlSafe(8);
   const bucketKey = await generateFileBucketKey(mnemonic, bucket);
   const bucketKeyHex = Buffer.from(bucketKey.subarray(0, 32)).toString('hex');
@@ -300,8 +304,15 @@ export const createPublicShareFromOwnerUser = async (
 
   const { encryptedCode: encryptedCodeFromResponse, encryptionAlgorithm: encryptionAlgorithmFromResponse } =
     publicSharingItemData;
+
+  let mnemonicToUse = mnemonic;
+  const isUserInvited = publicSharingItemData.ownerId !== user.uuid;
+  if (isUserInvited && encryptedMnemonic) {
+    const ownerMnemonic = await decryptMnemonic(encryptedMnemonic);
+    if (ownerMnemonic) mnemonicToUse = ownerMnemonic;
+  }
   if (encryptedCodeFromResponse !== encryptedCode) {
-    const key = encryptionAlgorithmFromResponse === NEW_SHARING_VERSION ? bucketKeyHex : mnemonic;
+    const key = encryptionAlgorithmFromResponse === NEW_SHARING_VERSION ? bucketKeyHex : mnemonicToUse;
     plainCode = aes.decrypt(encryptedCodeFromResponse, key);
   }
 
@@ -327,14 +338,12 @@ const getRandomElement = (list: string[]) => {
 export const getPublicShareLink = async (
   uuid: string,
   itemType: 'folder' | 'file',
-  encriptedMnemonic?: string,
+  encryptedMnemonic?: string,
 ): Promise<SharingMeta | void> => {
   try {
-    if (encriptedMnemonic) {
-      const ownerMnemonic = await decryptMnemonic(encriptedMnemonic);
-      if (ownerMnemonic) localStorageService.set(LocalStorageItem.UserMnemonic, ownerMnemonic);
-    }
-    const { publicSharingItemData, plainCode } = await createPublicShareFromOwnerUser(uuid, itemType);
+    const { publicSharingItemData, plainCode } = await createPublicShareFromOwnerUser(uuid, itemType, {
+      encryptedMnemonic,
+    });
     const { id: sharingId } = publicSharingItemData;
 
     const domains = domainManager.getDomainsList();

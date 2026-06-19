@@ -282,7 +282,9 @@ describe('Share Item Actions', () => {
 
       await result.current.onSavePublicSharePassword('my-password');
 
-      expect(createPublicShareFromOwnerUserSpy).toHaveBeenCalledWith('item-uuid-123', 'file', 'my-password');
+      expect(createPublicShareFromOwnerUserSpy).toHaveBeenCalledWith('item-uuid-123', 'file', {
+        plainPassword: 'my-password',
+      });
       expect(mockActionDispatch).toHaveBeenCalledWith(
         expect.objectContaining({ type: 'SET_SHARING_META', payload: mockSharingMeta }),
       );
