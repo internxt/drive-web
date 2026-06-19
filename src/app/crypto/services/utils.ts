@@ -2,7 +2,7 @@ import { aes, items as itemUtils } from '@internxt/lib';
 import envService from 'services/env.service';
 import { Buffer } from 'buffer';
 import CryptoJS from 'crypto-js';
-import { blake3, createSHA256, createSHA512, ripemd160, sha256 } from 'hash-wasm';
+import { blake3, createHMAC, createSHA256, createSHA512, ripemd160, sha256 } from 'hash-wasm';
 import { DriveItemData } from 'app/drive/types';
 import { AdvancedSharedItem } from '../../share/types';
 
@@ -15,6 +15,21 @@ import { AdvancedSharedItem } from '../../share/types';
 async function getSha512Combined(key: Buffer, data: Buffer): Promise<string> {
   const hash = await createSHA512();
   return hash.init().update(key).update(data).digest();
+}
+
+async function hmacSha512(key: Buffer, data: Buffer): Promise<string> {
+  const hmac = await createHMAC(createSHA512(), key);
+  return hmac.init().update(data).digest();
+}
+
+async function deriveHmacKey(fileKey: Buffer): Promise<Buffer> {
+  const keyMaterial = await crypto.subtle.importKey('raw', new Uint8Array(fileKey), 'HKDF', false, ['deriveBits']);
+  const derivedBits = await crypto.subtle.deriveBits(
+    { name: 'HKDF', hash: 'SHA-512', salt: new Uint8Array(64), info: new TextEncoder().encode('for hmac') },
+    keyMaterial,
+    512,
+  );
+  return Buffer.from(derivedBits);
 }
 
 interface PassObjectInterface {
@@ -115,7 +130,8 @@ const getItemPlainName = (item: DriveItemData | AdvancedSharedItem) => {
 };
 
 async function getFileHmacFromShardHashes(fileKey: Buffer, shardHashes: string[]): Promise<string> {
-  return getSha512Combined(fileKey, Buffer.from(shardHashes.join(''), 'hex'));
+  const hmacKey = await deriveHmacKey(fileKey);
+  return hmacSha512(hmacKey, Buffer.from(shardHashes.join(''), 'hex'));
 }
 
 export {
@@ -130,6 +146,8 @@ export {
   getSha256,
   getSha256Hasher,
   getSha512Combined,
+  hmacSha512,
+  deriveHmacKey,
   getFileHmacFromShardHashes,
   passToHash,
   renameFile,
