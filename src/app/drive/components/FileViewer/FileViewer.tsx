@@ -1,4 +1,4 @@
-import { Dialog, DialogBackdrop, Transition } from '@headlessui/react';
+import { Dialog, DialogBackdrop, DialogTitle, Transition } from '@headlessui/react';
 import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 import { isFileSizePreviewable } from 'services/media.service';
@@ -299,14 +299,14 @@ const FileViewer = ({
                 <UilMultiply height={24} width={24} />
               </button>
 
-              <Dialog.Title className="flex w-11/12 flex-row items-center text-lg">
+              <DialogTitle className="flex w-11/12 flex-row items-center text-lg">
                 <div className="mr-3 flex h-8 w-8 items-center">
                   <ItemIconComponent width={32} height={32} />
                 </div>
                 <p className="w-full truncate" title={filename}>
                   {filename}
                 </p>
-              </Dialog.Title>
+              </DialogTitle>
             </div>
 
             {/* Top bar buttons */}
