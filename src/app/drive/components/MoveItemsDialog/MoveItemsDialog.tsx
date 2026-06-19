@@ -234,9 +234,9 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
                       onDoubleClick={() => onShowFolderContentClicked(folder.uuid, folder.name)}
                       key={folder.id}
                     >
-                      <div className="flex flex-row gap-3 items-center">
-                        <img className="flex h-8 w-8" alt="Folder icon" src={folderImage} />
-                        <span className="w-full flex-1 truncate text-base" title={folder.name}>
+                      <div className="flex min-w-0 flex-1 flex-row gap-3 items-center">
+                        <img className="flex h-8 w-8 shrink-0" alt="Folder icon" src={folderImage} />
+                        <span className="min-w-0 flex-1 truncate text-base" title={folder.name}>
                           {folder.name}
                         </span>
                       </div>
