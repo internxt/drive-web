@@ -1099,6 +1099,27 @@
         "title": "Débloquer Cleaner",
         "description": "Mettez à niveau pour optimiser vos fichiers et libérer de l’espace."
       }
+    },
+    "reachingUsageBanner": {
+      "lowWarning": {
+        "title": "Obtenez plus d'espace pour vos fichiers",
+        "descriptionLabelLine1": "Débloquez un espace de stockage supplémentaire avec une **réduction exclusive de 85 %** sur votre mise à niveau",
+        "descriptionLabelLine2": "Accédez à des fonctionnalités avancées comme l'historique des versions de fichiers, Rclone, la prise en charge NAS, le support premium et bien plus encore"
+      },
+      "midWarning": {
+        "title": "Votre espace de stockage se remplit",
+        "descriptionLabelLine1": "Passez à la version supérieure dès aujourd'hui avec une **réduction exclusive de 85 %** et continuez à envoyer vos fichiers sans interruption",
+        "descriptionLabelLine2": "Obtenez plus de stockage ainsi que des fonctionnalités avancées comme l'historique des versions de fichiers, la prise en charge NAS, l'intégration Rclone et le support premium",
+        "sidenavStorageText": "Plus d'espace -85 %"
+      },
+      "highWarning": {
+        "title": "Votre espace de stockage est presque plein",
+        "descriptionLabelLine1": "Vous pourriez bientôt ne plus pouvoir envoyer de nouveaux fichiers",
+        "descriptionLabelLine2": "Passez à la version supérieure dès maintenant avec une réduction exclusive de 85 % pour continuer à stocker et synchroniser vos fichiers sans limites",
+        "sidenavStorageText": "Acheter de l'espace -85 %"
+      },
+      "close": "Fermer",
+      "cta": "Profiter de l'offre"
     }
   },
   "form": {

@@ -1879,10 +1879,10 @@
   dependencies:
     axios "^1.16.0"
 
-"@internxt/ui@=0.1.21":
-  version "0.1.21"
-  resolved "https://registry.yarnpkg.com/@internxt/ui/-/ui-0.1.21.tgz#169793db123abc19e98d1039cb4d91632e9cfc6d"
-  integrity sha512-MHpAe4J3X0qVPoV12pR4HhsbgyCe4bBLLHHC2PwMicC5WKsBfg2rOD2dbzoHTmeZt0ddWWGT7f8dwb4/qfO7Sg==
+"@internxt/ui@=0.1.22":
+  version "0.1.22"
+  resolved "https://registry.yarnpkg.com/@internxt/ui/-/ui-0.1.22.tgz#c4ee8969a333e16f3a5899327b71036d6a400b48"
+  integrity sha512-e5tvOBjTEgZc5/hDBfmhSm5dU4XA7NxOoUOkxeU8KjkBVHYnb0F30CHIY1zHTS1XugxfaUVrzrSZr94stE/YfQ==
   dependencies:
     "@internxt/css-config" "1.1.0"
     "@phosphor-icons/react" "^2.1.10"

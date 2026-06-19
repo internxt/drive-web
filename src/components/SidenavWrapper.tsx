@@ -24,6 +24,35 @@ import { useReferralParamsChange } from 'views/Drive/hooks/useReferralParamsChan
 import WorkspaceSelectorContainer from 'views/Home/components/WorkspaceSelectorContainer';
 import WorkspaceSelectorSkeleton from 'views/Home/components/WorkspaceSelectorSkeleton';
 import ReferralBanner from './ReferralBanner';
+import { CloudWarning } from '@phosphor-icons/react';
+
+type StorageWarning = 'lowWarning' | 'midWarning' | 'highWarning';
+
+interface StorageStageConfig {
+  key: StorageWarning;
+  threshold: number;
+  barClassName: string;
+  containerClassName?: string;
+  advertisementKey?: string;
+}
+
+const STORAGE_STAGES: StorageStageConfig[] = [
+  { key: 'lowWarning', threshold: 60, barClassName: 'bg-yellow-60', containerClassName: 'pb-5' },
+  {
+    key: 'midWarning',
+    threshold: 80,
+    barClassName: 'bg-orange-60',
+    containerClassName: 'pb-5',
+    advertisementKey: 'modals.reachingUsageBanner.midWarning.sidenavStorageText',
+  },
+  {
+    key: 'highWarning',
+    threshold: 95,
+    barClassName: 'bg-danger',
+    containerClassName: 'pb rounded-lg bg-alert border border-alert-dark',
+    advertisementKey: 'modals.reachingUsageBanner.highWarning.sidenavStorageText',
+  },
+];
 
 const SidenavPrimaryAction = ({
   user,
@@ -69,6 +98,12 @@ const SidenavWrapper = () => {
   const userUsage = planUsage > 0 ? bytesToString(planUsage) : '0GB';
   const isReferralEligible = useAppSelector((state: RootState) => state.referrals.isEligible);
 
+  const isFreeUser = subscription?.type === 'free';
+  const usedPercentage = planLimit > 0 ? (planUsage / planLimit) * 100 : 0;
+  const reachedStorageStage = isFreeUser
+    ? [...STORAGE_STAGES].reverse().find((stage) => usedPercentage >= stage.threshold)
+    : undefined;
+
   useReferralParamsChange();
 
   useEffect(() => {
@@ -91,13 +126,18 @@ const SidenavWrapper = () => {
   };
 
   const handleUpgradeClick = () => {
-    navigationService.openPreferencesDialog({
-      section: 'account',
-      subsection: 'plans',
-      workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId,
-    });
-    dispatch(uiActions.setIsPreferencesDialogOpen(true));
+    window.open('https://internxt.com/specialoffer', '_blank', 'noopener,noreferrer');
   };
+
+  const storageAdvertisement = reachedStorageStage?.advertisementKey ? (
+    <span className="flex flex-row gap-0.5 items-center">
+      <CloudWarning
+        className="size-5 text-yellow-60"
+        weight={reachedStorageStage.key === 'highWarning' ? 'fill' : 'regular'}
+      />
+      <p className="text-sm font-semibold text-gray-80">{translate(reachedStorageStage.advertisementKey)} </p>
+    </span>
+  ) : undefined;
 
   const handleReferralClick = () => {
     if (user) {
@@ -141,6 +181,9 @@ const SidenavWrapper = () => {
           onUpgradeClick: handleUpgradeClick,
           upgradeLabel: isUpgradeAvailable() ? translate('preferences.account.plans.upgrade') : undefined,
           isLoading: isLoadingPlanUsage && isLoadingPlanLimit && isLoadingBusinessLimitAndUsage,
+          barClassName: reachedStorageStage?.barClassName ?? 'bg-primary',
+          containerClassName: reachedStorageStage?.containerClassName,
+          advertisement: storageAdvertisement,
         }}
       />
       {isReferralEligible && (
