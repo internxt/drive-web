@@ -57,7 +57,7 @@ export const AccessLogsFilterOptions = ({
         maxLength={MAX_SEARCH_CHARACTERS}
       />
       <Menu as="div" className="relative z-20 outline-none">
-        <MenuButton>
+        <MenuButton className="outline-none">
           <Button variant="secondary" className="flex aspect-square flex-row gap-2">
             <p className="text-gray-80">{translate('preferences.workspace.accessLogs.filterActions.title')}</p>
             <div className="relative flex">

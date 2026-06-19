@@ -21,7 +21,7 @@ export const OptionalB2BDropdown = ({ errors, translate, register }: OptionalB2B
         <MenuButton
           onKeyDown={(e) => e.preventDefault()}
           className={
-            'flex h-full w-full flex-row items-center justify-between rounded-lg text-base transition-all duration-75 ease-in-out hover:underline'
+            'flex h-full w-full flex-row items-center justify-between rounded-lg text-base transition-all duration-75 ease-in-out hover:underline outline-none'
           }
           onClick={() => setOptionalAddressBillingDetailsDialogClicked(!optionalAddressBillingDetailsDialogClicked)}
         >

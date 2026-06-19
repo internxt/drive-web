@@ -89,8 +89,8 @@ export default function ShareLayout(props: Readonly<ShareLayoutProps>): JSX.Elem
             {isAuthenticated ? (
               <>
                 {/* User avatar */}
-                <Menu as="div" className="relative inline-block text-left">
-                  <MenuButton className="inline-flex w-full justify-center rounded-lg px-4 py-2 font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/10">
+                <Menu as="div" className="relative inline-block text-left outline-none">
+                  <MenuButton className="inline-flex w-full justify-center rounded-lg px-4 py-2 font-medium outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/10">
                     <div className="flex flex-row space-x-2.5">
                       <Avatar
                         diameter={36}
@@ -110,7 +110,7 @@ export default function ShareLayout(props: Readonly<ShareLayoutProps>): JSX.Elem
                     leaveFrom="opacity-100 scale-100"
                     leaveTo="opacity-0 scale-95"
                   >
-                    <MenuItems className="absolute right-0 origin-top-right whitespace-nowrap rounded-md bg-surface p-1 shadow-lg ring-1 ring-gray-100/5 focus:outline-none dark:bg-gray-5">
+                    <MenuItems className="absolute right-0 origin-top-right whitespace-nowrap rounded-md bg-surface p-1 shadow-lg ring-1 ring-gray-100/5 outline-none focus:outline-none dark:bg-gray-5">
                       <MenuItem>
                         {({ focus }) => (
                           <Link to="/" className="text-gray-90 no-underline hover:text-gray-90">

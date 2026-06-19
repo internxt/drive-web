@@ -4,7 +4,9 @@ import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/r
 const ItemsDropdown = ({ title, menuItems }: { title: JSX.Element; menuItems: ReactNode[] }) => {
   return (
     <Menu>
-      <MenuButton className={'flex h-full w-full rounded-lg text-base transition-all duration-75 ease-in-out'}>
+      <MenuButton
+        className={'flex h-full w-full rounded-lg text-base transition-all duration-75 ease-in-out outline-none'}
+      >
         {title}
       </MenuButton>
       <Transition

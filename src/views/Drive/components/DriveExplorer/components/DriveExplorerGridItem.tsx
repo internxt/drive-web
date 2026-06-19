@@ -122,11 +122,12 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
             <MenuButton
               id="dropdown-basic"
               ref={itemButton}
-              className="h-5 w-5 cursor-pointer rounded-1/2 bg-white font-bold text-primary opacity-0 transition group-hover:opacity-100"
+              className="h-5 w-5 cursor-pointer rounded-1/2 bg-white font-bold text-primary opacity-0 transition group-hover:opacity-100 outline-none"
             >
               <UilEllipsisH className="h-full w-full" />
             </MenuButton>
             <MenuItems
+              className="outline-none"
               data-tooltip-place="top"
               style={{
                 position: 'absolute',

@@ -29,7 +29,7 @@ export const AvailableCryptoCurrenciesDropdown = ({
       <Menu>
         <MenuButton
           onKeyDown={(e) => e.preventDefault()}
-          className={`flex h-full w-full flex-row items-center justify-between rounded-lg text-base transition-all duration-75 ease-in-out ${isDropdownOpen ? 'text-gray-100 dark:text-white' : 'text-[#6D6E78] hover:text-gray-100 hover:dark:text-white'}`}
+          className={`flex h-full w-full flex-row items-center justify-between rounded-lg outline-none text-base transition-all duration-75 ease-in-out ${isDropdownOpen ? 'text-gray-100 dark:text-white' : 'text-[#6D6E78] hover:text-gray-100 hover:dark:text-white'}`}
           onClick={onDropdownClicked}
         >
           {cryptoSelected ? (
@@ -54,7 +54,7 @@ export const AvailableCryptoCurrenciesDropdown = ({
           leaveFrom="transform opacity-100 scale-100"
           leaveTo="transform opacity-0 scale-95"
         >
-          <MenuItems onKeyDown={(e) => e.stopPropagation()} className="flex w-full flex-col gap-2">
+          <MenuItems onKeyDown={(e) => e.stopPropagation()} className="flex w-full flex-col gap-2 outline-none">
             <div className="flex flex-col w-full border border-gray-10" />
             {availableCryptoCurrencies.map((cryptoCurrency) => (
               <MenuItem key={cryptoCurrency.currencyId}>
