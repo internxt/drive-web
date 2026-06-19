@@ -304,8 +304,6 @@ export class NetworkFacade {
           async () => {
             const shardHashes = await Promise.all(sha256Hashes.map(getRipemd160FromHex));
             const hmac = await getFileHmacFromShardHashes(key as Buffer, shardHashes);
-            console.log('calculated HMAC', hmac);
-            console.log('received hmac', fileInfoRef.hmac?.value);
             if (fileInfoRef.hmac?.value && hmac !== fileInfoRef.hmac.value) throw new Error('File integrity check failed');
           }
         );
