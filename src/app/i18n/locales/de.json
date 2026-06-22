@@ -791,6 +791,7 @@
       "multipleDescription": "An diesem Speicherort ist bereits mehr als ein Element vorhanden. Möchtest du sie ersetzen oder alle behalten?",
       "replaceItem": "Aktuelles Element ersetzen",
       "keepBoth": "Behalte beide",
+      "selectOption": "Wähle eine Option",
       "upload": "Upload",
       "move": "Verschieben"
     },

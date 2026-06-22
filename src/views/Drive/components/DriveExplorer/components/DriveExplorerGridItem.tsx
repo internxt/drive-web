@@ -9,7 +9,7 @@ import { DriveExplorerItemProps } from '../types';
 import { useDriveItemActions, useDriveItemStoreProps, useDriveItemDrag, useDriveItemDrop } from '../../../hooks';
 
 import './DriveExplorerGridItem.scss';
-import { Menu } from '@headlessui/react';
+import { Menu, MenuButton, MenuItems } from '@headlessui/react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { moveItemsToTrash } from '../../../../../views/Trash/services';
 import transformItemService from 'app/drive/services/item-transform.service';
@@ -119,14 +119,15 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
       <Menu as="div" className="absolute right-2 top-2 z-10">
         {({ open }) => (
           <div className="relative">
-            <Menu.Button
+            <MenuButton
               id="dropdown-basic"
               ref={itemButton}
-              className="h-5 w-5 cursor-pointer rounded-1/2 bg-white font-bold text-primary opacity-0 transition group-hover:opacity-100"
+              className="h-5 w-5 cursor-pointer rounded-1/2 bg-white font-bold text-primary opacity-0 transition group-hover:opacity-100 outline-none"
             >
               <UilEllipsisH className="h-full w-full" />
-            </Menu.Button>
-            <Menu.Items
+            </MenuButton>
+            <MenuItems
+              className="outline-none"
               data-tooltip-place="top"
               style={{
                 position: 'absolute',
@@ -135,7 +136,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
               }}
             >
               <DriveItemDropdownActions openDropdown={open} item={item} />
-            </Menu.Items>
+            </MenuItems>
           </div>
         )}
       </Menu>

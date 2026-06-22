@@ -924,6 +924,7 @@
       "multipleDescription": "Più di un elemento esiste già in questa posizione. Si desidera sostituirli o si desidera mantenerli tutti",
       "replaceItem": "Sostituisci l'elemento attuale",
       "keepBoth": "Mantieni entrambi",
+      "selectOption": "Seleziona un'opzione",
       "upload": "Carica",
       "move": "Sposta"
     },

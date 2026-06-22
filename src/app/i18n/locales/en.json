@@ -888,6 +888,7 @@
       "multipleDescription": "More than one element already exists in this location. Do you want to replace them or you want to keep all",
       "replaceItem": "Replace current item",
       "keepBoth": "Keep both",
+      "selectOption": "Select an option",
       "upload": "Upload",
       "move": "Move"
     },

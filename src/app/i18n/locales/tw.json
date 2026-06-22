@@ -818,6 +818,7 @@
       "multipleDescription": "此位置已存在多個元素。您要替換它們還是保留全部？",
       "replaceItem": "替換當前項目",
       "keepBoth": "保留兩者",
+      "selectOption": "選擇一個選項",
       "upload": "上傳",
       "move": "移動"
     },

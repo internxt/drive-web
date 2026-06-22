@@ -818,6 +818,7 @@
       "multipleDescription": "Plus d'un élément existe déjà dans ce lieu. Voulez-vous les remplacer ou les conserver tous ?",
       "replaceItem": "Remplacer l'élément actuel",
       "keepBoth": "Garder les deux",
+      "selectOption": "Sélectionnez une option",
       "upload": "Télécharger",
       "move": "Déplacer"
     },

@@ -870,6 +870,7 @@
       "multipleDescription": "Más de un elemento existe en esta localización. Deseas reemplazarlos o mantenerlos?",
       "replaceItem": "Reemplazar el ítem",
       "keepBoth": "Mantener ambos",
+      "selectOption": "Selecciona una opción",
       "upload": "Subir",
       "move": "Mover"
     },
