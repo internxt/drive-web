@@ -10,7 +10,6 @@ import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { planSelectors } from 'app/store/slices/plan';
 import { sharedThunks } from 'app/store/slices/sharedLinks';
-import { uiActions } from 'app/store/slices/ui';
 import logo from 'assets/icons/small-logo.svg';
 import { useSidenavCollapsed } from 'hooks/useSidenavCollapsed';
 import { useSidenavNavigation } from 'hooks/useSidenavNavigation';
