@@ -180,7 +180,7 @@ const SidenavWrapper = () => {
           onUpgradeClick: handleUpgradeClick,
           upgradeLabel: isUpgradeAvailable() ? translate('preferences.account.plans.upgrade') : undefined,
           isLoading: isLoadingPlanUsage && isLoadingPlanLimit && isLoadingBusinessLimitAndUsage,
-          barClassName: reachedStorageStage?.barClassName ?? 'bg-primary',
+          barClassName: reachedStorageStage?.barClassName,
           containerClassName: reachedStorageStage?.containerClassName,
           advertisement: storageAdvertisement,
         }}
