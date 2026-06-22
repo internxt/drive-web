@@ -1852,6 +1852,13 @@
   dependencies:
     tailwindcss "^4.1.17"
 
+"@internxt/css-config@1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@internxt/css-config/-/css-config-1.1.1.tgz#0f6a41b9ba2d182b006155c5930cc59c455b0f51"
+  integrity sha512-RP7YZdvQZxzxGm1FZxbLw3PA/ojueHXJvzagUTTIdV4ev23OAcF80FAQZx4aTfX1mnMfQeFr0dOutqaPrBReqA==
+  dependencies:
+    tailwindcss "^4.1.17"
+
 "@internxt/eslint-config-internxt@1.0.10":
   version "1.0.10"
   resolved "https://registry.yarnpkg.com/@internxt/eslint-config-internxt/-/eslint-config-internxt-1.0.10.tgz#19025c479f84617a59484660f2f9c983ff3bc4ec"
