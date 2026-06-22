@@ -1,4 +1,4 @@
-import { Listbox } from '@headlessui/react';
+import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react';
 import isValidEmail from '@internxt/lib/dist/src/auth/isValidEmail';
 import { Avatar, Button, Checkbox, Input } from '@internxt/ui';
 import { CaretDown, Check, WarningCircle } from '@phosphor-icons/react';
@@ -148,15 +148,15 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
           {hasRoles ? (
             <Listbox value={userRole} onChange={setUserRole}>
               <div className="relative">
-                <Listbox.Button value={userRole} name="userRole">
+                <ListboxButton value={userRole} name="userRole">
                   <Button variant="secondary">
                     <span>{userRole ? translate(`modals.shareModal.invite.${userRole.toLowerCase()}`) : ''}</span>
                     <CaretDown size={24} />
                   </Button>
-                </Listbox.Button>
-                <Listbox.Options className="absolute right-0 z-10 mt-1 w-40 transform whitespace-nowrap rounded-lg border border-gray-10 bg-surface p-1 shadow-subtle transition-all duration-50 ease-out dark:bg-gray-5">
+                </ListboxButton>
+                <ListboxOptions className="absolute right-0 z-10 mt-1 w-40 transform whitespace-nowrap rounded-lg border border-gray-10 bg-surface p-1 shadow-subtle transition-all duration-50 ease-out dark:bg-gray-5">
                   {props.roles.map((role) => (
-                    <Listbox.Option
+                    <ListboxOption
                       key={role.id}
                       value={role.name}
                       className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg px-3 py-2 text-base font-medium hover:bg-gray-5 dark:hover:bg-gray-10"
@@ -169,9 +169,9 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
                           {selected ? <Check size={20} /> : null}
                         </>
                       )}
-                    </Listbox.Option>
+                    </ListboxOption>
                   ))}
-                </Listbox.Options>
+                </ListboxOptions>
               </div>
             </Listbox>
           ) : (
@@ -206,7 +206,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
                   </div>
                   <Listbox value={user.userRole} onChange={(selectedValue) => onEditRole(selectedValue, user)}>
                     <div className="relative">
-                      <Listbox.Button value={user.userRole} name={user.email}>
+                      <ListboxButton value={user.userRole} name={user.email}>
                         <Button variant="secondary">
                           <span>
                             {user.userRole
@@ -215,10 +215,10 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
                           </span>
                           <CaretDown size={24} />
                         </Button>
-                      </Listbox.Button>
-                      <Listbox.Options className="absolute right-0 z-10 mt-1 w-40 transform whitespace-nowrap rounded-lg border border-gray-10 bg-surface p-1 shadow-subtle transition-all duration-50 ease-out dark:bg-gray-5">
+                      </ListboxButton>
+                      <ListboxOptions className="absolute right-0 z-10 mt-1 w-40 transform whitespace-nowrap rounded-lg border border-gray-10 bg-surface p-1 shadow-subtle transition-all duration-50 ease-out dark:bg-gray-5">
                         {props.roles.map((role) => (
-                          <Listbox.Option
+                          <ListboxOption
                             key={role.id}
                             value={role.name}
                             className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg px-3 py-2 text-base font-medium hover:bg-gray-5 dark:hover:bg-gray-10"
@@ -233,9 +233,9 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
                                 {selected ? <Check size={20} /> : null}
                               </>
                             )}
-                          </Listbox.Option>
+                          </ListboxOption>
                         ))}
-                      </Listbox.Options>
+                      </ListboxOptions>
                     </div>
                   </Listbox>
                 </li>
