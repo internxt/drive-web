@@ -60,7 +60,8 @@ export const CheckoutProductCard = ({
   const derivedTax = Math.max(0, Number(totalAmountFormatted) - Number(planAmountWithoutTaxes));
   const derivedTaxFormatted = formatPrice(derivedTax);
 
-  const isHiddenCoupon = couponCodeData?.codeName === 'SPECIAL' || couponCodeData?.codeName === 'ANTIV';
+  const HIDDEN_COUPON_CODES = ['SPECIAL', 'ANTIV', 'SAVE'];
+  const isHiddenCoupon = HIDDEN_COUPON_CODES.includes(couponCodeData?.codeName ?? '');
 
   const discountPercentage =
     couponCodeData?.amountOff && couponCodeData?.amountOff < taxesData.amountWithTax
