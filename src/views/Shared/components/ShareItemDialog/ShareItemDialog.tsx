@@ -16,7 +16,7 @@ import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
 import { TFunction } from 'i18next';
 import { useTranslationContext } from '../../../../app/i18n/provider/TranslationProvider';
 import { domainManager } from '../../../../app/share/services/DomainManager';
-import _ from 'lodash';
+import _ from 'utils/lodash';
 import { AdvancedSharedItem } from '../../../../app/share/types';
 import { copyTextToClipboard } from 'utils/copyToClipboard.utils';
 

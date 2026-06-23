@@ -6,9 +6,7 @@ import envService from 'services/env.service';
 export const mapBackupFolder = (backupFolder: DriveFolderDataSDK): DriveFolderData => {
   return {
     ...backupFolder,
-    name:
-      backupFolder.plainName ??
-      aes.decrypt(backupFolder.name, `${envService.getVariable('secret2')}-${backupFolder.bucket}`),
+    name: backupFolder.plainName || backupFolder.plain_name,
     isFolder: true,
   };
 };

@@ -3,17 +3,10 @@ import ROUTES from 'app/routes/paths.json';
 import { DatabaseProvider } from 'app/database/types';
 import { AppConfig, AppViewConfig, AppViewLayout } from 'app/core/types';
 import { DownloadFolderMethod } from 'app/drive/types';
-import envService from 'services/env.service';
 
 export function getAppConfig(): AppConfig {
   const getPath = (pathId: string, path) => {
-    if (pathId == 'auth') {
-      return `/${envService.getVariable('authUrl')}`;
-    } else if (pathId == 'buttonAuth') {
-      return `/${envService.getVariable('buttonAuthUrl')}`;
-    } else {
-      return path;
-    }
+    return path;
   };
 
   const config: AppConfig = {

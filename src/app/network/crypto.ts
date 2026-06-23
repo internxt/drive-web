@@ -1,6 +1,7 @@
 import { mnemonicToSeed } from 'bip39';
 import { Cipher } from 'crypto';
 
+import { createSHA256 } from 'hash-wasm';
 import { getRipemd160FromHex, getSha256Hasher, getSha512Combined } from '../crypto/services/utils';
 
 /**
@@ -161,4 +162,30 @@ export async function generateFileBucketKey(mnemonic: string, bucketId: string):
 export async function getFileDeterministicKey(key: Buffer, data: Buffer): Promise<Buffer> {
   const hashHex = await getSha512Combined(key, data);
   return Buffer.from(hashHex, 'hex');
+}
+
+export async function createSha256HashingStream(
+  source: ReadableStream<Uint8Array>,
+  onHash: (digest: string) => void,
+): Promise<ReadableStream<Uint8Array>> {
+  const hasher = await createSHA256();
+  hasher.init();
+
+  const reader = source.getReader();
+
+  return new ReadableStream<Uint8Array>({
+    async pull(controller) {
+      const { done, value } = await reader.read();
+      if (done) {
+        onHash(hasher.digest('hex'));
+        controller.close();
+      } else {
+        hasher.update(value);
+        controller.enqueue(value);
+      }
+    },
+    cancel() {
+      reader.cancel();
+    },
+  });
 }

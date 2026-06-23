@@ -97,7 +97,9 @@
     "idManagement": "Identity Management"
   },
   "auth": {
+    "emailFloatingLabel": "電子郵件",
     "email": "電子郵件",
+    "passwordFloatingLabel": "密碼",
     "password": "密碼",
     "terms1": "通過創建帳戶，",
     "terms2": "您接受條款和條件",
@@ -536,9 +538,7 @@
               "titleNew": "新的",
               "year": "年",
               "month": "月",
-              "free": "免費",
-              "reachedFreeLimit": "您已超過 {{freePlanName}}",
-              "reachedFreeLimitDescription": "由於您當前使用 {{currentUsage}}，您的 Internxt Drive 將停止同步文件，並且您將無法添加新文件"
+              "free": "免費"
             },
             "giveUsFeedback": "請告訴我們為什麼您想要取消您的 {{currentPlanName}} Internxt 計劃並降級為免費計劃？",
             "feedback": {
@@ -818,6 +818,7 @@
       "multipleDescription": "此位置已存在多個元素。您要替換它們還是保留全部？",
       "replaceItem": "替換當前項目",
       "keepBoth": "保留兩者",
+      "selectOption": "選擇一個選項",
       "upload": "上傳",
       "move": "移動"
     },
@@ -1651,6 +1652,7 @@
     }
   },
   "referrals": {
+    "openError": "開啟推薦時發生錯誤，請再試一次。",
     "emailVerification": {
       "message": "請驗證您的電子郵件以獲得推薦資格。請檢查您的收件匣或",
       "resendVerification": "重新發送驗證"

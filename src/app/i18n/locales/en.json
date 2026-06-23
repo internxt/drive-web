@@ -98,14 +98,16 @@
     "environment": "World Environment Day"
   },
   "auth": {
-    "email": "Email",
+    "emailFloatingLabel": "Email address",
+    "email": "Email address",
+    "passwordFloatingLabel": "Password",
     "password": "Password",
     "terms1": "By creating an account, ",
     "terms2": "you accept the terms & conditions",
     "decrypting": "Decrypting...",
     "login": {
-      "title": "Login",
-      "forgotPwd": "Forgot your password?",
+      "title": "Log in",
+      "forgotPwd": "I forgot my password",
       "dontHaveAccount": "Don’t have an account?",
       "dontHaveAccountMobile": "Don't have an Internxt account?",
       "createAccount": "Create account",
@@ -569,9 +571,7 @@
               "titleNew": "New",
               "year": "year",
               "month": "month",
-              "free": "Free",
-              "reachedFreeLimit": "You are over {{freePlanName}}",
-              "reachedFreeLimitDescription": "As you are currently using {{currentUsage}}, your Internxt Drive will stop syncing your files and you won't be able to add new files"
+              "free": "Free"
             },
             "giveUsFeedback": "Tell us why you want to cancel your {{currentPlanName}} Internxt plan and downgrade to free plan?",
             "feedback": {
@@ -889,6 +889,7 @@
       "multipleDescription": "More than one element already exists in this location. Do you want to replace them or you want to keep all",
       "replaceItem": "Replace current item",
       "keepBoth": "Keep both",
+      "selectOption": "Select an option",
       "upload": "Upload",
       "move": "Move"
     },
@@ -1722,6 +1723,7 @@
     }
   },
   "referrals": {
+    "openError": "Something went wrong while opening referrals. Please try again.",
     "emailVerification": {
       "message": "Verify your email to be eligible to referrals. Check your inbox or",
       "resendVerification": "resend verification"
