@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FormatFileViewerProps } from '../../FileViewer';
 
@@ -8,7 +7,6 @@ const SCROLL_THRESHOLD_PX = 300;
 const FileTxtViewer: React.FC<FormatFileViewerProps> = ({ blob, setIsPreviewAvailable }) => {
   const [content, setContent] = useState('');
   const [offset, setOffset] = useState(0);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const decoderRef = useRef(new TextDecoder());
   const loadingRef = useRef(false);
 
@@ -18,7 +16,6 @@ const FileTxtViewer: React.FC<FormatFileViewerProps> = ({ blob, setIsPreviewAvai
     async (from: number) => {
       if (!blob || loadingRef.current || from >= blob.size) return;
       loadingRef.current = true;
-      setIsLoadingMore(true);
       try {
         const to = Math.min(from + CHUNK_SIZE, blob.size);
         const buffer = await blob.slice(from, to).arrayBuffer();
@@ -30,7 +27,6 @@ const FileTxtViewer: React.FC<FormatFileViewerProps> = ({ blob, setIsPreviewAvai
         console.error(err);
       } finally {
         loadingRef.current = false;
-        setIsLoadingMore(false);
       }
     },
     [blob, setIsPreviewAvailable],
