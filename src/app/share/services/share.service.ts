@@ -319,10 +319,18 @@ export const createPublicShareFromOwnerUser = async (
   return { publicSharingItemData, plainCode };
 };
 
-export const decryptPublicSharingCodeWithOwner = (encryptedCode: string) => {
+const decryptPublicSharingCodeWithOwner = async (encryptedCode: string, encryptionAlgorithm: string) => {
   const user = localStorageService.getUser() as UserSettings;
   const { mnemonic } = user;
-  return aes.decrypt(encryptedCode, mnemonic);
+  let key = mnemonic;
+  if (encryptionAlgorithm === NEW_SHARING_VERSION) {
+    const { bucket } = user;
+    const bucketKey = await generateFileBucketKey(mnemonic, bucket);
+    const bucketKeyHex = Buffer.from(bucketKey.subarray(0, 32)).toString('hex');
+
+    key = bucketKeyHex;
+  }
+  return aes.decrypt(encryptedCode, key);
 };
 
 const getRandomElement = (list: string[]) => {
@@ -796,12 +804,13 @@ export function getSharingInfo(itemId: string, itemType: 'file' | 'folder'): Pro
   });
 }
 
-export function saveSharingPassword(
+export async function saveSharingPassword(
   sharingId: string,
   plainPassword: string,
   encryptedCode: string,
+  encryptionAlgorithm: string,
 ): Promise<SharingMeta> {
-  const code = shareService.decryptPublicSharingCodeWithOwner(encryptedCode);
+  const code = await decryptPublicSharingCodeWithOwner(encryptedCode, encryptionAlgorithm);
   const encryptedPassword = aes.encrypt(plainPassword, code);
 
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
@@ -854,7 +863,6 @@ const shareService = {
   getPublicShareLink,
   saveSharingPassword,
   removeSharingPassword,
-  decryptPublicSharingCodeWithOwner,
   validateSharingInvitation,
   getPublicSharedItemInfo,
   getSharedFolderSize,

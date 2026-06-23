@@ -51,6 +51,7 @@ describe('Share Item Actions', () => {
     id: 'sharing-id-123',
     encryptedCode: 'encrypted-code',
     itemToken: 'share-token',
+    encryptionAlgorithm: 'encryption-algorithm',
   } as SharingMeta;
 
   beforeEach(() => {
@@ -256,7 +257,12 @@ describe('Share Item Actions', () => {
 
       await result.current.onSavePublicSharePassword('my-password');
 
-      expect(saveSharingPasswordSpy).toHaveBeenCalledWith('sharing-id-123', 'my-password', 'encrypted-code');
+      expect(saveSharingPasswordSpy).toHaveBeenCalledWith(
+        'sharing-id-123',
+        'my-password',
+        'encrypted-code',
+        'encryption-algorithm',
+      );
       expect(mockActionDispatch).toHaveBeenCalledWith(
         expect.objectContaining({ type: 'SET_IS_PASSWORD_PROTECTED', payload: true }),
       );
