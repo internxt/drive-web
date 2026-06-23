@@ -1,6 +1,6 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import BreadcrumbsBackupsView from 'components/BreadcrumbsBackupsView';
+import { CaretRight } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { DriveFolderData } from 'app/drive/types';
@@ -62,7 +62,13 @@ export default function PhotosView(): JSX.Element {
     onFolderUuidChanges(undefined);
   };
 
-  const goToFolder = (folderId: number, folderUuid?: string) => {
+  const goToDeviceRoot = () => {
+    if (!currentDevice) return;
+    setFoldersInBreadcrumbs([]);
+    onFolderUuidChanges(currentDevice.uuid);
+  };
+
+  const goToFolder = (_folderId: number, folderUuid?: string) => {
     const index = foldersInBreadcrumbs.findIndex((f) => f.uuid === folderUuid);
     const newPath = foldersInBreadcrumbs.slice(0, index + 1);
     setFoldersInBreadcrumbs(newPath);
@@ -120,13 +126,46 @@ export default function PhotosView(): JSX.Element {
       {/* Header */}
       <div className="flex h-14 shrink-0 items-center px-5">
         {activeTab === 'devices' && currentDevice ? (
-          <div className="flex z-10">
-            <BreadcrumbsBackupsView
-              backupsAsFoldersPath={foldersInBreadcrumbs}
-              goToFolder={goToFolder}
-              goToRootFolder={goToRootFolder}
-            />
-          </div>
+          /* Breadcrumb: Your devices > Device name > Year > Month > Day */
+          <nav className="flex items-center gap-1 text-sm min-w-0">
+            <button
+              onClick={goToRootFolder}
+              className="shrink-0 font-medium text-gray-50 hover:text-gray-80 transition-colors"
+            >
+              {translate('photos.your-devices')}
+            </button>
+            <CaretRight size={12} className="shrink-0 text-gray-30" />
+            {foldersInBreadcrumbs.length === 0 ? (
+              <span className="truncate font-medium text-gray-80">{currentDevice.plainName}</span>
+            ) : (
+              <>
+                <button
+                  onClick={goToDeviceRoot}
+                  className="shrink-0 font-medium text-gray-50 hover:text-gray-80 transition-colors"
+                >
+                  {currentDevice.plainName}
+                </button>
+                {foldersInBreadcrumbs.map((folder, i) => {
+                  const isLast = i === foldersInBreadcrumbs.length - 1;
+                  return (
+                    <span key={folder.uuid} className="flex items-center gap-1 min-w-0">
+                      <CaretRight size={12} className="shrink-0 text-gray-30" />
+                      {isLast ? (
+                        <span className="truncate font-medium text-gray-80">{folder.name}</span>
+                      ) : (
+                        <button
+                          onClick={() => goToFolder(folder.id, folder.uuid)}
+                          className="shrink-0 font-medium text-gray-50 hover:text-gray-80 transition-colors"
+                        >
+                          {folder.name}
+                        </button>
+                      )}
+                    </span>
+                  );
+                })}
+              </>
+            )}
+          </nav>
         ) : (
           <p className="text-lg font-medium">{translate('sideNav.photos')}</p>
         )}
