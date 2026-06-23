@@ -4,6 +4,7 @@ import { AppView } from '../types';
 
 import { AuthView, ButtonAuth, SignupBlog } from '../../../views/Signup/components';
 import BackupsView from 'views/Backups/BackupsView';
+import PhotosView from 'views/Photos';
 import {
   BlockedAccountView,
   RecoverAccountView,
@@ -48,6 +49,7 @@ const views: Array<{
   { id: AppView.Recents, component: RecentsView },
   { id: AppView.Trash, component: TrashView },
   { id: AppView.Backups, component: BackupsView },
+  { id: AppView.Photos, component: PhotosView },
   { id: AppView.Shared, component: SharedViewWrapper },
   { id: AppView.FolderFileNotFound, component: FolderFileNotFound },
   { id: AppView.Deactivation, component: DeactivationView },

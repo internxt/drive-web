@@ -424,6 +424,7 @@
   "sideNav": {
     "drive": "Drive",
     "backups": "Backups",
+    "photos": "Photos",
     "shared": "Shared",
     "recents": "Recents",
     "trash": "Trash",
@@ -2257,5 +2258,40 @@
   },
   "sdk": {
     "rateLimitToast": "This is taking longer than expected. Please wait..."
+  },
+  "photos": {
+    "your-devices": "Your devices",
+    "empty": {
+      "title": "No photo backups found",
+      "subtitle": "Back up your photos from the Internxt mobile app",
+      "folder": {
+        "title": "This folder is empty",
+        "subtitle": "Photos backed up from the mobile app will appear here"
+      }
+    },
+    "deleteDevice": {
+      "contextMenu": "Delete device",
+      "title": "Delete device backup?",
+      "subtitle": "All photo backups from this device will be permanently deleted. This action cannot be undone.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    },
+    "tabs": {
+      "gallery": "Gallery",
+      "devices": "Devices"
+    },
+    "gallery": {
+      "filter": {
+        "all": "All devices"
+      },
+      "empty": {
+        "title": "No photos found",
+        "subtitle": "Photos backed up from the Internxt mobile app will appear here",
+        "noDevices": {
+          "title": "No devices found",
+          "subtitle": "Back up your photos from the Internxt mobile app to see them here"
+        }
+      }
+    }
   }
 }

@@ -98,6 +98,14 @@
       "hideSearch": true
     },
     {
+      "id": "photos",
+      "layout": "header-and-sidenav",
+      "path": "/photos",
+      "exact": true,
+      "auth": true,
+      "hideSearch": true
+    },
+    {
       "id": "shared-links",
       "layout": "header-and-sidenav",
       "path": "/shared-links",

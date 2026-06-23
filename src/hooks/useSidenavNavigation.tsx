@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { matchPath } from 'react-router-dom';
-import { Clock, ClockCounterClockwise, Desktop, FolderSimple, Trash, Users } from '@phosphor-icons/react';
+import { Camera, Clock, ClockCounterClockwise, Desktop, FolderSimple, Trash, Users } from '@phosphor-icons/react';
 import { useSelector } from 'react-redux';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useAppSelector } from 'app/store/hooks';
@@ -60,6 +60,14 @@ export const useSidenavNavigation = () => {
         iconDataCy: 'sideNavBackupsIcon',
         isVisible: !isB2BWorkspace,
         onClick: () => onSidenavItemClick(AppView.Backups, workspaceUuid, resetAccessTokenFileFolder),
+      },
+      {
+        isActive: isActiveButton('/photos'),
+        label: translate('sideNav.photos'),
+        icon: Camera,
+        iconDataCy: 'sideNavPhotosIcon',
+        isVisible: !isB2BWorkspace,
+        onClick: () => onSidenavItemClick(AppView.Photos, workspaceUuid, resetAccessTokenFileFolder),
       },
       {
         isActive: isActiveButton('/shared'),

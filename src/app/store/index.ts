@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 
 import backupsReducer from '../../views/Backups/store/backupsSlice';
+import photosReducer from '../../views/Photos/store';
 import planReducer from './slices/plan';
 import referralsReducer from './slices/referrals';
 import sessionReducer from './slices/session';
@@ -20,6 +21,7 @@ export const store = configureStore({
     ui: uiReducer,
     plan: planReducer,
     backups: backupsReducer,
+    photos: photosReducer,
     taskManager: taskManagerReducer,
     referrals: referralsReducer,
     shared: sharedReducer,
