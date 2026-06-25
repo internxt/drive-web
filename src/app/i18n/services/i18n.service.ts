@@ -58,6 +58,7 @@ export default i18next
     detection: {
       order: ['querystring', 'localStorage', 'cookie', 'navigator'],
       caches: ['localStorage', 'cookie'],
+      cookieOptions: { secure: true, sameSite: 'strict' },
     },
     defaultNS: 'translation',
     ns: ['translation'],
