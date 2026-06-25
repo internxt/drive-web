@@ -1,4 +1,4 @@
-import { FileKey, NetworkCredentials } from 'app/drive/types/helper-types';
+import { NetworkCredentials } from 'app/drive/types/helper-types';
 import { VideoSessionDestroyedError } from '../errors/video-streaming.errors';
 import { VideoStreamingService } from './index';
 
@@ -7,7 +7,7 @@ export interface VideoStreamingSessionConfig {
   bucketId: string;
   fileSize: number;
   fileType: string;
-  key: FileKey;
+  mnemonic: string;
   credentials: NetworkCredentials;
 }
 
