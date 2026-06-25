@@ -1,4 +1,4 @@
-import { Disclosure } from '@headlessui/react';
+import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Plus } from '@phosphor-icons/react';
 import Section from '../../../General/components/Section';
@@ -35,7 +35,7 @@ const FrecuentlyAskedQuestions = () => {
                 open && 'mb-2 bg-gray-5 pb-6'
               } rounded-xl transition-all duration-150 ease-in-out`}
             >
-              <Disclosure.Button
+              <DisclosureButton
                 className={`flex w-full justify-between px-6 py-3 text-left font-medium text-gray-60 transition-all duration-150 ease-in-out ${
                   open && 'pt-6 text-gray-80'
                 }`}
@@ -48,9 +48,9 @@ const FrecuentlyAskedQuestions = () => {
                   weight="bold"
                   size={20}
                 />
-              </Disclosure.Button>
+              </DisclosureButton>
               {open && (
-                <Disclosure.Panel
+                <DisclosurePanel
                   className="px-6 pt-0 text-sm text-gray-60 transition-all duration-150 ease-in-out"
                   dangerouslySetInnerHTML={{ __html: question.body }}
                 />

@@ -60,7 +60,8 @@ export const CheckoutProductCard = ({
   const derivedTax = Math.max(0, Number(totalAmountFormatted) - Number(planAmountWithoutTaxes));
   const derivedTaxFormatted = formatPrice(derivedTax);
 
-  const isHiddenCoupon = couponCodeData?.codeName === 'SPECIAL' || couponCodeData?.codeName === 'ANTIV';
+  const HIDDEN_COUPON_CODES = ['SPECIAL', 'ANTIV', 'SAVE'];
+  const isHiddenCoupon = HIDDEN_COUPON_CODES.includes(couponCodeData?.codeName ?? '');
 
   const discountPercentage =
     couponCodeData?.amountOff && couponCodeData?.amountOff < taxesData.amountWithTax
@@ -199,7 +200,6 @@ export const CheckoutProductCard = ({
                   </button>
                   <Transition
                     show={openCouponCodeDropdown}
-                    className={'left-0'}
                     enter="transition duration-50 ease-out"
                     enterFrom="scale-98 opacity-0"
                     enterTo="scale-100 opacity-100"
@@ -207,7 +207,7 @@ export const CheckoutProductCard = ({
                     leaveFrom="scale-98 opacity-100"
                     leaveTo="scale-100 opacity-0"
                   >
-                    <div className="w-full items-center outline-none">
+                    <div className="left-0 w-full items-center outline-none">
                       <div className="flex w-full flex-col items-start space-y-1">
                         <p className="text-sm text-gray-80">{translate('checkout.productCard.addCoupon.inputText')}</p>
                         <div className="flex w-full flex-row space-x-3">
