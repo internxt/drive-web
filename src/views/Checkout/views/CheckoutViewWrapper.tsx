@@ -118,7 +118,7 @@ const CheckoutViewWrapper = () => {
     if (gclid) {
       const expiryDate = new Date();
       expiryDate.setTime(expiryDate.getTime() + GCLID_COOKIE_LIFESPAN_DAYS * MILLISECONDS_PER_DAY);
-      document.cookie = `gclid=${gclid}; expires=${expiryDate.toUTCString()}; path=/`;
+      document.cookie = `gclid=${gclid}; expires=${expiryDate.toUTCString()}; path=/; Secure`;
       localStorageService.set(STORAGE_KEYS.GCLID, gclid);
     }
     if (irclickid) {
