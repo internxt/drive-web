@@ -1,4 +1,4 @@
-import { Popover } from '@headlessui/react';
+import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react';
 import { Button, Loader } from '@internxt/ui';
 import { CaretDown, Check, Globe, Link, Users } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -45,7 +45,7 @@ export const UserRoleSelection = ({
         <Popover className="relative z-10">
           {({ open }) => (
             <>
-              <Popover.Button as="div" className="z-1 outline-none">
+              <PopoverButton as="div" className="z-1 outline-none">
                 <Button variant="secondary" disabled={isLoading || !isUserOwner}>
                   {accessMode === 'public' ? <Globe size={24} /> : <Users size={24} />}
                   <span>
@@ -61,9 +61,9 @@ export const UserRoleSelection = ({
                     <CaretDown size={24} />
                   )}
                 </Button>
-              </Popover.Button>
+              </PopoverButton>
 
-              <Popover.Panel
+              <PopoverPanel
                 className={`absolute bottom-full z-0 mb-1 w-80 origin-bottom-left rounded-lg border border-gray-10 bg-surface p-1 shadow-subtle transition-all duration-50 ease-out ${
                   open ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
                 }`}
@@ -136,7 +136,7 @@ export const UserRoleSelection = ({
                     )}
                   </>
                 )}
-              </Popover.Panel>
+              </PopoverPanel>
             </>
           )}
         </Popover>

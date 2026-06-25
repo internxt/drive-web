@@ -1,4 +1,4 @@
-import { Menu } from '@headlessui/react';
+import { MenuItem } from '@headlessui/react';
 import { DriveItemData } from 'app/drive/types';
 import { useDriveItemActions } from '../hooks';
 import {
@@ -31,9 +31,9 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
     onOpenPreviewButtonClicked,
   } = useDriveItemActions(item as DriveItemData);
 
-  const menuItemStyle = (active, disabled) => {
+  const menuItemStyle = (focus: boolean, disabled: boolean) => {
     let style = 'text-gray-80';
-    if (active) {
+    if (focus) {
       style = 'bg-gray-5 text-gray-100 dark:bg-gray-10';
     } else if (disabled) {
       style = 'pointer-events-none font-medium text-gray-100';
@@ -104,8 +104,8 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
                 </div>
               ) : (
                 option && (
-                  <Menu.Item disabled={option.disabled?.(item)}>
-                    {({ active, disabled }) => {
+                  <MenuItem disabled={option.disabled?.(item)}>
+                    {({ focus, disabled }) => {
                       return (
                         <button
                           onClick={(e) => {
@@ -113,7 +113,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
                             option.action?.(item);
                           }}
                           className={`flex w-full cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base ${menuItemStyle(
-                            active,
+                            focus,
                             disabled,
                           )}`}
                         >
@@ -130,7 +130,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
                         </button>
                       );
                     }}
-                  </Menu.Item>
+                  </MenuItem>
                 )
               )}
             </div>

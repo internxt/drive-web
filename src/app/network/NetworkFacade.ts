@@ -13,7 +13,13 @@ import { buildProgressStream, decryptStream } from 'services/stream.service';
 import { WORKER_MESSAGE_STATES } from 'app/drive/services/worker.service/types/upload';
 import { waitForContinueUploadSignal } from 'app/drive/services/worker.service/uploadWorkerUtils';
 import { TaskStatus } from '../tasks/types';
-import { createSha256HashingStream, encryptStreamInParts, generateFileKey, getEncryptedFile, processEveryFileBlobReturnHash } from './crypto';
+import {
+  createSha256HashingStream,
+  encryptStreamInParts,
+  generateFileKey,
+  getEncryptedFile,
+  processEveryFileBlobReturnHash,
+} from './crypto';
 import { DownloadProgressCallback, getDecryptedStream } from './download';
 import {
   DownloadAbortedByUserError,
@@ -23,7 +29,7 @@ import {
 import { ALLOWED_CHUNK_OVERHEAD, UPLOAD_CHUNK_SIZE } from './networkConstants';
 import { DownloadChunkPayload } from './types/index';
 import { uploadFileUint8Array, UploadProgressCallback } from './upload-utils';
-import { getFileHmacFromShardHashes } from 'app/crypto/services/utils';
+import { getFileHmacFromShardHashes, getRipemd160FromHex } from 'app/crypto/services/utils';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
@@ -70,6 +76,10 @@ export class NetworkFacade {
         return generateFileKey(mnemonic, bucketId, index as Buffer);
       },
       randomBytes,
+      computeHmac: async (key, shardHashes) => {
+        const value = await getFileHmacFromShardHashes(key as Buffer, shardHashes);
+        return { type: 'sha512', value };
+      },
     };
   }
 
@@ -255,7 +265,7 @@ export class NetworkFacade {
     options?: DownloadOptions,
   ): Promise<ReadableStream> {
     const encryptedContentStreams: ReadableStream<Uint8Array>[] = [];
-    const shardHashes: string[] = [];
+    const sha256Hashes: string[] = [];
     let fileInfoRef: { hmac?: { value: string; type: string } } = {};
     let fileStream: ReadableStream<Uint8Array>;
 
@@ -284,9 +294,7 @@ export class NetworkFacade {
           });
 
           encryptedContentStreams.push(
-            await createSha256HashingStream(encryptedContentStream, (digest) => {
-              shardHashes.push(digest);
-            })
+            await createSha256HashingStream(encryptedContentStream, (h) => sha256Hashes.push(h)),
           );
         }
       },
@@ -297,12 +305,14 @@ export class NetworkFacade {
         );
 
         fileStream = buildProgressStream(
-          decryptedStream, 
+          decryptedStream,
           (readBytes) => options?.downloadingCallback?.(fileSize, readBytes),
           async () => {
-            const hmac = await getFileHmacFromShardHashes(key as Buffer, shardHashes);
-            if (fileInfoRef.hmac?.value && hmac !== fileInfoRef.hmac.value) throw new Error('File integrity check failed');
-          }
+            const shardHashes = await Promise.all(sha256Hashes.map(getRipemd160FromHex));
+            const hmac = await getFileHmacFromShardHashes(options?.key || (key as Buffer), shardHashes);
+            if (fileInfoRef.hmac?.value && hmac !== fileInfoRef.hmac.value)
+              throw new Error('File integrity check failed');
+          },
         );
       },
       (options?.token && { token: options.token }) || undefined,
