@@ -19,7 +19,9 @@ const createConfig = (): VideoStreamingSessionConfig => ({
   bucketId: 'bucket-456',
   fileSize: 1024000,
   fileType: 'video/mp4',
-  mnemonic: 'test mnemonic',
+  key: {
+    mnemonic: 'test mnemonic',
+  },
   credentials: { user: 'user', pass: 'pass' },
 });
 
@@ -45,7 +47,9 @@ describe('Video Streaming Service', () => {
         expect.objectContaining({
           bucketId: config.bucketId,
           fileId: config.fileId,
-          mnemonic: config.mnemonic,
+          key: {
+            mnemonic: config.key.mnemonic,
+          },
           chunkStart: 0,
           chunkEnd: 1024,
         }),

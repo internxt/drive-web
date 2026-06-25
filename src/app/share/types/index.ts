@@ -1,5 +1,5 @@
 import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
-import { NetworkCredentials } from '../../network/download';
+import { NetworkCredentials } from 'app/drive/types/helper-types';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 
 export type AdvancedSharedItem = SharedFolders &

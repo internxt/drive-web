@@ -16,7 +16,9 @@ const createConfig = (): VideoStreamingSessionConfig => ({
   bucketId: 'bucket-456',
   fileSize: 1000000,
   fileType: 'video/mp4',
-  mnemonic: 'test mnemonic',
+  key: {
+    mnemonic: 'test mnemonic',
+  },
   credentials: { user: 'user', pass: 'pass' },
 });
 

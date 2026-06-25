@@ -3,6 +3,7 @@ import { createUploadWebWorker } from '../../../../WebWorker';
 import { createWorkerMessageHandlerPromise } from '../worker.service/uploadWorkerUtils';
 import { notifyUserWithCooldown } from 'app/core/factory/sdk/retryStrategies';
 import { IUploadParams } from './types';
+import { NetworkCredentials } from 'app/drive/types/helper-types';
 
 export { getEnvironmentConfig } from './getEnvironmentConfig';
 
@@ -11,10 +12,7 @@ export const MAX_ALLOWED_UPLOAD_SIZE = 40 * 1024 * 1024 * 1024;
 export class Network {
   private mnemonic: string;
 
-  private creds: {
-    user: string;
-    pass: string;
-  };
+  private creds: NetworkCredentials;
 
   constructor(bridgeUser: string, bridgePass: string, encryptionKey: string) {
     if (!bridgeUser) {

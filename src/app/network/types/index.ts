@@ -1,3 +1,4 @@
+import { FileKey } from 'app/drive/types/helper-types';
 import { DownloadProgressCallback } from '../download';
 
 export interface LegacyShardMeta {
@@ -28,7 +29,7 @@ export interface DownloadChunkTask {
 export interface DownloadChunkPayload {
   bucketId: string;
   fileId: string;
-  mnemonic: string;
+  key: FileKey;
   chunkStart: number;
   chunkEnd: number;
   options?: DownloadOptions;

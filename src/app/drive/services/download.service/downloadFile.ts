@@ -6,6 +6,7 @@ import { DriveFileData } from '../../types';
 import { BlobWritable, downloadFileAsBlob } from './downloadFileAsBlob';
 import fetchFileStream from './fetchFileStream';
 import fetchFileStreamUsingCredentials from './fetchFileStreamUsingCredentials';
+import { FileKey, NetworkCredentials } from 'app/drive/types/helper-types';
 
 async function pipe(readable: ReadableStream, writable: BlobWritable): Promise<void> {
   const reader = readable.getReader();
@@ -32,7 +33,7 @@ export default async function downloadFile(
   isWorkspace: boolean,
   updateProgressCallback: (progress: number) => void,
   abortController?: AbortController,
-  sharingOptions?: { credentials: { user: string; pass: string }; mnemonic: string },
+  sharingOptions?: { credentials: NetworkCredentials; key: FileKey },
 ): Promise<void> {
   const fileName = itemData.plainName ?? itemData.name;
   const completeFilename = itemData.type ? `${fileName}.${itemData.type}` : `${fileName}`;
@@ -66,11 +67,8 @@ export default async function downloadFile(
         {
           updateProgressCallback,
           abortController,
-          creds: {
-            user: sharingOptions.credentials.user,
-            pass: sharingOptions.credentials.pass,
-          },
-          mnemonic: sharingOptions.mnemonic,
+          creds: sharingOptions.credentials,
+          key: sharingOptions.key,
         },
       );
 

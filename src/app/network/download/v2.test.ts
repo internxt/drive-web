@@ -26,7 +26,9 @@ describe('Download V2', () => {
         bucketId: 'test-bucket',
         fileId: 'test-file',
         creds: mockCredentials,
-        mnemonic: 'test mnemonic',
+        key: {
+          mnemonic: 'test mnemonic',
+        },
         fileSize: 1024,
         options: {
           notifyProgress: progressCallback,
@@ -63,7 +65,7 @@ describe('Download V2', () => {
       expect(downloadFileSpy).toHaveBeenCalledWith({
         bucketId: params.bucketId,
         fileId: params.fileId,
-        mnemonic: params.mnemonic,
+        mnemonic: params.key.mnemonic,
         fileSize: params.fileSize,
         options: {
           downloadingCallback: progressCallback,
@@ -82,7 +84,9 @@ describe('Download V2', () => {
         bucketId: 'test-bucket',
         fileId: 'test-file',
         creds: mockCredentials,
-        mnemonic: 'test mnemonic',
+        key: {
+          mnemonic: 'test mnemonic',
+        },
         fileSize: 1024,
         chunkStart: 0,
         chunkEnd: 1024,
@@ -121,7 +125,9 @@ describe('Download V2', () => {
       expect(downloadSingleFileSpy).toHaveBeenCalledWith({
         bucketId: params.bucketId,
         fileId: params.fileId,
-        mnemonic: params.mnemonic,
+        key: {
+          mnemonic: params.key.mnemonic,
+        },
         chunkStart: params.chunkStart,
         chunkEnd: params.chunkEnd,
         options: {

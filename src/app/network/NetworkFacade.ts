@@ -335,7 +335,7 @@ export class NetworkFacade {
   async downloadChunk({
     bucketId,
     fileId,
-    mnemonic,
+    key,
     chunkStart,
     chunkEnd,
     options,
@@ -346,7 +346,7 @@ export class NetworkFacade {
     await downloadFile(
       fileId,
       bucketId,
-      mnemonic,
+      key.mnemonic ?? '',
       this.network,
       this.cryptoLib,
       Buffer.from,

@@ -15,7 +15,7 @@ import { FlatFolderZip } from 'services/zip.service';
 import { LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
 import { AdvancedSharedItem } from 'app/share/types';
 import { binaryStreamToBlob } from 'services/stream.service';
-import { downloadFile, NetworkCredentials } from 'app/network/download';
+import { downloadFile } from 'app/network/download';
 import localStorageService from 'services/local-storage.service';
 import date from 'services/date.service';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
@@ -31,12 +31,11 @@ import {
 import { downloadWorkerHandler } from './worker.service/downloadWorkerHandler';
 import { isFileEmpty } from 'utils/isFileEmpty';
 import deviceService from 'services/device.service';
+import { FileKey, NetworkCredentials } from 'app/drive/types/helper-types';
 
 export type DownloadCredentials = {
   credentials: NetworkCredentials;
-  key: {
-    mnemonic: string;
-  };
+  key: FileKey;
   workspaceId?: string;
 };
 
@@ -535,7 +534,7 @@ export class DownloadManagerService {
     isWorkspace: boolean;
     updateProgressCallback: (progress: number) => void;
     abortController?: AbortController;
-    sharingOptions: { credentials: { user: string; pass: string }; key: { mnemonic: string } };
+    sharingOptions: { credentials: NetworkCredentials; key: FileKey };
     downloadName?: string;
   }) => {
     const shouldDownloadUsingBlob =

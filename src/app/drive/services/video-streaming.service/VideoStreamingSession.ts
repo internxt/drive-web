@@ -1,3 +1,4 @@
+import { FileKey, NetworkCredentials } from 'app/drive/types/helper-types';
 import { VideoSessionDestroyedError } from '../errors/video-streaming.errors';
 import { VideoStreamingService } from './index';
 
@@ -6,11 +7,8 @@ export interface VideoStreamingSessionConfig {
   bucketId: string;
   fileSize: number;
   fileType: string;
-  mnemonic: string;
-  credentials: {
-    user: string;
-    pass: string;
-  };
+  key: FileKey;
+  credentials: NetworkCredentials;
 }
 
 const PLAYER_URL = '/video-stream/player.html';
