@@ -11,7 +11,9 @@ export default async function createMultipartFileDownloadStream(
     bucketId: itemData.bucket,
     fileId: itemData.fileId,
     creds: sharingOptions?.credentials,
-    mnemonic: sharingOptions?.mnemonic,
+    key: {
+      mnemonic: sharingOptions?.mnemonic,
+    },
     fileSize: itemData.size,
     options: {
       notifyProgress: (totalBytes, downloadedBytes) => {

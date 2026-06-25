@@ -125,7 +125,9 @@ describe('downloadManagerService', () => {
 
   const mockSharingOptions = {
     credentials: { user: 'test-user', pass: 'test-pass' },
-    mnemonic: 'test-mnemonic',
+    key: {
+      mnemonic: 'test-mnemonic',
+    },
   };
 
   const mockUser: UserSettings = {
@@ -240,7 +242,9 @@ describe('downloadManagerService', () => {
         pass: mockWorkspaceCredentials.credentials.networkPass,
       },
       workspaceId: mockWorkspace.workspace.id,
-      mnemonic: mockWorkspace.workspaceUser.key,
+      key: {
+        mnemonic: mockWorkspace.workspaceUser.key,
+      },
     };
 
     const result = DownloadManagerService.instance.getDownloadCredentialsFromWorkspace(
@@ -315,7 +319,9 @@ describe('downloadManagerService', () => {
           user: mockUser.bridgeUser,
           pass: mockUser.userId,
         },
-        mnemonic: mockUser.mnemonic,
+        key: {
+          mnemonic: mockUser.mnemonic,
+        },
       },
       options: {
         areSharedItems: false,
@@ -360,7 +366,9 @@ describe('downloadManagerService', () => {
           user: mockUser.bridgeUser,
           pass: mockUser.userId,
         },
-        mnemonic: mockUser.mnemonic,
+        key: {
+          mnemonic: mockUser.mnemonic,
+        },
       },
       options: {
         areSharedItems: false,
@@ -406,7 +414,9 @@ describe('downloadManagerService', () => {
           user: mockUser.bridgeUser,
           pass: mockUser.userId,
         },
-        mnemonic: mockUser.mnemonic,
+        key: {
+          mnemonic: mockUser.mnemonic,
+        },
       },
       options: {
         areSharedItems: false,
@@ -456,7 +466,9 @@ describe('downloadManagerService', () => {
           user: mockUser.bridgeUser,
           pass: mockUser.userId,
         },
-        mnemonic: mockUser.mnemonic,
+        key: {
+          mnemonic: mockUser.mnemonic,
+        },
       },
       options: {
         areSharedItems: false,
@@ -487,7 +499,9 @@ describe('downloadManagerService', () => {
         user: 'any-user',
         pass: 'any-pass',
       },
-      mnemonic: 'any-mnemonic',
+      key: {
+        mnemonic: 'any-mnemonic',
+      },
     };
 
     const downloadItem: DownloadItem = {
@@ -509,7 +523,9 @@ describe('downloadManagerService', () => {
       createFoldersIterator: createFoldersIterator,
       credentials: {
         credentials: mockCredentials.credentials,
-        mnemonic: mockCredentials.mnemonic,
+        key: {
+          mnemonic: mockCredentials.key.mnemonic,
+        },
       },
       options: {
         areSharedItems: false,
@@ -570,7 +586,9 @@ describe('downloadManagerService', () => {
           pass: mockWorkspaceCredentials.credentials.networkPass,
         },
         workspaceId: mockWorkspace.workspace.id,
-        mnemonic: mockWorkspace.workspaceUser.key,
+        key: {
+          mnemonic: mockWorkspace.workspaceUser.key,
+        },
       },
       options: {
         areSharedItems: false,
@@ -605,7 +623,9 @@ describe('downloadManagerService', () => {
           pass: 'any-pass',
         },
         workspaceId: 'any-workspace-id',
-        mnemonic: 'any-mnemonic',
+        key: {
+          mnemonic: 'any-mnemonic',
+        },
       },
       options: {
         areSharedItems: false,
@@ -673,7 +693,9 @@ describe('downloadManagerService', () => {
           pass: 'any-pass',
         },
         workspaceId: 'any-workspace-id',
-        mnemonic: 'any-mnemonic',
+        key: {
+          mnemonic: 'any-mnemonic',
+        },
       },
       options: {
         areSharedItems: false,
@@ -725,7 +747,9 @@ describe('downloadManagerService', () => {
           pass: 'any-pass',
         },
         workspaceId: 'any-workspace-id',
-        mnemonic: 'any-mnemonic',
+        key: {
+          mnemonic: 'any-mnemonic',
+        },
       },
       options: {
         areSharedItems: false,
@@ -774,7 +798,9 @@ describe('downloadManagerService', () => {
           user: 'any-user',
           pass: 'any-pass',
         },
-        mnemonic: 'any-mnemonic',
+        key: {
+          mnemonic: 'any-mnemonic',
+        },
       },
       options: {
         areSharedItems: false,
@@ -831,7 +857,9 @@ describe('downloadManagerService', () => {
           pass: 'any-pass',
         },
         workspaceId: 'any-workspace-id',
-        mnemonic: 'any-mnemonic',
+        key: {
+          mnemonic: 'any-mnemonic',
+        },
       },
       options: {
         areSharedItems: false,
@@ -884,7 +912,9 @@ describe('downloadManagerService', () => {
           pass: 'any-pass',
         },
         workspaceId: 'any-workspace-id',
-        mnemonic: 'any-mnemonic',
+        key: {
+          mnemonic: 'any-mnemonic',
+        },
       },
       options: {
         areSharedItems: false,
@@ -1003,7 +1033,9 @@ describe('downloadManagerService', () => {
             user: 'any-user',
             pass: 'any-pass',
           },
-          mnemonic: 'any-mnemonic',
+          key: {
+            mnemonic: 'any-mnemonic',
+          },
         },
         options: {
           areSharedItems: false,
@@ -1044,7 +1076,9 @@ describe('downloadManagerService', () => {
           pass: 'any-pass',
         },
         workspaceId: 'any-workspace-id',
-        mnemonic: 'any-mnemonic',
+        key: {
+          mnemonic: 'any-mnemonic',
+        },
       },
       options: {
         areSharedItems: false,
@@ -1129,7 +1163,9 @@ describe('downloadManagerService', () => {
           pass: 'any-pass',
         },
         workspaceId: 'any-workspace-id',
-        mnemonic: 'any-mnemonic',
+        key: {
+          mnemonic: 'any-mnemonic',
+        },
       },
       options: {
         areSharedItems: false,
@@ -1210,7 +1246,9 @@ describe('downloadManagerService', () => {
           pass: 'any-pass',
         },
         workspaceId: 'any-workspace-id',
-        mnemonic: 'any-mnemonic',
+        key: {
+          mnemonic: 'any-mnemonic',
+        },
       },
       options: {
         areSharedItems: false,
@@ -1285,7 +1323,9 @@ describe('downloadManagerService', () => {
           pass: 'any-pass',
         },
         workspaceId: 'any-workspace-id',
-        mnemonic: 'any-mnemonic',
+        key: {
+          mnemonic: 'any-mnemonic',
+        },
       },
       options: {
         areSharedItems: false,
@@ -1346,7 +1386,9 @@ describe('downloadManagerService', () => {
         createFoldersIterator: createFoldersIterator,
         credentials: {
           credentials: { user: 'any-user', pass: 'any-pass' },
-          mnemonic: 'any-mnemonic',
+          key: {
+            mnemonic: 'any-mnemonic',
+          },
         },
         options: { areSharedItems: false, downloadName: `${mockFile.name}.${mockFile.type}`, showErrors: true },
         taskId: 'mock-task-id',
@@ -1402,7 +1444,9 @@ describe('downloadManagerService', () => {
             user: 'any-user',
             pass: 'any-pass',
           },
-          mnemonic: 'any-mnemonic',
+          key: {
+            mnemonic: 'any-mnemonic',
+          },
         },
         options: {
           areSharedItems: false,
@@ -1457,7 +1501,9 @@ describe('downloadManagerService', () => {
             user: 'any-user',
             pass: 'any-pass',
           },
-          mnemonic: 'any-mnemonic',
+          key: {
+            mnemonic: 'any-mnemonic',
+          },
         },
         options: {
           areSharedItems: false,
@@ -1521,7 +1567,9 @@ describe('downloadManagerService', () => {
             pass: 'any-pass',
           },
           workspaceId: 'any-workspace-id',
-          mnemonic: 'any-mnemonic',
+          key: {
+            mnemonic: 'any-mnemonic',
+          },
         },
         options: {
           areSharedItems: false,
@@ -1582,7 +1630,9 @@ describe('downloadManagerService', () => {
             pass: 'any-pass',
           },
           workspaceId: 'any-workspace-id',
-          mnemonic: 'any-mnemonic',
+          key: {
+            mnemonic: 'any-mnemonic',
+          },
         },
         options: {
           areSharedItems: false,
@@ -1688,7 +1738,9 @@ describe('downloadManagerService', () => {
             user: 'any-user',
             pass: 'any-pass',
           },
-          mnemonic: 'any-mnemonic',
+          key: {
+            mnemonic: 'any-mnemonic',
+          },
         },
         options: {
           areSharedItems: false,
@@ -1727,7 +1779,9 @@ describe('downloadManagerService', () => {
             user: 'any-user',
             pass: 'any-pass',
           },
-          mnemonic: 'any-mnemonic',
+          key: {
+            mnemonic: 'any-mnemonic',
+          },
         },
         options: {
           areSharedItems: false,
@@ -1798,7 +1852,9 @@ describe('downloadManagerService', () => {
             user: 'any-user',
             pass: 'any-pass',
           },
-          mnemonic: 'any-mnemonic',
+          key: {
+            mnemonic: 'any-mnemonic',
+          },
         },
         options: {
           areSharedItems: false,
@@ -1842,7 +1898,9 @@ describe('downloadManagerService', () => {
             user: 'any-user',
             pass: 'any-pass',
           },
-          mnemonic: 'any-mnemonic',
+          key: {
+            mnemonic: 'any-mnemonic',
+          },
         },
         options: {
           areSharedItems: false,

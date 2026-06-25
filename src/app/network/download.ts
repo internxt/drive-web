@@ -6,7 +6,7 @@ import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from '.
 import { FileVersionOneError } from '@internxt/sdk/dist/network/download';
 import envService from 'services/env.service';
 
-import { generateFileKey } from './crypto';
+import { generateFileKey, getFileDeterministicKey } from './crypto';
 import downloadFileV2, { multipartDownload } from './download/v2';
 
 export type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
@@ -95,8 +95,11 @@ export interface IDownloadParams {
   bucketId: string;
   fileId: string | null;
   creds?: NetworkCredentials;
-  mnemonic?: string;
-  encryptionKey?: Buffer;
+  key: {
+    mnemonic?: string;
+    encryptionKey?: Buffer;
+    bucketKey?: Buffer;
+  };
   token?: string;
   options?: {
     notifyProgress: DownloadProgressCallback;
@@ -179,10 +182,12 @@ export async function _downloadFile(params: IDownloadParams): Promise<ReadableSt
   const iv = index.slice(0, 16);
   let key: Buffer;
 
-  if (params.encryptionKey) {
-    key = params.encryptionKey;
-  } else if (params.mnemonic) {
-    key = await generateFileKey(params.mnemonic, bucketId, index);
+  if (params.key.encryptionKey) {
+    key = params.key.encryptionKey;
+  } else if (params.key.mnemonic) {
+    key = await generateFileKey(params.key.mnemonic, bucketId, index);
+  } else if (params.key.bucketKey) {
+    key = await getFileDeterministicKey(params.key.bucketKey.subarray(0, 32), index);
   } else {
     throw new Error('Download error code 1');
   }

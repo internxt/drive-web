@@ -22,7 +22,9 @@ export default function fetchFileStreamUsingCredentials(
       user: options.creds.user,
       pass: options.creds.pass,
     },
-    mnemonic: options.mnemonic,
+    key: {
+      mnemonic: options.mnemonic,
+    },
     options: {
       notifyProgress: (totalBytes, downloadedBytes) => {
         const progress = downloadedBytes / totalBytes;

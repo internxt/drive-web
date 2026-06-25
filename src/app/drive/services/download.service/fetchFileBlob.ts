@@ -23,7 +23,9 @@ export default async function fetchFileBlob(
     bucketId: item.bucketId,
     fileId: item.fileId,
     creds,
-    mnemonic: mnemonic ? mnemonic : encryptionKey,
+    key: {
+      mnemonic: mnemonic ? mnemonic : encryptionKey,
+    },
     options: {
       notifyProgress: (totalBytes, downloadedBytes) => {
         options.updateProgressCallback(downloadedBytes / totalBytes);

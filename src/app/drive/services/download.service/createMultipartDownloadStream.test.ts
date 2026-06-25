@@ -8,12 +8,6 @@ const mockedSharingOptions = {
   mnemonic: 'sharing-mnemonic',
 };
 
-const mockedEnvironmentConfig = {
-  bridgeUser: 'bridge-user',
-  bridgePass: 'bridge-password',
-  encryptionKey: 'environment-mnemonic',
-};
-
 const baseFile: DriveFileData = {
   fileId: '123',
   name: 'test.txt',
@@ -46,7 +40,9 @@ describe('createMultipartFileDownloadStream', () => {
         user: mockedSharingOptions.credentials.user,
         pass: mockedSharingOptions.credentials.pass,
       },
-      mnemonic: mockedSharingOptions.mnemonic,
+      key: {
+        mnemonic: mockedSharingOptions.mnemonic,
+      },
       options: {
         notifyProgress: expect.any(Function),
         abortController: undefined,
