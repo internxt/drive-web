@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import { Network as NetworkModule } from '@internxt/sdk';
-import { downloadFile } from '@internxt/sdk/dist/network/download';
+import { downloadFile, downloadFileWithBucketKey } from '@internxt/sdk/dist/network/download';
 import { uploadFile, uploadMultipartFile } from '@internxt/sdk/dist/network/upload';
 import { validateMnemonic } from 'bip39';
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
@@ -17,6 +17,7 @@ import {
   createSha256HashingStream,
   encryptStreamInParts,
   generateFileKey,
+  generateFileKeyFromBucketKey,
   getEncryptedFile,
   processEveryFileBlobReturnHash,
 } from './crypto';
@@ -62,6 +63,7 @@ interface UploadTask {
  */
 export class NetworkFacade {
   private readonly cryptoLib: NetworkModule.Crypto;
+  private readonly cryptoLibBucketKey: NetworkModule.CryptoBucketKey;
   private isPaused: boolean;
 
   constructor(private readonly network: NetworkModule.Network) {
@@ -76,6 +78,18 @@ export class NetworkFacade {
         return generateFileKey(mnemonic, bucketId, index as Buffer);
       },
       randomBytes,
+      computeHmac: async (key, shardHashes) => {
+        const value = await getFileHmacFromShardHashes(key as Buffer, shardHashes);
+        return { type: 'sha512', value };
+      },
+    };
+
+    this.cryptoLibBucketKey = {
+      algorithm: NetworkModule.ALGORITHMS.AES256CTR,
+      randomBytes,
+      generateFileKeyFromBucketKey(bucketKey, index) {
+        return generateFileKeyFromBucketKey(bucketKey, index as Buffer);
+      },
       computeHmac: async (key, shardHashes) => {
         const value = await getFileHmacFromShardHashes(key as Buffer, shardHashes);
         return { type: 'sha512', value };
@@ -275,6 +289,70 @@ export class NetworkFacade {
       mnemonic,
       this.network,
       this.cryptoLib,
+      Buffer.from,
+      async (downloadables, fileInfo) => {
+        fileInfoRef = fileInfo;
+        for (const downloadable of downloadables) {
+          if (options?.abortController?.signal.aborted) {
+            throw new Error('Download aborted');
+          }
+
+          const encryptedContentStream = await fetch(downloadable.url, {
+            signal: options?.abortController?.signal,
+          }).then((res) => {
+            if (!res.body) {
+              throw new Error('No content received');
+            }
+
+            return res.body;
+          });
+
+          encryptedContentStreams.push(
+            await createSha256HashingStream(encryptedContentStream, (h) => sha256Hashes.push(h)),
+          );
+        }
+      },
+      async (algorithm, key, iv, fileSize) => {
+        const decryptedStream = getDecryptedStream(
+          encryptedContentStreams,
+          createDecipheriv('aes-256-ctr', options?.key || (key as Buffer), iv as Buffer),
+        );
+
+        fileStream = buildProgressStream(
+          decryptedStream,
+          (readBytes) => options?.downloadingCallback?.(fileSize, readBytes),
+          async () => {
+            const shardHashes = await Promise.all(sha256Hashes.map(getRipemd160FromHex));
+            const hmac = await getFileHmacFromShardHashes(options?.key || (key as Buffer), shardHashes);
+            if (fileInfoRef.hmac?.value && hmac !== fileInfoRef.hmac.value)
+              throw new Error('File integrity check failed');
+          },
+        );
+      },
+      (options?.token && { token: options.token }) || undefined,
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return fileStream!;
+  }
+
+  async downloadWithBucketKey(
+    bucketId: string,
+    fileId: string,
+    bucketKey: Buffer,
+    options?: DownloadOptions,
+  ): Promise<ReadableStream> {
+    const encryptedContentStreams: ReadableStream<Uint8Array>[] = [];
+    const sha256Hashes: string[] = [];
+    let fileInfoRef: { hmac?: { value: string; type: string } } = {};
+    let fileStream: ReadableStream<Uint8Array>;
+
+    await downloadFileWithBucketKey(
+      fileId,
+      bucketId,
+      bucketKey,
+      this.network,
+      this.cryptoLibBucketKey,
       Buffer.from,
       async (downloadables, fileInfo) => {
         fileInfoRef = fileInfo;

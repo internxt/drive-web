@@ -42,9 +42,7 @@ describe('createMultipartFileDownloadStream', () => {
         user: mockedSharingOptions.credentials.user,
         pass: mockedSharingOptions.credentials.pass,
       },
-      key: {
-        mnemonic: mockedSharingOptions.key.mnemonic,
-      },
+      key: mockedSharingOptions.key,
       options: {
         notifyProgress: expect.any(Function),
         abortController: undefined,

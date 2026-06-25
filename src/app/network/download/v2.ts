@@ -94,6 +94,32 @@ const downloadOwnFile: DownloadOwnFileFunction = async (params) => {
   });
 };
 
+const downloadOwnFileWithBucketKey: DownloadOwnFileFunction = async (params) => {
+  const { bucketId, fileId, key, options } = params;
+  const auth = await getAuthFromCredentials(params.creds);
+  const bucketKey = key.bucketKey;
+  if (!bucketKey) {
+    throw new Error('DOWNLOAD ERRNO. Innvalid Bucket key');
+  }
+
+  return new NetworkFacade(
+    Network.client(
+      envService.getVariable('storjBridge'),
+      {
+        clientName: 'drive-web',
+        clientVersion: '1.0',
+      },
+      {
+        bridgeUser: auth.username,
+        userId: auth.password,
+      },
+    ),
+  ).downloadWithBucketKey(bucketId, fileId, bucketKey, {
+    downloadingCallback: options?.notifyProgress,
+    abortController: options?.abortController,
+  });
+};
+
 export async function multipartDownload(params: DownloadOwnFileParams & { fileSize: number }): Promise<FileStream> {
   const { bucketId, fileId, key, fileSize, options } = params;
   const auth = await getAuthFromCredentials(params.creds);
@@ -163,6 +189,8 @@ const downloadFile: DownloadFileFunction = (params) => {
     return downloadSharedFile(params);
   } else if (params.creds && params.key.mnemonic) {
     return downloadOwnFile(params);
+  } else if (params.creds && params.key.bucketKey) {
+    return downloadOwnFileWithBucketKey(params);
   } else {
     throw new Error('DOWNLOAD ERRNO. 0');
   }

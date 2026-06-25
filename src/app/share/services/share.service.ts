@@ -701,11 +701,12 @@ export async function downloadPublicSharedFolder({
   const decrypted = aes.decrypt(encryptionKey, code);
 
   let bucketKey;
-  let mnemonic = decrypted;
+  let mnemonic;
 
   if (sharingVersion === NEW_SHARING_VERSION) {
     bucketKey = Buffer.from(decrypted, 'hex');
-    mnemonic = '';
+  } else {
+    mnemonic = decrypted;
   }
 
   const { credentials } = await shareService.getPublicSharedFolderContent(

@@ -52,9 +52,7 @@ export class VideoStreamingService {
       const stream = await downloadChunkFile({
         bucketId: this.config.bucketId,
         fileId: this.config.fileId,
-        key: {
-          mnemonic: this.config.key.mnemonic,
-        },
+        key: this.config.key,
         creds: this.config.credentials,
         chunkStart: start,
         chunkEnd: end,
