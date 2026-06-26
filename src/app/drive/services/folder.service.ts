@@ -28,7 +28,7 @@ import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
 import { queue, QueueObject } from 'async';
 import { QueueUtilsService } from 'utils/queueUtils';
 import { isFileEmpty } from 'utils/isFileEmpty';
-import { FileKey, NetworkCredentials } from 'app/drive/types/helper-types';
+import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
 
 interface GetFileStreamParams {
   file: DriveFileData;

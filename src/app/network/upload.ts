@@ -5,7 +5,7 @@ import { ConnectionLostError } from './requests';
 import envService from 'services/env.service';
 import { MAX_TRIES, RETRY_DELAY, UPLOAD_CHUNK_SIZE, MIN_MULTIPART_SIZE } from './networkConstants';
 import { UploadProgressCallback } from './upload-utils';
-import { NetworkCredentials } from 'app/drive/types/helper-types';
+import { NetworkCredentials } from 'app/network/types/helper-types';
 
 interface IUploadParams {
   filesize: number;

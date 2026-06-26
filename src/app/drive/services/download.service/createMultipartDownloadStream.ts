@@ -1,6 +1,6 @@
 import { multipartDownloadFile } from 'app/network/download';
 import { DriveFileData } from '../../types';
-import { FileKey, NetworkCredentials } from 'app/drive/types/helper-types';
+import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
 
 export default async function createMultipartFileDownloadStream(
   itemData: DriveFileData,

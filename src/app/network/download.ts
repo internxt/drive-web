@@ -8,7 +8,7 @@ import envService from 'services/env.service';
 
 import { generateFileKey, generateFileKeyFromBucketKey } from './crypto';
 import downloadFileV2, { multipartDownload } from './download/v2';
-import { FileKey, NetworkCredentials } from 'app/drive/types/helper-types';
+import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
 
 export type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
 export type Downloadable = { fileId: string | null; bucketId: string };

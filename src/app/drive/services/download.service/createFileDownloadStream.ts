@@ -1,4 +1,4 @@
-import { FileKey, NetworkCredentials } from 'app/drive/types/helper-types';
+import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
 import { DriveFileData } from '../../types';
 import fetchFileStream from './fetchFileStream';
 import fetchFileStreamUsingCredentials from './fetchFileStreamUsingCredentials';

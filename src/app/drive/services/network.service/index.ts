@@ -3,7 +3,7 @@ import { createUploadWebWorker } from '../../../../WebWorker';
 import { createWorkerMessageHandlerPromise } from '../worker.service/uploadWorkerUtils';
 import { notifyUserWithCooldown } from 'app/core/factory/sdk/retryStrategies';
 import { IUploadParams } from './types';
-import { NetworkCredentials } from 'app/drive/types/helper-types';
+import { NetworkCredentials } from 'app/network/types/helper-types';
 
 export { getEnvironmentConfig } from './getEnvironmentConfig';
 

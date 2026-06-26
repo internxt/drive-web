@@ -31,7 +31,7 @@ import {
 import { downloadWorkerHandler } from './worker.service/downloadWorkerHandler';
 import { isFileEmpty } from 'utils/isFileEmpty';
 import deviceService from 'services/device.service';
-import { FileKey, NetworkCredentials } from 'app/drive/types/helper-types';
+import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
 
 export type DownloadCredentials = {
   credentials: NetworkCredentials;

@@ -2,7 +2,7 @@ import envService from 'services/env.service';
 import axios, { AxiosBasicCredentials, AxiosRequestConfig } from 'axios';
 import errorService from 'services/error.service';
 import { getSha256 } from '../crypto/services/utils';
-import { NetworkCredentials } from 'app/drive/types/helper-types';
+import { NetworkCredentials } from 'app/network/types/helper-types';
 
 // TODO: Make this injectable
 const networkApiUrl = envService.getVariable('storjBridge');

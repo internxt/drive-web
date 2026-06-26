@@ -3,7 +3,7 @@ import { getSha256 } from '../../crypto/services/utils';
 import { NetworkFacade } from '../NetworkFacade';
 import envService from 'services/env.service';
 import { MultipartDownload } from './MultipartDownload';
-import { FileKey, NetworkCredentials } from 'app/drive/types/helper-types';
+import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
 
 type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
 type FileStream = ReadableStream<Uint8Array>;
@@ -37,10 +37,10 @@ interface DownloadSharedFileParams extends DownloadFileParams {
   encryptionKey: string;
 }
 
-type DownloadOwnFileParams = DownloadOwnFileWithMnemonicParams | DownloadOwnFileWithBucketKeyParams;
 type DownloadSharedFileFunction = (params: DownloadSharedFileParams) => DownloadFileResponse;
-type DownloadOwnFileFunction = (params: DownloadOwnFileParams) => DownloadFileResponse;
-type DownloadFileFunction = (params: DownloadSharedFileParams | DownloadOwnFileParams) => DownloadFileResponse;
+type DownloadFileFunction = (
+  params: DownloadSharedFileParams | DownloadOwnFileWithMnemonicParams | DownloadOwnFileWithBucketKeyParams,
+) => DownloadFileResponse;
 
 const downloadSharedFile: DownloadSharedFileFunction = (params) => {
   const { bucketId, fileId, encryptionKey, token, options } = params;
@@ -72,10 +72,14 @@ async function getAuthFromCredentials(creds: NetworkCredentials): Promise<{ user
   };
 }
 
-const downloadOwnFile: DownloadOwnFileFunction = async (params) => {
-  const { bucketId, fileId, key, options } = params;
+const downloadOwnFile = async (params: DownloadOwnFileWithMnemonicParams) => {
+  const {
+    bucketId,
+    fileId,
+    key: { mnemonic },
+    options,
+  } = params;
   const auth = await getAuthFromCredentials(params.creds);
-  const mnemonic = key.mnemonic ?? '';
 
   return new NetworkFacade(
     Network.client(
@@ -95,13 +99,14 @@ const downloadOwnFile: DownloadOwnFileFunction = async (params) => {
   });
 };
 
-const downloadOwnFileWithBucketKey: DownloadOwnFileFunction = async (params) => {
-  const { bucketId, fileId, key, options } = params;
+const downloadOwnFileWithBucketKey = async (params: DownloadOwnFileWithBucketKeyParams) => {
+  const {
+    bucketId,
+    fileId,
+    key: { bucketKey },
+    options,
+  } = params;
   const auth = await getAuthFromCredentials(params.creds);
-  const bucketKey = key.bucketKey;
-  if (!bucketKey) {
-    throw new Error('DOWNLOAD ERRNO. Innvalid Bucket key');
-  }
 
   return new NetworkFacade(
     Network.client(
@@ -121,10 +126,17 @@ const downloadOwnFileWithBucketKey: DownloadOwnFileFunction = async (params) => 
   });
 };
 
-export async function multipartDownload(params: DownloadOwnFileParams & { fileSize: number }): Promise<FileStream> {
-  const { bucketId, fileId, key, fileSize, options } = params;
+export async function multipartDownload(
+  params: DownloadOwnFileWithMnemonicParams & { fileSize: number },
+): Promise<FileStream> {
+  const {
+    bucketId,
+    fileId,
+    key: { mnemonic },
+    fileSize,
+    options,
+  } = params;
   const auth = await getAuthFromCredentials(params.creds);
-  const mnemonic = key.mnemonic ?? '';
 
   const networkFacade = new NetworkFacade(
     Network.client(
@@ -196,9 +208,9 @@ const downloadFile: DownloadFileFunction = (params) => {
   if (params.token && params.encryptionKey) {
     return downloadSharedFile(params);
   } else if (params.creds && params.key.mnemonic) {
-    return downloadOwnFile(params);
+    return downloadOwnFile(params as DownloadOwnFileWithMnemonicParams);
   } else if (params.creds && params.key.bucketKey) {
-    return downloadOwnFileWithBucketKey(params);
+    return downloadOwnFileWithBucketKey(params as DownloadOwnFileWithBucketKeyParams);
   } else {
     throw new Error('DOWNLOAD ERRNO. 0');
   }

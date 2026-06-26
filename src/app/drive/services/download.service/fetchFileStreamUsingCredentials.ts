@@ -1,4 +1,4 @@
-import { FileKey, NetworkCredentials } from 'app/drive/types/helper-types';
+import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
 import { downloadFile, Downloadable } from 'app/network/download';
 
 type FetchFileStreamOptions = {

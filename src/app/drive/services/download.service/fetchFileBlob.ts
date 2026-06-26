@@ -1,7 +1,7 @@
 import { binaryStreamToBlob } from 'services/stream.service';
 import { Downloadable, downloadFile } from 'app/network/download';
 import { getEnvironmentConfig } from '../network.service';
-import { NetworkCredentials } from 'app/drive/types/helper-types';
+import { NetworkCredentials } from 'app/network/types/helper-types';
 
 type FetchFileBlobOptions = {
   updateProgressCallback: (progress: number) => void;

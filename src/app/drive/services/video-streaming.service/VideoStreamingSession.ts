@@ -1,4 +1,4 @@
-import { NetworkCredentials } from 'app/drive/types/helper-types';
+import { NetworkCredentials } from 'app/network/types/helper-types';
 import { VideoSessionDestroyedError } from '../errors/video-streaming.errors';
 import { VideoStreamingService } from './index';
 
