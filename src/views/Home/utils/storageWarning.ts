@@ -1,3 +1,8 @@
+import localStorageService from 'services/local-storage.service';
+
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
+const DISMISSALS_STORAGE_KEY = 'storageWarningBannerDismissals';
+
 export type StorageWarning = 'lowWarning' | 'midWarning' | 'highWarning';
 
 export interface StorageWarningStage {
@@ -45,21 +50,16 @@ export const getReachedStorageWarningStage = (usedPercentage: number): StorageWa
   [...STORAGE_WARNING_STAGES].reverse().find((stage) => usedPercentage >= stage.threshold);
 
 export const openUpgradeSpecialOffer = (): void => {
-  window.open(SPECIAL_OFFER_URL, '_blank', 'noopener,noreferrer');
+  window.open(SPECIAL_OFFER_URL, '_blank', 'noopener noreferrer');
 };
-
-const DAY_IN_MS = 24 * 60 * 60 * 1000;
-const DISMISSALS_STORAGE_KEY = 'storageWarningBannerDismissals';
-
-export type StorageWarningDismissals = Partial<Record<StorageWarning, number>>;
 
 export const readDismissals = (): StorageWarningDismissals => {
   try {
-    const raw = localStorage.getItem(DISMISSALS_STORAGE_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw);
+    const raw = localStorageService.get(DISMISSALS_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
     return typeof parsed === 'object' && parsed !== null ? parsed : {};
-  } catch {
+  } catch (error) {
+    console.error('Failed to read storage warning dismissals', error);
     return {};
   }
 };
@@ -68,9 +68,9 @@ export const writeDismissal = (stageKey: StorageWarning, dismissedAt: number): v
   try {
     const dismissals = readDismissals();
     dismissals[stageKey] = dismissedAt;
-    localStorage.setItem(DISMISSALS_STORAGE_KEY, JSON.stringify(dismissals));
-  } catch {
-    //
+    localStorageService.set(DISMISSALS_STORAGE_KEY, JSON.stringify(dismissals));
+  } catch (error) {
+    console.error('Failed to write storage warning dismissal', error);
   }
 };
 
@@ -83,3 +83,5 @@ export const isStageInCooldown = (
   if (!dismissedAt) return false;
   return now < dismissedAt + stage.cooldownDays * DAY_IN_MS;
 };
+
+export type StorageWarningDismissals = Partial<Record<StorageWarning, number>>;

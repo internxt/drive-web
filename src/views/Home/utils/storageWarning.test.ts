@@ -55,7 +55,7 @@ describe('openUpgradeSpecialOffer', () => {
 
     openUpgradeSpecialOffer();
 
-    expect(openSpy).toHaveBeenCalledWith(SPECIAL_OFFER_URL, '_blank', 'noopener,noreferrer');
+    expect(openSpy).toHaveBeenCalledWith(SPECIAL_OFFER_URL, '_blank', 'noopener noreferrer');
     openSpy.mockRestore();
   });
 });

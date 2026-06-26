@@ -5,7 +5,7 @@ import { planSelectors } from 'app/store/slices/plan';
 import { UsageWarningBanner } from '@internxt/ui';
 import { bytesToString } from 'app/drive/services/size.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { openUpgradeSpecialOffer, REACHING_USAGE_BANNER_TRANSLATION_KEY } from 'app/store/slices/plan/storageWarning';
+import { openUpgradeSpecialOffer, REACHING_USAGE_BANNER_TRANSLATION_KEY } from 'views/Home/utils/storageWarning';
 import { useStorageWarningBanner } from 'views/Home/hooks/useStorageWarningBanner';
 
 const renderDescriptionLine = (line: string): JSX.Element => (

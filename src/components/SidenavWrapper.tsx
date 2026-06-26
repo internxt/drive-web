@@ -28,7 +28,7 @@ import {
   calculateUsedPercentage,
   getReachedStorageWarningStage,
   openUpgradeSpecialOffer,
-} from 'app/store/slices/plan/storageWarning';
+} from 'views/Home/utils/storageWarning';
 
 const SidenavPrimaryAction = ({
   user,

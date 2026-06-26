@@ -9,7 +9,7 @@ import {
   writeDismissal,
   StorageWarning,
   StorageWarningStage,
-} from 'app/store/slices/plan/storageWarning';
+} from 'views/Home/utils/storageWarning';
 
 const UPLOAD_IN_PROGRESS_STATUSES = [
   TaskStatus.Pending,

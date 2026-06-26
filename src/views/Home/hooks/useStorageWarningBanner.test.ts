@@ -8,7 +8,7 @@ vi.mock('app/tasks/hooks', () => ({
 import { useStorageWarningBanner } from './useStorageWarningBanner';
 import { useTaskManagerGetNotifications } from 'app/tasks/hooks';
 import { TaskType } from 'app/tasks/types';
-import { writeDismissal } from 'app/store/slices/plan/storageWarning';
+import { writeDismissal } from 'views/Home/utils/storageWarning';
 
 const mockUseTaskManagerGetNotifications = useTaskManagerGetNotifications as ReturnType<typeof vi.fn>;
 
