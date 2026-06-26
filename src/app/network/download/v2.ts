@@ -20,18 +20,21 @@ interface DownloadOwnFileWithMnemonicParams extends DownloadFileParams {
   creds: NetworkCredentials;
   key: { mnemonic: string; bucketKey?: never };
   token?: never;
+  encryptionKey?: never;
 }
 
 interface DownloadOwnFileWithBucketKeyParams extends DownloadFileParams {
   creds: NetworkCredentials;
   key: { bucketKey: Buffer; mnemonic?: never };
   token?: never;
+  encryptionKey?: never;
 }
 
 interface DownloadSharedFileParams extends DownloadFileParams {
   creds?: never;
   key: FileKey;
   token: string;
+  encryptionKey: string;
 }
 
 type DownloadOwnFileParams = DownloadOwnFileWithMnemonicParams | DownloadOwnFileWithBucketKeyParams;
@@ -40,13 +43,7 @@ type DownloadOwnFileFunction = (params: DownloadOwnFileParams) => DownloadFileRe
 type DownloadFileFunction = (params: DownloadSharedFileParams | DownloadOwnFileParams) => DownloadFileResponse;
 
 const downloadSharedFile: DownloadSharedFileFunction = (params) => {
-  const {
-    bucketId,
-    fileId,
-    key: { encryptionKey },
-    token,
-    options,
-  } = params;
+  const { bucketId, fileId, encryptionKey, token, options } = params;
 
   return new NetworkFacade(
     Network.client(
@@ -61,7 +58,7 @@ const downloadSharedFile: DownloadSharedFileFunction = (params) => {
       },
     ),
   ).download(bucketId, fileId, '', {
-    key: encryptionKey,
+    key: Buffer.from(encryptionKey, 'hex'),
     token,
     downloadingCallback: options?.notifyProgress,
     abortController: options?.abortController,
@@ -196,7 +193,7 @@ export async function downloadChunkFile(
 }
 
 const downloadFile: DownloadFileFunction = (params) => {
-  if (params.token && params.key.encryptionKey) {
+  if (params.token && params.encryptionKey) {
     return downloadSharedFile(params);
   } else if (params.creds && params.key.mnemonic) {
     return downloadOwnFile(params);
