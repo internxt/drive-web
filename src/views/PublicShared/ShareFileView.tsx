@@ -169,9 +169,7 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
     const readable = network.downloadFile({
       bucketId: fileInfo.item.bucket,
       fileId: fileInfo.item?.fileId,
-      key: {
-        encryptionKey: Buffer.from(encryptionKey, 'hex'),
-      },
+      encryptionKey: Buffer.from(encryptionKey, 'hex'),
       token: fileInfo.itemToken,
       options: {
         abortController,
@@ -203,9 +201,7 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
         const readable = await network.downloadFile({
           bucketId: fileInfo.item.bucket,
           fileId: fileInfo.item.fileId,
-          key: {
-            encryptionKey: Buffer.from(encryptionKey, 'hex'),
-          },
+          encryptionKey: Buffer.from(encryptionKey, 'hex'),
           token: fileInfo.itemToken,
           options: {
             notifyProgress: (totalProgress, downloadedBytes) => {
