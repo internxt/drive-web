@@ -12,7 +12,7 @@ export const MAX_ALLOWED_UPLOAD_SIZE = 40 * 1024 * 1024 * 1024;
 export class Network {
   private mnemonic: string;
 
-  private creds: NetworkCredentials;
+  private readonly creds: NetworkCredentials;
 
   constructor(bridgeUser: string, bridgePass: string, encryptionKey: string) {
     if (!bridgeUser) {

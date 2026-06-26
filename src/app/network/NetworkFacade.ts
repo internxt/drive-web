@@ -31,6 +31,7 @@ import { ALLOWED_CHUNK_OVERHEAD, UPLOAD_CHUNK_SIZE } from './networkConstants';
 import { DownloadChunkPayload } from './types/index';
 import { uploadFileUint8Array, UploadProgressCallback } from './upload-utils';
 import { getFileHmacFromShardHashes, getRipemd160FromHex } from 'app/crypto/services/utils';
+import { DecryptFileFunction, DownloadFileFunction } from '@internxt/sdk/dist/network/types';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
@@ -271,68 +272,67 @@ export class NetworkFacade {
     );
   }
 
+  private async downloadInternal(
+    execute: (onDownloadables: DownloadFileFunction, onDecrypt: DecryptFileFunction) => Promise<void>,
+    options?: DownloadOptions,
+  ): Promise<ReadableStream> {
+    const encryptedContentStreams: ReadableStream<Uint8Array>[] = [];
+    const sha256Hashes: string[] = [];
+    let fileInfoRef: { hmac?: { value: string; type: string } } = {};
+    let fileStream!: ReadableStream<Uint8Array>;
+
+    const onDownloadables: DownloadFileFunction = async (downloadables, fileInfo) => {
+      fileInfoRef = fileInfo;
+      for (const downloadable of downloadables) {
+        if (options?.abortController?.signal.aborted) throw new Error('Download aborted');
+        const res = await fetch(downloadable.url, { signal: options?.abortController?.signal });
+        if (!res.body) throw new Error('No content received');
+        encryptedContentStreams.push(await createSha256HashingStream(res.body, (h) => sha256Hashes.push(h)));
+      }
+    };
+
+    const onDecrypt: DecryptFileFunction = async (_algorithm, key, iv, fileSize) => {
+      fileStream = buildProgressStream(
+        getDecryptedStream(
+          encryptedContentStreams,
+          createDecipheriv('aes-256-ctr', options?.key || (key as Buffer), iv as Buffer),
+        ),
+        (readBytes) => options?.downloadingCallback?.(fileSize, readBytes),
+        async () => {
+          const shardHashes = await Promise.all(sha256Hashes.map(getRipemd160FromHex));
+          const hmac = await getFileHmacFromShardHashes(options?.key || (key as Buffer), shardHashes);
+          if (fileInfoRef.hmac?.value && hmac !== fileInfoRef.hmac.value)
+            throw new Error('File integrity check failed');
+        },
+      );
+    };
+
+    await execute(onDownloadables, onDecrypt);
+
+    return fileStream;
+  }
+
   async download(
     bucketId: string,
     fileId: string,
     mnemonic: string,
     options?: DownloadOptions,
   ): Promise<ReadableStream> {
-    const encryptedContentStreams: ReadableStream<Uint8Array>[] = [];
-    const sha256Hashes: string[] = [];
-    let fileInfoRef: { hmac?: { value: string; type: string } } = {};
-    let fileStream: ReadableStream<Uint8Array>;
-
-    await downloadFile(
-      fileId,
-      bucketId,
-      mnemonic,
-      this.network,
-      this.cryptoLib,
-      Buffer.from,
-      async (downloadables, fileInfo) => {
-        fileInfoRef = fileInfo;
-        for (const downloadable of downloadables) {
-          if (options?.abortController?.signal.aborted) {
-            throw new Error('Download aborted');
-          }
-
-          const encryptedContentStream = await fetch(downloadable.url, {
-            signal: options?.abortController?.signal,
-          }).then((res) => {
-            if (!res.body) {
-              throw new Error('No content received');
-            }
-
-            return res.body;
-          });
-
-          encryptedContentStreams.push(
-            await createSha256HashingStream(encryptedContentStream, (h) => sha256Hashes.push(h)),
-          );
-        }
-      },
-      async (algorithm, key, iv, fileSize) => {
-        const decryptedStream = getDecryptedStream(
-          encryptedContentStreams,
-          createDecipheriv('aes-256-ctr', options?.key || (key as Buffer), iv as Buffer),
-        );
-
-        fileStream = buildProgressStream(
-          decryptedStream,
-          (readBytes) => options?.downloadingCallback?.(fileSize, readBytes),
-          async () => {
-            const shardHashes = await Promise.all(sha256Hashes.map(getRipemd160FromHex));
-            const hmac = await getFileHmacFromShardHashes(options?.key || (key as Buffer), shardHashes);
-            if (fileInfoRef.hmac?.value && hmac !== fileInfoRef.hmac.value)
-              throw new Error('File integrity check failed');
-          },
-        );
-      },
-      (options?.token && { token: options.token }) || undefined,
+    return this.downloadInternal(
+      (onDownloadables, onDecrypt) =>
+        downloadFile(
+          fileId,
+          bucketId,
+          mnemonic,
+          this.network,
+          this.cryptoLib,
+          Buffer.from,
+          onDownloadables,
+          onDecrypt,
+          options?.token ? { token: options.token } : undefined,
+        ),
+      options,
     );
-
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return fileStream!;
   }
 
   async downloadWithBucketKey(
@@ -341,62 +341,21 @@ export class NetworkFacade {
     bucketKey: Buffer,
     options?: DownloadOptions,
   ): Promise<ReadableStream> {
-    const encryptedContentStreams: ReadableStream<Uint8Array>[] = [];
-    const sha256Hashes: string[] = [];
-    let fileInfoRef: { hmac?: { value: string; type: string } } = {};
-    let fileStream: ReadableStream<Uint8Array>;
-
-    await downloadFileWithBucketKey(
-      fileId,
-      bucketId,
-      bucketKey,
-      this.network,
-      this.cryptoLibBucketKey,
-      Buffer.from,
-      async (downloadables, fileInfo) => {
-        fileInfoRef = fileInfo;
-        for (const downloadable of downloadables) {
-          if (options?.abortController?.signal.aborted) {
-            throw new Error('Download aborted');
-          }
-
-          const encryptedContentStream = await fetch(downloadable.url, {
-            signal: options?.abortController?.signal,
-          }).then((res) => {
-            if (!res.body) {
-              throw new Error('No content received');
-            }
-
-            return res.body;
-          });
-
-          encryptedContentStreams.push(
-            await createSha256HashingStream(encryptedContentStream, (h) => sha256Hashes.push(h)),
-          );
-        }
-      },
-      async (algorithm, key, iv, fileSize) => {
-        const decryptedStream = getDecryptedStream(
-          encryptedContentStreams,
-          createDecipheriv('aes-256-ctr', options?.key || (key as Buffer), iv as Buffer),
-        );
-
-        fileStream = buildProgressStream(
-          decryptedStream,
-          (readBytes) => options?.downloadingCallback?.(fileSize, readBytes),
-          async () => {
-            const shardHashes = await Promise.all(sha256Hashes.map(getRipemd160FromHex));
-            const hmac = await getFileHmacFromShardHashes(options?.key || (key as Buffer), shardHashes);
-            if (fileInfoRef.hmac?.value && hmac !== fileInfoRef.hmac.value)
-              throw new Error('File integrity check failed');
-          },
-        );
-      },
-      (options?.token && { token: options.token }) || undefined,
+    return this.downloadInternal(
+      (onDownloadables, onDecrypt) =>
+        downloadFileWithBucketKey(
+          fileId,
+          bucketId,
+          bucketKey,
+          this.network,
+          this.cryptoLibBucketKey,
+          Buffer.from,
+          onDownloadables,
+          onDecrypt,
+          options?.token ? { token: options.token } : undefined,
+        ),
+      options,
     );
-
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return fileStream!;
   }
 
   /**
