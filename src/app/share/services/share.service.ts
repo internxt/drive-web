@@ -619,7 +619,9 @@ export async function downloadSharedFiles({
 }): Promise<void> {
   const sharingCredentials = {
     credentials: { ...creds },
-    mnemonic: decryptedEncryptionKey,
+    key: {
+      mnemonic: decryptedEncryptionKey,
+    },
   };
 
   if (selectedItems.length === 1 && !selectedItems[0].isFolder) {
@@ -684,17 +686,28 @@ export async function downloadPublicSharedFolder({
   token,
   code,
   incrementItemCount,
+  sharingVersion,
 }: {
   encryptionKey: string;
   item;
   token?: string;
   code: string;
   incrementItemCount: () => void;
+  sharingVersion: string;
 }): Promise<void> {
   const initPage = 0;
   const itemsPerPage = 15;
 
   const decrypted = aes.decrypt(encryptionKey, code);
+
+  let bucketKey;
+  let mnemonic;
+
+  if (sharingVersion === NEW_SHARING_VERSION) {
+    bucketKey = Buffer.from(decrypted, 'hex');
+  } else {
+    mnemonic = decrypted;
+  }
 
   const { credentials } = await shareService.getPublicSharedFolderContent(
     // folderUUID
@@ -731,7 +744,10 @@ export async function downloadPublicSharedFolder({
       user: credentials.networkUser,
       pass: credentials.networkPass,
     },
-    mnemonic: decrypted,
+    key: {
+      mnemonic,
+      bucketKey,
+    },
     isPublicShare: true,
   };
 
