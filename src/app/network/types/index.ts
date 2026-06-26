@@ -1,4 +1,3 @@
-import { FileKey } from 'app/drive/types/helper-types';
 import { DownloadProgressCallback } from '../download';
 
 export interface LegacyShardMeta {
