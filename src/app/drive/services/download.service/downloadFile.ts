@@ -6,7 +6,7 @@ import { DriveFileData } from '../../types';
 import { BlobWritable, downloadFileAsBlob } from './downloadFileAsBlob';
 import fetchFileStream from './fetchFileStream';
 import fetchFileStreamUsingCredentials from './fetchFileStreamUsingCredentials';
-import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
+import { NetworkCredentials } from 'app/network/types/helper-types';
 
 async function pipe(readable: ReadableStream, writable: BlobWritable): Promise<void> {
   const reader = readable.getReader();
