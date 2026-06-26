@@ -1,4 +1,4 @@
-import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
+import { NetworkCredentials } from 'app/network/types/helper-types';
 import { downloadFile, Downloadable } from 'app/network/download';
 
 type FetchFileStreamOptions = {
@@ -6,7 +6,7 @@ type FetchFileStreamOptions = {
   isTeam?: boolean;
   abortController?: AbortController;
   creds: NetworkCredentials;
-  key: FileKey;
+  mnemonic: string;
 };
 
 export default function fetchFileStreamUsingCredentials(
@@ -17,7 +17,7 @@ export default function fetchFileStreamUsingCredentials(
     fileId: item.fileId,
     bucketId: item.bucketId,
     creds: options.creds,
-    key: options.key,
+    key: { mnemonic: options.mnemonic },
     options: {
       notifyProgress: (totalBytes, downloadedBytes) => {
         const progress = downloadedBytes / totalBytes;

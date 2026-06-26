@@ -51,9 +51,7 @@ describe('createFileDownloadStream', () => {
     const abortController = new AbortController();
     const sharingOptions = {
       credentials: { user: 'test-user', pass: 'test-pass' },
-      key: {
-        mnemonic: 'test-mnemonic',
-      },
+      mnemonic: 'test-mnemonic',
     };
 
     const result = await createFileDownloadStream(baseFile, false, mockProgress, abortController, sharingOptions);
@@ -64,9 +62,7 @@ describe('createFileDownloadStream', () => {
         updateProgressCallback: mockProgress,
         abortController,
         creds: sharingOptions.credentials,
-        key: {
-          mnemonic: sharingOptions.key.mnemonic,
-        },
+        mnemonic: sharingOptions.mnemonic,
       },
     );
     expect(fetchFileStream).not.toHaveBeenCalled();

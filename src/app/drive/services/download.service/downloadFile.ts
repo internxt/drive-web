@@ -33,7 +33,7 @@ export default async function downloadFile(
   isWorkspace: boolean,
   updateProgressCallback: (progress: number) => void,
   abortController?: AbortController,
-  sharingOptions?: { credentials: NetworkCredentials; key: FileKey },
+  sharingOptions?: { credentials: NetworkCredentials; mnemonic: string },
 ): Promise<void> {
   const fileName = itemData.plainName ?? itemData.name;
   const completeFilename = itemData.type ? `${fileName}.${itemData.type}` : `${fileName}`;
@@ -68,7 +68,7 @@ export default async function downloadFile(
           updateProgressCallback,
           abortController,
           creds: sharingOptions.credentials,
-          key: sharingOptions.key,
+          mnemonic: sharingOptions.mnemonic,
         },
       );
 
