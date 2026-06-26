@@ -125,9 +125,7 @@ describe('Download V2', () => {
       expect(downloadSingleFileSpy).toHaveBeenCalledWith({
         bucketId: params.bucketId,
         fileId: params.fileId,
-        key: {
-          mnemonic: params.key.mnemonic,
-        },
+        mnemonic: params.key.mnemonic,
         chunkStart: params.chunkStart,
         chunkEnd: params.chunkEnd,
         options: {

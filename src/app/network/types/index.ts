@@ -29,7 +29,7 @@ export interface DownloadChunkTask {
 export interface DownloadChunkPayload {
   bucketId: string;
   fileId: string;
-  key: FileKey;
+  mnemonic: string;
   chunkStart: number;
   chunkEnd: number;
   options?: DownloadOptions;

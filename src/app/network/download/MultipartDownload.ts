@@ -190,9 +190,7 @@ export class MultipartDownload {
     const chunkStream = await this.network.downloadChunk({
       bucketId,
       fileId,
-      key: {
-        mnemonic,
-      },
+      mnemonic,
       chunkStart,
       chunkEnd,
       options,

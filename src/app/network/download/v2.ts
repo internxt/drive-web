@@ -16,21 +16,25 @@ interface DownloadFileParams {
   options?: DownloadFileOptions;
 }
 
-export interface DownloadOwnFileParams extends DownloadFileParams {
+interface DownloadOwnFileWithMnemonicParams extends DownloadFileParams {
   creds: NetworkCredentials;
-  key: FileKey;
+  key: { mnemonic: string; bucketKey?: never };
+  token?: never;
+}
+
+interface DownloadOwnFileWithBucketKeyParams extends DownloadFileParams {
+  creds: NetworkCredentials;
+  key: { bucketKey: Buffer; mnemonic?: never };
   token?: never;
 }
 
 interface DownloadSharedFileParams extends DownloadFileParams {
   creds?: never;
-  key: {
-    mnemonic?: never;
-    encryptionKey: string;
-  };
+  key: FileKey;
   token: string;
 }
 
+type DownloadOwnFileParams = DownloadOwnFileWithMnemonicParams | DownloadOwnFileWithBucketKeyParams;
 type DownloadSharedFileFunction = (params: DownloadSharedFileParams) => DownloadFileResponse;
 type DownloadOwnFileFunction = (params: DownloadOwnFileParams) => DownloadFileResponse;
 type DownloadFileFunction = (params: DownloadSharedFileParams | DownloadOwnFileParams) => DownloadFileResponse;
@@ -57,7 +61,7 @@ const downloadSharedFile: DownloadSharedFileFunction = (params) => {
       },
     ),
   ).download(bucketId, fileId, '', {
-    key: Buffer.from(encryptionKey, 'hex'),
+    key: encryptionKey,
     token,
     downloadingCallback: options?.notifyProgress,
     abortController: options?.abortController,
@@ -154,9 +158,16 @@ export async function multipartDownload(params: DownloadOwnFileParams & { fileSi
 }
 
 export async function downloadChunkFile(
-  params: DownloadOwnFileParams & { chunkStart: number; chunkEnd: number },
+  params: DownloadOwnFileWithMnemonicParams & { chunkStart: number; chunkEnd: number },
 ): Promise<FileStream> {
-  const { bucketId, fileId, key, chunkStart, chunkEnd, options } = params;
+  const {
+    bucketId,
+    fileId,
+    key: { mnemonic },
+    chunkStart,
+    chunkEnd,
+    options,
+  } = params;
   const auth = await getAuthFromCredentials(params.creds);
 
   return new NetworkFacade(
@@ -174,7 +185,7 @@ export async function downloadChunkFile(
   ).downloadChunk({
     bucketId,
     fileId,
-    key,
+    mnemonic,
     chunkStart,
     chunkEnd,
     options: {

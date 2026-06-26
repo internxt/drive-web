@@ -63,36 +63,35 @@ interface UploadTask {
  */
 export class NetworkFacade {
   private readonly cryptoLib: NetworkModule.Crypto;
-  private readonly cryptoLibBucketKey: NetworkModule.CryptoBucketKey;
+  private readonly cryptoLibBucketKey: NetworkModule.CryptoWithBucketKey;
   private isPaused: boolean;
 
   constructor(private readonly network: NetworkModule.Network) {
     this.isPaused = false;
 
-    this.cryptoLib = {
+    const baseCrypto = {
       algorithm: NetworkModule.ALGORITHMS.AES256CTR,
+      randomBytes,
+      computeHmac: async (key, shardHashes) => {
+        const value = await getFileHmacFromShardHashes(key as Buffer, shardHashes);
+        return { type: 'sha512' as const, value };
+      },
+    };
+
+    this.cryptoLib = {
+      ...baseCrypto,
       validateMnemonic: (mnemonic) => {
         return validateMnemonic(mnemonic);
       },
       generateFileKey: (mnemonic, bucketId, index) => {
         return generateFileKey(mnemonic, bucketId, index as Buffer);
       },
-      randomBytes,
-      computeHmac: async (key, shardHashes) => {
-        const value = await getFileHmacFromShardHashes(key as Buffer, shardHashes);
-        return { type: 'sha512', value };
-      },
     };
 
     this.cryptoLibBucketKey = {
-      algorithm: NetworkModule.ALGORITHMS.AES256CTR,
-      randomBytes,
+      ...baseCrypto,
       generateFileKeyFromBucketKey(bucketKey, index) {
         return generateFileKeyFromBucketKey(bucketKey, index as Buffer);
-      },
-      computeHmac: async (key, shardHashes) => {
-        const value = await getFileHmacFromShardHashes(key as Buffer, shardHashes);
-        return { type: 'sha512', value };
       },
     };
   }
@@ -413,7 +412,7 @@ export class NetworkFacade {
   async downloadChunk({
     bucketId,
     fileId,
-    key,
+    mnemonic,
     chunkStart,
     chunkEnd,
     options,
@@ -424,7 +423,7 @@ export class NetworkFacade {
     await downloadFile(
       fileId,
       bucketId,
-      key.mnemonic ?? '',
+      mnemonic,
       this.network,
       this.cryptoLib,
       Buffer.from,
