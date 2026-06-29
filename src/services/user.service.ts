@@ -37,7 +37,7 @@ const refreshAvatarUser = async (): Promise<{
 
 const updateUserProfile = (payload: Required<UpdateProfilePayload>): Promise<void> => {
   const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
-  const token = localStorageService.get(LocalStorageItem.NewToken) ?? undefined;
+  const token = localStorageService.getToken() ?? undefined;
   return usersClient.updateUserProfile(payload, token);
 };
 
@@ -48,14 +48,14 @@ const updateUserAvatar = (payload: { avatar: Blob }): Promise<{ avatar: string }
 
 const deleteUserAvatar = (): Promise<void> => {
   const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
-  const token = localStorageService.get(LocalStorageItem.NewToken) ?? undefined;
+  const token = localStorageService.getToken() ?? undefined;
   return usersClient.deleteUserAvatar(token);
 };
 
 const sendVerificationEmail = async (): Promise<void> => {
   const captchaToken = await generateCaptchaToken();
   const usersClient = SdkFactory.getNewApiInstance().createUsersClient(captchaToken);
-  const token = localStorageService.get(LocalStorageItem.NewToken) ?? undefined;
+  const token = localStorageService.getToken() ?? undefined;
   return usersClient.sendVerificationEmail(token);
 };
 
