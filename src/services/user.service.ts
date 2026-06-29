@@ -10,7 +10,6 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import localStorageService from 'services/local-storage.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 import { generateCaptchaToken } from 'utils';
-import { LocalStorageItem } from 'app/core/types';
 
 const preCreateUser = (email: string): Promise<PreCreateUserResponse> => {
   const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
