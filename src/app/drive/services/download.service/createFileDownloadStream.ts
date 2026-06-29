@@ -1,4 +1,4 @@
-import { NetworkCredentials } from 'app/network/types/helper-types';
+import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
 import { DriveFileData } from '../../types';
 import fetchFileStream from './fetchFileStream';
 import fetchFileStreamUsingCredentials from './fetchFileStreamUsingCredentials';
@@ -8,7 +8,7 @@ export default async function createFileDownloadStream(
   isWorkspace: boolean,
   updateProgressCallback: (progress: number) => void,
   abortController?: AbortController,
-  sharingOptions?: { credentials: NetworkCredentials; mnemonic: string },
+  sharingOptions?: { credentials: NetworkCredentials; key: FileKey },
 ): Promise<ReadableStream<Uint8Array>> {
   return !sharingOptions
     ? fetchFileStream(
@@ -21,7 +21,7 @@ export default async function createFileDownloadStream(
           updateProgressCallback,
           abortController,
           creds: sharingOptions.credentials,
-          mnemonic: sharingOptions.mnemonic,
+          key: sharingOptions.key,
         },
       );
 }
