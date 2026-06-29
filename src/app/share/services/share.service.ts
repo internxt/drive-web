@@ -865,6 +865,7 @@ const shareService = {
   removeUserRole,
   getSharedFolderContent,
   downloadSharedFiles,
+  decryptPublicSharingCodeWithOwner,
   getUsersOfSharedFolder,
   updateUserRoleOfSharedFolder,
   getUserRoleOfSharedFolder,

@@ -405,3 +405,41 @@ describe('Get public shared link', async () => {
     expect(showNotificationSpy).toHaveBeenCalledWith(expect.objectContaining({ requestId: 'test-request-id' }));
   });
 });
+
+describe('decryptPublicSharingCodeWithOwner', () => {
+  const bucket = 'test bucket';
+  const mnemonic = 'test mnemonic';
+  const plainCode = 'test plain code';
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  test('When encryptionAlgorithm is NEW_SHARING_VERSION, then code is decrypted using bucket key', async () => {
+    const bucketKey = await generateFileBucketKey(mnemonic, bucket);
+    const bucketKeyHex = Buffer.from(bucketKey.subarray(0, 32)).toString('hex');
+    const encryptedCode = aes.encrypt(plainCode, bucketKeyHex);
+
+    vi.spyOn(localStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
+
+    const result = await shareService.decryptPublicSharingCodeWithOwner(encryptedCode, 'inxt-v3');
+
+    expect(result).toBe(plainCode);
+  });
+
+  test('When encryptionAlgorithm is not NEW_SHARING_VERSION, then code is decrypted using mnemonic directly', async () => {
+    const encryptedCode = aes.encrypt(plainCode, mnemonic);
+    vi.spyOn(localStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
+
+    const result = await shareService.decryptPublicSharingCodeWithOwner(encryptedCode, 'inxt-v2');
+    expect(result).toBe(plainCode);
+  });
+
+  test('When decryption fails, then an error is thrown', async () => {
+    vi.spyOn(localStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
+
+    await expect(shareService.decryptPublicSharingCodeWithOwner('bad-encrypted-code', 'inxt-v3')).rejects.toThrow(
+      'Length 0, cannot decrypt',
+    );
+  });
+});
