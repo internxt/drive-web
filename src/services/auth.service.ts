@@ -212,7 +212,6 @@ export const doLogin = async (
       };
 
       localStorageService.set(LocalStorageItem.UserToken, token);
-      localStorageService.set(LocalStorageItem.UserMnemonic, clearMnemonic);
       localStorageService.set(LocalStorageItem.NewToken, newToken);
 
       return {
@@ -561,7 +560,6 @@ export const signUp = async (params: SignUpParams) => {
   localStorageService.clear();
 
   localStorageService.set(LocalStorageItem.UserToken, xToken);
-  localStorageService.set(LocalStorageItem.UserMnemonic, mnemonic);
   localStorageService.set(LocalStorageItem.NewToken, xNewToken);
 
   const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(xUser, password);

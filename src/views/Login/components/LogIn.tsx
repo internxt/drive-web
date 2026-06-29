@@ -46,7 +46,7 @@ export default function LogIn(): JSX.Element {
   const [showErrors, setShowErrors] = useState(false);
 
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
-  const mnemonic = localStorageService.get(LocalStorageItem.UserMnemonic);
+  const mnemonic = user?.mnemonic;
 
   const {
     isUniversalLinkMode,

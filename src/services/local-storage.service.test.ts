@@ -408,7 +408,6 @@ describe('Testing the local storage service', () => {
     it('When clear storage is requested, then removes all keys', () => {
       const expectedKeysToRemove = [
         LocalStorageItem.User,
-        LocalStorageItem.UserMnemonic,
         LocalStorageItem.UserToken,
         LocalStorageItem.NewToken,
         LocalStorageItem.TeamToken,

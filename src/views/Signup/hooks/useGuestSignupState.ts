@@ -20,7 +20,7 @@ export const useGuestSignupState = () => {
   const [showPasswordIndicator, setShowPasswordIndicator] = useState(false);
 
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
-  const mnemonic = localStorageService.get(LocalStorageItem.UserMnemonic);
+  const mnemonic = user?.mnemonic;
 
   return {
     isValidPassword,
