@@ -33,6 +33,7 @@ vi.mock('./crypto', () => ({
   generateFileKey: vi.fn(),
   getEncryptedFile: vi.fn(),
   processEveryFileBlobReturnHash: vi.fn(),
+  generateFileKeyFromBucketKey: vi.fn(),
 }));
 vi.mock('./download', () => ({
   getDecryptedStream: vi.fn(),
@@ -71,12 +72,10 @@ describe('NetworkFacade', () => {
     const fakeRipemd160Hash = 'ddeeff';
 
     function mockDownloadFile(fileInfoOverride: object = {}) {
-      (downloadFile as any).mockImplementation(
-        async (_fId, _bId, _mn, _net, _crypto, _buf, downloadCb, decryptCb) => {
-          await downloadCb([{ url: downloadUrl }], { size: 100, ...fileInfoOverride });
-          await decryptCb('AES256CTR', fakeKey, fakeIv, 100);
-        },
-      );
+      (downloadFile as any).mockImplementation(async (_fId, _bId, _mn, _net, _crypto, _buf, downloadCb, decryptCb) => {
+        await downloadCb([{ url: downloadUrl }], { size: 100, ...fileInfoOverride });
+        await decryptCb('AES256CTR', fakeKey, fakeIv, 100);
+      });
     }
 
     beforeEach(() => {

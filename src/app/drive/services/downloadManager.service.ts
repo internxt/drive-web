@@ -15,7 +15,7 @@ import { FlatFolderZip } from 'services/zip.service';
 import { LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
 import { AdvancedSharedItem } from 'app/share/types';
 import { binaryStreamToBlob } from 'services/stream.service';
-import { downloadFile, NetworkCredentials } from 'app/network/download';
+import { downloadFile } from 'app/network/download';
 import localStorageService from 'services/local-storage.service';
 import date from 'services/date.service';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
@@ -31,10 +31,11 @@ import {
 import { downloadWorkerHandler } from './worker.service/downloadWorkerHandler';
 import { isFileEmpty } from 'utils/isFileEmpty';
 import deviceService from 'services/device.service';
+import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
 
 export type DownloadCredentials = {
   credentials: NetworkCredentials;
-  mnemonic: string;
+  key: FileKey;
   workspaceId?: string;
 };
 
@@ -113,7 +114,9 @@ export class DownloadManagerService {
               pass: workspaceCredentials.credentials.networkPass,
             },
             workspaceId: selectedWorkspace.workspace.id,
-            mnemonic: selectedWorkspace.workspaceUser.key,
+            key: {
+              mnemonic: selectedWorkspace.workspaceUser.key,
+            },
           }
         : undefined;
     return credentials;
@@ -186,7 +189,9 @@ export class DownloadManagerService {
         user: user.bridgeUser,
         pass: user.userId,
       },
-      mnemonic: user.mnemonic,
+      key: {
+        mnemonic: user.mnemonic,
+      },
     };
     const workspaceCredentials = this.getDownloadCredentialsFromWorkspace(
       downloadItem.selectedWorkspace,
@@ -386,7 +391,9 @@ export class DownloadManagerService {
             user: (driveItem as AdvancedSharedItem).credentials?.networkUser ?? credentials.credentials.user,
             pass: (driveItem as AdvancedSharedItem).credentials?.networkPass ?? credentials.credentials.pass,
           },
-          mnemonic: (driveItem as AdvancedSharedItem).credentials?.mnemonic ?? credentials.mnemonic,
+          key: {
+            mnemonic: (driveItem as AdvancedSharedItem).credentials?.mnemonic ?? credentials.key.mnemonic,
+          },
           options: {
             abortController,
             notifyProgress: notifyProgressCallback,
@@ -424,7 +431,9 @@ export class DownloadManagerService {
               user: (driveItem as AdvancedSharedItem).credentials?.networkUser ?? credentials.credentials.user,
               pass: (driveItem as AdvancedSharedItem).credentials?.networkPass ?? credentials.credentials.pass,
             },
-            mnemonic: (driveItem as AdvancedSharedItem).credentials?.mnemonic ?? credentials.mnemonic,
+            key: {
+              mnemonic: (driveItem as AdvancedSharedItem).credentials?.mnemonic ?? credentials.key.mnemonic,
+            },
             workspaceId: credentials.workspaceId,
           },
           abortController,
@@ -525,7 +534,7 @@ export class DownloadManagerService {
     isWorkspace: boolean;
     updateProgressCallback: (progress: number) => void;
     abortController?: AbortController;
-    sharingOptions: { credentials: { user: string; pass: string }; mnemonic: string };
+    sharingOptions: { credentials: NetworkCredentials; key: FileKey };
     downloadName?: string;
   }) => {
     const shouldDownloadUsingBlob =
