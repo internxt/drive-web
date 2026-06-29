@@ -2,6 +2,7 @@ import envService from 'services/env.service';
 import axios, { AxiosBasicCredentials, AxiosRequestConfig } from 'axios';
 import errorService from 'services/error.service';
 import { getSha256 } from '../crypto/services/utils';
+import { NetworkCredentials } from 'app/network/types/helper-types';
 
 // TODO: Make this injectable
 const networkApiUrl = envService.getVariable('storjBridge');
@@ -42,11 +43,6 @@ export interface Mirror {
   };
   url: string;
   operation: string;
-}
-
-interface NetworkCredentials {
-  user: string;
-  pass: string;
 }
 
 async function getAuthFromCredentials(creds: NetworkCredentials): Promise<AxiosBasicCredentials> {
@@ -182,11 +178,6 @@ export async function getMirrors(
 
 function isFarmerOk(farmer?: Partial<Mirror['farmer']>) {
   return farmer && farmer.nodeID && farmer.port && farmer.address;
-}
-
-interface NetworkCredentials {
-  user: string;
-  pass: string;
 }
 
 export const CONNECTION_LOST_ERROR_MESSAGE = 'Connection lost';

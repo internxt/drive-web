@@ -33,6 +33,7 @@ vi.mock('./crypto', () => ({
   generateFileKey: vi.fn(),
   getEncryptedFile: vi.fn(),
   processEveryFileBlobReturnHash: vi.fn(),
+  generateFileKeyFromBucketKey: vi.fn(),
 }));
 vi.mock('./download', () => ({
   getDecryptedStream: vi.fn(),
