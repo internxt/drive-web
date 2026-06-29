@@ -53,7 +53,7 @@ const FileTxtViewer: React.FC<FormatFileViewerProps> = ({ blob, setIsPreviewAvai
 
   return (
     <div className="flex h-screen w-screen overflow-hidden px-20 pt-20">
-      <div ref={rootRef} className="h-full w-full overflow-auto bg-white p-6">
+      <div ref={rootRef} className="h-full w-full overflow-auto bg-surface p-6">
         <pre className="whitespace-pre-wrap break-words font-mono text-sm text-gray-100">{content}</pre>
         <div ref={sentinelRef} />
       </div>
