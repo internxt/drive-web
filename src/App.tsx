@@ -73,7 +73,7 @@ const App = (props: AppProps): JSX.Element => {
   const isOpen = isDialogOpen(ActionDialog.ModifyStorage);
   const { openBackupKeysDialog } = useDownloadBackupKeys(t);
   const token = localStorageService.get(LocalStorageItem.UserToken);
-  const newToken = localStorageService.get(LocalStorageItem.NewToken);
+  const newToken = localStorageService.getToken();
   const params = new URLSearchParams(window.location.search);
   const isVpnAuth = params.get('vpnAuth') === 'true';
   const skipSignupIfLoggedIn = params.get('skipSignupIfLoggedIn') === 'true';
