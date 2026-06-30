@@ -15,8 +15,8 @@ import { Translate } from 'app/i18n/types';
 import { navigationService } from 'services';
 
 const resetAccessTokenFileFolder = () => {
-  localStorageService.set(STORAGE_KEYS.FOLDER_ACCESS_TOKEN, '');
-  localStorageService.set(STORAGE_KEYS.FILE_ACCESS_TOKEN, '');
+  localStorageService.setStorageItem(STORAGE_KEYS.FOLDER_ACCESS_TOKEN, '');
+  localStorageService.setStorageItem(STORAGE_KEYS.FILE_ACCESS_TOKEN, '');
 };
 
 const isActiveButton = (path: string) => {

@@ -93,7 +93,7 @@ const fetchCredentials = createAsyncThunk<void, undefined, { state: RootState }>
       const credentials = await workspacesService.getWorkspaceCredentials(workspaceId);
 
       dispatch(workspacesActions.setCredentials(credentials));
-      localStorageService.set(STORAGE_KEYS.WORKSPACE_CREDENTIALS, JSON.stringify(credentials));
+      localStorageService.setStorageItem(STORAGE_KEYS.WORKSPACE_CREDENTIALS, JSON.stringify(credentials));
     }
     dispatch(workspacesActions.setIsLoadingCredentials(false));
   },
@@ -112,16 +112,16 @@ const setSelectedWorkspace = createAsyncThunk<
   const isSelectedWorkspace = localStorageB2BWorkspace?.workspace.id === workspaceId;
 
   if (isUnselectingWorkspace) {
-    localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, 'null');
+    localStorageService.setStorageItem(STORAGE_KEYS.B2B_WORKSPACE, 'null');
     dispatch(workspacesActions.setSelectedWorkspace(null));
     dispatch(workspacesActions.setCredentials(null));
-    localStorageService.set(STORAGE_KEYS.WORKSPACE_CREDENTIALS, 'null');
+    localStorageService.setStorageItem(STORAGE_KEYS.WORKSPACE_CREDENTIALS, 'null');
   } else if (isSelectedWorkspace) {
     dispatch(workspacesActions.setSelectedWorkspace(localStorageB2BWorkspace ?? null));
   } else {
     const workspace = state.workspaces.workspaces.find((workspace) => workspace.workspace.id === workspaceId);
     if (workspace) {
-      localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(workspace));
+      localStorageService.setStorageItem(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(workspace));
       dispatch(workspacesActions.setSelectedWorkspace(workspace ?? null));
     }
   }
@@ -176,7 +176,7 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
         dispatch(workspacesActions.setSelectedWorkspace(selectedWorkspace ?? null));
 
         if (selectedWorkspace) {
-          localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(selectedWorkspace));
+          localStorageService.setStorageItem(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(selectedWorkspace));
           dispatch(planThunks.fetchBusinessLimitUsageThunk());
           dispatch(fetchCredentials());
           dispatch(sessionThunks.changeWorkspaceThunk());
@@ -263,7 +263,7 @@ export const workspacesSlice = createSlice({
           item.workspace = Object.assign(workspace, patch);
           if (state.selectedWorkspace?.workspace.id === workspaceId) {
             state.selectedWorkspace = item;
-            localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(item));
+            localStorageService.setStorageItem(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(item));
           }
         }
         return item;

@@ -134,6 +134,7 @@ describe('onSubmit', () => {
         clear: vi.fn(),
         getUser: vi.fn(),
         set: vi.fn(),
+        setToken: vi.fn(),
       },
     }));
 

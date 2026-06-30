@@ -181,7 +181,7 @@ export class SdkFactory {
 
   private getNewToken(workspace: string): Token {
     const tokenByWorkspace: { [key in Workspace]: string } = {
-      [Workspace.Individuals]: SdkFactory.sdk.localStorage.get(LocalStorageItem.NewToken) || '',
+      [Workspace.Individuals]: SdkFactory.sdk.localStorage.getToken() || '',
       [Workspace.Business]: SdkFactory.sdk.localStorage.get(LocalStorageItem.TeamToken) || '',
     };
     return tokenByWorkspace[workspace];
@@ -192,7 +192,7 @@ export class SdkFactory {
     let token: string | undefined = undefined;
     if (workspace) {
       const credentials: WorkspaceCredentialsDetails | null = JSON.parse(
-        SdkFactory.sdk.localStorage.get(STORAGE_KEYS.WORKSPACE_CREDENTIALS) ?? 'null',
+        SdkFactory.sdk.localStorage.getStorageItem(STORAGE_KEYS.WORKSPACE_CREDENTIALS) ?? 'null',
       );
       if (credentials) {
         token = credentials.tokenHeader;

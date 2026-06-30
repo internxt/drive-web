@@ -3,7 +3,7 @@ import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/w
 import { LocalStorageItem, Workspace } from 'app/core/types';
 import { STORAGE_KEYS } from './storage-keys';
 
-function get(key: LocalStorageItem ): string | null {
+function get(key: LocalStorageItem): string | null {
   return localStorage.getItem(key);
 }
 
@@ -30,6 +30,10 @@ function setBackupKeysSeenAt(date: string): void {
   localStorage.setItem(seenAt, date);
 }
 
+function setToken(token: string): void {
+  return localStorage.setItem(LocalStorageItem.NewToken, token);
+}
+
 function removeBackupKeysSeenAt(): void {
   const { seenAt } = getBackupKeyStorageKeys();
   localStorage.removeItem(seenAt);
@@ -51,6 +55,10 @@ function getUser(): UserSettings | null {
   const stringUser: string | null = localStorage.getItem(LocalStorageItem.User);
 
   return stringUser ? JSON.parse(stringUser) : null;
+}
+
+function getToken(): string | null {
+  return localStorage.getItem(LocalStorageItem.NewToken);
 }
 
 function getWorkspace(): string {
@@ -90,13 +98,13 @@ export function setStorageItem(key: StorageKey, value: string): void {
 }
 
 function getStorageToken(isFolder: boolean): string | null {
-   const key = isFolder ? STORAGE_KEYS.FOLDER_ACCESS_TOKEN : STORAGE_KEYS.FILE_ACCESS_TOKEN;
-   return localStorage.getStorageItem(key);
+  const key = isFolder ? STORAGE_KEYS.FOLDER_ACCESS_TOKEN : STORAGE_KEYS.FILE_ACCESS_TOKEN;
+  return localStorage.getStorageItem(key);
 }
 
 function removeItem(key: string): void {
-  localStorage.removeItem(key);}
-
+  localStorage.removeItem(key);
+}
 
 function clear(): void {
   localStorage.setItem('theme', 'system');
@@ -115,9 +123,11 @@ const localStorageService = {
   get,
   setBackupKeysAcknowledged,
   setBackupKeysSeenAt,
+  setToken,
   removeBackupKeysSeenAt,
   getBackupKeys,
   getUser,
+  getToken,
   getWorkspace,
   getStorageToken,
   getStorageItem,
@@ -135,6 +145,7 @@ export interface LocalStorageService {
   get: (key: LocalStorageItem) => string | null;
   setBackupKeysAcknowledged: () => void;
   setBackupKeysSeenAt: (date: string) => void;
+  setToken: (token: string) => void;
   removeBackupKeysSeenAt: () => void;
   getBackupKeys: () => {
     seenAt: string | null;
@@ -145,6 +156,7 @@ export interface LocalStorageService {
   getUser: () => UserSettings | null;
   getStorageItem: (key: StorageKey) => string | null;
   setStorageItem: (key: StorageKey, value: string) => void;
+  getToken: () => string | null;
   getWorkspace: () => string;
   removeItem: (key: string) => void;
   clear: () => void;
