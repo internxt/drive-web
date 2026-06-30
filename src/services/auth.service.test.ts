@@ -1171,6 +1171,22 @@ describe('cancelAccount', () => {
 
     expect(mockAuthClient.sendUserDeactivationEmail).toHaveBeenCalledWith('test-token');
   });
+
+  it('should request account closure without token', async () => {
+    const mockAuthClient = {
+      sendUserDeactivationEmail: vi.fn().mockResolvedValue(undefined),
+    };
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
+    } as any);
+
+    vi.spyOn(localStorageService, 'getToken').mockReturnValue(null);
+
+    await authService.cancelAccount();
+
+    expect(mockAuthClient.sendUserDeactivationEmail).toHaveBeenCalledWith(undefined);
+  });
 });
 
 describe('getSalt', () => {
@@ -1306,6 +1322,23 @@ describe('generateNew2FA', () => {
     expect(result).toEqual({ qr: 'qr-code-data', secret: 'secret-key' });
     expect(mockAuthClient.generateTwoFactorAuthQR).toHaveBeenCalledWith('test-token');
   });
+
+  it('should generate new two-factor authentication QR code without token', async () => {
+    const mockAuthClient = {
+      generateTwoFactorAuthQR: vi.fn().mockResolvedValue({ qr: 'qr-code-data', secret: 'secret-key' }),
+    };
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
+    } as any);
+
+    vi.spyOn(localStorageService, 'getToken').mockReturnValue(null);
+
+    const result = await authService.generateNew2FA();
+
+    expect(result).toEqual({ qr: 'qr-code-data', secret: 'secret-key' });
+    expect(mockAuthClient.generateTwoFactorAuthQR).toHaveBeenCalledWith(undefined);
+  });
 });
 
 describe('deactivate2FA', () => {
@@ -1323,7 +1356,24 @@ describe('deactivate2FA', () => {
     const encryptedSalt = encryptText('test-salt');
     await authService.deactivate2FA(encryptedSalt, 'test-password', '123456');
 
-    expect(mockAuthClient.disableTwoFactorAuth).toHaveBeenCalled();
+    expect(mockAuthClient.disableTwoFactorAuth).toHaveBeenCalledWith(expect.any(String), '123456', 'test-token');
+  });
+
+  it('should disable two-factor authentication with valid credentials without token', async () => {
+    const mockAuthClient = {
+      disableTwoFactorAuth: vi.fn().mockResolvedValue(undefined),
+    };
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
+    } as any);
+
+    vi.spyOn(localStorageService, 'getToken').mockReturnValue(null);
+
+    const encryptedSalt = encryptText('test-salt');
+    await authService.deactivate2FA(encryptedSalt, 'test-password', '123456');
+
+    expect(mockAuthClient.disableTwoFactorAuth).toHaveBeenCalledWith(expect.any(String), '123456', undefined);
   });
 });
 
@@ -1429,6 +1479,26 @@ describe('authService default export', () => {
 
     await authService.default.store2FA('secret-code', '123456');
     expect(mockAuthClient.storeTwoFactorAuthKey).toHaveBeenCalledWith('secret-code', '123456', 'auth-token');
+
+    await authService.default.sendChangePasswordEmail('test@example.com');
+    expect(mockAuthClient.sendChangePasswordEmail).toHaveBeenCalledWith('test@example.com');
+  });
+
+  it('should allow storing two-factor authentication keys and sending password reset emails without token', async () => {
+    const mockAuthClient = {
+      storeTwoFactorAuthKey: vi.fn().mockResolvedValue(undefined),
+      sendChangePasswordEmail: vi.fn().mockResolvedValue(undefined),
+      resetAccountWithToken: vi.fn().mockResolvedValue(undefined),
+    };
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
+    } as any);
+
+    vi.spyOn(localStorageService, 'getToken').mockReturnValue(null);
+
+    await authService.default.store2FA('secret-code', '123456');
+    expect(mockAuthClient.storeTwoFactorAuthKey).toHaveBeenCalledWith('secret-code', '123456', undefined);
 
     await authService.default.sendChangePasswordEmail('test@example.com');
     expect(mockAuthClient.sendChangePasswordEmail).toHaveBeenCalledWith('test@example.com');
