@@ -188,7 +188,7 @@ export class SdkFactory {
   }
 
   private getWorkspaceToken(): Token | undefined {
-    const workspace = SdkFactory.sdk.localStorage.getB2BWorkspace();
+    const workspace = SdkFactory.sdk.localStorage.getStorageItem(STORAGE_KEYS.B2B_WORKSPACE);
     let token: string | undefined = undefined;
     if (workspace) {
       const credentials: WorkspaceCredentialsDetails | null = JSON.parse(

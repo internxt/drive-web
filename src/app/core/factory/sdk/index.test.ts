@@ -95,7 +95,6 @@ describe('SdkFactory', () => {
       get: vi.fn(),
       getToken: vi.fn(),
       getWorkspace: vi.fn(),
-      getB2BWorkspace: vi.fn(),
       getStorageItem: vi.fn(),
     } as any;
 
@@ -168,7 +167,6 @@ describe('SdkFactory', () => {
 
       vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
       vi.spyOn(mockLocalStorage, 'getToken').mockReturnValue(mockToken);
-      vi.spyOn(mockLocalStorage, 'getB2BWorkspace').mockReturnValue({ workspaceId: mockWorkspaceId } as any);
       vi.spyOn(mockLocalStorage, 'getStorageItem').mockImplementation((key) => {
         if (key === STORAGE_KEYS.B2B_WORKSPACE) return mockWorkspaceId;
         if (key === STORAGE_KEYS.WORKSPACE_CREDENTIALS) return JSON.stringify(mockCredentials);
