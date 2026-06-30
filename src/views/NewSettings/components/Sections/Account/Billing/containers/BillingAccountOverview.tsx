@@ -17,7 +17,7 @@ interface BillingAccountOverviewProps {
 }
 
 const BillingAccountOverview = ({ plan, changeSection }: BillingAccountOverviewProps) => {
-  const local = localStorageService.get('i18nextLng') ?? navigator.language.split('-')[0];
+  const local = localStorageService.getLanguage() ?? navigator.language.split('-')[0];
   const isSubscription = plan.individualSubscription?.type === 'subscription';
   const isFreeSubscription = plan.individualSubscription?.type === 'free';
   const isLifetimeSubscription = plan.individualSubscription?.type === 'lifetime';

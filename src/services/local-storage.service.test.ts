@@ -114,7 +114,7 @@ const mockWorkspaceData: WorkspaceData = {
   },
 };
 
-const localStorageKey = 'ITEM_EXISTS';
+const localStorageKey = LocalStorageItem.Language;
 const localStorageValue = 'item-exists';
 const tutorialCompletedId = 'id_1234';
 const userLocalStorageKey = 'xUser';
@@ -154,7 +154,7 @@ describe('Testing the local storage service', () => {
     });
 
     it('When the requested key does not exist, then nothing (null) is returned', () => {
-      const localStorageKey = 'ITEM_DOES_NOT_EXIST';
+      const localStorageKey = LocalStorageItem.IsThemeDark;
       const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
 
       const localStorageItem = localStorageService.get(localStorageKey);
@@ -167,7 +167,7 @@ describe('Testing the local storage service', () => {
 
   describe('Set a value with the given key', () => {
     it('When the key and its value is given, then they are set correctly', () => {
-      const localStorageKey = 'SET_KEY';
+      const localStorageKey = LocalStorageItem.AmountPaid;
       const localStorageValue = 'new-value';
       const setToLocalStorageSpy = vi.spyOn(Storage.prototype, 'setItem');
 
@@ -179,7 +179,7 @@ describe('Testing the local storage service', () => {
   });
 
   describe('Remove item from local storage', () => {
-    const removeLocalStorageKey = 'ITEM_TO_REMOVE';
+    const removeLocalStorageKey = LocalStorageItem.Currency;
     beforeEach(() => {
       localStorage.setItem(removeLocalStorageKey, 'item-to-remove');
     });
@@ -193,50 +193,6 @@ describe('Testing the local storage service', () => {
       expect(removeFromLocalStorageSpy).toHaveBeenCalled();
       expect(removeFromLocalStorageSpy).toHaveBeenCalledWith(removeLocalStorageKey);
       expect(nonExistentItem).toBeNull();
-    });
-  });
-
-  describe('Check if an item exists in local storage', () => {
-    it('When the item exists, then true is returned', () => {
-      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
-
-      const itemExists = localStorageService.exists(localStorageKey);
-
-      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(localStorageKey);
-      expect(itemExists).toBeTruthy();
-    });
-
-    it('When the item does not exist, then false is returned', () => {
-      const existingLocalStorageKey = 'ITEM_DOES_NOT_EXIST';
-      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
-
-      const itemExists = localStorageService.exists(existingLocalStorageKey);
-
-      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(existingLocalStorageKey);
-      expect(itemExists).toBeFalsy();
-    });
-  });
-
-  describe('Check if user completed the tutorial', () => {
-    it('When the user completed the tutorial, a value indicating so is returned (true)', () => {
-      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
-
-      const tutorialCompleted = localStorageService.hasCompletedTutorial(tutorialCompletedId);
-
-      expect(getFromLocalStorageSpy).toHaveBeenCalled();
-      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(STORAGE_KEYS.TUTORIAL_COMPLETED_ID);
-      expect(tutorialCompleted).toBeTruthy();
-    });
-
-    it('When the user did not completed the tutorial, a value indicating so is returned (false)', () => {
-      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
-
-      localStorage.removeItem(STORAGE_KEYS.TUTORIAL_COMPLETED_ID);
-      const tutorialCompleted = localStorageService.hasCompletedTutorial(tutorialCompletedId);
-
-      expect(getFromLocalStorageSpy).toHaveBeenCalled();
-      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(STORAGE_KEYS.TUTORIAL_COMPLETED_ID);
-      expect(tutorialCompleted).toBeFalsy();
     });
   });
 

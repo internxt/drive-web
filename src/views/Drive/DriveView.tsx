@@ -107,9 +107,9 @@ const DriveView = (props: DriveViewProps) => {
       const credentials = await workspacesService.getWorkspaceCredentials(workspaceId);
       const workspace = workspaces.find((workspace) => workspace.workspace.id === workspaceUuid);
       dispatch(workspacesActions.setCredentials(credentials));
-      localStorageService.set(STORAGE_KEYS.WORKSPACE_CREDENTIALS, JSON.stringify(credentials));
+      localStorageService.setStorageItem(STORAGE_KEYS.WORKSPACE_CREDENTIALS, JSON.stringify(credentials));
       dispatch(workspacesActions.setSelectedWorkspace(workspace ?? null));
-      localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(workspace));
+      localStorageService.setStorageItem(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(workspace));
       setTokenHeader(credentials.tokenHeader);
     } catch (error) {
       errorService.reportError(error);
@@ -119,8 +119,8 @@ const DriveView = (props: DriveViewProps) => {
   const setPersonalWithUrl = () => {
     dispatch(workspacesActions.setCredentials(null));
     dispatch(workspacesActions.setSelectedWorkspace(null));
-    localStorageService.set(STORAGE_KEYS.WORKSPACE_CREDENTIALS, 'null');
-    localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, 'null');
+    localStorageService.setStorageItem(STORAGE_KEYS.WORKSPACE_CREDENTIALS, 'null');
+    localStorageService.setStorageItem(STORAGE_KEYS.B2B_WORKSPACE, 'null');
   };
 
   const goFolder = async (folderUuid: string, workspacesToken?: string) => {

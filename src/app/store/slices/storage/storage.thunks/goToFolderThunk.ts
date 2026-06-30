@@ -25,7 +25,7 @@ const parsePathNames = (breadcrumbsList: FolderAncestor[] | FolderAncestorWorksp
 export const getAncestorsAndSetNamePath = async (uuid: string, dispatch) => {
   const workspaceSelected = useSelector(workspacesSelectors.getSelectedWorkspace);
   const isWorkspaceSelected = !!workspaceSelected;
-  const token = localStorageService.get('folderAccessToken') || undefined;
+  const token = localStorageService.getStorageToken(true) || undefined;
   const breadcrumbsList: FolderAncestor[] | FolderAncestorWorkspace[] = isWorkspaceSelected
     ? await newStorageService.getFolderAncestorsInWorkspace(workspaceSelected.workspace.id, 'folder', uuid, token)
     : await newStorageService.getFolderAncestors(uuid);

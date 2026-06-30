@@ -101,7 +101,7 @@ const CheckoutViewWrapper = () => {
   const lastName = user?.lastname ?? '';
   const fullName = userAccountName + ' ' + lastName;
 
-  const gclidStored = localStorageService.get(STORAGE_KEYS.GCLID);
+  const gclidStored = localStorageService.getStorageItem(STORAGE_KEYS.GCLID);
 
   const canChangePlanDialogBeOpened = selectedPlan?.price && isUpdateSubscriptionDialogOpen;
   const isCryptoPaymentDialogOpen = isDialogOpen(CRYPTO_PAYMENT_DIALOG_KEY);
@@ -119,7 +119,7 @@ const CheckoutViewWrapper = () => {
       const expiryDate = new Date();
       expiryDate.setTime(expiryDate.getTime() + GCLID_COOKIE_LIFESPAN_DAYS * MILLISECONDS_PER_DAY);
       document.cookie = `gclid=${gclid}; expires=${expiryDate.toUTCString()}; path=/; Secure`;
-      localStorageService.set(STORAGE_KEYS.GCLID, gclid);
+      localStorageService.setStorageItem(STORAGE_KEYS.GCLID, gclid);
     }
     if (irclickid) {
       handleImpactDTCCheckout({ irclickid, utmMedium });

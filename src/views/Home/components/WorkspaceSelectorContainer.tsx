@@ -55,8 +55,8 @@ const WorkspaceSelectorContainer = ({ user, isCollapsed }: WorkspaceSelectorCont
     }
     dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId }));
     dispatch(planThunks.fetchBusinessLimitUsageThunk());
-    localStorageService.set(STORAGE_KEYS.FOLDER_ACCESS_TOKEN, '');
-    localStorageService.set(STORAGE_KEYS.FILE_ACCESS_TOKEN, '');
+    localStorageService.setStorageItem(STORAGE_KEYS.FOLDER_ACCESS_TOKEN, '');
+    localStorageService.setStorageItem(STORAGE_KEYS.FILE_ACCESS_TOKEN, '');
   };
 
   if (!user) return null;

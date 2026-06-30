@@ -25,12 +25,12 @@ export interface TrashViewProps {
 }
 
 const shouldShowTrashDisposalDialog = (hasSignedToday: boolean): boolean => {
-  const hasSeenDialog = localStorageService.get(STORAGE_KEYS.HAS_SEEN_TRASH_DISPOSAL_DIALOG);
+  const hasSeenDialog = localStorageService.getStorageItem(STORAGE_KEYS.HAS_SEEN_TRASH_DISPOSAL_DIALOG);
   return !hasSignedToday && !hasSeenDialog;
 };
 
 const markTrashDisposalDialogAsSeen = (): void => {
-  localStorageService.set(STORAGE_KEYS.HAS_SEEN_TRASH_DISPOSAL_DIALOG, 'true');
+  localStorageService.setStorageItem(STORAGE_KEYS.HAS_SEEN_TRASH_DISPOSAL_DIALOG, 'true');
 };
 
 const TrashView = (props: TrashViewProps) => {
