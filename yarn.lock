@@ -1913,6 +1913,13 @@
   dependencies:
     tailwindcss "^4.1.17"
 
+"@internxt/css-config@1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@internxt/css-config/-/css-config-1.1.1.tgz#0f6a41b9ba2d182b006155c5930cc59c455b0f51"
+  integrity sha512-RP7YZdvQZxzxGm1FZxbLw3PA/ojueHXJvzagUTTIdV4ev23OAcF80FAQZx4aTfX1mnMfQeFr0dOutqaPrBReqA==
+  dependencies:
+    tailwindcss "^4.1.17"
+
 "@internxt/eslint-config-internxt@1.0.10":
   version "1.0.10"
   resolved "https://registry.yarnpkg.com/@internxt/eslint-config-internxt/-/eslint-config-internxt-1.0.10.tgz#19025c479f84617a59484660f2f9c983ff3bc4ec"
@@ -1940,10 +1947,10 @@
   dependencies:
     axios "^1.16.0"
 
-"@internxt/ui@=0.1.21":
-  version "0.1.21"
-  resolved "https://registry.yarnpkg.com/@internxt/ui/-/ui-0.1.21.tgz#169793db123abc19e98d1039cb4d91632e9cfc6d"
-  integrity sha512-MHpAe4J3X0qVPoV12pR4HhsbgyCe4bBLLHHC2PwMicC5WKsBfg2rOD2dbzoHTmeZt0ddWWGT7f8dwb4/qfO7Sg==
+"@internxt/ui@=0.1.22":
+  version "0.1.22"
+  resolved "https://registry.yarnpkg.com/@internxt/ui/-/ui-0.1.22.tgz#c4ee8969a333e16f3a5899327b71036d6a400b48"
+  integrity sha512-e5tvOBjTEgZc5/hDBfmhSm5dU4XA7NxOoUOkxeU8KjkBVHYnb0F30CHIY1zHTS1XugxfaUVrzrSZr94stE/YfQ==
   dependencies:
     "@internxt/css-config" "1.1.0"
     "@phosphor-icons/react" "^2.1.10"

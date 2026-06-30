@@ -535,7 +535,9 @@ function SharedView({
           selectedWorkspace={selectedWorkspace}
         />
       </div>
-      <WarningMessageWrapper />
+      <div className="px-5">
+        <WarningMessageWrapper />
+      </div>
       <div className="flex h-full w-full flex-col overflow-y-auto" ref={drop}>
         {
           /* DRAG AND DROP */

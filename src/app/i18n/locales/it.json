@@ -1206,6 +1206,27 @@
         "title": "Sblocca Cleaner",
         "description": "Aggiorna ora per mantenere i tuoi file ottimizzati e liberare spazio."
       }
+    },
+    "reachingUsageBanner": {
+      "lowWarning": {
+        "title": "Ottieni più spazio per i tuoi file",
+        "descriptionLabelLine1": "Sblocca spazio di archiviazione aggiuntivo con uno **sconto esclusivo dell'85%** sul tuo upgrade",
+        "descriptionLabelLine2": "Accedi a funzionalità avanzate come la cronologia delle versioni dei file, Rclone, il supporto NAS, il supporto premium e molto altro"
+      },
+      "midWarning": {
+        "title": "Il tuo spazio di archiviazione si sta riempiendo",
+        "descriptionLabelLine1": "Esegui l'upgrade oggi con uno **sconto esclusivo dell'85%** e continua a caricare senza interruzioni",
+        "descriptionLabelLine2": "Ottieni più spazio di archiviazione e funzionalità avanzate come la cronologia delle versioni dei file, il supporto NAS, l'integrazione con Rclone e il supporto premium",
+        "sidenavStorageText": "Più spazio -85%"
+      },
+      "highWarning": {
+        "title": "Il tuo spazio di archiviazione è quasi pieno",
+        "descriptionLabelLine1": "Presto potresti non essere più in grado di caricare nuovi file",
+        "descriptionLabelLine2": "Esegui subito l'upgrade con uno sconto esclusivo dell'85% per continuare ad archiviare e sincronizzare i tuoi file senza limiti",
+        "sidenavStorageText": "Acquista spazio -85%"
+      },
+      "close": "Chiudi",
+      "cta": "Ottieni l'offerta"
     }
   },
   "form": {

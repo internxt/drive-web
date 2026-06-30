@@ -1171,6 +1171,27 @@
         "title": "Unlock Cleaner",
         "description": "Upgrade now to keep your files optimized and free up space."
       }
+    },
+    "reachingUsageBanner": {
+      "lowWarning": {
+        "title": "Get more space for your files",
+        "descriptionLabelLine1": "Unlock additional storage with an exclusive **85% discount** on your upgrade",
+        "descriptionLabelLine2": "Access advanced features like file version history, Rclone, NAS support, premium support, and more"
+      },
+      "midWarning": {
+        "title": "Your storage is filling up",
+        "descriptionLabelLine1": "Upgrade today with an exclusive **85% discount** and keep uploading without interruptions",
+        "descriptionLabelLine2": "Get more storage plus advanced features like file version history, NAS support, Rclone integration, and premium support",
+        "sidenavStorageText": "More space 85% off"
+      },
+      "highWarning": {
+        "title": "Your storage is almost full",
+        "descriptionLabelLine1": "You may soon be unable to upload new files",
+        "descriptionLabelLine2": "Upgrade now with an exclusive 85% discount to continue storing and syncing your files without limits",
+        "sidenavStorageText": "Buy space 85% off"
+      },
+      "close": "Close",
+      "cta": "Get offer"
     }
   },
   "form": {

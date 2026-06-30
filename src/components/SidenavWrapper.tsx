@@ -10,7 +10,6 @@ import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { planSelectors } from 'app/store/slices/plan';
 import { sharedThunks } from 'app/store/slices/sharedLinks';
-import { uiActions } from 'app/store/slices/ui';
 import logo from 'assets/icons/small-logo.svg';
 import { useSidenavCollapsed } from 'hooks/useSidenavCollapsed';
 import { useSidenavNavigation } from 'hooks/useSidenavNavigation';
@@ -24,6 +23,12 @@ import { useReferralParamsChange } from 'views/Drive/hooks/useReferralParamsChan
 import WorkspaceSelectorContainer from 'views/Home/components/WorkspaceSelectorContainer';
 import WorkspaceSelectorSkeleton from 'views/Home/components/WorkspaceSelectorSkeleton';
 import ReferralBanner from './ReferralBanner';
+import { CloudWarning } from '@phosphor-icons/react';
+import {
+  calculateUsedPercentage,
+  getReachedStorageWarningStage,
+  openUpgradeSpecialOffer,
+} from 'views/Home/utils/storageWarning';
 
 const SidenavPrimaryAction = ({
   user,
@@ -69,6 +74,10 @@ const SidenavWrapper = () => {
   const userUsage = planUsage > 0 ? bytesToString(planUsage) : '0GB';
   const isReferralEligible = useAppSelector((state: RootState) => state.referrals.isEligible);
 
+  const isFreeUser = subscription?.type === 'free';
+  const usedPercentage = calculateUsedPercentage(planUsage, planLimit);
+  const reachedStorageStage = isFreeUser ? getReachedStorageWarningStage(usedPercentage) : undefined;
+
   useReferralParamsChange();
 
   useEffect(() => {
@@ -90,14 +99,17 @@ const SidenavWrapper = () => {
     return subscription?.type === 'free' || isLifetimeAvailable;
   };
 
-  const handleUpgradeClick = () => {
-    navigationService.openPreferencesDialog({
-      section: 'account',
-      subsection: 'plans',
-      workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId,
-    });
-    dispatch(uiActions.setIsPreferencesDialogOpen(true));
-  };
+  const handleUpgradeClick = openUpgradeSpecialOffer;
+
+  const storageAdvertisement = reachedStorageStage?.advertisementKey ? (
+    <span className="flex flex-row gap-0.5 items-center">
+      <CloudWarning
+        className="size-5 text-yellow-60"
+        weight={reachedStorageStage.key === 'highWarning' ? 'fill' : 'regular'}
+      />
+      <p className="text-sm font-semibold text-gray-80">{translate(reachedStorageStage.advertisementKey)} </p>
+    </span>
+  ) : undefined;
 
   const handleReferralClick = () => {
     if (user) {
@@ -141,6 +153,9 @@ const SidenavWrapper = () => {
           onUpgradeClick: handleUpgradeClick,
           upgradeLabel: isUpgradeAvailable() ? translate('preferences.account.plans.upgrade') : undefined,
           isLoading: isLoadingPlanUsage && isLoadingPlanLimit && isLoadingBusinessLimitAndUsage,
+          barClassName: reachedStorageStage?.barClassName,
+          containerClassName: reachedStorageStage?.containerClassName,
+          advertisement: storageAdvertisement,
         }}
       />
       {isReferralEligible && (

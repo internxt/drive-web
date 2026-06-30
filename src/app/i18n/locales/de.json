@@ -1097,6 +1097,27 @@
         "title": "Cleaner freischalten",
         "description": "Upgrade jetzt, um deine Dateien zu optimieren und Speicherplatz freizugeben."
       }
+    },
+    "reachingUsageBanner": {
+      "lowWarning": {
+        "title": "Hol dir mehr Speicherplatz für deine Dateien",
+        "descriptionLabelLine1": "Schalte zusätzlichen Speicher mit einem exklusiven **Rabatt von 85 %** auf dein Upgrade frei",
+        "descriptionLabelLine2": "Greife auf erweiterte Funktionen wie Dateiversionsverlauf, Rclone, NAS-Unterstützung, Premium-Support und mehr zu"
+      },
+      "midWarning": {
+        "title": "Dein Speicher füllt sich",
+        "descriptionLabelLine1": "Führe heute ein Upgrade mit einem exklusiven **Rabatt von 85 %** durch und lade weiter ohne Unterbrechungen hoch",
+        "descriptionLabelLine2": "Erhalte mehr Speicher sowie erweiterte Funktionen wie Dateiversionsverlauf, NAS-Unterstützung, Rclone-Integration und Premium-Support",
+        "sidenavStorageText": "Mehr Speicher 85 % Rabatt"
+      },
+      "highWarning": {
+        "title": "Dein Speicher ist fast voll",
+        "descriptionLabelLine1": "Möglicherweise kannst du bald keine neuen Dateien mehr hochladen",
+        "descriptionLabelLine2": "Führe jetzt ein Upgrade mit einem exklusiven Rabatt von 85 % durch, um deine Dateien ohne Grenzen weiter zu speichern und zu synchronisieren",
+        "sidenavStorageText": "Speicher kaufen 85 % Rabatt"
+      },
+      "close": "Schließen",
+      "cta": "Angebot sichern"
     }
   },
   "form": {

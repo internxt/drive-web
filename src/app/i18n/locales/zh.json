@@ -1136,6 +1136,27 @@
         "title": "解锁 Cleaner",
         "description": "升级以优化您的文件并释放存储空间。"
       }
+    },
+    "reachingUsageBanner": {
+      "lowWarning": {
+        "title": "为你的文件获取更多空间",
+        "descriptionLabelLine1": "升级时享受专属 **85% 折扣**，解锁额外存储空间",
+        "descriptionLabelLine2": "使用高级功能，例如文件版本历史记录、Rclone、NAS 支持、优先客服等"
+      },
+      "midWarning": {
+        "title": "你的存储空间即将用满",
+        "descriptionLabelLine1": "今天就以专属 **85% 折扣**升级，持续上传不中断",
+        "descriptionLabelLine2": "获取更多存储空间，以及文件版本历史记录、NAS 支持、Rclone 集成和优先客服等高级功能",
+        "sidenavStorageText": "更多空间 85% 折扣"
+      },
+      "highWarning": {
+        "title": "你的存储空间几乎已满",
+        "descriptionLabelLine1": "你可能很快将无法上传新文件",
+        "descriptionLabelLine2": "立即以专属 85% 折扣升级，不受限制地继续存储和同步你的文件",
+        "sidenavStorageText": "购买空间 85% 折扣"
+      },
+      "close": "关闭",
+      "cta": "获取优惠"
     }
   },
   "form": {

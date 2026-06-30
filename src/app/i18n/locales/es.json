@@ -1148,6 +1148,27 @@
         "title": "Desbloquear Cleaner",
         "description": "Mejora tu plan ahora para mantener tus archivos optimizados y liberar espacio."
       }
+    },
+    "reachingUsageBanner": {
+      "lowWarning": {
+        "title": "Consigue más espacio para tus archivos",
+        "descriptionLabelLine1": "Desbloquea almacenamiento adicional con un **85% de descuento** exclusivo en tu mejora",
+        "descriptionLabelLine2": "Accede a funciones avanzadas como el historial de versiones de archivos, Rclone, compatibilidad con NAS, soporte premium y mucho más"
+      },
+      "midWarning": {
+        "title": "Tu almacenamiento se está llenando",
+        "descriptionLabelLine1": "Mejora hoy con un **85% de descuento** exclusivo y sigue subiendo archivos sin interrupciones",
+        "descriptionLabelLine2": "Consigue más almacenamiento además de funciones avanzadas como el historial de versiones de archivos, compatibilidad con NAS, integración con Rclone y soporte premium",
+        "sidenavStorageText": "Más espacio 85% dto."
+      },
+      "highWarning": {
+        "title": "Tu almacenamiento está casi lleno",
+        "descriptionLabelLine1": "Es posible que pronto no puedas subir nuevos archivos",
+        "descriptionLabelLine2": "Mejora ahora con un 85% de descuento exclusivo para seguir almacenando y sincronizando tus archivos sin límites",
+        "sidenavStorageText": "Compra espacio 85% dto."
+      },
+      "close": "Cerrar",
+      "cta": "Obtener oferta"
     }
   },
   "form": {
