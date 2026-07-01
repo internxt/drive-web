@@ -20,7 +20,9 @@ export default function fetchFileStream(
       pass: bridgePass,
       user: bridgeUser,
     },
-    mnemonic: encryptionKey,
+    key: {
+      mnemonic: encryptionKey,
+    },
     options: {
       notifyProgress: (totalBytes: number, downloadedBytes: number) => {
         options.updateProgressCallback(downloadedBytes / totalBytes);
