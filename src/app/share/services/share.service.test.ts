@@ -16,6 +16,20 @@ import { stringUtils, aes } from '@internxt/lib';
 import notificationsService from 'app/notifications/services/notifications.service';
 import { SharedFiles, SharingMeta } from '@internxt/sdk/dist/drive/share/types';
 import { generateFileBucketKey } from 'app/network/crypto';
+import { domainManager } from './DomainManager';
+import { copyTextToClipboard } from 'utils/copyToClipboard.utils';
+import referralService from 'services/referral.service';
+import { ToastType } from 'app/notifications/services/notifications.service';
+
+vi.mock('utils/copyToClipboard.utils', () => ({
+  copyTextToClipboard: vi.fn(),
+}));
+
+vi.mock('services/referral.service', () => ({
+  default: {
+    trackShareCreated: vi.fn(),
+  },
+}));
 
 vi.mock('utils', () => ({
   generateCaptchaToken: vi.fn(() => 'mocked-captcha-token'),
@@ -57,7 +71,7 @@ describe('Encryption and Decryption', () => {
         getAllWorkspaceTeamSharedFolderFiles: vi.fn(),
       },
     }));
-    vi.mock('./DomainManager', () => ({ domainManager: vi.fn() }));
+    vi.mock('./DomainManager', () => ({ domainManager: { getDomainsList: vi.fn() } }));
   });
 
   beforeEach(() => {
@@ -329,8 +343,10 @@ describe('Get public shared link', async () => {
     bucket,
   } as SharedFiles;
 
+  const validSharingId = 'f32a91da-c799-4e13-aa17-8c4d9e0323c9';
+
   const mockSharingMeta = {
-    id: 'mock id',
+    id: validSharingId,
     itemId: 'mock item id',
     itemType: 'file',
     ownerId: 'mock owner id',
@@ -403,6 +419,86 @@ describe('Get public shared link', async () => {
     await getPublicShareLink('uuid', 'file');
 
     expect(showNotificationSpy).toHaveBeenCalledWith(expect.objectContaining({ requestId: 'test-request-id' }));
+  });
+
+  test('When domains list is not empty, use it', async () => {
+    vi.spyOn(localStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
+
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    const mockCreatePublicSharingItemFn = vi.fn().mockResolvedValue(mockSharingMeta);
+    const mockCreateShareClientFn = vi.fn(() => ({
+      createSharing: mockCreatePublicSharingItemFn,
+    }));
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
+      createShareClient: mockCreateShareClientFn,
+    } as any);
+
+    vi.mocked(domainManager.getDomainsList).mockReturnValue(['https://mock-domain.com']);
+    vi.mocked(copyTextToClipboard).mockResolvedValue(undefined);
+
+    const showNotificationSpy = vi.spyOn(notificationsService, 'show');
+    const trackShareCreatedSpy = vi.spyOn(referralService, 'trackShareCreated');
+
+    const { getPublicShareLink } = await import('./share.service');
+    const result = await getPublicShareLink('uuid', 'file');
+
+    expect(copyTextToClipboard).toHaveBeenCalledWith(
+      expect.stringContaining('https://mock-domain.com/sh/file/8yqR2seZThOqF4xNngMjyQ/'),
+    );
+    expect(showNotificationSpy).toHaveBeenCalledWith(expect.objectContaining({ type: ToastType.Success }));
+    expect(trackShareCreatedSpy).toHaveBeenCalledTimes(1);
+    expect(result).toEqual(expect.objectContaining({ id: validSharingId }));
+  });
+
+  test('When domains list is empty, use the fallback domain', async () => {
+    vi.spyOn(localStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
+
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    const mockCreatePublicSharingItemFn = vi.fn().mockResolvedValue(mockSharingMeta);
+    const mockCreateShareClientFn = vi.fn(() => ({
+      createSharing: mockCreatePublicSharingItemFn,
+    }));
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
+      createShareClient: mockCreateShareClientFn,
+    } as any);
+
+    vi.mocked(domainManager.getDomainsList).mockReturnValue([]);
+    vi.mocked(copyTextToClipboard).mockResolvedValue(undefined);
+
+    const { getPublicShareLink } = await import('./share.service');
+    await getPublicShareLink('uuid', 'file');
+
+    expect(copyTextToClipboard).toHaveBeenCalledWith(
+      expect.stringContaining(`${window.location.origin}/sh/file/8yqR2seZThOqF4xNngMjyQ/`),
+    );
+  });
+
+  test('When copyTextToClipboard rejects, an error notification is shown and the error is reported', async () => {
+    vi.spyOn(localStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
+
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    const mockCreatePublicSharingItemFn = vi.fn().mockResolvedValue(mockSharingMeta);
+    const mockCreateShareClientFn = vi.fn(() => ({
+      createSharing: mockCreatePublicSharingItemFn,
+    }));
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
+      createShareClient: mockCreateShareClientFn,
+    } as any);
+
+    vi.mocked(domainManager.getDomainsList).mockReturnValue(['https://mock-domain.com']);
+    vi.mocked(copyTextToClipboard).mockRejectedValueOnce(new Error('Clipboard unavailable'));
+
+    const errorService = (await import('services/error.service')).default;
+    const showNotificationSpy = vi.spyOn(notificationsService, 'show');
+
+    const { getPublicShareLink } = await import('./share.service');
+    const result = await getPublicShareLink('uuid', 'file');
+
+    expect(result).toBeUndefined();
+    expect(showNotificationSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ type: ToastType.Error, requestId: 'test-request-id' }),
+    );
+    expect(errorService.reportError).toHaveBeenCalled();
   });
 });
 
