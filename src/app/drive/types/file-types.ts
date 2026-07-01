@@ -191,6 +191,7 @@ const txtExtensions: FileExtensionMap = {
   txt: ['txt', 'text', 'conf', 'def', 'list', 'log', 'md', 'lock'],
 };
 
+const previewableTxtExtensionGroups: string[] = ['txt'];
 export const videoExtensions: FileExtensionMap = {
   webm: ['webm'],
   mkv: ['mkv'],
@@ -297,7 +298,7 @@ export const fileExtensionPreviewableGroups: fileExtensionsPreviewableDictionary
   [FileExtensionGroup.Image]: previewableImageExtensionGroups,
   [FileExtensionGroup.Pdf]: previewablePdfExtensionGroups,
   [FileExtensionGroup.Ppt]: [],
-  [FileExtensionGroup.Txt]: [],
+  [FileExtensionGroup.Txt]: previewableTxtExtensionGroups,
   [FileExtensionGroup.Video]: previewableVideoExtensionsGroup,
   [FileExtensionGroup.Word]: previewableDocsGroup,
   [FileExtensionGroup.Xls]: previewableExcelFormatExtensionGroup,

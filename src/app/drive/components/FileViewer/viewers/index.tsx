@@ -6,6 +6,7 @@ const FileVideoViewer = lazy(() => import('./FileVideoViewer/FileVideoViewer'));
 const FileAudioViewer = lazy(() => import('./FileAudioViewer/FileAudioViewer'));
 const FileXlsxViewer = lazy(() => import('./FileXlsxViewer/FileXlsxViewer'));
 const FileDocumentViewer = lazy(() => import('./FileDocumentViewer/FileDocumentViewer'));
+const FileTxtViewer = lazy(() => import('./FileTxtViewer/FileTxtViewer'));
 
 export default {
   [FileExtensionGroup.Image]: FileImageViewer,
@@ -14,4 +15,5 @@ export default {
   [FileExtensionGroup.Audio]: FileAudioViewer,
   [FileExtensionGroup.Xls]: FileXlsxViewer,
   [FileExtensionGroup.Word]: FileDocumentViewer,
+  [FileExtensionGroup.Txt]: FileTxtViewer,
 };

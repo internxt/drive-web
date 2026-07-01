@@ -97,6 +97,12 @@ const FileViewerWrapper = ({
     const extensionGroup = getIsTypeAllowedAndFileExtensionGroupValues(currentFile);
     const isVideo = extensionGroup?.fileExtensionGroup === FileExtensionGroup['Video'];
 
+    if (currentFile && Number(currentFile.size) === 0) {
+      setBlob(new Blob([]));
+      setUpdateProgress(0);
+      return;
+    }
+
     if (currentFile && !updateProgress && !isDownloadStarted && !isVideo) {
       setIsDownloadStarted(true);
       fileContentManager
