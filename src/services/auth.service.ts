@@ -109,7 +109,7 @@ const getCurrentUrlParams = (): Record<string, string> => {
 
 export async function logOut(loginParams?: Record<string, string>): Promise<void> {
   try {
-    const token = localStorageService.get(LocalStorageItem.NewToken) ?? undefined;
+    const token = localStorageService.getToken() ?? undefined;
     if (token) {
       const authClient = SdkFactory.getNewApiInstance().createAuthClient();
       await authClient.logout(token);
@@ -132,7 +132,7 @@ export async function logOut(loginParams?: Record<string, string>): Promise<void
 
 export function cancelAccount(): Promise<void> {
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
-  const token = localStorageService.get(LocalStorageItem.NewToken) ?? undefined;
+  const token = localStorageService.getToken() ?? undefined;
   return authClient.sendUserDeactivationEmail(token);
 }
 
@@ -213,7 +213,7 @@ export const doLogin = async (
 
       localStorageService.set(LocalStorageItem.UserToken, token);
       localStorageService.set(LocalStorageItem.UserMnemonic, clearMnemonic);
-      localStorageService.set(LocalStorageItem.NewToken, newToken);
+      localStorageService.setToken(newToken);
 
       return {
         user: clearUser,
@@ -420,7 +420,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
     .then((res) => {
       const { token, newToken } = res;
       if (token) localStorageService.set(LocalStorageItem.UserToken, token);
-      if (newToken) localStorageService.set(LocalStorageItem.NewToken, newToken);
+      if (newToken) localStorageService.setToken(newToken);
     })
     .catch((error) => {
       const appErr = errorService.castError(error);
@@ -438,7 +438,7 @@ export const userHas2FAStored = (): Promise<SecurityDetails> => {
 };
 
 export const generateNew2FA = (): Promise<TwoFactorAuthQR> => {
-  const token = localStorageService.get(LocalStorageItem.NewToken) || undefined;
+  const token = localStorageService.getToken() || undefined;
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   return authClient.generateTwoFactorAuthQR(token);
 };
@@ -451,7 +451,7 @@ export const deactivate2FA = (
   const salt = decryptText(passwordSalt);
   const hashObj = passToHash({ password: deactivationPassword, salt });
   const encPass = encryptText(hashObj.hash);
-  const token = localStorageService.get(LocalStorageItem.NewToken) || undefined;
+  const token = localStorageService.getToken() || undefined;
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   return authClient.disableTwoFactorAuth(encPass, deactivationCode, token);
 };
@@ -462,7 +462,7 @@ export async function areCredentialsCorrect(password: string): Promise<boolean> 
   const authClient = SdkFactory.getNewApiInstance().createAuthClient({
     unauthorizedCallback: () => undefined,
   });
-  const token = localStorageService.get(LocalStorageItem.NewToken) ?? undefined;
+  const token = localStorageService.getToken() ?? undefined;
   return authClient.areCredentialsCorrect(hashedPassword, token);
 }
 
@@ -487,7 +487,7 @@ export const getRedirectUrl = (urlSearchParams: URLSearchParams, token: string):
 };
 
 const store2FA = async (code: string, twoFactorCode: string): Promise<void> => {
-  const token = localStorageService.get(LocalStorageItem.NewToken) || undefined;
+  const token = localStorageService.getToken() || undefined;
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   return authClient.storeTwoFactorAuthKey(code, twoFactorCode, token);
 };
@@ -562,7 +562,7 @@ export const signUp = async (params: SignUpParams) => {
 
   localStorageService.set(LocalStorageItem.UserToken, xToken);
   localStorageService.set(LocalStorageItem.UserMnemonic, mnemonic);
-  localStorageService.set(LocalStorageItem.NewToken, xNewToken);
+  localStorageService.setToken(xNewToken);
 
   const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(xUser, password);
 

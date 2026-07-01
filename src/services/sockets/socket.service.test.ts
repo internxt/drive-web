@@ -52,7 +52,7 @@ describe('RealtimeService', () => {
       return '';
     });
 
-    vi.spyOn(localStorageService, 'get').mockReturnValue('mock-token-123');
+    vi.spyOn(localStorageService, 'getToken').mockReturnValue('mock-token-123');
 
     mockSocket.id = 'mock-socket-id';
     mockSocket.connected = true;

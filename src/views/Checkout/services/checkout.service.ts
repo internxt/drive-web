@@ -15,7 +15,6 @@ import envService from 'services/env.service';
 import errorService from 'services/error.service';
 import { bytesToString } from 'app/drive/services/size.service';
 import userService from 'services/user.service';
-import { LocalStorageItem } from 'app/core/types';
 
 const BORDER_SHADOW = 'rgb(0 102 255)';
 
@@ -114,7 +113,7 @@ export const createPaymentIntent = async ({
 
 const checkoutSetupIntent = async (customerId: string) => {
   try {
-    const newToken = localStorageService.get(LocalStorageItem.NewToken);
+    const newToken = localStorageService.getToken();
 
     if (!newToken) {
       throw new Error('No authentication token available');
