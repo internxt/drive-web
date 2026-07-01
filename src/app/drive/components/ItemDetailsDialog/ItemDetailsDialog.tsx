@@ -10,7 +10,6 @@ import iconService from 'app/drive/services/icon.service';
 import { Button, Modal } from '@internxt/ui';
 import { bytesToString } from 'app/drive/services/size.service';
 import localStorageService from 'services/local-storage.service';
-import { STORAGE_KEYS } from 'services/storage-keys';
 import { DriveItemData, DriveItemDetails, ItemDetailsProps } from 'app/drive/types';
 import newStorageService from 'app/drive/services/new-storage.service';
 import errorService from 'services/error.service';
@@ -192,8 +191,7 @@ const ItemDetailsDialog = ({
     const itemType: ItemType = item.isFolder ? 'folder' : 'file';
     const itemUuid = item.uuid;
     const itemFolderUuid = item.isFolder ? itemUuid : item.folderUuid;
-    const storageKey = item.isFolder ? STORAGE_KEYS.FOLDER_ACCESS_TOKEN : STORAGE_KEYS.FILE_ACCESS_TOKEN;
-    const token = localStorageService.get(storageKey) || undefined;
+    const token = localStorageService.getStorageToken(item.isFolder) || undefined;
 
     const [location, folderStats] = await Promise.all([
       getItemLocation(item, itemType, itemUuid, itemFolderUuid, token),

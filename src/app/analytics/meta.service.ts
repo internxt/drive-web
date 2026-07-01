@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { LocalStorageItem } from 'app/core/types';
 import localStorageService from 'services/local-storage.service';
 
 const canTrack = () => {
@@ -27,8 +28,8 @@ export const trackLead = (email: string, userID: string) => {
 export const trackPurchase = () => {
   if (!canTrack()) return;
 
-  const amountPaid = localStorageService.get('amountPaid');
-  const currency = localStorageService.get('currency');
+  const amountPaid = localStorageService.get(LocalStorageItem.AmountPaid);
+  const currency = localStorageService.get(LocalStorageItem.Currency);
 
   if (!amountPaid || !currency) {
     return;
