@@ -29,26 +29,27 @@ export const trackPurchase = () => {
 
   const amountPaid = localStorageService.get('amountPaid');
   const currency = localStorageService.get('currency');
-
-  if (!amountPaid || !currency) {
-    return;
-  }
+  if (!amountPaid || !currency) return;
 
   const value = Number.parseFloat(amountPaid);
 
+  const eventId =
+    localStorageService.get('subscriptionId') ??
+    localStorageService.get('paymentIntentId') ??
+    undefined;
+
   globalThis.window.dataLayer.push({
     event: 'purchaseSuccessful',
-    ecommerce: {
-      value: value,
-      currency: currency,
-    },
+    ecommerce: { value, currency },
+    ...(eventId && { eventId }),
   });
 
-  (globalThis.window as any).fbq('track', 'Purchase', {
-    value: value,
-    currency: currency,
-    content_type: 'product',
-  });
+  (globalThis.window as any).fbq(
+    'track',
+    'Purchase',
+    { value, currency, content_type: 'product' },
+    ...(eventId ? [{ eventID: eventId }] : []),
+  );
 };
 
 export const trackCheckoutStart = (data?: { value?: number; currency?: string; content_ids?: string[] }) => {

@@ -113,17 +113,6 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
 
     localStorageService.set('checkout_item_data', JSON.stringify(checkoutItemData));
 
-    const ecommerceData = {
-      currency: currencyCode,
-      value: totalAmount,
-      items: [item],
-    };
-
-    globalThis.window.dataLayer.push({
-      event: 'begin_checkout',
-      ecommerce: ecommerceData,
-    });
-
     if (globalThis.window.gtag && SEND_TO.length > 0) {
       globalThis.window.gtag('event', 'begin_checkout', {
         send_to: SEND_TO,
@@ -205,19 +194,6 @@ function trackPurchase(): void {
         email: email,
       });
     }
-
-    const purchaseEcommerce = {
-      transaction_id: transactionId,
-      currency: currencyCode,
-      value: amount,
-      items: [item],
-      coupon: couponCode ?? undefined,
-    };
-
-    globalThis.window.dataLayer.push({
-      event: 'purchase',
-      ecommerce: purchaseEcommerce,
-    });
 
     if (SEND_TO.length > 0) {
       globalThis.window.gtag('event', 'purchase', {

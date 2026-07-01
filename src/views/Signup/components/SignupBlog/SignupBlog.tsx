@@ -23,7 +23,7 @@ export default function SignupBlog(): JSX.Element {
     <>
       <Helmet>
         <link rel="canonical" href={`${envService.getVariable('hostname')}/signup-blog`} />
-        <script src={`https://www.googletagmanager.com/gtag/js?id=${envService.getVariable('gaBlogId')}`}></script>
+        <script src={`https://www.googletagmanager.com/gtag/js?id=${envService.getVariable('gaId')}`}></script>
       </Helmet>
 
       <div className="flex flex-col items-center justify-center overflow-hidden bg-white">

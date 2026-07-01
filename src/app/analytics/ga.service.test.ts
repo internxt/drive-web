@@ -74,6 +74,11 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
+function getGtagPayload(eventName: string): any {
+  const call = vi.mocked(globalThis.window.gtag).mock.calls.find((c) => c[0] === 'event' && c[1] === eventName);
+  return call?.[2];
+}
+
 describe('Testing GA Service', () => {
   describe('track function', () => {
     it('should push event to dataLayer when called with event name and data', () => {
@@ -108,14 +113,17 @@ describe('Testing GA Service', () => {
 
   describe('trackBeginCheckout function', () => {
     describe('Successful tracking', () => {
-      it('should push begin_checkout event to dataLayer', () => {
+      it('When a checkout starts, then a single begin_checkout event is reported to Google Analytics', () => {
         gaService.trackBeginCheckout(mockTrackBeginCheckoutParams);
 
-        expect(globalThis.window.dataLayer).toHaveLength(1);
-        expect(globalThis.window.dataLayer[0].event).toBe('begin_checkout');
+        const beginCheckoutCalls = vi
+          .mocked(globalThis.window.gtag)
+          .mock.calls.filter((call) => call[1] === 'begin_checkout');
+        expect(beginCheckoutCalls).toHaveLength(1);
+        expect(globalThis.window.dataLayer).toHaveLength(0);
       });
 
-      it('should call gtag with send_to configuration', () => {
+      it('When a checkout starts, then the event is reported to the configured analytics destinations', () => {
         gaService.trackBeginCheckout(mockTrackBeginCheckoutParams);
 
         expect(globalThis.window.gtag).toHaveBeenCalledWith(
@@ -127,24 +135,24 @@ describe('Testing GA Service', () => {
         );
       });
 
-      it('should include coupon code in the event when provided', () => {
+      it('When the customer applies a coupon, then the coupon is reported with the purchased item', () => {
         gaService.trackBeginCheckout(mockTrackBeginCheckoutParams);
 
-        const event = globalThis.window.dataLayer[0] as any;
-        expect(event.ecommerce.items[0]).toMatchObject({
+        const payload = getGtagPayload('begin_checkout');
+        expect(payload.items[0]).toMatchObject({
           coupon: 'DISCOUNT20',
         });
       });
 
-      it('should calculate and include discount amount when coupon is applied', () => {
+      it('When the customer applies a coupon, then the resulting discount amount is reported', () => {
         gaService.trackBeginCheckout(mockTrackBeginCheckoutParams);
 
-        const event = globalThis.window.dataLayer[0] as any;
-        expect(event.ecommerce.items[0].discount).toBeDefined();
-        expect(event.ecommerce.items[0].discount).toBeGreaterThan(0);
+        const payload = getGtagPayload('begin_checkout');
+        expect(payload.items[0].discount).toBeDefined();
+        expect(payload.items[0].discount).toBeGreaterThan(0);
       });
 
-      it('should calculate total value correctly when multiple seats are purchased', () => {
+      it('When several seats are purchased, then the reported quantity and total value reflect all seats', () => {
         const paramsWithMultipleSeats = {
           ...mockTrackBeginCheckoutParams,
           seats: 5,
@@ -152,19 +160,19 @@ describe('Testing GA Service', () => {
 
         gaService.trackBeginCheckout(paramsWithMultipleSeats);
 
-        const event = globalThis.window.dataLayer[0] as any;
-        expect(event.ecommerce.items[0].quantity).toBe(5);
-        expect(event.ecommerce.value).toBeGreaterThan(0);
+        const payload = getGtagPayload('begin_checkout');
+        expect(payload.items[0].quantity).toBe(5);
+        expect(payload.value).toBeGreaterThan(0);
       });
 
-      it('should format storage bytes into human-readable format', () => {
+      it('When a plan is bought, then its storage is reported in a human-readable format', () => {
         const bytesToStringSpy = vi.mocked(bytesToString);
 
         gaService.trackBeginCheckout(mockTrackBeginCheckoutParams);
 
         expect(bytesToStringSpy).toHaveBeenCalledWith(1099511627776);
-        const event = globalThis.window.dataLayer[0] as any;
-        expect(event.ecommerce.items[0].item_name).toContain('1TB');
+        const payload = getGtagPayload('begin_checkout');
+        expect(payload.items[0].item_name).toContain('1TB');
       });
 
       it('should save item data to localStorage for later use in purchase event', () => {
@@ -184,14 +192,11 @@ describe('Testing GA Service', () => {
     });
 
     describe('Error handling', () => {
-      it('should handle errors gracefully when tracking fails', () => {
+      it('When analytics reporting throws, then the checkout flow keeps working and the error is logged', () => {
         const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-        const mockDataLayer = {
-          push: vi.fn(() => {
-            throw new Error('Tracking Error');
-          }),
-        };
-        globalThis.window.dataLayer = mockDataLayer as any;
+        globalThis.window.gtag = vi.fn(() => {
+          throw new Error('Tracking Error');
+        }) as any;
 
         expect(() => gaService.trackBeginCheckout(mockTrackBeginCheckoutParams)).not.toThrow();
         expect(consoleErrorSpy).toHaveBeenCalled();
@@ -203,7 +208,7 @@ describe('Testing GA Service', () => {
 
   describe('trackPurchase function', () => {
     describe('Successful tracking', () => {
-      it('should push purchase event to dataLayer with correct transaction and item data', () => {
+      it('When a purchase completes, then a single purchase event with the transaction and item data is reported', () => {
         vi.mocked(localStorageService.getUser).mockReturnValue({
           uuid: 'user_uuid_123',
           email: 'test@example.com',
@@ -230,29 +235,28 @@ describe('Testing GA Service', () => {
 
         gaService.trackPurchase();
 
-        expect(globalThis.window.dataLayer).toHaveLength(1);
-        const event = globalThis.window.dataLayer[0] as any;
+        const purchaseCalls = vi.mocked(globalThis.window.gtag).mock.calls.filter((call) => call[1] === 'purchase');
+        expect(purchaseCalls).toHaveLength(1);
+        expect(globalThis.window.dataLayer).toHaveLength(0);
 
-        expect(event).toMatchObject({
-          event: 'purchase',
-          ecommerce: {
-            transaction_id: 'sub_12345',
-            currency: 'EUR',
-            value: 95.9,
-            items: [
-              {
-                item_id: 'price_yearly_2tb',
-                item_name: '2TB Year Plan',
-                item_category: 'Individual',
-                item_variant: 'year',
-                price: 119.88,
-                quantity: 1,
-                item_brand: 'Internxt',
-                coupon: 'DISCOUNT20',
-                discount: 23.98,
-              },
-            ],
-          },
+        const payload = getGtagPayload('purchase');
+        expect(payload).toMatchObject({
+          transaction_id: 'sub_12345',
+          currency: 'EUR',
+          value: 95.9,
+          items: [
+            {
+              item_id: 'price_yearly_2tb',
+              item_name: '2TB Year Plan',
+              item_category: 'Individual',
+              item_variant: 'year',
+              price: 119.88,
+              quantity: 1,
+              item_brand: 'Internxt',
+              coupon: 'DISCOUNT20',
+              discount: 23.98,
+            },
+          ],
         });
       });
 
@@ -275,8 +279,7 @@ describe('Testing GA Service', () => {
 
         gaService.trackPurchase();
 
-        const event = globalThis.window.dataLayer[0] as any;
-        expect(event.ecommerce.transaction_id).toBe('pi_999');
+        expect(getGtagPayload('purchase').transaction_id).toBe('pi_999');
       });
 
       it('should use subscription ID when payment intent is not available', () => {
@@ -298,8 +301,7 @@ describe('Testing GA Service', () => {
 
         gaService.trackPurchase();
 
-        const event = globalThis.window.dataLayer[0] as any;
-        expect(event.ecommerce.transaction_id).toBe('sub_888');
+        expect(getGtagPayload('purchase').transaction_id).toBe('sub_888');
       });
 
       it('should fallback to user UUID when neither payment intent nor subscription ID are available', () => {
@@ -321,8 +323,7 @@ describe('Testing GA Service', () => {
 
         gaService.trackPurchase();
 
-        const event = globalThis.window.dataLayer[0] as any;
-        expect(event.ecommerce.transaction_id).toBe('user_fallback_uuid');
+        expect(getGtagPayload('purchase').transaction_id).toBe('user_fallback_uuid');
       });
 
       it('should set user email for Enhanced Conversions when available', () => {
@@ -402,9 +403,9 @@ describe('Testing GA Service', () => {
 
         gaService.trackPurchase();
 
-        const event = globalThis.window.dataLayer[0] as any;
-        expect(event.ecommerce.items[0].price).toBe(119.88);
-        expect(event.ecommerce.value).toBe(0);
+        const payload = getGtagPayload('purchase');
+        expect(payload.items[0].price).toBe(119.88);
+        expect(payload.value).toBe(0);
       });
 
       it('should not track when checkout data is missing (already tracked)', () => {
@@ -464,7 +465,7 @@ describe('Testing GA Service', () => {
         consoleWarnSpy.mockRestore();
       });
 
-      it('should handle errors gracefully when dataLayer fails', () => {
+      it('When analytics reporting throws during a purchase, then the flow keeps working and the error is logged', () => {
         const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
         vi.mocked(localStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as any);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
@@ -479,15 +480,12 @@ describe('Testing GA Service', () => {
             });
           return 'dummy';
         });
-        const mockDataLayer = {
-          push: vi.fn(() => {
-            throw new Error('DL Error');
-          }),
-        };
-        globalThis.window.dataLayer = mockDataLayer as any;
+        globalThis.window.gtag = vi.fn(() => {
+          throw new Error('gtag Error');
+        }) as any;
 
         expect(() => gaService.trackPurchase()).not.toThrow();
-        expect(mockDataLayer.push).toHaveBeenCalled();
+        expect(globalThis.window.gtag).toHaveBeenCalled();
         expect(consoleErrorSpy).toHaveBeenCalled();
 
         consoleErrorSpy.mockRestore();
