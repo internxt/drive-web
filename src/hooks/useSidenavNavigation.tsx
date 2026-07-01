@@ -6,17 +6,16 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useAppSelector } from 'app/store/hooks';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { SidenavOption } from '@internxt/ui/dist/components/navigation/sidenav/SidenavOptions';
-import { AppView } from 'app/core/types';
+import { AppView, LocalStorageItem } from 'app/core/types';
 import { RootState } from 'app/store';
 import localStorageService from 'services/local-storage.service';
-import { STORAGE_KEYS } from 'services/storage-keys';
 import desktopService from 'services/desktop.service';
 import { Translate } from 'app/i18n/types';
 import { navigationService } from 'services';
 
 const resetAccessTokenFileFolder = () => {
-  localStorageService.set(STORAGE_KEYS.FOLDER_ACCESS_TOKEN, '');
-  localStorageService.set(STORAGE_KEYS.FILE_ACCESS_TOKEN, '');
+  localStorageService.set(LocalStorageItem.FolderAccessToken, '');
+  localStorageService.set(LocalStorageItem.FileAccessToken, '');
 };
 
 const isActiveButton = (path: string) => {
