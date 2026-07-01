@@ -596,7 +596,9 @@ export async function downloadSharedFiles({
 }): Promise<void> {
   const sharingCredentials = {
     credentials: { ...creds },
-    mnemonic: decryptedEncryptionKey,
+    key: {
+      mnemonic: decryptedEncryptionKey,
+    },
   };
 
   if (selectedItems.length === 1 && !selectedItems[0].isFolder) {
@@ -708,7 +710,9 @@ export async function downloadPublicSharedFolder({
       user: credentials.networkUser,
       pass: credentials.networkPass,
     },
-    mnemonic: decrypted,
+    key: {
+      mnemonic: decrypted,
+    },
     isPublicShare: true,
   };
 

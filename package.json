@@ -1,6 +1,6 @@
 {
   "name": "drive-web",
-  "version": "v1.0.804",
+  "version": "v1.0.805",
   "private": true,
   "packageManager": "yarn@1.22.22",
   "dependencies": {
@@ -9,7 +9,7 @@
     "@iconscout/react-unicons": "^1.1.6",
     "@internxt/css-config": "1.1.0",
     "@internxt/lib": "1.4.1",
-    "@internxt/sdk": "=1.17.9",
+    "@internxt/sdk": "=1.17.12",
     "@internxt/ui": "=0.1.21",
     "@phosphor-icons/react": "^2.1.7",
     "@popperjs/core": "^2.11.6",
