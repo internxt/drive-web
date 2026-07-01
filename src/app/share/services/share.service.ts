@@ -306,13 +306,20 @@ export const createPublicShareFromOwnerUser = async (
     publicSharingItemData;
 
   let mnemonicToUse = mnemonic;
+  let bucketKeyToUse = bucketKeyHex;
   const isUserInvited = publicSharingItemData.ownerId !== user.uuid;
   if (isUserInvited && encryptedMnemonic) {
     const ownerMnemonic = await decryptMnemonic(encryptedMnemonic);
-    if (ownerMnemonic) mnemonicToUse = ownerMnemonic;
+    if (ownerMnemonic) {
+      mnemonicToUse = ownerMnemonic;
+      if (encryptionAlgorithmFromResponse === NEW_SHARING_VERSION) {
+        const newBucketKey = await generateFileBucketKey(mnemonicToUse, bucket);
+        bucketKeyToUse = Buffer.from(newBucketKey.subarray(0, 32)).toString('hex');
+      }
+    }
   }
   if (encryptedCodeFromResponse !== encryptedCode) {
-    const key = encryptionAlgorithmFromResponse === NEW_SHARING_VERSION ? bucketKeyHex : mnemonicToUse;
+    const key = encryptionAlgorithmFromResponse === NEW_SHARING_VERSION ? bucketKeyToUse : mnemonicToUse;
     plainCode = aes.decrypt(encryptedCodeFromResponse, key);
   }
 

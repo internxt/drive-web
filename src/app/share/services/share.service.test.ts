@@ -390,6 +390,113 @@ describe('Get public shared link', async () => {
     expect(spyDecrypt).not.toHaveBeenCalled();
   });
 
+  test('When user is invited and mnemonic is available in sharing v2, decrypt the mnemonic and use it', async () => {
+    const keys = await generateNewKeys();
+    const publicKeyInBase64 = keys.publicKeyArmored;
+    const publicKyberKeyBase64 = keys.publicKyberKeyBase64;
+    vi.spyOn(localStorageService, 'getUser').mockReturnValue({
+      bucket,
+      mnemonic,
+      uuid: 'test-uuid',
+      keys: {
+        ecc: {
+          publicKey: keys.publicKeyArmored,
+          privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+        },
+        kyber: {
+          publicKey: keys.publicKyberKeyBase64,
+          privateKey: keys.privateKyberKeyBase64,
+        },
+      },
+    } as UserSettings);
+    const spyDecrypt = vi.spyOn(aes, 'decrypt');
+    const mockDifferentMnemonic = 'mock mnemonic';
+    const encryptedMnemonic = await hybridEncryptMessageWithPublicKey({
+      message: mockDifferentMnemonic,
+      publicKeyInBase64,
+      publicKyberKeyBase64,
+    });
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    const mockSharingMetaWithEncryptedMnemonic = {
+      ...mockSharingMeta,
+      encryptedCode: aes.encrypt(mockPlainCode, mockDifferentMnemonic),
+      encryptionAlgorithm: 'inxt-v2',
+    };
+
+    const mockCreatePublicSharingItemFn = vi.fn().mockResolvedValue(mockSharingMetaWithEncryptedMnemonic);
+    const mockCreateShareClientFn = vi.fn(() => ({
+      createSharing: mockCreatePublicSharingItemFn,
+    }));
+
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
+      createShareClient: mockCreateShareClientFn,
+    } as any);
+
+    const { createPublicShareFromOwnerUser } = await import('./share.service');
+    const { publicSharingItemData, plainCode } = await createPublicShareFromOwnerUser('uuid', 'file', {
+      encryptedMnemonic,
+    });
+
+    expect(plainCode).toBeDefined();
+    expect(publicSharingItemData).toBeDefined();
+    expect(spyDecrypt).toHaveBeenCalled();
+    expect(plainCode).toBe(mockPlainCode);
+  });
+
+  test('When user is invited and mnemonic is available in sharing v3, decrypt the mnemonic and compute bucketKey from it', async () => {
+    const keys = await generateNewKeys();
+    const publicKeyInBase64 = keys.publicKeyArmored;
+    const publicKyberKeyBase64 = keys.publicKyberKeyBase64;
+    vi.spyOn(localStorageService, 'getUser').mockReturnValue({
+      bucket,
+      mnemonic,
+      uuid: 'test-uuid',
+      keys: {
+        ecc: {
+          publicKey: keys.publicKeyArmored,
+          privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+        },
+        kyber: {
+          publicKey: keys.publicKyberKeyBase64,
+          privateKey: keys.privateKyberKeyBase64,
+        },
+      },
+    } as UserSettings);
+    const spyDecrypt = vi.spyOn(aes, 'decrypt');
+    const mockDifferentMnemonic = 'mock mnemonic';
+    const encryptedMnemonic = await hybridEncryptMessageWithPublicKey({
+      message: mockDifferentMnemonic,
+      publicKeyInBase64,
+      publicKyberKeyBase64,
+    });
+    const newBucketKey = await generateFileBucketKey(mockDifferentMnemonic, bucket);
+    const newBucketKeyHex = Buffer.from(newBucketKey.subarray(0, 32)).toString('hex');
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    const mockSharingMetaWithEncryptedMnemonic = {
+      ...mockSharingMeta,
+      encryptedCode: aes.encrypt(mockPlainCode, newBucketKeyHex),
+    };
+
+    const mockCreatePublicSharingItemFn = vi.fn().mockResolvedValue(mockSharingMetaWithEncryptedMnemonic);
+    const mockCreateShareClientFn = vi.fn(() => ({
+      createSharing: mockCreatePublicSharingItemFn,
+    }));
+
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
+      createShareClient: mockCreateShareClientFn,
+    } as any);
+
+    const { createPublicShareFromOwnerUser } = await import('./share.service');
+    const { publicSharingItemData, plainCode } = await createPublicShareFromOwnerUser('uuid', 'file', {
+      encryptedMnemonic,
+    });
+
+    expect(plainCode).toBeDefined();
+    expect(publicSharingItemData).toBeDefined();
+    expect(spyDecrypt).toHaveBeenCalled();
+    expect(plainCode).toBe(mockPlainCode);
+  });
+
   test('When encrypted code changes, decrypt code', async () => {
     vi.spyOn(localStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
     const spyDecrypt = vi.spyOn(aes, 'decrypt');
