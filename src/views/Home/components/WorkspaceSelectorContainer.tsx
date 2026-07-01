@@ -10,7 +10,7 @@ import { RootState } from 'app/store';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import WorkspaceSelector, { Workspace } from './WorkspaceSelector';
 import localStorageService from 'services/local-storage.service';
-import { STORAGE_KEYS } from 'services/storage-keys';
+import { LocalStorageItem } from 'app/core/types';
 
 interface WorkspaceSelectorContainerProps {
   user: UserSettings | undefined;
@@ -55,8 +55,8 @@ const WorkspaceSelectorContainer = ({ user, isCollapsed }: WorkspaceSelectorCont
     }
     dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId }));
     dispatch(planThunks.fetchBusinessLimitUsageThunk());
-    localStorageService.setStorageItem(STORAGE_KEYS.FOLDER_ACCESS_TOKEN, '');
-    localStorageService.setStorageItem(STORAGE_KEYS.FILE_ACCESS_TOKEN, '');
+    localStorageService.set(LocalStorageItem.FolderAccessToken, '');
+    localStorageService.set(LocalStorageItem.FileAccessToken, '');
   };
 
   if (!user) return null;

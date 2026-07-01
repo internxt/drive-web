@@ -3,7 +3,6 @@ import { SdkFactory } from './index';
 import { LocalStorageService } from 'services/local-storage.service';
 import { userThunks } from '../../../store/slices/user';
 import { LocalStorageItem, Workspace } from '../../types';
-import { STORAGE_KEYS } from 'services/storage-keys';
 import { Share, Users } from '@internxt/sdk/dist/drive';
 import packageJson from '../../../../../package.json';
 import { Auth } from '@internxt/sdk/dist/auth';
@@ -95,7 +94,6 @@ describe('SdkFactory', () => {
       get: vi.fn(),
       getToken: vi.fn(),
       getWorkspace: vi.fn(),
-      getStorageItem: vi.fn(),
     } as any;
 
     SdkFactory.initialize(mockDispatch, mockLocalStorage);
@@ -167,9 +165,9 @@ describe('SdkFactory', () => {
 
       vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
       vi.spyOn(mockLocalStorage, 'getToken').mockReturnValue(mockToken);
-      vi.spyOn(mockLocalStorage, 'getStorageItem').mockImplementation((key) => {
-        if (key === STORAGE_KEYS.B2B_WORKSPACE) return mockWorkspaceId;
-        if (key === STORAGE_KEYS.WORKSPACE_CREDENTIALS) return JSON.stringify(mockCredentials);
+      vi.spyOn(mockLocalStorage, 'get').mockImplementation((key) => {
+        if (key === LocalStorageItem.B2Bworkspace) return mockWorkspaceId;
+        if (key === LocalStorageItem.WorkspaceCredentials) return JSON.stringify(mockCredentials);
         return null;
       });
 
@@ -231,8 +229,8 @@ describe('SdkFactory', () => {
       vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
       vi.spyOn(mockLocalStorage, 'getToken').mockReturnValue(mockToken);
       vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-        if (key === STORAGE_KEYS.B2B_WORKSPACE) return mockWorkspaceId;
-        if (key === STORAGE_KEYS.WORKSPACE_CREDENTIALS) return null;
+        if (key === LocalStorageItem.B2Bworkspace) return mockWorkspaceId;
+        if (key === LocalStorageItem.WorkspaceCredentials) return null;
         return null;
       });
 

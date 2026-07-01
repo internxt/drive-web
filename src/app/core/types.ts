@@ -155,6 +155,21 @@ export enum LocalStorageItem {
   UccStorageKey = 'cello_ucc',
   Theme = 'theme',
   IsThemeDark = 'theme:isDark',
+  B2Bworkspace = 'b2bWorkspace',
+  WorkspaceCredentials = 'workspace_credentials',
+  FolderAccessToken = 'folderAccessToken',
+  FileAccessToken = 'fileAccessToken',
+  GCLID = 'gclid',
+  HasSeenTrashDisposalDialog = 'hasSeenTrashDisposalDialog',
+  IdManagementTheme = 'id_management_theme_enabled',
+  EnvironmentTheme = 'environment_theme_enabled',
+  SummerTheme = 'summer_theme_enabled',
+  StarWarsTheme = 'star_wars_theme_enabled',
+  HalloweenTheme = 'halloween_theme_enabled',
+  ChristmasTheme = 'christmas_theme_enabled',
+  SuperbawlTheme = 'superbowl_theme_enabled',
+  StpatricksTheme = 'stpatricks_theme_enabled',
+  AnniversaryTheme = 'anniversary_theme_enabled',
 }
 
 export enum OrderDirection {

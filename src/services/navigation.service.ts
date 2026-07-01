@@ -2,12 +2,11 @@ import { BrowserHistoryBuildOptions, createBrowserHistory } from 'history';
 import queryString from 'query-string';
 
 import { SelectSectionProps } from 'views/NewSettings/types/types';
-import { AppView } from 'app/core/types';
+import { AppView, LocalStorageItem } from 'app/core/types';
 import configService from './config.service';
 import errorService from './error.service';
 import { AppDispatch } from 'app/store';
 import localStorageService from './local-storage.service';
-import { STORAGE_KEYS } from 'services/storage-keys';
 import { workspacesActions } from 'app/store/slices/workspaces/workspacesStore';
 import envService from './env.service';
 
@@ -84,8 +83,8 @@ const navigationService = {
       dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId: currentWorkspaceUuid || null, updateUrl }));
   },
   resetB2BWorkspaceCredentials(dispatch): void {
-    localStorageService.setStorageItem(STORAGE_KEYS.B2B_WORKSPACE, 'null');
-    localStorageService.setStorageItem(STORAGE_KEYS.WORKSPACE_CREDENTIALS, 'null');
+    localStorageService.set(LocalStorageItem.B2Bworkspace, 'null');
+    localStorageService.set(LocalStorageItem.WorkspaceCredentials, 'null');
     dispatch(workspacesActions.setSelectedWorkspace(null));
     dispatch(workspacesActions.setCredentials(null));
   },

@@ -21,7 +21,6 @@ import { DriveItemData, FolderPathDialog } from 'app/drive/types';
 import { CreateFolderDialog } from 'views/Drive/components';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import localStorageService from 'services/local-storage.service';
-import { STORAGE_KEYS } from 'services/storage-keys';
 import { useMoveItems } from 'hooks/moveItems/useMoveItems';
 
 interface MoveItemsDialogProps {
@@ -124,7 +123,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     const itemUuid = item.uuid;
     const itemFolderUuid = item.isFolder ? itemUuid : item.folderUuid;
     const itemType = item.isFolder ? 'folder' : 'file';
-    const token = localStorageService.getStorageToken( item.isFolder) || undefined;
+    const token = localStorageService.getStorageToken(item.isFolder) || undefined;
 
     const breadcrumbsList: FolderAncestor[] | FolderAncestorWorkspace[] = isWorkspaceSelected
       ? await newStorageService.getFolderAncestorsInWorkspace(workspaceSelected.workspace.id, itemType, itemUuid, token)

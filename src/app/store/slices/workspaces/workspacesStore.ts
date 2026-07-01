@@ -3,10 +3,9 @@ import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { t } from 'i18next';
 import { RootState } from '../..';
 import localStorageService from 'services/local-storage.service';
-import { STORAGE_KEYS } from 'services/storage-keys';
 import navigationService from 'services/navigation.service';
 import workspacesService from 'services/workspace.service';
-import { AppView } from '../../../core/types';
+import { AppView, LocalStorageItem } from '../../../core/types';
 import { encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
 import {
   deleteWorkspaceAvatarFromDatabase,
@@ -93,7 +92,7 @@ const fetchCredentials = createAsyncThunk<void, undefined, { state: RootState }>
       const credentials = await workspacesService.getWorkspaceCredentials(workspaceId);
 
       dispatch(workspacesActions.setCredentials(credentials));
-      localStorageService.setStorageItem(STORAGE_KEYS.WORKSPACE_CREDENTIALS, JSON.stringify(credentials));
+      localStorageService.set(LocalStorageItem.WorkspaceCredentials, JSON.stringify(credentials));
     }
     dispatch(workspacesActions.setIsLoadingCredentials(false));
   },
@@ -112,16 +111,16 @@ const setSelectedWorkspace = createAsyncThunk<
   const isSelectedWorkspace = localStorageB2BWorkspace?.workspace.id === workspaceId;
 
   if (isUnselectingWorkspace) {
-    localStorageService.setStorageItem(STORAGE_KEYS.B2B_WORKSPACE, 'null');
+    localStorageService.set(LocalStorageItem.B2Bworkspace, 'null');
     dispatch(workspacesActions.setSelectedWorkspace(null));
     dispatch(workspacesActions.setCredentials(null));
-    localStorageService.setStorageItem(STORAGE_KEYS.WORKSPACE_CREDENTIALS, 'null');
+    localStorageService.set(LocalStorageItem.WorkspaceCredentials, 'null');
   } else if (isSelectedWorkspace) {
     dispatch(workspacesActions.setSelectedWorkspace(localStorageB2BWorkspace ?? null));
   } else {
     const workspace = state.workspaces.workspaces.find((workspace) => workspace.workspace.id === workspaceId);
     if (workspace) {
-      localStorageService.setStorageItem(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(workspace));
+      localStorageService.set(LocalStorageItem.B2Bworkspace, JSON.stringify(workspace));
       dispatch(workspacesActions.setSelectedWorkspace(workspace ?? null));
     }
   }
@@ -176,7 +175,7 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
         dispatch(workspacesActions.setSelectedWorkspace(selectedWorkspace ?? null));
 
         if (selectedWorkspace) {
-          localStorageService.setStorageItem(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(selectedWorkspace));
+          localStorageService.set(LocalStorageItem.B2Bworkspace, JSON.stringify(selectedWorkspace));
           dispatch(planThunks.fetchBusinessLimitUsageThunk());
           dispatch(fetchCredentials());
           dispatch(sessionThunks.changeWorkspaceThunk());
@@ -263,7 +262,7 @@ export const workspacesSlice = createSlice({
           item.workspace = Object.assign(workspace, patch);
           if (state.selectedWorkspace?.workspace.id === workspaceId) {
             state.selectedWorkspace = item;
-            localStorageService.setStorageItem(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(item));
+            localStorageService.set(LocalStorageItem.B2Bworkspace, JSON.stringify(item));
           }
         }
         return item;
