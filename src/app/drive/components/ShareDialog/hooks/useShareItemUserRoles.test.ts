@@ -5,6 +5,7 @@ import shareService from 'app/share/services/share.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import errorService from 'services/error.service';
 import { ItemToShare } from 'app/store/slices/storage/types';
+import { SharingMeta, UpdateUserRoleResponse } from '@internxt/sdk/dist/drive/share/types';
 
 const { mockDispatch, mockUseShareDialogContext, mockTranslate } = vi.hoisted(() => ({
   mockDispatch: vi.fn(),
@@ -22,10 +23,19 @@ vi.mock('../context/ShareDialogContextProvider', () => ({
 
 const mockSharingMeta = {
   id: 'sharing-id-123',
+  itemId: 'sharing-itempid',
+  itemType: 'file',
+  encryptionKey: 'encrypted-key',
   encryptedCode: 'encrypted-code',
-  token: 'share-token',
-  code: 'share-code',
-};
+  encryptedPassword: null,
+  itemToken: 'share-token',
+  encryptionAlgorithm: 'inxt-v3',
+  type: 'public',
+} as SharingMeta;
+
+const mockUpdateUserRoleResponse = {
+  message: 'mock-update-user-role-response',
+} as UpdateUserRoleResponse;
 
 const mockRoles = [
   { id: '1', name: 'OWNER', createdAt: new Date('2024-01-01'), updatedAt: new Date('2024-01-01') },
@@ -130,11 +140,11 @@ describe('Share Items User Roles', () => {
     });
 
     test('When changing to public mode for file, then updates sharing type and creates public share', async () => {
-      const mockShareInfo = { token: 'share-token', code: 'share-code' };
+      const plainCode = 'test plain code';
       const updateShareTypeSpy = vi.spyOn(shareService, 'updateSharingType').mockResolvedValue(undefined);
       const createPublicShareFromOwnerUserSpy = vi
         .spyOn(shareService, 'createPublicShareFromOwnerUser')
-        .mockResolvedValue(mockShareInfo as any);
+        .mockResolvedValue({ publicSharingItemData: mockSharingMeta, plainCode });
 
       const itemToShare = createItemToShare(false);
       const { result } = renderHook(() => useShareItemUserRoles({ isRestrictedSharingAvailable: true, itemToShare }));
@@ -144,7 +154,7 @@ describe('Share Items User Roles', () => {
       expect(updateShareTypeSpy).toHaveBeenCalledWith('item-uuid-123', 'file', 'public');
       expect(createPublicShareFromOwnerUserSpy).toHaveBeenCalledWith('item-uuid-123', 'file');
       expect(mockDispatch).toHaveBeenCalledWith(
-        expect.objectContaining({ type: 'SET_SHARING_META', payload: mockShareInfo }),
+        expect.objectContaining({ type: 'SET_SHARING_META', payload: mockSharingMeta }),
       );
       expect(mockDispatch).toHaveBeenCalledWith(
         expect.objectContaining({ type: 'SET_IS_PASSWORD_PROTECTED', payload: false }),
@@ -190,7 +200,7 @@ describe('Share Items User Roles', () => {
     test('When changing user role successfully, then updates role in state', async () => {
       const updateUserRoleOfSharedFolderSpy = vi
         .spyOn(shareService, 'updateUserRoleOfSharedFolder')
-        .mockResolvedValue(mockSharingMeta as any);
+        .mockResolvedValue(mockUpdateUserRoleResponse);
 
       const itemToShare = createItemToShare(true);
       const { result } = renderHook(() => useShareItemUserRoles({ isRestrictedSharingAvailable: true, itemToShare }));
@@ -216,7 +226,7 @@ describe('Share Items User Roles', () => {
       const itemToShare = createItemToShare(true);
       const updateUserRoleOfSharedFolderSpy = vi
         .spyOn(shareService, 'updateUserRoleOfSharedFolder')
-        .mockResolvedValue(mockSharingMeta as any);
+        .mockResolvedValue(mockUpdateUserRoleResponse);
       const { result } = renderHook(() => useShareItemUserRoles({ isRestrictedSharingAvailable: true, itemToShare }));
 
       await result.current.handleUserRoleChange('unknown@example.com', 'reader');
@@ -228,7 +238,7 @@ describe('Share Items User Roles', () => {
       const itemToShare = createItemToShare(true);
       const updateUserRoleOfSharedFolderSpy = vi
         .spyOn(shareService, 'updateUserRoleOfSharedFolder')
-        .mockResolvedValue(mockSharingMeta as any);
+        .mockResolvedValue(mockUpdateUserRoleResponse);
 
       const { result } = renderHook(() => useShareItemUserRoles({ isRestrictedSharingAvailable: true, itemToShare }));
 

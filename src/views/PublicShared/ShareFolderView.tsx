@@ -146,6 +146,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
           item: folderInfo.item,
           code,
           incrementItemCount,
+          sharingVersion: info.encryptionAlgorithm,
         })
           .then(() => {
             updateProgress(1);
