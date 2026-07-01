@@ -181,7 +181,7 @@ export class SdkFactory {
 
   private getNewToken(workspace: string): Token {
     const tokenByWorkspace: { [key in Workspace]: string } = {
-      [Workspace.Individuals]: SdkFactory.sdk.localStorage.get(LocalStorageItem.NewToken) || '',
+      [Workspace.Individuals]: SdkFactory.sdk.localStorage.getToken() || '',
       [Workspace.Business]: SdkFactory.sdk.localStorage.get(LocalStorageItem.TeamToken) || '',
     };
     return tokenByWorkspace[workspace];

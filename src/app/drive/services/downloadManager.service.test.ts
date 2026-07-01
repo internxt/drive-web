@@ -34,7 +34,7 @@ import { downloadFile } from 'app/network/download';
 import { downloadWorkerHandler } from './worker.service/downloadWorkerHandler';
 import deviceService from 'services/device.service';
 
-vi.mock('./../../network/requests', () => ({ ConnectionLostError: vi.fn(), NetworkCredentials: {} }));
+vi.mock('./../../network/requests', () => ({ ConnectionLostError: vi.fn() }));
 vi.mock('app/tasks/services/tasks.service', () => ({
   default: {
     create: vi.fn(),
@@ -87,7 +87,6 @@ vi.mock('./folder.service', () => ({
 
 vi.mock('app/network/download', () => ({
   downloadFile: vi.fn(),
-  NetworkCredentials: vi.fn(),
 }));
 
 vi.mock('services/stream.service', () => ({
@@ -125,7 +124,9 @@ describe('downloadManagerService', () => {
 
   const mockSharingOptions = {
     credentials: { user: 'test-user', pass: 'test-pass' },
-    mnemonic: 'test-mnemonic',
+    key: {
+      mnemonic: 'test-mnemonic',
+    },
   };
 
   const mockUser: UserSettings = {
@@ -209,6 +210,21 @@ describe('downloadManagerService', () => {
     updatedAt: new Date().toISOString(),
   };
 
+  const mockCredentialsNoWorkspace: DownloadCredentials = {
+    credentials: {
+      user: mockUser.bridgeUser,
+      pass: mockUser.userId,
+    },
+    key: {
+      mnemonic: mockUser.mnemonic,
+    },
+  };
+
+  const mockCredentials: DownloadCredentials = {
+    ...mockCredentialsNoWorkspace,
+    workspaceId: 'any-workspace-id',
+  };
+
   it('should return download credentials from workspace', () => {
     const workspace = {
       id: 'workspace-data-id',
@@ -240,7 +256,9 @@ describe('downloadManagerService', () => {
         pass: mockWorkspaceCredentials.credentials.networkPass,
       },
       workspaceId: mockWorkspace.workspace.id,
-      mnemonic: mockWorkspace.workspaceUser.key,
+      key: {
+        mnemonic: mockWorkspace.workspaceUser.key,
+      },
     };
 
     const result = DownloadManagerService.instance.getDownloadCredentialsFromWorkspace(
@@ -310,13 +328,7 @@ describe('downloadManagerService', () => {
       items: downloadItem.payload,
       createFilesIterator: createFilesIterator,
       createFoldersIterator: createFoldersIterator,
-      credentials: {
-        credentials: {
-          user: mockUser.bridgeUser,
-          pass: mockUser.userId,
-        },
-        mnemonic: mockUser.mnemonic,
-      },
+      credentials: mockCredentialsNoWorkspace,
       options: {
         areSharedItems: false,
         downloadName: `${mockFile.name}.${mockFile.type}`,
@@ -355,13 +367,7 @@ describe('downloadManagerService', () => {
       items: downloadItem.payload,
       createFilesIterator: createFilesIterator,
       createFoldersIterator: createFoldersIterator,
-      credentials: {
-        credentials: {
-          user: mockUser.bridgeUser,
-          pass: mockUser.userId,
-        },
-        mnemonic: mockUser.mnemonic,
-      },
+      credentials: mockCredentialsNoWorkspace,
       options: {
         areSharedItems: false,
         downloadName: mockFolder.name,
@@ -401,13 +407,7 @@ describe('downloadManagerService', () => {
       items: downloadItem.payload,
       createFilesIterator: createFilesIterator,
       createFoldersIterator: createFoldersIterator,
-      credentials: {
-        credentials: {
-          user: mockUser.bridgeUser,
-          pass: mockUser.userId,
-        },
-        mnemonic: mockUser.mnemonic,
-      },
+      credentials: mockCredentialsNoWorkspace,
       options: {
         areSharedItems: false,
         downloadName: expect.stringContaining('Internxt'),
@@ -451,13 +451,7 @@ describe('downloadManagerService', () => {
       items: downloadItem.payload,
       createFilesIterator: createFilesIterator,
       createFoldersIterator: createFoldersIterator,
-      credentials: {
-        credentials: {
-          user: mockUser.bridgeUser,
-          pass: mockUser.userId,
-        },
-        mnemonic: mockUser.mnemonic,
-      },
+      credentials: mockCredentialsNoWorkspace,
       options: {
         areSharedItems: false,
         downloadName: mockFile.name,
@@ -482,14 +476,6 @@ describe('downloadManagerService', () => {
   });
 
   it('should generate a download task getting credentials from parameters', async () => {
-    const mockCredentials: DownloadCredentials = {
-      credentials: {
-        user: 'any-user',
-        pass: 'any-pass',
-      },
-      mnemonic: 'any-mnemonic',
-    };
-
     const downloadItem: DownloadItem = {
       payload: [mockFile as DriveItemData],
       selectedWorkspace: null,
@@ -507,10 +493,7 @@ describe('downloadManagerService', () => {
       items: downloadItem.payload,
       createFilesIterator: createFilesIterator,
       createFoldersIterator: createFoldersIterator,
-      credentials: {
-        credentials: mockCredentials.credentials,
-        mnemonic: mockCredentials.mnemonic,
-      },
+      credentials: mockCredentials,
       options: {
         areSharedItems: false,
         downloadName: `${mockFile.name}.${mockFile.type}`,
@@ -570,7 +553,9 @@ describe('downloadManagerService', () => {
           pass: mockWorkspaceCredentials.credentials.networkPass,
         },
         workspaceId: mockWorkspace.workspace.id,
-        mnemonic: mockWorkspace.workspaceUser.key,
+        key: {
+          mnemonic: mockWorkspace.workspaceUser.key,
+        },
       },
       options: {
         areSharedItems: false,
@@ -599,14 +584,7 @@ describe('downloadManagerService', () => {
       items: downloadItem.payload,
       createFilesIterator: createFilesIterator,
       createFoldersIterator: createFoldersIterator,
-      credentials: {
-        credentials: {
-          user: 'any-user',
-          pass: 'any-pass',
-        },
-        workspaceId: 'any-workspace-id',
-        mnemonic: 'any-mnemonic',
-      },
+      credentials: mockCredentials,
       options: {
         areSharedItems: false,
         downloadName: `${mockFile.name}.${mockFile.type}`,
@@ -667,14 +645,7 @@ describe('downloadManagerService', () => {
       items: [mockFolder as DriveItemData],
       createFilesIterator: createFilesIterator,
       createFoldersIterator: createFoldersIterator,
-      credentials: {
-        credentials: {
-          user: 'any-user',
-          pass: 'any-pass',
-        },
-        workspaceId: 'any-workspace-id',
-        mnemonic: 'any-mnemonic',
-      },
+      credentials: mockCredentials,
       options: {
         areSharedItems: false,
         downloadName: `${mockFile.name}.${mockFile.type}`,
@@ -719,14 +690,7 @@ describe('downloadManagerService', () => {
       items: [mockFolder as DriveItemData],
       createFilesIterator: createFilesIterator,
       createFoldersIterator: createFoldersIterator,
-      credentials: {
-        credentials: {
-          user: 'any-user',
-          pass: 'any-pass',
-        },
-        workspaceId: 'any-workspace-id',
-        mnemonic: 'any-mnemonic',
-      },
+      credentials: mockCredentials,
       options: {
         areSharedItems: false,
         downloadName: `${mockFile.name}.${mockFile.type}`,
@@ -769,13 +733,7 @@ describe('downloadManagerService', () => {
       items: [mockFolder as DriveItemData],
       createFilesIterator: createFilesIterator,
       createFoldersIterator: createFoldersIterator,
-      credentials: {
-        credentials: {
-          user: 'any-user',
-          pass: 'any-pass',
-        },
-        mnemonic: 'any-mnemonic',
-      },
+      credentials: mockCredentials,
       options: {
         areSharedItems: false,
         downloadName: mockFolder.name,
@@ -825,14 +783,7 @@ describe('downloadManagerService', () => {
       items: downloadItem.payload,
       createFilesIterator: createFilesIterator,
       createFoldersIterator: createFoldersIterator,
-      credentials: {
-        credentials: {
-          user: 'any-user',
-          pass: 'any-pass',
-        },
-        workspaceId: 'any-workspace-id',
-        mnemonic: 'any-mnemonic',
-      },
+      credentials: mockCredentials,
       options: {
         areSharedItems: false,
         downloadName: `${mockFile.name}.${mockFile.type}`,
@@ -878,14 +829,7 @@ describe('downloadManagerService', () => {
       items: downloadItem.payload,
       createFilesIterator: createFilesIterator,
       createFoldersIterator: createFoldersIterator,
-      credentials: {
-        credentials: {
-          user: 'any-user',
-          pass: 'any-pass',
-        },
-        workspaceId: 'any-workspace-id',
-        mnemonic: 'any-mnemonic',
-      },
+      credentials: mockCredentials,
       options: {
         areSharedItems: false,
         downloadName: `${mockFile.name}.${mockFile.type}`,
@@ -998,13 +942,7 @@ describe('downloadManagerService', () => {
         items: [emptyFile as DriveItemData],
         createFilesIterator: createFilesIterator,
         createFoldersIterator: createFoldersIterator,
-        credentials: {
-          credentials: {
-            user: 'any-user',
-            pass: 'any-pass',
-          },
-          mnemonic: 'any-mnemonic',
-        },
+        credentials: mockCredentials,
         options: {
           areSharedItems: false,
           downloadName: `${emptyFile.name}.${emptyFile.type}`,
@@ -1038,14 +976,7 @@ describe('downloadManagerService', () => {
       items: downloadItem.payload,
       createFilesIterator: createFilesIterator,
       createFoldersIterator: createFoldersIterator,
-      credentials: {
-        credentials: {
-          user: 'any-user',
-          pass: 'any-pass',
-        },
-        workspaceId: 'any-workspace-id',
-        mnemonic: 'any-mnemonic',
-      },
+      credentials: mockCredentials,
       options: {
         areSharedItems: false,
         downloadName: `${mockFile.name}.${mockFile.type}`,
@@ -1123,14 +1054,7 @@ describe('downloadManagerService', () => {
       items: downloadItem.payload,
       createFilesIterator: createFilesIterator,
       createFoldersIterator: createFoldersIterator,
-      credentials: {
-        credentials: {
-          user: 'any-user',
-          pass: 'any-pass',
-        },
-        workspaceId: 'any-workspace-id',
-        mnemonic: 'any-mnemonic',
-      },
+      credentials: mockCredentials,
       options: {
         areSharedItems: false,
         downloadName: `${mockFile.name}.${mockFile.type}`,
@@ -1204,14 +1128,7 @@ describe('downloadManagerService', () => {
       items: downloadItem.payload,
       createFilesIterator: createFilesIterator,
       createFoldersIterator: createFoldersIterator,
-      credentials: {
-        credentials: {
-          user: 'any-user',
-          pass: 'any-pass',
-        },
-        workspaceId: 'any-workspace-id',
-        mnemonic: 'any-mnemonic',
-      },
+      credentials: mockCredentials,
       options: {
         areSharedItems: false,
         downloadName: `${mockFile.name}.${mockFile.type}`,
@@ -1279,14 +1196,7 @@ describe('downloadManagerService', () => {
       items: downloadItem.payload,
       createFilesIterator: createFilesIterator,
       createFoldersIterator: createFoldersIterator,
-      credentials: {
-        credentials: {
-          user: 'any-user',
-          pass: 'any-pass',
-        },
-        workspaceId: 'any-workspace-id',
-        mnemonic: 'any-mnemonic',
-      },
+      credentials: mockCredentials,
       options: {
         areSharedItems: false,
         downloadName: `${mockFile.name}.${mockFile.type}`,
@@ -1344,10 +1254,7 @@ describe('downloadManagerService', () => {
         items: [mockFile as DriveItemData],
         createFilesIterator: createFilesIterator,
         createFoldersIterator: createFoldersIterator,
-        credentials: {
-          credentials: { user: 'any-user', pass: 'any-pass' },
-          mnemonic: 'any-mnemonic',
-        },
+        credentials: mockCredentials,
         options: { areSharedItems: false, downloadName: `${mockFile.name}.${mockFile.type}`, showErrors: true },
         taskId: 'mock-task-id',
         failedItems: [],
@@ -1397,13 +1304,7 @@ describe('downloadManagerService', () => {
         items: [emptyFile as DriveItemData],
         createFilesIterator: createFilesIterator,
         createFoldersIterator: createFoldersIterator,
-        credentials: {
-          credentials: {
-            user: 'any-user',
-            pass: 'any-pass',
-          },
-          mnemonic: 'any-mnemonic',
-        },
+        credentials: mockCredentials,
         options: {
           areSharedItems: false,
           downloadName: `${emptyFile.name}.${emptyFile.type}`,
@@ -1452,13 +1353,7 @@ describe('downloadManagerService', () => {
         items: [mockFile as DriveItemData, mockFolder as DriveItemData],
         createFilesIterator: createFilesIterator,
         createFoldersIterator: createFoldersIterator,
-        credentials: {
-          credentials: {
-            user: 'any-user',
-            pass: 'any-pass',
-          },
-          mnemonic: 'any-mnemonic',
-        },
+        credentials: mockCredentials,
         options: {
           areSharedItems: false,
           downloadName: `${mockFile.name}.${mockFile.type}`,
@@ -1515,14 +1410,7 @@ describe('downloadManagerService', () => {
         items: [mockFile as DriveItemData, mockFile2 as DriveItemData],
         createFilesIterator: createFilesIterator,
         createFoldersIterator: createFoldersIterator,
-        credentials: {
-          credentials: {
-            user: 'any-user',
-            pass: 'any-pass',
-          },
-          workspaceId: 'any-workspace-id',
-          mnemonic: 'any-mnemonic',
-        },
+        credentials: mockCredentials,
         options: {
           areSharedItems: false,
           downloadName: `${mockFile.name}.${mockFile.type}`,
@@ -1576,14 +1464,7 @@ describe('downloadManagerService', () => {
         items: [mockFile as DriveItemData, mockFile2 as DriveItemData],
         createFilesIterator: createFilesIterator,
         createFoldersIterator: createFoldersIterator,
-        credentials: {
-          credentials: {
-            user: 'any-user',
-            pass: 'any-pass',
-          },
-          workspaceId: 'any-workspace-id',
-          mnemonic: 'any-mnemonic',
-        },
+        credentials: mockCredentials,
         options: {
           areSharedItems: false,
           downloadName: `${mockFile.name}.${mockFile.type}`,
@@ -1683,13 +1564,7 @@ describe('downloadManagerService', () => {
         items: [mockFolder as DriveItemData],
         createFilesIterator: createFilesIterator,
         createFoldersIterator: createFoldersIterator,
-        credentials: {
-          credentials: {
-            user: 'any-user',
-            pass: 'any-pass',
-          },
-          mnemonic: 'any-mnemonic',
-        },
+        credentials: mockCredentials,
         options: {
           areSharedItems: false,
           downloadName: mockFolder.name,
@@ -1722,13 +1597,7 @@ describe('downloadManagerService', () => {
         items: [mockFile as DriveItemData, mockFile2 as DriveItemData],
         createFilesIterator: createFilesIterator,
         createFoldersIterator: createFoldersIterator,
-        credentials: {
-          credentials: {
-            user: 'any-user',
-            pass: 'any-pass',
-          },
-          mnemonic: 'any-mnemonic',
-        },
+        credentials: mockCredentials,
         options: {
           areSharedItems: false,
           downloadName: `${mockFile.name}.${mockFile.type}`,
@@ -1793,13 +1662,7 @@ describe('downloadManagerService', () => {
         items: [mockFolder as DriveItemData],
         createFilesIterator: createFilesIterator,
         createFoldersIterator: createFoldersIterator,
-        credentials: {
-          credentials: {
-            user: 'any-user',
-            pass: 'any-pass',
-          },
-          mnemonic: 'any-mnemonic',
-        },
+        credentials: mockCredentials,
         options: {
           areSharedItems: false,
           downloadName: `${mockFile.name}.${mockFile.type}`,
@@ -1837,13 +1700,7 @@ describe('downloadManagerService', () => {
         items: [mockFile as DriveItemData, mockFolder as DriveItemData],
         createFilesIterator: createFilesIterator,
         createFoldersIterator: createFoldersIterator,
-        credentials: {
-          credentials: {
-            user: 'any-user',
-            pass: 'any-pass',
-          },
-          mnemonic: 'any-mnemonic',
-        },
+        credentials: mockCredentials,
         options: {
           areSharedItems: false,
           downloadName: `${mockFile.name}.${mockFile.type}`,

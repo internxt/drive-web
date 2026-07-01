@@ -94,7 +94,7 @@ describe('guestSignupOnSubmit', () => {
     );
     expect(localStorageService.clear).toHaveBeenCalled();
     expect(localStorageService.set).toHaveBeenCalledWith(LocalStorageItem.UserToken, 'access-token');
-    expect(localStorageService.set).toHaveBeenCalledWith(LocalStorageItem.NewToken, 'refresh-token');
+    expect(localStorageService.setToken).toHaveBeenCalledWith('refresh-token');
     expect(parseAndDecryptUserKeys).toHaveBeenCalledWith(mockRegistrationResponse.xUser, 'password123');
     expect(mockDispatch).toHaveBeenCalledWith(userActions.setUser(expect.objectContaining({ uuid: 'user-uuid' })));
     expect(mockDispatch).toHaveBeenCalledWith(userThunks.initializeUserThunk());

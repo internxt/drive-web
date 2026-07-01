@@ -1,7 +1,6 @@
 import io, { Socket } from 'socket.io-client';
 import localStorageService from '../local-storage.service';
 import envService from '../env.service';
-import { LocalStorageItem } from 'app/core/types';
 
 import type { EventHandler } from './event-handler.service';
 
@@ -72,5 +71,5 @@ export default class RealtimeService {
 }
 
 function getToken(): string {
-  return localStorageService.get(LocalStorageItem.NewToken) as string;
+  return localStorageService.getToken() as string;
 }

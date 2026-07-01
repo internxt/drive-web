@@ -46,7 +46,7 @@ export const guestSignupOnSubmit = async ({
     localStorageService.clear();
 
     localStorageService.set(LocalStorageItem.UserToken, xToken);
-    localStorageService.set(LocalStorageItem.NewToken, xNewToken);
+    localStorageService.setToken(xNewToken);
 
     const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(xUser, password);
 

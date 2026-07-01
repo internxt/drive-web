@@ -149,7 +149,7 @@ export default function LogIn(): JSX.Element {
   };
 
   const handleSuccessfulAuth = (token: string, user: UserSettings, mnemonic: string): void => {
-    const newToken = localStorageService.get(LocalStorageItem.NewToken);
+    const newToken = localStorageService.getToken();
 
     if (isOAuthFlow && newToken) {
       const success = handleOAuthSuccess(user, newToken);
