@@ -17,7 +17,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Button } from '@internxt/ui';
 import { WarningCircle } from '@phosphor-icons/react';
 import { AppError } from '@internxt/sdk';
-import { AppView, IFormValues, LocalStorageItem } from 'app/core/types';
+import { AppView, IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import shareService from 'app/share/services/share.service';
