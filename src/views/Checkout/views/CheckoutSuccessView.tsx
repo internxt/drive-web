@@ -1,6 +1,6 @@
 import useEffectAsync from 'hooks/useEffectAsync';
 import navigationService from 'services/navigation.service';
-import { AppView } from 'app/core/types';
+import { AppView, LocalStorageItem } from 'app/core/types';
 import { useAppDispatch } from 'app/store/hooks';
 import { useCallback, useRef } from 'react';
 import localStorageService from 'services/local-storage.service';
@@ -10,16 +10,16 @@ import metaService from 'app/analytics/meta.service';
 import { userStoragePolling } from 'utils/userStoragePolling.utils';
 
 export function removePaymentsStorage() {
-  localStorageService.removeItem('subscriptionId');
-  localStorageService.removeItem('paymentIntentId');
-  localStorageService.removeItem('amountPaid');
-  localStorageService.removeItem('productName');
-  localStorageService.removeItem('priceId');
-  localStorageService.removeItem('customerId');
-  localStorageService.removeItem('currency');
-  localStorageService.removeItem('customerToken');
-  localStorageService.removeItem('mobileToken');
-  localStorageService.removeItem('couponCode');
+  localStorageService.removeItem(LocalStorageItem.SubscriptionID);
+  localStorageService.removeItem(LocalStorageItem.PaymentIntentID);
+  localStorageService.removeItem(LocalStorageItem.AmountPaid);
+  localStorageService.removeItem(LocalStorageItem.ProductName);
+  localStorageService.removeItem(LocalStorageItem.PriceId);
+  localStorageService.removeItem(LocalStorageItem.CustomerId);
+  localStorageService.removeItem(LocalStorageItem.Currency);
+  localStorageService.removeItem(LocalStorageItem.CustomerToken);
+  localStorageService.removeItem(LocalStorageItem.MobileToken);
+  localStorageService.removeItem(LocalStorageItem.CouponCode);
 }
 
 const CheckoutSuccessView = (): JSX.Element => {

@@ -3,9 +3,6 @@ import localStorageService from 'services/local-storage.service';
 import { PlanState } from '../store/slices/plan';
 import { LocalStorageItem } from 'app/core/types';
 
-const BANNER_NAME_IN_LOCAL_STORAGE = 'show_banner';
-
-
 export class BannerManager {
   private readonly plan: PlanState;
   private readonly offerEndDay: Date;
@@ -29,7 +26,7 @@ export class BannerManager {
 
   private clearLocalStorageIfExpired(): void {
     if (this.isOfferExpired() || this.isBannerExpired()) {
-      localStorageService.removeItem(BANNER_NAME_IN_LOCAL_STORAGE);
+      localStorageService.removeItem(LocalStorageItem.BunnerName);
       localStorageService.removeItem(LocalStorageItem.BunnerNameForFreeUsers);
     }
   }
