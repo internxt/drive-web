@@ -9,7 +9,6 @@ import { LocalStorageService } from 'services/local-storage.service';
 import { LocalStorageItem, Workspace } from '../../types';
 import { Checkout } from '@internxt/sdk/dist/payments';
 import envService from 'services/env.service';
-import { STORAGE_KEYS } from 'services/storage-keys';
 import { Location } from '@internxt/sdk';
 import { HttpClient } from '@internxt/sdk/dist/shared/http/client';
 import { retryStrategies, notifyUserWithCooldown } from './retryStrategies';
@@ -181,18 +180,18 @@ export class SdkFactory {
 
   private getNewToken(workspace: string): Token {
     const tokenByWorkspace: { [key in Workspace]: string } = {
-      [Workspace.Individuals]: SdkFactory.sdk.localStorage.get(LocalStorageItem.NewToken) || '',
+      [Workspace.Individuals]: SdkFactory.sdk.localStorage.getToken() || '',
       [Workspace.Business]: SdkFactory.sdk.localStorage.get(LocalStorageItem.TeamToken) || '',
     };
     return tokenByWorkspace[workspace];
   }
 
   private getWorkspaceToken(): Token | undefined {
-    const workspace = SdkFactory.sdk.localStorage.get(STORAGE_KEYS.B2B_WORKSPACE);
+    const workspace = SdkFactory.sdk.localStorage.get(LocalStorageItem.B2Bworkspace);
     let token: string | undefined = undefined;
     if (workspace) {
       const credentials: WorkspaceCredentialsDetails | null = JSON.parse(
-        SdkFactory.sdk.localStorage.get(STORAGE_KEYS.WORKSPACE_CREDENTIALS) ?? 'null',
+        SdkFactory.sdk.localStorage.get(LocalStorageItem.WorkspaceCredentials) ?? 'null',
       );
       if (credentials) {
         token = credentials.tokenHeader;
