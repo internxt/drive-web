@@ -6,7 +6,7 @@ import packageJson from '../../../../../package.json';
 import { AppDispatch } from '../../../store';
 import { userThunks } from '../../../store/slices/user';
 import { LocalStorageService } from 'services/local-storage.service';
-import { LocalStorageItem, Workspace } from '../../types';
+import { LocalStorageItem } from '../../types';
 import { Checkout } from '@internxt/sdk/dist/payments';
 import envService from 'services/env.service';
 import { Location } from '@internxt/sdk';
@@ -131,10 +131,9 @@ export class SdkFactory {
   /** Helpers **/
 
   private getNewApiSecurity(unauthorizedCallback?: () => void): ApiSecurity {
-    const workspace = SdkFactory.sdk.localStorage.getWorkspace();
     const workspaceToken = this.getWorkspaceToken();
     return {
-      token: this.getNewToken(workspace),
+      token: this.getNewToken(),
       workspaceToken,
       unauthorizedCallback:
         unauthorizedCallback ??
@@ -145,7 +144,7 @@ export class SdkFactory {
   }
 
   private getIndividualApiSecurity(): ApiSecurity {
-    const token = this.getNewToken(Workspace.Individuals);
+    const token = this.getNewToken();
     return {
       token,
       unauthorizedCallback: () => {
@@ -178,12 +177,8 @@ export class SdkFactory {
     };
   }
 
-  private getNewToken(workspace: string): Token {
-    const tokenByWorkspace: { [key in Workspace]: string } = {
-      [Workspace.Individuals]: SdkFactory.sdk.localStorage.getToken() || '',
-      [Workspace.Business]: SdkFactory.sdk.localStorage.get(LocalStorageItem.TeamToken) || '',
-    };
-    return tokenByWorkspace[workspace];
+  private getNewToken(): Token {
+    return SdkFactory.sdk.localStorage.getToken() || '';
   }
 
   private getWorkspaceToken(): Token | undefined {
