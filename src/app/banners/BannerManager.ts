@@ -12,7 +12,7 @@ export class BannerManager {
   constructor(user: UserSettings, plan: PlanState, offerEndDay: Date) {
     this.plan = plan;
     this.offerEndDay = offerEndDay;
-    this.bannerItemInLocalStorage = localStorageService.get(LocalStorageItem.BunnerNameForFreeUsers);
+    this.bannerItemInLocalStorage = localStorageService.get(LocalStorageItem.BannerNameForFreeUsers);
     this.todayDate = new Date().toISOString().split('T')[0];
   }
 
@@ -26,7 +26,7 @@ export class BannerManager {
 
   private clearLocalStorageIfExpired(): void {
     if (this.isOfferExpired() || this.isBannerExpired()) {
-      localStorageService.removeItem(LocalStorageItem.BunnerNameForFreeUsers);
+      localStorageService.removeItem(LocalStorageItem.BannerNameForFreeUsers);
     }
   }
 
@@ -63,6 +63,6 @@ export class BannerManager {
   }
 
   public onCloseBanner(): void {
-    localStorageService.set(LocalStorageItem.BunnerNameForFreeUsers, this.todayDate);
+    localStorageService.set(LocalStorageItem.BannerNameForFreeUsers, this.todayDate);
   }
 }

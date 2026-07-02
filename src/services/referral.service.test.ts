@@ -53,14 +53,14 @@ const buildBannerState = (overrides: Record<string, unknown> = {}) =>
   });
 
 const seedBannerState = (overrides: Record<string, unknown> = {}, uccValue: string | null = null) => {
-  localStorageService.set(LocalStorageItem.BunnerStateKey, buildBannerState(overrides));
+  localStorageService.set(LocalStorageItem.BannerStateKey, buildBannerState(overrides));
   if (uccValue) {
     localStorageService.set(LocalStorageItem.UccStorageKey, uccValue);
   }
 };
 
 const expectBannerStateSaved = (fragment: string) => {
-  const saved = localStorageService.get(LocalStorageItem.BunnerStateKey);
+  const saved = localStorageService.get(LocalStorageItem.BannerStateKey);
   expect(saved).toContain(fragment);
 };
 
@@ -257,7 +257,7 @@ describe('referralService', () => {
 
       referralService.trackAppOpenDay();
 
-      const saved = JSON.parse(localStorageService.get(LocalStorageItem.BunnerStateKey) ?? '{}');
+      const saved = JSON.parse(localStorageService.get(LocalStorageItem.BannerStateKey) ?? '{}');
       expect(saved.appOpenDays).toEqual(['2026-03-19']);
     });
   });
@@ -278,7 +278,7 @@ describe('referralService', () => {
 
       referralService.incrementBannerShowCount();
 
-      const saved = JSON.parse(localStorageService.get(LocalStorageItem.BunnerStateKey) ?? '{}');
+      const saved = JSON.parse(localStorageService.get(LocalStorageItem.BannerStateKey) ?? '{}');
       expect(saved.showCount).toBe(1);
     });
   });
@@ -415,7 +415,7 @@ describe('referralService', () => {
 
       await referralService.openPanel(mockUser);
 
-      const saved = localStorageService.get(LocalStorageItem.BunnerStateKey);
+      const saved = localStorageService.get(LocalStorageItem.BannerStateKey);
       expect(saved).toBeNull();
     });
 
