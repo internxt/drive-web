@@ -9,13 +9,13 @@ import { EnvironmentConfig } from './types';
  */
 export function getEnvironmentConfig(isWorkspace?: boolean): EnvironmentConfig {
   const workspaceCredentials = localStorageService.getWorkspaceCredentials();
-  const workspace = localStorageService.getB2BWorkspace();
+  const workspaceMnemonic = localStorageService.getB2BWorkspaceMnemonic();
 
-  if (isWorkspace && workspaceCredentials && workspace) {
+  if (isWorkspace && workspaceCredentials && workspaceMnemonic) {
     return {
       bridgeUser: workspaceCredentials?.credentials?.networkUser,
       bridgePass: workspaceCredentials?.credentials?.networkPass,
-      encryptionKey: workspace.workspaceUser.key,
+      encryptionKey: workspaceMnemonic,
       bucketId: workspaceCredentials?.bucket,
       useProxy: envService.getVariable('dontUseProxy') !== 'true',
     };

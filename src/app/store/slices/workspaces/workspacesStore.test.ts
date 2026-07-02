@@ -63,7 +63,8 @@ vi.mock('services/workspace.service', () => ({
 vi.mock('services/local-storage.service', () => ({
   default: {
     set: vi.fn(),
-    getB2BWorkspace: vi.fn(),
+    getB2BWorkspaceId: vi.fn(),
+    getB2BWorkspaceMnemonic: vi.fn(),
   },
 }));
 vi.mock('services', () => ({

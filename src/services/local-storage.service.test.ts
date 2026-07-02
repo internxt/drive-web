@@ -124,7 +124,7 @@ beforeEach(() => {
   localStorage.setItem(localStorageKey, localStorageValue);
   localStorage.setItem(LocalStorageItem.User, stringifyMockedUser);
   localStorage.setItem(LocalStorageItem.WorkspaceCredentials, stringifyMockCredentials);
-  localStorage.setItem(LocalStorageItem.B2Bworkspace, stringifyWorkspaceData);
+  localStorage.setItem(LocalStorageItem.B2BworkspaceId, stringifyWorkspaceData);
   localStorage.setItem(LocalStorageItem.Theme, 'starwars');
   vi.clearAllMocks();
   vi.resetModules();
@@ -235,25 +235,30 @@ describe('Testing the local storage service', () => {
     });
 
     describe('Get workspace item data', () => {
-      it('When a workspace object exists, then the object is returned', () => {
-        const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
+      it('When workspace is set, then mnemonic and id are set', () => {
+        const setFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'setItem');
 
-        const workspaceCredentials = localStorageService.getB2BWorkspace();
+        localStorageService.setB2BWorkspace('test-workspace-id', 'test-workspace-mnemonic');
 
-        expect(getFromLocalStorageSpy).toHaveBeenCalled();
-        expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.B2Bworkspace);
-        expect(workspaceCredentials).toStrictEqual(JSON.parse(stringifyWorkspaceData));
+        expect(setFromLocalStorageSpy).toHaveBeenCalled();
+        expect(setFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.B2BworkspaceId, 'test-workspace-id');
+        expect(setFromLocalStorageSpy).toHaveBeenCalledWith(
+          LocalStorageItem.B2BworkspaceMnemonic,
+          'test-workspace-mnemonic',
+        );
       });
 
-      it('When a workspace object does not exist, then a value indicating so is returned (null)', () => {
-        const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
+      it('When a workspace is cleaned, then mnemonic and id are removed', () => {
+        const setFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'setItem');
 
-        localStorage.removeItem(LocalStorageItem.B2Bworkspace);
-        const workspaceCredentials = localStorageService.getB2BWorkspace();
+        localStorageService.clearB2BWorkspace();
 
-        expect(getFromLocalStorageSpy).toHaveBeenCalled();
-        expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.B2Bworkspace);
-        expect(workspaceCredentials).toBeNull();
+        expect(setFromLocalStorageSpy).toHaveBeenCalled();
+        expect(setFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.B2BworkspaceId, '');
+        expect(setFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.B2BworkspaceMnemonic, '');
+
+        expect(localStorageService.get(LocalStorageItem.B2BworkspaceId)).toBe('');
+        expect(localStorageService.get(LocalStorageItem.B2BworkspaceMnemonic)).toBe('');
       });
     });
   });

@@ -22,7 +22,7 @@ vi.mock('services/error.service', () => ({
 
 vi.mock('services/local-storage.service', () => ({
   default: {
-    getB2BWorkspace: vi.fn(),
+    get: vi.fn(),
   },
 }));
 
@@ -141,10 +141,10 @@ describe('get_trash', () => {
 
   describe('getWorkspaceTrashPaginated', () => {
     it('should fetch workspace trash folders', async () => {
-      const mockWorkspace = { workspace: { id: 'workspace-123' } };
+      const mockWorkspaceId = 'workspace-123';
       const mockResult = [{ plainName: 'folder1', id: 1 }];
 
-      (localStorageService.getB2BWorkspace as Mock).mockReturnValue(mockWorkspace);
+      (localStorageService.get as Mock).mockReturnValue(mockWorkspaceId);
       (workspacesService.getTrashItems as Mock).mockResolvedValue({ result: mockResult });
 
       const result = await getWorkspaceTrashPaginated(50, 0, 'folders');
@@ -155,10 +155,10 @@ describe('get_trash', () => {
     });
 
     it('should fetch workspace trash files', async () => {
-      const mockWorkspace = { workspace: { id: 'workspace-456' } };
+      const mockWorkspaceId = 'workspace-456';
       const mockResult = [{ plainName: 'file1.txt', id: 1 }];
 
-      (localStorageService.getB2BWorkspace as Mock).mockReturnValue(mockWorkspace);
+      (localStorageService.get as Mock).mockReturnValue(mockWorkspaceId);
       (workspacesService.getTrashItems as Mock).mockResolvedValue({ result: mockResult });
 
       const result = await getWorkspaceTrashPaginated(50, 10, 'files');
@@ -168,9 +168,9 @@ describe('get_trash', () => {
     });
 
     it('should handle errors', async () => {
-      const mockWorkspace = { workspace: { id: 'workspace-789' } };
+      const mockWorkspaceId = 'workspace-789';
 
-      (localStorageService.getB2BWorkspace as Mock).mockReturnValue(mockWorkspace);
+      (localStorageService.get as Mock).mockReturnValue(mockWorkspaceId);
       (workspacesService.getTrashItems as Mock).mockRejectedValue(new Error('Failed'));
 
       const result = await getWorkspaceTrashPaginated(50, 0, 'files');
