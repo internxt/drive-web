@@ -129,7 +129,7 @@ export enum AppView {
 }
 
 export enum LocalStorageItem {
-  Workspace = 'workspace',
+  WorkspaceType = 'workspace',
   User = 'xUser',
   UserToken = 'xToken',
   Team = 'xTeam',

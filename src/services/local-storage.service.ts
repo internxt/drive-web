@@ -62,7 +62,7 @@ function getToken(): string | null {
 }
 
 function getWorkspace(): string {
-  return get(LocalStorageItem.Workspace) ?? Workspace.Individuals;
+  return get(LocalStorageItem.WorkspaceType) ?? Workspace.Individuals;
 }
 
 function getB2BWorkspace(): WorkspaceData | null {

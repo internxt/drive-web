@@ -124,7 +124,7 @@ const workspaceValueInLocalStorage = Workspace.Business;
 beforeEach(() => {
   localStorage.setItem(localStorageKey, localStorageValue);
   localStorage.setItem(LocalStorageItem.User, stringifyMockedUser);
-  localStorage.setItem(LocalStorageItem.Workspace, workspaceValueInLocalStorage);
+  localStorage.setItem(LocalStorageItem.WorkspaceType, workspaceValueInLocalStorage);
   localStorage.setItem(LocalStorageItem.WorkspaceCredentials, stringifyMockCredentials);
   localStorage.setItem(LocalStorageItem.B2Bworkspace, stringifyWorkspaceData);
   localStorage.setItem(LocalStorageItem.Theme, 'starwars');
@@ -219,7 +219,7 @@ describe('Testing the local storage service', () => {
       const workspace = localStorageService.getWorkspace();
 
       expect(getFromLocalStorageSpy).toHaveBeenCalled();
-      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.Workspace);
+      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.WorkspaceType);
       expect(workspace).toStrictEqual(workspaceValueInLocalStorage);
     });
 
@@ -227,11 +227,11 @@ describe('Testing the local storage service', () => {
       const workspaceValueInLocalStorage = Workspace.Individuals;
       const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
 
-      localStorage.removeItem(LocalStorageItem.Workspace);
+      localStorage.removeItem(LocalStorageItem.WorkspaceType);
       const workspace = localStorageService.getWorkspace();
 
       expect(getFromLocalStorageSpy).toHaveBeenCalled();
-      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.Workspace);
+      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.WorkspaceType);
       expect(workspace).toStrictEqual(workspaceValueInLocalStorage);
     });
 
