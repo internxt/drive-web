@@ -26,7 +26,6 @@ export class BannerManager {
 
   private clearLocalStorageIfExpired(): void {
     if (this.isOfferExpired() || this.isBannerExpired()) {
-      localStorageService.removeItem(LocalStorageItem.BunnerName);
       localStorageService.removeItem(LocalStorageItem.BunnerNameForFreeUsers);
     }
   }

@@ -15,10 +15,7 @@ export function removePaymentsStorage() {
   localStorageService.removeItem(LocalStorageItem.AmountPaid);
   localStorageService.removeItem(LocalStorageItem.ProductName);
   localStorageService.removeItem(LocalStorageItem.PriceId);
-  localStorageService.removeItem(LocalStorageItem.CustomerId);
   localStorageService.removeItem(LocalStorageItem.Currency);
-  localStorageService.removeItem(LocalStorageItem.CustomerToken);
-  localStorageService.removeItem(LocalStorageItem.MobileToken);
   localStorageService.removeItem(LocalStorageItem.CouponCode);
 }
 

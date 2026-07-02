@@ -170,10 +170,6 @@ export enum LocalStorageItem {
   SuperbawlTheme = 'superbowl_theme_enabled',
   StpatricksTheme = 'stpatricks_theme_enabled',
   AnniversaryTheme = 'anniversary_theme_enabled',
-  BunnerName = 'show_banner',
-  CustomerId = 'customerId',
-  CustomerToken = 'customerToken',
-  MobileToken = 'mobileToken',
 }
 
 export enum OrderDirection {
