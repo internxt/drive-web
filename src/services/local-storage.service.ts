@@ -1,6 +1,6 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
-import { LocalStorageItem, Workspace } from 'app/core/types';
+import { LocalStorageItem } from 'app/core/types';
 import { BACKUP_KEY } from './storage-keys';
 
 function get(key: LocalStorageItem): string | null {
