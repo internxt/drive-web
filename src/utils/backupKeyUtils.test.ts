@@ -1,5 +1,4 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { LocalStorageItem } from 'app/core/types';
 import { getKeys } from 'app/crypto/services/keys.service';
 import { encryptMessageWithPublicKey, hybridEncryptMessageWithPublicKey } from 'app/crypto/services/pgp.service';
 import { encryptText, encryptTextWithKey, passToHash } from 'app/crypto/services/utils';
@@ -81,6 +80,7 @@ describe('backupKeyUtils', () => {
             publicKey: 'test-kyber-public-key',
           },
         },
+        mnemonic: mockMnemonic,
         userId: 'test-user-id',
         uuid: 'test-uuid',
         email: 'test@example.com',
@@ -141,6 +141,7 @@ describe('backupKeyUtils', () => {
           },
         },
         userId: 'test-user-id',
+        mnemonic: mockMnemonic,
         uuid: 'test-uuid',
         email: 'test@example.com',
         name: 'Test User',
@@ -169,7 +170,6 @@ describe('backupKeyUtils', () => {
 
       handleExportBackupKey(mockTranslate);
 
-      expect(localStorageService.get).toHaveBeenCalledWith(LocalStorageItem.UserMnemonic);
       expect(localStorageService.getUser).toHaveBeenCalled();
 
       expect(saveAs).toHaveBeenCalledWith(expect.any(Blob), 'INTERNXT-BACKUP-KEY.txt');
@@ -201,6 +201,7 @@ describe('backupKeyUtils', () => {
           },
         },
         userId: 'test-user-id',
+        mnemonic: mockMnemonic,
         uuid: 'test-uuid',
         email: 'test@example.com',
         name: 'Test User',
@@ -277,6 +278,7 @@ describe('backupKeyUtils', () => {
         bridgeUser: 'test-bridge-user',
         bucket: 'test-bucket',
         backupsBucket: null,
+        mnemonic: mockMnemonic,
         root_folder_id: 0,
         rootFolderId: 'test-root-folder-id',
         rootFolderUuid: 'test-root-folder-uuid',
@@ -292,7 +294,6 @@ describe('backupKeyUtils', () => {
         emailVerified: false,
       } as UserSettings;
 
-      vi.mocked(localStorageService.get).mockReturnValue(mockMnemonic);
       vi.mocked(localStorageService.getUser).mockReturnValue(mockUser);
 
       handleExportBackupKey(mockTranslate);

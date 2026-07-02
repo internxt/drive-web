@@ -5,7 +5,6 @@ import { LocalStorageItem } from 'app/core/types';
 
 const BANNER_NAME_IN_LOCAL_STORAGE = 'show_banner';
 
-
 export class BannerManager {
   private readonly plan: PlanState;
   private readonly offerEndDay: Date;
