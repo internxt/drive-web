@@ -206,11 +206,15 @@ const plainTextExtensions: FileExtensionMap = {
     'ini',
     'cfg',
     'properties',
+    'json',
     'jsonc',
     // data
     'tsv',
     // scripts / code not covered by the code group
     'tsx',
+    'jsx',
+    'ts',
+    'js',
     'mjs',
     'cjs',
     'go',
@@ -223,6 +227,7 @@ const plainTextExtensions: FileExtensionMap = {
     'bat',
     'cmd',
     'htm',
+    'html',
     // logs / diffs
     'log',
     'patch',
