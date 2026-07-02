@@ -126,7 +126,7 @@ beforeEach(() => {
   localStorage.setItem(LocalStorageItem.User, stringifyMockedUser);
   localStorage.setItem(LocalStorageItem.WorkspaceCredentials, stringifyMockCredentials);
   localStorage.setItem(LocalStorageItem.B2Bworkspace, stringifyWorkspaceData);
-  localStorage.setItem('theme', 'starwars');
+  localStorage.setItem(LocalStorageItem.Theme, 'starwars');
   vi.clearAllMocks();
   vi.resetModules();
 });

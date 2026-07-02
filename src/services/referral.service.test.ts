@@ -3,6 +3,8 @@ import envService from './env.service';
 import dateService from './date.service';
 import { loadExternalScript } from 'utils/loadExternalScript';
 import type referralServiceType from './referral.service';
+import localStorageService from 'services/local-storage.service';
+import { LocalStorageItem } from 'app/core/types';
 
 vi.mock('./env.service', () => ({
   default: {
@@ -36,8 +38,6 @@ vi.mock('utils/loadExternalScript', () => ({
   loadExternalScript: vi.fn().mockResolvedValue(undefined),
 }));
 
-const BANNER_STATE_KEY = 'referral_banner_state';
-const UCC_STORAGE_KEY = 'cello_ucc';
 const BANNER_SESSION_COUNTED_KEY = 'referral_banner_session_counted';
 
 const buildBannerState = (overrides: Record<string, unknown> = {}) =>
@@ -53,14 +53,14 @@ const buildBannerState = (overrides: Record<string, unknown> = {}) =>
   });
 
 const seedBannerState = (overrides: Record<string, unknown> = {}, uccValue: string | null = null) => {
-  localStorage.setItem(BANNER_STATE_KEY, buildBannerState(overrides));
+  localStorageService.set(LocalStorageItem.BannerStateKey, buildBannerState(overrides));
   if (uccValue) {
-    localStorage.setItem(UCC_STORAGE_KEY, uccValue);
+    localStorageService.set(LocalStorageItem.UccStorageKey, uccValue);
   }
 };
 
 const expectBannerStateSaved = (fragment: string) => {
-  const saved = localStorage.getItem(BANNER_STATE_KEY);
+  const saved = localStorageService.get(LocalStorageItem.BannerStateKey);
   expect(saved).toContain(fragment);
 };
 
@@ -95,7 +95,7 @@ describe('referralService', () => {
   let referralService: typeof referralServiceType;
 
   beforeEach(async () => {
-    localStorage.clear();
+    localStorageService.clear();
     vi.mocked(envService.getVariable).mockReturnValue('');
     vi.mocked(dateService.getDaysSince).mockReturnValue(0);
     vi.mocked(loadExternalScript).mockResolvedValue(undefined);
@@ -104,7 +104,7 @@ describe('referralService', () => {
 
   afterEach(() => {
     vi.clearAllMocks();
-    localStorage.clear();
+    localStorageService.clear();
     sessionStorage.clear();
     delete globalThis.cello;
     delete globalThis.Cello;
@@ -257,7 +257,7 @@ describe('referralService', () => {
 
       referralService.trackAppOpenDay();
 
-      const saved = JSON.parse(localStorage.getItem(BANNER_STATE_KEY) ?? '{}');
+      const saved = JSON.parse(localStorageService.get(LocalStorageItem.BannerStateKey) ?? '{}');
       expect(saved.appOpenDays).toEqual(['2026-03-19']);
     });
   });
@@ -278,7 +278,7 @@ describe('referralService', () => {
 
       referralService.incrementBannerShowCount();
 
-      const saved = JSON.parse(localStorage.getItem(BANNER_STATE_KEY) ?? '{}');
+      const saved = JSON.parse(localStorageService.get(LocalStorageItem.BannerStateKey) ?? '{}');
       expect(saved.showCount).toBe(1);
     });
   });
@@ -346,7 +346,7 @@ describe('referralService', () => {
       const result = await referralService.captureUcc();
 
       expect(result).toBe('attribution-ucc');
-      expect(localStorage.getItem(UCC_STORAGE_KEY)).toBe('attribution-ucc');
+      expect(localStorageService.get(LocalStorageItem.UccStorageKey)).toBe('attribution-ucc');
     });
 
     it('when the attribution fails, then null is returned', async () => {
@@ -415,7 +415,7 @@ describe('referralService', () => {
 
       await referralService.openPanel(mockUser);
 
-      const saved = localStorage.getItem(BANNER_STATE_KEY);
+      const saved = localStorageService.get(LocalStorageItem.BannerStateKey);
       expect(saved).toBeNull();
     });
 

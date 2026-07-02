@@ -84,7 +84,7 @@ function getStorageToken(isFolder: boolean): string | null {
   return get(key);
 }
 
-function removeItem(key: string): void {
+function removeItem(key: LocalStorageItem): void {
   localStorage.removeItem(key);
 }
 
@@ -128,6 +128,6 @@ export interface LocalStorageService {
   getB2BWorkspace: () => WorkspaceData | null;
   getUser: () => UserSettings | null;
   getToken: () => string | null;
-  removeItem: (key: string) => void;
+  removeItem: (key: LocalStorageItem) => void;
   clear: () => void;
 }
