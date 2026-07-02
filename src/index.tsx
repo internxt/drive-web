@@ -69,7 +69,6 @@ SdkFactory.initialize(store.dispatch, localStorageService);
 
 // Initializes store
 store.dispatch(userActions.initialize());
-store.dispatch(sessionActions.initialize());
 store.dispatch(storageThunks.initializeThunk());
 store.dispatch(planThunks.initializeThunk());
 store.dispatch(taskManagerThunks.initializeThunk());

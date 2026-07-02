@@ -129,11 +129,9 @@ export enum AppView {
 }
 
 export enum LocalStorageItem {
-  Workspace = 'workspace',
   User = 'xUser',
   UserToken = 'xToken',
   Team = 'xTeam',
-  TeamToken = 'xTokenTeam',
   NewToken = 'xNewToken',
   Language = 'i18nextLng',
   ShowSummerBanner = 'showSummerBanner',

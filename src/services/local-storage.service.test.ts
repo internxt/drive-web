@@ -124,7 +124,6 @@ const workspaceValueInLocalStorage = Workspace.Business;
 beforeEach(() => {
   localStorage.setItem(localStorageKey, localStorageValue);
   localStorage.setItem(LocalStorageItem.User, stringifyMockedUser);
-  localStorage.setItem(LocalStorageItem.Workspace, workspaceValueInLocalStorage);
   localStorage.setItem(LocalStorageItem.WorkspaceCredentials, stringifyMockCredentials);
   localStorage.setItem(LocalStorageItem.B2Bworkspace, stringifyWorkspaceData);
   localStorage.setItem('theme', 'starwars');
@@ -213,28 +212,6 @@ describe('Testing the local storage service', () => {
   });
 
   describe('Workspaces', () => {
-    it('When the workspace item exists, then it is returned', () => {
-      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
-
-      const workspace = localStorageService.getWorkspace();
-
-      expect(getFromLocalStorageSpy).toHaveBeenCalled();
-      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.Workspace);
-      expect(workspace).toStrictEqual(workspaceValueInLocalStorage);
-    });
-
-    it('When the workspace item does not exist, then it is returned', () => {
-      const workspaceValueInLocalStorage = Workspace.Individuals;
-      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
-
-      localStorage.removeItem(LocalStorageItem.Workspace);
-      const workspace = localStorageService.getWorkspace();
-
-      expect(getFromLocalStorageSpy).toHaveBeenCalled();
-      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.Workspace);
-      expect(workspace).toStrictEqual(workspaceValueInLocalStorage);
-    });
-
     describe('Get workspace credentials', () => {
       it('When there are credentials from a workspace, then the credentials are returned', () => {
         const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
