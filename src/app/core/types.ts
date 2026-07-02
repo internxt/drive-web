@@ -67,11 +67,6 @@ export interface AppViewConfig {
   hideSearch?: boolean;
 }
 
-export enum Workspace {
-  Individuals = 'personal',
-  Business = 'business',
-}
-
 export enum DragAndDropType {
   DriveItem = 'drive-item',
 }
@@ -129,14 +124,11 @@ export enum AppView {
 }
 
 export enum LocalStorageItem {
-  WorkspaceType = 'workspace',
   User = 'xUser',
   UserToken = 'xToken',
-  TeamToken = 'xTokenTeam',
   NewToken = 'xNewToken',
   Language = 'i18nextLng',
   ShowSummerBanner = 'showSummerBanner',
-  ResourcesToken = 'xResourcesToken',
   CheckoutItemData = 'checkout_item_data',
   SubscriptionID = 'subscriptionId',
   PaymentIntentID = 'paymentIntentId',

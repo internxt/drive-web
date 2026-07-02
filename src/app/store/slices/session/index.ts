@@ -1,28 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { LocalStorageItem, Workspace } from '../../../core/types';
-import localStorageService from 'services/local-storage.service';
 import { SessionState } from './session.model';
 import { sessionExtraReducers } from './session.thunks';
 
 const initialState: SessionState = {
   hasConnection: true,
-  workspace: Workspace.Individuals,
 };
 
 export const sessionSlice = createSlice({
   name: 'session',
   initialState,
   reducers: {
-    initialize: (state: SessionState) => {
-      state.workspace = (localStorageService.getWorkspace() as Workspace) || Workspace.Individuals;
-      localStorageService.set(LocalStorageItem.WorkspaceType, state.workspace);
-    },
     setHasConnection: (state: SessionState, action: PayloadAction<boolean>) => {
       state.hasConnection = action.payload;
-    },
-    setWorkspace: (state: SessionState, action: PayloadAction<Workspace>) => {
-      state.workspace = action.payload;
     },
     resetState: (state: SessionState) => {
       Object.assign(state, initialState);
