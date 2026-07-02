@@ -17,7 +17,7 @@ interface GuestSignupOnSubmitParams {
     password: string,
     invitationId: string,
     token: string,
-  ) => Promise<{ xUser: any; xToken: string; xNewToken: string; mnemonic: string }>;
+  ) => Promise<{ xUser: UserSettings; xToken: string; xNewToken: string; mnemonic: string }>;
   dispatch: AppDispatch;
   setIsLoading: (loading: boolean) => void;
   setSignupError: (error: string) => void;
@@ -41,11 +41,10 @@ export const guestSignupOnSubmit = async ({
 
   try {
     const { email, password, token } = formData;
-    const { xUser, xNewToken, mnemonic } = await doRegisterPreCreatedUser(email, password, invitationId, token || '');
+    const { xUser, xNewToken } = await doRegisterPreCreatedUser(email, password, invitationId, token || '');
 
     localStorageService.clear();
 
-    localStorageService.set(LocalStorageItem.UserMnemonic, mnemonic);
     localStorageService.setToken(xNewToken);
 
     const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(xUser, password);
