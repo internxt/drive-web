@@ -6,6 +6,7 @@ import { loadExternalScript } from 'utils/loadExternalScript';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { userService } from 'services';
 import { t } from 'i18next';
+import { LocalStorageItem } from 'app/core/types';
 
 const MAX_BANNER_SHOW_COUNT = 2;
 const MIN_FILE_UPLOADS_FOR_BANNER = 3;
@@ -18,9 +19,6 @@ interface ReferralUser {
   email: string;
   emailVerified: boolean;
 }
-
-const UCC_STORAGE_KEY = 'cello_ucc';
-const BANNER_STATE_KEY = 'referral_banner_state';
 
 interface BannerState {
   isDismissed: boolean;
@@ -43,13 +41,13 @@ const DEFAULT_BANNER_STATE: BannerState = {
 };
 
 const getBannerState = (): BannerState => {
-  const stored = localStorageService.get(BANNER_STATE_KEY);
+  const stored = localStorageService.get(LocalStorageItem.BunnerStateKey);
   return stored ? { ...DEFAULT_BANNER_STATE, ...JSON.parse(stored) } : { ...DEFAULT_BANNER_STATE };
 };
 
 const updateBannerState = (update: Partial<BannerState>): void => {
   const state = { ...getBannerState(), ...update };
-  localStorageService.set(BANNER_STATE_KEY, JSON.stringify(state));
+  localStorageService.set(LocalStorageItem.BunnerStateKey, JSON.stringify(state));
 };
 
 let bootPromise: Promise<void> | null = null;
@@ -194,7 +192,7 @@ const captureUccFromAttribution = async (): Promise<string | null> => {
     const celloAttribution = await waitForCelloAttribution();
     const ucc = await celloAttribution('getUcc');
     if (ucc) {
-      localStorageService.set(UCC_STORAGE_KEY, ucc);
+      localStorageService.set(LocalStorageItem.UccStorageKey, ucc);
       return ucc;
     }
   } catch (error) {
@@ -212,12 +210,12 @@ const captureUcc = async (): Promise<string | null> => {
 
   if (!uccFromUrl) return null;
 
-  localStorageService.set(UCC_STORAGE_KEY, uccFromUrl);
+  localStorageService.set(LocalStorageItem.UccStorageKey, uccFromUrl);
   return uccFromUrl;
 };
 
 const getStoredUcc = (): string | null => {
-  return localStorageService.get(UCC_STORAGE_KEY) ?? null;
+  return localStorageService.get(LocalStorageItem.UccStorageKey) ?? null;
 };
 
 const trackFileUpload = (): void => {
@@ -261,7 +259,7 @@ const shouldShowBanner = (): boolean => {
   const state = getBannerState();
 
   if (state.isDismissed || state.isModalOpened) return false;
-  if (localStorageService.get(UCC_STORAGE_KEY)) return false;
+  if (localStorageService.get(LocalStorageItem.UccStorageKey)) return false;
   if (state.showCount >= MAX_BANNER_SHOW_COUNT) return false;
 
   const hasEnoughFileUploads = state.fileUploadCount >= MIN_FILE_UPLOADS_FOR_BANNER;

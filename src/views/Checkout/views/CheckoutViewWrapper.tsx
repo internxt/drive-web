@@ -10,9 +10,8 @@ import envService from 'services/env.service';
 import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
-import { STORAGE_KEYS } from 'services/storage-keys';
 import { AppError } from '@internxt/sdk';
-import { AppView, IFormValues } from 'app/core/types';
+import { AppView, IFormValues, LocalStorageItem } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import ChangePlanDialog from 'views/NewSettings/components/Sections/Account/Plans/components/ChangePlanDialog';
 import longNotificationsService from 'app/notifications/services/longNotification.service';
@@ -101,7 +100,7 @@ const CheckoutViewWrapper = () => {
   const lastName = user?.lastname ?? '';
   const fullName = userAccountName + ' ' + lastName;
 
-  const gclidStored = localStorageService.get(STORAGE_KEYS.GCLID);
+  const gclidStored = localStorageService.get(LocalStorageItem.GCLID);
 
   const canChangePlanDialogBeOpened = selectedPlan?.price && isUpdateSubscriptionDialogOpen;
   const isCryptoPaymentDialogOpen = isDialogOpen(CRYPTO_PAYMENT_DIALOG_KEY);
@@ -119,7 +118,7 @@ const CheckoutViewWrapper = () => {
       const expiryDate = new Date();
       expiryDate.setTime(expiryDate.getTime() + GCLID_COOKIE_LIFESPAN_DAYS * MILLISECONDS_PER_DAY);
       document.cookie = `gclid=${gclid}; expires=${expiryDate.toUTCString()}; path=/; Secure`;
-      localStorageService.set(STORAGE_KEYS.GCLID, gclid);
+      localStorageService.set(LocalStorageItem.GCLID, gclid);
     }
     if (irclickid) {
       handleImpactDTCCheckout({ irclickid, utmMedium });

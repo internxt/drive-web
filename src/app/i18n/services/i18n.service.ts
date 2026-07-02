@@ -23,6 +23,7 @@ import zhJson from '../locales/zh.json';
 import ruJson from '../locales/ru.json';
 import deJson from '../locales/de.json';
 import twJson from '../locales/tw.json';
+import { LocalStorageItem } from 'app/core/types';
 
 const dayJsLocale = {
   es,
@@ -35,7 +36,7 @@ const dayJsLocale = {
   tw,
 };
 
-const deviceLang = localStorageService.get('i18nextLng') ?? navigator.language.split('-')[0];
+const deviceLang = localStorageService.get(LocalStorageItem.Language) ?? navigator.language.split('-')[0];
 
 dayjs.locale(dayJsLocale[deviceLang] || 'en');
 

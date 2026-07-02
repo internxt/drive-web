@@ -10,6 +10,7 @@ import EnvironmentBG from 'assets/images/banner/environment_theme.png';
 import SummerBG from 'assets/images/banner/SummerBanner.webp';
 import AnniversaryBG from 'assets/images/banner/5th_anniversary_theme.avif';
 import localStorageService from 'services/local-storage.service';
+import { LocalStorageItem } from 'app/core/types';
 
 export type Theme =
   | 'system'
@@ -73,11 +74,11 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const toggleTheme = (theme: Theme) => setCurrentTheme(theme);
 
   const persistDarkTheme = (value: boolean) => {
-    localStorageService.set('theme:isDark', value ? 'true' : 'false');
+    localStorageService.set(LocalStorageItem.IsThemeDark, value ? 'true' : 'false');
   };
 
   useEffect(() => {
-    const stored = localStorageService.get('theme') as Theme | null;
+    const stored = localStorageService.get(LocalStorageItem.Theme) as Theme | null;
     const defaultTheme = stored ?? 'system';
     setCurrentTheme(defaultTheme);
 
@@ -91,7 +92,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     const updateTheme = () => {
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-      localStorageService.set('theme', currentTheme);
+      localStorageService.set(LocalStorageItem.Theme, currentTheme);
 
       if (currentTheme === 'dark' || (currentTheme === 'system' && prefersDark)) {
         root.style.backgroundImage = 'none';
