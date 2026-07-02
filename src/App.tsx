@@ -8,7 +8,7 @@ import { Portal } from '@headlessui/react';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { ActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.context';
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
-import { AppView, LocalStorageItem } from 'app/core/types';
+import { AppView } from 'app/core/types';
 import { FolderPath } from 'app/drive/types';
 import { ModifyStorageModal } from './views/NewSettings/components/Sections/Workspace/Members/components/ModifyStorageModal';
 import { useAppSelector } from 'app/store/hooks';
