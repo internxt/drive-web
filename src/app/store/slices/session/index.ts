@@ -1,12 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { Workspace } from '../../../core/types';
 import { SessionState } from './session.model';
 import { sessionExtraReducers } from './session.thunks';
 
 const initialState: SessionState = {
   hasConnection: true,
-  workspace: Workspace.Individuals,
 };
 
 export const sessionSlice = createSlice({
@@ -15,9 +13,6 @@ export const sessionSlice = createSlice({
   reducers: {
     setHasConnection: (state: SessionState, action: PayloadAction<boolean>) => {
       state.hasConnection = action.payload;
-    },
-    setWorkspace: (state: SessionState, action: PayloadAction<Workspace>) => {
-      state.workspace = action.payload;
     },
     resetState: (state: SessionState) => {
       Object.assign(state, initialState);
