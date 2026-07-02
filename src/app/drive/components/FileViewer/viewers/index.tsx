@@ -16,4 +16,7 @@ export default {
   [FileExtensionGroup.Xls]: FileXlsxViewer,
   [FileExtensionGroup.Word]: FileDocumentViewer,
   [FileExtensionGroup.Txt]: FileTxtViewer,
+  [FileExtensionGroup.Code]: FileTxtViewer,
+  [FileExtensionGroup.Xml]: FileTxtViewer,
+  [FileExtensionGroup.Csv]: FileTxtViewer,
 };

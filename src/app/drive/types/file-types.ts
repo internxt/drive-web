@@ -162,6 +162,8 @@ const codeExtensions: FileExtensionMap = {
   yaml: ['yaml', 'yml'],
 };
 
+const previewableCodeExtensionGroups: string[] = Object.keys(codeExtensions);
+
 const figmaExtensions: FileExtensionMap = {
   fig: ['fig'],
 };
@@ -187,11 +189,48 @@ const pptExtensions: FileExtensionMap = {
   ppt: ['ppt', 'pptx', 'pptm'],
 };
 
-const txtExtensions: FileExtensionMap = {
-  txt: ['txt', 'text', 'conf', 'def', 'list', 'log', 'md', 'lock'],
+const plainTextExtensions: FileExtensionMap = {
+  plainText: [
+    // documents
+    'txt',
+    'text',
+    'md',
+    'rst',
+    'adoc',
+    // config
+    'conf',
+    'def',
+    'list',
+    'lock',
+    'toml',
+    'ini',
+    'cfg',
+    'properties',
+    'jsonc',
+    // data
+    'tsv',
+    // scripts / code not covered by the code group
+    'tsx',
+    'mjs',
+    'cjs',
+    'go',
+    'rs',
+    'swift',
+    'sh',
+    'bash',
+    'zsh',
+    'ps1',
+    'bat',
+    'cmd',
+    'htm',
+    // logs / diffs
+    'log',
+    'patch',
+    'diff',
+  ],
 };
 
-const previewableTxtExtensionGroups: string[] = ['txt'];
+const previewablePlainTxtExtensionGroups: string[] = ['plainText'];
 export const videoExtensions: FileExtensionMap = {
   webm: ['webm'],
   mkv: ['mkv'],
@@ -236,9 +275,13 @@ const xmlExtensions: FileExtensionMap = {
   svg: ['svg'],
 };
 
+const previewableXmlExtensionGroups: string[] = ['xml'];
+
 const csvExtensions: FileExtensionMap = {
   csv: ['csv'],
 };
+
+const previewableCsvExtensionGroups: string[] = ['csv'];
 
 const zipExtensions: FileExtensionMap = {
   zip: ['zip', 'zipx'],
@@ -281,7 +324,7 @@ const fileExtensionGroups: fileExtensionsDictionary = {
   [FileExtensionGroup.Image]: imageExtensions,
   [FileExtensionGroup.Pdf]: pdfExtensions,
   [FileExtensionGroup.Ppt]: pptExtensions,
-  [FileExtensionGroup.Txt]: txtExtensions,
+  [FileExtensionGroup.Txt]: plainTextExtensions,
   [FileExtensionGroup.Video]: videoExtensions,
   [FileExtensionGroup.Word]: WordExtensions,
   [FileExtensionGroup.Xls]: xlsExtensions,
@@ -293,17 +336,17 @@ const fileExtensionGroups: fileExtensionsDictionary = {
 
 export const fileExtensionPreviewableGroups: fileExtensionsPreviewableDictionary = {
   [FileExtensionGroup.Audio]: previewableAudioExtensionsGroup,
-  [FileExtensionGroup.Code]: [],
+  [FileExtensionGroup.Code]: previewableCodeExtensionGroups,
   [FileExtensionGroup.Figma]: [],
   [FileExtensionGroup.Image]: previewableImageExtensionGroups,
   [FileExtensionGroup.Pdf]: previewablePdfExtensionGroups,
   [FileExtensionGroup.Ppt]: [],
-  [FileExtensionGroup.Txt]: previewableTxtExtensionGroups,
+  [FileExtensionGroup.Txt]: previewablePlainTxtExtensionGroups,
   [FileExtensionGroup.Video]: previewableVideoExtensionsGroup,
   [FileExtensionGroup.Word]: previewableDocsGroup,
   [FileExtensionGroup.Xls]: previewableExcelFormatExtensionGroup,
-  [FileExtensionGroup.Xml]: [],
-  [FileExtensionGroup.Csv]: [],
+  [FileExtensionGroup.Xml]: previewableXmlExtensionGroups,
+  [FileExtensionGroup.Csv]: previewableCsvExtensionGroups,
   [FileExtensionGroup.Zip]: [],
   [FileExtensionGroup.Default]: [],
 };
