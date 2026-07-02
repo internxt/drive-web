@@ -41,7 +41,7 @@ describe('user thunks', () => {
     const base64 = (str: string) => (typeof btoa === 'function' ? btoa(str) : Buffer.from(str).toString('base64'));
     const payloadB64 = base64(JSON.stringify({ exp: futureExp }));
     const validToken = `aaa.${payloadB64}.bbb`;
-    vi.spyOn(localStorageService, 'get').mockReturnValue(validToken);
+    vi.spyOn(localStorageService, 'getToken').mockReturnValue(validToken);
 
     vi.spyOn(userService, 'refreshAvatarUser').mockResolvedValue({ avatar: null });
 
