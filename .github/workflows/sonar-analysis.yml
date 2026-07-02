@@ -15,17 +15,16 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node_version: [20.x]
+        node_version: [24.x]
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v6
         with:
-          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
-      # Generate a .npmrc file with the NPM_TOKEN
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node_version }}
-          registry-url: 'https://npm.pkg.github.com'
+          node-version: ${{ matrix.node-version }}
       - run: echo REACT_APP_CRYPTO_SECRET=${{ secrets.REACT_APP_CRYPTO_SECRET }} >> .env
       - run: echo REACT_APP_STRIPE_PK=${{ secrets.REACT_APP_STRIPE_PK }} >> .env
       - run: echo REACT_APP_STRIPE_TEST_PK=${{ secrets.REACT_APP_STRIPE_TEST_PK }} >> .env
@@ -39,17 +38,13 @@ jobs:
       - run: echo REACT_APP_PAYMENTS_API_URL=${{ secrets.REACT_APP_PAYMENTS_API_URL }} >> .env
       - run: echo REACT_APP_DRIVE_NEW_API_URL=${{ secrets.REACT_APP_DRIVE_NEW_API_URL }} >> .env
       - run: echo REACT_APP_NODE_ENV=production >> .env
-      - run: echo "registry=https://registry.yarnpkg.com/" > .npmrc
-      - run: echo "@internxt:registry=https://npm.pkg.github.com" >> .npmrc
-      # You cannot read packages from other private repos with GITHUB_TOKEN
-      # You have to use a PAT instead https://github.com/actions/setup-node/issues/49
-      - run: echo //npm.pkg.github.com/:_authToken=${{ secrets.PERSONAL_ACCESS_TOKEN }} >> .npmrc
-      - run: echo "always-auth=true" >> .npmrc
 
       - name: Install
         run: yarn install
+
       - name: Check and Install Playwright
         run: yarn playwright install
+
       - name: Unit test run
         run: yarn test:coverage
 
