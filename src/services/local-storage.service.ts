@@ -1,6 +1,6 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
-import { LocalStorageItem, Workspace } from 'app/core/types';
+import { LocalStorageItem } from 'app/core/types';
 import { BACKUP_KEY } from './storage-keys';
 
 function get(key: LocalStorageItem): string | null {
@@ -61,10 +61,6 @@ function getToken(): string | null {
   return get(LocalStorageItem.NewToken);
 }
 
-function getWorkspace(): string {
-  return get(LocalStorageItem.Workspace) ?? Workspace.Individuals;
-}
-
 function getB2BWorkspace(): WorkspaceData | null {
   const b2bWorkspace = get(LocalStorageItem.B2Bworkspace);
   if (b2bWorkspace === 'null') return null;
@@ -88,7 +84,7 @@ function getStorageToken(isFolder: boolean): string | null {
   return get(key);
 }
 
-function removeItem(key: string): void {
+function removeItem(key: LocalStorageItem): void {
   localStorage.removeItem(key);
 }
 
@@ -108,7 +104,6 @@ const localStorageService = {
   getBackupKeys,
   getUser,
   getToken,
-  getWorkspace,
   getStorageToken,
   removeItem,
   clear,
@@ -133,7 +128,6 @@ export interface LocalStorageService {
   getB2BWorkspace: () => WorkspaceData | null;
   getUser: () => UserSettings | null;
   getToken: () => string | null;
-  getWorkspace: () => string;
-  removeItem: (key: string) => void;
+  removeItem: (key: LocalStorageItem) => void;
   clear: () => void;
 }

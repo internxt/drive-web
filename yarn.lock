@@ -1878,12 +1878,12 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
-"@iconscout/react-unicons@^1.1.6":
-  version "1.1.6"
-  resolved "https://registry.yarnpkg.com/@iconscout/react-unicons/-/react-unicons-1.1.6.tgz#4137afb831666f9c6d3b45a410610b9db9507f3a"
-  integrity sha512-BnyVvBew7Vm1lvL8+qyqjchUbkVHlDyNAlN+r5b+0P0KrkQ66BHPBuJEJ2faT89L8qRu+TohE7dHMV+bndje3Q==
+"@iconscout/react-unicons@^2.2.5":
+  version "2.2.5"
+  resolved "https://registry.yarnpkg.com/@iconscout/react-unicons/-/react-unicons-2.2.5.tgz#d7a27fb0e30e87d77d45ac02e4e765d85f242026"
+  integrity sha512-Qn1YqlQPKUjgeGvtbsOWFlnmYBJL5iYpK+B+/nsUDz0tm8BmHQeGn9MsfSBB0WVYtLWiChhz5AQHbvXKqtWDmw==
   dependencies:
-    react ">=15.0.0 <17.0.0"
+    prop-types "^15.8.1"
 
 "@internationalized/date@^3.12.2":
   version "3.12.2"
@@ -1913,6 +1913,13 @@
   dependencies:
     tailwindcss "^4.1.17"
 
+"@internxt/css-config@1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@internxt/css-config/-/css-config-1.1.1.tgz#0f6a41b9ba2d182b006155c5930cc59c455b0f51"
+  integrity sha512-RP7YZdvQZxzxGm1FZxbLw3PA/ojueHXJvzagUTTIdV4ev23OAcF80FAQZx4aTfX1mnMfQeFr0dOutqaPrBReqA==
+  dependencies:
+    tailwindcss "^4.1.17"
+
 "@internxt/eslint-config-internxt@1.0.10":
   version "1.0.10"
   resolved "https://registry.yarnpkg.com/@internxt/eslint-config-internxt/-/eslint-config-internxt-1.0.10.tgz#19025c479f84617a59484660f2f9c983ff3bc4ec"
@@ -1927,9 +1934,10 @@
   resolved "https://registry.yarnpkg.com/@internxt/lib/-/lib-1.4.2.tgz#fd178ff4e71381509648e469ec8b574082cd6eb2"
   integrity sha512-3eYwSSl3NMwCyq+W8QkOrV0V0tCAcDfzmo8JH6BwU+rd4fMmJvriOnbFu9cKLJmXLk4GhCDEL5cr8rpFt4cAZQ==
 
-"@internxt/prettier-config@internxt/prettier-config#v1.0.2":
-  version "1.0.2"
-  resolved "https://codeload.github.com/internxt/prettier-config/tar.gz/9fa74e9a2805e1538b50c3809324f1c9d0f3e4f9"
+"@internxt/prettier-config@2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@internxt/prettier-config/-/prettier-config-2.0.1.tgz#a25e7a16f62a990aed2bd1804e04140cc8c33e77"
+  integrity sha512-sCnOMX7GR7BYDJ5OH1RiV/JaOBLE3uhL6QN6tYhMKi7QXK/cnM/77qmDlIEBlhTNIFEMLFljSkc0vZEvf6m2xA==
 
 "@internxt/sdk@=1.17.12":
   version "1.17.12"
@@ -2212,11 +2220,6 @@
   version "2.1.10"
   resolved "https://registry.yarnpkg.com/@phosphor-icons/react/-/react-2.1.10.tgz#3a97ec5b7a4b8d53afeb29125bc17e74ed2daf92"
   integrity sha512-vt8Tvq8GLjheAZZYa+YG/pW7HDbov8El/MANW8pOAz4eGxrwhnbfrQZq0Cp4q8zBEu8NIhHdnr+r8thnfRSNYA==
-
-"@phosphor-icons/react@^2.1.7":
-  version "2.1.7"
-  resolved "https://registry.yarnpkg.com/@phosphor-icons/react/-/react-2.1.7.tgz#b11a4b25849b7e3849970b688d9fe91e5d4fd8d7"
-  integrity sha512-g2e2eVAn1XG2a+LI09QU3IORLhnFNAFkNbo2iwbX6NOKSLOwvEMmTa7CgOzEbgNWR47z8i8kwjdvYZ5fkGx1mQ==
 
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"
@@ -8392,15 +8395,6 @@ react-window@^1.8.11:
   dependencies:
     "@babel/runtime" "^7.0.0"
     memoize-one ">=3.1.1 <6"
-
-"react@>=15.0.0 <17.0.0":
-  version "16.14.0"
-  resolved "https://registry.yarnpkg.com/react/-/react-16.14.0.tgz#94d776ddd0aaa37da3eda8fc5b6b18a4c9a3114d"
-  integrity sha512-0X2CImDkJGApiAlcf0ODKIneSwBPhqJawOa5wCtKbu7ZECrmS26NvtSILynQ66cgkT/RJ4LidJOc3bUESwmU8g==
-  dependencies:
-    loose-envify "^1.1.0"
-    object-assign "^4.1.1"
-    prop-types "^15.6.2"
 
 react@^18.2.0:
   version "18.2.0"
