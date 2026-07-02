@@ -134,7 +134,6 @@ export enum LocalStorageItem {
   NewToken = 'xNewToken',
   Language = 'i18nextLng',
   ShowSummerBanner = 'showSummerBanner',
-  ResourcesToken = 'xResourcesToken',
   CheckoutItemData = 'checkout_item_data',
   SubscriptionID = 'subscriptionId',
   PaymentIntentID = 'paymentIntentId',

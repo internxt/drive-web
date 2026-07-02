@@ -1,7 +1,7 @@
 import { afterAll, beforeEach, describe, expect, it, test, vi } from 'vitest';
 import localStorageService from './local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { LocalStorageItem, Workspace } from 'app/core/types';
+import { LocalStorageItem } from 'app/core/types';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 
 export const mockUserSettings: UserSettings = {
@@ -119,7 +119,6 @@ const localStorageValue = 'item-exists';
 const stringifyMockedUser = JSON.stringify(mockUserSettings);
 const stringifyMockCredentials = JSON.stringify(mockWorkspaceCredentialsDetails);
 const stringifyWorkspaceData = JSON.stringify(mockWorkspaceData);
-const workspaceValueInLocalStorage = Workspace.Business;
 
 beforeEach(() => {
   localStorage.setItem(localStorageKey, localStorageValue);

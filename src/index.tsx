@@ -10,7 +10,6 @@ import { userActions } from './app/store/slices/user';
 import { planThunks } from './app/store/slices/plan';
 import storageThunks from './app/store/slices/storage/storage.thunks';
 import { taskManagerThunks } from './app/store/slices/taskManager';
-import { sessionActions } from './app/store/slices/session';
 
 import 'react-tooltip/dist/react-tooltip.css';
 import './index.scss';
