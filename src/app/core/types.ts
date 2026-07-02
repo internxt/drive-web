@@ -132,7 +132,6 @@ export enum LocalStorageItem {
   WorkspaceType = 'workspace',
   User = 'xUser',
   UserToken = 'xToken',
-  Team = 'xTeam',
   TeamToken = 'xTokenTeam',
   NewToken = 'xNewToken',
   Language = 'i18nextLng',
