@@ -17,7 +17,7 @@ const axiosPlugin: AppPlugin = {
 
       const workspace =
         requestConfig.authWorkspace ||
-        (localStorageService.get(LocalStorageItem.Workspace) as Workspace) ||
+        (localStorageService.get(LocalStorageItem.WorkspaceType) as Workspace) ||
         Workspace.Individuals;
 
       const headers = new AxiosHeaders({

@@ -231,8 +231,8 @@ function trackPurchase(): void {
       });
     }
 
-    localStorageService.removeItem('checkout_item_data');
-    localStorageService.removeItem('itemOriginalPrice');
+    localStorageService.removeItem(LocalStorageItem.CheckoutItemData);
+    localStorageService.removeItem(LocalStorageItem.ItemOriginalPrice);
   } catch (error) {
     console.error('[GA Service] Error in trackPurchase:', error);
   }

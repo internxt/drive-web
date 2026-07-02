@@ -16,7 +16,7 @@ export const sessionSlice = createSlice({
   reducers: {
     initialize: (state: SessionState) => {
       state.workspace = (localStorageService.getWorkspace() as Workspace) || Workspace.Individuals;
-      localStorageService.set(LocalStorageItem.Workspace, state.workspace);
+      localStorageService.set(LocalStorageItem.WorkspaceType, state.workspace);
     },
     setHasConnection: (state: SessionState, action: PayloadAction<boolean>) => {
       state.hasConnection = action.payload;

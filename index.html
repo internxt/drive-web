@@ -34,10 +34,12 @@
       }
     </style>
     <script>
+      import localStorageService from 'services/local-storage.service';
+      import { LocalStorageItem } from 'app/core/types';
       (function () {
         try {
-          var storedTheme = localStorage.getItem('theme');
-          var persistedIsDark = localStorage.getItem('theme:isDark');
+          var storedTheme = localStorageService.get(LocalStorageItem.Theme);
+          var persistedIsDark = localStorageService.get(LocalStorageItem.IsDark);
           var systemPrefersDark = false;
 
           try {
