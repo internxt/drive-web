@@ -3,8 +3,6 @@ import localStorageService from 'services/local-storage.service';
 import { PlanState } from '../store/slices/plan';
 import { LocalStorageItem } from 'app/core/types';
 
-const BANNER_NAME_IN_LOCAL_STORAGE = 'show_banner';
-
 export class BannerManager {
   private readonly plan: PlanState;
   private readonly offerEndDay: Date;
@@ -14,7 +12,7 @@ export class BannerManager {
   constructor(user: UserSettings, plan: PlanState, offerEndDay: Date) {
     this.plan = plan;
     this.offerEndDay = offerEndDay;
-    this.bannerItemInLocalStorage = localStorageService.get(LocalStorageItem.BunnerNameForFreeUsers);
+    this.bannerItemInLocalStorage = localStorageService.get(LocalStorageItem.BannerNameForFreeUsers);
     this.todayDate = new Date().toISOString().split('T')[0];
   }
 
@@ -28,8 +26,7 @@ export class BannerManager {
 
   private clearLocalStorageIfExpired(): void {
     if (this.isOfferExpired() || this.isBannerExpired()) {
-      localStorageService.removeItem(BANNER_NAME_IN_LOCAL_STORAGE);
-      localStorageService.removeItem(LocalStorageItem.BunnerNameForFreeUsers);
+      localStorageService.removeItem(LocalStorageItem.BannerNameForFreeUsers);
     }
   }
 
@@ -66,6 +63,6 @@ export class BannerManager {
   }
 
   public onCloseBanner(): void {
-    localStorageService.set(LocalStorageItem.BunnerNameForFreeUsers, this.todayDate);
+    localStorageService.set(LocalStorageItem.BannerNameForFreeUsers, this.todayDate);
   }
 }

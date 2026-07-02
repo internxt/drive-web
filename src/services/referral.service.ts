@@ -41,13 +41,13 @@ const DEFAULT_BANNER_STATE: BannerState = {
 };
 
 const getBannerState = (): BannerState => {
-  const stored = localStorageService.get(LocalStorageItem.BunnerStateKey);
+  const stored = localStorageService.get(LocalStorageItem.BannerStateKey);
   return stored ? { ...DEFAULT_BANNER_STATE, ...JSON.parse(stored) } : { ...DEFAULT_BANNER_STATE };
 };
 
 const updateBannerState = (update: Partial<BannerState>): void => {
   const state = { ...getBannerState(), ...update };
-  localStorageService.set(LocalStorageItem.BunnerStateKey, JSON.stringify(state));
+  localStorageService.set(LocalStorageItem.BannerStateKey, JSON.stringify(state));
 };
 
 let bootPromise: Promise<void> | null = null;
