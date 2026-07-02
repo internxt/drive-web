@@ -67,11 +67,6 @@ export interface AppViewConfig {
   hideSearch?: boolean;
 }
 
-export enum Workspace {
-  Individuals = 'personal',
-  Business = 'business',
-}
-
 export enum DragAndDropType {
   DriveItem = 'drive-item',
 }
