@@ -1414,7 +1414,8 @@
       "errors": {}
     },
     "subtitles": {
-      "upload-failed": "Upload fehlgeschlagen"
+      "upload-failed": "Upload fehlgeschlagen",
+      "upload-partially-failed": "Einige Dateien konnten nicht hochgeladen werden"
     },
     "generalErrorMessages": {
       "retryUploadFailed": "Beim erneuten Hochladen ist etwas schiefgegangen. Versuche es erneut",

@@ -1419,7 +1419,8 @@
       "errors": {}
     },
     "subtitles": {
-      "upload-failed": "Échec du téléchargement"
+      "upload-failed": "Échec du téléchargement",
+      "upload-partially-failed": "Certains fichiers n'ont pas pu être téléchargés"
     },
     "generalErrorMessages": {
       "retryUploadFailed": "Quelque chose s'est mal passé en réessayant de télécharger. Essayez de télécharger à nouveau",

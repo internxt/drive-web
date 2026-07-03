@@ -10,6 +10,8 @@ import { TaskFolder, UploadFoldersManager, uploadFoldersWithManager } from './Up
 import * as networkInformation from './networkInformation';
 import { FilesExceedsSizeLimitError } from 'app/drive/services/file.service/upload.errors';
 import { uploadItemsParallelThunk } from 'app/store/slices/storage/storage.thunks/uploadItemsThunk';
+import { deleteItemsThunk } from '../store/slices/storage/storage.thunks/deleteItemsThunk';
+import { TaskStatus } from 'app/tasks/types';
 
 vi.mock('app/drive/services/new-storage.service', () => ({
   default: {
@@ -367,6 +369,81 @@ describe('checkUploadFolders', () => {
 
     expect(logNetworkInfoMock).toHaveBeenCalledOnce();
     expect(logNetworkInfoMock).toHaveBeenCalledWith({ folderName: 'MyFolder' });
+  });
+
+  it('should mark the task as Error but keep the already-uploaded content when a child file upload fails', async () => {
+    const mockFolder: DriveFolderData = {
+      id: 0,
+      uuid: 'uuid',
+      name: 'FolderWithFailingFile',
+      bucket: 'bucket',
+      parentId: 0,
+      parent_id: 0,
+      parentUuid: 'parentUuid',
+      userId: 0,
+      user_id: 0,
+      icon: null,
+      iconId: null,
+      icon_id: null,
+      isFolder: true,
+      color: null,
+      encrypt_version: null,
+      plain_name: 'FolderWithFailingFile',
+      deleted: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    const taskId = 'task-id';
+
+    (createFolder as Mock).mockResolvedValueOnce(mockFolder);
+    (checkFolderDuplicated as Mock).mockResolvedValueOnce({
+      duplicatedFoldersResponse: [],
+      foldersWithDuplicates: [],
+      foldersWithoutDuplicates: [mockFolder],
+    });
+
+    // The file upload thunk rejects (e.g. a 402 Payment Required response)
+    const dispatch = vi.fn().mockReturnValue({ unwrap: () => Promise.reject(new AppError('Payment Required')) });
+
+    vi.spyOn(tasksService, 'create').mockReturnValue(taskId);
+    const updateTaskSpy = vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'getTasks').mockReturnValue([]);
+    // A file failure no longer marks the task as Error mid-flight; it stays in process until the
+    // whole folder finishes, at which point it is marked as Error (partial upload) by the manager
+    vi.spyOn(tasksService, 'findTask').mockReturnValue({ id: taskId, status: TaskStatus.InProcess } as never);
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
+    vi.spyOn(errorService, 'castError').mockImplementation((e) => e as never);
+
+    await uploadFoldersWithManager({
+      payload: [
+        {
+          currentFolderId: 'currentFolderId',
+          root: {
+            folderId: mockFolder.uuid,
+            childrenFiles: [new File([new ArrayBuffer(10)], 'failing.txt')],
+            childrenFolders: [],
+            name: mockFolder.name,
+            fullPathEdited: 'path1',
+          },
+          options: { taskId },
+        },
+      ],
+      selectedWorkspace: null,
+      dispatch,
+      maxUploadFileSize: 100,
+    });
+
+    // The task must never be marked as Success
+    expect(updateTaskSpy).not.toHaveBeenCalledWith(
+      expect.objectContaining({ merge: expect.objectContaining({ status: TaskStatus.Success }) }),
+    );
+    // The task must be marked as Error (the subtitle key is resolved by i18n in the real app)
+    expect(updateTaskSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ merge: expect.objectContaining({ status: TaskStatus.Error }) }),
+    );
+    // The already-uploaded content must be preserved: the root folder must NOT be deleted
+    expect(deleteItemsThunk).not.toHaveBeenCalled();
   });
 
   describe('Handle File Uploads', () => {

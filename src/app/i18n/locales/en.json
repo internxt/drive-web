@@ -1491,7 +1491,8 @@
       "errors": {}
     },
     "subtitles": {
-      "upload-failed": "Upload failed"
+      "upload-failed": "Upload failed",
+      "upload-partially-failed": "Some files could not be uploaded"
     },
     "generalErrorMessages": {
       "retryUploadFailed": "Something went wrong when retrying the upload. Try uploading again",

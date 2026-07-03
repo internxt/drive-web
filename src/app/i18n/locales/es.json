@@ -1469,7 +1469,8 @@
       "errors": {}
     },
     "subtitles": {
-      "upload-failed": "Error al subir"
+      "upload-failed": "Error al subir",
+      "upload-partially-failed": "Algunos archivos no se pudieron subir"
     },
     "generalErrorMessages": {
       "retryUploadFailed": "Algo salió mal al reintentar la subida. Intenta subirlo de nuevo",

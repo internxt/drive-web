@@ -52,6 +52,9 @@ interface TaskInfo {
     itemsUploaded: number;
     totalItems: number;
   };
+  // Set when at least one file failed to upload. We keep the already-uploaded content
+  // (no rollback) and mark the task as errored once the whole folder finishes.
+  hasFailedFiles?: boolean;
 }
 
 const generateTaskIdForFolders = async (foldersPayload: UploadFolderPayload[]): Promise<TaskFolder[]> => {
@@ -217,7 +220,7 @@ export class UploadFoldersManager {
         );
       } catch {
         if (uploadAttempts >= UploadFoldersManager.MAX_UPLOAD_ATTEMPTS) {
-          this.stopUploadTask(taskId, abortController);
+          await this.stopUploadTask(taskId, abortController);
           this.killQueueAndNotifyError(taskId);
           return;
         }
@@ -287,9 +290,10 @@ export class UploadFoldersManager {
     )
       .unwrap()
       .catch(() => {
-        this.stopUploadTask(taskId, abortController);
-        this.killQueueAndNotifyError(taskId);
-        return;
+        // A file failed to upload. Do NOT roll back: keep everything already uploaded and let
+        // the queue keep uploading the remaining files/folders (best-effort). The task is marked
+        // as errored once the whole folder finishes, in uploadFolderTask.
+        this.tasksInfo[taskId].hasFailedFiles = true;
       });
   };
 
@@ -363,6 +367,142 @@ export class UploadFoldersManager {
     });
   };
 
+  private readonly finalizeSuccessfulUpload = (taskFolder: TaskFolder, memberId?: string): void => {
+    const { root, taskId, options: payloadOptions } = taskFolder;
+    const options = { withNotification: true, ...payloadOptions };
+
+    tasksService.updateTask({
+      taskId,
+      merge: {
+        itemUUID: { rootFolderUUID: this.tasksInfo[taskId].rootFolderItem?.uuid },
+        status: TaskStatus.Success,
+      },
+    });
+
+    options.onSuccess?.();
+    referralService.trackFolderUpload();
+    logNetworkInfoForUpload({ folderName: root.name });
+
+    setTimeout(() => {
+      this.dispatch(planThunks.fetchUsageThunk());
+      if (memberId) this.dispatch(planThunks.fetchBusinessLimitUsageThunk());
+    }, 1000);
+  };
+
+
+  private readonly handleFolderUploadError = (err: unknown, taskId: string, connectionLost: boolean): boolean => {
+    const castedError = errorService.castError(err);
+    const updatedTask = tasksService.findTask(taskId);
+
+    if (connectionLost) {
+      tasksService.updateTask({
+        taskId,
+        merge: {
+          status: TaskStatus.Error,
+          subtitle: t('error.connectionLostError') as string,
+        },
+      });
+      errorService.reportError(castedError);
+      return true;
+    }
+
+    const isActiveNonCancelledTask = updatedTask?.status !== TaskStatus.Cancelled && taskId === updatedTask?.id;
+    if (isActiveNonCancelledTask) {
+      tasksService.updateTask({
+        taskId,
+        merge: {
+          status: TaskStatus.Error,
+          subtitle: t('tasks.subtitles.upload-failed') as string,
+        },
+      });
+      errorService.reportError(castedError);
+    }
+
+    return false;
+  };
+
+  private readonly uploadFolderTask = async (
+    taskFolder: TaskFolder,
+    memberId: string | undefined,
+    isConnectionLost: () => boolean,
+  ): Promise<boolean> => {
+    const { root, currentFolderId, taskId } = taskFolder;
+
+    const taskAfterUpload = tasksService.findTask(taskId);
+
+    this.tasksInfo[taskId] = {
+      progress: {
+        itemsUploaded: 0,
+        totalItems: countItemsUnderRoot(root),
+      },
+    };
+
+    tasksService.updateTask({
+      taskId,
+      merge: {
+        status: TaskStatus.InProcess,
+        progress: 0,
+      },
+    });
+
+    const cancelQueueListener = (task?: TaskData) => {
+      const isCurrentTask = task && task.id === taskId;
+      if (isCurrentTask && task.status === TaskStatus.Cancelled) {
+        this.uploadFoldersQueue.kill();
+      }
+    };
+
+    const updateQueueListener = (task?: TaskData) => {
+      const isCurrentTask = task && task.id === taskId;
+      if (isCurrentTask && task.status === TaskStatus.InProcess) {
+        this.uploadFoldersQueue.resume();
+      } else if (isCurrentTask && task.status === TaskStatus.Paused) {
+        this.uploadFoldersQueue.pause();
+      }
+    };
+
+    tasksService.addListener({ event: TaskEvent.TaskCancelled, listener: cancelQueueListener });
+    tasksService.addListener({ event: TaskEvent.TaskUpdated, listener: updateQueueListener });
+
+    try {
+      root.folderId = currentFolderId;
+      await this.uploadFoldersQueue.pushAsync(taskFolder);
+
+      while (this.uploadFoldersQueue.running() > 0 || this.uploadFoldersQueue.length() > 0) {
+        await this.uploadFoldersQueue.drain();
+      }
+
+      if (isConnectionLost()) throw new ConnectionLostError();
+
+      const taskFailed =
+        taskAfterUpload?.status === TaskStatus.Error || taskAfterUpload?.status === TaskStatus.Cancelled;
+      if (taskFailed) {
+        return false;
+      }
+
+      if (this.tasksInfo[taskId].hasFailedFiles) {
+        // Some files failed but the already-uploaded content was preserved. Mark the task as
+        // errored with an explanatory subtitle instead of rolling back the partial upload.
+        tasksService.updateTask({
+          taskId,
+          merge: {
+            status: TaskStatus.Error,
+            subtitle: t('tasks.subtitles.upload-partially-failed') as string,
+          },
+        });
+        return false;
+      }
+
+      this.finalizeSuccessfulUpload(taskFolder, memberId);
+      return false;
+    } catch (err: unknown) {
+      return this.handleFolderUploadError(err, taskId, isConnectionLost());
+    } finally {
+      tasksService.removeListener({ event: TaskEvent.TaskCancelled, listener: cancelQueueListener });
+      tasksService.removeListener({ event: TaskEvent.TaskUpdated, listener: updateQueueListener });
+    }
+  };
+
   public readonly run = async (): Promise<void> => {
     const payloadWithTaskId = await generateTaskIdForFolders(this.payload);
 
@@ -379,99 +519,8 @@ export class UploadFoldersManager {
     context.addEventListener('offline', connectionLostListener);
 
     for (const taskFolder of payloadWithTaskId) {
-      const { root, currentFolderId, options: payloadOptions, taskId } = taskFolder;
-      const options = { withNotification: true, ...payloadOptions };
-
-      this.tasksInfo[taskId] = {
-        progress: {
-          itemsUploaded: 0,
-          totalItems: countItemsUnderRoot(root),
-        },
-      };
-
-      tasksService.updateTask({
-        taskId,
-        merge: {
-          status: TaskStatus.InProcess,
-          progress: 0,
-        },
-      });
-
-      const cancelQueueListener = (task?: TaskData) => {
-        const isCurrentTask = task && task.id === taskId;
-        if (isCurrentTask && task.status === TaskStatus.Cancelled) {
-          this.uploadFoldersQueue.kill();
-        }
-      };
-
-      const updateQueueListener = (task?: TaskData) => {
-        const isCurrentTask = task && task.id === taskId;
-        if (isCurrentTask && task.status === TaskStatus.InProcess) {
-          this.uploadFoldersQueue.resume();
-        } else if (isCurrentTask && task.status === TaskStatus.Paused) {
-          this.uploadFoldersQueue.pause();
-        }
-      };
-
-      tasksService.addListener({ event: TaskEvent.TaskCancelled, listener: cancelQueueListener });
-      tasksService.addListener({ event: TaskEvent.TaskUpdated, listener: updateQueueListener });
-
-      try {
-        root.folderId = currentFolderId;
-        await this.uploadFoldersQueue.pushAsync(taskFolder);
-
-        while (this.uploadFoldersQueue.running() > 0 || this.uploadFoldersQueue.length() > 0) {
-          await this.uploadFoldersQueue.drain();
-        }
-
-        if (connectionLost) throw new ConnectionLostError();
-
-        tasksService.updateTask({
-          taskId: taskId,
-          merge: {
-            itemUUID: { rootFolderUUID: this.tasksInfo[taskId].rootFolderItem?.uuid },
-            status: TaskStatus.Success,
-          },
-        });
-
-        options.onSuccess?.();
-        referralService.trackFolderUpload();
-        logNetworkInfoForUpload({ folderName: root.name });
-
-        setTimeout(() => {
-          this.dispatch(planThunks.fetchUsageThunk());
-          if (memberId) this.dispatch(planThunks.fetchBusinessLimitUsageThunk());
-        }, 1000);
-      } catch (err: unknown) {
-        const castedError = errorService.castError(err);
-        const updatedTask = tasksService.findTask(taskId);
-
-        if (connectionLost) {
-          tasksService.updateTask({
-            taskId: taskId,
-            merge: {
-              status: TaskStatus.Error,
-              subtitle: t('error.connectionLostError') as string,
-            },
-          });
-          errorService.reportError(castedError);
-          break;
-        } else if (updatedTask?.status !== TaskStatus.Cancelled && taskId === updatedTask?.id) {
-          tasksService.updateTask({
-            taskId: taskId,
-            merge: {
-              status: TaskStatus.Error,
-              subtitle: t('tasks.subtitles.upload-failed') as string,
-            },
-          });
-          // Log the error or report it but don't re-throw it to allow the next folder to be processed
-          errorService.reportError(castedError);
-          continue;
-        }
-      } finally {
-        tasksService.removeListener({ event: TaskEvent.TaskCancelled, listener: cancelQueueListener });
-        tasksService.removeListener({ event: TaskEvent.TaskUpdated, listener: updateQueueListener });
-      }
+      const shouldStop = await this.uploadFolderTask(taskFolder, memberId, () => connectionLost);
+      if (shouldStop) break;
     }
   };
 }
