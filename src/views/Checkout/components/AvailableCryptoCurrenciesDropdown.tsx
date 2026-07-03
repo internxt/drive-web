@@ -1,5 +1,5 @@
 import { Fragment, MouseEvent } from 'react';
-import { Menu, Transition } from '@headlessui/react';
+import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react';
 import { CryptoCurrency } from '@internxt/sdk/dist/payments/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import BitcoinLogo from 'assets/icons/checkout/bitcoin-logo.svg?react';
@@ -27,9 +27,9 @@ export const AvailableCryptoCurrenciesDropdown = ({
   return (
     <div className="flex w-full flex-col items-start gap-3 rounded-2xl border border-gray-10 bg-surface p-2.5 px-3.5">
       <Menu>
-        <Menu.Button
+        <MenuButton
           onKeyDown={(e) => e.preventDefault()}
-          className={`flex h-full w-full flex-row items-center justify-between rounded-lg text-base transition-all duration-75 ease-in-out ${isDropdownOpen ? 'text-gray-100 dark:text-white' : 'text-[#6D6E78] hover:text-gray-100 hover:dark:text-white'}`}
+          className={`flex h-full w-full flex-row items-center justify-between rounded-lg outline-none text-base transition-all duration-75 ease-in-out ${isDropdownOpen ? 'text-gray-100 dark:text-white' : 'text-[#6D6E78] hover:text-gray-100 hover:dark:text-white'}`}
           onClick={onDropdownClicked}
         >
           {cryptoSelected ? (
@@ -43,7 +43,7 @@ export const AvailableCryptoCurrenciesDropdown = ({
               <p className="text-sm font-semibold">{translate('checkout.crypto')}</p>
             </div>
           )}
-        </Menu.Button>
+        </MenuButton>
         <Transition
           show={isDropdownOpen}
           as={Fragment}
@@ -54,18 +54,18 @@ export const AvailableCryptoCurrenciesDropdown = ({
           leaveFrom="transform opacity-100 scale-100"
           leaveTo="transform opacity-0 scale-95"
         >
-          <Menu.Items onKeyDown={(e) => e.stopPropagation()} className="flex w-full flex-col gap-2">
+          <MenuItems onKeyDown={(e) => e.stopPropagation()} className="flex w-full flex-col gap-2 outline-none">
             <div className="flex flex-col w-full border border-gray-10" />
             {availableCryptoCurrencies.map((cryptoCurrency) => (
-              <Menu.Item key={cryptoCurrency.currencyId}>
-                {({ active, close }) => (
+              <MenuItem key={cryptoCurrency.currencyId}>
+                {({ focus }) => (
                   <button
                     onClick={(e: MouseEvent<HTMLButtonElement>) => {
                       e.preventDefault();
                       onCryptoChanges(cryptoCurrency.currencyId.toLowerCase());
                       onDropdownClicked();
                     }}
-                    className={`flex w-full flex-row items-center rounded-md text-left ${active ? 'bg-gray-10' : ''}`}
+                    className={`flex w-full flex-row items-center rounded-md text-left ${focus ? 'bg-gray-10' : ''}`}
                   >
                     <div className="flex flex-row gap-5 py-2 items-center">
                       <img src={cryptoCurrency.imageUrl} alt={cryptoCurrency.name} className="h-5 w-5" />
@@ -73,9 +73,9 @@ export const AvailableCryptoCurrenciesDropdown = ({
                     </div>
                   </button>
                 )}
-              </Menu.Item>
+              </MenuItem>
             ))}
-          </Menu.Items>
+          </MenuItems>
         </Transition>
       </Menu>
     </div>

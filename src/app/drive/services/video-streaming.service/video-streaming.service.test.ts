@@ -45,7 +45,7 @@ describe('Video Streaming Service', () => {
         expect.objectContaining({
           bucketId: config.bucketId,
           fileId: config.fileId,
-          mnemonic: config.mnemonic,
+          key: { mnemonic: config.mnemonic },
           chunkStart: 0,
           chunkEnd: 1024,
         }),

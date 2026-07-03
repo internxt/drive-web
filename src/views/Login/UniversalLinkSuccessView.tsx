@@ -28,7 +28,7 @@ export default function UniversalLinkView(): JSX.Element {
 
   const getUniversalLinkAuthUrl = (user: UserSettings) => {
     const token = localStorageService.get(LocalStorageItem.UserToken);
-    const newToken = localStorageService.get(LocalStorageItem.NewToken);
+    const newToken = localStorageService.getToken();
     if (!token) return AppView.Login;
     if (!newToken) return AppView.Login;
 

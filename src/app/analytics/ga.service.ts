@@ -5,6 +5,7 @@ import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
 import envService from 'services/env.service';
 import localStorageService from 'services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { LocalStorageItem } from 'app/core/types';
 
 interface BaseTrackParams {
   planId: string;
@@ -102,7 +103,7 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
     const item = buildItem(params);
     const currencyCode = currency ?? 'EUR';
 
-    localStorageService.set('itemOriginalPrice', item.price.toString());
+    localStorageService.set(LocalStorageItem.ItemOriginalPrice, item.price.toString());
 
     const checkoutItemData: CheckoutItemData = {
       item_name: item.item_name,
@@ -111,7 +112,7 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
       discount: item.discount || 0,
     };
 
-    localStorageService.set('checkout_item_data', JSON.stringify(checkoutItemData));
+    localStorageService.set(LocalStorageItem.CheckoutItemData, JSON.stringify(checkoutItemData));
 
     const ecommerceData = {
       currency: currencyCode,
@@ -148,23 +149,23 @@ function trackPurchase(): void {
 
     const { uuid, email } = userSettings;
 
-    const checkoutItemDataStr = localStorageService.get('checkout_item_data');
+    const checkoutItemDataStr = localStorageService.get(LocalStorageItem.CheckoutItemData);
     if (!checkoutItemDataStr) {
       console.warn('[GA Service] No checkout data found, purchase may have already been tracked');
       return;
     }
 
-    const subscriptionId = localStorageService.get('subscriptionId');
-    const paymentIntentId = localStorageService.get('paymentIntentId');
-    const priceId = localStorageService.get('priceId');
-    const currency = localStorageService.get('currency');
-    const amountPaidString = localStorageService.get('amountPaid');
+    const subscriptionId = localStorageService.get(LocalStorageItem.SubscriptionID);
+    const paymentIntentId = localStorageService.get(LocalStorageItem.PaymentIntentID);
+    const priceId = localStorageService.get(LocalStorageItem.PriceId);
+    const currency = localStorageService.get(LocalStorageItem.Currency);
+    const amountPaidString = localStorageService.get(LocalStorageItem.AmountPaid);
     const amount = Number.parseFloat(amountPaidString ?? '0');
 
-    const itemOriginalPriceStr = localStorageService.get('itemOriginalPrice');
+    const itemOriginalPriceStr = localStorageService.get(LocalStorageItem.ItemOriginalPrice);
     const itemOriginalPrice = Number.parseFloat(itemOriginalPriceStr ?? '0');
 
-    const couponCode = localStorageService.get('couponCode');
+    const couponCode = localStorageService.get(LocalStorageItem.CouponCode);
 
     let checkoutItemData: CheckoutItemData | null = null;
     try {
@@ -230,8 +231,8 @@ function trackPurchase(): void {
       });
     }
 
-    localStorageService.removeItem('checkout_item_data');
-    localStorageService.removeItem('itemOriginalPrice');
+    localStorageService.removeItem(LocalStorageItem.CheckoutItemData);
+    localStorageService.removeItem(LocalStorageItem.ItemOriginalPrice);
   } catch (error) {
     console.error('[GA Service] Error in trackPurchase:', error);
   }

@@ -194,7 +194,7 @@ const updateUserEmailCredentialsThunk = createAsyncThunk<
     username: newUserData.email,
   };
   localStorageService.set(LocalStorageItem.UserToken, token);
-  localStorageService.set(LocalStorageItem.NewToken, newToken);
+  localStorageService.setToken(newToken);
   dispatch(userActions.setUser(user));
 });
 

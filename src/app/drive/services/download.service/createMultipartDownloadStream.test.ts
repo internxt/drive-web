@@ -5,13 +5,9 @@ vi.mock('app/network/download');
 
 const mockedSharingOptions = {
   credentials: { user: 'sharing-user', pass: 'sharing-password' },
-  mnemonic: 'sharing-mnemonic',
-};
-
-const mockedEnvironmentConfig = {
-  bridgeUser: 'bridge-user',
-  bridgePass: 'bridge-password',
-  encryptionKey: 'environment-mnemonic',
+  key: {
+    mnemonic: 'sharing-mnemonic',
+  },
 };
 
 const baseFile: DriveFileData = {
@@ -46,7 +42,7 @@ describe('createMultipartFileDownloadStream', () => {
         user: mockedSharingOptions.credentials.user,
         pass: mockedSharingOptions.credentials.pass,
       },
-      mnemonic: mockedSharingOptions.mnemonic,
+      key: mockedSharingOptions.key,
       options: {
         notifyProgress: expect.any(Function),
         abortController: undefined,

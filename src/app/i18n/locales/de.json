@@ -510,9 +510,7 @@
               "titleNew": "Neu",
               "year": "Jahr",
               "month": "Monat",
-              "free": "Kostenlos",
-              "reachedFreeLimit": "Du bist über dem Limit {{freePlanName}}",
-              "reachedFreeLimitDescription": "Weil du derzeit {{currentUsage}} verwendest, synchronisiert dein Internxt Drive deine Dateien nicht mehr und du kannst keine neuen Dateien hinzufügen"
+              "free": "Kostenlos"
             },
             "giveUsFeedback": "Teile uns mit, warum du deinen Vertrag {{currentPlanName}} Internxt-Plan kündigen und auf den kostenlosen Plan wechseln möchtest?",
             "feedback": {
@@ -793,6 +791,7 @@
       "multipleDescription": "An diesem Speicherort ist bereits mehr als ein Element vorhanden. Möchtest du sie ersetzen oder alle behalten?",
       "replaceItem": "Aktuelles Element ersetzen",
       "keepBoth": "Behalte beide",
+      "selectOption": "Wähle eine Option",
       "upload": "Upload",
       "move": "Verschieben"
     },

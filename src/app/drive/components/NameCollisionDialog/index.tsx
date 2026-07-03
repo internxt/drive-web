@@ -1,5 +1,5 @@
 import { FC, useEffect, useMemo, useState } from 'react';
-import { RadioGroup } from '@headlessui/react';
+import { Label, Radio, RadioGroup } from '@headlessui/react';
 
 import { Button, Modal } from '@internxt/ui';
 import { DriveItemData } from 'app/drive/types';
@@ -100,10 +100,10 @@ const NameCollisionDialog: FC<NameCollisionDialogProps> = ({
         <p className="text-base text-gray-80">{description}</p>
 
         <RadioGroup value={selectedOption} onChange={setSelectedOption} disabled={isLoading}>
-          <RadioGroup.Label className="sr-only">Select an option</RadioGroup.Label>
+          <Label className="sr-only">{translate('modals.renameModal.selectOption')}</Label>
           <div className="flex flex-col items-start space-y-3">
             {options.map((option) => (
-              <RadioGroup.Option value={option} className="rounded-md outline-none" key={option.operation}>
+              <Radio value={option} className="rounded-md outline-none" key={option.operation}>
                 <div className="group flex cursor-pointer flex-row items-center space-x-1.5">
                   <div
                     className={`flex h-5 w-5 flex-col items-center justify-center rounded-full ${
@@ -119,11 +119,11 @@ const NameCollisionDialog: FC<NameCollisionDialogProps> = ({
                     />
                   </div>
 
-                  <RadioGroup.Label as="p" className="font-medium">
+                  <Label as="p" className="font-medium">
                     {option.name}
-                  </RadioGroup.Label>
+                  </Label>
                 </div>
-              </RadioGroup.Option>
+              </Radio>
             ))}
           </div>
         </RadioGroup>

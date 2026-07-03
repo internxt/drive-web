@@ -1,13 +1,13 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
-import { LocalStorageItem, Workspace } from 'app/core/types';
-import { STORAGE_KEYS } from './storage-keys';
+import { LocalStorageItem } from 'app/core/types';
+import { BACKUP_KEY } from './storage-keys';
 
-function get(key: string): string | null {
+function get(key: LocalStorageItem): string | null {
   return localStorage.getItem(key);
 }
 
-function set(key: string, value: string): void {
+function set(key: LocalStorageItem, value: string): void {
   return localStorage.setItem(key, value);
 }
 
@@ -15,8 +15,8 @@ function getBackupKeyStorageKeys() {
   const user = getUser();
   const userId = user?.uuid;
   return {
-    seenAt: `${STORAGE_KEYS.BACKUP_KEY.SEEN_AT}_${userId}`,
-    acknowledgedAt: `${STORAGE_KEYS.BACKUP_KEY.ACKNOWLEDGED_AT}_${userId}`,
+    seenAt: `${BACKUP_KEY.SEEN_AT}_${userId}`,
+    acknowledgedAt: `${BACKUP_KEY.ACKNOWLEDGED_AT}_${userId}`,
   };
 }
 
@@ -28,6 +28,10 @@ function setBackupKeysAcknowledged(): void {
 function setBackupKeysSeenAt(date: string): void {
   const { seenAt } = getBackupKeyStorageKeys();
   localStorage.setItem(seenAt, date);
+}
+
+function setToken(token: string): void {
+  return set(LocalStorageItem.NewToken, token);
 }
 
 function removeBackupKeysSeenAt(): void {
@@ -48,17 +52,17 @@ function getBackupKeys(): {
 }
 
 function getUser(): UserSettings | null {
-  const stringUser: string | null = localStorage.getItem(LocalStorageItem.User);
+  const stringUser: string | null = get(LocalStorageItem.User);
 
   return stringUser ? JSON.parse(stringUser) : null;
 }
 
-function getWorkspace(): string {
-  return localStorage.getItem('workspace') ?? Workspace.Individuals;
+function getToken(): string | null {
+  return get(LocalStorageItem.NewToken);
 }
 
 function getB2BWorkspace(): WorkspaceData | null {
-  const b2bWorkspace = localStorage.getItem(STORAGE_KEYS.B2B_WORKSPACE);
+  const b2bWorkspace = get(LocalStorageItem.B2Bworkspace);
   if (b2bWorkspace === 'null') return null;
 
   if (b2bWorkspace) return JSON.parse(b2bWorkspace);
@@ -67,7 +71,7 @@ function getB2BWorkspace(): WorkspaceData | null {
 }
 
 function getWorkspaceCredentials(): WorkspaceCredentialsDetails | null {
-  const workspaceCredentials = localStorage.getItem(STORAGE_KEYS.WORKSPACE_CREDENTIALS);
+  const workspaceCredentials = get(LocalStorageItem.WorkspaceCredentials);
   if (workspaceCredentials === 'null') return null;
 
   if (workspaceCredentials) return JSON.parse(workspaceCredentials);
@@ -75,28 +79,19 @@ function getWorkspaceCredentials(): WorkspaceCredentialsDetails | null {
   return null;
 }
 
-function removeItem(key: string): void {
+function getStorageToken(isFolder: boolean): string | null {
+  const key = isFolder ? LocalStorageItem.FolderAccessToken : LocalStorageItem.FileAccessToken;
+  return get(key);
+}
+
+function removeItem(key: LocalStorageItem): void {
   localStorage.removeItem(key);
 }
 
-function exists(key: string): boolean {
-  return !!localStorage.getItem(key);
-}
-
-function hasCompletedTutorial(id?: string): boolean {
-  return localStorage.getItem(STORAGE_KEYS.TUTORIAL_COMPLETED_ID) === id;
-}
-
 function clear(): void {
-  localStorage.setItem('theme', 'system');
-
+  set(LocalStorageItem.Theme, 'system');
   localStorage.removeItem(getBackupKeyStorageKeys().seenAt);
-  Object.values(STORAGE_KEYS.THEMES).forEach((key) => localStorage.removeItem(key));
   Object.values(LocalStorageItem).forEach((key) => localStorage.removeItem(key));
-  localStorage.removeItem('theme:isDark');
-  localStorage.removeItem(STORAGE_KEYS.B2B_WORKSPACE);
-  localStorage.removeItem(STORAGE_KEYS.WORKSPACE_CREDENTIALS);
-  localStorage.removeItem(STORAGE_KEYS.GCLID);
 }
 
 const localStorageService = {
@@ -104,13 +99,13 @@ const localStorageService = {
   get,
   setBackupKeysAcknowledged,
   setBackupKeysSeenAt,
+  setToken,
   removeBackupKeysSeenAt,
   getBackupKeys,
   getUser,
-  getWorkspace,
-  hasCompletedTutorial,
+  getToken,
+  getStorageToken,
   removeItem,
-  exists,
   clear,
   getB2BWorkspace,
   getWorkspaceCredentials,
@@ -119,18 +114,20 @@ const localStorageService = {
 export default localStorageService;
 
 export interface LocalStorageService {
-  set: (key: string, value: string) => void;
-  get: (key: string) => string | null;
+  set: (key: LocalStorageItem, value: string) => void;
+  get: (key: LocalStorageItem) => string | null;
   setBackupKeysAcknowledged: () => void;
   setBackupKeysSeenAt: (date: string) => void;
+  setToken: (token: string) => void;
   removeBackupKeysSeenAt: () => void;
   getBackupKeys: () => {
     seenAt: string | null;
     saved: boolean;
   };
+  getStorageToken: (isFolder: boolean) => string | null;
+  getB2BWorkspace: () => WorkspaceData | null;
   getUser: () => UserSettings | null;
-  getWorkspace: () => string;
-  removeItem: (key: string) => void;
-  exists: (key: string) => boolean;
+  getToken: () => string | null;
+  removeItem: (key: LocalStorageItem) => void;
   clear: () => void;
 }

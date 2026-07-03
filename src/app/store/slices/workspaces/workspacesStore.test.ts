@@ -17,6 +17,7 @@ vi.mock('i18next', () => ({
 
 vi.mock('../../../core/types', () => ({
   AppView: vi.fn(),
+  LocalStorageItem: vi.fn(),
 }));
 vi.mock('../../../share/services/share.service', () => ({
   decryptMnemonic: vi.fn(),

@@ -21,7 +21,6 @@ import { DriveItemData, FolderPathDialog } from 'app/drive/types';
 import { CreateFolderDialog } from 'views/Drive/components';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import localStorageService from 'services/local-storage.service';
-import { STORAGE_KEYS } from 'services/storage-keys';
 import { useMoveItems } from 'hooks/moveItems/useMoveItems';
 
 interface MoveItemsDialogProps {
@@ -124,8 +123,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     const itemUuid = item.uuid;
     const itemFolderUuid = item.isFolder ? itemUuid : item.folderUuid;
     const itemType = item.isFolder ? 'folder' : 'file';
-    const storageKey = item.isFolder ? STORAGE_KEYS.FOLDER_ACCESS_TOKEN : STORAGE_KEYS.FILE_ACCESS_TOKEN;
-    const token = localStorageService.get(storageKey) || undefined;
+    const token = localStorageService.getStorageToken(item.isFolder) || undefined;
 
     const breadcrumbsList: FolderAncestor[] | FolderAncestorWorkspace[] = isWorkspaceSelected
       ? await newStorageService.getFolderAncestorsInWorkspace(workspaceSelected.workspace.id, itemType, itemUuid, token)
@@ -234,9 +232,9 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
                       onDoubleClick={() => onShowFolderContentClicked(folder.uuid, folder.name)}
                       key={folder.id}
                     >
-                      <div className="flex flex-row gap-3 items-center">
-                        <img className="flex h-8 w-8" alt="Folder icon" src={folderImage} />
-                        <span className="w-full flex-1 truncate text-base" title={folder.name}>
+                      <div className="flex min-w-0 flex-1 flex-row gap-3 items-center">
+                        <img className="flex h-8 w-8 shrink-0" alt="Folder icon" src={folderImage} />
+                        <span className="min-w-0 flex-1 truncate text-base text-start" title={folder.name}>
                           {folder.name}
                         </span>
                       </div>
