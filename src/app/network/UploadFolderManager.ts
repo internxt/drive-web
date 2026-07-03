@@ -23,7 +23,6 @@ import { logNetworkInfoForUpload } from './networkInformation';
 import { uiActions } from 'app/store/slices/ui';
 import { FilesExceedsSizeLimitError } from 'app/drive/services/file.service/upload.errors';
 import { filterFilesByMaxSize } from 'app/store/slices/storage/fileUtils/filterFilesByMaxSize';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 interface UploadFolderPayload {
   root: IRoot;
@@ -258,10 +257,7 @@ export class UploadFoldersManager {
     if (allFilesExceedSizeLimit && hasNoChildFolders) {
       await this.stopUploadTask(taskId, abortController);
       this.killQueueAndNotifyError(taskId);
-      notificationsService.show({
-        text: t('notificationMessages.reachedFileSizeLimit'),
-        type: ToastType.Warning,
-      });
+
       this.dispatch(
         uiActions.setOpenFileSizeLimitReachedDialog({ open: true, info: { exceededFiles: level.childrenFiles } }),
       );
