@@ -7,7 +7,7 @@ import { NetworkCredentials } from 'app/network/types/helper-types';
 
 export { getEnvironmentConfig } from './getEnvironmentConfig';
 
-export const MAX_ALLOWED_UPLOAD_SIZE = 40 * 1024 * 1024 * 1024;
+export const MAX_ALLOWED_UPLOAD_SIZE = 100 * 1024 * 1024 * 1024;
 
 export class Network {
   private mnemonic: string;

@@ -81,10 +81,6 @@ const validateFileSize = (
   const { allowedFilesToUpload, exceededFiles } = filterFilesByMaxSize({ files, maxUploadFileSize });
 
   if (exceededFiles.length > 0) {
-    notificationsService.show({
-      text: t('notificationMessages.reachedFileSizeLimit'),
-      type: ToastType.Warning,
-    });
     openReachedFileSizeLimitDialog(exceededFiles, dispatch);
   }
 
