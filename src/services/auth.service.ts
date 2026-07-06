@@ -14,7 +14,7 @@ import { trackSignUp } from 'app/analytics/impact.service';
 import { trackLead } from 'app/analytics/meta.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
 import { SdkFactory } from 'app/core/factory/sdk';
-import { AppView, LocalStorageItem } from 'app/core/types';
+import { AppView } from 'app/core/types';
 import { HTTP_STATUS_CODES } from 'app/core/constants';
 import {
   assertPrivateKeyIsValid,
@@ -47,7 +47,6 @@ import { PasswordMismatchError } from './errors/auth.errors';
 
 type ProfileInfo = {
   user: UserSettings;
-  token: string;
   newToken: string;
   mnemonic: string;
 };
@@ -180,7 +179,7 @@ export const doLogin = async (
   return authClient
     .login(loginDetails, cryptoProvider)
     .then(async (data) => {
-      const { user, token, newToken } = data;
+      const { user, newToken } = data;
 
       const { privateKey: encryptedPrivateKey } = user;
 
@@ -211,12 +210,10 @@ export const doLogin = async (
         },
       };
 
-      localStorageService.set(LocalStorageItem.UserToken, token);
       localStorageService.setToken(newToken);
 
       return {
         user: clearUser,
-        token: token,
         newToken,
         mnemonic: clearMnemonic,
       };
@@ -417,8 +414,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
       encryptVersion: StorageTypes.EncryptionVersion.Aes03,
     })
     .then((res) => {
-      const { token, newToken } = res;
-      if (token) localStorageService.set(LocalStorageItem.UserToken, token);
+      const { newToken } = res;
       if (newToken) localStorageService.setToken(newToken);
     })
     .catch((error) => {
@@ -555,11 +551,10 @@ export const unblockAccount = (token: string): Promise<void> => {
 
 export const signUp = async (params: SignUpParams) => {
   const { doSignUp, email, password, token, redeemCodeObject, dispatch } = params;
-  const { xUser, xToken, xNewToken, mnemonic } = await doSignUp(email, password, token);
+  const { xUser, xNewToken, mnemonic } = await doSignUp(email, password, token);
 
   localStorageService.clear();
 
-  localStorageService.set(LocalStorageItem.UserToken, xToken);
   localStorageService.setToken(xNewToken);
 
   const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(xUser, password);
@@ -586,12 +581,12 @@ export const signUp = async (params: SignUpParams) => {
   await trackSignUp(xUser.uuid);
   trackLead(xUser.email, xUser.userId);
 
-  return { token: xToken, user: xUser, mnemonic, newToken: xNewToken };
+  return { user: xUser, mnemonic, newToken: xNewToken };
 };
 
 export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
   const { email, password, twoFactorCode, dispatch, loginType = 'web' } = params;
-  const { token, newToken, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType);
+  const { newToken, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType);
   dispatch(userActions.setUser(user));
 
   try {
@@ -607,7 +602,7 @@ export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
 
   userActions.setUser(user);
 
-  return { token, user, mnemonic, newToken };
+  return { user, mnemonic, newToken };
 };
 
 export const authenticateUser = async (params: AuthenticateUserParams): Promise<ProfileInfo> => {
