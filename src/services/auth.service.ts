@@ -14,7 +14,7 @@ import { trackSignUp } from 'app/analytics/impact.service';
 import { trackLead } from 'app/analytics/meta.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
 import { SdkFactory } from 'app/core/factory/sdk';
-import { AppView, LocalStorageItem } from 'app/core/types';
+import { AppView } from 'app/core/types';
 import { HTTP_STATUS_CODES } from 'app/core/constants';
 import {
   assertPrivateKeyIsValid,
