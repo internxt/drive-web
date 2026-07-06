@@ -18,7 +18,7 @@ function openDb(): Promise<IDBDatabase> {
       }
     };
     req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
+    req.onerror = () => reject(req.error ?? new Error('Request to open database failed'));
   });
 }
 
@@ -29,7 +29,7 @@ async function getKey(): Promise<CryptoKey | undefined> {
       const tx = db.transaction(STORE, 'readonly');
       const r = tx.objectStore(STORE).get(KEY_ID);
       r.onsuccess = () => resolve(r.result);
-      r.onerror = () => reject(r.error);
+      r.onerror = () => reject(r.error ?? new Error('Request to get key failed'));
     });
 
     return existing;
@@ -44,7 +44,7 @@ export function deleteDb(): Promise<void> {
   return new Promise((resolve, reject) => {
     const req = indexedDB.deleteDatabase(DB_NAME);
     req.onsuccess = () => resolve();
-    req.onerror = () => reject(req.error);
+    req.onerror = () => reject(req.error ?? new Error('Request to delete database failed'));
     req.onblocked = () => reject(new Error('deleteDatabase blocked by an open connection'));
   });
 }
@@ -63,7 +63,7 @@ export async function createNewKey(): Promise<CryptoKey> {
       const tx = db.transaction(STORE, 'readwrite');
       tx.objectStore(STORE).add(key, KEY_ID);
       tx.oncomplete = () => resolve();
-      tx.onerror = () => reject(tx.error);
+      tx.onerror = () => reject(tx.error ?? new Error('Request to store key failed'));
     });
 
     return key;

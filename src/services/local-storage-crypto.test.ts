@@ -22,7 +22,7 @@ describe('createNewKey', () => {
     expect(key.type).toBe('secret');
     expect(key.extractable).toBe(false);
     expect(key.algorithm.name).toBe(ALGORITHM);
-    expect((key.algorithm as AesKeyAlgorithm).length).toBe(KEY_LENGTH);
+    expect(key.algorithm as AesKeyAlgorithm).toHaveLength(KEY_LENGTH);
     expect(key.usages).toEqual(expect.arrayContaining(['encrypt', 'decrypt']));
   });
 
