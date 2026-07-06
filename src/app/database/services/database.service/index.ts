@@ -52,6 +52,10 @@ export interface AppDatabase extends DBSchema {
     key: string;
     value: AvatarBlobData;
   };
+  crypto_keys: {
+    key: string;
+    value: CryptoKey;
+  };
 }
 
 export type DatabaseService = (

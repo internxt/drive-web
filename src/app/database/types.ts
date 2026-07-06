@@ -10,6 +10,7 @@ export enum DatabaseCollection {
   Account_settings = 'account_settings',
   UploadItemStatus = 'upload_item_status',
   WorkspacesAvatarBlobs = 'workspaces_avatar_blobs',
+  CryptoKeys = 'crypto_keys',
 }
 
 export enum LRUCacheTypes {

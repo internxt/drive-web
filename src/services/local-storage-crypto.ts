@@ -5,48 +5,19 @@ import {
   FailedToFindKey,
   KeyAlreadyExistsError,
 } from './local-storage-errors';
-import { DB_NAME, DB_VERSION, STORE, KEY_ID, KEY_LENGTH, IV_LENGTH, ALGORITHM } from './local-storage-constants';
-
-function openDb(): Promise<IDBDatabase> {
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, DB_VERSION);
-    req.onupgradeneeded = () => {
-      const db = req.result;
-
-      if (!db.objectStoreNames.contains(STORE)) {
-        db.createObjectStore(STORE);
-      }
-    };
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error ?? new Error('Request to open database failed'));
-  });
-}
+import { KEY_ID, KEY_LENGTH, IV_LENGTH, ALGORITHM } from './local-storage-constants';
+import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
 
 async function getKey(): Promise<CryptoKey | undefined> {
-  const db = await openDb();
   try {
-    const existing = await new Promise<CryptoKey | undefined>((resolve, reject) => {
-      const tx = db.transaction(STORE, 'readonly');
-      const r = tx.objectStore(STORE).get(KEY_ID);
-      r.onsuccess = () => resolve(r.result);
-      r.onerror = () => reject(r.error ?? new Error('Request to get key failed'));
-    });
-
-    return existing;
+    return await databaseService.get(DatabaseCollection.CryptoKeys, KEY_ID);
   } catch (error) {
     throw new FailedToFindKey(error instanceof Error ? error.message : String(error));
-  } finally {
-    db.close();
   }
 }
 
 export function deleteDb(): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.deleteDatabase(DB_NAME);
-    req.onsuccess = () => resolve();
-    req.onerror = () => reject(req.error ?? new Error('Request to delete database failed'));
-    req.onblocked = () => reject(new Error('deleteDatabase blocked by an open connection'));
-  });
+  return databaseService.delete(DatabaseCollection.CryptoKeys, KEY_ID) as unknown as Promise<void>;
 }
 
 export async function createNewKey(): Promise<CryptoKey> {
@@ -54,23 +25,12 @@ export async function createNewKey(): Promise<CryptoKey> {
   if (existing) {
     throw new KeyAlreadyExistsError('A key already exists; clear storage before creating a new one');
   }
-
-  const db = await openDb();
   try {
     const key = await crypto.subtle.generateKey({ name: ALGORITHM, length: KEY_LENGTH }, false, ['encrypt', 'decrypt']);
-
-    await new Promise<void>((resolve, reject) => {
-      const tx = db.transaction(STORE, 'readwrite');
-      tx.objectStore(STORE).add(key, KEY_ID);
-      tx.oncomplete = () => resolve();
-      tx.onerror = () => reject(tx.error ?? new Error('Request to store key failed'));
-    });
-
+    await databaseService.put(DatabaseCollection.CryptoKeys, KEY_ID, key);
     return key;
   } catch (error) {
     throw new FailedToCreateKey(error instanceof Error ? error.message : String(error));
-  } finally {
-    db.close();
   }
 }
 
