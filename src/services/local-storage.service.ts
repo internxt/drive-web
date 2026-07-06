@@ -57,6 +57,10 @@ function getUser(): UserSettings | null {
   return stringUser ? JSON.parse(stringUser) : null;
 }
 
+function setUser(user: UserSettings): void {
+  set(LocalStorageItem.User, JSON.stringify(user));
+}
+
 function getToken(): string | null {
   return get(LocalStorageItem.NewToken);
 }
@@ -103,6 +107,7 @@ const localStorageService = {
   removeBackupKeysSeenAt,
   getBackupKeys,
   getUser,
+  setUser,
   getToken,
   getStorageToken,
   removeItem,
@@ -127,6 +132,7 @@ export interface LocalStorageService {
   getStorageToken: (isFolder: boolean) => string | null;
   getB2BWorkspace: () => WorkspaceData | null;
   getUser: () => UserSettings | null;
+  setUser: (user: UserSettings) => void;
   getToken: () => string | null;
   removeItem: (key: LocalStorageItem) => void;
   clear: () => void;

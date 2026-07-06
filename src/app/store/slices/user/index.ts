@@ -215,7 +215,7 @@ export const userSlice = createSlice({
       state.isAuthenticated = !!action.payload;
       state.user = action.payload;
 
-      localStorageService.set(LocalStorageItem.User, JSON.stringify(action.payload));
+      localStorageService.setUser(action.payload);
     },
     setToken: (state: UserState, action: PayloadAction<string>) => {
       localStorageService.setToken(action.payload);
