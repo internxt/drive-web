@@ -48,7 +48,7 @@ describe('createNewKey', () => {
     expect(decrypted).toBe(text);
   });
 
-  it('throws FailedToFindKey if key generation fails', async () => {
+  it('throws FailedToCreateKey if key generation fails', async () => {
     vi.spyOn(window.crypto.subtle, 'generateKey').mockImplementationOnce(() => {
       throw new Error('Simulated key generation failure');
     });

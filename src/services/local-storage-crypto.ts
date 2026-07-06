@@ -9,15 +9,11 @@ import { KEY_ID, KEY_LENGTH, IV_LENGTH, ALGORITHM } from './local-storage-consta
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
 
 async function getKey(): Promise<CryptoKey | undefined> {
-  try {
-    return await databaseService.get(DatabaseCollection.CryptoKeys, KEY_ID);
-  } catch (error) {
-    throw new FailedToFindKey(error instanceof Error ? error.message : String(error));
-  }
+  return databaseService.get(DatabaseCollection.CryptoKeys, KEY_ID);
 }
 
 export function deleteDb(): Promise<void> {
-  return databaseService.delete(DatabaseCollection.CryptoKeys, KEY_ID) as unknown as Promise<void>;
+  return databaseService.delete(DatabaseCollection.CryptoKeys, KEY_ID);
 }
 
 export async function createNewKey(): Promise<CryptoKey> {
