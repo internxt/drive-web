@@ -2,7 +2,7 @@ import { afterAll, beforeEach, describe, expect, it, test, vi } from 'vitest';
 import localStorageService from './local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { LocalStorageItem } from 'app/core/types';
-import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
+import { WorkspaceCredentialsDetails } from '@internxt/sdk/dist/workspaces';
 
 export const mockUserSettings: UserSettings = {
   userId: 'user_123',
