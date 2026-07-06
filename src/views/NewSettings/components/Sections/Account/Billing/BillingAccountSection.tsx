@@ -14,6 +14,7 @@ import BillingAccountOverview from './containers/BillingAccountOverview';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { getCurrentUsage, getPlanInfo, getPlanName } from '../../../../utils/planUtils';
 import { errorService } from 'services';
+import longNotificationsService from 'app/notifications/services/longNotification.service';
 
 interface BillingAccountSectionProps {
   changeSection: ({ section, subsection }) => void;
@@ -25,6 +26,7 @@ const BillingAccountSection = ({ changeSection, onClosePreferences }: BillingAcc
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const [isSubscription, setIsSubscription] = useState<boolean>(false);
   const [cancellingSubscription, setCancellingSubscription] = useState<boolean>(false);
+  const [applyingTrial, setApplyingTrial] = useState<boolean>(false);
   const [isCancelSubscriptionModalOpen, setIsCancelSubscriptionModalOpen] = useState<boolean>(false);
   const [planName, setPlanName] = useState<string>('');
   const [planInfo, setPlanInfo] = useState<string>('');
@@ -38,7 +40,31 @@ const BillingAccountSection = ({ changeSection, onClosePreferences }: BillingAcc
     setCurrentUsage(getCurrentUsage(plan.usageDetails));
   }, [plan.individualSubscription]);
 
-  async function cancelSubscription() {
+  const activateTrial = async () => {
+    if (plan.individualSubscription?.type !== 'subscription') return;
+
+    setApplyingTrial(true);
+
+    try {
+      await paymentService.applyCancellationTrial(plan.individualSubscription.subscriptionId);
+      longNotificationsService.show({ text: t('notificationMessages.successApplyCancellationIncentive') });
+      setIsCancelSubscriptionModalOpen(false);
+    } catch (error) {
+      const castedError = errorService.castError(error);
+      notificationsService.show({
+        text: t('notificationMessages.errorApplyCancellationIncentive'),
+        type: ToastType.Error,
+        requestId: castedError.requestId,
+      });
+    } finally {
+      setApplyingTrial(false);
+      setTimeout(() => {
+        dispatch(planThunks.initializeThunk()).unwrap();
+      }, 1000);
+    }
+  };
+
+  const cancelSubscription = async () => {
     setCancellingSubscription(true);
     try {
       await paymentService.cancelSubscription();
@@ -57,7 +83,7 @@ const BillingAccountSection = ({ changeSection, onClosePreferences }: BillingAcc
         dispatch(planThunks.initializeThunk()).unwrap();
       }, 1000);
     }
-  }
+  };
 
   return (
     <Section title={t('preferences.workspace.billing.title')} onClosePreferences={onClosePreferences}>
@@ -68,12 +94,14 @@ const BillingAccountSection = ({ changeSection, onClosePreferences }: BillingAcc
         <CancelSubscription
           individualPlan={plan.individualPlan}
           isCancelSubscriptionModalOpen={isCancelSubscriptionModalOpen}
-          setIsCancelSubscriptionModalOpen={setIsCancelSubscriptionModalOpen}
           cancellingSubscription={cancellingSubscription}
-          cancelSubscription={cancelSubscription}
           planName={planName}
           planInfo={planInfo}
           currentUsage={currentUsage}
+          applyingTrial={applyingTrial}
+          activateTrial={activateTrial}
+          cancelSubscription={cancelSubscription}
+          setIsCancelSubscriptionModalOpen={setIsCancelSubscriptionModalOpen}
         />
       )}
     </Section>

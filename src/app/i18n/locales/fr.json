@@ -536,6 +536,17 @@
               "continue": "Obtenir 3 mois GRATUITS"
             }
           },
+          "cancellationIncentive": {
+            "title": {
+              "normal": "LE MOIS PROCHAIN",
+              "blue": "OFFERT"
+            },
+            "description": "En conservant votre abonnement, vous bénéficierez du mois prochain gratuitement ainsi que d'une extension de l'essai jusqu'au {{newDate}}. Il s'agit d'une offre unique.",
+            "cta": {
+              "cancel": "Annuler quand même",
+              "freeMonth": "Obtenir 1 mois GRATUIT"
+            }
+          },
           "cancelSubscription": "Annuler l'abonnement",
           "billed": "Facturation {{interval}} {{renewDate}}",
           "paymentMethod": {
@@ -1476,6 +1487,8 @@
     "verificationEmail": "Courriel de vérification envoyé",
     "successCancelSubscription": "Votre abonnement a été annulé",
     "errorCancelSubscription": "Quelque chose s'est mal passé lors de l'annulation de votre abonnement",
+    "successApplyCancellationIncentive": "Merci de rester avec nous ! Profitez du mois prochain gratuitement",
+    "errorApplyCancellationIncentive": "Une erreur s'est produite lors de l'application de l'offre de fidélité",
     "errorPurchaseBusinessPlan": "Vous avez déjà un plan d'affaires.",
     "couponIsNotValidForUserError": "Le coupon ne peut être utilisé que par de nouveaux clients.",
     "errorApplyingCoupon": "Une erreur s'est produite lors de l'application du coupon",

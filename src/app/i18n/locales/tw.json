@@ -552,6 +552,17 @@
               "continue": "獲得 3 個月免費"
             }
           },
+          "cancellationIncentive": {
+            "title": {
+              "normal": "下個月",
+              "blue": "免費"
+            },
+            "description": "保留訂閱後，您將獲得下個月的免費使用權，並將試用期延長至 {{newDate}}。這是一次性優惠。",
+            "cta": {
+              "cancel": "仍然取消",
+              "freeMonth": "獲得1個月免費"
+            }
+          },
           "billed": "已收費 {{interval}} {{renewDate}}",
           "paymentMethod": {
             "head": "付款方式",
@@ -1478,6 +1489,8 @@
     "verificationEmail": "驗證郵件已發送",
     "successCancelSubscription": "您的訂閱已取消",
     "errorCancelSubscription": "取消訂閱時出現問題",
+    "successApplyCancellationIncentive": "感謝您繼續與我們同行！下個月免費享用",
+    "errorApplyCancellationIncentive": "套用取消優惠時發生問題",
     "successApplyCoupon": "免費使用3個月的優惠碼已應用",
     "errorApplyCoupon": "應用折扣時出現錯誤",
     "alreadyAppliedCoupon": "優惠碼已經應用",

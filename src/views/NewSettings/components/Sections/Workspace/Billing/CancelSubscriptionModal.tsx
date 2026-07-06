@@ -4,6 +4,7 @@ import { FreeStoragePlan } from 'app/drive/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Button, Modal } from '@internxt/ui';
 import { dateService } from 'services';
+import { CancellationIncentive } from './CancellationIncentive';
 
 interface CancelSubscriptionModalProps {
   individualPlan: StoragePlan | null;
@@ -13,21 +14,43 @@ interface CancelSubscriptionModalProps {
   currentPlanInfo: string;
   currentUsage: number;
   cancellingSubscription: boolean;
+  applyingTrial: boolean;
   userType: UserType;
   cancelSubscription: (userType?: UserType) => void;
+  activateTrial: () => void;
 }
 
 const CancelSubscriptionModal = ({
   individualPlan,
   isOpen,
-  onClose,
   currentPlanName,
   currentPlanInfo,
   currentUsage,
   cancellingSubscription,
-  cancelSubscription,
+  applyingTrial,
   userType = UserType.Individual,
+  activateTrial,
+  cancelSubscription,
+  onClose,
 }: CancelSubscriptionModalProps): JSX.Element => {
+  const commitment = individualPlan?.commitment;
+  const cancellationTrial = individualPlan?.cancellationTrial;
+  const isCommitmentEnabled = commitment?.enabled;
+  const isCancellationTrialRedeemed = cancellationTrial?.redeemed;
+  const shouldDisplayCancellationIncentiveDialog = isCommitmentEnabled && !isCancellationTrialRedeemed;
+
+  if (shouldDisplayCancellationIncentiveDialog)
+    return (
+      <CancellationIncentive
+        isOpen={isOpen}
+        applyingTrial={applyingTrial}
+        cancellingSubscription={cancellingSubscription}
+        onClose={onClose}
+        cancelSubscription={cancelSubscription}
+        activateTrial={activateTrial}
+      />
+    );
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <CancelPlanModal
@@ -44,6 +67,17 @@ const CancelSubscriptionModal = ({
   );
 };
 
+interface CancelPlanModalProps {
+  currentPlanName: string;
+  currentPlanInfo: string;
+  currentUsage: number;
+  userType: UserType;
+  cancellingSubscription: boolean;
+  individualPlan: StoragePlan | null;
+  cancelSubscription: () => void;
+  onClose: () => void;
+}
+
 const CancelPlanModal = ({
   currentPlanName,
   currentPlanInfo,
@@ -53,16 +87,7 @@ const CancelPlanModal = ({
   individualPlan,
   cancelSubscription,
   onClose,
-}: {
-  currentPlanName: string;
-  currentPlanInfo: string;
-  currentUsage: number;
-  userType: UserType;
-  cancellingSubscription: boolean;
-  individualPlan: StoragePlan | null;
-  cancelSubscription: () => void;
-  onClose: () => void;
-}): JSX.Element => {
+}: CancelPlanModalProps): JSX.Element => {
   const { translate } = useTranslationContext();
 
   const monthlyAmount = individualPlan?.monthlyPrice;
@@ -71,8 +96,8 @@ const CancelPlanModal = ({
   const remainingMonths = commitment?.remainingMonths;
   const commitmentRenewal =
     commitment?.cancellationDate && dateService.format(commitment?.cancellationDate, 'DD MMM YYYY');
-  const isCommitmentFirstMonth = commitment?.isFirstMonth;
-  const shouldDisplayCommitmentText = isCommitmentEnabled && !isCommitmentFirstMonth;
+  const isElegibleForCancellation = commitment?.isElegibleForCancellation;
+  const shouldDisplayCommitmentText = isCommitmentEnabled && !isElegibleForCancellation;
 
   const commitmentFirstMonthCancellationDescription = translate(
     'views.account.tabs.billing.cancelSubscriptionModal.commitment.firstMonthDescription',
@@ -86,7 +111,7 @@ const CancelPlanModal = ({
         freePlanName: FreeStoragePlan.simpleName,
       });
 
-  const description = isCommitmentFirstMonth ? commitmentFirstMonthCancellationDescription : normalDescription;
+  const description = isElegibleForCancellation ? commitmentFirstMonthCancellationDescription : normalDescription;
 
   const commitmentList = [
     translate('views.account.tabs.billing.cancelSubscriptionModal.commitment.monthsRemaining', {
@@ -153,7 +178,7 @@ const CancelPlanModal = ({
 
       <div className="mt-5 flex justify-end">
         <Button
-          className={'shadow-subtle-hard'}
+          className={'shadow-su0btle-hard'}
           variant="secondary"
           disabled={cancellingSubscription}
           onClick={cancelSubscription}

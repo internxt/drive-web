@@ -529,6 +529,17 @@
               "placeholder": "Обратная связь"
             }
           },
+          "cancellationIncentive": {
+            "title": {
+              "normal": "СЛЕДУЮЩИЙ МЕСЯЦ",
+              "blue": "БЕСПЛАТНО"
+            },
+            "description": "Сохранив подписку, вы получите следующий месяц бесплатно и продление пробного периода до {{newDate}}. Это единовременное предложение.",
+            "cta": {
+              "cancel": "Всё равно отменить",
+              "freeMonth": "Получить 1 месяц БЕСПЛАТНО"
+            }
+          },
           "billed": "Оплата {{interval}} {{renewDate}}",
           "paymentMethod": {
             "head": "Способ оплаты",
@@ -1490,6 +1501,8 @@
     "verificationEmail": "Электронное письмо с подтверждением отправлено",
     "successCancelSubscription": "Подписка отменена",
     "errorCancelSubscription": "Произошла ошибка при отмене подписки.",
+    "successApplyCancellationIncentive": "Спасибо, что остаётесь с нами! Следующий месяц бесплатно",
+    "errorApplyCancellationIncentive": "Произошла ошибка при применении предложения по отмене",
     "errorCreatingSubscription": "Что-то пошло не так при создании вашей подписки",
     "errorPurchaseBusinessPlan": "У вас уже есть бизнес-тариф.",
     "couponIsNotValidForUserError": "Купон может быть использован только новыми клиентами.",

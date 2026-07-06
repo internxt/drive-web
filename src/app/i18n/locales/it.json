@@ -620,6 +620,17 @@
               "placeholder": "Dacci un feedback"
             }
           },
+          "cancellationIncentive": {
+            "title": {
+              "normal": "IL MESE PROSSIMO",
+              "blue": "LO OFFRIAMO NOI"
+            },
+            "description": "Mantenendo il tuo abbonamento otterrai il mese prossimo gratuito e un'estensione della prova fino al {{newDate}}. Si tratta di un'offerta unica.",
+            "cta": {
+              "cancel": "Annulla comunque",
+              "freeMonth": "Ottieni 1 mese GRATIS"
+            }
+          },
           "billed": "Fatturato {{interval}} {{renewDate}}",
           "paymentMethod": {
             "head": "Metodo di pagamento",
@@ -1582,6 +1593,8 @@
     "verificationEmail": "L'e-mail di verifica è stata inviata",
     "successCancelSubscription": "L'abbonamento è stato annullato",
     "errorCancelSubscription": "Qualcosa è andato storto durante la cancellazione dell'abbonamento",
+    "successApplyCancellationIncentive": "Grazie per essere rimasto con noi! Goditi il prossimo mese gratis",
+    "errorApplyCancellationIncentive": "Qualcosa è andato storto durante l'applicazione dell'incentivo di cancellazione",
     "errorCreatingSubscription": "Si è verificato un errore durante la creazione del tuo abbonamento",
     "errorPurchaseBusinessPlan": "Hai già un piano aziendale.",
     "couponIsNotValidForUserError": "Il coupon può essere riscattato solo da nuovi clienti.",

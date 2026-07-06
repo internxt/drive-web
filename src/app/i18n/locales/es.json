@@ -566,6 +566,17 @@
               "continue": "Obtener 3 meses GRATIS"
             }
           },
+          "cancellationIncentive": {
+            "title": {
+              "normal": "EL PRÓXIMO MES",
+              "blue": "GRATIS"
+            },
+            "description": "Si mantienes tu suscripción obtendrás el próximo mes gratis y una extensión del período de prueba hasta el {{newDate}}. Solo se aplica una vez.",
+            "cta": {
+              "cancel": "Cancelar igualmente",
+              "freeMonth": "Obtener 1 mes GRATIS"
+            }
+          },
           "billed": "Facturación {{interval}} {{renewDate}}",
           "paymentMethod": {
             "head": "Método de pago",
@@ -1511,6 +1522,8 @@
     "verificationEmail": "Correo de verificación enviado",
     "successCancelSubscription": "Tu suscripción ha sido cancelada",
     "errorCancelSubscription": "Algo ha ido mal al cancelar la suscripción",
+    "successApplyCancellationIncentive": "¡Gracias por quedarte con nosotros! Disfruta del próximo mes gratis",
+    "errorApplyCancellationIncentive": "Algo ha ido mal al aplicar el incentivo de cancelación",
     "errorCreatingSubscription": "Algo salió mal al crear tu suscripción",
     "successApplyCoupon": "Se han aplicado 3 meses gratis",
     "errorApplyCoupon": "Se ha producido un error al aplicar el descuento",
