@@ -178,16 +178,19 @@ describe('Testing the local storage service', () => {
 
     describe('Get workspace item data', () => {
       it('When workspace is set, then mnemonic and id are set', () => {
+        const mockWorkspaceMnemonic = 'test-workspace-mnemonic';
         const setFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'setItem');
 
-        localStorageService.setB2BWorkspace('test-workspace-id', 'test-workspace-mnemonic');
+        localStorageService.setB2BWorkspace('test-workspace-id', mockWorkspaceMnemonic);
 
         expect(setFromLocalStorageSpy).toHaveBeenCalled();
         expect(setFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.B2BworkspaceId, 'test-workspace-id');
         expect(setFromLocalStorageSpy).toHaveBeenCalledWith(
           LocalStorageItem.B2BworkspaceMnemonic,
-          'test-workspace-mnemonic',
+          mockWorkspaceMnemonic,
         );
+
+        expect(localStorageService.getB2BWorkspaceMnemonic()).toBe(mockWorkspaceMnemonic);
       });
 
       it('When a workspace is cleaned, then mnemonic and id are removed', () => {

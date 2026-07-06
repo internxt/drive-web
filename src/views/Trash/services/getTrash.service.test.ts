@@ -6,6 +6,7 @@ import localStorageService from 'services/local-storage.service';
 import workspacesService from 'services/workspace.service';
 import { store } from 'app/store';
 import { storageActions } from 'app/store/slices/storage';
+import { Result } from 'postcss';
 
 vi.mock('app/core/factory/sdk', () => ({
   SdkFactory: {
@@ -29,6 +30,7 @@ vi.mock('services/local-storage.service', () => ({
 vi.mock('services/workspace.service', () => ({
   default: {
     getTrashItems: vi.fn(),
+    handleTrashError: vi.fn(),
   },
 }));
 
@@ -152,6 +154,13 @@ describe('get_trash', () => {
       expect(workspacesService.getTrashItems).toHaveBeenCalledWith('workspace-123', 'folder', 0);
       expect(store.dispatch).toHaveBeenCalledWith(storageActions.addFoldersOnTrashLength(1));
       expect(result).toEqual({ finished: true, itemsRetrieved: 1 });
+    });
+
+    it('should not delete if workspace ID is not found', async () => {
+      (localStorageService.get as Mock).mockReturnValue(null);
+      const result = await getWorkspaceTrashPaginated(50, 0, 'folders');
+
+      await expect(result).toEqual({ finished: false, itemsRetrieved: 0 });
     });
 
     it('should fetch workspace trash files', async () => {
