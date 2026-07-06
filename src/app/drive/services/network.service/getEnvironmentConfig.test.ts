@@ -39,7 +39,7 @@ const createMockWorkspaceCredentials = () =>
     bucket: 'workspace-bucket',
   }) as any;
 
-const createMockWorkspace = () => 'workspace-key';
+const createMockWorkspaceMnemonic = () => 'workspace-key';
 
 describe('Get Environment Config', () => {
   beforeEach(() => {
@@ -74,7 +74,7 @@ describe('Get Environment Config', () => {
 
     test('When the user requests workspace context but no workspace credentials are stored, then the personal credentials are returned', () => {
       mockedLocalStorage.getWorkspaceCredentials.mockReturnValue(null);
-      mockedLocalStorage.getB2BWorkspaceMnemonic.mockReturnValue(createMockWorkspace());
+      mockedLocalStorage.getB2BWorkspaceMnemonic.mockReturnValue(createMockWorkspaceMnemonic());
       mockedLocalStorage.getUser.mockReturnValue(createMockUser());
       mockedEnvService.getVariable.mockReturnValue('false');
 
@@ -100,7 +100,7 @@ describe('Get Environment Config', () => {
   describe('Workspace account context', () => {
     test('When the user is in a workspace, then the workspace credentials are returned', () => {
       mockedLocalStorage.getWorkspaceCredentials.mockReturnValue(createMockWorkspaceCredentials());
-      mockedLocalStorage.getB2BWorkspaceMnemonic.mockReturnValue(createMockWorkspace());
+      mockedLocalStorage.getB2BWorkspaceMnemonic.mockReturnValue(createMockWorkspaceMnemonic());
       mockedEnvService.getVariable.mockReturnValue('false');
 
       const result = getEnvironmentConfig(true);
@@ -116,7 +116,7 @@ describe('Get Environment Config', () => {
 
     test('When the user is in a workspace, then the workspace encryption key is used instead of the personal one', () => {
       mockedLocalStorage.getWorkspaceCredentials.mockReturnValue(createMockWorkspaceCredentials());
-      mockedLocalStorage.getB2BWorkspaceMnemonic.mockReturnValue(createMockWorkspace());
+      mockedLocalStorage.getB2BWorkspaceMnemonic.mockReturnValue(createMockWorkspaceMnemonic());
       mockedLocalStorage.getUser.mockReturnValue(createMockUser());
       mockedEnvService.getVariable.mockReturnValue('false');
 

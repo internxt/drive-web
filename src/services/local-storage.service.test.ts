@@ -54,77 +54,19 @@ const mockWorkspaceCredentialsDetails: WorkspaceCredentialsDetails = {
   tokenHeader: 'Bearer mock-token-abc-123',
 };
 
-const mockWorkspaceData: WorkspaceData = {
-  workspaceUser: {
-    backupsUsage: '500000000', // 500 MB
-    createdAt: '2023-05-01T10:00:00.000Z',
-    deactivated: false,
-    driveUsage: '1200000000', // 1.2 GB
-    freeSpace: '8800000000', // 8.8 GB free
-    id: 'workspace-user-001',
-    isManager: true,
-    isOwner: false,
-    key: 'mock-encryption-key',
-    member: {
-      avatar: null,
-      backupsBucket: 'backups-bucket-id',
-      bridgeUser: 'bridge-user-mock',
-      credit: 100,
-      email: 'jane.doe@example.com',
-      errorLoginCount: 0,
-      id: 101,
-      isEmailActivitySended: true,
-      lastPasswordChangedAt: '2023-07-01T12:00:00.000Z',
-      lastResend: '2023-08-01T12:00:00.000Z',
-      lastname: 'Doe',
-      name: 'Jane',
-      referralCode: 'REF-JANE-123',
-      referrer: null,
-      registerCompleted: true,
-      rootFolderId: 2001,
-      sharedWorkspace: true,
-      syncDate: '2023-10-01T08:00:00.000Z',
-      userId: 'user-1234',
-      username: 'janedoe',
-      uuid: 'uuid-janedoe-5678',
-      welcomePack: true,
-    },
-    memberId: '101',
-    rootFolderId: 'folder-abc-123',
-    spaceLimit: '10000000000', // 10 GB
-    updatedAt: '2023-10-01T12:00:00.000Z',
-    usedSpace: '1700000000', // 1.7 GB
-    workspaceId: 'workspace-xyz-456',
-  },
-  workspace: {
-    id: 'workspace-xyz-456',
-    ownerId: 'user-1234',
-    address: '123 Main St, Example City',
-    name: 'Marketing Workspace',
-    description: 'Workspace for the marketing department',
-    defaultTeamId: 'team-789',
-    workspaceUserId: 'workspace-user-001',
-    setupCompleted: true,
-    createdAt: '2023-04-01T09:30:00.000Z',
-    updatedAt: '2023-10-01T12:30:00.000Z',
-    avatar: null,
-    rootFolderId: 'folder-abc-123',
-    phoneNumber: null,
-  },
-};
+const mockWorkspaceId = 'workspace-user-001';
 
 const localStorageKey = LocalStorageItem.Language;
 const localStorageValue = 'item-exists';
 
 const stringifyMockedUser = JSON.stringify(mockUserSettings);
 const stringifyMockCredentials = JSON.stringify(mockWorkspaceCredentialsDetails);
-const stringifyWorkspaceData = JSON.stringify(mockWorkspaceData);
 
 beforeEach(() => {
   localStorage.setItem(localStorageKey, localStorageValue);
   localStorage.setItem(LocalStorageItem.User, stringifyMockedUser);
   localStorage.setItem(LocalStorageItem.WorkspaceCredentials, stringifyMockCredentials);
-  localStorage.setItem(LocalStorageItem.B2BworkspaceId, stringifyWorkspaceData);
+  localStorage.setItem(LocalStorageItem.B2BworkspaceId, mockWorkspaceId);
   localStorage.setItem(LocalStorageItem.Theme, 'starwars');
   vi.clearAllMocks();
   vi.resetModules();
