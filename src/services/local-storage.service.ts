@@ -12,8 +12,7 @@ function set(key: LocalStorageItem, value: string): void {
 }
 
 function getBackupKeyStorageKeys() {
-  const user = getUser();
-  const userId = user?.uuid;
+  const userId = get(LocalStorageItem.UserUUID);
   return {
     seenAt: `${BACKUP_KEY.SEEN_AT}_${userId}`,
     acknowledgedAt: `${BACKUP_KEY.ACKNOWLEDGED_AT}_${userId}`,
@@ -58,6 +57,7 @@ function getUser(): UserSettings | null {
 }
 
 function setUser(user: UserSettings): void {
+  set(LocalStorageItem.UserUUID, user.uuid);
   set(LocalStorageItem.User, JSON.stringify(user));
 }
 
@@ -76,8 +76,6 @@ function getB2BWorkspace(): WorkspaceData | null {
 
 function getWorkspaceCredentials(): WorkspaceCredentialsDetails | null {
   const workspaceCredentials = get(LocalStorageItem.WorkspaceCredentials);
-  if (workspaceCredentials === 'null') return null;
-
   if (workspaceCredentials) return JSON.parse(workspaceCredentials);
 
   return null;
