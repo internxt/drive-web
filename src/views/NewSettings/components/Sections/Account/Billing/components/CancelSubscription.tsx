@@ -7,12 +7,12 @@ interface CancelSubscriptionProps {
   individualPlan: StoragePlan | null;
   isCancelSubscriptionModalOpen: boolean;
   cancellingSubscription: boolean;
-  applyingTrial: boolean;
+  applyingTrial?: boolean;
   planName: string;
   planInfo: string;
   currentUsage: number;
   userType?: UserType;
-  activateTrial: () => void;
+  activateTrial?: () => void;
   cancelSubscription: () => void;
   setIsCancelSubscriptionModalOpen: (isCancelSubscriptionModalOpen: boolean) => void;
 }

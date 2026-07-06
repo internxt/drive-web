@@ -15,6 +15,7 @@ const mockIndividualPlan: StoragePlan = {
   isTeam: false,
   isLifetime: false,
   renewalPeriod: RenewalPeriod.Monthly,
+  cancellationTrial: { redeemed: false },
   storageLimit: 1000000000,
   amountOfSeats: 1,
   commitment: { enabled: false },
@@ -33,6 +34,7 @@ const mockBusinessPlan: StoragePlan = {
   isLifetime: false,
   renewalPeriod: RenewalPeriod.Monthly,
   storageLimit: 5000000000,
+  cancellationTrial: { redeemed: false },
   amountOfSeats: 5,
   commitment: { enabled: false },
 };

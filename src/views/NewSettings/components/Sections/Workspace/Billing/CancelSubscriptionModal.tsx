@@ -14,10 +14,10 @@ interface CancelSubscriptionModalProps {
   currentPlanInfo: string;
   currentUsage: number;
   cancellingSubscription: boolean;
-  applyingTrial: boolean;
+  applyingTrial?: boolean;
   userType: UserType;
   cancelSubscription: (userType?: UserType) => void;
-  activateTrial: () => void;
+  activateTrial?: () => void;
 }
 
 const CancelSubscriptionModal = ({
@@ -27,9 +27,9 @@ const CancelSubscriptionModal = ({
   currentPlanInfo,
   currentUsage,
   cancellingSubscription,
-  applyingTrial,
+  applyingTrial = false,
   userType = UserType.Individual,
-  activateTrial,
+  activateTrial = () => undefined,
   cancelSubscription,
   onClose,
 }: CancelSubscriptionModalProps): JSX.Element => {

@@ -23,6 +23,7 @@ import {
 } from 'app/store/slices/fileVersions';
 import CancelSubscriptionModal from '../../Workspace/Billing/CancelSubscriptionModal';
 import { fetchPlanPrices, getStripe } from '../../../../services/plansApi';
+import { useSubscriptionCancellation } from '../../../../hooks';
 import ChangePlanDialog from './components/ChangePlanDialog';
 import IntervalSwitch from './components/TabButton';
 import {
@@ -72,7 +73,6 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   const defaultInterval = plan.individualPlan?.renewalPeriod === 'monthly' ? 'month' : 'year';
   const [selectedInterval, setSelectedInterval] = useState<DisplayPrice['interval']>(defaultInterval);
   const [isCancelSubscriptionModalOpen, setIsCancelSubscriptionModalOpen] = useState(false);
-  const [cancellingSubscription, setCancellingSubscription] = useState(false);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isUpdatingSubscription, setIsUpdatingSubscription] = useState<boolean>(false);
@@ -259,28 +259,11 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     setIsUpdatingSubscription(false);
   };
 
-  async function cancelSubscription() {
-    setCancellingSubscription(true);
-    try {
-      await paymentService.cancelSubscription(selectedSubscriptionType);
-      notificationsService.show({ text: translate('notificationMessages.successCancelSubscription') });
-      setIsCancelSubscriptionModalOpen(false);
-    } catch (error) {
-      const castedError = errorService.castError(error);
-      errorService.reportError(error);
-      notificationsService.show({
-        text: translate('notificationMessages.errorCancelSubscription'),
-        type: ToastType.Error,
-        requestId: castedError.requestId,
-      });
-    } finally {
-      setCancellingSubscription(false);
-      setTimeout(() => {
-        dispatch(planThunks.initializeThunk()).unwrap();
-      }, 1000);
-      pollVersionLimitsUntilChanged();
-    }
-  }
+  const { cancellingSubscription, applyingTrial, cancelSubscription, activateTrial } = useSubscriptionCancellation({
+    individualSubscription,
+    onModalClose: () => setIsCancelSubscriptionModalOpen(false),
+    onCancelSuccess: () => pollVersionLimitsUntilChanged(),
+  });
 
   const shouldDisplayChangePlanDialog = () =>
     isIndividualSubscriptionSelected &&
@@ -384,7 +367,9 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
           setIsCancelSubscriptionModalOpen(false);
         }}
         cancellingSubscription={cancellingSubscription}
-        cancelSubscription={cancelSubscription}
+        applyingTrial={applyingTrial}
+        cancelSubscription={() => cancelSubscription(selectedSubscriptionType)}
+        activateTrial={activateTrial}
         currentPlanName={
           isIndividualSubscriptionSelected
             ? getPlanName(plan.individualPlan, plan.planLimit)
