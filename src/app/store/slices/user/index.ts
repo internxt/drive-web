@@ -181,7 +181,7 @@ export const deleteUserAvatarThunk = createAsyncThunk<void, void, { state: RootS
 
 const updateUserEmailCredentialsThunk = createAsyncThunk<
   void,
-  { newUserData: UserSettings; token: string; newToken: string },
+  { newUserData: UserSettings; newToken: string },
   { state: RootState }
 >('user/updateUser', async (payload, { dispatch, getState }) => {
   const currentUser = getState().user.user as UserSettings;
