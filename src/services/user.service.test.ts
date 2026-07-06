@@ -26,6 +26,7 @@ const authClientMock = {
 vi.mock('services/local-storage.service', () => ({
   default: {
     get: vi.fn(),
+    getToken: vi.fn(),
   },
 }));
 
@@ -49,7 +50,7 @@ describe('userService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
-    vi.spyOn(localStorageService, 'get').mockReturnValue(testToken);
+    vi.spyOn(localStorageService, 'getToken').mockReturnValue(testToken);
   });
 
   it('should pre-create user', async () => {

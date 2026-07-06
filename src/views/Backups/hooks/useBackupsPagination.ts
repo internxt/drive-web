@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import _ from 'lodash';
+import _ from 'utils/lodash';
 import { t } from 'i18next';
 import newStorageService from 'app/drive/services/new-storage.service';
 import { DriveItemData } from 'app/drive/types';

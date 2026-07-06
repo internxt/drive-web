@@ -98,7 +98,9 @@
     "environment": "Giornata Mondiale dell'Ambiente"
   },
   "auth": {
+    "emailFloatingLabel": "Indirizzo email",
     "email": "Email",
+    "passwordFloatingLabel": "Password",
     "password": "Password",
     "terms1": "Creando un account, ",
     "terms2": "accetti i termini e le condizioni",
@@ -348,7 +350,7 @@
       },
       "apply": "Applica",
       "taxes": "Tasse",
-      "annualBillingTemplate": "Piano annuale, fatturato mensilmente a {{price}}{{currency}}/mese per 12 mesi"
+      "annualBillingTemplate": "Piano annuale, fatturato {{currency}}{{priceNow}} per il primo mese, poi si rinnova a {{currency}}{{price}}/mese"
     },
     "confirmCryptoPayment": {
       "title": "Conferma il pagamento",
@@ -611,9 +613,7 @@
               "titleNew": "New",
               "year": "anno",
               "month": "mese",
-              "free": "libero",
-              "reachedFreeLimit": "Hai superato il {{freePlanName}}",
-              "reachedFreeLimitDescription": "Poiché si sta utilizzando {{uso corrente}}, Internxt Drive smetterà di sincronizzare i file e non sarà possibile aggiungere nuovi file."
+              "free": "libero"
             },
             "giveUsFeedback": "Ci dica perché vuole annullare il suo {{currentPlanName}} Internxt e passare al piano gratuito?",
             "feedback": {
@@ -924,6 +924,7 @@
       "multipleDescription": "Più di un elemento esiste già in questa posizione. Si desidera sostituirli o si desidera mantenerli tutti",
       "replaceItem": "Sostituisci l'elemento attuale",
       "keepBoth": "Mantieni entrambi",
+      "selectOption": "Seleziona un'opzione",
       "upload": "Carica",
       "move": "Sposta"
     },
@@ -1751,6 +1752,7 @@
     }
   },
   "referrals": {
+    "openError": "Si è verificato un errore durante l'apertura dei referral. Riprova.",
     "emailVerification": {
       "message": "Verifica la tua email per essere idoneo ai referral. Controlla la tua casella di posta o",
       "resendVerification": "rinvia verifica"
@@ -2121,7 +2123,7 @@
         "free": "Ottieni fino a 10 GB gratis",
         "manageBilling": "Gestisci la fatturazione",
         "freeForever": "Gratis per sempre",
-        "billedAnnually": "fatturato annualmente",
+        "billedAnnually": "/mese fatturato annualmente",
         "billedMonthly": "fatturato mensilmente",
         "year": "Anno",
         "month": "Mese",
@@ -2166,7 +2168,8 @@
               "Invita, condividi e collabora",
               "VPN Crittografata",
               "Antivirus",
-              "Cleaner (Pulitore)"
+              "Cleaner (Pulitore)",
+              "Meet"
             ]
           },
           "5TB": {

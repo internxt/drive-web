@@ -9,6 +9,7 @@ describe('setImpactCookies', () => {
   let cookieSetter: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
+    vi.clearAllMocks();
     cookieSetter = vi.spyOn(document, 'cookie', 'set');
   });
 
@@ -92,5 +93,14 @@ describe('setImpactCookies', () => {
 
     expect(daysDiff).toBeGreaterThan(29);
     expect(daysDiff).toBeLessThan(31);
+  });
+
+  it('When called, then all cookies include the Secure flag so they are never sent over HTTP', () => {
+    setImpactCookies('anon_123', 'click_abc', 'partner_456');
+
+    const cookies = getCookieCalls(cookieSetter);
+    for (const cookie of cookies) {
+      expect(cookie).toContain('Secure');
+    }
   });
 });

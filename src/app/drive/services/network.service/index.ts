@@ -1,21 +1,18 @@
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import envService from 'services/env.service';
 import { Abortable } from 'app/network/Abortable';
 import { createUploadWebWorker } from '../../../../WebWorker';
-import localStorageService from 'services/local-storage.service';
 import { createWorkerMessageHandlerPromise } from '../worker.service/uploadWorkerUtils';
 import { notifyUserWithCooldown } from 'app/core/factory/sdk/retryStrategies';
-import { EnvironmentConfig, IUploadParams } from './types';
+import { IUploadParams } from './types';
+import { NetworkCredentials } from 'app/network/types/helper-types';
 
-export const MAX_ALLOWED_UPLOAD_SIZE = 40 * 1024 * 1024 * 1024;
+export { getEnvironmentConfig } from './getEnvironmentConfig';
+
+export const MAX_ALLOWED_UPLOAD_SIZE = 100 * 1024 * 1024 * 1024;
 
 export class Network {
   private mnemonic: string;
 
-  private creds: {
-    user: string;
-    pass: string;
-  };
+  private readonly creds: NetworkCredentials;
 
   constructor(bridgeUser: string, bridgePass: string, encryptionKey: string) {
     if (!bridgeUser) {
@@ -80,35 +77,4 @@ export class Network {
 
     return createWorkerMessageHandlerPromise(worker, params, continueUploadOptions, notifyUserWithCooldown);
   }
-}
-
-/**
- * Returns required config to upload files to the Internxt Network
- * @param isTeam Flag to indicate if is a team or not
- * @returns
- */
-export function getEnvironmentConfig(isWorkspace?: boolean): EnvironmentConfig {
-  const workspaceCredentials = localStorageService.getWorkspaceCredentials();
-  const workspace = localStorageService.getB2BWorkspace();
-
-  if (isWorkspace && workspaceCredentials && workspace) {
-    return {
-      bridgeUser: workspaceCredentials?.credentials?.networkUser,
-      bridgePass: workspaceCredentials?.credentials?.networkPass,
-      // decrypted mnemonic
-      encryptionKey: workspace.workspaceUser.key,
-      bucketId: workspaceCredentials?.bucket,
-      useProxy: envService.getVariable('dontUseProxy') !== 'true',
-    };
-  }
-
-  const user = localStorageService.getUser() as UserSettings;
-
-  return {
-    bridgeUser: user.bridgeUser,
-    bridgePass: user.userId,
-    encryptionKey: user.mnemonic,
-    bucketId: user.bucket,
-    useProxy: envService.getVariable('dontUseProxy') !== 'true',
-  };
 }

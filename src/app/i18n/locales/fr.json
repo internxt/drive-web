@@ -77,7 +77,9 @@
     "environment": "Journée Mondiale de l'Environnement"
   },
   "auth": {
+    "emailFloatingLabel": "Adresse e-mail",
     "email": "Email",
+    "passwordFloatingLabel": "Mot de passe",
     "password": " Mot de passe ",
     "terms1": "En créant un compte,",
     "terms2": "vous acceptez les termes et conditions",
@@ -257,7 +259,7 @@
       },
       "apply": "Appliquer",
       "taxes": "Taxes",
-      "annualBillingTemplate": "Plan annuel, facturé mensuellement à {{price}}{{currency}}/mois pendant 12 mois"
+      "annualBillingTemplate": "Plan annuel, facturé {{currency}}{{priceNow}} pour le premier mois, puis renouvelé à {{currency}}{{price}}/mois"
     },
     "confirmCryptoPayment": {
       "title": "Confirmer le paiement",
@@ -520,9 +522,7 @@
               "titleNew": "Nouveau",
               "year": "année",
               "month": "mois",
-              "free": "Gratuit",
-              "reachedFreeLimit": "Vous dépassez {{freePlanName}}",
-              "reachedFreeLimitDescription": "Comme vous utilisez actuellement {{currentUsage}}, votre Internxt Drive cessera de synchroniser vos fichiers et vous ne pourrez plus en ajouter de nouveaux."
+              "free": "Gratuit"
             },
             "giveUsFeedback": "Dites-nous pourquoi vous souhaitez annuler votre abonnement Internxt {{currentPlanName}} et passer au plan gratuit ?",
             "feedback": {
@@ -818,6 +818,7 @@
       "multipleDescription": "Plus d'un élément existe déjà dans ce lieu. Voulez-vous les remplacer ou les conserver tous ?",
       "replaceItem": "Remplacer l'élément actuel",
       "keepBoth": "Garder les deux",
+      "selectOption": "Sélectionnez une option",
       "upload": "Télécharger",
       "move": "Déplacer"
     },
@@ -1644,6 +1645,7 @@
     }
   },
   "referrals": {
+    "openError": "Une erreur s'est produite lors de l'ouverture des parrainages. Veuillez réessayer.",
     "emailVerification": {
       "message": "Vérifiez votre e-mail pour être éligible aux parrainages. Consultez votre boîte de réception ou",
       "resendVerification": "renvoyer la vérification"
@@ -2014,7 +2016,7 @@
         "free": "Obtenez jusqu'à 10 Go gratuitement",
         "manageBilling": "Gérer la facturation",
         "freeForever": "Gratuit à vie",
-        "billedAnnually": "facturé annuellement",
+        "billedAnnually": "/mois facturé annuellement",
         "billedMonthly": "facturé mensuellement",
         "year": "Année",
         "month": "Mois",
@@ -2059,7 +2061,8 @@
               "Inviter, partager et collaborer",
               "VPN Chiffré",
               "Antivirus",
-              "Nettoyeur"
+              "Nettoyeur",
+              "Meet"
             ]
           },
           "5TB": {

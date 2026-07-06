@@ -1,4 +1,4 @@
-import { Popover } from '@headlessui/react';
+import { Popover, PopoverPanel } from '@headlessui/react';
 import { Check } from '@phosphor-icons/react';
 
 export const UserOptions = ({
@@ -23,7 +23,7 @@ export const UserOptions = ({
         minWidth: '160px',
       }}
     >
-      <Popover.Panel
+      <PopoverPanel
         className={`absolute right-0 z-10 origin-top-right whitespace-nowrap rounded-lg border border-gray-10 bg-surface p-1 shadow-subtle transition-all duration-50 ease-out dark:bg-gray-5 ${
           isUserSelected ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
         }`}
@@ -77,7 +77,7 @@ export const UserOptions = ({
             {translate('modals.shareModal.list.userItem.remove')}
           </p>
         </button>
-      </Popover.Panel>
+      </PopoverPanel>
     </Popover>
   ) : (
     <></>

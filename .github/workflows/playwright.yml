@@ -10,24 +10,25 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        node-version: [22.x]
     env:
       NODE_ENV: 'staging'
       CI: true
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v6
         with:
-          node-version: '20.19.0'
-      - run: echo "registry=https://registry.yarnpkg.com/" > .npmrc
-      - run: echo "@internxt:registry=https://npm.pkg.github.com" >> .npmrc
-      - run: echo //npm.pkg.github.com/:_authToken=${{ secrets.PERSONAL_ACCESS_TOKEN }} >> .npmrc
-      - run: echo "always-auth=true" >> .npmrc
+          node-version: ${{ matrix.node-version }}
       - run: echo REACT_APP_NODE_ENV=staging >> ./.env
       - run: echo REACT_APP_CRYPTO_SECRET=${{ secrets.REACT_APP_CRYPTO_SECRET }} >> ./.env
       - run: echo REACT_APP_STRIPE_PK=${{ secrets.REACT_APP_STRIPE_PK }} >> ./.env
       - run: echo REACT_APP_STRIPE_TEST_PK=${{ secrets.REACT_APP_STRIPE_TEST_PK }} >> ./.env
       - run: echo REACT_APP_SEGMENT_KEY=${{ secrets.REACT_APP_SEGMENT_KEY }} >> ./.env
-      - run: echo REACT_APP_CRYPTO_SECRET2=${{ secrets.REACT_APP_CRYPTO_SECRET2 }} >> ./.env
       - run: echo GENERATE_SOURCEMAP=${{ secrets.GENERATE_SOURCEMAP }} >> ./.env
       - run: echo REACT_APP_RECAPTCHA_V3=${{ secrets.REACT_APP_RECAPTCHA_V3 }} >> ./.env
       - run: echo REACT_APP_STORJ_BRIDGE=${{ secrets.REACT_APP_STORJ_BRIDGE }} >> ./.env
@@ -38,24 +39,31 @@ jobs:
       - run: echo REACT_APP_DRIVE_NEW_API_URL=${{ secrets.REACT_APP_DRIVE_NEW_API_URL }} >> ./.env
       - run: echo PLAYWRIGHT_EMAIL_TEST=${{ secrets.PLAYWRIGHT_EMAIL_TEST }} >> ./.env
       - run: echo PLAYWRIGHT_PASSWORD_TEST=${{ secrets.PLAYWRIGHT_PASSWORD_TEST }} >> ./.env
+      - run: echo REACT_APP_LOCATION_API_URL=some_api_key >> ./.env
       - run: echo '${{ secrets.TEST_USER_DATA }}' > test/e2e/tests/user.json
 
-      - run: echo REACT_APP_LOCATION_API_URL=some_api_key >> ./.env
       - name: Install dependencies
         run: npm install -g yarn && yarn
+
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
+
       - name: Start dev server
         run: yarn dev --host & npx wait-on http://localhost:3000
+
       - name: Run Playwright tests
         run: yarn playwright test
-      - uses: actions/upload-artifact@v4
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
-      - uses: actions/upload-artifact@v4
+
+      - name: Upload Playwright artifacts
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-artifacts

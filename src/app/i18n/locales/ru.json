@@ -77,7 +77,9 @@
     "environment": "World Environment Day"
   },
   "auth": {
+    "emailFloatingLabel": "Электронная почта",
     "email": "Email",
+    "passwordFloatingLabel": "Пароль",
     "password": "Password",
     "terms1": "При создании учетной записи",
     "terms2": "вы принимаете условия и положения",
@@ -257,7 +259,7 @@
       },
       "apply": "Применить",
       "taxes": "Налоги",
-      "annualBillingTemplate": "Годовой план, ежемесячная оплата {{price}}{{currency}}/мес. в течение 12 месяцев"
+      "annualBillingTemplate": "Годовой план, списание {{currency}}{{priceNow}} за первый месяц, затем продление по {{currency}}{{price}}/мес."
     },
     "confirmCryptoPayment": {
       "title": "Подтвердить платеж",
@@ -520,9 +522,7 @@
               "titleNew": "Новый",
               "year": "год",
               "month": "месяц",
-              "free": "бесплатно",
-              "reachedFreeLimit": "Вы превысили {{freePlanName}}",
-              "reachedFreeLimitDescription": "Поскольку вы сейчас используете {{currentUsage}}, Internxt Drive перестанет синхронизировать ваши файлы, и вы не сможете загрузать новые файлы."
+              "free": "бесплатно"
             },
             "giveUsFeedback": "Нам важно знать, почему вы хотите отменить {{currentPlanName}} план Internxt и перейти на бесплатный план?",
             "feedback": {
@@ -831,6 +831,7 @@
       "multipleDescription": "Несколько файлов уже существуют. Заменить их или оставить все?",
       "replaceItem": "Заменить текущий файл",
       "keepBoth": "Сохранить оба",
+      "selectOption": "Выберите опцию",
       "upload": "Загрузить",
       "move": "Переместить"
     },
@@ -1659,6 +1660,7 @@
     }
   },
   "referrals": {
+    "openError": "Не удалось открыть реферальную программу. Пожалуйста, попробуйте снова.",
     "emailVerification": {
       "message": "Подтвердите свою электронную почту, чтобы участвовать в реферальной программе. Проверьте свой почтовый ящик или",
       "resendVerification": "отправить повторно"
@@ -2029,7 +2031,7 @@
         "free": "Получите до 10 ГБ бесплатно",
         "manageBilling": "Управление платежами",
         "freeForever": "Бесплатно навсегда",
-        "billedAnnually": "оплачиваемый ежегодно",
+        "billedAnnually": "/мес. при годовой оплате",
         "billedMonthly": "оплачиваемый ежемесячно",
         "year": "Год",
         "month": "Месяц",
@@ -2074,7 +2076,8 @@
               "Приглашение, обмен и совместная работа",
               "Зашифрованный VPN",
               "Антивирус",
-              "Cleaner (Очиститель)"
+              "Cleaner (Очиститель)",
+              "Meet"
             ]
           },
           "5TB": {

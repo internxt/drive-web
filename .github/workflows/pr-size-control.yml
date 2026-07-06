@@ -1,14 +1,31 @@
-name: PR Size Checker
-on: pull_request
+name: PR Size Check
+on:
+  pull_request:
+    types: [opened, synchronize]
+
 jobs:
   check_pr_size:
-    name: Check PR size doesn't break set limit
     runs-on: ubuntu-latest
+    name: Check PR Size
+    timeout-minutes: 1
+
     steps:
-      # checkout your code with your git history
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: maidsafe/pr_size_checker@v2
-        with:
-          max_lines_changed: 500
+
+      - name: Get lines changed
+        run: |
+          LINES=$(git diff --shortstat origin/${{ github.base_ref }}...HEAD -- . ':!package.json' ':!yarn.lock' | awk '{print $4 + $6}')
+          echo "Lines changed: $LINES"
+          echo "LINES_CHANGED=$LINES" >> $GITHUB_ENV
+
+      - name: Fail if PR is too big
+        run: |
+          if [ "$LINES_CHANGED" -gt 500 ]; then
+            echo "::error::Large PR ($LINES_CHANGED lines). Please break it down into smaller PRs."
+            exit 1
+          else
+            echo "PR size OK ($LINES_CHANGED lines)"
+          fi

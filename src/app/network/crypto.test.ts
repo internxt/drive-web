@@ -1,10 +1,10 @@
 /**
- * @jest-environment jdom
+ * @jest-environment jsdom
  */
 
 import { Buffer } from 'buffer';
 import crypto from 'crypto';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   generateFileBucketKey,
   generateFileKey,
@@ -12,10 +12,15 @@ import {
   getFileDeterministicKey,
   processEveryFileBlobReturnHash,
   encryptStreamInParts,
+  createSha256HashingStream,
 } from './crypto';
 import { mnemonicToSeed } from 'bip39';
 
 describe('Test crypto.ts functions', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   globalThis.Buffer = Buffer;
 
   function createMockFile(name: string, size = 0, type = ''): File {
@@ -389,5 +394,94 @@ describe('File key generation functions', () => {
 
       expect(newResult.equals(oldResult)).toBe(true);
     });
+  });
+});
+
+describe('createSha256HashingStream', () => {
+  globalThis.Buffer = Buffer;
+
+  async function drainStream(stream: ReadableStream<Uint8Array>): Promise<Uint8Array[]> {
+    const reader = stream.getReader();
+    const chunks: Uint8Array[] = [];
+    let result = await reader.read();
+    while (!result.done) {
+      chunks.push(result.value);
+      result = await reader.read();
+    }
+    return chunks;
+  }
+
+  it('should pass all chunks through unchanged', async () => {
+    const input = [new Uint8Array([1, 2, 3]), new Uint8Array([4, 5, 6])];
+    const source = new ReadableStream<Uint8Array>({
+      start(controller) {
+        for (const chunk of input) controller.enqueue(chunk);
+        controller.close();
+      },
+    });
+
+    const onHash = vi.fn();
+    const stream = await createSha256HashingStream(source, onHash);
+    const chunks = await drainStream(stream);
+
+    expect(chunks).toEqual(input);
+  });
+
+  it('should call onHash exactly once when the stream ends', async () => {
+    const source = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(new Uint8Array([1, 2, 3]));
+        controller.close();
+      },
+    });
+
+    const onHash = vi.fn();
+    const stream = await createSha256HashingStream(source, onHash);
+    await drainStream(stream);
+
+    expect(onHash).toHaveBeenCalledOnce();
+  });
+
+  it('should call onHash with the correct SHA256 digest for a single chunk', async () => {
+    const data = new Uint8Array([1, 2, 3, 4, 5, 6]);
+    const source = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(data);
+        controller.close();
+      },
+    });
+
+    const onHash = vi.fn();
+    const stream = await createSha256HashingStream(source, onHash);
+    await drainStream(stream);
+
+    const expected = crypto.createHash('sha256').update(Buffer.from(data)).digest('hex');
+    expect(onHash).toHaveBeenCalledWith(expected);
+  });
+
+  it('should produce the same digest regardless of chunk boundaries', async () => {
+    const fullData = new Uint8Array([1, 2, 3, 4, 5, 6]);
+
+    const singleChunkSource = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(fullData);
+        controller.close();
+      },
+    });
+    const multiChunkSource = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(fullData.slice(0, 3));
+        controller.enqueue(fullData.slice(3));
+        controller.close();
+      },
+    });
+
+    const onHashSingle = vi.fn();
+    const onHashMulti = vi.fn();
+
+    await drainStream(await createSha256HashingStream(singleChunkSource, onHashSingle));
+    await drainStream(await createSha256HashingStream(multiChunkSource, onHashMulti));
+
+    expect(onHashSingle).toHaveBeenCalledWith(onHashMulti.mock.calls[0][0]);
   });
 });

@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import _ from 'lodash';
+import _ from 'utils/lodash';
 
 import newStorageService from 'app/drive/services/new-storage.service';
 import { storageActions } from '..';

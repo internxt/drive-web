@@ -24,6 +24,9 @@ import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
 
 import { AppViewConfig } from './app/core/types';
+import AuthShell from './components/AuthShell/AuthShell';
+import { LogIn } from './views/Login/components';
+import SignUpForm from './views/Signup/components/SignupForm';
 import { LRUFilesCacheManager } from './app/database/services/database.service/LRUFilesCacheManager';
 import { LRUFilesPreviewCacheManager } from './app/database/services/database.service/LRUFilesPreviewCacheManager';
 import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
@@ -70,7 +73,7 @@ const App = (props: AppProps): JSX.Element => {
   const isOpen = isDialogOpen(ActionDialog.ModifyStorage);
   const { openBackupKeysDialog } = useDownloadBackupKeys(t);
   const token = localStorageService.get(LocalStorageItem.UserToken);
-  const newToken = localStorageService.get(LocalStorageItem.NewToken);
+  const newToken = localStorageService.getToken();
   const params = new URLSearchParams(window.location.search);
   const isVpnAuth = params.get('vpnAuth') === 'true';
   const skipSignupIfLoggedIn = params.get('skipSignupIfLoggedIn') === 'true';
@@ -203,6 +206,18 @@ const App = (props: AppProps): JSX.Element => {
               to={`/?preferences=open&section=account&subsection=${params.get('tab') ?? 'account'}`}
             />
             <Redirect from="/app/:section?" to={{ pathname: '/:section?', search: `${queryParameters}` }} />
+            <Route
+              path={['/login', '/new']}
+              exact
+              render={() => (
+                <AuthShell>
+                  <Switch>
+                    <Route path="/login" component={LogIn} />
+                    <Route path="/new" component={SignUpForm} />
+                  </Switch>
+                </AuthShell>
+              )}
+            />
             {!MOBILE_EXCLUDED_PATHS.includes(pathName) && isMobile && isAuthenticated ? (
               <Route path="*">
                 <Mobile user={props.user} />

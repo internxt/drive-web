@@ -77,7 +77,9 @@
     "environment": "Weltumwelt"
   },
   "auth": {
+    "emailFloatingLabel": "E-Mail-Adresse",
     "email": "E-Mail",
+    "passwordFloatingLabel": "Passwort",
     "password": "Passwort",
     "terms1": "Durch die Erstellung eines Kontos,",
     "terms2": "Sie akzeptieren die Geschäftsbedingungen",
@@ -257,7 +259,7 @@
       },
       "apply": "Anwenden",
       "taxes": "Steuern",
-      "annualBillingTemplate": "Jahresplan, monatlich abgerechnet mit {{price}}{{currency}}/Monat für 12 Monate"
+      "annualBillingTemplate": "Jahresplan, abgerechnet mit {{currency}}{{priceNow}} für den ersten Monat, dann Verlängerung zu {{currency}}{{price}}/Monat"
     },
     "confirmCryptoPayment": {
       "title": "Zahlung bestätigen",
@@ -508,9 +510,7 @@
               "titleNew": "Neu",
               "year": "Jahr",
               "month": "Monat",
-              "free": "Kostenlos",
-              "reachedFreeLimit": "Du bist über dem Limit {{freePlanName}}",
-              "reachedFreeLimitDescription": "Weil du derzeit {{currentUsage}} verwendest, synchronisiert dein Internxt Drive deine Dateien nicht mehr und du kannst keine neuen Dateien hinzufügen"
+              "free": "Kostenlos"
             },
             "giveUsFeedback": "Teile uns mit, warum du deinen Vertrag {{currentPlanName}} Internxt-Plan kündigen und auf den kostenlosen Plan wechseln möchtest?",
             "feedback": {
@@ -791,6 +791,7 @@
       "multipleDescription": "An diesem Speicherort ist bereits mehr als ein Element vorhanden. Möchtest du sie ersetzen oder alle behalten?",
       "replaceItem": "Aktuelles Element ersetzen",
       "keepBoth": "Behalte beide",
+      "selectOption": "Wähle eine Option",
       "upload": "Upload",
       "move": "Verschieben"
     },
@@ -1638,6 +1639,7 @@
     }
   },
   "referrals": {
+    "openError": "Beim Öffnen der Empfehlungen ist ein Fehler aufgetreten. Bitte versuche es erneut.",
     "emailVerification": {
       "message": "Bestätige deine E-Mail-Adresse, um für Empfehlungen berechtigt zu sein. Überprüfe deinen Posteingang oder",
       "resendVerification": "Bestätigung erneut senden"
@@ -2008,7 +2010,7 @@
         "free": "Erhalten Sie bis zu 10 GB kostenlos",
         "manageBilling": "Abrechnung verwalten",
         "freeForever": "Für immer kostenlos",
-        "billedAnnually": "jährlich abgerechnet",
+        "billedAnnually": "/Monat jährlich abgerechnet",
         "billedMonthly": "monatlich abgerechnet",
         "year": "Jahr",
         "month": "Monat",
@@ -2053,7 +2055,8 @@
               "Einladen, teilen & zusammenarbeiten",
               "Verschlüsseltes VPN",
               "Antivirus",
-              "Cleaner (Bereinigungstool)"
+              "Cleaner (Bereinigungstool)",
+              "Meet"
             ]
           },
           "5TB": {

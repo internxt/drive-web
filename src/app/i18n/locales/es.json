@@ -77,7 +77,9 @@
     "environment": "Día Mundial del Medio Ambiente"
   },
   "auth": {
+    "emailFloatingLabel": "Correo electrónico",
     "email": "Correo electrónico",
+    "passwordFloatingLabel": "Contraseña",
     "password": "Contraseña",
     "terms1": "Al crear una cuenta, ",
     "terms2": "aceptas los términos y condiciones",
@@ -284,7 +286,7 @@
       },
       "apply": "Aplicar",
       "taxes": "Impuestos",
-      "annualBillingTemplate": "Plan anual, facturado mensualmente a {{price}}{{currency}}/mes durante 12 meses"
+      "annualBillingTemplate": "Plan anual, facturado a {{currency}}{{priceNow}} el primer mes, luego se renueva a {{currency}}{{price}}/mes"
     },
     "confirmCryptoPayment": {
       "title": "Confirmar el pago",
@@ -550,9 +552,7 @@
               "titleNew": "Nuevo",
               "year": "año",
               "month": "mes",
-              "free": "Gratis",
-              "reachedFreeLimit": "Has superado el límite de {{freePlanName}}",
-              "reachedFreeLimitDescription": "Como actualmente estás usando {{currentUsage}} de espacio, Internxt Drive dejará de sincronizar tus ficheros, y tampoco serás capaz de añadir nuevos"
+              "free": "Gratis"
             },
             "giveUsFeedback": "Cuéntenos por qué quiere cancelar su plan Internxt de {{currentPlanName}} y cambiar al plan gratuito.",
             "feedback": {
@@ -870,6 +870,7 @@
       "multipleDescription": "Más de un elemento existe en esta localización. Deseas reemplazarlos o mantenerlos?",
       "replaceItem": "Reemplazar el ítem",
       "keepBoth": "Mantener ambos",
+      "selectOption": "Selecciona una opción",
       "upload": "Subir",
       "move": "Mover"
     },
@@ -1698,6 +1699,7 @@
     }
   },
   "referrals": {
+    "openError": "Algo salió mal al abrir las invitaciones. Inténtalo de nuevo.",
     "emailVerification": {
       "message": "Verifica tu correo electrónico para ser elegible para referidos. Revisa tu bandeja de entrada o",
       "resendVerification": "reenviar verificación"
@@ -2071,7 +2073,7 @@
         "year": "Año",
         "month": "Mes",
         "lifetime": "Lifetime",
-        "billedAnnually": "facturado anualmente",
+        "billedAnnually": "/mes facturado anualmente",
         "billedMonthly": "facturado mensualmente",
         "types": {
           "essential": "Essential",
@@ -2113,7 +2115,8 @@
               "Invitar, compartir y colaborar",
               "VPN Cifrada",
               "Antivirus",
-              "Cleaner"
+              "Cleaner",
+              "Meet"
             ]
           },
           "5TB": {

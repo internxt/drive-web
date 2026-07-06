@@ -224,12 +224,9 @@ describe('Uploading a file', () => {
       .mockResolvedValue(expectedResponse as unknown as DriveFileData);
 
     const mockUploadFile = vi.fn().mockReturnValue([Promise.resolve('file-id-123'), { abort: vi.fn() }]);
-    mockNetwork.mockImplementation(
-      () =>
-        ({
-          uploadFile: mockUploadFile,
-        }) as any,
-    );
+    mockNetwork.mockImplementation(function () {
+      return { uploadFile: mockUploadFile } as any;
+    });
 
     await uploadFile(
       'user@test',
@@ -273,12 +270,9 @@ describe('Uploading a file', () => {
       .mockResolvedValue(expectedResponse as unknown as DriveFileData);
 
     const mockUploadFile = vi.fn().mockReturnValue([Promise.resolve('file-id-123'), { abort: vi.fn() }]);
-    mockNetwork.mockImplementation(
-      () =>
-        ({
-          uploadFile: mockUploadFile,
-        }) as any,
-    );
+    mockNetwork.mockImplementation(function () {
+      return { uploadFile: mockUploadFile } as any;
+    });
 
     await uploadFile(
       'user@test',
@@ -385,12 +379,9 @@ describe('Uploading a file', () => {
     } as any);
 
     const mockUploadFile = vi.fn().mockReturnValue([Promise.resolve(undefined), { abort: vi.fn() }]);
-    mockNetwork.mockImplementation(
-      () =>
-        ({
-          uploadFile: mockUploadFile,
-        }) as any,
-    );
+    mockNetwork.mockImplementation(function () {
+      return { uploadFile: mockUploadFile } as any;
+    });
 
     await expect(
       uploadFile(

@@ -1,5 +1,5 @@
 import { Downloadable, downloadFile } from 'app/network/download';
-import { getEnvironmentConfig } from '../network.service';
+import { getEnvironmentConfig } from '../network.service/getEnvironmentConfig';
 
 type FetchFileStreamOptions = {
   updateProgressCallback: (progress: number) => void;
@@ -20,7 +20,9 @@ export default function fetchFileStream(
       pass: bridgePass,
       user: bridgeUser,
     },
-    mnemonic: encryptionKey,
+    key: {
+      mnemonic: encryptionKey,
+    },
     options: {
       notifyProgress: (totalBytes: number, downloadedBytes: number) => {
         options.updateProgressCallback(downloadedBytes / totalBytes);

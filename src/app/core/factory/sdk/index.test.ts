@@ -2,8 +2,7 @@ import { describe, it, expect, vi, beforeEach, test } from 'vitest';
 import { SdkFactory } from './index';
 import { LocalStorageService } from 'services/local-storage.service';
 import { userThunks } from '../../../store/slices/user';
-import { LocalStorageItem, Workspace } from '../../types';
-import { STORAGE_KEYS } from 'services/storage-keys';
+import { LocalStorageItem } from '../../types';
 import { Share, Users } from '@internxt/sdk/dist/drive';
 import packageJson from '../../../../../package.json';
 import { Auth } from '@internxt/sdk/dist/auth';
@@ -50,12 +49,6 @@ vi.mock('@internxt/sdk', () => ({
   },
 }));
 
-vi.mock('@internxt/sdk/dist/shared/http/client', () => ({
-  HttpClient: {
-    enableGlobalRetry: vi.fn(),
-  },
-}));
-
 vi.mock('i18next', () => ({
   t: vi.fn((key: string) => key),
 }));
@@ -95,9 +88,11 @@ describe('SdkFactory', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(HttpClient, 'enableGlobalRetry').mockImplementation(vi.fn());
     mockDispatch = vi.fn();
     mockLocalStorage = {
       get: vi.fn(),
+      getToken: vi.fn(),
       getWorkspace: vi.fn(),
     } as any;
 
@@ -114,8 +109,6 @@ describe('SdkFactory', () => {
 
     it('When SDK clients are created without calling initialize, then enableGlobalRetry is not called again', () => {
       vi.mocked(HttpClient.enableGlobalRetry).mockClear();
-
-      vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(Workspace.Individuals);
       vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
         if (key === 'xNewToken') return 'test-token';
         return null;
@@ -132,13 +125,7 @@ describe('SdkFactory', () => {
   describe('getNewApiSecurity', () => {
     it('should return ApiSecurity with token and default unauthorized callback', () => {
       const mockToken = 'test-token';
-      const mockWorkspace = Workspace.Individuals;
-
-      vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
-      vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-        if (key === LocalStorageItem.NewToken) return mockToken;
-        return null;
-      });
+      vi.spyOn(mockLocalStorage, 'getToken').mockReturnValue(mockToken);
 
       const instance = SdkFactory.getNewApiInstance();
       const apiSecurity = (instance as any).getNewApiSecurity();
@@ -150,14 +137,9 @@ describe('SdkFactory', () => {
 
     it('should use custom unauthorized callback when provided', () => {
       const mockToken = 'test-token';
-      const mockWorkspace = Workspace.Individuals;
       const customCallback = vi.fn();
 
-      vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
-      vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-        if (key === LocalStorageItem.NewToken) return mockToken;
-        return null;
-      });
+      vi.spyOn(mockLocalStorage, 'getToken').mockReturnValue(mockToken);
 
       const instance = SdkFactory.getNewApiInstance();
       const apiSecurity = (instance as any).getNewApiSecurity(customCallback);
@@ -168,17 +150,15 @@ describe('SdkFactory', () => {
     it('should include workspace token when workspace credentials exist', () => {
       const mockToken = 'test-token';
       const mockWorkspaceToken = 'workspace-token';
-      const mockWorkspace = Workspace.Individuals;
       const mockWorkspaceId = 'workspace-123';
       const mockCredentials = {
         tokenHeader: mockWorkspaceToken,
       };
 
-      vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
-      vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-        if (key === LocalStorageItem.NewToken) return mockToken;
-        if (key === STORAGE_KEYS.B2B_WORKSPACE) return mockWorkspaceId;
-        if (key === STORAGE_KEYS.WORKSPACE_CREDENTIALS) return JSON.stringify(mockCredentials);
+      vi.spyOn(mockLocalStorage, 'getToken').mockReturnValue(mockToken);
+      vi.spyOn(mockLocalStorage, 'get').mockImplementation((key) => {
+        if (key === LocalStorageItem.B2Bworkspace) return mockWorkspaceId;
+        if (key === LocalStorageItem.WorkspaceCredentials) return JSON.stringify(mockCredentials);
         return null;
       });
 
@@ -191,13 +171,8 @@ describe('SdkFactory', () => {
 
     it('should call default unauthorized callback and dispatch logout', async () => {
       const mockToken = 'test-token';
-      const mockWorkspace = Workspace.Individuals;
 
-      vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
-      vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-        if (key === LocalStorageItem.NewToken) return mockToken;
-        return null;
-      });
+      vi.spyOn(mockLocalStorage, 'getToken').mockReturnValue(mockToken);
 
       const instance = SdkFactory.getNewApiInstance();
       const apiSecurity = (instance as any).getNewApiSecurity();
@@ -209,13 +184,8 @@ describe('SdkFactory', () => {
 
     it('should return token for Business workspace', () => {
       const mockToken = 'team-token';
-      const mockWorkspace = Workspace.Business;
 
-      vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
-      vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-        if (key === LocalStorageItem.TeamToken) return mockToken;
-        return null;
-      });
+      vi.spyOn(mockLocalStorage, 'getToken').mockReturnValue(mockToken);
 
       const instance = SdkFactory.getNewApiInstance();
       const apiSecurity = (instance as any).getNewApiSecurity();
@@ -224,10 +194,7 @@ describe('SdkFactory', () => {
     });
 
     it('should return empty string when no token exists', () => {
-      const mockWorkspace = Workspace.Individuals;
-
-      vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
-      vi.spyOn(mockLocalStorage, 'get').mockReturnValue(null);
+      vi.spyOn(mockLocalStorage, 'getToken').mockReturnValue(null);
 
       const instance = SdkFactory.getNewApiInstance();
       const apiSecurity = (instance as any).getNewApiSecurity();
@@ -237,14 +204,12 @@ describe('SdkFactory', () => {
 
     it('should handle workspace token when workspace credentials is null', () => {
       const mockToken = 'test-token';
-      const mockWorkspace = Workspace.Individuals;
       const mockWorkspaceId = 'workspace-123';
 
-      vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
+      vi.spyOn(mockLocalStorage, 'getToken').mockReturnValue(mockToken);
       vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-        if (key === LocalStorageItem.NewToken) return mockToken;
-        if (key === STORAGE_KEYS.B2B_WORKSPACE) return mockWorkspaceId;
-        if (key === STORAGE_KEYS.WORKSPACE_CREDENTIALS) return null;
+        if (key === LocalStorageItem.B2Bworkspace) return mockWorkspaceId;
+        if (key === LocalStorageItem.WorkspaceCredentials) return null;
         return null;
       });
 
@@ -258,13 +223,8 @@ describe('SdkFactory', () => {
     describe('Creating the user client', () => {
       test('When the user creates the client without captcha, then the app details are the defined by default', () => {
         const mockToken = 'test-token';
-        const mockWorkspace = Workspace.Individuals;
 
-        vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
-        vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-          if (key === LocalStorageItem.NewToken) return mockToken;
-          return null;
-        });
+        vi.spyOn(mockLocalStorage, 'getToken').mockReturnValue(mockToken);
 
         const instance = SdkFactory.getNewApiInstance();
         instance.createUsersClient();
@@ -281,14 +241,9 @@ describe('SdkFactory', () => {
 
       test('When the user creates the client with captcha, then the app details include the captcha header', () => {
         const mockToken = 'test-token';
-        const mockWorkspace = Workspace.Individuals;
         const captchaToken = 'captcha-token-123';
 
-        vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
-        vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-          if (key === LocalStorageItem.NewToken) return mockToken;
-          return null;
-        });
+        vi.spyOn(mockLocalStorage, 'getToken').mockReturnValue(mockToken);
 
         const instance = SdkFactory.getNewApiInstance();
         instance.createUsersClient(captchaToken);
@@ -310,13 +265,8 @@ describe('SdkFactory', () => {
     describe('Creating the share client', () => {
       test('When the Share creates the client without captcha, then the app details are the defined by default', () => {
         const mockToken = 'test-token';
-        const mockWorkspace = Workspace.Individuals;
 
-        vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
-        vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-          if (key === LocalStorageItem.NewToken) return mockToken;
-          return null;
-        });
+        vi.spyOn(mockLocalStorage, 'getToken').mockReturnValue(mockToken);
 
         const instance = SdkFactory.getNewApiInstance();
         instance.createShareClient();
@@ -333,14 +283,9 @@ describe('SdkFactory', () => {
 
       test('When the Share creates the client with captcha, then the app details include the captcha header', () => {
         const mockToken = 'test-token';
-        const mockWorkspace = Workspace.Individuals;
         const captchaToken = 'captcha-token-123';
 
-        vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
-        vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-          if (key === LocalStorageItem.NewToken) return mockToken;
-          return null;
-        });
+        vi.spyOn(mockLocalStorage, 'getToken').mockReturnValue(mockToken);
 
         const instance = SdkFactory.getNewApiInstance();
         instance.createShareClient(captchaToken);
@@ -362,13 +307,8 @@ describe('SdkFactory', () => {
     describe('Creating the auth client', () => {
       test('When the Auth creates the client without captcha, then the app details are the defined by default', () => {
         const mockToken = 'test-token';
-        const mockWorkspace = Workspace.Individuals;
 
-        vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
-        vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-          if (key === LocalStorageItem.NewToken) return mockToken;
-          return null;
-        });
+        vi.spyOn(mockLocalStorage, 'getToken').mockReturnValue(mockToken);
 
         const instance = SdkFactory.getNewApiInstance();
         instance.createAuthClient();
@@ -385,14 +325,9 @@ describe('SdkFactory', () => {
 
       test('When the Auth creates the client with captcha, then the app details include the captcha header', () => {
         const mockToken = 'test-token';
-        const mockWorkspace = Workspace.Individuals;
         const captchaToken = 'captcha-token-123';
 
-        vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
-        vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-          if (key === LocalStorageItem.NewToken) return mockToken;
-          return null;
-        });
+        vi.spyOn(mockLocalStorage, 'getToken').mockReturnValue(mockToken);
 
         const instance = SdkFactory.getNewApiInstance();
         instance.createAuthClient({ captchaToken });
@@ -414,13 +349,8 @@ describe('SdkFactory', () => {
     describe('Creating the location client', () => {
       test('When the Location client is created, then it uses the location API URL and default app details', () => {
         const mockToken = 'test-token';
-        const mockWorkspace = Workspace.Individuals;
 
-        vi.spyOn(mockLocalStorage, 'getWorkspace').mockReturnValue(mockWorkspace);
-        vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
-          if (key === LocalStorageItem.NewToken) return mockToken;
-          return null;
-        });
+        vi.spyOn(mockLocalStorage, 'getToken').mockReturnValue(mockToken);
 
         const instance = SdkFactory.getNewApiInstance();
         instance.createLocationClient();

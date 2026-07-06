@@ -28,33 +28,17 @@ import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
 import { queue, QueueObject } from 'async';
 import { QueueUtilsService } from 'utils/queueUtils';
 import { isFileEmpty } from 'utils/isFileEmpty';
+import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
 
-export interface GetFileStreamParams {
+interface GetFileStreamParams {
   file: DriveFileData;
-  creds: { user: string; pass: string };
-  mnemonic: string;
+  creds: NetworkCredentials;
+  key: FileKey;
   abortController?: AbortController;
   downloadProgress?: (progress: number) => void;
 }
 
-export interface IFolders {
-  bucket: string;
-  color: string;
-  createdAt: Date;
-  encrypt_version: string;
-  icon: string;
-  iconId: number | null;
-  icon_id: number | null;
-  id: number;
-  name: string;
-  parentId: number;
-  parent_id: number;
-  updatedAt: Date;
-  userId: number;
-  user_id: number;
-}
-
-export interface FolderChild {
+interface FolderChild {
   bucket: string;
   color: string;
   createdAt: string;
@@ -88,14 +72,11 @@ export interface FetchFolderContentResponse {
   user_id: number;
 }
 
-export interface DownloadFolderAsZipOptions {
+interface DownloadFolderAsZipOptions {
   destination?: FlatFolderZip;
   closeWhenFinished?: boolean;
-  credentials: {
-    user: string;
-    pass: string;
-  };
-  mnemonic: string;
+  credentials: NetworkCredentials;
+  key: FileKey;
   isPublicShare?: boolean;
   workspaceId?: string;
 }
@@ -226,7 +207,7 @@ export const createFilesIterator = (directoryUUID: string, workspaceId?: string)
 export async function getFileStream({
   file,
   creds,
-  mnemonic,
+  key,
   abortController,
   downloadProgress,
 }: GetFileStreamParams): Promise<ReadableStream<Uint8Array>> {
@@ -248,7 +229,7 @@ export async function getFileStream({
     bucketId: file.bucket,
     fileId: file.fileId,
     creds,
-    mnemonic,
+    key,
     options: {
       notifyProgress: (_, progress) => {
         const progressDelta = progress - lastReportedProgress;
@@ -373,7 +354,7 @@ export async function downloadFolderAsZip({
           return await getFileStream({
             file,
             creds: options.credentials,
-            mnemonic: options.mnemonic,
+            key: options.key,
             abortController,
             downloadProgress,
           });
@@ -432,7 +413,7 @@ export async function downloadFolderAsZip({
             // TODO: TO WORK UNTIL SDK TYPE CORRECT THE field fileiId -> fileId
             fileId: (file as any).fileId,
             creds: options.credentials,
-            mnemonic: options.mnemonic,
+            key: options.key,
           });
 
           const sourceBlob = await binaryStreamToBlob(downloadedFileStream);

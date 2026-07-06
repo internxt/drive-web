@@ -98,14 +98,16 @@
     "environment": "World Environment Day"
   },
   "auth": {
-    "email": "Email",
+    "emailFloatingLabel": "Email address",
+    "email": "Email address",
+    "passwordFloatingLabel": "Password",
     "password": "Password",
     "terms1": "By creating an account, ",
     "terms2": "you accept the terms & conditions",
     "decrypting": "Decrypting...",
     "login": {
-      "title": "Login",
-      "forgotPwd": "Forgot your password?",
+      "title": "Log in",
+      "forgotPwd": "I forgot my password",
       "dontHaveAccount": "Don’t have an account?",
       "dontHaveAccountMobile": "Don't have an Internxt account?",
       "createAccount": "Create account",
@@ -258,7 +260,7 @@
       "emailMustNotBeEmpty": "Email must not be empty",
       "privacyGuarantee": "Privacy guarantee: We do not share your information and will contact you only as needed to provide our service."
     },
-    "addressBillingTitle": "Address Billing",
+    "addressBillingTitle": "Billing Address",
     "crypto": "Crypto",
     "addressBilling": {
       "optional": {
@@ -305,7 +307,7 @@
       },
       "apply": "Apply",
       "taxes": "Taxes",
-      "annualBillingTemplate": "Annual plan, billed monthly at {{price}}{{currency}}/month for 12 months"
+      "annualBillingTemplate": "Annual plan, billed at {{currency}}{{priceNow}} for the first month, then renews at {{currency}}{{price}}/month"
     },
     "confirmCryptoPayment": {
       "title": "Confirm the payment",
@@ -568,9 +570,7 @@
               "titleNew": "New",
               "year": "year",
               "month": "month",
-              "free": "Free",
-              "reachedFreeLimit": "You are over {{freePlanName}}",
-              "reachedFreeLimitDescription": "As you are currently using {{currentUsage}}, your Internxt Drive will stop syncing your files and you won't be able to add new files"
+              "free": "Free"
             },
             "giveUsFeedback": "Tell us why you want to cancel your {{currentPlanName}} Internxt plan and downgrade to free plan?",
             "feedback": {
@@ -888,6 +888,7 @@
       "multipleDescription": "More than one element already exists in this location. Do you want to replace them or you want to keep all",
       "replaceItem": "Replace current item",
       "keepBoth": "Keep both",
+      "selectOption": "Select an option",
       "upload": "Upload",
       "move": "Move"
     },
@@ -1066,7 +1067,7 @@
         },
         "waitingForApproval": {
           "title": "Waiting for approval",
-          "description": "Your request has already been sent. We are awaiting approval from the owner"
+          "description": "Your request has already been sent. We are awaiting approval from the owner."
         }
       },
       "protectSharingModal": {
@@ -1721,6 +1722,7 @@
     }
   },
   "referrals": {
+    "openError": "Something went wrong while opening referrals. Please try again.",
     "emailVerification": {
       "message": "Verify your email to be eligible to referrals. Check your inbox or",
       "resendVerification": "resend verification"
@@ -2092,7 +2094,7 @@
         "free": "Get up to 10 GB for free",
         "manageBilling": "Manage billing",
         "freeForever": "Free forever",
-        "billedAnnually": "billed annually",
+        "billedAnnually": "/mo billed annually",
         "billedMonthly": "billed monthly",
         "year": "Year",
         "month": "Month",
@@ -2137,7 +2139,8 @@
               "Invite, share & collaborate",
               "Encrypted VPN",
               "Antivirus",
-              "Cleaner"
+              "Cleaner",
+              "Meet"
             ]
           },
           "5TB": {

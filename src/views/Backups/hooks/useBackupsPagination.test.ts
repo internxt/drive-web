@@ -4,7 +4,7 @@
 
 import { FetchFolderContentResponse } from '@internxt/sdk/dist/drive/storage/types';
 import { renderHook, waitFor } from '@testing-library/react';
-import _ from 'lodash';
+import _ from 'utils/lodash';
 
 import { act } from 'react-dom/test-utils';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
