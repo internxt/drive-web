@@ -73,7 +73,7 @@ describe('OAuth authentication service', () => {
     it('when origins are requested, then a safe copy of allowed domains is provided', () => {
       const origins = oauthService.getAllowedOrigins();
 
-      expect(origins).toEqual(['https://meet.internxt.com']);
+      expect(origins).toEqual(oauthService.ALLOWED_TARGET_ORIGINS);
       expect(origins).not.toBe(oauthService.getAllowedOrigins());
     });
   });
