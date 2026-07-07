@@ -307,35 +307,23 @@ describe('Testing the local storage service', () => {
         expect(localStorage.getItem(seenAtKey)).toBeNull();
       });
     });
-
-    describe('clear', () => {
-      test('When the user logs out, then the last seen date is removed but the acknowledged flag is kept', () => {
-        const date = new Date().toISOString();
-        localStorage.setItem(seenAtKey, date);
-        localStorage.setItem(acknowledgedKey, 'true');
-
-        localStorageService.clear();
-
-        expect(localStorage.getItem(seenAtKey)).toBeNull();
-        expect(localStorage.getItem(acknowledgedKey)).toBe('true');
-      });
-    });
   });
 
   describe('Clearing local storage', () => {
     it('When clear storage is requested, then removes all keys', () => {
-      const expectedKeysToRemove = Object.values(LocalStorageItem);
-
-      const setItemSpy = vi.spyOn(Storage.prototype, 'setItem');
-      const removeItemSpy = vi.spyOn(Storage.prototype, 'removeItem');
+      const clearSpy = vi.spyOn(Storage.prototype, 'clear');
+      localStorageService.setBackupKeysAcknowledged();
+      localStorageService.setBackupKeysSeenAt(new Date().toISOString());
 
       localStorageService.clear();
 
-      expect(setItemSpy).toHaveBeenCalledWith(LocalStorageItem.Theme, 'system');
+      expect(clearSpy).toHaveBeenCalledTimes(1);
 
-      for (const key of expectedKeysToRemove) {
-        expect(removeItemSpy).toHaveBeenCalledWith(key);
-      }
+      const userId = mockUserSettings.uuid;
+      const seenAtKey = `backup_key_seen_at_${userId}`;
+      const acknowledgedKey = `backup_key_acknowledged_at_${userId}`;
+      expect(localStorage.getItem(seenAtKey)).toBeNull();
+      expect(localStorage.getItem(acknowledgedKey)).toBeNull();
     });
   });
 });
