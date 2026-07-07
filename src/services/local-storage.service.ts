@@ -89,9 +89,7 @@ function removeItem(key: LocalStorageItem): void {
 }
 
 function clear(): void {
-  set(LocalStorageItem.Theme, 'system');
-  localStorage.removeItem(getBackupKeyStorageKeys().seenAt);
-  Object.values(LocalStorageItem).forEach((key) => localStorage.removeItem(key));
+  localStorage.clear();
 }
 
 const localStorageService = {
