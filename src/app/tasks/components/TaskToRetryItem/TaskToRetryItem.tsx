@@ -5,7 +5,7 @@ import { bytesToString } from 'app/drive/services/size.service';
 import { formatDefaultDate } from 'services/date.service';
 import { t } from 'i18next';
 import { TaskLoggerButton } from '../TaskLoggerButton/TaskLoggerButton';
-import { CircleNotch } from '@phosphor-icons/react';
+import { CircleNotchIcon } from '@phosphor-icons/react';
 import { RetryableTask } from 'app/network/RetryManager';
 
 const TaskToRetyItem = ({ index, style, data }: ListChildComponentProps) => {
@@ -39,7 +39,7 @@ const TaskToRetyItem = ({ index, style, data }: ListChildComponentProps) => {
         <TaskLoggerButton onClick={() => downloadItem(file)} Icon={RestartIcon} />
       )}
       {!isNotAllowed && status === 'retrying' && (
-        <CircleNotch size={24} className="mr-2 animate-spin text-gray-60" weight="bold" />
+        <CircleNotchIcon size={24} className="mr-2 animate-spin text-gray-60" weight="bold" />
       )}
     </div>
   );

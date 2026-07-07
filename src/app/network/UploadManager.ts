@@ -1,6 +1,7 @@
 import { queue, QueueObject } from 'async';
 import { randomBytes } from 'node:crypto';
 import { t } from 'i18next';
+import { AppError } from '@internxt/sdk';
 import errorService from 'services/error.service';
 import { HTTP_CODE_ERRORS, HTTP_STATUS_CODES } from '../core/constants';
 import uploadFile from 'app/drive/services/file.service/uploadFile';
@@ -318,6 +319,42 @@ class UploadManager {
     );
   }
 
+  // Marks the file task as errored, fires the relevant plan dialogs and (for non-folder uploads)
+  // kills the queue. Extracted from handleUploadErrors to keep its cognitive complexity low.
+  private applyUnexpectedUploadError({
+    taskId,
+    castedError,
+    isMaxSpaceError,
+    continueWithRemainingFiles,
+  }: {
+    taskId: string;
+    castedError: AppError;
+    isMaxSpaceError: boolean;
+    continueWithRemainingFiles: boolean;
+  }): void {
+    tasksService.updateTask({
+      taskId,
+      merge: { status: TaskStatus.Error, subtitle: t('tasks.subtitles.upload-failed') as string },
+    });
+    errorService.reportError(castedError);
+
+    if (castedError.code === HTTP_CODE_ERRORS.FILE_UPLOAD_SIZE_EXCEEDED) {
+      this.fileSizeExceededCallback?.();
+    }
+
+    if (isMaxSpaceError) {
+      this.maxSpaceOccupiedCallback();
+    }
+
+    // Non-folder uploads stop the whole batch; folder uploads keep going with the remaining files.
+    if (!continueWithRemainingFiles) {
+      if (!this.errored) {
+        this.uploadQueue.kill();
+      }
+      this.errored = true;
+    }
+  }
+
   private handleUploadErrors({
     error,
     fileData,
@@ -367,29 +404,7 @@ class UploadManager {
 
     // Handle unexpected errors
     if (isUnexpectedError) {
-      tasksService.updateTask({
-        taskId: taskId,
-        merge: { status: TaskStatus.Error, subtitle: t('tasks.subtitles.upload-failed') as string },
-      });
-      errorService.reportError(castedError);
-
-      // Handle file size exceeded
-      if (castedError.code === HTTP_CODE_ERRORS.FILE_UPLOAD_SIZE_EXCEEDED) {
-        this.fileSizeExceededCallback?.();
-      }
-
-      // Handle max space used error
-      if (isMaxSpaceError) {
-        this.maxSpaceOccupiedCallback();
-      }
-
-      // Ensure upload queue is killed and errored is set, unless we keep going in a folder upload
-      if (!continueWithRemainingFiles) {
-        if (!this.errored) {
-          this.uploadQueue.kill();
-        }
-        this.errored = true;
-      }
+      this.applyUnexpectedUploadError({ taskId, castedError, isMaxSpaceError, continueWithRemainingFiles });
     }
 
     // Handle upload aborted
