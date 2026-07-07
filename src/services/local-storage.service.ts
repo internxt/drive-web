@@ -1,7 +1,8 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
-import { LocalStorageItem } from 'app/core/types';
+import { LocalStorageItem, LocalStorageProtectedItem } from 'app/core/types';
 import { BACKUP_KEY } from './storage-keys';
+import { decryptEntry, encryptEntry } from './local-storage-crypto';
 
 function get(key: LocalStorageItem): string | null {
   return localStorage.getItem(key);
@@ -9,6 +10,19 @@ function get(key: LocalStorageItem): string | null {
 
 function set(key: LocalStorageItem, value: string): void {
   return localStorage.setItem(key, value);
+}
+
+async function getAndDecrypt(key: LocalStorageProtectedItem): Promise<string | null> {
+  const item = localStorage.getItem(key);
+  if (item) {
+    return await decryptEntry(item);
+  }
+  return null;
+}
+
+async function setAndEncrypt(key: LocalStorageProtectedItem, value: string): Promise<void> {
+  const encryptedValue = await encryptEntry(value);
+  return localStorage.setItem(key, encryptedValue);
 }
 
 function getBackupKeyStorageKeys() {
@@ -97,6 +111,8 @@ function clear(): void {
 const localStorageService = {
   set,
   get,
+  setAndEncrypt,
+  getAndDecrypt,
   setBackupKeysAcknowledged,
   setBackupKeysSeenAt,
   setToken,
@@ -116,6 +132,8 @@ export default localStorageService;
 export interface LocalStorageService {
   set: (key: LocalStorageItem, value: string) => void;
   get: (key: LocalStorageItem) => string | null;
+  getAndDecrypt: (key: LocalStorageProtectedItem) => Promise<string | null>;
+  setAndEncrypt: (key: LocalStorageProtectedItem, value: string) => Promise<void>;
   setBackupKeysAcknowledged: () => void;
   setBackupKeysSeenAt: (date: string) => void;
   setToken: (token: string) => void;
