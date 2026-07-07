@@ -160,6 +160,14 @@ export enum LocalStorageItem {
   AnniversaryTheme = 'anniversary_theme_enabled',
 }
 
+export enum LocalStorageProtectedItem {
+  User = 'xUser',
+  NewToken = 'xNewToken',
+  B2Bworkspace = 'b2bWorkspace',
+  WorkspaceCredentials = 'workspace_credentials',
+  FolderAccessToken = 'folderAccessToken',
+  FileAccessToken = 'fileAccessToken',
+}
 export enum OrderDirection {
   Asc = 'ASC',
   Desc = 'DESC',
