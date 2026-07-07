@@ -23,10 +23,6 @@ interface UseSubscriptionCancellationResult {
 
 const REFRESH_PLAN_DELAY_MS = 1000;
 
-/**
- * Encapsulates the subscription cancellation and cancellation-trial (retention incentive) logic
- * so it can be reused across the account and workspace billing sections.
- */
 export const useSubscriptionCancellation = ({
   individualSubscription,
   onModalClose,
