@@ -32,8 +32,6 @@ import { DownloadManager } from 'app/network/DownloadManager';
 import { getIsTypeAllowedAndFileExtensionGroupValues } from './utils/fileViewerUtils';
 import { FileExtensionGroup } from 'app/drive/types/file-types';
 
-type pathProps = 'drive' | 'trash' | 'shared' | 'recents';
-
 const SPECIAL_MIME_TYPES = ['heic'];
 
 interface FileViewerWrapperProps {
@@ -75,7 +73,6 @@ const FileViewerWrapper = ({
   const [blob, setBlob] = useState<Blob | null>(null);
 
   const user = localStorageService.getUser();
-  const userEmail = user?.email;
 
   const driveItemActions = useDriveItemActions(currentFile);
   const fileContentManager = getFileContentManager(currentFile, downloadFile);
@@ -281,7 +278,7 @@ const FileViewerWrapper = ({
         content: thumbnailGenerated.file,
       };
 
-      const thumbnailUploaded = await uploadThumbnail(userEmail as string, thumbnailToUpload, isWorkspace, () => {});
+      const thumbnailUploaded = await uploadThumbnail(thumbnailToUpload, isWorkspace, () => {});
 
       setCurrentThumbnail(thumbnailGenerated.file, thumbnailUploaded, driveFile as DriveItemData, dispatch);
 
