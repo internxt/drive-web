@@ -175,7 +175,6 @@ class UploadManager {
         let abortListener: (task: TaskData) => void;
 
         uploadFile(
-          fileData.userEmail,
           {
             name: file.name,
             size: file.size,

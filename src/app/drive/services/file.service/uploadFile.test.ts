@@ -229,7 +229,6 @@ describe('Uploading a file', () => {
     });
 
     await uploadFile(
-      'user@test',
       file,
       vi.fn(),
       {
@@ -275,7 +274,6 @@ describe('Uploading a file', () => {
     });
 
     await uploadFile(
-      'user@test',
       file,
       vi.fn(),
       {
@@ -323,7 +321,6 @@ describe('Uploading a file', () => {
     } as any);
 
     const result = await uploadFile(
-      'user@test.com',
       file,
       vi.fn(),
       { isTeam: false },
@@ -351,13 +348,7 @@ describe('Uploading a file', () => {
     } as any);
 
     await expect(
-      uploadFile(
-        'user@test.com',
-        file,
-        vi.fn(),
-        { isTeam: false },
-        { taskId: 'task-1', isPaused: false, isRetriedUpload: false },
-      ),
+      uploadFile(file, vi.fn(), { isTeam: false }, { taskId: 'task-1', isPaused: false, isRetriedUpload: false }),
     ).rejects.toThrow(BucketNotFoundError);
   });
 
@@ -384,13 +375,7 @@ describe('Uploading a file', () => {
     });
 
     await expect(
-      uploadFile(
-        'user@test.com',
-        file,
-        vi.fn(),
-        { isTeam: false },
-        { taskId: 'task-1', isPaused: false, isRetriedUpload: false },
-      ),
+      uploadFile(file, vi.fn(), { isTeam: false }, { taskId: 'task-1', isPaused: false, isRetriedUpload: false }),
     ).rejects.toThrow(FileIdRequiredError);
   });
 });
