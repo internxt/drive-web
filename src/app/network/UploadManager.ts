@@ -419,7 +419,7 @@ class UploadManager {
 
     if (continueWithRemainingFiles) {
       this.someUploadFailed = true;
-      if (!this.firstUploadError) this.firstUploadError = castedError;
+      this.firstUploadError ??= castedError;
       next(null);
       return;
     }
