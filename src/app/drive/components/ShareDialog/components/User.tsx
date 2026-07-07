@@ -3,11 +3,12 @@ import { Avatar } from '@internxt/ui';
 import { MouseEvent } from 'react';
 import { UserOptions } from './UserOptions';
 import { InvitedUserProps } from '../types';
+import { Translate } from 'app/i18n/types';
 
 interface UserProps {
   user: InvitedUserProps;
   listPosition: number | null;
-  translate: (key: string, props?: Record<string, unknown>) => string;
+  translate: Translate;
   openUserOptions: (
     event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>,
     user: InvitedUserProps,

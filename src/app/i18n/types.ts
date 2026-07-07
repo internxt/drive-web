@@ -8,7 +8,8 @@ type DotNotation<T, Prefix extends string = ''> = {
       : DotNotation<T[K], `${Prefix}${K & string}.`>;
 }[keyof T];
 
-export type TranslationKey = DotNotation<typeof en> | string;
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type TranslationKey = DotNotation<typeof en> | (string & {});
 export type Translate = (key: TranslationKey, props?: Record<string, unknown>) => string;
 export type TranslateArray = (key: TranslationKey, props?: Record<string, unknown>) => string[];
 
