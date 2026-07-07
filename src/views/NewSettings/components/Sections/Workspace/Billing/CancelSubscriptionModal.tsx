@@ -184,7 +184,7 @@ const CancelPlanModal = ({
           className={'shadow-subtle-hard'}
           variant="secondary"
           disabled={isCancellingSubscription}
-          onClick={cancelSubscription}
+          onClick={() => cancelSubscription()}
         >
           {translate('views.account.tabs.billing.cancelSubscriptionModal.cancelSubscription')}
         </Button>

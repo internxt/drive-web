@@ -57,7 +57,7 @@ export const CancellationIncentive = ({
       <div className="flex flex-row w-full justify-center items-center gap-5">
         <Button
           variant="secondary"
-          onClick={cancelSubscription}
+          onClick={() => cancelSubscription()}
           disabled={isCancellingSubscription}
           loading={isCancellingSubscription}
         >
