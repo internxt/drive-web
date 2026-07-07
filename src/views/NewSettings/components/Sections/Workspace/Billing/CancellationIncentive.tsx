@@ -1,11 +1,19 @@
 import { Button, Modal } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+
+// Needs to parse the date in the format DD/MM/YY so we can calculate the next billing date
+dayjs.extend(customParseFormat);
+
+const NEXT_BILLING_DATE_FORMAT = 'DD/MM/YY';
+const FREE_TRIAL_EXTRA_DAYS = 30;
 
 interface CancellationIncentiveProps {
   isOpen: boolean;
-  cancellingSubscription: boolean;
-  applyingTrial: boolean;
+  isCancellingSubscription: boolean;
+  isApplyingTrial: boolean;
+  nextBillingDate?: string;
   onClose: () => void;
   cancelSubscription: () => void;
   activateTrial: () => void;
@@ -13,13 +21,15 @@ interface CancellationIncentiveProps {
 
 export const CancellationIncentive = ({
   isOpen,
-  applyingTrial,
-  cancellingSubscription,
+  isApplyingTrial,
+  isCancellingSubscription,
+  nextBillingDate,
   activateTrial,
   cancelSubscription,
   onClose,
 }: CancellationIncentiveProps) => {
   const { translate } = useTranslationContext();
+
   return (
     <Modal
       isOpen={isOpen}
@@ -38,7 +48,9 @@ export const CancellationIncentive = ({
       <div className="flex flex-col text-center">
         <p className="text-lg">
           {translate('views.account.tabs.billing.cancellationIncentive.description', {
-            newDate: dayjs().add(30, 'day').format('DD/MM/YYYY'),
+            newDate: dayjs(nextBillingDate, NEXT_BILLING_DATE_FORMAT)
+              .add(FREE_TRIAL_EXTRA_DAYS, 'day')
+              .format('DD/MM/YYYY'),
           })}
         </p>
       </div>
@@ -46,12 +58,12 @@ export const CancellationIncentive = ({
         <Button
           variant="secondary"
           onClick={cancelSubscription}
-          disabled={cancellingSubscription}
-          loading={cancellingSubscription}
+          disabled={isCancellingSubscription}
+          loading={isCancellingSubscription}
         >
           {translate('views.account.tabs.billing.cancellationIncentive.cta.cancel')}
         </Button>
-        <Button variant="primary" onClick={activateTrial} disabled={applyingTrial} loading={applyingTrial}>
+        <Button variant="primary" onClick={activateTrial} disabled={isApplyingTrial} loading={isApplyingTrial}>
           {translate('views.account.tabs.billing.cancellationIncentive.cta.freeMonth')}
         </Button>
       </div>

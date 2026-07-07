@@ -13,8 +13,9 @@ interface CancelSubscriptionModalProps {
   currentPlanName: string;
   currentPlanInfo: string;
   currentUsage: number;
-  cancellingSubscription: boolean;
-  applyingTrial?: boolean;
+  isCancellingSubscription: boolean;
+  isApplyingTrial?: boolean;
+  nextBillingDate?: string;
   userType: UserType;
   cancelSubscription: (userType?: UserType) => void;
   activateTrial?: () => void;
@@ -26,8 +27,9 @@ const CancelSubscriptionModal = ({
   currentPlanName,
   currentPlanInfo,
   currentUsage,
-  cancellingSubscription,
-  applyingTrial = false,
+  isCancellingSubscription,
+  isApplyingTrial = false,
+  nextBillingDate,
   userType = UserType.Individual,
   activateTrial = () => undefined,
   cancelSubscription,
@@ -43,8 +45,9 @@ const CancelSubscriptionModal = ({
     return (
       <CancellationIncentive
         isOpen={isOpen}
-        applyingTrial={applyingTrial}
-        cancellingSubscription={cancellingSubscription}
+        isApplyingTrial={isApplyingTrial}
+        isCancellingSubscription={isCancellingSubscription}
+        nextBillingDate={nextBillingDate}
         onClose={onClose}
         cancelSubscription={cancelSubscription}
         activateTrial={activateTrial}
@@ -58,7 +61,7 @@ const CancelSubscriptionModal = ({
         userType={userType}
         onClose={onClose}
         cancelSubscription={cancelSubscription}
-        cancellingSubscription={cancellingSubscription}
+        isCancellingSubscription={isCancellingSubscription}
         currentPlanInfo={currentPlanInfo}
         currentUsage={currentUsage}
         individualPlan={individualPlan}
@@ -72,7 +75,7 @@ interface CancelPlanModalProps {
   currentPlanInfo: string;
   currentUsage: number;
   userType: UserType;
-  cancellingSubscription: boolean;
+  isCancellingSubscription: boolean;
   individualPlan: StoragePlan | null;
   cancelSubscription: () => void;
   onClose: () => void;
@@ -82,7 +85,7 @@ const CancelPlanModal = ({
   currentPlanName,
   currentPlanInfo,
   currentUsage,
-  cancellingSubscription,
+  isCancellingSubscription,
   userType,
   individualPlan,
   cancelSubscription,
@@ -178,14 +181,14 @@ const CancelPlanModal = ({
 
       <div className="mt-5 flex justify-end">
         <Button
-          className={'shadow-su0btle-hard'}
+          className={'shadow-subtle-hard'}
           variant="secondary"
-          disabled={cancellingSubscription}
+          disabled={isCancellingSubscription}
           onClick={cancelSubscription}
         >
           {translate('views.account.tabs.billing.cancelSubscriptionModal.cancelSubscription')}
         </Button>
-        <Button className="ml-2 shadow-subtle-hard" disabled={cancellingSubscription} onClick={onClose}>
+        <Button className="ml-2 shadow-subtle-hard" disabled={isCancellingSubscription} onClick={onClose}>
           {translate('views.account.tabs.billing.cancelSubscriptionModal.keepSubscription')}
         </Button>
       </div>

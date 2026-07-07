@@ -51,7 +51,7 @@ describe('Subscription Cancellation - Custom Hook', () => {
       expect(notificationShowSpy).toHaveBeenCalled();
       expect(onModalClose).toHaveBeenCalled();
       expect(onCancelSuccess).toHaveBeenCalled();
-      expect(result.current.cancellingSubscription).toBe(false);
+      expect(result.current.isCancellingSubscription).toBe(false);
     });
 
     test('When the cancellation fails, then an error notification is shown and the modal stays open', async () => {
@@ -67,7 +67,7 @@ describe('Subscription Cancellation - Custom Hook', () => {
         expect.objectContaining({ text: 'notificationMessages.errorCancelSubscription', type: ToastType.Error }),
       );
       expect(onModalClose).not.toHaveBeenCalled();
-      expect(result.current.cancellingSubscription).toBe(false);
+      expect(result.current.isCancellingSubscription).toBe(false);
     });
 
     test('When the subscription is cancelled, then the plan is refreshed after the delay', async () => {
@@ -103,7 +103,7 @@ describe('Subscription Cancellation - Custom Hook', () => {
         text: 'notificationMessages.successApplyCancellationIncentive',
       });
       expect(onModalClose).toHaveBeenCalled();
-      expect(result.current.applyingTrial).toBe(false);
+      expect(result.current.isApplyingTrial).toBe(false);
     });
 
     test('When there is no active subscription, then the trial is not activated', async () => {
@@ -130,7 +130,7 @@ describe('Subscription Cancellation - Custom Hook', () => {
           type: ToastType.Error,
         }),
       );
-      expect(result.current.applyingTrial).toBe(false);
+      expect(result.current.isApplyingTrial).toBe(false);
     });
   });
 });

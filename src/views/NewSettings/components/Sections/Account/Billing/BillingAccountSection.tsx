@@ -10,6 +10,7 @@ import CancelSubscription from './components/CancelSubscription';
 import BillingAccountOverview from './containers/BillingAccountOverview';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { getCurrentUsage, getPlanInfo, getPlanName } from '../../../../utils/planUtils';
+import { getNextBillingDate } from '../../../../utils';
 import { useSubscriptionCancellation } from '../../../../hooks';
 
 interface BillingAccountSectionProps {
@@ -24,8 +25,9 @@ const BillingAccountSection = ({ changeSection, onClosePreferences }: BillingAcc
   const [planName, setPlanName] = useState<string>('');
   const [planInfo, setPlanInfo] = useState<string>('');
   const [currentUsage, setCurrentUsage] = useState<number>(-1);
+  const nextBillingDate = getNextBillingDate(plan.individualSubscription);
 
-  const { cancellingSubscription, applyingTrial, cancelSubscription, activateTrial } = useSubscriptionCancellation({
+  const { isCancellingSubscription, isApplyingTrial, cancelSubscription, activateTrial } = useSubscriptionCancellation({
     individualSubscription: plan.individualSubscription,
     onModalClose: () => setIsCancelSubscriptionModalOpen(false),
   });
@@ -47,11 +49,12 @@ const BillingAccountSection = ({ changeSection, onClosePreferences }: BillingAcc
         <CancelSubscription
           individualPlan={plan.individualPlan}
           isCancelSubscriptionModalOpen={isCancelSubscriptionModalOpen}
-          cancellingSubscription={cancellingSubscription}
+          isCancellingSubscription={isCancellingSubscription}
           planName={planName}
           planInfo={planInfo}
           currentUsage={currentUsage}
-          applyingTrial={applyingTrial}
+          isApplyingTrial={isApplyingTrial}
+          nextBillingDate={nextBillingDate}
           activateTrial={activateTrial}
           cancelSubscription={cancelSubscription}
           setIsCancelSubscriptionModalOpen={setIsCancelSubscriptionModalOpen}

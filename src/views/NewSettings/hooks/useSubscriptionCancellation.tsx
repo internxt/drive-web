@@ -15,8 +15,8 @@ interface UseSubscriptionCancellationOptions {
 }
 
 interface UseSubscriptionCancellationResult {
-  cancellingSubscription: boolean;
-  applyingTrial: boolean;
+  isCancellingSubscription: boolean;
+  isApplyingTrial: boolean;
   cancelSubscription: (userType?: UserType) => Promise<void>;
   activateTrial: () => Promise<void>;
 }
@@ -29,8 +29,8 @@ export const useSubscriptionCancellation = ({
   onCancelSuccess,
 }: UseSubscriptionCancellationOptions): UseSubscriptionCancellationResult => {
   const dispatch = useAppDispatch();
-  const [cancellingSubscription, setCancellingSubscription] = useState<boolean>(false);
-  const [applyingTrial, setApplyingTrial] = useState<boolean>(false);
+  const [isCancellingSubscription, setIsCancellingSubscription] = useState<boolean>(false);
+  const [isApplyingTrial, setIsApplyingTrial] = useState<boolean>(false);
 
   const refreshPlan = () => {
     setTimeout(() => {
@@ -39,7 +39,7 @@ export const useSubscriptionCancellation = ({
   };
 
   const cancelSubscription = async (userType?: UserType) => {
-    setCancellingSubscription(true);
+    setIsCancellingSubscription(true);
     try {
       await paymentService.cancelSubscription(userType);
       notificationsService.show({ text: t('notificationMessages.successCancelSubscription') });
@@ -53,7 +53,7 @@ export const useSubscriptionCancellation = ({
         requestId: castedError.requestId,
       });
     } finally {
-      setCancellingSubscription(false);
+      setIsCancellingSubscription(false);
       refreshPlan();
       onCancelSuccess?.();
     }
@@ -62,7 +62,7 @@ export const useSubscriptionCancellation = ({
   const activateTrial = async () => {
     if (individualSubscription?.type !== 'subscription') return;
 
-    setApplyingTrial(true);
+    setIsApplyingTrial(true);
     try {
       await paymentService.applyCancellationTrial(individualSubscription.subscriptionId);
       longNotificationsService.show({ text: t('notificationMessages.successApplyCancellationIncentive') });
@@ -76,10 +76,10 @@ export const useSubscriptionCancellation = ({
         requestId: castedError.requestId,
       });
     } finally {
-      setApplyingTrial(false);
+      setIsApplyingTrial(false);
       refreshPlan();
     }
   };
 
-  return { cancellingSubscription, applyingTrial, cancelSubscription, activateTrial };
+  return { isCancellingSubscription, isApplyingTrial, cancelSubscription, activateTrial };
 };

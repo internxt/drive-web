@@ -6,8 +6,9 @@ import { StoragePlan, UserType } from '@internxt/sdk/dist/drive/payments/types/t
 interface CancelSubscriptionProps {
   individualPlan: StoragePlan | null;
   isCancelSubscriptionModalOpen: boolean;
-  cancellingSubscription: boolean;
-  applyingTrial?: boolean;
+  isCancellingSubscription: boolean;
+  isApplyingTrial?: boolean;
+  nextBillingDate?: string;
   planName: string;
   planInfo: string;
   currentUsage: number;
@@ -20,8 +21,9 @@ interface CancelSubscriptionProps {
 const CancelSubscription = ({
   individualPlan,
   isCancelSubscriptionModalOpen,
-  cancellingSubscription,
-  applyingTrial,
+  isCancellingSubscription,
+  isApplyingTrial,
+  nextBillingDate,
   planName,
   planInfo,
   currentUsage,
@@ -52,8 +54,9 @@ const CancelSubscription = ({
         onClose={() => {
           setIsCancelSubscriptionModalOpen(false);
         }}
-        cancellingSubscription={cancellingSubscription}
-        applyingTrial={applyingTrial}
+        isCancellingSubscription={isCancellingSubscription}
+        isApplyingTrial={isApplyingTrial}
+        nextBillingDate={nextBillingDate}
         currentPlanName={planName}
         currentPlanInfo={planInfo}
         currentUsage={currentUsage}

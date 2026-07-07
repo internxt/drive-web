@@ -33,6 +33,7 @@ import {
   getPlanName,
   getRenewalPeriod,
 } from '../../../../utils/planUtils';
+import { getNextBillingDate } from '../../../../utils';
 import { PlanSelectionComponent } from './components/PlanSelection/PlanSelectionComponent';
 import { InfoCardComponent } from './components/PlanSelection/InfoCardComponent';
 
@@ -58,6 +59,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   const versionLimits = useSelector(fileVersionsSelectors.getLimits);
 
   const { individualSubscription, businessSubscription } = plan;
+  const nextBillingDate = getNextBillingDate(individualSubscription);
   let stripe;
 
   if (user === undefined) throw new Error('User is not defined');
@@ -259,7 +261,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     setIsUpdatingSubscription(false);
   };
 
-  const { cancellingSubscription, applyingTrial, cancelSubscription, activateTrial } = useSubscriptionCancellation({
+  const { isCancellingSubscription, isApplyingTrial, cancelSubscription, activateTrial } = useSubscriptionCancellation({
     individualSubscription,
     onModalClose: () => setIsCancelSubscriptionModalOpen(false),
     onCancelSuccess: () => pollVersionLimitsUntilChanged(),
@@ -366,8 +368,9 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
         onClose={() => {
           setIsCancelSubscriptionModalOpen(false);
         }}
-        cancellingSubscription={cancellingSubscription}
-        applyingTrial={applyingTrial}
+        isCancellingSubscription={isCancellingSubscription}
+        isApplyingTrial={isApplyingTrial}
+        nextBillingDate={nextBillingDate}
         cancelSubscription={() => cancelSubscription(selectedSubscriptionType)}
         activateTrial={activateTrial}
         currentPlanName={
