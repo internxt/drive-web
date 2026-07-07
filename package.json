@@ -99,7 +99,8 @@
     "lint": "yarn run lint:ts && yarn run lint:scss",
     "lint:fix": "yarn run lint:ts:fix && yarn run lint:scss:fix",
     "typecheck": "tsc --noEmit",
-    "analyze": "cross-env ANALYZE=true yarn build"
+    "analyze": "cross-env ANALYZE=true yarn build",
+    "check:i18n": "node scripts/check-i18n.cjs"
   },
   "browserslist": {
     "production": [
