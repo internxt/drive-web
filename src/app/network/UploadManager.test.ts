@@ -562,6 +562,108 @@ describe('checkUploadFiles', () => {
     });
   });
 
+  it('should keep uploading the remaining folder files when one file fails, then reject with the original error', async () => {
+    const bigSize = 60 * 1024 * 1024;
+    const failError = new AppError('Payment required', 402);
+    (uploadFile as Mock).mockImplementation((_email: string, file: { name: string }) =>
+      file.name === 'fail.txt' ? Promise.reject(failError) : Promise.resolve(mockFile2),
+    );
+
+    vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
+    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
+    vi.spyOn(errorService, 'castError').mockImplementation((e) => e as AppError);
+    vi.spyOn(errorService, 'reportError').mockReturnValue();
+
+    await expect(
+      uploadFileWithManager({
+        files: [
+          {
+            taskId: 'taskId',
+            relatedTaskId: 'folder-task',
+            filecontent: {
+              content: 'c1' as unknown as File,
+              type: 'text/plain',
+              name: 'fail.txt',
+              size: bigSize,
+              parentFolderId: 'folder-1',
+            },
+            userEmail: '',
+            parentFolderId: 'folder-1',
+          },
+          {
+            taskId: 'taskId2',
+            relatedTaskId: 'folder-task',
+            filecontent: {
+              content: 'c2' as unknown as File,
+              type: 'text/plain',
+              name: 'ok.txt',
+              size: bigSize,
+              parentFolderId: 'folder-1',
+            },
+            userEmail: '',
+            parentFolderId: 'folder-1',
+          },
+        ],
+        maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
+        uploadRepository: DatabaseUploadRepository.getInstance(),
+        options: {
+          ownerUserAuthenticationData: undefined,
+          sharedItemData: { isDeepFolder: false, currentFolderId: 'parentFolderId' },
+          isUploadedFromFolder: true,
+        },
+      }),
+    ).rejects.toThrow(failError);
+
+    const uploadedNames = (uploadFile as Mock).mock.calls.map((call) => call[1]?.name);
+    expect(uploadedNames).toContain('ok.txt');
+  });
+
+  it('should not retry a not-allowed file (402) and mark it as non-retryable in RetryManager', async () => {
+    const notAllowedError = new AppError('Payment required', 402);
+    const uploadFileSpy = (uploadFile as Mock).mockRejectedValue(notAllowedError);
+
+    vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
+    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
+    vi.spyOn(errorService, 'castError').mockImplementation((e) => e as AppError);
+    vi.spyOn(errorService, 'reportError').mockReturnValue();
+
+    await expect(
+      uploadFileWithManager({
+        files: [
+          {
+            taskId: 'taskId',
+            relatedTaskId: 'folder-task',
+            filecontent: {
+              content: 'file-content' as unknown as File,
+              type: 'text/plain',
+              name: 'empty.txt',
+              size: 0,
+              parentFolderId: 'folder-1',
+            },
+            userEmail: '',
+            parentFolderId: 'folder-1',
+          },
+        ],
+        maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
+        uploadRepository: DatabaseUploadRepository.getInstance(),
+        options: {
+          ownerUserAuthenticationData: undefined,
+          sharedItemData: { isDeepFolder: false, currentFolderId: 'parentFolderId' },
+          isUploadedFromFolder: true,
+        },
+      }),
+    ).rejects.toThrow(notAllowedError);
+
+    expect(uploadFileSpy).toHaveBeenCalledTimes(1);
+    const retryTasks = RetryManager.getTasks();
+    expect(retryTasks).toHaveLength(1);
+    expect(retryTasks[0].retryable).toBe(false);
+  });
+
   it('When uploading a file to a workspace, then it uses workspace credentials and same bucket for file and thumbnail', async () => {
     const workspaceBucket = 'workspace-bucket-123';
     const workspaceId = 'workspace-id-456';

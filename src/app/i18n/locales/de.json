@@ -1291,7 +1291,8 @@
       "allProcessesHaveFinished": "Alle Prozesse sind abgeschlossen",
       "processing": "Wird bearbeitet {{pending}} von {{finished}}",
       "failedToUpload": "Fehler beim Hochladen",
-      "failedToDownload": "Fehler beim Herunterladen"
+      "failedToDownload": "Fehler beim Herunterladen",
+      "notAllowed": "Nicht erlaubt"
     },
     "waiting": "Warten",
     "paused": "Pausiert",

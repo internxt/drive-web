@@ -3,6 +3,7 @@ export type RetryableTask = {
   type: 'upload' | 'download';
   params: any;
   status?: 'pending' | 'failed' | 'retrying';
+  retryable?: boolean;
 };
 
 class RetryManager {

@@ -58,6 +58,15 @@ describe('TaskToRetyItem', () => {
     expect(mockDownloadItem).toHaveBeenCalledWith(mockFile);
   });
 
+  it('should not render a retry button and show the not-allowed label when the file is non-retryable', () => {
+    const notAllowedFile = { ...mockFile, retryable: false };
+    const notAllowedProps = { ...defaultProps, data: { files: [notAllowedFile], downloadItem: mockDownloadItem } };
+    const { queryByRole, getByText } = render(<TaskToRetyItem {...notAllowedProps} />);
+
+    expect(queryByRole('button')).not.toBeInTheDocument();
+    expect(getByText('tasks.messages.notAllowed')).toBeInTheDocument();
+  });
+
   it('should render a spinner when the file status is "retrying"', () => {
     const uploadingFile = { ...mockFile, status: 'retrying' };
     const uploadingProps = { ...defaultProps, data: { files: [uploadingFile], downloadItem: mockDownloadItem } };

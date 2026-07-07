@@ -1319,7 +1319,8 @@
       "allProcessesHaveFinished": "Все процессы завершены",
       "processing": "Обработка {{pending}} из {{finished}}",
       "failedToUpload": "Не удалось загрузить",
-      "failedToDownload": "Не удалось загрузить"
+      "failedToDownload": "Не удалось загрузить",
+      "notAllowed": "Не разрешено"
     },
     "waiting": "Ожидание",
     "paused": "Приостановлено",

@@ -1306,7 +1306,8 @@
       "allProcessesHaveFinished": "所有進程已完成",
       "processing": "處理中 {{pending}} 個，共 {{finished}} 個",
       "failedToUpload": "上傳失敗",
-      "failedToDownload": "下載失敗"
+      "failedToDownload": "下載失敗",
+      "notAllowed": "不允許"
     },
     "waiting": "等待中",
     "paused": "已暫停",

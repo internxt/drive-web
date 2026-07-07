@@ -1304,7 +1304,8 @@
       "allProcessesHaveFinished": "Tous les processus ont été complétés",
       "processing": "Traitement {{pending}} de {{finished}}",
       "failedToUpload": "Échec du téléchargement",
-      "failedToDownload": "Échec du téléchargement"
+      "failedToDownload": "Échec du téléchargement",
+      "notAllowed": "Non autorisé"
     },
     "waiting": "En attente",
     "paused": "En pause",

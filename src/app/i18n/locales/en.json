@@ -1376,7 +1376,8 @@
       "allProcessesHaveFinished": "All processes have finished",
       "processing": "Processing {{pending}} of {{finished}}",
       "failedToUpload": "Failed to upload",
-      "failedToDownload": "Failed to download"
+      "failedToDownload": "Failed to download",
+      "notAllowed": "Not allowed"
     },
     "waiting": "Waiting",
     "paused": "Paused",

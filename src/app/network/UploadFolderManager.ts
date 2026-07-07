@@ -385,7 +385,6 @@ export class UploadFoldersManager {
     }, 1000);
   };
 
-
   private readonly handleFolderUploadError = (err: unknown, taskId: string, connectionLost: boolean): boolean => {
     const castedError = errorService.castError(err);
     const updatedTask = tasksService.findTask(taskId);
@@ -423,8 +422,6 @@ export class UploadFoldersManager {
     isConnectionLost: () => boolean,
   ): Promise<boolean> => {
     const { root, currentFolderId, taskId } = taskFolder;
-
-    const taskAfterUpload = tasksService.findTask(taskId);
 
     this.tasksInfo[taskId] = {
       progress: {
@@ -470,8 +467,11 @@ export class UploadFoldersManager {
 
       if (isConnectionLost()) throw new ConnectionLostError();
 
+      // Re-read the task now that the upload has finished: it may have been marked Error (a fatal
+      // failure such as folder creation failing) or Cancelled while the queue was running.
+      const finishedTask = tasksService.findTask(taskId);
       const taskFailed =
-        taskAfterUpload?.status === TaskStatus.Error || taskAfterUpload?.status === TaskStatus.Cancelled;
+        finishedTask?.status === TaskStatus.Error || finishedTask?.status === TaskStatus.Cancelled;
       if (taskFailed) {
         return false;
       }
