@@ -72,7 +72,7 @@ export function useSignUp(referrer?: string): {
     const mnemonic = bip39.generateMnemonic(256);
     const encMnemonic = encryptTextWithKey(mnemonic, password);
 
-    const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+    const authClient = await SdkFactory.getNewApiInstance().createAuthClient();
 
     const keys = await getKeys(password);
 
@@ -102,7 +102,7 @@ export function useSignUp(referrer?: string): {
 
   const doRegisterPreCreatedUser = async (email: string, password: string, invitationId: string, captcha: string) => {
     const captchaToken = await generateCaptchaToken();
-    const authClient = SdkFactory.getNewApiInstance().createAuthClient({
+    const authClient = await SdkFactory.getNewApiInstance().createAuthClient({
       captchaToken,
     });
 

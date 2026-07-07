@@ -50,7 +50,7 @@ describe('userService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue(testToken);
+    vi.spyOn(localStorageService, 'getToken').mockResolvedValue(testToken);
   });
 
   it('should pre-create user', async () => {

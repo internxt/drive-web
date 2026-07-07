@@ -35,8 +35,8 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, string, {
       if (folderId) {
         let itemsPromise;
 
-        const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-        const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+        const storageClient = await SdkFactory.getNewApiInstance().createNewStorageClient();
+        const workspaceClient = await SdkFactory.getNewApiInstance().createWorkspacesClient();
 
         if (hasMoreDriveFolders) {
           if (selectedWorkspace) {

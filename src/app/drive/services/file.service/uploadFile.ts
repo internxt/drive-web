@@ -64,7 +64,7 @@ export const createFileEntry = async ({
 
     return workspacesService.createFileEntry(workspaceFileEntry, workspaceId, resourcesToken);
   } else {
-    const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+    const storageClient = await SdkFactory.getNewApiInstance().createNewStorageClient();
     const fileEntry: StorageTypes.FileEntryByUuid = {
       fileId: fileId,
       type: file.type,

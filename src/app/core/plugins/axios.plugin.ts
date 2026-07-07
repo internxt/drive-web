@@ -9,8 +9,8 @@ const axiosPlugin: AppPlugin = {
   install(store): void {
     axios.defaults.baseURL = envService.getVariable('newApi');
 
-    axios.interceptors.request.use((requestConfig) => {
-      const token = localStorageService.getToken();
+    axios.interceptors.request.use(async (requestConfig) => {
+      const token = await localStorageService.getToken();
 
       const headers = new AxiosHeaders({
         'content-type': 'application/json; charset=utf-8',

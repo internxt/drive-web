@@ -16,15 +16,19 @@ export const useOAuthFlow = ({ authOrigin }: UseOAuthFlowParams): UseOAuthFlowRe
   const isOAuthFlow = !!authOrigin;
 
   useEffect(() => {
-    if (isOAuthFlow) {
+    if (!isOAuthFlow) return;
+
+    const handleOAuthFlow = async () => {
       const user = localStorageService.getUser();
-      const newToken = localStorageService.getToken();
+      const newToken = await localStorageService.getToken();
 
       if (user && newToken) {
         const params = new URLSearchParams(globalThis.location.search);
         navigationService.push(AppView.OAuthLink, Object.fromEntries(params.entries()));
       }
-    }
+    };
+
+    void handleOAuthFlow();
   }, [isOAuthFlow]);
 
   const handleOAuthSuccess = (user: UserSettings, newToken: string): boolean => {

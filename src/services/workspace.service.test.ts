@@ -326,21 +326,21 @@ describe('workspace service', () => {
       expect(mockWorkspacesClient.createFileEntry).toHaveBeenCalledWith(fileEntry, mockIds.workspaceId, 'token');
     });
 
-    it('should create a folder', () => {
+    it('should create a folder', async () => {
       const payload = { workspaceId: mockIds.workspaceId, plainName: 'Folder', parentFolderUuid: 'parent-uuid' };
       const mockPromise = Promise.resolve({ id: 'folder-123' });
       const mockCanceler = vi.fn();
       mockWorkspacesClient.createFolder.mockReturnValue([mockPromise, mockCanceler]);
-      const [promise, canceler] = workspaceService.createFolder(payload);
+      const [promise, canceler] = await workspaceService.createFolder(payload);
       expect(promise).toBe(mockPromise);
       expect(canceler).toBe(mockCanceler);
     });
 
-    it('should retrieve workspace folders', () => {
+    it('should retrieve workspace folders', async () => {
       const mockPromise = Promise.resolve({ result: [] });
       const mockCanceler = vi.fn();
       mockWorkspacesClient.getFolders.mockReturnValue([mockPromise, mockCanceler]);
-      const [promise] = workspaceService.getWorkspaceFolders(mockIds.workspaceId, 'folder-id', 0, 50);
+      const [promise] = await workspaceService.getWorkspaceFolders(mockIds.workspaceId, 'folder-id', 0, 50);
       expect(promise).toBe(mockPromise);
       expect(mockWorkspacesClient.getFolders).toHaveBeenCalledWith(
         mockIds.workspaceId,
@@ -367,7 +367,7 @@ describe('workspace service', () => {
       const mockCanceler = vi.fn();
       mockWorkspacesClient.getFiles.mockReturnValue([mockPromise, mockCanceler]);
 
-      const [promise, canceler] = workspaceService.getWorkspaceFiles(mockIds.workspaceId, 'folder-id', 0, 50);
+      const [promise, canceler] = await workspaceService.getWorkspaceFiles(mockIds.workspaceId, 'folder-id', 0, 50);
       const result = await promise;
 
       expect(canceler).toBe(mockCanceler);
@@ -426,11 +426,11 @@ describe('workspace service', () => {
     it.each([
       { type: 'folders', fn: 'getAllWorkspaceTeamSharedFolders', clientFn: 'getWorkspaceTeamSharedFoldersV2' },
       { type: 'files', fn: 'getAllWorkspaceTeamSharedFiles', clientFn: 'getWorkspaceTeamSharedFilesV2' },
-    ])('should retrieve all shared $type', ({ fn, clientFn }) => {
+    ])('should retrieve all shared $type', async ({ fn, clientFn }) => {
       const mockPromise = Promise.resolve({ items: [] });
       const mockCanceler = vi.fn();
       mockWorkspacesClient[clientFn].mockReturnValue([mockPromise, mockCanceler]);
-      const [promise] = workspaceService[fn](mockIds.workspaceId);
+      const [promise] = await workspaceService[fn](mockIds.workspaceId);
       expect(promise).toBe(mockPromise);
     });
 
@@ -441,19 +441,19 @@ describe('workspace service', () => {
         clientFn: 'getWorkspaceTeamSharedFolderFoldersV2',
       },
       { type: 'files', fn: 'getAllWorkspaceTeamSharedFolderFiles', clientFn: 'getWorkspaceTeamSharedFolderFilesV2' },
-    ])('should retrieve $type within shared folder', ({ fn, clientFn }) => {
+    ])('should retrieve $type within shared folder', async ({ fn, clientFn }) => {
       const mockPromise = Promise.resolve({ items: [] });
       const mockCanceler = vi.fn();
       mockWorkspacesClient[clientFn].mockReturnValue([mockPromise, mockCanceler]);
-      const [promise] = workspaceService[fn](mockIds.workspaceId, 'shared-uuid', 1, 50);
+      const [promise] = await workspaceService[fn](mockIds.workspaceId, 'shared-uuid', 1, 50);
       expect(promise).toBe(mockPromise);
     });
 
-    it('should retrieve users and teams an item is shared with', () => {
+    it('should retrieve users and teams an item is shared with', async () => {
       const mockPromise = Promise.resolve({ users: [], teams: [] });
       const mockCanceler = vi.fn();
       mockWorkspacesClient.getUsersAndTeamsAnItemIsShareWidth.mockReturnValue([mockPromise, mockCanceler]);
-      const [promise] = workspaceService.getUsersAndTeamsAnItemIsShareWidth({
+      const [promise] = await workspaceService.getUsersAndTeamsAnItemIsShareWidth({
         workspaceId: mockIds.workspaceId,
         itemType: 'folder',
         itemId: 'item-123',

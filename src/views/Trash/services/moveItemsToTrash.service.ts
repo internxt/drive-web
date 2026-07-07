@@ -24,7 +24,7 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[], onSuccess?: () =>
   let movingItemsToastId;
 
   try {
-    const trashClient = SdkFactory.getNewApiInstance().createTrashClient();
+    const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
 
     movingItemsToastId = notificationsService.show({
       type: ToastType.Loading,

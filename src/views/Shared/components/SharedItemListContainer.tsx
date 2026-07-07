@@ -115,7 +115,7 @@ const SharedItemListContainer = ({
         const pageItemsNumber = 5;
         let sharedToken;
         if (workspaceCredentials && workspaceId) {
-          const [responsePromise] = workspacesService.getAllWorkspaceTeamSharedFolderFolders(
+          const [responsePromise] = await workspacesService.getAllWorkspaceTeamSharedFolderFolders(
             workspaceId,
             currentFolderId,
             page,

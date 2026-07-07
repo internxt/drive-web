@@ -7,7 +7,7 @@ export interface ReplaceFilePayload {
 }
 
 export async function replaceFile(fileUuid: string, payload: ReplaceFilePayload): Promise<DriveFileData> {
-  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  const storageClient = await SdkFactory.getNewApiInstance().createNewStorageClient();
   return storageClient.replaceFile(fileUuid, payload);
 }
 

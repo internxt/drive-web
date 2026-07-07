@@ -108,9 +108,9 @@ const getCurrentUrlParams = (): Record<string, string> => {
 
 export async function logOut(loginParams?: Record<string, string>): Promise<void> {
   try {
-    const token = localStorageService.getToken() ?? undefined;
+    const token = await localStorageService.getToken();
     if (token) {
-      const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+      const authClient = await SdkFactory.getNewApiInstance().createAuthClient();
       await authClient.logout(token);
     }
   } catch (error) {
@@ -129,14 +129,14 @@ export async function logOut(loginParams?: Record<string, string>): Promise<void
   }
 }
 
-export function cancelAccount(): Promise<void> {
-  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
-  const token = localStorageService.getToken() ?? undefined;
+export async function cancelAccount(): Promise<void> {
+  const authClient = await SdkFactory.getNewApiInstance().createAuthClient();
+  const token = await localStorageService.getToken();
   return authClient.sendUserDeactivationEmail(token);
 }
 
 export const is2FANeeded = async (email: string): Promise<boolean> => {
-  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  const authClient = await SdkFactory.getNewApiInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(email).catch((error) => {
     throw errorService.castError(error);
   });
@@ -159,7 +159,7 @@ export const doLogin = async (
   twoFactorCode: string,
   loginType: 'web' | 'desktop' | undefined = 'web',
 ): Promise<ProfileInfo> => {
-  const authClient = getAuthClient(loginType);
+  const authClient = await getAuthClient(loginType);
   const loginDetails: LoginDetails = {
     email: email.toLowerCase(),
     password: password,
@@ -231,7 +231,7 @@ export const readReferalCookie = (): string | undefined => {
 
 export const getSalt = async (): Promise<string> => {
   const email = localStorageService.getUser()?.email;
-  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  const authClient = await SdkFactory.getNewApiInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(String(email));
   return decryptText(securityDetails.encryptedSalt);
 };
@@ -284,7 +284,7 @@ export const recoverAccountWithBackupKey = async (
  */
 const recoveryOldBackuptWithToken = async (token: string, password: string, mnemonic: string): Promise<void> => {
   try {
-    const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+    const authClient = await SdkFactory.getNewApiInstance().createAuthClient();
     const recoverPayload = await prepareOldBackupRecoverPayloadForBackend({ mnemonic, password, token });
 
     return authClient.legacyRecoverAccount(recoverPayload);
@@ -334,7 +334,7 @@ export const updateCredentialsWithToken = async (
     }
   }
 
-  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  const authClient = await SdkFactory.getNewApiInstance().createAuthClient();
 
   const hasPrivateKeys = encryptedEccPrivateKey || encryptedKyberPrivateKey;
   const keys: RecoveryKeys | undefined = hasPrivateKeys
@@ -367,7 +367,7 @@ const resetAccountWithToken = async (token: string | undefined, newPassword: str
   const encryptedHashedNewPassword = encryptText(hashedNewPassword.hash);
   const encryptedHashedNewPasswordSalt = encryptText(hashedNewPassword.salt);
 
-  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  const authClient = await SdkFactory.getNewApiInstance().createAuthClient();
 
   return authClient.resetAccountWithToken(
     token,
@@ -398,7 +398,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
     privateKyberKeyEncrypted = aes.encrypt(user.keys.kyber.privateKey, newPassword);
   }
 
-  const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
+  const usersClient = await SdkFactory.getNewApiInstance().createUsersClient();
 
   return usersClient
     .changePassword({
@@ -426,19 +426,19 @@ export const changePassword = async (newPassword: string, currentPassword: strin
     });
 };
 
-export const userHas2FAStored = (): Promise<SecurityDetails> => {
+export const userHas2FAStored = async (): Promise<SecurityDetails> => {
   const email = localStorageService.getUser()?.email;
-  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  const authClient = await SdkFactory.getNewApiInstance().createAuthClient();
   return authClient.securityDetails(<string>email);
 };
 
-export const generateNew2FA = (): Promise<TwoFactorAuthQR> => {
-  const token = localStorageService.getToken() || undefined;
-  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+export const generateNew2FA = async (): Promise<TwoFactorAuthQR> => {
+  const token = await localStorageService.getToken();
+  const authClient = await SdkFactory.getNewApiInstance().createAuthClient();
   return authClient.generateTwoFactorAuthQR(token);
 };
 
-export const deactivate2FA = (
+export const deactivate2FA = async (
   passwordSalt: string,
   deactivationPassword: string,
   deactivationCode: string,
@@ -446,18 +446,18 @@ export const deactivate2FA = (
   const salt = decryptText(passwordSalt);
   const hashObj = passToHash({ password: deactivationPassword, salt });
   const encPass = encryptText(hashObj.hash);
-  const token = localStorageService.getToken() || undefined;
-  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  const token = await localStorageService.getToken();
+  const authClient = await SdkFactory.getNewApiInstance().createAuthClient();
   return authClient.disableTwoFactorAuth(encPass, deactivationCode, token);
 };
 
 export async function areCredentialsCorrect(password: string): Promise<boolean> {
   const salt = await getSalt();
   const { hash: hashedPassword } = passToHash({ password, salt });
-  const authClient = SdkFactory.getNewApiInstance().createAuthClient({
+  const authClient = await SdkFactory.getNewApiInstance().createAuthClient({
     unauthorizedCallback: () => undefined,
   });
-  const token = localStorageService.getToken() ?? undefined;
+  const token = await localStorageService.getToken();
   return authClient.areCredentialsCorrect(hashedPassword, token);
 }
 
@@ -482,8 +482,8 @@ export const getRedirectUrl = (urlSearchParams: URLSearchParams, token: string):
 };
 
 const store2FA = async (code: string, twoFactorCode: string): Promise<void> => {
-  const token = localStorageService.getToken() || undefined;
-  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  const token = await localStorageService.getToken();
+  const authClient = await SdkFactory.getNewApiInstance().createAuthClient();
   return authClient.storeTwoFactorAuthKey(code, twoFactorCode, token);
 };
 
@@ -534,18 +534,18 @@ const extractOneUseCredentialsForAutoSubmit = (
 
 const sendChangePasswordEmail = async (email: string): Promise<void> => {
   const captchaToken = await generateCaptchaToken();
-  const authClient = SdkFactory.getNewApiInstance().createAuthClient({ captchaToken });
+  const authClient = await SdkFactory.getNewApiInstance().createAuthClient({ captchaToken });
   return authClient.sendChangePasswordEmail(email);
 };
 
 export const requestUnblockAccount = async (email: string): Promise<void> => {
   const captchaToken = await generateCaptchaToken();
-  const authClient = SdkFactory.getNewApiInstance().createAuthClient({ captchaToken });
+  const authClient = await SdkFactory.getNewApiInstance().createAuthClient({ captchaToken });
   return authClient.requestUnblockAccount(email);
 };
 
-export const unblockAccount = (token: string): Promise<void> => {
-  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+export const unblockAccount = async (token: string): Promise<void> => {
+  const authClient = await SdkFactory.getNewApiInstance().createAuthClient();
   return authClient.unblockAccount(token);
 };
 

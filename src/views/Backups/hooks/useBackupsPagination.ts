@@ -43,7 +43,7 @@ export const useBackupsPagination = (folderUuid: string | undefined, clearSelect
       const currentOffset = isFirstLoad ? 0 : offset;
 
       try {
-        const [folderContentPromise] = newStorageService.getFolderContentByUuid({
+        const [folderContentPromise] = await newStorageService.getFolderContentByUuid({
           folderUuid,
           limit: DEFAULT_LIMIT,
           offset: currentOffset,

@@ -46,61 +46,62 @@ interface CreateShareResponse {
 }
 const NEW_SHARING_VERSION = 'inxt-v3';
 export async function createShare(params: ShareTypes.GenerateShareLinkPayload): Promise<CreateShareResponse> {
-  return await SdkFactory.getNewApiInstance().createShareClient().createShareLink(params);
+  const sdkInstance = await SdkFactory.getNewApiInstance().createShareClient();
+  return await sdkInstance.createShareLink(params);
 }
 
-export function updateShareLink(params: ShareTypes.UpdateShareLinkPayload): Promise<ShareTypes.ShareLink> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+export async function updateShareLink(params: ShareTypes.UpdateShareLinkPayload): Promise<ShareTypes.ShareLink> {
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.updateShareLink(params).catch((error) => {
     throw errorService.castError(error);
   });
 }
 
-export function getReceivedSharedFolders(
+export async function getReceivedSharedFolders(
   page: number,
   perPage: number,
   orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
 ): Promise<ListPrivateSharedFoldersResponse> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getReceivedSharedFolders(page, perPage, orderBy).catch((error) => {
     throw errorService.castError(error);
   });
 }
 
-export function getSentSharedFolders(
+export async function getSentSharedFolders(
   page: number,
   perPage: number,
   orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
 ): Promise<ListPrivateSharedFoldersResponse> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getSentSharedFolders(page, perPage, orderBy).catch((error) => {
     throw errorService.castError(error);
   });
 }
 
-export function getAllSharedFolders(
+export async function getAllSharedFolders(
   page: number,
   perPage: number,
   orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
 ): Promise<ListAllSharedFoldersResponse> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getAllSharedFolders(page, perPage, orderBy).catch((error) => {
     throw errorService.castError(error);
   });
 }
 
-export function getAllSharedFiles(
+export async function getAllSharedFiles(
   page: number,
   perPage: number,
   orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
 ): Promise<ListAllSharedFoldersResponse> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getAllSharedFiles(page, perPage, orderBy).catch((error) => {
     throw errorService.castError(error);
   });
 }
 
-export function getSharedFolderContent(
+export async function getSharedFolderContent(
   sharedFolderId: string,
   type: 'folders' | 'files',
   invitedToken: string | null,
@@ -108,7 +109,7 @@ export function getSharedFolderContent(
   perPage: number,
   orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
 ): Promise<ListSharedItemsResponse> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient
     .getSharedFolderContent(sharedFolderId, type, invitedToken, page, perPage, orderBy)
     .catch((error) => {
@@ -116,7 +117,7 @@ export function getSharedFolderContent(
     });
 }
 
-export function getPublicSharedFolderContent(
+export async function getPublicSharedFolderContent(
   sharedFolderId: string,
   type: 'folders' | 'files',
   token: string | null,
@@ -125,7 +126,7 @@ export function getPublicSharedFolderContent(
   code?: string,
   orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
 ): Promise<ListSharedItemsResponse> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient
     .getPublicSharedFolderContent(sharedFolderId, type, token, page, perPage, code, orderBy)
     .catch((error) => {
@@ -133,29 +134,29 @@ export function getPublicSharedFolderContent(
     });
 }
 
-export function deleteShareLink(shareId: string): Promise<{ deleted: boolean; shareId: string }> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+export async function deleteShareLink(shareId: string): Promise<{ deleted: boolean; shareId: string }> {
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.deleteShareLink(shareId).catch((error) => {
     throw errorService.castError(error);
   });
 }
 
-export function getSharedFolderInfo(token: string, password?: string): Promise<ShareTypes.ShareLink> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+export async function getSharedFolderInfo(token: string, password?: string): Promise<ShareTypes.ShareLink> {
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getShareLink(token, password).catch((error) => {
     throw errorService.castError(error);
   });
 }
 
-export function getShareDomains(): Promise<ShareDomainsResponse> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+export async function getShareDomains(): Promise<ShareDomainsResponse> {
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getShareDomains().catch((error) => {
     throw errorService.castError(error);
   });
 }
 
-export function getSharingRoles(): Promise<Role[]> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+export async function getSharingRoles(): Promise<Role[]> {
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getSharingRoles().catch((error) => {
     throw errorService.castError(error);
   });
@@ -163,52 +164,52 @@ export function getSharingRoles(): Promise<Role[]> {
 
 export async function inviteUserToSharedFolder(props: ShareFolderWithUserPayload): Promise<SharingInvite> {
   const captchaToken = await generateCaptchaToken();
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient(captchaToken);
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient(captchaToken);
   return shareClient.inviteUserToSharedFolder({ ...props }).catch((error) => {
     throw errorService.castError(error);
   });
 }
 
-export function getUsersOfSharedFolder({
+export async function getUsersOfSharedFolder({
   itemType,
   folderId,
 }: {
   itemType: string;
   folderId: string;
 }): Promise<Record<'users', any[]> | Record<'error', string>> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getAllAccessUsers({ itemType, folderId }).catch((error) => {
     throw errorService.castError(error);
   });
 }
 
-export function getSharedFolderInvitationsAsInvitedUser({
+export async function getSharedFolderInvitationsAsInvitedUser({
   limit = 10,
   offset = 0,
 }: {
   limit?: number;
   offset?: number;
 }): Promise<{ invites: SharedFoldersInvitationsAsInvitedUserResponse[] }> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getSharedFolderInvitationsAsInvitedUser({ limit, offset }).catch((error) => {
     throw errorService.castError(error);
   });
 }
 
-export function declineSharedFolderInvite({
+export async function declineSharedFolderInvite({
   invitationId,
   token,
 }: {
   invitationId: string;
   token?: string;
 }): Promise<void> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.declineSharedFolderInvite(invitationId, token).catch((error) => {
     throw errorService.castError(error);
   });
 }
 
-export function acceptSharedFolderInvite({
+export async function acceptSharedFolderInvite({
   invitationId,
   acceptInvite,
   token,
@@ -217,31 +218,31 @@ export function acceptSharedFolderInvite({
   acceptInvite?: AcceptInvitationToSharedFolderPayload;
   token?: string;
 }): Promise<void> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.acceptSharedFolderInvite({ invitationId, acceptInvite, token }).catch((error) => {
     throw errorService.castError(error);
   });
 }
 
-export function getUserRoleOfSharedFolder(sharingId: string): Promise<Role> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+export async function getUserRoleOfSharedFolder(sharingId: string): Promise<Role> {
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getUserRole(sharingId).catch((error) => {
     throw errorService.castError(error);
   });
 }
 
-export function getPublicSharedItemInfo(sharingId: string): Promise<PublicSharedItemInfo> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+export async function getPublicSharedItemInfo(sharingId: string): Promise<PublicSharedItemInfo> {
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getPublicSharedItemInfo(sharingId).catch((error) => {
     throw errorService.castError(error);
   });
 }
 
-export function updateUserRoleOfSharedFolder({
+export async function updateUserRoleOfSharedFolder({
   newRoleId,
   sharingId,
 }: UpdateUserRolePayload): Promise<UpdateUserRoleResponse> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient
     .updateUserRole({
       newRoleId,
@@ -252,7 +253,7 @@ export function updateUserRoleOfSharedFolder({
     });
 }
 
-export function removeUserRole({
+export async function removeUserRole({
   itemType,
   itemId,
   userId,
@@ -261,14 +262,14 @@ export function removeUserRole({
   itemId: string;
   userId: string;
 }): Promise<{ message: string }> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.removeUserRole({ itemType, itemId, userId }).catch((error) => {
     throw errorService.castError(error);
   });
 }
 
-export function stopSharingItem(itemType: string, itemId: string): Promise<void> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+export async function stopSharingItem(itemType: string, itemId: string): Promise<void> {
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.stopSharingFolder(itemType, itemId);
 }
 
@@ -407,10 +408,10 @@ interface SharedDirectoryFilesPayload {
   password?: string;
 }
 
-export function getSharedDirectoryFolders(
+export async function getSharedDirectoryFolders(
   payload: SharedDirectoryFoldersPayload,
 ): Promise<ShareTypes.SharedDirectoryFolders> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getShareLinkDirectory({
     type: 'folder',
     token: payload.token,
@@ -422,10 +423,10 @@ export function getSharedDirectoryFolders(
   });
 }
 
-export function getSharedDirectoryFiles(
+export async function getSharedDirectoryFiles(
   payload: SharedDirectoryFilesPayload,
 ): Promise<ShareTypes.SharedDirectoryFiles> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getShareLinkDirectory({
     type: 'file',
     token: payload.token,
@@ -457,7 +458,7 @@ class DirectorySharedFolderIterator implements Iterator<SharedFolders> {
     const { directoryId, resourcesToken, workspaceId } = this.queryValues;
     let items;
     if (workspaceId) {
-      const [promise] = workspacesService.getAllWorkspaceTeamSharedFolderFolders(
+      const [promise] = await workspacesService.getAllWorkspaceTeamSharedFolderFolders(
         workspaceId,
         directoryId,
         this.page,
@@ -497,7 +498,7 @@ class DirectorySharedFilesIterator implements Iterator<SharedFiles> {
     const { directoryId, resourcesToken, workspaceId } = this.queryValues;
     let items;
     if (workspaceId) {
-      const [promise] = workspacesService.getAllWorkspaceTeamSharedFolderFiles(
+      const [promise] = await workspacesService.getAllWorkspaceTeamSharedFolderFiles(
         workspaceId,
         directoryId,
         this.page,
@@ -786,42 +787,46 @@ export const processInvitation = async (
   return response;
 };
 
-export function createPublicSharingItem(publicSharingPayload: CreateSharingPayload): Promise<SharingMeta> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+export async function createPublicSharingItem(publicSharingPayload: CreateSharingPayload): Promise<SharingMeta> {
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.createSharing(publicSharingPayload).catch((error) => {
     throw errorService.castError(error);
   });
 }
-export function validateSharingInvitation(sharingId: string): Promise<{ uuid: string }> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+export async function validateSharingInvitation(sharingId: string): Promise<{ uuid: string }> {
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.validateInviteExpiration(sharingId).catch((error) => {
     throw errorService.castError(error);
   });
 }
 
-export function getPublicSharingMeta(sharingId: string, code: string, password?: string): Promise<SharingMeta> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+export async function getPublicSharingMeta(sharingId: string, code: string, password?: string): Promise<SharingMeta> {
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getSharingMeta(sharingId, code, password).catch((error) => {
     throw error;
   });
 }
 
-export function updateSharingType(itemId: string, itemType: 'file' | 'folder', sharingType: string): Promise<void> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+export async function updateSharingType(
+  itemId: string,
+  itemType: 'file' | 'folder',
+  sharingType: string,
+): Promise<void> {
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.updateSharingType({ itemId, itemType, sharingType }).catch((error) => {
     throw errorService.castError(error);
   });
 }
 
-export function getSharingType(itemId: string, itemType: 'file' | 'folder'): Promise<SharingMeta> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+export async function getSharingType(itemId: string, itemType: 'file' | 'folder'): Promise<SharingMeta> {
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getSharingType({ itemId, itemType }).catch((error) => {
     throw errorService.castError(error);
   });
 }
 
-export function getSharingInfo(itemId: string, itemType: 'file' | 'folder'): Promise<SharingInfo> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+export async function getSharingInfo(itemId: string, itemType: 'file' | 'folder'): Promise<SharingInfo> {
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getSharingInfo({ itemId, itemType }).catch((error) => {
     throw errorService.castError(error);
   });
@@ -836,21 +841,21 @@ export async function saveSharingPassword(
   const code = await decryptPublicSharingCodeWithOwner(encryptedCode, encryptionAlgorithm);
   const encryptedPassword = aes.encrypt(plainPassword, code);
 
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.saveSharingPassword(sharingId, encryptedPassword).catch((error) => {
     throw errorService.castError(error);
   });
 }
 
-export function removeSharingPassword(sharingId: string): Promise<void> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+export async function removeSharingPassword(sharingId: string): Promise<void> {
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.removeSharingPassword(sharingId).catch((error) => {
     throw errorService.castError(error);
   });
 }
 
 export async function getSharedFolderSize(id: string): Promise<SharedFolderSize> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  const shareClient = await SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getSharedFolderSize(id).catch((error) => {
     throw errorService.castError(error);
   });

@@ -113,7 +113,7 @@ export const createPaymentIntent = async ({
 
 const checkoutSetupIntent = async (customerId: string) => {
   try {
-    const newToken = localStorageService.getToken();
+    const newToken = await localStorageService.getToken();
 
     if (!newToken) {
       throw new Error('No authentication token available');

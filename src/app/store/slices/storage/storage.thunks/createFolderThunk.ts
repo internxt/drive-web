@@ -35,13 +35,13 @@ export const createFolderThunk = createAsyncThunk<DriveFolderData, CreateFolderP
 
     try {
       if (workspaceId) {
-        [createdFolderPromise, requestCanceler] = workspacesService.createFolder({
+        [createdFolderPromise, requestCanceler] = await workspacesService.createFolder({
           workspaceId,
           parentFolderUuid: parentFolderId,
           plainName: folderName,
         });
       } else {
-        [createdFolderPromise, requestCanceler] = folderService.createFolderByUuid(parentFolderId, folderName);
+        [createdFolderPromise, requestCanceler] = await folderService.createFolderByUuid(parentFolderId, folderName);
       }
 
       const taskId = tasksService.create<CreateFolderTask>({

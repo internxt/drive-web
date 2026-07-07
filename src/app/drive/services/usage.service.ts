@@ -9,14 +9,14 @@ export interface UsageDetailsProps {
 }
 
 export async function fetchUsage(): Promise<UsageResponseV2> {
-  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  const storageClient = await SdkFactory.getNewApiInstance().createNewStorageClient();
   const driveUsage = await storageClient.spaceUsageV2();
 
   return driveUsage;
 }
 
 async function getUsageDetails(): Promise<UsageDetailsProps> {
-  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  const storageClient = await SdkFactory.getNewApiInstance().createNewStorageClient();
 
   let drive = 0;
   let backups = 0;

@@ -126,7 +126,7 @@ const useFetchSharedData = () => {
       let response;
 
       if (workspaceId) {
-        const [promise] = workspacesService.getAllWorkspaceTeamSharedFolders(workspaceId);
+        const [promise] = await workspacesService.getAllWorkspaceTeamSharedFolders(workspaceId);
         response = await promise;
       } else {
         response = await shareService.getAllSharedFolders(page, ITEMS_PER_PAGE);
@@ -163,7 +163,7 @@ const useFetchSharedData = () => {
       let response;
 
       if (workspaceId) {
-        const [promise] = workspacesService.getAllWorkspaceTeamSharedFiles(workspaceId);
+        const [promise] = await workspacesService.getAllWorkspaceTeamSharedFiles(workspaceId);
         response = await promise;
       } else {
         response = await shareService.getAllSharedFiles(page, ITEMS_PER_PAGE);
@@ -198,7 +198,7 @@ const useFetchSharedData = () => {
       try {
         let response;
         if (workspaceId) {
-          const [promise] = workspacesService.getAllWorkspaceTeamSharedFolderFolders(
+          const [promise] = await workspacesService.getAllWorkspaceTeamSharedFolderFolders(
             workspaceId,
             currentFolderId,
             page,
@@ -251,7 +251,7 @@ const useFetchSharedData = () => {
       try {
         let response;
         if (workspaceId) {
-          const [promise] = workspacesService.getAllWorkspaceTeamSharedFolderFiles(
+          const [promise] = await workspacesService.getAllWorkspaceTeamSharedFolderFiles(
             workspaceId,
             currentFolderId,
             page,

@@ -47,78 +47,78 @@ export class SdkFactory {
     return this.sdk.newApiInstance;
   }
 
-  public createAuthClient(options?: { captchaToken?: string; unauthorizedCallback?: () => void }): Auth {
+  public async createAuthClient(options?: { captchaToken?: string; unauthorizedCallback?: () => void }): Promise<Auth> {
     const apiUrl = this.getApiUrl();
     const appDetails = this.getAppDetailsWithHeaders(options?.captchaToken);
-    const apiSecurity = this.getNewApiSecurity(options?.unauthorizedCallback);
+    const apiSecurity = await this.getNewApiSecurity(options?.unauthorizedCallback);
     return Auth.client(apiUrl, appDetails, apiSecurity);
   }
 
-  public createDesktopAuthClient(): Auth {
+  public async createDesktopAuthClient(): Promise<Auth> {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getDesktopAppDetails();
-    const apiSecurity = this.getNewApiSecurity();
+    const apiSecurity = await this.getNewApiSecurity();
     return Auth.client(apiUrl, appDetails, apiSecurity);
   }
 
-  public createNewStorageClient(): Storage {
+  public async createNewStorageClient(): Promise<Storage> {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
-    const apiSecurity = this.getNewApiSecurity();
+    const apiSecurity = await this.getNewApiSecurity();
     return Storage.client(apiUrl, appDetails, apiSecurity);
   }
 
-  public createWorkspacesClient(): Workspaces {
+  public async createWorkspacesClient(): Promise<Workspaces> {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
-    const apiSecurity = this.getNewApiSecurity();
+    const apiSecurity = await this.getNewApiSecurity();
     return Workspaces.client(apiUrl, appDetails, apiSecurity);
   }
 
-  public createShareClient(captchaToken?: string): Share {
+  public async createShareClient(captchaToken?: string): Promise<Share> {
     const apiUrl = this.getApiUrl();
     const appDetails = this.getAppDetailsWithHeaders(captchaToken);
-    const apiSecurity = this.getNewApiSecurity();
+    const apiSecurity = await this.getNewApiSecurity();
     return Share.client(apiUrl, appDetails, apiSecurity);
   }
 
-  public createTrashClient(): Trash {
+  public async createTrashClient(): Promise<Trash> {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
-    const apiSecurity = this.getNewApiSecurity();
+    const apiSecurity = await this.getNewApiSecurity();
     return Trash.client(apiUrl, appDetails, apiSecurity);
   }
 
-  public createUsersClient(captchaToken?: string): Users {
+  public async createUsersClient(captchaToken?: string): Promise<Users> {
     const apiUrl = this.getApiUrl();
     const appDetails = this.getAppDetailsWithHeaders(captchaToken);
-    const apiSecurity = this.getNewApiSecurity();
+    const apiSecurity = await this.getNewApiSecurity();
     return Users.client(apiUrl, appDetails, apiSecurity);
   }
 
-  public createReferralsClient(): Referrals {
+  public async createReferralsClient(): Promise<Referrals> {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
-    const apiSecurity = this.getNewApiSecurity();
+    const apiSecurity = await this.getNewApiSecurity();
     return Referrals.client(apiUrl, appDetails, apiSecurity);
   }
 
   public async createPaymentsClient(): Promise<Payments> {
     const appDetails = SdkFactory.getAppDetails();
-    const apiSecurity = this.getIndividualApiSecurity();
+    const apiSecurity = await this.getIndividualApiSecurity();
     return Payments.client(envService.getVariable('payments'), appDetails, apiSecurity);
   }
 
   public async createCheckoutClient(): Promise<Checkout> {
     const appDetails = SdkFactory.getAppDetails();
-    const apiSecurity = this.getIndividualApiSecurity();
+    const apiSecurity = await this.getIndividualApiSecurity();
     return Checkout.client(envService.getVariable('payments'), appDetails, apiSecurity);
   }
 
-  public createBackupsClient(): Backups {
+  public async createBackupsClient(): Promise<Backups> {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
-    const apiSecurity = this.getNewApiSecurity();
+    const apiSecurity = await this.getNewApiSecurity();
     return Backups.client(apiUrl, appDetails, apiSecurity);
   }
 
@@ -130,10 +130,11 @@ export class SdkFactory {
 
   /** Helpers **/
 
-  private getNewApiSecurity(unauthorizedCallback?: () => void): ApiSecurity {
+  private async getNewApiSecurity(unauthorizedCallback?: () => void): Promise<ApiSecurity> {
     const workspaceToken = this.getWorkspaceToken();
+    const token = await this.getNewToken();
     return {
-      token: this.getNewToken(),
+      token,
       workspaceToken,
       unauthorizedCallback:
         unauthorizedCallback ??
@@ -143,8 +144,8 @@ export class SdkFactory {
     };
   }
 
-  private getIndividualApiSecurity(): ApiSecurity {
-    const token = this.getNewToken();
+  private async getIndividualApiSecurity(): Promise<ApiSecurity> {
+    const token = await this.getNewToken();
     return {
       token,
       unauthorizedCallback: () => {
@@ -177,8 +178,8 @@ export class SdkFactory {
     };
   }
 
-  private getNewToken(): Token {
-    return SdkFactory.sdk.localStorage.getToken() || '';
+  private async getNewToken(): Promise<Token> {
+    return (await SdkFactory.sdk.localStorage.getToken()) || '';
   }
 
   private getWorkspaceToken(): Token | undefined {

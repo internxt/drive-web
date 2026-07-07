@@ -3,7 +3,7 @@ import { SdkFactory } from 'app/core/factory/sdk';
 import { HUNDRED_TB } from 'app/core/constants';
 
 async function fetchLimit(): Promise<number> {
-  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  const storageClient = await SdkFactory.getNewApiInstance().createNewStorageClient();
   return storageClient.spaceLimitV2().then((response) => {
     return response.maxSpaceBytes;
   });

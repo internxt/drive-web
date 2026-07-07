@@ -72,7 +72,7 @@ describe('checkCreateFolder', () => {
       uuid: 'uuid',
     };
 
-    vi.spyOn(folderService, 'createFolderByUuid').mockReturnValue([Promise.resolve(mockFolder), { cancel: vi.fn() }]);
+    vi.spyOn(folderService, 'createFolderByUuid').mockResolvedValue([Promise.resolve(mockFolder), { cancel: vi.fn() }]);
     vi.spyOn(tasksService, 'create').mockReturnValue('task-id');
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
     vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));

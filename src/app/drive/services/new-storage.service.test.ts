@@ -43,7 +43,7 @@ describe('newStorageService', () => {
         createNewStorageClient: () => mockStorageClient,
       });
 
-      const [promise, canceler] = newStorageService.getFolderContentByUuid({
+      const [promise, canceler] = await newStorageService.getFolderContentByUuid({
         folderUuid: 'test-folder-uuid',
       });
       const result = await promise;
@@ -66,7 +66,7 @@ describe('newStorageService', () => {
         createNewStorageClient: () => mockStorageClient,
       });
 
-      const [promise] = newStorageService.getFolderContentByUuid({
+      const [promise] = await newStorageService.getFolderContentByUuid({
         folderUuid: 'test-folder-uuid',
       });
       const result = await promise;
@@ -91,7 +91,7 @@ describe('newStorageService', () => {
         trash: true,
         workspacesToken: 'test-token',
       };
-      newStorageService.getFolderContentByUuid(params);
+      await newStorageService.getFolderContentByUuid(params);
 
       expect(mockGetFolderContentByUuid).toHaveBeenCalledWith(params);
     });

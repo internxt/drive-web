@@ -6,12 +6,12 @@ import errorService from 'services/error.service';
 import { DriveFileData, DriveFileMetadataPayload } from '../../types';
 import uploadFile from './uploadFile';
 
-export function updateMetaData(
+export async function updateMetaData(
   fileId: string,
   metadata: DriveFileMetadataPayload,
   resourcesToken?: string,
 ): Promise<void> {
-  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  const storageClient = await SdkFactory.getNewApiInstance().createNewStorageClient();
   const payload = { fileUuid: fileId, name: metadata.itemName };
 
   return storageClient.updateFileNameWithUUID(payload, resourcesToken);
@@ -22,7 +22,7 @@ export async function moveFileByUuid(
   destinationFolderUuid: string,
   newName?: string,
 ): Promise<StorageTypes.FileMeta> {
-  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  const storageClient = await SdkFactory.getNewApiInstance().createNewStorageClient();
   const payload: StorageTypes.MoveFileUuidPayload = {
     destinationFolder: destinationFolderUuid,
     name: newName,
@@ -42,12 +42,12 @@ export async function moveFileByUuid(
 }
 
 export async function deleteFile(fileData: DriveFileData): Promise<void> {
-  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  const storageClient = await SdkFactory.getNewApiInstance().createNewStorageClient();
   await storageClient.deleteFileByUuid(fileData.uuid);
 }
 
 async function fetchDeleted(): Promise<DriveFileData[]> {
-  const trashClient = SdkFactory.getNewApiInstance().createTrashClient();
+  const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
 
   const trashRequest = trashClient.getTrash();
 
@@ -57,8 +57,8 @@ async function fetchDeleted(): Promise<DriveFileData[]> {
   });
 }
 
-export function getFile(uuid: string, workspacesToken?: string): Promise<FileMeta> {
-  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+export async function getFile(uuid: string, workspacesToken?: string): Promise<FileMeta> {
+  const storageClient = await SdkFactory.getNewApiInstance().createNewStorageClient();
   const [responsePromise] = storageClient.getFile(uuid, workspacesToken);
 
   return responsePromise;

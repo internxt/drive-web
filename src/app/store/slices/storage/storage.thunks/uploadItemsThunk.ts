@@ -305,7 +305,7 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
       while (hasMoreItems) {
         let parentFolderContent;
         if (workspaceId && teamId) {
-          const [promise] = workspacesService.getAllWorkspaceTeamSharedFolderFiles(
+          const [promise] = await workspacesService.getAllWorkspaceTeamSharedFolderFiles(
             workspaceId,
             currentFolderId,
             page,

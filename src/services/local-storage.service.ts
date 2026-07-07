@@ -71,8 +71,8 @@ function getUser(): UserSettings | null {
   return stringUser ? JSON.parse(stringUser) : null;
 }
 
-function getToken(): string | null {
-  return get(LocalStorageItem.NewToken);
+async function getToken(): Promise<string | undefined> {
+  return get(LocalStorageItem.NewToken) ?? undefined;
 }
 
 function getB2BWorkspace(): WorkspaceData | null {
@@ -145,7 +145,7 @@ export interface LocalStorageService {
   getStorageToken: (isFolder: boolean) => string | null;
   getB2BWorkspace: () => WorkspaceData | null;
   getUser: () => UserSettings | null;
-  getToken: () => string | null;
+  getToken: () => Promise<string | undefined>;
   removeItem: (key: LocalStorageItem) => void;
   clear: () => void;
 }

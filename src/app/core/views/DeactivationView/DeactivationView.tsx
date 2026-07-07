@@ -41,9 +41,9 @@ class DeactivationView extends React.Component<DeactivationViewProps> {
     }
   };
 
-  ConfirmDeactivateUser = (token: string) => {
-    const authClient = SdkFactory.getNewApiInstance().createAuthClient();
-    const userToken = localStorageService.getToken() ?? undefined;
+  ConfirmDeactivateUser = async (token: string) => {
+    const authClient = await SdkFactory.getNewApiInstance().createAuthClient();
+    const userToken = await localStorageService.getToken();
     return authClient
       .confirmUserDeactivation(token, userToken)
       .then(() => {

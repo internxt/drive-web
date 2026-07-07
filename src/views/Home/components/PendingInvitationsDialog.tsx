@@ -28,7 +28,6 @@ const PendingInvitationsDialog = ({
 }) => {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
-  const token = localStorageService.getToken();
 
   function formatDate(dateString) {
     const date = dayjs(dateString);
@@ -42,6 +41,7 @@ const PendingInvitationsDialog = ({
   }
 
   async function onAcceptInvitation(invitationId: string) {
+    const token = await localStorageService.getToken();
     setIsLoading(true);
     try {
       token && (await workspacesService.acceptWorkspaceInvite({ invitationId, token }));
@@ -69,6 +69,7 @@ const PendingInvitationsDialog = ({
   }
 
   async function onDeclineInvitation(invitationId: string) {
+    const token = await localStorageService.getToken();
     setIsLoading(true);
     try {
       token && (await workspacesService.declineWorkspaceInvite({ invitationId, token }));

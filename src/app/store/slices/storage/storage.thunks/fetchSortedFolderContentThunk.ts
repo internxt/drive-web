@@ -30,8 +30,8 @@ export const fetchSortedFolderContentThunk = createAsyncThunk<void, string, { st
 
     try {
       dispatch(storageActions.setIsLoadingFolder({ folderId, value: true }));
-      const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-      const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+      const storageClient = await SdkFactory.getNewApiInstance().createNewStorageClient();
+      const workspaceClient = await SdkFactory.getNewApiInstance().createWorkspacesClient();
 
       let folderPromise;
 

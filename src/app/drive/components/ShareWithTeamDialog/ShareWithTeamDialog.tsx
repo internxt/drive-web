@@ -73,7 +73,7 @@ const ShareWithTeamDialog = ({ item, roles }: ShareWithTeamDialogProps) => {
     const itemId = item.uuid;
     try {
       if (workspaceId) {
-        const [promise] = workspacesService.getUsersAndTeamsAnItemIsShareWidth({
+        const [promise] = await workspacesService.getUsersAndTeamsAnItemIsShareWidth({
           workspaceId,
           itemType,
           itemId,

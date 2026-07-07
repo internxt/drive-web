@@ -66,7 +66,7 @@ const getReferralsClient = () => SdkFactory.getNewApiInstance().createReferralsC
 
 const fetchEmailVerifiedStatus = async (fallback: boolean): Promise<boolean> => {
   try {
-    const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
+    const usersClient = await SdkFactory.getNewApiInstance().createUsersClient();
     const { user } = await usersClient.refreshUser();
     return user.emailVerified;
   } catch {
@@ -75,7 +75,8 @@ const fetchEmailVerifiedStatus = async (fallback: boolean): Promise<boolean> => 
 };
 
 const fetchReferralToken = async (): Promise<string> => {
-  const { token } = await getReferralsClient().createReferralToken();
+  const referalClient = await getReferralsClient();
+  const { token } = await referalClient.createReferralToken();
   return token;
 };
 
@@ -301,7 +302,8 @@ const isEligibleForReferral = async (accountCreatedAt?: Date): Promise<boolean> 
   }
 
   try {
-    const { isEnabled } = await getReferralsClient().isReferralEnabled();
+    const referalCklient = await getReferralsClient();
+    const { isEnabled } = await referalCklient.isReferralEnabled();
     return isEnabled;
   } catch {
     return false;

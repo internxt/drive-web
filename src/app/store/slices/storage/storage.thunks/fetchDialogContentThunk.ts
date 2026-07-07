@@ -14,7 +14,7 @@ export const fetchDialogContentThunk = createAsyncThunk<void, string, { state: R
     const state = getState();
     const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
 
-    const [responsePromise] = newStorageService.getFolderContentByUuid({
+    const [responsePromise] = await newStorageService.getFolderContentByUuid({
       folderUuid: folderId,
       workspacesToken: workspaceCredentials?.tokenHeader,
     });

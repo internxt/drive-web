@@ -41,7 +41,7 @@ describe('user thunks', () => {
     const base64 = (str: string) => (typeof btoa === 'function' ? btoa(str) : Buffer.from(str).toString('base64'));
     const payloadB64 = base64(JSON.stringify({ exp: futureExp }));
     const validToken = `aaa.${payloadB64}.bbb`;
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue(validToken);
+    vi.spyOn(localStorageService, 'getToken').mockResolvedValue(validToken);
 
     vi.spyOn(userService, 'refreshAvatarUser').mockResolvedValue({ avatar: null });
 
@@ -64,7 +64,6 @@ describe('user thunks', () => {
       const refreshed = {
         user: { emailVerified: true, name: 'Jane', lastname: 'Smith', uuid: baseUser.uuid },
         newToken: 'new-token-abc',
-        oldToken: 'old-token-abc',
       } as unknown as Awaited<ReturnType<typeof userService.refreshUserData>>;
       vi.spyOn(userService, 'refreshUserData').mockResolvedValue(refreshed);
       vi.spyOn(userService, 'refreshAvatarUser').mockResolvedValue({ avatar: 'avatar-url' });
@@ -97,7 +96,6 @@ describe('user thunks', () => {
       const refreshed = {
         user: { emailVerified: true, name: 'Alice', lastname: 'Johnson', uuid: baseUser.uuid },
         newToken: 'forced-token-xyz',
-        oldToken: 'old-token-xyz',
       } as unknown as Awaited<ReturnType<typeof userService.refreshUserData>>;
       vi.spyOn(userService, 'refreshUserData').mockResolvedValue(refreshed);
       vi.spyOn(userService, 'refreshAvatarUser').mockResolvedValue({ avatar: 'forced-avatar-url' });

@@ -64,7 +64,7 @@ export const initializeUserThunk = createAsyncThunk<
 export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean } | undefined, { state: RootState }>(
   'user/refresh',
   async ({ forceRefresh } = {}, { dispatch, getState }) => {
-    const userToken = localStorageService.getToken();
+    const userToken = await localStorageService.getToken();
     const isExpired = isTokenExpired(userToken);
 
     const currentUser = getState().user.user;

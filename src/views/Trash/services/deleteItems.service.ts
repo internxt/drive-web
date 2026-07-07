@@ -21,7 +21,7 @@ const deleteItems = async (itemsToDelete: DriveItemData[]): Promise<void> => {
   });
 
   try {
-    const trashClient = SdkFactory.getNewApiInstance().createTrashClient();
+    const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
     await processBatchConcurrently({
       items,
       batchSize: MAX_ITEMS_TO_DELETE,

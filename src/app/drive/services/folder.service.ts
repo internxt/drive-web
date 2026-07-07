@@ -81,15 +81,15 @@ interface DownloadFolderAsZipOptions {
   workspaceId?: string;
 }
 
-export function createFolderByUuid(
+export async function createFolderByUuid(
   parentFolderUuid: string,
   plainName: string,
-): [Promise<StorageTypes.CreateFolderResponse>, RequestCanceler] {
+): Promise<[Promise<StorageTypes.CreateFolderResponse>, RequestCanceler]> {
   const payload: StorageTypes.CreateFolderByUuidPayload = {
     plainName: plainName,
     parentFolderUuid: parentFolderUuid,
   };
-  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  const storageClient = await SdkFactory.getNewApiInstance().createNewStorageClient();
   const [promise, requestCanceler] = storageClient.createFolderByUuid(payload);
 
   const finalPromise = promise
@@ -108,7 +108,7 @@ export async function updateMetaData(
   metadata: DriveFolderMetadataPayload,
   resourcesToken?: string,
 ): Promise<void> {
-  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  const storageClient = await SdkFactory.getNewApiInstance().createNewStorageClient();
 
   const payload = {
     folderUuid,
@@ -119,7 +119,7 @@ export async function updateMetaData(
 }
 
 export async function deleteFolder(folderData: DriveFolderData): Promise<void> {
-  const trashClient = SdkFactory.getNewApiInstance().createTrashClient();
+  const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
   await trashClient.deleteFolder(folderData.id);
 }
 
@@ -139,7 +139,7 @@ class DirectoryFolderIterator implements Iterator<DriveFolderData> {
 
     let folders;
     if (workspaceId) {
-      const [foldersPromise] = workspacesService.getWorkspaceFolders(
+      const [foldersPromise] = await workspacesService.getWorkspaceFolders(
         workspaceId,
         directoryUUID,
         this.offset,
@@ -147,7 +147,7 @@ class DirectoryFolderIterator implements Iterator<DriveFolderData> {
       );
       folders = (await foldersPromise).result;
     } else {
-      const [folderInfoPromise] = newStorageService.getFolderContentByUuid({
+      const [folderInfoPromise] = await newStorageService.getFolderContentByUuid({
         folderUuid: directoryUUID,
         offset: this.offset,
         limit: this.limit,
@@ -178,10 +178,15 @@ class DirectoryFilesIterator implements Iterator<DriveFileData> {
 
     let files;
     if (workspaceId) {
-      const [filesPromise] = workspacesService.getWorkspaceFiles(workspaceId, directoryUUID, this.offset, this.limit);
+      const [filesPromise] = await workspacesService.getWorkspaceFiles(
+        workspaceId,
+        directoryUUID,
+        this.offset,
+        this.limit,
+      );
       files = (await filesPromise).result;
     } else {
-      const [storageFolders] = newStorageService.getFolderContentByUuid({
+      const [storageFolders] = await newStorageService.getFolderContentByUuid({
         folderUuid: directoryUUID,
         offset: this.offset,
         limit: this.limit,
@@ -510,7 +515,7 @@ export async function moveFolderByUuid(
   destinationFolderUuid: string,
   newName?: string,
 ): Promise<StorageTypes.FolderMeta> {
-  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  const storageClient = await SdkFactory.getNewApiInstance().createNewStorageClient();
   const payload: StorageTypes.MoveFolderUuidPayload = {
     destinationFolder: destinationFolderUuid,
     name: newName,

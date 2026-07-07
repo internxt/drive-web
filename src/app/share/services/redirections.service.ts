@@ -60,7 +60,7 @@ const handlePrivateSharedFolderAccess = async ({
 const getPrivateSharedFolderAccessData = async (folderUUID: string, workspaceId?: string) => {
   let response;
   if (workspaceId) {
-    const [promise] = workspacesService.getAllWorkspaceTeamSharedFolderFiles(workspaceId, folderUUID, 0, 0);
+    const [promise] = await workspacesService.getAllWorkspaceTeamSharedFolderFiles(workspaceId, folderUUID, 0, 0);
     response = await promise;
   } else {
     response = await shareService.getSharedFolderContent(folderUUID, 'folders', '', 0, 0);

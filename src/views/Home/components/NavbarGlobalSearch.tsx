@@ -206,7 +206,7 @@ const Navbar = (props: NavbarProps) => {
     const query = searchInput.current?.value ?? '';
     const workspaceId = selectedWorkspace?.workspaceUser.workspaceId;
     if (query.length > 0) {
-      const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+      const storageClient = await SdkFactory.getNewApiInstance().createNewStorageClient();
       const [itemsPromise] = storageClient.getGlobalSearchItems(query, workspaceId);
       const items = await itemsPromise;
       const resultItems: SearchResult[] = Array.isArray(items) ? items : items.data;

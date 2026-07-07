@@ -26,8 +26,8 @@ export default function UniversalLinkView(): JSX.Element {
     }
   }, [user]);
 
-  const getUniversalLinkAuthUrl = (user: UserSettings) => {
-    const newToken = localStorageService.getToken();
+  const getUniversalLinkAuthUrl = async (user: UserSettings) => {
+    const newToken = await localStorageService.getToken();
     if (!newToken) return AppView.Login;
 
     let baseURL = DEEPLINK_SUCCESS_REDIRECT_BASE;
@@ -45,8 +45,8 @@ export default function UniversalLinkView(): JSX.Element {
     authService.logOut();
   };
 
-  const handleGoToUniversalLinkUrl = () => {
-    globalThis.location.href = getUniversalLinkAuthUrl(user);
+  const handleGoToUniversalLinkUrl = async () => {
+    globalThis.location.href = await getUniversalLinkAuthUrl(user);
   };
 
   return (

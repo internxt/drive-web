@@ -20,7 +20,7 @@ const clearTrash = async (workspaceId?: string): Promise<void> => {
     if (workspaceId) {
       await workspacesService.emptyTrash(workspaceId);
     } else {
-      const trashClient = SdkFactory.getNewApiInstance().createTrashClient();
+      const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
       await trashClient.clearTrash();
     }
     store.dispatch(storageActions.resetTrash());

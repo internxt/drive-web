@@ -30,8 +30,8 @@ const OAuthLinkView = (): JSX.Element => {
     authService.logOut(params);
   };
 
-  const handleContinueWithCurrentUser = () => {
-    const newToken = localStorageService.getToken();
+  const handleContinueWithCurrentUser = async () => {
+    const newToken = await localStorageService.getToken();
     if (!newToken) {
       navigationService.history.replace(AppView.Login);
       return;

@@ -9,7 +9,7 @@ import { store } from 'app/store';
 import { storageActions } from 'app/store/slices/storage';
 
 const getTrash = async (): Promise<void> => {
-  const trashClient = SdkFactory.getNewApiInstance().createTrashClient();
+  const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
   const itemsInTrash = await trashClient.getTrash();
   for (const folder of itemsInTrash.children) {
     Object.assign(folder, { isFolder: true });
@@ -67,7 +67,7 @@ const getTrashPaginated = async (
   folderId?: number | undefined,
 ): Promise<{ finished: boolean; itemsRetrieved: number }> => {
   try {
-    const trashClient = SdkFactory.getNewApiInstance().createTrashClient();
+    const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
     const itemsInTrash = await trashClient.getTrashedItemsSorted(limit, offset, type, root, sort, order, folderId);
 
     const { finished, itemsRetrieved } = processTrashItems(itemsInTrash.result, type, limit);

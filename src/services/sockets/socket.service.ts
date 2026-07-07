@@ -17,7 +17,7 @@ export default class RealtimeService {
     return this.instance;
   }
 
-  init(eventHandler: EventHandler, onConnected?: () => void): void {
+  async init(eventHandler: EventHandler, onConnected?: () => void): Promise<void> {
     if (this.socket?.connected || this.socket?.active) return;
 
     if (!this.isProduction) {
@@ -25,10 +25,11 @@ export default class RealtimeService {
     }
 
     const notificationsUrl = envService.getVariable('notifications');
+    const token = await getToken();
 
     this.socket = io(notificationsUrl, {
       auth: {
-        token: getToken(),
+        token,
       },
       reconnection: this.isProduction,
       withCredentials: this.isProduction,
@@ -70,6 +71,6 @@ export default class RealtimeService {
   }
 }
 
-function getToken(): string {
-  return localStorageService.getToken() as string;
+async function getToken(): Promise<string> {
+  return (await localStorageService.getToken()) ?? '';
 }

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { Toaster } from 'react-hot-toast';
 import { connect } from 'react-redux';
@@ -72,7 +72,7 @@ const App = (props: AppProps): JSX.Element => {
   const { isDialogOpen } = useActionDialog();
   const isOpen = isDialogOpen(ActionDialog.ModifyStorage);
   const { openBackupKeysDialog } = useDownloadBackupKeys(t);
-  const newToken = localStorageService.getToken();
+  const [newToken, setToken] = useState<string | null>(null);
   const params = new URLSearchParams(window.location.search);
   const isVpnAuth = params.get('vpnAuth') === 'true';
   const skipSignupIfLoggedIn = params.get('skipSignupIfLoggedIn') === 'true';
@@ -86,14 +86,22 @@ const App = (props: AppProps): JSX.Element => {
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const isWorkspaceIdParam = params.get('workspaceid');
 
-  useVpnAuth(isVpnAuth, newToken);
-
   useBeforeUnload();
 
   useEffect(() => {
     initializeInitialAppState();
     i18next.changeLanguage();
   }, []);
+
+  useEffect(() => {
+    const loadToken = async () => {
+      const newToken = (await localStorageService.getToken()) ?? '';
+      setToken(newToken);
+    };
+    void loadToken();
+  }, []);
+
+  useVpnAuth(isVpnAuth, newToken);
 
   useEffect(() => {
     if (isAuthenticated) {
