@@ -4,7 +4,6 @@
 import { aes } from '@internxt/lib';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SdkFactory } from 'app/core/factory/sdk';
-import { LocalStorageItem } from 'app/core/types';
 import * as keysService from 'app/crypto/services/keys.service';
 import * as pgpService from 'app/crypto/services/pgp.service';
 import { encryptText, encryptTextWithKey } from 'app/crypto/services/utils';
@@ -189,7 +188,6 @@ async function getMockUser(password: string, mnemonic: string) {
 
 describe('logIn', () => {
   it('log in should correctly decrypt keys', async () => {
-    const mockToken = 'test-token';
     const mockNewToken = 'test-new-token';
     const mockLoginType = 'web';
 
@@ -203,14 +201,12 @@ describe('logIn', () => {
       createAuthClient: vi.fn().mockReturnValue({
         login: vi.fn().mockResolvedValue({
           user: mockUser,
-          token: mockToken,
           newToken: mockNewToken,
         }),
       }),
       createDesktopAuthClient: vi.fn().mockReturnValue({
         login: vi.fn().mockResolvedValue({
           user: mockUser,
-          token: mockToken,
           newToken: mockNewToken,
         }),
       }),
@@ -240,7 +236,6 @@ describe('logIn', () => {
     };
 
     expect(result).toEqual({
-      token: mockToken,
       newToken: mockNewToken,
       user: mockClearUser,
       mnemonic: mockMnemonic,
@@ -292,14 +287,12 @@ describe('logIn', () => {
       createAuthClient: vi.fn().mockReturnValue({
         login: vi.fn().mockResolvedValue({
           user: mockUser,
-          token: mockToken,
           newToken: mockNewToken,
         }),
       }),
       createDesktopAuthClient: vi.fn().mockReturnValue({
         login: vi.fn().mockResolvedValue({
           user: mockUser,
-          token: mockToken,
           newToken: mockNewToken,
         }),
       }),
@@ -328,7 +321,6 @@ describe('logIn', () => {
     };
 
     expect(result).toEqual({
-      token: mockToken,
       newToken: mockNewToken,
       user: mockClearUser,
       mnemonic: mockMnemonic,
@@ -338,7 +330,6 @@ describe('logIn', () => {
 
 describe('signUp', () => {
   it('signUp should correctly decrypt keys', async () => {
-    const mockToken = 'test-token';
     const mockNewToken = 'test-new-token';
     const mockEmail = 'test@example.com';
 
@@ -352,7 +343,6 @@ describe('signUp', () => {
         ...mockUser,
         mnemonic: mockMnemonicNotEnc,
       },
-      xToken: mockToken,
       xNewToken: mockNewToken,
       mnemonic: mockMnemonicNotEnc,
     };
@@ -361,7 +351,7 @@ describe('signUp', () => {
       doSignUp: vi.fn().mockResolvedValue(mockSignUpResponse),
       email: mockEmail,
       password: mockPassword,
-      token: mockToken,
+      token: mockNewToken,
       redeemCodeObject: false,
       dispatch: vi.fn(),
     };
@@ -409,7 +399,6 @@ describe('signUp', () => {
     expect(spy).toBeCalledWith(mockClearUser);
 
     expect(result).toEqual({
-      token: mockToken,
       newToken: mockNewToken,
       user: {
         ...mockUser,
@@ -420,7 +409,6 @@ describe('signUp', () => {
   });
 
   it('signUp should work for old user structure', async () => {
-    const mockToken = 'test-token';
     const mockNewToken = 'test-new-token';
     const mockEmail = 'test@example.com';
 
@@ -463,7 +451,6 @@ describe('signUp', () => {
         ...mockUser,
         mnemonic: mockMnemonicNotEnc,
       },
-      xToken: mockToken,
       xNewToken: mockNewToken,
       mnemonic: mockMnemonicNotEnc,
     };
@@ -472,7 +459,7 @@ describe('signUp', () => {
       doSignUp: vi.fn().mockResolvedValue(mockSignUpResponse),
       email: mockEmail,
       password: mockPassword,
-      token: mockToken,
+      token: mockNewToken,
       redeemCodeObject: false,
       dispatch: vi.fn(),
     };
@@ -519,7 +506,6 @@ describe('signUp', () => {
     expect(spy).toBeCalledWith(mockClearUser);
 
     expect(result).toEqual({
-      token: mockToken,
       newToken: mockNewToken,
       user: {
         ...mockUser,
@@ -562,9 +548,7 @@ describe('Change password', () => {
     const mockSalt = 'mockSalt';
     const encryptedSalt = encryptText(mockSalt);
 
-    const changePasswordMock = vi
-      .fn()
-      .mockReturnValue(Promise.resolve({ newToken: 'newMockToken', token: 'mockToken' }));
+    const changePasswordMock = vi.fn().mockReturnValue(Promise.resolve({ newToken: 'newMockToken' }));
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
       createAuthClient: vi.fn().mockReturnValue({
         changePassword: changePasswordMock,
@@ -614,9 +598,7 @@ describe('Change password', () => {
     const mockSalt = 'mockSalt';
     const encryptedSalt = encryptText(mockSalt);
 
-    const changePasswordMock = vi
-      .fn()
-      .mockReturnValue(Promise.resolve({ newToken: 'newMockToken', token: 'mockToken' }));
+    const changePasswordMock = vi.fn().mockReturnValue(Promise.resolve({ newToken: 'newMockToken' }));
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
       createAuthClient: vi.fn().mockReturnValue({
         changePassword: changePasswordMock,

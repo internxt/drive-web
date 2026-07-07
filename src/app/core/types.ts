@@ -67,11 +67,6 @@ export interface AppViewConfig {
   hideSearch?: boolean;
 }
 
-export enum Workspace {
-  Individuals = 'personal',
-  Business = 'business',
-}
-
 export enum DragAndDropType {
   DriveItem = 'drive-item',
 }
@@ -129,16 +124,10 @@ export enum AppView {
 }
 
 export enum LocalStorageItem {
-  Workspace = 'workspace',
   User = 'xUser',
-  UserToken = 'xToken',
-  Team = 'xTeam',
-  TeamToken = 'xTokenTeam',
   NewToken = 'xNewToken',
   Language = 'i18nextLng',
   ShowSummerBanner = 'showSummerBanner',
-  InvitedToken = 'xInvitedToken',
-  ResourcesToken = 'xResourcesToken',
   CheckoutItemData = 'checkout_item_data',
   SubscriptionID = 'subscriptionId',
   PaymentIntentID = 'paymentIntentId',
@@ -149,8 +138,8 @@ export enum LocalStorageItem {
   CouponCode = 'couponCode',
   IsFirstPurchase = 'isFirstPurchase',
   ProductName = 'productName',
-  BunnerNameForFreeUsers = 'show_free_users_banner',
-  BunnerStateKey = 'referral_banner_state',
+  BannerNameForFreeUsers = 'show_free_users_banner',
+  BannerStateKey = 'referral_banner_state',
   UccStorageKey = 'cello_ucc',
   Theme = 'theme',
   IsThemeDark = 'theme:isDark',

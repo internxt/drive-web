@@ -82,7 +82,6 @@ export const createFileEntry = async ({
 };
 
 export async function uploadFile(
-  userEmail: string,
   file: FileToUpload,
   updateProgressCallback: (progress: number) => void,
   options: FileUploadOptions,
@@ -153,7 +152,7 @@ export async function uploadFile(
     };
   }
 
-  const generatedThumbnail = await generateThumbnailFromFile(file, response.uuid, userEmail, options.isTeam);
+  const generatedThumbnail = await generateThumbnailFromFile(file, response.uuid, options.isTeam);
   if (generatedThumbnail?.thumbnail) {
     response.thumbnails.push(generatedThumbnail.thumbnail);
     if (generatedThumbnail.thumbnailFile) {

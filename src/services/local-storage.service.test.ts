@@ -1,7 +1,7 @@
 import { afterAll, beforeEach, describe, expect, it, test, vi } from 'vitest';
 import localStorageService from './local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { LocalStorageItem, Workspace } from 'app/core/types';
+import { LocalStorageItem } from 'app/core/types';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 
 export const mockUserSettings: UserSettings = {
@@ -119,15 +119,13 @@ const localStorageValue = 'item-exists';
 const stringifyMockedUser = JSON.stringify(mockUserSettings);
 const stringifyMockCredentials = JSON.stringify(mockWorkspaceCredentialsDetails);
 const stringifyWorkspaceData = JSON.stringify(mockWorkspaceData);
-const workspaceValueInLocalStorage = Workspace.Business;
 
 beforeEach(() => {
   localStorage.setItem(localStorageKey, localStorageValue);
   localStorage.setItem(LocalStorageItem.User, stringifyMockedUser);
-  localStorage.setItem(LocalStorageItem.Workspace, workspaceValueInLocalStorage);
   localStorage.setItem(LocalStorageItem.WorkspaceCredentials, stringifyMockCredentials);
   localStorage.setItem(LocalStorageItem.B2Bworkspace, stringifyWorkspaceData);
-  localStorage.setItem('theme', 'starwars');
+  localStorage.setItem(LocalStorageItem.Theme, 'starwars');
   vi.clearAllMocks();
   vi.resetModules();
 });
@@ -213,28 +211,6 @@ describe('Testing the local storage service', () => {
   });
 
   describe('Workspaces', () => {
-    it('When the workspace item exists, then it is returned', () => {
-      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
-
-      const workspace = localStorageService.getWorkspace();
-
-      expect(getFromLocalStorageSpy).toHaveBeenCalled();
-      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.Workspace);
-      expect(workspace).toStrictEqual(workspaceValueInLocalStorage);
-    });
-
-    it('When the workspace item does not exist, then it is returned', () => {
-      const workspaceValueInLocalStorage = Workspace.Individuals;
-      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
-
-      localStorage.removeItem(LocalStorageItem.Workspace);
-      const workspace = localStorageService.getWorkspace();
-
-      expect(getFromLocalStorageSpy).toHaveBeenCalled();
-      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.Workspace);
-      expect(workspace).toStrictEqual(workspaceValueInLocalStorage);
-    });
-
     describe('Get workspace credentials', () => {
       it('When there are credentials from a workspace, then the credentials are returned', () => {
         const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
