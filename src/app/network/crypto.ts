@@ -150,6 +150,10 @@ export async function processEveryFileBlobReturnHash(
 export async function generateFileKey(mnemonic: string, bucketId: string, index: Buffer): Promise<Buffer> {
   const bucketKey = await generateFileBucketKey(mnemonic, bucketId);
 
+  return generateFileKeyFromBucketKey(bucketKey, index);
+}
+
+export async function generateFileKeyFromBucketKey(bucketKey: Buffer, index: Buffer): Promise<Buffer> {
   return (await getFileDeterministicKey(bucketKey.subarray(0, 32), index)).subarray(0, 32);
 }
 

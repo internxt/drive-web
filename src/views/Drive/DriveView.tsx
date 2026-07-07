@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 
-import { AppView } from 'app/core/types';
+import { AppView, LocalStorageItem } from 'app/core/types';
 import fileService from 'app/drive/services/file.service';
 import newStorageService from 'app/drive/services/new-storage.service';
 import { DriveItemData, FolderPath } from 'app/drive/types';
@@ -21,7 +21,6 @@ import envService from 'services/env.service';
 import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
-import { STORAGE_KEYS } from 'services/storage-keys';
 import workspacesService from 'services/workspace.service';
 import DriveExplorer from 'views/Drive/components/DriveExplorer/DriveExplorer';
 
@@ -107,9 +106,9 @@ const DriveView = (props: DriveViewProps) => {
       const credentials = await workspacesService.getWorkspaceCredentials(workspaceId);
       const workspace = workspaces.find((workspace) => workspace.workspace.id === workspaceUuid);
       dispatch(workspacesActions.setCredentials(credentials));
-      localStorageService.set(STORAGE_KEYS.WORKSPACE_CREDENTIALS, JSON.stringify(credentials));
+      localStorageService.set(LocalStorageItem.WorkspaceCredentials, JSON.stringify(credentials));
       dispatch(workspacesActions.setSelectedWorkspace(workspace ?? null));
-      localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(workspace));
+      localStorageService.set(LocalStorageItem.B2Bworkspace, JSON.stringify(workspace));
       setTokenHeader(credentials.tokenHeader);
     } catch (error) {
       errorService.reportError(error);
@@ -119,8 +118,8 @@ const DriveView = (props: DriveViewProps) => {
   const setPersonalWithUrl = () => {
     dispatch(workspacesActions.setCredentials(null));
     dispatch(workspacesActions.setSelectedWorkspace(null));
-    localStorageService.set(STORAGE_KEYS.WORKSPACE_CREDENTIALS, 'null');
-    localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, 'null');
+    localStorageService.set(LocalStorageItem.WorkspaceCredentials, 'null');
+    localStorageService.set(LocalStorageItem.WorkspaceCredentials, 'null');
   };
 
   const goFolder = async (folderUuid: string, workspacesToken?: string) => {

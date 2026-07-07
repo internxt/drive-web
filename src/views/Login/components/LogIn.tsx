@@ -17,7 +17,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Button } from '@internxt/ui';
 import { WarningCircle } from '@phosphor-icons/react';
 import { AppError } from '@internxt/sdk';
-import { AppView, IFormValues, LocalStorageItem } from 'app/core/types';
+import { AppView, IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import shareService from 'app/share/services/share.service';
@@ -46,7 +46,7 @@ export default function LogIn(): JSX.Element {
   const [showErrors, setShowErrors] = useState(false);
 
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
-  const mnemonic = localStorageService.get(LocalStorageItem.UserMnemonic);
+  const mnemonic = user?.mnemonic;
 
   const {
     isUniversalLinkMode,
@@ -148,10 +148,13 @@ export default function LogIn(): JSX.Element {
     }
   };
 
-  const handleSuccessfulAuth = (token: string, user: UserSettings, mnemonic: string): void => {
+  const handleSuccessfulAuth = (user: UserSettings, mnemonic: string): void => {
     const newToken = localStorageService.getToken();
 
-    if (isOAuthFlow && newToken) {
+    if (!newToken) {
+      throw new Error('No authentication token available');
+    }
+    if (isOAuthFlow) {
       const success = handleOAuthSuccess(user, newToken);
       if (!success) {
         setIsLoggingIn(false);
@@ -162,7 +165,7 @@ export default function LogIn(): JSX.Element {
       return;
     }
 
-    const redirectUrl = authService.getRedirectUrl(urlParams, token);
+    const redirectUrl = authService.getRedirectUrl(urlParams, newToken);
 
     if (redirectUrl && !isUniversalLinkMode && !isSharingInvitation) {
       globalThis.location.replace(redirectUrl);
@@ -195,8 +198,8 @@ export default function LogIn(): JSX.Element {
           loginType,
         };
 
-        const { token, user, mnemonic } = await authenticateUser(authParams);
-        handleSuccessfulAuth(token, user, mnemonic);
+        const { user, mnemonic } = await authenticateUser(authParams);
+        handleSuccessfulAuth(user, mnemonic);
       } else {
         setShowTwoFactor(true);
         setLoginError([]);

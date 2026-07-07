@@ -9,7 +9,7 @@ import envService from 'services/env.service';
 /**
  * List of allowed target origins for postMessage
  */
-const ALLOWED_TARGET_ORIGINS = ['https://meet.internxt.com'];
+export const ALLOWED_TARGET_ORIGINS = ['https://meet.internxt.com', 'https://mail-web-ea0.pages.dev'];
 
 /**
  * Checks if an origin matches allowed domains

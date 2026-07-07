@@ -858,7 +858,6 @@ export default connect((state: RootState) => {
     isClearTrashDialogOpen: state.ui.isClearTrashDialogOpen,
     viewMode: state.storage.viewMode,
     namePath: state.storage.namePath,
-    workspace: state.session.workspace,
     selectedWorkspace: selectedWorkspace,
     planLimit: planSelectors.planLimitToShow(state),
     planUsage: planSelectors.planUsageToShow(state),
