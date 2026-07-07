@@ -83,6 +83,7 @@
     "build": "vite build",
     "start": "vite preview",
     "build:staging": "vite build --mode staging",
+    "test:related": "vitest run --changed HEAD --passWithNoTests",
     "test:coverage": "vitest run --coverage",
     "test:playwright": "yarn playwright test",
     "test:chromium": "yarn playwright test --project=chromium",
