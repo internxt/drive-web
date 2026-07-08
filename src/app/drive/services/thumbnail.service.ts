@@ -24,6 +24,7 @@ import fetchFileBlob from './download.service/fetchFileBlob';
 import { getEnvironmentConfig } from './network.service';
 import { FileToUpload } from './file.service/types';
 import { ErrorLoadingVideoFileError } from './errors/thumbnail.service.errors';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 export interface ThumbnailToUpload {
   fileId: string;
@@ -165,6 +166,7 @@ export const uploadThumbnail = async (
   if (!bucketId) {
     notificationsService.show({ text: 'Login again to start uploading files', type: ToastType.Warning });
     localStorageService.clear();
+    await encryptedStorageService.hydrateEncryptedStorageCache();
     navigationService.push(AppView.Login);
 
     throw new Error('Bucket not found!');

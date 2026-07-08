@@ -24,6 +24,7 @@ import { DialogManagerProvider } from 'app/contexts/dialog-manager/ActionDialogM
 import envService from 'services/env.service';
 import { enforceCanonicalDriveDomain } from 'utils/canonicalDomain.utils';
 import { initializeServiceWorkers } from 'utils/initializeServiceWorkers.utils';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 /**
  * Patches Node.prototype.removeChild to prevent NotFoundError when browser
@@ -56,6 +57,7 @@ if (typeof Node !== 'undefined' && Node.prototype.removeChild) {
   };
 }
 
+await encryptedStorageService.hydrateEncryptedStorageCache();
 enforceCanonicalDriveDomain();
 
 // Initialize workers immediately
@@ -64,7 +66,7 @@ initializeServiceWorkers();
 // Installs plugins
 plugins.forEach((plugin) => plugin.install(store));
 
-SdkFactory.initialize(store.dispatch, localStorageService);
+SdkFactory.initialize(store.dispatch, localStorageService, encryptedStorageService);
 
 // Initializes store
 store.dispatch(userActions.initialize());

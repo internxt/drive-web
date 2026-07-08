@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, vi, afterEach, test } from 'vitest';
 import RealtimeService from './socket.service';
-import localStorageService from '../local-storage.service';
 import envService from '../env.service';
 import { SOCKET_EVENTS } from './types/socket.types';
 import { EventHandler } from './event-handler.service';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 const { mockSocket, ioMock } = vi.hoisted(() => {
   const mockSocket = {
@@ -52,7 +52,7 @@ describe('RealtimeService', () => {
       return '';
     });
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue('mock-token-123');
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue('mock-token-123');
 
     mockSocket.id = 'mock-socket-id';
     mockSocket.connected = true;

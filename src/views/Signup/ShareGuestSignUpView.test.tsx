@@ -30,6 +30,12 @@ describe('onSubmit', () => {
         clear: vi.fn(),
         getUser: vi.fn(),
         set: vi.fn(),
+      },
+    }));
+    vi.mock('services/encrypted-storage.service', () => ({
+      default: {
+        getToken: vi.fn(),
+        hydrateEncryptedStorageCache: vi.fn(),
         setToken: vi.fn(),
       },
     }));

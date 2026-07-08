@@ -161,12 +161,12 @@ export enum LocalStorageItem {
 }
 
 export enum LocalStorageProtectedItem {
-  User = 'xUser',
-  NewToken = 'xNewToken',
-  B2Bworkspace = 'b2bWorkspace',
-  WorkspaceCredentials = 'workspace_credentials',
-  FolderAccessToken = 'folderAccessToken',
-  FileAccessToken = 'fileAccessToken',
+  EncryptedUser = 'xUserEncrypted',
+  EncryptedToken = 'xTokenEncrypted',
+  EncryptedB2Bworkspace = 'xB2BworkspaceEncrypted',
+  EncryptedWorkspaceCredentials = 'xWorkspaceCredentialsEncrypted',
+  EncryptedFolderAccessToken = 'xFolderAccessTokenEncrypted',
+  EncryptedFileAccessToken = 'xFileAccessTokenEncrypted',
 }
 export enum OrderDirection {
   Asc = 'ASC',

@@ -1,6 +1,5 @@
 import { CouponCodeData, CreatedSubscriptionData } from '@internxt/sdk/dist/drive/payments/types/types';
 import axios from 'axios';
-import localStorageService from 'services/local-storage.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 import {
   CreateCustomerPayload,
@@ -15,6 +14,7 @@ import envService from 'services/env.service';
 import errorService from 'services/error.service';
 import { bytesToString } from 'app/drive/services/size.service';
 import userService from 'services/user.service';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 const BORDER_SHADOW = 'rgb(0 102 255)';
 
@@ -113,7 +113,7 @@ export const createPaymentIntent = async ({
 
 const checkoutSetupIntent = async (customerId: string) => {
   try {
-    const newToken = localStorageService.getToken();
+    const newToken = encryptedStorageService.getToken();
 
     if (!newToken) {
       throw new Error('No authentication token available');
