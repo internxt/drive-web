@@ -8,21 +8,13 @@ import {
 import { KEY_ID, KEY_LENGTH, IV_LENGTH, ALGORITHM } from './local-storage-constants';
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
 
-let keyReady = false;
-
 async function ensureKey(): Promise<CryptoKey> {
   const existing = await getKey();
-  if (existing) {
-    keyReady = true;
-    return existing;
-  }
-  const created = await createNewKey();
-  keyReady = true;
-  return created;
+  if (existing) return existing;
+  else return createNewKey();
 }
 
 export async function ensureKeyExists(): Promise<void> {
-  if (keyReady) return;
   await ensureKey();
 }
 
@@ -31,7 +23,6 @@ async function getKey(): Promise<CryptoKey | undefined> {
 }
 
 export function deleteDb(): Promise<void> {
-  keyReady = false;
   return databaseService.delete(DatabaseCollection.CryptoKeys, KEY_ID);
 }
 

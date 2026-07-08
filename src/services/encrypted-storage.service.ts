@@ -1,6 +1,5 @@
 import { decryptEntry, encryptEntry, ensureKeyExists } from './local-storage-crypto';
 import { LocalStorageItem, LocalStorageProtectedItem } from 'app/core/types';
-import { deleteDb } from './local-storage-crypto';
 
 let tokenCache: string | null = null;
 
@@ -41,15 +40,10 @@ function getToken(): string | undefined {
   return tokenCache ?? undefined;
 }
 
-async function clear(): Promise<void> {
-  return deleteDb();
-}
-
 const encryptedStorageService = {
   hydrateEncryptedStorageCache,
   getToken,
   setToken,
-  clear,
 };
 
 export default encryptedStorageService;
@@ -58,5 +52,4 @@ export interface EncryptedStorageService {
   hydrateEncryptedStorageCache: () => Promise<void>;
   setToken: (token: string) => void;
   getToken: () => string | undefined;
-  clear: () => Promise<void>;
 }
