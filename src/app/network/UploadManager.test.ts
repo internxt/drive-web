@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, Mock, test, vi } from 'vitest';
 import { uploadFileWithManager } from './UploadManager';
+import { createUploadFileTaskLifecycle } from './upload/uploadFileTaskLifecycle';
 import tasksService from 'app/tasks/services/tasks.service';
 import errorService from 'services/error.service';
 import { AppError } from '@internxt/sdk';
@@ -125,6 +126,7 @@ describe('UploadManager memory usage conditions', () => {
       ],
       maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
       uploadRepository: DatabaseUploadRepository.getInstance(),
+      taskLifecycle: createUploadFileTaskLifecycle(),
       options: {
         ownerUserAuthenticationData: undefined,
         sharedItemData: {
@@ -181,6 +183,7 @@ describe('UploadManager memory usage conditions', () => {
       ],
       maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
       uploadRepository: DatabaseUploadRepository.getInstance(),
+      taskLifecycle: createUploadFileTaskLifecycle(),
       options: {
         ownerUserAuthenticationData: undefined,
         sharedItemData: {
@@ -232,6 +235,7 @@ describe('checkUploadFiles', () => {
       ],
       maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
       uploadRepository: DatabaseUploadRepository.getInstance(),
+      taskLifecycle: createUploadFileTaskLifecycle(),
       options: {
         ownerUserAuthenticationData: undefined,
         sharedItemData: {
@@ -281,6 +285,7 @@ describe('checkUploadFiles', () => {
       ],
       maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
       uploadRepository: DatabaseUploadRepository.getInstance(),
+      taskLifecycle: createUploadFileTaskLifecycle(),
       options: {
         ownerUserAuthenticationData: undefined,
         sharedItemData: {
@@ -314,6 +319,7 @@ describe('checkUploadFiles', () => {
       ],
       maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
       uploadRepository: DatabaseUploadRepository.getInstance(),
+      taskLifecycle: createUploadFileTaskLifecycle(),
       abortController,
       options: {
         ownerUserAuthenticationData: undefined,
@@ -358,6 +364,7 @@ describe('checkUploadFiles', () => {
       ],
       maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
       uploadRepository: DatabaseUploadRepository.getInstance(),
+      taskLifecycle: createUploadFileTaskLifecycle(),
       options: {
         ownerUserAuthenticationData: undefined,
         sharedItemData: {
@@ -416,6 +423,7 @@ describe('checkUploadFiles', () => {
       ],
       maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
       uploadRepository: DatabaseUploadRepository.getInstance(),
+      taskLifecycle: createUploadFileTaskLifecycle(),
       options: {
         ownerUserAuthenticationData: undefined,
         sharedItemData: {
@@ -461,6 +469,7 @@ describe('checkUploadFiles', () => {
       ],
       maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
       uploadRepository: DatabaseUploadRepository.getInstance(),
+      taskLifecycle: createUploadFileTaskLifecycle(),
       options: {
         ownerUserAuthenticationData: undefined,
         sharedItemData: {
@@ -500,6 +509,7 @@ describe('checkUploadFiles', () => {
         ],
         maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
         uploadRepository: DatabaseUploadRepository.getInstance(),
+      taskLifecycle: createUploadFileTaskLifecycle(),
         options: {
           ownerUserAuthenticationData: undefined,
           sharedItemData: {
@@ -544,6 +554,7 @@ describe('checkUploadFiles', () => {
         ],
         maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
         uploadRepository: DatabaseUploadRepository.getInstance(),
+      taskLifecycle: createUploadFileTaskLifecycle(),
         options: {
           ownerUserAuthenticationData: undefined,
           sharedItemData: {
@@ -590,6 +601,7 @@ describe('checkUploadFiles', () => {
       ],
       maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
       uploadRepository: DatabaseUploadRepository.getInstance(),
+      taskLifecycle: createUploadFileTaskLifecycle(),
       options: {
         ownerUserAuthenticationData: {
           bucketId: workspaceBucket,
@@ -648,6 +660,7 @@ describe('checkUploadFiles', () => {
       ],
       maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
       uploadRepository: DatabaseUploadRepository.getInstance(),
+      taskLifecycle: createUploadFileTaskLifecycle(),
     });
 
     expect(logNetworkInfoMock).toHaveBeenCalledOnce();
@@ -681,6 +694,7 @@ describe('checkUploadFiles', () => {
         ],
         maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
         uploadRepository: DatabaseUploadRepository.getInstance(),
+      taskLifecycle: createUploadFileTaskLifecycle(),
       }),
     ).rejects.toThrow();
 
@@ -713,6 +727,7 @@ describe('checkUploadFiles', () => {
       ],
       maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
       uploadRepository: DatabaseUploadRepository.getInstance(),
+      taskLifecycle: createUploadFileTaskLifecycle(),
       options: {
         ownerUserAuthenticationData: undefined,
         sharedItemData: {
@@ -764,6 +779,7 @@ describe('checkUploadFiles', () => {
         ],
         maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
         uploadRepository: DatabaseUploadRepository.getInstance(),
+      taskLifecycle: createUploadFileTaskLifecycle(),
         options: {
           ownerUserAuthenticationData: undefined,
           sharedItemData: {

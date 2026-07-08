@@ -7,6 +7,7 @@ import { getUniqueFolderName } from 'app/store/slices/storage/folderUtils/getUni
 import tasksService from 'app/tasks/services/tasks.service';
 import { beforeEach, describe, expect, it, Mock, test, vi } from 'vitest';
 import { TaskFolder, UploadFoldersManager, uploadFoldersWithManager } from './UploadFolderManager';
+import { createUploadFolderTaskLifecycle } from './upload/uploadFolderTaskLifecycle';
 import * as networkInformation from './networkInformation';
 import { FilesExceedsSizeLimitError } from 'app/drive/services/file.service/upload.errors';
 import { uploadItemsParallelThunk } from 'app/store/slices/storage/storage.thunks/uploadItemsThunk';
@@ -145,6 +146,7 @@ describe('checkUploadFolders', () => {
       ],
       selectedWorkspace: null,
       dispatch: mockDispatch,
+      taskLifecycle: createUploadFolderTaskLifecycle(),
       maxUploadFileSize: 100,
     });
 
@@ -209,6 +211,7 @@ describe('checkUploadFolders', () => {
       ],
       selectedWorkspace: null,
       dispatch: mockDispatch,
+      taskLifecycle: createUploadFolderTaskLifecycle(),
       maxUploadFileSize: 100,
     });
 
@@ -303,6 +306,7 @@ describe('checkUploadFolders', () => {
       ],
       selectedWorkspace: null,
       dispatch: mockDispatch,
+      taskLifecycle: createUploadFolderTaskLifecycle(),
       maxUploadFileSize: 100,
     });
 
@@ -362,6 +366,7 @@ describe('checkUploadFolders', () => {
       ],
       selectedWorkspace: null,
       dispatch: mockDispatch,
+      taskLifecycle: createUploadFolderTaskLifecycle(),
       maxUploadFileSize: 100,
     });
 
@@ -394,7 +399,7 @@ describe('checkUploadFolders', () => {
     };
 
     const buildManager = (maxUploadFileSize?: number) => {
-      const manager = new UploadFoldersManager([], null, mockDispatch, maxUploadFileSize ?? 100);
+      const manager = new UploadFoldersManager([], null, mockDispatch, maxUploadFileSize ?? 100, createUploadFolderTaskLifecycle());
       manager['tasksInfo'][taskId] = { progress: { itemsUploaded: 0, totalItems: 1 } };
       return manager;
     };
@@ -415,7 +420,7 @@ describe('checkUploadFolders', () => {
       const bigFile = new File([new ArrayBuffer(200)], 'big.mp4');
       const dispatchWithUnwrap = vi.fn().mockReturnValue({ unwrap: () => Promise.resolve() });
       vi.spyOn(tasksService, 'updateTask').mockReturnValue();
-      const manager = new UploadFoldersManager([], null, dispatchWithUnwrap, 100);
+      const manager = new UploadFoldersManager([], null, dispatchWithUnwrap, 100, createUploadFolderTaskLifecycle());
       manager['tasksInfo'][taskId] = { progress: { itemsUploaded: 0, totalItems: 1 } };
       const level = {
         childrenFiles: [bigFile],
@@ -480,7 +485,7 @@ describe('checkUploadFolders', () => {
     const selectedWorkspace = null;
     const taskId = 'task-id';
 
-    const manager = new UploadFoldersManager(payload, selectedWorkspace, mockDispatch, 100);
+    const manager = new UploadFoldersManager(payload, selectedWorkspace, mockDispatch, 100, createUploadFolderTaskLifecycle());
     const abortController = new AbortController();
 
     const taskFolder: TaskFolder = {
