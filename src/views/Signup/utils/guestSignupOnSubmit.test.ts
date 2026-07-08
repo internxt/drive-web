@@ -95,7 +95,6 @@ describe('guestSignupOnSubmit', () => {
       'recaptcha-token',
     );
     expect(localStorageService.clear).toHaveBeenCalled();
-    expect(encryptedStorageService.hydrateEncryptedStorageCache).toHaveBeenCalled();
     expect(encryptedStorageService.setToken).toHaveBeenCalledWith('refresh-token');
     expect(parseAndDecryptUserKeys).toHaveBeenCalledWith(mockRegistrationResponse.xUser, 'password123');
     expect(mockDispatch).toHaveBeenCalledWith(userActions.setUser(expect.objectContaining({ uuid: 'user-uuid' })));

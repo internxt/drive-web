@@ -141,7 +141,6 @@ describe('onSubmit', () => {
       default: {
         getToken: vi.fn(),
         setToken: vi.fn(),
-        hydrateEncryptedStorageCache: vi.fn(),
       },
     }));
     vi.mock('services/navigation.service', () => ({

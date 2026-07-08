@@ -41,10 +41,7 @@ export async function createNewKey(): Promise<CryptoKey> {
 }
 
 export async function encryptEntry(plaintext: string): Promise<string> {
-  const key = await getKey();
-  if (!key) {
-    throw new FailedToFindKey('No encryption key found');
-  }
+  const key = await ensureKey();
   try {
     const iv = crypto.getRandomValues(new Uint8Array(IV_LENGTH));
     const encoded = new TextEncoder().encode(plaintext);

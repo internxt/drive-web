@@ -70,7 +70,6 @@ export default function ChangePassword(props: Readonly<ChangePasswordProps>): JS
       await authService.recoverAccountWithBackupKey(token, password, backupKeyContent);
 
       localStorageService.clear();
-      await encryptedStorageService.hydrateEncryptedStorageCache();
       setIsEmailSent(true);
     } catch (error) {
       const castedError = errorService.castError(error);

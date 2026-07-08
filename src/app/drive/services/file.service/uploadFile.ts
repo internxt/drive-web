@@ -14,7 +14,6 @@ import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 import { BucketNotFoundError, FileIdRequiredError } from './upload.errors';
 import { isFileEmpty } from 'utils/isFileEmpty';
 import { FileEntry } from '@internxt/sdk/dist/workspaces';
-import encryptedStorageService from 'services/encrypted-storage.service';
 
 export interface FileUploadOptions {
   isTeam: boolean;
@@ -113,7 +112,6 @@ export async function uploadFile(
   if (!bucketId) {
     notificationsService.show({ text: 'Login again to start uploading files', type: ToastType.Warning });
     localStorageService.clear();
-    await encryptedStorageService.hydrateEncryptedStorageCache();
     navigationService.push(AppView.Login);
 
     throw new BucketNotFoundError();

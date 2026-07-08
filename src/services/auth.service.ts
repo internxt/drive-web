@@ -555,7 +555,6 @@ export const signUp = async (params: SignUpParams) => {
   const { xUser, xNewToken, mnemonic } = await doSignUp(email, password, token);
 
   localStorageService.clear();
-  await encryptedStorageService.hydrateEncryptedStorageCache();
 
   await encryptedStorageService.setToken(xNewToken);
 

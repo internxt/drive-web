@@ -45,7 +45,6 @@ export const guestSignupOnSubmit = async ({
     const { xUser, xNewToken } = await doRegisterPreCreatedUser(email, password, invitationId, token || '');
 
     localStorageService.clear();
-    await encryptedStorageService.hydrateEncryptedStorageCache();
 
     await encryptedStorageService.setToken(xNewToken);
 

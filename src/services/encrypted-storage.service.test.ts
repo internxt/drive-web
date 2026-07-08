@@ -15,7 +15,6 @@ afterAll(() => {
 describe('Testing the local storage service', () => {
   describe('Get and set encrypted values', () => {
     it('When sets protected value, then the value is stored encrypted', async () => {
-      await encryptedStorageService.hydrateEncryptedStorageCache();
       const setFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'setItem');
       const cryptoSpy = vi.spyOn(window.crypto.subtle, 'encrypt');
 
@@ -32,7 +31,6 @@ describe('Testing the local storage service', () => {
     });
 
     it('When gets a protected value, then the result is decrypted', async () => {
-      await encryptedStorageService.hydrateEncryptedStorageCache();
       const cryptoSpy = vi.spyOn(window.crypto.subtle, 'encrypt');
 
       const value = 'test-value';

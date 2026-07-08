@@ -109,7 +109,6 @@ beforeAll(() => {
     default: {
       getToken: vi.fn(),
       setToken: vi.fn(),
-      hydrateEncryptedStorageCache: vi.fn(),
     },
   }));
   vi.mock('./vpnAuth.service', () => ({
