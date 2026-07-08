@@ -5,15 +5,12 @@ let tokenCache: string | null = null;
 
 async function getAndDecrypt(key: LocalStorageProtectedItem): Promise<string | null> {
   const item = localStorage.getItem(key);
-  if (item) {
-    return await decryptEntry(item);
-  }
-  return null;
+  return item ? decryptEntry(item) : null;
 }
 
 async function setAndEncrypt(key: LocalStorageProtectedItem, value: string): Promise<void> {
   const encryptedValue = await encryptEntry(value);
-  return localStorage.setItem(key, encryptedValue);
+  localStorage.setItem(key, encryptedValue);
 }
 
 async function setToken(token: string): Promise<void> {
@@ -23,8 +20,7 @@ async function setToken(token: string): Promise<void> {
 
 async function hydrateEncryptedStorageCache(): Promise<void> {
   await ensureKeyExists();
-  const token = await getAndDecrypt(LocalStorageProtectedItem.EncryptedToken);
-  tokenCache = token;
+  tokenCache = await getAndDecrypt(LocalStorageProtectedItem.EncryptedToken);
 
   //migration from unencrypted version, remove once completed
   if (!tokenCache) {
@@ -50,6 +46,6 @@ export default encryptedStorageService;
 
 export interface EncryptedStorageService {
   hydrateEncryptedStorageCache: () => Promise<void>;
-  setToken: (token: string) => void;
+  setToken: (token: string) => Promise<void>;
   getToken: () => string | undefined;
 }
