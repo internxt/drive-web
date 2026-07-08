@@ -28,6 +28,7 @@ describe('paymentService', () => {
     updateWorkspaceMembers: vi.fn(),
     cancelSubscription: vi.fn(),
     updateCustomerBillingInfo: vi.fn(),
+    applyCancellationTrial: vi.fn(),
   };
 
   const mockStripe = {
@@ -55,8 +56,8 @@ describe('paymentService', () => {
     });
   });
 
-  describe('updateSubscriptionPrice', () => {
-    it('upgrades or downgrades plan with coupon', async () => {
+  describe('Update subscription', () => {
+    test('When upgrading to a plan with coupon, then it should be applied and the plan updated', async () => {
       mockPaymentsClient.updateSubscriptionPrice.mockResolvedValue({
         userSubscription: { id: 'sub_123' },
         request3DSecure: false,
@@ -136,8 +137,8 @@ describe('paymentService', () => {
     });
   });
 
-  describe('cancelSubscription', () => {
-    it('stops ongoing subscription for user', async () => {
+  describe('Cancelling subscription', () => {
+    test('When cancelling the subscription, then stops the ongoing individual subscription', async () => {
       mockPaymentsClient.cancelSubscription.mockResolvedValue(undefined);
 
       await paymentService.cancelSubscription(UserType.Individual);
@@ -146,8 +147,8 @@ describe('paymentService', () => {
     });
   });
 
-  describe('getUserSubscription', () => {
-    it('gets current subscription information for personal account', async () => {
+  describe('Get the user subscription', () => {
+    test('When fetching the individual user subscription, then gets current subscription information', async () => {
       const mockSubscription = {
         id: 'sub_123',
         type: 'subscription',
@@ -161,7 +162,7 @@ describe('paymentService', () => {
       expect(result).toEqual(mockSubscription);
     });
 
-    it('gets subscription details without specifying account type', async () => {
+    test('When fetching a subscription without specifying account type, then gets individual subscription details', async () => {
       const mockSubscription = {
         id: 'sub_456',
         type: 'subscription',
@@ -176,8 +177,8 @@ describe('paymentService', () => {
     });
   });
 
-  describe('getPrices', () => {
-    it('shows available plan prices for selected currency and account type', async () => {
+  describe('Get prices', () => {
+    test('When fetching prices, then shows available plan prices for selected currency and account type', async () => {
       const mockPrices = [
         { id: 'price_1', amount: 999, currency: 'eur' },
         { id: 'price_2', amount: 1999, currency: 'eur' },
@@ -190,7 +191,7 @@ describe('paymentService', () => {
       expect(result).toEqual(mockPrices);
     });
 
-    it('shows default pricing options', async () => {
+    test('When fetching prices without specifying currency and type, then shows default pricing options', async () => {
       const mockPrices = [{ id: 'price_3', amount: 1299, currency: 'usd' }];
       mockPaymentsClient.getPrices.mockResolvedValue(mockPrices as any);
 
@@ -198,6 +199,14 @@ describe('paymentService', () => {
 
       expect(mockPaymentsClient.getPrices).toHaveBeenCalledWith(undefined, undefined);
       expect(result).toEqual(mockPrices);
+    });
+  });
+
+  describe('Applying cancellation trial', () => {
+    test('When applying the cancellation trial, then it should resolve correctly', async () => {
+      mockPaymentsClient.applyCancellationTrial.mockResolvedValue(undefined);
+
+      await expect(paymentService.applyCancellationTrial('sub-123')).resolves.not.toThrow();
     });
   });
 });
