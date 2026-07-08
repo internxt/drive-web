@@ -565,7 +565,7 @@ describe('checkUploadFiles', () => {
   it('should keep uploading the remaining folder files when one file fails, then reject with the original error', async () => {
     const bigSize = 60 * 1024 * 1024;
     const failError = new AppError('Payment required', 402);
-    (uploadFile as Mock).mockImplementation((_email: string, file: { name: string }) =>
+    (uploadFile as Mock).mockImplementation((file: { name: string }) =>
       file.name === 'fail.txt' ? Promise.reject(failError) : Promise.resolve(mockFile2),
     );
 
@@ -616,7 +616,7 @@ describe('checkUploadFiles', () => {
       }),
     ).rejects.toThrow(failError);
 
-    const uploadedNames = (uploadFile as Mock).mock.calls.map((call) => call[1]?.name);
+    const uploadedNames = (uploadFile as Mock).mock.calls.map((call) => call[0]?.name);
     expect(uploadedNames).toContain('ok.txt');
   });
 
