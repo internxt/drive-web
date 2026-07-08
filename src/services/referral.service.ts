@@ -302,8 +302,8 @@ const isEligibleForReferral = async (accountCreatedAt?: Date): Promise<boolean> 
   }
 
   try {
-    const referalCklient = await getReferralsClient();
-    const { isEnabled } = await referalCklient.isReferralEnabled();
+    const referalClient = await getReferralsClient();
+    const { isEnabled } = await referalClient.isReferralEnabled();
     return isEnabled;
   } catch {
     return false;
