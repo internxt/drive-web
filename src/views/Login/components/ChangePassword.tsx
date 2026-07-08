@@ -7,7 +7,6 @@ import { validateMnemonic } from 'bip39';
 import { Dispatch, RefObject, SetStateAction, createRef, useState } from 'react';
 import PasswordResetForm from './PasswordResetForm';
 import SuccessRedirectView from './SuccessRedirectView';
-import encryptedStorageService from 'services/encrypted-storage.service';
 
 interface ChangePasswordProps {
   setHasBackupKey: Dispatch<SetStateAction<boolean | undefined>>;

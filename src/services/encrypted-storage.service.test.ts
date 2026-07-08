@@ -10,9 +10,9 @@ beforeEach(() => {
 describe('Testing the local storage service', () => {
   describe('Get and set encrypted values', () => {
     const value = 'test-value';
-    const key = LocalStorageProtectedItem.EncryptedToken;
 
     it('When sets protected value, then the value is stored encrypted', async () => {
+      const key = LocalStorageProtectedItem.EncryptedToken;
       const setFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'setItem');
       const cryptoSpy = vi.spyOn(window.crypto.subtle, 'encrypt');
 
@@ -25,7 +25,6 @@ describe('Testing the local storage service', () => {
     });
 
     it('When hydrates encrypted storage, then the result is decrypted', async () => {
-      localStorage.clear();
       await encryptedStorageService.setToken(value);
       const cryptoSpy = vi.spyOn(window.crypto.subtle, 'decrypt');
 
