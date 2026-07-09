@@ -17,6 +17,7 @@ import { AppError } from '@internxt/sdk';
 import shareService from '../../../../share/services/share.service';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { MAX_ALLOWED_UPLOAD_SIZE } from 'app/drive/services/network.service';
+import { planSelectors } from '../../plan';
 
 vi.mock('../../../../share/services/share.service', () => ({
   default: {
@@ -33,6 +34,10 @@ vi.mock('services/workspace.service', () => ({
 vi.mock('../../plan', () => ({
   planThunks: {
     fetchUsageThunk: vi.fn(),
+  },
+  planSelectors: {
+    planLimitToShow: vi.fn(),
+    planUsageToShow: vi.fn(),
   },
 }));
 vi.mock('..', () => ({
@@ -168,6 +173,53 @@ describe('uploadItemsThunk', () => {
         requestId: 'test-request-id',
       }),
     );
+  });
+
+  test('when the upload manager reports a 420 but the account still has storage available, then a toast is shown instead of the storage full dialog', async () => {
+    (prepareFilesToUpload as Mock).mockResolvedValue({
+      filesToUpload: [mockFile],
+    });
+    (uploadFileWithManager as Mock).mockResolvedValue(undefined);
+    const showNotificationSpy = vi.spyOn(notificationsService, 'show');
+    (planSelectors.planLimitToShow as Mock).mockReturnValue(20);
+    (planSelectors.planUsageToShow as Mock).mockReturnValue(12.1);
+
+    await uploadItemsThunk({
+      files: [mockFile],
+      parentFolderId: 'parent1',
+    })(dispatch, getState as () => RootState, {});
+
+    const { maxSpaceOccupiedCallback } = (uploadFileWithManager as Mock).mock.calls[0][0];
+    maxSpaceOccupiedCallback();
+
+    expect(showNotificationSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ text: expect.stringContaining('error.tooManyRequests'), type: ToastType.Warning }),
+    );
+    expect(dispatch).not.toHaveBeenCalledWith(
+      expect.objectContaining({ type: 'ui/setOpenReachedPlanLimitDialog' }),
+    );
+  });
+
+  test('when the upload manager reports a 420 and the account has actually run out of storage, then the storage full dialog is shown', async () => {
+    (prepareFilesToUpload as Mock).mockResolvedValue({
+      filesToUpload: [mockFile],
+    });
+    (uploadFileWithManager as Mock).mockResolvedValue(undefined);
+    // Storage had room when the upload started (passes the pre-upload check), but gets
+    // consumed (e.g. by a concurrent desktop app backup) by the time the 420 arrives.
+    (planSelectors.planLimitToShow as Mock).mockReturnValue(20);
+    (planSelectors.planUsageToShow as Mock).mockReturnValue(12.1);
+
+    await uploadItemsThunk({
+      files: [mockFile],
+      parentFolderId: 'parent1',
+    })(dispatch, getState as () => RootState, {});
+
+    (planSelectors.planUsageToShow as Mock).mockReturnValue(20);
+    const { maxSpaceOccupiedCallback } = (uploadFileWithManager as Mock).mock.calls[0][0];
+    maxSpaceOccupiedCallback();
+
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'ui/setOpenReachedPlanLimitDialog' }));
   });
 });
 

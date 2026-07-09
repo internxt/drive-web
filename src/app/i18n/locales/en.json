@@ -1215,6 +1215,7 @@
     "teamInvitation": "The invitation email could not be sent",
     "ownerStorageIsFull": "Owner storage is full",
     "storageIsFull": "Your storage is full",
+    "tooManyRequests": "Too many requests, please wait a moment and try again",
     "ownerStorageIsFullDescription": "You can’t upload files in this shared folder.",
     "fileSizeLimitExceeded": {
       "title": {

@@ -1180,6 +1180,7 @@
     "teamInvitation": "邀请邮件无法发送",
     "ownerStorageIsFull": "所有者的存储空间已满",
     "storageIsFull": "您的存储空间已满",
+    "tooManyRequests": "请求过多，请稍候片刻后重试",
     "fileSizeLimitExceeded": {
       "title": {
         "singleFile": "此文件对您当前的套餐而言过大",

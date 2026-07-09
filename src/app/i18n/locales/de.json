@@ -1141,6 +1141,7 @@
     "teamInvitation": "Die Einladungs-E-Mail konnte nicht gesendet werden",
     "ownerStorageIsFull": "Der Speicher des Eigentümers ist voll",
     "storageIsFull": "Dein Speicher ist voll",
+    "tooManyRequests": "Zu viele Anfragen, bitte warte einen Moment und versuche es erneut",
     "fileSizeLimitExceeded": {
       "title": {
         "singleFile": "Diese Datei ist zu groß für deinen aktuellen Plan",
