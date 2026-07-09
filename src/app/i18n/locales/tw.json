@@ -1145,7 +1145,6 @@
     "teamInvitation": "無法發送邀請郵件",
     "ownerStorageIsFull": "擁有者的儲存空間已滿",
     "storageIsFull": "您的存儲空間已滿",
-    "tooManyRequests": "請求過多，請稍候片刻後重試",
     "fileSizeLimitExceeded": {
       "title": {
         "singleFile": "此檔案對您目前的方案而言太大",

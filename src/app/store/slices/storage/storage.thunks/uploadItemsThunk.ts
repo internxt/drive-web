@@ -90,18 +90,15 @@ const validateFileSize = (
 const notifyMaxSpaceOccupied = (state: RootState, dispatch: ThunkDispatch<RootState, unknown, AnyAction>) => {
   const planLimit = planSelectors.planLimitToShow(state);
   const planUsage = planSelectors.planUsageToShow(state);
-  const hasStorageAvailable = !!planLimit && planUsage < planLimit;
+  const isStorageActuallyFull = !!planLimit && planUsage >= planLimit;
 
-  if (hasStorageAvailable) {
-    notificationsService.show({ text: t('error.tooManyRequests'), type: ToastType.Warning });
-    return;
+  if (isStorageActuallyFull) {
+    dispatch(
+      uiActions.setOpenReachedPlanLimitDialog({
+        open: true,
+      }),
+    );
   }
-
-  dispatch(
-    uiActions.setOpenReachedPlanLimitDialog({
-      open: true,
-    }),
-  );
 };
 
 const isUploadAllowed = ({

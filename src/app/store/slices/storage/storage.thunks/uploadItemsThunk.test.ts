@@ -175,12 +175,11 @@ describe('uploadItemsThunk', () => {
     );
   });
 
-  test('when the upload manager reports a 420 but the account still has storage available, then a toast is shown instead of the storage full dialog', async () => {
+  test('when the upload manager reports a 420 but the account still has storage available, then the storage full dialog is not opened', async () => {
     (prepareFilesToUpload as Mock).mockResolvedValue({
       filesToUpload: [mockFile],
     });
     (uploadFileWithManager as Mock).mockResolvedValue(undefined);
-    const showNotificationSpy = vi.spyOn(notificationsService, 'show');
     (planSelectors.planLimitToShow as Mock).mockReturnValue(20);
     (planSelectors.planUsageToShow as Mock).mockReturnValue(12.1);
 
@@ -192,9 +191,6 @@ describe('uploadItemsThunk', () => {
     const { maxSpaceOccupiedCallback } = (uploadFileWithManager as Mock).mock.calls[0][0];
     maxSpaceOccupiedCallback();
 
-    expect(showNotificationSpy).toHaveBeenCalledWith(
-      expect.objectContaining({ text: expect.stringContaining('error.tooManyRequests'), type: ToastType.Warning }),
-    );
     expect(dispatch).not.toHaveBeenCalledWith(
       expect.objectContaining({ type: 'ui/setOpenReachedPlanLimitDialog' }),
     );

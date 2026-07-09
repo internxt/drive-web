@@ -1250,7 +1250,6 @@
     "teamInvitation": "Non è stato possibile inviare l'e-mail di invito",
     "ownerStorageIsFull": "Lo spazio di archiviazione del proprietario è pieno",
     "storageIsFull": "Lo spazio di archiviazione è pieno",
-    "tooManyRequests": "Troppe richieste, attendi un momento e riprova",
     "fileSizeLimitExceeded": {
       "title": {
         "singleFile": "Questo file è troppo grande per il tuo piano attuale",

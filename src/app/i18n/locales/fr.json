@@ -1144,7 +1144,6 @@
     "teamInvitation": "Le courriel d'invitation n'a pas pu être envoyé",
     "ownerStorageIsFull": "Le stockage du propriétaire est plein",
     "storageIsFull": "Votre espace de stockage est plein",
-    "tooManyRequests": "Trop de requêtes, veuillez patienter un instant et réessayer",
     "fileSizeLimitExceeded": {
       "title": {
         "singleFile": "Ce fichier est trop volumineux pour votre plan actuel",
