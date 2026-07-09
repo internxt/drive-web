@@ -1,8 +1,8 @@
 import tasksService from 'app/tasks/services/tasks.service';
 import { TaskData, TaskEvent, TaskStatus, TaskType, UploadFolderTask } from 'app/tasks/types';
 import referralService from 'services/referral.service';
-import { IRoot } from '../../store/slices/storage/types';
-import { logNetworkInfoForUpload } from '../networkInformation';
+import { IRoot } from 'app/store/slices/storage/types';
+import { logNetworkInfoForUpload } from 'app/network/networkInformation';
 import { errorMerge, UploadTaskErrorReason } from './uploadTaskErrors';
 
 export interface UploadFolderTaskCallbacks {

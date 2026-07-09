@@ -1,8 +1,8 @@
 import tasksService from 'app/tasks/services/tasks.service';
 import { SharedItemAuthenticationData, TaskData, TaskEvent, TaskStatus, TaskType, UploadFileTask } from 'app/tasks/types';
 import referralService from 'services/referral.service';
-import { logNetworkInfoForUpload } from '../networkInformation';
-import type { UploadManagerFileParams } from '../UploadManager';
+import { logNetworkInfoForUpload } from 'app/network/networkInformation';
+import type { UploadManagerFileParams } from 'app/network/UploadManager';
 import { errorMerge, UploadTaskErrorReason } from './uploadTaskErrors';
 
 export interface UploadFileTaskCallbacks {

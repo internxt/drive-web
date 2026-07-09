@@ -7,7 +7,7 @@ import { getUniqueFolderName } from 'app/store/slices/storage/folderUtils/getUni
 import tasksService from 'app/tasks/services/tasks.service';
 import { beforeEach, describe, expect, it, Mock, test, vi } from 'vitest';
 import { TaskFolder, UploadFoldersManager, uploadFoldersWithManager } from './UploadFolderManager';
-import { createUploadFolderTaskLifecycle } from './upload/uploadFolderTaskLifecycle';
+import { createUploadFolderTaskLifecycle } from 'app/tasks/upload/uploadFolderTaskLifecycle';
 import * as networkInformation from './networkInformation';
 import { FilesExceedsSizeLimitError } from 'app/drive/services/file.service/upload.errors';
 import { uploadItemsParallelThunk } from 'app/store/slices/storage/storage.thunks/uploadItemsThunk';

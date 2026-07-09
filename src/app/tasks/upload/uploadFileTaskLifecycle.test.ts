@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import tasksService from 'app/tasks/services/tasks.service';
 import { TaskEvent, TaskStatus } from 'app/tasks/types';
 import referralService from 'services/referral.service';
-import * as networkInformation from '../networkInformation';
+import * as networkInformation from 'app/network/networkInformation';
 import { createUploadFileTaskLifecycle } from './uploadFileTaskLifecycle';
 
 vi.mock('app/tasks/services/tasks.service', () => ({
@@ -23,7 +23,7 @@ vi.mock('services/referral.service', () => ({
   },
 }));
 
-vi.mock('../networkInformation', () => ({
+vi.mock('app/network/networkInformation', () => ({
   logNetworkInfoForUpload: vi.fn(),
 }));
 

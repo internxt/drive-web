@@ -27,7 +27,7 @@ import { CreateFolderDialog } from 'views/Drive/components';
 import DeleteItemsDialog from 'views/Trash/components/DeleteItemsDialog';
 import { useTrashPagination } from 'views/Trash/hooks/useTrashPagination';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { uploadFoldersWithTracking } from 'app/network/upload/uploadFoldersWithTracking';
+import { uploadFoldersWithTracking } from 'app/drive/services/folder.service/uploadFoldersWithTracking';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { AdvancedSharedItem } from 'app/share/types';
 import { Tutorial } from 'components/Tutorial';

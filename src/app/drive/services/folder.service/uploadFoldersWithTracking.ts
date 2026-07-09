@@ -1,6 +1,6 @@
 import { uiActions } from 'app/store/slices/ui';
-import { planThunks } from '../../store/slices/plan';
-import { uploadFoldersWithManager } from '../UploadFolderManager';
+import { planThunks } from 'app/store/slices/plan';
+import { uploadFoldersWithManager } from 'app/network/UploadFolderManager';
 
 type UploadFoldersWithManagerProps = Parameters<typeof uploadFoldersWithManager>[0];
 type UploadFoldersWithTrackingProps = Omit<

@@ -12,7 +12,7 @@ import RetryManager, { RetryableTask } from './RetryManager';
 import { ErrorMessages } from 'app/core/constants';
 import { MAX_UPLOAD_ATTEMPTS, TWENTY_MEGABYTES, USE_MULTIPART_THRESHOLD_BYTES } from './networkConstants';
 import { OwnerUserAuthenticationData } from './types';
-import { createUploadFileTaskLifecycle, UploadFileTaskCallbacks } from './upload/uploadFileTaskLifecycle';
+import { createUploadFileTaskLifecycle, UploadFileTaskCallbacks } from 'app/tasks/upload/uploadFileTaskLifecycle';
 
 enum FileSizeType {
   Big = 'big',

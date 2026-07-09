@@ -8,7 +8,7 @@ import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { getCollisionGroups } from 'app/store/slices/storage/storage.thunks/renameItemsThunk';
 import { uiActions } from 'app/store/slices/ui';
 import { DriveItemData } from 'app/drive/types';
-import { uploadFoldersWithTracking } from 'app/network/upload/uploadFoldersWithTracking';
+import { uploadFoldersWithTracking } from 'app/drive/services/folder.service/uploadFoldersWithTracking';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { fileVersionsSelectors } from 'app/store/slices/fileVersions';
 

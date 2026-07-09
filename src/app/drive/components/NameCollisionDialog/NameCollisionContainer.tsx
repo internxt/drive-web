@@ -10,7 +10,7 @@ import { uiActions } from 'app/store/slices/ui';
 import { DriveItemData } from 'app/drive/types';
 import { IRoot } from 'app/store/slices/storage/types';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-import { uploadFoldersWithTracking } from 'app/network/upload/uploadFoldersWithTracking';
+import { uploadFoldersWithTracking } from 'app/drive/services/folder.service/uploadFoldersWithTracking';
 import replaceFileService from 'views/Drive/services/replaceFile.service';
 import { Network, getEnvironmentConfig } from 'app/drive/services/network.service';
 import { fileVersionsActions, fileVersionsSelectors } from 'app/store/slices/fileVersions';

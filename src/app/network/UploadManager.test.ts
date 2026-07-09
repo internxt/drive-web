@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, Mock, test, vi } from 'vitest';
 import { uploadFileWithManager } from './UploadManager';
-import { createUploadFileTaskLifecycle } from './upload/uploadFileTaskLifecycle';
+import { createUploadFileTaskLifecycle } from 'app/tasks/upload/uploadFileTaskLifecycle';
 import tasksService from 'app/tasks/services/tasks.service';
 import errorService from 'services/error.service';
 import { AppError } from '@internxt/sdk';
