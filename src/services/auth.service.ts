@@ -181,7 +181,7 @@ export const doLogin = async (
     .then(async (data) => {
       const { user, newToken } = data;
 
-      const { privateKey: encryptedPrivateKey } = user;
+      const { privateKey: encryptedPrivateKey } = user.keys.ecc;
 
       const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(user, password);
 
@@ -197,7 +197,6 @@ export const doLogin = async (
       const clearUser = {
         ...user,
         mnemonic: clearMnemonic,
-        privateKey: privateKey,
         keys: {
           ecc: {
             publicKey: publicKey,
@@ -389,7 +388,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
 
   // Encrypt the mnemonic
   const encryptedMnemonic = encryptTextWithKey(user.mnemonic, newPassword);
-  const privateKey = Buffer.from(user.privateKey, 'base64').toString();
+  const privateKey = Buffer.from(user.keys.ecc.privateKey, 'base64').toString();
   const privateKeyEncrypted = aes.encrypt(privateKey, newPassword);
 
   let privateKyberKeyEncrypted = '';
@@ -561,7 +560,6 @@ export const signUp = async (params: SignUpParams) => {
 
   const user = {
     ...xUser,
-    privateKey,
     keys: {
       ecc: {
         publicKey: publicKey,

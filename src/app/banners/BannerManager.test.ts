@@ -42,9 +42,6 @@ describe('BannerManager - showFreeBanner', () => {
     sharedWorkspace: false,
     credit: 0,
     mnemonic: '',
-    privateKey: '',
-    publicKey: '',
-    revocationKey: '',
     keys: {
       ecc: { publicKey: '', privateKey: '' },
       kyber: { publicKey: '', privateKey: '' },
@@ -147,9 +144,6 @@ describe('BannerManager - showSubscriptionBanner', () => {
     sharedWorkspace: false,
     credit: 0,
     mnemonic: '',
-    privateKey: '',
-    publicKey: '',
-    revocationKey: '',
     keys: {
       ecc: { publicKey: '', privateKey: '' },
       kyber: { publicKey: '', privateKey: '' },
