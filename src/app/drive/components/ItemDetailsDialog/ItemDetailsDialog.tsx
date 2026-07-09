@@ -21,6 +21,7 @@ import { useSelector } from 'react-redux';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import dateService from 'services/date.service';
 import { getLocation } from 'utils/locationUtils';
+import { Translate } from 'app/i18n/types';
 
 const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
   return (
@@ -38,7 +39,7 @@ const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
   );
 };
 
-const ItemsDetails = ({ item, translate }: { item: ItemDetailsProps; translate: (key: string) => string }) => {
+const ItemsDetails = ({ item, translate }: { item: ItemDetailsProps; translate: Translate }) => {
   return (
     <>
       {Object.entries(item).map(([key, value]) => {

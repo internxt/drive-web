@@ -2,6 +2,7 @@ import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { checkoutService } from '../services';
 import { useEffect, useState } from 'react';
 import currencyService from '../services/currency.service';
+import { Translate } from 'app/i18n/types';
 
 interface UseProductsProps {
   planId: string | null;
@@ -11,7 +12,7 @@ interface UseProductsProps {
   userAddress?: string;
   country?: string;
   postalCode?: string;
-  translate: (key: string) => string;
+  translate: Translate;
 }
 
 interface FetchSelectedPlanPayload {

@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import WorkspaceAvatarWrapper from '../../NewSettings/components/Sections/Workspace/Overview/components/WorkspaceAvatarWrapper';
 import AvatarWrapper from '../../NewSettings/components/Sections/Account/Account/components/AvatarWrapper';
+import { Translate } from 'app/i18n/types';
 
 export interface Workspace {
   uuid: string;
@@ -36,7 +37,7 @@ const WorkspaceCard = ({
   isSelected: boolean;
   onClick: (workspace: Workspace) => void;
   Icon: Icon;
-  translate: (key: string, props?: Record<string, unknown> | undefined) => string;
+  translate: Translate;
 }) => {
   const handleOnClick = () => {
     onClick(workspace);

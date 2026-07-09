@@ -6,6 +6,7 @@ import dateService from 'services/date.service';
 import sizeService from '../../../app/drive/services/size.service';
 import { Device } from '@internxt/sdk/dist/drive/backups/types';
 import { DriveFolderData } from 'app/drive/types';
+import { Translate } from 'app/i18n/types';
 
 type Item = (Device & { name: string; size: number }) | (DriveFolderData & { size: number });
 
@@ -49,7 +50,7 @@ export function DeviceNameCell({ device, onDeviceClicked }: Readonly<DeviceNameC
 
 interface DeviceDateCellProps {
   device: Item;
-  translate: (key: string) => string;
+  translate: Translate;
 }
 
 export function DeviceDateCell({ device, translate }: Readonly<DeviceDateCellProps>): JSX.Element {
