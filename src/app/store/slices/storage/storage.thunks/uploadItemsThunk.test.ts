@@ -205,8 +205,6 @@ describe('uploadItemsThunk', () => {
       filesToUpload: [mockFile],
     });
     (uploadFileWithManager as Mock).mockResolvedValue(undefined);
-    // Storage had room when the upload started (passes the pre-upload check), but gets
-    // consumed (e.g. by a concurrent desktop app backup) by the time the 420 arrives.
     (planSelectors.planLimitToShow as Mock).mockReturnValue(20);
     (planSelectors.planUsageToShow as Mock).mockReturnValue(12.1);
 
