@@ -1,7 +1,7 @@
-import { RenewalPeriod } from '@internxt/sdk/dist/drive/payments/types/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { PlanState } from '../store/slices/plan';
+import { getPlanState, getStoragePlan } from 'testUtils/fixtures/plan.fixtures';
 import { BannerManager } from './BannerManager';
 
 vi.mock('services/local-storage.service', () => ({
@@ -57,43 +57,10 @@ describe('BannerManager - showFreeBanner', () => {
     avatar: null,
     emailVerified: true,
   };
-  const validPlan: PlanState = {
-    isLoadingPlanLimit: false,
-    isLoadingPlanUsage: false,
-    isLoadingBusinessLimitAndUsage: false,
-    individualPlan: {
-      planId: 'plan-id',
-      productId: 'product-id',
-      name: 'Plan',
-      simpleName: 'Free',
-      paymentInterval: RenewalPeriod.Monthly,
-      price: 0,
-      monthlyPrice: 0,
-      currency: 'eur',
-      isTeam: false,
-      isLifetime: false,
-      renewalPeriod: RenewalPeriod.Monthly,
-      storageLimit: 0,
-      amountOfSeats: 1,
-      seats: { minimumSeats: 1, maximumSeats: 1 },
-      commitment: { enabled: false },
-      cancellation: {
-        scheduled: false,
-      },
-      cancellationTrial: {
-        redeemed: false,
-      },
-    },
-    businessPlan: null,
-    planLimit: 0,
-    planUsage: 0,
-    usageDetails: null,
+  const validPlan: PlanState = getPlanState({
+    individualPlan: getStoragePlan({ planId: 'plan-id', simpleName: 'Free' }),
     individualSubscription: { type: 'free' },
-    businessSubscription: null,
-    businessPlanLimit: 0,
-    businessPlanUsage: 0,
-    businessPlanUsageDetails: null,
-  };
+  });
 
   const futureDate = new Date('2025-06-10');
   const expiredDate = new Date('2025-05-01');
@@ -169,37 +136,8 @@ describe('BannerManager - showSubscriptionBanner', () => {
     emailVerified: true,
   };
 
-  const validPlanForSubscription: PlanState = {
-    isLoadingPlanLimit: false,
-    isLoadingPlanUsage: false,
-    isLoadingBusinessLimitAndUsage: false,
-    individualPlan: {
-      planId: 'price_1PNxYtFAOdcgaBMQzkimr6OU',
-      productId: 'product-id',
-      name: 'Plan',
-      simpleName: 'Pro',
-      paymentInterval: RenewalPeriod.Monthly,
-      price: 0,
-      monthlyPrice: 0,
-      currency: 'eur',
-      isTeam: false,
-      isLifetime: false,
-      renewalPeriod: RenewalPeriod.Monthly,
-      storageLimit: 0,
-      amountOfSeats: 1,
-      seats: { minimumSeats: 1, maximumSeats: 1 },
-      commitment: { enabled: false },
-      cancellation: {
-        scheduled: false,
-      },
-      cancellationTrial: {
-        redeemed: false,
-      },
-    },
-    businessPlan: null,
-    planLimit: 0,
-    planUsage: 0,
-    usageDetails: null,
+  const validPlanForSubscription: PlanState = getPlanState({
+    individualPlan: getStoragePlan({ planId: 'price_1PNxYtFAOdcgaBMQzkimr6OU', simpleName: 'Pro' }),
     individualSubscription: {
       type: 'subscription',
       subscriptionId: 'sub-123',
@@ -209,49 +147,12 @@ describe('BannerManager - showSubscriptionBanner', () => {
       nextPayment: Date.now(),
       priceId: 'price_1PNxYtFAOdcgaBMQzkimr6OU',
     },
-    businessSubscription: null,
-    businessPlanLimit: 0,
-    businessPlanUsage: 0,
-    businessPlanUsageDetails: null,
-  };
+  });
 
-  const invalidPlan: PlanState = {
-    isLoadingPlanLimit: false,
-    isLoadingPlanUsage: false,
-    isLoadingBusinessLimitAndUsage: false,
-    individualPlan: {
-      planId: 'invalid-plan-id',
-      productId: 'product-id',
-      name: 'Plan',
-      simpleName: 'Free',
-      paymentInterval: RenewalPeriod.Monthly,
-      price: 0,
-      monthlyPrice: 0,
-      currency: 'eur',
-      isTeam: false,
-      isLifetime: false,
-      renewalPeriod: RenewalPeriod.Monthly,
-      storageLimit: 0,
-      amountOfSeats: 1,
-      seats: { minimumSeats: 1, maximumSeats: 1 },
-      commitment: { enabled: false },
-      cancellation: {
-        scheduled: false,
-      },
-      cancellationTrial: {
-        redeemed: false,
-      },
-    },
-    businessPlan: null,
-    planLimit: 0,
-    planUsage: 0,
-    usageDetails: null,
+  const invalidPlan: PlanState = getPlanState({
+    individualPlan: getStoragePlan({ planId: 'invalid-plan-id', simpleName: 'Free' }),
     individualSubscription: { type: 'free' },
-    businessSubscription: null,
-    businessPlanLimit: 0,
-    businessPlanUsage: 0,
-    businessPlanUsageDetails: null,
-  };
+  });
 
   const futureDate = new Date('2025-06-10');
 

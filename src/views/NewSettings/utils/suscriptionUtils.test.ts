@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { getSubscriptionData } from './suscriptionUtils';
 import { UserSubscription, UserType, StoragePlan, RenewalPeriod } from '@internxt/sdk/dist/drive/payments/types/types';
 import { PlanState } from 'app/store/slices/plan';
+import { getPlanState, getStoragePlan } from 'testUtils/fixtures/plan.fixtures';
 
 vi.mock('i18next', () => ({
   default: { language: 'en' },
@@ -27,32 +28,18 @@ vi.mock('views/Checkout/services', () => ({
   ProductService: {},
 }));
 
-const mockIndividualPlan: StoragePlan = {
+const mockIndividualPlan: StoragePlan = getStoragePlan({
   planId: 'individual-plan-123',
   productId: 'product-123',
   name: 'Individual Plan',
   simpleName: 'Individual',
-  paymentInterval: RenewalPeriod.Monthly,
   price: 100,
   monthlyPrice: 9.99,
   currency: 'USD',
-  isTeam: false,
-  isLifetime: false,
-  renewalPeriod: RenewalPeriod.Monthly,
   storageLimit: 1000000000,
-  amountOfSeats: 1,
-  commitment: {
-    enabled: false,
-  },
-  cancellation: {
-    scheduled: false,
-  },
-  cancellationTrial: {
-    redeemed: false,
-  },
-};
+});
 
-const mockBusinessPlan: StoragePlan = {
+const mockBusinessPlan: StoragePlan = getStoragePlan({
   planId: 'business-plan-456',
   productId: 'product-456',
   name: 'Business Plan',
@@ -62,20 +49,10 @@ const mockBusinessPlan: StoragePlan = {
   monthlyPrice: 49.99,
   currency: 'EUR',
   isTeam: true,
-  isLifetime: false,
   renewalPeriod: RenewalPeriod.Annually,
   storageLimit: 5000000000,
   amountOfSeats: 5,
-  commitment: {
-    enabled: false,
-  },
-  cancellation: {
-    scheduled: false,
-  },
-  cancellationTrial: {
-    redeemed: false,
-  },
-};
+});
 
 const mockIndividualSubscription: UserSubscription = {
   type: 'subscription',
@@ -102,21 +79,7 @@ const mockBusinessSubscription: UserSubscription = {
 const createMockPlanState = (
   individualPlan: StoragePlan | null = null,
   businessPlan: StoragePlan | null = null,
-): PlanState => ({
-  isLoadingPlanLimit: false,
-  isLoadingPlanUsage: false,
-  isLoadingBusinessLimitAndUsage: false,
-  individualPlan,
-  businessPlan,
-  planLimit: 0,
-  planUsage: 0,
-  usageDetails: null,
-  individualSubscription: null,
-  businessSubscription: null,
-  businessPlanLimit: 0,
-  businessPlanUsage: 0,
-  businessPlanUsageDetails: null,
-});
+): PlanState => getPlanState({ individualPlan, businessPlan });
 
 describe('getSubscriptionData', () => {
   describe('userType selection logic', () => {
