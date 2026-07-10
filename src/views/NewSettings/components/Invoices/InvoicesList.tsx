@@ -6,6 +6,7 @@ import { bytesToString } from 'app/drive/services/size.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { currencyService } from 'views/Checkout/services';
 import { Loader } from '@internxt/ui';
+import { Translate } from 'app/i18n/types';
 
 const InvoicesList = ({ invoices, state }: { invoices: Invoice[]; state: 'loading' | 'empty' | 'ready' }) => {
   const [hoverItemIndex, setHoverItemIndex] = useState<string | null>(null);
@@ -54,7 +55,7 @@ const InvoicesList = ({ invoices, state }: { invoices: Invoice[]; state: 'loadin
 interface ColumnProps {
   invoices: Invoice[];
   isLastInvoice: (i: number) => boolean;
-  translate: (key: string) => string;
+  translate: Translate;
   setHoverItemIndex: (index: string | null) => void;
   hoverItemIndex: string | null;
 }
