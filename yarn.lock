@@ -1939,10 +1939,10 @@
   resolved "https://registry.yarnpkg.com/@internxt/prettier-config/-/prettier-config-2.0.1.tgz#a25e7a16f62a990aed2bd1804e04140cc8c33e77"
   integrity sha512-sCnOMX7GR7BYDJ5OH1RiV/JaOBLE3uhL6QN6tYhMKi7QXK/cnM/77qmDlIEBlhTNIFEMLFljSkc0vZEvf6m2xA==
 
-"@internxt/sdk@=1.17.12":
-  version "1.17.12"
-  resolved "https://registry.yarnpkg.com/@internxt/sdk/-/sdk-1.17.12.tgz#abab0de41ae758f8bd31fbaf1719607a663347c6"
-  integrity sha512-HDo+NR+k1sUify2XyiwnAwEUuejJF1fJYg4DUFPHp/0YIvrrEecKe+oSY1HY+hTce8UMMvFnlLLkk1/wA95PSg==
+"@internxt/sdk@=1.17.14":
+  version "1.17.14"
+  resolved "https://registry.yarnpkg.com/@internxt/sdk/-/sdk-1.17.14.tgz#06a861d444bccde562d6582f6db149c72635f8fd"
+  integrity sha512-b7tXUGTNgfHmk5UtNVLGkY6hSnQLkdI5V0HZ/mXqu8mYhwW5Ar4FEsYxATkOAAXujBbbQpUJNInhjjRK3DSlUg==
   dependencies:
     axios "^1.16.0"
 
