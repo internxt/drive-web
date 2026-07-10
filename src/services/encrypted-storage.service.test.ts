@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { LocalStorageProtectedItem } from 'app/core/types';
 import encryptedStorageService from './encrypted-storage.service';
 
@@ -11,7 +11,7 @@ describe('Testing the local storage service', () => {
   describe('Get and set encrypted values', () => {
     const value = 'test-value';
 
-    it('When sets protected value, then the value is stored encrypted', async () => {
+    test('When sets protected value, then the value is stored encrypted', async () => {
       const key = LocalStorageProtectedItem.EncryptedToken;
       const setFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'setItem');
       const cryptoSpy = vi.spyOn(window.crypto.subtle, 'encrypt');
@@ -24,7 +24,7 @@ describe('Testing the local storage service', () => {
       expect(localStorageItem).not.toEqual(value);
     });
 
-    it('When hydrates encrypted storage, then the result is decrypted', async () => {
+    test('When hydrates encrypted storage, then the result is decrypted', async () => {
       await encryptedStorageService.setToken(value);
       const cryptoSpy = vi.spyOn(window.crypto.subtle, 'decrypt');
 
