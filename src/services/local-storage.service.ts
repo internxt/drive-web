@@ -26,7 +26,8 @@ async function setAndEncrypt(key: LocalStorageProtectedItem, value: string): Pro
 }
 
 function getBackupKeyStorageKeys() {
-  const userId = get(LocalStorageItem.UserUUID);
+  const user = getUser();
+  const userId = user?.uuid;
   return {
     seenAt: `${BACKUP_KEY.SEEN_AT}_${userId}`,
     acknowledgedAt: `${BACKUP_KEY.ACKNOWLEDGED_AT}_${userId}`,
@@ -71,7 +72,6 @@ function getUser(): UserSettings | null {
 }
 
 function setUser(user: UserSettings): void {
-  set(LocalStorageItem.UserUUID, user.uuid);
   set(LocalStorageItem.User, JSON.stringify(user));
 }
 
