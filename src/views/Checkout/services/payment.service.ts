@@ -137,9 +137,9 @@ const paymentService = {
     return paymentsClient.cancelSubscription(userType);
   },
 
-  async applyCancellationTrial(subscriptionId: string): Promise<void> {
+  async applyCancellationTrial(): Promise<void> {
     const paymentsClient = await SdkFactory.getNewApiInstance().createPaymentsClient();
-    return paymentsClient.applyCancellationTrial(subscriptionId);
+    return paymentsClient.applyCancellationTrial();
   },
 
   async updateCustomerBillingInfo(payload: CustomerBillingInfo): Promise<void> {

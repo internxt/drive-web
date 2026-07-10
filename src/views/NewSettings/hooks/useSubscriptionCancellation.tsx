@@ -64,7 +64,7 @@ export const useSubscriptionCancellation = ({
 
     setIsApplyingTrial(true);
     try {
-      await paymentService.applyCancellationTrial(individualSubscription.subscriptionId);
+      await paymentService.applyCancellationTrial();
       longNotificationsService.show({ text: t('notificationMessages.successApplyCancellationIncentive') });
       onModalClose?.();
     } catch (error) {

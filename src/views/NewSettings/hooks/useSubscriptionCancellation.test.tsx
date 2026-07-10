@@ -14,7 +14,16 @@ const { mockDispatch, mockInitializeThunk } = vi.hoisted(() => ({
 
 vi.mock('i18next', () => ({ default: { t: (key: string) => key }, t: (key: string) => key }));
 vi.mock('app/store/hooks', () => ({ useAppDispatch: () => mockDispatch }));
-vi.mock('app/store/slices/plan', () => ({ planThunks: { initializeThunk: mockInitializeThunk } }));
+vi.mock('app/store/slices/plan', () => ({
+  planThunks: { initializeThunk: mockInitializeThunk },
+  planSelectors: {
+    subscriptionToShow: vi.fn(),
+    planUsageToShow: vi.fn(),
+    planLimitToShow: vi.fn(),
+  },
+  planActions: {},
+  default: (state = {}) => state,
+}));
 
 const activeSubscription = { type: 'subscription' as const, subscriptionId: 'sub-id' } as any;
 
@@ -98,7 +107,7 @@ describe('Subscription Cancellation - Custom Hook', () => {
         await result.current.activateTrial();
       });
 
-      expect(applyCancellationTrialSpy).toHaveBeenCalledWith('sub-id');
+      expect(applyCancellationTrialSpy).toHaveBeenCalled();
       expect(longNotificationShowSpy).toHaveBeenCalledWith({
         text: 'notificationMessages.successApplyCancellationIncentive',
       });

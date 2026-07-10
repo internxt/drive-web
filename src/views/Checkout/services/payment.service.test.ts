@@ -206,7 +206,7 @@ describe('paymentService', () => {
     test('When applying the cancellation trial, then it should resolve correctly', async () => {
       mockPaymentsClient.applyCancellationTrial.mockResolvedValue(undefined);
 
-      await expect(paymentService.applyCancellationTrial('sub-123')).resolves.not.toThrow();
+      await expect(paymentService.applyCancellationTrial()).resolves.not.toThrow();
     });
   });
 });
