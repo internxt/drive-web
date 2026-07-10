@@ -1,61 +1,36 @@
 import { describe, it, expect, test } from 'vitest';
 import { planSelectors, PlanState, planSlice, planActions } from './index';
 import { RootState } from '../..';
-import { StoragePlan, RenewalPeriod } from '@internxt/sdk/dist/drive/payments/types/types';
+import { StoragePlan } from '@internxt/sdk/dist/drive/payments/types/types';
+import { getPlanState, getStoragePlan } from 'testUtils/fixtures/plan.fixtures';
 
-const mockIndividualPlan: StoragePlan = {
+const mockIndividualPlan: StoragePlan = getStoragePlan({
   planId: 'individual-plan-123',
   productId: 'product-123',
   name: 'Individual Plan',
   simpleName: 'Individual',
-  paymentInterval: RenewalPeriod.Monthly,
   price: 100,
   monthlyPrice: 10,
   currency: 'USD',
-  isTeam: false,
-  isLifetime: false,
-  renewalPeriod: RenewalPeriod.Monthly,
-  cancellationTrial: { redeemed: false },
   storageLimit: 1000000000,
-  amountOfSeats: 1,
-  commitment: { enabled: false },
-};
+});
 
-const mockBusinessPlan: StoragePlan = {
+const mockBusinessPlan: StoragePlan = getStoragePlan({
   planId: 'business-plan-456',
   productId: 'product-456',
   name: 'Business Plan',
   simpleName: 'Business',
-  paymentInterval: RenewalPeriod.Monthly,
   price: 500,
   monthlyPrice: 50,
   currency: 'USD',
   isTeam: true,
-  isLifetime: false,
-  renewalPeriod: RenewalPeriod.Monthly,
   storageLimit: 5000000000,
   cancellationTrial: { redeemed: false },
   amountOfSeats: 5,
-  commitment: { enabled: false },
-};
+});
 
 const createMockState = (planState: Partial<PlanState>, hasSelectedWorkspace = false): Partial<RootState> => ({
-  plan: {
-    isLoadingPlanLimit: false,
-    isLoadingPlanUsage: false,
-    isLoadingBusinessLimitAndUsage: false,
-    individualPlan: null,
-    businessPlan: null,
-    planLimit: 0,
-    planUsage: 0,
-    usageDetails: null,
-    individualSubscription: null,
-    businessSubscription: null,
-    businessPlanLimit: 0,
-    businessPlanUsage: 0,
-    businessPlanUsageDetails: null,
-    ...planState,
-  },
+  plan: getPlanState(planState),
   workspaces: {
     selectedWorkspace: hasSelectedWorkspace
       ? ({
@@ -147,21 +122,7 @@ describe('Plan Selectors', () => {
 describe('Plan Reducers', () => {
   describe('Update Limit plan', () => {
     test('When providing a max space bytes, then should update the plan limit and stop loading the plan limit', () => {
-      const initialState: PlanState = {
-        isLoadingPlanLimit: true,
-        isLoadingPlanUsage: false,
-        isLoadingBusinessLimitAndUsage: false,
-        individualPlan: null,
-        businessPlan: null,
-        planLimit: 0,
-        planUsage: 0,
-        usageDetails: null,
-        individualSubscription: null,
-        businessSubscription: null,
-        businessPlanLimit: 0,
-        businessPlanUsage: 0,
-        businessPlanUsageDetails: null,
-      };
+      const initialState: PlanState = getPlanState({ isLoadingPlanLimit: true });
 
       const newLimit = 5000000000;
       const result = planSlice.reducer(initialState, planActions.updatePlanLimit(newLimit));
@@ -171,21 +132,7 @@ describe('Plan Reducers', () => {
     });
 
     test('When there is no max space bytes, then should not update the user plan limit', () => {
-      const initialState: PlanState = {
-        isLoadingPlanLimit: true,
-        isLoadingPlanUsage: false,
-        isLoadingBusinessLimitAndUsage: false,
-        individualPlan: null,
-        businessPlan: null,
-        planLimit: 1000000000,
-        planUsage: 0,
-        usageDetails: null,
-        individualSubscription: null,
-        businessSubscription: null,
-        businessPlanLimit: 0,
-        businessPlanUsage: 0,
-        businessPlanUsageDetails: null,
-      };
+      const initialState: PlanState = getPlanState({ isLoadingPlanLimit: true, planLimit: 1000000000 });
 
       const result = planSlice.reducer(initialState, planActions.updatePlanLimit(null));
 

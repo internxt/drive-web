@@ -25,29 +25,6 @@
       "mail": "Mail"
     }
   },
-  "susbcriptionsBanner": {
-    "title": "升级您的计划！",
-    "features": ["后量子加密", "云盘、VPN 和杀毒软件", "即将推出邮件和会议"],
-    "description": "续订您的订阅，即可享受我们的新功能！",
-    "cta": "8折优惠"
-  },
-  "lifetimesBanner": {
-    "title": "升级您的计划！",
-    "features": ["后量子加密", "云盘、VPN 和杀毒软件", "即将推出邮件和会议"],
-    "description": "升级您的计划，享受我们的新功能，并扩展您的存储空间！",
-    "cta": "8折优惠"
-  },
-  "valentinesBanner": {
-    "title": "爱无极限！",
-    "subtitle": "使用代码 VDAY 即可享受2TB的九折套餐",
-    "cta": "达成交易"
-  },
-  "banner": {
-    "label": "永久保护您的文件",
-    "title": "通过Internxt获得终身访问安全的私人云存储！",
-    "cta": "选择您的计划",
-    "guarantee": "30天退款保证"
-  },
   "notFound": {
     "header": "Error 404",
     "title": "这没东西看...",
@@ -92,7 +69,10 @@
     "superBowl": "Super Bowl",
     "valentines": "Valentine's Day",
     "summer": "週年",
-    "anniversary": "Anniversary"
+    "anniversary": "Anniversary",
+    "stPatricks": "圣帕特里克节",
+    "idManagement": "身份管理",
+    "environment": "世界环境日"
   },
   "auth": {
     "emailFloatingLabel": "电子邮件",
@@ -108,9 +88,7 @@
       "dontHaveAccount": "没有账户？",
       "dontHaveAccountMobile": "没有 Internxt 账户？",
       "createAccount": "创建账户",
-      "2FA": "双因素代码",
       "twoFactorAuthenticationCode": "双因素验证码",
-      "wrongLogin": "用户名或密码无效",
       "failedToSendAuthData": "发送身份验证数据失败。请重试。"
     },
     "button": {
@@ -126,19 +104,42 @@
         "normalText": "Internxt 不存储密码。",
         "boldText": "如果您忘记了密码，您可以下载备份密钥以恢复对文件的访问。",
         "cta": "了解更多"
+      },
+      "authView": {
+        "emailPlaceholder": "电子邮件",
+        "passwordPlaceholder": "密码",
+        "emailEmpty": "电子邮件不能为空",
+        "passwordEmpty": "密码不能为空",
+        "buttonText": "获取优惠",
+        "legal": {
+          "line1": "创建账户即表示您接受",
+          "line2": "服务条款和隐私政策"
+        },
+        "heroTitle": "以完全隐私存储您的文件",
+        "planLabel": "2TB 套餐",
+        "freeTrialText": "前 30 天免费",
+        "discountText": "如果您决定续订，接下来三个月享 50% 折扣"
+      },
+      "blog": {
+        "title": {
+          "line1": "将隐私放在首位，立即加入",
+          "blueText": " Internxt ",
+          "line2": ""
+        },
+        "emailPlaceholder": "电子邮件",
+        "passwordPlaceholder": "密码",
+        "emailEmpty": "电子邮件不能为空",
+        "passwordEmpty": "密码不能为空",
+        "buttonText": "免费获取最多 1GB！",
+        "legal": {
+          "line1": "创建账户即表示您接受",
+          "line2": "服务条款和隐私政策"
+        }
       }
-    },
-    "downloadBackupKey": {
-      "title": "备份密钥",
-      "description": "备份密钥可在您忘记密码时恢复帐户。永远不要分享它。",
-      "downloadCta": "下载备份密钥",
-      "settingsTab": "您可以在“设置” > “安全”中访问您的备份密钥",
-      "skip": "跳过"
     },
     "forgotPassword": {
       "title": "账户恢复",
       "continue": "继续",
-      "sending": "发送...",
       "notFound": "未找到电子邮件地址，请重试",
       "password": "还记得您的密码吗？",
       "login": "登录",
@@ -184,7 +185,6 @@
       "title": "重启账户",
       "description": "根据我们的加密政策，如果没有密码或备份密钥，您将无法访问您的数据",
       "alert1": "重启账户后，您将了解您的所有文件、照片和备份都将被永久删除、",
-      "button": "发送账户重启验证",
       "successDescription": "您的账户和密码已重置",
       "error": "重启账户时出了问题。"
     },
@@ -215,7 +215,6 @@
         "password": "创建密码"
       },
       "signIn": {
-        "emailAddress": "您的电子邮件地址",
         "password": "您的密码"
       },
       "title": {
@@ -239,34 +238,19 @@
     "productCard": {
       "title": "订单摘要",
       "selectedPlan": "选择的计划",
-      "numberOfUsers": "用户数量：{{seats}}",
-      "renewalPeriod": {
-        "renewsAt": "* 续订日期为",
-        "month": "每月",
-        "year": "每年",
-        "lifetime": "终身"
-      },
       "renewalTitle": {
         "month": "每年",
         "year": "每年",
         "lifetime": "终身"
-      },
-      "pcMobileRenews": "* 试用期后第一年以 50€ 续订",
-      "plan": {
-        "month": "{{spaceToUpgrade}} - 1 {{interval}} 计划",
-        "year": "{{spaceToUpgrade}} - 1 {{interval}} 计划",
-        "lifetime": "{{spaceToUpgrade}} - {{interval}} 计划"
       },
       "billed": {
         "month": "按月计费",
         "year": "按年计费",
         "lifetime": "一次性支付"
       },
-      "perUser": "/每用户",
       "saving": "您节省了 {{percent}}%",
       "planDetails": "计划详情：",
       "total": "总计",
-      "totalForBusiness": "总计 {{N}} 用户：",
       "addCoupon": {
         "buttonTitle": "添加优惠券",
         "inputText": "优惠券代码"
@@ -302,14 +286,12 @@
     }
   },
   "general": {
-    "new": "新建",
     "of": "/",
     "at": "在",
     "terms": "条款和条件",
     "contactSupport": "联系支持",
     "help": "需要帮助吗？",
     "searchBar": {
-      "oldSearchBarPlaceholder": "搜索该文件夹",
       "placeholder": "在Drive中搜索",
       "filters": {
         "folder": "文件夹",
@@ -329,33 +311,14 @@
       }
     },
     "stage": {
-      "development": "发展",
-      "production": "生产"
+      "development": "发展"
     },
     "loading": {
-      "default": "加载中...",
-      "redirecting": "重定向中..."
-    },
-    "renewalPeriod": {
-      "monthly": "月度",
-      "annually": "年度",
-      "lifetime": "Lifetime"
+      "default": "加载中..."
     },
     "renewal": {
-      "monthly": "月度",
       "annually": "年度",
       "lifetime": "Lifetime"
-    },
-    "workspaces": {
-      "personal": "个人",
-      "business": "商业"
-    },
-    "time": {
-      "month": "/月"
-    },
-    "billing": {
-      "billedEachPeriod": "{{price}} 已计费的 {{period}}",
-      "oneTimePayment": "一次性支付"
     },
     "files": "*文件",
     "file": "*文件",
@@ -363,7 +326,6 @@
     "reloadPageMessage": "你所做的更改可能尚未保存"
   },
   "shareLayout": {
-    "title": "INTERNXT",
     "subtitle": "具有无与伦比的隐私保护的安全云存储",
     "labels": {
       "privacy": "为隐私而设计",
@@ -415,7 +377,6 @@
       }
     },
     "account": {
-      "title": "资料",
       "avatar": {
         "title": "上传新图片",
         "removePhoto": "删除",
@@ -438,46 +399,18 @@
       },
       "tabs": {
         "account": {
-          "label": "帐户",
-          "title": "个人的",
           "usage": "已使用 {{totalUsed}} / {{totalSpace}}",
           "view": {
-            "backups": "备份",
-            "trash": "垃圾箱",
-            "free": {
-              "planName": "免费计划",
-              "button": "购买储存空间"
-            },
-            "lifetime": {
-              "planName": "终身"
-            },
-            "subscription": {
-              "planName": "订阅",
-              "button": "更改",
-              "yearly": "年度",
-              "monthly": "/月"
-            }
+            "backups": "备份"
           },
           "accountDetails": {
-            "head": "帐户详情",
             "name": "名字",
             "lastname": "姓氏",
             "card": {
-              "name": "名字",
-              "lastname": "姓氏",
-              "edit": "编辑",
-              "email": "电子邮件",
-              "resendEmail": "重新发送验证邮件"
-            },
-            "verify": {
-              "verify": "验证您的电子邮件",
-              "verified": "已验证电子邮件地址",
-              "description": "检查你的收件箱"
+              "email": "电子邮件"
             },
             "editProfile": {
               "title": "编辑帐户详细信息",
-              "name": "名字",
-              "lastname": "姓氏",
               "updatedProfile": "个人资料文件更新成功",
               "errorUpdatingProfile": "我们无法更新您的个人资料"
             },
@@ -512,11 +445,7 @@
           }
         },
         "billing": {
-          "label": "计费",
-          "currentPlan": "目前的计划",
-          "subsRenew": "{{daysUntilRenewal}}天后续订",
           "cancelSubscriptionModal": {
-            "title": "取消订阅",
             "description": {
               "individual": "您即将取消您的 Internxt {{currentPlanName}} 计划。取消计划后，您将降级为免费的 Internxt {{freePlanName}} 计划。请确认您的选择以继续。",
               "business": "取消计划后，工作区以及所有数据将被删除。请确认您的选择以继续。"
@@ -529,7 +458,6 @@
               "afterLabel": "{{monthsRemaining}} 之后"
             },
             "keepSubscription": "继续订阅",
-            "continue": "继续",
             "cancelSubscription": "取消订阅",
             "infoBox": {
               "titleCurrent": "当前的",
@@ -538,102 +466,66 @@
               "month": "/月",
               "free": "免费的"
             },
-            "giveUsFeedback": "能否告诉我们您为什么要取消您的 {{currentPlanName}} Internxt 计划并降级为免费计划？",
-            "feedback": {
-              "placeholder": "给我们一些反馈"
-            },
-            "coupon": {
-              "title": "3 个月",
-              "subtitle": "免费",
-              "text1": "通过保持你的",
-              "text2": "订阅后您将免费获得接下来的 3 个月。这是一次性交易。",
-              "continue": "立刻获得免费的3个月吧"
+            "options": {
+              "cancelRenewal": {
+                "title": "取消续订",
+                "description": "保留完整访问权限至 {{endDate}}。在此之前您将继续按月付款，且计划不会续订。",
+                "bulletedInfo": "剩余付款次数：{{remainingMonths}}",
+                "label": "{{endDate}} 之后",
+                "cta": "取消续订",
+                "confirmationModal": {
+                  "description": "您的计划将保持有效至 {{endDate}}。在此之前您将继续按月付款，且订阅在该日期之后不会续订。",
+                  "goBack": "返回",
+                  "confirm": "确认取消"
+                }
+              },
+              "endNow": {
+                "title": "立即结束",
+                "description": "通过支付剩余余额的最终款项立即取消计划。您的访问权限将立即终止。",
+                "bulletedInfo": "立即付款：€{{amountToPay}}",
+                "label": "付款后",
+                "cta": "立即结束",
+                "confirmationModal": {
+                  "title": "立即结束计划",
+                  "description": "您将支付 {{amount}} 的最终款项，立即取消计划。",
+                  "afterThis": "之后：",
+                  "accessEndsImmediately": "您的访问权限将立即终止",
+                  "noFurtherCharges": "将不再产生任何费用",
+                  "overStorage": {
+                    "title": "您已超过 {{freeLimit}}",
+                    "description": "由于您目前使用了 {{currentUsage}}，您的 Internxt Drive 将停止同步文件，且您将无法添加新文件"
+                  },
+                  "goBack": "稍后再说",
+                  "confirm": "确认并付款"
+                }
+              }
             }
           },
           "cancellationIncentive": {
             "title": {
               "normal": "下个月",
-              "blue": "免费"
+              "blue": "我们请客"
             },
-            "description": "保留订阅后，您将获得下个月的免费使用权，以及将试用期延长至 {{newDate}}。这是一次性优惠。",
+            "description": "保留订阅即可获得下个月免费使用，并将试用期延长至 {{newDate}}。此优惠仅限一次。",
             "cta": {
-              "cancel": "仍然取消",
-              "freeMonth": "获得1个月免费"
+              "cancel": "仍要取消",
+              "freeMonth": "获得 1 个月免费"
             }
           },
-          "billed": "帐单 {{interval}} {{renewDate}}",
           "paymentMethod": {
-            "head": "付款方式",
-            "empty": {
-              "title": "您目前在免费计划中",
-              "subtitle": "当你采用付费订阅计划时，信用卡信息将自动出现在这里。"
-            },
             "title": "添加新的付款方式",
             "contactUs": {
-              "description": "联系我们以更新您的付款方式",
-              "contact": "联系人"
+              "description": "联系我们以更新您的付款方式"
             }
           },
           "invoices": {
             "head": "发票",
             "billingDate": "日期",
             "storage": "存储",
-            "ammount": "金额",
-            "plan": "计划",
-            "empty": "没有可用的发票",
-            "download": "下载发票"
-          }
-        },
-        "info": {
-          "title": "个人",
-          "description": "检查您的存储用户和帐户详细信息",
-          "advice1": {
-            "title": "可以编辑哪些数据？",
-            "description": "出于严格的安全原因并保护您在 Internxt 的数据，我们不允许修改用户账户的数据，例如电子邮件。"
-          },
-          "advice2": {
-            "title": "安全账户",
-            "description": "您的文件在离开您的设备之前已加密，因此只有您可以访问您的文件，没有诡计，没有隐藏的东西，只有隐私，这就是 Internxt。"
+            "plan": "计划"
           }
         },
         "plans": {
-          "label": "计划",
-          "title": "计划",
-          "description": "查找 Internxt 提供的不同存储和解决方案选项",
-          "changeWorkspace": {
-            "personal": "更改到个人计划",
-            "business": "更改到商业计划"
-          },
-          "viewAllFeatures": "查看所有功能",
-          "card": {
-            "annually": "{{amount}} 每年计费(欧元)",
-            "monthly": "每月(欧元) {{amount}}",
-            "lifetime": "欧元{{amount}}",
-            "oneTimePayment": "一次性付款"
-          },
-          "features": {
-            "title": "所有计划中包括的功能",
-            "sections": {
-              "section1": {
-                "title": "满意度保证",
-                "point1": "所有计划都有30天的退款保证。",
-                "point2": "随时皆可取消",
-                "point3": "高级客户支持"
-              },
-              "section2": {
-                "title": "默认安全",
-                "point1": "军事级别的加密以确保你的隐私",
-                "point2": "加密的云存储和共享",
-                "point3": "零知识隐私"
-              },
-              "section3": {
-                "title": "无限的访问和同步",
-                "point1": "从你的所有设备访问你的文件、照片和备份",
-                "point2": "无限的带宽同步",
-                "point3": "备份你电脑上的任何文件夹"
-              }
-            }
-          },
           "dialog": {
             "title": "更改计划",
             "subtitle1": "您即将更改您的 Internxt 计划 ",
@@ -656,26 +548,6 @@
               "back": "保留当前计划",
               "continue": "继续"
             }
-          }
-        },
-        "password": {
-          "title": "密码",
-          "description": "修改您的密码",
-          "advice1": {
-            "title": "修改密码",
-            "description": "更改密码将使您退出所有设备。再次登录需要输入您更改后的的密码。"
-          },
-          "advice2": {
-            "title": "为了确保密码安全，您应该牢记什么？",
-            "description": ""
-          },
-          "advice3": {
-            "title": "新加密密钥",
-            "description": "通过更改您的密码，您的所有文件都将使用您的旧密码解密，然后使用您的新密码重新加密，因此您不会失去对它们的访问权限！此操作不能被撤销"
-          },
-          "advice4": {
-            "title": "可以编辑哪些数据？",
-            "description": "出于严格的安全原因并保护您在 Internxt 的数据，我们不允许修改用户账户的数据，例如电子邮件。"
           }
         },
         "security": {
@@ -722,17 +594,11 @@
                   "description": "复制这个代码并妥善保管，万一你的设备丢失，你将会需要它。"
                 },
                 "enable": {
-                  "title": "确认2FA的激活情况",
-                  "description": "双因素认证代码"
-                },
-                "disable": {
-                  "title": "禁用双因素身份验证",
-                  "description": "要禁用双因素身份验证，请在下面输入您的双因素认证应用程序生成的代码。"
+                  "title": "确认2FA的激活情况"
                 }
               },
               "errors": {
-                "incorrect": "代码不正确，请重试",
-                "notVerified": "我们无法验证您的代码"
+                "incorrect": "代码不正确，请重试"
               }
             }
           },
@@ -786,8 +652,7 @@
       "auth": {
         "title": "验证电子邮件变更",
         "subtitle": "您的账户电子邮件将被改为 {{email}}",
-        "wrongPassword": "错误的密码，请重试",
-        "cta": "继续"
+        "wrongPassword": "错误的密码，请重试"
       },
       "success": {
         "title": "电子邮件更改成功",
@@ -815,7 +680,6 @@
           "edit": "编辑个人资料",
           "address": "地址",
           "phone": "电话",
-          "owner": "所有者",
           "workspaceOverview": "工作区概览",
           "members": "成员",
           "teams": "团队",
@@ -870,7 +734,6 @@
       "move": "移动"
     },
     "removeSharedLinkModal": {
-      "title": "删除链接",
       "multiSharedDescription": "拥有该链接的用户将失去对共享内容的访问权限。",
       "singleSharedDescription": "拥有该链接的用户将失去对共享内容的访问权限。",
       "cancel": "取消",
@@ -966,15 +829,10 @@
       },
       "requests": {
         "title": "访问请求",
-        "button": "请求",
         "empty": "没有剩余请求",
         "actions": {
           "accept": "接受",
-          "deny": "拒绝",
-          "roles": {
-            "editor": "编辑者",
-            "reader": "浏览者"
-          }
+          "deny": "拒绝"
         }
       },
       "stopSharing": {
@@ -992,11 +850,7 @@
         "subtitle": "使用链接或邀请的用户将不再访问“{{name}}”",
         "multipleItemsSubtitle": "使用链接或邀请的用户将不再访问这些共享项目",
         "cancel": "取消",
-        "confirm": "移至垃圾桶",
-        "notification": {
-          "success": "不再分享\"{{name}}\"",
-          "error": "无法移至垃圾桶，请重试"
-        }
+        "confirm": "移至垃圾桶"
       },
       "removeUser": {
         "notification": {
@@ -1068,17 +922,6 @@
       "sharedWith": "与您共享 ",
       "todayAt": "今天在 "
     },
-    "friendsInvitedModal": {
-      "title": "被邀请的朋友",
-      "email": "电子邮件",
-      "total": "共计",
-      "pending": "待处理",
-      "accepted": "已接受",
-      "empty": "你还没有邀请任何人",
-      "resend": "重新发送邀请",
-      "resentInvitation": "邀请重新发送成功",
-      "resendError": "重新发送电子邮件时出错: {{reason}}"
-    },
     "deleteAccountModal": {
       "title": "你确定吗？",
       "subtitle": "你的所有文件将被永远删除，你将失去对Internxt账户的访问。",
@@ -1108,8 +951,8 @@
     "shareWithTeamModal": {
       "title": "分享 \"{{name}}\"",
       "teams": "团队",
-      "teamsWithAccess": "有权限的团队：",
-      "shareButton": "分享"
+      "shareButton": "分享",
+      "teamsWithAcces": "有访问权限的团队："
     },
     "restrictedSharingModal": {
       "title": "升级以共享文件",
@@ -1131,10 +974,6 @@
         "title": "解锁 Meet",
         "description": "升级后可发起和加入完全加密的视频通话 —— 私密、安全且无限制。"
       },
-      "mail": {
-        "title": "解锁 Mail",
-        "description": "解锁您的端到端加密私人邮箱服务。"
-      },
       "vpn": {
         "title": "解锁 VPN",
         "description": "升级以使用私密加密的网络流量保护。"
@@ -1149,18 +988,9 @@
       }
     }
   },
-  "form": {
-    "fields": {
-      "email": {
-        "placeholder": "电子邮件地址"
-      }
-    }
-  },
   "error": {
     "wrongPassword": "密码不正确，请重试或联系所有者",
-    "genericError": "有一个错误: {{reason}}",
     "serverError": "内部服务器错误。稍后再试",
-    "deleteTeamMember": "删除团队成员时出错",
     "changingName": "更改名称时出错",
     "fileAlreadyExists": "已存在同名文件",
     "folderAlreadyExists": "已存在同名文件夹",
@@ -1168,27 +998,16 @@
     "folderCannotBeEmpty": "文件夹名称不能为空",
     "fileCannotBeEmpty": "文件名不能为空",
     "creatingFolder": "创建文件夹时出错",
-    "sendReferralInvitation": "无法发送邀请电子邮件",
-    "sendClaimEmail": "无法发送索赔电子邮件",
-    "anyReferralCredit": "您的帐户中没有任何信用",
-    "backupKeyDontMatch": "插入的备份密钥与您的唯一备份密钥不匹配",
-    "shareLinkMissingBucket": "由于缺少存储桶而无法生成共享链接",
-    "unavailableLink": "链接不可用",
-    "invalidActivationCode": "您的激活码无效。也许您之前使用过此链接并且您的帐户已激活",
-    "redirectToStripe": "无法重定向到 Stripe。请联系我们。原因: {{reason}}",
-    "deactivatingAccount": "停用帐户时出错。请联系我们。",
     "fetchingFolderContent": "获取文件夹内容时出错",
     "uploadingFolder": "上传文件夹时出错",
     "uploadingFile": "上传文件时出错: {{reason}}",
     "uploadingItems": "部分元素无法上传",
     "downloadingFile": "下载文件时出错: {{message}}",
     "downloadingFolder": "下载文件夹时出错: {{message}}",
-    "downloadingItems": "部分元素无法下载",
     "movingItemInsideItself": "您无法移动文件夹本身",
     "movingItem": "移动项目时出错",
     "renamingItem": "重命名项目时出错",
     "linkExpired": "此安全链接已过期",
-    "teamInvitation": "邀请邮件无法发送",
     "ownerStorageIsFull": "所有者的存储空间已满",
     "storageIsFull": "您的存储空间已满",
     "fileSizeLimitExceeded": {
@@ -1208,19 +1027,9 @@
     },
     "ownerStorageIsFullDescription": "您无法在此共享文件夹中上传文件。",
     "storageIsFullDescription": "无法上传同步或备份文件",
-    "noSpaceAvailable": "您已达到当前计划的限制，同步已停止。立即升级以确保您的文件安全同步。",
-    "sharedFolderTooBig": "Internxt Drive 不支持共享超过 1GB 的文件夹。",
-    "titleSharedFolderTooBig": "不受支持的操作",
-    "workingOnIt": "我们正在努力为您带来更好的体验。",
     "noFilePreview": "没有可用的文件预览",
-    "browserNotSupported": "浏览器不支持 ({{userAgent}})",
-    "subscribeToNewsletter": "订阅时事通讯时出错: {{message}}",
-    "lastPasswordError": "您上次输入的密码似乎无效。再试一次，如果问题仍然存在，请联系我们的支持人员。",
-    "incorrectPassword": "您输入的当前密码不匹配。请确保其正确。",
-    "emptyPassword": "之前的密码不能为空",
     "errorMovingToTrash": "将项目移至垃圾箱时出错。",
     "errorDeletingFromTrash": "从垃圾箱中删除项目时出错。",
-    "maxSizeUploadLimitError": "文件太大（大于40GB）",
     "connectionLostError": "互联网连接丢失",
     "errorLoadingTrashItems": "加载垃圾箱内的项目时出错",
     "updateAvatarError": "更新头像时出错",
@@ -1228,28 +1037,11 @@
     "errorSettingWorkspace": "设置工作区时出错"
   },
   "backups": {
-    "backups-from": "来自 {{deviceName}} 的备份",
     "your-devices": "你的设备",
-    "back-to-devices": "返回到设备",
     "empty": {
       "title": "此文件夹为空",
       "subtitle": "使用Internxt Desktop来上传您的数据",
       "downloadApp": "下载桌面应用程序"
-    },
-    "devices-list": {
-      "columns": {
-        "name": "名称",
-        "last-update": "修改日期",
-        "size": "大小"
-      }
-    },
-    "backups-list": {
-      "columns": {
-        "name": "名称",
-        "last-update": "修改日期",
-        "size": "大小",
-        "actions": "操作"
-      }
     },
     "dropdown": {
       "download": "下载",
@@ -1258,18 +1050,14 @@
   },
   "shared": {
     "errors": {
-      "notSharedFolder": "此文件夹未与您共享",
       "folderNotExists": "此文件夹不存在",
       "generic": "无法访问文件夹"
     }
   },
   "shared-links": {
     "shared-links": "共享的",
-    "view": "访问量",
     "list": {
       "name": "名称",
-      "link-content": "链接内容",
-      "shared": "已共享的",
       "created": "已创建的",
       "size": "大小",
       "owner": "所有者"
@@ -1279,37 +1067,18 @@
       "subtitle": "其他人与您共享的文件夹将显示在此处"
     },
     "item-menu": {
-      "copy-link": "复制链接",
-      "link-settings": "分享设置",
       "delete-link": "删除链接",
       "delete-links": "删除链接"
     },
-    "link-settings": {
-      "share-settings": "分享设置",
-      "views": "访问量",
-      "options": "选项",
-      "copy-link": "复制链接",
-      "save": "保存",
-      "saving": "正在保存",
-      "save-close": "保存并关闭",
-      "close": "关闭"
-    },
     "toast": {
       "copy-to-clipboard": "链接已复制到剪贴板",
-      "link-updated": "链接设置已更新",
       "link-deleted": "链接已删除",
-      "links-deleted": "链接已删除",
-      "error-deleting-links": "删除共享链接时发生错误"
+      "links-deleted": "链接已删除"
     }
   },
   "trash": {
     "trash": "垃圾箱",
     "clearTrash": "垃圾箱已清空",
-    "list": {
-      "name": "名称",
-      "size": "大小",
-      "moved-to-trash": "移入垃圾箱"
-    },
     "empty-state": {
       "title": "云盘的垃圾箱是空的",
       "subtitle": "被删除的文件和文件夹将会出现在这里"
@@ -1478,18 +1247,9 @@
   },
   "success": {
     "passwordChanged": "密码已修改",
-    "teamInvitationSent": "邀请邮件已发送至 {{email}}",
-    "referralInvitationSent": "邀请邮件已发送至 {{email}}",
-    "deletedTeamMember": "{{resource}} 已成功删除",
-    "accountDeactivationEmailSent": "已发送停用邮件！",
-    "claimEmailSent": "索赔电子邮件已发送！",
-    "teamsSubscriptionRedeemed": "你的团队准备好了！ 重新登录以开始使用 Teams",
     "linkCopied": "链接已复制！",
     "twoFactorAuthActivated": "您的双因素身份验证已激活！",
-    "twoFactorAuthDisabled": "您的双因素身份验证已被禁用",
-    "joinedToTheTeam": "您已成功加入团队",
-    "done": "完成",
-    "subscribeToNewsletter": "{{email}} 成功订阅电子报"
+    "twoFactorAuthDisabled": "您的双因素身份验证已被禁用"
   },
   "shareItemDialog": {
     "title": "链接设置",
@@ -1508,14 +1268,12 @@
     }
   },
   "notificationMessages": {
-    "copyLink": "已复制分享链接到剪贴板",
     "linkUpdated": "链接已更新",
     "itemsMovedToTrash": "{{item}} 已被移至回收站",
     "storageModified": "存储修改成功",
     "membersUpdatedSuccessfully": "成员更新成功",
     "errorModifyingStorage": "新存储空间对该成员无效。",
     "generalErrorWhileModifyingStorage": "修改存储时出错。",
-    "moveItems": "{{itemsToMove}} 成功移动",
     "restoreItems": "项目已成功恢复",
     "goToDrive": "在 Drive 中显示",
     "itemDeleted": "{{item}} 已删除",
@@ -1524,18 +1282,13 @@
     "verificationEmail": "验证邮件已发送",
     "successCancelSubscription": "您的订阅已被取消",
     "errorCancelSubscription": "取消订阅时出了点问题",
-    "successApplyCancellationIncentive": "感谢您继续与我们同行！下个月免费享用",
-    "errorApplyCancellationIncentive": "应用取消优惠时出了点问题",
-    "successApplyCoupon": "3个月免费申请",
-    "errorApplyCoupon": "应用折扣时出错",
-    "alreadyAppliedCoupon": "优惠券已使用",
     "errorCreatingSubscription": "创建您的订阅时出现问题",
-    "errorPurchaseBusinessPlan": "您已经有一个商业计划",
+    "successApplyCancellationIncentive": "感谢您继续与我们同行！尽享下个月免费服务",
+    "errorApplyCancellationIncentive": "应用取消优惠时发生错误",
     "couponIsNotValidForUserError": "优惠券只能由新客户兑换。",
     "errorApplyingCoupon": "应用优惠券时出错",
     "errorWhileFetchingMoreItems": "获取更多项目时出现错误",
     "errorDeletingItems": "删除此项目时出现错误",
-    "invalidTaxIdIsProvided": "提供的税号无效",
     "errorFetchingWorkspace": "获取工作区时出错 {{error}}",
     "errorSettingUpWorkspace": "设置工作区时出错 {{error}}",
     "errorWhileLoadingWorkspace": "加载工作区时出错 {{error}}",
@@ -1550,46 +1303,31 @@
   "actions": {
     "undo": "撤销",
     "upload": {
-      "new": "新建",
       "folder": "新建文件夹",
       "uploadFiles": "上传文件",
       "uploadFolder": "上传文件夹"
     },
-    "delete": "删除",
-    "share": "分享",
     "change": "更改",
     "download": "下载",
     "downloading": "正在下载",
     "downloadingItems": "正在下载 {{Items}} 项...",
     "downloaded": "已下载",
     "view": "预览",
-    "accessFile": "访问文件",
     "upgradeNow": "购买储存空间",
-    "purchasePlan": "购买储存空间",
     "upgrade": "购买储存空间",
     "buyStorage": "购买储存空间",
-    "deleteAccount": "永久删除帐户",
-    "changePassword": "修改密码",
     "buy": "购买",
     "cancel": "取消",
     "create": "创建",
-    "sendInvitation": "发送邀请",
-    "subscribe": "订阅",
-    "moreInfo": "更多信息",
-    "dismiss": "解散",
     "save": "保存",
     "saveChanges": "保存更改",
     "saving": "保存",
     "back": "返回",
-    "edit": "编辑",
-    "submit": "提交",
     "access": "访问",
     "previous": "以前的",
     "next": "下一步",
     "disable": "禁用",
     "move": "移动",
-    "moving": "正在移动...",
-    "navigating": "正在导航...",
     "restoreHere": "在这里恢复",
     "rename": "重命名",
     "restore": "恢复",
@@ -1610,18 +1348,13 @@
     "textCopied": "文本已复制到剪贴板"
   },
   "drive": {
-    "usage": "使用情况",
-    "currentPlan": "目前的计划",
     "loadingFile": "正在加载预览",
-    "previewNoAvailable": "预览不可用",
     "pdfPage": "第 {{page}} 页，共 {{pages}} 页",
     "list": {
       "columns": {
-        "type": "类型",
         "name": "名称",
         "modified": "修改日期",
         "size": "大小",
-        "actions": "操作",
         "autoDelete": "自动删除",
         "originalLocation": "原始位置"
       }
@@ -1634,19 +1367,14 @@
       "openPreview": "打开预览",
       "shareLink": "分享",
       "shareTeam": "与团队分享",
-      "shareWithWorkspace": "与工作区共享",
       "manageLinkAccess": "管理访问权限",
-      "getLink": "获取链接",
       "rename": "重命名",
       "details": "详细信息",
       "share": "分享",
-      "manageAccess": "管理访问权限",
       "download": "下载",
       "versionHistory": "版本历史",
       "moveToTrash": "移入垃圾箱",
       "copyLink": "复制链接",
-      "linkSettings": "链接设置",
-      "deleteLink": "删除链接",
       "restore": "恢复",
       "deletePermanently": "永久删除",
       "move": "移动",
@@ -1659,7 +1387,6 @@
       "progress": "删除..."
     },
     "clearTrash": {
-      "title": "要清空Drive垃圾箱吗？",
       "advice": "Drive 垃圾箱中的所有项目将被永久删除。此操作不能被撤销",
       "accept": "清空垃圾箱",
       "progress": "正在清空垃圾箱..."
@@ -1672,52 +1399,11 @@
     "movingToTrash": "正在将项目移动到回收站",
     "deletingItems": "正在从回收站中删除项目"
   },
-  "appSumo": {
-    "tiers": {
-      "internxt_tier1": "AppSumo Lifetime Tier 1",
-      "internxt_tier2": "AppSumo Lifetime Tier 2",
-      "internxt_tier3": "AppSumo Lifetime Tier 3",
-      "internxt_tier4": "AppSumo Lifetime Tier 4",
-      "internxt_tier5": "AppSumo Lifetime Tier 5",
-      "unlimited": "Lifetime Infinite Members"
-    },
-    "members": {
-      "internxt_tier1": "Team members: 1",
-      "internxt_tier2": "Team members: 5",
-      "internxt_tier3": "Team members: 10",
-      "internxt_tier4": "Team members: 25",
-      "internxt_tier5": "Team members: 100",
-      "unlimited": "团队成员数: {{total}}"
-    },
-    "plans": {
-      "advice": "您将被重定向到您的 AppSumo 帐户"
-    }
-  },
-  "newsletter": {
-    "dialog": {
-      "title": "订阅我们的新闻",
-      "message": "在您的收件箱中获取最新新闻和更新"
-    }
-  },
   "referrals": {
     "openError": "打开推荐时出错，请重试。",
     "emailVerification": {
       "message": "请验证您的电子邮件以获得推荐资格。请检查您的收件箱或",
       "resendVerification": "重新发送验证"
-    },
-    "items": {
-      "create-account": "创建一个账户",
-      "install-mobile-app": "安装移动应用程序并上传一个文件",
-      "share-file": "通过链接分享一个文件",
-      "subscribe-to-newsletter": "订阅新闻",
-      "install-desktop-app": "安装桌面应用程序，并上传一个文件",
-      "invite-friends": "邀请{{completedSteps}}/{{steps}}个朋友 ",
-      "invite-2-friends": "邀请{{completedSteps}}/{{steps}}个朋友 "
-    },
-    "rewards": {
-      "title": "免费获得 {{creditSum}}的容量!",
-      "progress": "已解锁 {{currentCredit}}",
-      "limit": "/ {{creditSum}}"
     }
   },
   "errors": {
@@ -1755,16 +1441,8 @@
   },
   "preferences": {
     "title": "首选项",
-    "general": {
-      "title": "常规"
-    },
     "workspace": {
-      "title": "工作区",
-      "overview": {
-        "title": "概述"
-      },
       "members": {
-        "title": "成员",
         "members": "成员",
         "guests": "受邀",
         "search": "搜索成员",
@@ -1783,7 +1461,6 @@
           "declinedSuccessfully": "成功拒绝工作区邀请",
           "invitationSent": "邀请成功发送",
           "error": {
-            "errorInviting": "发送邀请至 {{email}} 时出错",
             "acceptedError": "接受工作区邀请时出错",
             "declinedError": "拒绝工作区邀请时出错"
           }
@@ -1832,50 +1509,14 @@
           "actionButton": "发送请求"
         },
         "tabs": {
-          "activity": {
-            "name": "活动",
-            "empty": "无活动",
-            "disabilitedOwner": {
-              "title": "开始使用活动",
-              "subtitle": "通过活动日志记录，清晰了解文件和账户管理的使用情况",
-              "action": "启用活动"
-            },
-            "disabilitedMember": {
-              "title": "活动已禁用",
-              "subtitle": "联系工作区所有者以启用活动日志，进行文件和账户管理"
-            },
-            "roles": {
-              "title": "角色",
-              "member": "成员",
-              "manager": "经理",
-              "owner": "所有者"
-            },
-            "filter": {
-              "button": "过滤器",
-              "title": "过滤器",
-              "clear": "清除",
-              "dateRange": {
-                "title": "日期范围",
-                "7days": "最近 7 天",
-                "30days": "最近 30 天",
-                "90days": "最近 90 天"
-              }
-            }
-          },
           "teams": {
-            "title": "团队",
-            "role": "角色",
             "emptyTeamsOwner": {
               "title": "开始使用团队",
-              "subtitle": "通过将工作区成员分组为团队，更快地管理工作区成员",
-              "action": "创建团队"
+              "subtitle": "通过将工作区成员分组为团队，更快地管理工作区成员"
             },
             "emptyTeamsMember": {
               "title": "尚未创建团队",
               "subtitle": "工作区所有者可通过将成员分组为团队来更快地管理成员"
-            },
-            "emptyTeams": {
-              "title": "不属于任何团队"
             }
           }
         },
@@ -1884,7 +1525,8 @@
           "leave": "离开",
           "reactivate": "重新激活成员",
           "remove": "移除成員",
-          "passwordChange": "请求更改密码"
+          "passwordChange": "请求更改密码",
+          "modifyStorage": "修改存储空间"
         },
         "leaveModal": {
           "title": "离开",
@@ -1900,7 +1542,6 @@
         "members": "成员",
         "createTeamDialog": {
           "title": "新团队",
-          "label": "名称",
           "placeholder": "输入队名",
           "cancel": "取消",
           "create": "创建",
@@ -1925,11 +1566,9 @@
         },
         "renameTeamDialog": {
           "title": "重命名团队",
-          "label": "名称",
           "placeholder": "输入新团队名称",
           "cancel": "取消",
-          "rename": "重命名",
-          "nameExists": "该名称的团队已存在"
+          "rename": "重命名"
         },
         "deleteTeamDialog": {
           "title": "删除团队",
@@ -1954,7 +1593,6 @@
         "title": "计费",
         "nextBillingDate": "下一次账单日期",
         "planLimit": "以 {{planLimit}} 计划计费",
-        "subscription": "订阅",
         "membersLabel": "成员",
         "perUser": "每位用户",
         "members": {
@@ -2009,7 +1647,6 @@
       "accessLogs": {
         "filterActions": {
           "title": "筛选",
-          "searchMembers": "搜索成员",
           "filters": "筛选器",
           "clear": "清除",
           "activity": {
@@ -2044,27 +1681,12 @@
     },
     "account": {
       "title": "账户",
-      "inviteFriend": "邀请朋友",
-      "seeInvitations": "查看邀请",
-      "sendInvitationDescription": "传播消息，每邀请一个朋友获得1 GB免费存储空间。您最多可以获得{{N}}GB。",
-      "sendInvitation": "发送邀请",
-      "enterFriendEmail": "输入朋友的电子邮件",
-      "extraStorage": "额外存储空间",
-      "invitedFriends": "受邀朋友",
-      "friendsInvited": "受邀朋友",
-      "acceptedRequests": "已接受请求",
-      "user": "用户",
-      "status": "状态",
-      "accepted": "已接受",
-      "pending": "待定",
-      "noInvitations": "目前还没有发送邀请",
       "upgrade": "升级",
       "levelUpStorage": "升级您的存储空间，并获得许多其他好处",
       "upgradeNow": "立即升级",
       "emptyTrash": "清空回收站",
       "emptyTrashDescription": "回收站中的项目将被永久删除",
       "plans": {
-        "title": "套餐",
         "current": "当前",
         "upgrade": "升级",
         "downgrade": "降级",
@@ -2072,10 +1694,7 @@
         "manageBilling": "管理账单",
         "freeForever": "永久免费",
         "billedAnnually": "/月 按年计费",
-        "billedMonthly": "按月计费",
-        "year": "年",
         "month": "月",
-        "lifetime": "终身",
         "types": {
           "essential": "基础版",
           "premium": "高级版",
@@ -2087,7 +1706,6 @@
         "planFeaturesList": {
           "title": "套餐详情",
           "comingSoon": "即将推出",
-          "storage": " 加密云存储空间",
           "1TB": {
             "title": "Essential (基础版)",
             "features": [
@@ -2147,8 +1765,6 @@
           }
         },
         "businessPlanFeaturesList": {
-          "title": "套餐详情",
-          "storage": " 存储空间",
           "1TB": {
             "title": "标准版",
             "features": [
@@ -2188,11 +1804,7 @@
               "邮件"
             ]
           }
-        },
-        "user": "用户"
-      },
-      "billing": {
-        "title": "计费"
+        }
       },
       "security": {
         "title": "安全"
@@ -2214,23 +1826,17 @@
   "workspaces": {
     "workspaces": "工作区",
     "workspace": "工作区",
-    "createWorkspace": "创建工作区",
     "workspaceTypes": {
       "personal": "个人工作区",
       "business": "商务工作区"
     },
     "pending": "待发邀请",
-    "messages": {
-      "sharedSuccess": "项目成功与团队共享",
-      "switchingWorkspace": "切换工作区"
-    },
     "pendingInvitations": {
       "empty": "没有剩余的邀请",
       "title": "待处理的邀请",
       "accept": "接受",
       "deny": "拒绝",
-      "invitedOn": "邀请发送 ",
-      "todayAt": "今天在 "
+      "invitedOn": "邀请发送 "
     },
     "sharedWorkspace": "共享工作区"
   },

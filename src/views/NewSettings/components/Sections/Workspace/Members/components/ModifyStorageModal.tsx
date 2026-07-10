@@ -9,6 +9,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 import { MemberRole } from 'views/NewSettings/types/types';
 import UserCard from './UserCard';
+import { Translate } from 'app/i18n/types';
 
 const MINIMUM_BYTES_TO_ASSIGN = 100 * 1024 * 1024;
 const MODIFY_STORAGE_DIALOG_KEY = ActionDialog.ModifyStorage;
@@ -142,7 +143,7 @@ const UserCardAndStorageTable = ({
   memberName: Record<'name' | 'lastName', string>;
   memberRole: MemberRole;
   maxStorageForWorkspaceMember: number;
-  translate: (key: string, props?: Record<string, unknown>) => string;
+  translate: Translate;
 }) => (
   <div className="flex w-full overflow-hidden rounded-xl border border-gray-10">
     <table width={'100%'}>
@@ -199,7 +200,7 @@ const StorageSelectionCard = ({
   maxStorageForWorkspaceMember: number;
   isLoading: boolean;
   handleSliderChange: (newStorage: number) => void;
-  translate: (key: string, props?: Record<string, unknown>) => string;
+  translate: Translate;
 }) => (
   <div className="flex w-full flex-col gap-6 rounded-xl border border-gray-10 bg-surface p-6">
     <div className="flex h-full w-full flex-row justify-center gap-8">

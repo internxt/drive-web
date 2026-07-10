@@ -9,7 +9,7 @@
     "@iconscout/react-unicons": "^2.2.5",
     "@internxt/css-config": "1.1.1",
     "@internxt/lib": "1.4.2",
-    "@internxt/sdk": "=1.17.13",
+    "@internxt/sdk": "=1.17.14",
     "@internxt/ui": "=0.1.21",
     "@phosphor-icons/react": "^2.1.10",
     "@popperjs/core": "^2.11.6",
@@ -99,7 +99,8 @@
     "lint": "yarn run lint:ts && yarn run lint:scss",
     "lint:fix": "yarn run lint:ts:fix && yarn run lint:scss:fix",
     "typecheck": "tsc --noEmit",
-    "analyze": "cross-env ANALYZE=true yarn build"
+    "analyze": "cross-env ANALYZE=true yarn build",
+    "check:i18n": "node scripts/check-i18n.cjs"
   },
   "browserslist": {
     "production": [

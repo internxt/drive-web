@@ -1,13 +1,8 @@
 import { ItemDetailsProps } from 'app/drive/types';
 import Skeleton from 'react-loading-skeleton';
+import { Translate } from 'app/i18n/types';
 
-const ItemDetailsSkeleton = ({
-  translate,
-  isFolder,
-}: {
-  translate: (key: string) => string;
-  isFolder: boolean | undefined;
-}) => {
+const ItemDetailsSkeleton = ({ translate, isFolder }: { translate: Translate; isFolder: boolean | undefined }) => {
   const itemData: ItemDetailsProps = {
     name: '',
     shared: '',
