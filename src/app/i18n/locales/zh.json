@@ -465,6 +465,40 @@
               "year": "年度",
               "month": "/月",
               "free": "免费的"
+            },
+            "options": {
+              "cancelRenewal": {
+                "title": "取消续订",
+                "description": "保留完整访问权限至 {{endDate}}。在此之前您将继续按月付款，且计划不会续订。",
+                "bulletedInfo": "剩余付款次数：{{remainingMonths}}",
+                "label": "{{endDate}} 之后",
+                "cta": "取消续订",
+                "confirmationModal": {
+                  "description": "您的计划将保持有效至 {{endDate}}。在此之前您将继续按月付款，且订阅在该日期之后不会续订。",
+                  "goBack": "返回",
+                  "confirm": "确认取消"
+                }
+              },
+              "endNow": {
+                "title": "立即结束",
+                "description": "通过支付剩余余额的最终款项立即取消计划。您的访问权限将立即终止。",
+                "bulletedInfo": "立即付款：€{{amountToPay}}",
+                "label": "付款后",
+                "cta": "立即结束",
+                "confirmationModal": {
+                  "title": "立即结束计划",
+                  "description": "您将支付 {{amount}} 的最终款项，立即取消计划。",
+                  "afterThis": "之后：",
+                  "accessEndsImmediately": "您的访问权限将立即终止",
+                  "noFurtherCharges": "将不再产生任何费用",
+                  "overStorage": {
+                    "title": "您已超过 {{freeLimit}}",
+                    "description": "由于您目前使用了 {{currentUsage}}，您的 Internxt Drive 将停止同步文件，且您将无法添加新文件"
+                  },
+                  "goBack": "稍后再说",
+                  "confirm": "确认并付款"
+                }
+              }
             }
           },
           "cancellationIncentive": {

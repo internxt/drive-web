@@ -444,6 +444,40 @@
               "year": "Jahr",
               "month": "Monat",
               "free": "Kostenlos"
+            },
+            "options": {
+              "cancelRenewal": {
+                "title": "Verlängerung kündigen",
+                "description": "Behalten Sie vollen Zugriff bis zum {{endDate}}. Sie zahlen bis dahin weiterhin monatlich, und Ihr Plan wird nicht verlängert.",
+                "bulletedInfo": "Verbleibende Zahlungen: {{remainingMonths}}",
+                "label": "Nach dem {{endDate}}",
+                "cta": "Verlängerung kündigen",
+                "confirmationModal": {
+                  "description": "Ihr Plan bleibt bis zum {{endDate}} aktiv. Bis dahin werden Sie weiterhin monatlich belastet, und Ihr Abonnement wird nach diesem Datum nicht verlängert.",
+                  "goBack": "Zurück",
+                  "confirm": "Kündigung bestätigen"
+                }
+              },
+              "endNow": {
+                "title": "Jetzt beenden",
+                "description": "Kündigen Sie Ihren Plan sofort, indem Sie eine letzte Zahlung des Restbetrags leisten. Ihr Zugriff endet sofort.",
+                "bulletedInfo": "Jetzt zahlen: €{{amountToPay}}",
+                "label": "Nach der Zahlung",
+                "cta": "Jetzt beenden",
+                "confirmationModal": {
+                  "title": "Plan jetzt beenden",
+                  "description": "Sie werden Ihren Plan sofort kündigen, indem Sie eine letzte Zahlung von {{amount}} leisten.",
+                  "afterThis": "Danach:",
+                  "accessEndsImmediately": "Ihr Zugriff endet sofort",
+                  "noFurtherCharges": "Es fallen keine weiteren Kosten an",
+                  "overStorage": {
+                    "title": "Sie überschreiten {{freeLimit}}",
+                    "description": "Da Sie {{currentUsage}} nutzen, wird Ihr Internxt Drive die Synchronisierung Ihrer Dateien beenden und Sie können keine neuen Dateien hinzufügen"
+                  },
+                  "goBack": "Vielleicht später",
+                  "confirm": "Bestätigen und bezahlen"
+                }
+              }
             }
           },
           "cancellationIncentive": {

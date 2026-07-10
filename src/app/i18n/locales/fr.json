@@ -444,6 +444,40 @@
               "year": "année",
               "month": "mois",
               "free": "Gratuit"
+            },
+            "options": {
+              "cancelRenewal": {
+                "title": "Annuler le renouvellement",
+                "description": "Conservez un accès complet jusqu’au {{endDate}}. Vous continuerez les paiements mensuels jusqu’à cette date, et votre abonnement ne sera pas renouvelé.",
+                "bulletedInfo": "Paiements restants : {{remainingMonths}}",
+                "label": "Après le {{endDate}}",
+                "cta": "Annuler le renouvellement",
+                "confirmationModal": {
+                  "description": "Votre abonnement restera actif jusqu’au {{endDate}}. Vous continuerez à être facturé mensuellement jusqu’à cette date, et votre abonnement ne sera pas renouvelé après cette date.",
+                  "goBack": "Retour",
+                  "confirm": "Confirmer l’annulation"
+                }
+              },
+              "endNow": {
+                "title": "Terminer maintenant",
+                "description": "Annulez votre abonnement immédiatement en effectuant un dernier paiement du solde restant. Votre accès prendra fin immédiatement.",
+                "bulletedInfo": "Payer maintenant : €{{amountToPay}}",
+                "label": "Après paiement",
+                "cta": "Terminer maintenant",
+                "confirmationModal": {
+                  "title": "Mettre fin au plan maintenant",
+                  "description": "Vous allez annuler votre abonnement immédiatement en effectuant un dernier paiement de {{amount}}.",
+                  "afterThis": "Après cela :",
+                  "accessEndsImmediately": "Votre accès prendra fin immédiatement",
+                  "noFurtherCharges": "Aucun autre frais ne sera appliqué",
+                  "overStorage": {
+                    "title": "Vous dépassez {{freeLimit}}",
+                    "description": "Comme vous utilisez {{currentUsage}}, votre Internxt Drive arrêtera de synchroniser vos fichiers et vous ne pourrez plus ajouter de nouveaux fichiers"
+                  },
+                  "goBack": "Peut-être plus tard",
+                  "confirm": "Confirmer et payer"
+                }
+              }
             }
           },
           "cancellationIncentive": {

@@ -465,6 +465,40 @@
               "year": "anno",
               "month": "mese",
               "free": "libero"
+            },
+            "options": {
+              "cancelRenewal": {
+                "title": "Annulla rinnovo",
+                "description": "Mantieni l’accesso completo fino al {{endDate}}. Continuerai i pagamenti mensili fino ad allora e il tuo piano non si rinnoverà.",
+                "bulletedInfo": "Pagamenti rimanenti: {{remainingMonths}}",
+                "label": "Dopo il {{endDate}}",
+                "cta": "Annulla rinnovo",
+                "confirmationModal": {
+                  "description": "Il tuo piano rimarrà attivo fino al {{endDate}}. Continuerai a essere addebitato mensilmente fino ad allora e il tuo abbonamento non si rinnoverà dopo quella data.",
+                  "goBack": "Indietro",
+                  "confirm": "Conferma cancellazione"
+                }
+              },
+              "endNow": {
+                "title": "Termina ora",
+                "description": "Annulla il tuo piano immediatamente effettuando un pagamento finale del saldo residuo. Il tuo accesso terminerà subito.",
+                "bulletedInfo": "Paga ora: €{{amountToPay}}",
+                "label": "Dopo il pagamento",
+                "cta": "Termina ora",
+                "confirmationModal": {
+                  "title": "Termina il piano ora",
+                  "description": "Stai per annullare il tuo piano immediatamente effettuando un pagamento finale di {{amount}}.",
+                  "afterThis": "Dopo di che:",
+                  "accessEndsImmediately": "Il tuo accesso terminerà immediatamente",
+                  "noFurtherCharges": "Non verranno applicati ulteriori addebiti",
+                  "overStorage": {
+                    "title": "Hai superato {{freeLimit}}",
+                    "description": "Poiché stai utilizzando {{currentUsage}}, il tuo Internxt Drive smetterà di sincronizzare i tuoi file e non potrai aggiungere nuovi file"
+                  },
+                  "goBack": "Forse più tardi",
+                  "confirm": "Conferma e paga"
+                }
+              }
             }
           },
           "cancellationIncentive": {
