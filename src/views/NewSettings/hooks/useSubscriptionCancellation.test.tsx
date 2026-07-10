@@ -99,9 +99,7 @@ describe('Subscription Cancellation - Custom Hook', () => {
     test('When the trial is activated for an active subscription, then it succeeds and closes the modal', async () => {
       applyCancellationTrialSpy.mockResolvedValueOnce(undefined);
       const onModalClose = vi.fn();
-      const { result } = renderHook(() =>
-        useSubscriptionCancellation({ individualSubscription: activeSubscription, onModalClose }),
-      );
+      const { result } = renderHook(() => useSubscriptionCancellation({ onModalClose }));
 
       await act(async () => {
         await result.current.activateTrial();
@@ -115,19 +113,9 @@ describe('Subscription Cancellation - Custom Hook', () => {
       expect(result.current.isApplyingTrial).toBe(false);
     });
 
-    test('When there is no active subscription, then the trial is not activated', async () => {
-      const { result } = renderHook(() => useSubscriptionCancellation({ individualSubscription: { type: 'free' } }));
-
-      await act(async () => {
-        await result.current.activateTrial();
-      });
-
-      expect(applyCancellationTrialSpy).not.toHaveBeenCalled();
-    });
-
     test('When the trial activation fails, then an error notification is shown', async () => {
       applyCancellationTrialSpy.mockRejectedValueOnce(new Error('failed'));
-      const { result } = renderHook(() => useSubscriptionCancellation({ individualSubscription: activeSubscription }));
+      const { result } = renderHook(() => useSubscriptionCancellation({}));
 
       await act(async () => {
         await result.current.activateTrial();

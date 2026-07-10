@@ -1,6 +1,6 @@
 import { t } from 'i18next';
 import { Button } from '@internxt/ui';
-import CancelSubscriptionModal from '../../../Workspace/Billing/CancelSubscriptionModal';
+import CancelSubscriptionDialog from '../../../Workspace/Billing/CancelSubscriptionDialog';
 import { StoragePlan, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 
 interface CancelSubscriptionProps {
@@ -16,9 +16,12 @@ interface CancelSubscriptionProps {
   activateTrial?: () => void;
   cancelSubscription: () => void;
   setIsCancelSubscriptionModalOpen: (isCancelSubscriptionModalOpen: boolean) => void;
+  earlyCancellationClientSecret?: string | null;
+  earlyCancelSubscription?: () => void;
+  onEarlyCancellationConfirmed?: () => void;
 }
 
-const CancelSubscription = ({
+const CancelSubscriptionSection = ({
   individualPlan,
   isCancelSubscriptionModalOpen,
   isCancellingSubscription,
@@ -31,6 +34,9 @@ const CancelSubscription = ({
   activateTrial,
   cancelSubscription,
   setIsCancelSubscriptionModalOpen,
+  earlyCancellationClientSecret,
+  earlyCancelSubscription,
+  onEarlyCancellationConfirmed,
 }: CancelSubscriptionProps) => {
   const onCancelSubscriptionButtonClicked = () => {
     setIsCancelSubscriptionModalOpen(true);
@@ -48,7 +54,7 @@ const CancelSubscription = ({
         {t('preferences.workspace.billing.cancelSubscription.button')}
       </Button>
 
-      <CancelSubscriptionModal
+      <CancelSubscriptionDialog
         individualPlan={individualPlan}
         isOpen={isCancelSubscriptionModalOpen}
         onClose={() => {
@@ -63,9 +69,12 @@ const CancelSubscription = ({
         userType={userType}
         cancelSubscription={cancelSubscription}
         activateTrial={activateTrial}
+        earlyCancellationClientSecret={earlyCancellationClientSecret}
+        earlyCancelSubscription={earlyCancelSubscription}
+        onEarlyCancellationConfirmed={onEarlyCancellationConfirmed}
       />
     </section>
   );
 };
 
-export default CancelSubscription;
+export default CancelSubscriptionSection;

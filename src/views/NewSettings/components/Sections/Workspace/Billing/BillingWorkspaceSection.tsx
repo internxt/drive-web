@@ -14,7 +14,7 @@ import { useAppDispatch } from 'app/store/hooks';
 import { WorkspacesState, workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import BillingPaymentMethodCard from '../../../BillingPaymentMethodCard';
 import Invoices from '../../../containers/InvoicesContainer';
-import CancelSubscription from '../../Account/Billing/components/CancelSubscription';
+import CancelSubscriptionSection from '../../Account/Billing/components/CancelSubscriptionSection';
 import { getPlanInfo, getPlanName } from '../../../../utils/planUtils';
 import BillingDetailsCard from './BillingDetailsCard';
 import EditBillingDetailsModal from './components/EditBillingDetailsModal';
@@ -248,7 +248,7 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
       <BillingPaymentMethodCard subscription={plan.businessSubscription?.type} userType={UserType.Business} />
       <Invoices userType={UserType.Business} />
       {isSubscription && (
-        <CancelSubscription
+        <CancelSubscriptionSection
           isCancelSubscriptionModalOpen={isCancelSubscriptionModalOpen}
           setIsCancelSubscriptionModalOpen={setIsCancelSubscriptionModalOpen}
           isCancellingSubscription={isCancellingSubscription}

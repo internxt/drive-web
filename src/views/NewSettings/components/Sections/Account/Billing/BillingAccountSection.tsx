@@ -6,7 +6,7 @@ import { PlanState } from 'app/store/slices/plan';
 import Section from '../../../Section';
 import BillingPaymentMethodCard from '../../../../components/BillingPaymentMethodCard';
 import Invoices from '../../../containers/InvoicesContainer';
-import CancelSubscription from './components/CancelSubscription';
+import CancelSubscriptionSection from './components/CancelSubscriptionSection';
 import BillingAccountOverview from './containers/BillingAccountOverview';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { getCurrentUsage, getPlanInfo, getPlanName } from '../../../../utils/planUtils';
@@ -27,8 +27,15 @@ const BillingAccountSection = ({ changeSection, onClosePreferences }: BillingAcc
   const [currentUsage, setCurrentUsage] = useState<number>(-1);
   const nextBillingDate = getNextBillingDate(plan.individualSubscription);
 
-  const { isCancellingSubscription, isApplyingTrial, cancelSubscription, activateTrial } = useSubscriptionCancellation({
-    individualSubscription: plan.individualSubscription,
+  const {
+    isCancellingSubscription,
+    isApplyingTrial,
+    cancelSubscription,
+    activateTrial,
+    earlyCancellationClientSecret,
+    earlyCancelSubscription,
+    onEarlyCancellationConfirmed,
+  } = useSubscriptionCancellation({
     onModalClose: () => setIsCancelSubscriptionModalOpen(false),
   });
 
@@ -46,7 +53,7 @@ const BillingAccountSection = ({ changeSection, onClosePreferences }: BillingAcc
       <BillingPaymentMethodCard subscription={plan.individualSubscription?.type} userType={UserType.Individual} />
       <Invoices userType={UserType.Individual} />
       {isSubscription && (
-        <CancelSubscription
+        <CancelSubscriptionSection
           individualPlan={plan.individualPlan}
           isCancelSubscriptionModalOpen={isCancelSubscriptionModalOpen}
           isCancellingSubscription={isCancellingSubscription}
@@ -58,6 +65,9 @@ const BillingAccountSection = ({ changeSection, onClosePreferences }: BillingAcc
           activateTrial={activateTrial}
           cancelSubscription={cancelSubscription}
           setIsCancelSubscriptionModalOpen={setIsCancelSubscriptionModalOpen}
+          earlyCancellationClientSecret={earlyCancellationClientSecret}
+          earlyCancelSubscription={earlyCancelSubscription}
+          onEarlyCancellationConfirmed={onEarlyCancellationConfirmed}
         />
       )}
     </Section>

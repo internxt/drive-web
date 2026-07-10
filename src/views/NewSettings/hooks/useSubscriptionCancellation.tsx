@@ -1,6 +1,6 @@
 import { t } from 'i18next';
 import { useState } from 'react';
-import { UserSubscription, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import longNotificationsService from 'app/notifications/services/longNotification.service';
 import { paymentService } from 'views/Checkout/services';
@@ -9,7 +9,6 @@ import { planThunks } from 'app/store/slices/plan';
 import { errorService } from 'services';
 
 interface UseSubscriptionCancellationOptions {
-  individualSubscription?: UserSubscription | null;
   onModalClose?: () => void;
   onCancelSuccess?: () => void;
 }
@@ -17,20 +16,23 @@ interface UseSubscriptionCancellationOptions {
 interface UseSubscriptionCancellationResult {
   isCancellingSubscription: boolean;
   isApplyingTrial: boolean;
+  earlyCancellationClientSecret: string | null;
   cancelSubscription: (userType?: UserType) => Promise<void>;
+  earlyCancelSubscription: () => Promise<void>;
+  onEarlyCancellationConfirmed: () => void;
   activateTrial: () => Promise<void>;
 }
 
 const REFRESH_PLAN_DELAY_MS = 1000;
 
 export const useSubscriptionCancellation = ({
-  individualSubscription,
   onModalClose,
   onCancelSuccess,
 }: UseSubscriptionCancellationOptions): UseSubscriptionCancellationResult => {
   const dispatch = useAppDispatch();
   const [isCancellingSubscription, setIsCancellingSubscription] = useState<boolean>(false);
   const [isApplyingTrial, setIsApplyingTrial] = useState<boolean>(false);
+  const [earlyCancellationClientSecret, setEarlyCancellationClientSecret] = useState<string | null>(null);
 
   const refreshPlan = () => {
     setTimeout(() => {
@@ -60,8 +62,6 @@ export const useSubscriptionCancellation = ({
   };
 
   const activateTrial = async () => {
-    if (individualSubscription?.type !== 'subscription') return;
-
     setIsApplyingTrial(true);
     try {
       await paymentService.applyCancellationTrial();
@@ -81,5 +81,38 @@ export const useSubscriptionCancellation = ({
     }
   };
 
-  return { isCancellingSubscription, isApplyingTrial, cancelSubscription, activateTrial };
+  const earlyCancelSubscription = async () => {
+    setIsCancellingSubscription(true);
+    try {
+      const { clientSecret } = await paymentService.cancelSubscriptionEarly();
+      setEarlyCancellationClientSecret(clientSecret);
+    } catch (error) {
+      const castedError = errorService.castError(error);
+      errorService.reportError(error);
+      notificationsService.show({
+        text: t('notificationMessages.errorEarlyCancelSubscription'),
+        type: ToastType.Error,
+        requestId: castedError.requestId,
+      });
+      setIsCancellingSubscription(false);
+    }
+  };
+
+  const onEarlyCancellationConfirmed = () => {
+    setEarlyCancellationClientSecret(null);
+    setIsCancellingSubscription(false);
+    notificationsService.show({ text: t('notificationMessages.successEarlyCancelSubscription') });
+    refreshPlan();
+    onModalClose?.();
+  };
+
+  return {
+    isCancellingSubscription,
+    isApplyingTrial,
+    earlyCancellationClientSecret,
+    earlyCancelSubscription,
+    onEarlyCancellationConfirmed,
+    cancelSubscription,
+    activateTrial,
+  };
 };

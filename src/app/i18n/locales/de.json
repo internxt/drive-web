@@ -425,16 +425,17 @@
         },
         "billing": {
           "cancelSubscriptionModal": {
+            "title": "Abonnement kündigen",
             "description": {
-              "individual": "Sie sind dabei, Ihren Internxt-Tarif {{currentPlanName}} zu kündigen. Durch die Kündigung Ihres Tarifs werden Sie auf den kostenlosen Internxt-Tarif {{freePlanName}} herabgestuft. Bitte bestätigen Sie Ihre Wahl, um fortzufahren.",
+              "individual": {
+                "line1": "Ihr Jahresplan wird monatlich abgerechnet und läuft bis zum {{endDate}}. ",
+                "line2": "Sie können wählen, wie Sie fortfahren möchten:"
+              },
               "business": "Durch die Kündigung Ihres Tarifs wird der Workspace zusammen mit allen Daten gelöscht. Bitte bestätigen Sie Ihre Wahl, um fortzufahren."
             },
+
             "commitment": {
-              "firstMonthDescription": "Da Sie sich noch in Ihrer 30-tägigen Testphase befinden, wird Ihre Kündigung sofort wirksam. Sie werden nicht mehr belastet und Ihr Konto wird jetzt auf den kostenlosen 1-GB-Plan zurückgesetzt.",
-              "description": "Sie haben ein Jahresabonnement, das monatlich abgerechnet wird. Wenn Sie jetzt kündigen, bleibt Ihr Abonnement bis zum {{end_date}} aktiv, und Sie werden bis zu diesem Datum weiterhin monatlich belastet.",
-              "monthsRemaining": "Verbleibende Zahlungen: {{monthsRemaining}}",
-              "amountPerMonth": "Betrag pro Monat: €{{amount}}",
-              "afterLabel": "Nach dem {{monthsRemaining}}"
+              "firstMonthDescription": "Da Sie sich noch in Ihrer 30-tägigen Testphase befinden, wird Ihre Kündigung sofort wirksam. Sie werden nicht mehr belastet und Ihr Konto wird jetzt auf den kostenlosen 1-GB-Plan zurückgesetzt."
             },
             "keepSubscription": "Abonnement behalten",
             "cancelSubscription": "Abonnement beenden",

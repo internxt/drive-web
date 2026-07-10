@@ -40,11 +40,11 @@ const CancelPlanModal = ({
 
   const title = translate('views.account.tabs.billing.cancelSubscriptionModal.title');
   const description = {
-    line1: translate('views.account.tabs.billing.cancelSubscriptionModal.description.line1', {
+    line1: translate('views.account.tabs.billing.cancelSubscriptionModal.description.individual.line1', {
       endDate: commitmentRenewal,
     }),
 
-    line2: translate('views.account.tabs.billing.cancelSubscriptionModal.description.line2'),
+    line2: translate('views.account.tabs.billing.cancelSubscriptionModal.description.individual.line2'),
   };
 
   const cancelRenewalBulletedInfo = [
@@ -90,7 +90,7 @@ const CancelPlanModal = ({
             variantButtonAction="secondary"
             bulletedInfo={cancelRenewalBulletedInfo}
           />
-          {onOpenEndPlanNowDialog && (
+          {onOpenEndPlanNowDialog && remainingMonths && remainingMonths > 1 && (
             <PlanChangeOption
               title={translate('views.account.tabs.billing.cancelSubscriptionModal.options.endNow.title')}
               description={translate('views.account.tabs.billing.cancelSubscriptionModal.options.endNow.description')}

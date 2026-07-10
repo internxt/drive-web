@@ -425,16 +425,17 @@
         },
         "billing": {
           "cancelSubscriptionModal": {
+            "title": "Cancelar suscripción",
             "description": {
-              "individual": "Estás a punto de cancelar tu plan de Internxt {{currentPlanName}}. Al cancelar tu plan, pasarás al plan gratuito de Internxt {{freePlanName}}. Por favor, confirma tu elección para continuar.",
+              "individual": {
+                "line1": "Tu plan anual se factura mensualmente y termina el {{endDate}}. ",
+                "line2": "Puedes elegir cómo quieres continuar:"
+              },
               "business": "Al cancelar tu plan, el espacio de trabajo se eliminará junto con todos los datos. Por favor, confirma tu elección para continuar."
             },
+
             "commitment": {
-              "firstMonthDescription": "Como todavía estás en tu período de prueba de 30 días, tu cancelación será inmediata. Ya no se te cobrará y tu cuenta volverá al plan gratuito de 1 GB ahora.",
-              "description": "Tienes una suscripción anual facturada mensualmente. Si cancelas ahora, tu suscripción permanecerá activa hasta el {{end_date}}, y seguirás siendo cobrado mensualmente hasta esa fecha.",
-              "monthsRemaining": "Pagos restantes: {{monthsRemaining}}",
-              "amountPerMonth": "Importe por mes: €{{amount}}",
-              "afterLabel": "Después del {{monthsRemaining}}"
+              "firstMonthDescription": "Como todavía estás en tu período de prueba de 30 días, tu cancelación será inmediata. Ya no se te cobrará y tu cuenta volverá al plan gratuito de 1 GB ahora."
             },
             "keepSubscription": "Mantener suscripción",
             "cancelSubscription": "Cancelar suscripción",

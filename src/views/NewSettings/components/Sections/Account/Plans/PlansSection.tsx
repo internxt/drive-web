@@ -21,8 +21,8 @@ import {
   fileVersionsSelectors,
   fileVersionsActions,
 } from 'app/store/slices/fileVersions';
-import CancelSubscriptionModal from '../../Workspace/Billing/CancelSubscriptionModal';
-import { fetchPlanPrices, getStripe } from '../../../../services/plansApi';
+import CancelSubscriptionDialog from '../../Workspace/Billing/CancelSubscriptionDialog';
+import { fetchPlanPrices } from '../../../../services/plansApi';
 import { useSubscriptionCancellation } from '../../../../hooks';
 import ChangePlanDialog from './components/ChangePlanDialog';
 import IntervalSwitch from './components/TabButton';
@@ -60,7 +60,6 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
 
   const { individualSubscription, businessSubscription } = plan;
   const nextBillingDate = getNextBillingDate(individualSubscription);
-  let stripe;
 
   if (user === undefined) throw new Error('User is not defined');
 
@@ -100,8 +99,6 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
 
     const price = getDefaultPlanPrice();
     if (price) setPriceSelected(price);
-
-    stripe = getStripe(stripe);
   }, []);
 
   const handleOnPlanSelected = (price: DisplayPrice) => {
@@ -261,8 +258,15 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     setIsUpdatingSubscription(false);
   };
 
-  const { isCancellingSubscription, isApplyingTrial, cancelSubscription, activateTrial } = useSubscriptionCancellation({
-    individualSubscription,
+  const {
+    isCancellingSubscription,
+    isApplyingTrial,
+    cancelSubscription,
+    activateTrial,
+    earlyCancellationClientSecret,
+    earlyCancelSubscription,
+    onEarlyCancellationConfirmed,
+  } = useSubscriptionCancellation({
     onModalClose: () => setIsCancelSubscriptionModalOpen(false),
     onCancelSuccess: () => pollVersionLimitsUntilChanged(),
   });
@@ -362,7 +366,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
         />
       </div>
 
-      <CancelSubscriptionModal
+      <CancelSubscriptionDialog
         isOpen={isCancelSubscriptionModalOpen}
         individualPlan={plan.individualPlan}
         onClose={() => {
@@ -387,6 +391,9 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
             : getCurrentUsage(plan.businessPlanUsageDetails)
         }
         userType={selectedSubscriptionType}
+        earlyCancellationClientSecret={earlyCancellationClientSecret}
+        earlyCancelSubscription={earlyCancelSubscription}
+        onEarlyCancellationConfirmed={onEarlyCancellationConfirmed}
       />
     </Section>
   );
