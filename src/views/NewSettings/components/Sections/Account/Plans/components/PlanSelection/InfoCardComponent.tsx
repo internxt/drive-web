@@ -4,6 +4,7 @@ import { bytesToString } from 'app/drive/services/size.service';
 import { currencyService } from 'views/Checkout/services';
 import { displayAmount } from '../../../../../../utils/planUtils';
 import { InfoPlanCardSkeleton } from './skeletons/InfoPlanCardSkeleton';
+import { Translate } from 'app/i18n/types';
 
 interface InfoCardComponentProps {
   pricesToRender: DisplayPrice[];
@@ -15,7 +16,7 @@ interface InfoCardComponentProps {
   isLoadingCheckout: boolean;
   onCancelSubscription: (cancelSubscription: boolean) => void;
   handleOnPlanSelected: (priceSelected: DisplayPrice) => void;
-  translate: (key: string, props?: Record<string, unknown>) => string;
+  translate: Translate;
 }
 
 export const InfoCardComponent = ({
