@@ -51,7 +51,6 @@ export const guestSignupOnSubmit = async ({
 
     const user = {
       ...xUser,
-      privateKey,
       keys: {
         ecc: {
           publicKey: publicKey,

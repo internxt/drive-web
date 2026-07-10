@@ -69,7 +69,6 @@ describe('backupKeyUtils', () => {
       const mockMnemonic =
         'whip pipe sphere rail witness sting hawk project east return unhappy focus shop dry midnight frog critic lion horror slide luxury consider vibrant timber';
       const mockUser = {
-        privateKey: 'test-private-key',
         keys: {
           ecc: {
             privateKey: 'test-ecc-private-key',
@@ -131,7 +130,6 @@ describe('backupKeyUtils', () => {
       const mockMnemonic =
         'whip pipe sphere rail witness sting hawk project east return unhappy focus shop dry midnight frog critic lion horror slide luxury consider vibrant timber';
       const mockUser = {
-        privateKey: 'test-private-key',
         keys: {
           ecc: {
             privateKey: 'test-ecc-private-key',
@@ -155,8 +153,6 @@ describe('backupKeyUtils', () => {
         rootFolderUuid: 'test-root-folder-uuid',
         sharedWorkspace: false,
         credit: 0,
-        publicKey: 'test-public-key',
-        revocationKey: 'test-revocation-key',
         appSumoDetails: null,
         registerCompleted: false,
         hasReferralsProgram: false,
@@ -190,7 +186,6 @@ describe('backupKeyUtils', () => {
       const mockMnemonic =
         'whip pipe sphere rail witness sting hawk project east return unhappy focus shop dry midnight frog critic lion horror slide luxury consider vibrant timber';
       const mockUser = {
-        privateKey: 'test-private-key',
         keys: {
           ecc: {
             privateKey: 'test-ecc-private-key',
@@ -215,8 +210,6 @@ describe('backupKeyUtils', () => {
         rootFolderUuid: 'test-root-folder-uuid',
         sharedWorkspace: false,
         credit: 0,
-        publicKey: 'test-public-key',
-        revocationKey: 'test-revocation-key',
         appSumoDetails: null,
         registerCompleted: false,
         hasReferralsProgram: false,
@@ -268,7 +261,6 @@ describe('backupKeyUtils', () => {
     it('should handle missing key properties', () => {
       const mockMnemonic = 'test mnemonic';
       const mockUser = {
-        privateKey: 'test-private-key',
         userId: 'test-user-id',
         uuid: 'test-uuid',
         email: 'test@example.com',
@@ -284,8 +276,6 @@ describe('backupKeyUtils', () => {
         rootFolderUuid: 'test-root-folder-uuid',
         sharedWorkspace: false,
         credit: 0,
-        publicKey: 'test-public-key',
-        revocationKey: 'test-revocation-key',
         appSumoDetails: null,
         registerCompleted: false,
         hasReferralsProgram: false,
@@ -538,7 +528,6 @@ describe('backupKeyUtils', () => {
           ecc: {
             public: mockGeneratedKeys.ecc.publicKey,
             private: mockGeneratedKeys.ecc.privateKeyEncrypted,
-            revocationKey: mockGeneratedKeys.revocationCertificate,
           },
           kyber: {
             public: mockGeneratedKeys.kyber.publicKey,

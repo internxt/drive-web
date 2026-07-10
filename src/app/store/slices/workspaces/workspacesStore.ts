@@ -142,7 +142,8 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
         navigationService.push(AppView.Login);
         return;
       }
-      const { mnemonic, publicKey } = user;
+      const { mnemonic } = user;
+      const publicKey = user.keys.ecc.publicKey;
 
       const encryptedMnemonic = await encryptMessageWithPublicKey({
         message: mnemonic,

@@ -1,4 +1,4 @@
-import { aes, items as itemUtils } from '@internxt/lib';
+import { items as itemUtils } from '@internxt/lib';
 import envService from 'services/env.service';
 import { Buffer } from 'buffer';
 import CryptoJS from 'crypto-js';

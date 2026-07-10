@@ -36,8 +36,6 @@ vi.mock('app/core/factory/sdk', () => ({
           user: {
             userId: 'mock-user-id',
             mnemonic: 'mock-decrypted-mnemonic',
-            privateKey: 'mock-private-key',
-            publicKey: 'mock-public-key',
             appSumoDetails: 'mock-appSumoDetails',
             avatar: 'mock-avatar',
             keys: {
@@ -57,8 +55,6 @@ vi.mock('app/core/factory/sdk', () => ({
           user: {
             userId: 'mock-user-id',
             mnemonic: 'mock-encrypted-mnemonic',
-            privateKey: 'mock-private-key',
-            publicKey: 'mock-public-key',
             keys: {
               ecc: {
                 privateKey: 'mock-private-key',
@@ -121,8 +117,6 @@ describe('useSignUp', () => {
       xUser: {
         userId: 'mock-user-id',
         mnemonic: 'mock-decrypted-mnemonic',
-        privateKey: 'mock-private-key',
-        publicKey: 'mock-public-key',
         appSumoDetails: 'mock-appSumoDetails',
         avatar: 'mock-avatar',
         backupsBucket: undefined,
@@ -168,8 +162,6 @@ describe('useSignUp', () => {
         userId: 'mock-user-id',
         mnemonic: 'mock-decrypted-mnemonic',
         rootFolderId: undefined,
-        privateKey: 'mock-private-key',
-        publicKey: 'mock-public-key',
         appSumoDetails: null,
         avatar: undefined,
         backupsBucket: undefined,
@@ -196,7 +188,6 @@ describe('useSignUp', () => {
       lastname: undefined,
       name: undefined,
       registerCompleted: undefined,
-      revocationKey: undefined,
       rootFolderUuid: undefined,
       root_folder_id: undefined,
       sharedWorkspace: undefined,

@@ -22,7 +22,7 @@ import { encryptMessageWithPublicKey, hybridEncryptMessageWithPublicKey } from '
  */
 export interface BackupData {
   mnemonic: string;
-  privateKey: string;
+  privateKey?: string;
   keys: {
     ecc: string;
     kyber: string;
@@ -53,9 +53,8 @@ export function handleExportBackupKey(translate) {
 
     const backupData: BackupData = {
       mnemonic,
-      privateKey: user.privateKey,
       keys: {
-        ecc: user.keys?.ecc?.privateKey ?? user.privateKey,
+        ecc: user.keys?.ecc?.privateKey ?? '',
         kyber: user.keys?.kyber?.privateKey ?? '',
       },
       ...(hasPublicKeys && {
@@ -186,7 +185,6 @@ export const prepareOldBackupRecoverPayloadForBackend = async ({
         ecc: {
           public: generatedKeys.ecc?.publicKey,
           private: generatedKeys.ecc?.privateKeyEncrypted,
-          revocationKey: generatedKeys.revocationCertificate,
         },
         kyber: {
           public: generatedKeys.kyber.publicKey as string,

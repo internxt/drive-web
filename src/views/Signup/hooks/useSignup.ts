@@ -36,13 +36,10 @@ export function parseUserSettingsEnsureKyberKeysAdded(user: UserSettings): UserS
     rootFolderUuid: user.rootFolderUuid,
     sharedWorkspace: user.sharedWorkspace,
     credit: user.credit,
-    privateKey: user.privateKey,
-    publicKey: user.publicKey,
-    revocationKey: user.revocationKey,
     keys: {
       ecc: {
-        publicKey: user.keys?.ecc?.publicKey ?? user.publicKey,
-        privateKey: user.keys?.ecc?.privateKey ?? user.privateKey,
+        publicKey: user.keys?.ecc?.publicKey ?? '',
+        privateKey: user.keys?.ecc?.privateKey ?? '',
       },
       kyber: {
         publicKey: user.keys?.kyber?.publicKey ?? '',
@@ -56,7 +53,6 @@ export function parseUserSettingsEnsureKyberKeysAdded(user: UserSettings): UserS
     createdAt: user.createdAt ?? new Date().toISOString(),
     avatar: user.avatar,
     emailVerified: user.emailVerified,
-
     mnemonic: user.mnemonic,
   };
 }
