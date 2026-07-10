@@ -212,8 +212,8 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       section: 'account',
       subsection: 'plans',
     });
-    setIsRestrictedPasswordDialogOpen(false);
-    setIsRestrictedSharingDialogOpen(false);
+    actionDispatch(setIsRestrictedPasswordDialogOpen(false));
+    actionDispatch(setIsRestrictedSharingDialogOpen(false));
     onClose();
     dispatch(uiActions.setIsPreferencesDialogOpen(true));
   };
@@ -318,7 +318,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
             isLoading={isLoading}
             onCopyLink={onCopyLink}
             changeAccess={changeAccess}
-            setShowStopSharingConfirmation={onOpenStopSharingDialog}
+            onOpenStopSharingDialog={onOpenStopSharingDialog}
           />
 
           <SharePasswordInputDialog
