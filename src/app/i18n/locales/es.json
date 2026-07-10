@@ -444,6 +444,51 @@
               "year": "año",
               "month": "mes",
               "free": "Gratis"
+            },
+            "options": {
+              "cancelRenewal": {
+                "title": "Cancelar renovación",
+                "description": "Mantén el acceso completo hasta el {{endDate}}. Seguirás con los pagos mensuales hasta entonces, y tu plan no se renovará.",
+                "bulletedInfo": "Pagos restantes: {{remainingMonths}}",
+                "label": "Después del {{endDate}}",
+                "cta": "Cancelar renovación",
+                "confirmationModal": {
+                  "description": "Tu plan permanecerá activo hasta el {{endDate}}. Seguirás siendo facturado mensualmente hasta entonces, y tu suscripción no se renovará después de esa fecha.",
+                  "goBack": "Volver",
+                  "confirm": "Confirmar cancelación"
+                }
+              },
+              "endNow": {
+                "title": "Finalizar ahora",
+                "description": "Cancela tu plan de inmediato realizando un pago final del saldo restante. Tu acceso terminará de inmediato.",
+                "bulletedInfo": "Pagar ahora: €{{amountToPay}}",
+                "label": "Después del pago",
+                "cta": "Finalizar ahora",
+                "confirmationModal": {
+                  "title": "Finalizar plan ahora",
+                  "description": "Vas a cancelar tu plan de inmediato realizando un pago final de {{amount}}.",
+                  "afterThis": "Después de esto:",
+                  "accessEndsImmediately": "Tu acceso terminará de inmediato",
+                  "noFurtherCharges": "No se aplicarán más cargos",
+                  "overStorage": {
+                    "title": "Has superado {{freeLimit}}",
+                    "description": "Como estás utilizando {{currentUsage}}, tu Internxt Drive dejará de sincronizar tus archivos y no podrás añadir nuevos archivos"
+                  },
+                  "goBack": "Quizás más tarde",
+                  "confirm": "Confirmar y pagar"
+                }
+              }
+            }
+          },
+          "cancellationIncentive": {
+            "title": {
+              "normal": "EL PRÓXIMO MES",
+              "blue": "VA POR NOSOTROS"
+            },
+            "description": "Si mantienes tu suscripción, obtendrás el próximo mes gratis y una ampliación de la prueba hasta el {{newDate}}. Esta es una oferta única.",
+            "cta": {
+              "cancel": "Cancelar de todos modos",
+              "freeMonth": "Obtener 1 mes GRATIS"
             }
           },
           "paymentMethod": {
@@ -1212,6 +1257,8 @@
     "successCancelSubscription": "Tu suscripción ha sido cancelada",
     "errorCancelSubscription": "Algo ha ido mal al cancelar la suscripción",
     "errorCreatingSubscription": "Algo salió mal al crear tu suscripción",
+    "successApplyCancellationIncentive": "¡Gracias por continuar con nosotros! Disfruta del próximo mes gratis",
+    "errorApplyCancellationIncentive": "Ha ocurrido un error al aplicar el incentivo de cancelación",
     "couponIsNotValidForUserError": "El cupón solo puede ser canjeado por nuevos clientes.",
     "errorApplyingCoupon": "Ocurrió un error al aplicar el cupón",
     "errorWhileFetchingMoreItems": "Algo salió mal al obtener más elementos",
