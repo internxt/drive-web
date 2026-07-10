@@ -1286,6 +1286,8 @@
     "errorCreatingSubscription": "创建您的订阅时出现问题",
     "successApplyCancellationIncentive": "感谢您继续与我们同行！尽享下个月免费服务",
     "errorApplyCancellationIncentive": "应用取消优惠时发生错误",
+    "successEarlyCancelSubscription": "您的订阅已被取消",
+    "errorEarlyCancelSubscription": "取消订阅时出了点问题",
     "couponIsNotValidForUserError": "优惠券只能由新客户兑换。",
     "errorApplyingCoupon": "应用优惠券时出错",
     "errorWhileFetchingMoreItems": "获取更多项目时出现错误",

@@ -1285,6 +1285,8 @@
     "errorCancelSubscription": "取消訂閱時出現問題",
     "successApplyCancellationIncentive": "感謝您繼續與我們同行！下個月免費享用",
     "errorApplyCancellationIncentive": "套用取消優惠時發生問題",
+    "successEarlyCancelSubscription": "您的訂閱已取消",
+    "errorEarlyCancelSubscription": "取消訂閱時出現問題",
     "successApplyCoupon": "免費使用3個月的優惠碼已應用",
     "errorApplyCoupon": "應用折扣時出現錯誤",
     "alreadyAppliedCoupon": "優惠碼已經應用",
