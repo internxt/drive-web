@@ -25,29 +25,6 @@
       "mail": "Mail"
     }
   },
-  "susbcriptionsBanner": {
-    "title": "升級您的計畫！",
-    "features": ["後量子加密", "雲端硬碟、VPN 和防毒軟體", "即將推出郵件和會議"],
-    "description": "續訂您的訂閱，即可享受我們的新功能！",
-    "cta": "8折優惠"
-  },
-  "lifetimesBanner": {
-    "title": "升級您的計畫！",
-    "features": ["後量子加密", "雲端硬碟、VPN 和防毒軟體", "即將推出郵件和會議"],
-    "description": "升級您的計畫，享受我們的新功能，並擴展您的存儲空間！",
-    "cta": "8折優惠"
-  },
-  "valentinesBanner": {
-    "title": "愛無極限！",
-    "subtitle": "使用代碼 VDAY 獲得我們 2TB 方案九折優惠",
-    "cta": "獲得優惠"
-  },
-  "banner": {
-    "label": "永久保護你的文件",
-    "title": "使用 Internxt 獲得安全、私人雲端存儲的終身訪問權！",
-    "cta": "選擇你的方案",
-    "guarantee": "30 天退款保證"
-  },
   "notFound": {
     "header": "錯誤 404",
     "title": "此處無任何內容...",
@@ -78,7 +55,7 @@
     "zh": "简体中文 （中国)",
     "ru": "Русский (俄文)",
     "de": "Deutsch (德文)",
-    "tw": "繁體中文 （台灣)"
+    "zh-tw": "臺灣 (Taiwan)"
   },
   "theme": {
     "title": "外觀",
@@ -94,7 +71,8 @@
     "summer": "夏天",
     "anniversary": "Anniversary",
     "stPatricks": "St. Patrick's",
-    "idManagement": "Identity Management"
+    "idManagement": "Identity Management",
+    "environment": "世界環境日"
   },
   "auth": {
     "emailFloatingLabel": "電子郵件",
@@ -110,9 +88,7 @@
       "dontHaveAccount": "沒有帳戶？",
       "dontHaveAccountMobile": "沒有 Internxt 帳戶？",
       "createAccount": "創建帳戶",
-      "2FA": "雙重身份驗證代碼",
       "twoFactorAuthenticationCode": "雙重身份驗證代碼",
-      "wrongLogin": "使用者名稱或密碼無效",
       "failedToSendAuthData": "無法發送身份驗證數據。請重試。"
     },
     "button": {
@@ -128,19 +104,42 @@
         "normalText": "Internxt 不存儲密碼。",
         "boldText": "如果您忘記密碼，可以下載備份密鑰以重新獲取文件訪問權限。",
         "cta": "了解更多"
+      },
+      "authView": {
+        "emailPlaceholder": "電子郵件",
+        "passwordPlaceholder": "密碼",
+        "emailEmpty": "電子郵件不得為空",
+        "passwordEmpty": "密碼不得為空",
+        "buttonText": "取得優惠",
+        "legal": {
+          "line1": "建立帳戶即表示您接受",
+          "line2": "服務條款與隱私政策"
+        },
+        "heroTitle": "以完全隱私儲存您的檔案",
+        "planLabel": "2TB 方案",
+        "freeTrialText": "前 30 天免費",
+        "discountText": "若您決定續約，接下來三個月享 50% 折扣"
+      },
+      "blog": {
+        "title": {
+          "line1": "將隱私放在首位，立即加入",
+          "blueText": " Internxt ",
+          "line2": ""
+        },
+        "emailPlaceholder": "電子郵件",
+        "passwordPlaceholder": "密碼",
+        "emailEmpty": "電子郵件不得為空",
+        "passwordEmpty": "密碼不得為空",
+        "buttonText": "免費取得最多 1GB！",
+        "legal": {
+          "line1": "建立帳戶即表示您接受",
+          "line2": "服務條款與隱私政策"
+        }
       }
-    },
-    "downloadBackupKey": {
-      "title": "備份金鑰",
-      "description": "備份金鑰可以在您忘記密碼的情況下恢復帳戶。切勿分享它。",
-      "downloadCta": "下載備份金鑰",
-      "settingsTab": "您可以在設置 > 安全中訪問您的備份金鑰",
-      "skip": "跳過"
     },
     "forgotPassword": {
       "title": "帳戶恢復",
       "continue": "繼續",
-      "sending": "發送中...",
       "notFound": "找不到電子郵件地址，請再試一次",
       "password": "記得您的密碼嗎？",
       "login": "登錄",
@@ -186,7 +185,6 @@
       "title": "重新啟動帳戶",
       "description": "由於我們的端到端加密和零知識政策，如果沒有您的密碼或備份金鑰，您將無法訪問您的數據。",
       "alert1": "通過重新啟動您的帳戶，您理解所有文件、照片和備份將被永久刪除。",
-      "button": "發送帳戶重啟驗證",
       "successDescription": "您的帳戶和密碼已重置",
       "error": "重新啟動帳戶時出現錯誤"
     },
@@ -217,7 +215,6 @@
         "password": "創建密碼"
       },
       "signIn": {
-        "emailAddress": "您的電子郵件地址",
         "password": "您的密碼"
       },
       "title": {
@@ -241,34 +238,19 @@
     "productCard": {
       "title": "訂單摘要",
       "selectedPlan": "選擇的計劃",
-      "numberOfUsers": "用戶數：{{seats}}",
-      "renewalPeriod": {
-        "renewsAt": "* 續訂日期為",
-        "month": "每月",
-        "year": "每年",
-        "lifetime": "終身"
-      },
       "renewalTitle": {
         "month": "每年",
         "year": "每年",
         "lifetime": "終身"
-      },
-      "pcMobileRenews": "* 試用期後第一年以 50€ 續訂",
-      "plan": {
-        "month": "{{spaceToUpgrade}} - 1 {{interval}} 計劃",
-        "year": "{{spaceToUpgrade}} - 1 {{interval}} 計劃",
-        "lifetime": "{{spaceToUpgrade}} - {{interval}} 計劃"
       },
       "billed": {
         "month": "按月計費",
         "year": "按年計費",
         "lifetime": "一次性支付"
       },
-      "perUser": "/每用戶",
       "saving": "您節省了 {{percent}}%",
       "planDetails": "計劃詳情：",
       "total": "總計d",
-      "totalForBusiness": "總計 {{N}} 用戶：",
       "addCoupon": {
         "buttonTitle": "添加優惠券",
         "inputText": "優惠券代碼"
@@ -304,14 +286,12 @@
     }
   },
   "general": {
-    "new": "新的",
     "of": "的",
     "at": "在",
     "terms": "條款和條件",
     "contactSupport": "聯絡支持",
     "help": "需要幫助嗎？",
     "searchBar": {
-      "oldSearchBarPlaceholder": "搜尋此資料夾",
       "placeholder": "在 Drive 中搜尋",
       "filters": {
         "folder": "資料夾",
@@ -331,33 +311,14 @@
       }
     },
     "stage": {
-      "development": "開發",
-      "production": "生產"
+      "development": "開發"
     },
     "loading": {
-      "default": "加載中...",
-      "redirecting": "重定向中..."
-    },
-    "renewalPeriod": {
-      "monthly": "每月",
-      "annually": "每年",
-      "lifetime": "終身"
+      "default": "加載中..."
     },
     "renewal": {
-      "monthly": "每月",
       "annually": "每年",
       "lifetime": "終身"
-    },
-    "workspaces": {
-      "personal": "個人",
-      "business": "商業"
-    },
-    "time": {
-      "month": "月"
-    },
-    "billing": {
-      "billedEachPeriod": "{{price}} {{period}} 計費",
-      "oneTimePayment": "一次性付款"
     },
     "files": "檔案",
     "file": "檔案",
@@ -365,7 +326,6 @@
     "reloadPageMessage": "您所做的更改可能尚未保存。"
   },
   "shareLayout": {
-    "title": "我們是 INTERNXT",
     "subtitle": "具有無與倫比隱私的安全雲端儲存",
     "labels": {
       "privacy": "設計隱私",
@@ -417,7 +377,6 @@
       }
     },
     "account": {
-      "title": "帳戶",
       "avatar": {
         "title": "上傳頭像",
         "removePhoto": "刪除照片",
@@ -440,46 +399,18 @@
       },
       "tabs": {
         "account": {
-          "label": "帳戶",
-          "title": "個人",
           "usage": "已使用 {{totalUsed}} / {{totalSpace}}",
           "view": {
-            "backups": "備份",
-            "trash": "垃圾桶",
-            "free": {
-              "planName": "免費計劃",
-              "button": "升級"
-            },
-            "lifetime": {
-              "planName": "終身"
-            },
-            "subscription": {
-              "planName": "訂閱",
-              "button": "更改",
-              "yearly": "年",
-              "monthly": "月"
-            }
+            "backups": "備份"
           },
           "accountDetails": {
-            "head": "帳戶詳情",
             "name": "名字",
             "lastname": "姓氏",
             "card": {
-              "name": "名字",
-              "lastname": "姓氏",
-              "edit": "編輯",
-              "email": "電子郵件",
-              "resendEmail": "重新發送驗證郵件"
-            },
-            "verify": {
-              "verify": "驗證您的電子郵件",
-              "verified": "已驗證電子郵件",
-              "description": "檢查您的收件箱"
+              "email": "電子郵件"
             },
             "editProfile": {
               "title": "編輯帳戶詳情",
-              "name": "名字",
-              "lastname": "姓氏",
               "updatedProfile": "帳戶詳情已成功更新",
               "errorUpdatingProfile": "無法更新您的帳戶詳情"
             },
@@ -514,11 +445,7 @@
           }
         },
         "billing": {
-          "label": "帳單",
-          "currentPlan": "當前計劃",
-          "subsRenew": "訂閱將在 {{daysUntilRenewal}} 天後續訂",
           "cancelSubscriptionModal": {
-            "title": "取消訂閱",
             "description": {
               "individual": "您即將取消您的 Internxt {{currentPlanName}} 方案。取消方案後，您將降級為免費的 Internxt {{freePlanName}} 方案。請確認您的選擇以繼續。",
               "business": "取消方案後，工作區以及所有資料將被刪除。請確認您的選擇以繼續。"
@@ -531,7 +458,6 @@
               "afterLabel": "{{monthsRemaining}} 之後"
             },
             "keepSubscription": "保留訂閱",
-            "continue": "繼續",
             "cancelSubscription": "取消訂閱",
             "infoBox": {
               "titleCurrent": "當前",
@@ -539,214 +465,122 @@
               "year": "年",
               "month": "月",
               "free": "免費"
-            },
-            "giveUsFeedback": "請告訴我們為什麼您想要取消您的 {{currentPlanName}} Internxt 計劃並降級為免費計劃？",
-            "feedback": {
-              "placeholder": "給我們一些反饋"
-            },
-            "coupon": {
-              "title": "3 個月",
-              "subtitle": "免費",
-              "text1": "通過保留您的",
-              "text2": "訂閱，您將獲得接下來 3 個月的免費使用權。這是一個一次性優惠。",
-              "continue": "獲得 3 個月免費"
             }
           },
-          "billed": "已收費 {{interval}} {{renewDate}}",
           "paymentMethod": {
-            "head": "付款方式",
-            "empty": {
-              "title": "您目前使用的是免費計劃",
-              "subtitle": "當您擁有付費訂閱計劃時，信用卡信息將自動顯示在這裡。"
-            },
             "title": "添加新的付款方式",
             "contactUs": {
-              "description": "聯繫我們以更新您的付款方式",
-              "contact": "聯絡"
+              "description": "聯繫我們以更新您的付款方式"
             }
           },
           "invoices": {
             "head": "發票",
             "billingDate": "賬單日期",
             "plan": "計劃",
-            "empty": "沒有可用的發票",
-            "download": "下載發票"
-          }
-        },
-        "info": {
-          "title": "個人",
-          "description": "檢查您的存儲使用情況和帳戶詳情",
-          "advice1": {
-            "title": "哪些數據可以編輯？",
-            "description": "出於嚴格的安全原因並保護您的數據，我們不允許修改用戶帳戶的數據，例如電子郵件。"
-          },
-          "advice2": {
-            "title": "安全帳戶",
-            "description": "您的文件在離開您的設備前就已加密，因此只有您能訪問您的文件，沒有任何隱藏或作弊，這就是 Internxt 的隱私保護。"
+            "storage": "儲存空間"
           }
         },
         "plans": {
-          "label": "計劃",
-          "title": "計劃",
-          "description": "了解 Internxt 提供的不同存儲和解決方案選項",
-          "changeWorkspace": {
-            "personal": "切換到個人計劃",
-            "business": "切換到商業計劃"
-          },
-          "viewAllFeatures": "查看所有功能",
-          "card": {
-            "annually": "{{amount}} 每年收費",
-            "monthly": "{{amount}} 每月",
-            "lifetime": "{{amount}}",
-            "oneTimePayment": "一次性付款"
-          },
-          "features": {
-            "title": "所有計劃包含的功能",
-            "sections": {
-              "section1": {
-                "title": "滿意保證",
-                "point1": "所有訂閱均享有30天退款保證。",
-                "point2": "隨時取消，無任何隱藏條款。",
-                "point3": "高級支持。"
-              },
-              "section2": {
-                "title": "默認安全",
-                "point1": "軍用級加密以確保您的隱私。",
-                "point2": "加密文件存儲和共享。",
-                "point3": "零知識雲存儲。"
-              },
-              "section3": {
-                "title": "無限訪問和同步",
-                "point1": "從所有設備訪問您的文件、照片和備份。",
-                "point2": "無限帶寬同步。",
-                "point3": "備份電腦上的任何文件夾。"
-              }
+          "dialog": {
+            "title": "變更方案",
+            "subtitle1": "您即將將 Internxt 方案從 ",
+            "subtitle2": " 變更為 ",
+            "subtitle3": "。請確認您的選擇以繼續。",
+            "plan": {
+              "current": "目前",
+              "new": "新",
+              "interval": "月"
+            },
+            "alert": {
+              "title": "您已超過 ",
+              "text1": "由於您使用了 ",
+              "text2": "，您的 Internxt Drive 將停止同步檔案，且您將無法新增檔案"
+            },
+            "message": {
+              "text": "系統將立即向您收費，並在每個付款週期收費，直到您再次變更為止。"
+            },
+            "button": {
+              "back": "保留目前方案",
+              "continue": "繼續"
             }
-          },
-          "dialog": "更改計劃",
-          "subtitle1": "您即將將您的 Internxt 計劃從 ",
-          "subtitle2": " 更改為 ",
-          "subtitle3": "。請確認您的選擇以繼續。",
-          "plan": {
-            "current": "當前",
-            "new": "新的",
-            "interval": "月"
-          },
-          "alert": {
-            "title": "您已超過 ",
-            "text1": "由於您正在使用 ",
-            "text2": "，您的 Internxt Drive 將停止同步您的文件，並且您將無法添加新文件"
-          },
-          "message": {
-            "text": "您現在將被收費，並在每個付款期內收費，直到進行進一步更改。"
-          },
-          "button": {
-            "back": "保持當前計劃",
-            "continue": "更改計劃"
           }
-        }
-      },
-      "password": {
-        "title": "密碼",
-        "description": "更改您的密碼",
-        "advice1": {
-          "title": "更改密碼",
-          "description": "更改您的密碼將使您從所有設備上登出。再次登錄時需要使用新密碼。"
-        },
-        "advice2": {
-          "title": "如何確保您的密碼安全？",
-          "description": ""
-        },
-        "advice3": {
-          "title": "新的加密密鑰",
-          "description": "通過更改您的密碼，所有文件將使用您的舊密碼解密，然後使用您的新密碼重新加密，因此您不會失去對它們的訪問權限！此操作無法撤銷。"
-        },
-        "advice4": {
-          "title": "哪些數據可以編輯？",
-          "description": "出於嚴格的安全原因並保護您的數據，我們不允許修改用戶帳戶的數據，例如電子郵件。"
         },
         "security": {
-          "label": "安全",
+          "label": "安全性",
           "lock": {
-            "title": "請輸入您的密碼以繼續",
-            "description": "出於安全原因，您必須輸入您的密碼才能對此頁面進行任何更改。",
+            "title": "輸入密碼以繼續",
+            "description": "基於安全考量，您必須先輸入密碼才能在此頁面進行任何變更。",
             "inputLabel": "密碼",
             "errors": {
-              "incorrect": "密碼錯誤，請再試一次",
+              "incorrect": "密碼不正確，請再試一次",
               "notVerified": "我們無法驗證您的密碼"
             }
           },
           "changePassword": {
-            "title": "更改密碼",
-            "description": "請務必記住您的新密碼。如果您遺失了它，將無法訪問所有文件。我們強烈建議使用密碼管理器。",
-            "button": "更改密碼"
+            "title": "變更密碼",
+            "description": "我們不會儲存密碼；若您遺失密碼，將無法存取您的 Internxt 帳戶。",
+            "button": "變更密碼"
           },
           "2FA": {
-            "title": "雙重身份驗證 (2FA)",
-            "titleDisable": "禁用雙重身份驗證",
-            "description": "雙重身份驗證通過在登錄時要求額外的驗證來提供額外的安全層。除了您的 Internxt 密碼外，您還需要輸入發送到您註冊帳戶時所用電子郵件的唯一生成碼。",
-            "button": "啟用 2FA",
-            "disable": "禁用 2FA",
+            "title": "雙重驗證",
+            "titleDisable": "停用雙重驗證",
+            "description": "在登入時要求額外的驗證碼，增加一層安全防護。",
+            "button": "啟用",
+            "disable": "停用",
             "enabled": "已啟用",
-            "disabled": "已禁用",
+            "disabled": "已停用",
             "modal": {
-              "title": "雙重身份驗證",
-              "stepsLabel": "{{current}} / {{total}} 步",
-              "button": "啟用 2FA",
-              "2FALabelCode": "雙重身份驗證碼",
+              "title": "雙重驗證",
+              "stepsLabel": "{{current}} / {{total}}",
+              "button": "啟用",
+              "2FALabelCode": "雙重驗證碼",
               "or": "或",
               "steps": {
                 "download": {
                   "title": "下載 Authy",
-                  "description": "我們推薦使用 Authy，但您可以選擇任何其他 2FA 應用來設置雙重身份驗證過程。"
+                  "description": "我們建議使用 Authy，但您也可以使用任何其他您選擇的 2FA 應用程式設定 2FA 流程。"
                 },
                 "qr": {
-                  "title": "使用 2FA 應用掃描 QR 碼",
-                  "description": "如果無法掃描 QR 碼，請將此代碼插入應用中。"
+                  "title": "使用 2FA 應用程式掃描 QR 碼",
+                  "description": "如果您無法掃描 QR 碼，請將此代碼輸入應用程式。"
                 },
                 "backup-key": {
-                  "title": "保存備份金鑰",
-                  "description": "複製此代碼並保管好它，如果您丟失設備，將需要它來恢復您的帳戶。"
+                  "title": "儲存備份金鑰",
+                  "description": "複製此代碼並妥善保存，若您遺失裝置時將會需要它。"
                 },
                 "enable": {
-                  "title": "確認啟用 2FA",
-                  "description": "雙重身份驗證碼"
-                },
-                "disable": {
-                  "title": "禁用雙重身份驗證",
-                  "description": "要禁用雙重身份驗證，請將應用生成的代碼輸入下方。"
+                  "title": "確認啟用 2FA"
                 }
               },
               "errors": {
-                "incorrect": "代碼不正確，請再試一次",
-                "notVerified": "我們無法驗證您的代碼"
+                "incorrect": "驗證碼不正確，請再試一次"
               }
             }
           },
           "backupKey": {
             "title": "備份金鑰",
-            "description": "如果您忘記密碼，可以使用唯一的備份金鑰來恢復帳戶。切勿與他人共享此代碼。",
-            "button": "導出備份金鑰",
+            "description": "備份金鑰可在您忘記密碼時用於恢復帳戶。請勿分享。",
+            "button": "匯出備份金鑰",
             "success": "備份金鑰下載成功",
-            "error": "我們無法生成您的備份金鑰"
+            "error": "我們無法產生您的備份金鑰"
           },
           "faq": {
-            "title": "您有漏掉的問題嗎？",
+            "title": "還有什麼疑問嗎？",
             "faq1": {
-              "title": "為什麼我忘記密碼就會失去所有文件？",
-              "description": "您的密碼是訪問帳戶的唯一方式。Internxt 團隊絕對無法訪問您的帳戶，因此無法更改您的密碼。這是為了防止任何未經授權的訪問到您的帳戶和個人信息。<br/><br/>如果您創建了備份金鑰，即使沒有密碼，您也可以恢復帳戶。您可以通過訪問“設置”中的“安全”標籤來導出唯一的備份金鑰的副本。您的備份金鑰可以用於選擇“忘記密碼”並按照隨後電子郵件中的說明恢復您的帳戶。"
+              "title": "為什麼忘記密碼會遺失所有檔案？",
+              "description": "您的密碼是存取帳戶的唯一方式。Internxt 團隊完全無法存取您的帳戶，因此無法變更您的密碼。這是為了防止任何未經授權存取您的帳戶與個人資訊。<br/><br/>若您已建立備份金鑰，即可在沒有密碼的情況下恢復帳戶。您可以前往「設定」中的「安全性」分頁匯出您獨一無二的備份金鑰副本。登入時選擇「忘記密碼」並依照後續電子郵件中的指示操作，即可使用備份金鑰恢復帳戶。"
             },
             "faq2": {
-              "title": "我如何保證我的憑據安全？",
-              "description": "我們建議您使用可信的密碼管理器來存儲您的密碼。不僅是存儲 Internxt 的憑據，還有保護您的其他在線帳戶安全。"
+              "title": "我要如何確保我的憑證安全？",
+              "description": "我們建議您使用信譽良好的密碼管理器來儲存密碼。不僅是儲存 Internxt 的憑證，也能確保您其他線上帳戶的安全。"
             },
             "faq3": {
-              "title": "我可以用備份金鑰恢復我的帳戶嗎？",
-              "description": "如果您仍然擁有唯一的加密金鑰，您可以在沒有密碼的情況下恢復您的數據。請按照點擊“忘記密碼”後您將收到的電子郵件中列出的步驟進行操作。"
+              "title": "我可以使用備份金鑰恢復帳戶嗎？",
+              "description": "若您仍可存取您獨一無二的加密金鑰，即可在沒有密碼的情況下恢復資料。請依照點擊「忘記密碼」後收到的電子郵件中的步驟操作。"
             },
             "faq4": {
-              "title": "如果我更改密碼，會失去所有文件嗎？",
-              "description": "不會。由於您已經登錄帳戶，您可以更改密碼而不會丟失任何東西。請務必選擇一個在任何數據洩露中都沒有出現過的強密碼。"
+              "title": "變更密碼會遺失所有檔案嗎？",
+              "description": "不會。由於您已登入帳戶，可以在不遺失任何資料的情況下變更密碼。請務必選擇一組未曾出現在任何資料外洩事件中的強密碼。"
             }
           }
         }
@@ -762,6 +596,10 @@
         "title": "發生錯誤",
         "subtitle": "檢查鏈接是否正確或在設置 > 帳戶中再次請求電子郵件驗證",
         "cta": "轉到帳戶"
+      },
+      "message": {
+        "emailNotVerifiedPartOne": "您的電子郵件尚未驗證，請檢查您的收件匣或 ",
+        "emailNotVerifiedPartTwo": "重新傳送驗證"
       }
     },
     "emailChange": {
@@ -769,8 +607,7 @@
       "auth": {
         "title": "驗證電子郵件變更",
         "subtitle": "您的帳戶電子郵件將更改為 {{email}}",
-        "wrongPassword": "密碼錯誤，請再試一次",
-        "cta": "繼續"
+        "wrongPassword": "密碼錯誤，請再試一次"
       },
       "success": {
         "title": "電子郵件更改成功",
@@ -791,6 +628,35 @@
     "redirectToApp": {
       "message": "謝謝",
       "goToApp": "返回應用"
+    },
+    "preferences": {
+      "workspace": {
+        "overview": {
+          "edit": "編輯個人資料",
+          "address": "地址",
+          "phone": "電話",
+          "workspaceOverview": "工作區總覽",
+          "members": "成員",
+          "teams": "團隊",
+          "billed": "於 {{renewDate}} 收費",
+          "spaceUsed": "已使用空間 ({{percentageUsed}}%)",
+          "totalSpace": "總空間",
+          "editOverviewDetails": {
+            "title": "個人資料詳情",
+            "cancelButton": "取消",
+            "saveButton": "儲存變更"
+          },
+          "errors": {
+            "minNameLength": "公司名稱至少須有 3 個字元"
+          }
+        },
+        "billing": {
+          "editBilling": "編輯帳單",
+          "billingDetails": "帳單詳情",
+          "updatedBillingDetails": "詳情更新成功",
+          "errorUpdatingBillingDetails": "更新您的資料時發生錯誤。請於幾分鐘後再試"
+        }
+      }
     }
   },
   "contextMenu": {
@@ -823,7 +689,6 @@
       "move": "移動"
     },
     "removeSharedLinkModal": {
-      "title": "刪除連結",
       "multiSharedDescription": "具有此連結的用戶將失去對共享內容的訪問權限",
       "singleSharedDescription": "具有此連結的用戶將失去對共享內容的訪問權限",
       "cancel": "取消",
@@ -919,15 +784,10 @@
       },
       "requests": {
         "title": "訪問請求",
-        "button": "請求",
         "empty": "沒有剩餘的請求",
         "actions": {
           "accept": "接受",
-          "deny": "拒絕",
-          "roles": {
-            "editor": "編輯者",
-            "reader": "查看者"
-          }
+          "deny": "拒絕"
         }
       },
       "stopSharing": {
@@ -945,12 +805,7 @@
         "subtitle": "具有連結或被邀請的用戶將不再能夠訪問“{{name}}”",
         "multipleItemsSubtitle": "具有連結或被邀請的用戶將不再能夠訪問這些共享的項目",
         "cancel": "取消",
-        "confirm": "移動到垃圾桶",
-        "notification": {
-          "success": "不再分享“{{name}}”",
-          "successForMultipleItems": "不再分享這些項目",
-          "error": "無法移動到垃圾桶，請重試"
-        }
+        "confirm": "移動到垃圾桶"
       },
       "removeUser": {
         "notification": {
@@ -1022,17 +877,6 @@
       "sharedWith": "與您共享",
       "todayAt": "今天在"
     },
-    "friendsInvitedModal": {
-      "title": "已邀請的朋友",
-      "email": "電子郵件",
-      "total": "總計",
-      "pending": "待處理",
-      "accepted": "已接受",
-      "empty": "您尚未邀請任何人",
-      "resend": "重新發送邀請",
-      "resentInvitation": "邀請已成功重新發送",
-      "resendError": "重新發送電子郵件時出錯：{{reason}}"
-    },
     "deleteAccountModal": {
       "title": "您確定嗎？",
       "subtitle": "您的所有文件將永遠消失，您將無法訪問您的Internxt帳戶。",
@@ -1062,8 +906,8 @@
     "shareWithTeamModal": {
       "title": "分享 \"{{name}}\"",
       "teams": "團隊",
-      "teamsWithAccess": "有權限的團隊：",
-      "shareButton": "分享"
+      "shareButton": "分享",
+      "teamsWithAcces": "有存取權的團隊："
     },
     "restrictedSharingModal": {
       "title": "升級以分享檔案",
@@ -1085,10 +929,6 @@
         "title": "解鎖 Meet",
         "description": "升級後可發起並加入完全加密的視訊通話——私密、安全、無限制。"
       },
-      "mail": {
-        "title": "解鎖 Mail",
-        "description": "解鎖您的端對端加密私人電子郵件服務。"
-      },
       "vpn": {
         "title": "解鎖 VPN",
         "description": "升級以使用私密加密的網路流量保護。"
@@ -1103,18 +943,9 @@
       }
     }
   },
-  "form": {
-    "fields": {
-      "email": {
-        "placeholder": "電子郵件地址"
-      }
-    }
-  },
   "error": {
     "wrongPassword": "密碼錯誤，請重試或聯繫鏈接所有者",
-    "genericError": "發生錯誤：{{reason}}",
     "serverError": "內部服務器錯誤。請稍後再試",
-    "deleteTeamMember": "刪除團隊成員時出錯",
     "changingName": "更改名稱時出錯",
     "fileAlreadyExists": "具有相同名稱的文件已存在",
     "folderAlreadyExists": "已存在具有相同名稱的文件夾",
@@ -1122,27 +953,16 @@
     "folderCannotBeEmpty": "文件夾名稱不能為空",
     "fileCannotBeEmpty": "檔案名稱不能為空",
     "creatingFolder": "創建文件夾時出錯",
-    "sendReferralInvitation": "無法發送邀請電子郵件",
-    "sendClaimEmail": "無法發送索賠郵件",
-    "anyReferralCredit": "您的帳戶沒有任何信用額",
-    "backupKeyDontMatch": "插入的備份密鑰與您的唯一備份密鑰不匹配",
-    "shareLinkMissingBucket": "由於缺少存儲桶，無法生成共享鏈接",
-    "unavailableLink": "無法使用的鏈接",
-    "invalidActivationCode": "您的激活碼無效。也許您之前已使用過此鏈接，您的帳戶已經激活",
-    "redirectToStripe": "重定向到Stripe失敗。請與我們聯繫。原因：{{reason}}",
-    "deactivatingAccount": "停用帳戶時出錯。請與我們聯繫。",
     "fetchingFolderContent": "獲取文件夾內容時出錯",
     "uploadingFolder": "上傳文件夾時出錯",
     "uploadingFile": "上傳文件時出錯：{{reason}}",
     "uploadingItems": "部分元素無法上傳",
     "downloadingFile": "下載文件時出錯：{{message}}",
     "downloadingFolder": "下載文件夾時出錯：{{message}}",
-    "downloadingItems": "部分元素無法下載",
     "movingItemInsideItself": "您不能將文件夾移動到其內部",
     "movingItem": "移動項目時出錯",
     "renamingItem": "重命名項目時出錯",
     "linkExpired": "此安全鏈接已過期",
-    "teamInvitation": "無法發送邀請郵件",
     "ownerStorageIsFull": "擁有者的儲存空間已滿",
     "storageIsFull": "您的存儲空間已滿",
     "fileSizeLimitExceeded": {
@@ -1162,19 +982,9 @@
     },
     "ownerStorageIsFullDescription": "您無法在此共享資料夾中上傳檔案。",
     "storageIsFullDescription": "您無法上傳、同步或備份文件。",
-    "noSpaceAvailable": "您已達到當前計劃的限制，同步已停止。立即升級以保持文件的安全同步。",
-    "sharedFolderTooBig": "Internxt Drive不支持共享超過1GB的文件夾。",
-    "titleSharedFolderTooBig": "不支持的操作",
-    "workingOnIt": "我們正在努力為您帶來更好的體驗。",
     "noFilePreview": "無法預覽文件",
-    "browserNotSupported": "瀏覽器不受支持（{{userAgent}}）",
-    "subscribeToNewsletter": "訂閱通訊時出錯：{{message}}",
-    "lastPasswordError": "您輸入的最後一個密碼似乎無效。請重試，如果問題仍然存在，請聯繫我們的支持。",
-    "incorrectPassword": "您輸入的當前密碼不正確。請確保它是正確的。",
-    "emptyPassword": "以前的密碼不能為空",
     "errorMovingToTrash": "將項目移動到垃圾桶時出錯。",
     "errorDeletingFromTrash": "從垃圾桶中刪除項目時出錯。",
-    "maxSizeUploadLimitError": "文件過大（大於40GB）",
     "connectionLostError": "網絡連接已丟失",
     "errorLoadingTrashItems": "加載垃圾桶項目時出錯",
     "updateAvatarError": "更新頭像時發生錯誤",
@@ -1182,28 +992,11 @@
     "errorSettingWorkspace": "設定工作區時出錯"
   },
   "backups": {
-    "backups-from": "來自{{deviceName}}的備份",
     "your-devices": "您的設備",
-    "back-to-devices": "返回到設備",
     "empty": {
       "title": "沒有可用的備份",
       "subtitle": "在Internxt桌面應用程序上設置和管理您的備份",
       "downloadApp": "下載桌面應用程序"
-    },
-    "devices-list": {
-      "columns": {
-        "name": "名稱",
-        "last-update": "最後更新",
-        "size": "大小"
-      }
-    },
-    "backups-list": {
-      "columns": {
-        "name": "名稱",
-        "last-update": "最後更新",
-        "size": "大小",
-        "actions": "操作"
-      }
     },
     "dropdown": {
       "download": "下載",
@@ -1212,18 +1005,14 @@
   },
   "shared": {
     "errors": {
-      "notSharedFolder": "此文件夾未與您共享",
       "folderNotExists": "此文件夾不存在",
       "generic": "無法訪問文件夾"
     }
   },
   "shared-links": {
     "shared-links": "已分享",
-    "view": "次查看",
     "list": {
       "name": "名稱",
-      "link-content": "鏈接內容",
-      "shared": "已分享",
       "created": "創建時間",
       "size": "大小",
       "owner": "擁有者"
@@ -1233,37 +1022,18 @@
       "subtitle": "其他人與您共享的文件夾將顯示在這裡"
     },
     "item-menu": {
-      "copy-link": "複製鏈接",
-      "link-settings": "分享設置",
       "delete-link": "刪除鏈接",
       "delete-links": "刪除鏈接"
     },
-    "link-settings": {
-      "share-settings": "分享設置",
-      "views": "查看次數",
-      "options": "選項",
-      "copy-link": "複製鏈接",
-      "save": "保存",
-      "saving": "正在保存",
-      "save-close": "保存並關閉",
-      "close": "關閉"
-    },
     "toast": {
       "copy-to-clipboard": "鏈接已複製到剪貼板",
-      "link-updated": "鏈接設置已更新",
       "link-deleted": "鏈接已刪除",
-      "links-deleted": "鏈接已刪除",
-      "error-deleting-links": "刪除鏈接時出錯"
+      "links-deleted": "鏈接已刪除"
     }
   },
   "trash": {
     "trash": "垃圾桶",
     "clearTrash": "垃圾桶已清空",
-    "list": {
-      "name": "名稱",
-      "size": "大小",
-      "moved-to-trash": "已移至垃圾桶"
-    },
     "empty-state": {
       "title": "雲端垃圾桶為空",
       "subtitle": "已刪除的檔案和資料夾將顯示於此"
@@ -1432,18 +1202,9 @@
   },
   "success": {
     "passwordChanged": "密碼已成功更改",
-    "teamInvitationSent": "邀請郵件已發送至{{email}}",
-    "referralInvitationSent": "邀請郵件已發送至{{email}}",
-    "deletedTeamMember": "{{resource}} 已成功刪除",
-    "accountDeactivationEmailSent": "已發送停用帳戶郵件！",
-    "claimEmailSent": "索取郵件已發送！",
-    "teamsSubscriptionRedeemed": "您的團隊已準備就緒！請重新登錄以開始使用 Teams",
     "linkCopied": "鏈接已複製！",
     "twoFactorAuthActivated": "您的雙因素身份驗證已啟用！",
-    "twoFactorAuthDisabled": "您的雙因素身份驗證已停用",
-    "joinedToTheTeam": "您已成功加入團隊",
-    "done": "完成",
-    "subscribeToNewsletter": "{{email}} 成功訂閱電子報"
+    "twoFactorAuthDisabled": "您的雙因素身份驗證已停用"
   },
   "shareItemDialog": {
     "title": "鏈接設置",
@@ -1462,7 +1223,6 @@
     }
   },
   "notificationMessages": {
-    "copyLink": "已複製共享鏈接到剪貼板",
     "linkUpdated": "鏈接已更新",
     "itemsMovedToTrash": "{{item}} 已移到垃圾桶",
     "restoreItems": "項目已成功還原",
@@ -1471,23 +1231,17 @@
     "membersUpdatedSuccessfully": "成員更新成功",
     "errorModifyingStorage": "新存儲空間對此成員無效。",
     "generalErrorWhileModifyingStorage": "修改存儲時出錯。",
-    "moveItems": "{{itemsToMove}} 成功移動",
     "itemDeleted": "{{item}} 已刪除",
     "itemsDeleted": "文件已刪除",
     "emailNotEmpty": "電子郵件不能為空",
     "verificationEmail": "驗證郵件已發送",
     "successCancelSubscription": "您的訂閱已取消",
     "errorCancelSubscription": "取消訂閱時出現問題",
-    "successApplyCoupon": "免費使用3個月的優惠碼已應用",
-    "errorApplyCoupon": "應用折扣時出現錯誤",
-    "alreadyAppliedCoupon": "優惠碼已經應用",
     "errorCreatingSubscription": "建立您的訂閱時出現問題",
-    "errorPurchaseBusinessPlan": "您已經有一個商業計劃",
     "couponIsNotValidForUserError": "優惠券只能由新客戶兌換。",
     "errorApplyingCoupon": "應用優惠券時出錯",
     "errorWhileFetchingMoreItems": "獲取更多項目時出現錯誤",
     "errorDeletingItems": "刪除此項目時出現錯誤",
-    "invalidTaxIdIsProvided": "提供的稅號無效",
     "errorFetchingWorkspace": "獲取工作區時出錯 {{error}}",
     "errorSettingUpWorkspace": "設置工作區時出錯 {{error}}",
     "errorWhileLoadingWorkspace": "加載工作區時出錯 {{error}}",
@@ -1502,46 +1256,31 @@
   "actions": {
     "undo": "撤銷",
     "upload": {
-      "new": "新建",
       "folder": "新建資料夾",
       "uploadFiles": "上傳檔案",
       "uploadFolder": "上傳資料夾"
     },
     "change": "更改",
-    "delete": "刪除",
     "download": "下載",
     "downloading": "下載中",
     "downloadingItems": "正在下載 {{Items}} 項目...",
     "downloaded": "已下載",
     "view": "預覽",
-    "accessFile": "訪問檔案",
     "upgradeNow": "立即升級",
-    "purchasePlan": "立即升級",
     "upgrade": "升級",
     "buyStorage": "立即升級",
-    "deleteAccount": "永久刪除帳戶",
-    "changePassword": "更改密碼",
     "buy": "購買",
     "cancel": "取消",
     "create": "創建",
-    "sendInvitation": "發送邀請",
-    "subscribe": "訂閱",
-    "moreInfo": "更多信息",
-    "dismiss": "忽略",
     "save": "保存",
     "saveChanges": "儲存更改",
     "saving": "正在保存",
-    "share": "分享",
     "back": "返回",
-    "edit": "編輯",
-    "submit": "提交",
     "access": "訪問",
     "previous": "上一步",
     "next": "下一步",
     "disable": "停用",
     "move": "移動",
-    "moving": "正在移動...",
-    "navigating": "正在導航...",
     "restoreHere": "還原至此",
     "rename": "重新命名",
     "restore": "還原",
@@ -1562,18 +1301,13 @@
     "textCopied": "文字已複製到剪貼簿"
   },
   "drive": {
-    "usage": "使用量",
-    "currentPlan": "當前計劃",
     "loadingFile": "正在加載預覽",
-    "previewNoAvailable": "無法預覽",
     "pdfPage": "{{page}} / {{pages}} 頁",
     "list": {
       "columns": {
-        "type": "類型",
         "name": "名稱",
         "modified": "修改日期",
         "size": "大小",
-        "actions": "操作",
         "autoDelete": "自動刪除",
         "originalLocation": "原始位置"
       }
@@ -1588,17 +1322,12 @@
       "details": "詳細信息",
       "shareLink": "分享",
       "shareTeam": "与团队分享",
-      "shareWithWorkspace": "與工作區共享",
       "manageLinkAccess": "管理訪問權限",
-      "getLink": "獲取鏈接",
       "rename": "重新命名",
       "share": "分享",
-      "manageAccess": "管理訪問權限",
       "download": "下載",
       "moveToTrash": "移到垃圾桶",
       "copyLink": "複製鏈接",
-      "linkSettings": "鏈接設置",
-      "deleteLink": "刪除鏈接",
       "restore": "還原",
       "deletePermanently": "永久刪除",
       "move": "移動",
@@ -1611,7 +1340,6 @@
       "progress": "正在刪除..."
     },
     "clearTrash": {
-      "title": "清空 Drive 垃圾桶？",
       "advice": "Drive 垃圾桶中的所有項目都將被永久刪除。此操作無法撤銷。",
       "accept": "清空垃圾桶",
       "progress": "正在清空垃圾桶..."
@@ -1624,52 +1352,11 @@
     "movingToTrash": "正在將項目移到垃圾桶",
     "deletingItems": "正在從垃圾桶刪除項目"
   },
-  "appSumo": {
-    "tiers": {
-      "internxt_tier1": "AppSumo 終身版 第 1 層",
-      "internxt_tier2": "AppSumo 終身版 第 2 層",
-      "internxt_tier3": "AppSumo 終身版 第 3 層",
-      "internxt_tier4": "AppSumo 終身版 第 4 層",
-      "internxt_tier5": "AppSumo 終身版 第 5 層",
-      "unlimited": "終身無限會員"
-    },
-    "members": {
-      "internxt_tier1": "團隊成員：1 人",
-      "internxt_tier2": "團隊成員：5 人",
-      "internxt_tier3": "團隊成員：10 人",
-      "internxt_tier4": "團隊成員：25 人",
-      "internxt_tier5": "團隊成員：100 人",
-      "unlimited": "團隊成員：{{total}}"
-    },
-    "plans": {
-      "advice": "您將被重定向到您的 AppSumo 帳戶"
-    }
-  },
-  "newsletter": {
-    "dialog": {
-      "title": "訂閱我們的通訊",
-      "message": "在您的郵件收件箱中即可獲得最新消息和更新"
-    }
-  },
   "referrals": {
     "openError": "開啟推薦時發生錯誤，請再試一次。",
     "emailVerification": {
       "message": "請驗證您的電子郵件以獲得推薦資格。請檢查您的收件匣或",
       "resendVerification": "重新發送驗證"
-    },
-    "items": {
-      "create-account": "創建帳戶",
-      "install-mobile-app": "安裝移動應用程序並上傳文件",
-      "share-file": "通過鏈接分享文件",
-      "subscribe-to-newsletter": "訂閱通訊",
-      "install-desktop-app": "安裝桌面應用程序並上傳文件",
-      "invite-friends": "邀請 {{completedSteps}}/{{steps}} 位朋友",
-      "invite-2-friends": "邀請 {{completedSteps}}/{{steps}} 位朋友"
-    },
-    "rewards": {
-      "title": "免費獲得 {{creditSum}}",
-      "progress": "已解鎖 {{currentCredit}}",
-      "limit": "（共 {{creditSum}}）"
     }
   },
   "errors": {
@@ -1707,16 +1394,8 @@
   },
   "preferences": {
     "title": "偏好",
-    "general": {
-      "title": "一般"
-    },
     "workspace": {
-      "title": "工作區",
-      "overview": {
-        "title": "概覽"
-      },
       "members": {
-        "title": "成員",
         "members": "成員",
         "guests": "特邀",
         "search": "搜尋成員",
@@ -1735,7 +1414,6 @@
           "declinedSuccessfully": "工作區邀請已成功拒絕",
           "invitationSent": "邀請已成功發送",
           "error": {
-            "errorInviting": "發送邀請至{{email}}時出錯",
             "acceptedError": "接受工作區邀請時出錯",
             "declinedError": "拒絕工作區邀請時出錯"
           }
@@ -1784,50 +1462,14 @@
           "actionButton": "發送請求"
         },
         "tabs": {
-          "activity": {
-            "name": "活動",
-            "empty": "沒有活動",
-            "disabilitedOwner": {
-              "title": "開始使用活動",
-              "subtitle": "通過活動日誌記錄，清晰使用見解以進行文件和帳戶管理",
-              "action": "啟用活動"
-            },
-            "disabilitedMember": {
-              "title": "活動已禁用",
-              "subtitle": "聯繫工作區擁有者以啟用活動日誌以進行文件和帳戶管理"
-            },
-            "roles": {
-              "title": "角色",
-              "member": "成員",
-              "manager": "經理",
-              "owner": "擁有者"
-            },
-            "filter": {
-              "button": "篩選",
-              "title": "篩選條件",
-              "clear": "清除",
-              "dateRange": {
-                "title": "日期範圍",
-                "7days": "最近7天",
-                "30days": "最近30天",
-                "90days": "最近90天"
-              }
-            }
-          },
           "teams": {
-            "title": "團隊",
-            "role": "角色",
             "emptyTeamsOwner": {
               "title": "開始使用團隊",
-              "subtitle": "通過將成員分組到團隊中來更快地管理工作區成員",
-              "action": "創建一個團隊"
+              "subtitle": "通過將成員分組到團隊中來更快地管理工作區成員"
             },
             "emptyTeamsMember": {
               "title": "尚未創建團隊",
               "subtitle": "工作區擁有者可以通過將成員分組到團隊中來更快地管理成員"
-            },
-            "emptyTeams": {
-              "title": "不是任何團隊的成員"
             }
           }
         },
@@ -1836,7 +1478,8 @@
           "leave": "離開",
           "reactivate": "重新啟用成員",
           "remove": "移除成員",
-          "passwordChange": "要求更改密碼"
+          "passwordChange": "要求更改密碼",
+          "modifyStorage": "修改儲存空間"
         },
         "leaveModal": {
           "title": "離開",
@@ -1852,7 +1495,6 @@
         "members": "成員",
         "createTeamDialog": {
           "title": "新隊伍",
-          "label": "名稱",
           "placeholder": "輸入隊伍名稱",
           "cancel": "取消",
           "create": "建立",
@@ -1877,11 +1519,9 @@
         },
         "renameTeamDialog": {
           "title": "重新命名團隊",
-          "label": "名稱",
           "placeholder": "輸入新團隊名稱",
           "cancel": "取消",
-          "rename": "重新命名",
-          "nameExists": "該名稱的團隊已存在"
+          "rename": "重新命名"
         },
         "deleteTeamDialog": {
           "title": "刪除團隊",
@@ -1906,7 +1546,6 @@
         "title": "計費",
         "nextBillingDate": "下次計費日期",
         "planLimit": "計費計劃：{{planLimit}}",
-        "subscription": "訂閱",
         "membersLabel": "成員",
         "perUser": "每位使用者",
         "members": {
@@ -1953,12 +1592,14 @@
           "title": "取消訂閱",
           "text": "您的計劃將降級到免費等級。",
           "button": "取消訂閱"
+        },
+        "empty": {
+          "text": "沒有先前的發票"
         }
       },
       "accessLogs": {
         "filterActions": {
           "title": "篩選",
-          "searchMembers": "搜尋成員",
           "filters": "篩選器",
           "clear": "清除",
           "activity": {
@@ -1993,27 +1634,12 @@
     },
     "account": {
       "title": "帳戶",
-      "inviteFriend": "邀請朋友",
-      "seeInvitations": "查看邀請",
-      "sendInvitationDescription": "傳播消息並免費獲得每位朋友邀請1 GB。您最多可以獲得 {{N}}GB。",
-      "sendInvitation": "發送邀請",
-      "enterFriendEmail": "輸入朋友的電子郵件",
-      "extraStorage": "額外存儲",
-      "invitedFriends": "邀請的朋友",
-      "friendsInvited": "已邀請朋友",
-      "acceptedRequests": "已接受的請求",
-      "user": "用戶",
-      "status": "狀態",
-      "accepted": "已接受",
-      "pending": "待定",
-      "noInvitations": "尚未發送邀請",
       "upgrade": "升級",
       "levelUpStorage": "提升您的存儲空間並獲得許多其他好處",
       "upgradeNow": "立即升級",
       "emptyTrash": "清空垃圾桶",
       "emptyTrashDescription": "垃圾桶中的項目將被永久刪除",
       "plans": {
-        "title": "方案",
         "current": "當前",
         "upgrade": "升級",
         "downgrade": "降級",
@@ -2021,10 +1647,7 @@
         "manageBilling": "管理帳單",
         "freeForever": "永久免費",
         "billedAnnually": "/月 按年計費",
-        "billedMonthly": "按月計費",
-        "year": "年",
         "month": "月",
-        "lifetime": "終身",
         "types": {
           "essential": "基礎版",
           "premium": "高級版",
@@ -2036,7 +1659,6 @@
         "planFeaturesList": {
           "title": "方案詳情",
           "comingSoon": "即將推出",
-          "storage": " 加密雲端儲存空間",
           "1TB": {
             "title": "Essential (基本版)",
             "features": [
@@ -2067,8 +1689,7 @@
               "防毒軟體",
               "清理工具 (Cleaner)",
               "Meet"
-            ],
-            "comingSoonFeatures": []
+            ]
           },
           "5TB": {
             "title": "Ultimate (旗艦版)",
@@ -2097,8 +1718,6 @@
           }
         },
         "businessPlanFeaturesList": {
-          "title": "方案詳情",
-          "storage": " 儲存空間",
           "1TB": {
             "title": "標準版",
             "features": [
@@ -2138,11 +1757,7 @@
               "郵件"
             ]
           }
-        },
-        "user": "用戶"
-      },
-      "billing": {
-        "title": "計費"
+        }
       },
       "security": {
         "title": "安全"
@@ -2164,23 +1779,17 @@
   "workspaces": {
     "workspaces": "工作區",
     "workspace": "工作區",
-    "createWorkspace": "創建工作區",
     "workspaceTypes": {
       "personal": "個人工作區",
       "business": "商務工作區"
     },
     "pending": "待處理的邀請",
-    "messages": {
-      "sharedSuccess": "項目成功與團隊共享",
-      "switchingWorkspace": "切換工作區"
-    },
     "pendingInvitations": {
       "empty": "沒有剩餘的邀請",
       "title": "待處理的邀請",
       "accept": "接受",
       "deny": "拒絕",
-      "invitedOn": "邀請發送 ",
-      "todayAt": "今天在 "
+      "invitedOn": "邀請發送 "
     },
     "sharedWorkspace": "共用工作區"
   },

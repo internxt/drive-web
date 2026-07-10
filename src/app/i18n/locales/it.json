@@ -3,11 +3,6 @@
     "title": "Manage your files, account and subscription on the app",
     "logOut": "Log Out"
   },
-  "valentinesBanner": {
-    "title": "Love without limits!",
-    "subtitle": "Get 90% off our 2TB plan with code VDAY",
-    "cta": "Get the deal"
-  },
   "featuresBanner": {
     "label": {
       "blueText": "Ottieni l'85% di sconto",
@@ -29,24 +24,6 @@
       "meet": "Meet",
       "mail": "Mail"
     }
-  },
-  "susbcriptionsBanner": {
-    "title": "Potenzia il tuo piano!",
-    "features": ["Crittografia post-quantistica", "Drive, VPN e Antivirus", "Prossimi Mail e Meet"],
-    "description": "Rinnova il tuo abbonamento e ottieni le nostre nuove funzionalità!",
-    "cta": "80% di sconto"
-  },
-  "lifetimesBanner": {
-    "title": "Potenzia il tuo piano!",
-    "features": ["Crittografia post-quantistica", "Drive, VPN e Antivirus", "Prossimi Mail e Meet"],
-    "description": "Aggiorna il tuo piano con le nostre nuove funzionalità e aumenta il tuo spazio di archiviazione!",
-    "cta": "80% di sconto"
-  },
-  "banner": {
-    "label": "Proteggi i tuoi file per sempre",
-    "title": "Ottieni l'accesso a vita allo storage cloud sicuro e privato con Internxt!",
-    "cta": "Scegli il tuo piano",
-    "guarantee": "Garanzia di rimborso entro 30 giorni"
   },
   "notFound": {
     "header": "Error 404",
@@ -111,9 +88,7 @@
       "dontHaveAccount": "Non hai un account?",
       "dontHaveAccountMobile": "Non hai un account Internxt?",
       "createAccount": "Creare un account",
-      "2FA": "Codice a due fattori",
       "twoFactorAuthenticationCode": "Codice di autenticazione a due fattori",
-      "wrongLogin": "Nome utente o password non validi",
       "failedToSendAuthData": "Impossibile inviare i dati di autenticazione. Riprova."
     },
     "button": {
@@ -129,19 +104,42 @@
         "normalText": "Internxt non memorizza le password.",
         "boldText": "Se dimentichi la tua password, puoi scaricare una chiave di backup per recuperare l'accesso ai tuoi file.",
         "cta": "Ulteriori informazioni"
+      },
+      "authView": {
+        "emailPlaceholder": "Email",
+        "passwordPlaceholder": "Password",
+        "emailEmpty": "L'email non può essere vuota",
+        "passwordEmpty": "La password non può essere vuota",
+        "buttonText": "Ottieni l'offerta",
+        "legal": {
+          "line1": "Creando un account accetti",
+          "line2": "i termini di servizio e l'informativa sulla privacy"
+        },
+        "heroTitle": "Archivia i tuoi file con totale privacy",
+        "planLabel": "Piano da 2 TB",
+        "freeTrialText": "Gratis per i primi 30 giorni",
+        "discountText": "50% di sconto per i prossimi tre mesi se decidi di rinnovare"
+      },
+      "blog": {
+        "title": {
+          "line1": "Rendi la privacy una priorità e unisciti a",
+          "blueText": " Internxt ",
+          "line2": "oggi"
+        },
+        "emailPlaceholder": "Email",
+        "passwordPlaceholder": "Password",
+        "emailEmpty": "L'email non può essere vuota",
+        "passwordEmpty": "La password non può essere vuota",
+        "buttonText": "Ottieni fino a 1 GB, gratis!",
+        "legal": {
+          "line1": "Creando un account accetti i",
+          "line2": "termini di servizio e l'informativa sulla privacy"
+        }
       }
-    },
-    "downloadBackupKey": {
-      "title": "Chiave di backup",
-      "description": "La chiave di backup consente il recupero dell'account nel caso dimentichi la tua password. Non condividerla mai.",
-      "downloadCta": "Scarica la chiave di backup",
-      "settingsTab": "Puoi accedere alla tua chiave di backup in Impostazioni > Sicurezza",
-      "skip": "Salta"
     },
     "forgotPassword": {
       "title": "Recupero dell'account",
       "continue": "Continua",
-      "sending": "Invio...",
       "notFound": "Indirizzo e-mail non trovato, riprovare",
       "password": "Ricorda la tua password?",
       "login": "Login",
@@ -187,7 +185,6 @@
       "title": "Riavvia account",
       "description": "A causa della nostra politica di crittografia, non sei in grado di accedere ai tuoi dati senza la tua password o una chiave di backup.",
       "alert1": "Riavviando il tuo account sei consapevole che tutti i tuoi file, le tue foto e i tuoi backup saranno eliminati definitivamente",
-      "button": "Invia verifica riavvio account",
       "successDescription": "L'account e la password sono stati ripristinati",
       "error": "Qualcosa è andato storto durante il riavvio dell'account."
     },
@@ -218,7 +215,6 @@
         "password": "Crea una password"
       },
       "signIn": {
-        "emailAddress": "Il tuo indirizzo email",
         "password": "La tua password"
       },
       "title": {
@@ -242,108 +238,19 @@
     "productCard": {
       "title": "Riepilogo dell'ordine",
       "selectedPlan": "Piano selezionato",
-      "numberOfUsers": "Numero di utenti: {{seats}}",
-      "renewalPeriod": {
-        "renewsAt": "* Si rinnova il",
-        "month": "mensile",
-        "year": "annuale",
-        "lifetime": "a vita"
-      },
       "renewalTitle": {
         "month": "annuale",
         "year": "annuale",
         "lifetime": "a vita"
-      },
-      "pcMobileRenews": "* Si rinnova a 50€ il primo anno dopo il periodo di prova",
-      "plan": {
-        "month": "{{spaceToUpgrade}} - 1 piano {{interval}}",
-        "year": "{{spaceToUpgrade}} - 1 piano {{interval}}",
-        "lifetime": "{{spaceToUpgrade}} - piano {{interval}}"
       },
       "billed": {
         "month": "Fatturato mensilmente",
         "year": "Fatturato annualmente",
         "lifetime": "Pagamento unico"
       },
-      "perUser": "/per utente",
       "saving": "Stai risparmiando {{percent}}%",
-      "planDetails": {
-        "title": "Dettagli del piano:",
-        "commingSoon": "Prossimamente",
-        "features": {
-          "individuals": {
-            "1TB": {
-              "feature1": "1TB di archiviazione crittografata a conoscenza zero",
-              "feature2": "Crittografia post-quantistica",
-              "feature3": "VPN ultraveloce illimitata (FR)",
-              "feature4": "Antivirus",
-              "feature5": "Esegui il backup dei tuoi file",
-              "feature6": "Condivisione di file protetta da password",
-              "feature7": "Conformità GDPR",
-              "feature8": "Autenticazione a due fattori (2FA)",
-              "feature9": "Supporto CLI, WebDav e Rclone"
-            },
-            "3TB": {
-              "feature1": "3TB di archiviazione crittografata a conoscenza zero",
-              "feature2": "Crittografia post-quantistica",
-              "feature3": "VPN ultraveloce illimitata (FR, DE, PL)",
-              "feature4": "Antivirus",
-              "feature5": "Esegui il backup dei tuoi file",
-              "feature6": "Condivisione di file protetta da password",
-              "feature7": "Conformità GDPR",
-              "feature8": "Autenticazione a due fattori (2FA)",
-              "feature9": "Supporto CLI, WebDav e Rclone",
-              "feature10": "Meet (3 partecipanti)",
-              "feature11": "Mail (3 indirizzi)"
-            },
-            "5TB": {
-              "feature1": "5TB di archiviazione crittografata a conoscenza zero",
-              "feature2": "Crittografia post-quantistica",
-              "feature3": "VPN ultraveloce illimitata (FR, DE, PL, CA, UK)",
-              "feature4": "Antivirus",
-              "feature5": "Esegui il backup dei tuoi file",
-              "feature6": "Condivisione di file protetta da password",
-              "feature7": "Conformità GDPR",
-              "feature8": "Autenticazione a due fattori (2FA)",
-              "feature9": "Supporto CLI, WebDav e Rclone",
-              "feature10": "Meet (5 partecipanti)",
-              "feature11": "Mail (5 indirizzi)"
-            }
-          },
-          "business": {
-            "1TB": {
-              "feature1": "1TB di archiviazione/utente",
-              "feature2": "Crittografia post-quantistica",
-              "feature3": "VPN ultra veloce e illimitata (FR, DE, PL)",
-              "feature4": "Antivirus",
-              "feature5": "Backup dei tuoi file",
-              "feature6": "Condivisione di file protetta da password",
-              "feature7": "Conformità GDPR",
-              "feature8": "Autenticazione a due fattori (2FA)",
-              "feature9": "Supporto CLI, WebDav & Rclone",
-              "feature10": "Gestisci fatturazione e pagamenti dell'account",
-              "feature11": "Riunioni fino a 10 utenti ",
-              "feature12": "1 indirizzo email personalizzato/utente"
-            },
-            "2TB": {
-              "feature1": "2TB di archiviazione/utente",
-              "feature2": "Crittografia post-quantistica",
-              "feature3": "VPN ultra veloce e illimitata (FR, DE, PL, CA, UK)",
-              "feature4": "Antivirus",
-              "feature5": "Backup dei tuoi file",
-              "feature6": "Condivisione di file protetta da password",
-              "feature7": "Conformità GDPR",
-              "feature8": "Autenticazione a due fattori (2FA)",
-              "feature9": "Supporto CLI, WebDav & Rclone",
-              "feature10": "Gestisci fatturazione e pagamenti dell'account",
-              "feature11": "Riunioni fino a 100 utenti",
-              "feature12": "2 indirizzo email personalizzato/utente"
-            }
-          }
-        }
-      },
+      "planDetails": "Dettagli del piano:",
       "total": "Totale ",
-      "totalForBusiness": "Totale per {{N}} utenti: ",
       "addCoupon": {
         "buttonTitle": "Aggiungi coupon",
         "inputText": "Codice coupon"
@@ -379,14 +286,12 @@
     }
   },
   "general": {
-    "new": "new",
     "of": "di",
     "at": "alle",
     "terms": "Termini e condizioni",
     "contactSupport": "Contatta il supporto",
     "help": "Hai bisogno di aiuto?",
     "searchBar": {
-      "oldSearchBarPlaceholder": "Cerca in questa cartella",
       "placeholder": "Cerca in Drive",
       "filters": {
         "folder": "Cartella",
@@ -406,33 +311,14 @@
       }
     },
     "stage": {
-      "development": "Development",
-      "production": "Production"
+      "development": "Development"
     },
     "loading": {
-      "default": "Caricamento...",
-      "redirecting": "Redirecting..."
-    },
-    "renewalPeriod": {
-      "monthly": "mensile",
-      "annually": "annuale",
-      "lifetime": "lifetime"
+      "default": "Caricamento..."
     },
     "renewal": {
-      "monthly": "Mensile",
       "annually": "Annuale",
       "lifetime": "Lifetime"
-    },
-    "workspaces": {
-      "personal": "Individuals",
-      "business": "Business"
-    },
-    "time": {
-      "month": "month"
-    },
-    "billing": {
-      "billedEachPeriod": "{{price}} billed {{period}}",
-      "oneTimePayment": "One-time payment"
     },
     "files": "Files",
     "file": "File",
@@ -440,7 +326,6 @@
     "reloadPageMessage": "Le modifiche apportate potrebbero non essere state salvate."
   },
   "shareLayout": {
-    "title": "INTERNXT",
     "subtitle": "Archiviazione cloud sicura con privacy senza pari",
     "labels": {
       "privacy": "Privato by design",
@@ -492,7 +377,6 @@
       }
     },
     "account": {
-      "title": "Account",
       "avatar": {
         "title": "Carica avatar",
         "removePhoto": "Elimina",
@@ -515,46 +399,18 @@
       },
       "tabs": {
         "account": {
-          "label": "Account",
-          "title": "Personal",
           "usage": "Usati {{totalUsed}} di {{totalSpace}}",
           "view": {
-            "backups": "Backups",
-            "trash": "Cestino",
-            "free": {
-              "planName": "Piano gratuito",
-              "button": "Acquista spazio"
-            },
-            "lifetime": {
-              "planName": "A vita"
-            },
-            "subscription": {
-              "planName": "Abbonamento",
-              "button": "Cambia",
-              "yearly": "anno",
-              "monthly": "mese"
-            }
+            "backups": "Backups"
           },
           "accountDetails": {
-            "head": "Dettagli account",
             "name": "Nome",
             "lastname": "Cognome",
             "card": {
-              "name": "Nome",
-              "lastname": "Cognome",
-              "edit": "Modifica",
-              "email": "E-mail",
-              "resendEmail": "Invia nuovamente e-mail di verifica"
-            },
-            "verify": {
-              "verify": "Verifica la tua email",
-              "verified": "Email verificata",
-              "description": "Controlla nella tua casella di posta o nello spam"
+              "email": "E-mail"
             },
             "editProfile": {
               "title": "Modifica dei dettagli dell'account",
-              "name": "Nome",
-              "lastname": "Cognome",
               "updatedProfile": "Profilo aggiornato con successo",
               "errorUpdatingProfile": "Non è stato possibile aggiornare il profilo"
             },
@@ -589,11 +445,7 @@
           }
         },
         "billing": {
-          "label": "Fatturazione",
-          "currentPlan": "Piano attuale",
-          "subsRenew": "L'abbonamento si rinnova tra {{daysUntilRenewal}} giorni",
           "cancelSubscriptionModal": {
-            "title": "Annulla abbonamento",
             "description": {
               "individual": "Stai per annullare il tuo piano Internxt {{currentPlanName}}. Annullando il tuo piano, verrai retrocesso al piano gratuito di Internxt {{freePlanName}}. Conferma la tua scelta per procedere, per favore.",
               "business": "Annullando il tuo piano, lo spazio di lavoro verrà eliminato insieme a tutti i dati. Per favore, conferma la tua scelta per procedere."
@@ -606,7 +458,6 @@
               "afterLabel": "Dopo il {{monthsRemaining}}"
             },
             "keepSubscription": "Mantieni l'abbonamento",
-            "continua": "Continua",
             "cancelSubscription": "Annulla abbonamento",
             "infoBox": {
               "titleCurrent": "Current",
@@ -614,85 +465,22 @@
               "year": "anno",
               "month": "mese",
               "free": "libero"
-            },
-            "giveUsFeedback": "Ci dica perché vuole annullare il suo {{currentPlanName}} Internxt e passare al piano gratuito?",
-            "feedback": {
-              "placeholder": "Dacci un feedback"
             }
           },
-          "billed": "Fatturato {{interval}} {{renewDate}}",
           "paymentMethod": {
-            "head": "Metodo di pagamento",
-            "empty": {
-              "title": "Hai un piano gratuito",
-              "subtitle": "Qui appariranno automaticamente i dati della carta di credito quando utilizzi un piano di abbonamento a pagamento."
-            },
             "title": "Aggiungere un nuovo metodo di pagamento",
             "contactUs": {
-              "description": "Contattaci per aggiornare il tuo metodo di pagamento",
-              "contact": "Conttato"
+              "description": "Contattaci per aggiornare il tuo metodo di pagamento"
             }
           },
           "invoices": {
             "head": "Fatture",
             "plan": "Piano",
             "billingDate": "Data",
-            "storage": "Archiviazione",
-            "ammount": "Importo",
-            "empty": "Non ci sono fatture disponibili",
-            "download": "Scarica la fattura"
-          }
-        },
-        "info": {
-          "title": "Personal",
-          "description": "Check your storage user and account details",
-          "advice1": {
-            "title": "What data can be edited?",
-            "description": "For strict security reasons and to protect your data at Internxt we do not allow the data of a user account such as email to be modified."
-          },
-          "advice2": {
-            "title": "Security account",
-            "description": "Your files are encrypted before leaving your device, so only you can access your files, no tricks, no hidden things, just privacy, that’s Internxt."
+            "storage": "Archiviazione"
           }
         },
         "plans": {
-          "label": "Piani",
-          "title": "Piani",
-          "description": "Scoprite le diverse opzioni di archiviazione e di soluzione offerte da Internxt",
-          "changeWorkspace": {
-            "personal": "Modifica dei piani per gli individui",
-            "business": "Change to Plans for Business"
-          },
-          "viewAllFeatures": "Visualizza tutte le caratteristiche",
-          "card": {
-            "annually": "{{amount}} fatturato annualmente",
-            "monthly": "{{amount}} al mese",
-            "lifetime": "{{amount}}",
-            "oneTimePayment": "Pagamento unico"
-          },
-          "features": {
-            "title": "Funzionalità incluse in tutti i piani:",
-            "sections": {
-              "section1": {
-                "title": "Soddisfatti o rimborsati:",
-                "point1": "Tutti i piani hanno una garanzia di rimborso di 30 giorni.",
-                "point2": "Annulla in qualsiasi momento.",
-                "point3": "Assistenza clienti."
-              },
-              "section2": {
-                "title": "Sicurezza per default:",
-                "point1": "Crittografia di livello militare, a garanzia della tua privacy.",
-                "point2": "Archiviazione e condivisione cloud crittografate.",
-                "point3": "Privacy e crittografia totale."
-              },
-              "section3": {
-                "title": "Accesso e sincronizzazione illimitati:",
-                "point1": "Accedi ai tuoi file, foto e backup da tutti i tuoi dispositivi.",
-                "point2": "Sincronizzazione con larghezza di banda illimitata.",
-                "point3": "Esegui il backup di qualsiasi cartella del tuo computer."
-              }
-            }
-          },
           "dialog": {
             "title": "Cambia il tuo piano",
             "subtitle1": "Stai per cambiare il tuo piano Internxt da ",
@@ -708,33 +496,13 @@
               "text1": "Perché stai usando ",
               "text2": ", il vostro Internxt Drive smetterà di sincronizzare i vostri file e non sarete in grado di aggiungere nuovi file."
             },
-            "messagge": {
-              "text": "L'addebito avverrà ora e per ogni periodo di pagamento fino a nuove modifiche."
-            },
             "button": {
               "back": "Mantieni il piano attuale",
               "continue": "Continua"
+            },
+            "message": {
+              "text": "Ti verrà addebitato ora e a ogni periodo di pagamento fino a un'ulteriore modifica."
             }
-          }
-        },
-        "password": {
-          "title": "Password",
-          "description": "Change your password",
-          "advice1": {
-            "title": "Modifica la password",
-            "description": "Changing your password will sign you out from all your devices. The password introduced will be needed for logging in again."
-          },
-          "advice2": {
-            "title": "What should you keep in mind so that your password is secure?",
-            "description": ""
-          },
-          "advice3": {
-            "title": "New encryption key",
-            "description": "By changing your password, all your files will be un-encrypted with your old password, and then re-encrypted using your new password, and thus you won't lose access to them! This action cannot be undone."
-          },
-          "advice4": {
-            "title": "What data can be edited?",
-            "description": "For strict security reasons and to protect your data at Internxt we do not allow the data of a user account such as email to be modified."
           }
         },
         "security": {
@@ -781,17 +549,11 @@
                   "description": "Copia questo codice e tienilo al sicuro, ti servirà in caso di smarrimento del dispositivo."
                 },
                 "enable": {
-                  "title": "Conferma l'attivazione della 2FA",
-                  "description": "Codice di Autenticazione in due passaggi"
-                },
-                "disable": {
-                  "title": "Disabilitare l'autenticazione a due fattori",
-                  "description": "Per disattivare l'Autenticazione a due fattori, digitare il codice generato dall'app nell'input sottostante."
+                  "title": "Conferma l'attivazione della 2FA"
                 }
               },
               "errors": {
-                "incorrect": "The code is not correct, try again",
-                "notVerified": "We could not verify your code"
+                "incorrect": "The code is not correct, try again"
               }
             }
           },
@@ -845,8 +607,7 @@
       "auth": {
         "title": "Verifica modifica email",
         "subtitle": "L'email del tuo account sarà modificata in {{email}}",
-        "wrongPassword": "Password errata, si prega di riprovare",
-        "cta": "Continua"
+        "wrongPassword": "Password errata, si prega di riprovare"
       },
       "success": {
         "title": "Email modificata con successo",
@@ -874,7 +635,6 @@
           "edit": "Modifica profilo",
           "address": "Indirizzo",
           "phone": "Telefono",
-          "owner": "Proprietario",
           "workspaceOverview": "Panoramica dello spazio di lavoro",
           "members": "Membri",
           "teams": "Team",
@@ -929,7 +689,6 @@
       "move": "Sposta"
     },
     "removeSharedLinkModal": {
-      "title": "Elimina link",
       "multiSharedDescription": "Gli utenti che hanno questo link perderanno l'accesso al contenuto condiviso.",
       "singleSharedDescription": "Gli utenti che hanno questo link perderanno l'accesso al contenuto condiviso.",
       "cancel": "Annulla",
@@ -945,21 +704,21 @@
     "itemDetailsModal": {
       "title": "Dettagli",
       "fileCta": "Apri anteprima",
-      "cartellaCta": "Apri cartella",
       "itemDetails": {
-        "nome": "Nome",
-        "tipo": "Tipo",
         "modified": "Ultima modifica",
         "size": "Dimensione",
         "uploaded": "Caricato",
         "uploadedBy": "Caricato da",
         "shared": "Condiviso",
         "numberOfFiles": "Numero di file",
-        "location": "Posizione"
+        "location": "Posizione",
+        "name": "Nome",
+        "type": "Tipo"
       },
       "fileCount_one": "{{count}} file",
       "fileCount_other": "{{count}} file",
-      "fileCountMoreThan": "{{count}}+ file"
+      "fileCountMoreThan": "{{count}}+ file",
+      "folderCta": "Apri cartella"
     },
     "versionHistory": {
       "title": "Cronologia versioni",
@@ -1025,15 +784,10 @@
       },
       "requests": {
         "title": "Richieste di accesso",
-        "button": "Richieste",
         "empty": "Nessuna richiesta rimasta",
         "actions": {
           "accept": "Accetta",
-          "deny": "Nega",
-          "roles": {
-            "editor": "Editore",
-            "reader": "Visualizzatore"
-          }
+          "deny": "Nega"
         }
       },
       "stopSharing": {
@@ -1051,11 +805,7 @@
         "subtitle": "Gli utenti con il link o invitati non avranno più accesso a \"{{name}}\"",
         "multipleItemsSubtitle": "Gli utenti con il link o invitati non avranno più accesso a questi elementi condivisi",
         "cancel": "Annulla",
-        "confirm": "Sposta nel cestino",
-        "notification": {
-          "success": "Non più condiviso \"{{name}}\"",
-          "error": "Impossibile spostare nel cestino, riprova"
-        }
+        "confirm": "Sposta nel cestino"
       },
       "removeUser": {
         "notification": {
@@ -1127,17 +877,6 @@
       "sharedWith": "Condiviso con te ",
       "todayAt": "oggi alle "
     },
-    "friendsInvitedModal": {
-      "title": "Amici invitati",
-      "email": "E-mail",
-      "total": "Totale",
-      "pending": "In attesa",
-      "accepted": "Inviti accettati",
-      "empty": "Non hai ancora invitato nessuno",
-      "resend": "Reinvia l'invito",
-      "resentInvitation": "Invito reinviato con successo",
-      "resendError": "Errore durante il reinvio dell'e-mail: {{reason}}"
-    },
     "deleteAccountModal": {
       "title": "Sei sicuro?",
       "subtitle": "Tutti i tuoi file verranno rimossi per sempre e perderai l'accesso al tuo account Internxt.",
@@ -1167,8 +906,8 @@
     "shareWithTeamModal": {
       "title": "Condividi \"{{name}}\"",
       "teams": "Squadre",
-      "teamsWithAccess": "Squadre con accesso:",
-      "shareButton": "Condividi"
+      "shareButton": "Condividi",
+      "teamsWithAcces": "Team con accesso:"
     },
     "restrictedSharingModal": {
       "title": "Aggiorna per condividere file",
@@ -1190,10 +929,6 @@
         "title": "Sblocca Meet",
         "description": "Aggiorna ora per ospitare e partecipare a videochiamate completamente crittografate — private, sicure e illimitate."
       },
-      "mail": {
-        "title": "Sblocca Mail",
-        "description": "Sblocca il tuo servizio di email privato con crittografia end-to-end."
-      },
       "vpn": {
         "title": "Sblocca VPN",
         "description": "Aggiorna il piano per proteggere il tuo traffico con navigazione privata e crittografata."
@@ -1208,18 +943,9 @@
       }
     }
   },
-  "form": {
-    "fields": {
-      "email": {
-        "placeholder": "Email address"
-      }
-    }
-  },
   "error": {
     "wrongPassword": "Password errata, riprova o contatta il proprietario",
-    "genericError": "C'è stato un errore: {{reason}}",
     "serverError": "Errore interno del server. Riprovare più tardi",
-    "deleteTeamMember": "Errore nell'eliminazione di un membro del team",
     "changingName": "Errore durante la modifica del nome",
     "fileAlreadyExists": "Il file con lo stesso nome esiste già",
     "folderAlreadyExists": "Esiste già una cartella con lo stesso nome",
@@ -1227,27 +953,16 @@
     "folderCannotBeEmpty": "Il nome della cartella non può essere vuoto",
     "fileCannotBeEmpty": "Il nome del file non può essere vuoto",
     "creatingFolder": "Errore durante la creazione della cartella",
-    "sendReferralInvitation": "Impossibile inviare l'e-mail di invito",
-    "sendClaimEmail": "Impossibile inviare l'e-mail di richiesta di risarcimento",
-    "anyReferralCredit": "Non avete credito sul vostro conto",
-    "backupKeyDontMatch": "La chiave di backup inserita non corrisponde alla chiave di backup univoca.",
-    "shareLinkMissingBucket": "Impossibile generare il link di condivisione a causa del bucket mancante",
-    "unavailableLink": "Collegamento non disponibile",
-    "invalidActivationCode": "Il codice di attivazione non è valido. Forse avete già utilizzato questo link e il vostro account è già stato attivato.",
-    "redirectToStripe": "Impossibile reindirizzare a Stripe. Si prega di contattarci. Motivo: {{reason}}",
-    "deactivatingAccount": "Errore nella disattivazione dell'account. Contattateci.",
     "fetchingFolderContent": "Errore nel recupero del contenuto della cartella",
     "uploadingFolder": "Errore nel caricamento della cartella",
     "uploadingFile": "Errore nel caricamento del file: {{reason}}",
     "uploadingItems": "Non è stato possibile caricare alcuni elementi",
     "downloadingFile": "Errore nel download del file: {{message}}",
     "downloadingFolder": "Errore nel download della cartella: {{message}}",
-    "downloadingItems": "Non è stato possibile scaricare alcuni elementi",
     "movingItemInsideItself": "Non è possibile spostare una cartella al suo interno",
     "movingItem": "Errore durante lo spostamento degli elementi",
     "renamingItem": "Errore quando si rinominano gli elementi",
     "linkExpired": "Questo link sicuro è scaduto",
-    "teamInvitation": "Non è stato possibile inviare l'e-mail di invito",
     "ownerStorageIsFull": "Lo spazio di archiviazione del proprietario è pieno",
     "storageIsFull": "Lo spazio di archiviazione è pieno",
     "fileSizeLimitExceeded": {
@@ -1267,19 +982,9 @@
     },
     "ownerStorageIsFullDescription": "Non puoi caricare file in questa cartella condivisa.",
     "storageIsFullDescription": "Non puoi caricare, sincronizzare o eseguire il backup dei file",
-    "noSpaceAvailable": "Avete raggiunto i limiti del vostro piano attuale e la sincronizzazione si è interrotta. Effettuate subito l'aggiornamento per continuare a sincronizzare i vostri file in modo sicuro.",
-    "sharedFolderTooBig": "Internxt Drive non supporta la condivisione di cartelle di dimensioni superiori a 1 GB.",
-    "titleSharedFolderTooBig": "Azione non supportata",
-    "workingOnIt": "Stiamo lavorando per offrirvi un'esperienza migliore.",
     "noFilePreview": "Non è disponibile un'anteprima del file",
-    "browserNotSupported": "Browser non supportato ({{userAgent}})",
-    "subscribeToNewsletter": "Errore nell'iscrizione alla newsletter: {{message}}",
-    "lastPasswordError": "La password inserita come ultima sembra non essere valida. Riprovate e se il problema persiste, contattate il nostro supporto.",
-    "incorrectPassword": "La password attuale introdotta non corrisponde. Assicurarsi che sia corretta.",
-    "emptyPassword": "La password precedente non deve essere vuota",
     "errorMovingToTrash": "Si è verificato un errore durante lo spostamento degli elementi nel cestino.",
     "errorDeletingFromTrash": "Si è verificato un errore durante l'eliminazione degli elementi dal cestino.",
-    "maxSizeUploadLimitError": "File troppo grande (superiore a 40GB)",
     "connectionLostError": "Connessione Internet persa",
     "errorLoadingTrashItems": "Errore nel caricamento degli elementi del cestino",
     "updateAvatarError": "Errore nell'aggiornamento dell'avatar",
@@ -1287,28 +992,11 @@
     "errorSettingWorkspace": "Errore nella configurazione dello spazio di lavoro"
   },
   "backups": {
-    "backups-from": "Backup da {{deviceName}}",
     "your-devices": "I vostri dispositivi",
-    "back-to-devices": "Tornare ai dispositivi",
     "empty": {
       "title": "Non hai backup",
       "subtitle": "Usa l'applicazione desktop per configurare i tuoi backup",
       "downloadApp": "Scarica l'applicazione desktop"
-    },
-    "devices-list": {
-      "columns": {
-        "name": "Nome",
-        "last-update": "Ultima modifica",
-        "size": "Dimensione"
-      }
-    },
-    "backups-list": {
-      "columns": {
-        "name": "Nome",
-        "last-update": "Ultima modifica",
-        "size": "Dimensione",
-        "actions": "Azioni"
-      }
     },
     "dropdown": {
       "download": "Scarica",
@@ -1317,18 +1005,14 @@
   },
   "shared": {
     "errors": {
-      "notSharedFolder": "Questa cartella non è condivisa con te",
       "folderNotExists": "Questa cartella non esiste",
       "generic": "Impossibile accedere alla cartella"
     }
   },
   "shared-links": {
     "shared-links": "Condiviso",
-    "view": "viste",
     "list": {
       "name": "Nome",
-      "link-content": "Contenuto del link",
-      "shared": "Condivisioni",
       "created": "Creato",
       "size": "Dimensione",
       "owner": "Propietario"
@@ -1338,37 +1022,18 @@
       "subtitle": "Le cartelle che altre persone condividono con voi appariranno qui"
     },
     "item-menu": {
-      "copy-link": "Copia link",
-      "link-settings": "Condividi le impostazioni",
       "delete-link": "Elimina il link",
       "delete-links": "Elimina i link"
     },
-    "link-settings": {
-      "share-settings": "Condividi le impostazioni",
-      "views": "Viste",
-      "options": "Opzioni",
-      "copy-link": "Copia link",
-      "save": "Salva",
-      "saving": "Risparmio",
-      "save-close": "Salva e chiudi",
-      "close": "Chiudi"
-    },
     "toast": {
       "copy-to-clipboard": "Link copiato negli appunti",
-      "link-updated": "Impostazioni di collegamento aggiornate",
       "link-deleted": "Link rimosso",
-      "links-deleted": "Link(s) rimossi",
-      "error-deleting-links": "Si è verificato un errore durante l'eliminazione dei link condivisi"
+      "links-deleted": "Link(s) rimossi"
     }
   },
   "trash": {
     "trash": "Cestino",
     "clearTrash": "La spazzatura è stata eliminata",
-    "list": {
-      "name": "Nome",
-      "size": "Dimensione",
-      "moved-to-trash": "File inviato al cestino"
-    },
     "empty-state": {
       "title": "Il cestino è vuoto",
       "subtitle": "I file e le cartelle eliminati saranno visualizzati qui"
@@ -1537,18 +1202,9 @@
   },
   "success": {
     "passwordChanged": "Password modificata",
-    "teamInvitationSent": "Email di invito inviata a {{email}}",
-    "referralInvitationSent": "Email di invito inviata a {{email}}",
-    "deletedTeamMember": "La {{resource}} è stata cancellata con successo",
-    "accountDeactivationEmailSent": "Email di disattivazione inviata!",
-    "claimEmailSent": "Email di reclamo inviata!",
-    "teamsSubscriptionRedeemed": "La tua squadra è pronta! Effettua nuovamente il login per iniziare a utilizzare Teams",
     "linkCopied": "Link copiato!",
     "twoFactorAuthActivated": "L'autenticazione a due fattori è stata attivata!",
-    "twoFactorAuthDisabled": "L'autenticazione a due fattori è stata disattivata",
-    "joinedToTheTeam": "Ti sei unito al team con successo",
-    "done": "Fatto",
-    "subscribeToNewsletter": "{{email}} si è iscritto con successo alla newsletter"
+    "twoFactorAuthDisabled": "L'autenticazione a due fattori è stata disattivata"
   },
   "shareItemDialog": {
     "title": "Impostazioni link",
@@ -1567,7 +1223,6 @@
     }
   },
   "notificationMessages": {
-    "copyLink": "Link condiviso copiato negli appunti",
     "linkUpdated": "Link aggiornato",
     "itemsMovedToTrash": "{{item}} spostati nel cestino",
     "restoreItems": "Gli elementi sono stati ripristinati",
@@ -1583,10 +1238,8 @@
     "successCancelSubscription": "L'abbonamento è stato annullato",
     "errorCancelSubscription": "Qualcosa è andato storto durante la cancellazione dell'abbonamento",
     "errorCreatingSubscription": "Si è verificato un errore durante la creazione del tuo abbonamento",
-    "errorPurchaseBusinessPlan": "Hai già un piano aziendale.",
     "couponIsNotValidForUserError": "Il coupon può essere riscattato solo da nuovi clienti.",
     "errorApplyingCoupon": "Si è verificato un errore durante l'applicazione del coupon",
-    "invalidTaxIdIsProvided": "L'ID fiscale fornito non è valido",
     "errorWhileFetchingMoreItems": "Qualcosa è andato storto durante il recupero di ulteriori elementi",
     "errorDeletingItems": "Qualcosa è andato storto durante l'eliminazione di questo elemento",
     "errorFetchingWorkspace": "Errore durante il recupero dell'area di lavoro {{error}}",
@@ -1603,7 +1256,6 @@
   "actions": {
     "undo": "Annulla",
     "upload": {
-      "new": "Nuovo",
       "folder": "Nuova cartella",
       "uploadFiles": "Carica file",
       "uploadFolder": "Carica cartella"
@@ -1613,36 +1265,22 @@
     "downloading": "Downloading",
     "downloadingItems": "Scaricamento in corso di {{Items}} elementi...",
     "downloaded": "Scaricato",
-    "delete": "Elimina",
-    "share": "Condividi",
     "view": "Anteprima",
-    "accessFile": "Accesso al file",
     "upgradeNow": "Aggiornare ora",
-    "purchasePlan": "Aggiornare ora",
     "upgrade": "Acquista",
     "buyStorage": "Aggiornare ora",
-    "deleteAccount": "Eliminare definitivamente l'account",
-    "changePassword": "Modifica la password",
     "buy": "Acquista",
     "cancel": "Annulla",
     "create": "Crea",
-    "sendInvitation": "Inviare invito",
-    "subscribe": "Subscribe",
-    "moreInfo": "Maggiori informazioni",
-    "dismiss": "Licenziare",
     "save": "Salva",
     "saveChanges": "Salva modifiche",
     "saving": "Salvare",
     "back": "Indietro",
-    "edit": "Modifica",
-    "submit": "Invia",
     "access": "Accesso",
     "previous": "Precedente",
     "next": "Avanti",
     "disable": "Disabilitare",
     "move": "Sposta",
-    "moving": "Spostamento...",
-    "navigating": "Navigazione...",
     "restoreHere": "Ripristina qui",
     "rename": "Rinominare",
     "restore": "Ripristinare",
@@ -1663,18 +1301,13 @@
     "textCopied": "Testo copiato negli appunti"
   },
   "drive": {
-    "usage": "Utilizzo",
-    "currentPlan": "Piano attuale",
     "loadingFile": "Anteprima di caricamento",
-    "previewNoAvailable": "Nessuna anteprima disponibile",
     "pdfPage": "Pagina {{page}} di {{pages}}",
     "list": {
       "columns": {
-        "type": "Tipo",
         "name": "Nome",
         "modified": "Ultima modifica",
         "size": "Dimensione",
-        "actions": "Azioni",
         "autoDelete": "Eliminazione automatica",
         "originalLocation": "Posizione originale"
       }
@@ -1687,22 +1320,18 @@
       "openPreview": "Anteprima aperta",
       "shareLink": "Condividi",
       "shareTeam": "Condividi con il team",
-      "shareWithWorkspace": "Condividi con lo spazio di lavoro",
-      "getLink": "Ottenere link",
       "rename": "Rinomina",
       "download": "Scarica",
       "details": "Dettagli",
-      "manageAccess": "Gestisci accesso",
       "manageLinkAccess": "Gestisci accesso",
       "moveToTrash": "Sposta nel cestino",
       "copyLink": "Copia link",
-      "linkSettings": "Impostazioni link",
-      "deleteLink": "Elimina link",
       "restore": "Ripristinare",
       "deletePermanently": "Eliminare definitivamente",
       "move": "Sposta",
       "delete": "Elimina",
-      "versionHistory": "Cronologia versioni"
+      "versionHistory": "Cronologia versioni",
+      "share": "Condividi"
     },
     "deleteItems": {
       "title": "Eliminare definitivamente?",
@@ -1711,7 +1340,6 @@
       "progress": "Eliminazione..."
     },
     "clearTrash": {
-      "title": "Svuotare il cestino del Drive?",
       "advice": "Tutti gli elementi nel Cestino vengono eliminati in modo permanente. Questa azione non può essere annullata.",
       "accept": "Empty Trash",
       "progress": "Emptying Trash..."
@@ -1724,52 +1352,11 @@
     "movingToTrash": "Spostare gli oggetti nella spazzatura",
     "deletingItems": "Eliminazione di elementi dal cestino"
   },
-  "appSumo": {
-    "tiers": {
-      "internxt_tier1": "AppSumo Lifetime Tier 1",
-      "internxt_tier2": "AppSumo Lifetime Tier 2",
-      "internxt_tier3": "AppSumo Lifetime Tier 3",
-      "internxt_tier4": "AppSumo Lifetime Tier 4",
-      "internxt_tier5": "AppSumo Lifetime Tier 5",
-      "unlimited": "Lifetime Infinite Members"
-    },
-    "members": {
-      "internxt_tier1": "Team members: 1",
-      "internxt_tier2": "Team members: 5",
-      "internxt_tier3": "Team members: 10",
-      "internxt_tier4": "Team members: 25",
-      "internxt_tier5": "Team members: 100",
-      "unlimited": "Team members: {{total}}"
-    },
-    "plans": {
-      "advice": "You will be redirected to your AppSumo account"
-    }
-  },
-  "newsletter": {
-    "dialog": {
-      "title": "Subscribe to our newsletter",
-      "message": "Get the last news and updates right in your mail inbox"
-    }
-  },
   "referrals": {
     "openError": "Si è verificato un errore durante l'apertura dei referral. Riprova.",
     "emailVerification": {
       "message": "Verifica la tua email per essere idoneo ai referral. Controlla la tua casella di posta o",
       "resendVerification": "rinvia verifica"
-    },
-    "items": {
-      "create-account": "Creazione dell’account",
-      "install-mobile-app": "Installa l’app mobile e carica un file",
-      "share-file": "Condividi un file via link",
-      "subscribe-to-newsletter": "Iscriviti alla newsletter",
-      "install-desktop-app": "Installa l’app desktop e carica un file",
-      "invite-friends": "Invita {{completedSteps}}/{{steps}} amici",
-      "invite-2-friends": "Invita {{completedSteps}}/{{steps}} amici"
-    },
-    "rewards": {
-      "title": "Ottieni {{creditSum}} gratis",
-      "progress": "{{currentCredit}} di",
-      "limit": "{{creditSum}} sbloccati"
     }
   },
   "errors": {
@@ -1807,16 +1394,8 @@
   },
   "preferences": {
     "title": "Preferenze",
-    "general": {
-      "title": "Generale"
-    },
     "workspace": {
-      "title": "Spazio di lavoro",
-      "overview": {
-        "title": "Panoramica"
-      },
       "members": {
-        "title": "Membri",
         "members": "Membri",
         "guests": "Invitati",
         "search": "Cerca membri",
@@ -1835,7 +1414,6 @@
           "declinedSuccessfully": "Invito allo spazio di lavoro rifiutato con successo",
           "invitationSent": "Invito inviato con successo",
           "error": {
-            "errorInviting": "Errore nell'invio dell'invito a {{email}}",
             "acceptedError": "Errore nell'accettare l'invito allo spazio di lavoro",
             "declinedError": "Errore nel rifiutare l'invito allo spazio di lavoro"
           }
@@ -1884,50 +1462,14 @@
           "actionButton": "Invia richiesta"
         },
         "tabs": {
-          "activity": {
-            "name": "Attività",
-            "empty": "Nessuna attività",
-            "disabilitedOwner": {
-              "title": "Iniziare con l'attività",
-              "subtitle": "Chiari approfondimenti sull'uso per la gestione di file e account con la registrazione dei registri di attività",
-              "action": "Abilita attività"
-            },
-            "disabilitedMember": {
-              "title": "L'attività è disabilitata",
-              "subtitle": "Contattare il proprietario dell'area di lavoro per abilitare i registri delle attività per la gestione dei file e degli account"
-            },
-            "roles": {
-              "title": "Ruoli",
-              "member": "Membro",
-              "manager": "Manager",
-              "owner": "Proprietario"
-            },
-            "filter": {
-              "button": "Filtro",
-              "title": "Filtri",
-              "clear": "Clear",
-              "dateRange": {
-                "title": "Intervallo di date",
-                "7days": "Ultimi 7 giorni",
-                "30days": "Ultimi 30 giorni",
-                "90days": "Ultimi 90 giorni"
-              }
-            }
-          },
           "teams": {
-            "title": "Squadre",
-            "role": "Role",
             "emptyTeamsOwner": {
               "title": "Iniziare con i team",
-              "subtitle": "Gestisci più velocemente i membri dello spazio di lavoro raggruppandoli in team",
-              "action": "Crea un team"
+              "subtitle": "Gestisci più velocemente i membri dello spazio di lavoro raggruppandoli in team"
             },
             "emptyTeamsMember": {
               "title": "Nessuna squadra ancora creata",
               "subtitle": "Il proprietario dello spazio di lavoro può gestire i membri più velocemente raggruppandoli in team"
-            },
-            "emptyTeams": {
-              "title": "Non è membro di alcun team"
             }
           }
         },
@@ -1936,7 +1478,8 @@
           "leave": "Lascia",
           "reactivate": "Riattiva membro",
           "remove": "Rimuovi membro",
-          "passwordChange": "Richiedi la modifica della password"
+          "passwordChange": "Richiedi la modifica della password",
+          "modifyStorage": "Modifica archiviazione"
         },
         "leaveModal": {
           "title": "Lascia",
@@ -1952,7 +1495,6 @@
         "members": "Membri",
         "createTeamDialog": {
           "title": "Nuova squadra",
-          "label": "Nome",
           "placeholder": "Inserisci il nome della squadra",
           "cancel": "Annulla",
           "create": "Crea",
@@ -1977,11 +1519,9 @@
         },
         "renameTeamDialog": {
           "title": "Rinomina squadra",
-          "label": "Nome",
           "placeholder": "Inserisci il nuovo nome della squadra",
           "cancel": "Annulla",
-          "rename": "Rinomina",
-          "nameExists": "Una squadra con questo nome esiste già"
+          "rename": "Rinomina"
         },
         "deleteTeamDialog": {
           "title": "Elimina team",
@@ -2006,7 +1546,6 @@
         "title": "Fatturazione",
         "nextBillingDate": "Prossima data di fatturazione",
         "planLimit": "Fatturato per un piano da {{planLimit}}",
-        "subscription": "Abbonamento",
         "membersLabel": "membri",
         "perUser": "per utente",
         "members": {
@@ -2061,7 +1600,6 @@
       "accessLogs": {
         "filterActions": {
           "title": "Filtra",
-          "searchMembers": "Cerca membri",
           "filters": "Filtri",
           "clear": "Cancella",
           "activity": {
@@ -2096,27 +1634,12 @@
     },
     "account": {
       "title": "Conto",
-      "inviteFriend": "Invita un amico",
-      "seeInvitations": "Vedi Inviti",
-      "sendInvitationDescription": "Diffondi la voce e ottieni 1 GB per ogni amico invitato gratuitamente. Puoi ottenere fino a {{N}}GB in totale.",
-      "sendInvitation": "Invia invito",
-      "enterFriendEmail": "Inserisci l'email dell'amico",
-      "extraStorage": "Spazio di archiviazione extra",
-      "invitedFriends": "Amici invitati",
-      "friendsInvited": "Amici invitati",
-      "acceptedRequests": "Richieste accettate",
-      "user": "Utente",
-      "status": "Stato",
-      "accepted": "Accettato",
-      "pending": "In attesa",
-      "noInvitations": "Nessuna invito inviato ancora",
       "upgrade": "Aggiornare",
       "levelUpStorage": "Aumenta il tuo spazio di archiviazione e ottieni molti altri vantaggi",
       "upgradeNow": "Aggiorna ora",
       "emptyTrash": "Svuota cestino",
       "emptyTrashDescription": "Gli elementi nel cestino verranno eliminati in modo permanente",
       "plans": {
-        "title": "Piani",
         "current": "Attuale",
         "upgrade": "Aggiorna",
         "downgrade": "Retrocedi",
@@ -2124,10 +1647,7 @@
         "manageBilling": "Gestisci la fatturazione",
         "freeForever": "Gratis per sempre",
         "billedAnnually": "/mese fatturato annualmente",
-        "billedMonthly": "fatturato mensilmente",
-        "year": "Anno",
         "month": "Mese",
-        "lifetime": "A vita",
         "types": {
           "essential": "Essential",
           "premium": "Premium",
@@ -2139,7 +1659,6 @@
         "planFeaturesList": {
           "title": "Dettagli del Piano",
           "comingSoon": "Prossimamente",
-          "storage": " spazio di archiviazione cloud crittografato",
           "1TB": {
             "title": "Essential (Essenziale)",
             "features": [
@@ -2199,8 +1718,6 @@
           }
         },
         "businessPlanFeaturesList": {
-          "title": "Dettagli del piano",
-          "storage": " di archiviazione",
           "1TB": {
             "title": "Standard",
             "features": [
@@ -2240,12 +1757,7 @@
               "Email"
             ]
           }
-        },
-        "user": "Utente",
-        "persuser": "per utilisateur"
-      },
-      "billing": {
-        "title": "Fatturazione"
+        }
       },
       "security": {
         "title": "Security"
@@ -2267,23 +1779,17 @@
   "workspaces": {
     "workspaces": "Spazi di lavoro",
     "workspace": "Spazio di lavoro",
-    "createWorkspace": "Crea spazio di lavoro",
     "workspaceTypes": {
       "personal": "Spazio di lavoro personale",
       "business": "Spazio di lavoro aziendale"
     },
     "pending": "Inviti in sospeso",
-    "messages": {
-      "sharedSuccess": "Elemento condiviso con successo con il team",
-      "switchingWorkspace": "Cambio di spazio di lavoro"
-    },
     "pendingInvitations": {
       "empty": "Nessun invito rimasto",
       "title": "Inviti in sospeso",
       "accept": "Accetta",
       "deny": "Rifiuta",
-      "invitedOn": "Invito inviato ",
-      "todayAt": "oggi alle "
+      "invitedOn": "Invito inviato "
     },
     "sharedWorkspace": "Spazio di lavoro condiviso"
   },
