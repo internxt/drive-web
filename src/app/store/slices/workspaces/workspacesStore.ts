@@ -115,7 +115,7 @@ const setSelectedWorkspace = createAsyncThunk<
     dispatch(workspacesActions.setSelectedWorkspace(null));
     dispatch(workspacesActions.setCredentials(null));
     localStorageService.set(LocalStorageItem.WorkspaceCredentials, 'null');
-  } else if (isSelectedWorkspace) {
+  } else if (isSelectedWorkspace && selectedWorkspace?.workspace.id === workspaceId) {
     dispatch(workspacesActions.setSelectedWorkspace(selectedWorkspace));
   } else {
     const workspace = state.workspaces.workspaces.find((workspace) => workspace.workspace.id === workspaceId);

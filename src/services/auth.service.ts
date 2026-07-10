@@ -592,7 +592,7 @@ export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
   try {
     dispatch(planThunks.initializeThunk());
     await dispatch(initializeUserThunk())?.unwrap();
-    dispatch(workspaceThunks.fetchWorkspaces());
+    await dispatch(workspaceThunks.fetchWorkspaces());
     dispatch(workspaceThunks.checkAndSetLocalWorkspace());
   } catch (e: unknown) {
     const error = e as Error;
