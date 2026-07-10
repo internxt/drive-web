@@ -77,6 +77,12 @@ describe('BannerManager - showFreeBanner', () => {
       amountOfSeats: 1,
       seats: { minimumSeats: 1, maximumSeats: 1 },
       commitment: { enabled: false },
+      cancellation: {
+        scheduled: false,
+      },
+      cancellationTrial: {
+        redeemed: false,
+      },
     },
     businessPlan: null,
     planLimit: 0,
@@ -183,6 +189,12 @@ describe('BannerManager - showSubscriptionBanner', () => {
       amountOfSeats: 1,
       seats: { minimumSeats: 1, maximumSeats: 1 },
       commitment: { enabled: false },
+      cancellation: {
+        scheduled: false,
+      },
+      cancellationTrial: {
+        redeemed: false,
+      },
     },
     businessPlan: null,
     planLimit: 0,
@@ -223,6 +235,12 @@ describe('BannerManager - showSubscriptionBanner', () => {
       amountOfSeats: 1,
       seats: { minimumSeats: 1, maximumSeats: 1 },
       commitment: { enabled: false },
+      cancellation: {
+        scheduled: false,
+      },
+      cancellationTrial: {
+        redeemed: false,
+      },
     },
     businessPlan: null,
     planLimit: 0,

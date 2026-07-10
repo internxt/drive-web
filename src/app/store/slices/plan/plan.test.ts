@@ -18,6 +18,12 @@ const mockIndividualPlan: StoragePlan = {
   storageLimit: 1000000000,
   amountOfSeats: 1,
   commitment: { enabled: false },
+  cancellation: {
+    scheduled: false,
+  },
+  cancellationTrial: {
+    redeemed: false,
+  },
 };
 
 const mockBusinessPlan: StoragePlan = {
@@ -35,6 +41,12 @@ const mockBusinessPlan: StoragePlan = {
   storageLimit: 5000000000,
   amountOfSeats: 5,
   commitment: { enabled: false },
+  cancellation: {
+    scheduled: false,
+  },
+  cancellationTrial: {
+    redeemed: false,
+  },
 };
 
 const createMockState = (planState: Partial<PlanState>, hasSelectedWorkspace = false): Partial<RootState> => ({

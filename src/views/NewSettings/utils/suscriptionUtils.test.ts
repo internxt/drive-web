@@ -44,6 +44,12 @@ const mockIndividualPlan: StoragePlan = {
   commitment: {
     enabled: false,
   },
+  cancellation: {
+    scheduled: false,
+  },
+  cancellationTrial: {
+    redeemed: false,
+  },
 };
 
 const mockBusinessPlan: StoragePlan = {
@@ -62,6 +68,12 @@ const mockBusinessPlan: StoragePlan = {
   amountOfSeats: 5,
   commitment: {
     enabled: false,
+  },
+  cancellation: {
+    scheduled: false,
+  },
+  cancellationTrial: {
+    redeemed: false,
   },
 };
 
