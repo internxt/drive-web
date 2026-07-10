@@ -467,6 +467,17 @@
               "free": "免费的"
             }
           },
+          "cancellationIncentive": {
+            "title": {
+              "normal": "下个月",
+              "blue": "我们请客"
+            },
+            "description": "保留订阅即可获得下个月免费使用，并将试用期延长至 {{newDate}}。此优惠仅限一次。",
+            "cta": {
+              "cancel": "仍要取消",
+              "freeMonth": "获得 1 个月免费"
+            }
+          },
           "paymentMethod": {
             "title": "添加新的付款方式",
             "contactUs": {
@@ -1238,6 +1249,8 @@
     "successCancelSubscription": "您的订阅已被取消",
     "errorCancelSubscription": "取消订阅时出了点问题",
     "errorCreatingSubscription": "创建您的订阅时出现问题",
+    "successApplyCancellationIncentive": "感谢您继续与我们同行！尽享下个月免费服务",
+    "errorApplyCancellationIncentive": "应用取消优惠时发生错误",
     "couponIsNotValidForUserError": "优惠券只能由新客户兑换。",
     "errorApplyingCoupon": "应用优惠券时出错",
     "errorWhileFetchingMoreItems": "获取更多项目时出现错误",

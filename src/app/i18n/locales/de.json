@@ -446,6 +446,17 @@
               "free": "Kostenlos"
             }
           },
+          "cancellationIncentive": {
+            "title": {
+              "normal": "NÄCHSTEN MONAT",
+              "blue": "GEHT AUFS HAUS"
+            },
+            "description": "Wenn Sie Ihr Abonnement behalten, erhalten Sie den nächsten Monat kostenlos und eine Verlängerung der Testphase bis zum {{newDate}}. Dies ist ein einmaliges Angebot.",
+            "cta": {
+              "cancel": "Trotzdem kündigen",
+              "freeMonth": "1 Monat GRATIS erhalten"
+            }
+          },
           "paymentMethod": {
             "title": "Neue Zahlungsart hinzufügen",
             "contactUs": {
@@ -1214,6 +1225,8 @@
     "successCancelSubscription": "Dein Abonnement wurde gekündigt",
     "errorCancelSubscription": "Bei der Kündigung deines Abonnements ist ein Fehler aufgetreten",
     "errorCreatingSubscription": "Beim Erstellen Ihres Abonnements ist ein Fehler aufgetreten",
+    "successApplyCancellationIncentive": "Danke, dass Sie bei uns bleiben! Genießen Sie den nächsten Monat kostenlos",
+    "errorApplyCancellationIncentive": "Beim Anwenden des Kündigungsanreizes ist ein Fehler aufgetreten",
     "couponIsNotValidForUserError": "Der Gutschein kann nur von neuen Kunden eingelöst werden.",
     "errorApplyingCoupon": "Beim Anwenden des Coupons ist ein Fehler aufgetreten",
     "errorWhileFetchingMoreItems": "Beim Abrufen weiterer Elemente ist ein Fehler aufgetreten",

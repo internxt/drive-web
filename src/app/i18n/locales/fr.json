@@ -446,6 +446,17 @@
               "free": "Gratuit"
             }
           },
+          "cancellationIncentive": {
+            "title": {
+              "normal": "LE MOIS PROCHAIN",
+              "blue": "OFFERT"
+            },
+            "description": "En conservant votre abonnement, vous bénéficierez du mois prochain gratuit et d’une extension de l’essai jusqu’au {{newDate}}. Il s’agit d’une offre unique.",
+            "cta": {
+              "cancel": "Annuler quand même",
+              "freeMonth": "Obtenir 1 mois GRATUIT"
+            }
+          },
           "paymentMethod": {
             "title": "Add new payment method",
             "contactUs": {
@@ -1214,6 +1225,8 @@
     "itemsDeleted": "Fichiers supprimés",
     "emailNotEmpty": "L'adresse électronique ne doit pas être vide",
     "errorCreatingSubscription": "Un problème est survenu lors de la création de votre abonnement",
+    "successApplyCancellationIncentive": "Merci de rester avec nous ! Profitez du mois prochain gratuitement",
+    "errorApplyCancellationIncentive": "Une erreur est survenue lors de l’application de l’offre d’annulation",
     "verificationEmail": "Courriel de vérification envoyé",
     "successCancelSubscription": "Votre abonnement a été annulé",
     "errorCancelSubscription": "Quelque chose s'est mal passé lors de l'annulation de votre abonnement",

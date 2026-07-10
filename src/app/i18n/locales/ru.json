@@ -446,6 +446,17 @@
               "free": "бесплатно"
             }
           },
+          "cancellationIncentive": {
+            "title": {
+              "normal": "СЛЕДУЮЩИЙ МЕСЯЦ",
+              "blue": "ЗА НАШ СЧЁТ"
+            },
+            "description": "Сохранив подписку, вы получите следующий месяц бесплатно и продление пробного периода до {{newDate}}. Это разовое предложение.",
+            "cta": {
+              "cancel": "Всё равно отменить",
+              "freeMonth": "Получить 1 месяц БЕСПЛАТНО"
+            }
+          },
           "paymentMethod": {
             "title": "Добавить новый способ оплаты",
             "contactUs": {
@@ -1217,6 +1228,8 @@
     "successCancelSubscription": "Подписка отменена",
     "errorCancelSubscription": "Произошла ошибка при отмене подписки.",
     "errorCreatingSubscription": "Что-то пошло не так при создании вашей подписки",
+    "successApplyCancellationIncentive": "Спасибо, что остаётесь с нами! Наслаждайтесь следующим месяцем бесплатно",
+    "errorApplyCancellationIncentive": "Произошла ошибка при применении стимула отмены",
     "couponIsNotValidForUserError": "Купон может быть использован только новыми клиентами.",
     "errorApplyingCoupon": "Произошла ошибка при применении купона",
     "errorWhileFetchingMoreItems": "Произошла ошибка при получении дополнительных элементов",

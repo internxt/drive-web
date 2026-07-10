@@ -467,6 +467,17 @@
               "free": "Free"
             }
           },
+          "cancellationIncentive": {
+            "title": {
+              "normal": "NEXT MONTH",
+              "blue": "ON US"
+            },
+            "description": "By keeping your subscription you will get the next month free and an extension of the trial until {{newDate}}. This is a one-time deal.",
+            "cta": {
+              "cancel": "Cancel anyway",
+              "freeMonth": "Get 1 month FREE"
+            }
+          },
           "paymentMethod": {
             "title": "Add new payment method",
             "contactUs": {
@@ -1238,6 +1249,8 @@
     "successCancelSubscription": "Your subscription has been cancelled",
     "errorCancelSubscription": "Something went wrong while cancelling your subscription",
     "errorCreatingSubscription": "Something went wrong while creating your subscription",
+    "successApplyCancellationIncentive": "Thank you for staying with us! Enjoy the next month for free",
+    "errorApplyCancellationIncentive": "Something went wrong while applying the cancellation incentive",
     "couponIsNotValidForUserError": "Coupon can only be redeemed by new customers",
     "errorApplyingCoupon": "Something went wrong while applying the coupon",
     "errorWhileFetchingMoreItems": "Something went wrong while fetching more items",
