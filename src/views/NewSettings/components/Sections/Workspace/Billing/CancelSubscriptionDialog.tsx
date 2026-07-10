@@ -3,7 +3,7 @@ import CancelPlanModal from './components/cancelSubscription/paidPlanCancellatio
 import { useEffect, useState } from 'react';
 import CancelRenewalModal from './components/cancelSubscription/paidPlanCancellation/CancelRenewalModal';
 import EndPlanNowModal from './components/cancelSubscription/paidPlanCancellation/EndPlanNowModal';
-import { CancellationIncentive } from './CancellationIncentive';
+import { CancellationIncentive } from './components/cancelSubscription/CancellationIncentive';
 import { dateService } from 'services';
 import SimpleCancelSubscriptionModal from './components/cancelSubscription/SimpleCancelSubscriptionModal';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
