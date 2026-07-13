@@ -722,14 +722,14 @@
       "title": "重命名",
       "label": "名稱"
     },
-    "renameModal": {
+    "alreadyExistsModal": {
       "title": "項目已存在",
-      "titleMultipleItems": "多個項目已存在",
-      "description": "{{itemName}} 已存在於此位置。您要替換它還是保留兩者？",
-      "multipleDescription": "此位置已存在多個元素。您要替換它們還是保留全部？",
+      "selectOption": "選擇一個選項",
+      "description": "{{itemName}} 已存在於此位置。您要用正在移動的項目替換它嗎？",
       "replaceItem": "替換當前項目",
       "keepBoth": "保留兩者",
-      "selectOption": "選擇一個選項",
+      "skipFile": "跳過檔案",
+      "applyToAll": "將此操作套用至所有重複項目",
       "upload": "上傳",
       "move": "移動"
     },

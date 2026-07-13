@@ -722,14 +722,14 @@
       "title": "Rename",
       "label": "Name"
     },
-    "renameModal": {
+    "alreadyExistsModal": {
       "title": "Item already exists",
-      "titleMultipleItems": "Multiple items already exist",
-      "description": "{{itemName}} already exists in this location. Do you want to replace it or you want to keep both?",
-      "multipleDescription": "More than one element already exists in this location. Do you want to replace them or you want to keep all",
+      "selectOption": "Select an option",
+      "description": "{{itemName}} already exists in this location. Do you want to replace it with with the one you’re moving?",
       "replaceItem": "Replace current item",
       "keepBoth": "Keep both",
-      "selectOption": "Select an option",
+      "skipFile": "Skip file",
+      "applyToAll": "Apply this action to all duplicates",
       "upload": "Upload",
       "move": "Move"
     },

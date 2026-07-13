@@ -701,14 +701,14 @@
       "title": "Renommer",
       "label": "Nom"
     },
-    "renameModal": {
+    "alreadyExistsModal": {
       "title": "L'élément existe déjà",
-      "titleMultipleItems": "Plusieurs éléments existent déjà",
-      "description": "{{itemName}} existe déjà à cet endroit. Voulez-vous le remplacer ou conserver les deux ?",
-      "multipleDescription": "Plus d'un élément existe déjà dans ce lieu. Voulez-vous les remplacer ou les conserver tous ?",
+      "selectOption": "Sélectionnez une option",
+      "description": "{{itemName}} existe déjà à cet endroit. Voulez-vous le remplacer par celui que vous déplacez ?",
       "replaceItem": "Remplacer l'élément actuel",
       "keepBoth": "Garder les deux",
-      "selectOption": "Sélectionnez une option",
+      "skipFile": "Ignorer le fichier",
+      "applyToAll": "Appliquer cette action à tous les doublons",
       "upload": "Télécharger",
       "move": "Déplacer"
     },

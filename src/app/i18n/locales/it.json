@@ -722,14 +722,14 @@
       "title": "Rinominare",
       "label": "Nome"
     },
-    "renameModal": {
+    "alreadyExistsModal": {
       "title": "L'elemento esiste già",
-      "titleMultipleItems": "Esistono già più elementi",
-      "description": "Il {{itemName}} esiste già in questa posizione. Vuoi sostituirlo o vuoi mantenerli entrambi?",
-      "multipleDescription": "Più di un elemento esiste già in questa posizione. Si desidera sostituirli o si desidera mantenerli tutti",
+      "selectOption": "Seleziona un'opzione",
+      "description": "{{itemName}} esiste già in questa posizione. Vuoi sostituirlo con quello che stai spostando?",
       "replaceItem": "Sostituisci l'elemento attuale",
       "keepBoth": "Mantieni entrambi",
-      "selectOption": "Seleziona un'opzione",
+      "skipFile": "Salta file",
+      "applyToAll": "Applica questa azione a tutti i duplicati",
       "upload": "Carica",
       "move": "Sposta"
     },
