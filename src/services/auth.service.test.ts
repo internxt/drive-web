@@ -563,7 +563,7 @@ describe('Change password', () => {
       }),
     } as any);
 
-    await authService.changePassword(mockNewPassword, mockOldPassword, mockEmail);
+    await authService.changePassword(mockNewPassword, mockOldPassword);
     expect(changePasswordMock).toBeCalled();
     const [inputs] = changePasswordMock.mock.calls[0];
 
@@ -613,7 +613,7 @@ describe('Change password', () => {
       }),
     } as any);
 
-    await authService.changePassword(mockNewPassword, mockOldPassword, mockEmail);
+    await authService.changePassword(mockNewPassword, mockOldPassword);
     expect(changePasswordMock).toBeCalled();
     const [inputs] = changePasswordMock.mock.calls[0];
 
@@ -669,7 +669,7 @@ describe('Change password', () => {
 
     vi.spyOn(errorService, 'castError').mockReturnValueOnce({ message: 'Server error', status: 500 } as any);
 
-    const act = authService.changePassword(mockNewPassword, mockOldPassword, mockEmail);
+    const act = authService.changePassword(mockNewPassword, mockOldPassword);
 
     await expect(act).rejects.toBeInstanceOf(PasswordMismatchError);
   });
@@ -718,7 +718,7 @@ describe('Change password', () => {
     const appErr = { message: 'Forbidden', status: 403 };
     vi.spyOn(errorService, 'castError').mockReturnValueOnce(appErr as any);
 
-    const act = authService.changePassword(mockNewPassword, mockOldPassword, mockEmail);
+    const act = authService.changePassword(mockNewPassword, mockOldPassword);
 
     await expect(act).rejects.toBe(appErr);
     await expect(act).rejects.not.toBeInstanceOf(PasswordMismatchError);
