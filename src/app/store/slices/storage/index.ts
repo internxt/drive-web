@@ -21,6 +21,10 @@ const initialState: StorageState = {
   hasMoreDriveFiles: {},
   recents: [],
   isLoadingRecents: false,
+  favorites: [],
+  isLoadingFavorites: false,
+  hasMoreFavoriteFolders: true,
+  hasMoreFavoriteFiles: true,
   isLoadingDeleted: false,
   filters: filtersFactory(),
   order: orderFactory('name', OrderDirection.Asc),
@@ -67,6 +71,9 @@ export const storageSlice = createSlice({
     },
     setIsLoadingRecents: (state: StorageState, action: PayloadAction<boolean>) => {
       state.isLoadingRecents = action.payload;
+    },
+    setIsLoadingFavorites: (state: StorageState, action: PayloadAction<boolean>) => {
+      state.isLoadingFavorites = action.payload;
     },
     setIsLoadingDeleted: (state: StorageState, action: PayloadAction<boolean>) => {
       state.isLoadingDeleted = action.payload;
@@ -124,6 +131,21 @@ export const storageSlice = createSlice({
     },
     setRecents: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.recents = action.payload;
+    },
+    addFavorites: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
+      const favoriteItems = state.favorites.concat(action.payload);
+      state.favorites = removeDuplicates(favoriteItems);
+    },
+    setHasMoreFavoriteFolders: (state: StorageState, action: PayloadAction<boolean>) => {
+      state.hasMoreFavoriteFolders = action.payload;
+    },
+    setHasMoreFavoriteFiles: (state: StorageState, action: PayloadAction<boolean>) => {
+      state.hasMoreFavoriteFiles = action.payload;
+    },
+    resetFavoritesPagination: (state: StorageState) => {
+      state.favorites = [];
+      state.hasMoreFavoriteFolders = true;
+      state.hasMoreFavoriteFiles = true;
     },
     setItemsOnTrash: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.itemsOnTrash = action.payload;
@@ -390,9 +412,14 @@ export const storageSlice = createSlice({
 export const {
   setIsLoadingFolder,
   setIsLoadingRecents,
+  setIsLoadingFavorites,
   setIsLoadingDeleted,
   setItems,
   setRecents,
+  addFavorites,
+  setHasMoreFavoriteFolders,
+  setHasMoreFavoriteFiles,
+  resetFavoritesPagination,
   setFilters,
   resetFilters,
   selectItems,

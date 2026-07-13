@@ -353,6 +353,7 @@
   },
   "sideNav": {
     "drive": "云盘",
+    "favorites": "收藏",
     "backups": "备份",
     "shared": "共享的",
     "recents": "最近",
@@ -364,6 +365,13 @@
     }
   },
   "views": {
+    "favorites": {
+      "head": "收藏",
+      "empty": {
+        "title": "暂无收藏",
+        "description": "您标记为收藏的文件和文件夹将显示在这里"
+      }
+    },
     "recents": {
       "head": "最近",
       "empty": {

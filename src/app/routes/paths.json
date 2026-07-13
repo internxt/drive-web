@@ -82,6 +82,14 @@
       "auth": true
     },
     {
+      "id": "favorites",
+      "layout": "header-and-sidenav",
+      "path": "/favorites",
+      "exact": true,
+      "auth": true,
+      "hideSearch": true
+    },
+    {
       "id": "recents",
       "layout": "header-and-sidenav",
       "path": "/recents",
