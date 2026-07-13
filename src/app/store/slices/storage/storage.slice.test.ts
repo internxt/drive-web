@@ -214,5 +214,50 @@ describe('storage slice', () => {
       expect(nextState.hasMoreFavoriteFolders).toBe(true);
       expect(nextState.hasMoreFavoriteFiles).toBe(true);
     });
+
+    test('When an item is patched, then the matching favorite is updated and the rest are not affected', () => {
+      const matching = buildDriveItemData({ uuid: 'fav-uuid-1', id: 1, name: 'old-name.pdf', isFolder: false });
+      const other = buildDriveItemData({ uuid: 'fav-uuid-2', id: 2, name: 'other.pdf', isFolder: false });
+      const state = storageReducer(buildInitialState(), storageActions.addFavorites([matching, other]));
+
+      const nextState = storageReducer(
+        state,
+        storageActions.patchItem({
+          uuid: matching.uuid,
+          folderId: 'parent-folder-uuid',
+          isFolder: false,
+          patch: { name: 'new-name.pdf' },
+        }),
+      );
+
+      expect(nextState.favorites[0].name).toBe('new-name.pdf');
+      expect(nextState.favorites[1].name).toBe('other.pdf');
+    });
+
+    test('When the current thumbnails are cleared, then the favorites thumbnails are cleared too', () => {
+      const favorite = buildDriveItemData({
+        uuid: 'fav-uuid-1',
+        id: 1,
+        currentThumbnail: { urlObject: 'blob:thumbnail' } as unknown as DriveItemData['currentThumbnail'],
+      });
+      const state = storageReducer(buildInitialState(), storageActions.addFavorites([favorite]));
+
+      const nextState = storageReducer(
+        state,
+        storageActions.clearCurrentThumbnailItems({ folderId: 'parent-folder-uuid' }),
+      );
+
+      expect(nextState.favorites[0].currentThumbnail).toBeNull();
+    });
+
+    test('When items are popped updating recents, then the matching favorites are removed and the rest are kept', () => {
+      const toDelete = buildDriveItemData({ uuid: 'fav-uuid-1', id: 1, isFolder: false });
+      const toKeep = buildDriveItemData({ uuid: 'fav-uuid-2', id: 2, isFolder: false });
+      const state = storageReducer(buildInitialState(), storageActions.addFavorites([toDelete, toKeep]));
+
+      const nextState = storageReducer(state, storageActions.popItems({ updateRecents: true, items: [toDelete] }));
+
+      expect(nextState.favorites).toEqual([toKeep]);
+    });
   });
 });
