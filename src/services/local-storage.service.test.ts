@@ -65,7 +65,7 @@ const stringifyMockCredentials = JSON.stringify(mockWorkspaceCredentialsDetails)
 
 beforeEach(() => {
   localStorage.setItem(localStorageKey, localStorageValue);
-  localStorage.setItem(LocalStorageItem.User, stringifyMockedUser);
+  localStorageService.setUser(mockUserSettings);
   localStorage.setItem(LocalStorageItem.WorkspaceCredentials, stringifyMockCredentials);
   localStorage.setItem(LocalStorageItem.B2BworkspaceId, mockWorkspaceId);
   localStorage.setItem(LocalStorageItem.Theme, 'starwars');

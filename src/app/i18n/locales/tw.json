@@ -465,6 +465,51 @@
               "year": "年",
               "month": "月",
               "free": "免費"
+            },
+            "options": {
+              "cancelRenewal": {
+                "title": "取消續訂",
+                "description": "保留完整存取權限至 {{endDate}}。在此之前您將繼續按月付款，且方案不會續訂。",
+                "bulletedInfo": "剩餘付款次數：{{remainingMonths}}",
+                "label": "{{endDate}} 之後",
+                "cta": "取消續訂",
+                "confirmationModal": {
+                  "description": "您的方案將保持有效至 {{endDate}}。在此之前您將繼續按月付款，且訂閱在該日期之後不會續訂。",
+                  "goBack": "返回",
+                  "confirm": "確認取消"
+                }
+              },
+              "endNow": {
+                "title": "立即結束",
+                "description": "透過支付剩餘餘額的最終款項立即取消方案。您的存取權限將立即終止。",
+                "bulletedInfo": "立即付款：€{{amountToPay}}",
+                "label": "付款後",
+                "cta": "立即結束",
+                "confirmationModal": {
+                  "title": "立即結束方案",
+                  "description": "您將支付 {{amount}} 的最終款項，立即取消方案。",
+                  "afterThis": "之後：",
+                  "accessEndsImmediately": "您的存取權限將立即終止",
+                  "noFurtherCharges": "將不再產生任何費用",
+                  "overStorage": {
+                    "title": "您已超過 {{freeLimit}}",
+                    "description": "由於您目前使用了 {{currentUsage}}，您的 Internxt Drive 將停止同步檔案，且您將無法新增檔案"
+                  },
+                  "goBack": "稍後再說",
+                  "confirm": "確認並付款"
+                }
+              }
+            }
+          },
+          "cancellationIncentive": {
+            "title": {
+              "normal": "下個月",
+              "blue": "我們請客"
+            },
+            "description": "保留訂閱即可獲得下個月免費使用，並將試用期延長至 {{newDate}}。此優惠僅限一次。",
+            "cta": {
+              "cancel": "仍要取消",
+              "freeMonth": "獲得 1 個月免費"
             }
           },
           "paymentMethod": {
@@ -1238,6 +1283,8 @@
     "successCancelSubscription": "您的訂閱已取消",
     "errorCancelSubscription": "取消訂閱時出現問題",
     "errorCreatingSubscription": "建立您的訂閱時出現問題",
+    "successApplyCancellationIncentive": "感謝您繼續與我們同行！盡享下個月免費服務",
+    "errorApplyCancellationIncentive": "套用取消優惠時發生錯誤",
     "couponIsNotValidForUserError": "優惠券只能由新客戶兌換。",
     "errorApplyingCoupon": "應用優惠券時出錯",
     "errorWhileFetchingMoreItems": "獲取更多項目時出現錯誤",
