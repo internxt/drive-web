@@ -133,6 +133,26 @@ describe('fetchFavoritesThunk', () => {
     expect(storageActions.setHasMoreFavoriteFiles).toHaveBeenCalledWith(false);
   });
 
+  it('should report the error and reject with the casted error when fetching fails', async () => {
+    const { fetchFavoritesThunk } = await import('./fetchFavoritesThunk');
+    const { storageActions } = await import('app/store/slices/storage');
+    const { fetchFavoriteFolders } = await import('../services');
+    const errorService = (await import('services/error.service')).default;
+
+    const fetchError = new Error('Network error');
+    const getState = getStateWith({});
+
+    vi.mocked(fetchFavoriteFolders).mockRejectedValue(fetchError);
+
+    const result = await fetchFavoritesThunk()(dispatch, getState, undefined);
+
+    expect(errorService.reportError).toHaveBeenCalledWith(fetchError);
+    expect(errorService.castError).toHaveBeenCalledWith(fetchError);
+    expect(result.meta.requestStatus).toBe('rejected');
+    expect((result as { payload: unknown }).payload).toBe(fetchError);
+    expect(storageActions.addFavorites).not.toHaveBeenCalled();
+  });
+
   it('should not fetch anything when there are no more folders nor files', async () => {
     const { fetchFavoritesThunk } = await import('./fetchFavoritesThunk');
     const { storageActions } = await import('app/store/slices/storage');
