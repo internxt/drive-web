@@ -378,7 +378,7 @@ const resetAccountWithToken = async (token: string | undefined, newPassword: str
   );
 };
 
-export const changePassword = async (newPassword: string, currentPassword: string, email: string): Promise<void> => {
+export const changePassword = async (newPassword: string, currentPassword: string): Promise<void> => {
   const user = localStorageService.getUser() as UserSettings;
 
   const { encryptedCurrentPassword } = await getPasswordDetails(currentPassword);
