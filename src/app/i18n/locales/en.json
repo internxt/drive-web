@@ -473,6 +473,51 @@
               "year": "year",
               "month": "month",
               "free": "Free"
+            },
+            "options": {
+              "cancelRenewal": {
+                "title": "Cancel renewal",
+                "description": "Keep full access until {{endDate}}. You'll continue monthly payments until then, and your plan won't renew.",
+                "bulletedInfo": "Remaining payments: {{remainingMonths}}",
+                "label": "After {{endDate}}",
+                "cta": "Cancel renewal",
+                "confirmationModal": {
+                  "description": "Your plan will remain active until {{endDate}}. You’ll continue to be billed monthly until then, and your subscription will not renew after that date.",
+                  "goBack": "Go back",
+                  "confirm": "Confirm cancellation"
+                }
+              },
+              "endNow": {
+                "title": "End now",
+                "description": "Cancel your plan immediately by making a final payment of the remaining balance. Your access will end right away.",
+                "bulletedInfo": "Pay now: €{{amountToPay}}",
+                "label": "After payment",
+                "cta": "End now",
+                "confirmationModal": {
+                  "title": "End plan now",
+                  "description": "You are going to cancel your plan immediately by making a final payment of {{amount}}.",
+                  "afterThis": "After this:",
+                  "accessEndsImmediately": "Your access will end immediately",
+                  "noFurtherCharges": "No further charges will apply",
+                  "overStorage": {
+                    "title": "You are over {{freeLimit}}",
+                    "description": "Because you are using {{currentUsage}}, your Internxt Drive will stop syncing your files and you won't be able to add new files"
+                  },
+                  "goBack": "Maybe later",
+                  "confirm": "Confirm and pay"
+                }
+              }
+            }
+          },
+          "cancellationIncentive": {
+            "title": {
+              "normal": "NEXT MONTH",
+              "blue": "ON US"
+            },
+            "description": "By keeping your subscription you will get the next month free and an extension of the trial until {{newDate}}. This is a one-time deal.",
+            "cta": {
+              "cancel": "Cancel anyway",
+              "freeMonth": "Get 1 month FREE"
             }
           },
           "paymentMethod": {
@@ -1246,6 +1291,8 @@
     "successCancelSubscription": "Your subscription has been cancelled",
     "errorCancelSubscription": "Something went wrong while cancelling your subscription",
     "errorCreatingSubscription": "Something went wrong while creating your subscription",
+    "successApplyCancellationIncentive": "Thank you for staying with us! Enjoy the next month for free",
+    "errorApplyCancellationIncentive": "Something went wrong while applying the cancellation incentive",
     "couponIsNotValidForUserError": "Coupon can only be redeemed by new customers",
     "errorApplyingCoupon": "Something went wrong while applying the coupon",
     "errorWhileFetchingMoreItems": "Something went wrong while fetching more items",

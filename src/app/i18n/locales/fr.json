@@ -452,6 +452,51 @@
               "year": "année",
               "month": "mois",
               "free": "Gratuit"
+            },
+            "options": {
+              "cancelRenewal": {
+                "title": "Annuler le renouvellement",
+                "description": "Conservez un accès complet jusqu’au {{endDate}}. Vous continuerez les paiements mensuels jusqu’à cette date, et votre abonnement ne sera pas renouvelé.",
+                "bulletedInfo": "Paiements restants : {{remainingMonths}}",
+                "label": "Après le {{endDate}}",
+                "cta": "Annuler le renouvellement",
+                "confirmationModal": {
+                  "description": "Votre abonnement restera actif jusqu’au {{endDate}}. Vous continuerez à être facturé mensuellement jusqu’à cette date, et votre abonnement ne sera pas renouvelé après cette date.",
+                  "goBack": "Retour",
+                  "confirm": "Confirmer l’annulation"
+                }
+              },
+              "endNow": {
+                "title": "Terminer maintenant",
+                "description": "Annulez votre abonnement immédiatement en effectuant un dernier paiement du solde restant. Votre accès prendra fin immédiatement.",
+                "bulletedInfo": "Payer maintenant : €{{amountToPay}}",
+                "label": "Après paiement",
+                "cta": "Terminer maintenant",
+                "confirmationModal": {
+                  "title": "Mettre fin au plan maintenant",
+                  "description": "Vous allez annuler votre abonnement immédiatement en effectuant un dernier paiement de {{amount}}.",
+                  "afterThis": "Après cela :",
+                  "accessEndsImmediately": "Votre accès prendra fin immédiatement",
+                  "noFurtherCharges": "Aucun autre frais ne sera appliqué",
+                  "overStorage": {
+                    "title": "Vous dépassez {{freeLimit}}",
+                    "description": "Comme vous utilisez {{currentUsage}}, votre Internxt Drive arrêtera de synchroniser vos fichiers et vous ne pourrez plus ajouter de nouveaux fichiers"
+                  },
+                  "goBack": "Peut-être plus tard",
+                  "confirm": "Confirmer et payer"
+                }
+              }
+            }
+          },
+          "cancellationIncentive": {
+            "title": {
+              "normal": "LE MOIS PROCHAIN",
+              "blue": "OFFERT"
+            },
+            "description": "En conservant votre abonnement, vous bénéficierez du mois prochain gratuit et d’une extension de l’essai jusqu’au {{newDate}}. Il s’agit d’une offre unique.",
+            "cta": {
+              "cancel": "Annuler quand même",
+              "freeMonth": "Obtenir 1 mois GRATUIT"
             }
           },
           "paymentMethod": {
@@ -1222,6 +1267,8 @@
     "itemsDeleted": "Fichiers supprimés",
     "emailNotEmpty": "L'adresse électronique ne doit pas être vide",
     "errorCreatingSubscription": "Un problème est survenu lors de la création de votre abonnement",
+    "successApplyCancellationIncentive": "Merci de rester avec nous ! Profitez du mois prochain gratuitement",
+    "errorApplyCancellationIncentive": "Une erreur est survenue lors de l’application de l’offre d’annulation",
     "verificationEmail": "Courriel de vérification envoyé",
     "successCancelSubscription": "Votre abonnement a été annulé",
     "errorCancelSubscription": "Quelque chose s'est mal passé lors de l'annulation de votre abonnement",
