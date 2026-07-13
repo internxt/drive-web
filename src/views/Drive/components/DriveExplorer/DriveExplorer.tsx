@@ -527,7 +527,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   };
 
   useHotkeys('shift+F', () => {
-    if (isOpen) {
+    if (isOpen && !isFavorites) {
       setIsOpen(false);
       onCreateFolderButtonClicked();
     }
@@ -578,7 +578,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <BannerWrapper />
 
       <div className="flex h-full w-full max-w-full grow">
-        {!isTrash && isOpen && (
+        {!isTrash && !isFavorites && isOpen && (
           <ContextMenu
             item={'item'}
             menuItemsRef={menuContextItemsRef}
@@ -631,7 +631,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
               {title}
             </div>
             {/* General Dropdown for Drive Explorer/Trash */}
-            {!isTrash && (
+            {!isTrash && !isFavorites && (
               <div className="flex items-center justify-center">
                 <DriveTopBarItems
                   stepOneTutorialRef={tutorialState.uploadFileButtonRef}
@@ -739,7 +739,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     </div>
   );
 
-  if (isTrash) {
+  if (isTrash || isFavorites) {
     return driveExplorer;
   }
 

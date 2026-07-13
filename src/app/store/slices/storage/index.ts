@@ -308,6 +308,13 @@ export const storageSlice = createSlice({
         return item;
       });
 
+      state.favorites = state.favorites.map((item) => {
+        if (item.uuid === uuid && item.isFolder === isFolder) {
+          Object.assign(item, patch);
+        }
+        return item;
+      });
+
       state.selectedItems = state.selectedItems.map((item) => {
         if (item.uuid === uuid && item.isFolder === isFolder) {
           Object.assign(item, patch);
@@ -331,6 +338,11 @@ export const storageSlice = createSlice({
       }
 
       state.recents = state.recents.map((item) => {
+        item.currentThumbnail = null;
+        return item;
+      });
+
+      state.favorites = state.favorites.map((item) => {
         item.currentThumbnail = null;
         return item;
       });
@@ -390,6 +402,9 @@ export const storageSlice = createSlice({
 
       if (action.payload.updateRecents) {
         state.recents = state.recents.filter(
+          (item: DriveItemData) => !itemsToDelete.find((i) => i.id === item.id && !!i.isFolder === !!item.isFolder),
+        );
+        state.favorites = state.favorites.filter(
           (item: DriveItemData) => !itemsToDelete.find((i) => i.id === item.id && !!i.isFolder === !!item.isFolder),
         );
       }
