@@ -126,7 +126,7 @@ const downloadOwnFileWithBucketKey = async (params: DownloadOwnFileWithBucketKey
   });
 };
 
-export async function multipartDownload(
+async function multipartDownloadOwnFile(
   params: DownloadOwnFileWithMnemonicParams & { fileSize: number },
 ): Promise<FileStream> {
   const {
@@ -164,6 +164,51 @@ export async function multipartDownload(
       abortController: options?.abortController,
     },
   });
+}
+
+async function multipartDownloadSharedFile(
+  params: DownloadSharedFileParams & { fileSize: number },
+): Promise<FileStream> {
+  const { bucketId, fileId, encryptionKey, token, fileSize, options } = params;
+
+  const networkFacade = new NetworkFacade(
+    Network.client(
+      envService.getVariable('storjBridge'),
+      {
+        clientName: 'drive-web',
+        clientVersion: '1.0',
+      },
+      {
+        bridgeUser: '',
+        userId: '',
+      },
+    ),
+  );
+
+  const multipartDownload = new MultipartDownload(networkFacade);
+
+  return multipartDownload.downloadFile({
+    bucketId,
+    fileId,
+    mnemonic: '',
+    fileSize,
+    options: {
+      key: Buffer.from(encryptionKey, 'hex'),
+      token,
+      downloadingCallback: options?.notifyProgress,
+      abortController: options?.abortController,
+    },
+  });
+}
+
+export async function multipartDownload(
+  params: (DownloadOwnFileWithMnemonicParams | DownloadSharedFileParams) & { fileSize: number },
+): Promise<FileStream> {
+  if (params.token && params.encryptionKey) {
+    return multipartDownloadSharedFile(params);
+  }
+
+  return multipartDownloadOwnFile(params as DownloadOwnFileWithMnemonicParams & { fileSize: number });
 }
 
 export async function downloadChunkFile(

@@ -74,6 +74,48 @@ describe('Download V2', () => {
       });
       expect(result).toStrictEqual(mockStream);
     });
+
+    test('When token and encryptionKey are provided, the shared facade is created with empty auth and the encryptionKey is forwarded as options.key', async () => {
+      const abortController = new AbortController();
+      const progressCallback = vi.fn();
+      const encryptionKey = 'aabbccdd';
+      const token = 'shared-token';
+
+      const networkClientSpy = vi.spyOn(Network, 'client').mockReturnValue(mockNetworkClient as any);
+      const downloadFileSpy = vi.spyOn(MultipartDownload.prototype, 'downloadFile').mockResolvedValue(mockStream);
+
+      const result = await multipartDownload({
+        bucketId: 'test-bucket',
+        fileId: 'test-file',
+        key: {} as any,
+        token,
+        encryptionKey,
+        fileSize: 2048,
+        options: {
+          notifyProgress: progressCallback,
+          abortController,
+        },
+      } as any);
+
+      expect(networkClientSpy).toHaveBeenCalledWith(
+        mockBridgeUrl,
+        { clientName: 'drive-web', clientVersion: '1.0' },
+        { bridgeUser: '', userId: '' },
+      );
+      expect(downloadFileSpy).toHaveBeenCalledWith({
+        bucketId: 'test-bucket',
+        fileId: 'test-file',
+        mnemonic: '',
+        fileSize: 2048,
+        options: {
+          key: Buffer.from(encryptionKey, 'hex'),
+          token,
+          downloadingCallback: progressCallback,
+          abortController,
+        },
+      });
+      expect(result).toStrictEqual(mockStream);
+    });
   });
 
   describe('Download single chunk', () => {
