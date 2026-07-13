@@ -90,7 +90,7 @@ const CancelPlanModal = ({
             variantButtonAction="secondary"
             bulletedInfo={cancelRenewalBulletedInfo}
           />
-          {onOpenEndPlanNowDialog && remainingMonths && remainingMonths > 1 && (
+          {onOpenEndPlanNowDialog && !!remainingMonths && remainingMonths > 1 && (
             <PlanChangeOption
               title={translate('views.account.tabs.billing.cancelSubscriptionModal.options.endNow.title')}
               description={translate('views.account.tabs.billing.cancelSubscriptionModal.options.endNow.description')}
