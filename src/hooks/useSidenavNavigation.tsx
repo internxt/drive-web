@@ -57,7 +57,7 @@ export const useSidenavNavigation = () => {
         label: translate('sideNav.favorites'),
         icon: Star,
         iconDataCy: 'sideNavFavoritesIcon',
-        isVisible: true,
+        isVisible: false,
         onClick: () => onSidenavItemClick(AppView.Favorites, workspaceUuid, resetAccessTokenFileFolder),
       },
       {
