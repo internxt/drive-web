@@ -1,7 +1,8 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
-import { LocalStorageItem } from 'app/core/types';
+import { LocalStorageItem, LocalStorageProtectedItem } from 'app/core/types';
 import { BACKUP_KEY } from './storage-keys';
+import { decryptEntry, encryptEntry } from './local-storage-crypto';
 
 function get(key: LocalStorageItem): string | null {
   return localStorage.getItem(key);
@@ -9,6 +10,19 @@ function get(key: LocalStorageItem): string | null {
 
 function set(key: LocalStorageItem, value: string): void {
   return localStorage.setItem(key, value);
+}
+
+async function getAndDecrypt(key: LocalStorageProtectedItem): Promise<string | null> {
+  const item = localStorage.getItem(key);
+  if (item) {
+    return await decryptEntry(item);
+  }
+  return null;
+}
+
+async function setAndEncrypt(key: LocalStorageProtectedItem, value: string): Promise<void> {
+  const encryptedValue = await encryptEntry(value);
+  return localStorage.setItem(key, encryptedValue);
 }
 
 function getBackupKeyStorageKeys() {
@@ -57,6 +71,10 @@ function getUser(): UserSettings | null {
   return stringUser ? JSON.parse(stringUser) : null;
 }
 
+function setUser(user: UserSettings): void {
+  set(LocalStorageItem.User, JSON.stringify(user));
+}
+
 function getToken(): string | null {
   return get(LocalStorageItem.NewToken);
 }
@@ -72,8 +90,6 @@ function getB2BWorkspace(): WorkspaceData | null {
 
 function getWorkspaceCredentials(): WorkspaceCredentialsDetails | null {
   const workspaceCredentials = get(LocalStorageItem.WorkspaceCredentials);
-  if (workspaceCredentials === 'null') return null;
-
   if (workspaceCredentials) return JSON.parse(workspaceCredentials);
 
   return null;
@@ -89,20 +105,21 @@ function removeItem(key: LocalStorageItem): void {
 }
 
 function clear(): void {
-  set(LocalStorageItem.Theme, 'system');
-  localStorage.removeItem(getBackupKeyStorageKeys().seenAt);
-  Object.values(LocalStorageItem).forEach((key) => localStorage.removeItem(key));
+  localStorage.clear();
 }
 
 const localStorageService = {
   set,
   get,
+  setAndEncrypt,
+  getAndDecrypt,
   setBackupKeysAcknowledged,
   setBackupKeysSeenAt,
   setToken,
   removeBackupKeysSeenAt,
   getBackupKeys,
   getUser,
+  setUser,
   getToken,
   getStorageToken,
   removeItem,
@@ -116,6 +133,8 @@ export default localStorageService;
 export interface LocalStorageService {
   set: (key: LocalStorageItem, value: string) => void;
   get: (key: LocalStorageItem) => string | null;
+  getAndDecrypt: (key: LocalStorageProtectedItem) => Promise<string | null>;
+  setAndEncrypt: (key: LocalStorageProtectedItem, value: string) => Promise<void>;
   setBackupKeysAcknowledged: () => void;
   setBackupKeysSeenAt: (date: string) => void;
   setToken: (token: string) => void;
@@ -127,6 +146,7 @@ export interface LocalStorageService {
   getStorageToken: (isFolder: boolean) => string | null;
   getB2BWorkspace: () => WorkspaceData | null;
   getUser: () => UserSettings | null;
+  setUser: (user: UserSettings) => void;
   getToken: () => string | null;
   removeItem: (key: LocalStorageItem) => void;
   clear: () => void;

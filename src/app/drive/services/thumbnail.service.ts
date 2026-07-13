@@ -155,7 +155,6 @@ export const getVideoFrame = async (file: File): Promise<ThumbnailGenerated['fil
 };
 
 export const uploadThumbnail = async (
-  userEmail: string,
   thumbnailToUpload: ThumbnailToUpload,
   isTeam: boolean,
   updateProgressCallback: (progress: number) => void,
@@ -237,7 +236,6 @@ export const getThumbnailFrom = async (fileToUpload: FileToUpload): Promise<Thum
 export const generateThumbnailFromFile = async (
   fileToUpload: FileToUpload,
   fileId: string,
-  userEmail: string,
   isTeam: boolean,
 ): Promise<{ thumbnail: Thumbnail; thumbnailFile: File } | null> => {
   const fileType = fileToUpload.type ? String(fileToUpload.type).toLowerCase() : '';
@@ -260,7 +258,6 @@ export const generateThumbnailFromFile = async (
         const abortController = new AbortController();
 
         const thumbnailUploaded = await uploadThumbnail(
-          userEmail,
           thumbnailToUpload,
           isTeam,
           updateProgressCallback,

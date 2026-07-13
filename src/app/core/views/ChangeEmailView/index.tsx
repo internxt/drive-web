@@ -79,8 +79,8 @@ export default function ChangeEmailView(): JSX.Element {
 
         try {
           const { newAuthentication } = await userService.verifyEmailChange(token);
-          const { user, token: oldToken, newToken } = newAuthentication;
-          dispatch(userThunks.updateUserEmailCredentialsThunk({ newUserData: user, token: oldToken, newToken }));
+          const { user, newToken } = newAuthentication;
+          dispatch(userThunks.updateUserEmailCredentialsThunk({ newUserData: user, newToken }));
 
           setStatus(STATUS.SUCCESS);
         } catch (error) {

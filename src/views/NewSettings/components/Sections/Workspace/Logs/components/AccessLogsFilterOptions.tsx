@@ -2,6 +2,7 @@ import { Menu, MenuButton, MenuItems, Transition } from '@headlessui/react';
 import { WorkspaceLogType } from '@internxt/sdk/dist/workspaces';
 import { Button, Checkbox, Input, RadioButton } from '@internxt/ui';
 import { FunnelSimple } from '@phosphor-icons/react/dist/ssr';
+import { Translate } from 'app/i18n/types';
 
 const ALLOWED_LAST_DAYS_FILTERS = [7, 30, 90];
 const MAX_SEARCH_CHARACTERS = 50;
@@ -14,7 +15,7 @@ interface FilterOptionsProps {
     days?: number;
   };
   onClearAllFilters: () => void;
-  translate: (key: string, props?: Record<string, unknown>) => string;
+  translate: Translate;
   onChangeActivityFilters: (activityType: WorkspaceLogType) => void;
   handleDaysFilter: (days: number) => void;
   onSearchMembersInputValueChange: (value: string) => void;
