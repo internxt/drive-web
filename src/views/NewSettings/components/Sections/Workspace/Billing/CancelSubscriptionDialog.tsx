@@ -21,7 +21,7 @@ interface CancelSubscriptionModalProps {
   isApplyingTrial?: boolean;
   nextBillingDate?: string;
   userType: UserType;
-  cancelSubscription: () => void;
+  cancelSubscription: (userType?: UserType) => void;
   activateTrial?: () => void;
   earlyCancellationClientSecret?: string | null;
   earlyCancelSubscription?: () => void;
@@ -88,13 +88,15 @@ const CancelSubscriptionDialog = ({
     setView('cancelPlan');
   };
 
+  const onConfirmCancelSubscription = () => cancelSubscription(userType);
+
   return (
     <>
       <SimpleCancelSubscriptionModal
         isOpen={isOpen && isModalOpen('simpleCancelSub')}
         isCancellingSubscription={isCancellingSubscription}
         description={cancelLegacySubscriptionDescription}
-        cancelSubscription={cancelSubscription}
+        cancelSubscription={onConfirmCancelSubscription}
         onClose={onClose}
       />
       <CancellationIncentive
@@ -103,7 +105,7 @@ const CancelSubscriptionDialog = ({
         isCancellingSubscription={isCancellingSubscription}
         nextBillingDate={nextBillingDate}
         onClose={onClose}
-        cancelSubscription={cancelSubscription}
+        cancelSubscription={onConfirmCancelSubscription}
         activateTrial={activateTrial}
       />
       <CancelPlanModal
@@ -123,7 +125,7 @@ const CancelSubscriptionDialog = ({
         isCancellingSubscription={isCancellingSubscription}
         commitmentRenewal={commitmentRenewal}
         onGoBack={onCloseCancelRenewalDialog}
-        cancelSubscription={cancelSubscription}
+        cancelSubscription={onConfirmCancelSubscription}
       />
       {earlyCancelSubscription && onEarlyCancellationConfirmed && (
         <EndPlanNowModal

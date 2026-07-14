@@ -14,7 +14,7 @@ interface CancelSubscriptionProps {
   currentUsage: number;
   userType?: UserType;
   activateTrial?: () => void;
-  cancelSubscription: () => void;
+  cancelSubscription: (userType?: UserType) => void;
   setIsCancelSubscriptionModalOpen: (isCancelSubscriptionModalOpen: boolean) => void;
   earlyCancellationClientSecret?: string | null;
   earlyCancelSubscription?: () => void;
