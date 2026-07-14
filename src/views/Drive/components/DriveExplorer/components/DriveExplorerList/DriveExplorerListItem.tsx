@@ -9,9 +9,11 @@ import iconService from 'app/drive/services/icon.service';
 import { useDriveItemActions, useDriveItemDrag, useDriveItemDrop, useDriveItemStoreProps } from '../../../../hooks';
 import './DriveExplorerListItem.scss';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { WarningCircle } from '@phosphor-icons/react';
+import { Star, WarningCircle } from '@phosphor-icons/react';
 import { FileStatus } from '@internxt/sdk/dist/drive/storage/types';
 import { Translate } from 'app/i18n/types';
+import { useAppSelector } from 'app/store/hooks';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 
 const getItemClassNames = (isSelected: boolean, isDraggingOver: boolean, isDragging: boolean): string => {
   const selectedClass = isSelected ? 'selected' : '';
@@ -54,8 +56,15 @@ const getAutoDeleteStatusInfo = (
 const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const { isItemSelected, isEditingName } = useDriveItemStoreProps();
-  const { nameInputRef, onNameClicked, onItemClicked, onItemDoubleClicked, downloadAndSetThumbnail } =
-    useDriveItemActions(item);
+  const {
+    nameInputRef,
+    onNameClicked,
+    onItemClicked,
+    onItemDoubleClicked,
+    onToggleFavoriteButtonClicked,
+    downloadAndSetThumbnail,
+  } = useDriveItemActions(item);
+  const isWorkspaceSelected = !!useAppSelector(workspacesSelectors.getSelectedWorkspace);
 
   const { connectDragSource, isDraggingThisItem } = useDriveItemDrag(item);
   const { connectDropTarget, isDraggingOverThisItem } = useDriveItemDrop(item);
@@ -142,6 +151,26 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
             <p className="truncate">{itemName}</p>
           </button>
         </div>
+
+        {/* FAVORITE */}
+        {!isTrash && !isWorkspaceSelected && (
+          <button
+            data-test={`${basicFileDataTest}-favorite-action`}
+            className={`flex shrink-0 items-center pr-2 ${item.isFavorite ? '' : 'invisible group-hover:visible'}`}
+            title={translate(item.isFavorite ? 'drive.dropdown.removeFromFavorites' : 'drive.dropdown.addToFavorites')}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleFavoriteButtonClicked();
+            }}
+            onDoubleClick={(e) => e.stopPropagation()}
+          >
+            {item.isFavorite ? (
+              <Star weight="fill" size={20} className="text-yellow" />
+            ) : (
+              <Star size={20} className="text-gray-50" />
+            )}
+          </button>
+        )}
       </div>
 
       {
