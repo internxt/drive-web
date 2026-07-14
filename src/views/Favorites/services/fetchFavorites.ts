@@ -5,7 +5,7 @@ import { SdkFactory } from 'app/core/factory/sdk';
 export const fetchFavoriteFolders = (limit: number, offset: number): Promise<StorageTypes.FavoriteFolderDto[]> => {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
 
-  const [foldersPromise] = storageClient.getFavoriteFolders({ limit, offset });
+  const [foldersPromise] = storageClient.getFavorites('folder', { limit, offset });
 
   return foldersPromise;
 };
@@ -13,7 +13,7 @@ export const fetchFavoriteFolders = (limit: number, offset: number): Promise<Sto
 export const fetchFavoriteFiles = (limit: number, offset: number): Promise<StorageTypes.FavoriteFileDto[]> => {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
 
-  const [filesPromise] = storageClient.getFavoriteFiles({ limit, offset });
+  const [filesPromise] = storageClient.getFavorites('file', { limit, offset });
 
   return filesPromise;
 };
