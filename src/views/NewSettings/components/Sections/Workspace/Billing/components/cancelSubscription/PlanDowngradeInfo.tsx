@@ -12,7 +12,6 @@ const PlanDowngradeInfo = ({ currentPlanName, currentPlanInfo, currentUsage }: P
   const { translate } = useTranslationContext();
 
   const isOverFreeLimit = currentUsage > FreeStoragePlan.storageLimit;
-  const usagePercentage = Math.min((currentUsage / FreeStoragePlan.storageLimit) * 100, 100);
 
   return (
     <div className="flex flex-col gap-4 w-full">
