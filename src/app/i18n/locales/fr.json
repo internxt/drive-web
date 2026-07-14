@@ -437,6 +437,7 @@
             "commitment": {
               "firstMonthDescription": "Comme vous êtes encore dans votre période d'essai de 30 jours, votre annulation sera immédiate. Vous ne serez plus facturé et votre compte reviendra au plan gratuit de 1 Go maintenant."
             },
+            "directCancellationDescription": "Vous êtes sur le point d’annuler votre abonnement. Vous perdrez l’accès à votre plan et votre compte reviendra au plan gratuit. Veuillez confirmer votre choix pour continuer.",
             "keepSubscription": "Conserver l’abonnement",
             "cancelSubscription": "Annuler l’abonnement",
             "infoBox": {

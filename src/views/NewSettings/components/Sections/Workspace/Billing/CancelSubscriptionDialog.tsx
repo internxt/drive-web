@@ -56,11 +56,20 @@ const CancelSubscriptionDialog = ({
   const isElegibleForCancellation = commitment?.isElegibleForCancellation;
   const commitmentRenewal =
     commitment?.cancellationDate && dateService.format(commitment?.cancellationDate, 'DD MMM YYYY');
-  const shouldDisplayCancellationIncentiveDialog = isCommitmentEnabled && !isCancellationTrialRedeemed;
+  const shouldDisplayCancellationIncentiveDialog =
+    isCommitmentEnabled && isElegibleForCancellation && !isCancellationTrialRedeemed;
 
-  const cancelLegacySubscriptionDescription = isBusiness
-    ? translate('views.account.tabs.billing.cancelSubscriptionModal.description.business')
-    : translate('views.account.tabs.billing.cancelSubscriptionModal.commitment.firstMonthDescription');
+  const getSimpleCancellationDescription = () => {
+    if (isBusiness) {
+      return translate('views.account.tabs.billing.cancelSubscriptionModal.description.business');
+    }
+    if (isCommitmentEnabled && isElegibleForCancellation) {
+      return translate('views.account.tabs.billing.cancelSubscriptionModal.commitment.firstMonthDescription');
+    }
+    return translate('views.account.tabs.billing.cancelSubscriptionModal.directCancellationDescription');
+  };
+
+  const cancelLegacySubscriptionDescription = getSimpleCancellationDescription();
 
   useEffect(() => {
     if (shouldDisplayCancellationIncentiveDialog) {
@@ -93,14 +102,18 @@ const CancelSubscriptionDialog = ({
   return (
     <>
       <SimpleCancelSubscriptionModal
-        isOpen={isOpen && isModalOpen('simpleCancelSub')}
+        isOpen={isModalOpen('simpleCancelSub')}
         isCancellingSubscription={isCancellingSubscription}
         description={cancelLegacySubscriptionDescription}
         cancelSubscription={onConfirmCancelSubscription}
         onClose={onClose}
+        showStorageInfo={!isBusiness}
+        currentUsage={currentUsage}
+        currentPlanName={currentPlanName}
+        currentPlanInfo={currentPlanInfo}
       />
       <CancellationIncentive
-        isOpen={isOpen && isModalOpen('cancellationIncentive')}
+        isOpen={isModalOpen('cancellationIncentive')}
         isApplyingTrial={isApplyingTrial}
         isCancellingSubscription={isCancellingSubscription}
         nextBillingDate={nextBillingDate}
@@ -109,7 +122,7 @@ const CancelSubscriptionDialog = ({
         activateTrial={activateTrial}
       />
       <CancelPlanModal
-        isCancelPlanModalDialogOpen={isOpen && isModalOpen('cancelPlan')}
+        isCancelPlanModalDialogOpen={isModalOpen('cancelPlan')}
         currentPlanName={currentPlanName}
         userType={userType}
         onClose={onClose}
@@ -121,7 +134,7 @@ const CancelSubscriptionDialog = ({
         individualPlan={individualPlan}
       />
       <CancelRenewalModal
-        isCancelRenewalOpen={isOpen && isModalOpen('cancelRenewal')}
+        isCancelRenewalOpen={isModalOpen('cancelRenewal')}
         isCancellingSubscription={isCancellingSubscription}
         commitmentRenewal={commitmentRenewal}
         onGoBack={onCloseCancelRenewalDialog}
@@ -129,7 +142,7 @@ const CancelSubscriptionDialog = ({
       />
       {earlyCancelSubscription && onEarlyCancellationConfirmed && (
         <EndPlanNowModal
-          isOpen={isOpen && isModalOpen('endPlanNow')}
+          isOpen={isModalOpen('endPlanNow')}
           currentPlanName={currentPlanName}
           currentPlanInfo={currentPlanInfo}
           currentUsage={currentUsage}

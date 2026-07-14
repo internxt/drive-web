@@ -29,6 +29,7 @@ describe('paymentService', () => {
     cancelSubscription: vi.fn(),
     updateCustomerBillingInfo: vi.fn(),
     applyCancellationTrial: vi.fn(),
+    cancelSubscriptionEarly: vi.fn(),
   };
 
   const mockStripe = {
@@ -207,6 +208,20 @@ describe('paymentService', () => {
       mockPaymentsClient.applyCancellationTrial.mockResolvedValue(undefined);
 
       await expect(paymentService.applyCancellationTrial()).resolves.not.toThrow();
+    });
+  });
+
+  describe('Cancel subscription early', () => {
+    test('When cancelling subscription early, then it should return the client secret', async () => {
+      const clientSecretId = 'cs_123';
+      mockPaymentsClient.cancelSubscriptionEarly.mockResolvedValue({
+        clientSecret: clientSecretId,
+      });
+
+      const result = await paymentService.cancelSubscriptionEarly();
+
+      expect(mockPaymentsClient.cancelSubscriptionEarly).toHaveBeenCalled();
+      expect(result).toEqual({ clientSecret: clientSecretId });
     });
   });
 });
