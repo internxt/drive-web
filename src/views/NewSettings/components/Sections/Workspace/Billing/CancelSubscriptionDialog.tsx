@@ -63,7 +63,7 @@ const CancelSubscriptionDialog = ({
     if (isBusiness) {
       return translate('views.account.tabs.billing.cancelSubscriptionModal.description.business');
     }
-    if (shouldDisplayCancellationIncentiveDialog) {
+    if (isCommitmentEnabled && isElegibleForCancellation) {
       return translate('views.account.tabs.billing.cancelSubscriptionModal.commitment.firstMonthDescription');
     }
     return translate('views.account.tabs.billing.cancelSubscriptionModal.directCancellationDescription');

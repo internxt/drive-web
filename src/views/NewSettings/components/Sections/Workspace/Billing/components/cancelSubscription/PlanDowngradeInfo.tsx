@@ -50,10 +50,6 @@ const PlanDowngradeInfo = ({ currentPlanName, currentPlanInfo, currentUsage }: P
 
       {isOverFreeLimit && (
         <div className="rounded-xl border border-red/20 bg-red/5 p-4 text-center">
-          <p className="text-sm font-medium text-gray-100">{FreeStoragePlan.simpleName}</p>
-          <div className="mt-2 h-3 w-full overflow-hidden rounded-full bg-gray-5">
-            <div className="h-full rounded-full bg-red" style={{ width: `${usagePercentage}%` }} />
-          </div>
           <p className="mt-3 font-semibold text-red">
             {translate(
               'views.account.tabs.billing.cancelSubscriptionModal.options.endNow.confirmationModal.overStorage.title',
