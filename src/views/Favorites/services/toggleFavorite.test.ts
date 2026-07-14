@@ -5,19 +5,15 @@ import { DriveItemData } from 'app/drive/types';
 
 describe('toggleFavorite service', () => {
   const mockResponse = { favorited: true };
-  const mockMarkFileAsFavorite = vi.fn().mockResolvedValue(mockResponse);
-  const mockUnmarkFileAsFavorite = vi.fn().mockResolvedValue(mockResponse);
-  const mockMarkFolderAsFavorite = vi.fn().mockResolvedValue(mockResponse);
-  const mockUnmarkFolderAsFavorite = vi.fn().mockResolvedValue(mockResponse);
+  const mockMarkItemAsFavorite = vi.fn().mockResolvedValue(mockResponse);
+  const mockUnmarkItemAsFavorite = vi.fn().mockResolvedValue(mockResponse);
 
   beforeEach(() => {
     vi.clearAllMocks();
 
     const mockStorageClient = {
-      markFileAsFavorite: mockMarkFileAsFavorite,
-      unmarkFileAsFavorite: mockUnmarkFileAsFavorite,
-      markFolderAsFavorite: mockMarkFolderAsFavorite,
-      unmarkFolderAsFavorite: mockUnmarkFolderAsFavorite,
+      markItemAsFavorite: mockMarkItemAsFavorite,
+      unmarkItemAsFavorite: mockUnmarkItemAsFavorite,
     };
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
       createNewStorageClient: vi.fn().mockReturnValue(mockStorageClient),
@@ -29,8 +25,8 @@ describe('toggleFavorite service', () => {
 
     const result = await setItemFavorite(file, true);
 
-    expect(mockMarkFileAsFavorite).toHaveBeenCalledWith('file-uuid');
-    expect(mockUnmarkFileAsFavorite).not.toHaveBeenCalled();
+    expect(mockMarkItemAsFavorite).toHaveBeenCalledWith('file', 'file-uuid');
+    expect(mockUnmarkItemAsFavorite).not.toHaveBeenCalled();
     expect(result).toEqual(mockResponse);
   });
 
@@ -39,8 +35,8 @@ describe('toggleFavorite service', () => {
 
     await setItemFavorite(file, false);
 
-    expect(mockUnmarkFileAsFavorite).toHaveBeenCalledWith('file-uuid');
-    expect(mockMarkFileAsFavorite).not.toHaveBeenCalled();
+    expect(mockUnmarkItemAsFavorite).toHaveBeenCalledWith('file', 'file-uuid');
+    expect(mockMarkItemAsFavorite).not.toHaveBeenCalled();
   });
 
   it('should mark a folder as favorite', async () => {
@@ -48,8 +44,8 @@ describe('toggleFavorite service', () => {
 
     await setItemFavorite(folder, true);
 
-    expect(mockMarkFolderAsFavorite).toHaveBeenCalledWith('folder-uuid');
-    expect(mockMarkFileAsFavorite).not.toHaveBeenCalled();
+    expect(mockMarkItemAsFavorite).toHaveBeenCalledWith('folder', 'folder-uuid');
+    expect(mockUnmarkItemAsFavorite).not.toHaveBeenCalled();
   });
 
   it('should unmark a folder as favorite', async () => {
@@ -57,6 +53,6 @@ describe('toggleFavorite service', () => {
 
     await setItemFavorite(folder, false);
 
-    expect(mockUnmarkFolderAsFavorite).toHaveBeenCalledWith('folder-uuid');
+    expect(mockUnmarkItemAsFavorite).toHaveBeenCalledWith('folder', 'folder-uuid');
   });
 });

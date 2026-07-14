@@ -8,10 +8,9 @@ export const setItemFavorite = (
   favorite: boolean,
 ): Promise<StorageTypes.FavoriteStatusResponse> => {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  const itemType: StorageTypes.FavoriteItemType = item.isFolder ? 'folder' : 'file';
 
-  if (item.isFolder) {
-    return favorite ? storageClient.markFolderAsFavorite(item.uuid) : storageClient.unmarkFolderAsFavorite(item.uuid);
-  }
-
-  return favorite ? storageClient.markFileAsFavorite(item.uuid) : storageClient.unmarkFileAsFavorite(item.uuid);
+  return favorite
+    ? storageClient.markItemAsFavorite(itemType, item.uuid)
+    : storageClient.unmarkItemAsFavorite(itemType, item.uuid);
 };
