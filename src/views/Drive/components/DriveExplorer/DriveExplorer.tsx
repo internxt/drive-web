@@ -60,6 +60,7 @@ import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import { ShareDialogWrapper } from 'app/drive/components/ShareDialog/ShareDialogWrapper';
 import { fileVersionsSelectors } from 'app/store/slices/fileVersions';
+import { TranslationKey } from 'app/i18n/types';
 
 const MenuItemToGetSize = ({
   isTrash,
@@ -67,7 +68,7 @@ const MenuItemToGetSize = ({
   menuItemsRef,
 }: {
   isTrash: boolean;
-  translate: (key: string) => string;
+  translate: (key: TranslationKey) => string;
   menuItemsRef: React.RefObject<HTMLDivElement>;
 }) => (
   <div

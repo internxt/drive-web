@@ -11,6 +11,7 @@ import './DriveExplorerListItem.scss';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { WarningCircle } from '@phosphor-icons/react';
 import { FileStatus } from '@internxt/sdk/dist/drive/storage/types';
+import { Translate } from 'app/i18n/types';
 
 const getItemClassNames = (isSelected: boolean, isDraggingOver: boolean, isDragging: boolean): string => {
   const selectedClass = isSelected ? 'selected' : '';
@@ -29,7 +30,7 @@ const URGENT_AUTO_DELETE_THRESHOLD_DAYS = 2;
 const getAutoDeleteStatusInfo = (
   days: number,
   expiresAt: string,
-  translate: (key: string, options?: { count?: number }) => string,
+  translate: Translate,
 ): { text: string; isUrgent: boolean; expiresAt: string } => {
   const hours = dateService.getHoursUntilExpiration(expiresAt);
   const isLessThanADay = hours < HOURS_IN_A_DAY;
@@ -37,14 +38,14 @@ const getAutoDeleteStatusInfo = (
 
   if (isLessThanADay) {
     return {
-      text: translate('trash.autoDelete.inHours', { count: hours }),
+      text: translate('trash.autoDelete.inHours_one', { count: hours }),
       isUrgent: true,
       expiresAt: expiresAtDate,
     };
   }
 
   return {
-    text: translate('trash.autoDelete.inDays', { count: days }),
+    text: translate('trash.autoDelete.inDays_one', { count: days }),
     isUrgent: days <= URGENT_AUTO_DELETE_THRESHOLD_DAYS,
     expiresAt: expiresAtDate,
   };
