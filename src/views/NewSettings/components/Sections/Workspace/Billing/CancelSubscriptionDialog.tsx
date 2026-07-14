@@ -102,7 +102,7 @@ const CancelSubscriptionDialog = ({
   return (
     <>
       <SimpleCancelSubscriptionModal
-        isOpen={isOpen && isModalOpen('simpleCancelSub')}
+        isOpen={isModalOpen('simpleCancelSub')}
         isCancellingSubscription={isCancellingSubscription}
         description={cancelLegacySubscriptionDescription}
         cancelSubscription={onConfirmCancelSubscription}
@@ -113,7 +113,7 @@ const CancelSubscriptionDialog = ({
         currentPlanInfo={currentPlanInfo}
       />
       <CancellationIncentive
-        isOpen={isOpen && isModalOpen('cancellationIncentive')}
+        isOpen={isModalOpen('cancellationIncentive')}
         isApplyingTrial={isApplyingTrial}
         isCancellingSubscription={isCancellingSubscription}
         nextBillingDate={nextBillingDate}
@@ -122,7 +122,7 @@ const CancelSubscriptionDialog = ({
         activateTrial={activateTrial}
       />
       <CancelPlanModal
-        isCancelPlanModalDialogOpen={isOpen && isModalOpen('cancelPlan')}
+        isCancelPlanModalDialogOpen={isModalOpen('cancelPlan')}
         currentPlanName={currentPlanName}
         userType={userType}
         onClose={onClose}
@@ -134,7 +134,7 @@ const CancelSubscriptionDialog = ({
         individualPlan={individualPlan}
       />
       <CancelRenewalModal
-        isCancelRenewalOpen={isOpen && isModalOpen('cancelRenewal')}
+        isCancelRenewalOpen={isModalOpen('cancelRenewal')}
         isCancellingSubscription={isCancellingSubscription}
         commitmentRenewal={commitmentRenewal}
         onGoBack={onCloseCancelRenewalDialog}
@@ -142,7 +142,7 @@ const CancelSubscriptionDialog = ({
       />
       {earlyCancelSubscription && onEarlyCancellationConfirmed && (
         <EndPlanNowModal
-          isOpen={isOpen && isModalOpen('endPlanNow')}
+          isOpen={isModalOpen('endPlanNow')}
           currentPlanName={currentPlanName}
           currentPlanInfo={currentPlanInfo}
           currentUsage={currentUsage}

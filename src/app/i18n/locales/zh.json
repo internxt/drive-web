@@ -458,6 +458,7 @@
             "commitment": {
               "firstMonthDescription": "由于您仍在 30 天试用期内，您的取消将立即生效。您将不再被收费，您的账户现在将恢复为免费的 1GB 计划。"
             },
+            "directCancellationDescription": "您即将取消您的订阅。您将失去对计划的访问权限，且您的账户将恢复为免费计划。请确认您的选择以继续。",
             "keepSubscription": "继续订阅",
             "cancelSubscription": "取消订阅",
             "infoBox": {

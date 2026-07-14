@@ -437,6 +437,7 @@
             "commitment": {
               "firstMonthDescription": "Como todavía estás en tu período de prueba de 30 días, tu cancelación será inmediata. Ya no se te cobrará y tu cuenta volverá al plan gratuito de 1 GB ahora."
             },
+            "directCancellationDescription": "Estás a punto de cancelar tu suscripción. Perderás el acceso a tu plan y tu cuenta volverá al plan gratuito. Por favor, confirma tu elección para continuar.",
             "keepSubscription": "Mantener suscripción",
             "cancelSubscription": "Cancelar suscripción",
             "infoBox": {

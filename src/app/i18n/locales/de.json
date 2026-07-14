@@ -437,6 +437,7 @@
             "commitment": {
               "firstMonthDescription": "Da Sie sich noch in Ihrer 30-tägigen Testphase befinden, wird Ihre Kündigung sofort wirksam. Sie werden nicht mehr belastet und Ihr Konto wird jetzt auf den kostenlosen 1-GB-Plan zurückgesetzt."
             },
+            "directCancellationDescription": "Sie sind dabei, Ihr Abonnement zu kündigen. Sie verlieren den Zugang zu Ihrem Tarif und Ihr Konto wird auf den kostenlosen Tarif zurückgesetzt. Bitte bestätigen Sie Ihre Wahl, um fortzufahren.",
             "keepSubscription": "Abonnement behalten",
             "cancelSubscription": "Abonnement beenden",
             "infoBox": {
