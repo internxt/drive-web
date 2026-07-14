@@ -481,6 +481,16 @@
               }
             }
           },
+          "subscriptionEndingModal": {
+            "title": "Abonnement se terminant le {{endDate}}",
+            "description": {
+              "title": "Lorsque votre abonnement se termine :",
+              "storageReturns": "Votre stockage reviendra à la limite gratuite",
+              "featuresUnavailable": "Les fonctionnalités premium ne seront plus disponibles"
+            },
+            "maybeLater": "Peut-être plus tard",
+            "renewSubscription": "Renouveler l’abonnement"
+          },
           "cancellationIncentive": {
             "title": {
               "normal": "LE MOIS PROCHAIN",
@@ -1846,5 +1856,8 @@
   "linkExpired": {
     "title": "Lien expiré ou supprimé",
     "description": "Le lien ou l'invitation que vous avez consulté a expiré ou a été supprimé"
+  },
+  "common": {
+    "planCancelled": "Votre abonnement se termine le {{end_date}}"
   }
 }

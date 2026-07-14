@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
+import { useState } from 'react';
 
 import { Topbar as Navbar, Sidenav } from 'views/Home/components';
 import { uiActions } from 'app/store/slices/ui';
@@ -12,10 +13,15 @@ import { getAppConfig } from 'services/config.service';
 import ShareItemDialog from '../../../../views/Shared/components/ShareItemDialog/ShareItemDialog';
 import { Sidebar as VersionHistorySidebar } from '../../../../views/Drive/components/VersionHistory';
 import ReachedFileSizeLimitDialog from 'app/drive/components/ReachedFileSizeLimitDialog';
+import SubscriptionEndingModal from '../../../../views/NewSettings/components/Sections/Workspace/Billing/components/cancelSubscription/paidPlanCancellation/SubscriptionEndingModal';
+import { dateService } from 'services';
+import { getCurrentUsage, getPlanInfo, getPlanName } from '../../../../views/NewSettings/utils/planUtils';
 
 export interface HeaderAndSidenavLayoutProps {
   children: JSX.Element;
 }
+
+const SUBSCRIPTION_ENDING_WARNING_DAYS = 30;
 
 export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProps): JSX.Element {
   const dispatch = useAppDispatch();
@@ -27,12 +33,28 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
   const isReachedFileSizeLImitDialogOpen = useAppSelector((state) => state.ui.isReachedFileSizeLimitDialogOpen);
   const isDriveItemInfoMenuOpen = useAppSelector((state) => state.ui.isDriveItemInfoMenuOpen);
   const driveItemInfo = useAppSelector((state) => state.ui.currentFileInfoMenuItem);
+  const individualPlan = useAppSelector((state) => state.plan.individualPlan);
+  const planLimit = useAppSelector((state) => state.plan.planLimit);
+  const usageDetails = useAppSelector((state) => state.plan.usageDetails);
+  const currentPlanName = getPlanName(individualPlan, planLimit);
+  const currentPlanInfo = getPlanInfo(individualPlan);
+  const currentUsage = getCurrentUsage(usageDetails);
+
   const onDriveItemInfoMenuClosed = () => {
     dispatch(uiActions.setFileInfoItem(null));
     dispatch(uiActions.setIsDriveItemInfoMenuOpen(false));
   };
   const location = useLocation();
   const hideSearch = getAppConfig().views.find((view) => view.path === location.pathname)?.hideSearch;
+
+  const [isSubscriptionEndingModalClosed, setIsSubscriptionEndingModalClosed] = useState<boolean>(false);
+
+  const cancellationDate = individualPlan?.commitment?.cancellationDate;
+  const daysUntilCancellation = cancellationDate ? dateService.getDaysUntilExpiration(cancellationDate) : null;
+  const isSubscriptionEndingModalOpen =
+    !isSubscriptionEndingModalClosed &&
+    !!daysUntilCancellation &&
+    daysUntilCancellation <= SUBSCRIPTION_ENDING_WARNING_DAYS;
 
   if (!isAuthenticated) {
     navigationService.push(AppView.Login);
@@ -43,6 +65,18 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
       {isShareItemDialogOpen && itemToShare && <ShareItemDialog share={itemToShare?.share} item={itemToShare.item} />}
       {isReachedPlanLimitDialogOpen && <ReachedPlanLimitDialog />}
       {isReachedFileSizeLImitDialogOpen && <ReachedFileSizeLimitDialog />}
+      {isSubscriptionEndingModalOpen && cancellationDate && (
+        <SubscriptionEndingModal
+          isOpen={isSubscriptionEndingModalOpen}
+          currentPlanName={currentPlanName}
+          currentPlanInfo={currentPlanInfo}
+          currentUsage={currentUsage}
+          currentPlanLimit={planLimit}
+          cancellationDate={cancellationDate}
+          onClose={() => setIsSubscriptionEndingModalClosed(true)}
+          onRenewSubscription={() => setIsSubscriptionEndingModalClosed(true)}
+        />
+      )}
 
       <div className="flex h-1 grow">
         <Sidenav />

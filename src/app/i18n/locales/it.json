@@ -502,6 +502,16 @@
               }
             }
           },
+          "subscriptionEndingModal": {
+            "title": "L'abbonamento termina il {{endDate}}",
+            "description": {
+              "title": "Quando il tuo piano termina:",
+              "storageReturns": "Il tuo spazio di archiviazione tornerà al limite gratuito",
+              "featuresUnavailable": "Le funzionalità premium non saranno più disponibili"
+            },
+            "maybeLater": "Forse più tardi",
+            "renewSubscription": "Rinnova abbonamento"
+          },
           "cancellationIncentive": {
             "title": {
               "normal": "IL PROSSIMO MESE",
@@ -1845,5 +1855,8 @@
   },
   "sdk": {
     "rateLimitToast": "Ci sta volendo più del previsto. Attendere prego..."
+  },
+  "common": {
+    "planCancelled": "Il tuo abbonamento termina il {{end_date}}"
   }
 }

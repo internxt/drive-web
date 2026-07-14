@@ -502,6 +502,16 @@
               }
             }
           },
+          "subscriptionEndingModal": {
+            "title": "Subscription ending in {{endDate}}",
+            "description": {
+              "title": "When your plan ends:",
+              "storageReturns": "Your storage will return to the free limit",
+              "featuresUnavailable": "Premium features will no longer be available"
+            },
+            "maybeLater": "Maybe later",
+            "renewSubscription": "Renew subscription"
+          },
           "cancellationIncentive": {
             "title": {
               "normal": "NEXT MONTH",
@@ -1845,5 +1855,8 @@
   },
   "sdk": {
     "rateLimitToast": "This is taking longer than expected. Please wait..."
+  },
+  "common": {
+    "planCancelled": "Your subscription ends {{end_date}}"
   }
 }

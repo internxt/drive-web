@@ -481,6 +481,16 @@
               }
             }
           },
+          "subscriptionEndingModal": {
+            "title": "Suscripción finaliza el {{endDate}}",
+            "description": {
+              "title": "Cuando tu plan finalice:",
+              "storageReturns": "Tu almacenamiento volverá al límite gratuito",
+              "featuresUnavailable": "Las funciones premium ya no estarán disponibles"
+            },
+            "maybeLater": "Quizás más tarde",
+            "renewSubscription": "Renovar suscripción"
+          },
           "cancellationIncentive": {
             "title": {
               "normal": "EL PRÓXIMO MES",
@@ -1846,5 +1856,8 @@
   "linkExpired": {
     "title": "Enlace caducado o eliminado",
     "description": "El enlace o la invitación que visitaste ha caducado o se ha eliminado"
+  },
+  "common": {
+    "planCancelled": "Tu suscripción finaliza el {{end_date}}"
   }
 }

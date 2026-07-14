@@ -502,6 +502,16 @@
               }
             }
           },
+          "subscriptionEndingModal": {
+            "title": "訂閱將於 {{endDate}} 結束",
+            "description": {
+              "title": "當您的方案結束時：",
+              "storageReturns": "您的儲存空間將恢復為免費限額",
+              "featuresUnavailable": "進階功能將無法再使用"
+            },
+            "maybeLater": "稍後再說",
+            "renewSubscription": "續訂方案"
+          },
           "cancellationIncentive": {
             "title": {
               "normal": "下個月",
@@ -1848,5 +1858,8 @@
   },
   "sdk": {
     "rateLimitToast": "這花費的時間比預期的長，請稍候..."
+  },
+  "common": {
+    "planCancelled": "您的訂閱將於 {{end_date}} 結束"
   }
 }

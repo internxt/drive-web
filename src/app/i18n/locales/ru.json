@@ -481,6 +481,16 @@
               }
             }
           },
+          "subscriptionEndingModal": {
+            "title": "Подписка заканчивается {{endDate}}",
+            "description": {
+              "title": "Когда ваш план закончится:",
+              "storageReturns": "Ваше хранилище вернётся к бесплатному лимиту",
+              "featuresUnavailable": "Премиум-функции больше не будут доступны"
+            },
+            "maybeLater": "Может быть позже",
+            "renewSubscription": "Продлить подписку"
+          },
           "cancellationIncentive": {
             "title": {
               "normal": "СЛЕДУЮЩИЙ МЕСЯЦ",
@@ -1845,5 +1855,8 @@
   "linkExpired": {
     "title": "Ссылка устарела или удалена",
     "description": "Ссылка или приглашение, которое вы открыли, устарело или было удалено"
+  },
+  "common": {
+    "planCancelled": "Ваша подписка заканчивается {{end_date}}"
   }
 }

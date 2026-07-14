@@ -481,6 +481,16 @@
               }
             }
           },
+          "subscriptionEndingModal": {
+            "title": "Abonnement endet am {{endDate}}",
+            "description": {
+              "title": "Wenn Ihr Tarif endet:",
+              "storageReturns": "Ihr Speicher wird auf das kostenlose Limit zurückgesetzt",
+              "featuresUnavailable": "Premium-Funktionen stehen nicht mehr zur Verfügung"
+            },
+            "maybeLater": "Vielleicht später",
+            "renewSubscription": "Abonnement erneuern"
+          },
           "cancellationIncentive": {
             "title": {
               "normal": "NÄCHSTEN MONAT",
@@ -1848,5 +1858,8 @@
       "folderNotExists": "Dieser Ordner existiert nicht",
       "generic": "Auf den Ordner konnte nicht zugegriffen werden"
     }
+  },
+  "common": {
+    "planCancelled": "Ihr Abonnement endet am {{end_date}}"
   }
 }
