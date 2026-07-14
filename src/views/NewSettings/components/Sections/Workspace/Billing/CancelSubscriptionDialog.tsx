@@ -56,11 +56,20 @@ const CancelSubscriptionDialog = ({
   const isElegibleForCancellation = commitment?.isElegibleForCancellation;
   const commitmentRenewal =
     commitment?.cancellationDate && dateService.format(commitment?.cancellationDate, 'DD MMM YYYY');
-  const shouldDisplayCancellationIncentiveDialog = isCommitmentEnabled && !isCancellationTrialRedeemed;
+  const shouldDisplayCancellationIncentiveDialog =
+    isCommitmentEnabled && isElegibleForCancellation && !isCancellationTrialRedeemed;
 
-  const cancelLegacySubscriptionDescription = isBusiness
-    ? translate('views.account.tabs.billing.cancelSubscriptionModal.description.business')
-    : translate('views.account.tabs.billing.cancelSubscriptionModal.commitment.firstMonthDescription');
+  const getSimpleCancellationDescription = () => {
+    if (isBusiness) {
+      return translate('views.account.tabs.billing.cancelSubscriptionModal.description.business');
+    }
+    if (shouldDisplayCancellationIncentiveDialog) {
+      return translate('views.account.tabs.billing.cancelSubscriptionModal.commitment.firstMonthDescription');
+    }
+    return translate('views.account.tabs.billing.cancelSubscriptionModal.directCancellationDescription');
+  };
+
+  const cancelLegacySubscriptionDescription = getSimpleCancellationDescription();
 
   useEffect(() => {
     if (shouldDisplayCancellationIncentiveDialog) {
@@ -98,6 +107,10 @@ const CancelSubscriptionDialog = ({
         description={cancelLegacySubscriptionDescription}
         cancelSubscription={onConfirmCancelSubscription}
         onClose={onClose}
+        showStorageInfo={!isBusiness}
+        currentUsage={currentUsage}
+        currentPlanName={currentPlanName}
+        currentPlanInfo={currentPlanInfo}
       />
       <CancellationIncentive
         isOpen={isOpen && isModalOpen('cancellationIncentive')}
