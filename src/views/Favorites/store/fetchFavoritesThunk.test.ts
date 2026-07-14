@@ -85,7 +85,7 @@ describe('fetchFavoritesThunk', () => {
     expect(fetchFavoriteFolders).toHaveBeenCalledWith(FAVORITES_LIMIT, loadedFavorites.length);
     expect(fetchFavoriteFiles).not.toHaveBeenCalled();
     expect(storageActions.addFavorites).toHaveBeenCalledWith(
-      mockFolders.map((folder) => ({ ...folder, isFolder: true, name: folder.plainName })),
+      mockFolders.map((folder) => ({ ...folder, isFolder: true, isFavorite: true, name: folder.plainName })),
     );
     expect(storageActions.setHasMoreFavoriteFolders).toHaveBeenCalledWith(true);
   });
@@ -128,7 +128,7 @@ describe('fetchFavoritesThunk', () => {
     expect(fetchFavoriteFolders).not.toHaveBeenCalled();
     expect(fetchFavoriteFiles).toHaveBeenCalledWith(FAVORITES_LIMIT, 1);
     expect(storageActions.addFavorites).toHaveBeenCalledWith([
-      { ...mockFiles[0], isFolder: false, size: 100, name: 'file2.txt' },
+      { ...mockFiles[0], isFolder: false, isFavorite: true, size: 100, name: 'file2.txt' },
     ]);
     expect(storageActions.setHasMoreFavoriteFiles).toHaveBeenCalledWith(false);
   });

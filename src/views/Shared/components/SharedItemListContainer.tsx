@@ -1,6 +1,9 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHotkeys } from 'react-hotkeys-hook';
+import { AppDispatch } from '../../../app/store';
 import { DriveItemData, DriveItemDetails } from '../../../app/drive/types';
+import { toggleFavoriteThunk } from 'views/Favorites/store/toggleFavoriteThunk';
 import { storageActions } from '../../../app/store/slices/storage';
 import { uiActions } from '../../../app/store/slices/ui';
 import EmptySharedView from './EmptySharedView';
@@ -44,7 +47,7 @@ const SharedItemListContainer = ({
   onRenameSelectedItem,
   onOpenItemPreview,
 }: ShareItemListContainerProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
   const workspaceId = selectedWorkspace?.workspace.id;
   const defaultTeamId = selectedWorkspace?.workspace.defaultTeamId;
@@ -229,6 +232,25 @@ const SharedItemListContainer = ({
     actionDispatch(setOrderBy({ field: value.field, direction }));
   };
 
+  const toggleFavorite = useCallback(
+    (items: AdvancedSharedItem[]) => {
+      dispatch(toggleFavoriteThunk(items as unknown as DriveItemData[]));
+    },
+    [dispatch],
+  );
+
+  useHotkeys(
+    'f',
+    (e) => {
+      if (e.shiftKey) return;
+      e.preventDefault();
+      if (!disableKeyboardShortcuts && selectedItems.length === 1) {
+        toggleFavorite(selectedItems);
+      }
+    },
+    [disableKeyboardShortcuts, selectedItems, toggleFavorite],
+  );
+
   const contextMenu = useSharedContextMenu({
     selectedItems,
     sharedContextMenuActions: {
@@ -242,6 +264,7 @@ const SharedItemListContainer = ({
       openPreview(item) {
         openPreview(item);
       },
+      toggleFavorite,
     },
     isItemsOwnedByCurrentUser: checkIfIsItemsOwnedByCurrentUser(),
     isCurrentUserViewer: isCurrentUserViewer(),
