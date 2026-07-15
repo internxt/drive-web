@@ -302,7 +302,7 @@ describe('Testing GA Service', () => {
         expect(event.ecommerce.transaction_id).toBe('sub_888');
       });
 
-      it('should fallback to user UUID when neither payment intent nor subscription ID are available', () => {
+      it('should build a unique transaction ID per purchase when payment identifiers are missing, so repeat purchases by the same user are not discarded as duplicates', () => {
         vi.mocked(localStorageService.getUser).mockReturnValue({ uuid: 'user_fallback_uuid' } as any);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'paymentIntentId') return null;
@@ -322,7 +322,7 @@ describe('Testing GA Service', () => {
         gaService.trackPurchase();
 
         const event = globalThis.window.dataLayer[0] as any;
-        expect(event.ecommerce.transaction_id).toBe('user_fallback_uuid');
+        expect(event.ecommerce.transaction_id).toMatch(/^user_fallback_uuid-\d+$/);
       });
 
       it('should set user email for Enhanced Conversions when available', () => {
