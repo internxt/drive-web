@@ -9,7 +9,7 @@ import iconService from 'app/drive/services/icon.service';
 import { useDriveItemActions, useDriveItemDrag, useDriveItemDrop, useDriveItemStoreProps } from '../../../../hooks';
 import './DriveExplorerListItem.scss';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { Star, WarningCircle } from '@phosphor-icons/react';
+import { StarIcon, WarningCircle } from '@phosphor-icons/react';
 import { FileStatus } from '@internxt/sdk/dist/drive/storage/types';
 import { Translate } from 'app/i18n/types';
 import { useAppSelector } from 'app/store/hooks';
@@ -51,6 +51,37 @@ const getAutoDeleteStatusInfo = (
     isUrgent: days <= URGENT_AUTO_DELETE_THRESHOLD_DAYS,
     expiresAt: expiresAtDate,
   };
+};
+
+const FavoriteStarButton = ({
+  item,
+  dataTest,
+  onToggle,
+}: {
+  item: DriveExplorerItemProps['item'];
+  dataTest: string;
+  onToggle: () => void;
+}): JSX.Element => {
+  const { translate } = useTranslationContext();
+
+  return (
+    <button
+      data-test={dataTest}
+      className={`flex shrink-0 items-center pr-2 ${item.isFavorite ? '' : 'invisible group-hover:visible'}`}
+      title={translate(item.isFavorite ? 'drive.dropdown.removeFromFavorites' : 'drive.dropdown.addToFavorites')}
+      onClick={(e) => {
+        e.stopPropagation();
+        onToggle();
+      }}
+      onDoubleClick={(e) => e.stopPropagation()}
+    >
+      {item.isFavorite ? (
+        <StarIcon weight="fill" size={20} className="text-yellow" />
+      ) : (
+        <StarIcon size={20} className="text-gray-50" />
+      )}
+    </button>
+  );
 };
 
 const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.Element => {
@@ -154,22 +185,11 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
 
         {/* FAVORITE */}
         {!isTrash && !isWorkspaceSelected && (
-          <button
-            data-test={`${basicFileDataTest}-favorite-action`}
-            className={`flex shrink-0 items-center pr-2 ${item.isFavorite ? '' : 'invisible group-hover:visible'}`}
-            title={translate(item.isFavorite ? 'drive.dropdown.removeFromFavorites' : 'drive.dropdown.addToFavorites')}
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleFavoriteButtonClicked();
-            }}
-            onDoubleClick={(e) => e.stopPropagation()}
-          >
-            {item.isFavorite ? (
-              <Star weight="fill" size={20} className="text-yellow" />
-            ) : (
-              <Star size={20} className="text-gray-50" />
-            )}
-          </button>
+          <FavoriteStarButton
+            item={item}
+            dataTest={`${basicFileDataTest}-favorite-action`}
+            onToggle={onToggleFavoriteButtonClicked}
+          />
         )}
       </div>
 
