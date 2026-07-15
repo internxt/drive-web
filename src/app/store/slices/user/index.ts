@@ -18,6 +18,7 @@ import { uiActions } from '../ui';
 import { auth, TokenStatus } from '@internxt/lib';
 import { t } from 'i18next';
 import errorService from 'services/error.service';
+import { UserUnauthorizedError } from 'services/errors/auth.errors';
 import { refreshAvatar } from 'utils/avatarUtils';
 import { ProductService } from 'views/Checkout/services';
 import { UserTierFeatures } from 'views/Checkout/services/products.service';
@@ -51,7 +52,13 @@ export const initializeUserThunk = createAsyncThunk<
   payload = { ...defaultPayload, ...payload };
 
   if (user && isAuthenticated) {
-    dispatch(refreshUserThunk());
+    const result = await dispatch(refreshUserThunk());
+
+    if (refreshUserThunk.rejected.match(result)) {
+      dispatch(logoutThunk());
+      return;
+    }
+
     dispatch(getUserTierFeaturesThunk());
     dispatch(refreshAvatarThunk());
     await dispatch(referralsThunks.initializeThunk());
@@ -67,11 +74,20 @@ export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean 
     const userToken = localStorageService.getToken();
     const currentUser = getState().user.user;
 
-    if (!currentUser || !userToken) throw new Error('Current user is not defined');
+    if (!currentUser || !userToken) throw new UserUnauthorizedError();
 
     const tokenStatus = auth.validateTokenAndCheckExpiration(userToken);
 
-    const isRefreshRequired = tokenStatus === TokenStatus.REFRESH_REQUIRED || tokenStatus === TokenStatus.EXPIRED;
+    const isTokenInvalid = tokenStatus === TokenStatus.INVALID;
+    const isTokenExpired = tokenStatus === TokenStatus.EXPIRED;
+
+    const isTokenUnauthorized = isTokenInvalid || isTokenExpired;
+
+    if (isTokenUnauthorized) {
+      throw new UserUnauthorizedError();
+    }
+
+    const isRefreshRequired = tokenStatus === TokenStatus.REFRESH_REQUIRED;
 
     try {
       if (isRefreshRequired || forceRefresh) {

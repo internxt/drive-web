@@ -87,24 +87,14 @@ describe('user thunks', () => {
       );
     });
 
-    test('When token is expired, then refreshes user and token', async () => {
+    test('When token is expired, then rejects as unauthorized', async () => {
       vi.spyOn(auth, 'validateTokenAndCheckExpiration').mockReturnValue(TokenStatus.EXPIRED);
-      const refreshed = {
-        user: { emailVerified: true, name: 'Jane', lastname: 'Smith', uuid: baseUser.uuid },
-        newToken: 'new-token-expired',
-        oldToken: 'mock-token',
-      } as unknown as Awaited<ReturnType<typeof userService.refreshUserData>>;
-      vi.spyOn(userService, 'refreshUserData').mockResolvedValue(refreshed);
-      vi.spyOn(userService, 'refreshAvatarUser').mockResolvedValue({ avatar: 'avatar-url' });
-      vi.spyOn(userService, 'downloadAvatar').mockResolvedValue(new Blob(['x']));
 
       const thunk = refreshUserThunk();
-      await thunk(dispatchMock, getStateWithUser, undefined);
+      const result = await thunk(dispatchMock, getStateWithUser, undefined);
 
-      expect(userService.refreshUserData).toHaveBeenCalledWith(baseUser.uuid);
-      expect(dispatchMock).toHaveBeenCalledWith(
-        expect.objectContaining({ type: userActions.setToken.type, payload: 'new-token-expired' }),
-      );
+      expect(result.type).toBe('user/refresh/rejected');
+      expect((result as any).error?.name).toBe('UserUnauthorizedError');
     });
 
     test('refreshes user and token when forced', async () => {
@@ -187,7 +177,7 @@ describe('user thunks', () => {
       const thunk = refreshUserThunk();
       const result = await thunk(dispatchMock, getStateNoUser, undefined);
       expect(result.type).toBe('user/refresh/rejected');
-      expect((result as any).error?.message).toBe('Current user is not defined');
+      expect((result as any).error?.name).toBe('UserUnauthorizedError');
     });
   });
 
