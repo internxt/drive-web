@@ -16,12 +16,13 @@ import ReachedFileSizeLimitDialog from 'app/drive/components/ReachedFileSizeLimi
 import SubscriptionEndingModal from '../../../../views/NewSettings/components/Sections/Workspace/Billing/components/cancelSubscription/paidPlanCancellation/SubscriptionEndingModal';
 import { dateService } from 'services';
 import { getCurrentUsage, getPlanInfo, getPlanName } from '../../../../views/NewSettings/utils/planUtils';
+import { useSubscriptionCancellation } from 'views/NewSettings/hooks';
 
 export interface HeaderAndSidenavLayoutProps {
   children: JSX.Element;
 }
 
-const SUBSCRIPTION_ENDING_WARNING_DAYS = 30;
+const SUBSCRIPTION_ENDING_WARNING_DAYS = [30, 7];
 
 export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProps): JSX.Element {
   const dispatch = useAppDispatch();
@@ -49,12 +50,16 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
 
   const [isSubscriptionEndingModalClosed, setIsSubscriptionEndingModalClosed] = useState<boolean>(false);
 
+  const { isReactivatingSubscription, reactivateUserSubscription } = useSubscriptionCancellation({
+    onModalClose: () => setIsSubscriptionEndingModalClosed(true),
+  });
+
   const cancellationDate = individualPlan?.commitment?.cancellationDate;
   const daysUntilCancellation = cancellationDate ? dateService.getDaysUntilExpiration(cancellationDate) : null;
   const isSubscriptionEndingModalOpen =
     !isSubscriptionEndingModalClosed &&
-    !!daysUntilCancellation &&
-    daysUntilCancellation <= SUBSCRIPTION_ENDING_WARNING_DAYS;
+    daysUntilCancellation !== null &&
+    SUBSCRIPTION_ENDING_WARNING_DAYS.includes(daysUntilCancellation);
 
   if (!isAuthenticated) {
     navigationService.push(AppView.Login);
@@ -71,10 +76,10 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
           currentPlanName={currentPlanName}
           currentPlanInfo={currentPlanInfo}
           currentUsage={currentUsage}
-          currentPlanLimit={planLimit}
           cancellationDate={cancellationDate}
+          isReactivatingSubscription={isReactivatingSubscription}
           onClose={() => setIsSubscriptionEndingModalClosed(true)}
-          onRenewSubscription={() => setIsSubscriptionEndingModalClosed(true)}
+          onReactivateSubscription={reactivateUserSubscription}
         />
       )}
 

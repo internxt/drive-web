@@ -1298,6 +1298,8 @@
     "errorApplyCancellationIncentive": "Qualcosa è andato storto durante l'applicazione dell'incentivo di cancellazione",
     "successEarlyCancelSubscription": "L'abbonamento è stato annullato",
     "errorEarlyCancelSubscription": "Qualcosa è andato storto durante la cancellazione dell'abbonamento",
+    "successReactivateSubscription": "L'abbonamento è stato riattivato",
+    "errorReactivateSubscription": "Qualcosa è andato storto durante la riattivazione dell'abbonamento",
     "errorCreatingSubscription": "Si è verificato un errore durante la creazione del tuo abbonamento",
     "couponIsNotValidForUserError": "Il coupon può essere riscattato solo da nuovi clienti.",
     "errorApplyingCoupon": "Si è verificato un errore durante l'applicazione del coupon",

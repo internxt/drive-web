@@ -1277,6 +1277,8 @@
     "errorApplyCancellationIncentive": "Произошла ошибка при применении предложения по отмене",
     "successEarlyCancelSubscription": "Подписка отменена",
     "errorEarlyCancelSubscription": "Произошла ошибка при отмене подписки.",
+    "successReactivateSubscription": "Подписка возобновлена",
+    "errorReactivateSubscription": "Произошла ошибка при возобновлении подписки.",
     "errorCreatingSubscription": "Что-то пошло не так при создании вашей подписки",
     "couponIsNotValidForUserError": "Купон может быть использован только новыми клиентами.",
     "errorApplyingCoupon": "Произошла ошибка при применении купона",

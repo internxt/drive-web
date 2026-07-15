@@ -1274,6 +1274,8 @@
     "errorApplyCancellationIncentive": "Beim Anwenden des Kündigungsanreizes ist ein Fehler aufgetreten",
     "successEarlyCancelSubscription": "Dein Abonnement wurde gekündigt",
     "errorEarlyCancelSubscription": "Bei der Kündigung deines Abonnements ist ein Fehler aufgetreten",
+    "successReactivateSubscription": "Dein Abonnement wurde reaktiviert",
+    "errorReactivateSubscription": "Bei der Reaktivierung deines Abonnements ist ein Fehler aufgetreten",
     "errorCreatingSubscription": "Beim Erstellen Ihres Abonnements ist ein Fehler aufgetreten",
     "couponIsNotValidForUserError": "Der Gutschein kann nur von neuen Kunden eingelöst werden.",
     "errorApplyingCoupon": "Beim Anwenden des Coupons ist ein Fehler aufgetreten",

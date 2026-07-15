@@ -17,10 +17,12 @@ interface UseSubscriptionCancellationResult {
   isCancellingSubscription: boolean;
   isApplyingTrial: boolean;
   earlyCancellationClientSecret: string | null;
+  isReactivatingSubscription: boolean;
   cancelSubscription: (userType?: UserType) => Promise<void>;
   earlyCancelSubscription: () => Promise<void>;
   onEarlyCancellationConfirmed: () => void;
   activateTrial: () => Promise<void>;
+  reactivateUserSubscription: () => Promise<void>;
 }
 
 const REFRESH_PLAN_DELAY_MS = 1000;
@@ -32,6 +34,7 @@ export const useSubscriptionCancellation = ({
   const dispatch = useAppDispatch();
   const [isCancellingSubscription, setIsCancellingSubscription] = useState<boolean>(false);
   const [isApplyingTrial, setIsApplyingTrial] = useState<boolean>(false);
+  const [isReactivatingSubscription, setIsReactivatingSubscription] = useState<boolean>(false);
   const [earlyCancellationClientSecret, setEarlyCancellationClientSecret] = useState<string | null>(null);
 
   const refreshPlan = () => {
@@ -106,13 +109,35 @@ export const useSubscriptionCancellation = ({
     onModalClose?.();
   };
 
+  const reactivateUserSubscription = async () => {
+    setIsReactivatingSubscription(true);
+    try {
+      await paymentService.reactivateUserSubscription();
+      notificationsService.show({ text: t('notificationMessages.successReactivateSubscription') });
+      onModalClose?.();
+    } catch (error) {
+      const castedError = errorService.castError(error);
+      errorService.reportError(error);
+      notificationsService.show({
+        text: t('notificationMessages.errorReactivateSubscription'),
+        type: ToastType.Error,
+        requestId: castedError.requestId,
+      });
+    } finally {
+      setIsReactivatingSubscription(false);
+      refreshPlan();
+    }
+  };
+
   return {
     isCancellingSubscription,
     isApplyingTrial,
     earlyCancellationClientSecret,
+    isReactivatingSubscription,
     earlyCancelSubscription,
     onEarlyCancellationConfirmed,
     cancelSubscription,
     activateTrial,
+    reactivateUserSubscription,
   };
 };

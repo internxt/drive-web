@@ -1298,6 +1298,8 @@
     "errorApplyCancellationIncentive": "套用取消優惠時發生問題",
     "successEarlyCancelSubscription": "您的訂閱已取消",
     "errorEarlyCancelSubscription": "取消訂閱時出現問題",
+    "successReactivateSubscription": "您的訂閱已重新啟用",
+    "errorReactivateSubscription": "重新啟用訂閱時出現問題",
     "successApplyCoupon": "免費使用3個月的優惠碼已應用",
     "errorApplyCoupon": "應用折扣時出現錯誤",
     "alreadyAppliedCoupon": "優惠碼已經應用",

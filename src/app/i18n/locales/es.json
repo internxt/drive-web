@@ -1272,6 +1272,8 @@
     "errorApplyCancellationIncentive": "Algo ha ido mal al aplicar el incentivo de cancelación",
     "successEarlyCancelSubscription": "Tu suscripción ha sido cancelada",
     "errorEarlyCancelSubscription": "Algo ha ido mal al cancelar la suscripción",
+    "successReactivateSubscription": "Tu suscripción ha sido reactivada",
+    "errorReactivateSubscription": "Algo ha ido mal al reactivar la suscripción",
     "errorCreatingSubscription": "Algo salió mal al crear tu suscripción",
     "couponIsNotValidForUserError": "El cupón solo puede ser canjeado por nuevos clientes.",
     "errorApplyingCoupon": "Ocurrió un error al aplicar el cupón",

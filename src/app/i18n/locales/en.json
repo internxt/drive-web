@@ -1298,6 +1298,8 @@
     "errorApplyCancellationIncentive": "Something went wrong while applying the cancellation incentive",
     "successEarlyCancelSubscription": "Your subscription has been cancelled",
     "errorEarlyCancelSubscription": "Something went wrong while cancelling your subscription",
+    "successReactivateSubscription": "Your subscription has been reactivated",
+    "errorReactivateSubscription": "Something went wrong while reactivating your subscription",
     "errorCreatingSubscription": "Something went wrong while creating your subscription",
     "couponIsNotValidForUserError": "Coupon can only be redeemed by new customers",
     "errorApplyingCoupon": "Something went wrong while applying the coupon",
