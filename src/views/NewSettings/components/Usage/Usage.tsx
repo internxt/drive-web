@@ -39,22 +39,22 @@ const Usage = ({
         </div>
         <div className="mx-8 border border-gray-10" />
         <div className="flex w-full grow flex-col justify-start py-2">
-          <p className="text-3xl font-medium leading-9 text-gray-100">{spaceLimitString}</p>
-          <h1 className="text-base font-normal leading-5 text-gray-60">
-            {t('views.preferences.workspace.overview.totalSpace')}
-          </h1>
-          {planCancelled && cancellationDate && (
-            <div className="mt-1.5">
+          <div className="flex flex-row items-center gap-2">
+            <p className="text-3xl font-medium leading-9 text-gray-100">{spaceLimitString}</p>
+            {planCancelled && !!cancellationDate && (
               <Tooltip
                 title={t('common.planCancelled', {
                   end_date: dateService.format(cancellationDate, 'DD MMM YYYY'),
                 })}
                 popsFrom="top"
               >
-                <WarningCircleIcon color="#E5B700" />
+                <WarningCircleIcon color="#E5B700" size={24} />
               </Tooltip>
-            </div>
-          )}
+            )}
+          </div>
+          <h1 className="text-base font-normal leading-5 text-gray-60">
+            {t('views.preferences.workspace.overview.totalSpace')}
+          </h1>
         </div>
       </div>
       <div className="mt-6">
