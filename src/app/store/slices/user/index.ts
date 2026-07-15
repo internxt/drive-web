@@ -2,25 +2,25 @@ import { UpdateProfilePayload } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
+import { authService, localStorageService, navigationService, userService } from 'services';
 import { RootState } from '../..';
-import { authService, userService, localStorageService, navigationService } from 'services';
+import { saveAvatarToDatabase } from '../../../../views/NewSettings/components/Sections/Account/Account/components/AvatarWrapper';
 import { AppView } from '../../../core/types';
 import { deleteDatabaseProfileAvatar } from '../../../drive/services/database.service';
-import { saveAvatarToDatabase } from '../../../../views/NewSettings/components/Sections/Account/Account/components/AvatarWrapper';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { workspacesActions } from '../../../store/slices/workspaces/workspacesStore';
 import tasksService from '../../../tasks/services/tasks.service';
 import { referralsActions, referralsThunks } from '../referrals';
 import { sessionActions } from '../session';
 import { storageActions } from '../storage';
 import { uiActions } from '../ui';
-import { workspacesActions } from '../../../store/slices/workspaces/workspacesStore';
 
+import { auth, TokenStatus } from '@internxt/lib';
+import { t } from 'i18next';
 import errorService from 'services/error.service';
-import { isTokenExpired } from '../../utils';
 import { refreshAvatar } from 'utils/avatarUtils';
 import { ProductService } from 'views/Checkout/services';
 import { UserTierFeatures } from 'views/Checkout/services/products.service';
-import { t } from 'i18next';
 
 export interface UserState {
   isInitializing: boolean;
@@ -65,13 +65,16 @@ export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean 
   'user/refresh',
   async ({ forceRefresh } = {}, { dispatch, getState }) => {
     const userToken = localStorageService.getToken();
-    const isExpired = isTokenExpired(userToken);
-
     const currentUser = getState().user.user;
-    if (!currentUser) throw new Error('Current user is not defined');
+
+    if (!currentUser || !userToken) throw new Error('Current user is not defined');
+
+    const tokenStatus = auth.validateTokenAndCheckExpiration(userToken);
+
+    const isRefreshRequired = tokenStatus === TokenStatus.REFRESH_REQUIRED || tokenStatus === TokenStatus.EXPIRED;
 
     try {
-      if (isExpired || forceRefresh) {
+      if (isRefreshRequired || forceRefresh) {
         const { user, newToken } = await userService.refreshUserData(currentUser.uuid);
 
         const { emailVerified, name, lastname, uuid, createdAt } = user;
