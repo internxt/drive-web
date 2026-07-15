@@ -9,12 +9,13 @@ import { IS_CRYPTO_PAYMENT_ENABLED, THEME_STYLES } from '../constants';
 import { PlanInterval } from '../types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
+import { Translate } from 'app/i18n/types';
 
 interface UseInitializeCheckoutProps {
   checkoutTheme: string;
   price?: PriceWithTax;
   user?: UserSettings;
-  translate: (key: string) => string;
+  translate: Translate;
 }
 
 export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }: UseInitializeCheckoutProps) => {

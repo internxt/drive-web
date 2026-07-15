@@ -1,6 +1,6 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Button } from '@internxt/ui';
-import { AppView, LocalStorageItem } from 'app/core/types';
+import { AppView } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import AnimatedBackground from 'components/AnimatedBackground';
@@ -27,9 +27,7 @@ export default function UniversalLinkView(): JSX.Element {
   }, [user]);
 
   const getUniversalLinkAuthUrl = (user: UserSettings) => {
-    const token = localStorageService.get(LocalStorageItem.UserToken);
     const newToken = localStorageService.getToken();
-    if (!token) return AppView.Login;
     if (!newToken) return AppView.Login;
 
     let baseURL = DEEPLINK_SUCCESS_REDIRECT_BASE;
@@ -37,9 +35,7 @@ export default function UniversalLinkView(): JSX.Element {
       baseURL = Buffer.from(redirectUri, 'base64').toString();
     }
 
-    return `${baseURL}?mnemonic=${btoa(user.mnemonic)}&token=${btoa(token)}&newToken=${btoa(
-      newToken,
-    )}&privateKey=${btoa(user.privateKey)}`;
+    return `${baseURL}?mnemonic=${btoa(user.mnemonic)}&newToken=${btoa(newToken)}&privateKey=${btoa(user.privateKey)}`;
   };
 
   // Should redirect to login in the useEffect

@@ -1,8 +1,9 @@
-import { afterAll, beforeEach, describe, expect, it, test, vi } from 'vitest';
+import { afterAll, beforeEach, describe, expect, it, test, vi, afterEach } from 'vitest';
 import localStorageService from './local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { LocalStorageItem } from 'app/core/types';
+import { LocalStorageItem, LocalStorageProtectedItem } from 'app/core/types';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
+import { createNewKey, deleteDb } from './local-storage-crypto';
 
 export const mockUserSettings: UserSettings = {
   userId: 'user_123',
@@ -122,7 +123,7 @@ const stringifyWorkspaceData = JSON.stringify(mockWorkspaceData);
 
 beforeEach(() => {
   localStorage.setItem(localStorageKey, localStorageValue);
-  localStorage.setItem(LocalStorageItem.User, stringifyMockedUser);
+  localStorageService.setUser(mockUserSettings);
   localStorage.setItem(LocalStorageItem.WorkspaceCredentials, stringifyMockCredentials);
   localStorage.setItem(LocalStorageItem.B2Bworkspace, stringifyWorkspaceData);
   localStorage.setItem(LocalStorageItem.Theme, 'starwars');
@@ -132,6 +133,10 @@ beforeEach(() => {
 
 afterAll(() => {
   localStorage.clear();
+});
+
+afterEach(async () => {
+  await deleteDb();
 });
 
 describe('Testing the local storage service', () => {
@@ -186,6 +191,42 @@ describe('Testing the local storage service', () => {
       expect(removeFromLocalStorageSpy).toHaveBeenCalled();
       expect(removeFromLocalStorageSpy).toHaveBeenCalledWith(removeLocalStorageKey);
       expect(nonExistentItem).toBeNull();
+    });
+  });
+
+  describe('Get and set encrypted values', () => {
+    it('When sets protected value, then the value is stored encrypted', async () => {
+      await createNewKey();
+      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
+      const cryptoSpy = vi.spyOn(window.crypto.subtle, 'encrypt');
+
+      const key = LocalStorageProtectedItem.NewToken;
+      const value = 'test-value';
+      await localStorageService.setAndEncrypt(key, value);
+
+      const localStorageItem = localStorage.getItem(key);
+
+      expect(getFromLocalStorageSpy).toHaveBeenCalled();
+      expect(cryptoSpy).toHaveBeenCalled();
+      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(key);
+      expect(localStorageItem).not.toEqual(value);
+    });
+
+    it('When gets a protected value, then the result is decrypted', async () => {
+      await createNewKey();
+      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
+      const cryptoSpy = vi.spyOn(window.crypto.subtle, 'decrypt');
+
+      const key = LocalStorageProtectedItem.NewToken;
+      const value = 'test-value';
+      await localStorageService.setAndEncrypt(key, value);
+
+      const localStorageItem = await localStorageService.getAndDecrypt(key);
+
+      expect(getFromLocalStorageSpy).toHaveBeenCalled();
+      expect(cryptoSpy).toHaveBeenCalled();
+      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(key);
+      expect(localStorageItem).toBe(value);
     });
   });
 
@@ -316,35 +357,23 @@ describe('Testing the local storage service', () => {
         expect(localStorage.getItem(seenAtKey)).toBeNull();
       });
     });
-
-    describe('clear', () => {
-      test('When the user logs out, then the last seen date is removed but the acknowledged flag is kept', () => {
-        const date = new Date().toISOString();
-        localStorage.setItem(seenAtKey, date);
-        localStorage.setItem(acknowledgedKey, 'true');
-
-        localStorageService.clear();
-
-        expect(localStorage.getItem(seenAtKey)).toBeNull();
-        expect(localStorage.getItem(acknowledgedKey)).toBe('true');
-      });
-    });
   });
 
   describe('Clearing local storage', () => {
     it('When clear storage is requested, then removes all keys', () => {
-      const expectedKeysToRemove = Object.values(LocalStorageItem);
-
-      const setItemSpy = vi.spyOn(Storage.prototype, 'setItem');
-      const removeItemSpy = vi.spyOn(Storage.prototype, 'removeItem');
+      const clearSpy = vi.spyOn(Storage.prototype, 'clear');
+      localStorageService.setBackupKeysAcknowledged();
+      localStorageService.setBackupKeysSeenAt(new Date().toISOString());
 
       localStorageService.clear();
 
-      expect(setItemSpy).toHaveBeenCalledWith(LocalStorageItem.Theme, 'system');
+      expect(clearSpy).toHaveBeenCalledTimes(1);
 
-      for (const key of expectedKeysToRemove) {
-        expect(removeItemSpy).toHaveBeenCalledWith(key);
-      }
+      const userId = mockUserSettings.uuid;
+      const seenAtKey = `backup_key_seen_at_${userId}`;
+      const acknowledgedKey = `backup_key_acknowledged_at_${userId}`;
+      expect(localStorage.getItem(seenAtKey)).toBeNull();
+      expect(localStorage.getItem(acknowledgedKey)).toBeNull();
     });
   });
 });

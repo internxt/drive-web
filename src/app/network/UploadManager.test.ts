@@ -610,7 +610,6 @@ describe('checkUploadFiles', () => {
     });
 
     expect(uploadFileSpy).toHaveBeenCalledWith(
-      'user@test.com',
       expect.any(Object),
       expect.any(Function),
       expect.objectContaining({
@@ -725,7 +724,6 @@ describe('checkUploadFiles', () => {
     });
 
     expect(uploadFileSpy).toHaveBeenCalledWith(
-      'user@test.com',
       expect.any(Object),
       expect.any(Function),
       expect.objectContaining({

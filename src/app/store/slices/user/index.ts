@@ -4,7 +4,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
 import { RootState } from '../..';
 import { authService, userService, localStorageService, navigationService } from 'services';
-import { AppView, LocalStorageItem } from '../../../core/types';
+import { AppView } from '../../../core/types';
 import { deleteDatabaseProfileAvatar } from '../../../drive/services/database.service';
 import { saveAvatarToDatabase } from '../../../../views/NewSettings/components/Sections/Account/Account/components/AvatarWrapper';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
@@ -64,7 +64,7 @@ export const initializeUserThunk = createAsyncThunk<
 export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean } | undefined, { state: RootState }>(
   'user/refresh',
   async ({ forceRefresh } = {}, { dispatch, getState }) => {
-    const userToken = localStorageService.get(LocalStorageItem.UserToken);
+    const userToken = localStorageService.getToken();
     const isExpired = isTokenExpired(userToken);
 
     const currentUser = getState().user.user;
@@ -181,11 +181,11 @@ export const deleteUserAvatarThunk = createAsyncThunk<void, void, { state: RootS
 
 const updateUserEmailCredentialsThunk = createAsyncThunk<
   void,
-  { newUserData: UserSettings; token: string; newToken: string },
+  { newUserData: UserSettings; newToken: string },
   { state: RootState }
 >('user/updateUser', async (payload, { dispatch, getState }) => {
   const currentUser = getState().user.user as UserSettings;
-  const { newUserData, token, newToken } = payload;
+  const { newUserData, newToken } = payload;
 
   const user = {
     ...currentUser,
@@ -193,7 +193,6 @@ const updateUserEmailCredentialsThunk = createAsyncThunk<
     bridgeUser: newUserData.email,
     username: newUserData.email,
   };
-  localStorageService.set(LocalStorageItem.UserToken, token);
   localStorageService.setToken(newToken);
   dispatch(userActions.setUser(user));
 });
@@ -216,10 +215,10 @@ export const userSlice = createSlice({
       state.isAuthenticated = !!action.payload;
       state.user = action.payload;
 
-      localStorageService.set(LocalStorageItem.User, JSON.stringify(action.payload));
+      localStorageService.setUser(action.payload);
     },
     setToken: (state: UserState, action: PayloadAction<string>) => {
-      localStorageService.set(LocalStorageItem.UserToken, action.payload);
+      localStorageService.setToken(action.payload);
     },
     resetState: (state: UserState) => {
       Object.assign(state, initialState);
