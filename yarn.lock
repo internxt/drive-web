@@ -1929,10 +1929,10 @@
     "@typescript-eslint/parser" "^5.4.0"
     eslint-config-prettier "^8.3.0"
 
-"@internxt/lib@=1.5.0":
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/@internxt/lib/-/lib-1.5.0.tgz#2244562b9d0acbbdadaef6452f46e9c9db0206ef"
-  integrity sha512-X0c8jd2cqMPvAumv/fVFNH8x9ywd482ZZbp6H5vwWF/rxmJPLIOWmycvZvLNsKoKZw+OytAD+ScFKTAg0gPINQ==
+"@internxt/lib@=1.5.1":
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/@internxt/lib/-/lib-1.5.1.tgz#08d3a474c9952b5ca47404db5ed197f1615f9ff9"
+  integrity sha512-Zt6ZRJ4B3N6zgYE7kBtVSiBXNWLV2F6QgK27IvWCg+6C2qoWDwy6uN1niMzHgSi3KUSTKOB4jiu42wJUYj4LXw==
 
 "@internxt/prettier-config@2.0.1":
   version "2.0.1"
