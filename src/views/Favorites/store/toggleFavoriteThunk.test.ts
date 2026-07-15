@@ -7,6 +7,12 @@ vi.mock('../services', () => ({
   setItemFavorite: vi.fn(),
 }));
 
+vi.mock('services/navigation.service', () => ({
+  default: {
+    isCurrentPath: vi.fn(() => false),
+  },
+}));
+
 vi.mock('services/error.service', () => ({
   default: {
     reportError: vi.fn(),
@@ -26,6 +32,7 @@ vi.mock('app/store/slices/storage', () => ({
     patchItem: vi.fn((payload) => ({ type: 'storage/patchItem', payload })),
     addFavorites: vi.fn((payload) => ({ type: 'storage/addFavorites', payload })),
     removeFavorites: vi.fn((payload) => ({ type: 'storage/removeFavorites', payload })),
+    deselectItems: vi.fn((payload) => ({ type: 'storage/deselectItems', payload })),
   },
   storageSelectors: {},
 }));
@@ -99,6 +106,50 @@ describe('toggleFavoriteThunk', () => {
 
     expect(setItemFavorite).toHaveBeenCalledWith(notFavorited, true);
     expect(setItemFavorite).toHaveBeenCalledWith(favorited, false);
+  });
+
+  it('should deselect an unfavorited item when it is selected on the favorites view', async () => {
+    const { toggleFavoriteThunk } = await import('./toggleFavoriteThunk');
+    const { storageActions } = await import('app/store/slices/storage');
+    const navigationService = (await import('services/navigation.service')).default;
+
+    const favorited = buildItem({ id: 1, uuid: 'file-uuid-1', isFavorite: true });
+    vi.mocked(navigationService.isCurrentPath).mockReturnValue(true);
+    getState.mockReturnValue({ storage: { selectedItems: [favorited] } });
+
+    await toggleFavoriteThunk([favorited])(dispatch, getState, undefined);
+
+    expect(navigationService.isCurrentPath).toHaveBeenCalledWith('favorites');
+    expect(storageActions.deselectItems).toHaveBeenCalledWith([favorited]);
+  });
+
+  it('should not deselect an unfavorited item that was not selected on the favorites view', async () => {
+    const { toggleFavoriteThunk } = await import('./toggleFavoriteThunk');
+    const { storageActions } = await import('app/store/slices/storage');
+    const navigationService = (await import('services/navigation.service')).default;
+
+    const favorited = buildItem({ id: 1, uuid: 'file-uuid-1', isFavorite: true });
+    const otherSelected = buildItem({ id: 2, uuid: 'file-uuid-2', isFavorite: true });
+    vi.mocked(navigationService.isCurrentPath).mockReturnValue(true);
+    getState.mockReturnValue({ storage: { selectedItems: [otherSelected] } });
+
+    await toggleFavoriteThunk([favorited])(dispatch, getState, undefined);
+
+    expect(storageActions.deselectItems).not.toHaveBeenCalled();
+  });
+
+  it('should keep the selection when unfavoriting from a view other than favorites', async () => {
+    const { toggleFavoriteThunk } = await import('./toggleFavoriteThunk');
+    const { storageActions } = await import('app/store/slices/storage');
+    const navigationService = (await import('services/navigation.service')).default;
+
+    const favorited = buildItem({ id: 1, uuid: 'file-uuid-1', isFavorite: true });
+    vi.mocked(navigationService.isCurrentPath).mockReturnValue(false);
+
+    await toggleFavoriteThunk([favorited])(dispatch, getState, undefined);
+
+    expect(storageActions.removeFavorites).toHaveBeenCalledWith([favorited]);
+    expect(storageActions.deselectItems).not.toHaveBeenCalled();
   });
 
   it('should report the error and reject without updating the state when the request fails', async () => {

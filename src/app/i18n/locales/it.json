@@ -369,7 +369,7 @@
       "head": "Preferiti",
       "empty": {
         "title": "Ancora nessun preferito",
-        "description": "I file e le cartelle che contrassegni come preferiti appariranno qui"
+        "description": "Aggiungi file o cartelle ai tuoi preferiti per accedervi più velocemente"
       }
     },
     "recents": {

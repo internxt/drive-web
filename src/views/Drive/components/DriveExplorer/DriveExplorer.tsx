@@ -277,7 +277,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     if (isFavorites) {
       return (
         <Empty
-          icon={<StarIcon className="text-gray-40" size={80} weight="thin" />}
+          icon={<StarIcon className="text-primary" size={64} weight="fill" />}
           title={translate('views.favorites.empty.title')}
           subtitle={translate('views.favorites.empty.description')}
         />
