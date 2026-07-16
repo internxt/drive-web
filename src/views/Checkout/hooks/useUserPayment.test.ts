@@ -197,7 +197,7 @@ describe('Custom hook to handle payments', () => {
         elements: subscriptionPaymentPayload.elements,
         clientSecret: 'client_secret',
         confirmParams: {
-          return_url: `${envService.getVariable('hostname')}/checkout/success`,
+          return_url: `${globalThis.location.origin}/checkout/success`,
         },
       });
     });
@@ -253,7 +253,7 @@ describe('Custom hook to handle payments', () => {
         elements: subscriptionPaymentPayload.elements,
         clientSecret: 'client_secret',
         confirmParams: {
-          return_url: `${envService.getVariable('hostname')}/checkout/success`,
+          return_url: `${globalThis.location.origin}/checkout/success`,
         },
       });
     });
@@ -359,7 +359,7 @@ describe('Custom hook to handle payments', () => {
         elements: lifetimePaymentPayload.elements,
         clientSecret: 'client_secret',
         confirmParams: {
-          return_url: `${envService.getVariable('hostname')}/checkout/success`,
+          return_url: `${globalThis.location.origin}/checkout/success`,
         },
       });
     });

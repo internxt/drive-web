@@ -149,18 +149,19 @@ function trackPurchase(): void {
 
     const { uuid, email } = userSettings;
 
-    const checkoutItemDataStr = localStorageService.get(LocalStorageItem.CheckoutItemData);
-    if (!checkoutItemDataStr) {
-      console.warn('[GA Service] No checkout data found, purchase may have already been tracked');
+    const amountPaidString = localStorageService.get(LocalStorageItem.AmountPaid);
+    if (!amountPaidString) {
+      console.warn('[GA Service] No payment data found, purchase may have already been tracked');
       return;
     }
 
+    const checkoutItemDataStr = localStorageService.get(LocalStorageItem.CheckoutItemData);
     const subscriptionId = localStorageService.get(LocalStorageItem.SubscriptionID);
     const paymentIntentId = localStorageService.get(LocalStorageItem.PaymentIntentID);
     const priceId = localStorageService.get(LocalStorageItem.PriceId);
     const currency = localStorageService.get(LocalStorageItem.Currency);
-    const amountPaidString = localStorageService.get(LocalStorageItem.AmountPaid);
-    const amount = Number.parseFloat(amountPaidString ?? '0');
+    const productName = localStorageService.get(LocalStorageItem.ProductName);
+    const amount = Number.parseFloat(amountPaidString);
 
     const itemOriginalPriceStr = localStorageService.get(LocalStorageItem.ItemOriginalPrice);
     const itemOriginalPrice = Number.parseFloat(itemOriginalPriceStr ?? '0');
@@ -169,7 +170,7 @@ function trackPurchase(): void {
 
     let checkoutItemData: CheckoutItemData | null = null;
     try {
-      checkoutItemData = JSON.parse(checkoutItemDataStr) as CheckoutItemData;
+      checkoutItemData = checkoutItemDataStr ? (JSON.parse(checkoutItemDataStr) as CheckoutItemData) : null;
     } catch (parseError) {
       console.error('[GA Service] Error parsing checkout_item_data:', parseError);
     }
@@ -177,7 +178,7 @@ function trackPurchase(): void {
     const transactionId = paymentIntentId || subscriptionId || `${uuid}-${Date.now()}`;
     const currencyCode = currency ?? 'EUR';
 
-    const itemName = checkoutItemData?.item_name || 'Unknown Plan';
+    const itemName = checkoutItemData?.item_name || productName || 'Unknown Plan';
     const itemCategory = checkoutItemData?.item_category || 'Individual';
     const itemVariant = checkoutItemData?.item_variant || 'month';
     const itemDiscount = checkoutItemData?.discount || 0;

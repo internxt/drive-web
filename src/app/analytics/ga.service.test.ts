@@ -371,7 +371,7 @@ describe('Testing GA Service', () => {
         expect(localStorageService.removeItem).toHaveBeenCalledWith('itemOriginalPrice');
       });
 
-      it('should use fallback values when checkout item data is not available', () => {
+      it('should still report the purchase with fallback item details when the checkout item data was wiped, so signing up during checkout does not lose the conversion', () => {
         vi.mocked(localStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as any);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'checkout_item_data') return null;
@@ -382,7 +382,10 @@ describe('Testing GA Service', () => {
 
         gaService.trackPurchase();
 
-        expect(globalThis.window.dataLayer).toHaveLength(0);
+        expect(globalThis.window.dataLayer).toHaveLength(1);
+        const event = globalThis.window.dataLayer[0] as any;
+        expect(event.ecommerce.value).toBe(100);
+        expect(event.ecommerce.items[0].item_name).toBe('dummy');
       });
 
       it('should use original price from localStorage instead of amount paid', () => {
@@ -407,11 +410,11 @@ describe('Testing GA Service', () => {
         expect(event.ecommerce.value).toBe(0);
       });
 
-      it('should not track when checkout data is missing (already tracked)', () => {
+      it('should not report a purchase again once its payment data has been cleared after tracking', () => {
         const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
         vi.mocked(localStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as any);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
-          if (key === 'checkout_item_data') return null;
+          if (key === 'amountPaid') return null;
           return 'dummy';
         });
 
@@ -419,7 +422,7 @@ describe('Testing GA Service', () => {
 
         expect(globalThis.window.dataLayer).toHaveLength(0);
         expect(consoleWarnSpy).toHaveBeenCalledWith(
-          '[GA Service] No checkout data found, purchase may have already been tracked',
+          '[GA Service] No payment data found, purchase may have already been tracked',
         );
 
         consoleWarnSpy.mockRestore();

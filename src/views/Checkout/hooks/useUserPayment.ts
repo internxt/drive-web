@@ -2,7 +2,6 @@ import { Stripe, StripeElements } from '@stripe/stripe-js';
 
 import { savePaymentDataInLocalStorage } from 'app/analytics/impact.service';
 import checkoutService from '../services/checkout.service';
-import envService from 'services/env.service';
 import { sendConversionToAPI } from 'app/analytics/googleSheet.service';
 import navigationService from 'services/navigation.service';
 import errorService from 'services/error.service';
@@ -106,7 +105,7 @@ export const useUserPayment = () => {
     clientSecret: string,
     confirmPayment: Stripe['confirmPayment'],
   ) => {
-    const RETURN_URL_DOMAIN = envService.getVariable('hostname');
+    const RETURN_URL_DOMAIN = globalThis.location.origin;
     const { error: confirmIntentError } = await confirmPayment({
       elements,
       clientSecret: clientSecret,
@@ -125,7 +124,7 @@ export const useUserPayment = () => {
     clientSecret: string,
     setupIntent: Stripe['confirmSetup'],
   ) => {
-    const RETURN_URL_DOMAIN = envService.getVariable('hostname');
+    const RETURN_URL_DOMAIN = globalThis.location.origin;
     const { error: confirmIntentError } = await setupIntent({
       elements,
       clientSecret: clientSecret,
