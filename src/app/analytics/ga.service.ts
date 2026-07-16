@@ -125,9 +125,9 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
       ecommerce: ecommerceData,
     });
 
-    if (globalThis.window.gtag && SEND_TO.length > 0) {
+    if (globalThis.window.gtag && GA_ID) {
       globalThis.window.gtag('event', 'begin_checkout', {
-        send_to: SEND_TO,
+        send_to: [GA_ID],
         value: totalAmount,
         currency: currencyCode,
         items: [item],
@@ -174,7 +174,7 @@ function trackPurchase(): void {
       console.error('[GA Service] Error parsing checkout_item_data:', parseError);
     }
 
-    const transactionId = paymentIntentId || subscriptionId || uuid;
+    const transactionId = paymentIntentId || subscriptionId || `${uuid}-${Date.now()}`;
     const currencyCode = currency ?? 'EUR';
 
     const itemName = checkoutItemData?.item_name || 'Unknown Plan';
