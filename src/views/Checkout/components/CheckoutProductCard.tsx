@@ -212,7 +212,7 @@ export const CheckoutProductCard = ({
               )}
             </>
           )}
-          <Button type="submit" id="submit-create-account" className="hidden lg:flex" disabled={isButtonDisabled}>
+          <Button type="submit" id="submit-create-account" className="flex" disabled={isButtonDisabled}>
             {isButtonDisabled ? translate('checkout.processing') : translate('checkout.pay')}
           </Button>
         </div>

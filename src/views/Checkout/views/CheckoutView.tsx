@@ -127,7 +127,7 @@ const CheckoutView = ({
       <div className="mx-auto flex w-full max-w-screen-xl px-5 py-10">
         <div className="flex w-full flex-col space-y-8 lg:space-y-16">
           <HeaderComponent isUserAuthenticated={isUserAuthenticated} />
-          <div className="flex flex-col items-center justify-center gap-10 lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex flex-col items-center justify-center lg:flex-row lg:items-start lg:justify-between">
             <div className="flex w-full max-w-xl flex-col space-y-14" ref={userAuthComponentRef}>
               <CheckoutUserAuth
                 errors={errors}
@@ -138,7 +138,7 @@ const CheckoutView = ({
                 userData={userInfo}
                 onLogOut={checkoutViewManager.onLogOut}
               />
-              <div className="flex flex-col space-y-8 pb-20">
+              <div className="flex flex-col space-y-8 pb-14 lg:pb-20">
                 <div className="flex flex-col w-full gap-2">
                   <PaymentElement
                     options={PAYMENT_ELEMENT_OPTIONS}
@@ -191,7 +191,7 @@ const CheckoutView = ({
                 </div>
               </div>
             </div>
-            <div className="top-5 flex w-full max-w-xl flex-col gap-5 pb-10 lg:sticky lg:max-w-lg">
+            <div className="lg:top-5 flex w-full max-w-xl flex-col gap-5 pb-10 lg:sticky lg:max-w-lg">
               <CheckoutProductCard
                 selectedPlan={currentSelectedPlan}
                 couponCodeData={couponCodeData}
@@ -201,9 +201,7 @@ const CheckoutView = ({
                 onRemoveAppliedCouponCode={checkoutViewManager.onRemoveAppliedCouponCode}
                 isButtonDisabled={isButtonDisabled}
               />
-              <Button type="submit" id="submit" className="flex lg:hidden" disabled={isButtonDisabled}>
-                {isButtonDisabled ? translate('checkout.processing') : translate('checkout.pay')}
-              </Button>
+              
             </div>
           </div>
         </div>
