@@ -6,6 +6,7 @@ import { IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { LegacyRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import TextInput from 'components/TextInput';
 import { CheckoutProductCard } from '../components/CheckoutProductCard';
 import { CheckoutUserAuth } from '../components/CheckoutUserAuth';
 import { HeaderComponent } from '../components/Header';
@@ -43,6 +44,7 @@ interface CheckoutViewProps {
   checkoutViewManager: CheckoutViewManager;
   availableCryptoCurrencies?: CryptoCurrency[];
   onCurrencyTypeChanges: (currency: PaymentType) => void;
+  isPostalCodeRequired?: boolean;
 }
 
 const AUTH_METHOD_VALUES = {
@@ -58,6 +60,7 @@ const CheckoutView = ({
   checkoutViewManager,
   availableCryptoCurrencies,
   onCurrencyTypeChanges,
+  isPostalCodeRequired,
 }: CheckoutViewProps) => {
   const { translate } = useTranslationContext();
   // Those custom hooks should be here.
@@ -65,6 +68,7 @@ const CheckoutView = ({
   const stripeSDK = useStripe();
   const elements = useElements();
   const [isCryptoDropdownOpen, setIsCryptoDropdownOpen] = useState<boolean>(false);
+  const [postalCode, setPostalCode] = useState<string>('');
   const { isPaying, couponCodeError, authError, authMethod, couponCodeData, currentSelectedPlan, selectedCurrency } =
     checkoutViewVariables;
 
@@ -123,9 +127,6 @@ const CheckoutView = ({
       <div className="mx-auto flex w-full max-w-screen-xl px-5 py-10">
         <div className="flex w-full flex-col space-y-8 lg:space-y-16">
           <HeaderComponent isUserAuthenticated={isUserAuthenticated} />
-          <p className="text-xl font-bold text-gray-100 md:text-center lg:text-left lg:text-3xl">
-            {translate('checkout.title')}
-          </p>
           <div className="flex flex-col items-center justify-center gap-10 lg:flex-row lg:items-start lg:justify-between">
             <div className="flex w-full max-w-xl flex-col space-y-14" ref={userAuthComponentRef}>
               <CheckoutUserAuth
@@ -138,24 +139,6 @@ const CheckoutView = ({
                 onLogOut={checkoutViewManager.onLogOut}
               />
               <div className="flex flex-col space-y-8 pb-20">
-                <p className="text-2xl font-semibold text-gray-100">2. {translate('checkout.addressBillingTitle')}</p>
-                <div className="flex w-full flex-col items-center gap-10">
-                  <div className="flex w-full flex-col rounded-2xl border border-gray-10 bg-surface p-5">
-                    <AddressElement
-                      onChange={(e) => {
-                        checkoutViewManager.onUserNameChanges(e.value.name);
-                        checkoutViewManager.onUserAddressChanges(e.value.address);
-                      }}
-                      options={{
-                        mode: 'billing',
-                        autocomplete: {
-                          mode: 'automatic',
-                        },
-                      }}
-                    />
-                  </div>
-                </div>
-                <p className="text-2xl font-semibold text-gray-100">3. {translate('checkout.paymentTitle')}</p>
                 <div className="flex flex-col w-full gap-2">
                   <PaymentElement
                     options={PAYMENT_ELEMENT_OPTIONS}
@@ -174,10 +157,38 @@ const CheckoutView = ({
                       onCryptoChanges={checkoutViewManager.onCurrencyChange}
                     />
                   )}
+                  {isPostalCodeRequired && !isCryptoDropdownOpen && (
+                    <div className="flex w-full flex-col gap-1 pt-2">
+                      <p className="text-sm text-gray-80">{translate('checkout.postalCode.title')}</p>
+                      <TextInput
+                        placeholder={translate('checkout.postalCode.placeholder')}
+                        autoComplete="postal-code"
+                        value={postalCode}
+                        onChange={(e) => {
+                          setPostalCode(e.target.value);
+                          checkoutViewManager.onPostalCodeChanges(e.target.value);
+                        }}
+                      />
+                    </div>
+                  )}
+                  {isCryptoDropdownOpen && (
+                    <div className="mt-2 flex w-full flex-col space-y-4 rounded-2xl border border-gray-10 bg-surface p-5">
+                      <p className="font-medium text-gray-100">{translate('checkout.addressBillingTitle')}</p>
+                      <AddressElement
+                        onChange={(e) => {
+                          checkoutViewManager.onUserNameChanges(e.value.name);
+                          checkoutViewManager.onUserAddressChanges(e.value.address);
+                        }}
+                        options={{
+                          mode: 'billing',
+                          autocomplete: {
+                            mode: 'automatic',
+                          },
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
-                <Button type="submit" id="submit-create-account" className="hidden lg:flex" disabled={isButtonDisabled}>
-                  {isButtonDisabled ? translate('checkout.processing') : translate('checkout.pay')}
-                </Button>
               </div>
             </div>
             <div className="top-5 flex w-full max-w-xl flex-col gap-5 pb-10 lg:sticky lg:max-w-lg">
@@ -188,6 +199,7 @@ const CheckoutView = ({
                 couponError={couponCodeError}
                 onCouponInputChange={checkoutViewManager.onCouponInputChange}
                 onRemoveAppliedCouponCode={checkoutViewManager.onRemoveAppliedCouponCode}
+                isButtonDisabled={isButtonDisabled}
               />
               <Button type="submit" id="submit" className="flex lg:hidden" disabled={isButtonDisabled}>
                 {isButtonDisabled ? translate('checkout.processing') : translate('checkout.pay')}

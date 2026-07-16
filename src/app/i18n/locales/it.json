@@ -226,6 +226,10 @@
       "privacyGuarantee": "Garanzia di privacy: Non condividiamo le tue informazioni e ti contatteremo solo se necessario per fornire il nostro servizio."
     },
     "addressBillingTitle": "Indirizzo di Fatturazione",
+    "postalCode": {
+      "title": "Codice postale",
+      "placeholder": "Codice postale"
+    },
     "crypto": "Crypto",
     "addressBilling": {
       "optional": {
@@ -282,6 +286,8 @@
       "invalidPlan": "Tipo di piano non supportato. Seleziona un piano valido.",
       "fetchingCryptoCurrencies": "Non siamo riusciti a caricare le opzioni di criptovalute disponibili",
       "addressRequired": "Completa il tuo indirizzo di fatturazione per continuare",
+      "postalCodeRequired": "Inserisci il tuo codice postale per continuare",
+      "countryRequired": "Non siamo riusciti a determinare il tuo paese. Riprova più tardi.",
       "businessPlan": "Il piano aziendale non è disponibile"
     }
   },
