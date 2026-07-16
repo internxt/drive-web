@@ -2,9 +2,10 @@ import { BreadcrumbItemData, Breadcrumbs } from '@internxt/ui';
 import { OrderDirection } from 'app/core/types';
 import iconService from 'app/drive/services/icon.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { derivePublicSharingKey } from 'app/share/services/share.service';
 import { AdvancedSharedItem } from 'app/share/types';
 import { useAppDispatch } from 'app/store/hooks';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useDrop } from 'react-dnd';
 import { OrderField } from 'views/Shared/components/SharedItemList';
 import { sortSharedItems } from 'views/Shared/utils/sharedViewUtils';
@@ -15,6 +16,8 @@ interface PublicSharedFolderContentProps {
   rootFolderUuid: string;
   rootFolderName: string;
   code: string;
+  encryptionKey: string;
+  sharingVersion: string;
   onExitPreview: () => void;
 }
 
@@ -24,10 +27,16 @@ const PublicSharedFolderContent = ({
   rootFolderUuid,
   rootFolderName,
   code,
+  encryptionKey,
+  sharingVersion,
   onExitPreview,
 }: PublicSharedFolderContentProps) => {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
+  const publicShareKey = useMemo(
+    () => derivePublicSharingKey({ encryptionKey, code, sharingVersion }),
+    [encryptionKey, code, sharingVersion],
+  );
   const { folderPath, shareItems, isLoading, hasMoreItems, onNextPage, navigateToFolder, navigateToFolderAtIndex } =
     usePublicSharedFolderContent({ rootFolderUuid, rootFolderName, code });
   const [selectedItems, setSelectedItems] = useState<AdvancedSharedItem[]>([]);
@@ -112,6 +121,7 @@ const PublicSharedFolderContent = ({
       <div className="flex h-full w-full flex-col overflow-y-auto">
         <PublicSharedItemList
           shareItems={reorderedShareItems}
+          publicShareKey={publicShareKey}
           isLoading={isLoading}
           hasMoreItems={hasMoreItems}
           onNextPage={onNextPage}
