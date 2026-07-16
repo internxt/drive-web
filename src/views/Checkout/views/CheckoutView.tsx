@@ -1,5 +1,5 @@
 import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
-import { Button, Loader } from '@internxt/ui';
+import { Loader } from '@internxt/ui';
 import { AddressElement, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { StripePaymentElementOptions } from '@stripe/stripe-js';
 import { IFormValues } from 'app/core/types';
@@ -104,7 +104,7 @@ const CheckoutView = ({
     );
   }
 
-  const isButtonDisabled = authMethod === AUTH_METHOD_VALUES.IS_SIGNED_IN ? isPaying : isPaying && isValid;
+  const isPaymentProcessing = authMethod === AUTH_METHOD_VALUES.IS_SIGNED_IN ? isPaying : isPaying && isValid;
 
   function onAuthMethodToggled(authMethod: AuthMethodTypes) {
     reset({
@@ -199,9 +199,8 @@ const CheckoutView = ({
                 couponError={couponCodeError}
                 onCouponInputChange={checkoutViewManager.onCouponInputChange}
                 onRemoveAppliedCouponCode={checkoutViewManager.onRemoveAppliedCouponCode}
-                isButtonDisabled={isButtonDisabled}
+                isPaymentProcessing={isPaymentProcessing}
               />
-              
             </div>
           </div>
         </div>

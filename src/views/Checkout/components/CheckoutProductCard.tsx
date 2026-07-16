@@ -1,6 +1,6 @@
 import { Transition } from '@headlessui/react';
 import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
-import { Check, SealPercent, X } from '@phosphor-icons/react';
+import { SealPercent, X } from '@phosphor-icons/react';
 import { useState } from 'react';
 
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
@@ -18,12 +18,11 @@ import { Currency } from '../types';
 interface CheckoutProductCardProps {
   selectedPlan: PriceWithTax;
   showCouponCode: boolean;
-  showHardcodedRenewal?: string;
   onRemoveAppliedCouponCode: () => void;
   onCouponInputChange: (promoCode?: string) => void;
   couponCodeData?: CouponCodeData;
   couponError?: string;
-  isButtonDisabled?: boolean;
+  isPaymentProcessing?: boolean;
 }
 
 const Separator = () => <div className="border border-gray-10" />;
@@ -33,11 +32,11 @@ export const CheckoutProductCard = ({
   couponCodeData,
   showCouponCode,
   couponError,
-  isButtonDisabled,
+  isPaymentProcessing,
   onRemoveAppliedCouponCode,
   onCouponInputChange,
 }: CheckoutProductCardProps) => {
-  const { translate, translateList } = useTranslationContext();
+  const { translate } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
   const [couponName, setCouponName] = useState<string>('');
   const [openCouponCodeDropdown, setOpenCouponCodeDropdown] = useState<boolean>(false);
@@ -212,8 +211,8 @@ export const CheckoutProductCard = ({
               )}
             </>
           )}
-          <Button type="submit" id="submit-create-account" className="flex" disabled={isButtonDisabled}>
-            {isButtonDisabled ? translate('checkout.processing') : translate('checkout.pay')}
+          <Button type="submit" id="submit-create-account" className="flex" disabled={isPaymentProcessing}>
+            {isPaymentProcessing ? translate('checkout.processing') : translate('checkout.pay')}
           </Button>
         </div>
       </div>

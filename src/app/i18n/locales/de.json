@@ -184,7 +184,6 @@
     }
   },
   "checkout": {
-    "title": "Sie sind fast da! Sicher zur Kasse gehen",
     "pay": "Bezahlen",
     "processing": "Verarbeitung läuft...",
     "checkout": "Zur Kasse",
@@ -195,11 +194,6 @@
       },
       "signIn": {
         "password": "Ihr Passwort"
-      },
-      "title": {
-        "signUp": "Ein Konto erstellen",
-        "signIn": "Anmelden",
-        "userIsSignedIn": "Benutzer angemeldet als"
       },
       "emailMustNotBeEmpty": "Die E-Mail darf nicht leer sein",
       "privacyGuarantee": "Datenschutzgarantie: Wir teilen Ihre Informationen nicht und werden Sie nur kontaktieren, wenn es notwendig ist, um unseren Service zu bieten."
@@ -217,10 +211,7 @@
         "companyVatId": "USt-ID der Firma"
       }
     },
-    "paymentTitle": "Wählen Sie eine Zahlungsmethode",
     "productCard": {
-      "title": "Bestellübersicht",
-      "selectedPlan": "Ausgewählter Plan",
       "renewalTitle": {
         "month": "jährlich",
         "year": "jährlich",
@@ -232,7 +223,6 @@
         "lifetime": "Einmalige Zahlung"
       },
       "saving": "Sie sparen {{percent}}%",
-      "planDetails": "Plandetails:",
       "total": "Gesamt ",
       "addCoupon": {
         "buttonTitle": "Gutschein hinzufügen",

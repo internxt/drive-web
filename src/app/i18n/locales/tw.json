@@ -205,7 +205,6 @@
     }
   },
   "checkout": {
-    "title": "您快完成了！請安全結帳",
     "pay": "支付",
     "processing": "處理中...",
     "checkout": "結帳",
@@ -216,11 +215,6 @@
       },
       "signIn": {
         "password": "您的密碼"
-      },
-      "title": {
-        "signUp": "創建帳戶",
-        "signIn": "登錄",
-        "userIsSignedIn": "用戶已登錄為"
       },
       "emailMustNotBeEmpty": "電子郵件不能為空",
       "privacyGuarantee": "隱私保證：我們不會分享您的信息，並且只會在提供服務時與您聯繫。"
@@ -238,10 +232,7 @@
         "companyVatId": "公司增值稅編號"
       }
     },
-    "paymentTitle": "選擇支付方式",
     "productCard": {
-      "title": "訂單摘要",
-      "selectedPlan": "選擇的計劃",
       "renewalTitle": {
         "month": "每年",
         "year": "每年",
@@ -253,7 +244,6 @@
         "lifetime": "一次性支付"
       },
       "saving": "您節省了 {{percent}}%",
-      "planDetails": "計劃詳情：",
       "total": "總計d",
       "addCoupon": {
         "buttonTitle": "添加優惠券",

@@ -184,7 +184,6 @@
     }
   },
   "checkout": {
-    "title": "Vous y êtes presque ! Finalisez votre achat en toute sécurité",
     "pay": "Payer",
     "processing": "Traitement en cours...",
     "checkout": "Commander",
@@ -195,11 +194,6 @@
       },
       "signIn": {
         "password": "Votre mot de passe"
-      },
-      "title": {
-        "signUp": "Créer un compte",
-        "signIn": "Se connecter",
-        "userIsSignedIn": "Utilisateur connecté en tant que"
       },
       "emailMustNotBeEmpty": "L'email ne doit pas être vide",
       "privacyGuarantee": "Garantie de confidentialité : Nous ne partageons pas vos informations et ne vous contacterons que si nécessaire pour fournir notre service."
@@ -217,10 +211,7 @@
         "companyVatId": "Numéro de TVA de l'entreprise"
       }
     },
-    "paymentTitle": "Sélectionnez un mode de paiement",
     "productCard": {
-      "title": "Récapitulatif de la commande",
-      "selectedPlan": "Plan sélectionné",
       "renewalTitle": {
         "month": "annuel",
         "year": "annuel",
@@ -232,7 +223,6 @@
         "lifetime": "Paiement unique"
       },
       "saving": "Vous économisez {{percent}}%",
-      "planDetails": "Détails du plan :",
       "total": "Total ",
       "addCoupon": {
         "buttonTitle": "Ajouter un coupon",
