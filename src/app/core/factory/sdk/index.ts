@@ -6,6 +6,7 @@ import packageJson from '../../../../../package.json';
 import { AppDispatch } from '../../../store';
 import { userThunks } from '../../../store/slices/user';
 import { LocalStorageService } from 'services/local-storage.service';
+import { EncryptedStorageService } from 'services/encrypted-storage.service';
 import { LocalStorageItem } from '../../types';
 import { Checkout } from '@internxt/sdk/dist/payments';
 import envService from 'services/env.service';
@@ -22,6 +23,7 @@ export class SdkFactory {
   private static sdk: {
     dispatch: AppDispatch;
     localStorage: LocalStorageService;
+    encryptedStorage: EncryptedStorageService;
     newApiInstance: SdkFactory;
   };
   private readonly apiUrl: ApiUrl;
@@ -30,10 +32,15 @@ export class SdkFactory {
     this.apiUrl = apiUrl;
   }
 
-  public static initialize(dispatch: AppDispatch, localStorage: LocalStorageService): void {
+  public static initialize(
+    dispatch: AppDispatch,
+    localStorage: LocalStorageService,
+    encryptedStorage: EncryptedStorageService,
+  ): void {
     this.sdk = {
       dispatch,
       localStorage,
+      encryptedStorage,
       newApiInstance: new SdkFactory(envService.getVariable('newApi')),
     };
 
@@ -178,7 +185,7 @@ export class SdkFactory {
   }
 
   private getNewToken(): Token {
-    return SdkFactory.sdk.localStorage.getToken() || '';
+    return SdkFactory.sdk.encryptedStorage.getToken() || '';
   }
 
   private getWorkspaceToken(): Token | undefined {

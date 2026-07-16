@@ -59,7 +59,7 @@ describe('createNewKey', () => {
 describe('encryptEntry', () => {
   const mockMnemonic = 'test mnemonic';
   it('throws FailedToFindKey when no key exists yet', async () => {
-    await expect(encryptEntry(mockMnemonic)).rejects.toThrow(FailedToFindKey);
+    await expect(decryptEntry(mockMnemonic)).rejects.toThrow(FailedToFindKey);
   });
 
   it('throws FailedToEncryptEntry if encryption fails', async () => {
