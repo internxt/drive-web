@@ -7,8 +7,10 @@ import {
   thumbnailablePdfExtension,
   thumbnailableVideoExtension,
 } from 'app/drive/types/file-types';
-import { Downloadable } from 'app/network/download';
+import { Downloadable, downloadFile } from 'app/network/download';
+import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
 import { uploadFile as uploadToBucket } from 'app/network/upload';
+import { binaryStreamToBlob } from 'services/stream.service';
 import { AppDispatch } from 'app/store';
 import { storageActions } from 'app/store/slices/storage';
 import Resizer from 'react-image-file-resizer';
@@ -297,6 +299,21 @@ export const downloadThumbnail = async (thumbnailToDownload: Thumbnail, isWorksp
     { fileId: thumbnailToDownload.bucket_file, bucketId: thumbnailToDownload.bucket_id } as Downloadable,
     { isWorkspace: useWorkspaceCredentials, updateProgressCallback, abortController },
   );
+};
+
+export const downloadPublicThumbnail = async (
+  thumbnailToDownload: Thumbnail,
+  creds: NetworkCredentials,
+  key: FileKey,
+): Promise<Blob> => {
+  const thumbnailStream = await downloadFile({
+    bucketId: thumbnailToDownload.bucket_id,
+    fileId: thumbnailToDownload.bucket_file,
+    creds,
+    key,
+  });
+
+  return binaryStreamToBlob(thumbnailStream);
 };
 
 export const setCurrentThumbnail = (
