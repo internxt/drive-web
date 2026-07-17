@@ -30,9 +30,13 @@ import localStorageService from 'services/local-storage.service';
 import workspacesService from 'services/workspace.service';
 import { hybridDecryptMessageWithPrivateKey } from '../../crypto/services/pgp.service';
 import { downloadFolderAsZip } from 'app/drive/services/folder.service';
-import { DriveFolderData } from 'app/drive/types';
+import { DriveFileData, DriveFolderData } from 'app/drive/types';
 import { DownloadManager } from '../../network/DownloadManager';
-import { FileKey } from 'app/network/types/helper-types';
+import { downloadFile } from 'app/network/download';
+import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
+import downloadService from 'app/drive/services/download.service';
+import { binaryStreamToBlob } from 'services/stream.service';
+import { FlatFolderZip } from 'services/zip.service';
 import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
 import { AdvancedSharedItem } from '../types';
 import { domainManager } from './DomainManager';
@@ -706,6 +710,94 @@ export function derivePublicSharingKey({
   return { mnemonic: decrypted };
 }
 
+const getPublicItemDownloadName = (item: AdvancedSharedItem): string => {
+  const extension = item.type ? `.${item.type}` : '';
+  return `${item.plainName ?? item.name}${extension}`;
+};
+
+export async function downloadPublicSharedItems({
+  items,
+  credentials,
+  key,
+  code,
+  resourcesToken,
+  updateNumItems,
+}: {
+  items: AdvancedSharedItem[];
+  credentials: NetworkCredentials;
+  key: FileKey;
+  code: string;
+  resourcesToken?: string;
+  updateNumItems?: () => void;
+}): Promise<void> {
+  const initPage = 0;
+  const itemsPerPage = 15;
+
+  const createFoldersIterator = (directoryUuid: string, token?: string) => {
+    return new DirectoryPublicSharedFolderIterator(
+      { directoryId: directoryUuid, resourcesToken: token ?? resourcesToken },
+      initPage,
+      itemsPerPage,
+    );
+  };
+
+  const createFilesIterator = (directoryUuid: string, token?: string) => {
+    return new DirectoryPublicSharedFilesIterator(
+      { directoryId: directoryUuid, resourcesToken: token ?? resourcesToken, code },
+      initPage,
+      itemsPerPage,
+    );
+  };
+
+  const downloadFileStream = (file: AdvancedSharedItem) =>
+    downloadFile({
+      bucketId: (file as unknown as DriveFileData).bucket,
+      fileId: (file as unknown as DriveFileData).fileId,
+      creds: credentials,
+      key,
+    });
+
+  if (items.length === 1 && !items[0].isFolder) {
+    const [file] = items;
+    const fileStream = await downloadFileStream(file);
+    const fileBlob = await binaryStreamToBlob(fileStream, file.type || '');
+    updateNumItems?.();
+    return downloadService.downloadFileFromBlob(fileBlob, getPublicItemDownloadName(file));
+  }
+
+  const downloadFolderToZip = (folder: AdvancedSharedItem, destination?: FlatFolderZip) =>
+    downloadFolderAsZip({
+      folder: folder as unknown as DriveFolderData,
+      isSharedFolder: true,
+      foldersIterator: createFoldersIterator,
+      filesIterator: createFilesIterator,
+      updateProgress: () => {},
+      updateNumItems: updateNumItems ?? (() => {}),
+      options: destination
+        ? { credentials, key, isPublicShare: true, destination, closeWhenFinished: false }
+        : { credentials, key, isPublicShare: true },
+    });
+
+  if (items.length === 1) {
+    await downloadFolderToZip(items[0]);
+    return;
+  }
+
+  const zip = new FlatFolderZip('Internxt', {});
+
+  for (const item of items) {
+    if (item.isFolder) {
+      await downloadFolderToZip(item, zip);
+    } else {
+      const fileStream = await downloadFileStream(item);
+      zip.addFile(getPublicItemDownloadName(item), fileStream);
+      updateNumItems?.();
+    }
+  }
+
+  await zip.close();
+}
+
 export async function downloadPublicSharedFolder({
   encryptionKey,
   item,
@@ -721,9 +813,6 @@ export async function downloadPublicSharedFolder({
   incrementItemCount: () => void;
   sharingVersion: string;
 }): Promise<void> {
-  const initPage = 0;
-  const itemsPerPage = 15;
-
   const key = derivePublicSharingKey({ encryptionKey, code, sharingVersion });
 
   const { credentials } = await shareService.getPublicSharedFolderContent(
@@ -740,39 +829,16 @@ export async function downloadPublicSharedFolder({
     throw Error('No Credentials!');
   }
 
-  const createFoldersIterator = (directoryUuid: string, resourcesToken?: string) => {
-    return new DirectoryPublicSharedFolderIterator(
-      { directoryId: directoryUuid, resourcesToken: resourcesToken ?? token },
-      initPage,
-      itemsPerPage,
-    );
-  };
-
-  const createFilesIterator = (directoryUuid: string, resourcesToken?: string) => {
-    return new DirectoryPublicSharedFilesIterator(
-      { directoryId: directoryUuid, resourcesToken: resourcesToken ?? token, code: code },
-      initPage,
-      itemsPerPage,
-    );
-  };
-
-  const options = {
+  await downloadPublicSharedItems({
+    items: [{ ...item, isFolder: true } as AdvancedSharedItem],
     credentials: {
       user: credentials.networkUser,
       pass: credentials.networkPass,
     },
     key,
-    isPublicShare: true,
-  };
-
-  await downloadFolderAsZip({
-    folder: item as DriveFolderData,
-    isSharedFolder: true,
-    foldersIterator: createFoldersIterator,
-    filesIterator: createFilesIterator,
-    updateProgress: () => {},
+    code,
+    resourcesToken: token,
     updateNumItems: incrementItemCount,
-    options,
   });
 }
 

@@ -110,7 +110,7 @@ export default function ShareLayout(props: Readonly<ShareLayoutProps>): JSX.Elem
                     leaveFrom="opacity-100 scale-100"
                     leaveTo="opacity-0 scale-95"
                   >
-                    <MenuItems className="absolute right-0 origin-top-right whitespace-nowrap rounded-md bg-surface p-1 shadow-lg ring-1 ring-gray-100/5 outline-none focus:outline-none dark:bg-gray-5">
+                    <MenuItems className="absolute right-0 z-50 origin-top-right whitespace-nowrap rounded-md bg-surface p-1 shadow-lg ring-1 ring-gray-100/5 outline-none focus:outline-none dark:bg-gray-5">
                       <MenuItem>
                         {({ focus }) => (
                           <Link to="/" className="text-gray-90 no-underline hover:text-gray-90">

@@ -48,6 +48,7 @@ const renderList = (items: AdvancedSharedItem[], onItemDoubleClicked = vi.fn()) 
       selectedItems={[]}
       onSelectedItemsChanged={vi.fn()}
       sortBy={vi.fn()}
+      contextMenu={[]}
     />,
   );
   return { ...utils, onItemDoubleClicked };
