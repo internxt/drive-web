@@ -1,13 +1,13 @@
 import { auth } from '@internxt/lib';
 import queryString from 'query-string';
 import { useEffect, useMemo, useState } from 'react';
+import { isMobile } from 'react-device-detect';
 import { Helmet } from 'react-helmet-async';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { Link } from 'react-router-dom';
-import { isMobile } from 'react-device-detect';
 import PasswordFieldWithInfo from './PasswordFieldWithInfo';
 
-import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
+import testPasswordStrength from '@internxt/lib/dist/auth/testPasswordStrength';
 import { Button } from '@internxt/ui';
 import { AppView, IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
