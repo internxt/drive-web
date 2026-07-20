@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { describe, expect, test, vi, beforeEach } from 'vitest';
 import { fetchFavoriteFolders, fetchFavoriteFiles } from './fetchFavorites';
 import { SdkFactory } from 'app/core/factory/sdk';
 
@@ -27,7 +27,7 @@ describe('fetchFavorites services', () => {
     } as unknown as SdkFactory);
   });
 
-  it('should fetch favorite folders with the specified limit and offset', async () => {
+  test('When fetching favorite folders, then it requests them with the given limit and offset', async () => {
     const result = await fetchFavoriteFolders(50, 10);
 
     expect(SdkFactory.getNewApiInstance).toHaveBeenCalled();
@@ -35,7 +35,7 @@ describe('fetchFavorites services', () => {
     expect(result).toEqual(mockFolders);
   });
 
-  it('should fetch favorite files with the specified limit and offset', async () => {
+  test('When fetching favorite files, then it requests them with the given limit and offset', async () => {
     const result = await fetchFavoriteFiles(50, 20);
 
     expect(SdkFactory.getNewApiInstance).toHaveBeenCalled();
