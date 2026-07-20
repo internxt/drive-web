@@ -52,6 +52,7 @@ const usePublicSharedFolderContent = ({
   const [hasMoreFiles, setHasMoreFiles] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [nextLevelToken, setNextLevelToken] = useState('');
+  const [credentials, setCredentials] = useState<SharedNetworkCredentials>();
 
   const currentFolder = folderPath[folderPath.length - 1];
   const shareItems = [...folders, ...files];
@@ -63,60 +64,46 @@ const usePublicSharedFolderContent = ({
   }, [page, currentFolder.uuid, hasMoreFolders]);
 
   const fetchItems = async () => {
-    if (!isLoading) {
-      setIsLoading(true);
-      try {
-        if (hasMoreFolders) {
-          await fetchFolders();
-        } else if (hasMoreFiles) {
-          await fetchFiles();
-        }
-      } catch (error) {
-        errorService.reportError(error);
-      } finally {
-        setIsLoading(false);
+    if (isLoading || (!hasMoreFolders && !hasMoreFiles)) return;
+
+    setIsLoading(true);
+    try {
+      await fetchLevelItems(hasMoreFolders ? 'folders' : 'files');
+    } catch (error) {
+      errorService.reportError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const fetchLevelItems = async (type: 'folders' | 'files') => {
+    const isFoldersPhase = type === 'folders';
+
+    const response = await shareService.getPublicSharedFolderContent(
+      currentFolder.uuid,
+      type,
+      currentFolder.token,
+      page,
+      ITEMS_PER_PAGE,
+      isFoldersPhase ? undefined : code,
+    );
+
+    setNextLevelToken(response.token);
+    if (response.credentials) {
+      setCredentials(response.credentials);
+    }
+
+    const parsedItems = parsePublicSharedItems(response.items, isFoldersPhase, response.credentials);
+    const setItems = isFoldersPhase ? setFolders : setFiles;
+    setItems((previousItems) => (page === 0 ? parsedItems : [...previousItems, ...parsedItems]));
+
+    if (parsedItems.length < ITEMS_PER_PAGE) {
+      if (isFoldersPhase) {
+        setPage(0);
+        setHasMoreFolders(false);
+      } else {
+        setHasMoreFiles(false);
       }
-    }
-  };
-
-  const fetchFolders = async () => {
-    const response = await shareService.getPublicSharedFolderContent(
-      currentFolder.uuid,
-      'folders',
-      currentFolder.token,
-      page,
-      ITEMS_PER_PAGE,
-    );
-
-    setNextLevelToken(response.token);
-
-    const parsedFolders = parsePublicSharedItems(response.items, true, response.credentials);
-    setFolders((previousFolders) => (page === 0 ? parsedFolders : [...previousFolders, ...parsedFolders]));
-
-    if (parsedFolders.length < ITEMS_PER_PAGE) {
-      // after finish to fetch all folders reset page counter to 0 for fetch files
-      setPage(0);
-      setHasMoreFolders(false);
-    }
-  };
-
-  const fetchFiles = async () => {
-    const response = await shareService.getPublicSharedFolderContent(
-      currentFolder.uuid,
-      'files',
-      currentFolder.token,
-      page,
-      ITEMS_PER_PAGE,
-      code,
-    );
-
-    setNextLevelToken(response.token);
-
-    const parsedFiles = parsePublicSharedItems(response.items, false, response.credentials);
-    setFiles((previousFiles) => (page === 0 ? parsedFiles : [...previousFiles, ...parsedFiles]));
-
-    if (parsedFiles.length < ITEMS_PER_PAGE) {
-      setHasMoreFiles(false);
     }
   };
 
@@ -155,6 +142,8 @@ const usePublicSharedFolderContent = ({
   return {
     folderPath,
     shareItems,
+    credentials,
+    nextLevelToken,
     isLoading,
     hasMoreItems,
     onNextPage,

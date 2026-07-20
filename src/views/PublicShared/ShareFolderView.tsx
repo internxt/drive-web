@@ -17,6 +17,7 @@ import { HTTP_STATUS_CODES } from 'app/core/constants';
 
 import { useAppSelector } from 'app/store/hooks';
 import { PublicSharedFolderContent, SendBanner, ShareItemPwdView } from './components';
+import useWarnBeforeUnload from './hooks/useWarnBeforeUnload';
 import './components/ShareView.scss';
 import { Button, Loader } from '@internxt/ui';
 import { stringUtils } from '@internxt/lib';
@@ -168,13 +169,6 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     }
   };
 
-  const handleLeavePage = (e) => {
-    const confirmationMessage = '';
-
-    e.returnValue = confirmationMessage; //Trident, Chrome 34+
-    return confirmationMessage; // WebKit, Chrome <34
-  };
-
   const getFolderSize = async (folderId: string) => {
     try {
       setIsGetFolderSizeError(false);
@@ -188,13 +182,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     }
   };
 
-  useEffect(() => {
-    if (isDownloading && progress < 100) {
-      window.addEventListener('beforeunload', handleLeavePage);
-
-      return () => window.removeEventListener('beforeunload', handleLeavePage);
-    }
-  }, [progress]);
+  useWarnBeforeUnload(isDownloading && progress < 100);
 
   if (isDownloading) {
     downloadButton =

@@ -28,6 +28,7 @@ import { HTTP_STATUS_CODES } from 'app/core/constants';
 import { Button, Loader } from '@internxt/ui';
 import { stringUtils } from '@internxt/lib';
 import { SendBanner, ShareItemPwdView } from './components';
+import useWarnBeforeUnload from './hooks/useWarnBeforeUnload';
 import { isFileSizePreviewable } from 'services';
 
 export interface ShareViewProps extends ShareViewState {
@@ -223,20 +224,7 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
     }
   };
 
-  const handleLeavePage = (e) => {
-    const confirmationMessage = '';
-
-    e.returnValue = confirmationMessage; //Trident, Chrome 34+
-    return confirmationMessage; // WebKit, Chrome <34
-  };
-
-  useEffect(() => {
-    if (isDownloading && progress < 100) {
-      window.addEventListener('beforeunload', handleLeavePage);
-
-      return () => window.removeEventListener('beforeunload', handleLeavePage);
-    }
-  }, [progress]);
+  useWarnBeforeUnload(isDownloading && progress < 100);
 
   if (isError) {
     const ItemIconComponent = iconService.getItemIcon(false, 'default');

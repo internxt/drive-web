@@ -1,6 +1,6 @@
 import { items } from '@internxt/lib';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
-import { Empty, List } from '@internxt/ui';
+import { Empty, List, MenuItemType } from '@internxt/ui';
 import { OrderDirection } from 'app/core/types';
 import iconService from 'app/drive/services/icon.service';
 import transformItemService from 'app/drive/services/item-transform.service';
@@ -134,6 +134,7 @@ type PublicSharedItemListProps = {
   onSelectedItemsChanged: (changes: { props: AdvancedSharedItem; value: boolean }[]) => void;
   orderBy?: { field: OrderField; direction: OrderDirection };
   sortBy: (value: { field: OrderField; direction: 'ASC' | 'DESC' }) => void;
+  contextMenu: MenuItemType<AdvancedSharedItem>[];
 };
 
 export const PublicSharedItemList = ({
@@ -148,6 +149,7 @@ export const PublicSharedItemList = ({
   onSelectedItemsChanged,
   orderBy,
   sortBy,
+  contextMenu,
 }: PublicSharedItemListProps) => {
   const itemComposition = (item: AdvancedSharedItem) => (
     <PublicSharedListItem item={item} publicShareKey={publicShareKey} onNameClicked={onItemDoubleClicked} />
@@ -188,6 +190,7 @@ export const PublicSharedItemList = ({
       emptyState={emptyStateElement}
       onNextPage={onNextPage}
       hasMoreItems={hasMoreItems}
+      menu={contextMenu}
       displayMenuDiv
       selectedItems={selectedItems}
       keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
