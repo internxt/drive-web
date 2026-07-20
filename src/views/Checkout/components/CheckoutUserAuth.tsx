@@ -74,6 +74,7 @@ export const CheckoutUserAuth = ({
         <div className="flex flex-row space-x-2">
           <p className="text-gray-100">{AUTH_LABEL[authMethod]}</p>
           <button
+            type="button"
             onClick={(e) => {
               e.preventDefault();
               const newAuthMethod = authMethod === 'signIn' ? 'signUp' : 'signIn';

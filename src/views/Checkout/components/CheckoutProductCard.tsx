@@ -77,7 +77,6 @@ export const CheckoutProductCard = ({
       ? translate('preferences.account.plans.planFeaturesList.default.bytesTitle', { bytes })
       : specificTransalatedKey;
 
-
   return (
     <div className="flex w-full flex-col space-y-4 overflow-y-auto">
       <div className="flex w-full rounded-2xl border border-gray-10 bg-surface p-5">
@@ -135,6 +134,7 @@ export const CheckoutProductCard = ({
                   <div className="flex flex-row items-center gap-2">
                     <p className="text-lg font-medium text-gray-50">{couponCodeData.codeName}</p>
                     <button
+                      type="button"
                       onClick={(e) => {
                         e.preventDefault();
                         onRemoveAppliedCouponCode();
@@ -148,6 +148,7 @@ export const CheckoutProductCard = ({
               ) : (
                 <div className="flex flex-col gap-5">
                   <button
+                    type="button"
                     onClick={(e) => {
                       e.preventDefault();
                       setOpenCouponCodeDropdown(!openCouponCodeDropdown);
