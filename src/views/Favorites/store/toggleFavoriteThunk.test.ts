@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
 import { StorageState } from 'app/store/slices/storage/storage.model';
 import { DriveItemData } from 'app/drive/types';
@@ -48,7 +48,7 @@ describe('toggleFavoriteThunk', () => {
     vi.clearAllMocks();
   });
 
-  it('should mark a non-favorited file as favorite and add it to the favorites list', async () => {
+  test('When a non-favorited file is toggled, then it is marked as favorite and added to the favorites list', async () => {
     const { toggleFavoriteThunk } = await import('./toggleFavoriteThunk');
     const { storageActions } = await import('app/store/slices/storage');
     const { setItemFavorite } = await import('../services');
@@ -68,7 +68,7 @@ describe('toggleFavoriteThunk', () => {
     expect(storageActions.removeFavorites).not.toHaveBeenCalled();
   });
 
-  it('should unmark a favorited folder and remove it from the favorites list, using the parent uuid', async () => {
+  test('When a favorited folder is toggled, then it is unmarked and removed from the favorites list using the parent uuid', async () => {
     const { toggleFavoriteThunk } = await import('./toggleFavoriteThunk');
     const { storageActions } = await import('app/store/slices/storage');
     const { setItemFavorite } = await import('../services');
@@ -88,7 +88,7 @@ describe('toggleFavoriteThunk', () => {
     expect(storageActions.addFavorites).not.toHaveBeenCalled();
   });
 
-  it('should toggle every selected item according to its own state', async () => {
+  test('When multiple items are selected, then each is toggled according to its own state', async () => {
     const { toggleFavoriteThunk } = await import('./toggleFavoriteThunk');
     const { setItemFavorite } = await import('../services');
 
@@ -101,7 +101,7 @@ describe('toggleFavoriteThunk', () => {
     expect(setItemFavorite).toHaveBeenCalledWith(favorited, false);
   });
 
-  it('should report the error and reject without updating the state when the request fails', async () => {
+  test('When the toggle request fails, then the error is reported and the thunk rejects without updating the state', async () => {
     const { toggleFavoriteThunk } = await import('./toggleFavoriteThunk');
     const { storageActions } = await import('app/store/slices/storage');
     const { setItemFavorite } = await import('../services');
@@ -120,7 +120,7 @@ describe('toggleFavoriteThunk', () => {
 });
 
 describe('toggleFavoriteThunkExtraReducers', () => {
-  it('should show an error toast when the thunk is rejected', async () => {
+  test('When the thunk is rejected, then an error toast is shown', async () => {
     const { toggleFavoriteThunkExtraReducers } = await import('./toggleFavoriteThunk');
     const notificationsService = (await import('app/notifications/services/notifications.service')).default;
 

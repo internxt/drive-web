@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { describe, expect, test, vi, beforeEach } from 'vitest';
 import { setItemFavorite } from './toggleFavorite';
 import { SdkFactory } from 'app/core/factory/sdk';
 import { DriveItemData } from 'app/drive/types';
@@ -20,7 +20,7 @@ describe('toggleFavorite service', () => {
     } as unknown as SdkFactory);
   });
 
-  it('should mark a file as favorite', async () => {
+  test('When a file is marked as favorite, then it is set as favorite', async () => {
     const file = { uuid: 'file-uuid', isFolder: false } as DriveItemData;
 
     const result = await setItemFavorite(file, true);
@@ -30,7 +30,7 @@ describe('toggleFavorite service', () => {
     expect(result).toEqual(mockResponse);
   });
 
-  it('should unmark a file as favorite', async () => {
+  test('When a file is unmarked as favorite, then it is removed as favorite', async () => {
     const file = { uuid: 'file-uuid', isFolder: false } as DriveItemData;
 
     await setItemFavorite(file, false);
@@ -39,7 +39,7 @@ describe('toggleFavorite service', () => {
     expect(mockMarkItemAsFavorite).not.toHaveBeenCalled();
   });
 
-  it('should mark a folder as favorite', async () => {
+  test('When a folder is marked as favorite, then it is set as favorite', async () => {
     const folder = { uuid: 'folder-uuid', isFolder: true } as DriveItemData;
 
     await setItemFavorite(folder, true);
@@ -48,7 +48,7 @@ describe('toggleFavorite service', () => {
     expect(mockUnmarkItemAsFavorite).not.toHaveBeenCalled();
   });
 
-  it('should unmark a folder as favorite', async () => {
+  test('When a folder is unmarked as favorite, then it is removed as favorite', async () => {
     const folder = { uuid: 'folder-uuid', isFolder: true } as DriveItemData;
 
     await setItemFavorite(folder, false);

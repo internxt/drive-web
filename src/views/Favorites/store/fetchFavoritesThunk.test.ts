@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
 import { StorageState } from 'app/store/slices/storage/storage.model';
 import { RootState } from 'app/store';
@@ -63,7 +63,7 @@ describe('fetchFavoritesThunk', () => {
     vi.mocked(cryptoUtils.excludeHiddenItems).mockImplementation((items) => items);
   });
 
-  it('should fetch favorite folders first with the offset of already loaded folders', async () => {
+  test('When there are more folders to load, then favorite folders are fetched first with the offset of already loaded folders', async () => {
     const { fetchFavoritesThunk } = await import('./fetchFavoritesThunk');
     const { storageActions } = await import('app/store/slices/storage');
     const { fetchFavoriteFolders, fetchFavoriteFiles } = await import('../services');
@@ -90,7 +90,7 @@ describe('fetchFavoritesThunk', () => {
     expect(storageActions.setHasMoreFavoriteFolders).toHaveBeenCalledWith(true);
   });
 
-  it('should mark folders as exhausted when fewer items than the limit are returned', async () => {
+  test('When fewer folders than the limit are returned, then folders are marked as exhausted', async () => {
     const { fetchFavoritesThunk } = await import('./fetchFavoritesThunk');
     const { storageActions } = await import('app/store/slices/storage');
     const { fetchFavoriteFolders } = await import('../services');
@@ -107,7 +107,7 @@ describe('fetchFavoritesThunk', () => {
     expect(storageActions.setHasMoreFavoriteFolders).toHaveBeenCalledWith(false);
   });
 
-  it('should fetch favorite files when there are no more folders, with the offset of already loaded files', async () => {
+  test('When there are no more folders to load, then favorite files are fetched with the offset of already loaded files', async () => {
     const { fetchFavoritesThunk } = await import('./fetchFavoritesThunk');
     const { storageActions } = await import('app/store/slices/storage');
     const { fetchFavoriteFolders, fetchFavoriteFiles } = await import('../services');
@@ -133,7 +133,7 @@ describe('fetchFavoritesThunk', () => {
     expect(storageActions.setHasMoreFavoriteFiles).toHaveBeenCalledWith(false);
   });
 
-  it('should report the error and reject with the casted error when fetching fails', async () => {
+  test('When fetching favorites fails, then the error is reported and the thunk rejects with the casted error', async () => {
     const { fetchFavoritesThunk } = await import('./fetchFavoritesThunk');
     const { storageActions } = await import('app/store/slices/storage');
     const { fetchFavoriteFolders } = await import('../services');
@@ -153,7 +153,7 @@ describe('fetchFavoritesThunk', () => {
     expect(storageActions.addFavorites).not.toHaveBeenCalled();
   });
 
-  it('should not fetch anything when there are no more folders nor files', async () => {
+  test('When there are no more folders nor files to load, then nothing is fetched', async () => {
     const { fetchFavoritesThunk } = await import('./fetchFavoritesThunk');
     const { storageActions } = await import('app/store/slices/storage');
     const { fetchFavoriteFolders, fetchFavoriteFiles } = await import('../services');
@@ -169,7 +169,7 @@ describe('fetchFavoritesThunk', () => {
 });
 
 describe('fetchFavoritesThunkExtraReducers', () => {
-  it('should handle pending, fulfilled, and rejected states', async () => {
+  test('When the thunk is pending, fulfilled, or rejected, then the loading flag is updated accordingly', async () => {
     const { fetchFavoritesThunkExtraReducers } = await import('./fetchFavoritesThunk');
 
     const callbacks: Array<(state: StorageState, action: { payload?: unknown }) => void> = [];
