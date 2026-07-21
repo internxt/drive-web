@@ -1,4 +1,4 @@
-import { ArrowFatUp, FileArrowUp, FolderSimplePlus, Star, Trash, UploadSimple } from '@phosphor-icons/react';
+import { ArrowFatUp, FileArrowUp, FolderSimplePlus, StarIcon, Trash, UploadSimple } from '@phosphor-icons/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { usePaginationState, useTutorialState } from '../../hooks';
@@ -277,7 +277,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     if (isFavorites) {
       return (
         <Empty
-          icon={<Star className="text-gray-40" size={80} weight="thin" />}
+          icon={<StarIcon className="text-gray-40" size={80} weight="thin" />}
           title={translate('views.favorites.empty.title')}
           subtitle={translate('views.favorites.empty.description')}
         />
