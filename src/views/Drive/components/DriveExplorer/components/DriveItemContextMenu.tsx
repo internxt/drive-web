@@ -9,7 +9,7 @@ import {
   LockSimple,
   Link,
   PencilSimple,
-  Star,
+  StarIcon,
   Trash,
   Users,
 } from '@phosphor-icons/react';
@@ -89,7 +89,7 @@ const getRenameMenuItem = (renameItem: (target) => void) => ({
 
 const getToggleFavoriteMenuItem = (toggleFavorite: (target?) => void, isFavorited: boolean) => ({
   name: isFavorited ? t('drive.dropdown.removeFromFavorites') : t('drive.dropdown.addToFavorites'),
-  icon: isFavorited ? (StarSlashIcon as Icon) : Star,
+  icon: isFavorited ? (StarSlashIcon as Icon) : StarIcon,
   action: toggleFavorite,
   keyboardShortcutOptions: {
     keyboardShortcutText: 'F',

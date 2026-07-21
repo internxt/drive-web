@@ -138,7 +138,7 @@ export const storageSlice = createSlice({
     },
     removeFavorites: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.favorites = state.favorites.filter(
-        (item) => !action.payload.find((i) => i.uuid === item.uuid && !!i.isFolder === !!item.isFolder),
+        (item) => !action.payload.some((i) => i.uuid === item.uuid && !!i.isFolder === !!item.isFolder),
       );
     },
     setHasMoreFavoriteFolders: (state: StorageState, action: PayloadAction<boolean>) => {
