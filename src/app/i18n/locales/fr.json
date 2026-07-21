@@ -987,6 +987,7 @@
     "creatingFolder": "Erreur lors de la création d'un dossier",
     "fetchingFolderContent": "Erreur dans l'extraction du contenu d'un dossier",
     "togglingFavorite": "Une erreur s'est produite lors de la mise à jour des favoris",
+    "togglingSomeFavorites": "Certains favoris n'ont pas pu être mis à jour",
     "uploadingFolder": "Erreur lors du téléchargement d'un dossier",
     "uploadingFile": "Erreur lors du téléchargement du fichier : {{reason}}",
     "uploadingItems": "Certains éléments n'ont pas pu être téléchargés",

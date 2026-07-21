@@ -1,2 +1,2 @@
-export { fetchFavoriteFolders, fetchFavoriteFiles } from './fetchFavorites';
-export { setItemFavorite } from './toggleFavorite';
+export { fetchFavoriteFolders, fetchFavoriteFiles } from './fetchFavorites.service';
+export { setItemFavorite } from './toggleFavorite.service';

@@ -1,6 +1,5 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHotkeys } from 'react-hotkeys-hook';
 import { AppDispatch } from '../../../app/store';
 import { DriveItemData, DriveItemDetails } from '../../../app/drive/types';
 import { toggleFavoriteThunk } from 'views/Favorites/store/toggleFavoriteThunk';
@@ -20,6 +19,7 @@ import shareService, { decryptMnemonic } from '../../../app/share/services/share
 import { setOrderBy, setPage, setSelectedItems } from '../context/SharedViewContext.actions';
 import { useShareViewContext } from '../context/SharedViewContextProvider';
 import useSharedContextMenu from '../hooks/useSharedContextMenu';
+import { useToggleFavoriteHotkey } from 'hooks';
 import { isItemsOwnedByCurrentUser, sortSharedItems } from '../utils/sharedViewUtils';
 
 type ShareItemListContainerProps = {
@@ -239,17 +239,10 @@ const SharedItemListContainer = ({
     [dispatch],
   );
 
-  useHotkeys(
-    'f',
-    (e) => {
-      if (e.shiftKey) return;
-      e.preventDefault();
-      if (!disableKeyboardShortcuts && selectedItems.length === 1) {
-        toggleFavorite(selectedItems);
-      }
-    },
-    [disableKeyboardShortcuts, selectedItems, toggleFavorite],
-  );
+  useToggleFavoriteHotkey({
+    enabled: !disableKeyboardShortcuts,
+    selectedItems: selectedItems as unknown as DriveItemData[],
+  });
 
   const contextMenu = useSharedContextMenu({
     selectedItems,

@@ -1008,6 +1008,7 @@
     "creatingFolder": "Errore durante la creazione della cartella",
     "fetchingFolderContent": "Errore nel recupero del contenuto della cartella",
     "togglingFavorite": "Si è verificato un errore durante l'aggiornamento dei preferiti",
+    "togglingSomeFavorites": "Non è stato possibile aggiornare alcuni preferiti",
     "uploadingFolder": "Errore nel caricamento della cartella",
     "uploadingFile": "Errore nel caricamento del file: {{reason}}",
     "uploadingItems": "Non è stato possibile caricare alcuni elementi",

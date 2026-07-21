@@ -1008,6 +1008,7 @@
     "creatingFolder": "Error during folder creation",
     "fetchingFolderContent": "Error fetching folder content",
     "togglingFavorite": "There was an error updating favorites",
+    "togglingSomeFavorites": "Some favorites could not be updated",
     "uploadingFolder": "Error uploading folder",
     "uploadingFile": "Error uploading file: {{reason}}",
     "uploadingItems": "Some of the elements could not be uploaded",

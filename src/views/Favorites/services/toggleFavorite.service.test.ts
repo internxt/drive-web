@@ -1,5 +1,5 @@
 import { describe, expect, test, vi, beforeEach } from 'vitest';
-import { setItemFavorite } from './toggleFavorite';
+import { setItemFavorite } from './toggleFavorite.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 import { DriveItemData } from 'app/drive/types';
 

@@ -39,7 +39,7 @@ import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { fetchPaginatedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchFolderContentThunk';
 import { fetchFavoritesThunk } from 'views/Favorites/store/fetchFavoritesThunk';
-import { toggleFavoriteThunk } from 'views/Favorites/store/toggleFavoriteThunk';
+import { useToggleFavoriteHotkey } from 'hooks';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import { getAncestorsAndSetNamePath } from 'app/store/slices/storage/storage.thunks/goToFolderThunk';
 import {
@@ -546,17 +546,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     }
   });
 
-  useHotkeys(
-    'f',
-    (e) => {
-      if (e.shiftKey) return;
-      e.preventDefault();
-      if (!isTrash && !isSomeDialogOpen && selectedItems.length === 1) {
-        dispatch(toggleFavoriteThunk(selectedItems));
-      }
-    },
-    [isTrash, isSomeDialogOpen, selectedItems],
-  );
+  useToggleFavoriteHotkey({ enabled: !isTrash && !isSomeDialogOpen, selectedItems });
 
   const driveExplorer = (
     <div
