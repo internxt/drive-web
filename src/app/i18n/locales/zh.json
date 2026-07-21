@@ -1008,6 +1008,7 @@
     "creatingFolder": "创建文件夹时出错",
     "fetchingFolderContent": "获取文件夹内容时出错",
     "togglingFavorite": "更新收藏时出错",
+    "togglingSomeFavorites": "部分收藏无法更新",
     "uploadingFolder": "上传文件夹时出错",
     "uploadingFile": "上传文件时出错: {{reason}}",
     "uploadingItems": "部分元素无法上传",

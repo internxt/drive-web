@@ -2,6 +2,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
 import { StorageState } from 'app/store/slices/storage/storage.model';
 import { DriveItemData } from 'app/drive/types';
+import { StorageTypes } from '@internxt/sdk/dist/drive';
 
 vi.mock('../services', () => ({
   setItemFavorite: vi.fn(),
@@ -101,7 +102,7 @@ describe('toggleFavoriteThunk', () => {
     expect(setItemFavorite).toHaveBeenCalledWith(favorited, false);
   });
 
-  test('When the toggle request fails, then the error is reported and the thunk rejects without updating the state', async () => {
+  test('When all toggle requests fail, then the errors are reported and the thunk rejects without updating the state', async () => {
     const { toggleFavoriteThunk } = await import('./toggleFavoriteThunk');
     const { storageActions } = await import('app/store/slices/storage');
     const { setItemFavorite } = await import('../services');
@@ -110,33 +111,108 @@ describe('toggleFavoriteThunk', () => {
     const requestError = new Error('Network error');
     vi.mocked(setItemFavorite).mockRejectedValue(requestError);
 
-    const result = await toggleFavoriteThunk([buildItem()])(dispatch, getState, undefined);
+    const result = await toggleFavoriteThunk([buildItem(), buildItem({ uuid: 'file-uuid-2' })])(
+      dispatch,
+      getState,
+      undefined,
+    );
 
+    expect(errorService.reportError).toHaveBeenCalledTimes(2);
     expect(errorService.reportError).toHaveBeenCalledWith(requestError);
     expect(result.meta.requestStatus).toBe('rejected');
+    expect(storageActions.patchItem).not.toHaveBeenCalled();
     expect(storageActions.addFavorites).not.toHaveBeenCalled();
     expect(storageActions.removeFavorites).not.toHaveBeenCalled();
+  });
+
+  test('When only some toggle requests fail, then the thunk fulfills flagging the partial failure and only the successful items update the state', async () => {
+    const { toggleFavoriteThunk } = await import('./toggleFavoriteThunk');
+    const { storageActions } = await import('app/store/slices/storage');
+    const { setItemFavorite } = await import('../services');
+    const errorService = (await import('services/error.service')).default;
+
+    const failingItem = buildItem({ uuid: 'file-uuid-failing' });
+    const succeedingItem = buildItem({ uuid: 'file-uuid-succeeding' });
+    const requestError = new Error('Network error');
+    vi.mocked(setItemFavorite).mockImplementation((item) =>
+      item.uuid === failingItem.uuid
+        ? Promise.reject(requestError)
+        : Promise.resolve({} as StorageTypes.FavoriteStatusResponse),
+    );
+
+    const result = await toggleFavoriteThunk([failingItem, succeedingItem])(dispatch, getState, undefined);
+
+    expect(result.meta.requestStatus).toBe('fulfilled');
+    expect(result.payload).toEqual({ partiallyFailed: true });
+    expect(errorService.reportError).toHaveBeenCalledWith(requestError);
+    expect(storageActions.patchItem).toHaveBeenCalledTimes(1);
+    expect(storageActions.patchItem).toHaveBeenCalledWith({
+      uuid: succeedingItem.uuid,
+      folderId: succeedingItem.folderUuid,
+      isFolder: false,
+      patch: { isFavorite: true },
+    });
+    expect(storageActions.addFavorites).toHaveBeenCalledWith([{ ...succeedingItem, isFavorite: true }]);
+  });
+
+  test('When all toggle requests succeed, then the thunk fulfills without flagging a partial failure', async () => {
+    const { toggleFavoriteThunk } = await import('./toggleFavoriteThunk');
+
+    const result = await toggleFavoriteThunk([buildItem()])(dispatch, getState, undefined);
+
+    expect(result.meta.requestStatus).toBe('fulfilled');
+    expect(result.payload).toEqual({ partiallyFailed: false });
   });
 });
 
 describe('toggleFavoriteThunkExtraReducers', () => {
-  test('When the thunk is rejected, then an error toast is shown', async () => {
-    const { toggleFavoriteThunkExtraReducers } = await import('./toggleFavoriteThunk');
-    const notificationsService = (await import('app/notifications/services/notifications.service')).default;
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
-    const callbacks: Array<(state: StorageState, action: { payload?: unknown }) => void> = [];
+  const buildCallbacks = async () => {
+    const { toggleFavoriteThunkExtraReducers, toggleFavoriteThunk } = await import('./toggleFavoriteThunk');
+
+    const callbacks = new Map<string, (state: StorageState, action: { payload?: unknown }) => void>();
     const builder = {
-      addCase: vi.fn().mockImplementation((_, callback) => {
-        if (callback) callbacks.push(callback);
+      addCase: vi.fn().mockImplementation((actionCreator, callback) => {
+        callbacks.set(actionCreator.type, callback);
         return builder;
       }),
     } as unknown as ActionReducerMapBuilder<StorageState>;
 
     toggleFavoriteThunkExtraReducers(builder);
 
-    expect(builder.addCase).toHaveBeenCalledTimes(1);
+    return {
+      fulfilled: callbacks.get(toggleFavoriteThunk.fulfilled.type),
+      rejected: callbacks.get(toggleFavoriteThunk.rejected.type),
+    };
+  };
 
-    callbacks[0]({} as StorageState, {});
+  test('When the thunk is rejected, then an error toast is shown', async () => {
+    const notificationsService = (await import('app/notifications/services/notifications.service')).default;
+
+    const { rejected } = await buildCallbacks();
+
+    rejected?.({} as StorageState, {});
     expect(notificationsService.show).toHaveBeenCalled();
+  });
+
+  test('When the thunk fulfills with a partial failure, then a partial error toast is shown', async () => {
+    const notificationsService = (await import('app/notifications/services/notifications.service')).default;
+
+    const { fulfilled } = await buildCallbacks();
+
+    fulfilled?.({} as StorageState, { payload: { partiallyFailed: true } });
+    expect(notificationsService.show).toHaveBeenCalled();
+  });
+
+  test('When the thunk fulfills without failures, then no toast is shown', async () => {
+    const notificationsService = (await import('app/notifications/services/notifications.service')).default;
+
+    const { fulfilled } = await buildCallbacks();
+
+    fulfilled?.({} as StorageState, { payload: { partiallyFailed: false } });
+    expect(notificationsService.show).not.toHaveBeenCalled();
   });
 });
