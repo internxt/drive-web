@@ -348,7 +348,7 @@
       "head": "Favoriten",
       "empty": {
         "title": "Noch keine Favoriten",
-        "description": "Dateien und Ordner, die du als Favoriten markierst, werden hier angezeigt"
+        "description": "Füge Dateien oder Ordner zu deinen Favoriten hinzu, um schneller auf sie zuzugreifen"
       }
     },
     "recents": {

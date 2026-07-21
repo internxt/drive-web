@@ -348,7 +348,7 @@
       "head": "Favoris",
       "empty": {
         "title": "Aucun favori pour l'instant",
-        "description": "Les fichiers et dossiers que vous marquez comme favoris apparaîtront ici"
+        "description": "Ajoutez des fichiers ou des dossiers à vos favoris pour y accéder plus rapidement"
       }
     },
     "recents": {

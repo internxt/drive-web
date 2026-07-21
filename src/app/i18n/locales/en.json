@@ -369,7 +369,7 @@
       "head": "Favorites",
       "empty": {
         "title": "No favorites yet",
-        "description": "Files and folders you mark as favorites will appear here"
+        "description": "Add files or folders to your favorites to access them faster"
       }
     },
     "recents": {
