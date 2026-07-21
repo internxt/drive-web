@@ -22,7 +22,7 @@ import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { planThunks } from 'app/store/slices/plan';
 import { useThemeContext } from 'app/theme/ThemeProvider';
 import { PaymentType } from 'views/Checkout/types';
-import { AddressProvider, CheckoutViewManager, UserInfoProps } from '../types/checkout.types';
+import { CheckoutViewManager, UserInfoProps } from '../types/checkout.types';
 import CheckoutView from './CheckoutView';
 import { useUserPayment } from 'views/Checkout/hooks/useUserPayment';
 import { CRYPTO_PAYMENT_DIALOG_KEY, CryptoPaymentDialog } from 'views/Checkout/components/CryptoPaymentDialog';
@@ -40,9 +40,9 @@ import {
   GCLID_COOKIE_LIFESPAN_DAYS,
   IS_CRYPTO_PAYMENT_ENABLED,
   MILLISECONDS_PER_DAY,
-  POSTAL_CODE_REQUIRED_COUNTRIES,
   STATUS_CODE_ERROR,
 } from '../constants';
+import { useBillingDetails } from '../hooks/useBillingDetails';
 import { usePromotionalCode } from '../hooks/usePromotionalCode';
 import { useAuthCheckout } from '../hooks/useAuthCheckout';
 import { checkoutReducer, initialStateForCheckout } from '../store';
@@ -86,11 +86,17 @@ const CheckoutViewWrapper = () => {
   });
 
   const dispatch = useAppDispatch();
-  const [address, setAddress] = useState<AddressProvider>();
-  const [userName, setUserName] = useState(user?.name ?? '');
-  const [postalCode, setPostalCode] = useState('');
-
-  const isPostalCodeRequired = POSTAL_CODE_REQUIRED_COUNTRIES.includes(userLocationData?.location ?? '');
+  const {
+    address,
+    isPostalCodeRequired,
+    isCryptoAddressIncomplete,
+    billingCountry,
+    billingPostalCode,
+    getCustomerName,
+    onUserAddressChanges,
+    onUserNameChanges,
+    onPostalCodeChanges,
+  } = useBillingDetails({ user, userLocation: userLocationData?.location });
 
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const { doRegister } = useSignUp('activate');
@@ -141,9 +147,6 @@ const CheckoutViewWrapper = () => {
       return;
     }
 
-    const billingCountry = address?.country ?? userLocationData?.location;
-    const billingPostalCode = address?.postal_code ?? postalCode.trim();
-
     if (!billingCountry || !billingPostalCode) {
       return;
     }
@@ -159,7 +162,7 @@ const CheckoutViewWrapper = () => {
     }, 500);
 
     return () => clearTimeout(debounceTimer);
-  }, [address?.country, address?.postal_code, postalCode, selectedPlan?.price?.id, selectedPlan?.price?.currency]);
+  }, [billingCountry, billingPostalCode, selectedPlan?.price?.id, selectedPlan?.price?.currency]);
 
   useEffect(() => {
     if (isCheckoutReady && selectedPlan?.price) {
@@ -319,15 +322,10 @@ const CheckoutViewWrapper = () => {
       }
 
       const isCryptoPurchase = currencyType === PaymentType['CRYPTO'];
-      const isCryptoAddressIncomplete =
-        !userName.trim() || !address?.line1 || !address?.city || !address?.country || !address?.postal_code;
 
       if (isCryptoPurchase && isCryptoAddressIncomplete) {
         throw new Error(translate('checkout.error.addressRequired'));
       }
-
-      const billingCountry = address?.country ?? userLocationData?.location;
-      const billingPostalCode = address?.postal_code ?? (postalCode.trim() || undefined);
 
       if (!billingCountry) {
         throw new Error(translate('checkout.error.countryRequired'));
@@ -355,9 +353,7 @@ const CheckoutViewWrapper = () => {
             ...(userUuid && { new_user_id: userUuid }),
           }
         : undefined;
-      const authName = [authenticatedUser?.name, authenticatedUser?.lastname].filter(Boolean).join(' ').trim();
-      const fallbackCustomerName = userName.trim() || authName || authenticatedUser?.email || email;
-      const customerName = companyName ?? fallbackCustomerName;
+      const customerName = getCustomerName({ companyName, authenticatedUser, email });
 
       const { customerId, token } = await checkoutService.createCustomer({
         customerName: customerName || undefined,
@@ -406,14 +402,6 @@ const CheckoutViewWrapper = () => {
     }
   };
 
-  const onUserAddressChanges = (address: AddressProvider) => {
-    setAddress(address);
-  };
-
-  const onUserNameChanges = (userName: string) => {
-    setUserName(userName);
-  };
-
   const onCurrencyTypeChanges = (currency: PaymentType) => {
     setCurrencyType(currency);
   };
@@ -427,7 +415,7 @@ const CheckoutViewWrapper = () => {
     handleAuthMethodChange: setAuthMethod,
     onCurrencyChange: setSelectedCurrency,
     onUserNameChanges,
-    onPostalCodeChanges: setPostalCode,
+    onPostalCodeChanges,
   };
 
   return (
