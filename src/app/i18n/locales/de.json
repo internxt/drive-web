@@ -987,6 +987,7 @@
     "creatingFolder": "Fehler beim Erstellen des Ordners",
     "fetchingFolderContent": "Fehler beim Abrufen des Ordnerinhalts",
     "togglingFavorite": "Beim Aktualisieren der Favoriten ist ein Fehler aufgetreten",
+    "togglingSomeFavorites": "Einige Favoriten konnten nicht aktualisiert werden",
     "uploadingFolder": "Fehler beim Hochladen des Ordners",
     "uploadingFile": "Fehler beim Hochladen der Datei: {{reason}}",
     "uploadingItems": "Einige Elemente konnten nicht hochgeladen werden",

@@ -987,6 +987,7 @@
     "creatingFolder": "Error durante la creación de la carpeta",
     "fetchingFolderContent": "Error al obtener la carpeta",
     "togglingFavorite": "Hubo un error al actualizar favoritos",
+    "togglingSomeFavorites": "Algunos favoritos no se pudieron actualizar",
     "uploadingFolder": "Error al subir la carpeta",
     "uploadingFile": "Error al subir el archivo: {{reason}}",
     "uploadingItems": "No se ha podido subir alguno de los elementos",

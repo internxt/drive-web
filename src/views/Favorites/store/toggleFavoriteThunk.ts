@@ -10,56 +10,69 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { DriveItemData } from 'app/drive/types';
 import { setItemFavorite } from '../services';
 
-export const toggleFavoriteThunk = createAsyncThunk<void, DriveItemData[], { state: RootState }>(
+interface ToggleFavoriteResult {
+  partiallyFailed: boolean;
+}
+
+export const toggleFavoriteThunk = createAsyncThunk<ToggleFavoriteResult, DriveItemData[], { state: RootState }>(
   'storage/toggleFavorite',
   async (items: DriveItemData[], { dispatch, getState, rejectWithValue }) => {
-    try {
-      const unfavoritedItems: DriveItemData[] = [];
+    const results = await Promise.allSettled(items.map((item) => setItemFavorite(item, !item.isFavorite)));
 
-      await Promise.all(
-        items.map(async (item) => {
-          const favorite = !item.isFavorite;
+    const rejected = results.filter((result): result is PromiseRejectedResult => result.status === 'rejected');
+    rejected.forEach((result) => errorService.reportError(result.reason));
 
-          await setItemFavorite(item, favorite);
+    if (items.length > 0 && rejected.length === items.length) {
+      throw rejectWithValue(errorService.castError(rejected[0].reason));
+    }
 
-          dispatch(
-            storageActions.patchItem({
-              uuid: item.uuid,
-              folderId: item.isFolder ? item.parentUuid : item.folderUuid,
-              isFolder: item.isFolder,
-              patch: { isFavorite: favorite },
-            }),
-          );
+    const unfavoritedItems: DriveItemData[] = [];
 
-          if (favorite) {
-            dispatch(storageActions.addFavorites([{ ...item, isFavorite: favorite }]));
-          } else {
-            dispatch(storageActions.removeFavorites([item]));
-            unfavoritedItems.push(item);
-          }
-        }),
-      );
+    items
+      .filter((_, index) => results[index].status === 'fulfilled')
+      .forEach((item) => {
+        const favorite = !item.isFavorite;
 
-      if (unfavoritedItems.length > 0 && navigationService.isCurrentPath('favorites')) {
-        const { selectedItems } = getState().storage;
-        const itemsToDeselect = unfavoritedItems.filter((item) =>
-          selectedItems.some((selected) => selected.id === item.id && selected.isFolder === item.isFolder),
+        dispatch(
+          storageActions.patchItem({
+            uuid: item.uuid,
+            folderId: item.isFolder ? item.parentUuid : item.folderUuid,
+            isFolder: item.isFolder,
+            patch: { isFavorite: favorite },
+          }),
         );
 
-        if (itemsToDeselect.length > 0) {
-          dispatch(storageActions.deselectItems(itemsToDeselect));
+        if (favorite) {
+          dispatch(storageActions.addFavorites([{ ...item, isFavorite: favorite }]));
+        } else {
+          dispatch(storageActions.removeFavorites([item]));
+          unfavoritedItems.push(item);
         }
+      });
+
+    if (unfavoritedItems.length > 0 && navigationService.isCurrentPath('favorites')) {
+      const { selectedItems } = getState().storage;
+      const itemsToDeselect = unfavoritedItems.filter((item) =>
+        selectedItems.some((selected) => selected.id === item.id && selected.isFolder === item.isFolder),
+      );
+
+      if (itemsToDeselect.length > 0) {
+        dispatch(storageActions.deselectItems(itemsToDeselect));
       }
-    } catch (error) {
-      errorService.reportError(error);
-      const castedError = errorService.castError(error);
-      throw rejectWithValue(castedError);
     }
+
+    return { partiallyFailed: rejected.length > 0 };
   },
 );
 
 export const toggleFavoriteThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
-  builder.addCase(toggleFavoriteThunk.rejected, () => {
-    notificationsService.show({ text: t('error.togglingFavorite'), type: ToastType.Error });
-  });
+  builder
+    .addCase(toggleFavoriteThunk.fulfilled, (_, action) => {
+      if (action.payload.partiallyFailed) {
+        notificationsService.show({ text: t('error.togglingSomeFavorites'), type: ToastType.Error });
+      }
+    })
+    .addCase(toggleFavoriteThunk.rejected, () => {
+      notificationsService.show({ text: t('error.togglingFavorite'), type: ToastType.Error });
+    });
 };

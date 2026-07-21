@@ -1008,6 +1008,7 @@
     "creatingFolder": "創建文件夾時出錯",
     "fetchingFolderContent": "獲取文件夾內容時出錯",
     "togglingFavorite": "更新我的最愛時發生錯誤",
+    "togglingSomeFavorites": "部分我的最愛無法更新",
     "uploadingFolder": "上傳文件夾時出錯",
     "uploadingFile": "上傳文件時出錯：{{reason}}",
     "uploadingItems": "部分元素無法上傳",
