@@ -503,6 +503,16 @@
               }
             }
           },
+          "subscriptionEndingModal": {
+            "title": "訂閱將於 {{endDate}} 結束",
+            "description": {
+              "title": "當您的方案結束時：",
+              "storageReturns": "您的儲存空間將恢復為免費限額",
+              "featuresUnavailable": "進階功能將無法再使用"
+            },
+            "maybeLater": "稍後再說",
+            "renewSubscription": "續訂方案"
+          },
           "cancellationIncentive": {
             "title": {
               "normal": "下個月",
@@ -1288,6 +1298,8 @@
     "errorApplyCancellationIncentive": "套用取消優惠時發生問題",
     "successEarlyCancelSubscription": "您的訂閱已取消",
     "errorEarlyCancelSubscription": "取消訂閱時出現問題",
+    "successReactivateSubscription": "您的訂閱已重新啟用",
+    "errorReactivateSubscription": "重新啟用訂閱時出現問題",
     "successApplyCoupon": "免費使用3個月的優惠碼已應用",
     "errorApplyCoupon": "應用折扣時出現錯誤",
     "alreadyAppliedCoupon": "優惠碼已經應用",
@@ -1849,5 +1861,8 @@
   },
   "sdk": {
     "rateLimitToast": "這花費的時間比預期的長，請稍候..."
+  },
+  "common": {
+    "planCancelled": "您的訂閱將於 {{end_date}} 結束"
   }
 }

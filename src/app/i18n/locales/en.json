@@ -503,6 +503,16 @@
               }
             }
           },
+          "subscriptionEndingModal": {
+            "title": "Subscription ending in {{endDate}}",
+            "description": {
+              "title": "When your plan ends:",
+              "storageReturns": "Your storage will return to the free limit",
+              "featuresUnavailable": "Premium features will no longer be available"
+            },
+            "maybeLater": "Maybe later",
+            "renewSubscription": "Renew subscription"
+          },
           "cancellationIncentive": {
             "title": {
               "normal": "NEXT MONTH",
@@ -1288,6 +1298,8 @@
     "errorApplyCancellationIncentive": "Something went wrong while applying the cancellation incentive",
     "successEarlyCancelSubscription": "Your subscription has been cancelled",
     "errorEarlyCancelSubscription": "Something went wrong while cancelling your subscription",
+    "successReactivateSubscription": "Your subscription has been reactivated",
+    "errorReactivateSubscription": "Something went wrong while reactivating your subscription",
     "errorCreatingSubscription": "Something went wrong while creating your subscription",
     "couponIsNotValidForUserError": "Coupon can only be redeemed by new customers",
     "errorApplyingCoupon": "Something went wrong while applying the coupon",
@@ -1846,5 +1858,8 @@
   },
   "sdk": {
     "rateLimitToast": "This is taking longer than expected. Please wait..."
+  },
+  "common": {
+    "planCancelled": "Your subscription ends {{end_date}}"
   }
 }
