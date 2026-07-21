@@ -33,13 +33,16 @@ export const fetchFavoritesThunk = createAsyncThunk<void, void, { state: RootSta
       if (hasMoreFavoriteFolders) {
         const folders = await fetchFavoriteFolders(DEFAULT_LIMIT, foldersOffset);
 
-        parsedItems = folders.map((folder) => ({ ...folder, isFolder: true }) as unknown as DriveItemData);
+        parsedItems = folders.map(
+          (folder) => ({ ...folder, isFolder: true, isFavorite: true }) as unknown as DriveItemData,
+        );
         itemsLength = folders.length;
       } else if (hasMoreFavoriteFiles) {
         const files = await fetchFavoriteFiles(DEFAULT_LIMIT, filesOffset);
 
         parsedItems = files.map(
-          (file) => ({ ...file, isFolder: false, size: Number(file.size) }) as unknown as DriveItemData,
+          (file) =>
+            ({ ...file, isFolder: false, isFavorite: true, size: Number(file.size) }) as unknown as DriveItemData,
         );
         itemsLength = files.length;
       } else {

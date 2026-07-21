@@ -136,6 +136,11 @@ export const storageSlice = createSlice({
       const favoriteItems = state.favorites.concat(action.payload);
       state.favorites = removeDuplicates(favoriteItems);
     },
+    removeFavorites: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
+      state.favorites = state.favorites.filter(
+        (item) => !action.payload.some((i) => i.uuid === item.uuid && !!i.isFolder === !!item.isFolder),
+      );
+    },
     setHasMoreFavoriteFolders: (state: StorageState, action: PayloadAction<boolean>) => {
       state.hasMoreFavoriteFolders = action.payload;
     },
@@ -432,6 +437,7 @@ export const {
   setItems,
   setRecents,
   addFavorites,
+  removeFavorites,
   setHasMoreFavoriteFolders,
   setHasMoreFavoriteFiles,
   resetFavoritesPagination,

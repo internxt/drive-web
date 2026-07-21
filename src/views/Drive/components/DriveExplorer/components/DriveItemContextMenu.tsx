@@ -9,10 +9,12 @@ import {
   LockSimple,
   Link,
   PencilSimple,
+  StarIcon,
   Trash,
   Users,
 } from '@phosphor-icons/react';
 import MoveActionIcon from 'assets/icons/move.svg?react';
+import StarSlashIcon from 'assets/icons/star-slash.svg?react';
 import { t } from 'i18next';
 import { DriveFolderData, DriveItemData } from 'app/drive/types';
 import { AdvancedSharedItem } from 'app/share/types';
@@ -79,6 +81,18 @@ const getRenameMenuItem = (renameItem: (target) => void) => ({
   action: renameItem,
   keyboardShortcutOptions: {
     keyboardShortcutText: 'R',
+  },
+  disabled: () => {
+    return false;
+  },
+});
+
+const getToggleFavoriteMenuItem = (toggleFavorite: (target?) => void, isFavorited: boolean) => ({
+  name: isFavorited ? t('drive.dropdown.removeFromFavorites') : t('drive.dropdown.addToFavorites'),
+  icon: isFavorited ? (StarSlashIcon as Icon) : StarIcon,
+  action: toggleFavorite,
+  keyboardShortcutOptions: {
+    keyboardShortcutText: 'F',
   },
   disabled: () => {
     return false;
@@ -209,6 +223,8 @@ const contextMenuDriveNotSharedLink = ({
   viewVersionHistory,
   moveToTrash,
   versionHistoryConfig,
+  toggleFavorite,
+  isFavorited,
 }: {
   shareLink: (item: DriveItemData) => void;
   openPreview?: (item: DriveItemData) => void;
@@ -220,11 +236,14 @@ const contextMenuDriveNotSharedLink = ({
   viewVersionHistory?: (item: DriveItemData) => void;
   moveToTrash: (item: DriveItemData) => void;
   versionHistoryConfig?: VersionHistoryMenuConfig;
+  toggleFavorite?: (item: DriveItemData) => void;
+  isFavorited?: boolean;
 }): Array<MenuItemType<DriveItemData>> =>
   [
     shareLinkMenuItem(shareLink),
     getCopyLinkMenuItem(getLink),
     { separator: true },
+    toggleFavorite && getToggleFavoriteMenuItem(toggleFavorite, !!isFavorited),
     openPreview && getOpenPreviewMenuItem(openPreview),
     showDetailsMenuItem(showDetails),
     getRenameMenuItem(renameItem),
@@ -245,6 +264,8 @@ const contextMenuDriveFolderNotSharedLink = ({
   viewVersionHistory,
   moveToTrash,
   versionHistoryConfig,
+  toggleFavorite,
+  isFavorited,
 }: {
   shareLink: (item: DriveItemData) => void;
   getLink: (item: DriveItemData) => void;
@@ -255,18 +276,22 @@ const contextMenuDriveFolderNotSharedLink = ({
   viewVersionHistory: (item: DriveItemData) => void;
   moveToTrash: (item: DriveItemData) => void;
   versionHistoryConfig?: VersionHistoryMenuConfig;
-}): Array<MenuItemType<DriveItemData>> => [
-  shareLinkMenuItem(shareLink),
-  getCopyLinkMenuItem(getLink),
-  { separator: true },
-  showDetailsMenuItem(showDetails),
-  getRenameMenuItem(renameItem),
-  getMoveItemMenuItem(moveItem),
-  getDownloadMenuItem(downloadItem),
-  getVersionHistoryMenuItem(viewVersionHistory, versionHistoryConfig),
-  { separator: true },
-  getMoveToTrashMenuItem(moveToTrash),
-];
+  toggleFavorite?: (item: DriveItemData) => void;
+  isFavorited?: boolean;
+}): Array<MenuItemType<DriveItemData>> =>
+  [
+    shareLinkMenuItem(shareLink),
+    getCopyLinkMenuItem(getLink),
+    { separator: true },
+    toggleFavorite && getToggleFavoriteMenuItem(toggleFavorite, !!isFavorited),
+    showDetailsMenuItem(showDetails),
+    getRenameMenuItem(renameItem),
+    getMoveItemMenuItem(moveItem),
+    getDownloadMenuItem(downloadItem),
+    getVersionHistoryMenuItem(viewVersionHistory, versionHistoryConfig),
+    { separator: true },
+    getMoveToTrashMenuItem(moveToTrash),
+  ].filter(Boolean) as MenuItemType<DriveItemData>[];
 
 const contextMenuDriveItemShared = ({
   openPreview,
@@ -279,6 +304,8 @@ const contextMenuDriveItemShared = ({
   viewVersionHistory,
   moveToTrash,
   versionHistoryConfig,
+  toggleFavorite,
+  isFavorited,
 }: {
   openPreview?: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   showDetails: (item: DriveItemData) => void;
@@ -290,11 +317,14 @@ const contextMenuDriveItemShared = ({
   viewVersionHistory?: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   moveToTrash: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   versionHistoryConfig?: VersionHistoryMenuConfig;
+  toggleFavorite?: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
+  isFavorited?: boolean;
 }): Array<MenuItemType<DriveItemData | (ListShareLinksItem & { code: string })>> => {
   const shareLinkItems = [manageLinkAccessMenuItem(openShareAccessSettings), getCopyLinkMenuItem(copyLink)];
   return [
     ...shareLinkItems,
     { separator: true },
+    toggleFavorite && getToggleFavoriteMenuItem(toggleFavorite, !!isFavorited),
     openPreview && getOpenPreviewMenuItem(openPreview),
     showDetailsMenuItem(showDetails),
     getRenameMenuItem(renameItem),
@@ -316,6 +346,8 @@ const contextMenuDriveFolderShared = ({
   viewVersionHistory,
   moveToTrash,
   versionHistoryConfig,
+  toggleFavorite,
+  isFavorited,
 }: {
   copyLink: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   openShareAccessSettings: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
@@ -326,11 +358,14 @@ const contextMenuDriveFolderShared = ({
   viewVersionHistory: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   moveToTrash: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   versionHistoryConfig?: VersionHistoryMenuConfig;
+  toggleFavorite?: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
+  isFavorited?: boolean;
 }): Array<MenuItemType<DriveItemData | (ListShareLinksItem & { code: string })>> => {
   const shareLinkItems = [manageLinkAccessMenuItem(openShareAccessSettings), getCopyLinkMenuItem(copyLink)];
   return [
     ...shareLinkItems,
     { separator: true },
+    toggleFavorite && getToggleFavoriteMenuItem(toggleFavorite, !!isFavorited),
     showDetailsMenuItem(showDetails),
     getRenameMenuItem(renameItem),
     getMoveItemMenuItem(moveItem),
@@ -422,6 +457,8 @@ const contextMenuDriveItemSharedAFS = ({
   moveItem,
   downloadItem,
   moveToTrash,
+  toggleFavorite,
+  isFavorited,
 }: {
   openPreview?: (item: AdvancedSharedItem) => void;
   showDetails: (item: AdvancedSharedItem) => void;
@@ -431,9 +468,12 @@ const contextMenuDriveItemSharedAFS = ({
   moveItem?: (item: AdvancedSharedItem) => void;
   downloadItem: (item: AdvancedSharedItem) => void;
   moveToTrash?: (item: AdvancedSharedItem) => void;
+  toggleFavorite?: (item: AdvancedSharedItem) => void;
+  isFavorited?: boolean;
 }): Array<MenuItemType<AdvancedSharedItem>> =>
   [
     openShareAccessSettings && manageLinkAccessMenuItem(openShareAccessSettings),
+    toggleFavorite && getToggleFavoriteMenuItem(toggleFavorite, !!isFavorited),
     openPreview && getOpenPreviewMenuItem(openPreview),
     showDetailsMenuItem(showDetails),
     renameItem && getRenameMenuItem(renameItem),
@@ -450,6 +490,8 @@ const contextMenuDriveFolderSharedAFS = ({
   moveItem,
   downloadItem,
   moveToTrash,
+  toggleFavorite,
+  isFavorited,
 }: {
   copyLink: (item: any) => void;
   openShareAccessSettings?: (item: any) => void;
@@ -458,10 +500,13 @@ const contextMenuDriveFolderSharedAFS = ({
   moveItem?: (item: any) => void;
   downloadItem: (item: any) => Promise<void>;
   moveToTrash?: (item: any) => void;
+  toggleFavorite?: (item: any) => void;
+  isFavorited?: boolean;
 }): Array<MenuItemType<any>> =>
   [
     openShareAccessSettings && manageLinkAccessMenuItem(openShareAccessSettings),
     openShareAccessSettings && { separator: true },
+    toggleFavorite && getToggleFavoriteMenuItem(toggleFavorite, !!isFavorited),
     showDetailsMenuItem(showDetails),
     renameItem && getRenameMenuItem(renameItem),
     moveItem && getMoveItemMenuItem(moveItem),
