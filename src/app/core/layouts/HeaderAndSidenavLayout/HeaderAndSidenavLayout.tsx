@@ -1,5 +1,4 @@
 import { Link, useLocation } from 'react-router-dom';
-import { useState } from 'react';
 
 import { Topbar as Navbar, Sidenav } from 'views/Home/components';
 import { uiActions } from 'app/store/slices/ui';
@@ -14,15 +13,12 @@ import ShareItemDialog from '../../../../views/Shared/components/ShareItemDialog
 import { Sidebar as VersionHistorySidebar } from '../../../../views/Drive/components/VersionHistory';
 import ReachedFileSizeLimitDialog from 'app/drive/components/ReachedFileSizeLimitDialog';
 import SubscriptionEndingModal from '../../../../views/NewSettings/components/Sections/Workspace/Billing/components/cancelSubscription/paidPlanCancellation/SubscriptionEndingModal';
-import { dateService } from 'services';
 import { getCurrentUsage, getPlanInfo, getPlanName } from '../../../../views/NewSettings/utils/planUtils';
-import { useSubscriptionCancellation } from 'views/NewSettings/hooks';
+import { useSubscriptionEnd } from 'hooks/useSubscriptionEnd';
 
 export interface HeaderAndSidenavLayoutProps {
   children: JSX.Element;
 }
-
-const SUBSCRIPTION_ENDING_WARNING_DAYS = [30, 7];
 
 export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProps): JSX.Element {
   const dispatch = useAppDispatch();
@@ -48,18 +44,15 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
   const location = useLocation();
   const hideSearch = getAppConfig().views.find((view) => view.path === location.pathname)?.hideSearch;
 
-  const [isSubscriptionEndingModalClosed, setIsSubscriptionEndingModalClosed] = useState<boolean>(false);
-
-  const { isReactivatingSubscription, reactivateUserSubscription } = useSubscriptionCancellation({
-    onModalClose: () => setIsSubscriptionEndingModalClosed(true),
+  const {
+    cancellationDate,
+    isReactivatingSubscription,
+    isSubscriptionEndingModalOpen,
+    reactivateUserSubscription,
+    onModalClose,
+  } = useSubscriptionEnd({
+    commitment: individualPlan?.commitment,
   });
-
-  const cancellationDate = individualPlan?.commitment?.cancellationDate;
-  const daysUntilCancellation = cancellationDate ? dateService.getDaysUntilExpiration(cancellationDate) : null;
-  const isSubscriptionEndingModalOpen =
-    !isSubscriptionEndingModalClosed &&
-    daysUntilCancellation !== null &&
-    SUBSCRIPTION_ENDING_WARNING_DAYS.includes(daysUntilCancellation);
 
   if (!isAuthenticated) {
     navigationService.push(AppView.Login);
@@ -78,7 +71,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
           currentUsage={currentUsage}
           cancellationDate={cancellationDate}
           isReactivatingSubscription={isReactivatingSubscription}
-          onClose={() => setIsSubscriptionEndingModalClosed(true)}
+          onClose={onModalClose}
           onReactivateSubscription={reactivateUserSubscription}
         />
       )}
