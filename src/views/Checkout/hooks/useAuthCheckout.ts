@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { authenticateUser, RegisterFunction } from 'services/auth.service';
 import { AuthMethodTypes } from '../types';
 import databaseService from 'app/database/services/database.service';
@@ -15,8 +16,19 @@ export interface AuthCheckoutProps {
   changeAuthMethod: (authMethod: AuthMethodTypes) => void;
 }
 
-export const useAuthCheckout = ({ changeAuthMethod }: Pick<AuthCheckoutProps, 'changeAuthMethod'>) => {
+interface UseAuthCheckoutProps extends Pick<AuthCheckoutProps, 'changeAuthMethod'> {
+  isAuthenticated?: boolean;
+  user?: UserSettings;
+}
+
+export const useAuthCheckout = ({ changeAuthMethod, isAuthenticated, user }: UseAuthCheckoutProps) => {
   const [authError, setAuthError] = useState<string | null>();
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      changeAuthMethod('userIsSignedIn');
+    }
+  }, [isAuthenticated, user]);
 
   const onAuthenticateUser = async ({
     email,

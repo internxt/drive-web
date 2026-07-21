@@ -168,4 +168,33 @@ describe('Authentication Checkout Custom hook', () => {
     });
     expect(hookState.current.authError).toBeUndefined();
   });
+
+  describe('Syncing the auth method for already authenticated users', () => {
+    test('When the user is already authenticated and loaded, then the auth method is set to signed-in', () => {
+      const changeAuthMethod = vi.fn();
+
+      renderHook(() =>
+        useAuthCheckout({
+          changeAuthMethod,
+          isAuthenticated: true,
+          user: { uuid: 'user-uuid' } as any,
+        }),
+      );
+
+      expect(changeAuthMethod).toHaveBeenCalledWith('userIsSignedIn');
+    });
+
+    test('When the user is not authenticated, then the auth method is left unchanged', () => {
+      const changeAuthMethod = vi.fn();
+
+      renderHook(() =>
+        useAuthCheckout({
+          changeAuthMethod,
+          isAuthenticated: false,
+        }),
+      );
+
+      expect(changeAuthMethod).not.toHaveBeenCalled();
+    });
+  });
 });
