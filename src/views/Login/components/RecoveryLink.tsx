@@ -1,11 +1,11 @@
+import isValidEmail from '@internxt/lib/dist/auth/isValidEmail';
+import { Button, Input } from '@internxt/ui';
+import { Envelope, WarningCircle } from '@phosphor-icons/react';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import authService from 'services/auth.service';
-import { Button, Input } from '@internxt/ui';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { WarningCircle, Envelope } from '@phosphor-icons/react';
 import errorService from 'services/error.service';
-import isValidEmail from '@internxt/lib/dist/src/auth/isValidEmail';
 
 function RecoveryLink(): JSX.Element {
   const { translate } = useTranslationContext();
