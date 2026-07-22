@@ -8,72 +8,81 @@ const buildPlan = (interval: string, currency: string): PriceWithTax =>
   }) as unknown as PriceWithTax;
 
 describe('Ordering payment methods by country', () => {
-  it('When the country has a configured order, then the methods keep that order', () => {
-    const result = getPaymentMethodTypes('ES', buildPlan('lifetime', 'eur'));
+  it.each([
+    {
+      scenario: 'the country has a configured order, then the methods keep that order',
+      country: 'ES' as string | undefined,
+      expected: ['card', 'paypal', 'klarna'],
+    },
+    {
+      scenario: 'the country is configured with a different priority, then that priority is respected',
+      country: 'DE' as string | undefined,
+      expected: ['paypal', 'klarna', 'card'],
+    },
+    {
+      scenario: 'the country code is lowercase, then it is still matched',
+      country: 'fr' as string | undefined,
+      expected: ['card', 'paypal', 'klarna'],
+    },
+    {
+      scenario: 'the country has no configured order, then it falls back to the default order',
+      country: 'NL' as string | undefined,
+      expected: ['card', 'paypal', 'klarna'],
+    },
+    {
+      scenario: 'no country is provided, then it falls back to the default order',
+      country: undefined,
+      expected: ['card', 'paypal', 'klarna'],
+    },
+  ])('When $scenario', ({ country, expected }) => {
+    const result = getPaymentMethodTypes(country, buildPlan('lifetime', 'eur'));
 
-    expect(result).toStrictEqual(['card', 'paypal', 'klarna']);
-  });
-
-  it('When the country is configured with a different priority, then that priority is respected', () => {
-    const result = getPaymentMethodTypes('DE', buildPlan('lifetime', 'eur'));
-
-    expect(result).toStrictEqual(['paypal', 'klarna', 'card']);
-  });
-
-  it('When the country code is lowercase, then it is still matched', () => {
-    const result = getPaymentMethodTypes('fr', buildPlan('lifetime', 'eur'));
-
-    expect(result).toStrictEqual(['card', 'paypal', 'klarna']);
-  });
-
-  it('When the country has no configured order, then it falls back to the default order', () => {
-    const result = getPaymentMethodTypes('NL', buildPlan('lifetime', 'eur'));
-
-    expect(result).toStrictEqual(['card', 'paypal', 'klarna']);
-  });
-
-  it('When no country is provided, then it falls back to the default order', () => {
-    const result = getPaymentMethodTypes(undefined, buildPlan('lifetime', 'eur'));
-
-    expect(result).toStrictEqual(['card', 'paypal', 'klarna']);
+    expect(result).toStrictEqual(expected);
   });
 });
 
 describe('Filtering out payment methods that are not eligible for the plan', () => {
-  it('When the plan is a recurring subscription, then Klarna is removed because it only supports one-time payments', () => {
-    const result = getPaymentMethodTypes('ES', buildPlan('year', 'eur'));
+  it.each([
+    {
+      scenario: 'the plan is a recurring subscription, then Klarna is removed because it only supports one-time payments',
+      country: 'ES',
+      plan: buildPlan('year', 'eur'),
+      expected: ['card', 'paypal'],
+    },
+    {
+      scenario: 'a lifetime plan is billed in a currency where Klarna is not enabled, then Klarna is removed',
+      country: 'US',
+      plan: buildPlan('lifetime', 'usd'),
+      expected: ['paypal', 'card'],
+    },
+    {
+      scenario: 'Pix is preferred but the plan is not billed in Brazilian reais, then Pix is removed',
+      country: 'BR',
+      plan: buildPlan('year', 'eur'),
+      expected: ['card', 'paypal'],
+    },
+    {
+      scenario: 'the plan is billed in Brazilian reais, then Pix is offered first',
+      country: 'BR',
+      plan: buildPlan('year', 'brl'),
+      expected: ['pix', 'card', 'paypal'],
+    },
+    {
+      scenario: 'the plan is billed in Indian rupees, then UPI is offered first',
+      country: 'IN',
+      plan: buildPlan('year', 'inr'),
+      expected: ['upi', 'card', 'paypal'],
+    },
+    {
+      scenario: 'every preferred method is filtered out, then card is always kept as a fallback',
+      country: 'IN',
+      plan: buildPlan('year', 'eur'),
+      expected: ['card', 'paypal'],
+    },
+  ])('When $scenario', ({ country, plan, expected }) => {
+    const result = getPaymentMethodTypes(country, plan);
 
-    expect(result).toStrictEqual(['card', 'paypal']);
-  });
-
-  it('When a lifetime plan is billed in a currency where Klarna is not enabled, then Klarna is removed', () => {
-    const result = getPaymentMethodTypes('US', buildPlan('lifetime', 'usd'));
-
-    expect(result).toStrictEqual(['paypal', 'card']);
-  });
-
-  it('When Pix is preferred but the plan is not billed in Brazilian reais, then Pix is removed', () => {
-    const result = getPaymentMethodTypes('BR', buildPlan('year', 'eur'));
-
-    expect(result).toStrictEqual(['card', 'paypal']);
-  });
-
-  it('When the plan is billed in Brazilian reais, then Pix is offered first', () => {
-    const result = getPaymentMethodTypes('BR', buildPlan('year', 'brl'));
-
-    expect(result).toStrictEqual(['pix', 'card', 'paypal']);
-  });
-
-  it('When the plan is billed in Indian rupees, then UPI is offered first', () => {
-    const result = getPaymentMethodTypes('IN', buildPlan('year', 'inr'));
-
-    expect(result).toStrictEqual(['upi', 'card', 'paypal']);
-  });
-
-  it('When every preferred method is filtered out, then card is always kept as a fallback', () => {
-    const result = getPaymentMethodTypes('IN', buildPlan('year', 'eur'));
-
-    expect(result).toStrictEqual(['card', 'paypal']);
+    expect(result).toStrictEqual(expected);
   });
 });
 

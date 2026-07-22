@@ -6,7 +6,7 @@ type WalletMethod = 'apple_pay' | 'google_pay';
 
 export type DisplayPaymentMethod = StripePaymentMethodType | WalletMethod;
 
-const WALLET_METHODS: readonly WalletMethod[] = ['apple_pay', 'google_pay'];
+const WALLET_METHODS = new Set<WalletMethod>(['apple_pay', 'google_pay']);
 
 const PAYMENT_METHOD_ORDER_BY_COUNTRY: Record<string, DisplayPaymentMethod[]> = {
   US: ['apple_pay', 'google_pay', 'paypal', 'klarna', 'card'],
@@ -23,7 +23,7 @@ const DEFAULT_PAYMENT_METHOD_ORDER: DisplayPaymentMethod[] = ['apple_pay', 'goog
 const KLARNA_SUPPORTED_CURRENCIES = new Set<string>(['eur']);
 
 const isWalletMethod = (method: DisplayPaymentMethod): method is WalletMethod =>
-  WALLET_METHODS.includes(method as WalletMethod);
+  WALLET_METHODS.has(method as WalletMethod);
 
 const isPaymentMethodEligible = (method: DisplayPaymentMethod, plan: PriceWithTax): boolean => {
   const interval = plan?.price?.interval;
