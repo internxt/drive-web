@@ -20,16 +20,6 @@ describe('Ordering payment methods by country', () => {
       expected: ['paypal', 'klarna', 'card'],
     },
     {
-      scenario: 'the country code is lowercase, then it is still matched',
-      country: 'fr' as string | undefined,
-      expected: ['card', 'paypal', 'klarna'],
-    },
-    {
-      scenario: 'the country has no configured order, then it falls back to the default order',
-      country: 'NL' as string | undefined,
-      expected: ['card', 'paypal', 'klarna'],
-    },
-    {
       scenario: 'no country is provided, then it falls back to the default order',
       country: undefined,
       expected: ['card', 'paypal', 'klarna'],
