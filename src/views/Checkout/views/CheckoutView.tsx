@@ -143,11 +143,10 @@ const CheckoutView = ({
               <div className="flex flex-col space-y-8 pb-14 lg:pb-20">
                 <div className="flex flex-col w-full gap-2">
                   <PaymentElement
-                    options={
-                      paymentMethodOrder?.length
-                        ? { ...PAYMENT_ELEMENT_OPTIONS, paymentMethodOrder }
-                        : PAYMENT_ELEMENT_OPTIONS
-                    }
+                    options={{
+                      ...PAYMENT_ELEMENT_OPTIONS,
+                      paymentMethodOrder: paymentMethodOrder?.length ? paymentMethodOrder : undefined,
+                    }}
                     onChange={(event) => {
                       if (!event.collapsed) {
                         onStripePaymentExpanded();
