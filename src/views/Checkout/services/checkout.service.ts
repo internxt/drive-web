@@ -15,6 +15,7 @@ import envService from 'services/env.service';
 import errorService from 'services/error.service';
 import { bytesToString } from 'app/drive/services/size.service';
 import userService from 'services/user.service';
+import { getPaymentMethodTypes } from '../utils';
 
 const BORDER_SHADOW = 'rgb(0 102 255)';
 
@@ -159,6 +160,7 @@ const loadStripeElements = async (
     labelTextColor: string;
   },
   plan: PriceWithTax,
+  country?: string,
 ) => {
   const { backgroundColor, textColor, borderColor, borderInputColor, labelTextColor } = theme;
 
@@ -215,10 +217,7 @@ const loadStripeElements = async (
     mode: plan.price?.interval === 'lifetime' ? 'payment' : 'subscription',
     amount: plan.taxes?.amountWithTax,
     currency: plan.price?.currency,
-    payment_method_types:
-      plan?.price?.interval === 'lifetime' && plan.price?.currency === 'eur'
-        ? ['card', 'paypal', 'klarna']
-        : ['card', 'paypal'],
+    payment_method_types: getPaymentMethodTypes(country, plan),
   };
 };
 

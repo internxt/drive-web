@@ -45,6 +45,7 @@ interface CheckoutViewProps {
   availableCryptoCurrencies?: CryptoCurrency[];
   onCurrencyTypeChanges: (currency: PaymentType) => void;
   isPostalCodeRequired?: boolean;
+  paymentMethodOrder?: string[];
 }
 
 const AUTH_METHOD_VALUES = {
@@ -61,6 +62,7 @@ const CheckoutView = ({
   availableCryptoCurrencies,
   onCurrencyTypeChanges,
   isPostalCodeRequired,
+  paymentMethodOrder,
 }: CheckoutViewProps) => {
   const { translate } = useTranslationContext();
   // Those custom hooks should be here.
@@ -141,7 +143,11 @@ const CheckoutView = ({
               <div className="flex flex-col space-y-8 pb-14 lg:pb-20">
                 <div className="flex flex-col w-full gap-2">
                   <PaymentElement
-                    options={PAYMENT_ELEMENT_OPTIONS}
+                    options={
+                      paymentMethodOrder?.length
+                        ? { ...PAYMENT_ELEMENT_OPTIONS, paymentMethodOrder }
+                        : PAYMENT_ELEMENT_OPTIONS
+                    }
                     onChange={(event) => {
                       if (!event.collapsed) {
                         onStripePaymentExpanded();

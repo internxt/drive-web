@@ -47,6 +47,7 @@ import { usePromotionalCode } from '../hooks/usePromotionalCode';
 import { useAuthCheckout } from '../hooks/useAuthCheckout';
 import { checkoutReducer, initialStateForCheckout } from '../store';
 import { CheckoutLoader } from '../components/CheckoutLoader';
+import { getPaymentMethodOrder } from '../utils';
 
 const CheckoutViewWrapper = () => {
   const { translate } = useTranslationContext();
@@ -79,6 +80,7 @@ const CheckoutViewWrapper = () => {
     price: selectedPlan,
     checkoutTheme: checkoutTheme ?? 'light',
     translate,
+    country: userLocationData?.location,
   });
 
   const { onAuthenticateUser, onLogOut, authError } = useAuthCheckout({
@@ -440,6 +442,7 @@ const CheckoutViewWrapper = () => {
             availableCryptoCurrencies={availableCryptoCurrencies}
             onCurrencyTypeChanges={onCurrencyTypeChanges}
             isPostalCodeRequired={isPostalCodeRequired}
+            paymentMethodOrder={getPaymentMethodOrder(userLocationData?.location, selectedPlan)}
           />
           {canChangePlanDialogBeOpened ? (
             <ChangePlanDialog
