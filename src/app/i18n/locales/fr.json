@@ -184,6 +184,7 @@
     }
   },
   "checkout": {
+    "title": "Vous y êtes presque ! Finalisez votre achat en toute sécurité",
     "pay": "Payer",
     "processing": "Traitement en cours...",
     "checkout": "Commander",
@@ -195,14 +196,15 @@
       "signIn": {
         "password": "Votre mot de passe"
       },
+      "title": {
+        "signUp": "Créer un compte",
+        "signIn": "Se connecter",
+        "userIsSignedIn": "Utilisateur connecté en tant que"
+      },
       "emailMustNotBeEmpty": "L'email ne doit pas être vide",
       "privacyGuarantee": "Garantie de confidentialité : Nous ne partageons pas vos informations et ne vous contacterons que si nécessaire pour fournir notre service."
     },
     "addressBillingTitle": "Facturation d'Adresse",
-    "postalCode": {
-      "title": "Code postal",
-      "placeholder": "Code postal"
-    },
     "crypto": "Crypto",
     "addressBilling": {
       "optional": {
@@ -211,7 +213,10 @@
         "companyVatId": "Numéro de TVA de l'entreprise"
       }
     },
+    "paymentTitle": "Sélectionnez un mode de paiement",
     "productCard": {
+      "title": "Récapitulatif de la commande",
+      "selectedPlan": "Plan sélectionné",
       "renewalTitle": {
         "month": "annuel",
         "year": "annuel",
@@ -223,6 +228,7 @@
         "lifetime": "Paiement unique"
       },
       "saving": "Vous économisez {{percent}}%",
+      "planDetails": "Détails du plan :",
       "total": "Total ",
       "addCoupon": {
         "buttonTitle": "Ajouter un coupon",
@@ -255,8 +261,6 @@
       "invalidPlan": "Type de plan non pris en charge. Veuillez sélectionner un plan valide.",
       "fetchingCryptoCurrencies": "Nous n'avons pas pu charger les options de crypto-monnaies disponibles",
       "addressRequired": "Veuillez compléter votre adresse de facturation pour continuer",
-      "postalCodeRequired": "Veuillez saisir votre code postal pour continuer",
-      "countryRequired": "Nous n'avons pas pu déterminer votre pays. Veuillez réessayer plus tard.",
       "businessPlan": "Le plan d’entreprise n’est pas disponible"
     }
   },

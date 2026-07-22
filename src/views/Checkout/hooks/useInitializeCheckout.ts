@@ -16,16 +16,9 @@ interface UseInitializeCheckoutProps {
   price?: PriceWithTax;
   user?: UserSettings;
   translate: Translate;
-  country?: string;
 }
 
-export const useInitializeCheckout = ({
-  user,
-  price,
-  checkoutTheme,
-  translate,
-  country,
-}: UseInitializeCheckoutProps) => {
+export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }: UseInitializeCheckoutProps) => {
   const [stripeSdk, setStripeSdk] = useState<Stripe | null>(null);
   const [stripeElementsOptions, setStripeElementsOptions] = useState<StripeElementsOptions>();
   const [isCheckoutReady, setIsCheckoutReady] = useState(false);
@@ -47,7 +40,7 @@ export const useInitializeCheckout = ({
     if (stripeSdk && price) {
       loadStripeAndCrypto();
     }
-  }, [stripeSdk, price?.price?.id, country]);
+  }, [stripeSdk, price?.price?.id]);
 
   const initCheckout = async () => {
     try {
@@ -99,7 +92,7 @@ export const useInitializeCheckout = ({
     }
 
     try {
-      const stripeElements = await checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme], price, country);
+      const stripeElements = await checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme], price);
       setStripeElementsOptions(stripeElements as StripeElementsOptions);
     } catch (error) {
       const castedError = errorService.castError(error);
