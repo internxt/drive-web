@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, FunctionComponent, SVGProps } from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'app/store';
 import { storageSelectors } from 'app/store/slices/storage';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { SearchResult } from '@internxt/sdk/dist/drive/storage/types';
+import { SearchFileCategory, SearchResult } from '@internxt/sdk/dist/drive/storage/types';
+import { emptySearchFilters, searchItems, SearchFilters } from '../services';
 import { ArrowSquareOut, Gear, Gift, MagnifyingGlass, X } from '@phosphor-icons/react';
 import AccountPopover from './AccountPopover';
 import referralService from 'services/referral.service';
@@ -13,11 +14,9 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import iconService from 'app/drive/services/icon.service';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { isMacOs } from 'react-device-detect';
-import { SdkFactory } from 'app/core/factory/sdk';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { uiActions } from 'app/store/slices/ui';
-import fileExtensionGroups, { FileExtensionGroup, FileExtensionMap } from 'app/drive/types/file-types';
 import NotFoundState from './NotFoundState';
 import EmptyState from './EmptyState';
 import FilterItem from './FilterItem';
@@ -32,7 +31,11 @@ interface NavbarProps {
   plan: PlanState;
 }
 
-type FilterType = 'folder' | 'pdf' | 'image' | 'video' | 'audio' | null;
+interface SearchFilterItem {
+  id: SearchFileCategory;
+  Icon: FunctionComponent<SVGProps<SVGSVGElement>>;
+  name: string;
+}
 
 const getSearchBoxClassName = (openSearchBox: boolean) => {
   const baseClass = 'relative flex w-full items-center rounded-lg transition-all duration-150 ease-out';
@@ -77,23 +80,6 @@ const getSearchResultItemClassName = (isSelected: boolean) => {
   return `${baseClass} ${selectedClass}`;
 };
 
-const fileExtension = {
-  image: fileExtensionGroups[FileExtensionGroup.Image],
-  audio: fileExtensionGroups[FileExtensionGroup.Audio],
-  pdf: fileExtensionGroups[FileExtensionGroup.Pdf],
-  video: fileExtensionGroups[FileExtensionGroup.Video],
-  default: fileExtensionGroups[FileExtensionGroup.Default],
-};
-
-const isSelectedType = (extension: string, extensionMap: FileExtensionMap) => {
-  for (const fileType in extensionMap) {
-    if (extensionMap[fileType].includes(extension.toLowerCase())) {
-      return true;
-    }
-  }
-  return false;
-};
-
 const Navbar = (props: NavbarProps) => {
   const { translate } = useTranslationContext();
   const { user, hideSearch } = props;
@@ -104,11 +90,10 @@ const Navbar = (props: NavbarProps) => {
   const searchResultList = useRef<HTMLUListElement>(null);
   const [preventBlur, setPreventBlur] = useState<boolean>(false);
   const [openSearchBox, setOpenSearchBox] = useState<boolean>(false);
-  const [filters, setFilters] = useState<FilterType[]>([]);
+  const [filters, setFilters] = useState<SearchFilters>(emptySearchFilters);
 
   const [query, setQuery] = useState('');
   const [searchResult, setSearchResult] = useState<SearchResult[]>([]);
-  const [filteredResults, setFilteredResults] = useState<SearchResult[]>([]);
   const [selectedResult, setSelectedResult] = useState<number>(0);
   const [loadingSearch, setLoadingSearch] = useState<boolean>(false);
   const [typingTimerID, setTypingTimerID] = useState<NodeJS.Timeout | null>(null);
@@ -149,15 +134,12 @@ const Navbar = (props: NavbarProps) => {
     { enableOnFormTags: ['INPUT'] },
   );
 
-  useEffect(() => {
-    if (filters.length > 0) {
-      setFilteredResults(filteredSearchResults);
-    }
-  }, [filters, searchResult]);
+  const setTypeFilters = (updater: (current: SearchFileCategory[]) => SearchFileCategory[]) =>
+    setFilters((current) => ({ ...current, type: updater(current.type) }));
 
   useEffect(() => {
-    if (filters.length === 0) {
-      setFilteredResults([]);
+    if (query.length > 0) {
+      handleSearch();
     }
   }, [filters]);
 
@@ -172,19 +154,8 @@ const Navbar = (props: NavbarProps) => {
     setSearchResult([]);
   };
 
-  const matchesFilter = (result: SearchResult, filter: FilterType) => {
-    if (filter === 'folder') {
-      return result.itemType?.toLowerCase() === 'folder';
-    }
-    return result.item.type && isSelectedType(result.item.type, fileExtension[filter || 'default']);
-  };
-
-  const filteredSearchResults = searchResult.filter((result) => {
-    return filters.some((filter) => matchesFilter(result, filter));
-  });
-
   const shouldShowResults = () => {
-    return (filters.length === 0 && searchResult.length > 0) || (filters.length > 0 && filteredResults.length > 0);
+    return searchResult.length > 0;
   };
 
   const shouldShowNotFound = () => {
@@ -198,19 +169,11 @@ const Navbar = (props: NavbarProps) => {
     return <EmptyState />;
   };
 
-  const getDisplayResults = () => {
-    return filteredResults.length > 0 ? filteredResults : searchResult;
-  };
-
   const search = async () => {
     const query = searchInput.current?.value ?? '';
     const workspaceId = selectedWorkspace?.workspaceUser.workspaceId;
     if (query.length > 0) {
-      const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-      const [itemsPromise] = storageClient.getGlobalSearchItems(query, workspaceId);
-      const items = await itemsPromise;
-      const resultItems: SearchResult[] = Array.isArray(items) ? items : items.data;
-      setSearchResult(resultItems);
+      setSearchResult(await searchItems(query, workspaceId, filters));
     } else {
       setSearchResult([]);
     }
@@ -276,7 +239,7 @@ const Navbar = (props: NavbarProps) => {
     if (item) document.querySelector(`#searchResult_${item}`)?.scrollIntoView();
   };
 
-  const filterItems = [
+  const filterItems: SearchFilterItem[] = [
     {
       id: 'folder',
       Icon: iconService.getItemIcon(true),
@@ -373,16 +336,16 @@ const Navbar = (props: NavbarProps) => {
                       id={item.id}
                       Icon={item.Icon}
                       name={item.name}
-                      filters={filters}
-                      setFilters={setFilters}
+                      filters={filters.type}
+                      setFilters={setTypeFilters}
                     />
                   ))}
                 </div>
 
                 <button
                   type="button"
-                  className={getClearFiltersClassName(filters.length)}
-                  onClick={() => setFilters([])}
+                  className={getClearFiltersClassName(filters.type.length)}
+                  onClick={() => setFilters(emptySearchFilters)}
                 >
                   {translate('general.searchBar.filters.clear')}
                 </button>
@@ -390,7 +353,7 @@ const Navbar = (props: NavbarProps) => {
 
               {shouldShowResults() ? (
                 <ul ref={searchResultList} className="flex h-full flex-col overflow-y-auto pb-4">
-                  {getDisplayResults().map((item, index) => {
+                  {searchResult.map((item, index) => {
                     const isFolder = item.itemType === 'FOLDER' || item.itemType === 'folder';
                     const Icon = iconService.getItemIcon(isFolder, item.item.type);
                     return (
