@@ -9,7 +9,7 @@
     "@iconscout/react-unicons": "^2.2.5",
     "@internxt/css-config": "1.1.1",
     "@internxt/lib": "=1.5.1",
-    "@internxt/sdk": "=1.17.14",
+    "@internxt/sdk": "=1.17.19",
     "@internxt/ui": "=0.1.21",
     "@phosphor-icons/react": "^2.1.10",
     "@popperjs/core": "^2.11.6",

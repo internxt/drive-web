@@ -205,7 +205,6 @@
     }
   },
   "checkout": {
-    "title": "您快完成了！请安全结账",
     "pay": "支付",
     "processing": "处理中...",
     "checkout": "结账",
@@ -217,15 +216,14 @@
       "signIn": {
         "password": "您的密码"
       },
-      "title": {
-        "signUp": "创建账户",
-        "signIn": "登录",
-        "userIsSignedIn": "用户已登录为"
-      },
       "emailMustNotBeEmpty": "电子邮件不能为空",
       "privacyGuarantee": "隐私保证：我们不会分享您的信息，并且只会在提供服务时与您联系。"
     },
     "addressBillingTitle": "账单地址",
+    "postalCode": {
+      "title": "邮政编码",
+      "placeholder": "邮政编码"
+    },
     "crypto": "Crypto",
     "addressBilling": {
       "optional": {
@@ -234,10 +232,7 @@
         "companyVatId": "公司增值税编号"
       }
     },
-    "paymentTitle": "选择支付方式",
     "productCard": {
-      "title": "订单摘要",
-      "selectedPlan": "选择的计划",
       "renewalTitle": {
         "month": "每年",
         "year": "每年",
@@ -249,7 +244,6 @@
         "lifetime": "一次性支付"
       },
       "saving": "您节省了 {{percent}}%",
-      "planDetails": "计划详情：",
       "total": "总计",
       "addCoupon": {
         "buttonTitle": "添加优惠券",
@@ -282,6 +276,8 @@
       "invalidPlan": "不支持的套餐类型。请选择有效的套餐。",
       "fetchingCryptoCurrencies": "无法加载可用的加密货币选项",
       "addressRequired": "请填写您的账单地址以继续",
+      "postalCodeRequired": "请输入您的邮政编码以继续",
+      "countryRequired": "我们无法确定您的国家/地区,请稍后再试",
       "businessPlan": "企业计划不可用"
     }
   },
