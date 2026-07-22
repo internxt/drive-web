@@ -42,8 +42,7 @@ const isPaymentMethodEligible = (method: DisplayPaymentMethod, plan: PriceWithTa
 };
 
 const getOrderedPaymentMethods = (country: string | undefined, plan: PriceWithTax): DisplayPaymentMethod[] => {
-  const order = PAYMENT_METHOD_ORDER_BY_COUNTRY[country?.toUpperCase() ?? ''] ?? DEFAULT_PAYMENT_METHOD_ORDER;
-
+  const order = country ? PAYMENT_METHOD_ORDER_BY_COUNTRY[country] : DEFAULT_PAYMENT_METHOD_ORDER;
   return order.filter((method) => isPaymentMethodEligible(method, plan));
 };
 export const getPaymentMethodOrder = (country: string | undefined, plan: PriceWithTax): DisplayPaymentMethod[] =>
