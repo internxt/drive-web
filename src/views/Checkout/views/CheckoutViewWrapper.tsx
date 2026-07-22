@@ -22,7 +22,7 @@ import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { planThunks } from 'app/store/slices/plan';
 import { useThemeContext } from 'app/theme/ThemeProvider';
 import { PaymentType } from 'views/Checkout/types';
-import { CheckoutViewManager, UserInfoProps } from '../types/checkout.types';
+import { AddressProvider, CheckoutViewManager, UserInfoProps } from '../types/checkout.types';
 import CheckoutView from './CheckoutView';
 import { useUserPayment } from 'views/Checkout/hooks/useUserPayment';
 import { CRYPTO_PAYMENT_DIALOG_KEY, CryptoPaymentDialog } from 'views/Checkout/components/CryptoPaymentDialog';
@@ -42,12 +42,10 @@ import {
   MILLISECONDS_PER_DAY,
   STATUS_CODE_ERROR,
 } from '../constants';
-import { useBillingDetails } from '../hooks/useBillingDetails';
 import { usePromotionalCode } from '../hooks/usePromotionalCode';
 import { useAuthCheckout } from '../hooks/useAuthCheckout';
 import { checkoutReducer, initialStateForCheckout } from '../store';
 import { CheckoutLoader } from '../components/CheckoutLoader';
-import { getPaymentMethodOrder } from '../utils';
 
 const CheckoutViewWrapper = () => {
   const { translate } = useTranslationContext();
@@ -80,7 +78,6 @@ const CheckoutViewWrapper = () => {
     price: selectedPlan,
     checkoutTheme: checkoutTheme ?? 'light',
     translate,
-    country: userLocationData?.location,
   });
 
   const { onAuthenticateUser, onLogOut, authError } = useAuthCheckout({
@@ -88,17 +85,8 @@ const CheckoutViewWrapper = () => {
   });
 
   const dispatch = useAppDispatch();
-  const {
-    address,
-    isPostalCodeRequired,
-    isCryptoAddressIncomplete,
-    billingCountry,
-    billingPostalCode,
-    getCustomerName,
-    onUserAddressChanges,
-    onUserNameChanges,
-    onPostalCodeChanges,
-  } = useBillingDetails({ user, userLocation: userLocationData?.location });
+  const [address, setAddress] = useState<AddressProvider>();
+  const [userName, setUserName] = useState(user?.name ?? '');
 
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const { doRegister } = useSignUp('activate');
@@ -149,22 +137,16 @@ const CheckoutViewWrapper = () => {
       return;
     }
 
-    if (!billingCountry || !billingPostalCode) {
-      return;
-    }
-
-    const debounceTimer = setTimeout(() => {
+    if (userLocationData?.location !== address?.country && address?.postal_code) {
       fetchSelectedPlan({
         priceId: selectedPlan.price.id,
         currency: selectedPlan.price.currency,
         promotionCode: promotionCode ?? undefined,
-        postalCode: billingPostalCode,
-        country: billingCountry,
+        postalCode: address.postal_code,
+        country: address.country,
       });
-    }, 500);
-
-    return () => clearTimeout(debounceTimer);
-  }, [billingCountry, billingPostalCode, selectedPlan?.price?.id, selectedPlan?.price?.currency]);
+    }
+  }, [address?.country, address?.postal_code, selectedPlan?.price?.id, selectedPlan?.price?.currency]);
 
   useEffect(() => {
     if (isCheckoutReady && selectedPlan?.price) {
@@ -293,6 +275,7 @@ const CheckoutViewWrapper = () => {
 
     const { email, password, companyName, companyVatId } = formData;
     const isStripeNotLoaded = !stripeSDK || !elements;
+    const customerName = companyName ?? userName;
 
     const captchaToken = await generateCaptchaToken();
 
@@ -323,18 +306,8 @@ const CheckoutViewWrapper = () => {
         return;
       }
 
-      const isCryptoPurchase = currencyType === PaymentType['CRYPTO'];
-
-      if (isCryptoPurchase && isCryptoAddressIncomplete) {
+      if (!address?.line1 || !address?.city || !address.country) {
         throw new Error(translate('checkout.error.addressRequired'));
-      }
-
-      if (!billingCountry) {
-        throw new Error(translate('checkout.error.countryRequired'));
-      }
-
-      if (isPostalCodeRequired && !billingPostalCode) {
-        throw new Error(translate('checkout.error.postalCodeRequired'));
       }
 
       if (currencyType === PaymentType['FIAT']) {
@@ -355,14 +328,12 @@ const CheckoutViewWrapper = () => {
             ...(userUuid && { new_user_id: userUuid }),
           }
         : undefined;
-      const customerName = getCustomerName({ companyName, authenticatedUser, email });
-
       const { customerId, token } = await checkoutService.createCustomer({
-        customerName: customerName || undefined,
+        customerName,
         lineAddress1: address?.line1,
         lineAddress2: address?.line2 ?? undefined,
-        country: billingCountry,
-        postalCode: billingPostalCode,
+        country: address?.country,
+        postalCode: address?.postal_code,
         city: address?.city,
         companyVatId,
         captchaToken: customerToken,
@@ -404,6 +375,14 @@ const CheckoutViewWrapper = () => {
     }
   };
 
+  const onUserAddressChanges = (address: AddressProvider) => {
+    setAddress(address);
+  };
+
+  const onUserNameChanges = (userName: string) => {
+    setUserName(userName);
+  };
+
   const onCurrencyTypeChanges = (currency: PaymentType) => {
     setCurrencyType(currency);
   };
@@ -417,7 +396,6 @@ const CheckoutViewWrapper = () => {
     handleAuthMethodChange: setAuthMethod,
     onCurrencyChange: setSelectedCurrency,
     onUserNameChanges,
-    onPostalCodeChanges,
   };
 
   return (
@@ -441,8 +419,6 @@ const CheckoutViewWrapper = () => {
             checkoutViewManager={checkoutViewManager}
             availableCryptoCurrencies={availableCryptoCurrencies}
             onCurrencyTypeChanges={onCurrencyTypeChanges}
-            isPostalCodeRequired={isPostalCodeRequired}
-            paymentMethodOrder={getPaymentMethodOrder(userLocationData?.location, selectedPlan)}
           />
           {canChangePlanDialogBeOpened ? (
             <ChangePlanDialog

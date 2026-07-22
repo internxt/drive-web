@@ -32,5 +32,4 @@ export interface CheckoutViewManager {
   handleAuthMethodChange: (method: AuthMethodTypes) => void;
   onCurrencyChange: (currency: string) => void;
   onUserNameChanges: (userName: string) => void;
-  onPostalCodeChanges: (postalCode: string) => void;
 }

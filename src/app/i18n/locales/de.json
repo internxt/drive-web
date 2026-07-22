@@ -184,6 +184,7 @@
     }
   },
   "checkout": {
+    "title": "Sie sind fast da! Sicher zur Kasse gehen",
     "pay": "Bezahlen",
     "processing": "Verarbeitung läuft...",
     "checkout": "Zur Kasse",
@@ -195,14 +196,15 @@
       "signIn": {
         "password": "Ihr Passwort"
       },
+      "title": {
+        "signUp": "Ein Konto erstellen",
+        "signIn": "Anmelden",
+        "userIsSignedIn": "Benutzer angemeldet als"
+      },
       "emailMustNotBeEmpty": "Die E-Mail darf nicht leer sein",
       "privacyGuarantee": "Datenschutzgarantie: Wir teilen Ihre Informationen nicht und werden Sie nur kontaktieren, wenn es notwendig ist, um unseren Service zu bieten."
     },
     "addressBillingTitle": "Rechnungsadresse",
-    "postalCode": {
-      "title": "Postleitzahl",
-      "placeholder": "Postleitzahl"
-    },
     "crypto": "Crypto",
     "addressBilling": {
       "optional": {
@@ -211,7 +213,10 @@
         "companyVatId": "USt-ID der Firma"
       }
     },
+    "paymentTitle": "Wählen Sie eine Zahlungsmethode",
     "productCard": {
+      "title": "Bestellübersicht",
+      "selectedPlan": "Ausgewählter Plan",
       "renewalTitle": {
         "month": "jährlich",
         "year": "jährlich",
@@ -223,6 +228,7 @@
         "lifetime": "Einmalige Zahlung"
       },
       "saving": "Sie sparen {{percent}}%",
+      "planDetails": "Plandetails:",
       "total": "Gesamt ",
       "addCoupon": {
         "buttonTitle": "Gutschein hinzufügen",
@@ -255,8 +261,6 @@
       "invalidPlan": "Nicht unterstützter Plantyp. Bitte wählen Sie einen gültigen Plan.",
       "fetchingCryptoCurrencies": "Die verfügbaren Kryptowährungsoptionen konnten nicht geladen werden",
       "addressRequired": "Bitte vervollständigen Sie Ihre Rechnungsadresse, um fortzufahren",
-      "postalCodeRequired": "Bitte geben Sie Ihre Postleitzahl ein, um fortzufahren",
-      "countryRequired": "Wir konnten Ihr Land nicht ermitteln. Bitte versuchen Sie es später erneut.",
       "businessPlan": "Der Unternehmensplan ist nicht verfügbar"
     }
   },
