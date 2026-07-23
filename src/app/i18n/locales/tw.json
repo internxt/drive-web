@@ -309,7 +309,20 @@
         "code": "程式碼",
         "csv": "CSV",
         "xml": "XML",
-        "figma": "Figma"
+        "figma": "Figma",
+        "date": {
+          "dateModified": "修改日期",
+          "anyDate": "任何日期",
+          "today": "今天",
+          "last7days": "最近 7 天",
+          "last30days": "最近 30 天",
+          "thisYear": "今年（{{year}}）",
+          "lastYear": "去年（{{year}}）",
+          "specificDate": "特定日期",
+          "after": "之後",
+          "before": "之前",
+          "selectToday": "選擇今天"
+        }
       },
       "emptyState": {
         "title": "尋找檔案和資料夾",

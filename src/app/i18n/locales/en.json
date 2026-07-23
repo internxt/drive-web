@@ -309,7 +309,20 @@
         "code": "Code",
         "csv": "CSV",
         "xml": "XML",
-        "figma": "Figma"
+        "figma": "Figma",
+        "date": {
+          "dateModified": "Date modified",
+          "anyDate": "Any date",
+          "today": "Today",
+          "last7days": "Last 7 days",
+          "last30days": "Last 30 days",
+          "thisYear": "This year ({{year}})",
+          "lastYear": "Last year ({{year}})",
+          "specificDate": "Specific date",
+          "after": "After",
+          "before": "Before",
+          "selectToday": "Select today"
+        }
       },
       "emptyState": {
         "title": "Find files and folders",

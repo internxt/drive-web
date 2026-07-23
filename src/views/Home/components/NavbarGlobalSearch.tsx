@@ -5,7 +5,7 @@ import { storageSelectors } from 'app/store/slices/storage';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SearchFileCategory, SearchResult } from '@internxt/sdk/dist/drive/storage/types';
 import { emptySearchFilters, searchItems, SearchFilters } from '../services';
-import { ArrowSquareOut, Gear, Gift, MagnifyingGlass, X } from '@phosphor-icons/react';
+import { ArrowSquareOutIcon, GearIcon, GiftIcon, MagnifyingGlassIcon, XIcon } from '@phosphor-icons/react';
 import AccountPopover from './AccountPopover';
 import referralService from 'services/referral.service';
 import i18next from 'i18next';
@@ -20,7 +20,10 @@ import { uiActions } from 'app/store/slices/ui';
 import NotFoundState from './NotFoundState';
 import EmptyState from './EmptyState';
 import { toggleTypeCategory } from '../utils/typeFilterUtils';
+import { changeSpecificDate, datePresetToRange, SearchDatePreset, SpecificDateRange } from '../utils/dateFilterUtils';
 import SearchTypeFilter from './SearchTypeFilter';
+import SearchDateFilter from './SearchDateFilter';
+import { Dayjs } from 'dayjs';
 import { getItemPlainName } from 'app/crypto/services/utils';
 import navigationService from 'services/navigation.service';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
@@ -75,10 +78,13 @@ const Navbar = (props: NavbarProps) => {
 
   const dispatch = useAppDispatch();
   const searchInput = useRef<HTMLInputElement>(null);
+  const searchForm = useRef<HTMLFormElement>(null);
   const searchResultList = useRef<HTMLUListElement>(null);
   const [preventBlur, setPreventBlur] = useState<boolean>(false);
   const [openSearchBox, setOpenSearchBox] = useState<boolean>(false);
   const [filters, setFilters] = useState<SearchFilters>(emptySearchFilters);
+  const [datePreset, setDatePreset] = useState<SearchDatePreset>('any');
+  const [specificDates, setSpecificDates] = useState<SpecificDateRange>({});
 
   const [query, setQuery] = useState('');
   const [searchResult, setSearchResult] = useState<SearchResult[]>([]);
@@ -126,6 +132,19 @@ const Navbar = (props: NavbarProps) => {
     setFilters((current) => ({ ...current, type: toggleTypeCategory(current.type, category) }));
 
   const clearTypeFilter = () => setFilters((current) => ({ ...current, type: [] }));
+
+  const applyDateFilter = (preset: SearchDatePreset, specific: SpecificDateRange) => {
+    setDatePreset(preset);
+    setSpecificDates(specific);
+    setFilters((current) => ({ ...current, ...datePresetToRange(preset, specific) }));
+  };
+
+  const selectDatePreset = (preset: SearchDatePreset) => {
+    if (preset !== datePreset) applyDateFilter(preset, {});
+  };
+
+  const changeDateFilterDate = (field: 'after' | 'before', date?: Dayjs) =>
+    applyDateFilter('specific', changeSpecificDate(specificDates, field, date));
 
   const openSearchBoxRef = useRef(openSearchBox);
   openSearchBoxRef.current = openSearchBox;
@@ -244,9 +263,13 @@ const Navbar = (props: NavbarProps) => {
         {hideSearch ? (
           <div />
         ) : (
-          <form className="relative flex h-full w-full pl-4 items-center" onSubmitCapture={handleSubmit}>
+          <form
+            ref={searchForm}
+            className="relative flex h-full w-full pl-4 items-center"
+            onSubmitCapture={handleSubmit}
+          >
             <label className={getSearchBoxClassName(openSearchBox)} htmlFor="globalSearchInput">
-              <MagnifyingGlass
+              <MagnifyingGlassIcon
                 className="pointer-events-none absolute left-2.5 top-1/2 z-1 -translate-y-1/2 text-gray-60 focus-within:text-gray-80"
                 size={20}
               />
@@ -272,6 +295,7 @@ const Navbar = (props: NavbarProps) => {
                   }
                 }}
                 onBlurCapture={(e) => {
+                  if (searchForm.current?.contains(e.relatedTarget as Node | null)) return;
                   if (preventBlur) {
                     e.currentTarget.focus();
                   } else {
@@ -282,7 +306,7 @@ const Navbar = (props: NavbarProps) => {
                 placeholder={translate('general.searchBar.placeholder')}
               />
               <div className={getKeyboardShortcutClassName(openSearchBox)}>{isMacOs ? '⌘F' : 'Ctrl F'}</div>
-              <X
+              <XIcon
                 className={getClearButtonClassName(query, openSearchBox)}
                 onMouseDownCapture={() => {
                   setQuery('');
@@ -304,6 +328,13 @@ const Navbar = (props: NavbarProps) => {
                   selected={filters.type}
                   onToggle={toggleTypeFilter}
                   onSelectAny={clearTypeFilter}
+                  onClose={refocusSearchInput}
+                />
+                <SearchDateFilter
+                  preset={datePreset}
+                  specific={specificDates}
+                  onSelectPreset={selectDatePreset}
+                  onChangeDate={changeDateFilterDate}
                   onClose={refocusSearchInput}
                 />
               </div>
@@ -350,7 +381,7 @@ const Navbar = (props: NavbarProps) => {
           style={{ display: isReferralEligible ? 'flex' : 'none', position: 'relative' }}
           className="flex h-10 cursor-pointer items-center gap-2 border-none bg-transparent px-3"
         >
-          <Gift size={20} className="text-primary" />
+          <GiftIcon size={20} className="text-primary" />
           <span className="text-sm font-medium whitespace-nowrap text-primary">{referralLauncherLabel}</span>
         </button>
         <button
@@ -367,7 +398,7 @@ const Navbar = (props: NavbarProps) => {
             'text-gray-80 hover:bg-gray-5 hover:text-gray-80 active:bg-gray-10'
           }
         >
-          <Gear size={24} />
+          <GearIcon size={24} />
         </button>
         <AccountPopover
           className="z-40 mr-5"
@@ -396,7 +427,7 @@ const Navbar = (props: NavbarProps) => {
           }
           primaryAction={
             <span className="flex items-center">
-              {translate('modals.upgradePlanDialog.upgrade')} <ArrowSquareOut className="ml-1.5" weight="bold" />
+              {translate('modals.upgradePlanDialog.upgrade')} <ArrowSquareOutIcon className="ml-1.5" weight="bold" />
             </span>
           }
           secondaryAction={translate('modals.upgradePlanDialog.cancel')}

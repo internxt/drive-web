@@ -309,7 +309,20 @@
         "code": "Codice",
         "csv": "CSV",
         "xml": "XML",
-        "figma": "Figma"
+        "figma": "Figma",
+        "date": {
+          "dateModified": "Data di modifica",
+          "anyDate": "Qualsiasi data",
+          "today": "Oggi",
+          "last7days": "Ultimi 7 giorni",
+          "last30days": "Ultimi 30 giorni",
+          "thisYear": "Quest'anno ({{year}})",
+          "lastYear": "L'anno scorso ({{year}})",
+          "specificDate": "Data specifica",
+          "after": "Dopo",
+          "before": "Prima",
+          "selectToday": "Seleziona oggi"
+        }
       },
       "emptyState": {
         "title": "Trovare file e cartelle",

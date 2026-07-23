@@ -288,7 +288,20 @@
         "code": "Code",
         "csv": "CSV",
         "xml": "XML",
-        "figma": "Figma"
+        "figma": "Figma",
+        "date": {
+          "dateModified": "Änderungsdatum",
+          "anyDate": "Beliebiges Datum",
+          "today": "Heute",
+          "last7days": "Letzte 7 Tage",
+          "last30days": "Letzte 30 Tage",
+          "thisYear": "Dieses Jahr ({{year}})",
+          "lastYear": "Letztes Jahr ({{year}})",
+          "specificDate": "Bestimmtes Datum",
+          "after": "Nach",
+          "before": "Vor",
+          "selectToday": "Heute auswählen"
+        }
       },
       "emptyState": {
         "title": "Dateien und Ordner finden",

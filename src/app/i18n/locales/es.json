@@ -288,7 +288,20 @@
         "code": "Código",
         "csv": "CSV",
         "xml": "XML",
-        "figma": "Figma"
+        "figma": "Figma",
+        "date": {
+          "dateModified": "Fecha de modificación",
+          "anyDate": "Cualquier fecha",
+          "today": "Hoy",
+          "last7days": "Últimos 7 días",
+          "last30days": "Últimos 30 días",
+          "thisYear": "Este año ({{year}})",
+          "lastYear": "El año pasado ({{year}})",
+          "specificDate": "Fecha específica",
+          "after": "Después de",
+          "before": "Antes de",
+          "selectToday": "Seleccionar hoy"
+        }
       },
       "emptyState": {
         "title": "Buscar archivos y carpetas",

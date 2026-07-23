@@ -288,7 +288,20 @@
         "code": "Код",
         "csv": "CSV",
         "xml": "XML",
-        "figma": "Figma"
+        "figma": "Figma",
+        "date": {
+          "dateModified": "Дата изменения",
+          "anyDate": "Любая дата",
+          "today": "Сегодня",
+          "last7days": "Последние 7 дней",
+          "last30days": "Последние 30 дней",
+          "thisYear": "Этот год ({{year}})",
+          "lastYear": "Прошлый год ({{year}})",
+          "specificDate": "Конкретная дата",
+          "after": "После",
+          "before": "До",
+          "selectToday": "Выбрать сегодня"
+        }
       },
       "emptyState": {
         "title": "Поиск файлов и папок",

@@ -4,8 +4,8 @@ import { Checkbox } from '@internxt/ui';
 import { CaretDownIcon } from '@phosphor-icons/react';
 import iconService from 'app/drive/services/icon.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { useEffect, useRef } from 'react';
 import { TYPE_FILTER_ITEMS } from '../utils/typeFilterUtils';
+import DropdownCloseObserver from './DropdownCloseObserver';
 
 interface SearchTypeFilterProps {
   selected: SearchFileCategory[];
@@ -13,15 +13,6 @@ interface SearchTypeFilterProps {
   onSelectAny: () => void;
   onClose: () => void;
 }
-
-const MenuCloseObserver = ({ open, onClose }: { open: boolean; onClose: () => void }): null => {
-  const wasOpen = useRef(false);
-  useEffect(() => {
-    if (wasOpen.current && !open) onClose();
-    wasOpen.current = open;
-  }, [open]);
-  return null;
-};
 
 const SearchTypeFilter = ({ selected, onToggle, onSelectAny, onClose }: SearchTypeFilterProps): JSX.Element => {
   const { translate } = useTranslationContext();
@@ -31,7 +22,7 @@ const SearchTypeFilter = ({ selected, onToggle, onSelectAny, onClose }: SearchTy
     <Menu as="div" className="relative">
       {({ open }) => (
         <>
-          <MenuCloseObserver open={open} onClose={onClose} />
+          <DropdownCloseObserver open={open} onClose={onClose} />
           <MenuButton
             className={`${
               isAnyType
