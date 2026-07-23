@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
 import tasksService from 'app/tasks/services/tasks.service';
 import { TaskEvent, TaskStatus } from 'app/tasks/types';
 import referralService from 'services/referral.service';
@@ -68,7 +68,7 @@ describe('uploadFilesWithTasks', () => {
     vi.clearAllMocks();
   });
 
-  it('When a new file upload begins, then a task is created to track it', async () => {
+  test('When a new file upload begins, then a task is created to track it', async () => {
     (tasksService.create as Mock).mockReturnValue('new-task-id');
 
     const { managerProps } = await runUpload([buildFile()]);
@@ -84,7 +84,7 @@ describe('uploadFilesWithTasks', () => {
     expect(managerProps.files).toEqual([expect.objectContaining({ taskId: 'new-task-id' })]);
   });
 
-  it('When an upload is retried, then its existing task resumes instead of creating a new one', async () => {
+  test('When an upload is retried, then its existing task resumes instead of creating a new one', async () => {
     const { managerProps } = await runUpload([buildFile({ taskId: 'existing-task' })]);
 
     expect(tasksService.create).not.toHaveBeenCalled();
@@ -95,7 +95,7 @@ describe('uploadFilesWithTasks', () => {
     expect(managerProps.options.isRetriedUpload).toBe(true);
   });
 
-  it('When files from a folder upload begin, then the folder task shows as in progress', async () => {
+  test('When files from a folder upload begin, then the folder task shows as in progress', async () => {
     (tasksService.create as Mock).mockReturnValue('t1');
     (uploadRepository.getUploadState as Mock).mockResolvedValueOnce(undefined);
 
@@ -107,7 +107,7 @@ describe('uploadFilesWithTasks', () => {
     });
   });
 
-  it('When the folder task is paused, then it does not resume by itself', async () => {
+  test('When the folder task is paused, then it does not resume by itself', async () => {
     (tasksService.create as Mock).mockReturnValue('t1');
     (uploadRepository.getUploadState as Mock).mockResolvedValueOnce(TaskStatus.Paused);
 
@@ -119,7 +119,7 @@ describe('uploadFilesWithTasks', () => {
     });
   });
 
-  it('When a file upload starts, then its task shows it is being prepared and becomes stoppable', async () => {
+  test('When a file upload starts, then its task shows it is being prepared and becomes stoppable', async () => {
     (tasksService.create as Mock).mockReturnValue('t1');
     const { events, managerProps } = await runUpload([buildFile()]);
     const stop = vi.fn();
@@ -132,7 +132,7 @@ describe('uploadFilesWithTasks', () => {
     });
   });
 
-  it('When an upload attempt begins, then only files uploaded outside a folder show as in progress', async () => {
+  test('When an upload attempt begins, then only files uploaded outside a folder show as in progress', async () => {
     (tasksService.create as Mock).mockReturnValue('t1');
     const { events, managerProps } = await runUpload([buildFile()]);
 
@@ -144,7 +144,7 @@ describe('uploadFilesWithTasks', () => {
     expect(tasksService.updateTask).not.toHaveBeenCalled();
   });
 
-  it('When an upload advances, then the task progress updates unless the task is paused or cancelled', async () => {
+  test('When an upload advances, then the task progress updates unless the task is paused or cancelled', async () => {
     (tasksService.create as Mock).mockReturnValue('t1');
     const { events, managerProps } = await runUpload([buildFile()]);
 
@@ -162,7 +162,7 @@ describe('uploadFilesWithTasks', () => {
     expect(tasksService.updateTask).not.toHaveBeenCalled();
   });
 
-  it('When a file finishes uploading, then its task succeeds and the upload is tracked', async () => {
+  test('When a file finishes uploading, then its task succeeds and the upload is tracked', async () => {
     (tasksService.create as Mock).mockReturnValue('t1');
     const { events, managerProps } = await runUpload([buildFile()]);
 
@@ -176,7 +176,7 @@ describe('uploadFilesWithTasks', () => {
     expect(networkInformation.logNetworkInfoForUpload).toHaveBeenCalledWith({ fileName: 'file.txt', fileSize: 1024 });
   });
 
-  it('When a file inside a folder finishes uploading, then the folder progress advances', async () => {
+  test('When a file inside a folder finishes uploading, then the folder progress advances', async () => {
     (tasksService.create as Mock).mockReturnValue('t1');
     const relatedTaskProgress = { filesUploaded: 0, totalFilesToUpload: 4 };
     const { events, managerProps } = await runUpload([buildFile({ relatedTaskId: 'related-task' })], {
@@ -192,7 +192,7 @@ describe('uploadFilesWithTasks', () => {
     });
   });
 
-  it('When an upload fails, then the task shows an error message matching the cause', async () => {
+  test('When an upload fails, then the task shows an error message matching the cause', async () => {
     (tasksService.create as Mock).mockReturnValue('t1');
     const { events, managerProps } = await runUpload([buildFile()]);
 
@@ -212,7 +212,7 @@ describe('uploadFilesWithTasks', () => {
     expect(tasksService.updateTask).toHaveBeenCalledWith({ taskId: 't1', merge: { status: TaskStatus.Error } });
   });
 
-  it('When an upload is aborted, then its task shows as cancelled', async () => {
+  test('When an upload is aborted, then its task shows as cancelled', async () => {
     (tasksService.create as Mock).mockReturnValue('t1');
     const { events, managerProps } = await runUpload([buildFile()]);
 
@@ -221,7 +221,7 @@ describe('uploadFilesWithTasks', () => {
     expect(tasksService.updateTask).toHaveBeenCalledWith({ taskId: 't1', merge: { status: TaskStatus.Cancelled } });
   });
 
-  it('When a task is cancelled by the user, then only that upload is stopped', async () => {
+  test('When a task is cancelled by the user, then only that upload is stopped', async () => {
     (tasksService.create as Mock).mockReturnValue('t1');
     let registeredListener: ((task: { id: string }) => void) | undefined;
     (tasksService.addListener as Mock).mockImplementation(({ listener }) => {
