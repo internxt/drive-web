@@ -205,13 +205,10 @@
     }
   },
   "checkout": {
+    "title": "Ci sei quasi! Completa il pagamento in modo sicuro",
     "pay": "Paga",
     "processing": "Elaborazione in corso...",
     "checkout": "Pagamento",
-    "postalCode": {
-      "title": "Codice postale",
-      "placeholder": "Codice postale"
-    },
     "authComponent": {
       "signUp": {
         "emailAddress": "Il tuo indirizzo email",
@@ -219,6 +216,11 @@
       },
       "signIn": {
         "password": "La tua password"
+      },
+      "title": {
+        "signUp": "Crea un account",
+        "signIn": "Accedi",
+        "userIsSignedIn": "Utente connesso come"
       },
       "emailMustNotBeEmpty": "L'email non deve essere vuota",
       "privacyGuarantee": "Garanzia di privacy: Non condividiamo le tue informazioni e ti contatteremo solo se necessario per fornire il nostro servizio."
@@ -232,7 +234,10 @@
         "companyVatId": "Partita IVA dell'azienda"
       }
     },
+    "paymentTitle": "Seleziona un metodo di pagamento",
     "productCard": {
+      "title": "Riepilogo dell'ordine",
+      "selectedPlan": "Piano selezionato",
       "renewalTitle": {
         "month": "annuale",
         "year": "annuale",
@@ -244,6 +249,7 @@
         "lifetime": "Pagamento unico"
       },
       "saving": "Stai risparmiando {{percent}}%",
+      "planDetails": "Dettagli del piano:",
       "total": "Totale ",
       "addCoupon": {
         "buttonTitle": "Aggiungi coupon",
@@ -276,9 +282,7 @@
       "invalidPlan": "Tipo di piano non supportato. Seleziona un piano valido.",
       "fetchingCryptoCurrencies": "Non siamo riusciti a caricare le opzioni di criptovalute disponibili",
       "addressRequired": "Completa il tuo indirizzo di fatturazione per continuare",
-      "businessPlan": "Il piano aziendale non è disponibile",
-      "postalCodeRequired": "Inserisci il tuo codice postale per continuare",
-      "countryRequired": "Non siamo riusciti a determinare il tuo paese. Riprova più tardi."
+      "businessPlan": "Il piano aziendale non è disponibile"
     }
   },
   "general": {
@@ -1753,17 +1757,11 @@
               "Cleaner (Pulitore)",
               "Meet (Videoconferenza)"
             ],
-            "comingSoonFeatures": [
-              "Mail",
-              "Foto"
-            ]
+            "comingSoonFeatures": ["Mail", "Foto"]
           },
           "default": {
             "bytesTitle": "{{bytes}}",
-            "features": [
-              "{{bytes}} di spazio di archiviazione cloud crittografato",
-              "VPN Crittografata"
-            ]
+            "features": ["{{bytes}} di spazio di archiviazione cloud crittografato", "VPN Crittografata"]
           }
         },
         "businessPlanFeaturesList": {

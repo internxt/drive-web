@@ -205,13 +205,10 @@
     }
   },
   "checkout": {
+    "title": "You're almost there! Checkout securely",
     "pay": "Pay",
     "processing": "Processing...",
     "checkout": "Checkout",
-    "postalCode": {
-      "title": "Postal code",
-      "placeholder": "Postal code"
-    },
     "authComponent": {
       "signUp": {
         "emailAddress": "Your email address",
@@ -219,6 +216,11 @@
       },
       "signIn": {
         "password": "Your password"
+      },
+      "title": {
+        "signUp": "Create an account",
+        "signIn": "Login",
+        "userIsSignedIn": "User signed in as"
       },
       "emailMustNotBeEmpty": "Email must not be empty",
       "privacyGuarantee": "Privacy guarantee: We do not share your information and will contact you only as needed to provide our service."
@@ -232,18 +234,22 @@
         "companyVatId": "Company Vat ID"
       }
     },
+    "paymentTitle": "Select a payment method",
     "productCard": {
       "renewalTitle": {
         "month": "annual",
         "year": "annual",
         "lifetime": "lifetime"
       },
+      "title": "Order summary",
+      "selectedPlan": "Selected plan",
       "billed": {
         "month": "Billed monthly",
         "year": "Billed annually",
         "lifetime": "One-time payment"
       },
       "saving": "You're saving {{percent}}%",
+      "planDetails": "Plan details:",
       "total": "Total ",
       "addCoupon": {
         "buttonTitle": "Add coupon",
@@ -276,9 +282,7 @@
       "invalidPlan": "Unsupported plan type. Please select a valid plan.",
       "fetchingCryptoCurrencies": "We couldn't load the available cryptocurrency options",
       "addressRequired": "Please complete your billing address to continue",
-      "businessPlan": "Business plan is not available",
-      "postalCodeRequired": "Please enter your postal code to continue",
-      "countryRequired": "We couldn't determine your billing country. Please try again later."
+      "businessPlan": "Business plan is not available"
     }
   },
   "general": {
@@ -1753,17 +1757,11 @@
               "Cleaner",
               "Meet"
             ],
-            "comingSoonFeatures": [
-              "Mail",
-              "Photos"
-            ]
+            "comingSoonFeatures": ["Mail", "Photos"]
           },
           "default": {
             "bytesTitle": "{{bytes}}",
-            "features": [
-              "{{bytes}} of encrypted storage",
-              "Encrypted VPN"
-            ]
+            "features": ["{{bytes}} of encrypted storage", "Encrypted VPN"]
           }
         },
         "businessPlanFeaturesList": {
