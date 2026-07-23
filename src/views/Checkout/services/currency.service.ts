@@ -21,7 +21,6 @@ enum CurrencySymbol {
 
 const CURRENCY_BY_COUNTRY: Record<string, string> = {
   US: 'usd',
-  CA: 'usd',
 };
 
 const DEFAULT_CURRENCY = 'eur';

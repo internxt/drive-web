@@ -3,6 +3,8 @@ export const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
 export const IS_CRYPTO_PAYMENT_ENABLED = true;
 
+export const POSTAL_CODE_REQUIRED_COUNTRIES = ['US', 'CA', 'IN'];
+
 export const THEME_STYLES = {
   dark: {
     backgroundColor: 'rgb(17 17 17)',

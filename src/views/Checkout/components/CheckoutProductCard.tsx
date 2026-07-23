@@ -1,6 +1,6 @@
 import { Transition } from '@headlessui/react';
 import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
-import { Check, SealPercent, X } from '@phosphor-icons/react';
+import { SealPercentIcon, XIcon } from '@phosphor-icons/react';
 import { useState } from 'react';
 
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
@@ -18,11 +18,11 @@ import { Currency } from '../types';
 interface CheckoutProductCardProps {
   selectedPlan: PriceWithTax;
   showCouponCode: boolean;
-  showHardcodedRenewal?: string;
   onRemoveAppliedCouponCode: () => void;
   onCouponInputChange: (promoCode?: string) => void;
   couponCodeData?: CouponCodeData;
   couponError?: string;
+  isPaymentProcessing?: boolean;
 }
 
 const Separator = () => <div className="border border-gray-10" />;
@@ -31,12 +31,12 @@ export const CheckoutProductCard = ({
   selectedPlan,
   couponCodeData,
   showCouponCode,
-  showHardcodedRenewal,
   couponError,
+  isPaymentProcessing,
   onRemoveAppliedCouponCode,
   onCouponInputChange,
 }: CheckoutProductCardProps) => {
-  const { translate, translateList } = useTranslationContext();
+  const { translate } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
   const [couponName, setCouponName] = useState<string>('');
   const [openCouponCodeDropdown, setOpenCouponCodeDropdown] = useState<boolean>(false);
@@ -77,29 +77,10 @@ export const CheckoutProductCard = ({
       ? translate('preferences.account.plans.planFeaturesList.default.bytesTitle', { bytes })
       : specificTransalatedKey;
 
-  const specificFeatures = translateList(`preferences.account.plans.${planType}.${bytes}.features`, {
-    returnObjects: true,
-  });
-  const featureKeys = Array.isArray(specificFeatures)
-    ? specificFeatures
-    : translateList('preferences.account.plans.planFeaturesList.default.features', { bytes, returnObjects: true });
-
-  const featuresList = Array.isArray(
-    translateList(`preferences.account.plans.${planType}.${bytes}.comingSoonFeatures`),
-  );
-  const comingSoonFeatureKeys = Array.isArray(featuresList) ? featuresList : [];
-
   return (
     <div className="flex w-full flex-col space-y-4 overflow-y-auto">
-      <div className="flex w-full flex-row items-center justify-between space-x-4">
-        <p className="text-2xl font-semibold text-gray-100">{translate('checkout.productCard.title')}</p>
-        <div className="flex flex-row space-x-2">
-          {checkoutTheme === 'dark' ? <GuaranteeWhiteDays className="h-12" /> : <GuaranteeDarkDays className="h-12" />}
-        </div>
-      </div>
       <div className="flex w-full rounded-2xl border border-gray-10 bg-surface p-5">
         <div className="flex w-full flex-col space-y-5">
-          <p>{translate('checkout.productCard.selectedPlan')}</p>
           <p className="text-2xl font-bold text-gray-100">
             {productLabel + ' - ' + translate(`checkout.productCard.renewalTitle.${priceData.interval}`)}
           </p>
@@ -123,7 +104,7 @@ export const CheckoutProductCard = ({
           {couponCodeData && !isHiddenCoupon && (
             <div className="flex flex-row items-center justify-between font-semibold">
               <div className="flex flex-row items-center space-x-2 text-green-dark">
-                <SealPercent weight="fill" size={24} />
+                <SealPercentIcon weight="fill" size={24} />
                 <p>
                   {translate('checkout.productCard.saving', {
                     percent: couponCodeData?.percentOff ?? discountPercentage,
@@ -136,30 +117,6 @@ export const CheckoutProductCard = ({
               </p>
             </div>
           )}
-          <Separator />
-          <div className="flex flex-col space-y-5">
-            <p className="font-medium text-gray-100">{translate('checkout.productCard.planDetails')}</p>
-            <div className="flex flex-col space-y-4">
-              {featureKeys.map((feature) => (
-                <div key={feature} className="flex flex-row items-center space-x-2">
-                  <Check className="text-green-dark" size={16} weight="bold" />
-                  <p className="text-gray-100">{feature}</p>
-                </div>
-              ))}
-
-              {comingSoonFeatureKeys.length > 0 &&
-                comingSoonFeatureKeys?.map((feature) => (
-                  <div key={feature} className="flex flex-row items-center space-x-2">
-                    <Check className="text-green-dark" size={16} weight="bold" />
-                    <p className="text-gray-100">{feature}</p>
-
-                    <span className="rounded-md bg-orange/10 px-1 text-center text-orange">
-                      {translate('preferences.account.plans.planFeaturesList.comingSoon')}
-                    </span>
-                  </div>
-                ))}
-            </div>
-          </div>
           <Separator />
           <div className="flex flex-row items-center justify-between text-2xl font-semibold text-gray-100">
             <p>{totalLabel}</p>
@@ -183,7 +140,7 @@ export const CheckoutProductCard = ({
                         onCouponInputChange();
                       }}
                     >
-                      <X size={20} className="text-gray-50" />
+                      <XIcon size={20} className="text-gray-50" />
                     </button>
                   </div>
                 </div>
@@ -253,6 +210,9 @@ export const CheckoutProductCard = ({
               )}
             </>
           )}
+          <Button type="submit" id="submit-create-account" className="flex" disabled={isPaymentProcessing}>
+            {isPaymentProcessing ? translate('checkout.processing') : translate('checkout.pay')}
+          </Button>
         </div>
       </div>
       {priceData.interval === 'month' && (
@@ -264,6 +224,9 @@ export const CheckoutProductCard = ({
           })}
         </p>
       )}
+      <div className="flex justify-center flex-row space-x-2">
+        {checkoutTheme === 'dark' ? <GuaranteeWhiteDays className="h-12" /> : <GuaranteeDarkDays className="h-12" />}
+      </div>
     </div>
   );
 };
