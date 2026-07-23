@@ -299,7 +299,12 @@
         "image": "Image",
         "video": "Video",
         "audio": "Audio",
-        "clear": "Clear"
+        "attachments": "Attachments",
+        "anyType": "Any type",
+        "zip": "Archive (zip)",
+        "document": "Document",
+        "powerpoint": "Powerpoint",
+        "excel": "Excel"
       },
       "emptyState": {
         "title": "Find files and folders",

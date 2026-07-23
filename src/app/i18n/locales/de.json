@@ -278,7 +278,12 @@
         "image": "Bild",
         "video": "Video",
         "audio": "Audio",
-        "clear": "Löschen"
+        "attachments": "Anhänge",
+        "anyType": "Beliebiger Typ",
+        "zip": "Archiv (zip)",
+        "document": "Dokument",
+        "powerpoint": "Powerpoint",
+        "excel": "Excel"
       },
       "emptyState": {
         "title": "Dateien und Ordner finden",

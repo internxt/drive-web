@@ -278,7 +278,12 @@
         "image": "Изображение",
         "video": "Видео",
         "audio": "Аудио",
-        "clear": "Очистить"
+        "attachments": "Вложения",
+        "anyType": "Любой тип",
+        "zip": "Архив (zip)",
+        "document": "Документ",
+        "powerpoint": "Powerpoint",
+        "excel": "Excel"
       },
       "emptyState": {
         "title": "Поиск файлов и папок",

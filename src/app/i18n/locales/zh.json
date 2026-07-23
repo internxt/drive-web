@@ -299,7 +299,12 @@
         "image": "图片",
         "video": "视频",
         "audio": "语音",
-        "clear": "清除"
+        "attachments": "附件",
+        "anyType": "任何类型",
+        "zip": "压缩文件 (zip)",
+        "document": "文档",
+        "powerpoint": "Powerpoint",
+        "excel": "Excel"
       },
       "emptyState": {
         "title": "查找文件和文件夹",

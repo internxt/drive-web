@@ -278,7 +278,12 @@
         "image": "Imagen",
         "video": "Video",
         "audio": "Audio",
-        "clear": "Borrar"
+        "attachments": "Adjuntos",
+        "anyType": "Cualquier tipo",
+        "zip": "Archivo (zip)",
+        "document": "Documento",
+        "powerpoint": "Powerpoint",
+        "excel": "Excel"
       },
       "emptyState": {
         "title": "Buscar archivos y carpetas",

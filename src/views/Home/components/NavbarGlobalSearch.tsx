@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, FunctionComponent, SVGProps } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'app/store';
 import { storageSelectors } from 'app/store/slices/storage';
@@ -19,7 +19,8 @@ import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { uiActions } from 'app/store/slices/ui';
 import NotFoundState from './NotFoundState';
 import EmptyState from './EmptyState';
-import FilterItem from './FilterItem';
+import { toggleTypeCategory } from '../utils/typeFilterUtils';
+import SearchTypeFilter from './SearchTypeFilter';
 import { getItemPlainName } from 'app/crypto/services/utils';
 import navigationService from 'services/navigation.service';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
@@ -29,12 +30,6 @@ interface NavbarProps {
   user: UserSettings | undefined;
   hideSearch?: boolean;
   plan: PlanState;
-}
-
-interface SearchFilterItem {
-  id: SearchFileCategory;
-  Icon: FunctionComponent<SVGProps<SVGSVGElement>>;
-  name: string;
 }
 
 const getSearchBoxClassName = (openSearchBox: boolean) => {
@@ -60,18 +55,11 @@ const getClearButtonClassName = (query: string, openSearchBox: boolean) => {
 
 const getSearchResultsClassName = (openSearchBox: boolean) => {
   const baseClass =
-    'absolute top-12 z-10 flex h-80 w-full max-w-screen-sm origin-top flex-col overflow-hidden rounded-xl bg-surface text-gray-100 shadow-subtle-hard ring-1 ring-gray-10 transition-all duration-150 ease-out dark:bg-gray-5';
+    'absolute top-12 z-10 flex h-80 w-full max-w-screen-sm origin-top flex-col rounded-xl bg-surface text-gray-100 shadow-subtle-hard ring-1 ring-gray-10 transition-all duration-150 ease-out dark:bg-gray-5';
   if (openSearchBox) {
     return `${baseClass} translate-y-1.5 scale-100 opacity-100`;
   }
   return `${baseClass} pointer-events-none -translate-y-0.5 scale-98 opacity-0`;
-};
-
-const getClearFiltersClassName = (filtersLength: number) => {
-  const baseClass =
-    'flex h-8 cursor-pointer items-center space-x-2 rounded-full bg-gray-1 px-3 text-sm font-medium text-gray-60 transition-all duration-100 ease-out hover:bg-gray-5 dark:hover:bg-surface';
-  const visibilityClass = filtersLength === 0 ? 'pointer-events-none opacity-0' : '';
-  return `${baseClass} ${visibilityClass}`;
 };
 
 const getSearchResultItemClassName = (isSelected: boolean) => {
@@ -134,8 +122,19 @@ const Navbar = (props: NavbarProps) => {
     { enableOnFormTags: ['INPUT'] },
   );
 
-  const setTypeFilters = (updater: (current: SearchFileCategory[]) => SearchFileCategory[]) =>
-    setFilters((current) => ({ ...current, type: updater(current.type) }));
+  const toggleTypeFilter = (category: SearchFileCategory) =>
+    setFilters((current) => ({ ...current, type: toggleTypeCategory(current.type, category) }));
+
+  const clearTypeFilter = () => setFilters((current) => ({ ...current, type: [] }));
+
+  const openSearchBoxRef = useRef(openSearchBox);
+  openSearchBoxRef.current = openSearchBox;
+
+  const refocusSearchInput = () => {
+    setTimeout(() => {
+      if (openSearchBoxRef.current) searchInput.current?.focus();
+    }, 0);
+  };
 
   useEffect(() => {
     if (query.length > 0) {
@@ -239,34 +238,6 @@ const Navbar = (props: NavbarProps) => {
     if (item) document.querySelector(`#searchResult_${item}`)?.scrollIntoView();
   };
 
-  const filterItems: SearchFilterItem[] = [
-    {
-      id: 'folder',
-      Icon: iconService.getItemIcon(true),
-      name: translate('general.searchBar.filters.folder'),
-    },
-    {
-      id: 'pdf',
-      Icon: iconService.getItemIcon(false, 'pdf'),
-      name: translate('general.searchBar.filters.pdf'),
-    },
-    {
-      id: 'image',
-      Icon: iconService.getItemIcon(false, 'jpg'),
-      name: translate('general.searchBar.filters.image'),
-    },
-    {
-      id: 'video',
-      Icon: iconService.getItemIcon(false, 'mp4'),
-      name: translate('general.searchBar.filters.video'),
-    },
-    {
-      id: 'audio',
-      Icon: iconService.getItemIcon(false, 'mp3'),
-      name: translate('general.searchBar.filters.audio'),
-    },
-  ];
-
   return (
     <div className="flex h-14 w-full items-center justify-between border-b border-gray-5 text-gray-40 dark:bg-gray-1">
       <div className="flex h-full w-full items-center justify-between z-20">
@@ -328,31 +299,17 @@ const Navbar = (props: NavbarProps) => {
               onMouseEnter={() => setPreventBlur(true)}
               onMouseLeave={() => setPreventBlur(false)}
             >
-              <div className="flex w-full shrink-0 items-center justify-between border-b border-gray-5 px-2.5 py-2.5 dark:border-gray-10">
-                <div className="flex items-center space-x-2">
-                  {filterItems.map((item) => (
-                    <FilterItem
-                      key={item.id}
-                      id={item.id}
-                      Icon={item.Icon}
-                      name={item.name}
-                      filters={filters.type}
-                      setFilters={setTypeFilters}
-                    />
-                  ))}
-                </div>
-
-                <button
-                  type="button"
-                  className={getClearFiltersClassName(filters.type.length)}
-                  onClick={() => setFilters(emptySearchFilters)}
-                >
-                  {translate('general.searchBar.filters.clear')}
-                </button>
+              <div className="flex w-full shrink-0 items-center space-x-2 border-b border-gray-5 px-2.5 py-2.5 dark:border-gray-10">
+                <SearchTypeFilter
+                  selected={filters.type}
+                  onToggle={toggleTypeFilter}
+                  onSelectAny={clearTypeFilter}
+                  onClose={refocusSearchInput}
+                />
               </div>
 
               {shouldShowResults() ? (
-                <ul ref={searchResultList} className="flex h-full flex-col overflow-y-auto pb-4">
+                <ul ref={searchResultList} className="flex h-full flex-col overflow-y-auto rounded-b-xl pb-4">
                   {searchResult.map((item, index) => {
                     const isFolder = item.itemType === 'FOLDER' || item.itemType === 'folder';
                     const Icon = iconService.getItemIcon(isFolder, item.item.type);

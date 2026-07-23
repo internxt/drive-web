@@ -299,7 +299,12 @@
         "image": "Immagine",
         "video": "Video",
         "audio": "Audio",
-        "clear": "Libero"
+        "attachments": "Allegati",
+        "anyType": "Qualsiasi tipo",
+        "zip": "Archivio (zip)",
+        "document": "Documento",
+        "powerpoint": "Powerpoint",
+        "excel": "Excel"
       },
       "emptyState": {
         "title": "Trovare file e cartelle",

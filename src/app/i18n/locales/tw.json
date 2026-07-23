@@ -299,7 +299,12 @@
         "image": "圖片",
         "video": "視頻",
         "audio": "音頻",
-        "clear": "清除"
+        "attachments": "附件",
+        "anyType": "任何類型",
+        "zip": "壓縮檔 (zip)",
+        "document": "文件",
+        "powerpoint": "Powerpoint",
+        "excel": "Excel"
       },
       "emptyState": {
         "title": "尋找檔案和資料夾",

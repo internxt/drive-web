@@ -278,7 +278,12 @@
         "image": "Image",
         "video": "Vidéo",
         "audio": "Audio",
-        "clear": "Clair"
+        "attachments": "Pièces jointes",
+        "anyType": "Tout type",
+        "zip": "Archive (zip)",
+        "document": "Document",
+        "powerpoint": "Powerpoint",
+        "excel": "Excel"
       },
       "emptyState": {
         "title": "Rechercher des fichiers et des dossiers",
