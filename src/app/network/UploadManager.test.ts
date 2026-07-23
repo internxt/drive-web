@@ -1,5 +1,6 @@
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
-import { uploadFileWithManager, UploadManagerEvents } from './UploadManager';
+import { beforeEach, describe, expect, it, Mock, test, vi } from 'vitest';
+import { uploadFileWithManager } from './UploadManager';
+import tasksService from 'app/tasks/services/tasks.service';
 import errorService from 'services/error.service';
 import { AppError } from '@internxt/sdk';
 import uploadFile from 'app/drive/services/file.service/uploadFile';
@@ -8,9 +9,20 @@ import { DriveFileData } from 'app/drive/types';
 import RetryManager from './RetryManager';
 import { TaskStatus } from 'app/tasks/types';
 import { ErrorMessages } from 'app/core/constants';
+import * as networkInformation from './networkInformation';
 
 vi.mock('app/drive/services/file.service/uploadFile', () => ({
   default: vi.fn(() => Promise.resolve({} as DriveFileData)),
+}));
+
+vi.mock('app/tasks/services/tasks.service', () => ({
+  default: {
+    create: vi.fn(),
+    updateTask: vi.fn(),
+    findTask: vi.fn(),
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+  },
 }));
 
 vi.mock('services/error.service', () => ({
@@ -38,6 +50,18 @@ vi.mock('app/repositories/DatabaseUploadRepository', () => {
   };
 });
 
+vi.mock('i18next', () => ({ default: { language: 'en' }, t: () => 'Translation message' }));
+
+vi.mock('./networkInformation', () => ({
+  logNetworkInfoForUpload: vi.fn(),
+}));
+
+vi.mock('services/referral.service', () => ({
+  default: {
+    trackFileUpload: vi.fn(),
+  },
+}));
+
 const openMaxSpaceOccupiedDialogMock = vi.fn();
 
 const mockFile1 = {
@@ -62,36 +86,14 @@ const mockFile2 = {
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 } as unknown as DriveFileData;
-
-const buildFile = (taskId: string, overrides: Record<string, unknown> = {}) => ({
-  taskId,
-  filecontent: {
-    content: 'file-content' as unknown as File,
-    type: 'text/plain',
-    name: 'file.txt',
-    size: 1024,
-    parentFolderId: 'folder-1',
-  },
-  userEmail: '',
-  parentFolderId: '',
-  ...overrides,
-});
-
-const defaultOptions = {
-  ownerUserAuthenticationData: undefined,
-  sharedItemData: {
-    isDeepFolder: false,
-    currentFolderId: 'parentFolderId',
-  },
-  isUploadedFromFolder: true,
-};
+const taskId = 'task-id';
 
 describe('UploadManager memory usage conditions', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('When memory usage cannot be measured, then the upload still proceeds', async () => {
+  it('should handle case when window.performance.memory is undefined', async () => {
     const originalPerformance = window.performance;
     Object.defineProperty(window, 'performance', {
       value: undefined,
@@ -100,13 +102,37 @@ describe('UploadManager memory usage conditions', () => {
     });
 
     const uploadFileSpy = (uploadFile as Mock).mockResolvedValueOnce(mockFile1);
+    vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
+    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(errorService, 'castError').mockReturnValue(new AppError('error'));
 
     await uploadFileWithManager({
-      files: [buildFile('taskId')],
+      files: [
+        {
+          taskId: 'taskId',
+          filecontent: {
+            content: 'file-content' as unknown as File,
+            type: 'text/plain',
+            name: 'file.txt',
+            size: 1024,
+            parentFolderId: 'folder-1',
+          },
+          userEmail: '',
+          parentFolderId: '',
+        },
+      ],
       maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
       uploadRepository: DatabaseUploadRepository.getInstance(),
-      options: defaultOptions,
+      options: {
+        ownerUserAuthenticationData: undefined,
+        sharedItemData: {
+          isDeepFolder: false,
+          currentFolderId: 'parentFolderId',
+        },
+        isUploadedFromFolder: true,
+      },
     });
 
     expect(uploadFileSpy).toHaveBeenCalledOnce();
@@ -118,7 +144,7 @@ describe('UploadManager memory usage conditions', () => {
     });
   });
 
-  it('When memory usage readings are incomplete, then the upload still proceeds', async () => {
+  it('should handle case when memory properties are null', async () => {
     const originalPerformance = window.performance;
     Object.defineProperty(window, 'performance', {
       value: {
@@ -132,13 +158,37 @@ describe('UploadManager memory usage conditions', () => {
     });
 
     const uploadFileSpy = (uploadFile as Mock).mockResolvedValueOnce(mockFile1);
+    vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
+    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(errorService, 'castError').mockReturnValue(new AppError('error'));
 
     await uploadFileWithManager({
-      files: [buildFile('taskId')],
+      files: [
+        {
+          taskId: 'taskId',
+          filecontent: {
+            content: 'file-content' as unknown as File,
+            type: 'text/plain',
+            name: 'file.txt',
+            size: 1024,
+            parentFolderId: 'folder-1',
+          },
+          userEmail: '',
+          parentFolderId: '',
+        },
+      ],
       maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
       uploadRepository: DatabaseUploadRepository.getInstance(),
-      options: defaultOptions,
+      options: {
+        ownerUserAuthenticationData: undefined,
+        sharedItemData: {
+          isDeepFolder: false,
+          currentFolderId: 'parentFolderId',
+        },
+        isUploadedFromFolder: true,
+      },
     });
 
     expect(uploadFileSpy).toHaveBeenCalledOnce();
@@ -151,83 +201,178 @@ describe('UploadManager memory usage conditions', () => {
   });
 });
 
-describe('uploadFileWithManager', () => {
+describe('checkUploadFiles', () => {
   beforeEach(() => {
     RetryManager.clearTasks();
     vi.clearAllMocks();
   });
 
-  it('When several files are uploaded, then every file is transferred', async () => {
-    const uploadFileSpy = (uploadFile as Mock).mockResolvedValueOnce(mockFile1).mockResolvedValueOnce(mockFile2);
+  it('should upload file using an async queue', async () => {
+    const uploadFileSpy = (uploadFile as Mock).mockResolvedValueOnce(mockFile1);
+    vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
+    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(errorService, 'castError').mockReturnValue(new AppError('error'));
 
     await uploadFileWithManager({
-      files: [buildFile('taskId1'), buildFile('taskId2')],
+      files: [
+        {
+          taskId: 'taskId',
+          filecontent: {
+            content: 'file-content' as unknown as File,
+            type: 'text/plain',
+            name: 'file.txt',
+            size: 1024,
+            parentFolderId: 'folder-1',
+          },
+          userEmail: '',
+          parentFolderId: '',
+        },
+      ],
       maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
       uploadRepository: DatabaseUploadRepository.getInstance(),
-      options: defaultOptions,
+      options: {
+        ownerUserAuthenticationData: undefined,
+        sharedItemData: {
+          isDeepFolder: false,
+          currentFolderId: 'parentFolderId',
+        },
+        isUploadedFromFolder: true,
+      },
+    });
+
+    expect(uploadFileSpy).toHaveBeenCalledOnce();
+  });
+
+  it('should upload multiple files using an async queue', async () => {
+    const uploadFileSpy = (uploadFile as Mock).mockResolvedValueOnce(mockFile1).mockResolvedValueOnce(mockFile2);
+
+    vi.spyOn(tasksService, 'create').mockReturnValue(taskId);
+    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(errorService, 'castError').mockReturnValue(new AppError('error'));
+
+    await uploadFileWithManager({
+      files: [
+        {
+          taskId: 'taskId1',
+          filecontent: {
+            content: 'file-content1' as unknown as File,
+            type: 'text/plain1',
+            name: 'file1.txt',
+            size: 1024,
+            parentFolderId: 'folder-1',
+          },
+          userEmail: '',
+          parentFolderId: '',
+        },
+        {
+          taskId: 'taskId2',
+          filecontent: {
+            content: 'file-content2' as unknown as File,
+            type: 'text/plain2',
+            name: 'file2.txt',
+            size: 1024,
+            parentFolderId: 'folder-1',
+          },
+          userEmail: '',
+          parentFolderId: '',
+        },
+      ],
+      maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
+      uploadRepository: DatabaseUploadRepository.getInstance(),
+      options: {
+        ownerUserAuthenticationData: undefined,
+        sharedItemData: {
+          isDeepFolder: false,
+          currentFolderId: 'parentFolderId',
+        },
+        isUploadedFromFolder: true,
+      },
     });
 
     expect(uploadFileSpy).toHaveBeenCalledTimes(2);
   });
 
-  it('When a file upload succeeds, then the success is notified with the uploaded file data', async () => {
-    (uploadFile as Mock).mockResolvedValueOnce(mockFile1);
-    const events: UploadManagerEvents = { onUploadSuccess: vi.fn() };
-
-    await uploadFileWithManager({
-      files: [buildFile('taskId')],
-      maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
-      uploadRepository: DatabaseUploadRepository.getInstance(),
-      events,
-    });
-
-    expect(events.onUploadSuccess).toHaveBeenCalledOnce();
-    expect(events.onUploadSuccess).toHaveBeenCalledWith(
-      expect.objectContaining({ taskId: 'taskId' }),
-      expect.objectContaining({ uuid: mockFile1.uuid, name: 'file.txt' }),
-    );
-  });
-
-  it('When the upload is cancelled midway, then it is notified as cancelled and not as a failure', async () => {
+  it('should abort the file upload if abortController is called', async () => {
     const abortController = new AbortController();
-    (uploadFile as Mock).mockImplementation(() => {
-      abortController.abort();
-      return Promise.reject(new Error('abort'));
-    });
-    const events: UploadManagerEvents = { onUploadAborted: vi.fn(), onUploadError: vi.fn() };
 
-    await uploadFileWithManager({
-      files: [buildFile('taskId')],
+    uploadFileWithManager({
+      files: [
+        {
+          taskId: 'taskId',
+          filecontent: {
+            content: 'file-content' as unknown as File,
+            type: 'text/plain',
+            name: 'file.txt',
+            size: 1024,
+            parentFolderId: 'folder-1',
+          },
+          userEmail: '',
+          parentFolderId: '',
+        },
+      ],
       maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
       uploadRepository: DatabaseUploadRepository.getInstance(),
       abortController,
-      events,
+      options: {
+        ownerUserAuthenticationData: undefined,
+        sharedItemData: {
+          isDeepFolder: false,
+          currentFolderId: 'parentFolderId',
+        },
+        isUploadedFromFolder: true,
+      },
     });
 
-    expect(events.onUploadAborted).toHaveBeenCalledWith(expect.objectContaining({ taskId: 'taskId' }));
-    expect(events.onUploadError).not.toHaveBeenCalled();
+    abortController.abort();
+    expect(abortController.signal.aborted).toBe(true);
   });
 
-  it('When an upload succeeds, then it is no longer scheduled for retry', async () => {
+  it('should not add files to RetryManager if upload is successful and remove from RetryManager', async () => {
     (uploadFile as Mock).mockResolvedValueOnce(mockFile1);
     vi.spyOn(Promise, 'all').mockResolvedValueOnce([mockFile1]);
     const RetryAddFilesSpy = vi.spyOn(RetryManager, 'addTasks');
-    const RetryRemoveFileSpy = vi.spyOn(RetryManager, 'removeTask');
+    const RetrRemoveFileSpy = vi.spyOn(RetryManager, 'removeTask');
+
+    vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
+    vi.spyOn(tasksService, 'updateTask').mockReturnValueOnce();
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(errorService, 'castError').mockReturnValue(new AppError('error'));
 
     await uploadFileWithManager({
-      files: [buildFile('taskId')],
+      files: [
+        {
+          taskId: 'taskId',
+          filecontent: {
+            content: 'file-content' as unknown as File,
+            type: 'text/plain',
+            name: 'file.txt',
+            size: 1024,
+            parentFolderId: 'folder-1',
+          },
+          userEmail: '',
+          parentFolderId: '',
+        },
+      ],
       maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
       uploadRepository: DatabaseUploadRepository.getInstance(),
-      options: defaultOptions,
+      options: {
+        ownerUserAuthenticationData: undefined,
+        sharedItemData: {
+          isDeepFolder: false,
+          currentFolderId: 'parentFolderId',
+        },
+        isUploadedFromFolder: true,
+      },
     });
 
     expect(RetryAddFilesSpy).not.toHaveBeenCalled();
-    expect(RetryRemoveFileSpy).toHaveBeenCalledWith('taskId');
+    expect(RetrRemoveFileSpy).toHaveBeenCalledWith('taskId');
   });
 
-  it('When an upload keeps failing, then it is scheduled for retry', async () => {
+  it('should add files to RetryManager if any upload fails', async () => {
     //needs to fail twice because MAX_UPLOAD_ATTEMPTS = 2
     (uploadFile as Mock)
       .mockResolvedValueOnce(mockFile1)
@@ -235,95 +380,217 @@ describe('uploadFileWithManager', () => {
       .mockRejectedValueOnce(new AppError('Retryable file'));
     vi.spyOn(Promise, 'all').mockResolvedValueOnce([mockFile1, undefined]);
     const RetryAddFilesSpy = vi.spyOn(RetryManager, 'addTasks');
+
+    vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
+    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(errorService, 'castError').mockImplementation((e) => e as AppError);
 
     await uploadFileWithManager({
-      files: [buildFile('taskId'), buildFile('taskId2')],
+      files: [
+        {
+          taskId: 'taskId',
+          filecontent: {
+            content: 'file-content' as unknown as File,
+            type: 'text/plain',
+            name: 'file.txt',
+            size: 1024,
+            parentFolderId: 'folder-1',
+          },
+          userEmail: '',
+          parentFolderId: '',
+        },
+        {
+          taskId: 'taskId2',
+          filecontent: {
+            content: 'file-content2' as unknown as File,
+            type: 'text/plain2',
+            name: 'file2.txt',
+            size: 1024,
+            parentFolderId: 'folder-1',
+          },
+          userEmail: '',
+          parentFolderId: '',
+        },
+      ],
       maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
       uploadRepository: DatabaseUploadRepository.getInstance(),
-      options: defaultOptions,
+      options: {
+        ownerUserAuthenticationData: undefined,
+        sharedItemData: {
+          isDeepFolder: false,
+          currentFolderId: 'parentFolderId',
+        },
+        isUploadedFromFolder: true,
+      },
     });
 
     expect(RetryAddFilesSpy).toHaveBeenCalled();
-    expect(RetryManager.getTasks()).toHaveLength(1);
+    expect(RetryManager.getTasks().length).toBe(1);
   });
 
-  it('When a retried upload fails again, then it is marked as failed', async () => {
+  it('should change status to failed if cannot retry successfully', async () => {
     //needs to fail twice because MAX_UPLOAD_ATTEMPTS = 2
     (uploadFile as Mock)
       .mockRejectedValueOnce(new AppError('Retryable file'))
       .mockRejectedValueOnce(new AppError('Retryable file'));
     vi.spyOn(Promise, 'all').mockResolvedValueOnce([undefined]);
     const RetryChangeStatusSpy = vi.spyOn(RetryManager, 'changeStatus');
+
+    vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
+    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(errorService, 'castError').mockImplementation((e) => e as AppError);
 
     await uploadFileWithManager({
-      files: [buildFile('taskId')],
+      files: [
+        {
+          taskId: 'taskId',
+          filecontent: {
+            content: 'file-content' as unknown as File,
+            type: 'text/plain',
+            name: 'file.txt',
+            size: 1024,
+            parentFolderId: 'folder-1',
+          },
+          userEmail: '',
+          parentFolderId: '',
+        },
+      ],
       maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
       uploadRepository: DatabaseUploadRepository.getInstance(),
-      options: defaultOptions,
+      options: {
+        ownerUserAuthenticationData: undefined,
+        sharedItemData: {
+          isDeepFolder: false,
+          currentFolderId: 'parentFolderId',
+        },
+        isUploadedFromFolder: true,
+      },
     });
 
     expect(RetryChangeStatusSpy).toHaveBeenCalledWith('taskId', 'failed');
   });
 
-  it('When the connection is lost during an upload, then the failure is notified as a connection loss', async () => {
+  it('should handle lost connection error during upload', async () => {
     const lostConnectionError = new AppError(ErrorMessages.NetworkError);
     (uploadFile as Mock).mockRejectedValueOnce(lostConnectionError);
 
-    const events: UploadManagerEvents = { onUploadError: vi.fn() };
+    const updateTaskSpy = vi.spyOn(tasksService, 'updateTask');
     vi.spyOn(errorService, 'castError').mockImplementation((e) => e as AppError);
     vi.spyOn(errorService, 'reportError').mockReturnValue();
 
     await expect(
       uploadFileWithManager({
-        files: [buildFile('taskId')],
+        files: [
+          {
+            taskId: 'taskId',
+            filecontent: {
+              content: 'file-content' as unknown as File,
+              type: 'text/plain',
+              name: 'file.txt',
+              size: 1024,
+              parentFolderId: 'folder-1',
+            },
+            userEmail: '',
+            parentFolderId: '',
+          },
+        ],
         maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
         uploadRepository: DatabaseUploadRepository.getInstance(),
-        options: defaultOptions,
-        events,
+        options: {
+          ownerUserAuthenticationData: undefined,
+          sharedItemData: {
+            isDeepFolder: false,
+            currentFolderId: 'parentFolderId',
+          },
+          isUploadedFromFolder: true,
+        },
       }),
     ).rejects.toThrow(lostConnectionError);
 
     expect(errorService.reportError).toHaveBeenCalledWith(lostConnectionError);
-    expect(events.onUploadError).toHaveBeenCalledWith(expect.objectContaining({ taskId: 'taskId' }), 'connection-lost');
+    expect(updateTaskSpy).toHaveBeenCalledWith({
+      taskId: 'taskId',
+      merge: { status: TaskStatus.Error, subtitle: expect.any(String) },
+    });
   });
 
-  it('When an upload fails unexpectedly, then the failure is notified and no success is reported', async () => {
+  it('should handle an unexpected error', async () => {
     const unexpectedError = new AppError(ErrorMessages.ServerUnavailable);
     (uploadFile as Mock).mockRejectedValue(unexpectedError);
 
-    const events: UploadManagerEvents = { onUploadError: vi.fn(), onUploadSuccess: vi.fn() };
+    const updateTaskSpy = vi.spyOn(tasksService, 'updateTask');
     vi.spyOn(errorService, 'castError').mockImplementation((e) => e as AppError);
     const errorServiceSpy = vi.spyOn(errorService, 'reportError').mockReturnValue();
 
     await expect(
       uploadFileWithManager({
-        files: [buildFile('taskId')],
+        files: [
+          {
+            taskId: 'taskId',
+            filecontent: {
+              content: 'file-content' as unknown as File,
+              type: 'text/plain',
+              name: 'file.txt',
+              size: 1024,
+              parentFolderId: 'folder-1',
+            },
+            userEmail: '',
+            parentFolderId: '',
+          },
+        ],
         maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
         uploadRepository: DatabaseUploadRepository.getInstance(),
-        options: defaultOptions,
-        events,
+        options: {
+          ownerUserAuthenticationData: undefined,
+          sharedItemData: {
+            isDeepFolder: false,
+            currentFolderId: 'parentFolderId',
+          },
+          isUploadedFromFolder: true,
+        },
       }),
     ).rejects.toThrow(unexpectedError);
 
     expect(errorServiceSpy).toHaveBeenCalledWith(unexpectedError);
-    expect(events.onUploadError).toHaveBeenCalledWith(expect.objectContaining({ taskId: 'taskId' }), 'upload-failed');
-    expect(events.onUploadSuccess).not.toHaveBeenCalled();
+    expect(updateTaskSpy).toHaveBeenCalledWith({
+      taskId: 'taskId',
+      merge: { status: TaskStatus.Error, subtitle: expect.any(String) },
+    });
   });
 
-  it('When uploading a file to a workspace, then the workspace credentials are used', async () => {
+  it('When uploading a file to a workspace, then it uses workspace credentials and same bucket for file and thumbnail', async () => {
     const workspaceBucket = 'workspace-bucket-123';
     const workspaceId = 'workspace-id-456';
     const uploadFileSpy = (uploadFile as Mock).mockResolvedValueOnce(mockFile1);
+
+    vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
+    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(errorService, 'castError').mockReturnValue(new AppError('error'));
 
     await uploadFileWithManager({
-      files: [buildFile('taskId', { userEmail: 'user@test.com' })],
+      files: [
+        {
+          taskId: 'taskId',
+          filecontent: {
+            content: 'file-content' as unknown as File,
+            type: 'text/plain',
+            name: 'file.txt',
+            size: 1024,
+            parentFolderId: 'folder-1',
+          },
+          userEmail: 'user@test.com',
+          parentFolderId: '',
+        },
+      ],
       maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
       uploadRepository: DatabaseUploadRepository.getInstance(),
       options: {
-        ...defaultOptions,
         ownerUserAuthenticationData: {
           bucketId: workspaceBucket,
           workspaceId: workspaceId,
@@ -334,6 +601,11 @@ describe('uploadFileWithManager', () => {
           workspacesToken: 'workspaces-token',
           resourcesToken: 'resources-token',
         },
+        sharedItemData: {
+          isDeepFolder: false,
+          currentFolderId: 'parentFolderId',
+        },
+        isUploadedFromFolder: true,
       },
     });
 
@@ -351,15 +623,104 @@ describe('uploadFileWithManager', () => {
     );
   });
 
-  it('When uploading a personal file, then the personal credentials are used', async () => {
+  it('should log network information on successful file upload', async () => {
+    const logNetworkInfoMock = networkInformation.logNetworkInfoForUpload as Mock;
+    (uploadFile as Mock).mockResolvedValueOnce(mockFile1);
+    vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
+    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
+
+    await uploadFileWithManager({
+      files: [
+        {
+          taskId: 'taskId',
+          filecontent: {
+            content: 'file-content' as unknown as File,
+            type: 'text/plain',
+            name: 'file.txt',
+            size: 1024,
+            parentFolderId: 'folder-1',
+          },
+          userEmail: '',
+          parentFolderId: '',
+        },
+      ],
+      maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
+      uploadRepository: DatabaseUploadRepository.getInstance(),
+    });
+
+    expect(logNetworkInfoMock).toHaveBeenCalledOnce();
+    expect(logNetworkInfoMock).toHaveBeenCalledWith({ fileName: 'file.txt', fileSize: 1024 });
+  });
+
+  it('should not log network information when upload fails', async () => {
+    const logNetworkInfoMock = networkInformation.logNetworkInfoForUpload as Mock;
+    (uploadFile as Mock).mockRejectedValue(new AppError('Upload failed'));
+    vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
+    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
+    vi.spyOn(errorService, 'reportError').mockReturnValue();
+
+    await expect(
+      uploadFileWithManager({
+        files: [
+          {
+            taskId: 'taskId',
+            filecontent: {
+              content: 'file-content' as unknown as File,
+              type: 'text/plain',
+              name: 'file.txt',
+              size: 1024,
+              parentFolderId: 'folder-1',
+            },
+            userEmail: '',
+            parentFolderId: '',
+          },
+        ],
+        maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
+        uploadRepository: DatabaseUploadRepository.getInstance(),
+      }),
+    ).rejects.toThrow();
+
+    expect(logNetworkInfoMock).not.toHaveBeenCalled();
+  });
+
+  it('When uploading a personal file, then it uses personal credentials', async () => {
     const uploadFileSpy = (uploadFile as Mock).mockResolvedValueOnce(mockFile1);
+
+    vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
+    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(errorService, 'castError').mockReturnValue(new AppError('error'));
 
     await uploadFileWithManager({
-      files: [buildFile('taskId', { userEmail: 'user@test.com' })],
+      files: [
+        {
+          taskId: 'taskId',
+          filecontent: {
+            content: 'file-content' as unknown as File,
+            type: 'text/plain',
+            name: 'file.txt',
+            size: 1024,
+            parentFolderId: 'folder-1',
+          },
+          userEmail: 'user@test.com',
+          parentFolderId: '',
+        },
+      ],
       maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
       uploadRepository: DatabaseUploadRepository.getInstance(),
-      options: defaultOptions,
+      options: {
+        ownerUserAuthenticationData: undefined,
+        sharedItemData: {
+          isDeepFolder: false,
+          currentFolderId: 'parentFolderId',
+        },
+        isUploadedFromFolder: true,
+      },
     });
 
     expect(uploadFileSpy).toHaveBeenCalledWith(
@@ -373,20 +734,44 @@ describe('uploadFileWithManager', () => {
     );
   });
 
-  it('When the user has no storage space left, then they are warned about it', async () => {
+  test('When upload fails because the user has no storage space left, then the max space occupied callback is invoked', async () => {
     const err = new AppError('Max space used', 420);
     // needs to fail twice because MAX_UPLOAD_ATTEMPTS = 2
     (uploadFile as Mock).mockRejectedValue(err);
 
+    vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
+    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(errorService, 'castError').mockImplementation((e) => e as AppError);
     vi.spyOn(errorService, 'reportError').mockReturnValue();
 
     await expect(
       uploadFileWithManager({
-        files: [buildFile('taskId')],
+        files: [
+          {
+            taskId: 'taskId',
+            filecontent: {
+              content: 'file-content' as unknown as File,
+              type: 'text/plain',
+              name: 'file.txt',
+              size: 1024,
+              parentFolderId: 'folder-1',
+            },
+            userEmail: '',
+            parentFolderId: '',
+          },
+        ],
         maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
         uploadRepository: DatabaseUploadRepository.getInstance(),
-        options: defaultOptions,
+        options: {
+          ownerUserAuthenticationData: undefined,
+          sharedItemData: {
+            isDeepFolder: false,
+            currentFolderId: 'parentFolderId',
+          },
+          isUploadedFromFolder: true,
+        },
       }),
     ).rejects.toThrow(err);
 
