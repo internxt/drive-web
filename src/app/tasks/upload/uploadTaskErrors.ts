@@ -1,9 +1,8 @@
 import { t } from 'i18next';
 import { TaskStatus } from 'app/tasks/types';
+import { UploadErrorReason } from 'app/network/types';
 
-export type UploadTaskErrorReason = 'connection-lost' | 'upload-failed';
-
-const errorSubtitle = (reason?: UploadTaskErrorReason): string | undefined => {
+const errorSubtitle = (reason?: UploadErrorReason): string | undefined => {
   switch (reason) {
     case 'connection-lost':
       return t('error.connectionLostError') as string;
@@ -14,7 +13,7 @@ const errorSubtitle = (reason?: UploadTaskErrorReason): string | undefined => {
   }
 };
 
-export const errorMerge = (reason?: UploadTaskErrorReason) => {
+export const errorMerge = (reason?: UploadErrorReason) => {
   const subtitle = errorSubtitle(reason);
   return subtitle !== undefined ? { status: TaskStatus.Error, subtitle } : { status: TaskStatus.Error };
 };

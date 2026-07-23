@@ -1,10 +1,10 @@
 import { uiActions } from 'app/store/slices/ui';
 import { planThunks } from 'app/store/slices/plan';
-import { uploadFoldersWithManager } from 'app/network/UploadFolderManager';
+import { uploadFoldersWithTasks } from 'app/tasks/upload/uploadFoldersWithTasks';
 
-type UploadFoldersWithManagerProps = Parameters<typeof uploadFoldersWithManager>[0];
+type UploadFoldersWithTasksProps = Parameters<typeof uploadFoldersWithTasks>[0];
 type UploadFoldersWithTrackingProps = Omit<
-  UploadFoldersWithManagerProps,
+  UploadFoldersWithTasksProps,
   'fileSizeExceededCallback' | 'onFolderUploadSucceeded'
 >;
 
@@ -12,7 +12,7 @@ export const uploadFoldersWithTracking = (props: UploadFoldersWithTrackingProps)
   const { dispatch, selectedWorkspace } = props;
   const memberId = selectedWorkspace?.workspaceUser?.memberId;
 
-  return uploadFoldersWithManager({
+  return uploadFoldersWithTasks({
     ...props,
     fileSizeExceededCallback: (exceededFiles) =>
       dispatch(uiActions.setOpenFileSizeLimitReachedDialog({ open: true, info: { exceededFiles } })),
