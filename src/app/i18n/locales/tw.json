@@ -205,13 +205,10 @@
     }
   },
   "checkout": {
+    "title": "您快完成了！請安全結帳",
     "pay": "支付",
     "processing": "處理中...",
     "checkout": "結帳",
-    "postalCode": {
-      "title": "郵遞區號",
-      "placeholder": "郵遞區號"
-    },
     "authComponent": {
       "signUp": {
         "emailAddress": "您的電子郵件地址",
@@ -219,6 +216,11 @@
       },
       "signIn": {
         "password": "您的密碼"
+      },
+      "title": {
+        "signUp": "創建帳戶",
+        "signIn": "登錄",
+        "userIsSignedIn": "用戶已登錄為"
       },
       "emailMustNotBeEmpty": "電子郵件不能為空",
       "privacyGuarantee": "隱私保證：我們不會分享您的信息，並且只會在提供服務時與您聯繫。"
@@ -232,7 +234,10 @@
         "companyVatId": "公司增值稅編號"
       }
     },
+    "paymentTitle": "選擇支付方式",
     "productCard": {
+      "title": "訂單摘要",
+      "selectedPlan": "選擇的計劃",
       "renewalTitle": {
         "month": "每年",
         "year": "每年",
@@ -244,6 +249,7 @@
         "lifetime": "一次性支付"
       },
       "saving": "您節省了 {{percent}}%",
+      "planDetails": "計劃詳情：",
       "total": "總計d",
       "addCoupon": {
         "buttonTitle": "添加優惠券",
@@ -276,9 +282,7 @@
       "invalidPlan": "不支援的方案類型。請選擇有效的方案。",
       "fetchingCryptoCurrencies": "無法載入可用的加密貨幣選項",
       "addressRequired": "請填寫您的帳單地址以繼續",
-      "businessPlan": "企業計劃不可用",
-      "postalCodeRequired": "請輸入您的郵遞區號以繼續",
-      "countryRequired": "我們無法確定您的國家/地區,請稍後再試"
+      "businessPlan": "企業計劃不可用"
     }
   },
   "general": {
@@ -1753,17 +1757,11 @@
               "清理工具 (Cleaner)",
               "會議 (Meet)"
             ],
-            "comingSoonFeatures": [
-              "郵件 (Mail)",
-              "照片(Photos)"
-            ]
+            "comingSoonFeatures": ["郵件 (Mail)", "照片(Photos)"]
           },
           "default": {
             "bytesTitle": "{{bytes}}",
-            "features": [
-              "{{bytes}} 加密雲端儲存空間",
-              "加密 VPN"
-            ]
+            "features": ["{{bytes}} 加密雲端儲存空間", "加密 VPN"]
           }
         },
         "businessPlanFeaturesList": {
