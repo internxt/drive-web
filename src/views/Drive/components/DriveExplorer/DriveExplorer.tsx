@@ -27,7 +27,7 @@ import { CreateFolderDialog } from 'views/Drive/components';
 import DeleteItemsDialog from 'views/Trash/components/DeleteItemsDialog';
 import { useTrashPagination } from 'views/Trash/hooks/useTrashPagination';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { uploadFoldersWithTracking } from 'app/drive/services/folder.service/uploadFoldersWithTracking';
+import { uploadFoldersWithManager } from 'app/network/UploadFolderManager';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { AdvancedSharedItem } from 'app/share/types';
 import { Tutorial } from 'components/Tutorial';
@@ -790,7 +790,7 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
         options: { onSuccess: onDragAndDropEnd },
       }));
 
-      await uploadFoldersWithTracking({
+      await uploadFoldersWithManager({
         payload: folderDataToUpload,
         selectedWorkspace: props.selectedWorkspace,
         dispatch,

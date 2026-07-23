@@ -1,56 +1,44 @@
 import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit';
 import { queue, QueueObject } from 'async';
+import { t } from 'i18next';
 import errorService from 'services/error.service';
 import newStorageService from 'app/drive/services/new-storage.service';
 import { DriveFolderData, DriveItemData } from 'app/drive/types';
 import { RootState } from '../store';
+import { planThunks } from '../store/slices/plan';
 import { checkFolderDuplicated } from '../store/slices/storage/folderUtils/checkFolderDuplicated';
 import { createFolder } from '../store/slices/storage/folderUtils/createFolder';
 import { getUniqueFolderName } from '../store/slices/storage/folderUtils/getUniqueFolderName';
 import { deleteItemsThunk } from '../store/slices/storage/storage.thunks/deleteItemsThunk';
 import { uploadItemsParallelThunk } from '../store/slices/storage/storage.thunks/uploadItemsThunk';
 import { IRoot } from '../store/slices/storage/types';
+import tasksService from '../tasks/services/tasks.service';
+import { TaskData, TaskEvent, TaskStatus, TaskType, UploadFolderTask } from '../tasks/types';
 import { QueueUtilsService } from 'utils/queueUtils';
 import { wait } from 'utils/timeUtils';
 import { ConnectionLostError } from './requests';
+import referralService from 'services/referral.service';
+import { logNetworkInfoForUpload } from './networkInformation';
+import { uiActions } from 'app/store/slices/ui';
 import { FilesExceedsSizeLimitError } from 'app/drive/services/file.service/upload.errors';
 import { filterFilesByMaxSize } from 'app/store/slices/storage/fileUtils/filterFilesByMaxSize';
-import { UploadErrorReason } from './types';
 
-export interface UploadFolderPayload {
+interface UploadFolderPayload {
   root: IRoot;
   currentFolderId: string;
-  options: {
-    taskId: string;
+  options?: {
+    taskId?: string;
+    withNotification?: boolean;
     onSuccess?: () => void;
   };
-}
-
-export interface FolderUploadControls {
-  cancelUpload: () => void;
-  pauseUpload: () => void;
-  resumeUpload: () => void;
-}
-
-/**
- * Upload progress notifications emitted by the manager. The manager knows nothing
- * about how uploads are presented to the user; observers subscribe to these events.
- * `onFolderUploadStarted` may return a cleanup function, invoked when that folder's
- * upload finishes (successfully or not).
- */
-export interface UploadFolderManagerEvents {
-  onFolderUploadStarted?: (taskId: string, root: IRoot, controls: FolderUploadControls) => (() => void) | void;
-  onFolderUploadProgress?: (taskId: string, progress: number, stopUpload: () => Promise<void>) => void;
-  onFolderUploadSuccess?: (taskId: string, info: { folderName: string; rootFolderUUID?: string }) => void;
-  onFolderUploadError?: (taskId: string, reason?: UploadErrorReason) => void;
-  stopRelatedUploads?: (taskId: string) => Promise<void>[];
 }
 
 export interface TaskFolder {
   root: IRoot;
   currentFolderId: string;
   options?: {
+    withNotification?: boolean;
     onSuccess?: () => void;
   };
   taskId: string;
@@ -59,35 +47,50 @@ export interface TaskFolder {
 
 interface TaskInfo {
   rootFolderItem?: DriveFolderData;
-  cancelled: boolean;
   progress: {
     itemsUploaded: number;
     totalItems: number;
   };
 }
 
-interface UploadFoldersWithManagerProps {
-  payload: UploadFolderPayload[];
-  selectedWorkspace: WorkspaceData | null;
-  dispatch: ThunkDispatch<RootState, unknown, AnyAction>;
-  maxUploadFileSize: number;
-  fileSizeExceededCallback?: (exceededFiles: File[]) => void;
-  events?: UploadFolderManagerEvents;
-}
-
-const prepareTaskFolders = async (foldersPayload: UploadFolderPayload[]): Promise<TaskFolder[]> => {
+const generateTaskIdForFolders = async (foldersPayload: UploadFolderPayload[]): Promise<TaskFolder[]> => {
   const taskFolders: TaskFolder[] = [];
 
   for (const folder of foldersPayload) {
-    const { root: originalRoot, currentFolderId, options } = folder;
+    const { root: originalRoot, currentFolderId, options: payloadOptions } = folder;
+    const options = { withNotification: true, ...payloadOptions };
     const root = await handleFoldersRename(originalRoot, currentFolderId);
+
+    const uploadFolderAbortController = new AbortController();
+
+    let taskId = options?.taskId;
+
+    if (taskId) {
+      tasksService.updateTask({
+        taskId,
+        merge: {
+          folderName: root.name,
+          status: TaskStatus.InProcess,
+          progress: 0,
+        },
+      });
+    } else {
+      taskId = tasksService.create<UploadFolderTask>({
+        action: TaskType.UploadFolder,
+        folderName: root.name,
+        item: root,
+        parentFolderId: currentFolderId,
+        showNotification: !!options.withNotification,
+        cancellable: true,
+      });
+    }
 
     taskFolders.push({
       root,
       currentFolderId,
-      options,
-      taskId: options.taskId,
-      abortController: new AbortController(),
+      options: payloadOptions,
+      taskId,
+      abortController: uploadFolderAbortController,
     });
   }
   return taskFolders;
@@ -127,8 +130,20 @@ const handleFoldersRename = async (root: IRoot, currentFolderId: string) => {
   return folder;
 };
 
-export const uploadFoldersWithManager = (props: UploadFoldersWithManagerProps): Promise<void> =>
-  new UploadFoldersManager(props).run();
+export const uploadFoldersWithManager = ({
+  payload,
+  selectedWorkspace,
+  dispatch,
+  maxUploadFileSize,
+}: {
+  payload: UploadFolderPayload[];
+  selectedWorkspace: WorkspaceData | null;
+  dispatch: ThunkDispatch<RootState, unknown, AnyAction>;
+  maxUploadFileSize: number;
+}): Promise<void> => {
+  const uploadFoldersManager = new UploadFoldersManager(payload, selectedWorkspace, dispatch, maxUploadFileSize);
+  return uploadFoldersManager.run();
+};
 
 export class UploadFoldersManager {
   private static readonly MAX_CONCURRENT_UPLOADS = 6;
@@ -139,18 +154,19 @@ export class UploadFoldersManager {
   private readonly dispatch: ThunkDispatch<RootState, unknown, AnyAction>;
   private readonly abortController?: AbortController;
   private readonly maxUploadFileSize: number;
-  private readonly fileSizeExceededCallback?: (exceededFiles: File[]) => void;
-  private readonly events?: UploadFolderManagerEvents;
 
-  private readonly tasksInfo: Record<string, TaskInfo> = {};
+  private tasksInfo: Record<string, TaskInfo> = {};
 
-  constructor(props: UploadFoldersWithManagerProps) {
-    this.payload = props.payload;
-    this.selectedWorkspace = props.selectedWorkspace;
-    this.dispatch = props.dispatch;
-    this.maxUploadFileSize = props.maxUploadFileSize;
-    this.fileSizeExceededCallback = props.fileSizeExceededCallback;
-    this.events = props.events;
+  constructor(
+    payload: UploadFolderPayload[],
+    selectedWorkspace: WorkspaceData | null,
+    dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
+    maxUploadFileSize: number,
+  ) {
+    this.payload = payload;
+    this.selectedWorkspace = selectedWorkspace;
+    this.dispatch = dispatch;
+    this.maxUploadFileSize = maxUploadFileSize;
   }
 
   private readonly uploadFoldersQueue: QueueObject<TaskFolder> = queue<TaskFolder>(
@@ -212,11 +228,13 @@ export class UploadFoldersManager {
 
   private readonly updateTaskProgress = (taskId: string, abortController: AbortController): void => {
     this.tasksInfo[taskId].progress.itemsUploaded += 1;
-    this.events?.onFolderUploadProgress?.(
+    tasksService.updateTask({
       taskId,
-      this.tasksInfo[taskId].progress.itemsUploaded / this.tasksInfo[taskId].progress.totalItems,
-      () => this.stopUploadTask(taskId, abortController),
-    );
+      merge: {
+        progress: this.tasksInfo[taskId].progress.itemsUploaded / this.tasksInfo[taskId].progress.totalItems,
+        stop: () => this.stopUploadTask(taskId, abortController),
+      },
+    });
   };
 
   private readonly handleFileUploads = async (
@@ -240,7 +258,9 @@ export class UploadFoldersManager {
       await this.stopUploadTask(taskId, abortController);
       this.killQueueAndNotifyError(taskId);
 
-      this.fileSizeExceededCallback?.(level.childrenFiles);
+      this.dispatch(
+        uiActions.setOpenFileSizeLimitReachedDialog({ open: true, info: { exceededFiles: level.childrenFiles } }),
+      );
       throw new FilesExceedsSizeLimitError();
     }
 
@@ -310,10 +330,13 @@ export class UploadFoldersManager {
 
   private readonly stopUploadTask = async (taskId: string, uploadFolderAbortController: AbortController) => {
     uploadFolderAbortController.abort();
+    const relatedTasks = tasksService.getTasks({ relatedTaskId: taskId });
     const promises: Promise<void>[] = [];
 
-    // Cancels uploads spawned by this folder upload (e.g. its file uploads)
-    promises.push(...(this.events?.stopRelatedUploads?.(taskId) ?? []));
+    // Cancels related tasks
+    promises.push(
+      ...(relatedTasks.map((task) => task.stop?.()).filter((promise) => promise !== undefined) as Promise<void>[]),
+    );
     // Deletes the root folder
     const rootFolderItem = this.tasksInfo[taskId].rootFolderItem;
     if (rootFolderItem) {
@@ -327,11 +350,19 @@ export class UploadFoldersManager {
 
   private readonly killQueueAndNotifyError = (taskId: string) => {
     this.uploadFoldersQueue.kill();
-    this.events?.onFolderUploadError?.(taskId, 'upload-failed');
+    tasksService.updateTask({
+      taskId: taskId,
+      merge: {
+        status: TaskStatus.Error,
+        subtitle: t('tasks.subtitles.upload-failed') as string,
+      },
+    });
   };
 
   public readonly run = async (): Promise<void> => {
-    const taskFolders = await prepareTaskFolders(this.payload);
+    const payloadWithTaskId = await generateTaskIdForFolders(this.payload);
+
+    const memberId = this.selectedWorkspace?.workspaceUser?.memberId;
 
     const context = typeof window === 'undefined' ? self : window;
 
@@ -343,25 +374,43 @@ export class UploadFoldersManager {
     }
     context.addEventListener('offline', connectionLostListener);
 
-    for (const taskFolder of taskFolders) {
-      const { root, currentFolderId, options, taskId } = taskFolder;
+    for (const taskFolder of payloadWithTaskId) {
+      const { root, currentFolderId, options: payloadOptions, taskId } = taskFolder;
+      const options = { withNotification: true, ...payloadOptions };
 
       this.tasksInfo[taskId] = {
-        cancelled: false,
         progress: {
           itemsUploaded: 0,
           totalItems: countItemsUnderRoot(root),
         },
       };
 
-      const cleanupStartedEvent = this.events?.onFolderUploadStarted?.(taskId, root, {
-        cancelUpload: () => {
-          this.tasksInfo[taskId].cancelled = true;
-          this.uploadFoldersQueue.kill();
+      tasksService.updateTask({
+        taskId,
+        merge: {
+          status: TaskStatus.InProcess,
+          progress: 0,
         },
-        pauseUpload: () => this.uploadFoldersQueue.pause(),
-        resumeUpload: () => this.uploadFoldersQueue.resume(),
       });
+
+      const cancelQueueListener = (task?: TaskData) => {
+        const isCurrentTask = task && task.id === taskId;
+        if (isCurrentTask && task.status === TaskStatus.Cancelled) {
+          this.uploadFoldersQueue.kill();
+        }
+      };
+
+      const updateQueueListener = (task?: TaskData) => {
+        const isCurrentTask = task && task.id === taskId;
+        if (isCurrentTask && task.status === TaskStatus.InProcess) {
+          this.uploadFoldersQueue.resume();
+        } else if (isCurrentTask && task.status === TaskStatus.Paused) {
+          this.uploadFoldersQueue.pause();
+        }
+      };
+
+      tasksService.addListener({ event: TaskEvent.TaskCancelled, listener: cancelQueueListener });
+      tasksService.addListener({ event: TaskEvent.TaskUpdated, listener: updateQueueListener });
 
       try {
         root.folderId = currentFolderId;
@@ -373,27 +422,51 @@ export class UploadFoldersManager {
 
         if (connectionLost) throw new ConnectionLostError();
 
-        this.events?.onFolderUploadSuccess?.(taskId, {
-          folderName: root.name,
-          rootFolderUUID: this.tasksInfo[taskId].rootFolderItem?.uuid,
+        tasksService.updateTask({
+          taskId: taskId,
+          merge: {
+            itemUUID: { rootFolderUUID: this.tasksInfo[taskId].rootFolderItem?.uuid },
+            status: TaskStatus.Success,
+          },
         });
 
-        options?.onSuccess?.();
+        options.onSuccess?.();
+        referralService.trackFolderUpload();
+        logNetworkInfoForUpload({ folderName: root.name });
+
+        setTimeout(() => {
+          this.dispatch(planThunks.fetchUsageThunk());
+          if (memberId) this.dispatch(planThunks.fetchBusinessLimitUsageThunk());
+        }, 1000);
       } catch (err: unknown) {
         const castedError = errorService.castError(err);
+        const updatedTask = tasksService.findTask(taskId);
 
         if (connectionLost) {
-          this.events?.onFolderUploadError?.(taskId, 'connection-lost');
+          tasksService.updateTask({
+            taskId: taskId,
+            merge: {
+              status: TaskStatus.Error,
+              subtitle: t('error.connectionLostError') as string,
+            },
+          });
           errorService.reportError(castedError);
           break;
-        } else if (!this.tasksInfo[taskId].cancelled) {
-          this.events?.onFolderUploadError?.(taskId, 'upload-failed');
+        } else if (updatedTask?.status !== TaskStatus.Cancelled && taskId === updatedTask?.id) {
+          tasksService.updateTask({
+            taskId: taskId,
+            merge: {
+              status: TaskStatus.Error,
+              subtitle: t('tasks.subtitles.upload-failed') as string,
+            },
+          });
           // Log the error or report it but don't re-throw it to allow the next folder to be processed
           errorService.reportError(castedError);
           continue;
         }
       } finally {
-        cleanupStartedEvent?.();
+        tasksService.removeListener({ event: TaskEvent.TaskCancelled, listener: cancelQueueListener });
+        tasksService.removeListener({ event: TaskEvent.TaskUpdated, listener: updateQueueListener });
       }
     }
   };

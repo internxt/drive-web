@@ -8,7 +8,7 @@ import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { getCollisionGroups } from 'app/store/slices/storage/storage.thunks/renameItemsThunk';
 import { uiActions } from 'app/store/slices/ui';
 import { DriveItemData } from 'app/drive/types';
-import { uploadFoldersWithTracking } from 'app/drive/services/folder.service/uploadFoldersWithTracking';
+import { uploadFoldersWithManager } from 'app/network/UploadFolderManager';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { fileVersionsSelectors } from 'app/store/slices/fileVersions';
 
@@ -90,7 +90,7 @@ const handleFileDrop = async (
       root,
       currentFolderId: item.uuid,
     }));
-    await uploadFoldersWithTracking({
+    await uploadFoldersWithManager({
       payload: folderDataToUpload,
       selectedWorkspace,
       dispatch,
