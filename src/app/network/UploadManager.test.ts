@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, Mock, test, vi } from 'vitest';
+import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
 import { uploadFileWithManager, UploadManagerEvents } from './UploadManager';
 import errorService from 'services/error.service';
 import { AppError } from '@internxt/sdk';
@@ -68,7 +68,7 @@ describe('UploadManager memory usage conditions', () => {
     vi.clearAllMocks();
   });
 
-  it('When memory usage cannot be measured, then the upload still proceeds', async () => {
+  test('When memory usage cannot be measured, then the upload still proceeds', async () => {
     const originalPerformance = window.performance;
     Object.defineProperty(window, 'performance', {
       value: undefined,
@@ -115,7 +115,7 @@ describe('UploadManager memory usage conditions', () => {
     });
   });
 
-  it('When memory usage readings are incomplete, then the upload still proceeds', async () => {
+  test('When memory usage readings are incomplete, then the upload still proceeds', async () => {
     const originalPerformance = window.performance;
     Object.defineProperty(window, 'performance', {
       value: {
@@ -174,7 +174,7 @@ describe('uploadFileWithManager', () => {
     vi.clearAllMocks();
   });
 
-  it('When a file upload succeeds, then the success is notified with the uploaded file data', async () => {
+  test('When a file upload succeeds, then the success is notified with the uploaded file data', async () => {
     const uploadFileSpy = (uploadFile as Mock).mockResolvedValueOnce(mockFile1);
     const events: UploadManagerEvents = { onUploadSuccess: vi.fn() };
     vi.spyOn(errorService, 'castError').mockReturnValue(new AppError('error'));
@@ -214,7 +214,7 @@ describe('uploadFileWithManager', () => {
     );
   });
 
-  it('When several files are uploaded, then every file is transferred', async () => {
+  test('When several files are uploaded, then every file is transferred', async () => {
     const uploadFileSpy = (uploadFile as Mock).mockResolvedValueOnce(mockFile1).mockResolvedValueOnce(mockFile2);
 
     vi.spyOn(errorService, 'castError').mockReturnValue(new AppError('error'));
@@ -261,7 +261,7 @@ describe('uploadFileWithManager', () => {
     expect(uploadFileSpy).toHaveBeenCalledTimes(2);
   });
 
-  it('When the upload is cancelled midway, then it is notified as cancelled and not as a failure', async () => {
+  test('When the upload is cancelled midway, then it is notified as cancelled and not as a failure', async () => {
     const abortController = new AbortController();
     (uploadFile as Mock).mockImplementation(() => {
       abortController.abort();
@@ -302,7 +302,7 @@ describe('uploadFileWithManager', () => {
     expect(events.onUploadError).not.toHaveBeenCalled();
   });
 
-  it('When an upload succeeds, then it is no longer scheduled for retry', async () => {
+  test('When an upload succeeds, then it is no longer scheduled for retry', async () => {
     (uploadFile as Mock).mockResolvedValueOnce(mockFile1);
     vi.spyOn(Promise, 'all').mockResolvedValueOnce([mockFile1]);
     const RetryAddFilesSpy = vi.spyOn(RetryManager, 'addTasks');
@@ -341,7 +341,7 @@ describe('uploadFileWithManager', () => {
     expect(RetryRemoveFileSpy).toHaveBeenCalledWith('taskId');
   });
 
-  it('When an upload keeps failing, then it is scheduled for retry', async () => {
+  test('When an upload keeps failing, then it is scheduled for retry', async () => {
     //needs to fail twice because MAX_UPLOAD_ATTEMPTS = 2
     (uploadFile as Mock)
       .mockResolvedValueOnce(mockFile1)
@@ -395,7 +395,7 @@ describe('uploadFileWithManager', () => {
     expect(RetryManager.getTasks()).toHaveLength(1);
   });
 
-  it('When a retried upload fails again, then it is marked as failed', async () => {
+  test('When a retried upload fails again, then it is marked as failed', async () => {
     //needs to fail twice because MAX_UPLOAD_ATTEMPTS = 2
     (uploadFile as Mock)
       .mockRejectedValueOnce(new AppError('Retryable file'))
@@ -435,7 +435,7 @@ describe('uploadFileWithManager', () => {
     expect(RetryChangeStatusSpy).toHaveBeenCalledWith('taskId', 'failed');
   });
 
-  it('When the connection is lost during an upload, then the failure is notified as a connection loss', async () => {
+  test('When the connection is lost during an upload, then the failure is notified as a connection loss', async () => {
     const lostConnectionError = new AppError(ErrorMessages.NetworkError);
     (uploadFile as Mock).mockRejectedValueOnce(lostConnectionError);
 
@@ -477,7 +477,7 @@ describe('uploadFileWithManager', () => {
     expect(events.onUploadError).toHaveBeenCalledWith(expect.objectContaining({ taskId: 'taskId' }), 'connection-lost');
   });
 
-  it('When an upload fails unexpectedly, then the failure is notified and no success is reported', async () => {
+  test('When an upload fails unexpectedly, then the failure is notified and no success is reported', async () => {
     const unexpectedError = new AppError(ErrorMessages.ServerUnavailable);
     (uploadFile as Mock).mockRejectedValue(unexpectedError);
 
@@ -520,7 +520,7 @@ describe('uploadFileWithManager', () => {
     expect(events.onUploadSuccess).not.toHaveBeenCalled();
   });
 
-  it('When uploading a file to a workspace, then the workspace credentials are used', async () => {
+  test('When uploading a file to a workspace, then the workspace credentials are used', async () => {
     const workspaceBucket = 'workspace-bucket-123';
     const workspaceId = 'workspace-id-456';
     const uploadFileSpy = (uploadFile as Mock).mockResolvedValueOnce(mockFile1);
@@ -577,7 +577,7 @@ describe('uploadFileWithManager', () => {
     );
   });
 
-  it('When uploading a personal file, then the personal credentials are used', async () => {
+  test('When uploading a personal file, then the personal credentials are used', async () => {
     const uploadFileSpy = (uploadFile as Mock).mockResolvedValueOnce(mockFile1);
 
     vi.spyOn(errorService, 'castError').mockReturnValue(new AppError('error'));
