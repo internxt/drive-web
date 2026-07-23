@@ -394,8 +394,13 @@ describe('checkUploadFolders', () => {
     };
 
     const buildManager = (maxUploadFileSize?: number) => {
-      const manager = new UploadFoldersManager([], null, mockDispatch, maxUploadFileSize ?? 100);
-      manager['tasksInfo'][taskId] = { progress: { itemsUploaded: 0, totalItems: 1 } };
+      const manager = new UploadFoldersManager({
+        payload: [],
+        selectedWorkspace: null,
+        dispatch: mockDispatch,
+        maxUploadFileSize: maxUploadFileSize ?? 100,
+      });
+      manager['tasksInfo'][taskId] = { cancelled: false, progress: { itemsUploaded: 0, totalItems: 1 } };
       return manager;
     };
 
@@ -415,8 +420,13 @@ describe('checkUploadFolders', () => {
       const bigFile = new File([new ArrayBuffer(200)], 'big.mp4');
       const dispatchWithUnwrap = vi.fn().mockReturnValue({ unwrap: () => Promise.resolve() });
       vi.spyOn(tasksService, 'updateTask').mockReturnValue();
-      const manager = new UploadFoldersManager([], null, dispatchWithUnwrap, 100);
-      manager['tasksInfo'][taskId] = { progress: { itemsUploaded: 0, totalItems: 1 } };
+      const manager = new UploadFoldersManager({
+        payload: [],
+        selectedWorkspace: null,
+        dispatch: dispatchWithUnwrap,
+        maxUploadFileSize: 100,
+      });
+      manager['tasksInfo'][taskId] = { cancelled: false, progress: { itemsUploaded: 0, totalItems: 1 } };
       const level = {
         childrenFiles: [bigFile],
         childrenFolders: [{ folderId: 'c', childrenFiles: [], childrenFolders: [], name: 'Child', fullPathEdited: '' }],
@@ -476,11 +486,14 @@ describe('checkUploadFolders', () => {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    const payload = [];
-    const selectedWorkspace = null;
     const taskId = 'task-id';
 
-    const manager = new UploadFoldersManager(payload, selectedWorkspace, mockDispatch, 100);
+    const manager = new UploadFoldersManager({
+      payload: [],
+      selectedWorkspace: null,
+      dispatch: mockDispatch,
+      maxUploadFileSize: 100,
+    });
     const abortController = new AbortController();
 
     const taskFolder: TaskFolder = {
@@ -517,6 +530,7 @@ describe('checkUploadFolders', () => {
     const renameFolderSpy = (getUniqueFolderName as Mock).mockResolvedValueOnce('');
 
     manager['tasksInfo'][taskId] = {
+      cancelled: false,
       progress: {
         itemsUploaded: 0,
         totalItems: 2,
