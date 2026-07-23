@@ -2,7 +2,7 @@ import { DriveFolderData } from 'app/drive/types';
 import { createFolder } from 'app/store/slices/storage/folderUtils/createFolder';
 import { checkFolderDuplicated } from 'app/store/slices/storage/folderUtils/checkFolderDuplicated';
 import { getUniqueFolderName } from 'app/store/slices/storage/folderUtils/getUniqueFolderName';
-import { beforeEach, describe, expect, it, Mock, test, vi } from 'vitest';
+import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
 import {
   TaskFolder,
   UploadFolderManagerEvents,
@@ -77,7 +77,7 @@ describe('uploadFoldersWithManager', () => {
     vi.resetModules();
   });
 
-  it('When a folder upload completes, then the folder is created and the upload is notified from start to success', async () => {
+  test('When a folder upload completes, then the folder is created and the upload is notified from start to success', async () => {
     const mockFolder = buildFolderData({ name: 'MyFolder', plain_name: 'MyFolder' });
     const taskId = 'task-id';
 
@@ -132,7 +132,7 @@ describe('uploadFoldersWithManager', () => {
     expect(events.onFolderUploadError).not.toHaveBeenCalled();
   });
 
-  it('When a folder name already exists, then the folder is uploaded and announced with a new unique name', async () => {
+  test('When a folder name already exists, then the folder is uploaded and announced with a new unique name', async () => {
     const mockFolder = buildFolderData();
     const taskId = 'task-id';
 
@@ -174,7 +174,7 @@ describe('uploadFoldersWithManager', () => {
     );
   });
 
-  it('When a folder has subfolders, then every level is uploaded', async () => {
+  test('When a folder has subfolders, then every level is uploaded', async () => {
     const mockParentFolder = buildFolderData({ id: 1, uuid: 'uuid1' });
     const mockChildFolder = buildFolderData({
       id: 2,
@@ -282,7 +282,7 @@ describe('uploadFoldersWithManager', () => {
     });
   });
 
-  it('When the upload was already cancelled, then the folder is not uploaded', async () => {
+  test('When the upload was already cancelled, then the folder is not uploaded', async () => {
     const mockParentFolder = buildFolderData({ id: 1, uuid: 'uuid1' });
     const mockChildFolder = buildFolderData({
       id: 2,
