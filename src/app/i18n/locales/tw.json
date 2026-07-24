@@ -442,17 +442,19 @@
         },
         "billing": {
           "cancelSubscriptionModal": {
+            "title": "取消訂閱",
             "description": {
-              "individual": "您即將取消您的 Internxt {{currentPlanName}} 方案。取消方案後，您將降級為免費的 Internxt {{freePlanName}} 方案。請確認您的選擇以繼續。",
+              "individual": {
+                "line1": "您的年度方案按月計費，並於 {{endDate}} 到期。",
+                "line2": "您可以選擇接下來的處理方式："
+              },
               "business": "取消方案後，工作區以及所有資料將被刪除。請確認您的選擇以繼續。"
             },
+
             "commitment": {
-              "firstMonthDescription": "由於您仍在 30 天試用期內，您的取消將立即生效。您將不再被收費，您的帳戶現在將恢復為免費的 1GB 方案。",
-              "description": "您擁有按月計費的年度訂閱。如果您現在取消，您的訂閱將保持有效至 {{end_date}}，且在該日期之前您將繼續被按月收費。",
-              "monthsRemaining": "剩餘付款次數：{{monthsRemaining}}",
-              "amountPerMonth": "每月金額：€{{amount}}",
-              "afterLabel": "{{monthsRemaining}} 之後"
+              "firstMonthDescription": "由於您仍在 30 天試用期內，您的取消將立即生效。您將不再被收費，您的帳戶現在將恢復為免費的 1GB 方案。"
             },
+            "directCancellationDescription": "您即將取消您的訂閱。您將失去對方案的存取權限，且您的帳戶將恢復為免費方案。請確認您的選擇以繼續。",
             "keepSubscription": "保留訂閱",
             "cancelSubscription": "取消訂閱",
             "infoBox": {
@@ -1278,9 +1280,14 @@
     "verificationEmail": "驗證郵件已發送",
     "successCancelSubscription": "您的訂閱已取消",
     "errorCancelSubscription": "取消訂閱時出現問題",
+    "successApplyCancellationIncentive": "感謝您繼續與我們同行！下個月免費享用",
+    "errorApplyCancellationIncentive": "套用取消優惠時發生問題",
+    "successEarlyCancelSubscription": "您的訂閱已取消",
+    "errorEarlyCancelSubscription": "取消訂閱時出現問題",
+    "successApplyCoupon": "免費使用3個月的優惠碼已應用",
+    "errorApplyCoupon": "應用折扣時出現錯誤",
+    "alreadyAppliedCoupon": "優惠碼已經應用",
     "errorCreatingSubscription": "建立您的訂閱時出現問題",
-    "successApplyCancellationIncentive": "感謝您繼續與我們同行！盡享下個月免費服務",
-    "errorApplyCancellationIncentive": "套用取消優惠時發生錯誤",
     "couponIsNotValidForUserError": "優惠券只能由新客戶兌換。",
     "errorApplyingCoupon": "應用優惠券時出錯",
     "errorWhileFetchingMoreItems": "獲取更多項目時出現錯誤",

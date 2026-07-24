@@ -442,17 +442,19 @@
         },
         "billing": {
           "cancelSubscriptionModal": {
+            "title": "Annulla abbonamento",
             "description": {
-              "individual": "Stai per annullare il tuo piano Internxt {{currentPlanName}}. Annullando il tuo piano, verrai retrocesso al piano gratuito di Internxt {{freePlanName}}. Conferma la tua scelta per procedere, per favore.",
+              "individual": {
+                "line1": "Il tuo piano annuale viene fatturato mensilmente e termina il {{endDate}}. ",
+                "line2": "Puoi scegliere come procedere:"
+              },
               "business": "Annullando il tuo piano, lo spazio di lavoro verrà eliminato insieme a tutti i dati. Per favore, conferma la tua scelta per procedere."
             },
+
             "commitment": {
-              "firstMonthDescription": "Poiché sei ancora nel tuo periodo di prova di 30 giorni, la tua cancellazione sarà immediata. Non ti verrà più addebitato nulla e il tuo account tornerà ora al piano gratuito da 1 GB.",
-              "description": "Hai un abbonamento annuale fatturato mensilmente. Se annulli ora, il tuo abbonamento rimarrà attivo fino al {{end_date}} e continuerai a essere addebitato mensilmente fino a quella data.",
-              "monthsRemaining": "Pagamenti rimanenti: {{monthsRemaining}}",
-              "amountPerMonth": "Importo al mese: €{{amount}}",
-              "afterLabel": "Dopo il {{monthsRemaining}}"
+              "firstMonthDescription": "Poiché sei ancora nel tuo periodo di prova di 30 giorni, la tua cancellazione sarà immediata. Non ti verrà più addebitato nulla e il tuo account tornerà ora al piano gratuito da 1 GB."
             },
+            "directCancellationDescription": "Stai per annullare il tuo abbonamento. Perderai l'accesso al tuo piano e il tuo account tornerà al piano gratuito. Conferma la tua scelta per procedere, per favore.",
             "keepSubscription": "Mantieni l'abbonamento",
             "cancelSubscription": "Annulla abbonamento",
             "infoBox": {
@@ -1278,9 +1280,11 @@
     "verificationEmail": "L'e-mail di verifica è stata inviata",
     "successCancelSubscription": "L'abbonamento è stato annullato",
     "errorCancelSubscription": "Qualcosa è andato storto durante la cancellazione dell'abbonamento",
-    "errorCreatingSubscription": "Si è verificato un errore durante la creazione del tuo abbonamento",
     "successApplyCancellationIncentive": "Grazie per essere rimasto con noi! Goditi il prossimo mese gratis",
-    "errorApplyCancellationIncentive": "Si è verificato un errore durante l’applicazione dell’incentivo di cancellazione",
+    "errorApplyCancellationIncentive": "Qualcosa è andato storto durante l'applicazione dell'incentivo di cancellazione",
+    "successEarlyCancelSubscription": "L'abbonamento è stato annullato",
+    "errorEarlyCancelSubscription": "Qualcosa è andato storto durante la cancellazione dell'abbonamento",
+    "errorCreatingSubscription": "Si è verificato un errore durante la creazione del tuo abbonamento",
     "couponIsNotValidForUserError": "Il coupon può essere riscattato solo da nuovi clienti.",
     "errorApplyingCoupon": "Si è verificato un errore durante l'applicazione del coupon",
     "errorWhileFetchingMoreItems": "Qualcosa è andato storto durante il recupero di ulteriori elementi",

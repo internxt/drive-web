@@ -2,9 +2,8 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { authService, errorService } from 'services';
-import Section from '../../../../Section';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { Button, Modal } from '@internxt/ui';
+import { Button, Card, Modal } from '@internxt/ui';
 import { RootState } from 'app/store';
 import { PlanState } from 'app/store/slices/plan';
 
@@ -47,8 +46,9 @@ const DeleteAccountContainer = ({ onClosePreferences }: { onClosePreferences: ()
   };
 
   return (
-    <Section title={translate('views.account.tabs.account.deleteAccount.head')} onClosePreferences={onClosePreferences}>
+    <Card>
       <div className="max-w-sm">
+        <p className="text-2xl font-semibold">{translate('views.account.tabs.account.deleteAccount.head')}</p>
         <p className="mt-1 text-sm font-normal text-gray-60">
           {translate('views.account.tabs.account.deleteAccount.description')}
         </p>
@@ -74,7 +74,7 @@ const DeleteAccountContainer = ({ onClosePreferences }: { onClosePreferences: ()
           </Button>
         </div>
       </Modal>
-    </Section>
+    </Card>
   );
 };
 

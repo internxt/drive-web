@@ -58,12 +58,17 @@ export const CancellationIncentive = ({
         <Button
           variant="secondary"
           onClick={() => cancelSubscription()}
-          disabled={isCancellingSubscription}
+          disabled={isApplyingTrial || isCancellingSubscription}
           loading={isCancellingSubscription}
         >
           {translate('views.account.tabs.billing.cancellationIncentive.cta.cancel')}
         </Button>
-        <Button variant="primary" onClick={activateTrial} disabled={isApplyingTrial} loading={isApplyingTrial}>
+        <Button
+          variant="primary"
+          onClick={activateTrial}
+          disabled={isApplyingTrial || isCancellingSubscription}
+          loading={isApplyingTrial}
+        >
           {translate('views.account.tabs.billing.cancellationIncentive.cta.freeMonth')}
         </Button>
       </div>

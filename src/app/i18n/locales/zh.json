@@ -442,17 +442,19 @@
         },
         "billing": {
           "cancelSubscriptionModal": {
+            "title": "取消订阅",
             "description": {
-              "individual": "您即将取消您的 Internxt {{currentPlanName}} 计划。取消计划后，您将降级为免费的 Internxt {{freePlanName}} 计划。请确认您的选择以继续。",
+              "individual": {
+                "line1": "您的年度计划按月计费，并于 {{endDate}} 到期。",
+                "line2": "您可以选择接下来的处理方式："
+              },
               "business": "取消计划后，工作区以及所有数据将被删除。请确认您的选择以继续。"
             },
+
             "commitment": {
-              "firstMonthDescription": "由于您仍在 30 天试用期内，您的取消将立即生效。您将不再被收费，您的账户现在将恢复为免费的 1GB 计划。",
-              "description": "您拥有按月计费的年度订阅。如果您现在取消，您的订阅将保持有效至 {{end_date}}，且在该日期之前您将继续被按月收费。",
-              "monthsRemaining": "剩余付款次数：{{monthsRemaining}}",
-              "amountPerMonth": "每月金额：€{{amount}}",
-              "afterLabel": "{{monthsRemaining}} 之后"
+              "firstMonthDescription": "由于您仍在 30 天试用期内，您的取消将立即生效。您将不再被收费，您的账户现在将恢复为免费的 1GB 计划。"
             },
+            "directCancellationDescription": "您即将取消您的订阅。您将失去对计划的访问权限，且您的账户将恢复为免费计划。请确认您的选择以继续。",
             "keepSubscription": "继续订阅",
             "cancelSubscription": "取消订阅",
             "infoBox": {
@@ -1281,6 +1283,8 @@
     "errorCreatingSubscription": "创建您的订阅时出现问题",
     "successApplyCancellationIncentive": "感谢您继续与我们同行！尽享下个月免费服务",
     "errorApplyCancellationIncentive": "应用取消优惠时发生错误",
+    "successEarlyCancelSubscription": "您的订阅已被取消",
+    "errorEarlyCancelSubscription": "取消订阅时出了点问题",
     "couponIsNotValidForUserError": "优惠券只能由新客户兑换。",
     "errorApplyingCoupon": "应用优惠券时出错",
     "errorWhileFetchingMoreItems": "获取更多项目时出现错误",

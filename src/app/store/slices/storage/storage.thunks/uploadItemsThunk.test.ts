@@ -191,9 +191,7 @@ describe('uploadItemsThunk', () => {
     const { maxSpaceOccupiedCallback } = (uploadFileWithManager as Mock).mock.calls[0][0];
     maxSpaceOccupiedCallback();
 
-    expect(dispatch).not.toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'ui/setOpenReachedPlanLimitDialog' }),
-    );
+    expect(dispatch).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'ui/setOpenReachedPlanLimitDialog' }));
   });
 
   test('when the upload manager reports a 420 and the account has actually run out of storage, then the storage full dialog is shown', async () => {

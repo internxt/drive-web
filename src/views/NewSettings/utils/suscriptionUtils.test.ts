@@ -50,6 +50,7 @@ const mockBusinessPlan: StoragePlan = getStoragePlan({
   currency: 'EUR',
   isTeam: true,
   renewalPeriod: RenewalPeriod.Annually,
+  cancellationTrial: { redeemed: false },
   storageLimit: 5000000000,
   amountOfSeats: 5,
 });
