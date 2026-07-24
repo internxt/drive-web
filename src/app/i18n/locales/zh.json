@@ -718,14 +718,14 @@
       "title": "重命名",
       "label": "名称"
     },
-    "renameModal": {
+    "alreadyExistsModal": {
       "title": "项目已经存在",
-      "titleMultipleItems": "多个项目已存在",
-      "description": "{{itemName}} 已存在于此位置。 你想替换它还是保留两者？",
-      "multipleDescription": "此位置已存在多个元素。 你想替换它们还是想保留所有",
+      "selectOption": "选择一个选项",
+      "description": "{{itemName}} 已存在于此位置。是否要用您正在移动的文件替换它？",
       "replaceItem": "替换当前项目",
       "keepBoth": "保留两者",
-      "selectOption": "选择一个选项",
+      "skipFile": "跳过文件",
+      "applyToAll": "将此操作应用于所有重复项",
       "upload": "上传",
       "move": "移动"
     },

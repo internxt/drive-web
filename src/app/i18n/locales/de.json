@@ -697,14 +697,14 @@
       "title": "Umbenennen",
       "label": "Name"
     },
-    "renameModal": {
+    "alreadyExistsModal": {
       "title": "Objekt existiert bereits",
-      "titleMultipleItems": "Es sind bereits mehrere Elemente vorhanden",
-      "description": "{{itemName}} existiert bereits an diesem Ort. Möchtest du es ersetzen oder möchtest du beide behalten?",
-      "multipleDescription": "An diesem Speicherort ist bereits mehr als ein Element vorhanden. Möchtest du sie ersetzen oder alle behalten?",
+      "selectOption": "Wähle eine Option",
+      "description": "{{itemName}} existiert bereits an diesem Ort. Möchtest du es durch die Datei ersetzen, die du gerade verschiebst?",
       "replaceItem": "Aktuelles Element ersetzen",
       "keepBoth": "Behalte beide",
-      "selectOption": "Wähle eine Option",
+      "skipFile": "Datei überspringen",
+      "applyToAll": "Diese Aktion auf alle Duplikate anwenden",
       "upload": "Upload",
       "move": "Verschieben"
     },
