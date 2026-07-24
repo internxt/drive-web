@@ -281,13 +281,15 @@ const CheckoutViewWrapper = () => {
   ) => {
     event?.preventDefault();
 
+    const isStripeNotLoaded = !stripeSDK || !elements;
+
     if (!selectedPlan?.price?.id) {
       console.error('No selected plan available for checkout');
       setIsUserPaying(false);
       return;
     }
 
-    if (!stripeSDK || !elements) {
+    if (isStripeNotLoaded) {
       console.error('Stripe.js has not loaded yet. Please try again later.');
       return;
     }
