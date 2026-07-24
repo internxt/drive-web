@@ -281,46 +281,24 @@ const CheckoutViewWrapper = () => {
   ) => {
     event?.preventDefault();
 
+    const isStripeNotLoaded = !stripeSDK || !elements;
+
     if (!selectedPlan?.price?.id) {
       console.error('No selected plan available for checkout');
       setIsUserPaying(false);
       return;
     }
 
+    if (isStripeNotLoaded) {
+      console.error('Stripe.js has not loaded yet. Please try again later.');
+      return;
+    }
+
     setIsUserPaying(true);
 
     const { email, password, companyName, companyVatId } = formData;
-    const isStripeNotLoaded = !stripeSDK || !elements;
-
-    const captchaToken = await generateCaptchaToken();
-
-    let authenticatedUser = user;
-
-    if (authMethod !== 'userIsSignedIn') {
-      const result = await onAuthenticateUser({
-        email,
-        password,
-        authMethod,
-        dispatch,
-        authCaptcha: captchaToken,
-        doRegister,
-        onAuthenticationFail: () => {
-          userAuthComponentRef.current?.scrollIntoView();
-          setIsUserPaying(false);
-        },
-      });
-
-      if (result) {
-        authenticatedUser = result;
-      }
-    }
 
     try {
-      if (isStripeNotLoaded) {
-        console.error('Stripe.js has not loaded yet. Please try again later.');
-        return;
-      }
-
       const isCryptoPurchase = currencyType === PaymentType['CRYPTO'];
 
       if (isCryptoPurchase && isCryptoAddressIncomplete) {
@@ -340,6 +318,29 @@ const CheckoutViewWrapper = () => {
 
         if (elementsError) {
           throw new Error(elementsError.message);
+        }
+      }
+
+      const captchaToken = await generateCaptchaToken();
+
+      let authenticatedUser = user;
+
+      if (authMethod !== 'userIsSignedIn') {
+        const result = await onAuthenticateUser({
+          email,
+          password,
+          authMethod,
+          dispatch,
+          authCaptcha: captchaToken,
+          doRegister,
+          onAuthenticationFail: () => {
+            userAuthComponentRef.current?.scrollIntoView();
+            setIsUserPaying(false);
+          },
+        });
+
+        if (result) {
+          authenticatedUser = result;
         }
       }
 
