@@ -18,7 +18,7 @@
     "@stripe/stripe-js": "^3.5.0",
     "@typeform/embed-react": "^1.19.0",
     "assert": "^2.1.0",
-    "axios": "^1.16.0",
+    "axios": "^1.18.0",
     "bip39": "^3.0.3",
     "browserify-zlib": "^0.2.0",
     "copy-to-clipboard": "^3.3.1",
