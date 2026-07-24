@@ -1090,7 +1090,8 @@
       "allProcessesHaveFinished": "Alle Prozesse sind abgeschlossen",
       "processing": "Wird bearbeitet {{pending}} von {{finished}}",
       "failedToUpload": "Fehler beim Hochladen",
-      "failedToDownload": "Fehler beim Herunterladen"
+      "failedToDownload": "Fehler beim Herunterladen",
+      "notAllowed": "Nicht erlaubt"
     },
     "waiting": "Warten",
     "paused": "Pausiert",
@@ -1208,7 +1209,8 @@
       "errors": {}
     },
     "subtitles": {
-      "upload-failed": "Upload fehlgeschlagen"
+      "upload-failed": "Upload fehlgeschlagen",
+      "upload-partially-failed": "Einige Dateien konnten nicht hochgeladen werden"
     },
     "generalErrorMessages": {
       "retryUploadFailed": "Beim erneuten Hochladen ist etwas schiefgegangen. Versuche es erneut",

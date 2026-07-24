@@ -1117,7 +1117,8 @@
       "allProcessesHaveFinished": "Tutti i processi sono stati completati",
       "processing": "Elaborazione {{pending}} di {{finished}}",
       "failedToUpload": "Caricamento fallito",
-      "failedToDownload": "Download fallito"
+      "failedToDownload": "Download fallito",
+      "notAllowed": "Non consentito"
     },
     "waiting": "In attesa",
     "paused": "In pausa",
@@ -1232,7 +1233,8 @@
       "errors": {}
     },
     "subtitles": {
-      "upload-failed": "Caricamento fallito"
+      "upload-failed": "Caricamento fallito",
+      "upload-partially-failed": "Alcuni file non sono stati caricati"
     },
     "generalErrorMessages": {
       "retryUploadFailed": "Qualcosa è andato storto nel riprovare a caricare. Prova a caricare di nuovo",

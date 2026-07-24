@@ -51,6 +51,9 @@ interface TaskInfo {
     itemsUploaded: number;
     totalItems: number;
   };
+  // Set when at least one file failed to upload. We keep the already-uploaded content
+  // (no rollback) and mark the task as errored once the whole folder finishes.
+  hasFailedFiles?: boolean;
 }
 
 const generateTaskIdForFolders = async (foldersPayload: UploadFolderPayload[]): Promise<TaskFolder[]> => {
@@ -216,7 +219,7 @@ export class UploadFoldersManager {
         );
       } catch {
         if (uploadAttempts >= UploadFoldersManager.MAX_UPLOAD_ATTEMPTS) {
-          this.stopUploadTask(taskId, abortController);
+          await this.stopUploadTask(taskId, abortController);
           this.killQueueAndNotifyError(taskId);
           return;
         }
@@ -283,9 +286,10 @@ export class UploadFoldersManager {
     )
       .unwrap()
       .catch(() => {
-        this.stopUploadTask(taskId, abortController);
-        this.killQueueAndNotifyError(taskId);
-        return;
+        // A file failed to upload. Do NOT roll back: keep everything already uploaded and let
+        // the queue keep uploading the remaining files/folders (best-effort). The task is marked
+        // as errored once the whole folder finishes, in uploadFolderTask.
+        this.tasksInfo[taskId].hasFailedFiles = true;
       });
   };
 
@@ -359,6 +363,65 @@ export class UploadFoldersManager {
     });
   };
 
+  // Registers the queue pause/resume/cancel listeners for a folder task and returns a cleanup fn.
+  private readonly attachQueueListeners = (taskId: string): (() => void) => {
+    const cancelQueueListener = (task?: TaskData) => {
+      if (task?.id === taskId && task.status === TaskStatus.Cancelled) this.uploadFoldersQueue.kill();
+    };
+
+    const updateQueueListener = (task?: TaskData) => {
+      if (task?.id !== taskId) return;
+      if (task.status === TaskStatus.InProcess) this.uploadFoldersQueue.resume();
+      else if (task.status === TaskStatus.Paused) this.uploadFoldersQueue.pause();
+    };
+
+    tasksService.addListener({ event: TaskEvent.TaskCancelled, listener: cancelQueueListener });
+    tasksService.addListener({ event: TaskEvent.TaskUpdated, listener: updateQueueListener });
+
+    return () => {
+      tasksService.removeListener({ event: TaskEvent.TaskCancelled, listener: cancelQueueListener });
+      tasksService.removeListener({ event: TaskEvent.TaskUpdated, listener: updateQueueListener });
+    };
+  };
+
+  // Decides the final task status once the queue has drained: keep a fatal Error/Cancelled state,
+  // mark a partial failure, or finalize as Success and run the success side-effects.
+  private readonly finalizeFolderUpload = (taskFolder: TaskFolder, memberId?: string): void => {
+    const { root, taskId, options: payloadOptions } = taskFolder;
+
+    // The task may have been marked Error (a fatal failure such as folder creation) or Cancelled
+    // while the queue was running: don't overwrite that final state.
+    const finishedTask = tasksService.findTask(taskId);
+    if (finishedTask?.status === TaskStatus.Error || finishedTask?.status === TaskStatus.Cancelled) return;
+
+    if (this.tasksInfo[taskId].hasFailedFiles) {
+      // Some files failed, but the already-uploaded content is preserved (no rollback).
+      tasksService.updateTask({
+        taskId,
+        merge: { status: TaskStatus.Error, subtitle: t('tasks.subtitles.upload-partially-failed') as string },
+      });
+      return;
+    }
+
+    tasksService.updateTask({
+      taskId,
+      merge: {
+        itemUUID: { rootFolderUUID: this.tasksInfo[taskId].rootFolderItem?.uuid },
+        status: TaskStatus.Success,
+      },
+    });
+
+    const options = { withNotification: true, ...payloadOptions };
+    options.onSuccess?.();
+    referralService.trackFolderUpload();
+    logNetworkInfoForUpload({ folderName: root.name });
+
+    setTimeout(() => {
+      this.dispatch(planThunks.fetchUsageThunk());
+      if (memberId) this.dispatch(planThunks.fetchBusinessLimitUsageThunk());
+    }, 1000);
+  };
+
   public readonly run = async (): Promise<void> => {
     const payloadWithTaskId = await generateTaskIdForFolders(this.payload);
 
@@ -375,8 +438,7 @@ export class UploadFoldersManager {
     context.addEventListener('offline', connectionLostListener);
 
     for (const taskFolder of payloadWithTaskId) {
-      const { root, currentFolderId, options: payloadOptions, taskId } = taskFolder;
-      const options = { withNotification: true, ...payloadOptions };
+      const { root, currentFolderId, taskId } = taskFolder;
 
       this.tasksInfo[taskId] = {
         progress: {
@@ -385,32 +447,9 @@ export class UploadFoldersManager {
         },
       };
 
-      tasksService.updateTask({
-        taskId,
-        merge: {
-          status: TaskStatus.InProcess,
-          progress: 0,
-        },
-      });
+      tasksService.updateTask({ taskId, merge: { status: TaskStatus.InProcess, progress: 0 } });
 
-      const cancelQueueListener = (task?: TaskData) => {
-        const isCurrentTask = task && task.id === taskId;
-        if (isCurrentTask && task.status === TaskStatus.Cancelled) {
-          this.uploadFoldersQueue.kill();
-        }
-      };
-
-      const updateQueueListener = (task?: TaskData) => {
-        const isCurrentTask = task && task.id === taskId;
-        if (isCurrentTask && task.status === TaskStatus.InProcess) {
-          this.uploadFoldersQueue.resume();
-        } else if (isCurrentTask && task.status === TaskStatus.Paused) {
-          this.uploadFoldersQueue.pause();
-        }
-      };
-
-      tasksService.addListener({ event: TaskEvent.TaskCancelled, listener: cancelQueueListener });
-      tasksService.addListener({ event: TaskEvent.TaskUpdated, listener: updateQueueListener });
+      const removeQueueListeners = this.attachQueueListeners(taskId);
 
       try {
         root.folderId = currentFolderId;
@@ -422,51 +461,30 @@ export class UploadFoldersManager {
 
         if (connectionLost) throw new ConnectionLostError();
 
-        tasksService.updateTask({
-          taskId: taskId,
-          merge: {
-            itemUUID: { rootFolderUUID: this.tasksInfo[taskId].rootFolderItem?.uuid },
-            status: TaskStatus.Success,
-          },
-        });
-
-        options.onSuccess?.();
-        referralService.trackFolderUpload();
-        logNetworkInfoForUpload({ folderName: root.name });
-
-        setTimeout(() => {
-          this.dispatch(planThunks.fetchUsageThunk());
-          if (memberId) this.dispatch(planThunks.fetchBusinessLimitUsageThunk());
-        }, 1000);
+        this.finalizeFolderUpload(taskFolder, memberId);
       } catch (err: unknown) {
         const castedError = errorService.castError(err);
-        const updatedTask = tasksService.findTask(taskId);
 
         if (connectionLost) {
           tasksService.updateTask({
-            taskId: taskId,
-            merge: {
-              status: TaskStatus.Error,
-              subtitle: t('error.connectionLostError') as string,
-            },
+            taskId,
+            merge: { status: TaskStatus.Error, subtitle: t('error.connectionLostError') as string },
           });
           errorService.reportError(castedError);
           break;
-        } else if (updatedTask?.status !== TaskStatus.Cancelled && taskId === updatedTask?.id) {
+        }
+
+        const updatedTask = tasksService.findTask(taskId);
+        if (updatedTask?.status !== TaskStatus.Cancelled && taskId === updatedTask?.id) {
           tasksService.updateTask({
-            taskId: taskId,
-            merge: {
-              status: TaskStatus.Error,
-              subtitle: t('tasks.subtitles.upload-failed') as string,
-            },
+            taskId,
+            merge: { status: TaskStatus.Error, subtitle: t('tasks.subtitles.upload-failed') as string },
           });
-          // Log the error or report it but don't re-throw it to allow the next folder to be processed
+          // Report the error but keep going so the remaining folders are still processed.
           errorService.reportError(castedError);
-          continue;
         }
       } finally {
-        tasksService.removeListener({ event: TaskEvent.TaskCancelled, listener: cancelQueueListener });
-        tasksService.removeListener({ event: TaskEvent.TaskUpdated, listener: updateQueueListener });
+        removeQueueListeners();
       }
     }
   };

@@ -1096,7 +1096,8 @@
       "allProcessesHaveFinished": "Все процессы завершены",
       "processing": "Обработка {{pending}} из {{finished}}",
       "failedToUpload": "Не удалось загрузить",
-      "failedToDownload": "Не удалось загрузить"
+      "failedToDownload": "Не удалось загрузить",
+      "notAllowed": "Не разрешено"
     },
     "waiting": "Ожидание",
     "paused": "Приостановлено",
@@ -1211,7 +1212,8 @@
       "errors": {}
     },
     "subtitles": {
-      "upload-failed": "Не удалось загрузить"
+      "upload-failed": "Не удалось загрузить",
+      "upload-partially-failed": "Некоторые файлы не удалось загрузить"
     },
     "generalErrorMessages": {
       "retryUploadFailed": "Что-то пошло не так при повторной попытке загрузки. Попробуйте загрузить снова",

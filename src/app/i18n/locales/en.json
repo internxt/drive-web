@@ -1117,7 +1117,8 @@
       "allProcessesHaveFinished": "All processes have finished",
       "processing": "Processing {{pending}} of {{finished}}",
       "failedToUpload": "Failed to upload",
-      "failedToDownload": "Failed to download"
+      "failedToDownload": "Failed to download",
+      "notAllowed": "Not allowed"
     },
     "waiting": "Waiting",
     "paused": "Paused",
@@ -1232,7 +1233,8 @@
       "errors": {}
     },
     "subtitles": {
-      "upload-failed": "Upload failed"
+      "upload-failed": "Upload failed",
+      "upload-partially-failed": "Some files could not be uploaded"
     },
     "generalErrorMessages": {
       "retryUploadFailed": "Something went wrong when retrying the upload. Try uploading again",

@@ -1117,7 +1117,8 @@
       "allProcessesHaveFinished": "所有处理都已完成",
       "processing": "正在处理 {{pending}}/{{finished}}",
       "failedToUpload": "上傳失敗",
-      "failedToDownload": "下載失敗"
+      "failedToDownload": "下載失敗",
+      "notAllowed": "不允許"
     },
     "waiting": "等待中",
     "paused": "暂停",
@@ -1232,7 +1233,8 @@
       "errors": {}
     },
     "subtitles": {
-      "upload-failed": "上传失败"
+      "upload-failed": "上传失败",
+      "upload-partially-failed": "部分文件无法上传"
     },
     "generalErrorMessages": {
       "retryUploadFailed": "重试上传时出了问题。请再次上传",

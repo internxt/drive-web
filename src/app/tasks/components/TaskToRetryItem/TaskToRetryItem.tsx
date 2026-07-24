@@ -5,13 +5,14 @@ import { bytesToString } from 'app/drive/services/size.service';
 import { formatDefaultDate } from 'services/date.service';
 import { t } from 'i18next';
 import { TaskLoggerButton } from '../TaskLoggerButton/TaskLoggerButton';
-import { CircleNotch } from '@phosphor-icons/react';
+import { CircleNotchIcon } from '@phosphor-icons/react';
 import { RetryableTask } from 'app/network/RetryManager';
 
 const TaskToRetyItem = ({ index, style, data }: ListChildComponentProps) => {
   const file: RetryableTask = data.files[index];
-  const { params, status } = file;
+  const { params, status, retryable } = file;
   const { downloadItem } = data;
+  const isNotAllowed = retryable === false;
   const getFileIcon = (type: string) => {
     const IconComponent = iconService.getItemIcon(false, type);
     return <IconComponent className="w-10 h-10 text-gray-600" />;
@@ -33,8 +34,13 @@ const TaskToRetyItem = ({ index, style, data }: ListChildComponentProps) => {
           </p>
         </div>
       </div>
-      {status === 'failed' && <TaskLoggerButton onClick={() => downloadItem(file)} Icon={RestartIcon} />}
-      {status === 'retrying' && <CircleNotch size={24} className="mr-2 animate-spin text-gray-60" weight="bold" />}
+      {isNotAllowed && <span className="mr-2 text-sm font-medium text-gray-50">{t('tasks.messages.notAllowed')}</span>}
+      {!isNotAllowed && status === 'failed' && (
+        <TaskLoggerButton onClick={() => downloadItem(file)} Icon={RestartIcon} />
+      )}
+      {!isNotAllowed && status === 'retrying' && (
+        <CircleNotchIcon size={24} className="mr-2 animate-spin text-gray-60" weight="bold" />
+      )}
     </div>
   );
 };

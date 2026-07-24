@@ -1096,7 +1096,8 @@
       "allProcessesHaveFinished": "Todos los procesos han finalizado",
       "processing": "Procesando {{pending}} de {{finished}}",
       "failedToUpload": "Error al subir",
-      "failedToDownload": "Error al descargar"
+      "failedToDownload": "Error al descargar",
+      "notAllowed": "No permitido"
     },
     "waiting": "Esperando",
     "paused": "Pausado",
@@ -1212,7 +1213,8 @@
       "errors": {}
     },
     "subtitles": {
-      "upload-failed": "Error al subir"
+      "upload-failed": "Error al subir",
+      "upload-partially-failed": "Algunos archivos no se pudieron subir"
     },
     "generalErrorMessages": {
       "retryUploadFailed": "Algo salió mal al reintentar la subida. Intenta subirlo de nuevo",
