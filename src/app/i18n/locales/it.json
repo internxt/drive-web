@@ -349,6 +349,7 @@
   },
   "sideNav": {
     "drive": "Drive",
+    "favorites": "Preferiti",
     "backups": "Backup",
     "shared": "Condiviso",
     "recents": "Recenti",
@@ -360,6 +361,13 @@
     }
   },
   "views": {
+    "favorites": {
+      "head": "Preferiti",
+      "empty": {
+        "title": "Ancora nessun preferito",
+        "description": "I file e le cartelle che contrassegni come preferiti appariranno qui"
+      }
+    },
     "recents": {
       "head": "Recenti",
       "empty": {

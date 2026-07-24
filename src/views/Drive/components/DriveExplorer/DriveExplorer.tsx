@@ -1,4 +1,4 @@
-import { ArrowFatUp, FileArrowUp, FolderSimplePlus, Trash, UploadSimple } from '@phosphor-icons/react';
+import { ArrowFatUp, FileArrowUp, FolderSimplePlus, Star, Trash, UploadSimple } from '@phosphor-icons/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { usePaginationState, useTutorialState } from '../../hooks';
@@ -38,6 +38,7 @@ import { storageActions } from 'app/store/slices/storage';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { fetchPaginatedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchFolderContentThunk';
+import { fetchFavoritesThunk } from 'views/Favorites/store/fetchFavoritesThunk';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import { getAncestorsAndSetNamePath } from 'app/store/slices/storage/storage.thunks/goToFolderThunk';
 import {
@@ -144,6 +145,8 @@ interface DriveExplorerProps {
   filesOnTrashLength: number;
   hasMoreFolders: boolean;
   hasMoreFiles: boolean;
+  hasMoreFavoriteFolders: boolean;
+  hasMoreFavoriteFiles: boolean;
   getTrashPaginated?: (
     limit: number,
     offset: number | undefined,
@@ -176,6 +179,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     filesOnTrashLength,
     hasMoreFolders,
     hasMoreFiles,
+    hasMoreFavoriteFolders,
+    hasMoreFavoriteFiles,
     getTrashPaginated,
     selectedWorkspace,
   } = props;
@@ -187,6 +192,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const hasAnyItemSelected = selectedItems.length > 0;
 
   const isRecents = title === translate('views.recents.head');
+  const isFavorites = title === translate('views.favorites.head');
   const isTrash = title === translate('trash.trash');
 
   // Upload state
@@ -209,7 +215,14 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const paginationState = usePaginationState({ isTrash, hasMoreFiles, hasMoreFolders });
+  const hasMoreFoldersToLoad = isFavorites ? hasMoreFavoriteFolders : hasMoreFolders;
+  const hasMoreFilesToLoad = isFavorites ? hasMoreFavoriteFiles : hasMoreFiles;
+
+  const paginationState = usePaginationState({
+    isTrash,
+    hasMoreFiles: hasMoreFilesToLoad,
+    hasMoreFolders: hasMoreFoldersToLoad,
+  });
   const tutorialState = useTutorialState();
 
   const itemToRename = useAppSelector((state: RootState) => state.storage.itemToRename);
@@ -245,6 +258,15 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           icon={filesEmptyImage}
           title={translate('views.recents.empty.title')}
           subtitle={translate('views.recents.empty.description')}
+        />
+      );
+    }
+    if (isFavorites) {
+      return (
+        <Empty
+          icon={<Star className="text-gray-40" size={80} weight="thin" />}
+          title={translate('views.favorites.empty.title')}
+          subtitle={translate('views.favorites.empty.description')}
         />
       );
     }
@@ -347,10 +369,10 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    if ((!isTrash && !hasMoreFolders) || (isTrash && !hasMoreTrashFolders)) {
+    if ((!isTrash && !hasMoreFoldersToLoad) || (isTrash && !hasMoreTrashFolders)) {
       fetchItems();
     }
-  }, [hasMoreFolders, hasMoreTrashFolders]);
+  }, [hasMoreFoldersToLoad, hasMoreTrashFolders]);
 
   useEffect(() => {
     resetPaginationState();
@@ -359,13 +381,21 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const resetPaginationState = () => {
     dispatch(storageActions.resetTrash());
+    dispatch(storageActions.resetFavoritesPagination());
     paginationState.resetPaginationState();
     setHasMoreTrashFolders(true);
     setIsLoadingTrashItems(false);
   };
 
-  const fetchItems = () =>
-    isTrash ? getMoreTrashItems() : dispatch(fetchPaginatedFolderContentThunk(currentFolderId));
+  const fetchItems = () => {
+    if (isTrash) {
+      getMoreTrashItems();
+    } else if (isFavorites) {
+      dispatch(fetchFavoritesThunk());
+    } else {
+      dispatch(fetchPaginatedFolderContentThunk(currentFolderId));
+    }
+  };
 
   const onDetailsButtonClicked = useCallback(
     (item: DriveItemData | AdvancedSharedItem) => {
@@ -497,7 +527,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   };
 
   useHotkeys('shift+F', () => {
-    if (isOpen) {
+    if (isOpen && !isFavorites) {
       setIsOpen(false);
       onCreateFolderButtonClicked();
     }
@@ -548,7 +578,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <BannerWrapper />
 
       <div className="flex h-full w-full max-w-full grow">
-        {!isTrash && isOpen && (
+        {!isTrash && !isFavorites && isOpen && (
           <ContextMenu
             item={'item'}
             menuItemsRef={menuContextItemsRef}
@@ -601,7 +631,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
               {title}
             </div>
             {/* General Dropdown for Drive Explorer/Trash */}
-            {!isTrash && (
+            {!isTrash && !isFavorites && (
               <div className="flex items-center justify-center">
                 <DriveTopBarItems
                   stepOneTutorialRef={tutorialState.uploadFileButtonRef}
@@ -709,7 +739,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     </div>
   );
 
-  if (isTrash) {
+  if (isTrash || isFavorites) {
     return driveExplorer;
   }
 
@@ -866,6 +896,8 @@ export default connect((state: RootState) => {
     filesOnTrashLength: state.storage.filesOnTrashLength,
     hasMoreFolders,
     hasMoreFiles,
+    hasMoreFavoriteFolders: state.storage.hasMoreFavoriteFolders,
+    hasMoreFavoriteFiles: state.storage.hasMoreFavoriteFiles,
     roles: state.shared.roles,
   };
 })(DropTarget([NativeTypes.FILE], dropTargetSpec, dropTargetCollect)(DriveExplorer));

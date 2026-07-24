@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { matchPath } from 'react-router-dom';
-import { Clock, ClockCounterClockwise, Desktop, FolderSimple, Trash, Users } from '@phosphor-icons/react';
+import { Clock, ClockCounterClockwise, Desktop, FolderSimple, Star, Trash, Users } from '@phosphor-icons/react';
 import { useSelector } from 'react-redux';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useAppSelector } from 'app/store/hooks';
@@ -51,6 +51,14 @@ export const useSidenavNavigation = () => {
         iconDataCy: 'sideNavDriveIcon',
         isVisible: true,
         onClick: () => onSidenavItemClick(AppView.Drive, workspaceUuid, resetAccessTokenFileFolder),
+      },
+      {
+        isActive: isActiveButton('/favorites'),
+        label: translate('sideNav.favorites'),
+        icon: Star,
+        iconDataCy: 'sideNavFavoritesIcon',
+        isVisible: false,
+        onClick: () => onSidenavItemClick(AppView.Favorites, workspaceUuid, resetAccessTokenFileFolder),
       },
       {
         isActive: isActiveButton('/backups'),

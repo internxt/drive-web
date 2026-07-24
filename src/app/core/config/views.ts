@@ -17,6 +17,7 @@ import {
 import SignUpView, { ShareGuestSignUpView, WorkspaceGuestSignUpView } from '../../../views/Signup';
 import DeactivationView from '../../core/views/DeactivationView/DeactivationView';
 import DriveView from 'views/Drive';
+import FavoritesView from 'views/Favorites';
 import FolderFileNotFound from 'app/drive/views/FolderFileNotFound/FolderFileNotFound';
 import RecentsView from 'views/Recents';
 import RequestAccess from 'app/drive/views/RequestAccess/RequestAccess';
@@ -45,6 +46,7 @@ const views: Array<{
   { id: AppView.Auth, component: AuthView },
   { id: AppView.ButtonAuth, component: ButtonAuth },
   { id: AppView.RecoverAccount, component: RecoverAccountView },
+  { id: AppView.Favorites, component: FavoritesView },
   { id: AppView.Recents, component: RecentsView },
   { id: AppView.Trash, component: TrashView },
   { id: AppView.Backups, component: BackupsView },

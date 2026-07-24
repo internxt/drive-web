@@ -349,6 +349,7 @@
   },
   "sideNav": {
     "drive": "Drive",
+    "favorites": "Favorites",
     "backups": "Backups",
     "shared": "Shared",
     "recents": "Recents",
@@ -360,6 +361,13 @@
     }
   },
   "views": {
+    "favorites": {
+      "head": "Favorites",
+      "empty": {
+        "title": "No favorites yet",
+        "description": "Files and folders you mark as favorites will appear here"
+      }
+    },
     "recents": {
       "head": "Recents",
       "empty": {
