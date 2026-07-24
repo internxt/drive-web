@@ -108,7 +108,7 @@ const DriveView = (props: DriveViewProps) => {
       dispatch(workspacesActions.setCredentials(credentials));
       localStorageService.set(LocalStorageItem.WorkspaceCredentials, JSON.stringify(credentials));
       dispatch(workspacesActions.setSelectedWorkspace(workspace ?? null));
-      localStorageService.set(LocalStorageItem.B2Bworkspace, JSON.stringify(workspace));
+      if (workspace) localStorageService.setB2BWorkspace(workspace.workspace.id, workspace.workspaceUser.key);
       setTokenHeader(credentials.tokenHeader);
     } catch (error) {
       errorService.reportError(error);

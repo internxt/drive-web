@@ -2,7 +2,7 @@ import { afterAll, beforeEach, describe, expect, it, test, vi, afterEach } from 
 import localStorageService from './local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { LocalStorageItem, LocalStorageProtectedItem } from 'app/core/types';
-import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
+import { WorkspaceCredentialsDetails } from '@internxt/sdk/dist/workspaces';
 import { createNewKey, deleteDb } from './local-storage-crypto';
 
 export const mockUserSettings: UserSettings = {
@@ -55,77 +55,19 @@ const mockWorkspaceCredentialsDetails: WorkspaceCredentialsDetails = {
   tokenHeader: 'Bearer mock-token-abc-123',
 };
 
-const mockWorkspaceData: WorkspaceData = {
-  workspaceUser: {
-    backupsUsage: '500000000', // 500 MB
-    createdAt: '2023-05-01T10:00:00.000Z',
-    deactivated: false,
-    driveUsage: '1200000000', // 1.2 GB
-    freeSpace: '8800000000', // 8.8 GB free
-    id: 'workspace-user-001',
-    isManager: true,
-    isOwner: false,
-    key: 'mock-encryption-key',
-    member: {
-      avatar: null,
-      backupsBucket: 'backups-bucket-id',
-      bridgeUser: 'bridge-user-mock',
-      credit: 100,
-      email: 'jane.doe@example.com',
-      errorLoginCount: 0,
-      id: 101,
-      isEmailActivitySended: true,
-      lastPasswordChangedAt: '2023-07-01T12:00:00.000Z',
-      lastResend: '2023-08-01T12:00:00.000Z',
-      lastname: 'Doe',
-      name: 'Jane',
-      referralCode: 'REF-JANE-123',
-      referrer: null,
-      registerCompleted: true,
-      rootFolderId: 2001,
-      sharedWorkspace: true,
-      syncDate: '2023-10-01T08:00:00.000Z',
-      userId: 'user-1234',
-      username: 'janedoe',
-      uuid: 'uuid-janedoe-5678',
-      welcomePack: true,
-    },
-    memberId: '101',
-    rootFolderId: 'folder-abc-123',
-    spaceLimit: '10000000000', // 10 GB
-    updatedAt: '2023-10-01T12:00:00.000Z',
-    usedSpace: '1700000000', // 1.7 GB
-    workspaceId: 'workspace-xyz-456',
-  },
-  workspace: {
-    id: 'workspace-xyz-456',
-    ownerId: 'user-1234',
-    address: '123 Main St, Example City',
-    name: 'Marketing Workspace',
-    description: 'Workspace for the marketing department',
-    defaultTeamId: 'team-789',
-    workspaceUserId: 'workspace-user-001',
-    setupCompleted: true,
-    createdAt: '2023-04-01T09:30:00.000Z',
-    updatedAt: '2023-10-01T12:30:00.000Z',
-    avatar: null,
-    rootFolderId: 'folder-abc-123',
-    phoneNumber: null,
-  },
-};
+const mockWorkspaceId = 'workspace-user-001';
 
 const localStorageKey = LocalStorageItem.Language;
 const localStorageValue = 'item-exists';
 
 const stringifyMockedUser = JSON.stringify(mockUserSettings);
 const stringifyMockCredentials = JSON.stringify(mockWorkspaceCredentialsDetails);
-const stringifyWorkspaceData = JSON.stringify(mockWorkspaceData);
 
 beforeEach(() => {
   localStorage.setItem(localStorageKey, localStorageValue);
   localStorageService.setUser(mockUserSettings);
   localStorage.setItem(LocalStorageItem.WorkspaceCredentials, stringifyMockCredentials);
-  localStorage.setItem(LocalStorageItem.B2Bworkspace, stringifyWorkspaceData);
+  localStorage.setItem(LocalStorageItem.B2BworkspaceId, mockWorkspaceId);
   localStorage.setItem(LocalStorageItem.Theme, 'starwars');
   vi.clearAllMocks();
   vi.resetModules();
@@ -276,25 +218,33 @@ describe('Testing the local storage service', () => {
     });
 
     describe('Get workspace item data', () => {
-      it('When a workspace object exists, then the object is returned', () => {
-        const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
+      it('When workspace is set, then mnemonic and id are set', () => {
+        const mockWorkspaceMnemonic = 'test-workspace-mnemonic';
+        const setFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'setItem');
 
-        const workspaceCredentials = localStorageService.getB2BWorkspace();
+        localStorageService.setB2BWorkspace('test-workspace-id', mockWorkspaceMnemonic);
 
-        expect(getFromLocalStorageSpy).toHaveBeenCalled();
-        expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.B2Bworkspace);
-        expect(workspaceCredentials).toStrictEqual(JSON.parse(stringifyWorkspaceData));
+        expect(setFromLocalStorageSpy).toHaveBeenCalled();
+        expect(setFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.B2BworkspaceId, 'test-workspace-id');
+        expect(setFromLocalStorageSpy).toHaveBeenCalledWith(
+          LocalStorageItem.B2BworkspaceMnemonic,
+          mockWorkspaceMnemonic,
+        );
+
+        expect(localStorageService.getB2BWorkspaceMnemonic()).toBe(mockWorkspaceMnemonic);
       });
 
-      it('When a workspace object does not exist, then a value indicating so is returned (null)', () => {
-        const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
+      it('When a workspace is cleaned, then mnemonic and id are removed', () => {
+        const setFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'setItem');
 
-        localStorage.removeItem(LocalStorageItem.B2Bworkspace);
-        const workspaceCredentials = localStorageService.getB2BWorkspace();
+        localStorageService.clearB2BWorkspace();
 
-        expect(getFromLocalStorageSpy).toHaveBeenCalled();
-        expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.B2Bworkspace);
-        expect(workspaceCredentials).toBeNull();
+        expect(setFromLocalStorageSpy).toHaveBeenCalled();
+        expect(setFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.B2BworkspaceId, '');
+        expect(setFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.B2BworkspaceMnemonic, '');
+
+        expect(localStorageService.get(LocalStorageItem.B2BworkspaceId)).toBe('');
+        expect(localStorageService.get(LocalStorageItem.B2BworkspaceMnemonic)).toBe('');
       });
     });
   });

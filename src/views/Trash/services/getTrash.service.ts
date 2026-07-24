@@ -7,6 +7,7 @@ import { DriveItemData } from 'app/drive/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { store } from 'app/store';
 import { storageActions } from 'app/store/slices/storage';
+import { LocalStorageItem } from 'app/core/types';
 
 const getTrash = async (): Promise<void> => {
   const trashClient = SdkFactory.getNewApiInstance().createTrashClient();
@@ -83,9 +84,12 @@ const getWorkspaceTrashPaginated = async (
   type: 'files' | 'folders',
 ): Promise<{ finished: boolean; itemsRetrieved: number }> => {
   try {
-    const workspace = localStorageService.getB2BWorkspace();
+    const workspaceId = localStorageService.get(LocalStorageItem.B2BworkspaceId);
+    if (!workspaceId) {
+      throw new Error('Workspace id not found in local storage');
+    }
     const trashType = type === 'files' ? 'file' : 'folder';
-    const itemsInTrash = await workspacesService.getTrashItems(workspace?.workspace.id as string, trashType, offset);
+    const itemsInTrash = await workspacesService.getTrashItems(workspaceId, trashType, offset);
 
     const { finished, itemsRetrieved } = processTrashItems(itemsInTrash.result, type, limit);
     return { finished, itemsRetrieved };
