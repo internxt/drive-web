@@ -322,6 +322,23 @@
           "after": "After",
           "before": "Before",
           "selectToday": "Select today"
+        },
+        "size": {
+          "size": "Size",
+          "anySize": "Any size",
+          "less5mb": "Less than 5 MB",
+          "less100mb": "Less than 100 MB",
+          "less1gb": "Less than 1 GB",
+          "more1gb": "More than 1 GB",
+          "customRange": "Custom size range",
+          "biggerThan": "Bigger than",
+          "smallerThan": "Smaller than",
+          "unit": "Unit",
+          "bytes": "Bytes",
+          "kilobytes": "Kilobytes",
+          "megabytes": "Megabytes",
+          "gigabytes": "Gigabytes",
+          "terabytes": "Terabytes"
         }
       },
       "emptyState": {

@@ -322,6 +322,23 @@
           "after": "之后",
           "before": "之前",
           "selectToday": "选择今天"
+        },
+        "size": {
+          "size": "大小",
+          "anySize": "任何大小",
+          "less5mb": "小于 5 MB",
+          "less100mb": "小于 100 MB",
+          "less1gb": "小于 1 GB",
+          "more1gb": "大于 1 GB",
+          "customRange": "自定义大小范围",
+          "biggerThan": "大于",
+          "smallerThan": "小于",
+          "unit": "单位",
+          "bytes": "字节",
+          "kilobytes": "KB",
+          "megabytes": "MB",
+          "gigabytes": "GB",
+          "terabytes": "TB"
         }
       },
       "emptyState": {

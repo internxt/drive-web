@@ -21,8 +21,16 @@ import NotFoundState from './NotFoundState';
 import EmptyState from './EmptyState';
 import { toggleTypeCategory } from '../utils/typeFilterUtils';
 import { changeSpecificDate, datePresetToRange, SearchDatePreset, SpecificDateRange } from '../utils/dateFilterUtils';
+import {
+  changeCustomSize,
+  CustomSizeRange,
+  emptyCustomSizeRange,
+  SearchSizePreset,
+  sizePresetToRange,
+} from '../utils/sizeFilterUtils';
 import SearchTypeFilter from './SearchTypeFilter';
 import SearchDateFilter from './SearchDateFilter';
+import SearchSizeFilter from './SearchSizeFilter';
 import { Dayjs } from 'dayjs';
 import { getItemPlainName } from 'app/crypto/services/utils';
 import navigationService from 'services/navigation.service';
@@ -85,6 +93,8 @@ const Navbar = (props: NavbarProps) => {
   const [filters, setFilters] = useState<SearchFilters>(emptySearchFilters);
   const [datePreset, setDatePreset] = useState<SearchDatePreset>('any');
   const [specificDates, setSpecificDates] = useState<SpecificDateRange>({});
+  const [sizePreset, setSizePreset] = useState<SearchSizePreset>('any');
+  const [customSize, setCustomSize] = useState<CustomSizeRange>(emptyCustomSizeRange);
 
   const [query, setQuery] = useState('');
   const [searchResult, setSearchResult] = useState<SearchResult[]>([]);
@@ -145,6 +155,21 @@ const Navbar = (props: NavbarProps) => {
 
   const changeDateFilterDate = (field: 'after' | 'before', date?: Dayjs) =>
     applyDateFilter('specific', changeSpecificDate(specificDates, field, date));
+
+  const applySizeFilter = (preset: SearchSizePreset, custom: CustomSizeRange) => {
+    setSizePreset(preset);
+    setCustomSize(custom);
+    setFilters((current) => ({ ...current, ...sizePresetToRange(preset, custom) }));
+  };
+
+  const selectSizePreset = (preset: SearchSizePreset) => {
+    if (preset !== sizePreset) applySizeFilter(preset, emptyCustomSizeRange);
+  };
+
+  const changeCustomSizeFilter = (changes: Partial<CustomSizeRange>) => {
+    const nextCustomSize = changeCustomSize(customSize, changes);
+    if (nextCustomSize !== customSize) applySizeFilter('custom', nextCustomSize);
+  };
 
   const openSearchBoxRef = useRef(openSearchBox);
   openSearchBoxRef.current = openSearchBox;
@@ -335,6 +360,13 @@ const Navbar = (props: NavbarProps) => {
                   specific={specificDates}
                   onSelectPreset={selectDatePreset}
                   onChangeDate={changeDateFilterDate}
+                  onClose={refocusSearchInput}
+                />
+                <SearchSizeFilter
+                  preset={sizePreset}
+                  custom={customSize}
+                  onSelectPreset={selectSizePreset}
+                  onChangeCustom={changeCustomSizeFilter}
                   onClose={refocusSearchInput}
                 />
               </div>

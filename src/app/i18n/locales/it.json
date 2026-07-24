@@ -322,6 +322,23 @@
           "after": "Dopo",
           "before": "Prima",
           "selectToday": "Seleziona oggi"
+        },
+        "size": {
+          "size": "Dimensione",
+          "anySize": "Qualsiasi dimensione",
+          "less5mb": "Meno di 5 MB",
+          "less100mb": "Meno di 100 MB",
+          "less1gb": "Meno di 1 GB",
+          "more1gb": "Più di 1 GB",
+          "customRange": "Intervallo di dimensioni personalizzato",
+          "biggerThan": "Maggiore di",
+          "smallerThan": "Minore di",
+          "unit": "Unità",
+          "bytes": "Byte",
+          "kilobytes": "Kilobyte",
+          "megabytes": "Megabyte",
+          "gigabytes": "Gigabyte",
+          "terabytes": "Terabyte"
         }
       },
       "emptyState": {
