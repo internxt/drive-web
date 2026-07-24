@@ -304,7 +304,12 @@
         "zip": "压缩文件 (zip)",
         "document": "文档",
         "powerpoint": "Powerpoint",
-        "excel": "Excel"
+        "excel": "Excel",
+        "text": "文本 (txt)",
+        "code": "代码",
+        "csv": "CSV",
+        "xml": "XML",
+        "figma": "Figma"
       },
       "emptyState": {
         "title": "查找文件和文件夹",

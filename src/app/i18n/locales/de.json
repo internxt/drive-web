@@ -283,7 +283,12 @@
         "zip": "Archiv (zip)",
         "document": "Dokument",
         "powerpoint": "Powerpoint",
-        "excel": "Excel"
+        "excel": "Excel",
+        "text": "Text (txt)",
+        "code": "Code",
+        "csv": "CSV",
+        "xml": "XML",
+        "figma": "Figma"
       },
       "emptyState": {
         "title": "Dateien und Ordner finden",

@@ -10,6 +10,11 @@ export const TYPE_FILTER_ITEMS: { id: SearchFileCategory; labelKey: string; exte
   { id: 'word', labelKey: 'document', extension: 'docx' },
   { id: 'ppt', labelKey: 'powerpoint', extension: 'pptx' },
   { id: 'xls', labelKey: 'excel', extension: 'xlsx' },
+  { id: 'txt', labelKey: 'text', extension: 'txt' },
+  { id: 'code', labelKey: 'code', extension: 'js' },
+  { id: 'csv', labelKey: 'csv', extension: 'csv' },
+  { id: 'xml', labelKey: 'xml', extension: 'xml' },
+  { id: 'figma', labelKey: 'figma', extension: 'fig' },
 ];
 
 export const toggleTypeCategory = (

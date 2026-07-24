@@ -283,7 +283,12 @@
         "zip": "Архив (zip)",
         "document": "Документ",
         "powerpoint": "Powerpoint",
-        "excel": "Excel"
+        "excel": "Excel",
+        "text": "Текст (txt)",
+        "code": "Код",
+        "csv": "CSV",
+        "xml": "XML",
+        "figma": "Figma"
       },
       "emptyState": {
         "title": "Поиск файлов и папок",

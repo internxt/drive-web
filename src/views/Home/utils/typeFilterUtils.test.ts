@@ -12,6 +12,11 @@ const ALL_CATEGORIES: SearchFileCategory[] = [
   'word',
   'ppt',
   'xls',
+  'txt',
+  'code',
+  'csv',
+  'xml',
+  'figma',
 ];
 
 describe('toggleTypeCategory', () => {
@@ -32,9 +37,9 @@ describe('toggleTypeCategory', () => {
   });
 
   test('When every category ends up selected, then the selection normalizes to any type', () => {
-    const allButOne = ALL_CATEGORIES.filter((category) => category !== 'xls');
+    const allButOne = ALL_CATEGORIES.filter((category) => category !== 'figma');
 
-    expect(toggleTypeCategory(allButOne, 'xls')).toEqual([]);
+    expect(toggleTypeCategory(allButOne, 'figma')).toEqual([]);
   });
 
   test('When toggling, then the original selection is not mutated', () => {

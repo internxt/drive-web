@@ -304,7 +304,12 @@
         "zip": "Archivio (zip)",
         "document": "Documento",
         "powerpoint": "Powerpoint",
-        "excel": "Excel"
+        "excel": "Excel",
+        "text": "Testo (txt)",
+        "code": "Codice",
+        "csv": "CSV",
+        "xml": "XML",
+        "figma": "Figma"
       },
       "emptyState": {
         "title": "Trovare file e cartelle",

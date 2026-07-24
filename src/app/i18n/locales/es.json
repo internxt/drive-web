@@ -283,7 +283,12 @@
         "zip": "Archivo (zip)",
         "document": "Documento",
         "powerpoint": "Powerpoint",
-        "excel": "Excel"
+        "excel": "Excel",
+        "text": "Texto (txt)",
+        "code": "Código",
+        "csv": "CSV",
+        "xml": "XML",
+        "figma": "Figma"
       },
       "emptyState": {
         "title": "Buscar archivos y carpetas",
