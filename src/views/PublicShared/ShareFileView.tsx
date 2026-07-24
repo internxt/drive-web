@@ -16,6 +16,8 @@ import UilArrowRight from '@iconscout/react-unicons/icons/uil-arrow-right';
 import { Check, DownloadSimple, Eye } from '@phosphor-icons/react';
 
 import downloadService from 'app/drive/services/download.service';
+import { MIN_DOWNLOAD_MULTIPART_SIZE } from 'app/network/networkConstants';
+import { DownloadProgressCallback } from 'app/network/download';
 import './components/ShareView.scss';
 
 import { ShareTypes } from '@internxt/sdk/dist/drive';
@@ -195,24 +197,31 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
 
       if (fileInfo) {
         const encryptionKey = fileInfo.encryptionKey;
+        const fileSize = fileInfo.item.size;
 
         setProgress(MIN_PROGRESS);
         setIsDownloading(true);
-        const readable = await network.downloadFile({
+
+        const downloadParams = {
           bucketId: fileInfo.item.bucket,
           fileId: fileInfo.item.fileId,
           encryptionKey: Buffer.from(encryptionKey, 'hex'),
           token: fileInfo.itemToken,
           options: {
-            notifyProgress: (totalProgress, downloadedBytes) => {
+            notifyProgress: ((totalProgress, downloadedBytes) => {
               const progress = Math.trunc((downloadedBytes / totalProgress) * 100);
               setProgress(progress);
               if (progress == 100) {
                 setIsDownloading(false);
               }
-            },
+            }) as DownloadProgressCallback,
           },
-        });
+        };
+
+        const readable =
+          fileSize >= MIN_DOWNLOAD_MULTIPART_SIZE
+            ? await network.multipartDownloadFile({ ...downloadParams, fileSize })
+            : await network.downloadFile(downloadParams);
         const fileBlob = await binaryStreamToBlob(readable);
 
         await downloadService.downloadFileFromBlob(fileBlob, getFormatFileName());
