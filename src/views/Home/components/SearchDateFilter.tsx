@@ -1,5 +1,4 @@
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react';
-import { RadioButton } from '@internxt/ui';
 import { CaretDownIcon, XIcon } from '@phosphor-icons/react';
 import dayjs, { Dayjs } from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
@@ -8,6 +7,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { DATE_PRESET_ITEMS, SearchDatePreset, SpecificDateRange } from '../utils/dateFilterUtils';
 import DateCalendar from './DateCalendar';
 import DropdownCloseObserver from './DropdownCloseObserver';
+import SearchFilterRadioList from './SearchFilterRadioList';
 
 dayjs.extend(customParseFormat);
 
@@ -27,9 +27,10 @@ interface SearchDateInputProps {
   minDate?: Dayjs;
   maxDate?: Dayjs;
   onChange: (date?: Dayjs) => void;
+  onEnter: () => void;
 }
 
-const SearchDateInput = ({ label, value, minDate, maxDate, onChange }: SearchDateInputProps): JSX.Element => {
+const SearchDateInput = ({ label, value, minDate, maxDate, onChange, onEnter }: SearchDateInputProps): JSX.Element => {
   const [text, setText] = useState('');
   const [showCalendar, setShowCalendar] = useState(false);
 
@@ -58,6 +59,12 @@ const SearchDateInput = ({ label, value, minDate, maxDate, onChange }: SearchDat
           spellCheck="false"
           autoComplete="off"
           onChange={(event) => handleTextChange(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') {
+              event.preventDefault();
+              onEnter();
+            }
+          }}
           onFocus={() => setShowCalendar(true)}
           onBlur={() => {
             setShowCalendar(false);
@@ -101,7 +108,7 @@ const SearchDateFilter = ({
 
   return (
     <Popover className="relative">
-      {({ open }) => (
+      {({ open, close }) => (
         <>
           <DropdownCloseObserver open={open} onClose={onClose} />
           <PopoverButton
@@ -119,25 +126,15 @@ const SearchDateFilter = ({
             transition
             className="absolute left-0 z-20 mt-1 flex min-w-[320px] origin-top-left flex-col rounded-lg border border-gray-10 bg-surface py-1.5 shadow-subtle-hard outline-none transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 dark:bg-gray-5"
           >
-            <div
-              role="none"
-              onMouseDown={(event) => event.preventDefault()}
-              onClick={(event) => event.preventDefault()}
-            >
-              <div className="flex flex-row items-center gap-2 px-4 py-2">
-                <RadioButton checked={isAnyDate} onClick={() => onSelectPreset('any')} />
-                <p className="text-gray-100">{translate('general.searchBar.filters.date.anyDate')}</p>
-              </div>
-              <div className="mx-4 border-t border-gray-10" />
-              {DATE_PRESET_ITEMS.map(({ id, labelKey }) => (
-                <div className="flex flex-row items-center gap-2 px-4 py-2" key={id}>
-                  <RadioButton checked={preset === id} onClick={() => onSelectPreset(id)} />
-                  <p className="text-gray-100">
-                    {translate(`general.searchBar.filters.date.${labelKey}`, { year: presetYears[id] })}
-                  </p>
-                </div>
-              ))}
-            </div>
+            <SearchFilterRadioList
+              anyLabel={translate('general.searchBar.filters.date.anyDate')}
+              items={DATE_PRESET_ITEMS.map(({ id, labelKey }) => ({
+                id,
+                label: translate(`general.searchBar.filters.date.${labelKey}`, { year: presetYears[id] }),
+              }))}
+              selected={preset}
+              onSelect={onSelectPreset}
+            />
             {preset === 'specific' && (
               <>
                 <div className="mx-4 border-t border-gray-10" />
@@ -147,12 +144,14 @@ const SearchDateFilter = ({
                     value={specific.after}
                     maxDate={specific.before}
                     onChange={(date) => onChangeDate('after', date)}
+                    onEnter={close}
                   />
                   <SearchDateInput
                     label={translate('general.searchBar.filters.date.before')}
                     value={specific.before}
                     minDate={specific.after}
                     onChange={(date) => onChangeDate('before', date)}
+                    onEnter={close}
                   />
                 </div>
               </>

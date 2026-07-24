@@ -153,8 +153,10 @@ const Navbar = (props: NavbarProps) => {
     if (preset !== datePreset) applyDateFilter(preset, {});
   };
 
-  const changeDateFilterDate = (field: 'after' | 'before', date?: Dayjs) =>
-    applyDateFilter('specific', changeSpecificDate(specificDates, field, date));
+  const changeDateFilterDate = (field: 'after' | 'before', date?: Dayjs) => {
+    const nextSpecificDates = changeSpecificDate(specificDates, field, date);
+    if (nextSpecificDates !== specificDates) applyDateFilter('specific', nextSpecificDates);
+  };
 
   const applySizeFilter = (preset: SearchSizePreset, custom: CustomSizeRange) => {
     setSizePreset(preset);
