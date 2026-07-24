@@ -16,10 +16,11 @@ import { Link } from 'react-router-dom';
 import { HTTP_STATUS_CODES } from 'app/core/constants';
 
 import { useAppSelector } from 'app/store/hooks';
-import { SendBanner, ShareItemPwdView } from './components';
+import { PublicSharedFolderContent, SendBanner, ShareItemPwdView } from './components';
 import './components/ShareView.scss';
-import { Loader } from '@internxt/ui';
+import { Button, Loader } from '@internxt/ui';
 import { stringUtils } from '@internxt/lib';
+import { EyeIcon } from '@phosphor-icons/react';
 
 interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -60,6 +61,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   const [sendBannerVisible, setSendBannerVisible] = useState(false);
   const [folderSize, setFolderSize] = useState<string | null>(null);
   const [isGetFolderSizeError, setIsGetFolderSizeError] = useState<boolean>(false);
+  const [isPreviewingContent, setIsPreviewingContent] = useState(false);
 
   let body, downloadButton;
 
@@ -246,6 +248,18 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     );
   };
 
+  const renderDownloadActionButton = () => (
+    <button
+      onClick={() => {
+        download();
+      }}
+      className={`flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg px-6 font-medium
+                  text-white ${progress && progress >= 100 ? 'bg-green' : 'bg-primary'}`}
+    >
+      {downloadButton}
+    </button>
+  );
+
   const renderLoadedState = () => {
     const FileIcon = iconService.getItemIcon(true);
 
@@ -257,6 +271,21 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
           setItemPassword={setItemPassword}
           itemData={itemData}
         />
+      );
+    }
+
+    if (isPreviewingContent) {
+      return (
+        <>
+          <SendBanner sendBannerVisible={sendBannerVisible} setSendBannerVisible={setSendBannerVisible} />
+
+          <PublicSharedFolderContent
+            rootFolderUuid={info?.item?.uuid}
+            rootFolderName={info?.item?.plainName}
+            code={code}
+            onExitPreview={() => setIsPreviewingContent(false)}
+          />
+        </>
       );
     }
 
@@ -286,16 +315,13 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
         </div>
 
         {/* Actions */}
-        <div className="flex flex-row items-center justify-center">
-          <button
-            onClick={() => {
-              download();
-            }}
-            className={`flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg px-6 font-medium
-                        text-white ${progress && progress >= 100 ? 'bg-green' : 'bg-primary'}`}
-          >
-            {downloadButton}
-          </button>
+        <div className="flex flex-row items-center justify-center space-x-2">
+          <Button variant="secondary" onClick={() => setIsPreviewingContent(true)}>
+            <EyeIcon size={24} className="text-gray-80" />
+            <span className="ml-2">{translate('actions.view')}</span>
+          </Button>
+
+          {renderDownloadActionButton()}
         </div>
       </>
     );

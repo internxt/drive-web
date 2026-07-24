@@ -13,7 +13,7 @@ import fileExtensionService from 'app/drive/services/file-extension.service';
 import { fileExtensionPreviewableGroups } from 'app/drive/types/file-types';
 
 import UilArrowRight from '@iconscout/react-unicons/icons/uil-arrow-right';
-import { Check, DownloadSimple, Eye } from '@phosphor-icons/react';
+import { CheckIcon, DownloadSimpleIcon, EyeIcon } from '@phosphor-icons/react';
 
 import downloadService from 'app/drive/services/download.service';
 import './components/ShareView.scss';
@@ -104,7 +104,7 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
       return (
         <>
           {/* Download completed */}
-          <Check size={24} />
+          <CheckIcon size={24} />
           <span>{translate('actions.downloaded')}</span>
         </>
       );
@@ -124,7 +124,7 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
     return (
       <>
         {/* Download button */}
-        <DownloadSimple size={24} />
+        <DownloadSimpleIcon size={24} />
         <span>{translate('actions.download')}</span>
       </>
     );
@@ -315,7 +315,7 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
                   });
               }}
             >
-              <Eye size={24} className="text-gray-80" />
+              <EyeIcon size={24} className="text-gray-80" />
               <span className="ml-2">{translate('actions.view')}</span>
             </Button>
           )}

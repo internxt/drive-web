@@ -1,0 +1,151 @@
+import { items } from '@internxt/lib';
+import { Empty, List } from '@internxt/ui';
+import { OrderDirection } from 'app/core/types';
+import iconService from 'app/drive/services/icon.service';
+import transformItemService from 'app/drive/services/item-transform.service';
+import sizeService from 'app/drive/services/size.service';
+import { DriveItemData } from 'app/drive/types';
+import { AdvancedSharedItem } from 'app/share/types';
+import folderEmptyImage from 'assets/icons/light/folder-open.svg';
+import { t } from 'i18next';
+import { OrderField } from 'views/Shared/components/SharedItemList';
+
+const skinSkeleton = [
+  <div key="1" className="flex flex-row items-center space-x-4">
+    <div key="2" className="h-8 w-8 rounded-md bg-gray-5" />
+    <div key="3" className="h-4 w-40 rounded bg-gray-5" />
+  </div>,
+  <div key="4" className="h-4 w-20 rounded bg-gray-5" />,
+];
+
+type PublicSharedListItemProps = {
+  item: AdvancedSharedItem;
+  onNameClicked: (shareItem: AdvancedSharedItem) => void;
+};
+
+const PublicSharedListItem = ({ item, onNameClicked }: PublicSharedListItemProps) => {
+  const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
+  const displayName =
+    transformItemService.getItemPlainNameWithExtension(item as unknown as DriveItemData) ??
+    items.getItemDisplayName(item);
+
+  return (
+    <div
+      className="group relative flex w-full grow flex-row items-center text-base"
+      data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
+    >
+      {/* ITEM NAME */}
+      <div className="flex min-w-[200px] grow shrink-0 items-center truncate whitespace-nowrap pr-3">
+        {/* ICON */}
+        <div className="box-content flex items-center pr-4">
+          <div className="flex h-10 w-10 justify-center drop-shadow-soft">
+            <ItemIconComponent
+              className="h-full"
+              data-test={`file-list-${item.isFolder ? 'folder' : 'file'}-${displayName}`}
+            />
+          </div>
+        </div>
+
+        {/* NAME */}
+        <div className="flex w-[200px] grow cursor-pointer items-center truncate pr-2">
+          <button
+            data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
+            className="truncate"
+            title={displayName}
+            onClick={(e) => {
+              e.stopPropagation();
+              onNameClicked(item);
+            }}
+          >
+            <p className="truncate">{displayName}</p>
+          </button>
+        </div>
+      </div>
+
+      {/* SIZE */}
+      <div className="block w-40 shrink-0 items-center whitespace-nowrap">
+        {sizeService.bytesToString(item.size, false) === '' || item.isFolder ? (
+          <span className="opacity-25">—</span>
+        ) : (
+          sizeService.bytesToString(item.size, false)
+        )}
+      </div>
+    </div>
+  );
+};
+
+type PublicSharedItemListProps = {
+  shareItems: AdvancedSharedItem[];
+  isLoading: boolean;
+  hasMoreItems: boolean;
+  onNextPage: () => void;
+  onClickItem: (shareItem: AdvancedSharedItem) => void;
+  onItemDoubleClicked: (shareItem: AdvancedSharedItem) => void;
+  selectedItems: AdvancedSharedItem[];
+  onSelectedItemsChanged: (changes: { props: AdvancedSharedItem; value: boolean }[]) => void;
+  orderBy?: { field: OrderField; direction: OrderDirection };
+  sortBy: (value: { field: OrderField; direction: 'ASC' | 'DESC' }) => void;
+};
+
+export const PublicSharedItemList = ({
+  shareItems,
+  isLoading,
+  hasMoreItems,
+  onNextPage,
+  onClickItem,
+  onItemDoubleClicked,
+  selectedItems,
+  onSelectedItemsChanged,
+  orderBy,
+  sortBy,
+}: PublicSharedItemListProps) => {
+  const itemComposition = (item: AdvancedSharedItem) => (
+    <PublicSharedListItem item={item} onNameClicked={onItemDoubleClicked} />
+  );
+
+  const emptyStateElement = (
+    <Empty
+      icon={<img className="w-36" alt="" src={folderEmptyImage} />}
+      title={t('views.recents.empty.folderEmpty')}
+      subtitle={''}
+    />
+  );
+
+  return (
+    <List<AdvancedSharedItem, OrderField>
+      header={[
+        {
+          label: t('shared-links.list.name'),
+          width: 'flex-1 min-w-activity truncate whitespace-nowrap',
+          name: 'name',
+          orderable: true,
+          defaultDirection: 'ASC',
+        },
+        {
+          label: t('shared-links.list.size'),
+          width: 'w-40',
+          name: 'size',
+          orderable: true,
+          defaultDirection: 'ASC',
+        },
+      ]}
+      items={shareItems}
+      isLoading={isLoading}
+      onClick={onClickItem}
+      onDoubleClick={onItemDoubleClicked}
+      itemComposition={[itemComposition]}
+      skinSkeleton={skinSkeleton}
+      emptyState={emptyStateElement}
+      onNextPage={onNextPage}
+      hasMoreItems={hasMoreItems}
+      displayMenuDiv
+      selectedItems={selectedItems}
+      keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
+      onSelectedItemsChanged={onSelectedItemsChanged}
+      orderBy={orderBy}
+      onOrderByChanged={sortBy}
+    />
+  );
+};
+
+export default PublicSharedItemList;
