@@ -2,6 +2,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Button } from '@internxt/ui';
 import { AppView } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { validateUrl } from 'utils/urlValidation';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import AnimatedBackground from 'components/AnimatedBackground';
 import { isMobile } from 'react-device-detect';
@@ -32,7 +33,10 @@ export default function UniversalLinkView(): JSX.Element {
 
     let baseURL = DEEPLINK_SUCCESS_REDIRECT_BASE;
     if (redirectUri) {
-      baseURL = Buffer.from(redirectUri, 'base64').toString();
+      const decoded = Buffer.from(redirectUri, 'base64').toString();
+      if (validateUrl(decoded, ['http:'], ['127.0.0.1'])) {
+        baseURL = decoded;
+      }
     }
 
     return `${baseURL}?mnemonic=${btoa(user.mnemonic)}&newToken=${btoa(newToken)}&privateKey=${btoa(user.privateKey)}`;

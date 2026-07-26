@@ -41,6 +41,7 @@ import navigationService from 'services/navigation.service';
 import RealtimeService from 'services/sockets/socket.service';
 import { generateCaptchaToken } from 'utils';
 import { BackupData, detectBackupKeyFormat, prepareOldBackupRecoverPayloadForBackend } from 'utils/backupKeyUtils';
+import { validateUrl } from 'utils/urlValidation';
 import { AuthMethodTypes } from 'views/Checkout/types';
 import vpnAuthService from './vpnAuth.service';
 import { PasswordMismatchError } from './errors/auth.errors';
@@ -462,13 +463,10 @@ export async function areCredentialsCorrect(password: string): Promise<boolean> 
 }
 
 export const getRedirectUrl = (urlSearchParams: URLSearchParams, token: string): string | null => {
-  const ALLOWED_DOMAINS = ['https://internxt.com', 'https://drive.internxt.com'];
   const redirectUrl = urlSearchParams.get('redirectUrl');
 
   if (!redirectUrl) return null;
-  const allowed = ALLOWED_DOMAINS.some((allowedDomain) => redirectUrl.includes(allowedDomain));
-
-  if (!allowed) return null;
+  if (!validateUrl(redirectUrl, ['https:'], ['internxt.com', 'drive.internxt.com'])) return null;
 
   const url = new URL(redirectUrl);
   const currentParams = url.searchParams;
