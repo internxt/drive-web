@@ -1729,11 +1729,17 @@
               "Cleaner (Bereinigungstool)",
               "Meet (Videokonferenz)"
             ],
-            "comingSoonFeatures": ["Mail", "Fotos"]
+            "comingSoonFeatures": [
+              "Mail",
+              "Fotos"
+            ]
           },
           "default": {
             "bytesTitle": "{{bytes}}",
-            "features": ["{{bytes}} verschlüsselter Cloud-Speicher", "Verschlüsseltes VPN"]
+            "features": [
+              "{{bytes}} verschlüsselter Cloud-Speicher",
+              "Verschlüsseltes VPN"
+            ]
           }
         },
         "businessPlanFeaturesList": {

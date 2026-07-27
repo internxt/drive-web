@@ -1732,11 +1732,17 @@
               "Nettoyeur",
               "Meet (Réunion)"
             ],
-            "comingSoonFeatures": ["Mail", "Photos"]
+            "comingSoonFeatures": [
+              "Mail",
+              "Photos"
+            ]
           },
           "default": {
             "bytesTitle": "{{bytes}}",
-            "features": ["{{bytes}} de stockage cloud chiffré", "VPN Chiffré"]
+            "features": [
+              "{{bytes}} de stockage cloud chiffré",
+              "VPN Chiffré"
+            ]
           }
         },
         "businessPlanFeaturesList": {
