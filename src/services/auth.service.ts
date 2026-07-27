@@ -13,9 +13,9 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { trackSignUp } from 'app/analytics/impact.service';
 import { trackLead } from 'app/analytics/meta.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
+import { HTTP_STATUS_CODES } from 'app/core/constants';
 import { SdkFactory } from 'app/core/factory/sdk';
 import { AppView } from 'app/core/types';
-import { HTTP_STATUS_CODES } from 'app/core/constants';
 import {
   assertPrivateKeyIsValid,
   assertValidateKeys,
@@ -41,10 +41,10 @@ import navigationService from 'services/navigation.service';
 import RealtimeService from 'services/sockets/socket.service';
 import { generateCaptchaToken } from 'utils';
 import { BackupData, detectBackupKeyFormat, prepareOldBackupRecoverPayloadForBackend } from 'utils/backupKeyUtils';
-import { validateUrl } from 'utils/urlValidation';
+import { TRUSTED_WEB_HOSTNAMES, TRUSTED_WEB_PROTOCOLS, validateUrl } from 'utils/urlValidation';
 import { AuthMethodTypes } from 'views/Checkout/types';
-import vpnAuthService from './vpnAuth.service';
 import { PasswordMismatchError } from './errors/auth.errors';
+import vpnAuthService from './vpnAuth.service';
 
 type ProfileInfo = {
   user: UserSettings;
@@ -465,8 +465,18 @@ export async function areCredentialsCorrect(password: string): Promise<boolean> 
 export const getRedirectUrl = (urlSearchParams: URLSearchParams, token: string): string | null => {
   const redirectUrl = urlSearchParams.get('redirectUrl');
 
-  if (!redirectUrl) return null;
-  if (!validateUrl(redirectUrl, ['https:'], ['internxt.com', 'drive.internxt.com'])) return null;
+  if (!redirectUrl) {
+    return null;
+  }
+  if (
+    !validateUrl({
+      urlString: redirectUrl,
+      allowedProtocols: TRUSTED_WEB_PROTOCOLS,
+      allowedHostnames: TRUSTED_WEB_HOSTNAMES,
+    })
+  ) {
+    return null;
+  }
 
   const url = new URL(redirectUrl);
   const currentParams = url.searchParams;
