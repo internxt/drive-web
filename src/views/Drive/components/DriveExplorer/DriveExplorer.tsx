@@ -1,4 +1,4 @@
-import { ArrowFatUp, FileArrowUp, FolderSimplePlus, Star, Trash, UploadSimple } from '@phosphor-icons/react';
+import { ArrowFatUp, FileArrowUp, FolderSimplePlus, Trash, UploadSimple } from '@phosphor-icons/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { usePaginationState, useTutorialState } from '../../hooks';
@@ -38,7 +38,8 @@ import { storageActions } from 'app/store/slices/storage';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { fetchPaginatedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchFolderContentThunk';
-import { fetchFavoritesThunk } from 'views/Favorites/store/fetchFavoritesThunk';
+import { FavoritesEmptyState } from 'views/Favorites/components';
+import { useFavoritesPagination } from 'views/Favorites/hooks';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import { getAncestorsAndSetNamePath } from 'app/store/slices/storage/storage.thunks/goToFolderThunk';
 import {
@@ -145,8 +146,6 @@ interface DriveExplorerProps {
   filesOnTrashLength: number;
   hasMoreFolders: boolean;
   hasMoreFiles: boolean;
-  hasMoreFavoriteFolders: boolean;
-  hasMoreFavoriteFiles: boolean;
   getTrashPaginated?: (
     limit: number,
     offset: number | undefined,
@@ -179,8 +178,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     filesOnTrashLength,
     hasMoreFolders,
     hasMoreFiles,
-    hasMoreFavoriteFolders,
-    hasMoreFavoriteFiles,
     getTrashPaginated,
     selectedWorkspace,
   } = props;
@@ -214,6 +211,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const menuContextItemsRef = useRef<HTMLDivElement | null>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const { hasMoreFavoriteFolders, hasMoreFavoriteFiles, fetchFavorites, resetFavoritesPagination } =
+    useFavoritesPagination();
 
   const hasMoreFoldersToLoad = isFavorites ? hasMoreFavoriteFolders : hasMoreFolders;
   const hasMoreFilesToLoad = isFavorites ? hasMoreFavoriteFiles : hasMoreFiles;
@@ -262,13 +262,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       );
     }
     if (isFavorites) {
-      return (
-        <Empty
-          icon={<Star className="text-gray-40" size={80} weight="thin" />}
-          title={translate('views.favorites.empty.title')}
-          subtitle={translate('views.favorites.empty.description')}
-        />
-      );
+      return <FavoritesEmptyState />;
     }
     if (isTrash) {
       return (
@@ -381,7 +375,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const resetPaginationState = () => {
     dispatch(storageActions.resetTrash());
-    dispatch(storageActions.resetFavoritesPagination());
+    resetFavoritesPagination();
     paginationState.resetPaginationState();
     setHasMoreTrashFolders(true);
     setIsLoadingTrashItems(false);
@@ -391,7 +385,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     if (isTrash) {
       getMoreTrashItems();
     } else if (isFavorites) {
-      dispatch(fetchFavoritesThunk());
+      fetchFavorites();
     } else {
       dispatch(fetchPaginatedFolderContentThunk(currentFolderId));
     }
@@ -896,8 +890,6 @@ export default connect((state: RootState) => {
     filesOnTrashLength: state.storage.filesOnTrashLength,
     hasMoreFolders,
     hasMoreFiles,
-    hasMoreFavoriteFolders: state.storage.hasMoreFavoriteFolders,
-    hasMoreFavoriteFiles: state.storage.hasMoreFavoriteFiles,
     roles: state.shared.roles,
   };
 })(DropTarget([NativeTypes.FILE], dropTargetSpec, dropTargetCollect)(DriveExplorer));
