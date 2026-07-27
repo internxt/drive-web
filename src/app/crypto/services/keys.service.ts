@@ -6,15 +6,11 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 const MINIMAL_ENCRYPTED_KEY_LEN = 129;
 
 export async function getKeys(password: string): Promise<Keys> {
-  const { privateKeyArmored, publicKeyArmored, revocationCertificate, publicKyberKeyBase64, privateKyberKeyBase64 } =
-    await generateNewKeys();
+  const { privateKeyArmored, publicKeyArmored, publicKyberKeyBase64, privateKyberKeyBase64 } = await generateNewKeys();
   const encPrivateKey = aes.encrypt(privateKeyArmored, password);
   const encPrivateKyberKey = aes.encrypt(privateKyberKeyBase64, password);
 
   const keys: Keys = {
-    privateKeyEncrypted: encPrivateKey,
-    publicKey: publicKeyArmored,
-    revocationCertificate: revocationCertificate,
     ecc: {
       privateKeyEncrypted: encPrivateKey,
       publicKey: publicKeyArmored,

@@ -71,7 +71,7 @@ const CancelPlanModal = ({
   const remainingMonths = commitment?.remainingMonths;
   const commitmentRenewal =
     commitment?.cancellationDate && dateService.format(commitment?.cancellationDate, 'DD MMM YYYY');
-  const isCommitmentFirstMonth = commitment?.isFirstMonth;
+  const isCommitmentFirstMonth = commitment?.isElegibleForCancellation;
   const shouldDisplayCommitmentText = isCommitmentEnabled && !isCommitmentFirstMonth;
 
   const commitmentFirstMonthCancellationDescription = translate(

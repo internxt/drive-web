@@ -4,10 +4,11 @@ import TextInput from 'components/TextInput';
 import { IFormValues } from 'app/core/types';
 import { useState } from 'react';
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
+import { Translate } from 'app/i18n/types';
 
 interface OptionalB2BDropdownProps {
   errors: FieldErrors<IFormValues>;
-  translate: (key: string, props?: Record<string, unknown>) => string;
+  translate: Translate;
   register: UseFormRegister<IFormValues>;
 }
 

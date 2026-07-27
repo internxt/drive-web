@@ -1,7 +1,7 @@
 import { expect, Request, Route, test } from '@playwright/test';
+import { getLoggedUser, getUserCredentials } from '../helper/getUser';
 import { staticData } from '../helper/staticData';
 import { LoginPage } from '../pages/loginPage';
-import { getLoggedUser, getUserCredentials } from '../helper/getUser';
 const BASE_API_URL = process.env.REACT_APP_DRIVE_NEW_API_URL;
 
 const credentialsFile = getUserCredentials();

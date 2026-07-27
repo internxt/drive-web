@@ -1,15 +1,16 @@
 import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import { FunctionComponent, SVGProps } from 'react';
+import { Translate } from 'app/i18n/types';
 
 interface DownloadItemComponentProps {
   onDownload: () => void;
-  translate: (key: string, props?: Record<string, unknown> | undefined) => string;
+  translate: Translate;
 }
 
 interface NoPreviewIsAvailableProps {
   fileName: string;
   onDownload: () => void;
-  translate: (key: string, props?: Record<string, unknown> | undefined) => string;
+  translate: Translate;
   ItemIconComponent: FunctionComponent<SVGProps<SVGSVGElement>>;
 }
 

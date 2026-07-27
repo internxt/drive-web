@@ -94,8 +94,6 @@ describe('backupKeyUtils', () => {
         rootFolderUuid: 'test-root-folder-uuid',
         sharedWorkspace: false,
         credit: 0,
-        publicKey: 'test-public-key',
-        revocationKey: 'test-revocation-key',
         appSumoDetails: null,
         registerCompleted: false,
         hasReferralsProgram: false,
@@ -508,12 +506,12 @@ describe('backupKeyUtils', () => {
 
       expect(encryptMessageWithPublicKey).toHaveBeenCalledWith({
         message: mockMnemonic,
-        publicKeyInBase64: mockGeneratedKeys.publicKey,
+        publicKeyInBase64: mockGeneratedKeys.ecc.publicKey,
       });
 
       expect(hybridEncryptMessageWithPublicKey).toHaveBeenCalledWith({
         message: mockMnemonic,
-        publicKeyInBase64: mockGeneratedKeys.publicKey,
+        publicKeyInBase64: mockGeneratedKeys.ecc.publicKey,
         publicKyberKeyBase64: mockGeneratedKeys.kyber.publicKey,
       });
 
@@ -528,6 +526,7 @@ describe('backupKeyUtils', () => {
           ecc: {
             public: mockGeneratedKeys.ecc.publicKey,
             private: mockGeneratedKeys.ecc.privateKeyEncrypted,
+            revocationKey: '',
           },
           kyber: {
             public: mockGeneratedKeys.kyber.publicKey,

@@ -212,8 +212,8 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       section: 'account',
       subsection: 'plans',
     });
-    setIsRestrictedPasswordDialogOpen(false);
-    setIsRestrictedSharingDialogOpen(false);
+    actionDispatch(setIsRestrictedPasswordDialogOpen(false));
+    actionDispatch(setIsRestrictedSharingDialogOpen(false));
     onClose();
     dispatch(uiActions.setIsPreferencesDialogOpen(true));
   };
@@ -318,7 +318,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
             isLoading={isLoading}
             onCopyLink={onCopyLink}
             changeAccess={changeAccess}
-            setShowStopSharingConfirmation={onOpenStopSharingDialog}
+            onOpenStopSharingDialog={onOpenStopSharingDialog}
           />
 
           <SharePasswordInputDialog
@@ -330,7 +330,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
           <UpgradeDialog
             isDialogOpen={isRestrictedSharingDialogOpen}
             onAccept={onUpgradePlan}
-            onCloseDialog={() => setIsRestrictedSharingDialogOpen(false)}
+            onCloseDialog={() => actionDispatch(setIsRestrictedSharingDialogOpen(false))}
             title={translate('modals.restrictedSharingModal.title')}
             subtitle={translate('modals.restrictedSharingModal.subtitle')}
             primaryAction={translate('actions.upgrade')}
@@ -339,7 +339,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
           <UpgradeDialog
             isDialogOpen={isRestrictedPasswordDialogOpen}
             onAccept={onUpgradePlan}
-            onCloseDialog={() => setIsRestrictedPasswordDialogOpen(false)}
+            onCloseDialog={() => actionDispatch(setIsRestrictedPasswordDialogOpen(false))}
             title={translate('modals.restrictedPasswordModal.title')}
             subtitle={translate('modals.restrictedPasswordModal.subtitle')}
             primaryAction={translate('actions.upgrade')}
@@ -347,7 +347,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
           />
           <SharePasswordDisableDialog
             isOpen={openPasswordDisableDialog}
-            onClose={() => setOpenPasswordDisableDialog(false)}
+            onClose={() => actionDispatch(setOpenPasswordDisableDialog(false))}
             onConfirmHandler={onDisablePassword}
           />
 

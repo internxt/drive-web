@@ -2,6 +2,7 @@ import { Avatar } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { MemberRole } from '../../../../../types/types';
 import RoleBadge from './RoleBadge';
+import { TranslationKey } from 'app/i18n/types';
 
 interface UserProps {
   name: string;
@@ -26,7 +27,11 @@ const UserCard = ({ name, lastName, role, email, avatarSrc, styleOptions }: User
       <Avatar src={avatarSrc} fullName={`${name} ${lastName}`} diameter={styleOptions?.avatarDiameter ?? 36} />
       <div className="flex flex-col gap-2">
         {rolePosition === 'column' && (
-          <RoleBadge role={role} roleText={translate(`preferences.workspace.members.role.${role}`)} size={'small'} />
+          <RoleBadge
+            role={role}
+            roleText={translate(`preferences.workspace.members.role.${role as string}` as TranslationKey)}
+            size={'small'}
+          />
         )}
         <div className="flex flex-col gap-0">
           <div className="flex flex-row justify-between space-x-2">
@@ -38,7 +43,7 @@ const UserCard = ({ name, lastName, role, email, avatarSrc, styleOptions }: User
             {rolePosition === 'row' && (
               <RoleBadge
                 role={role}
-                roleText={translate(`preferences.workspace.members.role.${role}`)}
+                roleText={translate(`preferences.workspace.members.role.${role}` as TranslationKey)}
                 size={'small'}
               />
             )}

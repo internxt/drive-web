@@ -17,7 +17,7 @@ import workspacesService from 'services/workspace.service';
 import { uploadFileWithManager } from '../../../../network/UploadManager';
 import DatabaseUploadRepository from '../../../../repositories/DatabaseUploadRepository';
 import shareService from '../../../../share/services/share.service';
-import { planThunks } from '../../plan';
+import { planSelectors, planThunks } from '../../plan';
 import { uiActions } from '../../ui';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
 
@@ -87,20 +87,32 @@ const validateFileSize = (
   return allowedFilesToUpload;
 };
 
+const notifyMaxSpaceOccupied = (state: RootState, dispatch: ThunkDispatch<RootState, unknown, AnyAction>) => {
+  const planLimit = planSelectors.planLimitToShow(state);
+  const planUsage = planSelectors.planUsageToShow(state);
+  const isStorageActuallyFull = !!planLimit && planUsage >= planLimit;
+
+  if (isStorageActuallyFull) {
+    dispatch(
+      uiActions.setOpenReachedPlanLimitDialog({
+        open: true,
+      }),
+    );
+  }
+};
+
 const isUploadAllowed = ({
   state,
   files,
   dispatch,
-  isWorkspaceSelected,
 }: {
   state: RootState;
   files: File[];
   dispatch: ThunkDispatch<RootState, unknown, AnyAction>;
-  isWorkspaceSelected: boolean;
 }): boolean => {
   try {
-    const planLimit = isWorkspaceSelected ? state.plan.businessPlanLimit : state.plan.planLimit;
-    const planUsage = isWorkspaceSelected ? state.plan.businessPlanUsage : state.plan.planUsage;
+    const planLimit = planSelectors.planLimitToShow(state);
+    const planUsage = planSelectors.planUsageToShow(state);
     const uploadItemsSize = Object.values(files).reduce((acum, file) => acum + file.size, 0);
 
     const totalItemsSize = uploadItemsSize + planUsage;
@@ -165,7 +177,6 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       state: getState(),
       files: allowedFilesToUpload,
       dispatch,
-      isWorkspaceSelected: !!workspaceId,
     });
     if (!continueWithUpload) return;
 
@@ -198,19 +209,12 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       abortController: new AbortController(),
     }));
 
-    const openMaxSpaceOccupiedDialog = () =>
-      dispatch(
-        uiActions.setOpenReachedPlanLimitDialog({
-          open: true,
-        }),
-      );
-
     const openFileSizeLimitDialog = () => openReachedFileSizeLimitDialog(allowedFilesToUpload, dispatch);
 
     try {
       await uploadFileWithManager({
         files: filesToUploadData,
-        maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialog,
+        maxSpaceOccupiedCallback: () => notifyMaxSpaceOccupied(getState(), dispatch),
         fileSizeExceededCallback: openFileSizeLimitDialog,
         uploadRepository: DatabaseUploadRepository.getInstance(),
         options: {
@@ -492,19 +496,12 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
       },
     }));
 
-    const openMaxSpaceOccupiedDialog = () =>
-      dispatch(
-        uiActions.setOpenReachedPlanLimitDialog({
-          open: true,
-        }),
-      );
-
     const openFileSizeLimitDialog = () => openReachedFileSizeLimitDialog(allowedFilesToUpload, dispatch);
 
     try {
       await uploadFileWithManager({
         files: filesToUploadData,
-        maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialog,
+        maxSpaceOccupiedCallback: () => notifyMaxSpaceOccupied(getState(), dispatch),
         fileSizeExceededCallback: openFileSizeLimitDialog,
         uploadRepository: DatabaseUploadRepository.getInstance(),
         abortController,
