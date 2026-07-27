@@ -1753,11 +1753,17 @@
               "Cleaner",
               "Meet"
             ],
-            "comingSoonFeatures": ["Mail", "Photos"]
+            "comingSoonFeatures": [
+              "Mail",
+              "Photos"
+            ]
           },
           "default": {
             "bytesTitle": "{{bytes}}",
-            "features": ["{{bytes}} of encrypted storage", "Encrypted VPN"]
+            "features": [
+              "{{bytes}} of encrypted storage",
+              "Encrypted VPN"
+            ]
           }
         },
         "businessPlanFeaturesList": {

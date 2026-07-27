@@ -1753,11 +1753,17 @@
               "清理工具 (Cleaner)",
               "会议 (Meet)"
             ],
-            "comingSoonFeatures": ["邮件 (Mail)", "照片 (Photos)"]
+            "comingSoonFeatures": [
+              "邮件 (Mail)",
+              "照片 (Photos)"
+            ]
           },
           "default": {
             "bytesTitle": "{{bytes}}",
-            "features": ["{{bytes}} 加密云存储空间", "加密 VPN"]
+            "features": [
+              "{{bytes}} 加密云存储空间",
+              "加密 VPN"
+            ]
           }
         },
         "businessPlanFeaturesList": {
