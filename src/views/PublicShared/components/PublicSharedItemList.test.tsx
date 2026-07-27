@@ -72,17 +72,31 @@ describe('PublicSharedItemList', () => {
       THUMBNAIL,
       { user: CREDENTIALS.networkUser, pass: CREDENTIALS.networkPass },
       PUBLIC_SHARE_KEY,
+      expect.any(AbortController),
     );
   });
 
-  test('When the item is a folder or a non-image file, then the type icon is shown and no thumbnail is downloaded', () => {
+  test('When the item is a folder or a file type without thumbnail support, then the type icon is shown and no thumbnail is downloaded', () => {
     const folder = createItem({ id: 2, uuid: 'folder-uuid', plainName: 'docs', type: undefined, isFolder: true });
-    const pdf = createItem({ id: 3, uuid: 'pdf-uuid', plainName: 'report', type: 'pdf' });
+    const zip = createItem({ id: 3, uuid: 'zip-uuid', plainName: 'bundle', type: 'zip' });
 
-    const { container } = renderList([folder, pdf]);
+    const { container } = renderList([folder, zip]);
 
     expect(downloadPublicThumbnail).not.toHaveBeenCalled();
     expect(container.querySelector('img[src="blob:mock-thumbnail-url"]')).toBeNull();
+  });
+
+  test('When a pdf or video item has a thumbnail and credentials, then the thumbnail is downloaded', async () => {
+    vi.mocked(downloadPublicThumbnail).mockResolvedValue(new Blob(['thumbnail-bytes']));
+
+    const pdf = createItem({ id: 4, uuid: 'pdf-uuid', plainName: 'report', type: 'pdf' });
+    const video = createItem({ id: 5, uuid: 'video-uuid', plainName: 'clip', type: 'mp4' });
+
+    const { findByAltText } = renderList([pdf, video]);
+
+    await findByAltText('report.pdf');
+    await findByAltText('clip.mp4');
+    expect(downloadPublicThumbnail).toHaveBeenCalledTimes(2);
   });
 
   test('When the item has no credentials yet, then no thumbnail download is attempted', () => {
@@ -112,10 +126,12 @@ describe('PublicSharedItemList', () => {
 
     const { unmount } = renderList([createItem()]);
     await waitFor(() => expect(downloadPublicThumbnail).toHaveBeenCalled());
+    const abortController = vi.mocked(downloadPublicThumbnail).mock.calls[0][3] as AbortController;
 
     unmount();
     resolveDownload(new Blob(['thumbnail-bytes']));
 
+    expect(abortController.signal.aborted).toBe(true);
     await waitFor(() => expect(URL.revokeObjectURL).toHaveBeenCalledWith(OBJECT_URL));
   });
 
