@@ -1,6 +1,6 @@
-import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
-import { t } from 'i18next';
+import testPasswordStrength from '@internxt/lib/dist/auth/testPasswordStrength';
 import { MAX_PASSWORD_LENGTH } from 'components/ValidPassword';
+import { t } from 'i18next';
 
 export const onChangePasswordHandler = ({
   password,

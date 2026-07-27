@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { onChangePasswordHandler } from './passwordValidation';
 
 const mockTestPasswordStrength = vi.hoisted(() => vi.fn());
-vi.mock('@internxt/lib/dist/src/auth/testPasswordStrength', () => ({
+vi.mock('@internxt/lib/dist/auth/testPasswordStrength', () => ({
   __esModule: true,
   default: mockTestPasswordStrength,
 }));
