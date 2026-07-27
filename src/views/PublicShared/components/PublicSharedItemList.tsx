@@ -7,7 +7,7 @@ import transformItemService from 'app/drive/services/item-transform.service';
 import sizeService from 'app/drive/services/size.service';
 import { downloadPublicThumbnail } from 'app/drive/services/thumbnail.service';
 import { DriveItemData } from 'app/drive/types';
-import { thumbnailableImageExtension } from 'app/drive/types/file-types';
+import { thumbnailableExtension } from 'app/drive/types/file-types';
 import { FileKey } from 'app/network/types/helper-types';
 import { AdvancedSharedItem } from 'app/share/types';
 import folderEmptyImage from 'assets/icons/light/folder-open.svg';
@@ -39,16 +39,18 @@ const PublicSharedListItem = ({ item, publicShareKey, onNameClicked }: PublicSha
 
   useEffect(() => {
     const thumbnail = (item.thumbnails as Thumbnail[] | undefined)?.[0];
-    const isImage = !item.isFolder && !!item.type && thumbnailableImageExtension.includes(item.type.toLowerCase());
-    if (!thumbnail || !isImage || !item.credentials) return;
+    const isThumbnailable = !item.isFolder && !!item.type && thumbnailableExtension.includes(item.type.toLowerCase());
+    if (!thumbnail || !isThumbnailable || !item.credentials) return;
 
     let objectUrl: string | undefined;
     let isUnmounted = false;
+    const abortController = new AbortController();
 
     downloadPublicThumbnail(
       thumbnail,
       { user: item.credentials.networkUser, pass: item.credentials.networkPass },
       publicShareKey,
+      abortController,
     )
       .then((thumbnailBlob) => {
         objectUrl = URL.createObjectURL(thumbnailBlob);
@@ -58,10 +60,13 @@ const PublicSharedListItem = ({ item, publicShareKey, onNameClicked }: PublicSha
           setThumbnailUrl(objectUrl);
         }
       })
-      .catch((error) => errorService.reportError(error));
+      .catch((error) => {
+        if (!abortController.signal.aborted) errorService.reportError(error);
+      });
 
     return () => {
       isUnmounted = true;
+      abortController.abort();
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
   }, [item]);
@@ -82,7 +87,7 @@ const PublicSharedListItem = ({ item, publicShareKey, onNameClicked }: PublicSha
                   className="aspect-square h-full max-h-full object-contain object-center"
                   src={thumbnailUrl}
                   alt={displayName}
-                  data-test={`file-list-${item.isFolder ? 'folder' : 'file'}-image`}
+                  data-test="file-list-file-image"
                 />
               </div>
             ) : (
@@ -97,6 +102,7 @@ const PublicSharedListItem = ({ item, publicShareKey, onNameClicked }: PublicSha
         {/* NAME */}
         <div className="flex w-[200px] grow cursor-pointer items-center truncate pr-2">
           <button
+            type="button"
             data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
             className="truncate"
             title={displayName}

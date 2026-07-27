@@ -305,12 +305,14 @@ export const downloadPublicThumbnail = async (
   thumbnailToDownload: Thumbnail,
   creds: NetworkCredentials,
   key: FileKey,
+  abortController?: AbortController,
 ): Promise<Blob> => {
   const thumbnailStream = await downloadFile({
     bucketId: thumbnailToDownload.bucket_id,
     fileId: thumbnailToDownload.bucket_file,
     creds,
     key,
+    options: abortController && { notifyProgress: () => undefined, abortController },
   });
 
   return binaryStreamToBlob(thumbnailStream);

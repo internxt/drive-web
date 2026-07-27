@@ -238,6 +238,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
 
   const renderDownloadActionButton = () => (
     <button
+      type="button"
       onClick={() => {
         download();
       }}
