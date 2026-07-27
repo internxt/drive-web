@@ -1,4 +1,10 @@
-import { ArrowFatUp, FileArrowUp, FolderSimplePlus, Star, Trash, UploadSimple } from '@phosphor-icons/react';
+import {
+  ArrowFatUpIcon,
+  FileArrowUpIcon,
+  FolderSimplePlusIcon,
+  TrashIcon,
+  UploadSimpleIcon,
+} from '@phosphor-icons/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { usePaginationState, useTutorialState } from '../../hooks';
@@ -38,8 +44,9 @@ import { storageActions } from 'app/store/slices/storage';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { fetchPaginatedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchFolderContentThunk';
-import { fetchFavoritesThunk } from 'views/Favorites/store/fetchFavoritesThunk';
 import { useToggleFavoriteHotkey } from 'hooks';
+import { FavoritesEmptyState } from 'views/Favorites/components';
+import { useFavoritesPagination } from 'views/Favorites/hooks';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import { getAncestorsAndSetNamePath } from 'app/store/slices/storage/storage.thunks/goToFolderThunk';
 import {
@@ -88,7 +95,7 @@ const MenuItemToGetSize = ({
     {!isTrash && (
       <>
         <div className="flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10">
-          <FolderSimplePlus size={20} />
+          <FolderSimplePlusIcon size={20} />
           <p>{translate('actions.upload.folder')}</p>
         </div>
 
@@ -99,7 +106,7 @@ const MenuItemToGetSize = ({
             'flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10'
           }
         >
-          <FileArrowUp size={20} />
+          <FileArrowUpIcon size={20} />
           <p className="ml-3">{translate('actions.upload.uploadFiles')}</p>
         </div>
       </>
@@ -109,7 +116,7 @@ const MenuItemToGetSize = ({
         'flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10'
       }
     >
-      <UploadSimple size={20} />
+      <UploadSimpleIcon size={20} />
       <p className="ml-3">{translate('actions.upload.uploadFolder')}</p>
     </div>
   </div>
@@ -117,7 +124,7 @@ const MenuItemToGetSize = ({
 
 const EmptyTrash = () => (
   <div className="flex h-36 w-36 items-center justify-center rounded-full bg-gray-5">
-    <Trash size={80} weight="thin" />
+    <TrashIcon size={80} weight="thin" />
   </div>
 );
 
@@ -146,8 +153,6 @@ interface DriveExplorerProps {
   filesOnTrashLength: number;
   hasMoreFolders: boolean;
   hasMoreFiles: boolean;
-  hasMoreFavoriteFolders: boolean;
-  hasMoreFavoriteFiles: boolean;
   getTrashPaginated?: (
     limit: number,
     offset: number | undefined,
@@ -180,8 +185,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     filesOnTrashLength,
     hasMoreFolders,
     hasMoreFiles,
-    hasMoreFavoriteFolders,
-    hasMoreFavoriteFiles,
     getTrashPaginated,
     selectedWorkspace,
   } = props;
@@ -215,6 +218,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const menuContextItemsRef = useRef<HTMLDivElement | null>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const { hasMoreFavoriteFolders, hasMoreFavoriteFiles, fetchFavorites, resetFavoritesPagination } =
+    useFavoritesPagination();
 
   const hasMoreFoldersToLoad = isFavorites ? hasMoreFavoriteFolders : hasMoreFolders;
   const hasMoreFilesToLoad = isFavorites ? hasMoreFavoriteFiles : hasMoreFiles;
@@ -257,7 +263,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           title={translate('views.recents.empty.noResults')}
           subtitle={translate('views.recents.empty.dragNDrop')}
           action={{
-            icon: UploadSimple,
+            icon: UploadSimpleIcon,
             style: 'elevated',
             text: translate('views.recents.empty.uploadFiles'),
             onClick: onUploadFileButtonClicked,
@@ -275,13 +281,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       );
     }
     if (isFavorites) {
-      return (
-        <Empty
-          icon={<Star className="text-gray-40" size={80} weight="thin" />}
-          title={translate('views.favorites.empty.title')}
-          subtitle={translate('views.favorites.empty.description')}
-        />
-      );
+      return <FavoritesEmptyState />;
     }
     if (isTrash) {
       return (
@@ -298,7 +298,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         title={translate('views.recents.empty.folderEmpty')}
         subtitle={translate('views.recents.empty.folderEmptySubtitle')}
         action={{
-          icon: UploadSimple,
+          icon: UploadSimpleIcon,
           style: 'elevated',
           text: translate('views.recents.empty.uploadFiles'),
           onClick: onUploadFileButtonClicked,
@@ -394,7 +394,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const resetPaginationState = () => {
     dispatch(storageActions.resetTrash());
-    dispatch(storageActions.resetFavoritesPagination());
+    resetFavoritesPagination();
     paginationState.resetPaginationState();
     setHasMoreTrashFolders(true);
     setIsLoadingTrashItems(false);
@@ -404,7 +404,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     if (isTrash) {
       getMoreTrashItems();
     } else if (isFavorites) {
-      dispatch(fetchFavoritesThunk());
+      fetchFavorites();
     } else {
       dispatch(fetchPaginatedFolderContentThunk(currentFolderId));
     }
@@ -617,21 +617,21 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                       'flex w-full cursor-pointer items-center space-x-3 whitespace-nowrap bg-transparent p-0 text-left'
                     }
                   >
-                    <FolderSimplePlus size={20} />
+                    <FolderSimplePlusIcon size={20} />
                     <p data-cy="contextMenuCreateFolderButtonText">{translate('actions.upload.folder')}</p>
                     <span className="ml-5 flex grow items-center justify-end text-sm text-gray-40">
-                      <ArrowFatUp size={14} /> F
+                      <ArrowFatUpIcon size={14} /> F
                     </span>
                   </button>
                 ),
               },
               {
-                icon: FileArrowUp,
+                icon: FileArrowUpIcon,
                 name: translate('actions.upload.uploadFiles'),
                 action: onUploadFileButtonClicked,
               },
               {
-                icon: UploadSimple,
+                icon: UploadSimpleIcon,
                 name: translate('actions.upload.uploadFolder'),
                 action: onUploadFolderButtonClicked,
               },
@@ -682,7 +682,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
               isOpen={isOpen}
               menu={[
                 {
-                  icon: Trash,
+                  icon: TrashIcon,
                   name: translate('drive.clearTrash.accept'),
                   action: onDeletePermanentlyButtonClicked,
                 },
@@ -911,8 +911,6 @@ export default connect((state: RootState) => {
     filesOnTrashLength: state.storage.filesOnTrashLength,
     hasMoreFolders,
     hasMoreFiles,
-    hasMoreFavoriteFolders: state.storage.hasMoreFavoriteFolders,
-    hasMoreFavoriteFiles: state.storage.hasMoreFavoriteFiles,
     roles: state.shared.roles,
   };
 })(DropTarget([NativeTypes.FILE], dropTargetSpec, dropTargetCollect)(DriveExplorer));
