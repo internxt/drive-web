@@ -66,6 +66,7 @@ const FavoriteStarButton = ({
 
   return (
     <button
+      type="button"
       data-test={dataTest}
       className={`flex shrink-0 items-center pr-2 ${item.isFavorite ? '' : 'invisible group-hover:visible'}`}
       title={translate(item.isFavorite ? 'drive.dropdown.removeFromFavorites' : 'drive.dropdown.addToFavorites')}
