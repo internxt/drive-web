@@ -1,5 +1,5 @@
 import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react';
-import isValidEmail from '@internxt/lib/dist/src/auth/isValidEmail';
+import isValidEmail from '@internxt/lib/dist/auth/isValidEmail';
 import { Avatar, Button, Checkbox, Input } from '@internxt/ui';
 import { CaretDown, Check, WarningCircle } from '@phosphor-icons/react';
 import { AsyncThunkAction } from '@reduxjs/toolkit';
