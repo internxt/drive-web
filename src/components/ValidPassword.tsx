@@ -1,8 +1,8 @@
-import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
+import testPasswordStrength from '@internxt/lib/dist/auth/testPasswordStrength';
+import { Input } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useState } from 'react';
 import PasswordStrengthIndicator from './PasswordStrengthIndicator';
-import { Input } from '@internxt/ui';
 
 export const MAX_PASSWORD_LENGTH = 50;
 interface ValidPasswordProps {

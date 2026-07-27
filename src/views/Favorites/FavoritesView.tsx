@@ -10,6 +10,7 @@ import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { DriveItemData } from 'app/drive/types';
 import { AppView } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useFavoritesPagination } from './hooks';
 
 export interface FavoritesViewProps {
   isLoadingFavorites: boolean;
@@ -20,6 +21,7 @@ export interface FavoritesViewProps {
 const FavoritesView = (props: FavoritesViewProps) => {
   const { items, isLoadingFavorites, dispatch } = props;
   const { translate } = useTranslationContext();
+  const { fetchFavorites, resetFavoritesPagination } = useFavoritesPagination();
 
   useEffect(() => {
     dispatch(storageActions.clearSelectedItems());
@@ -27,8 +29,8 @@ const FavoritesView = (props: FavoritesViewProps) => {
   }, []);
 
   const fetchFavoritesContent = () => {
-    dispatch(storageActions.resetFavoritesPagination());
-    dispatch(storageThunks.fetchFavoritesThunk());
+    resetFavoritesPagination();
+    fetchFavorites();
   };
 
   const redirectToDrive = () => {

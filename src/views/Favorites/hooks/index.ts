@@ -1,0 +1,1 @@
+export { useFavoritesPagination } from './useFavoritesPagination';
