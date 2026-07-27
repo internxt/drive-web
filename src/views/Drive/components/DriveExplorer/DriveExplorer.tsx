@@ -1,4 +1,10 @@
-import { ArrowFatUp, FileArrowUp, FolderSimplePlus, Trash, UploadSimple } from '@phosphor-icons/react';
+import {
+  ArrowFatUpIcon,
+  FileArrowUpIcon,
+  FolderSimplePlusIcon,
+  TrashIcon,
+  UploadSimpleIcon,
+} from '@phosphor-icons/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { usePaginationState, useTutorialState } from '../../hooks';
@@ -88,7 +94,7 @@ const MenuItemToGetSize = ({
     {!isTrash && (
       <>
         <div className="flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10">
-          <FolderSimplePlus size={20} />
+          <FolderSimplePlusIcon size={20} />
           <p>{translate('actions.upload.folder')}</p>
         </div>
 
@@ -99,7 +105,7 @@ const MenuItemToGetSize = ({
             'flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10'
           }
         >
-          <FileArrowUp size={20} />
+          <FileArrowUpIcon size={20} />
           <p className="ml-3">{translate('actions.upload.uploadFiles')}</p>
         </div>
       </>
@@ -109,7 +115,7 @@ const MenuItemToGetSize = ({
         'flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10'
       }
     >
-      <UploadSimple size={20} />
+      <UploadSimpleIcon size={20} />
       <p className="ml-3">{translate('actions.upload.uploadFolder')}</p>
     </div>
   </div>
@@ -117,7 +123,7 @@ const MenuItemToGetSize = ({
 
 const EmptyTrash = () => (
   <div className="flex h-36 w-36 items-center justify-center rounded-full bg-gray-5">
-    <Trash size={80} weight="thin" />
+    <TrashIcon size={80} weight="thin" />
   </div>
 );
 
@@ -244,7 +250,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           title={translate('views.recents.empty.noResults')}
           subtitle={translate('views.recents.empty.dragNDrop')}
           action={{
-            icon: UploadSimple,
+            icon: UploadSimpleIcon,
             style: 'elevated',
             text: translate('views.recents.empty.uploadFiles'),
             onClick: onUploadFileButtonClicked,
@@ -279,7 +285,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         title={translate('views.recents.empty.folderEmpty')}
         subtitle={translate('views.recents.empty.folderEmptySubtitle')}
         action={{
-          icon: UploadSimple,
+          icon: UploadSimpleIcon,
           style: 'elevated',
           text: translate('views.recents.empty.uploadFiles'),
           onClick: onUploadFileButtonClicked,
@@ -596,21 +602,21 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                       'flex w-full cursor-pointer items-center space-x-3 whitespace-nowrap bg-transparent p-0 text-left'
                     }
                   >
-                    <FolderSimplePlus size={20} />
+                    <FolderSimplePlusIcon size={20} />
                     <p data-cy="contextMenuCreateFolderButtonText">{translate('actions.upload.folder')}</p>
                     <span className="ml-5 flex grow items-center justify-end text-sm text-gray-40">
-                      <ArrowFatUp size={14} /> F
+                      <ArrowFatUpIcon size={14} /> F
                     </span>
                   </button>
                 ),
               },
               {
-                icon: FileArrowUp,
+                icon: FileArrowUpIcon,
                 name: translate('actions.upload.uploadFiles'),
                 action: onUploadFileButtonClicked,
               },
               {
-                icon: UploadSimple,
+                icon: UploadSimpleIcon,
                 name: translate('actions.upload.uploadFolder'),
                 action: onUploadFolderButtonClicked,
               },
@@ -661,7 +667,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
               isOpen={isOpen}
               menu={[
                 {
-                  icon: Trash,
+                  icon: TrashIcon,
                   name: translate('drive.clearTrash.accept'),
                   action: onDeletePermanentlyButtonClicked,
                 },

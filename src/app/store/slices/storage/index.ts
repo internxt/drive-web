@@ -386,14 +386,12 @@ export const storageSlice = createSlice({
     ) {
       const folderIds = action.payload.folderIds || Object.keys(state.levels).map((folderId) => folderId);
       const itemsToDelete = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
+      const isItemToDelete = (item: DriveItemData) =>
+        itemsToDelete.some((i) => i.id === item.id && !!i.isFolder === !!item.isFolder);
 
       folderIds.forEach((folderId) => {
         const folderItems = state.levels[folderId] ?? [];
-        let items = [...folderItems];
-
-        items = items.filter(
-          (item: DriveItemData) => !itemsToDelete.find((i) => i.id === item.id && !!i.isFolder === !!item.isFolder),
-        );
+        const items = [...folderItems].filter((item: DriveItemData) => !isItemToDelete(item));
 
         state.levels[folderId] = items;
 
@@ -401,12 +399,8 @@ export const storageSlice = createSlice({
       });
 
       if (action.payload.updateRecents) {
-        state.recents = state.recents.filter(
-          (item: DriveItemData) => !itemsToDelete.find((i) => i.id === item.id && !!i.isFolder === !!item.isFolder),
-        );
-        state.favorites = state.favorites.filter(
-          (item: DriveItemData) => !itemsToDelete.find((i) => i.id === item.id && !!i.isFolder === !!item.isFolder),
-        );
+        state.recents = state.recents.filter((item: DriveItemData) => !isItemToDelete(item));
+        state.favorites = state.favorites.filter((item: DriveItemData) => !isItemToDelete(item));
       }
     },
     resetState(state: StorageState) {
