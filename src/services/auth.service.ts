@@ -121,6 +121,7 @@ export async function logOut(loginParams?: Record<string, string>): Promise<void
   vpnAuthService.logOut();
   await databaseService.clear();
   localStorageService.clear();
+  encryptedStorageService.clear();
   RealtimeService.getInstance().stop();
   if (!navigationService.isCurrentPath(AppView.BlockedAccount) && !navigationService.isCurrentPath(AppView.Checkout)) {
     const preservedParams = getCurrentUrlParams();

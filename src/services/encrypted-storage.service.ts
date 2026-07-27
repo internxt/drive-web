@@ -36,10 +36,16 @@ function getToken(): string | undefined {
   return tokenCache ?? undefined;
 }
 
+function clear(): void {
+  tokenCache = null;
+  localStorage.removeItem(LocalStorageProtectedItem.EncryptedToken);
+}
+
 const encryptedStorageService = {
   hydrateEncryptedStorageCache,
   getToken,
   setToken,
+  clear,
 };
 
 export default encryptedStorageService;

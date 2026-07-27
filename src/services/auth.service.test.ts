@@ -109,6 +109,7 @@ beforeAll(() => {
     default: {
       getToken: vi.fn(),
       setToken: vi.fn(),
+      clear: vi.fn(),
     },
   }));
   vi.mock('./vpnAuth.service', () => ({
@@ -1111,6 +1112,7 @@ describe('logOut', () => {
 
     expect(mockAuthClient.logout).toHaveBeenCalledWith('test-token');
     expect(localStorageService.clear).toHaveBeenCalled();
+    expect(encryptedStorageService.clear).toHaveBeenCalled();
   });
 
   it('should sign out user even when session has expired', async () => {
