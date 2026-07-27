@@ -52,9 +52,6 @@ export const CheckoutUserAuth = ({
 
   return (
     <div className="flex flex-col space-y-8">
-      <p className="text-2xl font-semibold text-gray-100">
-        1. {translate(`checkout.authComponent.title.${authMethod}`)}
-      </p>
       <div
         role="none"
         onKeyDown={handleKeyDown}
@@ -77,6 +74,7 @@ export const CheckoutUserAuth = ({
         <div className="flex flex-row space-x-2">
           <p className="text-gray-100">{AUTH_LABEL[authMethod]}</p>
           <button
+            type="button"
             onClick={(e) => {
               e.preventDefault();
               const newAuthMethod = authMethod === 'signIn' ? 'signUp' : 'signIn';
