@@ -361,5 +361,26 @@ describe('Thumbnail Service', () => {
       });
       expect(new Uint8Array(await thumbnailBlob.arrayBuffer())).toEqual(thumbnailContent);
     });
+
+    test('When downloading a public thumbnail with an abort controller, then it is forwarded to the download options', async () => {
+      const thumbnail = { bucket_id: 'thumbnail-bucket-id', bucket_file: 'thumbnail-file-id' } as Thumbnail;
+      const creds = { user: 'network-user', pass: 'network-pass' };
+      const key = { mnemonic: 'test mnemonic' };
+      const abortController = new AbortController();
+
+      vi.mocked(downloadFile).mockResolvedValueOnce(
+        new ReadableStream<Uint8Array>({
+          start(controller) {
+            controller.close();
+          },
+        }),
+      );
+
+      await downloadPublicThumbnail(thumbnail, creds, key, abortController);
+
+      const params = vi.mocked(downloadFile).mock.lastCall?.[0];
+      expect(params?.options?.abortController).toBe(abortController);
+      expect(params?.options?.notifyProgress(100, 50)).toBeUndefined();
+    });
   });
 });

@@ -87,7 +87,7 @@ const PublicSharedListItem = ({ item, publicShareKey, onNameClicked }: PublicSha
                   className="aspect-square h-full max-h-full object-contain object-center"
                   src={thumbnailUrl}
                   alt={displayName}
-                  data-test={`file-list-${item.isFolder ? 'folder' : 'file'}-image`}
+                  data-test="file-list-file-image"
                 />
               </div>
             ) : (

@@ -2,6 +2,7 @@ import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { downloadPublicThumbnail } from 'app/drive/services/thumbnail.service';
 import { AdvancedSharedItem } from 'app/share/types';
+import errorService from 'services/error.service';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import PublicSharedItemList from './PublicSharedItemList';
 
@@ -133,6 +134,33 @@ describe('PublicSharedItemList', () => {
 
     expect(abortController.signal.aborted).toBe(true);
     await waitFor(() => expect(URL.revokeObjectURL).toHaveBeenCalledWith(OBJECT_URL));
+  });
+
+  test('When the thumbnail download fails, then the error is reported', async () => {
+    const downloadError = new Error('download failed');
+    vi.mocked(downloadPublicThumbnail).mockRejectedValue(downloadError);
+
+    renderList([createItem()]);
+
+    await waitFor(() => expect(errorService.reportError).toHaveBeenCalledWith(downloadError));
+  });
+
+  test('When the download is aborted by unmounting, then the rejection is not reported as an error', async () => {
+    let rejectDownload: (error: Error) => void = () => undefined;
+    vi.mocked(downloadPublicThumbnail).mockReturnValue(
+      new Promise<Blob>((_, reject) => {
+        rejectDownload = reject;
+      }),
+    );
+
+    const { unmount } = renderList([createItem()]);
+    await waitFor(() => expect(downloadPublicThumbnail).toHaveBeenCalled());
+
+    unmount();
+    rejectDownload(new Error('aborted'));
+
+    await new Promise((resolve) => setTimeout(resolve));
+    expect(errorService.reportError).not.toHaveBeenCalled();
   });
 
   test('When the item name is clicked, then onItemDoubleClicked receives the item', () => {
