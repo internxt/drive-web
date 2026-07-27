@@ -11,11 +11,13 @@ vi.mock('react-redux', () => ({
 const enabledLimits: FileLimitsResponse = {
   versioning: { enabled: true, maxFileSize: 0, retentionDays: 0, maxVersions: 0 },
   maxUploadFileSize: 0,
+  photosAccess: false,
 };
 
 const disabledLimits: FileLimitsResponse = {
   versioning: { enabled: false, maxFileSize: 0, retentionDays: 0, maxVersions: 0 },
   maxUploadFileSize: 0,
+  photosAccess: false,
 };
 
 describe('Version history menu', () => {
