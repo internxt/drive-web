@@ -49,6 +49,7 @@ const PublicSharedListItem = ({ item, onNameClicked }: PublicSharedListItemProps
         {/* NAME */}
         <div className="flex w-[200px] grow cursor-pointer items-center truncate pr-2">
           <button
+            type="button"
             data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
             className="truncate"
             title={displayName}

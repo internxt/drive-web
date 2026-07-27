@@ -53,10 +53,10 @@ const usePublicSharedFolderContent = ({
   const [isLoading, setIsLoading] = useState(false);
   const [nextLevelToken, setNextLevelToken] = useState('');
 
-  const currentFolder = folderPath[folderPath.length - 1];
-  const shareItems = [...folders, ...files];
+  const currentFolder = folderPath.at(-1) as PublicFolderLevel;
   const hasMoreItems = hasMoreFolders || hasMoreFiles;
   const isAwaitingInitialFilesLoad = !hasMoreFolders && hasMoreFiles && files.length === 0;
+  const shareItems = isAwaitingInitialFilesLoad ? [] : [...folders, ...files];
 
   useEffect(() => {
     fetchItems();
@@ -155,7 +155,7 @@ const usePublicSharedFolderContent = ({
   return {
     folderPath,
     shareItems,
-    isLoading,
+    isLoading: isLoading || isAwaitingInitialFilesLoad,
     hasMoreItems,
     onNextPage,
     navigateToFolder,
