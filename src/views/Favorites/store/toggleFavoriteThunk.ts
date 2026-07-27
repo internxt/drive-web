@@ -3,7 +3,7 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { t } from 'i18next';
 import { StorageState } from 'app/store/slices/storage/storage.model';
 import { storageActions } from 'app/store/slices/storage';
-import { RootState } from 'app/store';
+import { AppDispatch, RootState } from 'app/store';
 import navigationService from 'services/navigation.service';
 import errorService from 'services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
@@ -13,6 +13,22 @@ import { setItemFavorite } from '../services';
 interface ToggleFavoriteResult {
   partiallyFailed: boolean;
 }
+
+const deselectUnfavoritedItems = (
+  unfavoritedItems: DriveItemData[],
+  selectedItems: DriveItemData[],
+  dispatch: AppDispatch,
+): void => {
+  if (unfavoritedItems.length === 0 || !navigationService.isCurrentPath('favorites')) return;
+
+  const itemsToDeselect = unfavoritedItems.filter((item) =>
+    selectedItems.some((selected) => selected.uuid === item.uuid && selected.isFolder === item.isFolder),
+  );
+
+  if (itemsToDeselect.length > 0) {
+    dispatch(storageActions.deselectItems(itemsToDeselect));
+  }
+};
 
 export const toggleFavoriteThunk = createAsyncThunk<ToggleFavoriteResult, DriveItemData[], { state: RootState }>(
   'storage/toggleFavorite',
@@ -50,16 +66,7 @@ export const toggleFavoriteThunk = createAsyncThunk<ToggleFavoriteResult, DriveI
         }
       });
 
-    if (unfavoritedItems.length > 0 && navigationService.isCurrentPath('favorites')) {
-      const { selectedItems } = getState().storage;
-      const itemsToDeselect = unfavoritedItems.filter((item) =>
-        selectedItems.some((selected) => selected.id === item.id && selected.isFolder === item.isFolder),
-      );
-
-      if (itemsToDeselect.length > 0) {
-        dispatch(storageActions.deselectItems(itemsToDeselect));
-      }
-    }
+    deselectUnfavoritedItems(unfavoritedItems, getState().storage.selectedItems, dispatch as AppDispatch);
 
     return { partiallyFailed: rejected.length > 0 };
   },
