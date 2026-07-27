@@ -24,6 +24,12 @@ const fetchPromotionCodeByName = async (priceId: string, promotionCodeName: stri
   return paymentClient.fetchPromotionCodeByName(priceId, promotionCodeName);
 };
 
+export type CreateCheckoutCustomerPayload = Pick<
+  CreateCustomerPayload,
+  'country' | 'captchaToken' | 'companyVatId' | 'metadata' | 'lineAddress2'
+> &
+  Partial<Pick<CreateCustomerPayload, 'customerName' | 'lineAddress1' | 'city' | 'postalCode'>>;
+
 const createCustomer = async ({
   customerName,
   city,
@@ -34,7 +40,7 @@ const createCustomer = async ({
   captchaToken,
   companyVatId,
   metadata,
-}: CreateCustomerPayload): Promise<{
+}: CreateCheckoutCustomerPayload): Promise<{
   customerId: string;
   token: string;
 }> => {
@@ -49,7 +55,7 @@ const createCustomer = async ({
     captchaToken,
     companyVatId,
     metadata,
-  });
+  } as CreateCustomerPayload);
 };
 
 const getPriceById = async ({
