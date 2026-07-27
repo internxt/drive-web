@@ -54,4 +54,5 @@ export interface EncryptedStorageService {
   hydrateEncryptedStorageCache: () => Promise<void>;
   setToken: (token: string) => Promise<void>;
   getToken: () => string | undefined;
+  clear: () => void;
 }

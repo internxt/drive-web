@@ -33,4 +33,20 @@ describe('Testing the local storage service', () => {
       expect(cryptoSpy).toHaveBeenCalled();
     });
   });
+
+  describe('Clear token', () => {
+    const value = 'test-value';
+
+    test('When clear is called, then the in-memory cache is nulled and token is removed from localstorgae', async () => {
+      await encryptedStorageService.setToken(value);
+      const key = LocalStorageProtectedItem.EncryptedToken;
+      const removeItemSpy = vi.spyOn(Storage.prototype, 'removeItem');
+
+      encryptedStorageService.clear();
+
+      expect(encryptedStorageService.getToken()).toBeUndefined();
+      expect(removeItemSpy).toHaveBeenCalledWith(key);
+      expect(localStorage.getItem(key)).toBeNull();
+    });
+  });
 });
