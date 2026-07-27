@@ -191,6 +191,26 @@ describe('storage slice', () => {
       expect(nextState.favorites[0]).toEqual(original);
     });
 
+    test('When favorites are removed, then only the matching items disappear from the list', () => {
+      const toRemove = buildDriveItemData({ uuid: 'fav-uuid-1', id: 1, isFolder: false });
+      const toKeep = buildDriveItemData({ uuid: 'fav-uuid-2', id: 2, isFolder: false });
+      const state = storageReducer(buildInitialState(), storageActions.addFavorites([toRemove, toKeep]));
+
+      const nextState = storageReducer(state, storageActions.removeFavorites([toRemove]));
+
+      expect(nextState.favorites).toEqual([toKeep]);
+    });
+
+    test('When a favorite file shares its uuid with a folder, then removing the file keeps the folder', () => {
+      const file = buildDriveItemData({ uuid: 'fav-shared-uuid', id: 1, isFolder: false });
+      const folder = buildDriveItemData({ uuid: 'fav-folder-uuid', id: 2, isFolder: true });
+      const state = storageReducer(buildInitialState(), storageActions.addFavorites([file, folder]));
+
+      const nextState = storageReducer(state, storageActions.removeFavorites([file]));
+
+      expect(nextState.favorites).toEqual([folder]);
+    });
+
     test('When the has-more flags for favorite folders and files are set, then the state reflects the new values', () => {
       const stateWithoutMoreFolders = storageReducer(
         buildInitialState(),
