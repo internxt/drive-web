@@ -3,6 +3,7 @@ export type RetryableTask = {
   type: 'upload' | 'download';
   params: any;
   status?: 'pending' | 'failed' | 'retrying';
+  retryable?: boolean;
 };
 
 class RetryManager {
@@ -15,7 +16,11 @@ class RetryManager {
   }
 
   addTasks(tasks: RetryableTask[]) {
+    // A task can only appear once per taskId: re-adding a failed task replaces its entry
+    // instead of duplicating it in the retry list.
+    const incomingTaskIds = new Set(tasks.map((task) => task.taskId).filter(Boolean));
     const tasksWithStatus = tasks.map((task) => ({ ...task, status: 'failed' }) as RetryableTask);
+    this.tasksToRetry = this.tasksToRetry.filter((task) => !incomingTaskIds.has(task.taskId));
     this.tasksToRetry.push(...tasksWithStatus);
     this.notify();
   }

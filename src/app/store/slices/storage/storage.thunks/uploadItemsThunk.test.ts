@@ -376,6 +376,32 @@ describe('uploadItemsThunkExtraReducers', () => {
     });
   });
 
+  it('should not leak a failed request options into later dispatches through DEFAULT_OPTIONS', () => {
+    const notificationsServiceSpy = vi.spyOn(notificationsService, 'show');
+    const cases = new Map();
+    const builder = {
+      addCase: (action, reducer) => {
+        cases.set(action, reducer);
+        return builder;
+      },
+    };
+
+    uploadItemsThunkExtraReducers(builder as unknown as ActionReducerMapBuilder<StorageState>);
+    const rejectedHandler = cases.get(uploadItemsParallelThunk.rejected);
+
+    rejectedHandler(
+      {},
+      {
+        meta: { arg: { options: { showErrors: false, relatedTaskId: 'folder-task-id' } } },
+        error: { message: 'folder upload failed' },
+      },
+    );
+    expect(notificationsServiceSpy).not.toHaveBeenCalled();
+
+    rejectedHandler({}, { meta: { arg: {} }, error: { message: 'other upload failed' } });
+    expect(notificationsServiceSpy).toHaveBeenCalledOnce();
+  });
+
   it('should handle rejected case and not call RetryManager if file is not retrying', () => {
     const notificationsServiceSpy = vi.spyOn(notificationsService, 'show');
     const cases = new Map();

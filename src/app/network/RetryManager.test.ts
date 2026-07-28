@@ -24,6 +24,16 @@ describe('RetryManager', () => {
     expect(tasks).toContainEqual({ ...anotherTask, status: 'failed' });
   });
 
+  it('should replace an existing task instead of duplicating it when re-added', () => {
+    RetryManager.addTasks([sampleTask, anotherTask]);
+    RetryManager.addTasks([{ ...sampleTask, retryable: false }]);
+    const tasks = RetryManager.getTasks();
+    expect(tasks).toHaveLength(2);
+    expect(tasks.filter((task) => task.taskId === 'task1')).toEqual([
+      { ...sampleTask, retryable: false, status: 'failed' },
+    ]);
+  });
+
   it('should change the status of a task', () => {
     RetryManager.addTask(sampleTask);
     RetryManager.changeStatus('task1', 'retrying');

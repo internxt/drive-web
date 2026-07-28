@@ -538,7 +538,7 @@ export const uploadItemsThunkExtraReducers = (builder: ActionReducerMapBuilder<S
     .addCase(uploadItemsParallelThunk.pending, () => undefined)
     .addCase(uploadItemsParallelThunk.fulfilled, () => undefined)
     .addCase(uploadItemsParallelThunk.rejected, (state, action) => {
-      const requestOptions = Object.assign(DEFAULT_OPTIONS, action.meta.arg.options ?? {});
+      const requestOptions = { ...DEFAULT_OPTIONS, ...(action.meta.arg.options ?? {}) };
       const taskId = action.meta.arg.taskId;
       if (taskId && RetryManager.isRetryingTask(taskId)) RetryManager.changeStatus(taskId, 'failed');
       if (requestOptions?.showErrors) {
