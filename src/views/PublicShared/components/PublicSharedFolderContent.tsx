@@ -53,6 +53,7 @@ const PublicSharedFolderContent = ({
     credentials,
     nextLevelToken,
     isLoading,
+    hasError,
     hasMoreItems,
     onNextPage,
     navigateToFolder,
@@ -221,7 +222,7 @@ const PublicSharedFolderContent = ({
   ];
 
   return (
-    <div className="flex h-full w-full flex-col px-5">
+    <div className="flex min-h-0 w-full flex-1 flex-col self-stretch px-5">
       {previewItem && (
         <FileViewer
           show={!!previewItem}
@@ -253,11 +254,12 @@ const PublicSharedFolderContent = ({
           useDrop={useDrop}
         />
       </div>
-      <div className="flex h-full w-full flex-col overflow-y-auto">
+      <div className="flex min-h-0 w-full flex-1 flex-col overflow-y-auto">
         <PublicSharedItemList
           shareItems={reorderedShareItems}
           publicShareKey={publicShareKey}
           isLoading={isLoading}
+          hasError={hasError}
           hasMoreItems={hasMoreItems}
           onNextPage={onNextPage}
           onClickItem={onClickItem}

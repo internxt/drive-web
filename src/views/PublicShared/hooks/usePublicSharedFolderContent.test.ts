@@ -99,7 +99,7 @@ describe('usePublicSharedFolderContent', () => {
       result.current.navigateToFolder(result.current.shareItems[0]);
     });
 
-    await waitFor(() => expect(result.current.shareItems).toHaveLength(1));
+    await waitFor(() => expect(result.current.shareItems[0]?.name).toBe('notes'));
     // the token returned while listing the parent level is used to list the subfolder
     expect(mockedGetPublicSharedFolderContent).toHaveBeenCalledWith(
       'subfolder-uuid',
@@ -113,7 +113,6 @@ describe('usePublicSharedFolderContent', () => {
       { uuid: ROOT_UUID, name: 'Root folder', token: '' },
       { uuid: 'subfolder-uuid', name: 'Documents', token: 'root-files-token' },
     ]);
-    expect(result.current.shareItems[0].name).toBe('notes');
 
     act(() => {
       result.current.navigateToFolderAtIndex(0);
@@ -168,5 +167,83 @@ describe('usePublicSharedFolderContent', () => {
     await waitFor(() => expect(result.current.shareItems).toHaveLength(31));
     expect(mockedGetPublicSharedFolderContent).toHaveBeenCalledWith(ROOT_UUID, 'folders', '', 1, 30, undefined);
     await waitFor(() => expect(result.current.hasMoreItems).toBe(false));
+  });
+
+  test('When fetching the level content fails, then it stops loading and exposes the error', async () => {
+    mockedGetPublicSharedFolderContent.mockRejectedValueOnce(new Error('Server error'));
+
+    const { result } = renderContentHook();
+
+    await waitFor(() => expect(result.current.hasError).toBe(true));
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.hasMoreItems).toBe(false);
+    expect(result.current.shareItems).toHaveLength(0);
+  });
+
+  test('When navigating back to an already visited folder, then it renders it from cache without fetching again', async () => {
+    mockedGetPublicSharedFolderContent.mockImplementation((folderUuid, type) => {
+      if (folderUuid === ROOT_UUID) {
+        return type === 'folders'
+          ? Promise.resolve(buildResponse([createFolder('subfolder-uuid', 'Documents')], 'root-folders-token'))
+          : Promise.resolve(buildResponse([createFile('root-file-uuid', 'photo')], 'root-files-token'));
+      }
+      return type === 'folders'
+        ? Promise.resolve(buildResponse([], 'sub-folders-token'))
+        : Promise.resolve(buildResponse([createFile('deep-file-uuid', 'notes')], 'sub-files-token'));
+    });
+
+    const { result } = renderContentHook();
+    await waitFor(() => expect(result.current.shareItems).toHaveLength(2));
+
+    act(() => {
+      result.current.navigateToFolder(result.current.shareItems[0]);
+    });
+    await waitFor(() => expect(result.current.shareItems[0]?.name).toBe('notes'));
+
+    mockedGetPublicSharedFolderContent.mockClear();
+
+    act(() => {
+      result.current.navigateToFolderAtIndex(0);
+    });
+
+    expect(result.current.shareItems).toHaveLength(2);
+    expect(result.current.shareItems[0].name).toBe('Documents');
+    expect(result.current.isLoading).toBe(false);
+    expect(mockedGetPublicSharedFolderContent).not.toHaveBeenCalled();
+  });
+
+  test('When navigating forward to an already visited subfolder, then it also renders from cache', async () => {
+    mockedGetPublicSharedFolderContent.mockImplementation((folderUuid, type) => {
+      if (folderUuid === ROOT_UUID) {
+        return type === 'folders'
+          ? Promise.resolve(buildResponse([createFolder('subfolder-uuid', 'Documents')], 'root-folders-token'))
+          : Promise.resolve(buildResponse([], 'root-files-token'));
+      }
+      return type === 'folders'
+        ? Promise.resolve(buildResponse([], 'sub-folders-token'))
+        : Promise.resolve(buildResponse([], 'sub-files-token'));
+    });
+
+    const { result } = renderContentHook();
+    await waitFor(() => expect(result.current.hasMoreItems).toBe(false));
+
+    act(() => {
+      result.current.navigateToFolder(result.current.shareItems[0]);
+    });
+    await waitFor(() => expect(result.current.hasMoreItems).toBe(false));
+
+    act(() => {
+      result.current.navigateToFolderAtIndex(0);
+    });
+
+    mockedGetPublicSharedFolderContent.mockClear();
+
+    act(() => {
+      result.current.navigateToFolder(result.current.shareItems[0]);
+    });
+
+    expect(result.current.shareItems).toHaveLength(0);
+    expect(result.current.hasMoreItems).toBe(false);
+    expect(mockedGetPublicSharedFolderContent).not.toHaveBeenCalled();
   });
 });
