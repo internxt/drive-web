@@ -7,7 +7,7 @@ beforeEach(() => {
   localStorage.clear();
 });
 
-describe('Testing the local storage service', () => {
+describe('Testing the encrypted storage service', () => {
   describe('Get and set encrypted values', () => {
     const value = 'test-value';
 
@@ -37,7 +37,7 @@ describe('Testing the local storage service', () => {
   describe('Clear token', () => {
     const value = 'test-value';
 
-    test('When clear is called, then the in-memory cache is nulled and token is removed from localstorgae', async () => {
+    test('When clear is called, then the in-memory cache is nulled and token is removed from encrypted storage', async () => {
       await encryptedStorageService.setToken(value);
       const key = LocalStorageProtectedItem.EncryptedToken;
       const removeItemSpy = vi.spyOn(Storage.prototype, 'removeItem');

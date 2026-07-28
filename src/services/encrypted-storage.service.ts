@@ -3,22 +3,22 @@ import { LocalStorageItem, LocalStorageProtectedItem } from 'app/core/types';
 
 let tokenCache: string | null = null;
 
-async function getAndDecrypt(key: LocalStorageProtectedItem): Promise<string | null> {
+const getAndDecrypt = async (key: LocalStorageProtectedItem): Promise<string | null> => {
   const item = localStorage.getItem(key);
   return item ? decryptEntry(item) : null;
-}
+};
 
-async function setAndEncrypt(key: LocalStorageProtectedItem, value: string): Promise<void> {
+const setAndEncrypt = async (key: LocalStorageProtectedItem, value: string): Promise<void> => {
   const encryptedValue = await encryptEntry(value);
   localStorage.setItem(key, encryptedValue);
-}
+};
 
-async function setToken(token: string): Promise<void> {
+const setToken = async (token: string): Promise<void> => {
   tokenCache = token;
   return setAndEncrypt(LocalStorageProtectedItem.EncryptedToken, token);
-}
+};
 
-async function hydrateEncryptedStorageCache(): Promise<void> {
+const hydrateEncryptedStorageCache = async (): Promise<void> => {
   await ensureKeyExists();
   tokenCache = await getAndDecrypt(LocalStorageProtectedItem.EncryptedToken);
 
@@ -30,16 +30,14 @@ async function hydrateEncryptedStorageCache(): Promise<void> {
       localStorage.removeItem(LocalStorageItem.NewToken);
     }
   }
-}
+};
 
-function getToken(): string | undefined {
-  return tokenCache ?? undefined;
-}
+const getToken = (): string | undefined => tokenCache ?? undefined;
 
-function clear(): void {
+const clear = (): void => {
   tokenCache = null;
   localStorage.removeItem(LocalStorageProtectedItem.EncryptedToken);
-}
+};
 
 const encryptedStorageService = {
   hydrateEncryptedStorageCache,
