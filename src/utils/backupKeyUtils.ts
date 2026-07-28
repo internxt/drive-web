@@ -91,7 +91,7 @@ export const detectBackupKeyFormat = (
 ): { type: 'old' | 'new'; mnemonic: string; backupData?: BackupData } => {
   try {
     const parsedData = JSON.parse(backupKeyContent);
-    if (parsedData?.mnemonic && parsedData?.keys?.ecc && parsedData?.keys?.kyber) {
+    if (parsedData?.mnemonic && parsedData.privateKey && parsedData?.keys?.ecc && parsedData?.keys?.kyber) {
       const hasPublicKeys = parsedData.publicKeys?.ecc && parsedData.publicKeys?.kyber;
 
       const backupData: BackupData = {
