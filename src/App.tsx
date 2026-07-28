@@ -132,7 +132,7 @@ const App = (props: AppProps): JSX.Element => {
 
       await domainManager.fetchDomains();
 
-      dispatch(workspaceThunks.fetchWorkspaces());
+      await dispatch(workspaceThunks.fetchWorkspaces());
       navigationService.setWorkspaceFromParams(workspaceThunks, dispatch, false);
 
       await props.dispatch(
