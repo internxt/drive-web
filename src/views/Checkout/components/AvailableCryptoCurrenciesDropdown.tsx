@@ -41,6 +41,8 @@ export const AvailableCryptoCurrenciesDropdown = ({
     (crypto) => crypto.currencyId.toLowerCase() === selectedCurrency,
   );
 
+  const shouldShowAddressForm = cryptoSelected && !isDropdownOpen;
+
   return (
     <div className="flex w-full flex-col items-start gap-3 rounded-2xl border border-gray-10 bg-surface p-2.5 px-3.5">
       <Menu>
@@ -95,14 +97,16 @@ export const AvailableCryptoCurrenciesDropdown = ({
           </MenuItems>
         </Transition>
       </Menu>
-      {cryptoSelected && !isDropdownOpen && (
+      {shouldShowAddressForm && (
         <div className="flex w-full flex-col gap-3">
           <div className="flex w-full border-t border-gray-10" />
           <AddressElement
             options={CRYPTO_ADDRESS_ELEMENT_OPTIONS}
             onChange={(event) => {
               const { firstName, lastName, name, address } = event.value;
-              onUserNameChanges([firstName, lastName].filter(Boolean).join(' ').trim() || name);
+              const fullName = [firstName, lastName].filter(Boolean).join(' ').trim();
+
+              onUserNameChanges( fullName || name);
               onUserAddressChanges(address);
             }}
           />

@@ -17,7 +17,7 @@ export interface AuthCheckoutProps {
   changeAuthMethod: (authMethod: AuthMethodTypes) => void;
 }
 
-const AUTH_ERROR_TRANSLATION_KEY = {
+export const AUTH_ERROR_TRANSLATION_KEY = {
   invalidCredentials: 'checkout.authComponent.authError.invalidCredentials',
   twoFactorEnabled: 'checkout.authComponent.authError.twoFactorEnabled',
   emailAlreadyRegistered: 'checkout.authComponent.authError.emailAlreadyRegistered',
@@ -39,7 +39,8 @@ const isTwoFactorBlockingTheSignIn = async (
 
   try {
     return await is2FANeeded(email);
-  } catch {
+  } catch (err) {
+    errorService.reportError(errorService.castError(err));
     return false;
   }
 };
@@ -102,11 +103,14 @@ export const useAuthCheckout = ({ changeAuthMethod }: Pick<AuthCheckoutProps, 'c
       setAuthError(null);
       return profileInfo.user;
     } catch (err) {
-      errorService.reportError(err);
+      const error = err as Error;
+      setAuthError(error.message);
       const { status } = errorService.castError(err);
       const isTwoFactorEnabled = await isTwoFactorBlockingTheSignIn(email, authMethod, status);
+      const errorKey = getAuthErrorTranslationKey({ status, authMethod, isTwoFactorEnabled });
+      const errorMessage = translate(errorKey);
 
-      setAuthError(translate(getAuthErrorTranslationKey({ status, authMethod, isTwoFactorEnabled })));
+      setAuthError(errorMessage);
       onAuthenticationFail();
       return;
     }

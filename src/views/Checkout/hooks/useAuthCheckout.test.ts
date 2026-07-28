@@ -4,7 +4,8 @@ import databaseService from 'app/database/services/database.service';
 import { localStorageService, RealtimeService } from 'services';
 import { authenticateUser, is2FANeeded } from 'services/auth.service';
 import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
-import { AuthCheckoutProps, useAuthCheckout } from './useAuthCheckout';
+import enTranslations from 'app/i18n/locales/en.json';
+import { AUTH_ERROR_TRANSLATION_KEY, AuthCheckoutProps, useAuthCheckout } from './useAuthCheckout';
 
 vi.mock('services/auth.service', () => ({
   authenticateUser: vi.fn(),
@@ -130,7 +131,7 @@ describe('Authentication Checkout Custom hook', () => {
   test('When the credentials are wrong, then the user is asked to check the email and password', async () => {
     const hookState = await authenticateWithError(new AppError('Wrong login credentials', 401));
 
-    expect(hookState.current.authError).toBe('checkout.authComponent.authError.invalidCredentials');
+    expect(hookState.current.authError).toBe(AUTH_ERROR_TRANSLATION_KEY.invalidCredentials);
   });
 
   test('When the account has two factor authentication enabled, then the user is asked to sign in from the login page', async () => {
@@ -138,7 +139,7 @@ describe('Authentication Checkout Custom hook', () => {
 
     const hookState = await authenticateWithError(new AppError('Wrong login credentials', 401));
 
-    expect(hookState.current.authError).toBe('checkout.authComponent.authError.twoFactorEnabled');
+    expect(hookState.current.authError).toBe(AUTH_ERROR_TRANSLATION_KEY.twoFactorEnabled);
   });
 
   test('When the email already has an account, then the user is asked to log in instead of signing up', async () => {
@@ -147,43 +148,54 @@ describe('Authentication Checkout Custom hook', () => {
       authMethod: 'signUp',
     });
 
-    expect(hookState.current.authError).toBe('checkout.authComponent.authError.emailAlreadyRegistered');
+    expect(hookState.current.authError).toBe(AUTH_ERROR_TRANSLATION_KEY.emailAlreadyRegistered);
   });
 
   test('When the account is locked, then the user is told to unlock it before continuing', async () => {
     const hookState = await authenticateWithError(new AppError('Account blocked', 403));
 
-    expect(hookState.current.authError).toBe('checkout.authComponent.authError.accountLocked');
+    expect(hookState.current.authError).toBe(AUTH_ERROR_TRANSLATION_KEY.accountLocked);
   });
 
   test('When the login attempts are rate limited, then the user is asked to wait before retrying', async () => {
     const hookState = await authenticateWithError(new AppError('Too many requests', 429));
 
-    expect(hookState.current.authError).toBe('checkout.authComponent.authError.tooManyAttempts');
+    expect(hookState.current.authError).toBe(AUTH_ERROR_TRANSLATION_KEY.tooManyAttempts);
   });
 
   test('When the submitted data is rejected, then the user is asked to review the email and password', async () => {
     const hookState = await authenticateWithError(new AppError('Bad request', 400));
 
-    expect(hookState.current.authError).toBe('checkout.authComponent.authError.invalidData');
+    expect(hookState.current.authError).toBe(AUTH_ERROR_TRANSLATION_KEY.invalidData);
   });
 
   test('When the server fails, then the user is asked to retry later instead of blaming the credentials', async () => {
     const hookState = await authenticateWithError(new AppError('Internal server error', 500));
 
-    expect(hookState.current.authError).toBe('checkout.authComponent.authError.serverError');
+    expect(hookState.current.authError).toBe(AUTH_ERROR_TRANSLATION_KEY.serverError);
   });
 
   test('When the request never reaches the server, then the user is asked to retry later', async () => {
     const hookState = await authenticateWithError(new Error('Network Error'));
 
-    expect(hookState.current.authError).toBe('checkout.authComponent.authError.serverError');
+    expect(hookState.current.authError).toBe(AUTH_ERROR_TRANSLATION_KEY.serverError);
   });
 
   test('When the failure reason is not recognised, then a generic message is shown', async () => {
     const hookState = await authenticateWithError(new AppError('Unexpected', 418));
 
-    expect(hookState.current.authError).toBe('checkout.authComponent.authError.unknown');
+    expect(hookState.current.authError).toBe(AUTH_ERROR_TRANSLATION_KEY.unknown);
+  });
+
+  test('When any authentication error is shown, then the user reads a translated message instead of a raw key', () => {
+    const translationFor = (key: string) =>
+      key
+        .split('.')
+        .reduce<unknown>((section, path) => (section as Record<string, unknown> | undefined)?.[path], enTranslations);
+
+    for (const key of Object.values(AUTH_ERROR_TRANSLATION_KEY)) {
+      expect(translationFor(key)).toBeTypeOf('string');
+    }
   });
 
   test('When the request fails, then the raw provider error is never shown to the user', async () => {
@@ -197,7 +209,7 @@ describe('Authentication Checkout Custom hook', () => {
 
     const hookState = await authenticateWithError(new AppError('Wrong login credentials', 401));
 
-    expect(hookState.current.authError).toBe('checkout.authComponent.authError.invalidCredentials');
+    expect(hookState.current.authError).toBe(AUTH_ERROR_TRANSLATION_KEY.invalidCredentials);
   });
 
   test('When the failure is not an unauthorized sign in, then the two factor status is not requested', async () => {
