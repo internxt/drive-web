@@ -1090,7 +1090,8 @@
       "allProcessesHaveFinished": "Alle Prozesse sind abgeschlossen",
       "processing": "Wird bearbeitet {{pending}} von {{finished}}",
       "failedToUpload": "Fehler beim Hochladen",
-      "failedToDownload": "Fehler beim Herunterladen"
+      "failedToDownload": "Fehler beim Herunterladen",
+      "notAllowed": "Nicht erlaubt"
     },
     "waiting": "Warten",
     "paused": "Pausiert",
@@ -1729,17 +1730,11 @@
               "Cleaner (Bereinigungstool)",
               "Meet (Videokonferenz)"
             ],
-            "comingSoonFeatures": [
-              "Mail",
-              "Fotos"
-            ]
+            "comingSoonFeatures": ["Mail", "Fotos"]
           },
           "default": {
             "bytesTitle": "{{bytes}}",
-            "features": [
-              "{{bytes}} verschlüsselter Cloud-Speicher",
-              "Verschlüsseltes VPN"
-            ]
+            "features": ["{{bytes}} verschlüsselter Cloud-Speicher", "Verschlüsseltes VPN"]
           }
         },
         "businessPlanFeaturesList": {

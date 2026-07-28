@@ -8,7 +8,7 @@ vi.mock('app/drive/services/size.service', () => ({
 }));
 
 vi.mock('services/date.service', () => ({
-  formatDefaultDate: vi.fn(() => '2025-02-25'),
+  formatDefaultDate: vi.fn(() => '9 Jan, 2025 at 12:20'),
 }));
 
 vi.mock('i18next', () => ({
@@ -22,7 +22,7 @@ describe('TaskToRetyItem', () => {
       filecontent: {
         name: 'Test File',
         size: 10485760,
-        type: 'application/pdf',
+        type: 'pdf',
         content: {
           lastModified: 1677654000000,
         },
@@ -40,11 +40,11 @@ describe('TaskToRetyItem', () => {
     },
   };
 
-  it('should render file namem size and date correctly', () => {
+  it('should render the file name with its extension, plus size and date', () => {
     const { getByText } = render(<TaskToRetyItem {...defaultProps} />);
 
-    expect(getByText('Test File')).toBeInTheDocument();
-    expect(getByText('10 MB - 2025-02-25')).toBeInTheDocument();
+    expect(getByText('Test File.pdf')).toBeInTheDocument();
+    expect(getByText('10 MB - 9 Jan, 2025 at 12:20')).toBeInTheDocument();
   });
 
   it('should render a retry button when the file status is "failed"', () => {
@@ -64,5 +64,14 @@ describe('TaskToRetyItem', () => {
     const { container } = render(<TaskToRetyItem {...uploadingProps} />);
     const spinner = container.querySelector('.animate-spin');
     expect(spinner).toBeInTheDocument();
+  });
+
+  it('should render a "Not allowed" label instead of a retry button when the file is not retryable', () => {
+    const notAllowedFile = { ...mockFile, retryable: false };
+    const notAllowedProps = { ...defaultProps, data: { files: [notAllowedFile], downloadItem: mockDownloadItem } };
+    const { getByText, queryByRole } = render(<TaskToRetyItem {...notAllowedProps} />);
+
+    expect(getByText('tasks.messages.notAllowed')).toBeInTheDocument();
+    expect(queryByRole('button')).not.toBeInTheDocument();
   });
 });

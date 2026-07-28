@@ -44,11 +44,10 @@ const TaskToRetry = ({ isOpen, files, onClose }: TaskToRetryProps): JSX.Element 
           workspaceCredentials,
           taskId,
         });
-      } catch {
+      } finally {
         RetryManager.changeStatus(taskId ?? params?.taskId ?? '', 'failed');
       }
     }
-    RetryManager.changeStatus(taskId ?? params?.taskId ?? '', 'failed');
   };
 
   return (
@@ -73,9 +72,11 @@ const TaskToRetry = ({ isOpen, files, onClose }: TaskToRetryProps): JSX.Element 
       <div className="absolute top-[72px] left-0 w-full border-b border-gray-10" />
 
       {files?.length > 0 ? (
-        <List height={400} itemCount={files.length} itemSize={72} width={'100%'} itemData={{ files, downloadItem }}>
-          {TaskToRetryItem}
-        </List>
+        <div className="pt-3">
+          <List height={400} itemCount={files.length} itemSize={72} width={'100%'} itemData={{ files, downloadItem }}>
+            {TaskToRetryItem}
+          </List>
+        </div>
       ) : (
         <span className="flex p-5 justify-between items-center" data-testid="finish-msg-taskRetry">
           {translate('tasks.messages.allProcessesHaveFinished')}.

@@ -1096,7 +1096,8 @@
       "allProcessesHaveFinished": "Todos los procesos han finalizado",
       "processing": "Procesando {{pending}} de {{finished}}",
       "failedToUpload": "Error al subir",
-      "failedToDownload": "Error al descargar"
+      "failedToDownload": "Error al descargar",
+      "notAllowed": "No permitido"
     },
     "waiting": "Esperando",
     "paused": "Pausado",
@@ -1733,17 +1734,11 @@
               "Cleaner",
               "Meet"
             ],
-            "comingSoonFeatures": [
-              "Mail",
-              "Fotos"
-            ]
+            "comingSoonFeatures": ["Mail", "Fotos"]
           },
           "default": {
             "bytesTitle": "{{bytes}}",
-            "features": [
-              "{{bytes}} de almacenamiento en la nube cifrado",
-              "VPN cifrada"
-            ]
+            "features": ["{{bytes}} de almacenamiento en la nube cifrado", "VPN cifrada"]
           }
         },
         "businessPlanFeaturesList": {

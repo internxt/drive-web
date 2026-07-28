@@ -1096,7 +1096,8 @@
       "allProcessesHaveFinished": "Все процессы завершены",
       "processing": "Обработка {{pending}} из {{finished}}",
       "failedToUpload": "Не удалось загрузить",
-      "failedToDownload": "Не удалось загрузить"
+      "failedToDownload": "Не удалось загрузить",
+      "notAllowed": "Не разрешено"
     },
     "waiting": "Ожидание",
     "paused": "Приостановлено",
@@ -1732,17 +1733,11 @@
               "Cleaner (Очиститель)",
               "Meet (Видеоконференции)"
             ],
-            "comingSoonFeatures": [
-              "Mail (Почта)",
-              "Фотографии"
-            ]
+            "comingSoonFeatures": ["Mail (Почта)", "Фотографии"]
           },
           "default": {
             "bytesTitle": "{{bytes}}",
-            "features": [
-              "{{bytes}} зашифрованного облачного хранилища",
-              "Зашифрованный VPN"
-            ]
+            "features": ["{{bytes}} зашифрованного облачного хранилища", "Зашифрованный VPN"]
           }
         },
         "businessPlanFeaturesList": {

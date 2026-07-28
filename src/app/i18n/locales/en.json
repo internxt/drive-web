@@ -1117,7 +1117,8 @@
       "allProcessesHaveFinished": "All processes have finished",
       "processing": "Processing {{pending}} of {{finished}}",
       "failedToUpload": "Failed to upload",
-      "failedToDownload": "Failed to download"
+      "failedToDownload": "Failed to download",
+      "notAllowed": "Not allowed"
     },
     "waiting": "Waiting",
     "paused": "Paused",
@@ -1753,17 +1754,11 @@
               "Cleaner",
               "Meet"
             ],
-            "comingSoonFeatures": [
-              "Mail",
-              "Photos"
-            ]
+            "comingSoonFeatures": ["Mail", "Photos"]
           },
           "default": {
             "bytesTitle": "{{bytes}}",
-            "features": [
-              "{{bytes}} of encrypted storage",
-              "Encrypted VPN"
-            ]
+            "features": ["{{bytes}} of encrypted storage", "Encrypted VPN"]
           }
         },
         "businessPlanFeaturesList": {

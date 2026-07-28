@@ -1117,7 +1117,8 @@
       "allProcessesHaveFinished": "所有处理都已完成",
       "processing": "正在处理 {{pending}}/{{finished}}",
       "failedToUpload": "上傳失敗",
-      "failedToDownload": "下載失敗"
+      "failedToDownload": "下載失敗",
+      "notAllowed": "不允許"
     },
     "waiting": "等待中",
     "paused": "暂停",
@@ -1753,17 +1754,11 @@
               "清理工具 (Cleaner)",
               "会议 (Meet)"
             ],
-            "comingSoonFeatures": [
-              "邮件 (Mail)",
-              "照片 (Photos)"
-            ]
+            "comingSoonFeatures": ["邮件 (Mail)", "照片 (Photos)"]
           },
           "default": {
             "bytesTitle": "{{bytes}}",
-            "features": [
-              "{{bytes}} 加密云存储空间",
-              "加密 VPN"
-            ]
+            "features": ["{{bytes}} 加密云存储空间", "加密 VPN"]
           }
         },
         "businessPlanFeaturesList": {
