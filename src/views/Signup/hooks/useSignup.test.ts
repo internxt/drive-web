@@ -74,9 +74,6 @@ vi.mock('app/core/factory/sdk', () => ({
 
 vi.mock('app/crypto/services/keys.service', () => ({
   getKeys: vi.fn().mockResolvedValue({
-    privateKeyArmored: 'mock-private-key',
-    publicKeyArmored: 'mock-public-key',
-    revocationCertificate: 'mock-revocation-cert',
     ecc: {
       privateKey: 'mock-private-key',
       publicKeyEncrypted: 'mock-public-key',

@@ -323,6 +323,7 @@ describe('backupKeyUtils', () => {
     it('When backup has no publicKeys, then result should not include publicKeys', () => {
       const mockBackupData: BackupData = {
         mnemonic: 'test mnemonic',
+        privateKey: 'test-private-key',
         keys: {
           ecc: 'test-ecc-key',
           kyber: 'test-kyber-key',
@@ -380,6 +381,7 @@ describe('backupKeyUtils', () => {
     it('should detect new backup key format with full data', () => {
       const mockBackupData: BackupData = {
         mnemonic: 'test mnemonic',
+        privateKey: 'test-private-key',
         keys: {
           ecc: 'test-ecc-key',
           kyber: 'test-kyber-key',
@@ -473,9 +475,6 @@ describe('backupKeyUtils', () => {
       vi.mocked(encryptTextWithKey).mockImplementation((text) => `encrypted-with-key-${text}`);
 
       const mockGeneratedKeys = {
-        publicKey: 'test-public-key',
-        privateKeyEncrypted: 'test-private-key-encrypted',
-        revocationCertificate: 'test-revocation-cert',
         ecc: {
           publicKey: 'test-ecc-public-key',
           privateKeyEncrypted: 'test-ecc-private-key-encrypted',

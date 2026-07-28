@@ -323,7 +323,6 @@ describe('Change password', () => {
   it('changePassword should correctly re-encrypt keys', async () => {
     const mockOldPassword = 'password123';
     const mockNewPassword = 'newPassword123';
-    const mockEmail = 'test@example.com';
 
     const mockMnemonicNotEnc =
       'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
@@ -380,7 +379,6 @@ describe('Change password', () => {
   test('When the server rejects the password change with an internal server error, then a password mismatch error is raised', async () => {
     const mockOldPassword = 'password123';
     const mockNewPassword = 'newPassword123';
-    const mockEmail = 'test@example.com';
 
     const mockMnemonicNotEnc =
       'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
@@ -425,7 +423,6 @@ describe('Change password', () => {
   test('When the server rejects the password change with a non-server error, then the original error is propagated', async () => {
     const mockOldPassword = 'password123';
     const mockNewPassword = 'newPassword123';
-    const mockEmail = 'test@example.com';
 
     const mockMnemonicNotEnc =
       'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
@@ -521,6 +518,7 @@ describe('updateCredentialsWithToken', () => {
     const mockMnemonic =
       'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
     const mockBackupData: BackupData = {
+      privateKey: 'test-private-key',
       mnemonic: '',
       keys: {
         ecc: '',
@@ -561,6 +559,7 @@ describe('updateCredentialsWithToken', () => {
     const mockMnemonic =
       'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
     const mockBackupData: BackupData = {
+      privateKey: '',
       mnemonic: '',
       keys: {
         ecc: 'test-ecc-private-key',
@@ -998,6 +997,7 @@ describe('recoverAccountWithBackupKey', () => {
 
     const newBackupContent = JSON.stringify({
       mnemonic: 'test mnemonic words here for new format backup key content test with proper length',
+      privateKey: Buffer.from('test-private-key').toString('base64'),
       keys: {
         ecc: Buffer.from('test-ecc-key').toString('base64'),
         kyber: 'test-kyber-key',

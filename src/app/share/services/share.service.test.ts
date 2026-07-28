@@ -83,7 +83,6 @@ describe('Encryption and Decryption', () => {
     keys: {
       privateKeyArmored: string;
       publicKeyArmored: string;
-      revocationCertificate: string;
       publicKyberKeyBase64: string;
       privateKyberKeyBase64: string;
     },
