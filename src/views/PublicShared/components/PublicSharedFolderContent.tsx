@@ -102,7 +102,7 @@ const PublicSharedFolderContent = ({
   ];
 
   return (
-    <div className="flex w-full flex-1 flex-col self-stretch px-5">
+    <div className="flex min-h-0 w-full flex-1 flex-col self-stretch px-5">
       <div className="z-10 flex h-14 w-full shrink-0 flex-row items-center">
         <Breadcrumbs
           items={breadcrumbItems}
@@ -117,7 +117,7 @@ const PublicSharedFolderContent = ({
           useDrop={useDrop}
         />
       </div>
-      <div className="flex h-full w-full flex-col overflow-y-auto">
+      <div className="flex min-h-0 w-full flex-1 flex-col overflow-y-auto">
         <PublicSharedItemList
           shareItems={reorderedShareItems}
           isLoading={isLoading}
