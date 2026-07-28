@@ -42,6 +42,7 @@ const renderList = (items: AdvancedSharedItem[], onItemDoubleClicked = vi.fn()) 
       shareItems={items}
       publicShareKey={PUBLIC_SHARE_KEY}
       isLoading={false}
+      hasError={false}
       hasMoreItems={false}
       onNextPage={vi.fn()}
       onClickItem={vi.fn()}

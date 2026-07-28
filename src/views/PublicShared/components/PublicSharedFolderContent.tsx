@@ -37,8 +37,16 @@ const PublicSharedFolderContent = ({
     () => derivePublicSharingKey({ encryptionKey, code, sharingVersion }),
     [encryptionKey, code, sharingVersion],
   );
-  const { folderPath, shareItems, isLoading, hasMoreItems, onNextPage, navigateToFolder, navigateToFolderAtIndex } =
-    usePublicSharedFolderContent({ rootFolderUuid, rootFolderName, code });
+  const {
+    folderPath,
+    shareItems,
+    isLoading,
+    hasError,
+    hasMoreItems,
+    onNextPage,
+    navigateToFolder,
+    navigateToFolderAtIndex,
+  } = usePublicSharedFolderContent({ rootFolderUuid, rootFolderName, code });
   const [selectedItems, setSelectedItems] = useState<AdvancedSharedItem[]>([]);
   const [orderBy, setOrderBy] = useState<{ field: OrderField; direction: OrderDirection }>();
 
@@ -103,7 +111,7 @@ const PublicSharedFolderContent = ({
   ];
 
   return (
-    <div className="flex h-full w-full flex-col px-5">
+    <div className="flex min-h-0 w-full flex-1 flex-col self-stretch px-5">
       <div className="z-10 flex h-14 w-full shrink-0 flex-row items-center">
         <Breadcrumbs
           items={breadcrumbItems}
@@ -118,11 +126,12 @@ const PublicSharedFolderContent = ({
           useDrop={useDrop}
         />
       </div>
-      <div className="flex h-full w-full flex-col overflow-y-auto">
+      <div className="flex min-h-0 w-full flex-1 flex-col overflow-y-auto">
         <PublicSharedItemList
           shareItems={reorderedShareItems}
           publicShareKey={publicShareKey}
           isLoading={isLoading}
+          hasError={hasError}
           hasMoreItems={hasMoreItems}
           onNextPage={onNextPage}
           onClickItem={onClickItem}

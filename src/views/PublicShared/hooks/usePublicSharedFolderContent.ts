@@ -1,8 +1,10 @@
 import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
 import { getItemPlainName } from 'app/crypto/services/utils';
 import shareService from 'app/share/services/share.service';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { AdvancedSharedItem, SharedNetworkCredentials } from 'app/share/types';
-import { useEffect, useState } from 'react';
+import { t } from 'i18next';
+import { useEffect, useRef, useState } from 'react';
 import errorService from 'services/error.service';
 
 const ITEMS_PER_PAGE = 30;
@@ -11,6 +13,12 @@ export interface PublicFolderLevel {
   uuid: string;
   name: string;
   token: string;
+}
+
+interface CachedFolderLevel {
+  folders: AdvancedSharedItem[];
+  files: AdvancedSharedItem[];
+  nextLevelToken: string;
 }
 
 const parsePublicSharedItems = (
@@ -51,7 +59,9 @@ const usePublicSharedFolderContent = ({
   const [hasMoreFolders, setHasMoreFolders] = useState(true);
   const [hasMoreFiles, setHasMoreFiles] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const [nextLevelToken, setNextLevelToken] = useState('');
+  const levelCacheRef = useRef<Record<string, CachedFolderLevel>>({});
 
   const currentFolder = folderPath.at(-1) as PublicFolderLevel;
   const hasMoreItems = hasMoreFolders || hasMoreFiles;
@@ -61,6 +71,12 @@ const usePublicSharedFolderContent = ({
   useEffect(() => {
     fetchItems();
   }, [page, currentFolder.uuid, hasMoreFolders]);
+
+  useEffect(() => {
+    if (!hasMoreItems && !hasError && !isLoading) {
+      levelCacheRef.current[currentFolder.uuid] = { folders, files, nextLevelToken };
+    }
+  }, [hasMoreItems, hasError, isLoading, folders, files, nextLevelToken, currentFolder.uuid]);
 
   const fetchItems = async () => {
     if (!isLoading) {
@@ -73,6 +89,12 @@ const usePublicSharedFolderContent = ({
         }
       } catch (error) {
         errorService.reportError(error);
+        setHasError(true);
+        setHasMoreFolders(false);
+        setHasMoreFiles(false);
+        if (folders.length > 0 || files.length > 0) {
+          notificationsService.show({ text: t('error.fetchingFolderContent'), type: ToastType.Error });
+        }
       } finally {
         setIsLoading(false);
       }
@@ -94,7 +116,6 @@ const usePublicSharedFolderContent = ({
     setFolders((previousFolders) => (page === 0 ? parsedFolders : [...previousFolders, ...parsedFolders]));
 
     if (parsedFolders.length < ITEMS_PER_PAGE) {
-      // after finish to fetch all folders reset page counter to 0 for fetch files
       setPage(0);
       setHasMoreFolders(false);
     }
@@ -126,6 +147,22 @@ const usePublicSharedFolderContent = ({
     setPage(0);
     setHasMoreFolders(true);
     setHasMoreFiles(true);
+    setHasError(false);
+  };
+
+  const applyLevelState = (folderUuid: string) => {
+    const cachedLevel = levelCacheRef.current[folderUuid];
+    if (!cachedLevel) {
+      resetLevelItems();
+      return;
+    }
+    setFolders(cachedLevel.folders);
+    setFiles(cachedLevel.files);
+    setNextLevelToken(cachedLevel.nextLevelToken);
+    setPage(0);
+    setHasMoreFolders(false);
+    setHasMoreFiles(false);
+    setHasError(false);
   };
 
   const navigateToFolder = (shareItem: AdvancedSharedItem) => {
@@ -135,14 +172,14 @@ const usePublicSharedFolderContent = ({
       ...previousPath,
       { uuid: shareItem.uuid, name: shareItem.name, token: nextLevelToken },
     ]);
-    resetLevelItems();
+    applyLevelState(shareItem.uuid);
   };
 
   const navigateToFolderAtIndex = (index: number) => {
     if (isLoading || index >= folderPath.length - 1) return;
 
     setFolderPath((previousPath) => previousPath.slice(0, index + 1));
-    resetLevelItems();
+    applyLevelState(folderPath[index].uuid);
   };
 
   const onNextPage = () => {
@@ -156,6 +193,7 @@ const usePublicSharedFolderContent = ({
     folderPath,
     shareItems,
     isLoading: isLoading || isAwaitingInitialFilesLoad,
+    hasError,
     hasMoreItems,
     onNextPage,
     navigateToFolder,

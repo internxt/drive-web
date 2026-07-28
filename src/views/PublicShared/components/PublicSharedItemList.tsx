@@ -1,6 +1,7 @@
 import { items } from '@internxt/lib';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 import { Empty, List } from '@internxt/ui';
+import { WarningCircleIcon } from '@phosphor-icons/react';
 import { OrderDirection } from 'app/core/types';
 import iconService from 'app/drive/services/icon.service';
 import transformItemService from 'app/drive/services/item-transform.service';
@@ -132,6 +133,7 @@ type PublicSharedItemListProps = {
   shareItems: AdvancedSharedItem[];
   publicShareKey: FileKey;
   isLoading: boolean;
+  hasError: boolean;
   hasMoreItems: boolean;
   onNextPage: () => void;
   onClickItem: (shareItem: AdvancedSharedItem) => void;
@@ -146,6 +148,7 @@ export const PublicSharedItemList = ({
   shareItems,
   publicShareKey,
   isLoading,
+  hasError,
   hasMoreItems,
   onNextPage,
   onClickItem,
@@ -163,6 +166,14 @@ export const PublicSharedItemList = ({
     <Empty
       icon={<img className="w-36" alt="" src={folderEmptyImage} />}
       title={t('views.recents.empty.folderEmpty')}
+      subtitle={''}
+    />
+  );
+
+  const errorStateElement = (
+    <Empty
+      icon={<WarningCircleIcon className="text-red" size={80} weight="thin" />}
+      title={t('error.fetchingFolderContent')}
       subtitle={''}
     />
   );
@@ -191,7 +202,7 @@ export const PublicSharedItemList = ({
       onDoubleClick={onItemDoubleClicked}
       itemComposition={[itemComposition]}
       skinSkeleton={skinSkeleton}
-      emptyState={emptyStateElement}
+      emptyState={hasError ? errorStateElement : emptyStateElement}
       onNextPage={onNextPage}
       hasMoreItems={hasMoreItems}
       displayMenuDiv
