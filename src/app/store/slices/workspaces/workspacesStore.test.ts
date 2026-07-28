@@ -43,11 +43,6 @@ vi.mock(
 vi.mock('services/navigation.service', () => ({
   default: { push: vi.fn() },
 }));
-vi.mock('./workspaces.selectors', () => ({
-  default: {
-    getSelectedWorkspace: vi.fn(),
-  },
-}));
 vi.mock('services/workspace.service', () => ({
   default: {
     setupWorkspace: vi.fn(),
@@ -80,11 +75,6 @@ vi.mock('services', () => ({
   },
 }));
 
-vi.mock('../session/session.thunks', () => ({
-  default: {
-    changeWorkspaceThunk: vi.fn(() => ({ type: 'session/changeWorkspaceThunk' })),
-  },
-}));
 vi.mock('./workspaces.selectors', () => ({
   default: {
     getSelectedWorkspace: vi.fn(),
@@ -191,9 +181,6 @@ describe('Encryption and Decryption', () => {
 
   test('sets selected workspace and related side effects after setup completes', async () => {
     const keys = await generateNewKeys();
-    const unhandled: unknown[] = [];
-    const onUnhandled = (e: unknown) => unhandled.push(e);
-    process.on('unhandledRejection', onUnhandled);
 
     const mockUser: Partial<UserSettings> = {
       mnemonic: 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
@@ -227,15 +214,7 @@ describe('Encryption and Decryption', () => {
     await setupWorkspace({ pendingWorkspace: mockPendingWorkspace })(dispatchMock, getStateMock, undefined);
 
     await new Promise((resolve) => setTimeout(resolve, 1100));
-    process.off('unhandledRejection', onUnhandled);
-    if (unhandled.length) {
-      console.log('unhandled rejections:', unhandled);
-    }
 
-    console.log(
-      'dispatch calls:',
-      dispatchMock.mock.calls.map((c) => c[0]),
-    );
     expect(localStorageService.setB2BWorkspace).toHaveBeenCalledWith(mockPendingWorkspace.id, 'decrypted-key');
   });
 
