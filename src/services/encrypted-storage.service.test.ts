@@ -38,7 +38,7 @@ describe('Testing the encrypted storage service', () => {
       const key = LocalStorageProtectedItem.EncryptedToken;
       localStorage.setItem(key, 'not-valid-encrypted-token');
 
-      await expect(encryptedStorageService.hydrateEncryptedStorageCache()).rejects.toThrow();
+      await expect(encryptedStorageService.hydrateEncryptedStorageCache()).resolves.toBeUndefined();
 
       expect(encryptedStorageService.getToken()).toBeUndefined();
     });

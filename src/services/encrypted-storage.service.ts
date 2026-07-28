@@ -20,7 +20,11 @@ const setToken = async (token: string): Promise<void> => {
 
 const hydrateEncryptedStorageCache = async (): Promise<void> => {
   await ensureKeyExists();
-  tokenCache = await getAndDecrypt(LocalStorageProtectedItem.EncryptedToken);
+  try {
+    tokenCache = await getAndDecrypt(LocalStorageProtectedItem.EncryptedToken);
+  } catch {
+    tokenCache = null;
+  }
 
   //migration from unencrypted version, remove once completed
   if (!tokenCache) {
