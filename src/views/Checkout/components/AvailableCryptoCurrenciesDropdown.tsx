@@ -1,8 +1,21 @@
 import { Fragment, MouseEvent } from 'react';
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react';
 import { CryptoCurrency } from '@internxt/sdk/dist/payments/types';
+import { AddressElement } from '@stripe/react-stripe-js';
+import { StripeAddressElementOptions } from '@stripe/stripe-js';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import BitcoinLogo from 'assets/icons/checkout/bitcoin-logo.svg?react';
+import { AddressProvider } from '../types/checkout.types';
+
+const CRYPTO_ADDRESS_ELEMENT_OPTIONS: StripeAddressElementOptions = {
+  mode: 'billing',
+  display: {
+    name: 'split',
+  },
+  fields: {
+    phone: 'never',
+  },
+};
 
 interface AvailableCryptoCurrenciesDropdownProps {
   availableCryptoCurrencies: CryptoCurrency[];
@@ -10,6 +23,8 @@ interface AvailableCryptoCurrenciesDropdownProps {
   isDropdownOpen: boolean;
   onDropdownClicked: () => void;
   onCryptoChanges: (crypto: string) => void;
+  onUserAddressChanges: (address: AddressProvider) => void;
+  onUserNameChanges: (userName: string) => void;
 }
 
 export const AvailableCryptoCurrenciesDropdown = ({
@@ -18,6 +33,8 @@ export const AvailableCryptoCurrenciesDropdown = ({
   isDropdownOpen,
   onDropdownClicked,
   onCryptoChanges,
+  onUserAddressChanges,
+  onUserNameChanges,
 }: AvailableCryptoCurrenciesDropdownProps) => {
   const { translate } = useTranslationContext();
   const cryptoSelected = availableCryptoCurrencies.find(
@@ -78,6 +95,19 @@ export const AvailableCryptoCurrenciesDropdown = ({
           </MenuItems>
         </Transition>
       </Menu>
+      {cryptoSelected && !isDropdownOpen && (
+        <div className="flex w-full flex-col gap-3">
+          <div className="flex w-full border-t border-gray-10" />
+          <AddressElement
+            options={CRYPTO_ADDRESS_ELEMENT_OPTIONS}
+            onChange={(event) => {
+              const { firstName, lastName, name, address } = event.value;
+              onUserNameChanges([firstName, lastName].filter(Boolean).join(' ').trim() || name);
+              onUserAddressChanges(address);
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };
