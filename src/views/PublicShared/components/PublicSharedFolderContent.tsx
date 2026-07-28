@@ -28,8 +28,16 @@ const PublicSharedFolderContent = ({
 }: PublicSharedFolderContentProps) => {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
-  const { folderPath, shareItems, isLoading, hasMoreItems, onNextPage, navigateToFolder, navigateToFolderAtIndex } =
-    usePublicSharedFolderContent({ rootFolderUuid, rootFolderName, code });
+  const {
+    folderPath,
+    shareItems,
+    isLoading,
+    hasError,
+    hasMoreItems,
+    onNextPage,
+    navigateToFolder,
+    navigateToFolderAtIndex,
+  } = usePublicSharedFolderContent({ rootFolderUuid, rootFolderName, code });
   const [selectedItems, setSelectedItems] = useState<AdvancedSharedItem[]>([]);
   const [orderBy, setOrderBy] = useState<{ field: OrderField; direction: OrderDirection }>();
 
@@ -113,6 +121,7 @@ const PublicSharedFolderContent = ({
         <PublicSharedItemList
           shareItems={reorderedShareItems}
           isLoading={isLoading}
+          hasError={hasError}
           hasMoreItems={hasMoreItems}
           onNextPage={onNextPage}
           onClickItem={onClickItem}
