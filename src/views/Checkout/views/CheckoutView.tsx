@@ -3,7 +3,6 @@ import {  Loader } from '@internxt/ui';
 import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { StripePaymentElementOptions } from '@stripe/stripe-js';
 import { IFormValues } from 'app/core/types';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { LegacyRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { CheckoutProductCard } from '../components/CheckoutProductCard';
@@ -59,7 +58,6 @@ const CheckoutView = ({
   availableCryptoCurrencies,
   onCurrencyTypeChanges,
 }: CheckoutViewProps) => {
-  const { translate } = useTranslationContext();
   // Those custom hooks should be here.
   // They cannot be moved to the Parent, because it must be wrapped by <Elements> component.
   const stripeSDK = useStripe();

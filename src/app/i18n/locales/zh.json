@@ -221,6 +221,16 @@
         "password": "您的密码"
       },
       "emailMustNotBeEmpty": "电子邮件不能为空",
+      "authError": {
+        "invalidCredentials": "电子邮件或密码不正确，请重试。",
+        "twoFactorEnabled": "此账户已启用双重验证。请先前往登录页面登录，再返回此处完成购买。",
+        "emailAlreadyRegistered": "此电子邮件已注册账户。请选择“登录”以继续购买。",
+        "accountLocked": "出于安全原因，此账户已被锁定。请先查看您的收件箱以解锁，然后再继续。",
+        "tooManyAttempts": "尝试次数过多，请稍等一分钟后重试。",
+        "invalidData": "请确认您的电子邮件和密码是否正确，然后重试。",
+        "serverError": "我们无法完成此步骤。请几分钟后重试，如果问题仍然存在请联系客服。",
+        "unknown": "我们无法验证您的信息。请确认您的电子邮件和密码，然后重试。"
+      },
       "privacyGuarantee": "隐私保证：我们不会分享您的信息，并且只会在提供服务时与您联系。"
     },
     "addressBillingTitle": "账单地址",

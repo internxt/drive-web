@@ -200,6 +200,16 @@
         "password": "Ihr Passwort"
       },
       "emailMustNotBeEmpty": "Die E-Mail darf nicht leer sein",
+      "authError": {
+        "invalidCredentials": "Die E-Mail-Adresse oder das Passwort ist falsch. Bitte versuche es erneut.",
+        "twoFactorEnabled": "Dieses Konto verwendet die Zwei-Faktor-Authentifizierung. Melde dich auf der Anmeldeseite an und kehre zurück, um deinen Kauf abzuschließen.",
+        "emailAlreadyRegistered": "Es existiert bereits ein Konto mit dieser E-Mail-Adresse. Wähle „Anmelden“, um mit deinem Kauf fortzufahren.",
+        "accountLocked": "Dieses Konto ist aus Sicherheitsgründen gesperrt. Überprüfe deinen Posteingang, um es zu entsperren, bevor du fortfährst.",
+        "tooManyAttempts": "Zu viele Versuche. Bitte warte eine Minute und versuche es erneut.",
+        "invalidData": "Bitte überprüfe, ob deine E-Mail-Adresse und dein Passwort korrekt sind, und versuche es erneut.",
+        "serverError": "Wir konnten diesen Schritt nicht abschließen. Bitte versuche es in einigen Minuten erneut oder wende dich an den Support, wenn das Problem weiterhin besteht.",
+        "unknown": "Wir konnten deine Daten nicht überprüfen. Bitte überprüfe deine E-Mail-Adresse und dein Passwort und versuche es erneut."
+      },
       "privacyGuarantee": "Datenschutzgarantie: Wir teilen Ihre Informationen nicht und werden Sie nur kontaktieren, wenn es notwendig ist, um unseren Service zu bieten."
     },
     "addressBillingTitle": "Rechnungsadresse",
