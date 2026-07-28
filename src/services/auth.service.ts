@@ -317,8 +317,8 @@ export const updateCredentialsWithToken = async (
   let encryptedKyberPrivateKey: string | undefined;
 
   if (backupData) {
-    if (backupData.privateKey || backupData.keys?.ecc) {
-      const eccPrivateKeyBase64 = backupData.privateKey || backupData.keys?.ecc;
+    if (backupData.keys?.ecc) {
+      const eccPrivateKeyBase64 = backupData.keys?.ecc;
       if (eccPrivateKeyBase64) {
         const eccPrivateKey = Buffer.from(eccPrivateKeyBase64, 'base64').toString();
         encryptedEccPrivateKey = aes.encrypt(eccPrivateKey, newPassword);

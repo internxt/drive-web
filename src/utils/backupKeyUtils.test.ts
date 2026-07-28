@@ -323,7 +323,6 @@ describe('backupKeyUtils', () => {
     it('When backup has no publicKeys, then result should not include publicKeys', () => {
       const mockBackupData: BackupData = {
         mnemonic: 'test mnemonic',
-        privateKey: 'test-private-key',
         keys: {
           ecc: 'test-ecc-key',
           kyber: 'test-kyber-key',
@@ -381,7 +380,6 @@ describe('backupKeyUtils', () => {
     it('should detect new backup key format with full data', () => {
       const mockBackupData: BackupData = {
         mnemonic: 'test mnemonic',
-        privateKey: 'test-private-key',
         keys: {
           ecc: 'test-ecc-key',
           kyber: 'test-kyber-key',
@@ -526,7 +524,6 @@ describe('backupKeyUtils', () => {
           ecc: {
             public: mockGeneratedKeys.ecc.publicKey,
             private: mockGeneratedKeys.ecc.privateKeyEncrypted,
-            revocationKey: '',
           },
           kyber: {
             public: mockGeneratedKeys.kyber.publicKey,

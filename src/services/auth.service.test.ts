@@ -521,7 +521,6 @@ describe('updateCredentialsWithToken', () => {
     const mockMnemonic =
       'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
     const mockBackupData: BackupData = {
-      privateKey: 'test-private-key',
       mnemonic: '',
       keys: {
         ecc: '',
@@ -562,7 +561,6 @@ describe('updateCredentialsWithToken', () => {
     const mockMnemonic =
       'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
     const mockBackupData: BackupData = {
-      privateKey: '',
       mnemonic: '',
       keys: {
         ecc: 'test-ecc-private-key',
@@ -1000,7 +998,6 @@ describe('recoverAccountWithBackupKey', () => {
 
     const newBackupContent = JSON.stringify({
       mnemonic: 'test mnemonic words here for new format backup key content test with proper length',
-      privateKey: Buffer.from('test-private-key').toString('base64'),
       keys: {
         ecc: Buffer.from('test-ecc-key').toString('base64'),
         kyber: 'test-kyber-key',
