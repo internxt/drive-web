@@ -7,7 +7,7 @@ import {
 } from './uploadItemsThunk';
 import { RootState } from '../../..';
 import { prepareFilesToUpload } from '../fileUtils/prepareFilesToUpload';
-import { uploadFileWithManager } from '../../../../network/UploadManager';
+import { uploadFilesWithTasks } from 'app/tasks/upload/uploadFilesWithTasks';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import RetryManager from 'app/network/RetryManager';
 import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
@@ -68,8 +68,8 @@ vi.mock('../fileUtils/prepareFilesToUpload', () => ({
   prepareFilesToUpload: vi.fn(),
 }));
 
-vi.mock('../../../../network/UploadManager', () => ({
-  uploadFileWithManager: vi.fn(),
+vi.mock('app/tasks/upload/uploadFilesWithTasks', () => ({
+  uploadFilesWithTasks: vi.fn(),
 }));
 
 vi.mock('../../workspaces/workspaces.selectors', () => ({
@@ -113,7 +113,7 @@ describe('uploadItemsThunk', () => {
     })(dispatch, getState as () => RootState, {});
 
     expect(prepareFilesToUpload).toHaveBeenCalled();
-    expect(uploadFileWithManager).toHaveBeenCalled();
+    expect(uploadFilesWithTasks).toHaveBeenCalled();
   });
 
   it('should handle upload errors', async () => {
@@ -121,7 +121,7 @@ describe('uploadItemsThunk', () => {
       filesToUpload: [mockFile],
     });
     const notificationsServiceSpy = vi.spyOn(notificationsService, 'show');
-    (uploadFileWithManager as Mock).mockRejectedValue(new Error('Upload failed'));
+    (uploadFilesWithTasks as Mock).mockRejectedValue(new Error('Upload failed'));
 
     await uploadItemsThunk({
       files: [mockFile],
@@ -138,7 +138,7 @@ describe('uploadItemsThunk', () => {
     (prepareFilesToUpload as Mock).mockResolvedValue({
       filesToUpload: [mockFile],
     });
-    (uploadFileWithManager as Mock).mockRejectedValueOnce(new Error('Upload failed'));
+    (uploadFilesWithTasks as Mock).mockRejectedValueOnce(new Error('Upload failed'));
     const RetryChangeStatusSpy = vi.spyOn(RetryManager, 'changeStatus');
 
     await uploadItemsThunk({
@@ -160,7 +160,7 @@ describe('uploadItemsThunk', () => {
     (prepareFilesToUpload as Mock).mockResolvedValue({
       filesToUpload: [mockFile],
     });
-    (uploadFileWithManager as Mock).mockRejectedValue(randomError);
+    (uploadFilesWithTasks as Mock).mockRejectedValue(randomError);
 
     await uploadItemsThunk({
       files: [mockFile],
@@ -179,7 +179,7 @@ describe('uploadItemsThunk', () => {
     (prepareFilesToUpload as Mock).mockResolvedValue({
       filesToUpload: [mockFile],
     });
-    (uploadFileWithManager as Mock).mockResolvedValue(undefined);
+    (uploadFilesWithTasks as Mock).mockResolvedValue(undefined);
     (planSelectors.planLimitToShow as Mock).mockReturnValue(20);
     (planSelectors.planUsageToShow as Mock).mockReturnValue(12.1);
 
@@ -188,7 +188,7 @@ describe('uploadItemsThunk', () => {
       parentFolderId: 'parent1',
     })(dispatch, getState as () => RootState, {});
 
-    const { maxSpaceOccupiedCallback } = (uploadFileWithManager as Mock).mock.calls[0][0];
+    const { maxSpaceOccupiedCallback } = (uploadFilesWithTasks as Mock).mock.calls[0][0];
     maxSpaceOccupiedCallback();
 
     expect(dispatch).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'ui/setOpenReachedPlanLimitDialog' }));
@@ -198,7 +198,7 @@ describe('uploadItemsThunk', () => {
     (prepareFilesToUpload as Mock).mockResolvedValue({
       filesToUpload: [mockFile],
     });
-    (uploadFileWithManager as Mock).mockResolvedValue(undefined);
+    (uploadFilesWithTasks as Mock).mockResolvedValue(undefined);
     (planSelectors.planLimitToShow as Mock).mockReturnValue(20);
     (planSelectors.planUsageToShow as Mock).mockReturnValue(12.1);
 
@@ -208,7 +208,7 @@ describe('uploadItemsThunk', () => {
     })(dispatch, getState as () => RootState, {});
 
     (planSelectors.planUsageToShow as Mock).mockReturnValue(20);
-    const { maxSpaceOccupiedCallback } = (uploadFileWithManager as Mock).mock.calls[0][0];
+    const { maxSpaceOccupiedCallback } = (uploadFilesWithTasks as Mock).mock.calls[0][0];
     maxSpaceOccupiedCallback();
 
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'ui/setOpenReachedPlanLimitDialog' }));
@@ -235,7 +235,7 @@ describe('upload shared items thunk', () => {
     const showNotificationSpy = vi.spyOn(notificationsService, 'show');
     (workspacesSelectors.getSelectedWorkspace as Mock).mockReturnValue(null);
     (shareService.getSharedFolderContent as Mock).mockResolvedValue({ items: [] });
-    (uploadFileWithManager as Mock).mockRejectedValue(randomError);
+    (uploadFilesWithTasks as Mock).mockRejectedValue(randomError);
 
     await uploadSharedItemsThunk({
       files: [mockFile],
@@ -272,7 +272,7 @@ describe('Upload items in parallel thunk', () => {
     (prepareFilesToUpload as Mock).mockResolvedValue({
       filesToUpload: [mockFile],
     });
-    (uploadFileWithManager as Mock).mockRejectedValue(randomError);
+    (uploadFilesWithTasks as Mock).mockRejectedValue(randomError);
 
     await uploadItemsParallelThunk({
       files: [mockFile],
@@ -300,7 +300,7 @@ describe('Upload items in parallel thunk', () => {
     })(dispatch, getStateWithLimit as () => RootState, {});
 
     expect(prepareFilesToUpload).not.toHaveBeenCalled();
-    expect(uploadFileWithManager).not.toHaveBeenCalled();
+    expect(uploadFilesWithTasks).not.toHaveBeenCalled();
   });
 
   test('When some files exceed the size limit and some do not, then only the allowed files are uploaded', async () => {
