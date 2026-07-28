@@ -32,6 +32,16 @@ describe('Testing the encrypted storage service', () => {
 
       expect(cryptoSpy).toHaveBeenCalled();
     });
+
+    test('When hydrateEncryptedStorageCache fails, then getToken still returns undefined', async () => {
+      encryptedStorageService.clear();
+      const key = LocalStorageProtectedItem.EncryptedToken;
+      localStorage.setItem(key, 'not-valid-encrypted-token');
+
+      await expect(encryptedStorageService.hydrateEncryptedStorageCache()).rejects.toThrow();
+
+      expect(encryptedStorageService.getToken()).toBeUndefined();
+    });
   });
 
   describe('Clear token', () => {
