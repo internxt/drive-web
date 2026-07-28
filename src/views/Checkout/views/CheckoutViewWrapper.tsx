@@ -367,7 +367,6 @@ const CheckoutViewWrapper = () => {
         city: address?.city,
         companyVatId,
         captchaToken: customerToken,
-        turnstileToken: customerTurnstileToken,
         metadata,
       });
 
