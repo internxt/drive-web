@@ -12,6 +12,7 @@ import notificationsService from 'app/notifications/services/notifications.servi
 const { setupWorkspace, setSelectedWorkspace } = workspaceThunks;
 import { workspacesActions } from './workspacesStore';
 import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
+import { decryptMnemonic } from '../../../share/services/share.service';
 
 vi.mock('i18next', () => ({
   t: vi.fn((key, params) => `${key} ${params?.reason ?? ''}`),
@@ -25,7 +26,7 @@ vi.mock('../../../share/services/share.service', () => ({
   decryptMnemonic: vi.fn(),
 }));
 vi.mock('../plan', () => ({
-  planThunks: vi.fn(),
+  planThunks: { initializeThunk: vi.fn(), fetchBusinessLimitUsageThunk: vi.fn() },
 }));
 vi.mock('../session/session.thunks', () => ({
   default: {
@@ -187,6 +188,56 @@ describe('Encryption and Decryption', () => {
 
     return mockPendingWorkspace;
   }
+
+  test('sets selected workspace and related side effects after setup completes', async () => {
+    const keys = await generateNewKeys();
+    const unhandled: unknown[] = [];
+    const onUnhandled = (e: unknown) => unhandled.push(e);
+    process.on('unhandledRejection', onUnhandled);
+
+    const mockUser: Partial<UserSettings> = {
+      mnemonic: 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
+      publicKey: keys.publicKeyArmored,
+      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+    };
+
+    const mockPendingWorkspace = getMockPendingWorkspace();
+
+    const mockRootState: Partial<RootState> = {
+      user: { user: mockUser as UserSettings, isInitializing: false, isAuthenticated: false, isInitialized: false },
+    };
+    const dispatchMock = vi.fn();
+    const getStateMock = vi.fn(() => mockRootState as RootState);
+
+    const mockSelectedWorkspace = {
+      workspace: { id: mockPendingWorkspace.id },
+      workspaceUser: { key: 'decrypted-key' },
+    } as unknown as WorkspaceData;
+
+    vi.spyOn(navigationService, 'push').mockImplementation(() => {});
+    vi.spyOn(localStorageService, 'set').mockImplementation(() => {});
+    vi.spyOn(localStorageService, 'setB2BWorkspace').mockImplementation(() => {});
+    vi.spyOn(workspacesService, 'setupWorkspace').mockResolvedValue(undefined);
+    vi.spyOn(workspacesService, 'getWorkspaces').mockResolvedValue({
+      availableWorkspaces: [mockSelectedWorkspace],
+      pendingWorkspaces: [],
+    });
+    vi.mocked(decryptMnemonic).mockImplementation(async (key) => key);
+
+    await setupWorkspace({ pendingWorkspace: mockPendingWorkspace })(dispatchMock, getStateMock, undefined);
+
+    await new Promise((resolve) => setTimeout(resolve, 1100));
+    process.off('unhandledRejection', onUnhandled);
+    if (unhandled.length) {
+      console.log('unhandled rejections:', unhandled);
+    }
+
+    console.log(
+      'dispatch calls:',
+      dispatchMock.mock.calls.map((c) => c[0]),
+    );
+    expect(localStorageService.setB2BWorkspace).toHaveBeenCalledWith(mockPendingWorkspace.id, 'decrypted-key');
+  });
 
   test('should setup workspace and encrypt mnemonic', async () => {
     const keys = await generateNewKeys();
