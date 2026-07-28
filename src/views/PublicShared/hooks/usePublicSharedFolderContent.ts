@@ -8,7 +8,6 @@ import { useEffect, useRef, useState } from 'react';
 import errorService from 'services/error.service';
 
 const ITEMS_PER_PAGE = 30;
-const PREVIOUS_LEVEL_ITEMS_GRACE_MS = 450;
 
 export interface PublicFolderLevel {
   uuid: string;
@@ -62,22 +61,16 @@ const usePublicSharedFolderContent = ({
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [nextLevelToken, setNextLevelToken] = useState('');
-  const [previousLevelItems, setPreviousLevelItems] = useState<AdvancedSharedItem[]>([]);
   const levelCacheRef = useRef<Record<string, CachedFolderLevel>>({});
-  const previousLevelItemsTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   const currentFolder = folderPath.at(-1) as PublicFolderLevel;
   const hasMoreItems = hasMoreFolders || hasMoreFiles;
   const isAwaitingInitialFilesLoad = !hasMoreFolders && hasMoreFiles && files.length === 0;
-  const currentLevelItems = isAwaitingInitialFilesLoad ? [] : [...folders, ...files];
-  const isShowingPreviousLevelItems = currentLevelItems.length === 0 && hasMoreItems;
-  const shareItems = isShowingPreviousLevelItems ? previousLevelItems : currentLevelItems;
+  const shareItems = isAwaitingInitialFilesLoad ? [] : [...folders, ...files];
 
   useEffect(() => {
     fetchItems();
   }, [page, currentFolder.uuid, hasMoreFolders]);
-
-  useEffect(() => () => clearTimeout(previousLevelItemsTimeoutRef.current), []);
 
   useEffect(() => {
     if (!hasMoreItems && !hasError && !isLoading) {
@@ -149,9 +142,6 @@ const usePublicSharedFolderContent = ({
   };
 
   const resetLevelItems = () => {
-    setPreviousLevelItems(shareItems);
-    clearTimeout(previousLevelItemsTimeoutRef.current);
-    previousLevelItemsTimeoutRef.current = setTimeout(() => setPreviousLevelItems([]), PREVIOUS_LEVEL_ITEMS_GRACE_MS);
     setFolders([]);
     setFiles([]);
     setPage(0);
@@ -176,7 +166,7 @@ const usePublicSharedFolderContent = ({
   };
 
   const navigateToFolder = (shareItem: AdvancedSharedItem) => {
-    if (isLoading || isShowingPreviousLevelItems || !shareItem.isFolder) return;
+    if (isLoading || !shareItem.isFolder) return;
 
     setFolderPath((previousPath) => [
       ...previousPath,
@@ -186,7 +176,7 @@ const usePublicSharedFolderContent = ({
   };
 
   const navigateToFolderAtIndex = (index: number) => {
-    if (isLoading || isShowingPreviousLevelItems || index >= folderPath.length - 1) return;
+    if (isLoading || index >= folderPath.length - 1) return;
 
     setFolderPath((previousPath) => previousPath.slice(0, index + 1));
     applyLevelState(folderPath[index].uuid);

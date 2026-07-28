@@ -4,7 +4,7 @@
 
 import { ListSharedItemsResponse } from '@internxt/sdk/dist/drive/share/types';
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import usePublicSharedFolderContent from './usePublicSharedFolderContent';
 
 vi.mock('app/share/services/share.service', () => ({
@@ -54,10 +54,6 @@ const renderContentHook = () =>
 describe('usePublicSharedFolderContent', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
   });
 
   test('When the hook mounts, then it fetches the root folders and then the files of the public shared folder', async () => {
@@ -248,102 +244,5 @@ describe('usePublicSharedFolderContent', () => {
     expect(result.current.shareItems).toHaveLength(0);
     expect(result.current.hasMoreItems).toBe(false);
     expect(mockedGetPublicSharedFolderContent).not.toHaveBeenCalled();
-  });
-
-  test('When navigating into a not yet visited folder, then the previous level items stay visible until it resolves', async () => {
-    let resolveSubfolderFolders: (value: ListSharedItemsResponse) => void = () => undefined;
-    mockedGetPublicSharedFolderContent.mockImplementation((folderUuid, type) => {
-      if (folderUuid === ROOT_UUID) {
-        return type === 'folders'
-          ? Promise.resolve(buildResponse([createFolder('subfolder-uuid', 'Documents')], 'root-folders-token'))
-          : Promise.resolve(buildResponse([], 'root-files-token'));
-      }
-      if (type === 'folders') {
-        return new Promise((resolve) => {
-          resolveSubfolderFolders = resolve;
-        });
-      }
-      return Promise.resolve(buildResponse([], 'sub-files-token'));
-    });
-
-    const { result } = renderContentHook();
-    await waitFor(() => expect(result.current.hasMoreItems).toBe(false));
-
-    act(() => {
-      result.current.navigateToFolder(result.current.shareItems[0]);
-    });
-
-    expect(result.current.shareItems[0]?.name).toBe('Documents');
-    expect(result.current.isLoading).toBe(true);
-
-    await act(async () => {
-      resolveSubfolderFolders(buildResponse([], 'sub-folders-token'));
-    });
-
-    await waitFor(() => expect(result.current.hasMoreItems).toBe(false));
-    expect(result.current.shareItems).toHaveLength(0);
-    expect(result.current.isLoading).toBe(false);
-  });
-
-  test('When the previous level items are still displayed, then navigating on them is ignored', async () => {
-    mockedGetPublicSharedFolderContent.mockImplementation((folderUuid, type) => {
-      if (folderUuid === ROOT_UUID) {
-        return type === 'folders'
-          ? Promise.resolve(
-              buildResponse(
-                [createFolder('subfolder-uuid', 'Documents'), createFolder('other-subfolder-uuid', 'Photos')],
-                'root-folders-token',
-              ),
-            )
-          : Promise.resolve(buildResponse([], 'root-files-token'));
-      }
-      return new Promise(() => undefined);
-    });
-
-    const { result } = renderContentHook();
-    await waitFor(() => expect(result.current.hasMoreItems).toBe(false));
-
-    act(() => {
-      result.current.navigateToFolder(result.current.shareItems[0]);
-    });
-
-    expect(result.current.shareItems[1]?.name).toBe('Photos');
-
-    act(() => {
-      result.current.navigateToFolder(result.current.shareItems[1]);
-      result.current.navigateToFolderAtIndex(0);
-    });
-
-    expect(result.current.folderPath).toHaveLength(2);
-    expect(result.current.folderPath[1].name).toBe('Documents');
-  });
-
-  test('When the new level takes longer than the grace period, then the previous items are cleared while it keeps loading', async () => {
-    mockedGetPublicSharedFolderContent.mockImplementation((folderUuid, type) => {
-      if (folderUuid === ROOT_UUID) {
-        return type === 'folders'
-          ? Promise.resolve(buildResponse([createFolder('subfolder-uuid', 'Documents')], 'root-folders-token'))
-          : Promise.resolve(buildResponse([], 'root-files-token'));
-      }
-      return new Promise(() => undefined);
-    });
-
-    const { result } = renderContentHook();
-    await waitFor(() => expect(result.current.hasMoreItems).toBe(false));
-
-    vi.useFakeTimers();
-
-    act(() => {
-      result.current.navigateToFolder(result.current.shareItems[0]);
-    });
-
-    expect(result.current.shareItems[0]?.name).toBe('Documents');
-
-    act(() => {
-      vi.advanceTimersByTime(500);
-    });
-
-    expect(result.current.shareItems).toHaveLength(0);
-    expect(result.current.isLoading).toBe(true);
   });
 });
