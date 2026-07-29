@@ -10,7 +10,6 @@ import { StorageState } from '../storage.model';
 import storageSelectors from '../storage.selectors';
 import { useSelector } from 'react-redux';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
-import localStorageService from 'services/local-storage.service';
 import encryptedStorageService from 'services/encrypted-storage.service';
 
 const parsePathNames = (breadcrumbsList: FolderAncestor[] | FolderAncestorWorkspace[]) => {

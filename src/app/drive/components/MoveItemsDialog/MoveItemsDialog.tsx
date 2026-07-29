@@ -20,7 +20,6 @@ import { useSelector } from 'react-redux';
 import { DriveItemData, FolderPathDialog } from 'app/drive/types';
 import { CreateFolderDialog } from 'views/Drive/components';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-import localStorageService from 'services/local-storage.service';
 import { useMoveItems } from 'hooks/moveItems/useMoveItems';
 import encryptedStorageService from 'services/encrypted-storage.service';
 
