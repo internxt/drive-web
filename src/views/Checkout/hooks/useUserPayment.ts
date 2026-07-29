@@ -39,6 +39,7 @@ export const useUserPayment = () => {
     token,
     currency,
     captchaToken,
+    turnstileToken,
     promoCodeId,
   }: CreateSubscriptionPayload) => {
     const {
@@ -52,6 +53,7 @@ export const useUserPayment = () => {
       token,
       currency,
       captchaToken,
+      turnstileToken,
       promoCodeId,
     });
 
@@ -70,6 +72,7 @@ export const useUserPayment = () => {
     token,
     userAddress,
     captchaToken,
+    turnstileToken,
     promoCodeId,
   }: CreatePaymentIntentPayload) => {
     const paymentIntentResponse = await checkoutService.createPaymentIntent({
@@ -79,6 +82,7 @@ export const useUserPayment = () => {
       userAddress,
       token,
       captchaToken,
+      turnstileToken,
       promoCodeId: promoCodeId,
     });
 
@@ -148,6 +152,7 @@ export const useUserPayment = () => {
     couponCodeData,
     elements,
     captchaToken,
+    turnstileToken,
     translate,
     confirmPayment,
     confirmSetupIntent,
@@ -158,6 +163,7 @@ export const useUserPayment = () => {
       priceId,
       token,
       captchaToken,
+      turnstileToken,
       promoCodeId: couponCodeData?.codeId,
       currency,
     });
@@ -198,6 +204,7 @@ export const useUserPayment = () => {
     couponCodeData,
     elements,
     captchaToken,
+    turnstileToken,
     userAddress,
     confirmPayment,
     openCryptoPaymentDialog,
@@ -215,6 +222,7 @@ export const useUserPayment = () => {
       priceId,
       token,
       captchaToken,
+      turnstileToken,
       promoCodeId: couponCodeData?.codeId,
       userAddress,
       currency,
@@ -269,6 +277,7 @@ export const useUserPayment = () => {
     elements,
     gclidStored,
     captchaToken,
+    turnstileToken,
     userAddress,
     translate,
     confirmPayment,
@@ -302,6 +311,7 @@ export const useUserPayment = () => {
           token,
           couponCodeData,
           captchaToken,
+          turnstileToken,
           userAddress,
           translate,
           confirmPayment,
@@ -320,6 +330,7 @@ export const useUserPayment = () => {
           token,
           couponCodeData,
           captchaToken,
+          turnstileToken,
           userAddress,
           translate,
           confirmPayment,

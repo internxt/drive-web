@@ -85,6 +85,7 @@ export interface CreatePaymentIntentPayload {
   token: string;
   currency: string;
   captchaToken: string;
+  turnstileToken?: string;
   userAddress: string;
   promoCodeId?: string;
 }
@@ -96,6 +97,7 @@ export interface ProcessPurchasePayload {
   currency: string;
   elements: StripeElements;
   captchaToken: string;
+  turnstileToken?: string;
   userAddress: string;
   confirmPayment: Stripe['confirmPayment'];
   confirmSetupIntent: Stripe['confirmSetup'];
@@ -119,6 +121,7 @@ export interface UseUserPaymentPayload {
   openCryptoPaymentDialog?: (key: ActionDialog, config?: DialogActionConfig) => void;
   gclidStored: string | null;
   captchaToken: string;
+  turnstileToken?: string;
   translate: Translate;
   couponCodeData?: CouponCodeData;
 }

@@ -4,6 +4,7 @@ export * from './canonicalDomain.utils';
 export * from './dnd-utils';
 export * from './driveItemsUtils';
 export * from './generateCaptchaToken';
+export * from './generateTurnstileToken';
 export * from './locationUtils';
 export * from './queueUtils';
 export * from './timeUtils';
