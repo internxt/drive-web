@@ -184,8 +184,16 @@ describe('Encryption and Decryption', () => {
 
     const mockUser: Partial<UserSettings> = {
       mnemonic: 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
-      publicKey: keys.publicKeyArmored,
-      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      keys: {
+        ecc: {
+          publicKey: keys.publicKeyArmored,
+          privateKey: keys.privateKeyArmored,
+        },
+        kyber: {
+          publicKey: keys.publicKyberKeyBase64,
+          privateKey: keys.privateKyberKeyBase64,
+        },
+      },
     };
 
     const mockPendingWorkspace = getMockPendingWorkspace();
