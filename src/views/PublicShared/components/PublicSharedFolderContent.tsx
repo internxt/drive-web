@@ -11,9 +11,9 @@ import { useMemo, useState } from 'react';
 import { useDrop } from 'react-dnd';
 import { OrderField } from 'views/Shared/components/SharedItemList';
 import { sortSharedItems } from 'views/Shared/utils/sharedViewUtils';
+import useBeforeUnload from 'hooks/useBeforeUnload';
 import usePublicSharedDownload from '../hooks/usePublicSharedDownload';
 import usePublicSharedFolderContent from '../hooks/usePublicSharedFolderContent';
-import useWarnBeforeUnload from '../hooks/useWarnBeforeUnload';
 import mapSharedItemToPreviewFile from '../utils/mapSharedItemToPreviewFile';
 import PublicSharedItemList from './PublicSharedItemList';
 
@@ -68,7 +68,7 @@ const PublicSharedFolderContent = ({
       resourcesToken: nextLevelToken,
     });
 
-  useWarnBeforeUnload(isDownloading);
+  useBeforeUnload(() => isDownloading);
 
   const previewFile = useMemo(() => (previewItem ? mapSharedItemToPreviewFile(previewItem) : null), [previewItem]);
 

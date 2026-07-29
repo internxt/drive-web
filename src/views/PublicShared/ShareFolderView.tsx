@@ -17,7 +17,7 @@ import { HTTP_STATUS_CODES } from 'app/core/constants';
 
 import { useAppSelector } from 'app/store/hooks';
 import { PublicSharedFolderContent, SendBanner, ShareItemPwdView } from './components';
-import useWarnBeforeUnload from './hooks/useWarnBeforeUnload';
+import useBeforeUnload from 'hooks/useBeforeUnload';
 import './components/ShareView.scss';
 import { Button, Loader } from '@internxt/ui';
 import { stringUtils } from '@internxt/lib';
@@ -182,7 +182,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     }
   };
 
-  useWarnBeforeUnload(isDownloading && progress < 100);
+  useBeforeUnload(() => isDownloading && progress < 100);
 
   if (isDownloading) {
     downloadButton =

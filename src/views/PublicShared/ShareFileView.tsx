@@ -28,7 +28,7 @@ import { HTTP_STATUS_CODES } from 'app/core/constants';
 import { Button, Loader } from '@internxt/ui';
 import { stringUtils } from '@internxt/lib';
 import { SendBanner, ShareItemPwdView } from './components';
-import useWarnBeforeUnload from './hooks/useWarnBeforeUnload';
+import useBeforeUnload from 'hooks/useBeforeUnload';
 import { isFileSizePreviewable } from 'services';
 
 export interface ShareViewProps extends ShareViewState {
@@ -224,7 +224,7 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
     }
   };
 
-  useWarnBeforeUnload(isDownloading && progress < 100);
+  useBeforeUnload(() => isDownloading && progress < 100);
 
   if (isError) {
     const ItemIconComponent = iconService.getItemIcon(false, 'default');
