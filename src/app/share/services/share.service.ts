@@ -30,7 +30,7 @@ import localStorageService from 'services/local-storage.service';
 import workspacesService from 'services/workspace.service';
 import { hybridDecryptMessageWithPrivateKey } from '../../crypto/services/pgp.service';
 import { downloadFolderAsZip } from 'app/drive/services/folder.service';
-import { DriveFileData, DriveFolderData } from 'app/drive/types';
+import { DriveFolderData } from 'app/drive/types';
 import { DownloadManager } from '../../network/DownloadManager';
 import { downloadFile } from 'app/network/download';
 import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
@@ -749,13 +749,18 @@ export async function downloadPublicSharedItems({
     );
   };
 
-  const downloadFileStream = (file: AdvancedSharedItem) =>
-    downloadFile({
-      bucketId: (file as unknown as DriveFileData).bucket,
-      fileId: (file as unknown as DriveFileData).fileId,
+  const downloadFileStream = (file: AdvancedSharedItem) => {
+    if (!file.bucket || !file.fileId) {
+      throw new Error(`Missing network data to download shared file '${getPublicItemDownloadName(file)}'`);
+    }
+
+    return downloadFile({
+      bucketId: file.bucket,
+      fileId: file.fileId,
       creds: credentials,
       key,
     });
+  };
 
   if (items.length === 1 && !items[0].isFolder) {
     const [file] = items;

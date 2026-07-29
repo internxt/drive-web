@@ -7,7 +7,6 @@ import iconService from 'app/drive/services/icon.service';
 import transformItemService from 'app/drive/services/item-transform.service';
 import sizeService from 'app/drive/services/size.service';
 import { downloadPublicThumbnail } from 'app/drive/services/thumbnail.service';
-import { DriveItemData } from 'app/drive/types';
 import { thumbnailableExtension } from 'app/drive/types/file-types';
 import { FileKey } from 'app/network/types/helper-types';
 import { AdvancedSharedItem } from 'app/share/types';
@@ -34,9 +33,7 @@ type PublicSharedListItemProps = {
 const PublicSharedListItem = ({ item, publicShareKey, onNameClicked }: PublicSharedListItemProps) => {
   const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
   const [thumbnailUrl, setThumbnailUrl] = useState<string>();
-  const displayName =
-    transformItemService.getItemPlainNameWithExtension(item as unknown as DriveItemData) ??
-    items.getItemDisplayName(item);
+  const displayName = transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item);
 
   useEffect(() => {
     const thumbnail = (item.thumbnails as Thumbnail[] | undefined)?.[0];

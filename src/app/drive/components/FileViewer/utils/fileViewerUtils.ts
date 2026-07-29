@@ -4,7 +4,7 @@ import { FileExtensionGroup, fileExtensionPreviewableGroups } from 'app/drive/ty
 
 export const extensionsList = fileExtensionService.computeExtensionsLists(fileExtensionPreviewableGroups);
 
-export function getIsTypeAllowedAndFileExtensionGroupValues(file: DriveFileData) {
+export function getIsTypeAllowedAndFileExtensionGroupValues(file: Pick<DriveFileData, 'type'>) {
   for (const [groupKey, extensions] of Object.entries(extensionsList)) {
     const isTypeAllowed = extensions.includes(file?.type ? String(file.type).toLowerCase() : '');
 

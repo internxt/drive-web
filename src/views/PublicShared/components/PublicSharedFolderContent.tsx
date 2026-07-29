@@ -2,22 +2,17 @@ import { BreadcrumbItemData, Breadcrumbs, MenuItemType } from '@internxt/ui';
 import { DownloadSimpleIcon, EyeIcon } from '@phosphor-icons/react';
 import { OrderDirection } from 'app/core/types';
 import FileViewer from 'app/drive/components/FileViewer/FileViewer';
-import { getIsTypeAllowedAndFileExtensionGroupValues } from 'app/drive/components/FileViewer/utils/fileViewerUtils';
 import iconService from 'app/drive/services/icon.service';
 import { DriveFileData } from 'app/drive/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { downloadFile } from 'app/network/download';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { derivePublicSharingKey, downloadPublicSharedItems } from 'app/share/services/share.service';
+import { derivePublicSharingKey } from 'app/share/services/share.service';
 import { AdvancedSharedItem } from 'app/share/types';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { useMemo, useState } from 'react';
 import { useDrop } from 'react-dnd';
-import { isFileSizePreviewable } from 'services';
-import errorService from 'services/error.service';
-import { binaryStreamToBlob } from 'services/stream.service';
 import { OrderField } from 'views/Shared/components/SharedItemList';
 import { sortSharedItems } from 'views/Shared/utils/sharedViewUtils';
+import usePublicSharedDownload from '../hooks/usePublicSharedDownload';
 import usePublicSharedFolderContent from '../hooks/usePublicSharedFolderContent';
 import useWarnBeforeUnload from '../hooks/useWarnBeforeUnload';
 import PublicSharedItemList from './PublicSharedItemList';
@@ -62,12 +57,18 @@ const PublicSharedFolderContent = ({
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const [selectedItems, setSelectedItems] = useState<AdvancedSharedItem[]>([]);
   const [orderBy, setOrderBy] = useState<{ field: OrderField; direction: OrderDirection }>();
-  const [isDownloading, setIsDownloading] = useState(false);
-  const [previewItem, setPreviewItem] = useState<AdvancedSharedItem | null>(null);
-  const [previewBlob, setPreviewBlob] = useState<Blob | null>(null);
-  const [previewProgress, setPreviewProgress] = useState(0);
 
   const shareCredentials = credentials ? { user: credentials.networkUser, pass: credentials.networkPass } : undefined;
+
+  const { isDownloading, downloadItems, previewItem, previewBlob, previewProgress, openPreview, closePreview } =
+    usePublicSharedDownload({
+      credentials: shareCredentials,
+      publicShareKey,
+      code,
+      resourcesToken: nextLevelToken,
+    });
+
+  useWarnBeforeUnload(isDownloading);
 
   const reorderedShareItems = sortSharedItems(shareItems, orderBy);
 
@@ -97,67 +98,6 @@ const PublicSharedFolderContent = ({
   const onClickItem = (shareItem: AdvancedSharedItem) => {
     const unselectedItems = selectedItems.map((selectedItem) => ({ props: selectedItem, value: false }));
     handleOnSelectedItemsChanged([...unselectedItems, { props: shareItem, value: true }]);
-  };
-
-  const downloadItems = (itemsToDownload: AdvancedSharedItem[]) => {
-    if (isDownloading || itemsToDownload.length === 0 || !shareCredentials) return;
-
-    setIsDownloading(true);
-
-    downloadPublicSharedItems({
-      items: itemsToDownload,
-      credentials: shareCredentials,
-      key: publicShareKey,
-      code,
-      resourcesToken: nextLevelToken,
-    })
-      .catch((err) => {
-        errorService.reportError(err);
-        notificationsService.show({ text: errorService.castError(err).message, type: ToastType.Error });
-      })
-      .finally(() => {
-        setIsDownloading(false);
-      });
-  };
-
-  useWarnBeforeUnload(isDownloading);
-
-  const isTypeAllowed = (shareItem: AdvancedSharedItem) =>
-    !!getIsTypeAllowedAndFileExtensionGroupValues(shareItem as unknown as DriveFileData)?.isTypeAllowed;
-
-  const closePreview = () => {
-    setPreviewItem(null);
-    setPreviewBlob(null);
-    setPreviewProgress(0);
-  };
-
-  const openPreview = (shareItem: AdvancedSharedItem) => {
-    if (shareItem.isFolder || !shareCredentials) return;
-
-    setPreviewItem(shareItem);
-
-    if (!isTypeAllowed(shareItem) || !isFileSizePreviewable(Number(shareItem.size))) return;
-
-    downloadFile({
-      bucketId: (shareItem as unknown as DriveFileData).bucket,
-      fileId: (shareItem as unknown as DriveFileData).fileId,
-      creds: shareCredentials,
-      key: publicShareKey,
-      options: {
-        notifyProgress: (totalBytes, downloadedBytes) => {
-          setPreviewProgress(downloadedBytes / totalBytes);
-        },
-      },
-    })
-      .then((fileStream) => binaryStreamToBlob(fileStream, shareItem.type || ''))
-      .then((fileBlob) => {
-        setPreviewBlob(fileBlob);
-      })
-      .catch((err) => {
-        closePreview();
-        errorService.reportError(err);
-        notificationsService.show({ text: errorService.castError(err).message, type: ToastType.Error });
-      });
   };
 
   const onItemDoubleClicked = (shareItem: AdvancedSharedItem) => {
