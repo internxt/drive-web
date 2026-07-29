@@ -1,2 +1,2 @@
 export { emptySearchFilters, searchItems } from './search.service';
-export type { SearchFilters } from './search.service';
+export type { SearchFileCategory, SearchFilters } from './search.service';
