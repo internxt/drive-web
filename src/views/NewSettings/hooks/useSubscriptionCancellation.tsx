@@ -25,7 +25,7 @@ interface UseSubscriptionCancellationResult {
   reactivateUserSubscription: () => Promise<void>;
 }
 
-const REFRESH_PLAN_DELAY_MS = 1000;
+const REFRESH_PLAN_DELAY_MS = 5000;
 
 export const useSubscriptionCancellation = ({
   onModalClose,
@@ -49,6 +49,8 @@ export const useSubscriptionCancellation = ({
       await paymentService.cancelSubscription(userType);
       notificationsService.show({ text: t('notificationMessages.successCancelSubscription') });
       onModalClose?.();
+      refreshPlan();
+      onCancelSuccess?.();
     } catch (error) {
       const castedError = errorService.castError(error);
       errorService.reportError(error);
@@ -59,8 +61,6 @@ export const useSubscriptionCancellation = ({
       });
     } finally {
       setIsCancellingSubscription(false);
-      refreshPlan();
-      onCancelSuccess?.();
     }
   };
 
@@ -70,6 +70,7 @@ export const useSubscriptionCancellation = ({
       await paymentService.applyCancellationTrial();
       longNotificationsService.show({ text: t('notificationMessages.successApplyCancellationIncentive') });
       onModalClose?.();
+      refreshPlan();
     } catch (error) {
       const castedError = errorService.castError(error);
       errorService.reportError(error);
@@ -80,7 +81,6 @@ export const useSubscriptionCancellation = ({
       });
     } finally {
       setIsApplyingTrial(false);
-      refreshPlan();
     }
   };
 
@@ -114,6 +114,7 @@ export const useSubscriptionCancellation = ({
     try {
       await paymentService.reactivateUserSubscription();
       notificationsService.show({ text: t('notificationMessages.successReactivateSubscription') });
+      refreshPlan();
       onModalClose?.();
     } catch (error) {
       const castedError = errorService.castError(error);
@@ -125,7 +126,6 @@ export const useSubscriptionCancellation = ({
       });
     } finally {
       setIsReactivatingSubscription(false);
-      refreshPlan();
     }
   };
 
