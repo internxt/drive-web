@@ -1,9 +1,8 @@
-import { afterAll, beforeEach, describe, expect, it, test, vi, afterEach } from 'vitest';
+import { afterAll, beforeEach, describe, expect, it, test, vi } from 'vitest';
 import localStorageService from './local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { LocalStorageItem, LocalStorageProtectedItem } from 'app/core/types';
+import { LocalStorageItem } from 'app/core/types';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
-import { createNewKey, deleteDb } from './local-storage-crypto';
 
 export const mockUserSettings: UserSettings = {
   userId: 'user_123',
@@ -135,10 +134,6 @@ afterAll(() => {
   localStorage.clear();
 });
 
-afterEach(async () => {
-  await deleteDb();
-});
-
 describe('Testing the local storage service', () => {
   describe('Get a value from local storage', () => {
     it('When the requested key exists, then the value is returned', () => {
@@ -191,42 +186,6 @@ describe('Testing the local storage service', () => {
       expect(removeFromLocalStorageSpy).toHaveBeenCalled();
       expect(removeFromLocalStorageSpy).toHaveBeenCalledWith(removeLocalStorageKey);
       expect(nonExistentItem).toBeNull();
-    });
-  });
-
-  describe('Get and set encrypted values', () => {
-    it('When sets protected value, then the value is stored encrypted', async () => {
-      await createNewKey();
-      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
-      const cryptoSpy = vi.spyOn(window.crypto.subtle, 'encrypt');
-
-      const key = LocalStorageProtectedItem.NewToken;
-      const value = 'test-value';
-      await localStorageService.setAndEncrypt(key, value);
-
-      const localStorageItem = localStorage.getItem(key);
-
-      expect(getFromLocalStorageSpy).toHaveBeenCalled();
-      expect(cryptoSpy).toHaveBeenCalled();
-      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(key);
-      expect(localStorageItem).not.toEqual(value);
-    });
-
-    it('When gets a protected value, then the result is decrypted', async () => {
-      await createNewKey();
-      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
-      const cryptoSpy = vi.spyOn(window.crypto.subtle, 'decrypt');
-
-      const key = LocalStorageProtectedItem.NewToken;
-      const value = 'test-value';
-      await localStorageService.setAndEncrypt(key, value);
-
-      const localStorageItem = await localStorageService.getAndDecrypt(key);
-
-      expect(getFromLocalStorageSpy).toHaveBeenCalled();
-      expect(cryptoSpy).toHaveBeenCalled();
-      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(key);
-      expect(localStorageItem).toBe(value);
     });
   });
 

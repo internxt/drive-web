@@ -45,7 +45,7 @@ describe('VPN authentication management', () => {
 
     test('When there is no new token, then we should not listen to events', async () => {
       const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
-      renderHook(() => useVpnAuth(isVpnAuth, null));
+      renderHook(() => useVpnAuth(isVpnAuth, undefined));
 
       expect(addEventListenerSpy).not.toHaveBeenCalledWith('message', expect.any(Function));
 
