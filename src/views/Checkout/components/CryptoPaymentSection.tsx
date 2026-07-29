@@ -79,6 +79,7 @@ export const CryptoPaymentSection = ({
               <MenuItem key={cryptoCurrency.currencyId}>
                 {({ focus }) => (
                   <button
+                    type='button'
                     onClick={(e: MouseEvent<HTMLButtonElement>) => {
                       e.preventDefault();
                       onCryptoChanges(cryptoCurrency.currencyId.toLowerCase());
