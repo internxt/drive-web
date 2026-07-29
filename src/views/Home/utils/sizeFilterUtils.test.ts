@@ -44,10 +44,10 @@ describe('changeCustomSize', () => {
     expect(next).toEqual({ ...current, biggerThanUnit: 'MB' });
   });
 
-  test('When the change inverts the range in bytes, then it is still applied so the search returns an empty result', () => {
+  test('When the change would invert the range in bytes, then the current range is returned unchanged', () => {
     const current: CustomSizeRange = { biggerThan: 10, biggerThanUnit: 'KB', smallerThan: 5, smallerThanUnit: 'GB' };
 
-    expect(changeCustomSize(current, { smallerThanUnit: 'B' }).smallerThanUnit).toBe('B');
+    expect(changeCustomSize(current, { smallerThanUnit: 'B' })).toBe(current);
   });
 
   test('When both bounds are equal in bytes, then the change is accepted', () => {

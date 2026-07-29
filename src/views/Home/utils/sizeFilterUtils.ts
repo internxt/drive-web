@@ -61,5 +61,8 @@ export const sizePresetToRange = (
 };
 
 export const changeCustomSize = (current: CustomSizeRange, changes: Partial<CustomSizeRange>): CustomSizeRange => {
-  return { ...current, ...changes };
+  const next = { ...current, ...changes };
+  const { minSize, maxSize } = sizePresetToRange('custom', next);
+  if (minSize !== undefined && maxSize !== undefined && maxSize < minSize) return current;
+  return next;
 };
