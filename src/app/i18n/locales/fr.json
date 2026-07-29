@@ -452,7 +452,7 @@
                 "title": "Annuler le renouvellement",
                 "description": "Conservez un accès complet jusqu’au {{endDate}}. Vous continuerez les paiements mensuels jusqu’à cette date, et votre abonnement ne sera pas renouvelé.",
                 "bulletedInfo": "Paiements restants : {{remainingMonths}}",
-                "label": "Après le {{endDate}}",
+                "label": "À partir du {{endDate}}",
                 "cta": "Annuler le renouvellement",
                 "confirmationModal": {
                   "description": "Votre abonnement restera actif jusqu’au {{endDate}}. Vous continuerez à être facturé mensuellement jusqu’à cette date, et votre abonnement ne sera pas renouvelé après cette date.",
@@ -481,6 +481,16 @@
                 }
               }
             }
+          },
+          "subscriptionEndingModal": {
+            "title": "Abonnement se terminant le {{endDate}}",
+            "description": {
+              "title": "Lorsque votre abonnement se termine :",
+              "storageReturns": "Votre stockage reviendra à la limite gratuite",
+              "featuresUnavailable": "Les fonctionnalités premium ne seront plus disponibles"
+            },
+            "maybeLater": "Peut-être plus tard",
+            "renewSubscription": "Renouveler l’abonnement"
           },
           "cancellationIncentive": {
             "title": {
@@ -1268,6 +1278,8 @@
     "errorCancelSubscription": "Quelque chose s'est mal passé lors de l'annulation de votre abonnement",
     "successEarlyCancelSubscription": "Votre abonnement a été annulé",
     "errorEarlyCancelSubscription": "Quelque chose s'est mal passé lors de l'annulation de votre abonnement",
+    "successReactivateSubscription": "Votre abonnement a été réactivé",
+    "errorReactivateSubscription": "Quelque chose s'est mal passé lors de la réactivation de votre abonnement",
     "errorPurchaseBusinessPlan": "Vous avez déjà un plan d'affaires.",
     "couponIsNotValidForUserError": "Le coupon ne peut être utilisé que par de nouveaux clients.",
     "errorApplyingCoupon": "Une erreur s'est produite lors de l'application du coupon",
@@ -1847,5 +1859,8 @@
   "linkExpired": {
     "title": "Lien expiré ou supprimé",
     "description": "Le lien ou l'invitation que vous avez consulté a expiré ou a été supprimé"
+  },
+  "common": {
+    "planCancelled": "Votre abonnement se termine le {{end_date}}"
   }
 }

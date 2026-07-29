@@ -17,13 +17,15 @@ interface UseSubscriptionCancellationResult {
   isCancellingSubscription: boolean;
   isApplyingTrial: boolean;
   earlyCancellationClientSecret: string | null;
+  isReactivatingSubscription: boolean;
   cancelSubscription: (userType?: UserType) => Promise<void>;
   earlyCancelSubscription: () => Promise<void>;
   onEarlyCancellationConfirmed: () => void;
   activateTrial: () => Promise<void>;
+  reactivateUserSubscription: () => Promise<void>;
 }
 
-const REFRESH_PLAN_DELAY_MS = 1000;
+const REFRESH_PLAN_DELAY_MS = 5000;
 
 export const useSubscriptionCancellation = ({
   onModalClose,
@@ -32,6 +34,7 @@ export const useSubscriptionCancellation = ({
   const dispatch = useAppDispatch();
   const [isCancellingSubscription, setIsCancellingSubscription] = useState<boolean>(false);
   const [isApplyingTrial, setIsApplyingTrial] = useState<boolean>(false);
+  const [isReactivatingSubscription, setIsReactivatingSubscription] = useState<boolean>(false);
   const [earlyCancellationClientSecret, setEarlyCancellationClientSecret] = useState<string | null>(null);
 
   const refreshPlan = () => {
@@ -46,6 +49,8 @@ export const useSubscriptionCancellation = ({
       await paymentService.cancelSubscription(userType);
       notificationsService.show({ text: t('notificationMessages.successCancelSubscription') });
       onModalClose?.();
+      refreshPlan();
+      onCancelSuccess?.();
     } catch (error) {
       const castedError = errorService.castError(error);
       errorService.reportError(error);
@@ -56,8 +61,6 @@ export const useSubscriptionCancellation = ({
       });
     } finally {
       setIsCancellingSubscription(false);
-      refreshPlan();
-      onCancelSuccess?.();
     }
   };
 
@@ -67,6 +70,7 @@ export const useSubscriptionCancellation = ({
       await paymentService.applyCancellationTrial();
       longNotificationsService.show({ text: t('notificationMessages.successApplyCancellationIncentive') });
       onModalClose?.();
+      refreshPlan();
     } catch (error) {
       const castedError = errorService.castError(error);
       errorService.reportError(error);
@@ -77,7 +81,6 @@ export const useSubscriptionCancellation = ({
       });
     } finally {
       setIsApplyingTrial(false);
-      refreshPlan();
     }
   };
 
@@ -106,13 +109,35 @@ export const useSubscriptionCancellation = ({
     onModalClose?.();
   };
 
+  const reactivateUserSubscription = async () => {
+    setIsReactivatingSubscription(true);
+    try {
+      await paymentService.reactivateUserSubscription();
+      notificationsService.show({ text: t('notificationMessages.successReactivateSubscription') });
+      refreshPlan();
+      onModalClose?.();
+    } catch (error) {
+      const castedError = errorService.castError(error);
+      errorService.reportError(error);
+      notificationsService.show({
+        text: t('notificationMessages.errorReactivateSubscription'),
+        type: ToastType.Error,
+        requestId: castedError.requestId,
+      });
+    } finally {
+      setIsReactivatingSubscription(false);
+    }
+  };
+
   return {
     isCancellingSubscription,
     isApplyingTrial,
     earlyCancellationClientSecret,
+    isReactivatingSubscription,
     earlyCancelSubscription,
     onEarlyCancellationConfirmed,
     cancelSubscription,
     activateTrial,
+    reactivateUserSubscription,
   };
 };

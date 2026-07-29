@@ -149,6 +149,11 @@ const paymentService = {
     return { clientSecret };
   },
 
+  async reactivateUserSubscription(): Promise<void> {
+    const paymentsClient = await SdkFactory.getNewApiInstance().createPaymentsClient();
+    return paymentsClient.reactivateUserSubscription();
+  },
+
   async updateCustomerBillingInfo(payload: CustomerBillingInfo): Promise<void> {
     const paymentsClient = await SdkFactory.getNewApiInstance().createPaymentsClient();
     return paymentsClient.updateCustomerBillingInfo(payload);

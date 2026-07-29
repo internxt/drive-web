@@ -30,6 +30,7 @@ describe('paymentService', () => {
     updateCustomerBillingInfo: vi.fn(),
     applyCancellationTrial: vi.fn(),
     cancelSubscriptionEarly: vi.fn(),
+    reactivateUserSubscription: vi.fn(),
   };
 
   const mockStripe = {
@@ -222,6 +223,23 @@ describe('paymentService', () => {
 
       expect(mockPaymentsClient.cancelSubscriptionEarly).toHaveBeenCalled();
       expect(result).toEqual({ clientSecret: clientSecretId });
+    });
+  });
+
+  describe('Reactivating user subscription', () => {
+    test('When reactivating user subscription, then it delegates to the payments client and resolves correctly', async () => {
+      mockPaymentsClient.reactivateUserSubscription.mockResolvedValue(undefined);
+
+      await expect(paymentService.reactivateUserSubscription()).resolves.not.toThrow();
+
+      expect(mockPaymentsClient.reactivateUserSubscription).toHaveBeenCalled();
+    });
+
+    test('When the payments client fails to reactivate the subscription, then the error is propagated', async () => {
+      const reactivationError = new Error('Reactivation failed');
+      mockPaymentsClient.reactivateUserSubscription.mockRejectedValue(reactivationError);
+
+      await expect(paymentService.reactivateUserSubscription()).rejects.toThrow(reactivationError);
     });
   });
 });

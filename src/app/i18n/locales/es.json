@@ -452,7 +452,7 @@
                 "title": "Cancelar renovación",
                 "description": "Mantén el acceso completo hasta el {{endDate}}. Seguirás con los pagos mensuales hasta entonces, y tu plan no se renovará.",
                 "bulletedInfo": "Pagos restantes: {{remainingMonths}}",
-                "label": "Después del {{endDate}}",
+                "label": "Desde {{endDate}}",
                 "cta": "Cancelar renovación",
                 "confirmationModal": {
                   "description": "Tu plan permanecerá activo hasta el {{endDate}}. Seguirás siendo facturado mensualmente hasta entonces, y tu suscripción no se renovará después de esa fecha.",
@@ -481,6 +481,16 @@
                 }
               }
             }
+          },
+          "subscriptionEndingModal": {
+            "title": "Suscripción finaliza el {{endDate}}",
+            "description": {
+              "title": "Cuando tu plan finalice:",
+              "storageReturns": "Tu almacenamiento volverá al límite gratuito",
+              "featuresUnavailable": "Las funciones premium ya no estarán disponibles"
+            },
+            "maybeLater": "Quizás más tarde",
+            "renewSubscription": "Renovar suscripción"
           },
           "cancellationIncentive": {
             "title": {
@@ -1262,6 +1272,8 @@
     "errorApplyCancellationIncentive": "Algo ha ido mal al aplicar el incentivo de cancelación",
     "successEarlyCancelSubscription": "Tu suscripción ha sido cancelada",
     "errorEarlyCancelSubscription": "Algo ha ido mal al cancelar la suscripción",
+    "successReactivateSubscription": "Tu suscripción ha sido reactivada",
+    "errorReactivateSubscription": "Algo ha ido mal al reactivar la suscripción",
     "errorCreatingSubscription": "Algo salió mal al crear tu suscripción",
     "couponIsNotValidForUserError": "El cupón solo puede ser canjeado por nuevos clientes.",
     "errorApplyingCoupon": "Ocurrió un error al aplicar el cupón",
@@ -1847,5 +1859,8 @@
   "linkExpired": {
     "title": "Enlace caducado o eliminado",
     "description": "El enlace o la invitación que visitaste ha caducado o se ha eliminado"
+  },
+  "common": {
+    "planCancelled": "Tu suscripción finaliza el {{end_date}}"
   }
 }
