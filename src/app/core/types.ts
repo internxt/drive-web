@@ -143,7 +143,8 @@ export enum LocalStorageItem {
   UccStorageKey = 'cello_ucc',
   Theme = 'theme',
   IsThemeDark = 'theme:isDark',
-  B2Bworkspace = 'b2bWorkspace',
+  B2BworkspaceId = 'b2bWorkspaceId',
+  B2BworkspaceMnemonic = 'b2bWorkspaceMnemonic',
   WorkspaceCredentials = 'workspace_credentials',
   FolderAccessToken = 'folderAccessToken',
   FileAccessToken = 'fileAccessToken',
@@ -162,7 +163,7 @@ export enum LocalStorageItem {
 
 export enum LocalStorageProtectedItem {
   User = 'xUser',
-  NewToken = 'xNewToken',
+  EncryptedToken = 'xTokenEncrypted',
   B2Bworkspace = 'b2bWorkspace',
   WorkspaceCredentials = 'workspace_credentials',
   FolderAccessToken = 'folderAccessToken',
