@@ -1,5 +1,5 @@
 import { Menu, MenuButton, MenuItems } from '@headlessui/react';
-import { SearchFileCategory } from '@internxt/sdk/dist/drive/storage/types';
+import { SearchFileCategory } from '../services';
 import { Checkbox } from '@internxt/ui';
 import { CaretDownIcon } from '@phosphor-icons/react';
 import iconService from 'app/drive/services/icon.service';

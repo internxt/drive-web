@@ -1,4 +1,4 @@
-import { SearchFileCategory } from '@internxt/sdk/dist/drive/storage/types';
+import { SearchFileCategory } from '../services';
 
 export const TYPE_FILTER_ITEMS: { id: SearchFileCategory; labelKey: string; extension?: string }[] = [
   { id: 'folder', labelKey: 'folder' },
