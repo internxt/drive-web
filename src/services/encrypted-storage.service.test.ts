@@ -35,7 +35,7 @@ describe('Testing the encrypted storage service', () => {
 
       expect(cryptoSpy).not.toHaveBeenCalled();
       expect(setFromLocalStorageSpy).not.toHaveBeenCalled();
-      expect(localStorageItem).toEqual(null);
+      expect(localStorageItem).toBeNull();
     });
 
     test('When hydrates encrypted storage, then the result is decrypted', async () => {
