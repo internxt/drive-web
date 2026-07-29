@@ -10,7 +10,6 @@ import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
 import { userActions } from 'app/store/slices/user';
 import authService, { authenticateUser, is2FANeeded } from 'services/auth.service';
-import localStorageService from 'services/local-storage.service';
 import { twoFactorRegexPattern } from 'services/validation.service';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
@@ -27,6 +26,7 @@ import { envService, errorService, navigationService, vpnAuthService, workspaces
 import { AuthMethodTypes } from 'views/Checkout/types';
 import { useOAuthFlow } from 'views/Login/hooks/useOAuthFlow';
 import useLoginRedirections from '../hooks/useLoginRedirections';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 const showNotification = ({ text, isError }: { text: string; isError: boolean }) => {
   notificationsService.show({
@@ -149,7 +149,7 @@ export default function LogIn(): JSX.Element {
   };
 
   const handleSuccessfulAuth = (user: UserSettings, mnemonic: string): void => {
-    const newToken = localStorageService.getToken();
+    const newToken = encryptedStorageService.getToken();
 
     if (!newToken) {
       throw new Error('No authentication token available');
