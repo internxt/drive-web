@@ -52,6 +52,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
     onModalClose,
   } = useSubscriptionEnd({
     commitment: individualPlan?.commitment,
+    isCancellationScheduled: individualPlan?.cancellation.scheduled ?? false,
   });
 
   if (!isAuthenticated) {

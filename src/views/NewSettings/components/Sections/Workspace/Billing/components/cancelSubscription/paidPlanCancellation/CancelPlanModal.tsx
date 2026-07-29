@@ -34,6 +34,7 @@ const CancelPlanModal = ({
   const remainingMonths = commitment?.remainingMonths;
 
   const commitmentRenewal = cancellationDate && dateService.format(cancellationDate, 'DD MMM YYYY');
+  const shouldDisplayEarlyCancellationDialog = onOpenEndPlanNowDialog && !!remainingMonths && remainingMonths > 1;
 
   const title = translate('views.account.tabs.billing.cancelSubscriptionModal.title');
   const description = {
@@ -76,7 +77,11 @@ const CancelPlanModal = ({
           {description.line1} <br /> {description.line2}
         </p>
 
-        <div className="flex w-full flex-col gap-4 sm:flex-row">
+        <div
+          className={`flex w-full flex-col gap-4 sm:flex-row ${
+            shouldDisplayEarlyCancellationDialog ? '' : 'sm:justify-center'
+          }`}
+        >
           <PlanChangeOption
             title={translate('views.account.tabs.billing.cancelSubscriptionModal.options.cancelRenewal.title')}
             description={translate(
@@ -92,7 +97,7 @@ const CancelPlanModal = ({
             variantButtonAction="secondary"
             bulletedInfo={cancelRenewalBulletedInfo}
           />
-          {onOpenEndPlanNowDialog && !!remainingMonths && remainingMonths > 1 && (
+          {shouldDisplayEarlyCancellationDialog && (
             <PlanChangeOption
               title={translate('views.account.tabs.billing.cancelSubscriptionModal.options.endNow.title')}
               description={translate('views.account.tabs.billing.cancelSubscriptionModal.options.endNow.description')}
