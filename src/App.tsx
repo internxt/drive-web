@@ -20,7 +20,7 @@ import authService from './services/auth.service';
 import configService from 'services/config.service';
 import envService from 'services/env.service';
 import errorService from 'services/error.service';
-import localStorageService from 'services/local-storage.service';
+import encryptedStorageService from 'services/encrypted-storage.service';
 import navigationService from 'services/navigation.service';
 
 import { AppViewConfig } from './app/core/types';
@@ -72,7 +72,7 @@ const App = (props: AppProps): JSX.Element => {
   const { isDialogOpen } = useActionDialog();
   const isOpen = isDialogOpen(ActionDialog.ModifyStorage);
   const { openBackupKeysDialog } = useDownloadBackupKeys(t);
-  const newToken = localStorageService.getToken();
+  const newToken = encryptedStorageService.getToken();
   const params = new URLSearchParams(window.location.search);
   const isVpnAuth = params.get('vpnAuth') === 'true';
   const skipSignupIfLoggedIn = params.get('skipSignupIfLoggedIn') === 'true';
