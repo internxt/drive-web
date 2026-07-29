@@ -11,7 +11,7 @@ import { HeaderComponent } from '../components/Header';
 import { AuthMethodTypes, PaymentType } from '../types';
 import { CheckoutViewManager, UserInfoProps } from '../types/checkout.types';
 import { CryptoCurrency, PriceWithTax } from '@internxt/sdk/dist/payments/types';
-import { AvailableCryptoCurrenciesDropdown } from '../components/AvailableCryptoCurrenciesDropdown';
+import { CryptoPaymentSection } from '../components/CryptoPaymentSection';
 
 export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
   wallets: {
@@ -143,7 +143,7 @@ const CheckoutView = ({
                     }}
                   />
                   {availableCryptoCurrencies && (
-                    <AvailableCryptoCurrenciesDropdown
+                    <CryptoPaymentSection
                       availableCryptoCurrencies={availableCryptoCurrencies}
                       selectedCurrency={selectedCurrency}
                       isDropdownOpen={isCryptoDropdownOpen}

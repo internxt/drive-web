@@ -17,7 +17,7 @@ const CRYPTO_ADDRESS_ELEMENT_OPTIONS: StripeAddressElementOptions = {
   },
 };
 
-interface AvailableCryptoCurrenciesDropdownProps {
+interface CryptoPaymentSectionProps {
   availableCryptoCurrencies: CryptoCurrency[];
   selectedCurrency: string;
   isDropdownOpen: boolean;
@@ -27,7 +27,7 @@ interface AvailableCryptoCurrenciesDropdownProps {
   onUserNameChanges: (userName: string) => void;
 }
 
-export const AvailableCryptoCurrenciesDropdown = ({
+export const CryptoPaymentSection = ({
   availableCryptoCurrencies,
   selectedCurrency,
   isDropdownOpen,
@@ -35,7 +35,7 @@ export const AvailableCryptoCurrenciesDropdown = ({
   onCryptoChanges,
   onUserAddressChanges,
   onUserNameChanges,
-}: AvailableCryptoCurrenciesDropdownProps) => {
+}: CryptoPaymentSectionProps) => {
   const { translate } = useTranslationContext();
   const cryptoSelected = availableCryptoCurrencies.find(
     (crypto) => crypto.currencyId.toLowerCase() === selectedCurrency,
