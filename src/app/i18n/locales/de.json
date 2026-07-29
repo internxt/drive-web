@@ -328,6 +328,7 @@
   },
   "sideNav": {
     "drive": "Drive",
+    "favorites": "Favoriten",
     "backups": "Backups",
     "shared": "Geteilt",
     "recents": "Neueste",
@@ -339,6 +340,13 @@
     }
   },
   "views": {
+    "favorites": {
+      "head": "Favoriten",
+      "empty": {
+        "title": "Noch keine Favoriten",
+        "description": "Dateien und Ordner, die du als Favoriten markierst, werden hier angezeigt"
+      }
+    },
     "recents": {
       "head": "Neueste",
       "empty": {
@@ -1729,17 +1737,11 @@
               "Cleaner (Bereinigungstool)",
               "Meet (Videokonferenz)"
             ],
-            "comingSoonFeatures": [
-              "Mail",
-              "Fotos"
-            ]
+            "comingSoonFeatures": ["Mail", "Fotos"]
           },
           "default": {
             "bytesTitle": "{{bytes}}",
-            "features": [
-              "{{bytes}} verschlüsselter Cloud-Speicher",
-              "Verschlüsseltes VPN"
-            ]
+            "features": ["{{bytes}} verschlüsselter Cloud-Speicher", "Verschlüsseltes VPN"]
           }
         },
         "businessPlanFeaturesList": {

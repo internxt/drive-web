@@ -328,6 +328,7 @@
   },
   "sideNav": {
     "drive": "Drive",
+    "favorites": "Favoritos",
     "backups": "Backups",
     "shared": "Compartido",
     "recents": "Recientes",
@@ -339,6 +340,13 @@
     }
   },
   "views": {
+    "favorites": {
+      "head": "Favoritos",
+      "empty": {
+        "title": "Aún no tienes favoritos",
+        "description": "Los archivos y carpetas que marques como favoritos aparecerán aquí"
+      }
+    },
     "recents": {
       "head": "Recientes",
       "empty": {
@@ -1733,17 +1741,11 @@
               "Cleaner",
               "Meet"
             ],
-            "comingSoonFeatures": [
-              "Mail",
-              "Fotos"
-            ]
+            "comingSoonFeatures": ["Mail", "Fotos"]
           },
           "default": {
             "bytesTitle": "{{bytes}}",
-            "features": [
-              "{{bytes}} de almacenamiento en la nube cifrado",
-              "VPN cifrada"
-            ]
+            "features": ["{{bytes}} de almacenamiento en la nube cifrado", "VPN cifrada"]
           }
         },
         "businessPlanFeaturesList": {

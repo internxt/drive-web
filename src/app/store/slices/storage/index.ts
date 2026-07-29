@@ -21,6 +21,10 @@ const initialState: StorageState = {
   hasMoreDriveFiles: {},
   recents: [],
   isLoadingRecents: false,
+  favorites: [],
+  isLoadingFavorites: false,
+  hasMoreFavoriteFolders: true,
+  hasMoreFavoriteFiles: true,
   isLoadingDeleted: false,
   filters: filtersFactory(),
   order: orderFactory('name', OrderDirection.Asc),
@@ -67,6 +71,9 @@ export const storageSlice = createSlice({
     },
     setIsLoadingRecents: (state: StorageState, action: PayloadAction<boolean>) => {
       state.isLoadingRecents = action.payload;
+    },
+    setIsLoadingFavorites: (state: StorageState, action: PayloadAction<boolean>) => {
+      state.isLoadingFavorites = action.payload;
     },
     setIsLoadingDeleted: (state: StorageState, action: PayloadAction<boolean>) => {
       state.isLoadingDeleted = action.payload;
@@ -124,6 +131,21 @@ export const storageSlice = createSlice({
     },
     setRecents: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.recents = action.payload;
+    },
+    addFavorites: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
+      const favoriteItems = state.favorites.concat(action.payload);
+      state.favorites = removeDuplicates(favoriteItems);
+    },
+    setHasMoreFavoriteFolders: (state: StorageState, action: PayloadAction<boolean>) => {
+      state.hasMoreFavoriteFolders = action.payload;
+    },
+    setHasMoreFavoriteFiles: (state: StorageState, action: PayloadAction<boolean>) => {
+      state.hasMoreFavoriteFiles = action.payload;
+    },
+    resetFavoritesPagination: (state: StorageState) => {
+      state.favorites = [];
+      state.hasMoreFavoriteFolders = true;
+      state.hasMoreFavoriteFiles = true;
     },
     setItemsOnTrash: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.itemsOnTrash = action.payload;
@@ -286,6 +308,13 @@ export const storageSlice = createSlice({
         return item;
       });
 
+      state.favorites = state.favorites.map((item) => {
+        if (item.uuid === uuid && item.isFolder === isFolder) {
+          Object.assign(item, patch);
+        }
+        return item;
+      });
+
       state.selectedItems = state.selectedItems.map((item) => {
         if (item.uuid === uuid && item.isFolder === isFolder) {
           Object.assign(item, patch);
@@ -309,6 +338,11 @@ export const storageSlice = createSlice({
       }
 
       state.recents = state.recents.map((item) => {
+        item.currentThumbnail = null;
+        return item;
+      });
+
+      state.favorites = state.favorites.map((item) => {
         item.currentThumbnail = null;
         return item;
       });
@@ -352,14 +386,12 @@ export const storageSlice = createSlice({
     ) {
       const folderIds = action.payload.folderIds || Object.keys(state.levels).map((folderId) => folderId);
       const itemsToDelete = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
+      const isItemToDelete = (item: DriveItemData) =>
+        itemsToDelete.some((i) => i.id === item.id && !!i.isFolder === !!item.isFolder);
 
       folderIds.forEach((folderId) => {
         const folderItems = state.levels[folderId] ?? [];
-        let items = [...folderItems];
-
-        items = items.filter(
-          (item: DriveItemData) => !itemsToDelete.find((i) => i.id === item.id && !!i.isFolder === !!item.isFolder),
-        );
+        const items = [...folderItems].filter((item: DriveItemData) => !isItemToDelete(item));
 
         state.levels[folderId] = items;
 
@@ -367,9 +399,8 @@ export const storageSlice = createSlice({
       });
 
       if (action.payload.updateRecents) {
-        state.recents = state.recents.filter(
-          (item: DriveItemData) => !itemsToDelete.find((i) => i.id === item.id && !!i.isFolder === !!item.isFolder),
-        );
+        state.recents = state.recents.filter((item: DriveItemData) => !isItemToDelete(item));
+        state.favorites = state.favorites.filter((item: DriveItemData) => !isItemToDelete(item));
       }
     },
     resetState(state: StorageState) {
@@ -390,9 +421,14 @@ export const storageSlice = createSlice({
 export const {
   setIsLoadingFolder,
   setIsLoadingRecents,
+  setIsLoadingFavorites,
   setIsLoadingDeleted,
   setItems,
   setRecents,
+  addFavorites,
+  setHasMoreFavoriteFolders,
+  setHasMoreFavoriteFiles,
+  resetFavoritesPagination,
   setFilters,
   resetFilters,
   selectItems,

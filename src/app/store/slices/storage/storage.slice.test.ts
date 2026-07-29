@@ -160,4 +160,104 @@ describe('storage slice', () => {
       expect(databaseService.put).toHaveBeenCalledWith(DatabaseCollection.Levels, folderId, [existingItem]);
     });
   });
+
+  describe('Favorites', () => {
+    test('When the favorites loading flag is set, then the state reflects the new value', () => {
+      const nextState = storageReducer(buildInitialState(), storageActions.setIsLoadingFavorites(true));
+
+      expect(nextState.isLoadingFavorites).toBe(true);
+    });
+
+    test('When favorites are added to existing ones, then the new items appear after the existing ones', () => {
+      const existing = buildDriveItemData({ uuid: 'fav-uuid-1', id: 1, name: 'existing.pdf' });
+      const incoming = buildDriveItemData({ uuid: 'fav-uuid-2', id: 2, name: 'incoming.pdf' });
+
+      const stateWithExisting = storageReducer(buildInitialState(), storageActions.addFavorites([existing]));
+
+      const nextState = storageReducer(stateWithExisting, storageActions.addFavorites([incoming]));
+
+      expect(nextState.favorites).toEqual([existing, incoming]);
+    });
+
+    test('When a favorite with a duplicate uuid is added, then only the first occurrence is kept', () => {
+      const original = buildDriveItemData({ uuid: 'fav-shared-uuid', id: 1, name: 'original.pdf' });
+      const duplicate = buildDriveItemData({ uuid: 'fav-shared-uuid', id: 99, name: 'duplicate.pdf' });
+
+      const stateWithOriginal = storageReducer(buildInitialState(), storageActions.addFavorites([original]));
+
+      const nextState = storageReducer(stateWithOriginal, storageActions.addFavorites([duplicate]));
+
+      expect(nextState.favorites).toHaveLength(1);
+      expect(nextState.favorites[0]).toEqual(original);
+    });
+
+    test('When the has-more flags for favorite folders and files are set, then the state reflects the new values', () => {
+      const stateWithoutMoreFolders = storageReducer(
+        buildInitialState(),
+        storageActions.setHasMoreFavoriteFolders(false),
+      );
+      const nextState = storageReducer(stateWithoutMoreFolders, storageActions.setHasMoreFavoriteFiles(false));
+
+      expect(nextState.hasMoreFavoriteFolders).toBe(false);
+      expect(nextState.hasMoreFavoriteFiles).toBe(false);
+    });
+
+    test('When the favorites pagination is reset, then the favorites are cleared and the has-more flags are restored', () => {
+      const favorite = buildDriveItemData({ uuid: 'fav-uuid-1', id: 1 });
+      let state = storageReducer(buildInitialState(), storageActions.addFavorites([favorite]));
+      state = storageReducer(state, storageActions.setHasMoreFavoriteFolders(false));
+      state = storageReducer(state, storageActions.setHasMoreFavoriteFiles(false));
+
+      const nextState = storageReducer(state, storageActions.resetFavoritesPagination());
+
+      expect(nextState.favorites).toEqual([]);
+      expect(nextState.hasMoreFavoriteFolders).toBe(true);
+      expect(nextState.hasMoreFavoriteFiles).toBe(true);
+    });
+
+    test('When an item is patched, then the matching favorite is updated and the rest are not affected', () => {
+      const matching = buildDriveItemData({ uuid: 'fav-uuid-1', id: 1, name: 'old-name.pdf', isFolder: false });
+      const other = buildDriveItemData({ uuid: 'fav-uuid-2', id: 2, name: 'other.pdf', isFolder: false });
+      const state = storageReducer(buildInitialState(), storageActions.addFavorites([matching, other]));
+
+      const nextState = storageReducer(
+        state,
+        storageActions.patchItem({
+          uuid: matching.uuid,
+          folderId: 'parent-folder-uuid',
+          isFolder: false,
+          patch: { name: 'new-name.pdf' },
+        }),
+      );
+
+      expect(nextState.favorites[0].name).toBe('new-name.pdf');
+      expect(nextState.favorites[1].name).toBe('other.pdf');
+    });
+
+    test('When the current thumbnails are cleared, then the favorites thumbnails are cleared too', () => {
+      const favorite = buildDriveItemData({
+        uuid: 'fav-uuid-1',
+        id: 1,
+        currentThumbnail: { urlObject: 'blob:thumbnail' } as unknown as DriveItemData['currentThumbnail'],
+      });
+      const state = storageReducer(buildInitialState(), storageActions.addFavorites([favorite]));
+
+      const nextState = storageReducer(
+        state,
+        storageActions.clearCurrentThumbnailItems({ folderId: 'parent-folder-uuid' }),
+      );
+
+      expect(nextState.favorites[0].currentThumbnail).toBeNull();
+    });
+
+    test('When items are popped updating recents, then the matching favorites are removed and the rest are kept', () => {
+      const toDelete = buildDriveItemData({ uuid: 'fav-uuid-1', id: 1, isFolder: false });
+      const toKeep = buildDriveItemData({ uuid: 'fav-uuid-2', id: 2, isFolder: false });
+      const state = storageReducer(buildInitialState(), storageActions.addFavorites([toDelete, toKeep]));
+
+      const nextState = storageReducer(state, storageActions.popItems({ updateRecents: true, items: [toDelete] }));
+
+      expect(nextState.favorites).toEqual([toKeep]);
+    });
+  });
 });

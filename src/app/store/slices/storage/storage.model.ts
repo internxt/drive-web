@@ -19,6 +19,10 @@ export interface StorageState {
   hasMoreDriveFiles: Record<number, boolean>;
   recents: DriveItemData[];
   isLoadingRecents: boolean;
+  favorites: DriveItemData[];
+  isLoadingFavorites: boolean;
+  hasMoreFavoriteFolders: boolean;
+  hasMoreFavoriteFiles: boolean;
   isLoadingDeleted: boolean;
   filters: StorageFilters;
   order: OrderSettings;

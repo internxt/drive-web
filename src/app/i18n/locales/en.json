@@ -349,6 +349,7 @@
   },
   "sideNav": {
     "drive": "Drive",
+    "favorites": "Favorites",
     "backups": "Backups",
     "shared": "Shared",
     "recents": "Recents",
@@ -360,6 +361,13 @@
     }
   },
   "views": {
+    "favorites": {
+      "head": "Favorites",
+      "empty": {
+        "title": "No favorites yet",
+        "description": "Files and folders you mark as favorites will appear here"
+      }
+    },
     "recents": {
       "head": "Recents",
       "empty": {
@@ -1753,17 +1761,11 @@
               "Cleaner",
               "Meet"
             ],
-            "comingSoonFeatures": [
-              "Mail",
-              "Photos"
-            ]
+            "comingSoonFeatures": ["Mail", "Photos"]
           },
           "default": {
             "bytesTitle": "{{bytes}}",
-            "features": [
-              "{{bytes}} of encrypted storage",
-              "Encrypted VPN"
-            ]
+            "features": ["{{bytes}} of encrypted storage", "Encrypted VPN"]
           }
         },
         "businessPlanFeaturesList": {
