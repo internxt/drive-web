@@ -124,13 +124,11 @@ const CancelSubscriptionDialog = ({
       <CancelPlanModal
         isCancelPlanModalDialogOpen={isModalOpen('cancelPlan')}
         currentPlanName={currentPlanName}
-        userType={userType}
         onClose={onClose}
         onOpenCancelRenewalDialog={onOpenCancelRenewalDialog}
         onOpenEndPlanNowDialog={earlyCancelSubscription ? onOpenEndPlanNowDialog : undefined}
         isCancellingSubscription={isCancellingSubscription}
         currentPlanInfo={currentPlanInfo}
-        currentUsage={currentUsage}
         individualPlan={individualPlan}
       />
       <CancelRenewalModal

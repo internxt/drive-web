@@ -452,7 +452,7 @@
                 "title": "Annuler le renouvellement",
                 "description": "Conservez un accès complet jusqu’au {{endDate}}. Vous continuerez les paiements mensuels jusqu’à cette date, et votre abonnement ne sera pas renouvelé.",
                 "bulletedInfo": "Paiements restants : {{remainingMonths}}",
-                "label": "Après le {{endDate}}",
+                "label": "À partir du {{endDate}}",
                 "cta": "Annuler le renouvellement",
                 "confirmationModal": {
                   "description": "Votre abonnement restera actif jusqu’au {{endDate}}. Vous continuerez à être facturé mensuellement jusqu’à cette date, et votre abonnement ne sera pas renouvelé après cette date.",

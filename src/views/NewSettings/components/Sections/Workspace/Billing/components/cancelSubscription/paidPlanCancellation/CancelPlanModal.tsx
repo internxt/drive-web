@@ -1,14 +1,13 @@
-import { StoragePlan, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
+import { StoragePlan } from '@internxt/sdk/dist/drive/payments/types/types';
 import { Button, Modal } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { dateService } from 'services';
 import PlanChangeOption from './PlanChangeOption';
+import { XIcon } from '@phosphor-icons/react';
 
 interface CancelPlanModalProps {
   currentPlanName: string;
   currentPlanInfo: string;
-  currentUsage: number;
-  userType: UserType;
   isCancellingSubscription: boolean;
   individualPlan: StoragePlan | null;
   isCancelPlanModalDialogOpen: boolean;
@@ -20,9 +19,7 @@ interface CancelPlanModalProps {
 const CancelPlanModal = ({
   currentPlanName,
   currentPlanInfo,
-  currentUsage,
   isCancellingSubscription,
-  userType,
   individualPlan,
   isCancelPlanModalDialogOpen,
   onOpenCancelRenewalDialog,
@@ -54,7 +51,7 @@ const CancelPlanModal = ({
   ];
   const endNowBulletedInfo = [
     translate('views.account.tabs.billing.cancelSubscriptionModal.options.endNow.bulletedInfo', {
-      amountToPay: earlyCancellationFee,
+      amountToPay: earlyCancellationFee?.toFixed(2),
     }),
   ];
 
@@ -69,7 +66,12 @@ const CancelPlanModal = ({
   return (
     <Modal isOpen={isCancelPlanModalDialogOpen} onClose={onClose} maxWidth="w-max">
       <div className="flex flex-col w-full gap-5">
-        <h4 className="text-2xl font-medium">{title}</h4>
+        <div className="flex flex-row w-full justify-between">
+          <h4 className="text-2xl font-medium">{title}</h4>
+          <button onClick={onClose}>
+            <XIcon size={24} />
+          </button>
+        </div>
         <p className="text-gray-100">
           {description.line1} <br /> {description.line2}
         </p>

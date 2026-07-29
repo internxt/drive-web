@@ -452,7 +452,7 @@
                 "title": "Cancelar renovación",
                 "description": "Mantén el acceso completo hasta el {{endDate}}. Seguirás con los pagos mensuales hasta entonces, y tu plan no se renovará.",
                 "bulletedInfo": "Pagos restantes: {{remainingMonths}}",
-                "label": "Después del {{endDate}}",
+                "label": "Desde {{endDate}}",
                 "cta": "Cancelar renovación",
                 "confirmationModal": {
                   "description": "Tu plan permanecerá activo hasta el {{endDate}}. Seguirás siendo facturado mensualmente hasta entonces, y tu suscripción no se renovará después de esa fecha.",

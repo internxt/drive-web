@@ -473,7 +473,7 @@
                 "title": "Annulla rinnovo",
                 "description": "Mantieni l’accesso completo fino al {{endDate}}. Continuerai i pagamenti mensili fino ad allora e il tuo piano non si rinnoverà.",
                 "bulletedInfo": "Pagamenti rimanenti: {{remainingMonths}}",
-                "label": "Dopo il {{endDate}}",
+                "label": "Dal {{endDate}}",
                 "cta": "Annulla rinnovo",
                 "confirmationModal": {
                   "description": "Il tuo piano rimarrà attivo fino al {{endDate}}. Continuerai a essere addebitato mensilmente fino ad allora e il tuo abbonamento non si rinnoverà dopo quella data.",

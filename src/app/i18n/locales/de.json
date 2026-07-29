@@ -452,7 +452,7 @@
                 "title": "Verlängerung kündigen",
                 "description": "Behalten Sie vollen Zugriff bis zum {{endDate}}. Sie zahlen bis dahin weiterhin monatlich, und Ihr Plan wird nicht verlängert.",
                 "bulletedInfo": "Verbleibende Zahlungen: {{remainingMonths}}",
-                "label": "Nach dem {{endDate}}",
+                "label": "Ab {{endDate}}",
                 "cta": "Verlängerung kündigen",
                 "confirmationModal": {
                   "description": "Ihr Plan bleibt bis zum {{endDate}} aktiv. Bis dahin werden Sie weiterhin monatlich belastet, und Ihr Abonnement wird nach diesem Datum nicht verlängert.",
