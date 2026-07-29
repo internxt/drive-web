@@ -22,6 +22,7 @@ import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selector
 import dateService from 'services/date.service';
 import { getLocation } from 'utils/locationUtils';
 import { Translate } from 'app/i18n/types';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
   return (
@@ -192,7 +193,7 @@ const ItemDetailsDialog = ({
     const itemType: ItemType = item.isFolder ? 'folder' : 'file';
     const itemUuid = item.uuid;
     const itemFolderUuid = item.isFolder ? itemUuid : item.folderUuid;
-    const token = localStorageService.getStorageToken(item.isFolder) || undefined;
+    const token = await encryptedStorageService.getStorageToken(item.isFolder);
 
     const [location, folderStats] = await Promise.all([
       getItemLocation(item, itemType, itemUuid, itemFolderUuid, token),
