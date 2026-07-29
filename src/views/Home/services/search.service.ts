@@ -1,5 +1,8 @@
-import { GlobalSearchOptions, SearchFileCategory, SearchResult } from '@internxt/sdk/dist/drive/storage/types';
+import { GlobalSearchOptions, SearchResult } from '@internxt/sdk/dist/drive/storage/types';
 import { SdkFactory } from 'app/core/factory/sdk';
+import fileExtensionGroups, { FileExtensionGroup } from 'app/drive/types/file-types';
+
+export type SearchFileCategory = 'folder' | Lowercase<Exclude<keyof typeof FileExtensionGroup, 'Default'>>;
 
 export interface SearchFilters {
   type: SearchFileCategory[];
@@ -11,9 +14,32 @@ export interface SearchFilters {
 
 export const emptySearchFilters: SearchFilters = { type: [] };
 
+const CATEGORY_EXTENSION_GROUPS: Record<Exclude<SearchFileCategory, 'folder'>, FileExtensionGroup> = {
+  audio: FileExtensionGroup.Audio,
+  code: FileExtensionGroup.Code,
+  csv: FileExtensionGroup.Csv,
+  figma: FileExtensionGroup.Figma,
+  image: FileExtensionGroup.Image,
+  pdf: FileExtensionGroup.Pdf,
+  ppt: FileExtensionGroup.Ppt,
+  txt: FileExtensionGroup.Txt,
+  video: FileExtensionGroup.Video,
+  word: FileExtensionGroup.Word,
+  xls: FileExtensionGroup.Xls,
+  xml: FileExtensionGroup.Xml,
+  zip: FileExtensionGroup.Zip,
+};
+
+const resolveTypeFilters = (categories: SearchFileCategory[]): string[] => {
+  const types = categories.flatMap((category) =>
+    category === 'folder' ? ['folder'] : Object.values(fileExtensionGroups[CATEGORY_EXTENSION_GROUPS[category]]).flat(),
+  );
+  return [...new Set(types)];
+};
+
 const buildSearchOptions = (filters: SearchFilters): GlobalSearchOptions => {
   const options: GlobalSearchOptions = {};
-  if (filters.type.length > 0) options.type = filters.type;
+  if (filters.type.length > 0) options.type = resolveTypeFilters(filters.type);
   if (filters.minSize !== undefined) options.minSize = filters.minSize;
   if (filters.maxSize !== undefined) options.maxSize = filters.maxSize;
   if (filters.modifiedAfter !== undefined) options.modifiedAfter = filters.modifiedAfter;
