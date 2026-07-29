@@ -18,6 +18,7 @@ import { uiActions } from '../ui';
 import { auth, TokenStatus } from '@internxt/lib';
 import { t } from 'i18next';
 import errorService from 'services/error.service';
+import referralService from 'services/referral.service';
 import { UserUnauthorizedError } from 'services/errors/auth.errors';
 import { refreshAvatar } from 'utils/avatarUtils';
 import { ProductService } from 'views/Checkout/services';
@@ -64,7 +65,7 @@ export const initializeUserThunk = createAsyncThunk<
     await dispatch(referralsThunks.initializeThunk());
     dispatch(setIsUserInitialized(true));
   } else if (payload.redirectToLogin) {
-    navigationService.push(AppView.Login);
+    navigationService.push(AppView.Login, referralService.getReferralOpenQueryParams());
   }
 });
 
