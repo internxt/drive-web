@@ -30,7 +30,6 @@ import localStorageService from 'services/local-storage.service';
 import workspacesService from 'services/workspace.service';
 import { hybridDecryptMessageWithPrivateKey } from '../../crypto/services/pgp.service';
 import { downloadFolderAsZip } from 'app/drive/services/folder.service';
-import { DriveFolderData } from 'app/drive/types';
 import { DownloadManager } from '../../network/DownloadManager';
 import { downloadFile } from 'app/network/download';
 import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
@@ -772,7 +771,7 @@ export async function downloadPublicSharedItems({
 
   const downloadFolderToZip = (folder: AdvancedSharedItem, destination?: FlatFolderZip) =>
     downloadFolderAsZip({
-      folder: folder as unknown as DriveFolderData,
+      folder,
       isSharedFolder: true,
       foldersIterator: createFoldersIterator,
       filesIterator: createFilesIterator,
