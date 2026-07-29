@@ -379,7 +379,10 @@ const resetAccountWithToken = async (token: string | undefined, newPassword: str
 };
 
 export const changePassword = async (newPassword: string, currentPassword: string): Promise<void> => {
-  const user = localStorageService.getUser() as UserSettings;
+  const user = localStorageService.getUser();
+  if (!user) {
+    throw new Error('No user in local storage');
+  }
 
   const { encryptedCurrentPassword } = await getPasswordDetails(currentPassword);
 
@@ -392,12 +395,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   const encryptedMnemonic = encryptTextWithKey(user.mnemonic, newPassword);
   const privateKey = Buffer.from(user.keys.ecc.privateKey, 'base64').toString();
   const privateKeyEncrypted = aes.encrypt(privateKey, newPassword);
-
-  let privateKyberKeyEncrypted = '';
-
-  if (user.keys?.kyber?.privateKey) {
-    privateKyberKeyEncrypted = aes.encrypt(user.keys.kyber.privateKey, newPassword);
-  }
+  const privateKyberKeyEncrypted = aes.encrypt(user.keys.kyber.privateKey, newPassword);
 
   const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
 
@@ -560,7 +558,7 @@ export const signUp = async (params: SignUpParams) => {
 
   const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(xUser, password);
 
-  const user = {
+  const user: UserSettings = {
     ...xUser,
     keys: {
       ecc: {
@@ -572,7 +570,7 @@ export const signUp = async (params: SignUpParams) => {
         privateKey: privateKyberKey,
       },
     },
-  } as UserSettings;
+  };
 
   dispatch(userActions.setUser(user));
   await dispatch(userThunks.initializeUserThunk());
