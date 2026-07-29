@@ -17,6 +17,7 @@ import { BackupData } from 'utils/backupKeyUtils';
 import { beforeAll, beforeEach, describe, expect, it, test, vi } from 'vitest';
 import * as authService from './auth.service';
 import { PasswordMismatchError } from './errors/auth.errors';
+import encryptedStorageService from './encrypted-storage.service';
 
 const mockSecret = '123456789QWERTY';
 const mockApi = 'https://mock';
@@ -101,9 +102,14 @@ beforeAll(() => {
       get: vi.fn(),
       clear: vi.fn(),
       getUser: vi.fn(),
-      getToken: vi.fn(),
       set: vi.fn(),
+    },
+  }));
+  vi.mock('services/encrypted-storage.service', () => ({
+    default: {
+      getToken: vi.fn(),
       setToken: vi.fn(),
+      clear: vi.fn(),
     },
   }));
   vi.mock('./vpnAuth.service', () => ({
@@ -285,7 +291,7 @@ describe('signUp', () => {
 
     const result = await authService.signUp(params);
 
-    expect(localStorageService.setToken).toHaveBeenCalledWith(mockNewToken);
+    expect(encryptedStorageService.setToken).toHaveBeenCalledWith(mockNewToken);
 
     const plainPrivateKeyInBase64 = Buffer.from(
       keysService.decryptPrivateKey(mockUser.keys.ecc.privateKey, mockPassword),
@@ -473,7 +479,7 @@ describe('Change password', () => {
         sendUserDeactivationEmail: mockSendDeactivationEmail,
       }),
     } as any);
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue('token');
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue('token');
 
     await authService.cancelAccount();
     expect(mockSendDeactivationEmail).toHaveBeenCalledWith('token');
@@ -641,7 +647,7 @@ describe('areCredentialsCorrect', () => {
     const mockSalt = 'mockSalt';
     const mockToken = 'mockToken';
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue(mockToken);
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(mockToken);
 
     const encryptedSalt = encryptText(mockSalt);
     const mockAreCredentialsCorrect = vi.fn().mockResolvedValue(true);
@@ -664,7 +670,7 @@ describe('areCredentialsCorrect', () => {
     const mockSalt = 'mockSalt';
     const mockToken = 'mockToken';
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue(mockToken);
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(mockToken);
 
     const encryptedSalt = encryptText(mockSalt);
     const mockAreCredentialsCorrect = vi.fn().mockResolvedValue(false);
@@ -686,7 +692,7 @@ describe('areCredentialsCorrect', () => {
     const mockPassword = 'password123';
     const mockSalt = 'mockSalt';
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue(null);
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(undefined);
 
     const encryptedSalt = encryptText(mockSalt);
     const mockAreCredentialsCorrect = vi.fn().mockResolvedValue(true);
@@ -709,7 +715,7 @@ describe('areCredentialsCorrect', () => {
     const mockSalt = 'mockSalt';
     const mockToken = 'mockToken';
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue(mockToken);
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(mockToken);
 
     const encryptedSalt = encryptText(mockSalt);
     const mockError = new Error('API error');
@@ -732,7 +738,7 @@ describe('areCredentialsCorrect', () => {
     const mockEmail = 'test@example.com';
     const mockCreateAuthClient = vi.fn();
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue(mockToken);
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(mockToken);
 
     vi.spyOn(localStorageService, 'getUser').mockReturnValue({
       email: mockEmail,
@@ -842,17 +848,18 @@ describe('logOut', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue('test-token');
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue('test-token');
     vi.spyOn(localStorageService, 'clear').mockImplementation(() => {});
 
     await authService.logOut();
 
     expect(mockAuthClient.logout).toHaveBeenCalledWith('test-token');
     expect(localStorageService.clear).toHaveBeenCalled();
+    expect(encryptedStorageService.clear).toHaveBeenCalled();
   });
 
   it('should sign out user even when session has expired', async () => {
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue(null);
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(undefined);
     vi.spyOn(localStorageService, 'clear').mockImplementation(() => {});
 
     await authService.logOut();
@@ -869,7 +876,7 @@ describe('logOut', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue('test-token');
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue('test-token');
     vi.spyOn(localStorageService, 'clear').mockImplementation(() => {});
 
     const loginParams = { redirect: 'dashboard' };
@@ -889,7 +896,7 @@ describe('cancelAccount', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue('test-token');
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue('test-token');
 
     await authService.cancelAccount();
 
@@ -905,7 +912,7 @@ describe('cancelAccount', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue(null);
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(undefined);
 
     await authService.cancelAccount();
 
@@ -1039,7 +1046,7 @@ describe('generateNew2FA', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue('test-token');
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue('test-token');
 
     const result = await authService.generateNew2FA();
 
@@ -1056,7 +1063,7 @@ describe('generateNew2FA', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue(null);
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(undefined);
 
     const result = await authService.generateNew2FA();
 
@@ -1075,7 +1082,7 @@ describe('deactivate2FA', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue('test-token');
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue('test-token');
 
     const encryptedSalt = encryptText('test-salt');
     await authService.deactivate2FA(encryptedSalt, 'test-password', '123456');
@@ -1092,7 +1099,7 @@ describe('deactivate2FA', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue(null);
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(undefined);
 
     const encryptedSalt = encryptText('test-salt');
     await authService.deactivate2FA(encryptedSalt, 'test-password', '123456');
@@ -1199,7 +1206,7 @@ describe('authService default export', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue('auth-token');
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue('auth-token');
 
     await authService.default.store2FA('secret-code', '123456');
     expect(mockAuthClient.storeTwoFactorAuthKey).toHaveBeenCalledWith('secret-code', '123456', 'auth-token');
@@ -1219,7 +1226,7 @@ describe('authService default export', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue(null);
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(undefined);
 
     await authService.default.store2FA('secret-code', '123456');
     expect(mockAuthClient.storeTwoFactorAuthKey).toHaveBeenCalledWith('secret-code', '123456', undefined);

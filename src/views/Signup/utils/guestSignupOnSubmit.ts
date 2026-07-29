@@ -7,6 +7,7 @@ import { parseAndDecryptUserKeys } from 'app/crypto/services/keys.service';
 import { userActions, userThunks } from 'app/store/slices/user';
 import { planThunks } from 'app/store/slices/plan';
 import { AppDispatch } from 'app/store';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 interface GuestSignupOnSubmitParams {
   formData: IFormValues;
@@ -45,7 +46,7 @@ export const guestSignupOnSubmit = async ({
 
     localStorageService.clear();
 
-    localStorageService.setToken(xNewToken);
+    await encryptedStorageService.setToken(xNewToken);
 
     const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(xUser, password);
 
