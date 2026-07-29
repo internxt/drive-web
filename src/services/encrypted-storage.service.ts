@@ -11,12 +11,13 @@ const getAndDecrypt = async (key: LocalStorageProtectedItem): Promise<string | n
 };
 
 const setAndEncrypt = async (key: LocalStorageProtectedItem, value: string): Promise<void> => {
+  if (!value) return;
   const encryptedValue = await encryptEntry(value);
   localStorage.setItem(key, encryptedValue);
 };
 
 const setToken = async (token: string): Promise<void> => {
-  tokenCache = token;
+  tokenCache = token || null;
   return setAndEncrypt(LocalStorageProtectedItem.EncryptedToken, token);
 };
 
@@ -37,12 +38,12 @@ const getStorageToken = async (isFolder: boolean): Promise<string | undefined> =
 };
 
 const setFolderToken = async (token: string): Promise<void> => {
-  folderTokenCache = token;
+  folderTokenCache = token || null;
   return setAndEncrypt(LocalStorageProtectedItem.EncryptedFolderToken, token);
 };
 
 const setFileToken = async (token: string): Promise<void> => {
-  fileTokenCache = token;
+  fileTokenCache = token || null;
   return setAndEncrypt(LocalStorageProtectedItem.EncryptedFileToken, token);
 };
 

@@ -25,6 +25,19 @@ describe('Testing the encrypted storage service', () => {
       expect(localStorageItem).not.toEqual(value);
     });
 
+    test('When sets protected value to empty, then nothing is stored', async () => {
+      const key = LocalStorageProtectedItem.EncryptedToken;
+      const setFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'setItem');
+      const cryptoSpy = vi.spyOn(window.crypto.subtle, 'encrypt');
+
+      await encryptedStorageService.setToken('');
+      const localStorageItem = localStorage.getItem(key);
+
+      expect(cryptoSpy).not.toHaveBeenCalled();
+      expect(setFromLocalStorageSpy).not.toHaveBeenCalled();
+      expect(localStorageItem).toEqual(null);
+    });
+
     test('When hydrates encrypted storage, then the result is decrypted', async () => {
       await encryptedStorageService.setToken(value);
       const cryptoSpy = vi.spyOn(window.crypto.subtle, 'decrypt');
