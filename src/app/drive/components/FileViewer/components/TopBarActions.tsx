@@ -36,11 +36,21 @@ const TopBarActions: FC<TopBarActionsProps> = ({
       className={`${background} z-10 mt-3 flex h-11 shrink-0 flex-row items-center justify-end space-x-2 rounded-lg`}
     >
       <div className="flex flex-row items-center justify-center space-x-2">
-        <button onClick={onDownload} title={translate('actions.download')} className={ICON_BUTTON_CLASSNAME}>
+        <button
+          type="button"
+          onClick={onDownload}
+          title={translate('actions.download')}
+          className={ICON_BUTTON_CLASSNAME}
+        >
           <UilImport size={20} />
         </button>
         {isShareView && (
-          <button onClick={handleReportShare} title={translate('actions.report')} className={ICON_BUTTON_CLASSNAME}>
+          <button
+            type="button"
+            onClick={handleReportShare}
+            title={translate('actions.report')}
+            className={ICON_BUTTON_CLASSNAME}
+          >
             <WarningCircleIcon size={20} />
           </button>
         )}
