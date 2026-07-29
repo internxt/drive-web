@@ -3,7 +3,6 @@ import { DownloadSimpleIcon, EyeIcon } from '@phosphor-icons/react';
 import { OrderDirection } from 'app/core/types';
 import FileViewer from 'app/drive/components/FileViewer/FileViewer';
 import iconService from 'app/drive/services/icon.service';
-import { DriveFileData } from 'app/drive/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { derivePublicSharingKey } from 'app/share/services/share.service';
 import { AdvancedSharedItem } from 'app/share/types';
@@ -15,6 +14,7 @@ import { sortSharedItems } from 'views/Shared/utils/sharedViewUtils';
 import usePublicSharedDownload from '../hooks/usePublicSharedDownload';
 import usePublicSharedFolderContent from '../hooks/usePublicSharedFolderContent';
 import useWarnBeforeUnload from '../hooks/useWarnBeforeUnload';
+import mapSharedItemToPreviewFile from '../utils/mapSharedItemToPreviewFile';
 import PublicSharedItemList from './PublicSharedItemList';
 
 interface PublicSharedFolderContentProps {
@@ -69,6 +69,8 @@ const PublicSharedFolderContent = ({
     });
 
   useWarnBeforeUnload(isDownloading);
+
+  const previewFile = useMemo(() => (previewItem ? mapSharedItemToPreviewFile(previewItem) : null), [previewItem]);
 
   const reorderedShareItems = sortSharedItems(shareItems, orderBy);
 
@@ -163,10 +165,10 @@ const PublicSharedFolderContent = ({
 
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col self-stretch px-5">
-      {previewItem && (
+      {previewItem && previewFile && (
         <FileViewer
           show={!!previewItem}
-          file={previewItem as unknown as DriveFileData}
+          file={previewFile}
           onClose={closePreview}
           onDownload={() => {
             const itemToDownload = previewItem;
