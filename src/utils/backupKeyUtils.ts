@@ -49,14 +49,14 @@ export function handleExportBackupKey(translate) {
       type: ToastType.Error,
     });
   } else {
-    const hasPublicKeys = user.keys?.ecc?.publicKey && user.keys?.kyber?.publicKey;
+    const hasPublicKeys = user.keys.ecc.publicKey && user.keys.kyber.publicKey;
 
     const backupData: BackupData = {
       mnemonic,
-      privateKey: user.keys?.ecc?.privateKey ?? '',
+      privateKey: user.keys.ecc.privateKey,
       keys: {
-        ecc: user.keys?.ecc?.privateKey ?? '',
-        kyber: user.keys?.kyber?.privateKey ?? '',
+        ecc: user.keys.ecc.privateKey,
+        kyber: user.keys.kyber.privateKey,
       },
       ...(hasPublicKeys && {
         publicKeys: {

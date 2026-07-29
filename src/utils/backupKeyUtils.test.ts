@@ -255,44 +255,6 @@ describe('backupKeyUtils', () => {
         type: ToastType.Error,
       });
     });
-
-    it('should handle missing key properties', () => {
-      const mockMnemonic = 'test mnemonic';
-      const mockUser = {
-        userId: 'test-user-id',
-        uuid: 'test-uuid',
-        email: 'test@example.com',
-        name: 'Test User',
-        lastname: 'User',
-        username: 'testuser',
-        bridgeUser: 'test-bridge-user',
-        bucket: 'test-bucket',
-        backupsBucket: null,
-        mnemonic: mockMnemonic,
-        root_folder_id: 0,
-        rootFolderId: 'test-root-folder-id',
-        rootFolderUuid: 'test-root-folder-uuid',
-        sharedWorkspace: false,
-        credit: 0,
-        appSumoDetails: null,
-        registerCompleted: false,
-        hasReferralsProgram: false,
-        createdAt: new Date(),
-        avatar: null,
-        emailVerified: false,
-      } as UserSettings;
-
-      vi.mocked(localStorageService.getUser).mockReturnValue(mockUser);
-
-      handleExportBackupKey(mockTranslate);
-
-      expect(saveAs).toHaveBeenCalled();
-
-      expect(notificationsService.show).toHaveBeenCalledWith({
-        text: mockTranslate('views.account.tabs.security.backupKey.success'),
-        type: ToastType.Success,
-      });
-    });
   });
 
   describe('detectBackupKeyFormat', () => {

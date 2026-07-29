@@ -112,7 +112,6 @@ describe('onSubmit', () => {
 
     vi.mock('./hooks/useSignup', () => ({
       useSignUp: vi.fn().mockReturnValue({ doRegisterPreCreatedUser: vi.fn() }),
-      parseUserSettingsEnsureKyberKeysAdded: vi.importActual,
     }));
 
     vi.mock('components/PasswordStrengthIndicator', () => ({

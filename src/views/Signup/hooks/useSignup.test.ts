@@ -116,14 +116,7 @@ describe('useSignUp', () => {
         mnemonic: 'mock-decrypted-mnemonic',
         appSumoDetails: 'mock-appSumoDetails',
         avatar: 'mock-avatar',
-        backupsBucket: undefined,
-        bridgeUser: undefined,
-        bucket: undefined,
-        createdAt: expect.any(String),
-        credit: undefined,
-        email: undefined,
-        emailVerified: undefined,
-        hasReferralsProgram: undefined,
+        bucket: '',
         keys: {
           ecc: {
             privateKey: 'mock-private-key',
@@ -136,6 +129,7 @@ describe('useSignUp', () => {
         },
       },
       xToken: 'mock-token',
+      xNewToken: undefined,
       mnemonic: 'mock-decrypted-mnemonic',
     });
 
@@ -158,17 +152,6 @@ describe('useSignUp', () => {
       xUser: {
         userId: 'mock-user-id',
         mnemonic: 'mock-decrypted-mnemonic',
-        rootFolderId: undefined,
-        appSumoDetails: null,
-        avatar: undefined,
-        backupsBucket: undefined,
-        bridgeUser: undefined,
-        bucket: undefined,
-        createdAt: expect.any(String),
-        credit: undefined,
-        email: undefined,
-        emailVerified: undefined,
-        hasReferralsProgram: undefined,
         keys: {
           ecc: {
             privateKey: 'mock-private-key',
@@ -179,18 +162,11 @@ describe('useSignUp', () => {
             privateKey: '',
           },
         },
+        rootFolderId: undefined,
       },
       xToken: 'mock-token',
+      xNewToken: undefined,
       mnemonic: 'mock-decrypted-mnemonic',
-      lastname: undefined,
-      name: undefined,
-      registerCompleted: undefined,
-      rootFolderUuid: undefined,
-      root_folder_id: undefined,
-      sharedWorkspace: undefined,
-      teams: undefined,
-      username: undefined,
-      uuid: undefined,
     });
 
     expect(bip39.generateMnemonic).toHaveBeenCalledWith(256);
