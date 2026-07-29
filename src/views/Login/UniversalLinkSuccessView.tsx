@@ -6,7 +6,8 @@ import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import AnimatedBackground from 'components/AnimatedBackground';
 import { isMobile } from 'react-device-detect';
 import { useEffect, useMemo } from 'react';
-import authService from 'services/auth.service';
+import { useAppDispatch } from 'app/store/hooks';
+import { userThunks } from 'app/store/slices/user';
 import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
 
@@ -14,6 +15,7 @@ const DEEPLINK_SUCCESS_REDIRECT_BASE = 'internxt://login-success';
 
 export default function UniversalLinkView(): JSX.Element {
   const { translate } = useTranslationContext();
+  const dispatch = useAppDispatch();
   const user = useMemo(() => localStorageService.getUser(), []);
 
   const urlParams = new URLSearchParams(globalThis.location.search);
@@ -42,7 +44,7 @@ export default function UniversalLinkView(): JSX.Element {
   if (!user) return <></>;
 
   const handleGoToLogin = () => {
-    authService.logOut();
+    dispatch(userThunks.logoutThunk());
   };
 
   const handleGoToUniversalLinkUrl = () => {
