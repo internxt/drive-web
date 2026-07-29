@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { SearchFileCategory } from '@internxt/sdk/dist/drive/storage/types';
+import { SearchFileCategory } from '../services';
 import { toggleTypeCategory } from './typeFilterUtils';
 
 const ALL_CATEGORIES: SearchFileCategory[] = [
