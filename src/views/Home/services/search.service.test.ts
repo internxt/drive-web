@@ -25,13 +25,24 @@ describe('searchItems', () => {
     expect(getGlobalSearchItems).toHaveBeenCalledWith('report', 'workspace-1', {});
   });
 
-  test('When type categories are active, then they are included in the options', async () => {
+  test('When type categories are active, then they are resolved to their file extensions', async () => {
     const getGlobalSearchItems = mockGlobalSearch();
     const filters: SearchFilters = { type: ['pdf', 'image'] };
 
     await searchItems('report', undefined, filters);
 
-    expect(getGlobalSearchItems).toHaveBeenCalledWith('report', undefined, { type: ['pdf', 'image'] });
+    const sentTypes = optionsSentToSdk(getGlobalSearchItems).type;
+    expect(sentTypes).toEqual(expect.arrayContaining(['pdf', 'jpg', 'jpeg', 'png']));
+    expect(sentTypes).not.toContain('image');
+  });
+
+  test('When categories share extensions, then the resolved extensions are deduplicated', async () => {
+    const getGlobalSearchItems = mockGlobalSearch();
+
+    await searchItems('report', undefined, { type: ['audio', 'video'] });
+
+    const sentTypes = optionsSentToSdk(getGlobalSearchItems).type;
+    expect(sentTypes.filter((extension: string) => extension === 'ogg')).toHaveLength(1);
   });
 
   test('When size and date filters are set, then they are forwarded verbatim', async () => {
