@@ -5,6 +5,7 @@ import { AppView } from 'app/core/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import oauthService from 'services/oauth.service';
 import { useOAuthFlow } from './useOAuthFlow';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 vi.mock('services/navigation.service', () => ({
   default: { push: vi.fn() },
@@ -82,13 +83,13 @@ describe('OAuth custom hook', () => {
       const mockPush = vi.fn();
 
       vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUserSettings);
-      vi.spyOn(localStorageService, 'getToken').mockReturnValue(mockNewToken);
+      vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(mockNewToken);
       vi.mocked(navigationService.push).mockImplementation(mockPush);
 
       renderHook(() => useOAuthFlow({ authOrigin: 'https://meet.internxt.com' }));
 
       expect(localStorageService.getUser).toHaveBeenCalled();
-      expect(localStorageService.getToken).toHaveBeenCalled();
+      expect(encryptedStorageService.getToken).toHaveBeenCalled();
       expect(mockPush).toHaveBeenCalledWith(AppView.OAuthLink, expect.any(Object));
       expect(mockSendAuthSuccess).not.toHaveBeenCalled();
     });
@@ -97,7 +98,7 @@ describe('OAuth custom hook', () => {
       const mockNewToken = 'test-new-token';
 
       vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUserSettings);
-      vi.spyOn(localStorageService, 'getToken').mockReturnValue(mockNewToken);
+      vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(mockNewToken);
 
       renderHook(() => useOAuthFlow({ authOrigin: null }));
 

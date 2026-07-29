@@ -163,7 +163,7 @@ export enum LocalStorageItem {
 
 export enum LocalStorageProtectedItem {
   User = 'xUser',
-  NewToken = 'xNewToken',
+  EncryptedToken = 'xTokenEncrypted',
   B2Bworkspace = 'b2bWorkspace',
   WorkspaceCredentials = 'workspace_credentials',
   FolderAccessToken = 'folderAccessToken',
