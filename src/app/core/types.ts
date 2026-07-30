@@ -157,6 +157,7 @@ export enum LocalStorageItem {
   SuperbawlTheme = 'superbowl_theme_enabled',
   StpatricksTheme = 'stpatricks_theme_enabled',
   AnniversaryTheme = 'anniversary_theme_enabled',
+  SubscriptionEndingModalClosed = 'subscription_ending_modal_closed',
 }
 
 export enum LocalStorageProtectedItem {
