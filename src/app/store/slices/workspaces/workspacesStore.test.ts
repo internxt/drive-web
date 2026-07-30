@@ -13,6 +13,7 @@ const { setupWorkspace, setSelectedWorkspace } = workspaceThunks;
 import { workspacesActions } from './workspacesStore';
 import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { decryptMnemonic } from '../../../share/services/share.service';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 vi.mock('i18next', () => ({
   t: vi.fn((key, params) => `${key} ${params?.reason ?? ''}`),
@@ -62,9 +63,14 @@ vi.mock('services/local-storage.service', () => ({
   default: {
     set: vi.fn(),
     get: vi.fn(),
+    getB2BWorkspaceId: vi.fn(),
+  },
+}));
+
+vi.mock('services/encrypted-storage.service', () => ({
+  default: {
     setB2BWorkspace: vi.fn(),
     clearB2BWorkspace: vi.fn(),
-    getB2BWorkspaceId: vi.fn(),
     getB2BWorkspaceMnemonic: vi.fn(),
   },
 }));
@@ -102,7 +108,7 @@ describe('setSelectedWorkspace', () => {
 
     await setSelectedWorkspace({ workspaceId: null })(dispatchMock, getStateMock, undefined);
 
-    expect(localStorageService.clearB2BWorkspace).toHaveBeenCalled();
+    expect(encryptedStorageService.clearB2BWorkspace).toHaveBeenCalled();
     expect(dispatchMock).toHaveBeenCalledWith(workspacesActions.setSelectedWorkspace(null));
     expect(dispatchMock).toHaveBeenCalledWith(workspacesActions.setCredentials(null));
   });
@@ -120,7 +126,7 @@ describe('setSelectedWorkspace', () => {
     await setSelectedWorkspace({ workspaceId: mockWorkspace.workspace.id })(dispatchMock, getStateMock, undefined);
 
     expect(dispatchMock).toHaveBeenCalledWith(workspacesActions.setSelectedWorkspace(mockWorkspace));
-    expect(localStorageService.setB2BWorkspace).not.toHaveBeenCalled();
+    expect(encryptedStorageService.setB2BWorkspace).not.toHaveBeenCalled();
   });
 
   test('selects a new workspace found in state.workspaces.workspaces and fetches credentials', async () => {
@@ -135,7 +141,7 @@ describe('setSelectedWorkspace', () => {
 
     await setSelectedWorkspace({ workspaceId: mockWorkspace.workspace.id })(dispatchMock, getStateMock, undefined);
 
-    expect(localStorageService.setB2BWorkspace).toHaveBeenCalledWith('ws-1', 'decrypted-key');
+    expect(encryptedStorageService.setB2BWorkspace).toHaveBeenCalledWith('ws-1', 'decrypted-key');
     expect(dispatchMock).toHaveBeenCalledWith(workspacesActions.setSelectedWorkspace(mockWorkspace));
   });
 
@@ -152,7 +158,7 @@ describe('setSelectedWorkspace', () => {
     await setSelectedWorkspace({ workspaceId: mockWorkspace.workspace.id })(dispatchMock, getStateMock, undefined);
 
     expect(dispatchMock).not.toHaveBeenCalledWith(workspacesActions.setSelectedWorkspace(expect.anything()));
-    expect(localStorageService.setB2BWorkspace).not.toHaveBeenCalled();
+    expect(encryptedStorageService.setB2BWorkspace).not.toHaveBeenCalled();
   });
 });
 
@@ -203,7 +209,7 @@ describe('Encryption and Decryption', () => {
 
     vi.spyOn(navigationService, 'push').mockImplementation(() => {});
     vi.spyOn(localStorageService, 'set').mockImplementation(() => {});
-    vi.spyOn(localStorageService, 'setB2BWorkspace').mockImplementation(() => {});
+    vi.spyOn(encryptedStorageService, 'setB2BWorkspace').mockResolvedValue(undefined);
     vi.spyOn(workspacesService, 'setupWorkspace').mockResolvedValue(undefined);
     vi.spyOn(workspacesService, 'getWorkspaces').mockResolvedValue({
       availableWorkspaces: [mockSelectedWorkspace],
@@ -215,7 +221,7 @@ describe('Encryption and Decryption', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 1100));
 
-    expect(localStorageService.setB2BWorkspace).toHaveBeenCalledWith(mockPendingWorkspace.id, 'decrypted-key');
+    expect(encryptedStorageService.setB2BWorkspace).toHaveBeenCalledWith(mockPendingWorkspace.id, 'decrypted-key');
   });
 
   test('should setup workspace and encrypt mnemonic', async () => {

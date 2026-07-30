@@ -57,20 +57,6 @@ function setUser(user: UserSettings): void {
   set(LocalStorageItem.User, JSON.stringify(user));
 }
 
-function getB2BWorkspaceMnemonic(): string | null {
-  return get(LocalStorageItem.B2BworkspaceMnemonic);
-}
-
-function clearB2BWorkspace(): void {
-  set(LocalStorageItem.B2BworkspaceMnemonic, '');
-  set(LocalStorageItem.B2BworkspaceId, '');
-}
-
-function setB2BWorkspace(workspaceID: string, workspaceMnemonic: string): void {
-  set(LocalStorageItem.B2BworkspaceId, workspaceID);
-  set(LocalStorageItem.B2BworkspaceMnemonic, workspaceMnemonic);
-}
-
 function getWorkspaceCredentials(): WorkspaceCredentialsDetails | null {
   const workspaceCredentials = get(LocalStorageItem.WorkspaceCredentials);
   if (workspaceCredentials) return JSON.parse(workspaceCredentials);
@@ -103,9 +89,6 @@ const localStorageService = {
   getStorageToken,
   removeItem,
   clear,
-  getB2BWorkspaceMnemonic,
-  clearB2BWorkspace,
-  setB2BWorkspace,
   getWorkspaceCredentials,
 };
 
@@ -122,9 +105,6 @@ export interface LocalStorageService {
     saved: boolean;
   };
   getStorageToken: (isFolder: boolean) => string | null;
-  getB2BWorkspaceMnemonic: () => string | null;
-  clearB2BWorkspace: () => void;
-  setB2BWorkspace: (workspaceID: string, workspaceMnemonic: string) => void;
   getUser: () => UserSettings | null;
   setUser: (user: UserSettings) => void;
   removeItem: (key: LocalStorageItem) => void;

@@ -9,6 +9,7 @@ import { AppDispatch } from 'app/store';
 import localStorageService from './local-storage.service';
 import { workspacesActions } from 'app/store/slices/workspaces/workspacesStore';
 import envService from './env.service';
+import encryptedStorageService from './encrypted-storage.service';
 
 const browserHistoryConfig: BrowserHistoryBuildOptions = {
   forceRefresh: false,
@@ -83,7 +84,7 @@ const navigationService = {
       dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId: currentWorkspaceUuid || null, updateUrl }));
   },
   resetB2BWorkspaceCredentials(dispatch): void {
-    localStorageService.clearB2BWorkspace();
+    encryptedStorageService.clearB2BWorkspace();
     localStorageService.set(LocalStorageItem.WorkspaceCredentials, 'null');
     dispatch(workspacesActions.setSelectedWorkspace(null));
     dispatch(workspacesActions.setCredentials(null));

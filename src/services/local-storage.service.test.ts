@@ -175,37 +175,6 @@ describe('Testing the local storage service', () => {
         expect(workspaceCredentials).toBeNull();
       });
     });
-
-    describe('Get workspace item data', () => {
-      it('When workspace is set, then mnemonic and id are set', () => {
-        const mockWorkspaceMnemonic = 'test-workspace-mnemonic';
-        const setFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'setItem');
-
-        localStorageService.setB2BWorkspace('test-workspace-id', mockWorkspaceMnemonic);
-
-        expect(setFromLocalStorageSpy).toHaveBeenCalled();
-        expect(setFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.B2BworkspaceId, 'test-workspace-id');
-        expect(setFromLocalStorageSpy).toHaveBeenCalledWith(
-          LocalStorageItem.B2BworkspaceMnemonic,
-          mockWorkspaceMnemonic,
-        );
-
-        expect(localStorageService.getB2BWorkspaceMnemonic()).toBe(mockWorkspaceMnemonic);
-      });
-
-      it('When a workspace is cleaned, then mnemonic and id are removed', () => {
-        const setFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'setItem');
-
-        localStorageService.clearB2BWorkspace();
-
-        expect(setFromLocalStorageSpy).toHaveBeenCalled();
-        expect(setFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.B2BworkspaceId, '');
-        expect(setFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.B2BworkspaceMnemonic, '');
-
-        expect(localStorageService.get(LocalStorageItem.B2BworkspaceId)).toBe('');
-        expect(localStorageService.get(LocalStorageItem.B2BworkspaceMnemonic)).toBe('');
-      });
-    });
   });
 
   describe('Backup key acknowledgment', () => {

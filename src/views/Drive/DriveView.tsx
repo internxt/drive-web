@@ -23,6 +23,7 @@ import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
 import workspacesService from 'services/workspace.service';
 import DriveExplorer from 'views/Drive/components/DriveExplorer/DriveExplorer';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -108,7 +109,7 @@ const DriveView = (props: DriveViewProps) => {
       dispatch(workspacesActions.setCredentials(credentials));
       localStorageService.set(LocalStorageItem.WorkspaceCredentials, JSON.stringify(credentials));
       dispatch(workspacesActions.setSelectedWorkspace(workspace ?? null));
-      if (workspace) localStorageService.setB2BWorkspace(workspace.workspace.id, workspace.workspaceUser.key);
+      if (workspace) await encryptedStorageService.setB2BWorkspace(workspace.workspace.id, workspace.workspaceUser.key);
       setTokenHeader(credentials.tokenHeader);
     } catch (error) {
       errorService.reportError(error);

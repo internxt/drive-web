@@ -144,7 +144,6 @@ export enum LocalStorageItem {
   Theme = 'theme',
   IsThemeDark = 'theme:isDark',
   B2BworkspaceId = 'b2bWorkspaceId',
-  B2BworkspaceMnemonic = 'b2bWorkspaceMnemonic',
   WorkspaceCredentials = 'workspace_credentials',
   FolderAccessToken = 'folderAccessToken',
   FileAccessToken = 'fileAccessToken',
@@ -164,8 +163,8 @@ export enum LocalStorageItem {
 export enum LocalStorageProtectedItem {
   User = 'xUser',
   EncryptedToken = 'xTokenEncrypted',
-  B2Bworkspace = 'b2bWorkspace',
-  WorkspaceCredentials = 'workspace_credentials',
+  EncryptedB2BworkspaceMnemonic = 'xEncryptedB2BWorkspaceMnemonic',
+  EncryptedWorkspaceCredentials = 'xEncryptedWorkspaceCredentials',
   FolderAccessToken = 'folderAccessToken',
   FileAccessToken = 'fileAccessToken',
 }
