@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
+import { describe, it, test, expect, vi, beforeEach, Mock } from 'vitest';
 import moveItemsToTrash from './moveItemsToTrash.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 import errorService from 'services/error.service';
@@ -42,6 +42,7 @@ vi.mock('app/notifications/services/notifications.service', () => ({
 vi.mock('app/store', () => ({
   store: {
     dispatch: vi.fn(),
+    getState: vi.fn(),
   },
 }));
 
@@ -50,12 +51,14 @@ vi.mock('app/store/slices/storage', () => ({
     popItems: vi.fn(),
     pushItems: vi.fn(),
     clearSelectedItems: vi.fn(),
+    resetFavoritesPagination: vi.fn(),
   },
 }));
 
 vi.mock('app/store/slices/storage/storage.thunks', () => ({
   default: {
     moveItemsThunk: vi.fn(),
+    fetchFavoritesThunk: vi.fn(),
   },
 }));
 
@@ -70,6 +73,7 @@ vi.mock('i18next', () => ({
 describe('moveItemsToTrash', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    (store.getState as Mock).mockReturnValue({ storage: { favorites: [] } });
   });
 
   it('should move multiple items to trash with onSuccess callback', async () => {
@@ -163,6 +167,65 @@ describe('moveItemsToTrash', () => {
     expect(store.dispatch).toHaveBeenCalledWith(
       storageActions.pushItems({ updateRecents: true, items: mockItems, folderIds: ['folder-789'] }),
     );
+  });
+
+  test('When a folder is trashed and there are favorites loaded, then the favorites list is refetched', async () => {
+    const mockItems = [{ uuid: 'folder-1', isFolder: true, type: 'folder' }] as DriveItemData[];
+
+    (store.getState as Mock).mockReturnValue({ storage: { favorites: [{ uuid: 'fav-1' }] } });
+    (notificationsService.show as Mock).mockReturnValue('toast-id');
+    (processBatchConcurrently as Mock).mockResolvedValue(undefined);
+    (deleteDatabaseItems as Mock).mockResolvedValue(undefined);
+
+    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
+      createTrashClient: () => ({
+        addItemsToTrash: vi.fn(),
+      }),
+    });
+
+    await moveItemsToTrash(mockItems);
+
+    expect(storageActions.resetFavoritesPagination).toHaveBeenCalled();
+    expect(storageThunks.fetchFavoritesThunk).toHaveBeenCalled();
+  });
+
+  test('When only files are trashed, then the favorites list is not refetched', async () => {
+    const mockItems = [{ uuid: 'file-1', isFolder: false, type: 'file' }] as DriveItemData[];
+
+    (store.getState as Mock).mockReturnValue({ storage: { favorites: [{ uuid: 'fav-1' }] } });
+    (notificationsService.show as Mock).mockReturnValue('toast-id');
+    (processBatchConcurrently as Mock).mockResolvedValue(undefined);
+    (deleteDatabaseItems as Mock).mockResolvedValue(undefined);
+
+    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
+      createTrashClient: () => ({
+        addItemsToTrash: vi.fn(),
+      }),
+    });
+
+    await moveItemsToTrash(mockItems);
+
+    expect(storageActions.resetFavoritesPagination).not.toHaveBeenCalled();
+    expect(storageThunks.fetchFavoritesThunk).not.toHaveBeenCalled();
+  });
+
+  test('When a folder is trashed but no favorites are loaded, then the favorites list is not refetched', async () => {
+    const mockItems = [{ uuid: 'folder-1', isFolder: true, type: 'folder' }] as DriveItemData[];
+
+    (notificationsService.show as Mock).mockReturnValue('toast-id');
+    (processBatchConcurrently as Mock).mockResolvedValue(undefined);
+    (deleteDatabaseItems as Mock).mockResolvedValue(undefined);
+
+    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
+      createTrashClient: () => ({
+        addItemsToTrash: vi.fn(),
+      }),
+    });
+
+    await moveItemsToTrash(mockItems);
+
+    expect(storageActions.resetFavoritesPagination).not.toHaveBeenCalled();
+    expect(storageThunks.fetchFavoritesThunk).not.toHaveBeenCalled();
   });
 
   it('should handle errors', async () => {
