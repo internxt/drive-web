@@ -75,6 +75,7 @@ function ShareGuestSingUpView(): JSX.Element {
     showError,
     signupError,
   });
+
   useEffect(() => {
     if (user && mnemonic) {
       dispatch(userActions.setUser(user));
