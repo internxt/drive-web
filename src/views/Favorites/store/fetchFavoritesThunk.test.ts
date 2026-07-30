@@ -45,9 +45,12 @@ const getStateWith = (storage: Partial<StorageState>) =>
       favorites: [],
       hasMoreFavoriteFolders: true,
       hasMoreFavoriteFiles: true,
+      order: { by: 'name', direction: 'ASC' },
       ...storage,
     },
   } as unknown as RootState);
+
+const DEFAULT_SORT_OPTIONS = { sort: 'plainName', order: 'ASC' };
 
 describe('fetchFavoritesThunk', () => {
   const dispatch = vi.fn();
@@ -82,7 +85,7 @@ describe('fetchFavoritesThunk', () => {
 
     await fetchFavoritesThunk()(dispatch, getState, undefined);
 
-    expect(fetchFavoriteFolders).toHaveBeenCalledWith(FAVORITES_LIMIT, loadedFavorites.length);
+    expect(fetchFavoriteFolders).toHaveBeenCalledWith(FAVORITES_LIMIT, loadedFavorites.length, DEFAULT_SORT_OPTIONS);
     expect(fetchFavoriteFiles).not.toHaveBeenCalled();
     expect(storageActions.addFavorites).toHaveBeenCalledWith(
       mockFolders.map((folder) => ({ ...folder, isFolder: true, isFavorite: true, name: folder.plainName })),
@@ -126,7 +129,7 @@ describe('fetchFavoritesThunk', () => {
     await fetchFavoritesThunk()(dispatch, getState, undefined);
 
     expect(fetchFavoriteFolders).not.toHaveBeenCalled();
-    expect(fetchFavoriteFiles).toHaveBeenCalledWith(FAVORITES_LIMIT, 1);
+    expect(fetchFavoriteFiles).toHaveBeenCalledWith(FAVORITES_LIMIT, 1, DEFAULT_SORT_OPTIONS);
     expect(storageActions.addFavorites).toHaveBeenCalledWith([
       { ...mockFiles[0], isFolder: false, isFavorite: true, size: 100, name: 'file2.txt' },
     ]);
@@ -151,6 +154,32 @@ describe('fetchFavoritesThunk', () => {
     expect(result.meta.requestStatus).toBe('rejected');
     expect((result as { payload: unknown }).payload).toBe(fetchError);
     expect(storageActions.addFavorites).not.toHaveBeenCalled();
+  });
+
+  test('When the current order is by updatedAt, then it is forwarded to the favorites fetch', async () => {
+    const { fetchFavoritesThunk } = await import('./fetchFavoritesThunk');
+    const { fetchFavoriteFolders } = await import('../services');
+
+    const getState = getStateWith({ order: { by: 'updatedAt', direction: 'DESC' } } as Partial<StorageState>);
+
+    vi.mocked(fetchFavoriteFolders).mockResolvedValue([]);
+
+    await fetchFavoritesThunk()(dispatch, getState, undefined);
+
+    expect(fetchFavoriteFolders).toHaveBeenCalledWith(FAVORITES_LIMIT, 0, { sort: 'updatedAt', order: 'DESC' });
+  });
+
+  test('When the current order is not supported by the API, then it falls back to updatedAt keeping the direction', async () => {
+    const { fetchFavoritesThunk } = await import('./fetchFavoritesThunk');
+    const { fetchFavoriteFolders } = await import('../services');
+
+    const getState = getStateWith({ order: { by: 'size', direction: 'DESC' } } as Partial<StorageState>);
+
+    vi.mocked(fetchFavoriteFolders).mockResolvedValue([]);
+
+    await fetchFavoritesThunk()(dispatch, getState, undefined);
+
+    expect(fetchFavoriteFolders).toHaveBeenCalledWith(FAVORITES_LIMIT, 0, { sort: 'updatedAt', order: 'DESC' });
   });
 
   test('When there are no more folders nor files to load, then nothing is fetched', async () => {
