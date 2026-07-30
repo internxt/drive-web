@@ -16,13 +16,14 @@ import { storageActions } from '../storage';
 import { uiActions } from '../ui';
 
 import { auth, TokenStatus } from '@internxt/lib';
-import { t } from 'i18next';
 import errorService from 'services/error.service';
 import referralService from 'services/referral.service';
 import { UserUnauthorizedError } from 'services/errors/auth.errors';
 import { refreshAvatar } from 'utils/avatarUtils';
 import { ProductService } from 'views/Checkout/services';
 import { UserTierFeatures } from 'views/Checkout/services/products.service';
+import { t } from 'i18next';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 export interface UserState {
   isInitializing: boolean;
@@ -72,7 +73,7 @@ export const initializeUserThunk = createAsyncThunk<
 export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean } | undefined, { state: RootState }>(
   'user/refresh',
   async ({ forceRefresh } = {}, { dispatch, getState }) => {
-    const userToken = localStorageService.getToken();
+    const userToken = encryptedStorageService.getToken();
     const currentUser = getState().user.user;
 
     if (!currentUser || !userToken) throw new UserUnauthorizedError();
@@ -98,7 +99,7 @@ export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean 
         const avatar = await refreshAvatar(uuid);
 
         dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname, createdAt }));
-        dispatch(userActions.setToken(newToken));
+        await encryptedStorageService.setToken(newToken);
       }
     } catch (err) {
       errorService.reportError(err);
@@ -213,7 +214,7 @@ const updateUserEmailCredentialsThunk = createAsyncThunk<
     bridgeUser: newUserData.email,
     username: newUserData.email,
   };
-  localStorageService.setToken(newToken);
+  await encryptedStorageService.setToken(newToken);
   dispatch(userActions.setUser(user));
 });
 
@@ -236,9 +237,6 @@ export const userSlice = createSlice({
       state.user = action.payload;
 
       localStorageService.setUser(action.payload);
-    },
-    setToken: (state: UserState, action: PayloadAction<string>) => {
-      localStorageService.setToken(action.payload);
     },
     resetState: (state: UserState) => {
       Object.assign(state, initialState);
