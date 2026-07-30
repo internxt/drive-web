@@ -6,6 +6,7 @@ import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import { isMobile } from 'react-device-detect';
 import { useEffect, useMemo } from 'react';
 import AnimatedBackground from 'components/AnimatedBackground';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 const OAuthLinkView = (): JSX.Element => {
   const { translate } = useTranslationContext();
@@ -31,7 +32,7 @@ const OAuthLinkView = (): JSX.Element => {
   };
 
   const handleContinueWithCurrentUser = () => {
-    const newToken = localStorageService.getToken();
+    const newToken = encryptedStorageService.getToken();
     if (!newToken) {
       navigationService.history.replace(AppView.Login);
       return;

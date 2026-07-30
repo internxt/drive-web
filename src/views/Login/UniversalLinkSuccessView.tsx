@@ -10,6 +10,7 @@ import { useAppDispatch } from 'app/store/hooks';
 import { userThunks } from 'app/store/slices/user';
 import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 const DEEPLINK_SUCCESS_REDIRECT_BASE = 'internxt://login-success';
 
@@ -29,7 +30,7 @@ export default function UniversalLinkView(): JSX.Element {
   }, [user]);
 
   const getUniversalLinkAuthUrl = (user: UserSettings) => {
-    const newToken = localStorageService.getToken();
+    const newToken = encryptedStorageService.getToken();
     if (!newToken) return AppView.Login;
 
     let baseURL = DEEPLINK_SUCCESS_REDIRECT_BASE;

@@ -24,6 +24,7 @@ import { DialogManagerProvider } from 'app/contexts/dialog-manager/ActionDialogM
 import envService from 'services/env.service';
 import { enforceCanonicalDriveDomain } from 'utils/canonicalDomain.utils';
 import { initializeServiceWorkers } from 'utils/initializeServiceWorkers.utils';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 /**
  * Patches Node.prototype.removeChild to prevent NotFoundError when browser
@@ -56,44 +57,49 @@ if (typeof Node !== 'undefined' && Node.prototype.removeChild) {
   };
 }
 
-enforceCanonicalDriveDomain();
+async function bootstrap() {
+  await encryptedStorageService.hydrateEncryptedStorageCache();
+  enforceCanonicalDriveDomain();
 
-// Initialize workers immediately
-initializeServiceWorkers();
+  // Initialize workers immediately
+  initializeServiceWorkers();
 
-// Installs plugins
-plugins.forEach((plugin) => plugin.install(store));
+  // Installs plugins
+  plugins.forEach((plugin) => plugin.install(store));
 
-SdkFactory.initialize(store.dispatch, localStorageService);
+  SdkFactory.initialize(store.dispatch, localStorageService, encryptedStorageService);
 
-// Initializes store
-store.dispatch(userActions.initialize());
-store.dispatch(storageThunks.initializeThunk());
-store.dispatch(planThunks.initializeThunk());
-store.dispatch(taskManagerThunks.initializeThunk());
+  // Initializes store
+  store.dispatch(userActions.initialize());
+  store.dispatch(storageThunks.initializeThunk());
+  store.dispatch(planThunks.initializeThunk());
+  store.dispatch(taskManagerThunks.initializeThunk());
 
-const container = document.getElementById('root') as HTMLElement;
-document.documentElement.setAttribute('translate', 'no');
-const root = createRoot(container);
-root.render(
-  <React.StrictMode>
-    <HelmetProvider>
-      <LiveChatLoaderProvider provider="intercom" providerKey={envService.getVariable('intercomProviderKey')}>
-        <Provider store={store}>
-          <DialogManagerProvider>
-            <ThemeProvider>
-              <TranslationProvider>
-                <App />
-              </TranslationProvider>
-            </ThemeProvider>
-          </DialogManagerProvider>
-        </Provider>
-      </LiveChatLoaderProvider>
-    </HelmetProvider>
-  </React.StrictMode>,
-);
+  const container = document.getElementById('root') as HTMLElement;
+  document.documentElement.setAttribute('translate', 'no');
+  const root = createRoot(container);
+  root.render(
+    <React.StrictMode>
+      <HelmetProvider>
+        <LiveChatLoaderProvider provider="intercom" providerKey={envService.getVariable('intercomProviderKey')}>
+          <Provider store={store}>
+            <DialogManagerProvider>
+              <ThemeProvider>
+                <TranslationProvider>
+                  <App />
+                </TranslationProvider>
+              </ThemeProvider>
+            </DialogManagerProvider>
+          </Provider>
+        </LiveChatLoaderProvider>
+      </HelmetProvider>
+    </React.StrictMode>,
+  );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+  // If you want to start measuring performance in your app, pass a function
+  // to log results (for example: reportWebVitals(console.log))
+  // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+  reportWebVitals();
+}
+
+bootstrap();
