@@ -52,6 +52,7 @@ const clear = (): void => {
   tokenCache = null;
   localStorage.removeItem(LocalStorageProtectedItem.EncryptedToken);
   clearB2BWorkspace();
+  clearWorkspaceCredentials();
 };
 
 const getB2BWorkspaceMnemonic = async (): Promise<string | null> => {
