@@ -1,5 +1,4 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { WorkspaceCredentialsDetails } from '@internxt/sdk/dist/workspaces';
 import { LocalStorageItem } from 'app/core/types';
 import { BACKUP_KEY } from './storage-keys';
 
@@ -57,13 +56,6 @@ function setUser(user: UserSettings): void {
   set(LocalStorageItem.User, JSON.stringify(user));
 }
 
-function getWorkspaceCredentials(): WorkspaceCredentialsDetails | null {
-  const workspaceCredentials = get(LocalStorageItem.WorkspaceCredentials);
-  if (workspaceCredentials) return JSON.parse(workspaceCredentials);
-
-  return null;
-}
-
 function getStorageToken(isFolder: boolean): string | null {
   const key = isFolder ? LocalStorageItem.FolderAccessToken : LocalStorageItem.FileAccessToken;
   return get(key);
@@ -89,7 +81,6 @@ const localStorageService = {
   getStorageToken,
   removeItem,
   clear,
-  getWorkspaceCredentials,
 };
 
 export default localStorageService;

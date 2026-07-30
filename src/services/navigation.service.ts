@@ -2,7 +2,7 @@ import { BrowserHistoryBuildOptions, createBrowserHistory } from 'history';
 import queryString from 'query-string';
 
 import { SelectSectionProps } from 'views/NewSettings/types/types';
-import { AppView, LocalStorageItem } from 'app/core/types';
+import { AppView } from 'app/core/types';
 import configService from './config.service';
 import errorService from './error.service';
 import { AppDispatch } from 'app/store';
@@ -85,7 +85,7 @@ const navigationService = {
   },
   resetB2BWorkspaceCredentials(dispatch): void {
     encryptedStorageService.clearB2BWorkspace();
-    localStorageService.set(LocalStorageItem.WorkspaceCredentials, 'null');
+    encryptedStorageService.clearWorkspaceCredentials();
     dispatch(workspacesActions.setSelectedWorkspace(null));
     dispatch(workspacesActions.setCredentials(null));
   },

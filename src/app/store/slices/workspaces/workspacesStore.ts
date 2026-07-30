@@ -93,7 +93,7 @@ const fetchCredentials = createAsyncThunk<void, undefined, { state: RootState }>
       const credentials = await workspacesService.getWorkspaceCredentials(workspaceId);
 
       dispatch(workspacesActions.setCredentials(credentials));
-      localStorageService.set(LocalStorageItem.WorkspaceCredentials, JSON.stringify(credentials));
+      await encryptedStorageService.setWorkspaceCredentials(credentials);
     }
     dispatch(workspacesActions.setIsLoadingCredentials(false));
   },
@@ -115,7 +115,7 @@ const setSelectedWorkspace = createAsyncThunk<
     encryptedStorageService.clearB2BWorkspace();
     dispatch(workspacesActions.setSelectedWorkspace(null));
     dispatch(workspacesActions.setCredentials(null));
-    localStorageService.set(LocalStorageItem.WorkspaceCredentials, 'null');
+    encryptedStorageService.clearWorkspaceCredentials();
   } else if (isSelectedWorkspace && selectedWorkspace?.workspace.id === workspaceId) {
     dispatch(workspacesActions.setSelectedWorkspace(selectedWorkspace));
   } else {

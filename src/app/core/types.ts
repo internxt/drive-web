@@ -144,7 +144,6 @@ export enum LocalStorageItem {
   Theme = 'theme',
   IsThemeDark = 'theme:isDark',
   B2BworkspaceId = 'b2bWorkspaceId',
-  WorkspaceCredentials = 'workspace_credentials',
   FolderAccessToken = 'folderAccessToken',
   FileAccessToken = 'fileAccessToken',
   GCLID = 'gclid',

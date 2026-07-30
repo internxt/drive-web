@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 
-import { AppView, LocalStorageItem } from 'app/core/types';
+import { AppView } from 'app/core/types';
 import fileService from 'app/drive/services/file.service';
 import newStorageService from 'app/drive/services/new-storage.service';
 import { DriveItemData, FolderPath } from 'app/drive/types';
@@ -19,7 +19,6 @@ import { Helmet } from 'react-helmet-async';
 import { useHistory } from 'react-router-dom';
 import envService from 'services/env.service';
 import errorService from 'services/error.service';
-import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
 import workspacesService from 'services/workspace.service';
 import DriveExplorer from 'views/Drive/components/DriveExplorer/DriveExplorer';
@@ -107,7 +106,7 @@ const DriveView = (props: DriveViewProps) => {
       const credentials = await workspacesService.getWorkspaceCredentials(workspaceId);
       const workspace = workspaces.find((workspace) => workspace.workspace.id === workspaceUuid);
       dispatch(workspacesActions.setCredentials(credentials));
-      localStorageService.set(LocalStorageItem.WorkspaceCredentials, JSON.stringify(credentials));
+      await encryptedStorageService.setWorkspaceCredentials(credentials);
       dispatch(workspacesActions.setSelectedWorkspace(workspace ?? null));
       if (workspace) await encryptedStorageService.setB2BWorkspace(workspace.workspace.id, workspace.workspaceUser.key);
       setTokenHeader(credentials.tokenHeader);
@@ -119,8 +118,7 @@ const DriveView = (props: DriveViewProps) => {
   const setPersonalWithUrl = () => {
     dispatch(workspacesActions.setCredentials(null));
     dispatch(workspacesActions.setSelectedWorkspace(null));
-    localStorageService.set(LocalStorageItem.WorkspaceCredentials, 'null');
-    localStorageService.set(LocalStorageItem.WorkspaceCredentials, 'null');
+    encryptedStorageService.clearWorkspaceCredentials();
   };
 
   const goFolder = async (folderUuid: string, workspacesToken?: string) => {

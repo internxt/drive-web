@@ -9,7 +9,7 @@ import encryptedStorageService from 'services/encrypted-storage.service';
  * @param isWorkspace Flag to indicate if is a team or not
  */
 export async function getEnvironmentConfig(isWorkspace?: boolean): Promise<EnvironmentConfig> {
-  const workspaceCredentials = localStorageService.getWorkspaceCredentials();
+  const workspaceCredentials = encryptedStorageService.getWorkspaceCredentials();
   const workspaceMnemonic = await encryptedStorageService.getB2BWorkspaceMnemonic();
 
   if (isWorkspace && workspaceCredentials && workspaceMnemonic) {
