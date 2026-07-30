@@ -16,7 +16,7 @@ export const useToggleFavoriteHotkey = ({ enabled, selectedItems }: UseToggleFav
     (e) => {
       if (e.shiftKey) return;
       e.preventDefault();
-      if (enabled && selectedItems.length === 1) {
+      if (enabled && selectedItems.length > 0) {
         dispatch(toggleFavoriteThunk(selectedItems));
       }
     },

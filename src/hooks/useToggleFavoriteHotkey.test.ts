@@ -52,14 +52,16 @@ describe('useToggleFavoriteHotkey', () => {
     expect(dispatchMock).not.toHaveBeenCalled();
   });
 
-  test('When more than one item is selected, then pressing F does not dispatch', () => {
-    renderHook(() =>
-      useToggleFavoriteHotkey({ enabled: true, selectedItems: [buildItem('file-uuid-1'), buildItem('file-uuid-2')] }),
-    );
+  test('When more than one item is selected, then pressing F dispatches the toggle with all of them', async () => {
+    const { toggleFavoriteThunk } = await import('views/Favorites/store/toggleFavoriteThunk');
+    const selectedItems = [buildItem('file-uuid-1'), buildItem('file-uuid-2')];
+
+    renderHook(() => useToggleFavoriteHotkey({ enabled: true, selectedItems }));
 
     pressF();
 
-    expect(dispatchMock).not.toHaveBeenCalled();
+    expect(toggleFavoriteThunk).toHaveBeenCalledWith(selectedItems);
+    expect(dispatchMock).toHaveBeenCalledTimes(1);
   });
 
   test('When no item is selected, then pressing F does not dispatch', () => {
