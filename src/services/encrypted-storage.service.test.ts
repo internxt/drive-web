@@ -140,4 +140,49 @@ describe('Testing the encrypted storage service', () => {
       expect(encryptedStorageService.getWorkspaceCredentials()).toBeNull();
     });
   });
+
+  describe('getB2BWorkspaceMnemonic', () => {
+    test('When no mnemonic is stored, then it returns null', async () => {
+      const result = await encryptedStorageService.getB2BWorkspaceMnemonic();
+
+      expect(result).toBeNull();
+    });
+
+    test('When called with no cache but a value in storage, then it decrypts and returns it', async () => {
+      const mockWorkspaceMnemonic = 'test-workspace-mnemonic';
+      const key = LocalStorageProtectedItem.EncryptedB2BworkspaceMnemonic;
+
+      await encryptedStorageService.setB2BWorkspace('test-workspace-id', mockWorkspaceMnemonic);
+      const encryptedValue = localStorage.getItem(key) as string;
+
+      encryptedStorageService.clearB2BWorkspace();
+      localStorage.setItem(key, encryptedValue);
+
+      const cryptoSpy = vi.spyOn(window.crypto.subtle, 'decrypt');
+      const result = await encryptedStorageService.getB2BWorkspaceMnemonic();
+
+      expect(cryptoSpy).toHaveBeenCalled();
+      expect(result).toBe(mockWorkspaceMnemonic);
+    });
+
+    test('When the workspace mnemonic is already cached, then returns it without decrypting', async () => {
+      const mockWorkspaceMnemonic = 'test-workspace-mnemonic';
+      await encryptedStorageService.setB2BWorkspace('test-workspace-id', mockWorkspaceMnemonic);
+
+      const cryptoSpy = vi.spyOn(window.crypto.subtle, 'decrypt');
+      const result = await encryptedStorageService.getB2BWorkspaceMnemonic();
+
+      expect(cryptoSpy).not.toHaveBeenCalled();
+      expect(result).toBe(mockWorkspaceMnemonic);
+    });
+
+    test('When storage contains a corrupted value, then it fails silently and returns null', async () => {
+      const key = LocalStorageProtectedItem.EncryptedB2BworkspaceMnemonic;
+      localStorage.setItem(key, 'not-valid-encrypted-value');
+
+      const result = await encryptedStorageService.getB2BWorkspaceMnemonic();
+
+      expect(result).toBeNull();
+    });
+  });
 });
