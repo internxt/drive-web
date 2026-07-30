@@ -83,7 +83,7 @@ const navigationService = {
       dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId: currentWorkspaceUuid || null, updateUrl }));
   },
   resetB2BWorkspaceCredentials(dispatch): void {
-    localStorageService.set(LocalStorageItem.B2Bworkspace, 'null');
+    localStorageService.clearB2BWorkspace();
     localStorageService.set(LocalStorageItem.WorkspaceCredentials, 'null');
     dispatch(workspacesActions.setSelectedWorkspace(null));
     dispatch(workspacesActions.setCredentials(null));
