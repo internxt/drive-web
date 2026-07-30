@@ -4,6 +4,7 @@ import { Topbar as Navbar, Sidenav } from 'views/Home/components';
 import { uiActions } from 'app/store/slices/ui';
 import ReachedPlanLimitDialog from 'app/drive/components/ReachedPlanLimitDialog/ReachedPlanLimitDialog';
 import navigationService from 'services/navigation.service';
+import referralService from 'services/referral.service';
 import { AppView } from '../../types';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import TaskLogger from 'app/tasks/components/TaskLogger/TaskLogger';
@@ -56,7 +57,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
   });
 
   if (!isAuthenticated) {
-    navigationService.push(AppView.Login);
+    navigationService.push(AppView.Login, referralService.getReferralOpenQueryParams());
   }
 
   return isAuthenticated ? (
