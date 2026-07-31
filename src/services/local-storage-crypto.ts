@@ -64,7 +64,7 @@ export async function decryptEntry(ciphertextBase64: string): Promise<string> {
   }
 
   try {
-    const input = Uint8Array.fromBase64(ciphertextBase64);
+    const input = Buffer.from(ciphertextBase64, 'base64');
 
     const iv = input.slice(0, IV_LENGTH);
     const data = input.slice(IV_LENGTH);

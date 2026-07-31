@@ -77,7 +77,7 @@ describe('encryptEntry', () => {
     const result = await encryptEntry(mockMnemonic);
 
     expect(typeof result).toBe('string');
-    const decodedLength = Uint8Array.fromBase64(result).length;
+    const decodedLength = Buffer.from(result, 'base64').length;
     expect(decodedLength).toBeGreaterThan(IV_LENGTH);
   });
 
