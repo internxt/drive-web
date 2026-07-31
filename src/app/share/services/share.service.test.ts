@@ -2,7 +2,6 @@
  * @jest-environment jsdom
  */
 import { describe, expect, it, vi, Mock, beforeEach, beforeAll, test } from 'vitest';
-import localStorageService from 'services/local-storage.service';
 import { Buffer } from 'buffer';
 import {
   generateNewKeys,
@@ -55,9 +54,10 @@ describe('Encryption and Decryption', () => {
     }));
     vi.mock('services/error.service', () => ({
       default: {
-        castError: vi
-          .fn()
-          .mockImplementation((e) => ({ message: e.message || 'Default error message', requestId: 'test-request-id' })),
+        castError: vi.fn().mockImplementation((e) => ({
+          message: typeof e === 'string' ? e : e.message || 'Default error message',
+          requestId: 'test-request-id',
+        })),
         reportError: vi.fn(),
       },
     }));
@@ -645,5 +645,32 @@ describe('decryptPublicSharingCodeWithOwner', () => {
     await expect(shareService.decryptPublicSharingCodeWithOwner('bad-encrypted-code', 'inxt-v3')).rejects.toThrow(
       'Length 0, cannot decrypt',
     );
+  });
+
+  describe('when user is not found', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+      vi.restoreAllMocks();
+    });
+
+    test('createPublicShareFromOwnerUser throws and reports error when user is not found', async () => {
+      vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(undefined as any);
+      const errorService = (await import('services/error.service')).default;
+
+      await expect(shareService.createPublicShareFromOwnerUser('uuid', 'file')).rejects.toEqual(
+        expect.objectContaining({ message: 'User Not Found' }),
+      );
+      expect(errorService.reportError).toHaveBeenCalled();
+    });
+
+    test('decryptPublicSharingCodeWithOwner throws and reports error when user is not found', async () => {
+      vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(undefined as any);
+      const errorService = (await import('services/error.service')).default;
+
+      await expect(shareService.decryptPublicSharingCodeWithOwner('encrypted-code', 'inxt-v3')).rejects.toEqual(
+        expect.objectContaining({ message: 'User Not Found' }),
+      );
+      expect(errorService.reportError).toHaveBeenCalled();
+    });
   });
 });
