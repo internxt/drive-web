@@ -7,6 +7,7 @@ import {
 } from './local-storage-errors';
 import { KEY_ID, KEY_LENGTH, IV_LENGTH, ALGORITHM } from './local-storage-constants';
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
+import { Buffer } from 'buffer';
 
 async function ensureKey(): Promise<CryptoKey> {
   const existing = await getKey();
@@ -50,7 +51,7 @@ export async function encryptEntry(plaintext: string): Promise<string> {
     const result = new Uint8Array(iv.length + buf.length);
     result.set(iv, 0);
     result.set(buf, iv.length);
-    return result.toBase64();
+    return Buffer.from(result).toString('base64');
   } catch (error) {
     throw new FailedToEncryptEntry(error instanceof Error ? error.message : String(error));
   }

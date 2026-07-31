@@ -8,6 +8,7 @@ import {
   FailedToEncryptEntry,
 } from './local-storage-errors';
 import { KEY_LENGTH, ALGORITHM, IV_LENGTH } from './local-storage-constants';
+import { Buffer } from 'buffer';
 
 beforeEach(async () => {
   await deleteDb();
@@ -121,7 +122,7 @@ describe('decryptEntry', () => {
 
     const bytes = Uint8Array.fromBase64(ciphertext);
     bytes[bytes.length - 1] ^= 0xff;
-    const tampered = bytes.toBase64();
+    const tampered = Buffer.from(bytes).toString('base64');
 
     await expect(decryptEntry(tampered)).rejects.toThrow(FailedToDecryptEntry);
   });
