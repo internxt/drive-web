@@ -4,7 +4,6 @@ import dayjs from 'dayjs';
 import { getCookie, setImpactCookies } from './utils';
 import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import envService from 'services/env.service';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';

@@ -1,6 +1,5 @@
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import {
   thumbnailableExtension,
   thumbnailableImageExtension,

@@ -3,7 +3,6 @@ import { AdvancedSharedItem } from 'app/share/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Role } from '@internxt/sdk/dist/drive/share/types';
 import { MAX_SHARED_NAME_LENGTH } from 'views/Shared/SharedView';
-import localStorageService from 'services/local-storage.service';
 import encryptedStorageService from 'services/encrypted-storage.service';
 
 export const cropSharedName = (name: string) => {
