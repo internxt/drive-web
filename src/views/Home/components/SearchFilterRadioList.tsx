@@ -1,4 +1,5 @@
 import { RadioButton } from '@internxt/ui';
+import SearchFilterRow from './SearchFilterRow';
 
 interface SearchFilterRadioListProps<T extends string> {
   anyLabel: string;
@@ -14,16 +15,16 @@ const SearchFilterRadioList = <T extends string>({
   onSelect,
 }: SearchFilterRadioListProps<T>): JSX.Element => (
   <div role="none" onMouseDown={(event) => event.preventDefault()} onClick={(event) => event.preventDefault()}>
-    <div className="flex flex-row items-center gap-2 px-4 py-2">
+    <SearchFilterRow onClick={() => onSelect('any')}>
       <RadioButton checked={selected === 'any'} onClick={() => onSelect('any')} />
       <p className="text-gray-100">{anyLabel}</p>
-    </div>
+    </SearchFilterRow>
     <div className="mx-4 border-t border-gray-10" />
     {items.map(({ id, label }) => (
-      <div className="flex flex-row items-center gap-2 px-4 py-2" key={id}>
+      <SearchFilterRow onClick={() => onSelect(id)} key={id}>
         <RadioButton checked={selected === id} onClick={() => onSelect(id)} />
         <p className="text-gray-100">{label}</p>
-      </div>
+      </SearchFilterRow>
     ))}
   </div>
 );
