@@ -132,7 +132,6 @@ describe('onSubmit', () => {
       default: {
         get: vi.fn(),
         clear: vi.fn(),
-        getUser: vi.fn(),
         set: vi.fn(),
         setToken: vi.fn(),
       },
@@ -141,6 +140,7 @@ describe('onSubmit', () => {
       default: {
         getToken: vi.fn(),
         setToken: vi.fn(),
+        getUser: vi.fn(),
       },
     }));
     vi.mock('services/navigation.service', () => ({

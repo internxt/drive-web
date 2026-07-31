@@ -12,6 +12,7 @@ import { bytesToString } from 'app/drive/services/size.service';
 import { getProductAmount } from 'views/Checkout/utils';
 import { sendAddShoppersConversion } from './addShoppers.services';
 import { LocalStorageItem } from 'app/core/types';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 /**
  * Stores relevant payment data in local storage to be retrieved later,
@@ -137,7 +138,7 @@ export async function trackSignUp(uuid: string): Promise<void> {
 
 export async function trackPaymentConversion(): Promise<void> {
   try {
-    const userSettings = localStorageService.getUser() as UserSettings;
+    const userSettings = encryptedStorageService.getUser();
     if (!userSettings) {
       console.warn('[Impact Service] No user settings found');
       return;

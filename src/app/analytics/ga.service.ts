@@ -4,8 +4,8 @@ import { getProductAmount } from 'views/Checkout/utils/getProductAmount';
 import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
 import envService from 'services/env.service';
 import localStorageService from 'services/local-storage.service';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { LocalStorageItem } from 'app/core/types';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 interface BaseTrackParams {
   planId: string;
@@ -141,7 +141,7 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
 
 function trackPurchase(): void {
   try {
-    const userSettings = localStorageService.getUser() as UserSettings;
+    const userSettings = encryptedStorageService.getUser();
     if (!userSettings) {
       console.warn('[GA Service] No user settings found, aborting purchase tracking');
       return;

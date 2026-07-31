@@ -101,7 +101,6 @@ beforeAll(() => {
     default: {
       get: vi.fn(),
       clear: vi.fn(),
-      getUser: vi.fn(),
       set: vi.fn(),
     },
   }));
@@ -110,6 +109,7 @@ beforeAll(() => {
       getToken: vi.fn(),
       setToken: vi.fn(),
       clear: vi.fn(),
+      getUser: vi.fn(),
     },
   }));
   vi.mock('./vpnAuth.service', () => ({
@@ -548,7 +548,7 @@ describe('Change password', () => {
     };
 
     const mockUser = mockClearUser as UserSettings;
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUser);
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(mockUser);
 
     const mockSalt = 'mockSalt';
     const encryptedSalt = encryptText(mockSalt);
@@ -598,7 +598,7 @@ describe('Change password', () => {
     };
 
     const mockUser = mockClearUser as UserSettings;
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUser);
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(mockUser);
 
     const mockSalt = 'mockSalt';
     const encryptedSalt = encryptText(mockSalt);
@@ -657,7 +657,7 @@ describe('Change password', () => {
     };
 
     const mockUser = mockClearUser as UserSettings;
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUser);
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(mockUser);
 
     const encryptedSalt = encryptText('mockSalt');
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
@@ -705,7 +705,7 @@ describe('Change password', () => {
     };
 
     const mockUser = mockClearUser as UserSettings;
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUser);
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(mockUser);
 
     const encryptedSalt = encryptText('mockSalt');
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
@@ -997,9 +997,9 @@ describe('areCredentialsCorrect', () => {
 
     vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(mockToken);
 
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue({
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({
       email: mockEmail,
-    } as any);
+    } as UserSettings);
 
     const encryptedSalt = encryptText(mockSalt);
     const mockAreCredentialsCorrect = vi.fn().mockResolvedValue(true);
@@ -1187,7 +1187,7 @@ describe('getSalt', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue({ email: 'test@test.com' } as UserSettings);
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ email: 'test@test.com' } as UserSettings);
 
     const salt = await authService.getSalt();
 
@@ -1206,7 +1206,7 @@ describe('getPasswordDetails', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue({ email: 'test@test.com' } as UserSettings);
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ email: 'test@test.com' } as UserSettings);
 
     const result = await authService.getPasswordDetails('test-password');
 
@@ -1225,7 +1225,7 @@ describe('getPasswordDetails', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue({ email: 'test@test.com' } as UserSettings);
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ email: 'test@test.com' } as UserSettings);
 
     await expect(authService.getPasswordDetails('test-password')).rejects.toThrow(
       'Internal server error. Please reload.',
@@ -1284,7 +1284,7 @@ describe('userHas2FAStored', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue({ email: 'test@test.com' } as UserSettings);
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ email: 'test@test.com' } as UserSettings);
 
     const result = await authService.userHas2FAStored();
 

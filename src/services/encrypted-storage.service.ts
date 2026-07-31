@@ -1,5 +1,6 @@
 import { decryptEntry, encryptEntry, ensureKeyExists } from './local-storage-crypto';
 import { LocalStorageItem, LocalStorageProtectedItem } from 'app/core/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 let tokenCache: string | null = null;
 
@@ -41,13 +42,28 @@ const getToken = (): string | undefined => tokenCache ?? undefined;
 const clear = (): void => {
   tokenCache = null;
   localStorage.removeItem(LocalStorageProtectedItem.EncryptedToken);
+  localStorage.removeItem(LocalStorageProtectedItem.User);
+  localStorage.removeItem(LocalStorageItem.UserID);
 };
+
+function getUser(): UserSettings | null {
+  const stringUser: string | null = localStorage.getItem(LocalStorageProtectedItem.User);
+
+  return stringUser ? JSON.parse(stringUser) : null;
+}
+
+function setUser(user: UserSettings): void {
+  localStorage.setItem(LocalStorageItem.UserID, user.userId);
+  localStorage.setItem(LocalStorageProtectedItem.User, JSON.stringify(user));
+}
 
 const encryptedStorageService = {
   hydrateEncryptedStorageCache,
   getToken,
   setToken,
   clear,
+  getUser,
+  setUser,
 };
 
 export default encryptedStorageService;
@@ -57,4 +73,6 @@ export interface EncryptedStorageService {
   setToken: (token: string) => Promise<void>;
   getToken: () => string | undefined;
   clear: () => void;
+  getUser: () => UserSettings | null;
+  setUser: (user: UserSettings) => void;
 }

@@ -32,6 +32,7 @@ import { downloadWorkerHandler } from './worker.service/downloadWorkerHandler';
 import { isFileEmpty } from 'utils/isFileEmpty';
 import deviceService from 'services/device.service';
 import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 export type DownloadCredentials = {
   credentials: NetworkCredentials;
@@ -181,7 +182,7 @@ export class DownloadManagerService {
       }
     }
 
-    const user = localStorageService.getUser();
+    const user = encryptedStorageService.getUser();
     if (!user) throw new Error('User not found');
 
     const userCredentials: DownloadCredentials = {

@@ -22,6 +22,7 @@ import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selector
 import dateService from 'services/date.service';
 import { getLocation } from 'utils/locationUtils';
 import { Translate } from 'app/i18n/types';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
   return (
@@ -103,7 +104,7 @@ const ItemDetailsDialog = ({
   const isItemFolder = item?.type === 'folder' || item?.isFolder;
   const IconComponent = iconService.getItemIcon(isItemFolder ?? false, item?.type);
   const itemName = `${item?.plainName ?? item?.name}` + `${item?.type && !item.isFolder ? '.' + item?.type : ''}`;
-  const user = localStorageService.getUser();
+  const user = encryptedStorageService.getUser();
   const isFolder = item?.isFolder;
   const workspaceSelected = useSelector(workspacesSelectors.getSelectedWorkspace);
   const isWorkspaceSelected = !!workspaceSelected;

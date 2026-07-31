@@ -13,6 +13,7 @@ import {
   handleExportBackupKey,
   prepareOldBackupRecoverPayloadForBackend,
 } from './backupKeyUtils';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 vi.mock('file-saver', async () => {
   const actual = await vi.importActual<typeof import('file-saver')>('file-saver');
@@ -25,6 +26,11 @@ vi.mock('file-saver', async () => {
 vi.mock('services/local-storage.service', () => ({
   default: {
     get: vi.fn(),
+  },
+}));
+
+vi.mock('services/encrypted-storage.service', () => ({
+  default: {
     getUser: vi.fn(),
   },
 }));
@@ -106,7 +112,7 @@ describe('backupKeyUtils', () => {
       } as UserSettings;
 
       vi.mocked(localStorageService.get).mockReturnValue(mockMnemonic);
-      vi.mocked(localStorageService.getUser).mockReturnValue(mockUser);
+      vi.mocked(encryptedStorageService.getUser).mockReturnValue(mockUser);
 
       handleExportBackupKey(mockTranslate);
 
@@ -166,11 +172,11 @@ describe('backupKeyUtils', () => {
       } as UserSettings;
 
       vi.mocked(localStorageService.get).mockReturnValue(mockMnemonic);
-      vi.mocked(localStorageService.getUser).mockReturnValue(mockUser);
+      vi.mocked(encryptedStorageService.getUser).mockReturnValue(mockUser);
 
       handleExportBackupKey(mockTranslate);
 
-      expect(localStorageService.getUser).toHaveBeenCalled();
+      expect(encryptedStorageService.getUser).toHaveBeenCalled();
 
       expect(saveAs).toHaveBeenCalledWith(expect.any(Blob), 'INTERNXT-BACKUP-KEY.txt');
 
@@ -226,7 +232,7 @@ describe('backupKeyUtils', () => {
       } as UserSettings;
 
       vi.mocked(localStorageService.get).mockReturnValue(mockMnemonic);
-      vi.mocked(localStorageService.getUser).mockReturnValue(mockUser);
+      vi.mocked(encryptedStorageService.getUser).mockReturnValue(mockUser);
 
       handleExportBackupKey(mockTranslate);
 
@@ -239,7 +245,7 @@ describe('backupKeyUtils', () => {
 
     it('should handle missing mnemonic', () => {
       vi.mocked(localStorageService.get).mockReturnValue(null);
-      vi.mocked(localStorageService.getUser).mockReturnValue({} as any);
+      vi.mocked(encryptedStorageService.getUser).mockReturnValue({} as any);
 
       handleExportBackupKey(mockTranslate);
 
@@ -253,7 +259,7 @@ describe('backupKeyUtils', () => {
 
     it('should handle missing user', () => {
       vi.mocked(localStorageService.get).mockReturnValue('test-mnemonic');
-      vi.mocked(localStorageService.getUser).mockReturnValue(null);
+      vi.mocked(encryptedStorageService.getUser).mockReturnValue(null);
 
       handleExportBackupKey(mockTranslate);
 
@@ -294,7 +300,7 @@ describe('backupKeyUtils', () => {
         emailVerified: false,
       } as UserSettings;
 
-      vi.mocked(localStorageService.getUser).mockReturnValue(mockUser);
+      vi.mocked(encryptedStorageService.getUser).mockReturnValue(mockUser);
 
       handleExportBackupKey(mockTranslate);
 

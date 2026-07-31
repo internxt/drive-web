@@ -1,7 +1,7 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { AppView } from 'app/core/types';
 import { useEffect } from 'react';
-import { oauthService, localStorageService, navigationService } from 'services';
+import { oauthService, navigationService } from 'services';
 import encryptedStorageService from 'services/encrypted-storage.service';
 
 interface UseOAuthFlowParams {
@@ -18,7 +18,7 @@ export const useOAuthFlow = ({ authOrigin }: UseOAuthFlowParams): UseOAuthFlowRe
 
   useEffect(() => {
     if (isOAuthFlow) {
-      const user = localStorageService.getUser();
+      const user = encryptedStorageService.getUser();
       const newToken = encryptedStorageService.getToken();
 
       if (user && newToken) {

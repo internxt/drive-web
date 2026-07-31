@@ -2,6 +2,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import envService from 'services/env.service';
 import localStorageService from 'services/local-storage.service';
 import { EnvironmentConfig } from './types';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 /**
  * Returns required config to upload files to the Internxt Network
@@ -21,7 +22,7 @@ export function getEnvironmentConfig(isWorkspace?: boolean): EnvironmentConfig {
     };
   }
 
-  const user = localStorageService.getUser() as UserSettings;
+  const user = encryptedStorageService.getUser() as UserSettings;
 
   return {
     bridgeUser: user.bridgeUser,

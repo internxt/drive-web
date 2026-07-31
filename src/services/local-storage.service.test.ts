@@ -1,46 +1,9 @@
 import { afterAll, beforeEach, describe, expect, it, test, vi } from 'vitest';
 import localStorageService from './local-storage.service';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { LocalStorageItem } from 'app/core/types';
 import { WorkspaceCredentialsDetails } from '@internxt/sdk/dist/workspaces';
 
-export const mockUserSettings: UserSettings = {
-  userId: 'user_123',
-  uuid: 'uuid-1234-5678',
-  email: 'test.user@example.com',
-  name: 'Test',
-  lastname: 'User',
-  username: 'testuser',
-  bridgeUser: 'bridge_user',
-  bucket: 'user-bucket',
-  backupsBucket: 'backups-bucket',
-  root_folder_id: 1,
-  rootFolderId: 'folder-id-123',
-  rootFolderUuid: 'folder-uuid-456',
-  sharedWorkspace: false,
-  credit: 100,
-  mnemonic: 'test mnemonic phrase',
-  privateKey: 'private-key-mock',
-  publicKey: 'public-key-mock',
-  revocationKey: 'revocation-key-mock',
-  keys: {
-    ecc: {
-      publicKey: 'ecc-public-key-mock',
-      privateKey: 'ecc-private-key-mock',
-    },
-    kyber: {
-      publicKey: 'kyber-public-key-mock',
-      privateKey: 'kyber-private-key-mock',
-    },
-  },
-  teams: true,
-  appSumoDetails: null,
-  registerCompleted: true,
-  hasReferralsProgram: true,
-  createdAt: new Date('2023-06-01T12:00:00.000Z'),
-  avatar: null,
-  emailVerified: true,
-};
+const userId = 'user_123';
 
 const mockWorkspaceCredentialsDetails: WorkspaceCredentialsDetails = {
   workspaceId: 'workspace-123',
@@ -59,12 +22,11 @@ const mockWorkspaceId = 'workspace-user-001';
 const localStorageKey = LocalStorageItem.Language;
 const localStorageValue = 'item-exists';
 
-const stringifyMockedUser = JSON.stringify(mockUserSettings);
 const stringifyMockCredentials = JSON.stringify(mockWorkspaceCredentialsDetails);
 
 beforeEach(() => {
   localStorage.setItem(localStorageKey, localStorageValue);
-  localStorageService.setUser(mockUserSettings);
+  localStorage.setItem(LocalStorageItem.UserID, userId);
   localStorage.setItem(LocalStorageItem.WorkspaceCredentials, stringifyMockCredentials);
   localStorage.setItem(LocalStorageItem.B2BworkspaceId, mockWorkspaceId);
   localStorage.setItem(LocalStorageItem.Theme, 'starwars');
@@ -131,27 +93,6 @@ describe('Testing the local storage service', () => {
     });
   });
 
-  describe('Fetching user data from local storage', () => {
-    it('When the user data exists in local storage, then the user is returned', () => {
-      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
-
-      const userFromLocalStorage = localStorageService.getUser();
-
-      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.User);
-      expect(userFromLocalStorage).toStrictEqual(JSON.parse(stringifyMockedUser));
-    });
-
-    it('When the user data does not exist in local storage, then nothing (null) is returned', () => {
-      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
-
-      localStorage.removeItem(LocalStorageItem.User);
-      const userFromLocalStorage = localStorageService.getUser();
-
-      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.User);
-      expect(userFromLocalStorage).toBeNull();
-    });
-  });
-
   describe('Workspaces', () => {
     describe('Get workspace credentials', () => {
       it('When there are credentials from a workspace, then the credentials are returned', () => {
@@ -209,7 +150,6 @@ describe('Testing the local storage service', () => {
   });
 
   describe('Backup key acknowledgment', () => {
-    const userId = mockUserSettings.uuid;
     const seenAtKey = `backup_key_seen_at_${userId}`;
     const acknowledgedKey = `backup_key_acknowledged_at_${userId}`;
 
@@ -278,7 +218,6 @@ describe('Testing the local storage service', () => {
 
       expect(clearSpy).toHaveBeenCalledTimes(1);
 
-      const userId = mockUserSettings.uuid;
       const seenAtKey = `backup_key_seen_at_${userId}`;
       const acknowledgedKey = `backup_key_acknowledged_at_${userId}`;
       expect(localStorage.getItem(seenAtKey)).toBeNull();

@@ -9,6 +9,7 @@ import { AppDispatch } from 'app/store';
 import localStorageService from './local-storage.service';
 import { workspacesActions } from 'app/store/slices/workspaces/workspacesStore';
 import envService from './env.service';
+import encryptedStorageService from './encrypted-storage.service';
 
 const browserHistoryConfig: BrowserHistoryBuildOptions = {
   forceRefresh: false,
@@ -74,7 +75,7 @@ const navigationService = {
     }
   },
   setWorkspaceFromParams(workspaceThunks, dispatch: AppDispatch, updateUrl = true): void {
-    const user = localStorageService.getUser();
+    const user = encryptedStorageService.getUser();
     const params = new URLSearchParams(globalThis.location.search);
     const [currentWorkspaceUuid] = params.getAll('workspaceid');
     user &&
