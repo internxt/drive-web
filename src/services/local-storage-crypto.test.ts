@@ -120,7 +120,7 @@ describe('decryptEntry', () => {
     await createNewKey();
     const ciphertext = await encryptEntry(mockMnemonic);
 
-    const bytes = Uint8Array.fromBase64(ciphertext);
+    const bytes = Buffer.from(ciphertext, 'base64');
     bytes[bytes.length - 1] ^= 0xff;
     const tampered = Buffer.from(bytes).toString('base64');
 
