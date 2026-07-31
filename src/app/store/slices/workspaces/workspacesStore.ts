@@ -121,7 +121,8 @@ const setSelectedWorkspace = createAsyncThunk<
     if (state.workspaces.workspaces.length === 0) {
       await dispatch(fetchWorkspaces());
     }
-    const workspace = state.workspaces.workspaces.find((workspace) => workspace.workspace.id === workspaceId);
+    const currentState = getState();
+    const workspace = currentState.workspaces.workspaces.find((workspace) => workspace.workspace.id === workspaceId);
     if (workspace) {
       localStorageService.setB2BWorkspace(workspace.workspace.id, workspace.workspaceUser.key);
       dispatch(workspacesActions.setSelectedWorkspace(workspace ?? null));
