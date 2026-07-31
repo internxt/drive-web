@@ -112,9 +112,9 @@ describe('backupKeyUtils', () => {
       } as UserSettings;
 
       vi.mocked(localStorageService.get).mockReturnValue(mockMnemonic);
-      vi.mocked(encryptedStorageService.getUser).mockReturnValue(mockUser);
+      vi.mocked(encryptedStorageService.getUser).mockResolvedValue(mockUser);
 
-      handleExportBackupKey(mockTranslate);
+      await handleExportBackupKey(mockTranslate);
 
       expect(saveAs).toHaveBeenCalledWith(expect.any(Blob), 'INTERNXT-BACKUP-KEY.txt');
 
@@ -172,9 +172,9 @@ describe('backupKeyUtils', () => {
       } as UserSettings;
 
       vi.mocked(localStorageService.get).mockReturnValue(mockMnemonic);
-      vi.mocked(encryptedStorageService.getUser).mockReturnValue(mockUser);
+      vi.mocked(encryptedStorageService.getUser).mockResolvedValue(mockUser);
 
-      handleExportBackupKey(mockTranslate);
+      await handleExportBackupKey(mockTranslate);
 
       expect(encryptedStorageService.getUser).toHaveBeenCalled();
 
@@ -232,9 +232,9 @@ describe('backupKeyUtils', () => {
       } as UserSettings;
 
       vi.mocked(localStorageService.get).mockReturnValue(mockMnemonic);
-      vi.mocked(encryptedStorageService.getUser).mockReturnValue(mockUser);
+      vi.mocked(encryptedStorageService.getUser).mockResolvedValue(mockUser);
 
-      handleExportBackupKey(mockTranslate);
+      await handleExportBackupKey(mockTranslate);
 
       const blobCall = vi.mocked(saveAs).mock.calls[0][0] as Blob;
       const blobContent = await blobCall.text();
@@ -243,11 +243,11 @@ describe('backupKeyUtils', () => {
       expect(parsedBackup.publicKeys).toBeUndefined();
     });
 
-    it('should handle missing mnemonic', () => {
+    it('should handle missing mnemonic', async () => {
       vi.mocked(localStorageService.get).mockReturnValue(null);
-      vi.mocked(encryptedStorageService.getUser).mockReturnValue({} as any);
+      vi.mocked(encryptedStorageService.getUser).mockResolvedValue({} as UserSettings);
 
-      handleExportBackupKey(mockTranslate);
+      await handleExportBackupKey(mockTranslate);
 
       expect(saveAs).not.toHaveBeenCalled();
 
@@ -257,11 +257,11 @@ describe('backupKeyUtils', () => {
       });
     });
 
-    it('should handle missing user', () => {
+    it('should handle missing user', async () => {
       vi.mocked(localStorageService.get).mockReturnValue('test-mnemonic');
-      vi.mocked(encryptedStorageService.getUser).mockReturnValue(null);
+      vi.mocked(encryptedStorageService.getUser).mockResolvedValue(null);
 
-      handleExportBackupKey(mockTranslate);
+      await handleExportBackupKey(mockTranslate);
 
       expect(saveAs).not.toHaveBeenCalled();
 
@@ -271,7 +271,7 @@ describe('backupKeyUtils', () => {
       });
     });
 
-    it('should handle missing key properties', () => {
+    it('should handle missing key properties', async () => {
       const mockMnemonic = 'test mnemonic';
       const mockUser = {
         privateKey: 'test-private-key',
@@ -300,9 +300,9 @@ describe('backupKeyUtils', () => {
         emailVerified: false,
       } as UserSettings;
 
-      vi.mocked(encryptedStorageService.getUser).mockReturnValue(mockUser);
+      vi.mocked(encryptedStorageService.getUser).mockResolvedValue(mockUser);
 
-      handleExportBackupKey(mockTranslate);
+      await handleExportBackupKey(mockTranslate);
 
       expect(saveAs).toHaveBeenCalled();
 

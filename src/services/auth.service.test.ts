@@ -7,7 +7,7 @@ import { SdkFactory } from 'app/core/factory/sdk';
 import * as keysService from 'app/crypto/services/keys.service';
 import * as pgpService from 'app/crypto/services/pgp.service';
 import { encryptText, encryptTextWithKey } from 'app/crypto/services/utils';
-import { userActions } from 'app/store/slices/user';
+import { userThunks } from 'app/store/slices/user';
 import { validateMnemonic } from 'bip39';
 import { Buffer } from 'node:buffer';
 import errorService from 'services/error.service';
@@ -72,11 +72,9 @@ beforeAll(() => {
 
   vi.mock('app/store/slices/user', () => ({
     initializeUserThunk: vi.fn(),
-    userActions: {
-      setUser: vi.fn(),
-    },
     userThunks: {
       initializeUserThunk: vi.fn(),
+      setUserThunk: vi.fn(),
     },
   }));
 
@@ -375,7 +373,7 @@ describe('signUp', () => {
 
     vi.spyOn(globalThis, 'fetch').mockReturnValue(Promise.resolve(mockRes));
 
-    const spy = vi.spyOn(userActions, 'setUser');
+    const spy = vi.spyOn(userThunks, 'setUserThunk');
 
     const result = await authService.signUp(params);
 
@@ -483,7 +481,7 @@ describe('signUp', () => {
 
     vi.spyOn(globalThis, 'fetch').mockReturnValue(Promise.resolve(mockRes));
 
-    const spy = vi.spyOn(userActions, 'setUser');
+    const spy = vi.spyOn(userThunks, 'setUserThunk');
 
     const result = await authService.signUp(params);
 
@@ -548,7 +546,7 @@ describe('Change password', () => {
     };
 
     const mockUser = mockClearUser as UserSettings;
-    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(mockUser);
+    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue(mockUser);
 
     const mockSalt = 'mockSalt';
     const encryptedSalt = encryptText(mockSalt);
@@ -598,7 +596,7 @@ describe('Change password', () => {
     };
 
     const mockUser = mockClearUser as UserSettings;
-    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(mockUser);
+    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue(mockUser);
 
     const mockSalt = 'mockSalt';
     const encryptedSalt = encryptText(mockSalt);
@@ -657,7 +655,7 @@ describe('Change password', () => {
     };
 
     const mockUser = mockClearUser as UserSettings;
-    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(mockUser);
+    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue(mockUser);
 
     const encryptedSalt = encryptText('mockSalt');
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
@@ -705,7 +703,7 @@ describe('Change password', () => {
     };
 
     const mockUser = mockClearUser as UserSettings;
-    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(mockUser);
+    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue(mockUser);
 
     const encryptedSalt = encryptText('mockSalt');
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
@@ -997,7 +995,7 @@ describe('areCredentialsCorrect', () => {
 
     vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(mockToken);
 
-    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({
+    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue({
       email: mockEmail,
     } as UserSettings);
 
@@ -1187,7 +1185,7 @@ describe('getSalt', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ email: 'test@test.com' } as UserSettings);
+    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue({ email: 'test@test.com' } as UserSettings);
 
     const salt = await authService.getSalt();
 
@@ -1206,7 +1204,7 @@ describe('getPasswordDetails', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ email: 'test@test.com' } as UserSettings);
+    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue({ email: 'test@test.com' } as UserSettings);
 
     const result = await authService.getPasswordDetails('test-password');
 
@@ -1225,7 +1223,7 @@ describe('getPasswordDetails', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ email: 'test@test.com' } as UserSettings);
+    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue({ email: 'test@test.com' } as UserSettings);
 
     await expect(authService.getPasswordDetails('test-password')).rejects.toThrow(
       'Internal server error. Please reload.',
@@ -1284,7 +1282,7 @@ describe('userHas2FAStored', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ email: 'test@test.com' } as UserSettings);
+    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue({ email: 'test@test.com' } as UserSettings);
 
     const result = await authService.userHas2FAStored();
 

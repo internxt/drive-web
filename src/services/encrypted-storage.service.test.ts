@@ -60,8 +60,7 @@ describe('Testing the encrypted storage service', () => {
       expect(localStorage.getItem(key)).toBeNull();
     });
   });
-
-  describe('Fetching user data from local storage', () => {
+  describe('Get and set user', () => {
     const mockUserSettings: UserSettings = {
       userId: 'user_123',
       uuid: 'uuid-1234-5678',
@@ -100,24 +99,30 @@ describe('Testing the encrypted storage service', () => {
       emailVerified: true,
     };
 
-    const stringifyMockedUser = JSON.stringify(mockUserSettings);
-    test('When the user data exists in local storage, then the user is returned', () => {
-      encryptedStorageService.setUser(mockUserSettings);
+    test('When the user data exists in local storage, then the user is returned', async () => {
+      const key = LocalStorageProtectedItem.EncryptedUser;
+
+      await encryptedStorageService.setUser(mockUserSettings);
+      const data = localStorage.getItem(key);
+      console.log('TEST HERE', data);
+      encryptedStorageService.clear();
+      localStorage.setItem(key, data as string);
+
       const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
+      const userFromLocalStorage = await encryptedStorageService.getUser();
 
-      const userFromLocalStorage = encryptedStorageService.getUser();
-
-      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageProtectedItem.User);
-      expect(userFromLocalStorage).toStrictEqual(JSON.parse(stringifyMockedUser));
+      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(key);
+      expect(data).not.toBe(JSON.stringify(mockUserSettings));
+      expect(userFromLocalStorage).toStrictEqual(mockUserSettings);
     });
 
-    test('When the user data does not exist in local storage, then nothing (null) is returned', () => {
+    test('When the user data does not exist in local storage, then nothing (null) is returned', async () => {
       const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
 
-      localStorage.removeItem(LocalStorageProtectedItem.User);
-      const userFromLocalStorage = encryptedStorageService.getUser();
+      encryptedStorageService.clear();
+      const userFromLocalStorage = await encryptedStorageService.getUser();
 
-      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageProtectedItem.User);
+      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageProtectedItem.EncryptedUser);
       expect(userFromLocalStorage).toBeNull();
     });
   });

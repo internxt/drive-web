@@ -137,7 +137,7 @@ export async function trackSignUp(uuid: string): Promise<void> {
 
 export async function trackPaymentConversion(): Promise<void> {
   try {
-    const userSettings = encryptedStorageService.getUser();
+    const userSettings = await encryptedStorageService.getUser();
     if (!userSettings) {
       console.warn('[Impact Service] No user settings found');
       return;

@@ -39,8 +39,8 @@ export interface BackupData {
  * @returns {void}
  * @throws {Error} Implicitly throws if file saving fails
  */
-export function handleExportBackupKey(translate) {
-  const user = encryptedStorageService.getUser();
+export async function handleExportBackupKey(translate) {
+  const user = await encryptedStorageService.getUser();
   const mnemonic = user?.mnemonic;
 
   if (!mnemonic || !user) {

@@ -319,7 +319,7 @@ describe('downloadManagerService', () => {
     };
     const mockTaskId = 'mock-task-id';
 
-    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(mockUser);
+    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue(mockUser);
     const createTaskSpy = vi.spyOn(tasksService, 'create').mockReturnValue(mockTaskId);
     vi.spyOn(tasksService, 'updateTask').mockRejectedValue(new Error('It should create task'));
 
@@ -358,7 +358,7 @@ describe('downloadManagerService', () => {
     };
     const mockTaskId = 'mock-task-id';
 
-    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(mockUser);
+    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue(mockUser);
     const createTaskSpy = vi.spyOn(tasksService, 'create').mockReturnValue(mockTaskId);
     vi.spyOn(tasksService, 'updateTask').mockRejectedValue(new Error('It should create task'));
 
@@ -398,7 +398,7 @@ describe('downloadManagerService', () => {
     };
     const mockTaskId = 'mock-task-id';
 
-    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(mockUser);
+    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue(mockUser);
     const createTaskSpy = vi.spyOn(tasksService, 'create').mockReturnValue(mockTaskId);
     vi.spyOn(tasksService, 'updateTask').mockRejectedValue(new Error('It should create task'));
 
@@ -442,7 +442,7 @@ describe('downloadManagerService', () => {
       workspaceCredentials: null,
     };
 
-    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(mockUser);
+    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue(mockUser);
     const createTaskSpy = vi.spyOn(tasksService, 'create').mockRejectedValue(new Error('It should update task'));
     const updateTaskSpy = vi.spyOn(tasksService, 'updateTask').mockReturnValue();
 
@@ -484,7 +484,7 @@ describe('downloadManagerService', () => {
     };
     const mockTaskId = 'mock-task-id';
 
-    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(mockUser);
+    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue(mockUser);
     vi.spyOn(tasksService, 'create').mockReturnValue(mockTaskId);
     vi.spyOn(tasksService, 'updateTask').mockRejectedValue(new Error('It should create task'));
 
@@ -538,7 +538,7 @@ describe('downloadManagerService', () => {
     };
     const mockTaskId = 'mock-task-id';
 
-    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(mockUser);
+    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue(mockUser);
     vi.spyOn(tasksService, 'create').mockReturnValue(mockTaskId);
     vi.spyOn(tasksService, 'updateTask').mockRejectedValue(new Error('It should create task'));
 

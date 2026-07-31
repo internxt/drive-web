@@ -160,7 +160,7 @@ export const uploadThumbnail = async (
   updateProgressCallback: (progress: number) => void,
   abortController?: AbortController,
 ): Promise<Thumbnail> => {
-  const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(isTeam);
+  const { bridgeUser, bridgePass, encryptionKey, bucketId } = await getEnvironmentConfig(isTeam);
 
   if (!bucketId) {
     notificationsService.show({ text: 'Login again to start uploading files', type: ToastType.Warning });
@@ -285,7 +285,7 @@ export const downloadThumbnail = async (thumbnailToDownload: Thumbnail, isWorksp
   let useWorkspaceCredentials = isWorkspace;
 
   if (isWorkspace) {
-    const user = encryptedStorageService.getUser();
+    const user = await encryptedStorageService.getUser();
     if (user) {
       const isInPersonalBucket = thumbnailToDownload.bucket_id === user.bucket;
 

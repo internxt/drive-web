@@ -4,7 +4,7 @@ import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
 import { parseAndDecryptUserKeys } from 'app/crypto/services/keys.service';
-import { userActions, userThunks } from 'app/store/slices/user';
+import { userThunks } from 'app/store/slices/user';
 import { planThunks } from 'app/store/slices/plan';
 import { AppDispatch } from 'app/store';
 import encryptedStorageService from 'services/encrypted-storage.service';
@@ -65,7 +65,7 @@ export const guestSignupOnSubmit = async ({
       },
     } as UserSettings;
 
-    dispatch(userActions.setUser(user));
+    dispatch(userThunks.setUserThunk(user));
     await dispatch(userThunks.initializeUserThunk());
     dispatch(planThunks.initializeThunk());
 

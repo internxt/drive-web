@@ -66,38 +66,48 @@ const FileVideoViewer = ({
   useEffect(() => {
     if (disableVideoStream || !containerRef.current) return;
 
-    const user = encryptedStorageService.getUser();
-    const mnemonic = user?.mnemonic ?? '';
-    const bridgeUser = user?.bridgeUser ?? '';
-    const userId = user?.userId ?? '';
+    let session: VideoStreamingSession | null = null;
+    let cancelled = false;
 
-    if (!bridgeUser || !userId || !mnemonic) {
-      console.error('[FileVideoViewer] Missing credentials');
-      handleOnError('Missing credentials');
-      return;
-    }
+    const setup = async () => {
+      const user = await encryptedStorageService.getUser();
+      const mnemonic = user?.mnemonic ?? '';
+      const bridgeUser = user?.bridgeUser ?? '';
+      const userId = user?.userId ?? '';
 
-    if (!file.fileId) {
-      console.error('[FileVideoViewer] Missing fileId');
-      handleOnError('Missing fileId');
-      return;
-    }
+      if (!bridgeUser || !userId || !mnemonic) {
+        console.error('[FileVideoViewer] Missing credentials');
+        handleOnError('Missing credentials');
+        return;
+      }
 
-    const session = new VideoStreamingSession({
-      fileId: file.fileId,
-      bucketId: file.bucket,
-      fileSize: file.size,
-      fileType: file.type,
-      mnemonic: file.mnemonic ?? mnemonic,
-      credentials: file.credentials
-        ? { user: file.credentials?.user, pass: file.credentials?.pass }
-        : { user: bridgeUser, pass: userId },
-    });
+      if (!file.fileId) {
+        console.error('[FileVideoViewer] Missing fileId');
+        handleOnError('Missing fileId');
+        return;
+      }
 
-    session.init(containerRef.current, handleOnReady, handleOnError);
+      if (cancelled || !containerRef.current) return;
+
+      session = new VideoStreamingSession({
+        fileId: file.fileId,
+        bucketId: file.bucket,
+        fileSize: file.size,
+        fileType: file.type,
+        mnemonic: file.mnemonic ?? mnemonic,
+        credentials: file.credentials
+          ? { user: file.credentials?.user, pass: file.credentials?.pass }
+          : { user: bridgeUser, pass: userId },
+      });
+
+      session.init(containerRef.current, handleOnReady, handleOnError);
+    };
+
+    setup();
 
     return () => {
-      session.destroy();
+      cancelled = true;
+      session?.destroy();
       setCanPlay(false);
     };
   }, [file.fileId, file.bucket, file.size, file.type, disableVideoStream]);
