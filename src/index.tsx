@@ -6,7 +6,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import plugins from './app/core/plugins';
 import { store } from './app/store';
-import { userActions } from './app/store/slices/user';
+import { userThunks } from './app/store/slices/user';
 import { planThunks } from './app/store/slices/plan';
 import storageThunks from './app/store/slices/storage/storage.thunks';
 import { taskManagerThunks } from './app/store/slices/taskManager';
@@ -70,7 +70,7 @@ async function bootstrap() {
   SdkFactory.initialize(store.dispatch, localStorageService, encryptedStorageService);
 
   // Initializes store
-  store.dispatch(userActions.initialize());
+  store.dispatch(userThunks.initializeThunk());
   store.dispatch(storageThunks.initializeThunk());
   store.dispatch(planThunks.initializeThunk());
   store.dispatch(taskManagerThunks.initializeThunk());

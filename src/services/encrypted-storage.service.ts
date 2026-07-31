@@ -1,7 +1,9 @@
 import { decryptEntry, encryptEntry, ensureKeyExists } from './local-storage-crypto';
 import { LocalStorageItem, LocalStorageProtectedItem } from 'app/core/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 let tokenCache: string | null = null;
+let userCache: UserSettings | null = null;
 
 const getAndDecrypt = async (key: LocalStorageProtectedItem): Promise<string | null> => {
   const item = localStorage.getItem(key);
@@ -11,6 +13,30 @@ const getAndDecrypt = async (key: LocalStorageProtectedItem): Promise<string | n
 const setAndEncrypt = async (key: LocalStorageProtectedItem, value: string): Promise<void> => {
   const encryptedValue = await encryptEntry(value);
   localStorage.setItem(key, encryptedValue);
+};
+
+const getUser = async (): Promise<UserSettings | null> => {
+  if (userCache !== null) return userCache;
+
+  try {
+    const value = await getAndDecrypt(LocalStorageProtectedItem.EncryptedUser);
+    if (!value) {
+      userCache = null;
+    } else {
+      const parsed = JSON.parse(value) as UserSettings;
+      userCache = { ...parsed, createdAt: new Date(parsed.createdAt) };
+    }
+  } catch {
+    userCache = null;
+  }
+
+  return userCache;
+};
+
+const setUser = async (user: UserSettings): Promise<void> => {
+  userCache = user;
+  localStorage.setItem(LocalStorageItem.UserID, user.userId);
+  await setAndEncrypt(LocalStorageProtectedItem.EncryptedUser, JSON.stringify(user));
 };
 
 const setToken = async (token: string): Promise<void> => {
@@ -41,6 +67,9 @@ const getToken = (): string | undefined => tokenCache ?? undefined;
 const clear = (): void => {
   tokenCache = null;
   localStorage.removeItem(LocalStorageProtectedItem.EncryptedToken);
+  userCache = null;
+  localStorage.removeItem(LocalStorageProtectedItem.EncryptedUser);
+  localStorage.removeItem(LocalStorageItem.UserID);
 };
 
 const encryptedStorageService = {
@@ -48,6 +77,8 @@ const encryptedStorageService = {
   getToken,
   setToken,
   clear,
+  getUser,
+  setUser,
 };
 
 export default encryptedStorageService;
@@ -57,4 +88,6 @@ export interface EncryptedStorageService {
   setToken: (token: string) => Promise<void>;
   getToken: () => string | undefined;
   clear: () => void;
+  getUser: () => Promise<UserSettings | null>;
+  setUser: (user: UserSettings) => Promise<void>;
 }

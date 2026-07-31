@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { LocalStorageProtectedItem } from 'app/core/types';
 import encryptedStorageService from './encrypted-storage.service';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 beforeEach(() => {
   vi.restoreAllMocks();
@@ -57,6 +58,72 @@ describe('Testing the encrypted storage service', () => {
       expect(encryptedStorageService.getToken()).toBeUndefined();
       expect(removeItemSpy).toHaveBeenCalledWith(key);
       expect(localStorage.getItem(key)).toBeNull();
+    });
+  });
+  describe('Get and set user', () => {
+    const mockUserSettings: UserSettings = {
+      userId: 'user_123',
+      uuid: 'uuid-1234-5678',
+      email: 'test.user@example.com',
+      name: 'Test',
+      lastname: 'User',
+      username: 'testuser',
+      bridgeUser: 'bridge_user',
+      bucket: 'user-bucket',
+      backupsBucket: 'backups-bucket',
+      root_folder_id: 1,
+      rootFolderId: 'folder-id-123',
+      rootFolderUuid: 'folder-uuid-456',
+      sharedWorkspace: false,
+      credit: 100,
+      mnemonic: 'test mnemonic phrase',
+      privateKey: 'private-key-mock',
+      publicKey: 'public-key-mock',
+      revocationKey: 'revocation-key-mock',
+      keys: {
+        ecc: {
+          publicKey: 'ecc-public-key-mock',
+          privateKey: 'ecc-private-key-mock',
+        },
+        kyber: {
+          publicKey: 'kyber-public-key-mock',
+          privateKey: 'kyber-private-key-mock',
+        },
+      },
+      teams: true,
+      appSumoDetails: null,
+      registerCompleted: true,
+      hasReferralsProgram: true,
+      createdAt: new Date('2023-06-01T12:00:00.000Z'),
+      avatar: null,
+      emailVerified: true,
+    };
+
+    test('When the user data exists in local storage, then the user is returned', async () => {
+      const key = LocalStorageProtectedItem.EncryptedUser;
+
+      await encryptedStorageService.setUser(mockUserSettings);
+      const data = localStorage.getItem(key);
+      console.log('TEST HERE', data);
+      encryptedStorageService.clear();
+      localStorage.setItem(key, data as string);
+
+      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
+      const userFromLocalStorage = await encryptedStorageService.getUser();
+
+      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(key);
+      expect(data).not.toBe(JSON.stringify(mockUserSettings));
+      expect(userFromLocalStorage).toStrictEqual(mockUserSettings);
+    });
+
+    test('When the user data does not exist in local storage, then nothing (null) is returned', async () => {
+      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
+
+      encryptedStorageService.clear();
+      const userFromLocalStorage = await encryptedStorageService.getUser();
+
+      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageProtectedItem.EncryptedUser);
+      expect(userFromLocalStorage).toBeNull();
     });
   });
 });

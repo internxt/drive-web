@@ -5,9 +5,8 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import AnimatedBackground from 'components/AnimatedBackground';
 import { isMobile } from 'react-device-detect';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import authService from 'services/auth.service';
-import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
 import encryptedStorageService from 'services/encrypted-storage.service';
 
@@ -15,7 +14,11 @@ const DEEPLINK_SUCCESS_REDIRECT_BASE = 'internxt://login-success';
 
 export default function UniversalLinkView(): JSX.Element {
   const { translate } = useTranslationContext();
-  const user = useMemo(() => localStorageService.getUser(), []);
+  const [user, setUser] = useState<UserSettings | null>(null);
+
+  useEffect(() => {
+    encryptedStorageService.getUser().then(setUser);
+  }, []);
 
   const urlParams = new URLSearchParams(globalThis.location.search);
   const redirectUri = urlParams.get('redirectUri');

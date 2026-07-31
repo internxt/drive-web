@@ -124,7 +124,8 @@ export enum AppView {
 }
 
 export enum LocalStorageItem {
-  User = 'xUser',
+  UserID = 'xUserID',
+  /** @deprecated Use EncryptedToken via encryptedStorageService instead. Kept only for migration. */
   NewToken = 'xNewToken',
   Language = 'i18nextLng',
   ShowSummerBanner = 'showSummerBanner',
@@ -163,7 +164,7 @@ export enum LocalStorageItem {
 }
 
 export enum LocalStorageProtectedItem {
-  User = 'xUser',
+  EncryptedUser = 'xEncryptedUser',
   EncryptedToken = 'xTokenEncrypted',
   B2Bworkspace = 'b2bWorkspace',
   WorkspaceCredentials = 'workspace_credentials',

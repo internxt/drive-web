@@ -6,6 +6,7 @@ import envService from 'services/env.service';
 import localStorageService from 'services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { LocalStorageItem } from 'app/core/types';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 interface BaseTrackParams {
   planId: string;
@@ -139,9 +140,9 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
   }
 }
 
-function trackPurchase(): void {
+async function trackPurchase(): Promise<void> {
   try {
-    const userSettings = localStorageService.getUser() as UserSettings;
+    const userSettings = await encryptedStorageService.getUser();
     if (!userSettings) {
       console.warn('[GA Service] No user settings found, aborting purchase tracking');
       return;

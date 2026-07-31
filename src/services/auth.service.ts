@@ -32,7 +32,7 @@ import {
 import databaseService from 'app/database/services/database.service';
 import { AppDispatch } from 'app/store';
 import { planThunks } from 'app/store/slices/plan';
-import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/user';
+import { initializeUserThunk, userThunks } from 'app/store/slices/user';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { generateMnemonic, validateMnemonic } from 'bip39';
 import errorService from 'services/error.service';
@@ -232,7 +232,7 @@ export const readReferalCookie = (): string | undefined => {
 };
 
 export const getSalt = async (): Promise<string> => {
-  const email = localStorageService.getUser()?.email;
+  const email = (await encryptedStorageService.getUser())?.email;
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(String(email));
   return decryptText(securityDetails.encryptedSalt);
@@ -380,7 +380,7 @@ const resetAccountWithToken = async (token: string | undefined, newPassword: str
 };
 
 export const changePassword = async (newPassword: string, currentPassword: string): Promise<void> => {
-  const user = localStorageService.getUser() as UserSettings;
+  const user = (await encryptedStorageService.getUser()) as UserSettings;
 
   const { encryptedCurrentPassword } = await getPasswordDetails(currentPassword);
 
@@ -428,8 +428,8 @@ export const changePassword = async (newPassword: string, currentPassword: strin
     });
 };
 
-export const userHas2FAStored = (): Promise<SecurityDetails> => {
-  const email = localStorageService.getUser()?.email;
+export const userHas2FAStored = async (): Promise<SecurityDetails> => {
+  const email = (await encryptedStorageService.getUser())?.email;
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   return authClient.securityDetails(<string>email);
 };
@@ -576,7 +576,7 @@ export const signUp = async (params: SignUpParams) => {
     },
   } as UserSettings;
 
-  dispatch(userActions.setUser(user));
+  dispatch(userThunks.setUserThunk(user));
   await dispatch(userThunks.initializeUserThunk());
 
   if (!redeemCodeObject) dispatch(planThunks.initializeThunk());
@@ -589,7 +589,7 @@ export const signUp = async (params: SignUpParams) => {
 export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
   const { email, password, twoFactorCode, dispatch, loginType = 'web' } = params;
   const { newToken, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType);
-  dispatch(userActions.setUser(user));
+  dispatch(userThunks.setUserThunk(user));
 
   try {
     dispatch(planThunks.initializeThunk());
@@ -602,7 +602,7 @@ export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
     throw new Error(error.message);
   }
 
-  userActions.setUser(user);
+  userThunks.setUserThunk(user);
 
   return { user, mnemonic, newToken };
 };

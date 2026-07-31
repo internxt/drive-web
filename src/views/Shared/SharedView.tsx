@@ -2,8 +2,7 @@ import _ from 'utils/lodash';
 import { connect, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import { ChangeEvent, useEffect, useLayoutEffect, useRef } from 'react';
-import localStorageService from 'services/local-storage.service';
+import { ChangeEvent, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { DriveItemData } from '../../app/drive/types';
 import { useTranslationContext } from '../../app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../app/notifications/services/notifications.service';
@@ -67,6 +66,8 @@ import {
   isItemOwnedByCurrentUser,
 } from './utils/sharedViewUtils';
 import { ShareDialogWrapper } from 'app/drive/components/ShareDialog/ShareDialogWrapper';
+import encryptedStorageService from 'services/encrypted-storage.service';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 export const MAX_SHARED_NAME_LENGTH = 32;
 
@@ -91,7 +92,11 @@ function SharedView({
   const dispatch = useAppDispatch();
   const history = useHistory();
 
-  const currentUser = localStorageService.getUser();
+  const [currentUser, setCurrentUser] = useState<UserSettings | null>(null);
+
+  useEffect(() => {
+    encryptedStorageService.getUser().then(setCurrentUser);
+  }, []);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const urlParams = new URLSearchParams(globalThis.location.search);

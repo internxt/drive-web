@@ -1,7 +1,6 @@
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { DriveFileData, DriveItemData } from 'app/drive/types';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
-import localStorageService from 'services/local-storage.service';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import errorService from 'services/error.service';
 import { OrderDirection } from 'app/core/types';
@@ -31,6 +30,8 @@ import { MenuItemType } from '@internxt/ui';
 import { DownloadManager } from 'app/network/DownloadManager';
 import { getIsTypeAllowedAndFileExtensionGroupValues } from './utils/fileViewerUtils';
 import { FileExtensionGroup } from 'app/drive/types/file-types';
+import encryptedStorageService from 'services/encrypted-storage.service';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 const SPECIAL_MIME_TYPES = ['heic'];
 
@@ -72,7 +73,11 @@ const FileViewerWrapper = ({
 
   const [blob, setBlob] = useState<Blob | null>(null);
 
-  const user = localStorageService.getUser();
+  const [user, setCurrentUser] = useState<UserSettings | null>(null);
+
+  useEffect(() => {
+    encryptedStorageService.getUser().then(setCurrentUser);
+  }, []);
 
   const driveItemActions = useDriveItemActions(currentFile);
   const fileContentManager = getFileContentManager(currentFile, downloadFile);

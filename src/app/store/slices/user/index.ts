@@ -2,7 +2,7 @@ import { UpdateProfilePayload } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
-import { authService, localStorageService, navigationService, userService } from 'services';
+import { authService, navigationService, userService } from 'services';
 import { RootState } from '../..';
 import { saveAvatarToDatabase } from '../../../../views/NewSettings/components/Sections/Account/Account/components/AvatarWrapper';
 import { AppView } from '../../../core/types';
@@ -40,6 +40,25 @@ const initialState: UserState = {
   userTierFeatures: undefined,
 };
 
+const initializeThunk = createAsyncThunk<void, undefined, { state: RootState }>(
+  'user/initialize',
+  async (_, { dispatch }) => {
+    const user = await encryptedStorageService.getUser();
+    if (user) {
+      dispatch(userActions.setUser(user));
+    }
+    dispatch(userActions.setIsUserInitialized(true));
+  },
+);
+
+const setUserThunk = createAsyncThunk<void, UserSettings, { state: RootState }>(
+  'user/setUser',
+  async (user, { dispatch }) => {
+    dispatch(userActions.setUser(user));
+    await encryptedStorageService.setUser(user);
+  },
+);
+
 export const initializeUserThunk = createAsyncThunk<
   void,
   { redirectToLogin: boolean } | undefined,
@@ -63,7 +82,7 @@ export const initializeUserThunk = createAsyncThunk<
     dispatch(getUserTierFeaturesThunk());
     dispatch(refreshAvatarThunk());
     await dispatch(referralsThunks.initializeThunk());
-    dispatch(setIsUserInitialized(true));
+    dispatch(userActions.setIsUserInitialized(true));
   } else if (payload.redirectToLogin) {
     navigationService.push(AppView.Login);
   }
@@ -97,7 +116,7 @@ export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean 
         const { emailVerified, name, lastname, uuid, createdAt } = user;
         const avatar = await refreshAvatar(uuid);
 
-        dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname, createdAt }));
+        dispatch(userThunks.setUserThunk({ ...currentUser, avatar, emailVerified, name, lastname, createdAt }));
         await encryptedStorageService.setToken(newToken);
       }
     } catch (err) {
@@ -135,7 +154,7 @@ export const refreshAvatarThunk = createAsyncThunk<void, { forceRefresh?: boolea
         const refreshedAvatar = await refreshAvatar(uuid);
 
         dispatch(
-          userActions.setUser({
+          userThunks.setUserThunk({
             ...currentUser,
             avatar: refreshedAvatar,
           }),
@@ -170,7 +189,7 @@ export const updateUserProfileThunk = createAsyncThunk<void, Required<UpdateProf
     if (!currentUser) throw new Error('User is not defined');
 
     await userService.updateUserProfile(payload);
-    dispatch(userActions.setUser({ ...currentUser, ...payload }));
+    dispatch(userThunks.setUserThunk({ ...currentUser, ...payload }));
   },
 );
 
@@ -183,7 +202,7 @@ export const updateUserAvatarThunk = createAsyncThunk<void, { avatar: Blob }, { 
     const { avatar } = await userService.updateUserAvatar(payload);
 
     await saveAvatarToDatabase(avatar, payload.avatar);
-    dispatch(userActions.setUser({ ...currentUser, avatar }));
+    dispatch(userThunks.setUserThunk({ ...currentUser, avatar }));
   },
 );
 
@@ -195,7 +214,7 @@ export const deleteUserAvatarThunk = createAsyncThunk<void, void, { state: RootS
 
     await deleteDatabaseProfileAvatar();
     await userService.deleteUserAvatar();
-    dispatch(userActions.setUser({ ...currentUser, avatar: null }));
+    dispatch(userThunks.setUserThunk({ ...currentUser, avatar: null }));
   },
 );
 
@@ -204,7 +223,11 @@ const updateUserEmailCredentialsThunk = createAsyncThunk<
   { newUserData: UserSettings; newToken: string },
   { state: RootState }
 >('user/updateUser', async (payload, { dispatch, getState }) => {
-  const currentUser = getState().user.user as UserSettings;
+  const currentUser = getState().user.user;
+
+  if (!currentUser) {
+    throw new Error('No current user in state');
+  }
   const { newUserData, newToken } = payload;
 
   const user = {
@@ -215,16 +238,13 @@ const updateUserEmailCredentialsThunk = createAsyncThunk<
   };
   await encryptedStorageService.setToken(newToken);
   dispatch(userActions.setUser(user));
+  await encryptedStorageService.setUser(user);
 });
 
 export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    initialize: (state: UserState) => {
-      state.user = localStorageService.getUser() || undefined;
-      state.isAuthenticated = !!state.user;
-    },
     setIsUserInitialized: (state: UserState, action: PayloadAction<boolean>) => {
       state.isInitialized = action.payload;
     },
@@ -234,8 +254,6 @@ export const userSlice = createSlice({
     setUser: (state: UserState, action: PayloadAction<UserSettings>) => {
       state.isAuthenticated = !!action.payload;
       state.user = action.payload;
-
-      localStorageService.setUser(action.payload);
     },
     resetState: (state: UserState) => {
       Object.assign(state, initialState);
@@ -284,10 +302,11 @@ export const userSelectors = {
   hasReferralsProgram: (state: RootState): boolean => !!state.user.user?.hasReferralsProgram,
 };
 
-export const { initialize, resetState, setIsUserInitialized } = userSlice.actions;
-export const userActions = userSlice.actions;
+const userActions = userSlice.actions;
 
 export const userThunks = {
+  setUserThunk,
+  initializeThunk,
   initializeUserThunk,
   refreshUserThunk,
   logoutThunk,
