@@ -196,7 +196,7 @@ const PublicSharedFolderContent = ({
           useDrop={useDrop}
         />
       </div>
-      <div className="flex min-h-0 w-full flex-1 flex-col overflow-y-auto">
+      <div className="public-shared-list flex min-h-0 w-full flex-1 flex-col overflow-y-auto">
         <PublicSharedItemList
           shareItems={reorderedShareItems}
           publicShareKey={publicShareKey}

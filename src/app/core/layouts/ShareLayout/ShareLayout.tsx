@@ -83,7 +83,7 @@ export default function ShareLayout(props: Readonly<ShareLayoutProps>): JSX.Elem
         </div>
 
         {/* Download container */}
-        <div className="flex flex-1 flex-col">
+        <div className="flex min-w-0 flex-1 flex-col">
           {/* Top bar */}
           <div className="hidden h-20 shrink-0 flex-row items-center justify-end px-6 sm:flex">
             {isAuthenticated ? (
