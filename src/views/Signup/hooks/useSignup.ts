@@ -49,15 +49,13 @@ export function useSignUp(referrer?: string): {
     };
 
     const data = await authClient.register(registerDetails);
-    const { token, newToken, user } = data;
+    const { token, newToken } = data;
     // TODO: need to update user type of register to include bucket field
+    const user = data.user as unknown as UserSettings;
     user.mnemonic = decryptTextWithKey(user.mnemonic, password);
 
     return {
-      xUser: {
-        ...user,
-        bucket: '',
-      },
+      xUser: user,
       xToken: token,
       xNewToken: newToken,
       mnemonic: user.mnemonic,

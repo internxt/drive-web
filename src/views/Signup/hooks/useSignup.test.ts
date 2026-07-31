@@ -116,7 +116,6 @@ describe('useSignUp', () => {
         mnemonic: 'mock-decrypted-mnemonic',
         appSumoDetails: 'mock-appSumoDetails',
         avatar: 'mock-avatar',
-        bucket: '',
         keys: {
           ecc: {
             privateKey: 'mock-private-key',
