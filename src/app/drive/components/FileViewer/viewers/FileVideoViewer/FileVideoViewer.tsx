@@ -65,11 +65,9 @@ const FileVideoViewer = ({
 
   useEffect(() => {
     if (disableVideoStream || !containerRef.current) return;
+    const container = containerRef.current;
 
-    let session: VideoStreamingSession | null = null;
-    let cancelled = false;
-
-    const setup = async () => {
+    const setupStreaming = async () => {
       const user = await encryptedStorageService.getUser();
       const mnemonic = user?.mnemonic ?? '';
       const bridgeUser = user?.bridgeUser ?? '';
@@ -87,9 +85,7 @@ const FileVideoViewer = ({
         return;
       }
 
-      if (cancelled || !containerRef.current) return;
-
-      session = new VideoStreamingSession({
+      const session = new VideoStreamingSession({
         fileId: file.fileId,
         bucketId: file.bucket,
         fileSize: file.size,
@@ -100,14 +96,18 @@ const FileVideoViewer = ({
           : { user: bridgeUser, pass: userId },
       });
 
-      session.init(containerRef.current, handleOnReady, handleOnError);
+      session.init(container, handleOnReady, handleOnError);
+
+      return session;
     };
 
-    setup();
+    let sessionRef: VideoStreamingSession | undefined;
+    setupStreaming().then((session) => {
+      sessionRef = session;
+    });
 
     return () => {
-      cancelled = true;
-      session?.destroy();
+      sessionRef?.destroy();
       setCanPlay(false);
     };
   }, [file.fileId, file.bucket, file.size, file.type, disableVideoStream]);
