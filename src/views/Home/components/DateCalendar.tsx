@@ -16,10 +16,8 @@ const getMondayFirstGridStart = (month: Dayjs): Dayjs => {
   return firstDayOfMonth.subtract((firstDayOfMonth.day() + 6) % 7, 'day');
 };
 
-const getCalendarLocale = (): string => {
-  const language = i18next.language ?? 'en';
-  return language.toLowerCase() === 'zh-tw' ? 'zh-tw' : language.split('-')[0].toLowerCase();
-};
+export const getCalendarLocale = (language: string): string =>
+  language.toLowerCase() === 'zh-tw' ? 'zh-tw' : language.split('-')[0].toLowerCase();
 
 const getDayClassName = (isSelected: boolean, isCurrentMonth: boolean, isDisabled: boolean) => {
   if (isSelected) return 'bg-primary text-white';
@@ -36,7 +34,7 @@ const DateCalendar = ({ selected, minDate, maxDate, onSelect }: DateCalendarProp
     if (selected) setMonth(selected.startOf('month'));
   }, [selected?.valueOf()]);
 
-  const locale = getCalendarLocale();
+  const locale = getCalendarLocale(i18next.language ?? 'en');
   const gridStart = getMondayFirstGridStart(month);
   const days = Array.from({ length: 42 }, (_, index) => gridStart.add(index, 'day'));
   const weekdayLabels = Array.from({ length: 7 }, (_, index) =>
