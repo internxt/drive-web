@@ -6,6 +6,7 @@ import iconService from 'app/drive/services/icon.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { TYPE_FILTER_ITEMS } from '../utils/typeFilterUtils';
 import DropdownCloseObserver from './DropdownCloseObserver';
+import SearchFilterRow from './SearchFilterRow';
 
 interface SearchTypeFilterProps {
   selected: SearchFileCategory[];
@@ -38,19 +39,19 @@ const SearchTypeFilter = ({ selected, onToggle, onSelectAny, onClose }: SearchTy
             transition
             className="absolute left-0 z-20 mt-1 flex min-w-[240px] origin-top-left flex-col rounded-lg border border-gray-10 bg-surface py-1.5 shadow-subtle-hard outline-none transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0 dark:bg-gray-5"
           >
-            <div className="flex flex-row items-center gap-2 px-4 py-2">
-              <Checkbox checked={isAnyType} indeterminate={!isAnyType} onClick={onSelectAny} />
+            <SearchFilterRow onClick={onSelectAny}>
+              <Checkbox checked={isAnyType} indeterminate={!isAnyType} />
               <p className="text-gray-100">{translate('general.searchBar.filters.anyType')}</p>
-            </div>
+            </SearchFilterRow>
             <div className="mx-4 border-t border-gray-10" />
             {TYPE_FILTER_ITEMS.map(({ id, labelKey, extension }) => {
               const Icon = iconService.getItemIcon(id === 'folder', extension);
               return (
-                <div className="flex flex-row items-center gap-2 px-4 py-2" key={id}>
-                  <Checkbox checked={isAnyType || selected.includes(id)} onClick={() => onToggle(id)} />
+                <SearchFilterRow onClick={() => onToggle(id)} key={id}>
+                  <Checkbox checked={isAnyType || selected.includes(id)} />
                   <Icon className="h-6 w-6 drop-shadow-soft" />
                   <p className="text-gray-100">{translate(`general.searchBar.filters.${labelKey}`)}</p>
-                </div>
+                </SearchFilterRow>
               );
             })}
           </MenuItems>
