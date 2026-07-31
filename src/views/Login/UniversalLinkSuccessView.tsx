@@ -2,11 +2,13 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Button } from '@internxt/ui';
 import { AppView } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useAppDispatch } from 'app/store/hooks';
+import { userThunks } from 'app/store/slices/user';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import AnimatedBackground from 'components/AnimatedBackground';
 import { useEffect, useMemo } from 'react';
 import { isMobile } from 'react-device-detect';
-import authService from 'services/auth.service';
+import encryptedStorageService from 'services/encrypted-storage.service';
 import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
 import { TRUSTED_LOCALHOST_HOSTNAMES, TRUSTED_LOCALHOST_PROTOCOLS, validateUrl } from 'utils/urlValidation';
@@ -15,6 +17,7 @@ const DEEPLINK_SUCCESS_REDIRECT_BASE = 'internxt://login-success';
 
 export default function UniversalLinkView(): JSX.Element {
   const { translate } = useTranslationContext();
+  const dispatch = useAppDispatch();
   const user = useMemo(() => localStorageService.getUser(), []);
 
   const urlParams = new URLSearchParams(globalThis.location.search);
@@ -28,7 +31,7 @@ export default function UniversalLinkView(): JSX.Element {
   }, [user]);
 
   const getUniversalLinkAuthUrl = (user: UserSettings) => {
-    const newToken = localStorageService.getToken();
+    const newToken = encryptedStorageService.getToken();
     if (!newToken) return AppView.Login;
 
     let baseURL = DEEPLINK_SUCCESS_REDIRECT_BASE;
@@ -52,7 +55,7 @@ export default function UniversalLinkView(): JSX.Element {
   if (!user) return <></>;
 
   const handleGoToLogin = () => {
-    authService.logOut();
+    dispatch(userThunks.logoutThunk());
   };
 
   const handleGoToUniversalLinkUrl = () => {

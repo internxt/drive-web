@@ -1,5 +1,5 @@
 import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
-import {  Loader } from '@internxt/ui';
+import { Loader } from '@internxt/ui';
 import { AddressElement, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { StripePaymentElementOptions } from '@stripe/stripe-js';
 import { IFormValues } from 'app/core/types';
