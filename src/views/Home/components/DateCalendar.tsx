@@ -43,10 +43,15 @@ const DateCalendar = ({ selected, minDate, maxDate, onSelect }: DateCalendarProp
     dayjs().day(1).add(index, 'day').locale(locale).format('ddd'),
   );
 
-  const isDayDisabled = (day: Dayjs): boolean =>
-    Boolean((minDate && day.isBefore(minDate, 'day')) || (maxDate && day.isAfter(maxDate, 'day')));
-
   const today = dayjs();
+
+  const isDayDisabled = (day: Dayjs): boolean =>
+    Boolean(
+      day.isAfter(today, 'day') ||
+        (minDate && day.isBefore(minDate, 'day')) ||
+        (maxDate && day.isAfter(maxDate, 'day')),
+    );
+
   const isTodayDisabled = isDayDisabled(today);
 
   const selectToday = () => {
