@@ -8,6 +8,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { DATE_PRESET_ITEMS, SearchDatePreset, SpecificDateRange } from '../utils/dateFilterUtils';
 import DateCalendar from './DateCalendar';
 import DropdownCloseObserver from './DropdownCloseObserver';
+import SearchFilterRow from './SearchFilterRow';
 
 dayjs.extend(customParseFormat);
 
@@ -124,18 +125,18 @@ const SearchDateFilter = ({
               onMouseDown={(event) => event.preventDefault()}
               onClick={(event) => event.preventDefault()}
             >
-              <div className="flex flex-row items-center gap-2 px-4 py-2">
+              <SearchFilterRow onClick={() => onSelectPreset('any')}>
                 <RadioButton checked={isAnyDate} onClick={() => onSelectPreset('any')} />
                 <p className="text-gray-100">{translate('general.searchBar.filters.date.anyDate')}</p>
-              </div>
+              </SearchFilterRow>
               <div className="mx-4 border-t border-gray-10" />
               {DATE_PRESET_ITEMS.map(({ id, labelKey }) => (
-                <div className="flex flex-row items-center gap-2 px-4 py-2" key={id}>
+                <SearchFilterRow onClick={() => onSelectPreset(id)} key={id}>
                   <RadioButton checked={preset === id} onClick={() => onSelectPreset(id)} />
                   <p className="text-gray-100">
                     {translate(`general.searchBar.filters.date.${labelKey}`, { year: presetYears[id] })}
                   </p>
-                </div>
+                </SearchFilterRow>
               ))}
             </div>
             {preset === 'specific' && (
