@@ -195,7 +195,8 @@
       "login": "Login",
       "success": "You have successfully logged in",
       "error": "Login failed, please try again",
-      "closeWindow": "You can close this window"
+      "closeWindow": "You can close this window",
+      "invalidRedirectUri": "Invalid redirect URL"
     },
     "oauthLink": {
       "continueAs": "Continue as",

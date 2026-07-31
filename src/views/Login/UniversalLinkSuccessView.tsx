@@ -2,6 +2,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Button } from '@internxt/ui';
 import { AppView } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useAppDispatch } from 'app/store/hooks';
 import { userThunks } from 'app/store/slices/user';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
@@ -30,22 +31,24 @@ export default function UniversalLinkView(): JSX.Element {
     }
   }, [user]);
 
-  const getUniversalLinkAuthUrl = (user: UserSettings) => {
+  const getUniversalLinkAuthUrl = (user: UserSettings): string | null => {
     const newToken = encryptedStorageService.getToken();
     if (!newToken) return AppView.Login;
 
     let baseURL = DEEPLINK_SUCCESS_REDIRECT_BASE;
     if (redirectUri) {
       const decoded = Buffer.from(redirectUri, 'base64').toString();
-      if (
-        validateUrl({
-          urlString: decoded,
-          allowedProtocols: TRUSTED_LOCALHOST_PROTOCOLS,
-          allowedHostnames: TRUSTED_LOCALHOST_HOSTNAMES,
-        })
-      ) {
-        baseURL = decoded;
+      const isValidRedirectUri = validateUrl({
+        urlString: decoded,
+        allowedProtocols: TRUSTED_LOCALHOST_PROTOCOLS,
+        allowedHostnames: TRUSTED_LOCALHOST_HOSTNAMES,
+      });
+
+      if (!isValidRedirectUri) {
+        return null;
       }
+
+      baseURL = decoded;
     }
 
     return `${baseURL}?mnemonic=${btoa(user.mnemonic)}&newToken=${btoa(newToken)}&privateKey=${btoa(user.privateKey)}`;
@@ -59,7 +62,13 @@ export default function UniversalLinkView(): JSX.Element {
   };
 
   const handleGoToUniversalLinkUrl = () => {
-    globalThis.location.href = getUniversalLinkAuthUrl(user);
+    const universalLinkAuthUrl = getUniversalLinkAuthUrl(user);
+    if (!universalLinkAuthUrl) {
+      notificationsService.show({ text: translate('auth.universalLink.invalidRedirectUri'), type: ToastType.Error });
+      return;
+    }
+
+    globalThis.location.href = universalLinkAuthUrl;
   };
 
   return (

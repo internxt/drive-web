@@ -195,7 +195,8 @@
       "login": "登录",
       "success": "您已成功登录",
       "error": "无法登录，请重试",
-      "closeWindow": "您可以关闭此窗口"
+      "closeWindow": "您可以关闭此窗口",
+      "invalidRedirectUri": "无效的重定向网址"
     },
     "oauthLink": {
       "continueAs": "继续使用",

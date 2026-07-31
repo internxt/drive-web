@@ -174,7 +174,8 @@
       "login": "Anmelden",
       "success": "Du hast dich erfolgreich angemeldet",
       "error": "Anmeldung fehlgeschlagen, bitte versuche es erneut",
-      "closeWindow": "Du kannst dieses Fenster schließen"
+      "closeWindow": "Du kannst dieses Fenster schließen",
+      "invalidRedirectUri": "Ungültige Weiterleitungs-URL"
     },
     "oauthLink": {
       "continueAs": "Fortfahren als",

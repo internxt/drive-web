@@ -174,7 +174,8 @@
       "login": "Iniciar sesión",
       "success": "Has iniciado sesión correctamente",
       "error": "No se ha podido iniciar sesion, inténtelo de nuevo",
-      "closeWindow": "Puedes cerrar esta ventana"
+      "closeWindow": "Puedes cerrar esta ventana",
+      "invalidRedirectUri": "URL de redirección no válida"
     },
     "oauthLink": {
       "continueAs": "Continuar como",
