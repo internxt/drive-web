@@ -66,8 +66,8 @@ export async function decryptEntry(ciphertextBase64: string): Promise<string> {
   try {
     const input = Buffer.from(ciphertextBase64, 'base64');
 
-    const iv = input.slice(0, IV_LENGTH);
-    const data = input.slice(IV_LENGTH);
+    const iv = input.subarray(0, IV_LENGTH);
+    const data = input.subarray(IV_LENGTH);
     const buf = await crypto.subtle.decrypt({ name: ALGORITHM, iv }, key, data);
     return new TextDecoder().decode(buf);
   } catch (error) {
