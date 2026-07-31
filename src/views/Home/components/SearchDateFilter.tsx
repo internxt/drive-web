@@ -45,7 +45,7 @@ const SearchDateInput = ({ label, value, minDate, maxDate, onChange }: SearchDat
       return;
     }
     const parsed = dayjs(nextText, DATE_INPUT_FORMAT, true);
-    if (parsed.isValid()) onChange(parsed);
+    if (parsed.isValid() && !parsed.isAfter(dayjs(), 'day')) onChange(parsed);
   };
 
   return (
