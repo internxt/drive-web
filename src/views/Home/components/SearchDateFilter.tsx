@@ -73,18 +73,23 @@ const SearchDateInput = ({ label, value, minDate, maxDate, onChange, onEnter }: 
           className="w-full appearance-none border-none bg-transparent !p-0 !shadow-none !ring-0 text-gray-100 placeholder-gray-40 outline-none"
         />
         {text.length > 0 && (
-          <XIcon
-            size={18}
-            className="shrink-0 cursor-pointer text-gray-60"
-            onMouseDown={(event) => {
-              event.preventDefault();
-              handleTextChange('');
-            }}
-          />
+          <button
+            type="button"
+            aria-label={`Clear ${label}`}
+            className="flex shrink-0 cursor-pointer items-center text-gray-60"
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={() => handleTextChange('')}
+          >
+            <XIcon size={18} />
+          </button>
         )}
       </div>
       {showCalendar && (
-        <div className="absolute left-0 top-full z-30 mt-1" onMouseDown={(event) => event.preventDefault()}>
+        <div
+          role="presentation"
+          className="absolute left-0 top-full z-30 mt-1"
+          onMouseDown={(event) => event.preventDefault()}
+        >
           <DateCalendar selected={value} minDate={minDate} maxDate={maxDate} onSelect={onChange} />
         </div>
       )}
