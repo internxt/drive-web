@@ -89,16 +89,16 @@ const clear = (): void => {
   localStorage.removeItem(LocalStorageItem.UserUUID);
 };
 
-function getUser(): UserSettings | null {
+const getUser = (): UserSettings | null => {
   const stringUser: string | null = localStorage.getItem(LocalStorageProtectedItem.User);
 
   return stringUser ? JSON.parse(stringUser) : null;
-}
+};
 
-function setUser(user: UserSettings): void {
+const setUser = (user: UserSettings): void => {
   localStorage.setItem(LocalStorageItem.UserUUID, user.uuid);
   localStorage.setItem(LocalStorageProtectedItem.User, JSON.stringify(user));
-}
+};
 
 const encryptedStorageService = {
   hydrateEncryptedStorageCache,
