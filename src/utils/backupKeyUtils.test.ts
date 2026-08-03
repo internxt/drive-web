@@ -75,7 +75,6 @@ describe('backupKeyUtils', () => {
       const mockMnemonic =
         'whip pipe sphere rail witness sting hawk project east return unhappy focus shop dry midnight frog critic lion horror slide luxury consider vibrant timber';
       const mockUser = {
-        privateKey: 'test-private-key',
         keys: {
           ecc: {
             privateKey: 'test-ecc-private-key',
@@ -101,8 +100,6 @@ describe('backupKeyUtils', () => {
         rootFolderUuid: 'test-root-folder-uuid',
         sharedWorkspace: false,
         credit: 0,
-        publicKey: 'test-public-key',
-        revocationKey: 'test-revocation-key',
         appSumoDetails: null,
         registerCompleted: false,
         hasReferralsProgram: false,
@@ -137,7 +134,6 @@ describe('backupKeyUtils', () => {
       const mockMnemonic =
         'whip pipe sphere rail witness sting hawk project east return unhappy focus shop dry midnight frog critic lion horror slide luxury consider vibrant timber';
       const mockUser = {
-        privateKey: 'test-private-key',
         keys: {
           ecc: {
             privateKey: 'test-ecc-private-key',
@@ -161,8 +157,6 @@ describe('backupKeyUtils', () => {
         rootFolderUuid: 'test-root-folder-uuid',
         sharedWorkspace: false,
         credit: 0,
-        publicKey: 'test-public-key',
-        revocationKey: 'test-revocation-key',
         appSumoDetails: null,
         registerCompleted: false,
         hasReferralsProgram: false,
@@ -196,7 +190,6 @@ describe('backupKeyUtils', () => {
       const mockMnemonic =
         'whip pipe sphere rail witness sting hawk project east return unhappy focus shop dry midnight frog critic lion horror slide luxury consider vibrant timber';
       const mockUser = {
-        privateKey: 'test-private-key',
         keys: {
           ecc: {
             privateKey: 'test-ecc-private-key',
@@ -221,8 +214,6 @@ describe('backupKeyUtils', () => {
         rootFolderUuid: 'test-root-folder-uuid',
         sharedWorkspace: false,
         credit: 0,
-        publicKey: 'test-public-key',
-        revocationKey: 'test-revocation-key',
         appSumoDetails: null,
         registerCompleted: false,
         hasReferralsProgram: false,
@@ -268,47 +259,6 @@ describe('backupKeyUtils', () => {
       expect(notificationsService.show).toHaveBeenCalledWith({
         text: mockTranslate('views.account.tabs.security.backupKey.error'),
         type: ToastType.Error,
-      });
-    });
-
-    it('should handle missing key properties', () => {
-      const mockMnemonic = 'test mnemonic';
-      const mockUser = {
-        privateKey: 'test-private-key',
-        userId: 'test-user-id',
-        uuid: 'test-uuid',
-        email: 'test@example.com',
-        name: 'Test User',
-        lastname: 'User',
-        username: 'testuser',
-        bridgeUser: 'test-bridge-user',
-        bucket: 'test-bucket',
-        backupsBucket: null,
-        mnemonic: mockMnemonic,
-        root_folder_id: 0,
-        rootFolderId: 'test-root-folder-id',
-        rootFolderUuid: 'test-root-folder-uuid',
-        sharedWorkspace: false,
-        credit: 0,
-        publicKey: 'test-public-key',
-        revocationKey: 'test-revocation-key',
-        appSumoDetails: null,
-        registerCompleted: false,
-        hasReferralsProgram: false,
-        createdAt: new Date(),
-        avatar: null,
-        emailVerified: false,
-      } as UserSettings;
-
-      vi.mocked(encryptedStorageService.getUser).mockReturnValue(mockUser);
-
-      handleExportBackupKey(mockTranslate);
-
-      expect(saveAs).toHaveBeenCalled();
-
-      expect(notificationsService.show).toHaveBeenCalledWith({
-        text: mockTranslate('views.account.tabs.security.backupKey.success'),
-        type: ToastType.Success,
       });
     });
   });
@@ -493,9 +443,6 @@ describe('backupKeyUtils', () => {
       vi.mocked(encryptTextWithKey).mockImplementation((text) => `encrypted-with-key-${text}`);
 
       const mockGeneratedKeys = {
-        publicKey: 'test-public-key',
-        privateKeyEncrypted: 'test-private-key-encrypted',
-        revocationCertificate: 'test-revocation-cert',
         ecc: {
           publicKey: 'test-ecc-public-key',
           privateKeyEncrypted: 'test-ecc-private-key-encrypted',
@@ -524,12 +471,12 @@ describe('backupKeyUtils', () => {
 
       expect(encryptMessageWithPublicKey).toHaveBeenCalledWith({
         message: mockMnemonic,
-        publicKeyInBase64: mockGeneratedKeys.publicKey,
+        publicKeyInBase64: mockGeneratedKeys.ecc.publicKey,
       });
 
       expect(hybridEncryptMessageWithPublicKey).toHaveBeenCalledWith({
         message: mockMnemonic,
-        publicKeyInBase64: mockGeneratedKeys.publicKey,
+        publicKeyInBase64: mockGeneratedKeys.ecc.publicKey,
         publicKyberKeyBase64: mockGeneratedKeys.kyber.publicKey,
       });
 
@@ -544,7 +491,6 @@ describe('backupKeyUtils', () => {
           ecc: {
             public: mockGeneratedKeys.ecc.publicKey,
             private: mockGeneratedKeys.ecc.privateKeyEncrypted,
-            revocationKey: mockGeneratedKeys.revocationCertificate,
           },
           kyber: {
             public: mockGeneratedKeys.kyber.publicKey,
