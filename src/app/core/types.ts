@@ -144,8 +144,6 @@ export enum LocalStorageItem {
   Theme = 'theme',
   IsThemeDark = 'theme:isDark',
   B2BworkspaceId = 'b2bWorkspaceId',
-  FolderAccessToken = 'folderAccessToken',
-  FileAccessToken = 'fileAccessToken',
   GCLID = 'gclid',
   HasSeenTrashDisposalDialog = 'hasSeenTrashDisposalDialog',
   IdManagementTheme = 'id_management_theme_enabled',
@@ -165,8 +163,8 @@ export enum LocalStorageProtectedItem {
   EncryptedToken = 'xTokenEncrypted',
   EncryptedB2BworkspaceMnemonic = 'xEncryptedB2BWorkspaceMnemonic',
   EncryptedWorkspaceCredentials = 'xEncryptedWorkspaceCredentials',
-  FolderAccessToken = 'folderAccessToken',
-  FileAccessToken = 'fileAccessToken',
+  EncryptedFolderToken = 'xEncryptedFolderToken',
+  EncryptedFileToken = 'xEncryptedFileToken',
 }
 export enum OrderDirection {
   Asc = 'ASC',

@@ -56,11 +56,6 @@ function setUser(user: UserSettings): void {
   set(LocalStorageItem.User, JSON.stringify(user));
 }
 
-function getStorageToken(isFolder: boolean): string | null {
-  const key = isFolder ? LocalStorageItem.FolderAccessToken : LocalStorageItem.FileAccessToken;
-  return get(key);
-}
-
 function removeItem(key: LocalStorageItem): void {
   localStorage.removeItem(key);
 }
@@ -78,7 +73,6 @@ const localStorageService = {
   getBackupKeys,
   getUser,
   setUser,
-  getStorageToken,
   removeItem,
   clear,
 };
@@ -95,7 +89,6 @@ export interface LocalStorageService {
     seenAt: string | null;
     saved: boolean;
   };
-  getStorageToken: (isFolder: boolean) => string | null;
   getUser: () => UserSettings | null;
   setUser: (user: UserSettings) => void;
   removeItem: (key: LocalStorageItem) => void;

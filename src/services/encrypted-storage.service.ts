@@ -5,6 +5,8 @@ import { WorkspaceCredentialsDetails } from '@internxt/sdk/dist/workspaces';
 let tokenCache: string | null = null;
 let workspaceMnemonicCache: string | null = null;
 let workspaceCredentialsCache: WorkspaceCredentialsDetails | null = null;
+let folderTokenCache: string | null = null;
+let fileTokenCache: string | null = null;
 
 const getAndDecrypt = async (key: LocalStorageProtectedItem): Promise<string | null> => {
   const item = localStorage.getItem(key);
@@ -12,13 +14,50 @@ const getAndDecrypt = async (key: LocalStorageProtectedItem): Promise<string | n
 };
 
 const setAndEncrypt = async (key: LocalStorageProtectedItem, value: string): Promise<void> => {
+  if (!value) return;
   const encryptedValue = await encryptEntry(value);
   localStorage.setItem(key, encryptedValue);
 };
 
 const setToken = async (token: string): Promise<void> => {
-  tokenCache = token;
+  tokenCache = token || null;
   return setAndEncrypt(LocalStorageProtectedItem.EncryptedToken, token);
+};
+
+const getSharedItemAccessToken = async (isFolder: boolean): Promise<string | undefined> => {
+  const key = isFolder ? LocalStorageProtectedItem.EncryptedFolderToken : LocalStorageProtectedItem.EncryptedFileToken;
+  const cache = isFolder ? folderTokenCache : fileTokenCache;
+  if (cache !== null) return cache;
+
+  let value: string | null;
+  try {
+    value = await getAndDecrypt(key);
+  } catch {
+    value = null;
+  }
+  if (isFolder) folderTokenCache = value;
+  else fileTokenCache = value;
+  return value ?? undefined;
+};
+
+const setFolderToken = async (token: string): Promise<void> => {
+  folderTokenCache = token || null;
+  return setAndEncrypt(LocalStorageProtectedItem.EncryptedFolderToken, token);
+};
+
+const setFileToken = async (token: string): Promise<void> => {
+  fileTokenCache = token || null;
+  return setAndEncrypt(LocalStorageProtectedItem.EncryptedFileToken, token);
+};
+
+const clearFolderToken = (): void => {
+  folderTokenCache = null;
+  localStorage.removeItem(LocalStorageProtectedItem.EncryptedFolderToken);
+};
+
+const clearFileToken = (): void => {
+  fileTokenCache = null;
+  localStorage.removeItem(LocalStorageProtectedItem.EncryptedFileToken);
 };
 
 const hydrateEncryptedStorageCache = async (): Promise<void> => {
@@ -50,6 +89,8 @@ const getToken = (): string | undefined => tokenCache ?? undefined;
 
 const clear = (): void => {
   tokenCache = null;
+  folderTokenCache = null;
+  fileTokenCache = null;
   localStorage.removeItem(LocalStorageProtectedItem.EncryptedToken);
   clearB2BWorkspace();
   clearWorkspaceCredentials();
@@ -91,12 +132,19 @@ const setWorkspaceCredentials = async (credentials: WorkspaceCredentialsDetails)
 const clearWorkspaceCredentials = (): void => {
   workspaceCredentialsCache = null;
   localStorage.removeItem(LocalStorageProtectedItem.EncryptedWorkspaceCredentials);
+  localStorage.removeItem(LocalStorageProtectedItem.EncryptedFolderToken);
+  localStorage.removeItem(LocalStorageProtectedItem.EncryptedFileToken);
 };
 
 const encryptedStorageService = {
   hydrateEncryptedStorageCache,
   getToken,
   setToken,
+  getSharedItemAccessToken,
+  setFileToken,
+  setFolderToken,
+  clearFileToken,
+  clearFolderToken,
   clear,
   getB2BWorkspaceMnemonic,
   setB2BWorkspace,
@@ -112,6 +160,11 @@ export interface EncryptedStorageService {
   hydrateEncryptedStorageCache: () => Promise<void>;
   setToken: (token: string) => Promise<void>;
   getToken: () => string | undefined;
+  getSharedItemAccessToken: (isFolder: boolean) => Promise<string | undefined>;
+  setFileToken: (token: string) => Promise<void>;
+  setFolderToken: (token: string) => Promise<void>;
+  clearFileToken: () => void;
+  clearFolderToken: () => void;
   clear: () => void;
   setB2BWorkspace: (workspaceID: string, workspaceMnemonic: string) => Promise<void>;
   getB2BWorkspaceMnemonic: () => Promise<string | null>;
