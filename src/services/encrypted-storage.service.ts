@@ -89,9 +89,9 @@ const getToken = (): string | undefined => tokenCache ?? undefined;
 
 const clear = (): void => {
   tokenCache = null;
-  folderTokenCache = null;
-  fileTokenCache = null;
   localStorage.removeItem(LocalStorageProtectedItem.EncryptedToken);
+  clearFileToken();
+  clearFolderToken();
   clearB2BWorkspace();
   clearWorkspaceCredentials();
 };
@@ -132,8 +132,6 @@ const setWorkspaceCredentials = async (credentials: WorkspaceCredentialsDetails)
 const clearWorkspaceCredentials = (): void => {
   workspaceCredentialsCache = null;
   localStorage.removeItem(LocalStorageProtectedItem.EncryptedWorkspaceCredentials);
-  localStorage.removeItem(LocalStorageProtectedItem.EncryptedFolderToken);
-  localStorage.removeItem(LocalStorageProtectedItem.EncryptedFileToken);
 };
 
 const encryptedStorageService = {
