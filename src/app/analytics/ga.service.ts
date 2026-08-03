@@ -6,6 +6,7 @@ import envService from 'services/env.service';
 import localStorageService from 'services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { LocalStorageItem } from 'app/core/types';
+import { getCookie } from './utils';
 
 interface BaseTrackParams {
   planId: string;
@@ -31,6 +32,18 @@ interface CheckoutItemData {
 const GA_ID = envService.getVariable('gaId');
 const GA_TAG = envService.getVariable('gaConversionTag');
 const SEND_TO = [GA_ID, GA_TAG].filter(Boolean);
+
+const TRACKING_PARAMS = [
+  'utm_medium',
+  'utm_source',
+  'utm_campaign',
+  'utm_id',
+  'gclid',
+  'irclickid',
+  'gad_source',
+  'gad_campaignid',
+  'gbraid',
+] as const;
 
 if (globalThis.window !== undefined && !globalThis.window.dataLayer) {
   globalThis.window.dataLayer = [];
@@ -120,6 +133,17 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
       items: [item],
     };
 
+    const trackingCookies = TRACKING_PARAMS.reduce(
+      (acc, param) => {
+        const value = getCookie(param);
+        if (value) {
+          acc[param] = value;
+        }
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+
     globalThis.window.dataLayer.push({
       event: 'begin_checkout',
       ecommerce: ecommerceData,
@@ -132,6 +156,7 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
         currency: currencyCode,
         items: [item],
         ...(promoCodeId && { coupon: promoCodeId }),
+        ...trackingCookies,
       });
     }
   } catch (error) {
@@ -184,6 +209,17 @@ function trackPurchase(): void {
 
     const finalPrice = itemOriginalPrice > 0 ? itemOriginalPrice : amount;
 
+    const trackingCookies = TRACKING_PARAMS.reduce(
+      (acc, param) => {
+        const value = getCookie(param);
+        if (value) {
+          acc[param] = value;
+        }
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+
     const item = {
       item_id: priceId,
       item_name: itemName,
@@ -228,6 +264,7 @@ function trackPurchase(): void {
         currency: currencyCode,
         items: [item],
         coupon: couponCode ?? undefined,
+        ...trackingCookies,
       });
     }
 
