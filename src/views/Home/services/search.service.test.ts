@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { emptySearchFilters, searchItems, SearchFilters } from './search.service';
+import { defaultSearchFilters, searchItems, SearchFilters } from './search.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 
 describe('searchItems', () => {
@@ -17,10 +17,18 @@ describe('searchItems', () => {
 
   const optionsSentToSdk = (getGlobalSearchItems: ReturnType<typeof vi.fn>) => getGlobalSearchItems.mock.calls[0][2];
 
-  test('When no filters are active, then the SDK receives empty options', async () => {
+  test('When every type category is selected, then the SDK receives empty options', async () => {
     const getGlobalSearchItems = mockGlobalSearch();
 
-    await searchItems('report', 'workspace-1', emptySearchFilters);
+    await searchItems('report', 'workspace-1', defaultSearchFilters);
+
+    expect(getGlobalSearchItems).toHaveBeenCalledWith('report', 'workspace-1', {});
+  });
+
+  test('When no type category is selected, then the SDK receives no type filter', async () => {
+    const getGlobalSearchItems = mockGlobalSearch();
+
+    await searchItems('report', 'workspace-1', { type: [] });
 
     expect(getGlobalSearchItems).toHaveBeenCalledWith('report', 'workspace-1', {});
   });
@@ -98,13 +106,13 @@ describe('searchItems', () => {
     const results = [{ id: '1' }, { id: '2' }];
     mockGlobalSearch({ data: results });
 
-    expect(await searchItems('report', undefined, emptySearchFilters)).toEqual(results);
+    expect(await searchItems('report', undefined, defaultSearchFilters)).toEqual(results);
   });
 
   test('When the response is a plain array, then it is returned as is', async () => {
     const results = [{ id: '1' }];
     mockGlobalSearch(results);
 
-    expect(await searchItems('report', undefined, emptySearchFilters)).toEqual(results);
+    expect(await searchItems('report', undefined, defaultSearchFilters)).toEqual(results);
   });
 });
