@@ -1,6 +1,7 @@
 import { GlobalSearchOptions, SearchResult } from '@internxt/sdk/dist/drive/storage/types';
 import { SdkFactory } from 'app/core/factory/sdk';
 import fileExtensionGroups, { FileExtensionGroup } from 'app/drive/types/file-types';
+import { ALL_TYPE_CATEGORIES, isTypeFilterActive } from '../utils/typeFilterUtils';
 
 export type SearchFileCategory = 'folder' | Lowercase<Exclude<keyof typeof FileExtensionGroup, 'Default'>>;
 
@@ -12,7 +13,7 @@ export interface SearchFilters {
   modifiedBefore?: string;
 }
 
-export const emptySearchFilters: SearchFilters = { type: [] };
+export const defaultSearchFilters: SearchFilters = { type: [...ALL_TYPE_CATEGORIES] };
 
 const CATEGORY_EXTENSION_GROUPS: Record<Exclude<SearchFileCategory, 'folder'>, FileExtensionGroup> = {
   audio: FileExtensionGroup.Audio,
@@ -39,7 +40,7 @@ const resolveTypeFilters = (categories: SearchFileCategory[]): string[] => {
 
 const buildSearchOptions = (filters: SearchFilters): GlobalSearchOptions => {
   const options: GlobalSearchOptions = {};
-  if (filters.type.length > 0) options.type = resolveTypeFilters(filters.type);
+  if (isTypeFilterActive(filters.type)) options.type = resolveTypeFilters(filters.type);
   if (filters.minSize !== undefined) options.minSize = filters.minSize;
   if (filters.maxSize !== undefined) options.maxSize = filters.maxSize;
   if (filters.modifiedAfter !== undefined) options.modifiedAfter = filters.modifiedAfter;

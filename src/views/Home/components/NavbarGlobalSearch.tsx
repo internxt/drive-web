@@ -4,7 +4,7 @@ import { RootState } from 'app/store';
 import { storageSelectors } from 'app/store/slices/storage';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SearchResult } from '@internxt/sdk/dist/drive/storage/types';
-import { emptySearchFilters, searchItems, SearchFileCategory, SearchFilters } from '../services';
+import { defaultSearchFilters, searchItems, SearchFileCategory, SearchFilters } from '../services';
 import { ArrowSquareOutIcon, GearIcon, GiftIcon, MagnifyingGlassIcon, XIcon } from '@phosphor-icons/react';
 import AccountPopover from './AccountPopover';
 import referralService from 'services/referral.service';
@@ -19,7 +19,7 @@ import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { uiActions } from 'app/store/slices/ui';
 import NotFoundState from './NotFoundState';
 import EmptyState from './EmptyState';
-import { toggleTypeCategory } from '../utils/typeFilterUtils';
+import { toggleAllTypeCategories, toggleTypeCategory } from '../utils/typeFilterUtils';
 import { changeSpecificDate, datePresetToRange, SearchDatePreset, SpecificDateRange } from '../utils/dateFilterUtils';
 import SearchTypeFilter from './SearchTypeFilter';
 import SearchDateFilter from './SearchDateFilter';
@@ -82,7 +82,7 @@ const Navbar = (props: NavbarProps) => {
   const searchResultList = useRef<HTMLUListElement>(null);
   const [preventBlur, setPreventBlur] = useState<boolean>(false);
   const [openSearchBox, setOpenSearchBox] = useState<boolean>(false);
-  const [filters, setFilters] = useState<SearchFilters>(emptySearchFilters);
+  const [filters, setFilters] = useState<SearchFilters>(defaultSearchFilters);
   const [datePreset, setDatePreset] = useState<SearchDatePreset>('any');
   const [specificDates, setSpecificDates] = useState<SpecificDateRange>({});
 
@@ -131,7 +131,8 @@ const Navbar = (props: NavbarProps) => {
   const toggleTypeFilter = (category: SearchFileCategory) =>
     setFilters((current) => ({ ...current, type: toggleTypeCategory(current.type, category) }));
 
-  const clearTypeFilter = () => setFilters((current) => ({ ...current, type: [] }));
+  const toggleAllTypeFilters = () =>
+    setFilters((current) => ({ ...current, type: toggleAllTypeCategories(current.type) }));
 
   const applyDateFilter = (preset: SearchDatePreset, specific: SpecificDateRange) => {
     setDatePreset(preset);
@@ -327,7 +328,7 @@ const Navbar = (props: NavbarProps) => {
                 <SearchTypeFilter
                   selected={filters.type}
                   onToggle={toggleTypeFilter}
-                  onSelectAny={clearTypeFilter}
+                  onToggleAll={toggleAllTypeFilters}
                   onClose={refocusSearchInput}
                 />
                 <SearchDateFilter
