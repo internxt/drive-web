@@ -23,16 +23,18 @@ import navigationService from 'services/navigation.service';
 import workspacesService from 'services/workspace.service';
 import DriveExplorer from 'views/Drive/components/DriveExplorer/DriveExplorer';
 import encryptedStorageService from 'services/encrypted-storage.service';
+import { Loader } from '@internxt/ui';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
   isLoading: boolean;
   items: DriveItemData[];
   dispatch: AppDispatch;
+  currentFolderId: string;
 }
 
 const DriveView = (props: DriveViewProps) => {
-  const { dispatch, namePath, items, isLoading } = props;
+  const { dispatch, namePath, items, isLoading, currentFolderId } = props;
   const [title, setTitle] = useState('Internxt Drive');
   const { isFileView, isFolderView, itemUuid, workspaceUuid, isOverviewSubsection } = useDriveNavigation();
   const credentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
@@ -43,12 +45,21 @@ const DriveView = (props: DriveViewProps) => {
   const isSelectedWorkspace = selectedWorkspace?.workspace.id === workspaceUuid;
   const history = useHistory();
 
+  const isWorkspaceContextReady = !workspaceUuid || isSelectedWorkspace;
+  const isFolderContextReady = !isFolderView || !itemUuid || currentFolderId === itemUuid;
+  const isDriveContextReady = isWorkspaceContextReady && isFolderContextReady;
+
   useEffect(() => {
     dispatch(uiActions.setIsGlobalSearch(false));
-    dispatch(storageThunks.resetNamePathThunk());
     dispatch(storageActions.clearSelectedItems());
     dispatch(fetchVersionLimitsThunk({}));
   }, []);
+
+  useEffect(() => {
+    if (!workspaceUuid || isSelectedWorkspace) {
+      dispatch(storageThunks.resetNamePathThunk());
+    }
+  }, [workspaceUuid, isSelectedWorkspace]);
 
   useEffect(() => {
     if (fileViewer) {
@@ -187,7 +198,13 @@ const DriveView = (props: DriveViewProps) => {
         <title>{title}</title>
         <link rel="canonical" href={`${envService.getVariable('hostname')}`} />
       </Helmet>
-      <DriveExplorer title={<BreadcrumbsDriveView namePath={namePath} />} isLoading={isLoading} items={items} />
+      {isDriveContextReady ? (
+        <DriveExplorer title={<BreadcrumbsDriveView namePath={namePath} />} isLoading={isLoading} items={items} />
+      ) : (
+        <div className="flex h-full w-full items-center justify-center">
+          <Loader />
+        </div>
+      )}
     </>
   );
 };
