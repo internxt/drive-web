@@ -7,7 +7,6 @@ beforeEach(() => {
   vi.restoreAllMocks();
   localStorage.clear();
   encryptedStorageService.clear();
-  encryptedStorageService.clear();
 });
 
 describe('Testing the encrypted storage service', () => {
