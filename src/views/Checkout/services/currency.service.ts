@@ -20,8 +20,13 @@ enum CurrencySymbol {
 }
 
 const CURRENCY_BY_COUNTRY: Record<string, string> = {
-  US: 'usd',
-  CA: 'usd',
+  US: 'usd', // United States
+  CA: 'usd', // Canada
+  SA: 'usd', // Saudi Arabia
+  AE: 'usd', // United Arab Emirates (UAE)
+  QA: 'usd', // Qatar
+  BH: 'usd', // Bahrain
+  OM: 'usd', // Oman
 };
 
 const DEFAULT_CURRENCY = 'eur';
