@@ -2,7 +2,13 @@ import { Menu, MenuButton, MenuItem, MenuItems, Popover, PopoverButton, PopoverP
 import { CaretDownIcon, CheckIcon, XIcon } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { CustomSizeRange, SearchSizePreset, SIZE_PRESET_ITEMS, SIZE_UNIT_ITEMS, SizeUnit } from '../utils/sizeFilterUtils';
+import {
+  CustomSizeRange,
+  SearchSizePreset,
+  SIZE_PRESET_ITEMS,
+  SIZE_UNIT_ITEMS,
+  SizeUnit,
+} from '../utils/sizeFilterUtils';
 import DropdownCloseObserver from './DropdownCloseObserver';
 import SearchFilterRadioList from './SearchFilterRadioList';
 
@@ -97,14 +103,15 @@ const SearchSizeInput = ({
           <span className="pointer-events-none pl-1 text-gray-40">{unit}</span>
           <div className="grow" />
           {text.length > 0 && (
-            <XIcon
-              size={18}
-              className="shrink-0 cursor-pointer text-gray-60"
-              onMouseDown={(event) => {
-                event.preventDefault();
-                handleTextChange('');
-              }}
-            />
+            <button
+              type="button"
+              aria-label={`Clear ${label}`}
+              className="flex shrink-0 cursor-pointer items-center text-gray-60"
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={() => handleTextChange('')}
+            >
+              <XIcon size={18} />
+            </button>
           )}
         </label>
       </div>
