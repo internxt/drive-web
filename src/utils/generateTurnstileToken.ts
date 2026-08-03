@@ -40,7 +40,7 @@ export async function generateTurnstileToken(): Promise<string | undefined> {
       resolve(token);
     };
 
-    const timeoutId = setTimeout(() => settle(undefined), TURNSTILE_TIMEOUT_MS);
+    const timeoutId = setTimeout(() => settle(), TURNSTILE_TIMEOUT_MS);
 
     widgetId = turnstile.render(container, {
       sitekey: siteKey,
@@ -48,12 +48,12 @@ export async function generateTurnstileToken(): Promise<string | undefined> {
       execution: 'execute',
       appearance: 'interaction-only',
       callback: (token) => settle(token),
-      'error-callback': () => settle(undefined),
-      'expired-callback': () => settle(undefined),
+      'error-callback': () => settle(),
+      'expired-callback': () => settle(),
     });
 
     if (!widgetId) {
-      settle(undefined);
+      settle();
       return;
     }
 
