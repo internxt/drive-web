@@ -49,14 +49,14 @@ export function handleExportBackupKey(translate) {
       type: ToastType.Error,
     });
   } else {
-    const hasPublicKeys = user.keys?.ecc?.publicKey && user.keys?.kyber?.publicKey;
+    const hasPublicKeys = user.keys.ecc.publicKey && user.keys.kyber.publicKey;
 
     const backupData: BackupData = {
       mnemonic,
-      privateKey: user.privateKey,
+      privateKey: user.keys.ecc.privateKey,
       keys: {
-        ecc: user.keys?.ecc?.privateKey ?? user.privateKey,
-        kyber: user.keys?.kyber?.privateKey ?? '',
+        ecc: user.keys.ecc.privateKey,
+        kyber: user.keys.kyber.privateKey,
       },
       ...(hasPublicKeys && {
         publicKeys: {
@@ -160,11 +160,11 @@ export const prepareOldBackupRecoverPayloadForBackend = async ({
     const encryptedMnemonic = encryptTextWithKey(mnemonic, password);
 
     const generatedKeys = await getKeys(password);
-    const eccPublicKeyInBase64 = generatedKeys.publicKey;
+    const eccPublicKeyInBase64 = generatedKeys.ecc.publicKey;
     const kyberPublicKeyInBase64 = generatedKeys.kyber.publicKey;
     const eccEncryptedMnemonic = await encryptMessageWithPublicKey({
       message: mnemonic,
-      publicKeyInBase64: generatedKeys.publicKey,
+      publicKeyInBase64: generatedKeys.ecc.publicKey,
     });
 
     const base64EccEncryptedMnemonic = btoa(eccEncryptedMnemonic as string);
@@ -186,7 +186,6 @@ export const prepareOldBackupRecoverPayloadForBackend = async ({
         ecc: {
           public: generatedKeys.ecc?.publicKey,
           private: generatedKeys.ecc?.privateKeyEncrypted,
-          revocationKey: generatedKeys.revocationCertificate,
         },
         kyber: {
           public: generatedKeys.kyber.publicKey as string,

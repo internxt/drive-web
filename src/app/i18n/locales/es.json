@@ -1759,17 +1759,11 @@
               "Cleaner",
               "Meet"
             ],
-            "comingSoonFeatures": [
-              "Mail",
-              "Fotos"
-            ]
+            "comingSoonFeatures": ["Mail", "Fotos"]
           },
           "default": {
             "bytesTitle": "{{bytes}}",
-            "features": [
-              "{{bytes}} de almacenamiento en la nube cifrado",
-              "VPN cifrada"
-            ]
+            "features": ["{{bytes}} de almacenamiento en la nube cifrado", "VPN cifrada"]
           }
         },
         "businessPlanFeaturesList": {
