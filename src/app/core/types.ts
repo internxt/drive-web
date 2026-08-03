@@ -124,7 +124,7 @@ export enum AppView {
 }
 
 export enum LocalStorageItem {
-  UserID = 'xUserID',
+  UserUUID = 'xUserUUID',
   NewToken = 'xNewToken',
   Language = 'i18nextLng',
   ShowSummerBanner = 'showSummerBanner',

@@ -11,10 +11,10 @@ function set(key: LocalStorageItem, value: string): void {
 }
 
 function getBackupKeyStorageKeys() {
-  const userId = localStorage.getItem(LocalStorageItem.UserID);
+  const uuid = localStorage.getItem(LocalStorageItem.UserUUID);
   return {
-    seenAt: `${BACKUP_KEY.SEEN_AT}_${userId}`,
-    acknowledgedAt: `${BACKUP_KEY.ACKNOWLEDGED_AT}_${userId}`,
+    seenAt: `${BACKUP_KEY.SEEN_AT}_${uuid}`,
+    acknowledgedAt: `${BACKUP_KEY.ACKNOWLEDGED_AT}_${uuid}`,
   };
 }
 

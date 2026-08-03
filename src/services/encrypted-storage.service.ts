@@ -43,7 +43,7 @@ const clear = (): void => {
   tokenCache = null;
   localStorage.removeItem(LocalStorageProtectedItem.EncryptedToken);
   localStorage.removeItem(LocalStorageProtectedItem.User);
-  localStorage.removeItem(LocalStorageItem.UserID);
+  localStorage.removeItem(LocalStorageItem.UserUUID);
 };
 
 function getUser(): UserSettings | null {
@@ -53,7 +53,7 @@ function getUser(): UserSettings | null {
 }
 
 function setUser(user: UserSettings): void {
-  localStorage.setItem(LocalStorageItem.UserID, user.userId);
+  localStorage.setItem(LocalStorageItem.UserUUID, user.uuid);
   localStorage.setItem(LocalStorageProtectedItem.User, JSON.stringify(user));
 }
 
