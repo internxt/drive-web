@@ -104,27 +104,27 @@ describe('Testing the encrypted storage service', () => {
       expect(localStorageItem).not.toEqual(fileToken);
     });
 
-    test('When getStorageToken(true) is called after setFolderToken, then it returns the decrypted value', async () => {
+    test('When getSharedItemAccessToken(true) is called after setFolderToken, then it returns the decrypted value', async () => {
       await encryptedStorageService.setFolderToken(folderToken);
       const cryptoSpy = vi.spyOn(window.crypto.subtle, 'decrypt');
 
-      const result = await encryptedStorageService.getStorageToken(true);
+      const result = await encryptedStorageService.getSharedItemAccessToken(true);
 
       expect(cryptoSpy).not.toHaveBeenCalled();
       expect(result).toBe(folderToken);
     });
 
-    test('When getStorageToken(false) is called after setFileToken, then it returns the decrypted value', async () => {
+    test('When getSharedItemAccessToken(false) is called after setFileToken, then it returns the decrypted value', async () => {
       await encryptedStorageService.setFileToken(fileToken);
       const cryptoSpy = vi.spyOn(window.crypto.subtle, 'decrypt');
 
-      const result = await encryptedStorageService.getStorageToken(false);
+      const result = await encryptedStorageService.getSharedItemAccessToken(false);
 
       expect(cryptoSpy).not.toHaveBeenCalled();
       expect(result).toBe(fileToken);
     });
 
-    test('When getStorageToken(true) is called with no cache but a value in storage, then it decrypts', async () => {
+    test('When getSharedItemAccessToken(true) is called with no cache but a value in storage, then it decrypts', async () => {
       const key = LocalStorageProtectedItem.EncryptedFolderToken;
 
       await encryptedStorageService.setFolderToken(folderToken);
@@ -134,13 +134,13 @@ describe('Testing the encrypted storage service', () => {
       localStorage.setItem(key, encryptedValue);
 
       const cryptoSpy = vi.spyOn(window.crypto.subtle, 'decrypt');
-      const result = await encryptedStorageService.getStorageToken(true);
+      const result = await encryptedStorageService.getSharedItemAccessToken(true);
 
       expect(cryptoSpy).toHaveBeenCalled();
       expect(result).toBe(folderToken);
     });
 
-    test('When getStorageToken(false) is called with no cache but a value in storage, then it decrypts', async () => {
+    test('When getSharedItemAccessToken(false) is called with no cache but a value in storage, then it decrypts', async () => {
       const key = LocalStorageProtectedItem.EncryptedFileToken;
 
       await encryptedStorageService.setFileToken(fileToken);
@@ -150,20 +150,20 @@ describe('Testing the encrypted storage service', () => {
       localStorage.setItem(key, encryptedValue);
 
       const cryptoSpy = vi.spyOn(window.crypto.subtle, 'decrypt');
-      const result = await encryptedStorageService.getStorageToken(false);
+      const result = await encryptedStorageService.getSharedItemAccessToken(false);
 
       expect(cryptoSpy).toHaveBeenCalled();
       expect(result).toBe(fileToken);
     });
 
-    test('When getStorageToken(true) is called and no folder token is stored, then it returns undefined', async () => {
-      const result = await encryptedStorageService.getStorageToken(true);
+    test('When getSharedItemAccessToken(true) is called and no folder token is stored, then it returns undefined', async () => {
+      const result = await encryptedStorageService.getSharedItemAccessToken(true);
 
       expect(result).toBeUndefined();
     });
 
-    test('When getStorageToken(false) is called and no file token is stored, then it returns undefined', async () => {
-      const result = await encryptedStorageService.getStorageToken(false);
+    test('When getSharedItemAccessToken(false) is called and no file token is stored, then it returns undefined', async () => {
+      const result = await encryptedStorageService.getSharedItemAccessToken(false);
 
       expect(result).toBeUndefined();
     });
@@ -177,7 +177,7 @@ describe('Testing the encrypted storage service', () => {
 
       expect(removeItemSpy).toHaveBeenCalledWith(key);
       expect(localStorage.getItem(key)).toBeNull();
-      expect(await encryptedStorageService.getStorageToken(true)).toBeUndefined();
+      expect(await encryptedStorageService.getSharedItemAccessToken(true)).toBeUndefined();
     });
 
     test('When clearFileToken is called, then the file token is removed from storage', async () => {
@@ -189,7 +189,7 @@ describe('Testing the encrypted storage service', () => {
 
       expect(removeItemSpy).toHaveBeenCalledWith(key);
       expect(localStorage.getItem(key)).toBeNull();
-      expect(await encryptedStorageService.getStorageToken(false)).toBeUndefined();
+      expect(await encryptedStorageService.getSharedItemAccessToken(false)).toBeUndefined();
     });
   });
 });

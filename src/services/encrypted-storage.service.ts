@@ -21,7 +21,7 @@ const setToken = async (token: string): Promise<void> => {
   return setAndEncrypt(LocalStorageProtectedItem.EncryptedToken, token);
 };
 
-const getStorageToken = async (isFolder: boolean): Promise<string | undefined> => {
+const getSharedItemAccessToken = async (isFolder: boolean): Promise<string | undefined> => {
   const key = isFolder ? LocalStorageProtectedItem.EncryptedFolderToken : LocalStorageProtectedItem.EncryptedFileToken;
   const cache = isFolder ? folderTokenCache : fileTokenCache;
   if (cache !== null) return cache;
@@ -90,7 +90,7 @@ const encryptedStorageService = {
   hydrateEncryptedStorageCache,
   getToken,
   setToken,
-  getStorageToken,
+  getSharedItemAccessToken,
   setFileToken,
   setFolderToken,
   clearFileToken,
@@ -104,7 +104,7 @@ export interface EncryptedStorageService {
   hydrateEncryptedStorageCache: () => Promise<void>;
   setToken: (token: string) => Promise<void>;
   getToken: () => string | undefined;
-  getStorageToken: (isFolder: boolean) => Promise<string | undefined>;
+  getSharedItemAccessToken: (isFolder: boolean) => Promise<string | undefined>;
   setFileToken: (token: string) => Promise<void>;
   setFolderToken: (token: string) => Promise<void>;
   clearFileToken: () => void;

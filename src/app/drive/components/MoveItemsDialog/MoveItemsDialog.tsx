@@ -123,7 +123,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     const itemUuid = item.uuid;
     const itemFolderUuid = item.isFolder ? itemUuid : item.folderUuid;
     const itemType = item.isFolder ? 'folder' : 'file';
-    const token = await encryptedStorageService.getStorageToken(item.isFolder);
+    const token = await encryptedStorageService.getSharedItemAccessToken(item.isFolder);
 
     const breadcrumbsList: FolderAncestor[] | FolderAncestorWorkspace[] = isWorkspaceSelected
       ? await newStorageService.getFolderAncestorsInWorkspace(workspaceSelected.workspace.id, itemType, itemUuid, token)

@@ -193,7 +193,7 @@ const ItemDetailsDialog = ({
     const itemType: ItemType = item.isFolder ? 'folder' : 'file';
     const itemUuid = item.uuid;
     const itemFolderUuid = item.isFolder ? itemUuid : item.folderUuid;
-    const token = await encryptedStorageService.getStorageToken(item.isFolder);
+    const token = await encryptedStorageService.getSharedItemAccessToken(item.isFolder);
 
     const [location, folderStats] = await Promise.all([
       getItemLocation(item, itemType, itemUuid, itemFolderUuid, token),
