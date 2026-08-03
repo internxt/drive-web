@@ -203,8 +203,16 @@ describe('Encryption and Decryption', () => {
 
     const mockUser: Partial<UserSettings> = {
       mnemonic: 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
-      publicKey: keys.publicKeyArmored,
-      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      keys: {
+        ecc: {
+          publicKey: keys.publicKeyArmored,
+          privateKey: keys.privateKeyArmored,
+        },
+        kyber: {
+          publicKey: keys.publicKyberKeyBase64,
+          privateKey: keys.privateKyberKeyBase64,
+        },
+      },
     };
 
     const mockPendingWorkspace = getMockPendingWorkspace();
@@ -242,8 +250,16 @@ describe('Encryption and Decryption', () => {
     const mockUser: Partial<UserSettings> = {
       mnemonic:
         'truck arch rather sell tilt return warm nurse rack vacuum rubber tribe unfold scissors copper sock panel ozone harsh ahead danger soda legal state',
-      publicKey: keys.publicKeyArmored,
-      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      keys: {
+        ecc: {
+          publicKey: keys.publicKeyArmored,
+          privateKey: keys.privateKeyArmored,
+        },
+        kyber: {
+          publicKey: keys.publicKyberKeyBase64,
+          privateKey: keys.privateKyberKeyBase64,
+        },
+      },
     };
 
     const mockRootState: Partial<RootState> = {
@@ -272,6 +288,7 @@ describe('Encryption and Decryption', () => {
     const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
       encryptedMessageInBase64: encryptedMnemonic,
       privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKyberKeyInBase64: keys.privateKyberKeyBase64,
     });
 
     expect(decryptedMessage).toEqual(mockUser.mnemonic);
