@@ -53,7 +53,7 @@ const getUser = async (): Promise<UserSettings | null> => {
 
 const setUser = async (user: UserSettings): Promise<void> => {
   userCache = user;
-  localStorage.setItem(LocalStorageItem.UserID, user.userId);
+  localStorage.setItem(LocalStorageItem.UserUUID, user.uuid);
   await setAndEncrypt(LocalStorageProtectedItem.EncryptedUser, JSON.stringify(user));
 };
 
