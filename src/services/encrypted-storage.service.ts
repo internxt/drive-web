@@ -4,6 +4,8 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 let tokenCache: string | null = null;
 let userCache: UserSettings | null = null;
+let folderTokenCache: string | null = null;
+let fileTokenCache: string | null = null;
 
 const getAndDecrypt = async (key: LocalStorageProtectedItem): Promise<string | null> => {
   const item = localStorage.getItem(key);
@@ -11,6 +13,7 @@ const getAndDecrypt = async (key: LocalStorageProtectedItem): Promise<string | n
 };
 
 const setAndEncrypt = async (key: LocalStorageProtectedItem, value: string): Promise<void> => {
+  if (!value) return;
   const encryptedValue = await encryptEntry(value);
   localStorage.setItem(key, encryptedValue);
 };
@@ -55,8 +58,44 @@ const setUser = async (user: UserSettings): Promise<void> => {
 };
 
 const setToken = async (token: string): Promise<void> => {
-  tokenCache = token;
+  tokenCache = token || null;
   return setAndEncrypt(LocalStorageProtectedItem.EncryptedToken, token);
+};
+
+const getSharedItemAccessToken = async (isFolder: boolean): Promise<string | undefined> => {
+  const key = isFolder ? LocalStorageProtectedItem.EncryptedFolderToken : LocalStorageProtectedItem.EncryptedFileToken;
+  const cache = isFolder ? folderTokenCache : fileTokenCache;
+  if (cache !== null) return cache;
+
+  let value: string | null;
+  try {
+    value = await getAndDecrypt(key);
+  } catch {
+    value = null;
+  }
+  if (isFolder) folderTokenCache = value;
+  else fileTokenCache = value;
+  return value ?? undefined;
+};
+
+const setFolderToken = async (token: string): Promise<void> => {
+  folderTokenCache = token || null;
+  return setAndEncrypt(LocalStorageProtectedItem.EncryptedFolderToken, token);
+};
+
+const setFileToken = async (token: string): Promise<void> => {
+  fileTokenCache = token || null;
+  return setAndEncrypt(LocalStorageProtectedItem.EncryptedFileToken, token);
+};
+
+const clearFolderToken = (): void => {
+  folderTokenCache = null;
+  localStorage.removeItem(LocalStorageProtectedItem.EncryptedFolderToken);
+};
+
+const clearFileToken = (): void => {
+  fileTokenCache = null;
+  localStorage.removeItem(LocalStorageProtectedItem.EncryptedFileToken);
 };
 
 const hydrateEncryptedStorageCache = async (): Promise<void> => {
@@ -81,16 +120,25 @@ const getToken = (): string | undefined => tokenCache ?? undefined;
 
 const clear = (): void => {
   tokenCache = null;
+  folderTokenCache = null;
+  fileTokenCache = null;
   localStorage.removeItem(LocalStorageProtectedItem.EncryptedToken);
   userCache = null;
+  localStorage.removeItem(LocalStorageProtectedItem.EncryptedFolderToken);
+  localStorage.removeItem(LocalStorageProtectedItem.EncryptedFileToken);
   localStorage.removeItem(LocalStorageProtectedItem.EncryptedUser);
-  localStorage.removeItem(LocalStorageItem.UserID);
+  localStorage.removeItem(LocalStorageItem.UserUUID);
 };
 
 const encryptedStorageService = {
   hydrateEncryptedStorageCache,
   getToken,
   setToken,
+  getSharedItemAccessToken,
+  setFileToken,
+  setFolderToken,
+  clearFileToken,
+  clearFolderToken,
   clear,
   getUser,
   setUser,
@@ -102,6 +150,11 @@ export interface EncryptedStorageService {
   hydrateEncryptedStorageCache: () => Promise<void>;
   setToken: (token: string) => Promise<void>;
   getToken: () => string | undefined;
+  getSharedItemAccessToken: (isFolder: boolean) => Promise<string | undefined>;
+  setFileToken: (token: string) => Promise<void>;
+  setFolderToken: (token: string) => Promise<void>;
+  clearFileToken: () => void;
+  clearFolderToken: () => void;
   clear: () => void;
   getUser: () => Promise<UserSettings | null>;
   setUser: (user: UserSettings) => Promise<void>;

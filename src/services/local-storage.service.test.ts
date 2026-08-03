@@ -3,7 +3,7 @@ import localStorageService from './local-storage.service';
 import { LocalStorageItem } from 'app/core/types';
 import { WorkspaceCredentialsDetails } from '@internxt/sdk/dist/workspaces';
 
-const userId = 'user_123';
+const userUUID = 'user_123';
 
 const mockWorkspaceCredentialsDetails: WorkspaceCredentialsDetails = {
   workspaceId: 'workspace-123',
@@ -26,7 +26,7 @@ const stringifyMockCredentials = JSON.stringify(mockWorkspaceCredentialsDetails)
 
 beforeEach(() => {
   localStorage.setItem(localStorageKey, localStorageValue);
-  localStorage.setItem(LocalStorageItem.UserID, userId);
+  localStorage.setItem(LocalStorageItem.UserUUID, userUUID);
   localStorage.setItem(LocalStorageItem.WorkspaceCredentials, stringifyMockCredentials);
   localStorage.setItem(LocalStorageItem.B2BworkspaceId, mockWorkspaceId);
   localStorage.setItem(LocalStorageItem.Theme, 'starwars');
@@ -150,8 +150,8 @@ describe('Testing the local storage service', () => {
   });
 
   describe('Backup key acknowledgment', () => {
-    const seenAtKey = `backup_key_seen_at_${userId}`;
-    const acknowledgedKey = `backup_key_acknowledged_at_${userId}`;
+    const seenAtKey = `backup_key_seen_at_${userUUID}`;
+    const acknowledgedKey = `backup_key_acknowledged_at_${userUUID}`;
 
     describe('Get backup keys', () => {
       test('When the user has never interacted with the backup keys dialog, then nothing is returned', () => {
@@ -218,8 +218,8 @@ describe('Testing the local storage service', () => {
 
       expect(clearSpy).toHaveBeenCalledTimes(1);
 
-      const seenAtKey = `backup_key_seen_at_${userId}`;
-      const acknowledgedKey = `backup_key_acknowledged_at_${userId}`;
+      const seenAtKey = `backup_key_seen_at_${userUUID}`;
+      const acknowledgedKey = `backup_key_acknowledged_at_${userUUID}`;
       expect(localStorage.getItem(seenAtKey)).toBeNull();
       expect(localStorage.getItem(acknowledgedKey)).toBeNull();
     });

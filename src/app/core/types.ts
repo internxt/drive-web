@@ -126,7 +126,7 @@ export enum AppView {
 export enum LocalStorageItem {
   /** @deprecated Use EncryptedUser via encryptedStorageService instead. Kept only for migration. */
   User = 'xUser',
-  UserID = 'xUserID',
+  UserUUID = 'xUserUUID',
   /** @deprecated Use EncryptedToken via encryptedStorageService instead. Kept only for migration. */
   NewToken = 'xNewToken',
   Language = 'i18nextLng',
@@ -149,8 +149,6 @@ export enum LocalStorageItem {
   B2BworkspaceId = 'b2bWorkspaceId',
   B2BworkspaceMnemonic = 'b2bWorkspaceMnemonic',
   WorkspaceCredentials = 'workspace_credentials',
-  FolderAccessToken = 'folderAccessToken',
-  FileAccessToken = 'fileAccessToken',
   GCLID = 'gclid',
   HasSeenTrashDisposalDialog = 'hasSeenTrashDisposalDialog',
   IdManagementTheme = 'id_management_theme_enabled',
@@ -170,8 +168,8 @@ export enum LocalStorageProtectedItem {
   EncryptedToken = 'xTokenEncrypted',
   B2Bworkspace = 'b2bWorkspace',
   WorkspaceCredentials = 'workspace_credentials',
-  FolderAccessToken = 'folderAccessToken',
-  FileAccessToken = 'fileAccessToken',
+  EncryptedFolderToken = 'xEncryptedFolderToken',
+  EncryptedFileToken = 'xEncryptedFileToken',
 }
 export enum OrderDirection {
   Asc = 'ASC',
