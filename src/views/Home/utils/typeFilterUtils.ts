@@ -1,4 +1,4 @@
-import { SearchFileCategory } from '../services';
+import type { SearchFileCategory } from '../services';
 
 export const TYPE_FILTER_ITEMS: { id: SearchFileCategory; labelKey: string; extension?: string }[] = [
   { id: 'folder', labelKey: 'folder' },
@@ -17,13 +17,19 @@ export const TYPE_FILTER_ITEMS: { id: SearchFileCategory; labelKey: string; exte
   { id: 'figma', labelKey: 'figma', extension: 'fig' },
 ];
 
+export const ALL_TYPE_CATEGORIES: SearchFileCategory[] = TYPE_FILTER_ITEMS.map(({ id }) => id);
+
 export const toggleTypeCategory = (
   selected: SearchFileCategory[],
   category: SearchFileCategory,
-): SearchFileCategory[] => {
-  const next = selected.includes(category)
-    ? selected.filter((current) => current !== category)
-    : [...selected, category];
-  const isEveryCategorySelected = next.length === TYPE_FILTER_ITEMS.length;
-  return isEveryCategorySelected ? [] : next;
-};
+): SearchFileCategory[] =>
+  selected.includes(category) ? selected.filter((current) => current !== category) : [...selected, category];
+
+export const areAllTypeCategoriesSelected = (selected: SearchFileCategory[]): boolean =>
+  selected.length === ALL_TYPE_CATEGORIES.length;
+
+export const toggleAllTypeCategories = (selected: SearchFileCategory[]): SearchFileCategory[] =>
+  areAllTypeCategoriesSelected(selected) ? [] : [...ALL_TYPE_CATEGORIES];
+
+export const isTypeFilterActive = (selected: SearchFileCategory[]): boolean =>
+  selected.length > 0 && !areAllTypeCategoriesSelected(selected);
