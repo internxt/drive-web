@@ -143,7 +143,8 @@ export enum LocalStorageItem {
   UccStorageKey = 'cello_ucc',
   Theme = 'theme',
   IsThemeDark = 'theme:isDark',
-  B2Bworkspace = 'b2bWorkspace',
+  B2BworkspaceId = 'b2bWorkspaceId',
+  B2BworkspaceMnemonic = 'b2bWorkspaceMnemonic',
   WorkspaceCredentials = 'workspace_credentials',
   FolderAccessToken = 'folderAccessToken',
   FileAccessToken = 'fileAccessToken',
@@ -158,6 +159,7 @@ export enum LocalStorageItem {
   SuperbawlTheme = 'superbowl_theme_enabled',
   StpatricksTheme = 'stpatricks_theme_enabled',
   AnniversaryTheme = 'anniversary_theme_enabled',
+  SubscriptionEndingModalClosed = 'subscription_ending_modal_closed',
 }
 
 export enum LocalStorageProtectedItem {
