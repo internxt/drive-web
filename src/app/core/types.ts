@@ -124,6 +124,8 @@ export enum AppView {
 }
 
 export enum LocalStorageItem {
+  /** @deprecated Use EncryptedUser via encryptedStorageService instead. Kept only for migration. */
+  User = 'xUser',
   UserID = 'xUserID',
   /** @deprecated Use EncryptedToken via encryptedStorageService instead. Kept only for migration. */
   NewToken = 'xNewToken',
