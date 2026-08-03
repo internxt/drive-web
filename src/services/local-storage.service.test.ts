@@ -21,9 +21,6 @@ export const mockUserSettings: UserSettings = {
   sharedWorkspace: false,
   credit: 100,
   mnemonic: 'test mnemonic phrase',
-  privateKey: 'private-key-mock',
-  publicKey: 'public-key-mock',
-  revocationKey: 'revocation-key-mock',
   keys: {
     ecc: {
       publicKey: 'ecc-public-key-mock',

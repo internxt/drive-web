@@ -50,9 +50,8 @@ export const guestSignupOnSubmit = async ({
 
     const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(xUser, password);
 
-    const user = {
+    const user: UserSettings = {
       ...xUser,
-      privateKey,
       keys: {
         ecc: {
           publicKey: publicKey,
@@ -63,7 +62,7 @@ export const guestSignupOnSubmit = async ({
           privateKey: privateKyberKey,
         },
       },
-    } as UserSettings;
+    };
 
     dispatch(userActions.setUser(user));
     await dispatch(userThunks.initializeUserThunk());
