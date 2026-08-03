@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { LocalStorageProtectedItem } from 'app/core/types';
+import { LocalStorageProtectedItem, LocalStorageItem } from 'app/core/types';
 import encryptedStorageService from './encrypted-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
@@ -99,7 +99,7 @@ describe('Testing the encrypted storage service', () => {
       emailVerified: true,
     };
 
-    test('When the user data exists in local storage, then the user is returned', async () => {
+    test('When the user data exists in encryptede storage, then the user is returned', async () => {
       const key = LocalStorageProtectedItem.EncryptedUser;
 
       await encryptedStorageService.setUser(mockUserSettings);
@@ -116,13 +116,33 @@ describe('Testing the encrypted storage service', () => {
       expect(userFromLocalStorage).toStrictEqual(mockUserSettings);
     });
 
-    test('When the user data does not exist in local storage, then nothing (null) is returned', async () => {
+    test('When the user data does not exist in encrypted storage, then nothing (null) is returned', async () => {
       const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
 
       encryptedStorageService.clear();
       const userFromLocalStorage = await encryptedStorageService.getUser();
 
       expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageProtectedItem.EncryptedUser);
+      expect(userFromLocalStorage).toBeNull();
+    });
+
+    test('When encrypted user is missing but unencrypted legacy user exists, then it migrates and returns it', async () => {
+      encryptedStorageService.clear();
+      localStorage.setItem(LocalStorageItem.User, JSON.stringify(mockUserSettings));
+
+      const userFromLocalStorage = await encryptedStorageService.getUser();
+
+      expect(userFromLocalStorage).toStrictEqual(mockUserSettings);
+      expect(localStorage.getItem(LocalStorageItem.User)).toBeNull();
+      expect(localStorage.getItem(LocalStorageProtectedItem.EncryptedUser)).not.toBeNull();
+    });
+
+    test('When legacy unencrypted user is invalid JSON, then getUser returns null', async () => {
+      encryptedStorageService.clear();
+      localStorage.setItem(LocalStorageItem.User, 'not-valid-json');
+
+      const userFromLocalStorage = await encryptedStorageService.getUser();
+
       expect(userFromLocalStorage).toBeNull();
     });
   });

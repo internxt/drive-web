@@ -33,10 +33,11 @@ const getUser = async (): Promise<UserSettings | null> => {
   //migration from unencrypted version, remove once completed
   if (!userCache) {
     try {
-      const unencryptedUser = localStorage.getItem(LocalStorageItem.NewToken);
+      const unencryptedUser = localStorage.getItem(LocalStorageItem.User);
       if (unencryptedUser) {
         const parsedUser = JSON.parse(unencryptedUser) as UserSettings;
-        await setUser(parsedUser);
+        const user = { ...parsedUser, createdAt: new Date(parsedUser.createdAt) };
+        await setUser(user);
         localStorage.removeItem(LocalStorageItem.User);
       }
     } catch {
