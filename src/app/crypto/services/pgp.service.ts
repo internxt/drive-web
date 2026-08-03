@@ -26,13 +26,12 @@ export function compareKeyPairIDs(privateKey: PrivateKey, publicKey: PublicKey):
 export async function generateNewKeys(): Promise<{
   privateKeyArmored: string;
   publicKeyArmored: string;
-  revocationCertificate: string;
   publicKyberKeyBase64: string;
   privateKyberKeyBase64: string;
 }> {
   const openpgp = await getOpenpgp();
 
-  const { privateKey, publicKey, revocationCertificate } = await openpgp.generateKey({
+  const { privateKey, publicKey } = await openpgp.generateKey({
     userIDs: [{ email: 'inxt@inxt.com' }],
     curve: 'ed25519Legacy',
   });
@@ -43,7 +42,6 @@ export async function generateNewKeys(): Promise<{
   return {
     privateKeyArmored: privateKey,
     publicKeyArmored: Buffer.from(publicKey).toString('base64'),
-    revocationCertificate: Buffer.from(revocationCertificate).toString('base64'),
     publicKyberKeyBase64: Buffer.from(publicKyberKey).toString('base64'),
     privateKyberKeyBase64: Buffer.from(privateKyberKey).toString('base64'),
   };

@@ -84,7 +84,6 @@ describe('Encryption and Decryption', () => {
     keys: {
       privateKeyArmored: string;
       publicKeyArmored: string;
-      revocationCertificate: string;
       publicKyberKeyBase64: string;
       privateKyberKeyBase64: string;
     },
@@ -93,7 +92,6 @@ describe('Encryption and Decryption', () => {
     const mockUser: UserSettings = {
       uuid: 'mock-uuid',
       email: 'mock@test.com',
-      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
       mnemonic: encryptedMnemonicInBase64,
       userId: 'mock-user-id',
       name: 'mock-name',
@@ -107,8 +105,6 @@ describe('Encryption and Decryption', () => {
       rootFolderUuid: undefined,
       sharedWorkspace: false,
       credit: 0,
-      publicKey: keys.publicKeyArmored,
-      revocationKey: keys.revocationCertificate,
       keys: {
         ecc: {
           publicKey: keys.publicKeyArmored,
@@ -158,52 +154,6 @@ describe('Encryption and Decryption', () => {
     });
 
     const mockUser = await getMockUser(keys, encriptedMnemonic);
-
-    (encryptedStorageService.getUser as Mock).mockReturnValue(mockUser);
-
-    const ownerMnemonic = await decryptMnemonic(mockUser.mnemonic);
-    expect(encryptedStorageService.getUser).toHaveBeenCalled();
-    expect(ownerMnemonic).toEqual(mnemonic);
-  });
-
-  it('should decrypt mnemonic encrypted without key field', async () => {
-    const mnemonic =
-      'truck arch rather sell tilt return warm nurse rack vacuum rubber tribe unfold scissors copper sock panel ozone harsh ahead danger soda legal state';
-    const keys = await generateNewKeys();
-    const encriptedMnemonic = await encryptMessageWithPublicKey({
-      message: mnemonic,
-      publicKeyInBase64: keys.publicKeyArmored,
-    });
-    const encryptedMnemonicInBase64 = btoa(encriptedMnemonic as string);
-
-    const mockOldUser: Partial<UserSettings> = {
-      uuid: 'mock-uuid',
-      email: 'mock@test.com',
-      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
-      mnemonic: encryptedMnemonicInBase64,
-      userId: 'mock-user-id',
-      name: 'mock-name',
-      lastname: 'mock-lastname',
-      username: 'mock-username',
-      bridgeUser: 'mock-bridgeUser',
-      bucket: 'mock-bucket',
-      backupsBucket: null,
-      root_folder_id: 0,
-      rootFolderId: 'mock-rootFolderId',
-      rootFolderUuid: undefined,
-      sharedWorkspace: false,
-      credit: 0,
-      publicKey: keys.publicKeyArmored,
-      revocationKey: keys.revocationCertificate,
-      appSumoDetails: null,
-      registerCompleted: false,
-      hasReferralsProgram: false,
-      createdAt: new Date(),
-      avatar: null,
-      emailVerified: false,
-    };
-
-    const mockUser = mockOldUser as UserSettings;
 
     (encryptedStorageService.getUser as Mock).mockReturnValue(mockUser);
 

@@ -183,7 +183,7 @@ export const doLogin = async (
     .then(async (data) => {
       const { user, newToken } = data;
 
-      const { privateKey: encryptedPrivateKey } = user;
+      const { privateKey: encryptedPrivateKey } = user.keys.ecc;
 
       const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(user, password);
 
@@ -199,7 +199,6 @@ export const doLogin = async (
       const clearUser = {
         ...user,
         mnemonic: clearMnemonic,
-        privateKey: privateKey,
         keys: {
           ecc: {
             publicKey: publicKey,
@@ -380,7 +379,10 @@ const resetAccountWithToken = async (token: string | undefined, newPassword: str
 };
 
 export const changePassword = async (newPassword: string, currentPassword: string): Promise<void> => {
-  const user = (await encryptedStorageService.getUser()) as UserSettings;
+  const user = await encryptedStorageService.getUser();
+  if (!user) {
+    throw new Error('No user in local storage');
+  }
 
   const { encryptedCurrentPassword } = await getPasswordDetails(currentPassword);
 
@@ -391,14 +393,9 @@ export const changePassword = async (newPassword: string, currentPassword: strin
 
   // Encrypt the mnemonic
   const encryptedMnemonic = encryptTextWithKey(user.mnemonic, newPassword);
-  const privateKey = Buffer.from(user.privateKey, 'base64').toString();
+  const privateKey = Buffer.from(user.keys.ecc.privateKey, 'base64').toString();
   const privateKeyEncrypted = aes.encrypt(privateKey, newPassword);
-
-  let privateKyberKeyEncrypted = '';
-
-  if (user.keys?.kyber?.privateKey) {
-    privateKyberKeyEncrypted = aes.encrypt(user.keys.kyber.privateKey, newPassword);
-  }
+  const privateKyberKeyEncrypted = aes.encrypt(user.keys.kyber.privateKey, newPassword);
 
   const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
 
@@ -561,9 +558,8 @@ export const signUp = async (params: SignUpParams) => {
 
   const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(xUser, password);
 
-  const user = {
+  const user: UserSettings = {
     ...xUser,
-    privateKey,
     keys: {
       ecc: {
         publicKey: publicKey,
@@ -574,7 +570,7 @@ export const signUp = async (params: SignUpParams) => {
         privateKey: privateKyberKey,
       },
     },
-  } as UserSettings;
+  };
 
   dispatch(userThunks.setUserThunk(user));
   await dispatch(userThunks.initializeUserThunk());
