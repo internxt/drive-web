@@ -176,7 +176,7 @@ describe('setSelectedWorkspace', () => {
     await setSelectedWorkspace({ workspaceId: mockWorkspace.workspace.id })(dispatchMock, getStateMock, undefined);
 
     expect(getStateMock).toHaveBeenCalledTimes(2);
-    expect(localStorageService.setB2BWorkspace).toHaveBeenCalledWith('ws-1', 'decrypted-key');
+    expect(encryptedStorageService.setB2BWorkspace).toHaveBeenCalledWith('ws-1', 'decrypted-key');
     expect(dispatchMock).toHaveBeenCalledWith(workspacesActions.setSelectedWorkspace(mockWorkspace));
   });
 });
