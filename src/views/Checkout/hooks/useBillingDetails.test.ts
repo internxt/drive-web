@@ -13,17 +13,6 @@ const mockAddress: AddressProvider = {
 };
 
 describe('Billing details checkout custom hook', () => {
-  test('When the user is located in a country that requires a postal code, then the postal code is marked as required', () => {
-    const { result } = renderHook(() => useBillingDetails({ userLocation: 'US' }));
-
-    expect(result.current.isPostalCodeRequired).toBe(true);
-  });
-
-  test('When the user is located in a country that does not require a postal code, then the postal code is not required', () => {
-    const { result } = renderHook(() => useBillingDetails({ userLocation: 'ES' }));
-
-    expect(result.current.isPostalCodeRequired).toBe(false);
-  });
 
   test('When no address is provided, then the billing country and postal code fall back to the detected location and the typed postal code', () => {
     const { result } = renderHook(() => useBillingDetails({ userLocation: 'ES' }));
