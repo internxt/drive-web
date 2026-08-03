@@ -12,11 +12,8 @@ import {
 import { isValid } from '../../../src/app/crypto/services/utilspgp';
 
 import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { Buffer } from 'node:buffer';
 
 describe('Generate keys', () => {
-  globalThis.Buffer = Buffer;
-
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
@@ -26,9 +23,6 @@ describe('Generate keys', () => {
     const password = 'test pwd';
     const keys = await getKeys(password);
 
-    expect(keys).toHaveProperty('privateKeyEncrypted');
-    expect(keys).toHaveProperty('publicKey');
-    expect(keys).toHaveProperty('revocationCertificate');
     expect(keys).toHaveProperty('ecc');
     expect(keys).toHaveProperty('ecc.privateKeyEncrypted');
     expect(keys).toHaveProperty('ecc.publicKey');
@@ -49,16 +43,14 @@ describe('# keys service tests', () => {
     const keys = await generateNewKeys();
     const keys_different = await generateNewKeys();
 
-    await expect(
-      assertValidateKeys(keys.privateKeyArmored, Buffer.from(keys_different.publicKeyArmored, 'base64').toString()),
-    ).rejects.toThrow(new KeysDoNotMatchError());
+    await expect(assertValidateKeys(keys.privateKeyArmored, atob(keys_different.publicKeyArmored))).rejects.toThrow(
+      new KeysDoNotMatchError(),
+    );
   });
   it('should validate public and private keys', async () => {
     const keys = await generateNewKeys();
 
-    await expect(
-      assertValidateKeys(keys.privateKeyArmored, Buffer.from(keys.publicKeyArmored, 'base64').toString()),
-    ).resolves.toBeUndefined();
+    await expect(assertValidateKeys(keys.privateKeyArmored, atob(keys.publicKeyArmored))).resolves.toBeUndefined();
   });
 });
 

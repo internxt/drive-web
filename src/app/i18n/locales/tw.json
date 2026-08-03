@@ -1782,17 +1782,11 @@
               "清理工具 (Cleaner)",
               "會議 (Meet)"
             ],
-            "comingSoonFeatures": [
-              "郵件 (Mail)",
-              "照片(Photos)"
-            ]
+            "comingSoonFeatures": ["郵件 (Mail)", "照片(Photos)"]
           },
           "default": {
             "bytesTitle": "{{bytes}}",
-            "features": [
-              "{{bytes}} 加密雲端儲存空間",
-              "加密 VPN"
-            ]
+            "features": ["{{bytes}} 加密雲端儲存空間", "加密 VPN"]
           }
         },
         "businessPlanFeaturesList": {
