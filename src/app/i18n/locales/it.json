@@ -221,6 +221,16 @@
         "password": "La tua password"
       },
       "emailMustNotBeEmpty": "L'email non deve essere vuota",
+      "authError": {
+        "invalidCredentials": "L'email o la password non sono corretti. Riprova.",
+        "twoFactorEnabled": "Questo account utilizza l'autenticazione a due fattori. Accedi dalla pagina di accesso e torna qui per completare l'acquisto.",
+        "emailAlreadyRegistered": "Esiste già un account con questa email. Seleziona “Accedi” per proseguire con il tuo acquisto.",
+        "accountLocked": "Questo account è bloccato per motivi di sicurezza. Controlla la tua casella di posta per sbloccarlo prima di continuare.",
+        "tooManyAttempts": "Troppi tentativi. Attendi un minuto e riprova.",
+        "invalidData": "Verifica che la tua email e la tua password siano corrette e riprova.",
+        "serverError": "Non siamo riusciti a completare questo passaggio. Riprova tra qualche minuto o contatta il supporto se il problema persiste.",
+        "unknown": "Non siamo riusciti a verificare i tuoi dati. Controlla la tua email e la tua password e riprova."
+      },
       "privacyGuarantee": "Garanzia di privacy: Non condividiamo le tue informazioni e ti contatteremo solo se necessario per fornire il nostro servizio."
     },
     "addressBillingTitle": "Indirizzo di Fatturazione",

@@ -200,6 +200,16 @@
         "password": "Votre mot de passe"
       },
       "emailMustNotBeEmpty": "L'email ne doit pas être vide",
+      "authError": {
+        "invalidCredentials": "L'email ou le mot de passe est incorrect. Veuillez réessayer.",
+        "twoFactorEnabled": "Ce compte utilise l'authentification à deux facteurs. Connectez-vous depuis la page de connexion, puis revenez pour finaliser votre achat.",
+        "emailAlreadyRegistered": "Un compte existe déjà avec cette adresse email. Sélectionnez « Se connecter » pour poursuivre votre achat.",
+        "accountLocked": "Ce compte est bloqué pour des raisons de sécurité. Consultez votre boîte de réception pour le débloquer avant de continuer.",
+        "tooManyAttempts": "Trop de tentatives. Veuillez patienter une minute et réessayer.",
+        "invalidData": "Veuillez vérifier que votre email et votre mot de passe sont corrects, puis réessayer.",
+        "serverError": "Nous n'avons pas pu finaliser cette étape. Veuillez réessayer dans quelques minutes ou contacter le support si le problème persiste.",
+        "unknown": "Nous n'avons pas pu vérifier vos informations. Veuillez vérifier votre email et votre mot de passe, puis réessayer."
+      },
       "privacyGuarantee": "Garantie de confidentialité : Nous ne partageons pas vos informations et ne vous contacterons que si nécessaire pour fournir notre service."
     },
     "addressBillingTitle": "Facturation d'Adresse",

@@ -1,6 +1,5 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useState } from 'react';
-import { POSTAL_CODE_REQUIRED_COUNTRIES } from '../constants';
 import { AddressProvider } from '../types/checkout.types';
 
 interface UseBillingDetailsProps {
@@ -19,7 +18,6 @@ export const useBillingDetails = ({ user, userLocation }: UseBillingDetailsProps
   const [userName, setUserName] = useState(user?.name ?? '');
   const [postalCode, setPostalCode] = useState('');
 
-  const isPostalCodeRequired = POSTAL_CODE_REQUIRED_COUNTRIES.includes(userLocation ?? '');
 
   const billingCountry = address?.country ?? userLocation;
   const billingPostalCode = address?.postal_code ?? (postalCode.trim() || undefined);
@@ -37,7 +35,6 @@ export const useBillingDetails = ({ user, userLocation }: UseBillingDetailsProps
     address,
     userName,
     postalCode,
-    isPostalCodeRequired,
     isCryptoAddressIncomplete,
     billingCountry,
     billingPostalCode,
