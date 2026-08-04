@@ -1,20 +1,14 @@
 import { describe, expect, test, vi, beforeEach } from 'vitest';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { getEnvironmentConfig } from './getEnvironmentConfig';
-import localStorageService from 'services/local-storage.service';
 import envService from 'services/env.service';
 import encryptedStorageService from 'services/encrypted-storage.service';
 import { WorkspaceCredentialsDetails } from '@internxt/sdk/dist/workspaces';
 
-vi.mock('services/local-storage.service', () => ({
-  default: {
-    getWorkspaceCredentials: vi.fn(),
-    getB2BWorkspaceMnemonic: vi.fn(),
-  },
-}));
-
 vi.mock('services/encrypted-storage.service', () => ({
   default: {
+    getB2BWorkspaceMnemonic: vi.fn(),
+    getWorkspaceCredentials: vi.fn(),
     getUser: vi.fn(),
   },
 }));
@@ -25,7 +19,6 @@ vi.mock('services/env.service', () => ({
   },
 }));
 
-const mockedLocalStorage = vi.mocked(localStorageService);
 const mockedEncryptedStorage = vi.mocked(encryptedStorageService);
 const mockedEnvService = vi.mocked(envService);
 
@@ -81,8 +74,8 @@ describe('Get Environment Config', () => {
     });
 
     test('When the user requests workspace context but no workspace credentials are stored, then the personal credentials are returned', async () => {
-      mockedLocalStorage.getWorkspaceCredentials.mockReturnValue(null);
-      mockedLocalStorage.getB2BWorkspaceMnemonic.mockReturnValue(createMockWorkspaceMnemonic());
+      mockedEncryptedStorage.getWorkspaceCredentials.mockReturnValue(null);
+      mockedEncryptedStorage.getB2BWorkspaceMnemonic.mockResolvedValue(createMockWorkspaceMnemonic());
       mockedEncryptedStorage.getUser.mockResolvedValue(createMockUser());
       mockedEnvService.getVariable.mockReturnValue('false');
 
@@ -93,8 +86,8 @@ describe('Get Environment Config', () => {
     });
 
     test('When the user requests workspace context but no workspace data is stored, then the personal credentials are returned', async () => {
-      mockedLocalStorage.getWorkspaceCredentials.mockReturnValue(createMockWorkspaceCredentials());
-      mockedLocalStorage.getB2BWorkspaceMnemonic.mockReturnValue(null);
+      mockedEncryptedStorage.getWorkspaceCredentials.mockReturnValue(createMockWorkspaceCredentials());
+      mockedEncryptedStorage.getB2BWorkspaceMnemonic.mockResolvedValue(null);
       mockedEncryptedStorage.getUser.mockResolvedValue(createMockUser());
       mockedEnvService.getVariable.mockReturnValue('false');
 
@@ -107,8 +100,8 @@ describe('Get Environment Config', () => {
 
   describe('Workspace account context', () => {
     test('When the user is in a workspace, then the workspace credentials are returned', async () => {
-      mockedLocalStorage.getWorkspaceCredentials.mockReturnValue(createMockWorkspaceCredentials());
-      mockedLocalStorage.getB2BWorkspaceMnemonic.mockReturnValue(createMockWorkspaceMnemonic());
+      mockedEncryptedStorage.getWorkspaceCredentials.mockReturnValue(createMockWorkspaceCredentials());
+      mockedEncryptedStorage.getB2BWorkspaceMnemonic.mockResolvedValueOnce(createMockWorkspaceMnemonic());
       mockedEnvService.getVariable.mockReturnValue('false');
 
       const result = await getEnvironmentConfig(true);
@@ -123,8 +116,8 @@ describe('Get Environment Config', () => {
     });
 
     test('When the user is in a workspace, then the workspace encryption key is used instead of the personal one', async () => {
-      mockedLocalStorage.getWorkspaceCredentials.mockReturnValue(createMockWorkspaceCredentials());
-      mockedLocalStorage.getB2BWorkspaceMnemonic.mockReturnValue(createMockWorkspaceMnemonic());
+      mockedEncryptedStorage.getWorkspaceCredentials.mockReturnValue(createMockWorkspaceCredentials());
+      mockedEncryptedStorage.getB2BWorkspaceMnemonic.mockResolvedValue(createMockWorkspaceMnemonic());
       mockedEncryptedStorage.getUser.mockResolvedValue(createMockUser());
       mockedEnvService.getVariable.mockReturnValue('false');
 

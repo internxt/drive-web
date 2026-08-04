@@ -1,6 +1,5 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import envService from 'services/env.service';
-import localStorageService from 'services/local-storage.service';
 import { EnvironmentConfig } from './types';
 import encryptedStorageService from 'services/encrypted-storage.service';
 
@@ -9,8 +8,8 @@ import encryptedStorageService from 'services/encrypted-storage.service';
  * @param isWorkspace Flag to indicate if is a team or not
  */
 export async function getEnvironmentConfig(isWorkspace?: boolean): Promise<EnvironmentConfig> {
-  const workspaceCredentials = localStorageService.getWorkspaceCredentials();
-  const workspaceMnemonic = localStorageService.getB2BWorkspaceMnemonic();
+  const workspaceCredentials = encryptedStorageService.getWorkspaceCredentials();
+  const workspaceMnemonic = await encryptedStorageService.getB2BWorkspaceMnemonic();
 
   if (isWorkspace && workspaceCredentials && workspaceMnemonic) {
     return {

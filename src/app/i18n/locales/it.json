@@ -195,7 +195,8 @@
       "login": "Accedi",
       "success": "Accesso effettuato con successo",
       "error": "Impossibile accedere, riprova",
-      "closeWindow": "Puoi chiudere questa finestra"
+      "closeWindow": "Puoi chiudere questa finestra",
+      "invalidRedirectUri": "URL di reindirizzamento non valido"
     },
     "oauthLink": {
       "continueAs": "Continua come",

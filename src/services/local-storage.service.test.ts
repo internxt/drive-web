@@ -1,34 +1,15 @@
 import { afterAll, beforeEach, describe, expect, it, test, vi } from 'vitest';
 import localStorageService from './local-storage.service';
 import { LocalStorageItem } from 'app/core/types';
-import { WorkspaceCredentialsDetails } from '@internxt/sdk/dist/workspaces';
 
 const userUUID = 'user_123';
-
-const mockWorkspaceCredentialsDetails: WorkspaceCredentialsDetails = {
-  workspaceId: 'workspace-123',
-  bucket: 'workspace-bucket',
-  workspaceUserId: 'workspace-user-456',
-  email: 'workspace.user@example.com',
-  credentials: {
-    networkPass: 'mockNetworkPassword123',
-    networkUser: 'workspace.network.user',
-  },
-  tokenHeader: 'Bearer mock-token-abc-123',
-};
-
-const mockWorkspaceId = 'workspace-user-001';
 
 const localStorageKey = LocalStorageItem.Language;
 const localStorageValue = 'item-exists';
 
-const stringifyMockCredentials = JSON.stringify(mockWorkspaceCredentialsDetails);
-
 beforeEach(() => {
   localStorage.setItem(localStorageKey, localStorageValue);
   localStorage.setItem(LocalStorageItem.UserUUID, userUUID);
-  localStorage.setItem(LocalStorageItem.WorkspaceCredentials, stringifyMockCredentials);
-  localStorage.setItem(LocalStorageItem.B2BworkspaceId, mockWorkspaceId);
   localStorage.setItem(LocalStorageItem.Theme, 'starwars');
   vi.clearAllMocks();
   vi.resetModules();
@@ -90,62 +71,6 @@ describe('Testing the local storage service', () => {
       expect(removeFromLocalStorageSpy).toHaveBeenCalled();
       expect(removeFromLocalStorageSpy).toHaveBeenCalledWith(removeLocalStorageKey);
       expect(nonExistentItem).toBeNull();
-    });
-  });
-
-  describe('Workspaces', () => {
-    describe('Get workspace credentials', () => {
-      it('When there are credentials from a workspace, then the credentials are returned', () => {
-        const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
-
-        const workspaceCredentials = localStorageService.getWorkspaceCredentials();
-
-        expect(getFromLocalStorageSpy).toHaveBeenCalled();
-        expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.WorkspaceCredentials);
-        expect(workspaceCredentials).toStrictEqual(JSON.parse(stringifyMockCredentials));
-      });
-
-      it('When there are not credentials from a workspace, then a value indicating so is returned (null)', () => {
-        const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
-
-        localStorage.removeItem(LocalStorageItem.WorkspaceCredentials);
-        const workspaceCredentials = localStorageService.getWorkspaceCredentials();
-
-        expect(getFromLocalStorageSpy).toHaveBeenCalled();
-        expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.WorkspaceCredentials);
-        expect(workspaceCredentials).toBeNull();
-      });
-    });
-
-    describe('Get workspace item data', () => {
-      it('When workspace is set, then mnemonic and id are set', () => {
-        const mockWorkspaceMnemonic = 'test-workspace-mnemonic';
-        const setFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'setItem');
-
-        localStorageService.setB2BWorkspace('test-workspace-id', mockWorkspaceMnemonic);
-
-        expect(setFromLocalStorageSpy).toHaveBeenCalled();
-        expect(setFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.B2BworkspaceId, 'test-workspace-id');
-        expect(setFromLocalStorageSpy).toHaveBeenCalledWith(
-          LocalStorageItem.B2BworkspaceMnemonic,
-          mockWorkspaceMnemonic,
-        );
-
-        expect(localStorageService.getB2BWorkspaceMnemonic()).toBe(mockWorkspaceMnemonic);
-      });
-
-      it('When a workspace is cleaned, then mnemonic and id are removed', () => {
-        const setFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'setItem');
-
-        localStorageService.clearB2BWorkspace();
-
-        expect(setFromLocalStorageSpy).toHaveBeenCalled();
-        expect(setFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.B2BworkspaceId, '');
-        expect(setFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.B2BworkspaceMnemonic, '');
-
-        expect(localStorageService.get(LocalStorageItem.B2BworkspaceId)).toBe('');
-        expect(localStorageService.get(LocalStorageItem.B2BworkspaceMnemonic)).toBe('');
-      });
     });
   });
 
