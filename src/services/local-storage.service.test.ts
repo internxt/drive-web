@@ -1,22 +1,8 @@
 import { afterAll, beforeEach, describe, expect, it, test, vi } from 'vitest';
 import localStorageService from './local-storage.service';
 import { LocalStorageItem } from 'app/core/types';
-import { WorkspaceCredentialsDetails } from '@internxt/sdk/dist/workspaces';
-import encryptedStorageService from './encrypted-storage.service';
 
 const userUUID = 'user_123';
-
-const mockWorkspaceCredentialsDetails: WorkspaceCredentialsDetails = {
-  workspaceId: 'workspace-123',
-  bucket: 'workspace-bucket',
-  workspaceUserId: 'workspace-user-456',
-  email: 'workspace.user@example.com',
-  credentials: {
-    networkPass: 'mockNetworkPassword123',
-    networkUser: 'workspace.network.user',
-  },
-  tokenHeader: 'Bearer mock-token-abc-123',
-};
 
 const mockWorkspaceId = 'workspace-user-001';
 
@@ -26,7 +12,6 @@ const localStorageValue = 'item-exists';
 beforeEach(async () => {
   localStorage.setItem(localStorageKey, localStorageValue);
   localStorage.setItem(LocalStorageItem.UserUUID, userUUID);
-  await encryptedStorageService.setWorkspaceCredentials(mockWorkspaceCredentialsDetails);
   localStorage.setItem(LocalStorageItem.B2BworkspaceId, mockWorkspaceId);
   localStorage.setItem(LocalStorageItem.Theme, 'starwars');
   vi.clearAllMocks();
@@ -89,19 +74,6 @@ describe('Testing the local storage service', () => {
       expect(removeFromLocalStorageSpy).toHaveBeenCalled();
       expect(removeFromLocalStorageSpy).toHaveBeenCalledWith(removeLocalStorageKey);
       expect(nonExistentItem).toBeNull();
-    });
-  });
-
-  describe('Workspaces', () => {
-    describe('Get workspace credentials', () => {
-      it('When there are credentials from a workspace, then the credentials are returned', () => {
-        const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
-
-        const workspaceCredentials = encryptedStorageService.getWorkspaceCredentials();
-
-        expect(getFromLocalStorageSpy).not.toHaveBeenCalled();
-        expect(workspaceCredentials).toStrictEqual(mockWorkspaceCredentialsDetails);
-      });
     });
   });
 
