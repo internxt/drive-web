@@ -78,11 +78,6 @@ function getWorkspaceCredentials(): WorkspaceCredentialsDetails | null {
   return null;
 }
 
-function getStorageToken(isFolder: boolean): string | null {
-  const key = isFolder ? LocalStorageItem.FolderAccessToken : LocalStorageItem.FileAccessToken;
-  return get(key);
-}
-
 function removeItem(key: LocalStorageItem): void {
   localStorage.removeItem(key);
 }
@@ -100,7 +95,6 @@ const localStorageService = {
   getBackupKeys,
   getUser,
   setUser,
-  getStorageToken,
   removeItem,
   clear,
   getB2BWorkspaceMnemonic,
@@ -121,7 +115,6 @@ export interface LocalStorageService {
     seenAt: string | null;
     saved: boolean;
   };
-  getStorageToken: (isFolder: boolean) => string | null;
   getB2BWorkspaceMnemonic: () => string | null;
   clearB2BWorkspace: () => void;
   setB2BWorkspace: (workspaceID: string, workspaceMnemonic: string) => void;

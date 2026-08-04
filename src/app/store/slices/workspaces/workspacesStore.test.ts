@@ -154,6 +154,25 @@ describe('setSelectedWorkspace', () => {
     expect(dispatchMock).not.toHaveBeenCalledWith(workspacesActions.setSelectedWorkspace(expect.anything()));
     expect(localStorageService.setB2BWorkspace).not.toHaveBeenCalled();
   });
+
+  test('re-fetches state after dispatching fetchWorkspaces to find newly loaded workspace', async () => {
+    vi.spyOn(localStorageService, 'get').mockReturnValue(null);
+    const dispatchMock = vi.fn();
+    const getStateMock = vi
+      .fn()
+      .mockReturnValueOnce({
+        workspaces: { selectedWorkspace: null, workspaces: [] },
+      })
+      .mockReturnValueOnce({
+        workspaces: { selectedWorkspace: null, workspaces: [mockWorkspace] },
+      });
+
+    await setSelectedWorkspace({ workspaceId: mockWorkspace.workspace.id })(dispatchMock, getStateMock, undefined);
+
+    expect(getStateMock).toHaveBeenCalledTimes(2);
+    expect(localStorageService.setB2BWorkspace).toHaveBeenCalledWith('ws-1', 'decrypted-key');
+    expect(dispatchMock).toHaveBeenCalledWith(workspacesActions.setSelectedWorkspace(mockWorkspace));
+  });
 });
 
 describe('Encryption and Decryption', () => {
@@ -184,8 +203,16 @@ describe('Encryption and Decryption', () => {
 
     const mockUser: Partial<UserSettings> = {
       mnemonic: 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
-      publicKey: keys.publicKeyArmored,
-      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      keys: {
+        ecc: {
+          publicKey: keys.publicKeyArmored,
+          privateKey: keys.privateKeyArmored,
+        },
+        kyber: {
+          publicKey: keys.publicKyberKeyBase64,
+          privateKey: keys.privateKyberKeyBase64,
+        },
+      },
     };
 
     const mockPendingWorkspace = getMockPendingWorkspace();
@@ -223,8 +250,16 @@ describe('Encryption and Decryption', () => {
     const mockUser: Partial<UserSettings> = {
       mnemonic:
         'truck arch rather sell tilt return warm nurse rack vacuum rubber tribe unfold scissors copper sock panel ozone harsh ahead danger soda legal state',
-      publicKey: keys.publicKeyArmored,
-      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      keys: {
+        ecc: {
+          publicKey: keys.publicKeyArmored,
+          privateKey: keys.privateKeyArmored,
+        },
+        kyber: {
+          publicKey: keys.publicKyberKeyBase64,
+          privateKey: keys.privateKyberKeyBase64,
+        },
+      },
     };
 
     const mockRootState: Partial<RootState> = {
@@ -253,6 +288,7 @@ describe('Encryption and Decryption', () => {
     const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
       encryptedMessageInBase64: encryptedMnemonic,
       privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKyberKeyInBase64: keys.privateKyberKeyBase64,
     });
 
     expect(decryptedMessage).toEqual(mockUser.mnemonic);

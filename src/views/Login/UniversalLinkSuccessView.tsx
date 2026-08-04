@@ -51,7 +51,7 @@ export default function UniversalLinkView(): JSX.Element {
       baseURL = decoded;
     }
 
-    return `${baseURL}?mnemonic=${btoa(user.mnemonic)}&newToken=${btoa(newToken)}&privateKey=${btoa(user.privateKey)}`;
+    return `${baseURL}?mnemonic=${btoa(user.mnemonic)}&newToken=${btoa(newToken)}&privateKey=${btoa(user.keys.ecc.privateKey)}`;
   };
 
   // Should redirect to login in the useEffect

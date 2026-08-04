@@ -8,6 +8,7 @@ import {
   FailedToEncryptEntry,
 } from './local-storage-errors';
 import { KEY_LENGTH, ALGORITHM, IV_LENGTH } from './local-storage-constants';
+import { Buffer } from 'buffer';
 
 beforeEach(async () => {
   await deleteDb();
@@ -76,7 +77,7 @@ describe('encryptEntry', () => {
     const result = await encryptEntry(mockMnemonic);
 
     expect(typeof result).toBe('string');
-    const decodedLength = Uint8Array.fromBase64(result).length;
+    const decodedLength = Buffer.from(result, 'base64').length;
     expect(decodedLength).toBeGreaterThan(IV_LENGTH);
   });
 
@@ -119,9 +120,9 @@ describe('decryptEntry', () => {
     await createNewKey();
     const ciphertext = await encryptEntry(mockMnemonic);
 
-    const bytes = Uint8Array.fromBase64(ciphertext);
+    const bytes = Buffer.from(ciphertext, 'base64');
     bytes[bytes.length - 1] ^= 0xff;
-    const tampered = bytes.toBase64();
+    const tampered = Buffer.from(bytes).toString('base64');
 
     await expect(decryptEntry(tampered)).rejects.toThrow(FailedToDecryptEntry);
   });

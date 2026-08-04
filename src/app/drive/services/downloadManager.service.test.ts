@@ -132,7 +132,6 @@ describe('downloadManagerService', () => {
   const mockUser: UserSettings = {
     uuid: 'mock-uuid',
     email: 'mock-email',
-    privateKey: 'privateKeyEncrypted',
     mnemonic: 'encryptedMockMnemonic',
     userId: 'mock-userId',
     name: 'mock-name',
@@ -146,8 +145,6 @@ describe('downloadManagerService', () => {
     rootFolderUuid: undefined,
     sharedWorkspace: false,
     credit: 0,
-    publicKey: 'publicKey',
-    revocationKey: 'revocationCertificate',
     keys: {
       ecc: {
         publicKey: 'keys.ecc.publicKey',

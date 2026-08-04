@@ -1,13 +1,22 @@
+import { AppError } from '@internxt/sdk';
 import { act, renderHook } from '@testing-library/react';
 import databaseService from 'app/database/services/database.service';
 import { localStorageService, RealtimeService } from 'services';
-import { authenticateUser } from 'services/auth.service';
+import { authenticateUser, is2FANeeded } from 'services/auth.service';
 import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
-import { AuthCheckoutProps, useAuthCheckout } from './useAuthCheckout';
+import enTranslations from 'app/i18n/locales/en.json';
+import { AUTH_ERROR_TRANSLATION_KEY, AuthCheckoutProps, useAuthCheckout } from './useAuthCheckout';
 
 vi.mock('services/auth.service', () => ({
   authenticateUser: vi.fn(),
+  is2FANeeded: vi.fn(),
   default: {},
+}));
+
+vi.mock('app/i18n/provider/TranslationProvider', () => ({
+  useTranslationContext: vi.fn().mockReturnValue({
+    translate: vi.fn().mockImplementation((key: string) => key),
+  }),
 }));
 
 const mockProfile = {
@@ -27,9 +36,26 @@ const mockedAuthenticateUserProps: Omit<AuthCheckoutProps, 'changeAuthMethod'> =
   onAuthenticationFail: vi.fn(),
 };
 
+const authenticateWithError = async (error: unknown, props = mockedAuthenticateUserProps) => {
+  (authenticateUser as Mock).mockRejectedValue(error);
+
+  const { result: hookState } = renderHook(() =>
+    useAuthCheckout({
+      changeAuthMethod: vi.fn(),
+    }),
+  );
+
+  await act(async () => {
+    await hookState.current.onAuthenticateUser(props);
+  });
+
+  return hookState;
+};
+
 describe('Authentication Checkout Custom hook', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    (is2FANeeded as Mock).mockResolvedValue(false);
   });
 
   test('When the user is not logged in, then the user is logged in correctly', async () => {
@@ -55,7 +81,7 @@ describe('Authentication Checkout Custom hook', () => {
       token: mockedAuthenticateUserProps.authCaptcha,
       doSignUp: mockedAuthenticateUserProps.doRegister,
     });
-    expect(hookState.current.authError).toBeUndefined();
+    expect(hookState.current.authError).toBeNull();
     expect(mockedAuthenticateUserProps.onAuthenticationFail).not.toHaveBeenCalled();
   });
 
@@ -96,23 +122,100 @@ describe('Authentication Checkout Custom hook', () => {
     expect(returnedUser).toBeUndefined();
   });
 
-  test('When authentication fails, then the error is set and the error is handled correctly', async () => {
-    const errorMessage = 'Authentication failed';
-    (authenticateUser as Mock).mockRejectedValue(new Error(errorMessage));
+  test('When authentication fails, then the payment flow is notified so it can stop', async () => {
+    await authenticateWithError(new AppError('Wrong login credentials', 401));
 
-    const changeAuthMethod = vi.fn();
-    const { result: hookState } = renderHook(() =>
-      useAuthCheckout({
-        changeAuthMethod,
-      }),
-    );
+    expect(mockedAuthenticateUserProps.onAuthenticationFail).toHaveBeenCalled();
+  });
 
-    await act(async () => {
-      await hookState.current.onAuthenticateUser(mockedAuthenticateUserProps);
+  test('When the credentials are wrong, then the user is asked to check the email and password', async () => {
+    const hookState = await authenticateWithError(new AppError('Wrong login credentials', 401));
+
+    expect(hookState.current.authError).toBe(AUTH_ERROR_TRANSLATION_KEY.invalidCredentials);
+  });
+
+  test('When the account has two factor authentication enabled, then the user is asked to sign in from the login page', async () => {
+    (is2FANeeded as Mock).mockResolvedValue(true);
+
+    const hookState = await authenticateWithError(new AppError('Wrong login credentials', 401));
+
+    expect(hookState.current.authError).toBe(AUTH_ERROR_TRANSLATION_KEY.twoFactorEnabled);
+  });
+
+  test('When the email already has an account, then the user is asked to log in instead of signing up', async () => {
+    const hookState = await authenticateWithError(new AppError('User already registered', 409), {
+      ...mockedAuthenticateUserProps,
+      authMethod: 'signUp',
     });
 
-    expect(hookState.current.authError).toBe(errorMessage);
-    expect(mockedAuthenticateUserProps.onAuthenticationFail).toHaveBeenCalled();
+    expect(hookState.current.authError).toBe(AUTH_ERROR_TRANSLATION_KEY.emailAlreadyRegistered);
+  });
+
+  test('When the account is locked, then the user is told to unlock it before continuing', async () => {
+    const hookState = await authenticateWithError(new AppError('Account blocked', 403));
+
+    expect(hookState.current.authError).toBe(AUTH_ERROR_TRANSLATION_KEY.accountLocked);
+  });
+
+  test('When the login attempts are rate limited, then the user is asked to wait before retrying', async () => {
+    const hookState = await authenticateWithError(new AppError('Too many requests', 429));
+
+    expect(hookState.current.authError).toBe(AUTH_ERROR_TRANSLATION_KEY.tooManyAttempts);
+  });
+
+  test('When the submitted data is rejected, then the user is asked to review the email and password', async () => {
+    const hookState = await authenticateWithError(new AppError('Bad request', 400));
+
+    expect(hookState.current.authError).toBe(AUTH_ERROR_TRANSLATION_KEY.invalidData);
+  });
+
+  test('When the server fails, then the user is asked to retry later instead of blaming the credentials', async () => {
+    const hookState = await authenticateWithError(new AppError('Internal server error', 500));
+
+    expect(hookState.current.authError).toBe(AUTH_ERROR_TRANSLATION_KEY.serverError);
+  });
+
+  test('When the request never reaches the server, then the user is asked to retry later', async () => {
+    const hookState = await authenticateWithError(new Error('Network Error'));
+
+    expect(hookState.current.authError).toBe(AUTH_ERROR_TRANSLATION_KEY.serverError);
+  });
+
+  test('When the failure reason is not recognised, then a generic message is shown', async () => {
+    const hookState = await authenticateWithError(new AppError('Unexpected', 418));
+
+    expect(hookState.current.authError).toBe(AUTH_ERROR_TRANSLATION_KEY.unknown);
+  });
+
+  test('When any authentication error is shown, then the user reads a translated message instead of a raw key', () => {
+    const translationFor = (key: string) =>
+      key
+        .split('.')
+        .reduce<unknown>((section, path) => (section as Record<string, unknown> | undefined)?.[path], enTranslations);
+
+    for (const key of Object.values(AUTH_ERROR_TRANSLATION_KEY)) {
+      expect(translationFor(key)).toBeTypeOf('string');
+    }
+  });
+
+  test('When the request fails, then the raw provider error is never shown to the user', async () => {
+    const hookState = await authenticateWithError(new AppError('Request failed with status code 401', 401));
+
+    expect(hookState.current.authError).not.toContain('status code');
+  });
+
+  test('When two factor authentication cannot be checked, then the wrong credentials message is shown', async () => {
+    (is2FANeeded as Mock).mockRejectedValue(new Error('Service unavailable'));
+
+    const hookState = await authenticateWithError(new AppError('Wrong login credentials', 401));
+
+    expect(hookState.current.authError).toBe(AUTH_ERROR_TRANSLATION_KEY.invalidCredentials);
+  });
+
+  test('When the failure is not an unauthorized sign in, then the two factor status is not requested', async () => {
+    await authenticateWithError(new AppError('Internal server error', 500));
+
+    expect(is2FANeeded).not.toHaveBeenCalled();
   });
 
   test('When the user wants to log out, then all services are cleared and the auth method is set to ‘sign up’', async () => {
@@ -166,6 +269,6 @@ describe('Authentication Checkout Custom hook', () => {
       token: signUpProps.authCaptcha,
       doSignUp: signUpProps.doRegister,
     });
-    expect(hookState.current.authError).toBeUndefined();
+    expect(hookState.current.authError).toBeNull();
   });
 });
