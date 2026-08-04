@@ -154,6 +154,25 @@ describe('setSelectedWorkspace', () => {
     expect(dispatchMock).not.toHaveBeenCalledWith(workspacesActions.setSelectedWorkspace(expect.anything()));
     expect(localStorageService.setB2BWorkspace).not.toHaveBeenCalled();
   });
+
+  test('re-fetches state after dispatching fetchWorkspaces to find newly loaded workspace', async () => {
+    vi.spyOn(localStorageService, 'get').mockReturnValue(null);
+    const dispatchMock = vi.fn();
+    const getStateMock = vi
+      .fn()
+      .mockReturnValueOnce({
+        workspaces: { selectedWorkspace: null, workspaces: [] },
+      })
+      .mockReturnValueOnce({
+        workspaces: { selectedWorkspace: null, workspaces: [mockWorkspace] },
+      });
+
+    await setSelectedWorkspace({ workspaceId: mockWorkspace.workspace.id })(dispatchMock, getStateMock, undefined);
+
+    expect(getStateMock).toHaveBeenCalledTimes(2);
+    expect(localStorageService.setB2BWorkspace).toHaveBeenCalledWith('ws-1', 'decrypted-key');
+    expect(dispatchMock).toHaveBeenCalledWith(workspacesActions.setSelectedWorkspace(mockWorkspace));
+  });
 });
 
 describe('Encryption and Decryption', () => {
