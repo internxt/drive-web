@@ -16,7 +16,7 @@ export default async function fetchFileBlob(
   credentials?: NetworkCredentials,
   mnemonic?: string,
 ): Promise<Blob> {
-  const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(!!options.isWorkspace);
+  const { bridgeUser, bridgePass, encryptionKey } = await getEnvironmentConfig(!!options.isWorkspace);
 
   const creds = credentials ? credentials : { pass: bridgePass, user: bridgeUser };
 
