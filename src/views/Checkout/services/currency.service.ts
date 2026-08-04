@@ -27,6 +27,7 @@ const CURRENCY_BY_COUNTRY: Record<string, string> = {
   QA: 'usd', // Qatar
   BH: 'usd', // Bahrain
   OM: 'usd', // Oman
+  IR: 'usd', // Iran
 };
 
 const DEFAULT_CURRENCY = 'eur';
