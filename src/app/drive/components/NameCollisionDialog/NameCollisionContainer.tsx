@@ -79,7 +79,7 @@ const NameCollisionContainer: FC = () => {
   };
 
   const uploadFileAndGetFileId = async (file: File, itemToReplace: DriveItemData) => {
-    const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(!!selectedWorkspace);
+    const { bridgeUser, bridgePass, encryptionKey, bucketId } = await getEnvironmentConfig(!!selectedWorkspace);
     const network = new Network(bridgeUser, bridgePass, encryptionKey);
     const taskId = `replace-${itemToReplace.uuid}-${Date.now()}`;
     const [uploadPromise] = network.uploadFile(
