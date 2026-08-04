@@ -162,6 +162,7 @@ export enum LocalStorageItem {
 
 export enum LocalStorageProtectedItem {
   User = 'xUser',
+  EncryptedUser = 'xEncryptedUser',
   EncryptedToken = 'xTokenEncrypted',
   B2Bworkspace = 'b2bWorkspace',
   WorkspaceCredentials = 'workspace_credentials',

@@ -5,6 +5,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 let tokenCache: string | null = null;
 let folderTokenCache: string | null = null;
 let fileTokenCache: string | null = null;
+let userCache: UserSettings | null = null;
 
 const getAndDecrypt = async (key: LocalStorageProtectedItem): Promise<string | null> => {
   const item = localStorage.getItem(key);
@@ -82,22 +83,30 @@ const clear = (): void => {
   tokenCache = null;
   folderTokenCache = null;
   fileTokenCache = null;
+  userCache = null;
   localStorage.removeItem(LocalStorageProtectedItem.EncryptedToken);
   localStorage.removeItem(LocalStorageProtectedItem.EncryptedFolderToken);
   localStorage.removeItem(LocalStorageProtectedItem.EncryptedFileToken);
   localStorage.removeItem(LocalStorageProtectedItem.User);
   localStorage.removeItem(LocalStorageItem.UserUUID);
+  localStorage.removeItem(LocalStorageProtectedItem.EncryptedUser);
 };
 
 const getUser = (): UserSettings | null => {
+  if (userCache !== null) return userCache;
   const stringUser: string | null = localStorage.getItem(LocalStorageProtectedItem.User);
 
   return stringUser ? JSON.parse(stringUser) : null;
 };
 
-const setUser = (user: UserSettings): void => {
+const setUser = async (user: UserSettings): Promise<void> => {
   localStorage.setItem(LocalStorageItem.UserUUID, user.uuid);
+
+  //migration from unencrypted version, remove once completed
   localStorage.setItem(LocalStorageProtectedItem.User, JSON.stringify(user));
+
+  userCache = user;
+  await setAndEncrypt(LocalStorageProtectedItem.EncryptedUser, JSON.stringify(user));
 };
 
 const encryptedStorageService = {

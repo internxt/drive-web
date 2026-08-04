@@ -4,7 +4,7 @@ import { AppView, IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import shareService from 'app/share/services/share.service';
 import { useAppDispatch } from 'app/store/hooks';
-import { userActions } from 'app/store/slices/user';
+import { userThunks } from 'app/store/slices/user';
 import { ExpiredLinkView } from 'components';
 import { MAX_PASSWORD_LENGTH } from 'components/ValidPassword';
 import queryString from 'query-string';
@@ -78,7 +78,7 @@ function ShareGuestSingUpView(): JSX.Element {
 
   useEffect(() => {
     if (user && mnemonic) {
-      dispatch(userActions.setUser(user));
+      dispatch(userThunks.setUserThunk(user));
       if (mnemonic) {
         return navigationService.push(AppView.Shared);
       }

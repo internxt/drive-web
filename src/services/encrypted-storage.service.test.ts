@@ -112,9 +112,13 @@ describe('Testing the encrypted storage service', () => {
     };
 
     const stringifyMockedUser = JSON.stringify(mockUserSettings);
-    test('When the user data exists in local storage, then the user is returned', () => {
-      encryptedStorageService.setUser(mockUserSettings);
+    test('When the user data exists in encrypted storage, then the user is returned', async () => {
+      const key = LocalStorageProtectedItem.User;
+      await encryptedStorageService.setUser(mockUserSettings);
       const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
+      const data = localStorage.getItem(key);
+      encryptedStorageService.clear();
+      localStorage.setItem(key, data as string);
 
       const userFromLocalStorage = encryptedStorageService.getUser();
 
