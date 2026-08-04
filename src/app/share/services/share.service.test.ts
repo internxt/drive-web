@@ -137,6 +137,7 @@ describe('Encryption and Decryption', () => {
     const mockUser = await getMockUser(keys, encryptedMnemonicInBase64);
 
     (encryptedStorageService.getUser as Mock).mockResolvedValue(mockUser);
+    expect((await encryptedStorageService.getUser()) as UserSettings).toEqual(mockUser);
 
     const ownerMnemonic = await decryptMnemonic(mockUser.mnemonic);
     expect(encryptedStorageService.getUser).toHaveBeenCalled();
@@ -155,7 +156,8 @@ describe('Encryption and Decryption', () => {
 
     const mockUser = await getMockUser(keys, encriptedMnemonic);
 
-    (encryptedStorageService.getUser as Mock).mockReturnValue(mockUser);
+    (encryptedStorageService.getUser as Mock).mockResolvedValue(mockUser);
+    expect((await encryptedStorageService.getUser()) as UserSettings).toEqual(mockUser);
 
     const ownerMnemonic = await decryptMnemonic(mockUser.mnemonic);
     expect(encryptedStorageService.getUser).toHaveBeenCalled();
@@ -592,5 +594,32 @@ describe('decryptPublicSharingCodeWithOwner', () => {
     await expect(shareService.decryptPublicSharingCodeWithOwner('bad-encrypted-code', 'inxt-v3')).rejects.toThrow(
       'Length 0, cannot decrypt',
     );
+  });
+
+  describe('when user is not found', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+      vi.restoreAllMocks();
+    });
+
+    test('createPublicShareFromOwnerUser throws and reports error when user is not found', async () => {
+      vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue(undefined as any);
+      const errorService = (await import('services/error.service')).default;
+
+      await expect(shareService.createPublicShareFromOwnerUser('uuid', 'file')).rejects.toEqual(
+        expect.objectContaining({ message: 'User Not Found' }),
+      );
+      expect(errorService.reportError).toHaveBeenCalled();
+    });
+
+    test('decryptPublicSharingCodeWithOwner throws and reports error when user is not found', async () => {
+      vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(undefined as any);
+      const errorService = (await import('services/error.service')).default;
+
+      await expect(shareService.decryptPublicSharingCodeWithOwner('encrypted-code', 'inxt-v3')).rejects.toEqual(
+        expect.objectContaining({ message: 'User Not Found' }),
+      );
+      expect(errorService.reportError).toHaveBeenCalled();
+    });
   });
 });
