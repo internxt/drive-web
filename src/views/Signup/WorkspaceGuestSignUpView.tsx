@@ -76,10 +76,12 @@ function WorkspaceGuestSingUpView(): JSX.Element {
 
   useEffect(() => {
     if (user && mnemonic) {
-      dispatch(userThunks.setUserThunk(user));
-      if (mnemonic) {
-        return navigationService.push(AppView.Drive);
-      }
+      (async () => {
+        await dispatch(userThunks.setUserThunk(user));
+        if (mnemonic) {
+          return navigationService.push(AppView.Drive);
+        }
+      })();
     }
   }, []);
 

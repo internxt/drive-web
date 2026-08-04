@@ -64,7 +64,7 @@ export const guestSignupOnSubmit = async ({
       },
     };
 
-    dispatch(userThunks.setUserThunk(user));
+    await dispatch(userThunks.setUserThunk(user));
     await dispatch(userThunks.initializeUserThunk());
     dispatch(planThunks.initializeThunk());
 

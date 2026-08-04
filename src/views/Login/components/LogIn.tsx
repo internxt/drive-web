@@ -81,14 +81,16 @@ export default function LogIn(): JSX.Element {
 
   useEffect(() => {
     if (user && mnemonic && !isOAuthFlow) {
-      dispatch(userThunks.setUserThunk(user));
-      redirectWithCredentials(
-        user,
-        mnemonic,
-        isUniversalLinkMode || isSharingInvitation
-          ? { universalLinkMode: isUniversalLinkMode, isSharingInvitation }
-          : undefined,
-      );
+      (async () => {
+        await dispatch(userThunks.setUserThunk(user));
+        redirectWithCredentials(
+          user,
+          mnemonic,
+          isUniversalLinkMode || isSharingInvitation
+            ? { universalLinkMode: isUniversalLinkMode, isSharingInvitation }
+            : undefined,
+        );
+      })();
     }
   }, []);
 
