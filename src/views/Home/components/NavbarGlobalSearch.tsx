@@ -6,6 +6,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SearchResult } from '@internxt/sdk/dist/drive/storage/types';
 import { defaultSearchFilters, searchItems, SearchFileCategory, SearchFilters } from '../services';
 import { ArrowSquareOutIcon, GearIcon, GiftIcon, MagnifyingGlassIcon, XIcon } from '@phosphor-icons/react';
+import { Loader } from '@internxt/ui';
 import AccountPopover from './AccountPopover';
 import referralService from 'services/referral.service';
 import i18next from 'i18next';
@@ -61,6 +62,13 @@ const getClearButtonClassName = (query: string, openSearchBox: boolean) => {
     'absolute right-2.5 top-1/2 z-1 -translate-y-1/2 cursor-pointer text-gray-60 transition-all duration-100 ease-out';
   const isHidden = query.length === 0 || !openSearchBox;
   const visibilityClass = isHidden ? 'pointer-events-none opacity-0' : '';
+  return `${baseClass} ${visibilityClass}`;
+};
+
+const getSearchLoaderClassName = (loadingSearch: boolean, openSearchBox: boolean) => {
+  const baseClass = 'absolute right-9 top-1/2 z-1 -translate-y-1/2 transition-all duration-100 ease-out';
+  const isHidden = !loadingSearch || !openSearchBox;
+  const visibilityClass = isHidden ? 'opacity-0' : '';
   return `${baseClass} ${visibilityClass}`;
 };
 
@@ -309,7 +317,7 @@ const Navbar = (props: NavbarProps) => {
                 spellCheck="false"
                 type="text"
                 value={query}
-                className="inxt-input left-icon h-10 w-full appearance-none rounded-lg border border-transparent bg-gray-5 px-9 text-lg text-gray-100 placeholder-gray-60 outline-none ring-1 ring-gray-10 transition-all duration-150 ease-out hover:shadow-sm hover:ring-gray-20 focus:border-primary focus:bg-surface focus:placeholder-gray-80 focus:shadow-none focus:ring-3 focus:ring-primary/10 dark:focus:bg-gray-1 dark:focus:ring-primary/20"
+                className="inxt-input left-icon h-10 w-full appearance-none rounded-lg border border-transparent bg-gray-5 pl-9 pr-16 text-lg text-gray-100 placeholder-gray-60 outline-none ring-1 ring-gray-10 transition-all duration-150 ease-out hover:shadow-sm hover:ring-gray-20 focus:border-primary focus:bg-surface focus:placeholder-gray-80 focus:shadow-none focus:ring-3 focus:ring-primary/10 dark:focus:bg-gray-1 dark:focus:ring-primary/20"
                 onChange={(e) => {
                   setQuery(e.target.value);
                   handleSearch();
@@ -334,6 +342,11 @@ const Navbar = (props: NavbarProps) => {
                 placeholder={translate('general.searchBar.placeholder')}
               />
               <div className={getKeyboardShortcutClassName(openSearchBox)}>{isMacOs ? '⌘F' : 'Ctrl F'}</div>
+              <Loader
+                classNameContainer={getSearchLoaderClassName(loadingSearch, openSearchBox)}
+                classNameLoader="text-gray-60"
+                size={20}
+              />
               <XIcon
                 className={getClearButtonClassName(query, openSearchBox)}
                 onMouseDownCapture={() => {
