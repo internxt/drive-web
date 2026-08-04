@@ -44,8 +44,8 @@ const initialState: UserState = {
 const setUserThunk = createAsyncThunk<void, UserSettings, { state: RootState }>(
   'user/setUser',
   async (user, { dispatch }) => {
-    dispatch(userActions.setUser(user));
     await encryptedStorageService.setUser(user);
+    dispatch(userActions.setUser(user));
   },
 );
 
@@ -223,8 +223,8 @@ const updateUserEmailCredentialsThunk = createAsyncThunk<
     username: newUserData.email,
   };
   await encryptedStorageService.setToken(newToken);
-  dispatch(userActions.setUser(user));
   await encryptedStorageService.setUser(user);
+  dispatch(userActions.setUser(user));
 });
 
 export const userSlice = createSlice({
