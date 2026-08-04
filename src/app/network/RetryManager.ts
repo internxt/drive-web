@@ -1,8 +1,19 @@
+export enum RetryableTaskType {
+  Upload = 'upload',
+  Download = 'download',
+}
+
+export enum RetryableTaskStatus {
+  Pending = 'pending',
+  Failed = 'failed',
+  Retrying = 'retrying',
+}
+
 export type RetryableTask = {
   taskId: string;
-  type: 'upload' | 'download';
+  type: RetryableTaskType;
   params: any;
-  status?: 'pending' | 'failed' | 'retrying';
+  status?: RetryableTaskStatus;
   retryable?: boolean;
 };
 
@@ -11,7 +22,7 @@ class RetryManager {
   private listeners: (() => void)[] = [];
 
   addTask(task: RetryableTask) {
-    this.tasksToRetry.push({ ...task, status: 'failed' });
+    this.tasksToRetry.push({ ...task, status: RetryableTaskStatus.Failed });
     this.notify();
   }
 
@@ -19,13 +30,13 @@ class RetryManager {
     // A task can only appear once per taskId: re-adding a failed task replaces its entry
     // instead of duplicating it in the retry list.
     const incomingTaskIds = new Set(tasks.map((task) => task.taskId).filter(Boolean));
-    const tasksWithStatus = tasks.map((task) => ({ ...task, status: 'failed' }) as RetryableTask);
+    const tasksWithStatus = tasks.map((task) => ({ ...task, status: RetryableTaskStatus.Failed }));
     this.tasksToRetry = this.tasksToRetry.filter((task) => !incomingTaskIds.has(task.taskId));
     this.tasksToRetry.push(...tasksWithStatus);
     this.notify();
   }
 
-  changeStatus(taskId: string, status: 'pending' | 'failed' | 'retrying') {
+  changeStatus(taskId: string, status: RetryableTaskStatus) {
     this.tasksToRetry = this.tasksToRetry.map((task) => (task.taskId === taskId ? { ...task, status } : task));
     this.notify();
   }
@@ -52,7 +63,7 @@ class RetryManager {
     this.notify();
   }
 
-  getTasks(type?: 'upload' | 'download') {
+  getTasks(type?: RetryableTaskType) {
     return type ? this.tasksToRetry.filter((task) => task.type === type) : this.tasksToRetry;
   }
 

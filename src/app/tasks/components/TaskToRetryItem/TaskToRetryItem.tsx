@@ -6,7 +6,9 @@ import { formatDefaultDate } from 'services/date.service';
 import { t } from 'i18next';
 import { TaskLoggerButton } from '../TaskLoggerButton/TaskLoggerButton';
 import { CircleNotch } from '@phosphor-icons/react';
-import { RetryableTask } from 'app/network/RetryManager';
+import { RetryableTask, RetryableTaskStatus, RetryableTaskType } from 'app/network/RetryManager';
+import { UploadManagerFileParams } from 'app/network/UploadManager';
+import { DownloadItemType } from 'app/drive/services/downloadManager.service';
 
 interface DisplayData {
   name: string;
@@ -16,20 +18,31 @@ interface DisplayData {
   isFolder: boolean;
 }
 
-const getDisplayData = (params: RetryableTask['params']): DisplayData => ({
-  name: params?.filecontent?.name ?? params.plainName ?? params.name,
-  type: params?.filecontent?.type ?? params.type,
-  size: params?.filecontent?.size ?? params.size,
-  modifiedAt: params?.filecontent?.content.lastModified ?? params.updatedAt,
-  isFolder: Boolean(params?.isFolder),
+const getUploadDisplayData = (params: UploadManagerFileParams): DisplayData => ({
+  name: params.filecontent.name,
+  type: params.filecontent.type,
+  size: params.filecontent.size,
+  modifiedAt: params.filecontent.content.lastModified,
+  isFolder: false,
 });
+
+const getDownloadDisplayData = (item: DownloadItemType): DisplayData => ({
+  name: item.plainName ?? item.name,
+  type: item.type,
+  size: item.size,
+  modifiedAt: item.updatedAt,
+  isFolder: Boolean(item.isFolder),
+});
+
+const getDisplayData = (task: RetryableTask): DisplayData =>
+  task.type === RetryableTaskType.Upload ? getUploadDisplayData(task.params) : getDownloadDisplayData(task.params);
 
 const withExtension = (name: string, type?: string): string =>
   type && !name?.toLowerCase().endsWith(`.${type.toLowerCase()}`) ? `${name}.${type}` : name;
 
 const TaskToRetyItem = ({ index, style, data }: ListChildComponentProps) => {
   const file: RetryableTask = data.files[index];
-  const { params, status, retryable } = file;
+  const { status, retryable } = file;
   const { downloadItem } = data;
   const isNotAllowed = retryable === false;
   const getFileIcon = (type: string) => {
@@ -39,7 +52,7 @@ const TaskToRetyItem = ({ index, style, data }: ListChildComponentProps) => {
   const FolderIcon = iconService.getItemIcon(true);
   const getFolderIcon = <FolderIcon className="w-12 h-12 drop-shadow-soft" />;
 
-  const { name, type, size, modifiedAt, isFolder } = getDisplayData(params);
+  const { name, type, size, modifiedAt, isFolder } = getDisplayData(file);
   const displayName = withExtension(name, type);
   const displaySize = bytesToString(size, false).replace('kB', 'KB');
 
@@ -60,10 +73,10 @@ const TaskToRetyItem = ({ index, style, data }: ListChildComponentProps) => {
         </div>
       </div>
       {isNotAllowed && <span className="mr-2 text-sm font-medium text-gray-50">{t('tasks.messages.notAllowed')}</span>}
-      {!isNotAllowed && status === 'failed' && (
+      {!isNotAllowed && status === RetryableTaskStatus.Failed && (
         <TaskLoggerButton onClick={() => downloadItem(file)} Icon={RestartIcon} sizeClassName="h-8 w-8" iconSize={16} />
       )}
-      {!isNotAllowed && status === 'retrying' && (
+      {!isNotAllowed && status === RetryableTaskStatus.Retrying && (
         <CircleNotch size={16} className="mr-2 animate-spin text-gray-60" weight="bold" />
       )}
     </div>

@@ -8,7 +8,7 @@ import { PersistUploadRepository } from '../repositories/DatabaseUploadRepositor
 import { TaskStatus } from '../tasks/types';
 import { ConnectionLostError } from './requests';
 import { FileToUpload } from 'app/drive/services/file.service/types';
-import RetryManager, { RetryableTask } from './RetryManager';
+import RetryManager, { RetryableTask, RetryableTaskStatus, RetryableTaskType } from './RetryManager';
 import { ErrorMessages } from 'app/core/constants';
 import { MAX_UPLOAD_ATTEMPTS, TWENTY_MEGABYTES, USE_MULTIPART_THRESHOLD_BYTES } from './networkConstants';
 import { OwnerUserAuthenticationData, UploadErrorReason } from './types';
@@ -440,7 +440,7 @@ class UploadManager {
           else
             filesToRetry.push({
               taskId: files[i]?.taskId ?? files[i]?.relatedTaskId ?? '',
-              type: 'upload',
+              type: RetryableTaskType.Upload,
               params: files[i],
               retryable: !this.nonRetryableTaskIds.has(files[i]?.taskId ?? ''),
             });
@@ -451,7 +451,7 @@ class UploadManager {
         if (files.length === 1 && fileTaskId) {
           const noFilesToRetry = filesToRetry.length === 0;
           if (noFilesToRetry) RetryManager.removeTask(fileTaskId);
-          else RetryManager.changeStatus(fileTaskId, 'failed');
+          else RetryManager.changeStatus(fileTaskId, RetryableTaskStatus.Failed);
         }
       };
 

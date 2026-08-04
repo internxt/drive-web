@@ -21,7 +21,7 @@ import { planSelectors, planThunks } from '../../plan';
 import { uiActions } from '../../ui';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
 
-import RetryManager from 'app/network/RetryManager';
+import RetryManager, { RetryableTaskStatus } from 'app/network/RetryManager';
 import { FileToUpload } from 'app/drive/services/file.service/types';
 import { prepareFilesToUpload } from '../fileUtils/prepareFilesToUpload';
 import { StorageState } from '../storage.model';
@@ -227,7 +227,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
         },
       });
     } catch (error) {
-      if (taskId && isRetry) RetryManager.changeStatus(taskId, 'failed');
+      if (taskId && isRetry) RetryManager.changeStatus(taskId, RetryableTaskStatus.Failed);
       errors.push(errorService.castError(error));
     }
 
@@ -540,7 +540,7 @@ export const uploadItemsThunkExtraReducers = (builder: ActionReducerMapBuilder<S
     .addCase(uploadItemsParallelThunk.rejected, (state, action) => {
       const requestOptions = { ...DEFAULT_OPTIONS, ...(action.meta.arg.options ?? {}) };
       const taskId = action.meta.arg.taskId;
-      if (taskId && RetryManager.isRetryingTask(taskId)) RetryManager.changeStatus(taskId, 'failed');
+      if (taskId && RetryManager.isRetryingTask(taskId)) RetryManager.changeStatus(taskId, RetryableTaskStatus.Failed);
       if (requestOptions?.showErrors) {
         notificationsService.show({
           text: t('error.uploadingFile', { reason: action.error.message ?? '' }),
