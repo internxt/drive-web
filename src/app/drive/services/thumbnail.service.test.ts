@@ -1,15 +1,15 @@
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 import Resizer from 'react-image-file-resizer';
-import localStorageService from 'services/local-storage.service';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import fetchFileBlob from './download.service/fetchFileBlob';
 import { ErrorLoadingVideoFileError } from './errors/thumbnail.service.errors';
 import { downloadThumbnail, getImageThumbnail, getVideoFrame } from './thumbnail.service';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 vi.mock('react-image-file-resizer', () => ({
   default: { imageFileResizer: vi.fn() },
 }));
-vi.mock('services/local-storage.service', () => ({
+vi.mock('services/encrypted-storage.service', () => ({
   default: { getUser: vi.fn() },
 }));
 vi.mock('./download.service/fetchFileBlob');
@@ -274,7 +274,7 @@ describe('Thumbnail Service', () => {
     });
 
     test('When downloading thumbnail in workspace context with workspace bucket, then it uses workspace credentials', async () => {
-      vi.mocked(localStorageService.getUser).mockReturnValue({ bucket: personalBucket } as any);
+      vi.mocked(encryptedStorageService.getUser).mockReturnValue({ bucket: personalBucket } as any);
 
       await downloadThumbnail(mockThumbnail, true);
 
@@ -295,7 +295,7 @@ describe('Thumbnail Service', () => {
         bucket_id: personalBucket,
       };
 
-      vi.mocked(localStorageService.getUser).mockReturnValue({ bucket: personalBucket } as any);
+      vi.mocked(encryptedStorageService.getUser).mockReturnValue({ bucket: personalBucket } as any);
 
       await downloadThumbnail(thumbnailInPersonalBucket, true);
 
@@ -311,7 +311,7 @@ describe('Thumbnail Service', () => {
     });
 
     test('When downloading thumbnail in personal context, then it uses personal credentials', async () => {
-      vi.mocked(localStorageService.getUser).mockReturnValue({ bucket: personalBucket } as any);
+      vi.mocked(encryptedStorageService.getUser).mockReturnValue({ bucket: personalBucket } as any);
 
       await downloadThumbnail(mockThumbnail, false);
 

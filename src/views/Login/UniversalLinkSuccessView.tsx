@@ -10,7 +10,6 @@ import AnimatedBackground from 'components/AnimatedBackground';
 import { useEffect, useMemo } from 'react';
 import { isMobile } from 'react-device-detect';
 import encryptedStorageService from 'services/encrypted-storage.service';
-import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
 import { TRUSTED_LOCALHOST_HOSTNAMES, TRUSTED_LOCALHOST_PROTOCOLS, validateUrl } from 'utils/urlValidation';
 
@@ -19,7 +18,7 @@ const DEEPLINK_SUCCESS_REDIRECT_BASE = 'internxt://login-success';
 export default function UniversalLinkView(): JSX.Element {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
-  const user = useMemo(() => localStorageService.getUser(), []);
+  const user = useMemo(() => encryptedStorageService.getUser(), []);
 
   const urlParams = new URLSearchParams(globalThis.location.search);
   const redirectUri = urlParams.get('redirectUri');

@@ -3,11 +3,18 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { getEnvironmentConfig } from './getEnvironmentConfig';
 import localStorageService from 'services/local-storage.service';
 import envService from 'services/env.service';
+import encryptedStorageService from 'services/encrypted-storage.service';
+import { WorkspaceCredentialsDetails } from '@internxt/sdk/dist/workspaces';
 
 vi.mock('services/local-storage.service', () => ({
   default: {
     getWorkspaceCredentials: vi.fn(),
     getB2BWorkspaceMnemonic: vi.fn(),
+  },
+}));
+
+vi.mock('services/encrypted-storage.service', () => ({
+  default: {
     getUser: vi.fn(),
   },
 }));
@@ -19,6 +26,7 @@ vi.mock('services/env.service', () => ({
 }));
 
 const mockedLocalStorage = vi.mocked(localStorageService);
+const mockedEncryptedStorage = vi.mocked(encryptedStorageService);
 const mockedEnvService = vi.mocked(envService);
 
 const createMockUser = (overrides: Partial<UserSettings> = {}): UserSettings =>
@@ -37,7 +45,7 @@ const createMockWorkspaceCredentials = () =>
       networkPass: 'workspace-pass',
     },
     bucket: 'workspace-bucket',
-  }) as any;
+  }) as WorkspaceCredentialsDetails;
 
 const createMockWorkspaceMnemonic = () => 'workspace-key';
 
@@ -48,7 +56,7 @@ describe('Get Environment Config', () => {
 
   describe('Personal account context', () => {
     test('When the user is not in a workspace, then the personal credentials are returned', () => {
-      mockedLocalStorage.getUser.mockReturnValue(createMockUser());
+      mockedEncryptedStorage.getUser.mockReturnValue(createMockUser());
       mockedEnvService.getVariable.mockReturnValue('false');
 
       const result = getEnvironmentConfig(false);
@@ -63,7 +71,7 @@ describe('Get Environment Config', () => {
     });
 
     test('When the workspace flag is not provided, then the personal credentials are returned by default', () => {
-      mockedLocalStorage.getUser.mockReturnValue(createMockUser());
+      mockedEncryptedStorage.getUser.mockReturnValue(createMockUser());
       mockedEnvService.getVariable.mockReturnValue('false');
 
       const result = getEnvironmentConfig();
@@ -75,7 +83,7 @@ describe('Get Environment Config', () => {
     test('When the user requests workspace context but no workspace credentials are stored, then the personal credentials are returned', () => {
       mockedLocalStorage.getWorkspaceCredentials.mockReturnValue(null);
       mockedLocalStorage.getB2BWorkspaceMnemonic.mockReturnValue(createMockWorkspaceMnemonic());
-      mockedLocalStorage.getUser.mockReturnValue(createMockUser());
+      mockedEncryptedStorage.getUser.mockReturnValue(createMockUser());
       mockedEnvService.getVariable.mockReturnValue('false');
 
       const result = getEnvironmentConfig(true);
@@ -87,7 +95,7 @@ describe('Get Environment Config', () => {
     test('When the user requests workspace context but no workspace data is stored, then the personal credentials are returned', () => {
       mockedLocalStorage.getWorkspaceCredentials.mockReturnValue(createMockWorkspaceCredentials());
       mockedLocalStorage.getB2BWorkspaceMnemonic.mockReturnValue(null);
-      mockedLocalStorage.getUser.mockReturnValue(createMockUser());
+      mockedEncryptedStorage.getUser.mockReturnValue(createMockUser());
       mockedEnvService.getVariable.mockReturnValue('false');
 
       const result = getEnvironmentConfig(true);
@@ -117,7 +125,7 @@ describe('Get Environment Config', () => {
     test('When the user is in a workspace, then the workspace encryption key is used instead of the personal one', () => {
       mockedLocalStorage.getWorkspaceCredentials.mockReturnValue(createMockWorkspaceCredentials());
       mockedLocalStorage.getB2BWorkspaceMnemonic.mockReturnValue(createMockWorkspaceMnemonic());
-      mockedLocalStorage.getUser.mockReturnValue(createMockUser());
+      mockedEncryptedStorage.getUser.mockReturnValue(createMockUser());
       mockedEnvService.getVariable.mockReturnValue('false');
 
       const result = getEnvironmentConfig(true);
@@ -129,7 +137,7 @@ describe('Get Environment Config', () => {
 
   describe('Proxy usage', () => {
     test('When proxy usage is enabled in the environment, then the proxy flag is true', () => {
-      mockedLocalStorage.getUser.mockReturnValue(createMockUser());
+      mockedEncryptedStorage.getUser.mockReturnValue(createMockUser());
       mockedEnvService.getVariable.mockReturnValue('false');
 
       const result = getEnvironmentConfig(false);
@@ -138,7 +146,7 @@ describe('Get Environment Config', () => {
     });
 
     test('When proxy usage is disabled in the environment, then the proxy flag is false', () => {
-      mockedLocalStorage.getUser.mockReturnValue(createMockUser());
+      mockedEncryptedStorage.getUser.mockReturnValue(createMockUser());
       mockedEnvService.getVariable.mockReturnValue('true');
 
       const result = getEnvironmentConfig(false);
@@ -147,7 +155,7 @@ describe('Get Environment Config', () => {
     });
 
     test('When the proxy setting is not configured in the environment, then the proxy is used by default', () => {
-      mockedLocalStorage.getUser.mockReturnValue(createMockUser());
+      mockedEncryptedStorage.getUser.mockReturnValue(createMockUser());
       mockedEnvService.getVariable.mockReturnValue('');
 
       const result = getEnvironmentConfig(false);

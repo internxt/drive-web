@@ -18,7 +18,6 @@ export const useBillingDetails = ({ user, userLocation }: UseBillingDetailsProps
   const [userName, setUserName] = useState(user?.name ?? '');
   const [postalCode, setPostalCode] = useState('');
 
-
   const billingCountry = address?.country ?? userLocation;
   const billingPostalCode = address?.postal_code ?? (postalCode.trim() || undefined);
 

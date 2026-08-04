@@ -1,4 +1,3 @@
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { WorkspaceCredentialsDetails } from '@internxt/sdk/dist/workspaces';
 import { LocalStorageItem } from 'app/core/types';
 import { BACKUP_KEY } from './storage-keys';
@@ -12,11 +11,10 @@ function set(key: LocalStorageItem, value: string): void {
 }
 
 function getBackupKeyStorageKeys() {
-  const user = getUser();
-  const userId = user?.uuid;
+  const uuid = localStorage.getItem(LocalStorageItem.UserUUID);
   return {
-    seenAt: `${BACKUP_KEY.SEEN_AT}_${userId}`,
-    acknowledgedAt: `${BACKUP_KEY.ACKNOWLEDGED_AT}_${userId}`,
+    seenAt: `${BACKUP_KEY.SEEN_AT}_${uuid}`,
+    acknowledgedAt: `${BACKUP_KEY.ACKNOWLEDGED_AT}_${uuid}`,
   };
 }
 
@@ -45,16 +43,6 @@ function getBackupKeys(): {
     seenAt: localStorage.getItem(seenAt),
     saved: isAcknowledged,
   };
-}
-
-function getUser(): UserSettings | null {
-  const stringUser: string | null = get(LocalStorageItem.User);
-
-  return stringUser ? JSON.parse(stringUser) : null;
-}
-
-function setUser(user: UserSettings): void {
-  set(LocalStorageItem.User, JSON.stringify(user));
 }
 
 function getB2BWorkspaceMnemonic(): string | null {
@@ -93,8 +81,6 @@ const localStorageService = {
   setBackupKeysSeenAt,
   removeBackupKeysSeenAt,
   getBackupKeys,
-  getUser,
-  setUser,
   removeItem,
   clear,
   getB2BWorkspaceMnemonic,
@@ -118,8 +104,6 @@ export interface LocalStorageService {
   getB2BWorkspaceMnemonic: () => string | null;
   clearB2BWorkspace: () => void;
   setB2BWorkspace: (workspaceID: string, workspaceMnemonic: string) => void;
-  getUser: () => UserSettings | null;
-  setUser: (user: UserSettings) => void;
   removeItem: (key: LocalStorageItem) => void;
   clear: () => void;
 }

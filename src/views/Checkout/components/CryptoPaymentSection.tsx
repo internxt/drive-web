@@ -79,7 +79,7 @@ export const CryptoPaymentSection = ({
               <MenuItem key={cryptoCurrency.currencyId}>
                 {({ focus }) => (
                   <button
-                    type='button'
+                    type="button"
                     onClick={(e: MouseEvent<HTMLButtonElement>) => {
                       e.preventDefault();
                       onCryptoChanges(cryptoCurrency.currencyId.toLowerCase());
@@ -107,7 +107,7 @@ export const CryptoPaymentSection = ({
               const { firstName, lastName, name, address } = event.value;
               const fullName = [firstName, lastName].filter(Boolean).join(' ').trim();
 
-              onUserNameChanges( fullName || name);
+              onUserNameChanges(fullName || name);
               onUserAddressChanges(address);
             }}
           />

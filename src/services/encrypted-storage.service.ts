@@ -1,5 +1,6 @@
 import { decryptEntry, encryptEntry, ensureKeyExists } from './local-storage-crypto';
 import { LocalStorageItem, LocalStorageProtectedItem } from 'app/core/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 let tokenCache: string | null = null;
 let folderTokenCache: string | null = null;
@@ -84,6 +85,19 @@ const clear = (): void => {
   localStorage.removeItem(LocalStorageProtectedItem.EncryptedToken);
   localStorage.removeItem(LocalStorageProtectedItem.EncryptedFolderToken);
   localStorage.removeItem(LocalStorageProtectedItem.EncryptedFileToken);
+  localStorage.removeItem(LocalStorageProtectedItem.User);
+  localStorage.removeItem(LocalStorageItem.UserUUID);
+};
+
+const getUser = (): UserSettings | null => {
+  const stringUser: string | null = localStorage.getItem(LocalStorageProtectedItem.User);
+
+  return stringUser ? JSON.parse(stringUser) : null;
+};
+
+const setUser = (user: UserSettings): void => {
+  localStorage.setItem(LocalStorageItem.UserUUID, user.uuid);
+  localStorage.setItem(LocalStorageProtectedItem.User, JSON.stringify(user));
 };
 
 const encryptedStorageService = {
@@ -96,6 +110,8 @@ const encryptedStorageService = {
   clearFileToken,
   clearFolderToken,
   clear,
+  getUser,
+  setUser,
 };
 
 export default encryptedStorageService;
@@ -110,4 +126,6 @@ export interface EncryptedStorageService {
   clearFileToken: () => void;
   clearFolderToken: () => void;
   clear: () => void;
+  getUser: () => UserSettings | null;
+  setUser: (user: UserSettings) => void;
 }

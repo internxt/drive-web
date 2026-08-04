@@ -1,5 +1,5 @@
 import { Button } from '@internxt/ui';
-import { authService, oauthService, navigationService, localStorageService } from 'services';
+import { authService, oauthService, navigationService } from 'services';
 import { AppView } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
@@ -10,7 +10,7 @@ import encryptedStorageService from 'services/encrypted-storage.service';
 
 const OAuthLinkView = (): JSX.Element => {
   const { translate } = useTranslationContext();
-  const user = useMemo(() => localStorageService.getUser(), []);
+  const user = useMemo(() => encryptedStorageService.getUser(), []);
 
   const urlParams = new URLSearchParams(globalThis.location.search);
 
