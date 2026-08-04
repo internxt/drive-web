@@ -3,6 +3,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { getEnvironmentConfig } from './getEnvironmentConfig';
 import envService from 'services/env.service';
 import encryptedStorageService from 'services/encrypted-storage.service';
+import { WorkspaceCredentialsDetails } from '@internxt/sdk/dist/workspaces';
 
 vi.mock('services/encrypted-storage.service', () => ({
   default: {
@@ -37,7 +38,7 @@ const createMockWorkspaceCredentials = () =>
       networkPass: 'workspace-pass',
     },
     bucket: 'workspace-bucket',
-  }) as any;
+  }) as WorkspaceCredentialsDetails;
 
 const createMockWorkspaceMnemonic = () => 'workspace-key';
 
