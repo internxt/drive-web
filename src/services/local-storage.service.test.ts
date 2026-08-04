@@ -9,7 +9,7 @@ const mockWorkspaceId = 'workspace-user-001';
 const localStorageKey = LocalStorageItem.Language;
 const localStorageValue = 'item-exists';
 
-beforeEach(async () => {
+beforeEach(() => {
   localStorage.setItem(localStorageKey, localStorageValue);
   localStorage.setItem(LocalStorageItem.UserUUID, userUUID);
   localStorage.setItem(LocalStorageItem.B2BworkspaceId, mockWorkspaceId);

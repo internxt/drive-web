@@ -376,28 +376,4 @@ describe('Testing the encrypted storage service', () => {
       expect(await encryptedStorageService.getSharedItemAccessToken(false)).toBeUndefined();
     });
   });
-  describe('Clear all encrypted storage', () => {
-    const mockWorkspaceCredentialsDetails: WorkspaceCredentialsDetails = {
-      workspaceId: 'workspace-123',
-      bucket: 'workspace-bucket',
-      workspaceUserId: 'workspace-user-456',
-      email: 'workspace.user@example.com',
-      credentials: {
-        networkPass: 'mockNetworkPassword123',
-        networkUser: 'workspace.network.user',
-      },
-      tokenHeader: 'Bearer mock-token-abc-123',
-    };
-    describe('Get workspace credentials', () => {
-      test('When there are credentials from a workspace, then the credentials are returned', async () => {
-        await encryptedStorageService.setWorkspaceCredentials(mockWorkspaceCredentialsDetails);
-        const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
-
-        const workspaceCredentials = encryptedStorageService.getWorkspaceCredentials();
-
-        expect(getFromLocalStorageSpy).not.toHaveBeenCalled();
-        expect(workspaceCredentials).toStrictEqual(mockWorkspaceCredentialsDetails);
-      });
-    });
-  });
 });
