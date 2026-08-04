@@ -580,7 +580,7 @@ export const signUp = async (params: SignUpParams) => {
     },
   };
 
-  dispatch(userThunks.setUserThunk(user));
+  await dispatch(userThunks.setUserThunk(user));
   await dispatch(userThunks.initializeUserThunk());
 
   if (!redeemCodeObject) dispatch(planThunks.initializeThunk());
@@ -593,7 +593,7 @@ export const signUp = async (params: SignUpParams) => {
 export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
   const { email, password, twoFactorCode, dispatch, loginType = 'web' } = params;
   const { newToken, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType);
-  dispatch(userThunks.setUserThunk(user));
+  await dispatch(userThunks.setUserThunk(user));
 
   try {
     dispatch(planThunks.initializeThunk());

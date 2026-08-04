@@ -78,10 +78,12 @@ function ShareGuestSingUpView(): JSX.Element {
 
   useEffect(() => {
     if (user && mnemonic) {
-      dispatch(userThunks.setUserThunk(user));
-      if (mnemonic) {
-        return navigationService.push(AppView.Shared);
-      }
+      (async () => {
+        await dispatch(userThunks.setUserThunk(user));
+        if (mnemonic) {
+          return navigationService.push(AppView.Shared);
+        }
+      })();
     }
   }, []);
 
