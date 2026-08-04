@@ -65,8 +65,20 @@ export const isSizeFilterActive = (preset: SearchSizePreset, custom: CustomSizeR
   return minSize !== undefined || maxSize !== undefined;
 };
 
+export const maxSizeForUnit = (unit: SizeUnit): number => Math.floor(Number.MAX_SAFE_INTEGER / UNIT_BYTES[unit]);
+
+export const isSizeWithinLimit = (value: number, unit: SizeUnit): boolean => value <= maxSizeForUnit(unit);
+
+const clampToUnit = (value: number | undefined, unit: SizeUnit): number | undefined =>
+  value === undefined ? value : Math.min(value, maxSizeForUnit(unit));
+
 export const changeCustomSize = (current: CustomSizeRange, changes: Partial<CustomSizeRange>): CustomSizeRange => {
-  const next = { ...current, ...changes };
+  const merged = { ...current, ...changes };
+  const next = {
+    ...merged,
+    biggerThan: clampToUnit(merged.biggerThan, merged.biggerThanUnit),
+    smallerThan: clampToUnit(merged.smallerThan, merged.smallerThanUnit),
+  };
   const { minSize, maxSize } = sizePresetToRange('custom', next);
   if (minSize !== undefined && maxSize !== undefined && maxSize < minSize) return current;
   return next;

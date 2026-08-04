@@ -4,6 +4,8 @@ import {
   CustomSizeRange,
   emptyCustomSizeRange,
   isSizeFilterActive,
+  isSizeWithinLimit,
+  maxSizeForUnit,
   sizePresetToRange,
 } from './sizeFilterUtils';
 
@@ -67,6 +69,30 @@ describe('changeCustomSize', () => {
 
     expect(changeCustomSize(current, { biggerThan: undefined }).biggerThan).toBeUndefined();
   });
+
+  test('When the unit change leaves the bound past the limit, then the bound is clamped to the maximum for that unit', () => {
+    const current: CustomSizeRange = {
+      biggerThan: Number.MAX_SAFE_INTEGER,
+      biggerThanUnit: 'B',
+      smallerThanUnit: 'GB',
+    };
+
+    const next = changeCustomSize(current, { biggerThanUnit: 'KB' });
+
+    expect(next.biggerThanUnit).toBe('KB');
+    expect(next.biggerThan).toBe(maxSizeForUnit('KB'));
+  });
+
+  test('When the bound already fits the new unit, then it is kept as it is', () => {
+    const current: CustomSizeRange = { biggerThan: 10, biggerThanUnit: 'B', smallerThanUnit: 'GB' };
+
+    expect(changeCustomSize(current, { biggerThanUnit: 'TB' })).toEqual({
+      biggerThan: 10,
+      biggerThanUnit: 'TB',
+      smallerThan: undefined,
+      smallerThanUnit: 'GB',
+    });
+  });
 });
 
 describe('isSizeFilterActive', () => {
@@ -87,5 +113,25 @@ describe('isSizeFilterActive', () => {
     const custom: CustomSizeRange = { biggerThan: 10, biggerThanUnit: 'KB', smallerThanUnit: 'GB' };
 
     expect(isSizeFilterActive('custom', custom)).toBe(true);
+  });
+});
+
+describe('maxSizeForUnit', () => {
+  test('When a unit is given, then the maximum is what still fits the exact integer range', () => {
+    expect(maxSizeForUnit('B')).toBe(Number.MAX_SAFE_INTEGER);
+    expect(maxSizeForUnit('KB')).toBe(8796093022207);
+    expect(maxSizeForUnit('TB')).toBe(8191);
+  });
+});
+
+describe('isSizeWithinLimit', () => {
+  test('When the value in bytes stays exact, then it is within the limit', () => {
+    expect(isSizeWithinLimit(500, 'MB')).toBe(true);
+    expect(isSizeWithinLimit(8191, 'TB')).toBe(true);
+  });
+
+  test('When the value in bytes exceeds the exact integer range, then it is not within the limit', () => {
+    expect(isSizeWithinLimit(8192, 'TB')).toBe(false);
+    expect(isSizeWithinLimit(Number('1231423523523465612345'), 'B')).toBe(false);
   });
 });

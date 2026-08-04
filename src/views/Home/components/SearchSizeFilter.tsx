@@ -5,6 +5,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import {
   CustomSizeRange,
   isSizeFilterActive,
+  isSizeWithinLimit,
   SearchSizePreset,
   SIZE_PRESET_ITEMS,
   SIZE_UNIT_ITEMS,
@@ -76,6 +77,7 @@ const SearchSizeInput = ({
   const handleTextChange = (nextText: string) => {
     const digits = nextText.replace(/\D/g, '');
     const nextValue = digits === '' ? undefined : Number(digits);
+    if (nextValue !== undefined && !isSizeWithinLimit(nextValue, unit)) return;
     setText(digits);
     if (nextValue !== value) onValueChange(nextValue);
   };
