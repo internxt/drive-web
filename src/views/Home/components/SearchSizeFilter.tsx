@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import {
   CustomSizeRange,
+  isSizeFilterActive,
   SearchSizePreset,
   SIZE_PRESET_ITEMS,
   SIZE_UNIT_ITEMS,
@@ -140,7 +141,7 @@ const SearchSizeFilter = ({
   onClose,
 }: SearchSizeFilterProps): JSX.Element => {
   const { translate } = useTranslationContext();
-  const isAnySize = preset === 'any';
+  const isFiltering = isSizeFilterActive(preset, custom);
 
   return (
     <Popover className="relative min-w-0">
@@ -150,7 +151,7 @@ const SearchSizeFilter = ({
           <PopoverButton
             as={SearchFilterPill}
             label={translate('general.searchBar.filters.size.size')}
-            active={!isAnySize}
+            active={isFiltering}
           />
 
           <PopoverPanel

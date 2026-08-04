@@ -4,7 +4,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { useEffect, useState } from 'react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { DATE_PRESET_ITEMS, SearchDatePreset, SpecificDateRange } from '../utils/dateFilterUtils';
+import { DATE_PRESET_ITEMS, isDateFilterActive, SearchDatePreset, SpecificDateRange } from '../utils/dateFilterUtils';
 import DateCalendar from './DateCalendar';
 import DropdownCloseObserver from './DropdownCloseObserver';
 import SearchFilterPill from './SearchFilterPill';
@@ -106,7 +106,7 @@ const SearchDateFilter = ({
   onClose,
 }: SearchDateFilterProps): JSX.Element => {
   const { translate } = useTranslationContext();
-  const isAnyDate = preset === 'any';
+  const isFiltering = isDateFilterActive(preset, specific);
   const presetYears: Partial<Record<SearchDatePreset, number>> = {
     thisYear: dayjs().year(),
     lastYear: dayjs().year() - 1,
@@ -120,7 +120,7 @@ const SearchDateFilter = ({
           <PopoverButton
             as={SearchFilterPill}
             label={translate('general.searchBar.filters.date.dateModified')}
-            active={!isAnyDate}
+            active={isFiltering}
           />
 
           <PopoverPanel

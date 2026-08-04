@@ -60,6 +60,11 @@ export const sizePresetToRange = (
   }
 };
 
+export const isSizeFilterActive = (preset: SearchSizePreset, custom: CustomSizeRange): boolean => {
+  const { minSize, maxSize } = sizePresetToRange(preset, custom);
+  return minSize !== undefined || maxSize !== undefined;
+};
+
 export const changeCustomSize = (current: CustomSizeRange, changes: Partial<CustomSizeRange>): CustomSizeRange => {
   const next = { ...current, ...changes };
   const { minSize, maxSize } = sizePresetToRange('custom', next);

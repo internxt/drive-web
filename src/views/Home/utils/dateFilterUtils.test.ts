@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { changeSpecificDate, datePresetToRange, SpecificDateRange } from './dateFilterUtils';
+import { changeSpecificDate, datePresetToRange, isDateFilterActive, SpecificDateRange } from './dateFilterUtils';
 
 describe('datePresetToRange', () => {
   beforeEach(() => {
@@ -96,5 +96,25 @@ describe('changeSpecificDate', () => {
     const next = changeSpecificDate(current, 'before', dayjs('2026-07-10'));
 
     expect(next.before?.isSame(dayjs('2026-07-10'), 'day')).toBe(true);
+  });
+});
+
+describe('isDateFilterActive', () => {
+  test('When the preset is any, then the filter is not active', () => {
+    expect(isDateFilterActive('any', {})).toBe(false);
+  });
+
+  test('When a bounded preset is selected, then the filter is active', () => {
+    expect(isDateFilterActive('today', {})).toBe(true);
+    expect(isDateFilterActive('lastYear', {})).toBe(true);
+  });
+
+  test('When the specific preset is selected with no dates, then the filter is not active', () => {
+    expect(isDateFilterActive('specific', {})).toBe(false);
+  });
+
+  test('When the specific preset is selected with one date, then the filter is active', () => {
+    expect(isDateFilterActive('specific', { after: dayjs('2026-07-10') })).toBe(true);
+    expect(isDateFilterActive('specific', { before: dayjs('2026-07-10') })).toBe(true);
   });
 });

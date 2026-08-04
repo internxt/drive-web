@@ -1,5 +1,11 @@
 import { describe, expect, test } from 'vitest';
-import { changeCustomSize, CustomSizeRange, emptyCustomSizeRange, sizePresetToRange } from './sizeFilterUtils';
+import {
+  changeCustomSize,
+  CustomSizeRange,
+  emptyCustomSizeRange,
+  isSizeFilterActive,
+  sizePresetToRange,
+} from './sizeFilterUtils';
 
 describe('sizePresetToRange', () => {
   test('When the preset is any, then no bounds are returned', () => {
@@ -60,5 +66,26 @@ describe('changeCustomSize', () => {
     const current: CustomSizeRange = { biggerThan: 10, biggerThanUnit: 'KB', smallerThan: 5, smallerThanUnit: 'GB' };
 
     expect(changeCustomSize(current, { biggerThan: undefined }).biggerThan).toBeUndefined();
+  });
+});
+
+describe('isSizeFilterActive', () => {
+  test('When the preset is any, then the filter is not active', () => {
+    expect(isSizeFilterActive('any', emptyCustomSizeRange)).toBe(false);
+  });
+
+  test('When a bounded preset is selected, then the filter is active', () => {
+    expect(isSizeFilterActive('less5mb', emptyCustomSizeRange)).toBe(true);
+    expect(isSizeFilterActive('more1gb', emptyCustomSizeRange)).toBe(true);
+  });
+
+  test('When the custom preset is selected with no bounds, then the filter is not active', () => {
+    expect(isSizeFilterActive('custom', emptyCustomSizeRange)).toBe(false);
+  });
+
+  test('When the custom preset is selected with one bound, then the filter is active', () => {
+    const custom: CustomSizeRange = { biggerThan: 10, biggerThanUnit: 'KB', smallerThanUnit: 'GB' };
+
+    expect(isSizeFilterActive('custom', custom)).toBe(true);
   });
 });

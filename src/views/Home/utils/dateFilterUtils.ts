@@ -47,6 +47,11 @@ export const datePresetToRange = (
   }
 };
 
+export const isDateFilterActive = (preset: SearchDatePreset, specific: SpecificDateRange): boolean => {
+  const { modifiedAfter, modifiedBefore } = datePresetToRange(preset, specific);
+  return modifiedAfter !== undefined || modifiedBefore !== undefined;
+};
+
 export const changeSpecificDate = (
   current: SpecificDateRange,
   field: 'after' | 'before',

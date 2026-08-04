@@ -155,7 +155,12 @@ const Navbar = (props: NavbarProps) => {
   const applyDateFilter = (preset: SearchDatePreset, specific: SpecificDateRange) => {
     setDatePreset(preset);
     setSpecificDates(specific);
-    setFilters((current) => ({ ...current, ...datePresetToRange(preset, specific) }));
+    setFilters((current) => {
+      const range = datePresetToRange(preset, specific);
+      const unchanged =
+        range.modifiedAfter === current.modifiedAfter && range.modifiedBefore === current.modifiedBefore;
+      return unchanged ? current : { ...current, ...range };
+    });
   };
 
   const selectDatePreset = (preset: SearchDatePreset) => {
@@ -170,7 +175,11 @@ const Navbar = (props: NavbarProps) => {
   const applySizeFilter = (preset: SearchSizePreset, custom: CustomSizeRange) => {
     setSizePreset(preset);
     setCustomSize(custom);
-    setFilters((current) => ({ ...current, ...sizePresetToRange(preset, custom) }));
+    setFilters((current) => {
+      const range = sizePresetToRange(preset, custom);
+      const unchanged = range.minSize === current.minSize && range.maxSize === current.maxSize;
+      return unchanged ? current : { ...current, ...range };
+    });
   };
 
   const selectSizePreset = (preset: SearchSizePreset) => {
