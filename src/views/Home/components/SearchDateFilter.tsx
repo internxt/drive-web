@@ -4,7 +4,13 @@ import dayjs, { Dayjs } from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { useEffect, useState } from 'react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { DATE_PRESET_ITEMS, isDateFilterActive, SearchDatePreset, SpecificDateRange } from '../utils/dateFilterUtils';
+import {
+  DATE_PRESET_ITEMS,
+  formatDateInput,
+  isDateFilterActive,
+  SearchDatePreset,
+  SpecificDateRange,
+} from '../utils/dateFilterUtils';
 import DateCalendar from './DateCalendar';
 import DropdownCloseObserver from './DropdownCloseObserver';
 import SearchFilterPill from './SearchFilterPill';
@@ -40,12 +46,13 @@ const SearchDateInput = ({ label, value, minDate, maxDate, onChange, onEnter }: 
   }, [value?.valueOf()]);
 
   const handleTextChange = (nextText: string) => {
-    setText(nextText);
-    if (nextText === '') {
+    const nextDate = formatDateInput(nextText);
+    setText(nextDate);
+    if (nextDate === '') {
       onChange(undefined);
       return;
     }
-    const parsed = dayjs(nextText, DATE_INPUT_FORMAT, true);
+    const parsed = dayjs(nextDate, DATE_INPUT_FORMAT, true);
     if (parsed.isValid() && !parsed.isAfter(dayjs(), 'day')) onChange(parsed);
   };
 
@@ -55,6 +62,7 @@ const SearchDateInput = ({ label, value, minDate, maxDate, onChange, onEnter }: 
       <div className="flex h-10 items-center rounded-md border border-gray-20 bg-surface px-3 focus-within:border-primary dark:bg-gray-5">
         <input
           type="text"
+          inputMode="numeric"
           value={text}
           placeholder="dd/mm/yyyy"
           spellCheck="false"

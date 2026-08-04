@@ -47,6 +47,11 @@ export const datePresetToRange = (
   }
 };
 
+export const formatDateInput = (text: string): string => {
+  const digits = text.replace(/\D/g, '').slice(0, 8);
+  return [digits.slice(0, 2), digits.slice(2, 4), digits.slice(4, 8)].filter((part) => part.length > 0).join('/');
+};
+
 export const isDateFilterActive = (preset: SearchDatePreset, specific: SpecificDateRange): boolean => {
   const { modifiedAfter, modifiedBefore } = datePresetToRange(preset, specific);
   return modifiedAfter !== undefined || modifiedBefore !== undefined;
