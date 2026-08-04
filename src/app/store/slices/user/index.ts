@@ -41,6 +41,17 @@ const initialState: UserState = {
   userTierFeatures: undefined,
 };
 
+const initializeThunk = createAsyncThunk<void, undefined, { state: RootState }>(
+  'user/initialize',
+  async (_, { dispatch }) => {
+    const user = await encryptedStorageService.getUser();
+    if (user) {
+      dispatch(userActions.setUser(user));
+    }
+    dispatch(userActions.setIsUserInitialized(true));
+  },
+);
+
 const setUserThunk = createAsyncThunk<void, UserSettings, { state: RootState }>(
   'user/setUser',
   async (user, { dispatch }) => {
@@ -72,7 +83,7 @@ export const initializeUserThunk = createAsyncThunk<
     dispatch(getUserTierFeaturesThunk());
     dispatch(refreshAvatarThunk());
     await dispatch(referralsThunks.initializeThunk());
-    dispatch(setIsUserInitialized(true));
+    dispatch(userActions.setIsUserInitialized(true));
   } else if (payload.redirectToLogin) {
     navigationService.push(AppView.Login, referralService.getReferralOpenQueryParams());
   }
@@ -231,10 +242,6 @@ export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    initialize: (state: UserState) => {
-      state.user = encryptedStorageService.getUser() || undefined;
-      state.isAuthenticated = !!state.user;
-    },
     setIsUserInitialized: (state: UserState, action: PayloadAction<boolean>) => {
       state.isInitialized = action.payload;
     },
@@ -292,11 +299,11 @@ export const userSelectors = {
   hasReferralsProgram: (state: RootState): boolean => !!state.user.user?.hasReferralsProgram,
 };
 
-export const { initialize, resetState, setIsUserInitialized } = userSlice.actions;
-export const userActions = userSlice.actions;
+const userActions = userSlice.actions;
 
 export const userThunks = {
   setUserThunk,
+  initializeThunk,
   initializeUserThunk,
   refreshUserThunk,
   logoutThunk,

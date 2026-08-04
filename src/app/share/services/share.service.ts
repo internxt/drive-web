@@ -279,7 +279,7 @@ export const createPublicShareFromOwnerUser = async (
     encryptedMnemonic?: string;
   },
 ): Promise<{ publicSharingItemData: SharingMeta; plainCode: string }> => {
-  const user = encryptedStorageService.getUser();
+  const user = await encryptedStorageService.getUser();
   if (!user) {
     const error = errorService.castError('User Not Found');
     errorService.reportError(error);
@@ -331,7 +331,7 @@ export const createPublicShareFromOwnerUser = async (
 };
 
 const decryptPublicSharingCodeWithOwner = async (encryptedCode: string, encryptionAlgorithm: string) => {
-  const user = encryptedStorageService.getUser();
+  const user = await encryptedStorageService.getUser();
   if (!user) {
     const error = errorService.castError('User Not Found');
     errorService.reportError(error);
@@ -590,7 +590,7 @@ class DirectoryPublicSharedFilesIterator implements Iterator<SharedFiles> {
 }
 
 export const decryptMnemonic = async (encryptionKey: string): Promise<string | undefined> => {
-  const user = encryptedStorageService.getUser();
+  const user = await encryptedStorageService.getUser();
   if (user) {
     let decryptedKey;
     try {

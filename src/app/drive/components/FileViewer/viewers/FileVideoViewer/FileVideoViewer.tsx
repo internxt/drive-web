@@ -65,39 +65,49 @@ const FileVideoViewer = ({
 
   useEffect(() => {
     if (disableVideoStream || !containerRef.current) return;
+    const container = containerRef.current;
 
-    const user = encryptedStorageService.getUser();
-    const mnemonic = user?.mnemonic ?? '';
-    const bridgeUser = user?.bridgeUser ?? '';
-    const userId = user?.userId ?? '';
+    const setupStreaming = async () => {
+      const user = await encryptedStorageService.getUser();
+      const mnemonic = user?.mnemonic ?? '';
+      const bridgeUser = user?.bridgeUser ?? '';
+      const userId = user?.userId ?? '';
 
-    if (!bridgeUser || !userId || !mnemonic) {
-      console.error('[FileVideoViewer] Missing credentials');
-      handleOnError('Missing credentials');
-      return;
-    }
+      if (!bridgeUser || !userId || !mnemonic) {
+        console.error('[FileVideoViewer] Missing credentials');
+        handleOnError('Missing credentials');
+        return;
+      }
 
-    if (!file.fileId) {
-      console.error('[FileVideoViewer] Missing fileId');
-      handleOnError('Missing fileId');
-      return;
-    }
+      if (!file.fileId) {
+        console.error('[FileVideoViewer] Missing fileId');
+        handleOnError('Missing fileId');
+        return;
+      }
 
-    const session = new VideoStreamingSession({
-      fileId: file.fileId,
-      bucketId: file.bucket,
-      fileSize: file.size,
-      fileType: file.type,
-      mnemonic: file.mnemonic ?? mnemonic,
-      credentials: file.credentials
-        ? { user: file.credentials?.user, pass: file.credentials?.pass }
-        : { user: bridgeUser, pass: userId },
+      const session = new VideoStreamingSession({
+        fileId: file.fileId,
+        bucketId: file.bucket,
+        fileSize: file.size,
+        fileType: file.type,
+        mnemonic: file.mnemonic ?? mnemonic,
+        credentials: file.credentials
+          ? { user: file.credentials?.user, pass: file.credentials?.pass }
+          : { user: bridgeUser, pass: userId },
+      });
+
+      session.init(container, handleOnReady, handleOnError);
+
+      return session;
+    };
+
+    let sessionRef: VideoStreamingSession | undefined;
+    setupStreaming().then((session) => {
+      sessionRef = session;
     });
 
-    session.init(containerRef.current, handleOnReady, handleOnError);
-
     return () => {
-      session.destroy();
+      sessionRef?.destroy();
       setCanPlay(false);
     };
   }, [file.fileId, file.bucket, file.size, file.type, disableVideoStream]);

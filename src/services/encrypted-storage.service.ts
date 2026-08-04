@@ -92,18 +92,41 @@ const clear = (): void => {
   localStorage.removeItem(LocalStorageProtectedItem.EncryptedUser);
 };
 
-const getUser = (): UserSettings | null => {
+const getUser = async (): Promise<UserSettings | null> => {
   if (userCache !== null) return userCache;
-  const stringUser: string | null = localStorage.getItem(LocalStorageProtectedItem.User);
 
-  return stringUser ? JSON.parse(stringUser) : null;
+  try {
+    const value = await getAndDecrypt(LocalStorageProtectedItem.EncryptedUser);
+    if (!value) {
+      userCache = null;
+    } else {
+      const parsed = JSON.parse(value) as UserSettings;
+      userCache = { ...parsed, createdAt: new Date(parsed.createdAt) };
+    }
+  } catch {
+    userCache = null;
+  }
+
+  //migration from unencrypted version, remove once completed
+  if (!userCache) {
+    try {
+      const unencryptedUser = localStorage.getItem(LocalStorageProtectedItem.User);
+      if (unencryptedUser) {
+        const parsedUser = JSON.parse(unencryptedUser) as UserSettings;
+        const user = { ...parsedUser, createdAt: new Date(parsedUser.createdAt) };
+        await setUser(user);
+        localStorage.removeItem(LocalStorageProtectedItem.User);
+      }
+    } catch {
+      userCache = null;
+    }
+  }
+
+  return userCache;
 };
 
 const setUser = async (user: UserSettings): Promise<void> => {
   localStorage.setItem(LocalStorageItem.UserUUID, user.uuid);
-
-  //migration from unencrypted version, remove once completed
-  localStorage.setItem(LocalStorageProtectedItem.User, JSON.stringify(user));
 
   userCache = user;
   await setAndEncrypt(LocalStorageProtectedItem.EncryptedUser, JSON.stringify(user));
@@ -135,6 +158,6 @@ export interface EncryptedStorageService {
   clearFileToken: () => void;
   clearFolderToken: () => void;
   clear: () => void;
-  getUser: () => UserSettings | null;
-  setUser: (user: UserSettings) => void;
+  getUser: () => Promise<UserSettings | null>;
+  setUser: (user: UserSettings) => Promise<void>;
 }
