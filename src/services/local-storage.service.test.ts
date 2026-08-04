@@ -4,15 +4,12 @@ import { LocalStorageItem } from 'app/core/types';
 
 const userUUID = 'user_123';
 
-const mockWorkspaceId = 'workspace-user-001';
-
 const localStorageKey = LocalStorageItem.Language;
 const localStorageValue = 'item-exists';
 
 beforeEach(() => {
   localStorage.setItem(localStorageKey, localStorageValue);
   localStorage.setItem(LocalStorageItem.UserUUID, userUUID);
-  localStorage.setItem(LocalStorageItem.B2BworkspaceId, mockWorkspaceId);
   localStorage.setItem(LocalStorageItem.Theme, 'starwars');
   vi.clearAllMocks();
   vi.resetModules();

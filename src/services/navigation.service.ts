@@ -6,7 +6,6 @@ import { AppView } from 'app/core/types';
 import configService from './config.service';
 import errorService from './error.service';
 import { AppDispatch } from 'app/store';
-import localStorageService from './local-storage.service';
 import { workspacesActions } from 'app/store/slices/workspaces/workspacesStore';
 import envService from './env.service';
 import encryptedStorageService from './encrypted-storage.service';
