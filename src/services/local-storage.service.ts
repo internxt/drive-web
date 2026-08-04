@@ -1,4 +1,3 @@
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { LocalStorageItem } from 'app/core/types';
 import { BACKUP_KEY } from './storage-keys';
 
@@ -11,11 +10,10 @@ function set(key: LocalStorageItem, value: string): void {
 }
 
 function getBackupKeyStorageKeys() {
-  const user = getUser();
-  const userId = user?.uuid;
+  const uuid = localStorage.getItem(LocalStorageItem.UserUUID);
   return {
-    seenAt: `${BACKUP_KEY.SEEN_AT}_${userId}`,
-    acknowledgedAt: `${BACKUP_KEY.ACKNOWLEDGED_AT}_${userId}`,
+    seenAt: `${BACKUP_KEY.SEEN_AT}_${uuid}`,
+    acknowledgedAt: `${BACKUP_KEY.ACKNOWLEDGED_AT}_${uuid}`,
   };
 }
 
@@ -46,16 +44,6 @@ function getBackupKeys(): {
   };
 }
 
-function getUser(): UserSettings | null {
-  const stringUser: string | null = get(LocalStorageItem.User);
-
-  return stringUser ? JSON.parse(stringUser) : null;
-}
-
-function setUser(user: UserSettings): void {
-  set(LocalStorageItem.User, JSON.stringify(user));
-}
-
 function removeItem(key: LocalStorageItem): void {
   localStorage.removeItem(key);
 }
@@ -71,8 +59,6 @@ const localStorageService = {
   setBackupKeysSeenAt,
   removeBackupKeysSeenAt,
   getBackupKeys,
-  getUser,
-  setUser,
   removeItem,
   clear,
 };
@@ -89,8 +75,6 @@ export interface LocalStorageService {
     seenAt: string | null;
     saved: boolean;
   };
-  getUser: () => UserSettings | null;
-  setUser: (user: UserSettings) => void;
   removeItem: (key: LocalStorageItem) => void;
   clear: () => void;
 }

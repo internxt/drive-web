@@ -1,6 +1,5 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import envService from 'services/env.service';
-import localStorageService from 'services/local-storage.service';
 import { EnvironmentConfig } from './types';
 import encryptedStorageService from 'services/encrypted-storage.service';
 
@@ -22,7 +21,7 @@ export async function getEnvironmentConfig(isWorkspace?: boolean): Promise<Envir
     };
   }
 
-  const user = localStorageService.getUser() as UserSettings;
+  const user = encryptedStorageService.getUser() as UserSettings;
 
   return {
     bridgeUser: user.bridgeUser,

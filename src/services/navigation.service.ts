@@ -75,7 +75,7 @@ const navigationService = {
     }
   },
   setWorkspaceFromParams(workspaceThunks, dispatch: AppDispatch, updateUrl = true): void {
-    const user = localStorageService.getUser();
+    const user = encryptedStorageService.getUser();
     const params = new URLSearchParams(globalThis.location.search);
     const [currentWorkspaceUuid] = params.getAll('workspaceid');
     user &&

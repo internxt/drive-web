@@ -1,6 +1,7 @@
 import { decryptEntry, encryptEntry, ensureKeyExists } from './local-storage-crypto';
 import { LocalStorageItem, LocalStorageProtectedItem } from 'app/core/types';
 import { WorkspaceCredentialsDetails } from '@internxt/sdk/dist/workspaces';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 let tokenCache: string | null = null;
 let workspaceMnemonicCache: string | null = null;
@@ -132,6 +133,19 @@ const setWorkspaceCredentials = async (credentials: WorkspaceCredentialsDetails)
 const clearWorkspaceCredentials = (): void => {
   workspaceCredentialsCache = null;
   localStorage.removeItem(LocalStorageProtectedItem.EncryptedWorkspaceCredentials);
+  localStorage.removeItem(LocalStorageProtectedItem.User);
+  localStorage.removeItem(LocalStorageItem.UserUUID);
+};
+
+const getUser = (): UserSettings | null => {
+  const stringUser: string | null = localStorage.getItem(LocalStorageProtectedItem.User);
+
+  return stringUser ? JSON.parse(stringUser) : null;
+};
+
+const setUser = (user: UserSettings): void => {
+  localStorage.setItem(LocalStorageItem.UserUUID, user.uuid);
+  localStorage.setItem(LocalStorageProtectedItem.User, JSON.stringify(user));
 };
 
 const encryptedStorageService = {
@@ -150,6 +164,8 @@ const encryptedStorageService = {
   getWorkspaceCredentials,
   setWorkspaceCredentials,
   clearWorkspaceCredentials,
+  getUser,
+  setUser,
 };
 
 export default encryptedStorageService;
@@ -170,4 +186,6 @@ export interface EncryptedStorageService {
   getWorkspaceCredentials: () => WorkspaceCredentialsDetails | null;
   setWorkspaceCredentials: (credentials: WorkspaceCredentialsDetails) => Promise<void>;
   clearWorkspaceCredentials: () => void;
+  getUser: () => UserSettings | null;
+  setUser: (user: UserSettings) => void;
 }
