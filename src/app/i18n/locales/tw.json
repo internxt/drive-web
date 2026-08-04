@@ -195,7 +195,8 @@
       "login": "登入",
       "success": "您已成功登入",
       "error": "無法登入，請再試一次",
-      "closeWindow": "您可以關閉此視窗"
+      "closeWindow": "您可以關閉此視窗",
+      "invalidRedirectUri": "無效的重新導向網址"
     },
     "oauthLink": {
       "continueAs": "繼續使用",

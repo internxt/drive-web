@@ -174,7 +174,8 @@
       "login": "Connexion",
       "success": "Vous vous êtes connecté avec succès",
       "error": "Échec de la connexion, veuillez réessayer",
-      "closeWindow": "Vous pouvez fermer cette fenêtre"
+      "closeWindow": "Vous pouvez fermer cette fenêtre",
+      "invalidRedirectUri": "URL de redirection invalide"
     },
     "oauthLink": {
       "continueAs": "Continuer en tant que",
