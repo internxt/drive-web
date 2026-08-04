@@ -44,6 +44,8 @@ interface NavbarProps {
   plan: PlanState;
 }
 
+type SearchFilterName = 'type' | 'date' | 'size';
+
 const getSearchBoxClassName = (openSearchBox: boolean) => {
   const baseClass = 'relative flex w-full items-center rounded-lg transition-all duration-150 ease-out';
   const widthClass = openSearchBox ? 'max-w-screen-sm' : 'max-w-sm';
@@ -194,9 +196,16 @@ const Navbar = (props: NavbarProps) => {
   const openSearchBoxRef = useRef(openSearchBox);
   openSearchBoxRef.current = openSearchBox;
 
-  const refocusSearchInput = () => {
+  const openDropdown = useRef<SearchFilterName | null>(null);
+
+  const handleDropdownOpenChange = (name: SearchFilterName) => (open: boolean) => {
+    if (open) {
+      openDropdown.current = name;
+      return;
+    }
+    if (openDropdown.current === name) openDropdown.current = null;
     setTimeout(() => {
-      if (openSearchBoxRef.current) searchInput.current?.focus();
+      if (openSearchBoxRef.current && openDropdown.current === null) searchInput.current?.focus();
     }, 0);
   };
 
@@ -378,21 +387,21 @@ const Navbar = (props: NavbarProps) => {
                   selected={filters.type}
                   onToggle={toggleTypeFilter}
                   onToggleAll={toggleAllTypeFilters}
-                  onClose={refocusSearchInput}
+                  onOpenChange={handleDropdownOpenChange('type')}
                 />
                 <SearchDateFilter
                   preset={datePreset}
                   specific={specificDates}
                   onSelectPreset={selectDatePreset}
                   onChangeDate={changeDateFilterDate}
-                  onClose={refocusSearchInput}
+                  onOpenChange={handleDropdownOpenChange('date')}
                 />
                 <SearchSizeFilter
                   preset={sizePreset}
                   custom={customSize}
                   onSelectPreset={selectSizePreset}
                   onChangeCustom={changeCustomSizeFilter}
-                  onClose={refocusSearchInput}
+                  onOpenChange={handleDropdownOpenChange('size')}
                 />
               </div>
 

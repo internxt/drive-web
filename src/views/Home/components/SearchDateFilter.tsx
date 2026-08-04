@@ -12,7 +12,7 @@ import {
   SpecificDateRange,
 } from '../utils/dateFilterUtils';
 import DateCalendar from './DateCalendar';
-import DropdownCloseObserver from './DropdownCloseObserver';
+import DropdownOpenObserver from './DropdownOpenObserver';
 import SearchFilterPill from './SearchFilterPill';
 import SearchFilterRadioList from './SearchFilterRadioList';
 
@@ -25,7 +25,7 @@ interface SearchDateFilterProps {
   specific: SpecificDateRange;
   onSelectPreset: (preset: SearchDatePreset) => void;
   onChangeDate: (field: 'after' | 'before', date?: Dayjs) => void;
-  onClose: () => void;
+  onOpenChange: (open: boolean) => void;
 }
 
 interface SearchDateInputProps {
@@ -111,7 +111,7 @@ const SearchDateFilter = ({
   specific,
   onSelectPreset,
   onChangeDate,
-  onClose,
+  onOpenChange,
 }: SearchDateFilterProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const isFiltering = isDateFilterActive(preset, specific);
@@ -124,7 +124,7 @@ const SearchDateFilter = ({
     <Popover className="relative min-w-0">
       {({ open, close }) => (
         <>
-          <DropdownCloseObserver open={open} onClose={onClose} />
+          <DropdownOpenObserver open={open} onOpenChange={onOpenChange} />
           <PopoverButton
             as={SearchFilterPill}
             label={translate('general.searchBar.filters.date.dateModified')}

@@ -10,7 +10,7 @@ import {
   SIZE_UNIT_ITEMS,
   SizeUnit,
 } from '../utils/sizeFilterUtils';
-import DropdownCloseObserver from './DropdownCloseObserver';
+import DropdownOpenObserver from './DropdownOpenObserver';
 import SearchFilterPill from './SearchFilterPill';
 import SearchFilterRadioList from './SearchFilterRadioList';
 
@@ -130,7 +130,7 @@ interface SearchSizeFilterProps {
   custom: CustomSizeRange;
   onSelectPreset: (preset: SearchSizePreset) => void;
   onChangeCustom: (changes: Partial<CustomSizeRange>) => void;
-  onClose: () => void;
+  onOpenChange: (open: boolean) => void;
 }
 
 const SearchSizeFilter = ({
@@ -138,7 +138,7 @@ const SearchSizeFilter = ({
   custom,
   onSelectPreset,
   onChangeCustom,
-  onClose,
+  onOpenChange,
 }: SearchSizeFilterProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const isFiltering = isSizeFilterActive(preset, custom);
@@ -147,7 +147,7 @@ const SearchSizeFilter = ({
     <Popover className="relative min-w-0">
       {({ open, close }) => (
         <>
-          <DropdownCloseObserver open={open} onClose={onClose} />
+          <DropdownOpenObserver open={open} onOpenChange={onOpenChange} />
           <PopoverButton
             as={SearchFilterPill}
             label={translate('general.searchBar.filters.size.size')}
