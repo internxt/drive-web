@@ -10,6 +10,7 @@ import {
   SizeUnit,
 } from '../utils/sizeFilterUtils';
 import DropdownCloseObserver from './DropdownCloseObserver';
+import SearchFilterPill from './SearchFilterPill';
 import SearchFilterRadioList from './SearchFilterRadioList';
 
 interface SizeUnitSelectProps {
@@ -142,20 +143,15 @@ const SearchSizeFilter = ({
   const isAnySize = preset === 'any';
 
   return (
-    <Popover className="relative">
+    <Popover className="relative min-w-0">
       {({ open, close }) => (
         <>
           <DropdownCloseObserver open={open} onClose={onClose} />
           <PopoverButton
-            className={`${
-              isAnySize
-                ? 'bg-surface text-gray-80 ring-gray-10 hover:bg-gray-1 hover:shadow-sm hover:ring-gray-20 dark:bg-gray-5 dark:hover:bg-gray-10'
-                : 'bg-primary/10 text-primary ring-primary/20 dark:bg-primary/20 dark:text-white dark:ring-primary/75'
-            } flex h-8 cursor-pointer items-center space-x-2 rounded-full px-3 font-medium shadow-sm outline-none ring-1 transition-all duration-100 ease-out`}
-          >
-            <span className="text-sm">{translate('general.searchBar.filters.size.size')}</span>
-            <CaretDownIcon size={16} />
-          </PopoverButton>
+            as={SearchFilterPill}
+            label={translate('general.searchBar.filters.size.size')}
+            active={!isAnySize}
+          />
 
           <PopoverPanel
             transition

@@ -1,11 +1,11 @@
 import { Menu, MenuButton, MenuItems } from '@headlessui/react';
 import { SearchFileCategory } from '../services';
 import { Checkbox } from '@internxt/ui';
-import { CaretDownIcon } from '@phosphor-icons/react';
 import iconService from 'app/drive/services/icon.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { areAllTypeCategoriesSelected, isTypeFilterActive, TYPE_FILTER_ITEMS } from '../utils/typeFilterUtils';
 import DropdownCloseObserver from './DropdownCloseObserver';
+import SearchFilterPill from './SearchFilterPill';
 import SearchFilterRow from './SearchFilterRow';
 
 interface SearchTypeFilterProps {
@@ -21,20 +21,15 @@ const SearchTypeFilter = ({ selected, onToggle, onToggleAll, onClose }: SearchTy
   const isFiltering = isTypeFilterActive(selected);
 
   return (
-    <Menu as="div" className="relative">
+    <Menu as="div" className="relative min-w-0">
       {({ open }) => (
         <>
           <DropdownCloseObserver open={open} onClose={onClose} />
           <MenuButton
-            className={`${
-              isFiltering
-                ? 'bg-primary/10 text-primary ring-primary/20 dark:bg-primary/20 dark:text-white dark:ring-primary/75'
-                : 'bg-surface text-gray-80 ring-gray-10 hover:bg-gray-1 hover:shadow-sm hover:ring-gray-20 dark:bg-gray-5 dark:hover:bg-gray-10'
-            } flex h-8 cursor-pointer items-center space-x-2 rounded-full px-3 font-medium shadow-sm outline-none ring-1 transition-all duration-100 ease-out`}
-          >
-            <span className="text-sm">{translate('general.searchBar.filters.attachments')}</span>
-            <CaretDownIcon size={16} />
-          </MenuButton>
+            as={SearchFilterPill}
+            label={translate('general.searchBar.filters.attachments')}
+            active={isFiltering}
+          />
 
           <MenuItems
             transition

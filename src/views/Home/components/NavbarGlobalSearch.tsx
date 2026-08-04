@@ -351,7 +351,7 @@ const Navbar = (props: NavbarProps) => {
               onMouseEnter={() => setPreventBlur(true)}
               onMouseLeave={() => setPreventBlur(false)}
             >
-              <div className="flex w-full shrink-0 items-center space-x-2 border-b border-gray-5 px-2.5 py-2.5 dark:border-gray-10">
+              <div className="flex w-full shrink-0 flex-wrap items-center gap-2 border-b border-gray-5 px-2.5 py-2.5 dark:border-gray-10">
                 <SearchTypeFilter
                   selected={filters.type}
                   onToggle={toggleTypeFilter}
