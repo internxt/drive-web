@@ -73,10 +73,10 @@ const FileViewerWrapper = ({
 
   const [blob, setBlob] = useState<Blob | null>(null);
 
-  const [user, setCurrentUser] = useState<UserSettings | null>(null);
+  const [user, setUser] = useState<UserSettings | null>(null);
 
   useEffect(() => {
-    encryptedStorageService.getUser().then(setCurrentUser);
+    encryptedStorageService.getUser().then(setUser);
   }, []);
 
   const driveItemActions = useDriveItemActions(currentFile);
