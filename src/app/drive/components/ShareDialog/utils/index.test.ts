@@ -4,6 +4,8 @@ import { localStorageService } from 'services';
 import { DriveItemData } from 'app/drive/types';
 import { AdvancedSharedItem } from 'app/share/types';
 import { Role } from '@internxt/sdk/dist/drive/share/types';
+import encryptedStorageService from 'services/encrypted-storage.service';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 describe('Cropping the name', () => {
   test('When name length is less than max length, then returns original name', () => {
@@ -98,8 +100,8 @@ describe('Get the local user data', () => {
       email: 'john@example.com',
       avatar: 'avatar-url',
       uuid: 'user-uuid-123',
-    } as any;
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUser);
+    } as UserSettings;
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(mockUser);
 
     const result = getLocalUserData();
 
@@ -126,8 +128,8 @@ describe('Get the local user data', () => {
       email: 'bob@example.com',
       avatar: null,
       uuid: 'user-uuid-789',
-    } as any;
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUser);
+    } as UserSettings;
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(mockUser);
 
     const result = getLocalUserData();
 

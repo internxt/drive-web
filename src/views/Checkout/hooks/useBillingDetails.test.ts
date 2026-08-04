@@ -13,7 +13,6 @@ const mockAddress: AddressProvider = {
 };
 
 describe('Billing details checkout custom hook', () => {
-
   test('When no address is provided, then the billing country and postal code fall back to the detected location and the typed postal code', () => {
     const { result } = renderHook(() => useBillingDetails({ userLocation: 'ES' }));
 

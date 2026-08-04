@@ -9,7 +9,6 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import iconService from 'app/drive/services/icon.service';
 import { Button, Modal } from '@internxt/ui';
 import { bytesToString } from 'app/drive/services/size.service';
-import localStorageService from 'services/local-storage.service';
 import { DriveItemData, DriveItemDetails, ItemDetailsProps } from 'app/drive/types';
 import newStorageService from 'app/drive/services/new-storage.service';
 import errorService from 'services/error.service';
@@ -104,7 +103,7 @@ const ItemDetailsDialog = ({
   const isItemFolder = item?.type === 'folder' || item?.isFolder;
   const IconComponent = iconService.getItemIcon(isItemFolder ?? false, item?.type);
   const itemName = `${item?.plainName ?? item?.name}` + `${item?.type && !item.isFolder ? '.' + item?.type : ''}`;
-  const user = localStorageService.getUser();
+  const user = encryptedStorageService.getUser();
   const isFolder = item?.isFolder;
   const workspaceSelected = useSelector(workspacesSelectors.getSelectedWorkspace);
   const isWorkspaceSelected = !!workspaceSelected;

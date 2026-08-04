@@ -309,7 +309,9 @@ const CheckoutViewWrapper = () => {
 
       if (currencyType === PaymentType['FIAT']) {
         const { error: elementsError } = await elements.submit();
-        const { confirmationToken, error: confirmationTokenError } = await stripeSDK.createConfirmationToken({ elements });
+        const { confirmationToken, error: confirmationTokenError } = await stripeSDK.createConfirmationToken({
+          elements,
+        });
 
         if (elementsError) {
           throw new Error(elementsError.message);
@@ -320,7 +322,6 @@ const CheckoutViewWrapper = () => {
         }
 
         paymentPostalCode = confirmationToken.payment_method_preview.billing_details.address?.postal_code ?? undefined;
-
       }
 
       const captchaToken = await generateCaptchaToken();
