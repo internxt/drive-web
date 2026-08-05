@@ -179,7 +179,8 @@
     "glob": "^10.5.0",
     "js-yaml": "^4.1.1",
     "readdir-glob/minimatch": "5.1.8",
-    "readdir-glob/brace-expansion": "2.0.3",
-    "babel-plugin-macros/yaml": "1.10.3"
+    "readdir-glob/minimatch/brace-expansion": "2.1.4",
+    "babel-plugin-macros/yaml": "1.10.3",
+    "xlsx-preview/exceljs/uuid": "^11.1.1"
   }
 }
