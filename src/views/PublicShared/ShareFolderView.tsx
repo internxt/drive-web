@@ -284,6 +284,8 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
             rootFolderUuid={info?.item?.uuid}
             rootFolderName={info?.item?.plainName}
             code={code}
+            encryptionKey={info?.encryptionKey}
+            sharingVersion={info?.encryptionAlgorithm}
             onExitPreview={() => setIsPreviewingContent(false)}
           />
         </>

@@ -11,7 +11,7 @@ import {
 } from '../../crypto/services/pgp.service';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import shareService, { decryptMnemonic, getPublicShareLink } from './share.service';
+import shareService, { decryptMnemonic, derivePublicSharingKey, getPublicShareLink } from './share.service';
 import { stringUtils, aes } from '@internxt/lib';
 import notificationsService from 'app/notifications/services/notifications.service';
 import { SharedFiles, SharingMeta } from '@internxt/sdk/dist/drive/share/types';
@@ -644,5 +644,33 @@ describe('decryptPublicSharingCodeWithOwner', () => {
     await expect(shareService.decryptPublicSharingCodeWithOwner('bad-encrypted-code', 'inxt-v3')).rejects.toThrow(
       'Length 0, cannot decrypt',
     );
+  });
+});
+
+describe('derivePublicSharingKey', () => {
+  const code = 'plain-code';
+
+  test('When sharingVersion is the new sharing version, then the decrypted hex is returned as bucketKey', () => {
+    const bucketKeyHex = Buffer.from('public-sharing-bucket-key-32-byt').toString('hex');
+    const encryptionKey = aes.encrypt(bucketKeyHex, code);
+
+    const result = derivePublicSharingKey({ encryptionKey, code, sharingVersion: 'inxt-v3' });
+
+    expect(result).toEqual({ bucketKey: Buffer.from(bucketKeyHex, 'hex') });
+  });
+
+  test('When sharingVersion is not the new sharing version, then the decrypted value is returned as mnemonic', () => {
+    const mnemonic = 'test mnemonic phrase';
+    const encryptionKey = aes.encrypt(mnemonic, code);
+
+    const result = derivePublicSharingKey({ encryptionKey, code, sharingVersion: 'inxt-v2' });
+
+    expect(result).toEqual({ mnemonic });
+  });
+
+  test('When the code does not match the encryption key, then an error is thrown', () => {
+    expect(() =>
+      derivePublicSharingKey({ encryptionKey: 'bad-encrypted-key', code, sharingVersion: 'inxt-v3' }),
+    ).toThrow();
   });
 });

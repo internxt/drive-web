@@ -1732,17 +1732,11 @@
               "Cleaner (Очиститель)",
               "Meet (Видеоконференции)"
             ],
-            "comingSoonFeatures": [
-              "Mail (Почта)",
-              "Фотографии"
-            ]
+            "comingSoonFeatures": ["Mail (Почта)", "Фотографии"]
           },
           "default": {
             "bytesTitle": "{{bytes}}",
-            "features": [
-              "{{bytes}} зашифрованного облачного хранилища",
-              "Зашифрованный VPN"
-            ]
+            "features": ["{{bytes}} зашифрованного облачного хранилища", "Зашифрованный VPN"]
           }
         },
         "businessPlanFeaturesList": {

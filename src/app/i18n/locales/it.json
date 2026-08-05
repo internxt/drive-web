@@ -1753,17 +1753,11 @@
               "Cleaner (Pulitore)",
               "Meet (Videoconferenza)"
             ],
-            "comingSoonFeatures": [
-              "Mail",
-              "Foto"
-            ]
+            "comingSoonFeatures": ["Mail", "Foto"]
           },
           "default": {
             "bytesTitle": "{{bytes}}",
-            "features": [
-              "{{bytes}} di spazio di archiviazione cloud crittografato",
-              "VPN Crittografata"
-            ]
+            "features": ["{{bytes}} di spazio di archiviazione cloud crittografato", "VPN Crittografata"]
           }
         },
         "businessPlanFeaturesList": {

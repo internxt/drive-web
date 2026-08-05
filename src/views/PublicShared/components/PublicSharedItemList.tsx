@@ -1,14 +1,20 @@
 import { items } from '@internxt/lib';
+import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 import { Empty, List } from '@internxt/ui';
 import { WarningCircleIcon } from '@phosphor-icons/react';
 import { OrderDirection } from 'app/core/types';
 import iconService from 'app/drive/services/icon.service';
 import transformItemService from 'app/drive/services/item-transform.service';
 import sizeService from 'app/drive/services/size.service';
+import { downloadPublicThumbnail } from 'app/drive/services/thumbnail.service';
 import { DriveItemData } from 'app/drive/types';
+import { thumbnailableExtension } from 'app/drive/types/file-types';
+import { FileKey } from 'app/network/types/helper-types';
 import { AdvancedSharedItem } from 'app/share/types';
 import folderEmptyImage from 'assets/icons/light/folder-open.svg';
 import { t } from 'i18next';
+import { useEffect, useState } from 'react';
+import errorService from 'services/error.service';
 import { OrderField } from 'views/Shared/components/SharedItemList';
 
 const skinSkeleton = [
@@ -21,14 +27,50 @@ const skinSkeleton = [
 
 type PublicSharedListItemProps = {
   item: AdvancedSharedItem;
+  publicShareKey: FileKey;
   onNameClicked: (shareItem: AdvancedSharedItem) => void;
 };
 
-const PublicSharedListItem = ({ item, onNameClicked }: PublicSharedListItemProps) => {
+const PublicSharedListItem = ({ item, publicShareKey, onNameClicked }: PublicSharedListItemProps) => {
   const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
+  const [thumbnailUrl, setThumbnailUrl] = useState<string>();
   const displayName =
     transformItemService.getItemPlainNameWithExtension(item as unknown as DriveItemData) ??
     items.getItemDisplayName(item);
+
+  useEffect(() => {
+    const thumbnail = (item.thumbnails as Thumbnail[] | undefined)?.[0];
+    const isThumbnailable = !item.isFolder && !!item.type && thumbnailableExtension.includes(item.type.toLowerCase());
+    if (!thumbnail || !isThumbnailable || !item.credentials) return;
+
+    let objectUrl: string | undefined;
+    let isUnmounted = false;
+    const abortController = new AbortController();
+
+    downloadPublicThumbnail(
+      thumbnail,
+      { user: item.credentials.networkUser, pass: item.credentials.networkPass },
+      publicShareKey,
+      abortController,
+    )
+      .then((thumbnailBlob) => {
+        objectUrl = URL.createObjectURL(thumbnailBlob);
+        if (isUnmounted) {
+          URL.revokeObjectURL(objectUrl);
+        } else {
+          setThumbnailUrl(objectUrl);
+        }
+      })
+      .catch((error) => {
+        if (!abortController.signal.aborted) errorService.reportError(error);
+      });
+
+    return () => {
+      isUnmounted = true;
+      abortController.abort();
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [item]);
 
   return (
     <div
@@ -40,10 +82,21 @@ const PublicSharedListItem = ({ item, onNameClicked }: PublicSharedListItemProps
         {/* ICON */}
         <div className="box-content flex items-center pr-4">
           <div className="flex h-10 w-10 justify-center drop-shadow-soft">
-            <ItemIconComponent
-              className="h-full"
-              data-test={`file-list-${item.isFolder ? 'folder' : 'file'}-${displayName}`}
-            />
+            {thumbnailUrl ? (
+              <div className="h-full w-full">
+                <img
+                  className="aspect-square h-full max-h-full object-contain object-center"
+                  src={thumbnailUrl}
+                  alt={displayName}
+                  data-test="file-list-file-image"
+                />
+              </div>
+            ) : (
+              <ItemIconComponent
+                className="h-full"
+                data-test={`file-list-${item.isFolder ? 'folder' : 'file'}-${displayName}`}
+              />
+            )}
           </div>
         </div>
 
@@ -78,6 +131,7 @@ const PublicSharedListItem = ({ item, onNameClicked }: PublicSharedListItemProps
 
 type PublicSharedItemListProps = {
   shareItems: AdvancedSharedItem[];
+  publicShareKey: FileKey;
   isLoading: boolean;
   hasError: boolean;
   hasMoreItems: boolean;
@@ -92,6 +146,7 @@ type PublicSharedItemListProps = {
 
 export const PublicSharedItemList = ({
   shareItems,
+  publicShareKey,
   isLoading,
   hasError,
   hasMoreItems,
@@ -104,7 +159,7 @@ export const PublicSharedItemList = ({
   sortBy,
 }: PublicSharedItemListProps) => {
   const itemComposition = (item: AdvancedSharedItem) => (
-    <PublicSharedListItem item={item} onNameClicked={onItemDoubleClicked} />
+    <PublicSharedListItem item={item} publicShareKey={publicShareKey} onNameClicked={onItemDoubleClicked} />
   );
 
   const emptyStateElement = (
