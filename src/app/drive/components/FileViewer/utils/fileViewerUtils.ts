@@ -4,7 +4,15 @@ import { FileExtensionGroup, fileExtensionPreviewableGroups } from 'app/drive/ty
 
 export const extensionsList = fileExtensionService.computeExtensionsLists(fileExtensionPreviewableGroups);
 
-export function getIsTypeAllowedAndFileExtensionGroupValues(file: DriveFileData) {
+const PORTRAIT_PAGE_HORIZONTAL_MARGIN = 32;
+
+export const PORTRAIT_VIEWER_PADDING_CLASS = 'portrait:px-4';
+
+export function getPortraitFitWidth(): number | undefined {
+  return window.innerWidth < window.innerHeight ? window.innerWidth - PORTRAIT_PAGE_HORIZONTAL_MARGIN : undefined;
+}
+
+export function getIsTypeAllowedAndFileExtensionGroupValues(file: Pick<DriveFileData, 'type'>) {
   for (const [groupKey, extensions] of Object.entries(extensionsList)) {
     const isTypeAllowed = extensions.includes(file?.type ? String(file.type).toLowerCase() : '');
 
