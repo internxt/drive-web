@@ -160,7 +160,7 @@ export const uploadThumbnail = async (
   updateProgressCallback: (progress: number) => void,
   abortController?: AbortController,
 ): Promise<Thumbnail> => {
-  const { bridgeUser, bridgePass, encryptionKey, bucketId } = await getEnvironmentConfig(isTeam);
+  const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(isTeam);
 
   if (!bucketId) {
     notificationsService.show({ text: 'Login again to start uploading files', type: ToastType.Warning });

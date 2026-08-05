@@ -7,11 +7,11 @@ type FetchFileStreamOptions = {
   abortController?: AbortController;
 };
 
-export default async function fetchFileStream(
+export default function fetchFileStream(
   item: Downloadable,
   options: FetchFileStreamOptions,
 ): Promise<ReadableStream<Uint8Array>> {
-  const { bridgeUser, bridgePass, encryptionKey } = await getEnvironmentConfig(!!options.isWorkspace);
+  const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(!!options.isWorkspace);
 
   return downloadFile({
     bucketId: item.bucketId,

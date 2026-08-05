@@ -12,7 +12,6 @@ import { USER_NOTIFICATION_MAX_RETRIES } from './retryStrategies';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import dateService from 'services/date.service';
 import { EncryptedStorageService } from 'services/encrypted-storage.service';
-import { WorkspaceCredentialsDetails } from '@internxt/sdk/dist/workspaces';
 
 const MOCKED_NEW_API = 'https://api.internxt.com';
 const MOCKED_PAYMENTS = 'https://payments.internxt.com';
@@ -95,11 +94,11 @@ describe('SdkFactory', () => {
     mockDispatch = vi.fn();
     mockLocalStorage = {
       get: vi.fn(),
+      getWorkspace: vi.fn(),
     } as any;
 
     mockEncryptedStorage = {
       getToken: vi.fn(),
-      getWorkspaceCredentials: vi.fn(),
     } as any;
 
     SdkFactory.initialize(mockDispatch, mockLocalStorage, mockEncryptedStorage);
@@ -164,11 +163,9 @@ describe('SdkFactory', () => {
       vi.spyOn(mockEncryptedStorage, 'getToken').mockReturnValue(mockToken);
       vi.spyOn(mockLocalStorage, 'get').mockImplementation((key) => {
         if (key === LocalStorageItem.B2BworkspaceId) return mockWorkspaceId;
+        if (key === LocalStorageItem.WorkspaceCredentials) return JSON.stringify(mockCredentials);
         return null;
       });
-      vi.spyOn(mockEncryptedStorage, 'getWorkspaceCredentials').mockReturnValue(
-        mockCredentials as WorkspaceCredentialsDetails,
-      );
 
       const instance = SdkFactory.getNewApiInstance();
       const apiSecurity = (instance as any).getNewApiSecurity();
@@ -217,9 +214,9 @@ describe('SdkFactory', () => {
       vi.spyOn(mockEncryptedStorage, 'getToken').mockReturnValue(mockToken);
       vi.spyOn(mockLocalStorage, 'get').mockImplementation((key: string) => {
         if (key === LocalStorageItem.B2BworkspaceId) return mockWorkspaceId;
+        if (key === LocalStorageItem.WorkspaceCredentials) return null;
         return null;
       });
-      vi.spyOn(mockEncryptedStorage, 'getWorkspaceCredentials').mockReturnValue(null);
 
       const instance = SdkFactory.getNewApiInstance();
       const apiSecurity = (instance as any).getNewApiSecurity();
