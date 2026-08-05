@@ -133,8 +133,6 @@ const setWorkspaceCredentials = async (credentials: WorkspaceCredentialsDetails)
 const clearWorkspaceCredentials = (): void => {
   workspaceCredentialsCache = null;
   localStorage.removeItem(LocalStorageProtectedItem.EncryptedWorkspaceCredentials);
-  localStorage.removeItem(LocalStorageProtectedItem.User);
-  localStorage.removeItem(LocalStorageItem.UserUUID);
 };
 
 const getUser = (): UserSettings | null => {
