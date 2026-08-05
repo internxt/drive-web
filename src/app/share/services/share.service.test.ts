@@ -11,7 +11,18 @@ import {
 } from '../../crypto/services/pgp.service';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import shareService, { decryptMnemonic, derivePublicSharingKey, getPublicShareLink } from './share.service';
+import { downloadFolderAsZip } from 'app/drive/services/folder.service';
+import downloadService from 'app/drive/services/download.service';
+import { downloadFile } from 'app/network/download';
+import { FlatFolderZip } from 'services/zip.service';
+import { AdvancedSharedItem } from '../types';
+import shareService, {
+  decryptMnemonic,
+  derivePublicSharingKey,
+  downloadPublicSharedFolder,
+  downloadPublicSharedItems,
+  getPublicShareLink,
+} from './share.service';
 import { stringUtils, aes } from '@internxt/lib';
 import notificationsService from 'app/notifications/services/notifications.service';
 import { SharedFiles, SharingMeta } from '@internxt/sdk/dist/drive/share/types';
@@ -33,6 +44,30 @@ vi.mock('services/referral.service', () => ({
 
 vi.mock('utils', () => ({
   generateCaptchaToken: vi.fn(() => 'mocked-captcha-token'),
+}));
+
+vi.mock('app/network/download', () => ({
+  downloadFile: vi.fn(),
+  downloadFileWithBucketKey: vi.fn(),
+  multipartDownloadFile: vi.fn(),
+  getDecryptedStream: vi.fn(),
+  FileVersionOneError: class FileVersionOneError extends Error {},
+}));
+
+vi.mock('app/drive/services/download.service', () => ({
+  default: {
+    downloadFileFromBlob: vi.fn(),
+  },
+}));
+
+vi.mock('services/zip.service', () => ({
+  FlatFolderZip: vi.fn().mockImplementation(function () {
+    return {
+      addFile: vi.fn(),
+      close: vi.fn().mockResolvedValue(undefined),
+    };
+  }),
+  createFolderWithFilesWritable: vi.fn(),
 }));
 
 describe('Encryption and Decryption', () => {
@@ -672,5 +707,182 @@ describe('derivePublicSharingKey', () => {
     expect(() =>
       derivePublicSharingKey({ encryptionKey: 'bad-encrypted-key', code, sharingVersion: 'inxt-v3' }),
     ).toThrow();
+  });
+});
+
+describe('Download public shared items', () => {
+  const CREDENTIALS = { user: 'network-user', pass: 'network-pass' };
+  const KEY = { mnemonic: 'test mnemonic' };
+  const CODE = 'plain-code';
+
+  const createStream = (content: Uint8Array) =>
+    new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(content);
+        controller.close();
+      },
+    });
+
+  const createPublicFile = (plainName: string, fileId: string): AdvancedSharedItem =>
+    ({
+      uuid: `${plainName}-uuid`,
+      plainName,
+      name: 'encrypted-name',
+      type: 'png',
+      bucket: 'bucket-id',
+      fileId,
+      isFolder: false,
+    }) as unknown as AdvancedSharedItem;
+
+  const createPublicFolder = (plainName: string): AdvancedSharedItem =>
+    ({
+      id: 10,
+      uuid: `${plainName}-uuid`,
+      plainName,
+      name: 'encrypted-name',
+      isFolder: true,
+    }) as unknown as AdvancedSharedItem;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  test('When a single file is downloaded, then it is fetched with the share credentials and key and saved with its plain name', async () => {
+    const file = createPublicFile('photo', 'network-file-id');
+    const updateNumItems = vi.fn();
+    vi.mocked(downloadFile).mockResolvedValueOnce(createStream(new Uint8Array([1, 2, 3])));
+
+    await downloadPublicSharedItems({
+      items: [file],
+      credentials: CREDENTIALS,
+      key: KEY,
+      code: CODE,
+      updateNumItems,
+    });
+
+    expect(downloadFile).toHaveBeenCalledWith({
+      bucketId: 'bucket-id',
+      fileId: 'network-file-id',
+      creds: CREDENTIALS,
+      key: KEY,
+    });
+    expect(downloadService.downloadFileFromBlob).toHaveBeenCalledWith(expect.any(Blob), 'photo.png');
+    expect(updateNumItems).toHaveBeenCalledTimes(1);
+    expect(FlatFolderZip).not.toHaveBeenCalled();
+  });
+
+  test('When a single folder is downloaded, then it is zipped with the share credentials and key through the public iterators', async () => {
+    const folder = createPublicFolder('Documents');
+
+    await downloadPublicSharedItems({
+      items: [folder],
+      credentials: CREDENTIALS,
+      key: KEY,
+      code: CODE,
+      resourcesToken: 'level-token',
+    });
+
+    expect(downloadFolderAsZip).toHaveBeenCalledWith(
+      expect.objectContaining({
+        folder,
+        isSharedFolder: true,
+        options: { credentials: CREDENTIALS, key: KEY, isPublicShare: true },
+      }),
+    );
+    expect(downloadService.downloadFileFromBlob).not.toHaveBeenCalled();
+  });
+
+  test('When several items are downloaded, then files and folders are packed into a single zip that is closed at the end', async () => {
+    const file = createPublicFile('photo', 'network-file-id');
+    const folder = createPublicFolder('Documents');
+    vi.mocked(downloadFile).mockResolvedValueOnce(createStream(new Uint8Array([1, 2, 3])));
+
+    await downloadPublicSharedItems({
+      items: [folder, file],
+      credentials: CREDENTIALS,
+      key: KEY,
+      code: CODE,
+    });
+
+    const zipInstance = vi.mocked(FlatFolderZip).mock.results[0].value;
+    expect(downloadFolderAsZip).toHaveBeenCalledWith(
+      expect.objectContaining({
+        folder,
+        options: expect.objectContaining({ destination: zipInstance, closeWhenFinished: false }),
+      }),
+    );
+    expect(zipInstance.addFile).toHaveBeenCalledWith('photo.png', expect.anything());
+    expect(zipInstance.close).toHaveBeenCalledTimes(1);
+  });
+
+  test('When a folder is downloaded, then the folders/files iterator factories build public iterators without throwing', async () => {
+    const folder = createPublicFolder('Documents');
+
+    await downloadPublicSharedItems({
+      items: [folder],
+      credentials: CREDENTIALS,
+      key: KEY,
+      code: CODE,
+      resourcesToken: 'level-token',
+    });
+
+    const { foldersIterator, filesIterator } = vi.mocked(downloadFolderAsZip).mock.calls[0][0] as {
+      foldersIterator: (directoryUuid: string, token?: string) => unknown;
+      filesIterator: (directoryUuid: string, token?: string) => unknown;
+    };
+
+    expect(() => foldersIterator('sub-folder-uuid')).not.toThrow();
+    expect(() => filesIterator('sub-folder-uuid')).not.toThrow();
+  });
+});
+
+describe('Download public shared folder', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  test('When credentials are returned, then the folder contents are downloaded with the derived key', async () => {
+    vi.spyOn(shareService, 'getPublicSharedFolderContent').mockResolvedValueOnce({
+      items: [],
+      token: '',
+      credentials: { networkUser: 'net-user', networkPass: 'net-pass' },
+    } as any);
+    const encryptionKey = aes.encrypt('bucket-key-hex', 'plain-code');
+
+    await downloadPublicSharedFolder({
+      encryptionKey,
+      item: { uuid: 'folder-uuid', plainName: 'Documents' },
+      code: 'plain-code',
+      incrementItemCount: vi.fn(),
+      sharingVersion: 'inxt-v2',
+    });
+
+    expect(downloadFolderAsZip).toHaveBeenCalledWith(
+      expect.objectContaining({
+        options: expect.objectContaining({
+          credentials: { user: 'net-user', pass: 'net-pass' },
+          isPublicShare: true,
+        }),
+      }),
+    );
+  });
+
+  test('When no credentials are returned, then an error is thrown', async () => {
+    vi.spyOn(shareService, 'getPublicSharedFolderContent').mockResolvedValueOnce({
+      items: [],
+      token: '',
+      credentials: null,
+    } as any);
+    const encryptionKey = aes.encrypt('bucket-key-hex', 'plain-code');
+
+    await expect(
+      downloadPublicSharedFolder({
+        encryptionKey,
+        item: { uuid: 'folder-uuid', plainName: 'Documents' },
+        code: 'plain-code',
+        incrementItemCount: vi.fn(),
+        sharingVersion: 'inxt-v2',
+      }),
+    ).rejects.toThrow('No Credentials!');
   });
 });

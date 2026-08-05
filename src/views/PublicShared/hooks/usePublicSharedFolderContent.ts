@@ -61,6 +61,7 @@ const usePublicSharedFolderContent = ({
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [nextLevelToken, setNextLevelToken] = useState('');
+  const [credentials, setCredentials] = useState<SharedNetworkCredentials>();
   const levelCacheRef = useRef<Record<string, CachedFolderLevel>>({});
 
   const currentFolder = folderPath.at(-1) as PublicFolderLevel;
@@ -79,65 +80,52 @@ const usePublicSharedFolderContent = ({
   }, [hasMoreItems, hasError, isLoading, folders, files, nextLevelToken, currentFolder.uuid]);
 
   const fetchItems = async () => {
-    if (!isLoading) {
-      setIsLoading(true);
-      try {
-        if (hasMoreFolders) {
-          await fetchFolders();
-        } else if (hasMoreFiles) {
-          await fetchFiles();
-        }
-      } catch (error) {
-        errorService.reportError(error);
-        setHasError(true);
-        setHasMoreFolders(false);
-        setHasMoreFiles(false);
-        if (folders.length > 0 || files.length > 0) {
-          notificationsService.show({ text: t('error.fetchingFolderContent'), type: ToastType.Error });
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    }
-  };
+    if (isLoading || (!hasMoreFolders && !hasMoreFiles)) return;
 
-  const fetchFolders = async () => {
-    const response = await shareService.getPublicSharedFolderContent(
-      currentFolder.uuid,
-      'folders',
-      currentFolder.token,
-      page,
-      ITEMS_PER_PAGE,
-    );
-
-    setNextLevelToken(response.token);
-
-    const parsedFolders = parsePublicSharedItems(response.items, true, response.credentials);
-    setFolders((previousFolders) => (page === 0 ? parsedFolders : [...previousFolders, ...parsedFolders]));
-
-    if (parsedFolders.length < ITEMS_PER_PAGE) {
-      setPage(0);
+    setIsLoading(true);
+    try {
+      await fetchLevelItems(hasMoreFolders ? 'folders' : 'files');
+    } catch (error) {
+      errorService.reportError(error);
+      setHasError(true);
       setHasMoreFolders(false);
+      setHasMoreFiles(false);
+      if (folders.length > 0 || files.length > 0) {
+        notificationsService.show({ text: t('error.fetchingFolderContent'), type: ToastType.Error });
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const fetchFiles = async () => {
+  const fetchLevelItems = async (type: 'folders' | 'files') => {
+    const isFoldersPhase = type === 'folders';
+
     const response = await shareService.getPublicSharedFolderContent(
       currentFolder.uuid,
-      'files',
+      type,
       currentFolder.token,
       page,
       ITEMS_PER_PAGE,
-      code,
+      isFoldersPhase ? undefined : code,
     );
 
     setNextLevelToken(response.token);
+    if (response.credentials) {
+      setCredentials(response.credentials);
+    }
 
-    const parsedFiles = parsePublicSharedItems(response.items, false, response.credentials);
-    setFiles((previousFiles) => (page === 0 ? parsedFiles : [...previousFiles, ...parsedFiles]));
+    const parsedItems = parsePublicSharedItems(response.items, isFoldersPhase, response.credentials);
+    const setItems = isFoldersPhase ? setFolders : setFiles;
+    setItems((previousItems) => (page === 0 ? parsedItems : [...previousItems, ...parsedItems]));
 
-    if (parsedFiles.length < ITEMS_PER_PAGE) {
-      setHasMoreFiles(false);
+    if (parsedItems.length < ITEMS_PER_PAGE) {
+      if (isFoldersPhase) {
+        setPage(0);
+        setHasMoreFolders(false);
+      } else {
+        setHasMoreFiles(false);
+      }
     }
   };
 
@@ -192,6 +180,8 @@ const usePublicSharedFolderContent = ({
   return {
     folderPath,
     shareItems,
+    credentials,
+    nextLevelToken,
     isLoading: isLoading || isAwaitingInitialFilesLoad,
     hasError,
     hasMoreItems,

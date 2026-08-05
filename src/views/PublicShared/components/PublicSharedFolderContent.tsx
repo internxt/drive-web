@@ -1,15 +1,20 @@
-import { BreadcrumbItemData, Breadcrumbs } from '@internxt/ui';
+import { BreadcrumbItemData, Breadcrumbs, MenuItemType } from '@internxt/ui';
+import { DownloadSimpleIcon, EyeIcon } from '@phosphor-icons/react';
 import { OrderDirection } from 'app/core/types';
+import FileViewer from 'app/drive/components/FileViewer/FileViewer';
 import iconService from 'app/drive/services/icon.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { derivePublicSharingKey } from 'app/share/services/share.service';
 import { AdvancedSharedItem } from 'app/share/types';
-import { useAppDispatch } from 'app/store/hooks';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { useMemo, useState } from 'react';
 import { useDrop } from 'react-dnd';
 import { OrderField } from 'views/Shared/components/SharedItemList';
 import { sortSharedItems } from 'views/Shared/utils/sharedViewUtils';
+import useBeforeUnload from 'hooks/useBeforeUnload';
+import usePublicSharedDownload from '../hooks/usePublicSharedDownload';
 import usePublicSharedFolderContent from '../hooks/usePublicSharedFolderContent';
+import mapSharedItemToPreviewFile from '../utils/mapSharedItemToPreviewFile';
 import PublicSharedItemList from './PublicSharedItemList';
 
 interface PublicSharedFolderContentProps {
@@ -40,6 +45,8 @@ const PublicSharedFolderContent = ({
   const {
     folderPath,
     shareItems,
+    credentials,
+    nextLevelToken,
     isLoading,
     hasError,
     hasMoreItems,
@@ -47,8 +54,23 @@ const PublicSharedFolderContent = ({
     navigateToFolder,
     navigateToFolderAtIndex,
   } = usePublicSharedFolderContent({ rootFolderUuid, rootFolderName, code });
+  const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const [selectedItems, setSelectedItems] = useState<AdvancedSharedItem[]>([]);
   const [orderBy, setOrderBy] = useState<{ field: OrderField; direction: OrderDirection }>();
+
+  const shareCredentials = credentials ? { user: credentials.networkUser, pass: credentials.networkPass } : undefined;
+
+  const { isDownloading, downloadItems, previewItem, previewBlob, previewProgress, openPreview, closePreview } =
+    usePublicSharedDownload({
+      credentials: shareCredentials,
+      publicShareKey,
+      code,
+      resourcesToken: nextLevelToken,
+    });
+
+  useBeforeUnload(() => isDownloading);
+
+  const previewFile = useMemo(() => (previewItem ? mapSharedItemToPreviewFile(previewItem) : null), [previewItem]);
 
   const reorderedShareItems = sortSharedItems(shareItems, orderBy);
 
@@ -84,8 +106,39 @@ const PublicSharedFolderContent = ({
     if (shareItem.isFolder) {
       setSelectedItems([]);
       navigateToFolder(shareItem);
+    } else {
+      openPreview(shareItem);
     }
   };
+
+  const previewMenuItem: MenuItemType<AdvancedSharedItem> = {
+    name: translate('drive.dropdown.openPreview'),
+    icon: EyeIcon,
+    action: openPreview,
+  };
+
+  const getDownloadMenuItem = (
+    onDownload: (shareItem: AdvancedSharedItem) => void,
+  ): MenuItemType<AdvancedSharedItem> => ({
+    name: translate('drive.dropdown.download'),
+    icon: DownloadSimpleIcon,
+    action: onDownload,
+    disabled: () => isDownloading,
+  });
+
+  const getContextMenu = (): MenuItemType<AdvancedSharedItem>[] => {
+    if (selectedItems.length > 1) {
+      return [getDownloadMenuItem(() => downloadItems(selectedItems))];
+    }
+
+    if (selectedItems[0]?.isFolder) {
+      return [getDownloadMenuItem((shareItem) => downloadItems([shareItem]))];
+    }
+
+    return [previewMenuItem, getDownloadMenuItem((shareItem) => downloadItems([shareItem]))];
+  };
+
+  const contextMenu = getContextMenu();
 
   const goToFolderBreadcrumb = (index: number) => {
     setSelectedItems([]);
@@ -112,6 +165,23 @@ const PublicSharedFolderContent = ({
 
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col self-stretch px-5">
+      {previewItem && previewFile && (
+        <FileViewer
+          show={!!previewItem}
+          file={previewFile}
+          onClose={closePreview}
+          onDownload={() => {
+            const itemToDownload = previewItem;
+            closePreview();
+            downloadItems([itemToDownload]);
+          }}
+          progress={previewProgress}
+          blob={previewBlob}
+          isAuthenticated={isAuthenticated}
+          isShareView
+          disableVideoStream
+        />
+      )}
       <div className="z-10 flex h-14 w-full shrink-0 flex-row items-center">
         <Breadcrumbs
           items={breadcrumbItems}
@@ -126,7 +196,7 @@ const PublicSharedFolderContent = ({
           useDrop={useDrop}
         />
       </div>
-      <div className="flex min-h-0 w-full flex-1 flex-col overflow-y-auto">
+      <div className="public-shared-list flex min-h-0 w-full flex-1 flex-col overflow-y-auto">
         <PublicSharedItemList
           shareItems={reorderedShareItems}
           publicShareKey={publicShareKey}
@@ -140,6 +210,7 @@ const PublicSharedFolderContent = ({
           onSelectedItemsChanged={handleOnSelectedItemsChanged}
           orderBy={orderBy}
           sortBy={sortBy}
+          contextMenu={contextMenu}
         />
       </div>
     </div>

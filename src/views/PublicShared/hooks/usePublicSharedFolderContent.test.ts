@@ -1,7 +1,3 @@
-/**
- * @jest-environment jsdom
- */
-
 import { ListSharedItemsResponse } from '@internxt/sdk/dist/drive/share/types';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
@@ -67,7 +63,7 @@ describe('usePublicSharedFolderContent', () => {
 
     await waitFor(() => expect(result.current.shareItems).toHaveLength(2));
 
-    expect(mockedGetPublicSharedFolderContent).toHaveBeenCalledWith(ROOT_UUID, 'folders', '', 0, 30);
+    expect(mockedGetPublicSharedFolderContent).toHaveBeenCalledWith(ROOT_UUID, 'folders', '', 0, 30, undefined);
     expect(mockedGetPublicSharedFolderContent).toHaveBeenCalledWith(ROOT_UUID, 'files', '', 0, 30, CODE);
 
     const [folder, file] = result.current.shareItems;
@@ -107,6 +103,7 @@ describe('usePublicSharedFolderContent', () => {
       'root-files-token',
       0,
       30,
+      undefined,
     );
     expect(result.current.folderPath).toEqual([
       { uuid: ROOT_UUID, name: 'Root folder', token: '' },
@@ -164,7 +161,7 @@ describe('usePublicSharedFolderContent', () => {
     });
 
     await waitFor(() => expect(result.current.shareItems).toHaveLength(31));
-    expect(mockedGetPublicSharedFolderContent).toHaveBeenCalledWith(ROOT_UUID, 'folders', '', 1, 30);
+    expect(mockedGetPublicSharedFolderContent).toHaveBeenCalledWith(ROOT_UUID, 'folders', '', 1, 30, undefined);
     await waitFor(() => expect(result.current.hasMoreItems).toBe(false));
   });
 

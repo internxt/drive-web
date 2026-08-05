@@ -1,13 +1,12 @@
 import { items } from '@internxt/lib';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
-import { Empty, List } from '@internxt/ui';
+import { Empty, List, MenuItemType } from '@internxt/ui';
 import { WarningCircleIcon } from '@phosphor-icons/react';
 import { OrderDirection } from 'app/core/types';
 import iconService from 'app/drive/services/icon.service';
 import transformItemService from 'app/drive/services/item-transform.service';
 import sizeService from 'app/drive/services/size.service';
 import { downloadPublicThumbnail } from 'app/drive/services/thumbnail.service';
-import { DriveItemData } from 'app/drive/types';
 import { thumbnailableExtension } from 'app/drive/types/file-types';
 import { FileKey } from 'app/network/types/helper-types';
 import { AdvancedSharedItem } from 'app/share/types';
@@ -34,9 +33,7 @@ type PublicSharedListItemProps = {
 const PublicSharedListItem = ({ item, publicShareKey, onNameClicked }: PublicSharedListItemProps) => {
   const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
   const [thumbnailUrl, setThumbnailUrl] = useState<string>();
-  const displayName =
-    transformItemService.getItemPlainNameWithExtension(item as unknown as DriveItemData) ??
-    items.getItemDisplayName(item);
+  const displayName = transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item);
 
   useEffect(() => {
     const thumbnail = (item.thumbnails as Thumbnail[] | undefined)?.[0];
@@ -78,7 +75,7 @@ const PublicSharedListItem = ({ item, publicShareKey, onNameClicked }: PublicSha
       data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
     >
       {/* ITEM NAME */}
-      <div className="flex min-w-[200px] grow shrink-0 items-center truncate whitespace-nowrap pr-3">
+      <div className="flex min-w-0 grow items-center truncate whitespace-nowrap pr-3 sm:min-w-[200px] sm:shrink-0">
         {/* ICON */}
         <div className="box-content flex items-center pr-4">
           <div className="flex h-10 w-10 justify-center drop-shadow-soft">
@@ -101,7 +98,7 @@ const PublicSharedListItem = ({ item, publicShareKey, onNameClicked }: PublicSha
         </div>
 
         {/* NAME */}
-        <div className="flex w-[200px] grow cursor-pointer items-center truncate pr-2">
+        <div className="flex min-w-0 grow cursor-pointer items-center truncate pr-2 sm:w-[200px]">
           <button
             type="button"
             data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
@@ -118,7 +115,7 @@ const PublicSharedListItem = ({ item, publicShareKey, onNameClicked }: PublicSha
       </div>
 
       {/* SIZE */}
-      <div className="block w-40 shrink-0 items-center whitespace-nowrap">
+      <div className="block w-24 shrink-0 items-center whitespace-nowrap sm:w-40">
         {sizeService.bytesToString(item.size, false) === '' || item.isFolder ? (
           <span className="opacity-25">—</span>
         ) : (
@@ -142,6 +139,7 @@ type PublicSharedItemListProps = {
   onSelectedItemsChanged: (changes: { props: AdvancedSharedItem; value: boolean }[]) => void;
   orderBy?: { field: OrderField; direction: OrderDirection };
   sortBy: (value: { field: OrderField; direction: 'ASC' | 'DESC' }) => void;
+  contextMenu: MenuItemType<AdvancedSharedItem>[];
 };
 
 export const PublicSharedItemList = ({
@@ -157,6 +155,7 @@ export const PublicSharedItemList = ({
   onSelectedItemsChanged,
   orderBy,
   sortBy,
+  contextMenu,
 }: PublicSharedItemListProps) => {
   const itemComposition = (item: AdvancedSharedItem) => (
     <PublicSharedListItem item={item} publicShareKey={publicShareKey} onNameClicked={onItemDoubleClicked} />
@@ -183,14 +182,14 @@ export const PublicSharedItemList = ({
       header={[
         {
           label: t('shared-links.list.name'),
-          width: 'flex-1 min-w-activity truncate whitespace-nowrap',
+          width: 'min-w-0 flex-1 truncate whitespace-nowrap sm:min-w-activity',
           name: 'name',
           orderable: true,
           defaultDirection: 'ASC',
         },
         {
           label: t('shared-links.list.size'),
-          width: 'w-40',
+          width: 'w-24 sm:w-40',
           name: 'size',
           orderable: true,
           defaultDirection: 'ASC',
@@ -205,6 +204,7 @@ export const PublicSharedItemList = ({
       emptyState={hasError ? errorStateElement : emptyStateElement}
       onNextPage={onNextPage}
       hasMoreItems={hasMoreItems}
+      menu={contextMenu}
       displayMenuDiv
       selectedItems={selectedItems}
       keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
