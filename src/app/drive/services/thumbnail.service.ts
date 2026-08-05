@@ -1,6 +1,5 @@
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import {
   thumbnailableExtension,
   thumbnailableImageExtension,
@@ -26,6 +25,7 @@ import fetchFileBlob from './download.service/fetchFileBlob';
 import { getEnvironmentConfig } from './network.service';
 import { FileToUpload } from './file.service/types';
 import { ErrorLoadingVideoFileError } from './errors/thumbnail.service.errors';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 export interface ThumbnailToUpload {
   fileId: string;
@@ -162,7 +162,7 @@ export const uploadThumbnail = async (
   updateProgressCallback: (progress: number) => void,
   abortController?: AbortController,
 ): Promise<Thumbnail> => {
-  const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(isTeam);
+  const { bridgeUser, bridgePass, encryptionKey, bucketId } = await getEnvironmentConfig(isTeam);
 
   if (!bucketId) {
     notificationsService.show({ text: 'Login again to start uploading files', type: ToastType.Warning });
@@ -287,11 +287,13 @@ export const downloadThumbnail = async (thumbnailToDownload: Thumbnail, isWorksp
   let useWorkspaceCredentials = isWorkspace;
 
   if (isWorkspace) {
-    const user = localStorageService.getUser() as UserSettings;
-    const isInPersonalBucket = thumbnailToDownload.bucket_id === user.bucket;
+    const user = encryptedStorageService.getUser();
+    if (user) {
+      const isInPersonalBucket = thumbnailToDownload.bucket_id === user.bucket;
 
-    if (isInPersonalBucket) {
-      useWorkspaceCredentials = false;
+      if (isInPersonalBucket) {
+        useWorkspaceCredentials = false;
+      }
     }
   }
 

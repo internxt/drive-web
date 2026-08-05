@@ -195,7 +195,8 @@
       "login": "登录",
       "success": "您已成功登录",
       "error": "无法登录，请重试",
-      "closeWindow": "您可以关闭此窗口"
+      "closeWindow": "您可以关闭此窗口",
+      "invalidRedirectUri": "无效的重定向网址"
     },
     "oauthLink": {
       "continueAs": "继续使用",
@@ -221,6 +222,16 @@
         "password": "您的密码"
       },
       "emailMustNotBeEmpty": "电子邮件不能为空",
+      "authError": {
+        "invalidCredentials": "电子邮件或密码不正确，请重试。",
+        "twoFactorEnabled": "此账户已启用双重验证。请先前往登录页面登录，再返回此处完成购买。",
+        "emailAlreadyRegistered": "此电子邮件已注册账户。请选择“登录”以继续购买。",
+        "accountLocked": "出于安全原因，此账户已被锁定。请先查看您的收件箱以解锁，然后再继续。",
+        "tooManyAttempts": "尝试次数过多，请稍等一分钟后重试。",
+        "invalidData": "请确认您的电子邮件和密码是否正确，然后重试。",
+        "serverError": "我们无法完成此步骤。请几分钟后重试，如果问题仍然存在请联系客服。",
+        "unknown": "我们无法验证您的信息。请确认您的电子邮件和密码，然后重试。"
+      },
       "privacyGuarantee": "隐私保证：我们不会分享您的信息，并且只会在提供服务时与您联系。"
     },
     "addressBillingTitle": "账单地址",
@@ -442,17 +453,19 @@
         },
         "billing": {
           "cancelSubscriptionModal": {
+            "title": "取消订阅",
             "description": {
-              "individual": "您即将取消您的 Internxt {{currentPlanName}} 计划。取消计划后，您将降级为免费的 Internxt {{freePlanName}} 计划。请确认您的选择以继续。",
+              "individual": {
+                "line1": "您的年度计划按月计费，并于 {{endDate}} 到期。",
+                "line2": "您可以选择接下来的处理方式："
+              },
               "business": "取消计划后，工作区以及所有数据将被删除。请确认您的选择以继续。"
             },
+
             "commitment": {
-              "firstMonthDescription": "由于您仍在 30 天试用期内，您的取消将立即生效。您将不再被收费，您的账户现在将恢复为免费的 1GB 计划。",
-              "description": "您拥有按月计费的年度订阅。如果您现在取消，您的订阅将保持有效至 {{end_date}}，且在该日期之前您将继续被按月收费。",
-              "monthsRemaining": "剩余付款次数：{{monthsRemaining}}",
-              "amountPerMonth": "每月金额：€{{amount}}",
-              "afterLabel": "{{monthsRemaining}} 之后"
+              "firstMonthDescription": "由于您仍在 30 天试用期内，您的取消将立即生效。您将不再被收费，您的账户现在将恢复为免费的 1GB 计划。"
             },
+            "directCancellationDescription": "您即将取消您的订阅。您将失去对计划的访问权限，且您的账户将恢复为免费计划。请确认您的选择以继续。",
             "keepSubscription": "继续订阅",
             "cancelSubscription": "取消订阅",
             "infoBox": {
@@ -496,6 +509,16 @@
                 }
               }
             }
+          },
+          "subscriptionEndingModal": {
+            "title": "订阅将于 {{endDate}} 结束",
+            "description": {
+              "title": "当您的计划结束时：",
+              "storageReturns": "您的存储空间将恢复为免费限额",
+              "featuresUnavailable": "高级功能将不再可用"
+            },
+            "maybeLater": "稍后再说",
+            "renewSubscription": "续订订阅"
           },
           "cancellationIncentive": {
             "title": {
@@ -1281,6 +1304,10 @@
     "errorCreatingSubscription": "创建您的订阅时出现问题",
     "successApplyCancellationIncentive": "感谢您继续与我们同行！尽享下个月免费服务",
     "errorApplyCancellationIncentive": "应用取消优惠时发生错误",
+    "successEarlyCancelSubscription": "您的订阅已被取消",
+    "errorEarlyCancelSubscription": "取消订阅时出了点问题",
+    "successReactivateSubscription": "您的订阅已重新激活",
+    "errorReactivateSubscription": "重新激活订阅时出了点问题",
     "couponIsNotValidForUserError": "优惠券只能由新客户兑换。",
     "errorApplyingCoupon": "应用优惠券时出错",
     "errorWhileFetchingMoreItems": "获取更多项目时出现错误",
@@ -1838,5 +1865,8 @@
   },
   "sdk": {
     "rateLimitToast": "这花费的时间比预期的长，请稍候..."
+  },
+  "common": {
+    "planCancelled": "您的订阅将于 {{end_date}} 结束"
   }
 }

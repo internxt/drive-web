@@ -20,8 +20,8 @@ import { useSelector } from 'react-redux';
 import { DriveItemData, FolderPathDialog } from 'app/drive/types';
 import { CreateFolderDialog } from 'views/Drive/components';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-import localStorageService from 'services/local-storage.service';
 import { useMoveItems } from 'hooks/moveItems/useMoveItems';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 interface MoveItemsDialogProps {
   onItemsMoved?: () => void;
@@ -123,7 +123,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     const itemUuid = item.uuid;
     const itemFolderUuid = item.isFolder ? itemUuid : item.folderUuid;
     const itemType = item.isFolder ? 'folder' : 'file';
-    const token = localStorageService.getStorageToken(item.isFolder) || undefined;
+    const token = await encryptedStorageService.getSharedItemAccessToken(item.isFolder);
 
     const breadcrumbsList: FolderAncestor[] | FolderAncestorWorkspace[] = isWorkspaceSelected
       ? await newStorageService.getFolderAncestorsInWorkspace(workspaceSelected.workspace.id, itemType, itemUuid, token)

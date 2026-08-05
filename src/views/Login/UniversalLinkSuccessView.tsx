@@ -2,19 +2,23 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Button } from '@internxt/ui';
 import { AppView } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { useAppDispatch } from 'app/store/hooks';
+import { userThunks } from 'app/store/slices/user';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import AnimatedBackground from 'components/AnimatedBackground';
-import { isMobile } from 'react-device-detect';
 import { useEffect, useMemo } from 'react';
-import authService from 'services/auth.service';
-import localStorageService from 'services/local-storage.service';
+import { isMobile } from 'react-device-detect';
+import encryptedStorageService from 'services/encrypted-storage.service';
 import navigationService from 'services/navigation.service';
+import { TRUSTED_LOCALHOST_HOSTNAMES, TRUSTED_LOCALHOST_PROTOCOLS, validateUrl } from 'utils/urlValidation';
 
 const DEEPLINK_SUCCESS_REDIRECT_BASE = 'internxt://login-success';
 
 export default function UniversalLinkView(): JSX.Element {
   const { translate } = useTranslationContext();
-  const user = useMemo(() => localStorageService.getUser(), []);
+  const dispatch = useAppDispatch();
+  const user = useMemo(() => encryptedStorageService.getUser(), []);
 
   const urlParams = new URLSearchParams(globalThis.location.search);
   const redirectUri = urlParams.get('redirectUri');
@@ -26,27 +30,44 @@ export default function UniversalLinkView(): JSX.Element {
     }
   }, [user]);
 
-  const getUniversalLinkAuthUrl = (user: UserSettings) => {
-    const newToken = localStorageService.getToken();
+  const getUniversalLinkAuthUrl = (user: UserSettings): string | null => {
+    const newToken = encryptedStorageService.getToken();
     if (!newToken) return AppView.Login;
 
     let baseURL = DEEPLINK_SUCCESS_REDIRECT_BASE;
     if (redirectUri) {
-      baseURL = Buffer.from(redirectUri, 'base64').toString();
+      const decoded = Buffer.from(redirectUri, 'base64').toString();
+      const isValidRedirectUri = validateUrl({
+        urlString: decoded,
+        allowedProtocols: TRUSTED_LOCALHOST_PROTOCOLS,
+        allowedHostnames: TRUSTED_LOCALHOST_HOSTNAMES,
+      });
+
+      if (!isValidRedirectUri) {
+        return null;
+      }
+
+      baseURL = decoded;
     }
 
-    return `${baseURL}?mnemonic=${btoa(user.mnemonic)}&newToken=${btoa(newToken)}&privateKey=${btoa(user.privateKey)}`;
+    return `${baseURL}?mnemonic=${btoa(user.mnemonic)}&newToken=${btoa(newToken)}&privateKey=${btoa(user.keys.ecc.privateKey)}`;
   };
 
   // Should redirect to login in the useEffect
   if (!user) return <></>;
 
   const handleGoToLogin = () => {
-    authService.logOut();
+    dispatch(userThunks.logoutThunk());
   };
 
   const handleGoToUniversalLinkUrl = () => {
-    globalThis.location.href = getUniversalLinkAuthUrl(user);
+    const universalLinkAuthUrl = getUniversalLinkAuthUrl(user);
+    if (!universalLinkAuthUrl) {
+      notificationsService.show({ text: translate('auth.universalLink.invalidRedirectUri'), type: ToastType.Error });
+      return;
+    }
+
+    globalThis.location.href = universalLinkAuthUrl;
   };
 
   return (

@@ -8,7 +8,8 @@ import { beforeEach, describe, expect, it, test, vi } from 'vitest';
 import { vi as _vi } from 'vitest';
 import { auth, TokenStatus } from '@internxt/lib';
 import { refreshAvatarThunk, refreshUserThunk, userActions } from 'app/store/slices/user';
-import { errorService, localStorageService, userService } from 'services';
+import { errorService, userService } from 'services';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 _vi.mock('app/drive/services/database.service', () => ({
   updateDatabaseProfileAvatar: _vi.fn(),
@@ -38,7 +39,8 @@ describe('user thunks', () => {
     getStateWithUser = () => state as RootState;
     dispatchMock = vi.fn();
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue('mock-token');
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue('mock-token');
+    vi.spyOn(encryptedStorageService, 'setToken').mockResolvedValue(undefined);
     vi.spyOn(auth, 'validateTokenAndCheckExpiration').mockReturnValue(TokenStatus.VALID);
 
     vi.spyOn(userService, 'refreshAvatarUser').mockResolvedValue({ avatar: null });
@@ -55,11 +57,11 @@ describe('user thunks', () => {
 
       expect(userService.refreshUserData).not.toHaveBeenCalled();
       expect(dispatchMock).not.toHaveBeenCalledWith(expect.objectContaining({ type: userActions.setUser.type }));
-      expect(dispatchMock).not.toHaveBeenCalledWith(expect.objectContaining({ type: userActions.setToken.type }));
+      expect(encryptedStorageService.setToken).not.toHaveBeenCalled();
     });
 
     test('When token is missing, then an error indicating so is thrown', async () => {
-      vi.spyOn(localStorageService, 'getToken').mockReturnValue(null);
+      vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(undefined);
 
       const thunk = refreshUserThunk();
       const result = await thunk(dispatchMock, getStateWithUser, undefined);
@@ -82,9 +84,7 @@ describe('user thunks', () => {
       await thunk(dispatchMock, getStateWithUser, undefined);
 
       expect(userService.refreshUserData).toHaveBeenCalledWith(baseUser.uuid);
-      expect(dispatchMock).toHaveBeenCalledWith(
-        expect.objectContaining({ type: userActions.setToken.type, payload: 'refreshed-token' }),
-      );
+      expect(encryptedStorageService.setToken).toHaveBeenCalledWith('refreshed-token');
     });
 
     test('When token is expired, then rejects as unauthorized', async () => {
@@ -106,6 +106,7 @@ describe('user thunks', () => {
       vi.spyOn(userService, 'refreshUserData').mockResolvedValue(refreshed);
       vi.spyOn(userService, 'refreshAvatarUser').mockResolvedValue({ avatar: 'avatar-url' });
       vi.spyOn(userService, 'downloadAvatar').mockResolvedValue(new Blob(['x']));
+      const setTokenSpy = vi.spyOn(encryptedStorageService, 'setToken');
 
       const thunk = refreshUserThunk({ forceRefresh: true });
       await thunk(dispatchMock, getStateWithUser, undefined);
@@ -125,9 +126,7 @@ describe('user thunks', () => {
           }),
         }),
       );
-      expect(dispatchMock).toHaveBeenCalledWith(
-        expect.objectContaining({ type: userActions.setToken.type, payload: 'new-token-abc' }),
-      );
+      expect(setTokenSpy).toHaveBeenCalledWith('new-token-abc');
     });
 
     it('still refreshes when forceRefresh is true (independent of token)', async () => {
@@ -139,6 +138,7 @@ describe('user thunks', () => {
       vi.spyOn(userService, 'refreshUserData').mockResolvedValue(refreshed);
       vi.spyOn(userService, 'refreshAvatarUser').mockResolvedValue({ avatar: 'forced-avatar-url' });
       vi.spyOn(userService, 'downloadAvatar').mockResolvedValue(new Blob(['y']));
+      const setTokenSpy = vi.spyOn(encryptedStorageService, 'setToken');
 
       const thunk = refreshUserThunk({ forceRefresh: true });
       await thunk(dispatchMock, getStateWithUser, undefined);
@@ -158,9 +158,7 @@ describe('user thunks', () => {
           }),
         }),
       );
-      expect(dispatchMock).toHaveBeenCalledWith(
-        expect.objectContaining({ type: userActions.setToken.type, payload: 'forced-token-xyz' }),
-      );
+      expect(setTokenSpy).toHaveBeenCalledWith('forced-token-xyz');
     });
 
     it('reports error when refresh fails', async () => {

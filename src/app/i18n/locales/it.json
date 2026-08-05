@@ -195,7 +195,8 @@
       "login": "Accedi",
       "success": "Accesso effettuato con successo",
       "error": "Impossibile accedere, riprova",
-      "closeWindow": "Puoi chiudere questa finestra"
+      "closeWindow": "Puoi chiudere questa finestra",
+      "invalidRedirectUri": "URL di reindirizzamento non valido"
     },
     "oauthLink": {
       "continueAs": "Continua come",
@@ -221,6 +222,16 @@
         "password": "La tua password"
       },
       "emailMustNotBeEmpty": "L'email non deve essere vuota",
+      "authError": {
+        "invalidCredentials": "L'email o la password non sono corretti. Riprova.",
+        "twoFactorEnabled": "Questo account utilizza l'autenticazione a due fattori. Accedi dalla pagina di accesso e torna qui per completare l'acquisto.",
+        "emailAlreadyRegistered": "Esiste già un account con questa email. Seleziona “Accedi” per proseguire con il tuo acquisto.",
+        "accountLocked": "Questo account è bloccato per motivi di sicurezza. Controlla la tua casella di posta per sbloccarlo prima di continuare.",
+        "tooManyAttempts": "Troppi tentativi. Attendi un minuto e riprova.",
+        "invalidData": "Verifica che la tua email e la tua password siano corrette e riprova.",
+        "serverError": "Non siamo riusciti a completare questo passaggio. Riprova tra qualche minuto o contatta il supporto se il problema persiste.",
+        "unknown": "Non siamo riusciti a verificare i tuoi dati. Controlla la tua email e la tua password e riprova."
+      },
       "privacyGuarantee": "Garanzia di privacy: Non condividiamo le tue informazioni e ti contatteremo solo se necessario per fornire il nostro servizio."
     },
     "addressBillingTitle": "Indirizzo di Fatturazione",
@@ -442,17 +453,19 @@
         },
         "billing": {
           "cancelSubscriptionModal": {
+            "title": "Annulla abbonamento",
             "description": {
-              "individual": "Stai per annullare il tuo piano Internxt {{currentPlanName}}. Annullando il tuo piano, verrai retrocesso al piano gratuito di Internxt {{freePlanName}}. Conferma la tua scelta per procedere, per favore.",
+              "individual": {
+                "line1": "Il tuo piano annuale viene fatturato mensilmente e termina il {{endDate}}. ",
+                "line2": "Puoi scegliere come procedere:"
+              },
               "business": "Annullando il tuo piano, lo spazio di lavoro verrà eliminato insieme a tutti i dati. Per favore, conferma la tua scelta per procedere."
             },
+
             "commitment": {
-              "firstMonthDescription": "Poiché sei ancora nel tuo periodo di prova di 30 giorni, la tua cancellazione sarà immediata. Non ti verrà più addebitato nulla e il tuo account tornerà ora al piano gratuito da 1 GB.",
-              "description": "Hai un abbonamento annuale fatturato mensilmente. Se annulli ora, il tuo abbonamento rimarrà attivo fino al {{end_date}} e continuerai a essere addebitato mensilmente fino a quella data.",
-              "monthsRemaining": "Pagamenti rimanenti: {{monthsRemaining}}",
-              "amountPerMonth": "Importo al mese: €{{amount}}",
-              "afterLabel": "Dopo il {{monthsRemaining}}"
+              "firstMonthDescription": "Poiché sei ancora nel tuo periodo di prova di 30 giorni, la tua cancellazione sarà immediata. Non ti verrà più addebitato nulla e il tuo account tornerà ora al piano gratuito da 1 GB."
             },
+            "directCancellationDescription": "Stai per annullare il tuo abbonamento. Perderai l'accesso al tuo piano e il tuo account tornerà al piano gratuito. Conferma la tua scelta per procedere, per favore.",
             "keepSubscription": "Mantieni l'abbonamento",
             "cancelSubscription": "Annulla abbonamento",
             "infoBox": {
@@ -467,7 +480,7 @@
                 "title": "Annulla rinnovo",
                 "description": "Mantieni l’accesso completo fino al {{endDate}}. Continuerai i pagamenti mensili fino ad allora e il tuo piano non si rinnoverà.",
                 "bulletedInfo": "Pagamenti rimanenti: {{remainingMonths}}",
-                "label": "Dopo il {{endDate}}",
+                "label": "Dal {{endDate}}",
                 "cta": "Annulla rinnovo",
                 "confirmationModal": {
                   "description": "Il tuo piano rimarrà attivo fino al {{endDate}}. Continuerai a essere addebitato mensilmente fino ad allora e il tuo abbonamento non si rinnoverà dopo quella data.",
@@ -496,6 +509,16 @@
                 }
               }
             }
+          },
+          "subscriptionEndingModal": {
+            "title": "L'abbonamento termina il {{endDate}}",
+            "description": {
+              "title": "Quando il tuo piano termina:",
+              "storageReturns": "Il tuo spazio di archiviazione tornerà al limite gratuito",
+              "featuresUnavailable": "Le funzionalità premium non saranno più disponibili"
+            },
+            "maybeLater": "Forse più tardi",
+            "renewSubscription": "Rinnova abbonamento"
           },
           "cancellationIncentive": {
             "title": {
@@ -1278,9 +1301,13 @@
     "verificationEmail": "L'e-mail di verifica è stata inviata",
     "successCancelSubscription": "L'abbonamento è stato annullato",
     "errorCancelSubscription": "Qualcosa è andato storto durante la cancellazione dell'abbonamento",
-    "errorCreatingSubscription": "Si è verificato un errore durante la creazione del tuo abbonamento",
     "successApplyCancellationIncentive": "Grazie per essere rimasto con noi! Goditi il prossimo mese gratis",
-    "errorApplyCancellationIncentive": "Si è verificato un errore durante l’applicazione dell’incentivo di cancellazione",
+    "errorApplyCancellationIncentive": "Qualcosa è andato storto durante l'applicazione dell'incentivo di cancellazione",
+    "successEarlyCancelSubscription": "L'abbonamento è stato annullato",
+    "errorEarlyCancelSubscription": "Qualcosa è andato storto durante la cancellazione dell'abbonamento",
+    "successReactivateSubscription": "L'abbonamento è stato riattivato",
+    "errorReactivateSubscription": "Qualcosa è andato storto durante la riattivazione dell'abbonamento",
+    "errorCreatingSubscription": "Si è verificato un errore durante la creazione del tuo abbonamento",
     "couponIsNotValidForUserError": "Il coupon può essere riscattato solo da nuovi clienti.",
     "errorApplyingCoupon": "Si è verificato un errore durante l'applicazione del coupon",
     "errorWhileFetchingMoreItems": "Qualcosa è andato storto durante il recupero di ulteriori elementi",
@@ -1838,5 +1865,8 @@
   },
   "sdk": {
     "rateLimitToast": "Ci sta volendo più del previsto. Attendere prego..."
+  },
+  "common": {
+    "planCancelled": "Il tuo abbonamento termina il {{end_date}}"
   }
 }

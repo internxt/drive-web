@@ -2,7 +2,6 @@
  * @jest-environment jsdom
  */
 import { describe, expect, it, vi, Mock, beforeEach, beforeAll, test } from 'vitest';
-import localStorageService from 'services/local-storage.service';
 import { Buffer } from 'buffer';
 import {
   generateNewKeys,
@@ -31,6 +30,7 @@ import { domainManager } from './DomainManager';
 import { copyTextToClipboard } from 'utils/copyToClipboard.utils';
 import referralService from 'services/referral.service';
 import { ToastType } from 'app/notifications/services/notifications.service';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 vi.mock('utils/copyToClipboard.utils', () => ({
   copyTextToClipboard: vi.fn(),
@@ -89,13 +89,14 @@ describe('Encryption and Decryption', () => {
     }));
     vi.mock('services/error.service', () => ({
       default: {
-        castError: vi
-          .fn()
-          .mockImplementation((e) => ({ message: e.message || 'Default error message', requestId: 'test-request-id' })),
+        castError: vi.fn().mockImplementation((e) => ({
+          message: typeof e === 'string' ? e : e.message || 'Default error message',
+          requestId: 'test-request-id',
+        })),
         reportError: vi.fn(),
       },
     }));
-    vi.mock('services/local-storage.service', () => ({
+    vi.mock('services/encrypted-storage.service', () => ({
       default: {
         getUser: vi.fn(),
       },
@@ -118,7 +119,6 @@ describe('Encryption and Decryption', () => {
     keys: {
       privateKeyArmored: string;
       publicKeyArmored: string;
-      revocationCertificate: string;
       publicKyberKeyBase64: string;
       privateKyberKeyBase64: string;
     },
@@ -127,7 +127,6 @@ describe('Encryption and Decryption', () => {
     const mockUser: UserSettings = {
       uuid: 'mock-uuid',
       email: 'mock@test.com',
-      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
       mnemonic: encryptedMnemonicInBase64,
       userId: 'mock-user-id',
       name: 'mock-name',
@@ -141,8 +140,6 @@ describe('Encryption and Decryption', () => {
       rootFolderUuid: undefined,
       sharedWorkspace: false,
       credit: 0,
-      publicKey: keys.publicKeyArmored,
-      revocationKey: keys.revocationCertificate,
       keys: {
         ecc: {
           publicKey: keys.publicKeyArmored,
@@ -174,11 +171,11 @@ describe('Encryption and Decryption', () => {
 
     const mockUser = await getMockUser(keys, encryptedMnemonicInBase64);
 
-    (localStorageService.getUser as Mock).mockReturnValue(mockUser);
-    expect(localStorageService.getUser() as UserSettings).toEqual(mockUser);
+    (encryptedStorageService.getUser as Mock).mockReturnValue(mockUser);
+    expect(encryptedStorageService.getUser() as UserSettings).toEqual(mockUser);
 
     const ownerMnemonic = await decryptMnemonic(mockUser.mnemonic);
-    expect(localStorageService.getUser).toHaveBeenCalled();
+    expect(encryptedStorageService.getUser).toHaveBeenCalled();
     expect(ownerMnemonic).toEqual(mnemonic);
   });
 
@@ -194,58 +191,11 @@ describe('Encryption and Decryption', () => {
 
     const mockUser = await getMockUser(keys, encriptedMnemonic);
 
-    (localStorageService.getUser as Mock).mockReturnValue(mockUser);
-    expect(localStorageService.getUser() as UserSettings).toEqual(mockUser);
+    (encryptedStorageService.getUser as Mock).mockReturnValue(mockUser);
+    expect(encryptedStorageService.getUser() as UserSettings).toEqual(mockUser);
 
     const ownerMnemonic = await decryptMnemonic(mockUser.mnemonic);
-    expect(localStorageService.getUser).toHaveBeenCalled();
-    expect(ownerMnemonic).toEqual(mnemonic);
-  });
-
-  it('should decrypt mnemonic encrypted without key field', async () => {
-    const mnemonic =
-      'truck arch rather sell tilt return warm nurse rack vacuum rubber tribe unfold scissors copper sock panel ozone harsh ahead danger soda legal state';
-    const keys = await generateNewKeys();
-    const encriptedMnemonic = await encryptMessageWithPublicKey({
-      message: mnemonic,
-      publicKeyInBase64: keys.publicKeyArmored,
-    });
-    const encryptedMnemonicInBase64 = btoa(encriptedMnemonic as string);
-
-    const mockOldUser: Partial<UserSettings> = {
-      uuid: 'mock-uuid',
-      email: 'mock@test.com',
-      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
-      mnemonic: encryptedMnemonicInBase64,
-      userId: 'mock-user-id',
-      name: 'mock-name',
-      lastname: 'mock-lastname',
-      username: 'mock-username',
-      bridgeUser: 'mock-bridgeUser',
-      bucket: 'mock-bucket',
-      backupsBucket: null,
-      root_folder_id: 0,
-      rootFolderId: 'mock-rootFolderId',
-      rootFolderUuid: undefined,
-      sharedWorkspace: false,
-      credit: 0,
-      publicKey: keys.publicKeyArmored,
-      revocationKey: keys.revocationCertificate,
-      appSumoDetails: null,
-      registerCompleted: false,
-      hasReferralsProgram: false,
-      createdAt: new Date(),
-      avatar: null,
-      emailVerified: false,
-    };
-
-    const mockUser = mockOldUser as UserSettings;
-
-    (localStorageService.getUser as Mock).mockReturnValue(mockUser);
-    expect(localStorageService.getUser() as UserSettings).toEqual(mockUser);
-
-    const ownerMnemonic = await decryptMnemonic(mockUser.mnemonic);
-    expect(localStorageService.getUser).toHaveBeenCalled();
+    expect(encryptedStorageService.getUser).toHaveBeenCalled();
     expect(ownerMnemonic).toEqual(mnemonic);
   });
 
@@ -398,7 +348,7 @@ describe('Get public shared link', async () => {
   } as SharingMeta;
 
   test('When encrypted code does no change, do not decrypt code', async () => {
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
     const spyDecrypt = vi.spyOn(aes, 'decrypt');
 
     const { SdkFactory } = await import('../../core/factory/sdk');
@@ -429,7 +379,7 @@ describe('Get public shared link', async () => {
     const keys = await generateNewKeys();
     const publicKeyInBase64 = keys.publicKeyArmored;
     const publicKyberKeyBase64 = keys.publicKyberKeyBase64;
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue({
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({
       bucket,
       mnemonic,
       uuid: 'test-uuid',
@@ -482,7 +432,7 @@ describe('Get public shared link', async () => {
     const keys = await generateNewKeys();
     const publicKeyInBase64 = keys.publicKeyArmored;
     const publicKyberKeyBase64 = keys.publicKyberKeyBase64;
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue({
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({
       bucket,
       mnemonic,
       uuid: 'test-uuid',
@@ -533,7 +483,7 @@ describe('Get public shared link', async () => {
   });
 
   test('When encrypted code changes, decrypt code', async () => {
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
     const spyDecrypt = vi.spyOn(aes, 'decrypt');
 
     const { SdkFactory } = await import('../../core/factory/sdk');
@@ -564,7 +514,7 @@ describe('Get public shared link', async () => {
   });
 
   test('When domains list is not empty, use it', async () => {
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
 
     const { SdkFactory } = await import('../../core/factory/sdk');
     const mockCreatePublicSharingItemFn = vi.fn().mockResolvedValue(mockSharingMeta);
@@ -593,7 +543,7 @@ describe('Get public shared link', async () => {
   });
 
   test('When domains list is empty, use the fallback domain', async () => {
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
 
     const { SdkFactory } = await import('../../core/factory/sdk');
     const mockCreatePublicSharingItemFn = vi.fn().mockResolvedValue(mockSharingMeta);
@@ -616,7 +566,7 @@ describe('Get public shared link', async () => {
   });
 
   test('When copyTextToClipboard rejects, an error notification is shown and the error is reported', async () => {
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
 
     const { SdkFactory } = await import('../../core/factory/sdk');
     const mockCreatePublicSharingItemFn = vi.fn().mockResolvedValue(mockSharingMeta);
@@ -658,7 +608,7 @@ describe('decryptPublicSharingCodeWithOwner', () => {
     const bucketKeyHex = Buffer.from(bucketKey.subarray(0, 32)).toString('hex');
     const encryptedCode = aes.encrypt(plainCode, bucketKeyHex);
 
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
 
     const result = await shareService.decryptPublicSharingCodeWithOwner(encryptedCode, 'inxt-v3');
 
@@ -667,18 +617,45 @@ describe('decryptPublicSharingCodeWithOwner', () => {
 
   test('When encryptionAlgorithm is not NEW_SHARING_VERSION, then code is decrypted using mnemonic directly', async () => {
     const encryptedCode = aes.encrypt(plainCode, mnemonic);
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
 
     const result = await shareService.decryptPublicSharingCodeWithOwner(encryptedCode, 'inxt-v2');
     expect(result).toBe(plainCode);
   });
 
   test('When decryption fails, then an error is thrown', async () => {
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
 
     await expect(shareService.decryptPublicSharingCodeWithOwner('bad-encrypted-code', 'inxt-v3')).rejects.toThrow(
       'Length 0, cannot decrypt',
     );
+  });
+
+  describe('when user is not found', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+      vi.restoreAllMocks();
+    });
+
+    test('createPublicShareFromOwnerUser throws and reports error when user is not found', async () => {
+      vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(undefined as any);
+      const errorService = (await import('services/error.service')).default;
+
+      await expect(shareService.createPublicShareFromOwnerUser('uuid', 'file')).rejects.toEqual(
+        expect.objectContaining({ message: 'User Not Found' }),
+      );
+      expect(errorService.reportError).toHaveBeenCalled();
+    });
+
+    test('decryptPublicSharingCodeWithOwner throws and reports error when user is not found', async () => {
+      vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(undefined as any);
+      const errorService = (await import('services/error.service')).default;
+
+      await expect(shareService.decryptPublicSharingCodeWithOwner('encrypted-code', 'inxt-v3')).rejects.toEqual(
+        expect.objectContaining({ message: 'User Not Found' }),
+      );
+      expect(errorService.reportError).toHaveBeenCalled();
+    });
   });
 });
 

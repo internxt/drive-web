@@ -20,13 +20,11 @@ import {
   UpdateUserRolePayload,
   UpdateUserRoleResponse,
 } from '@internxt/sdk/dist/drive/share/types';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { t } from 'i18next';
 import { Iterator } from '../../core/collections';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from 'services/error.service';
-import localStorageService from 'services/local-storage.service';
 import workspacesService from 'services/workspace.service';
 import { hybridDecryptMessageWithPrivateKey } from '../../crypto/services/pgp.service';
 import { downloadFolderAsZip } from 'app/drive/services/folder.service';
@@ -43,6 +41,7 @@ import { generateCaptchaToken } from 'utils';
 import { copyTextToClipboard } from 'utils/copyToClipboard.utils';
 import referralService from 'services/referral.service';
 import { generateFileBucketKey } from 'app/network/crypto';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 interface CreateShareResponse {
   created: boolean;
@@ -284,7 +283,12 @@ export const createPublicShareFromOwnerUser = async (
     encryptedMnemonic?: string;
   },
 ): Promise<{ publicSharingItemData: SharingMeta; plainCode: string }> => {
-  const user = localStorageService.getUser() as UserSettings;
+  const user = encryptedStorageService.getUser();
+  if (!user) {
+    const error = errorService.castError('User Not Found');
+    errorService.reportError(error);
+    throw error;
+  }
   const { mnemonic, bucket } = user;
   const { plainPassword, encryptedMnemonic } = options ?? {};
 
@@ -331,7 +335,12 @@ export const createPublicShareFromOwnerUser = async (
 };
 
 const decryptPublicSharingCodeWithOwner = async (encryptedCode: string, encryptionAlgorithm: string) => {
-  const user = localStorageService.getUser() as UserSettings;
+  const user = encryptedStorageService.getUser();
+  if (!user) {
+    const error = errorService.castError('User Not Found');
+    errorService.reportError(error);
+    throw error;
+  }
   const { mnemonic } = user;
   let key = mnemonic;
   if (encryptionAlgorithm === NEW_SHARING_VERSION) {
@@ -585,12 +594,12 @@ class DirectoryPublicSharedFilesIterator implements Iterator<SharedFiles> {
 }
 
 export const decryptMnemonic = async (encryptionKey: string): Promise<string | undefined> => {
-  const user = localStorageService.getUser();
+  const user = encryptedStorageService.getUser();
   if (user) {
     let decryptedKey;
-    const privateKeyInBase64 = user.keys?.ecc?.privateKey ?? user.privateKey;
-    const privateKyberKeyInBase64 = user.keys?.kyber?.privateKey ?? '';
     try {
+      const privateKeyInBase64 = user.keys.ecc.privateKey;
+      const privateKyberKeyInBase64 = user.keys.kyber.privateKey;
       decryptedKey = await hybridDecryptMessageWithPrivateKey({
         encryptedMessageInBase64: encryptionKey,
         privateKeyInBase64,

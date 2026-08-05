@@ -1,14 +1,13 @@
-import { StoragePlan, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
+import { StoragePlan } from '@internxt/sdk/dist/drive/payments/types/types';
 import { Button, Modal } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { dateService } from 'services';
 import PlanChangeOption from './PlanChangeOption';
+import { XIcon } from '@phosphor-icons/react';
 
 interface CancelPlanModalProps {
   currentPlanName: string;
   currentPlanInfo: string;
-  currentUsage: number;
-  userType: UserType;
   isCancellingSubscription: boolean;
   individualPlan: StoragePlan | null;
   isCancelPlanModalDialogOpen: boolean;
@@ -20,9 +19,7 @@ interface CancelPlanModalProps {
 const CancelPlanModal = ({
   currentPlanName,
   currentPlanInfo,
-  currentUsage,
   isCancellingSubscription,
-  userType,
   individualPlan,
   isCancelPlanModalDialogOpen,
   onOpenCancelRenewalDialog,
@@ -37,14 +34,15 @@ const CancelPlanModal = ({
   const remainingMonths = commitment?.remainingMonths;
 
   const commitmentRenewal = cancellationDate && dateService.format(cancellationDate, 'DD MMM YYYY');
+  const shouldDisplayEarlyCancellationDialog = onOpenEndPlanNowDialog && !!remainingMonths && remainingMonths > 1;
 
   const title = translate('views.account.tabs.billing.cancelSubscriptionModal.title');
   const description = {
-    line1: translate('views.account.tabs.billing.cancelSubscriptionModal.description.line1', {
+    line1: translate('views.account.tabs.billing.cancelSubscriptionModal.description.individual.line1', {
       endDate: commitmentRenewal,
     }),
 
-    line2: translate('views.account.tabs.billing.cancelSubscriptionModal.description.line2'),
+    line2: translate('views.account.tabs.billing.cancelSubscriptionModal.description.individual.line2'),
   };
 
   const cancelRenewalBulletedInfo = [
@@ -54,7 +52,7 @@ const CancelPlanModal = ({
   ];
   const endNowBulletedInfo = [
     translate('views.account.tabs.billing.cancelSubscriptionModal.options.endNow.bulletedInfo', {
-      amountToPay: earlyCancellationFee,
+      amountToPay: earlyCancellationFee?.toFixed(2),
     }),
   ];
 
@@ -69,12 +67,21 @@ const CancelPlanModal = ({
   return (
     <Modal isOpen={isCancelPlanModalDialogOpen} onClose={onClose} maxWidth="w-max">
       <div className="flex flex-col w-full gap-5">
-        <h4 className="text-2xl font-medium">{title}</h4>
+        <div className="flex flex-row w-full justify-between">
+          <h4 className="text-2xl font-medium">{title}</h4>
+          <button onClick={onClose}>
+            <XIcon size={24} />
+          </button>
+        </div>
         <p className="text-gray-100">
           {description.line1} <br /> {description.line2}
         </p>
 
-        <div className="flex w-full flex-col gap-4 sm:flex-row">
+        <div
+          className={`flex w-full flex-col gap-4 sm:flex-row ${
+            shouldDisplayEarlyCancellationDialog ? '' : 'sm:justify-center'
+          }`}
+        >
           <PlanChangeOption
             title={translate('views.account.tabs.billing.cancelSubscriptionModal.options.cancelRenewal.title')}
             description={translate(
@@ -90,7 +97,7 @@ const CancelPlanModal = ({
             variantButtonAction="secondary"
             bulletedInfo={cancelRenewalBulletedInfo}
           />
-          {onOpenEndPlanNowDialog && (
+          {shouldDisplayEarlyCancellationDialog && (
             <PlanChangeOption
               title={translate('views.account.tabs.billing.cancelSubscriptionModal.options.endNow.title')}
               description={translate('views.account.tabs.billing.cancelSubscriptionModal.options.endNow.description')}
