@@ -21,7 +21,7 @@ const open = (name: string, version?: number): Promise<idb.IDBPDatabase<AppDatab
       if (oldVersion <= 5) {
         db.createObjectStore('workspaces_avatar_blobs');
       }
-      if (oldVersion <= 6 && !db.objectStoreNames.contains('crypto_keys')) {
+      if (oldVersion <= 6) {
         db.createObjectStore('crypto_keys');
       }
     },
