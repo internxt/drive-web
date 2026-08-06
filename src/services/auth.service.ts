@@ -13,9 +13,9 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { trackSignUp } from 'app/analytics/impact.service';
 import { trackLead } from 'app/analytics/meta.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
+import { HTTP_STATUS_CODES } from 'app/core/constants';
 import { SdkFactory } from 'app/core/factory/sdk';
 import { AppView } from 'app/core/types';
-import { HTTP_STATUS_CODES } from 'app/core/constants';
 import {
   assertPrivateKeyIsValid,
   assertValidateKeys,
@@ -41,10 +41,11 @@ import navigationService from 'services/navigation.service';
 import RealtimeService from 'services/sockets/socket.service';
 import { generateCaptchaToken } from 'utils';
 import { BackupData, detectBackupKeyFormat, prepareOldBackupRecoverPayloadForBackend } from 'utils/backupKeyUtils';
+import { TRUSTED_WEB_HOSTNAMES, TRUSTED_WEB_PROTOCOLS, validateUrl } from 'utils/urlValidation';
 import { AuthMethodTypes } from 'views/Checkout/types';
-import vpnAuthService from './vpnAuth.service';
-import { PasswordMismatchError } from './errors/auth.errors';
 import encryptedStorageService from './encrypted-storage.service';
+import { PasswordMismatchError } from './errors/auth.errors';
+import vpnAuthService from './vpnAuth.service';
 
 type ProfileInfo = {
   user: UserSettings;
@@ -183,7 +184,7 @@ export const doLogin = async (
     .then(async (data) => {
       const { user, newToken } = data;
 
-      const { privateKey: encryptedPrivateKey } = user;
+      const { privateKey: encryptedPrivateKey } = user.keys.ecc;
 
       const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(user, password);
 
@@ -199,7 +200,6 @@ export const doLogin = async (
       const clearUser = {
         ...user,
         mnemonic: clearMnemonic,
-        privateKey: privateKey,
         keys: {
           ecc: {
             publicKey: publicKey,
@@ -232,7 +232,7 @@ export const readReferalCookie = (): string | undefined => {
 };
 
 export const getSalt = async (): Promise<string> => {
-  const email = localStorageService.getUser()?.email;
+  const email = encryptedStorageService.getUser()?.email;
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(String(email));
   return decryptText(securityDetails.encryptedSalt);
@@ -380,7 +380,10 @@ const resetAccountWithToken = async (token: string | undefined, newPassword: str
 };
 
 export const changePassword = async (newPassword: string, currentPassword: string): Promise<void> => {
-  const user = localStorageService.getUser() as UserSettings;
+  const user = encryptedStorageService.getUser();
+  if (!user) {
+    throw new Error('No user in local storage');
+  }
 
   const { encryptedCurrentPassword } = await getPasswordDetails(currentPassword);
 
@@ -391,14 +394,9 @@ export const changePassword = async (newPassword: string, currentPassword: strin
 
   // Encrypt the mnemonic
   const encryptedMnemonic = encryptTextWithKey(user.mnemonic, newPassword);
-  const privateKey = Buffer.from(user.privateKey, 'base64').toString();
+  const privateKey = Buffer.from(user.keys.ecc.privateKey, 'base64').toString();
   const privateKeyEncrypted = aes.encrypt(privateKey, newPassword);
-
-  let privateKyberKeyEncrypted = '';
-
-  if (user.keys?.kyber?.privateKey) {
-    privateKyberKeyEncrypted = aes.encrypt(user.keys.kyber.privateKey, newPassword);
-  }
+  const privateKyberKeyEncrypted = aes.encrypt(user.keys.kyber.privateKey, newPassword);
 
   const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
 
@@ -429,7 +427,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
 };
 
 export const userHas2FAStored = (): Promise<SecurityDetails> => {
-  const email = localStorageService.getUser()?.email;
+  const email = encryptedStorageService.getUser()?.email;
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   return authClient.securityDetails(<string>email);
 };
@@ -464,13 +462,20 @@ export async function areCredentialsCorrect(password: string): Promise<boolean> 
 }
 
 export const getRedirectUrl = (urlSearchParams: URLSearchParams, token: string): string | null => {
-  const ALLOWED_DOMAINS = ['https://internxt.com', 'https://drive.internxt.com'];
   const redirectUrl = urlSearchParams.get('redirectUrl');
 
-  if (!redirectUrl) return null;
-  const allowed = ALLOWED_DOMAINS.some((allowedDomain) => redirectUrl.includes(allowedDomain));
-
-  if (!allowed) return null;
+  if (!redirectUrl) {
+    return null;
+  }
+  if (
+    !validateUrl({
+      urlString: redirectUrl,
+      allowedProtocols: TRUSTED_WEB_PROTOCOLS,
+      allowedHostnames: TRUSTED_WEB_HOSTNAMES,
+    })
+  ) {
+    return null;
+  }
 
   const url = new URL(redirectUrl);
   const currentParams = url.searchParams;
@@ -561,9 +566,8 @@ export const signUp = async (params: SignUpParams) => {
 
   const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(xUser, password);
 
-  const user = {
+  const user: UserSettings = {
     ...xUser,
-    privateKey,
     keys: {
       ecc: {
         publicKey: publicKey,
@@ -574,7 +578,7 @@ export const signUp = async (params: SignUpParams) => {
         privateKey: privateKyberKey,
       },
     },
-  } as UserSettings;
+  };
 
   dispatch(userActions.setUser(user));
   await dispatch(userThunks.initializeUserThunk());

@@ -17,6 +17,7 @@ import { planThunks } from '../plan';
 import sessionThunks from '../session/session.thunks';
 import workspacesSelectors from './workspaces.selectors';
 import { errorService } from 'services';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 export interface WorkspacesState {
   workspaces: WorkspaceData[];
@@ -92,7 +93,7 @@ const fetchCredentials = createAsyncThunk<void, undefined, { state: RootState }>
       const credentials = await workspacesService.getWorkspaceCredentials(workspaceId);
 
       dispatch(workspacesActions.setCredentials(credentials));
-      localStorageService.set(LocalStorageItem.WorkspaceCredentials, JSON.stringify(credentials));
+      await encryptedStorageService.setWorkspaceCredentials(credentials);
     }
     dispatch(workspacesActions.setIsLoadingCredentials(false));
   },
@@ -111,16 +112,20 @@ const setSelectedWorkspace = createAsyncThunk<
   const isSelectedWorkspace = localStorageB2BWorkspaceId === workspaceId;
 
   if (isUnselectingWorkspace) {
-    localStorageService.clearB2BWorkspace();
+    encryptedStorageService.clearB2BWorkspace();
     dispatch(workspacesActions.setSelectedWorkspace(null));
     dispatch(workspacesActions.setCredentials(null));
-    localStorageService.set(LocalStorageItem.WorkspaceCredentials, 'null');
+    encryptedStorageService.clearWorkspaceCredentials();
   } else if (isSelectedWorkspace && selectedWorkspace?.workspace.id === workspaceId) {
     dispatch(workspacesActions.setSelectedWorkspace(selectedWorkspace));
   } else {
-    const workspace = state.workspaces.workspaces.find((workspace) => workspace.workspace.id === workspaceId);
+    if (state.workspaces.workspaces.length === 0) {
+      await dispatch(fetchWorkspaces());
+    }
+    const currentState = getState();
+    const workspace = currentState.workspaces.workspaces.find((workspace) => workspace.workspace.id === workspaceId);
     if (workspace) {
-      localStorageService.setB2BWorkspace(workspace.workspace.id, workspace.workspaceUser.key);
+      await encryptedStorageService.setB2BWorkspace(workspace.workspace.id, workspace.workspaceUser.key);
       dispatch(workspacesActions.setSelectedWorkspace(workspace ?? null));
     }
   }
@@ -142,7 +147,8 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
         navigationService.push(AppView.Login);
         return;
       }
-      const { mnemonic, publicKey } = user;
+      const { mnemonic } = user;
+      const publicKey = user.keys.ecc.publicKey;
 
       const encryptedMnemonic = await encryptMessageWithPublicKey({
         message: mnemonic,
@@ -175,7 +181,10 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
         dispatch(workspacesActions.setSelectedWorkspace(selectedWorkspace ?? null));
 
         if (selectedWorkspace) {
-          localStorageService.setB2BWorkspace(selectedWorkspace.workspace.id, selectedWorkspace.workspaceUser.key);
+          await encryptedStorageService.setB2BWorkspace(
+            selectedWorkspace.workspace.id,
+            selectedWorkspace.workspaceUser.key,
+          );
           dispatch(planThunks.fetchBusinessLimitUsageThunk());
           dispatch(fetchCredentials());
           dispatch(sessionThunks.changeWorkspaceThunk());
@@ -262,7 +271,6 @@ export const workspacesSlice = createSlice({
           item.workspace = Object.assign(workspace, patch);
           if (state.selectedWorkspace?.workspace.id === workspaceId) {
             state.selectedWorkspace = item;
-            localStorageService.setB2BWorkspace(item.workspace.id, item.workspaceUser.key);
           }
         }
         return item;

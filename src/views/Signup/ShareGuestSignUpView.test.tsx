@@ -28,7 +28,6 @@ describe('onSubmit', () => {
       default: {
         get: vi.fn(),
         clear: vi.fn(),
-        getUser: vi.fn(),
         set: vi.fn(),
       },
     }));
@@ -36,6 +35,7 @@ describe('onSubmit', () => {
       default: {
         getToken: vi.fn(),
         setToken: vi.fn(),
+        getUser: vi.fn(),
       },
     }));
 
@@ -78,7 +78,6 @@ describe('onSubmit', () => {
 
     vi.mock('./hooks/useSignup', () => ({
       useSignUp: vi.fn().mockReturnValue({ doRegisterPreCreatedUser: vi.fn() }),
-      parseUserSettingsEnsureKyberKeysAdded: vi.importActual,
     }));
 
     vi.mock('./hooks/useGuestSignupState', () => ({
@@ -243,7 +242,6 @@ describe('onSubmit', () => {
     const mockUser: UserSettings = {
       uuid: 'mock-uuid',
       email: mockEmal,
-      privateKey: keys.ecc.privateKeyEncrypted,
       mnemonic: encryptedMockMnemonic,
       userId: 'mock-userId',
       name: 'mock-name',
@@ -257,8 +255,6 @@ describe('onSubmit', () => {
       rootFolderUuid: undefined,
       sharedWorkspace: false,
       credit: 0,
-      publicKey: keys.ecc.publicKey,
-      revocationKey: keys.revocationCertificate,
       keys: {
         ecc: {
           publicKey: keys.ecc.publicKey,
@@ -313,7 +309,6 @@ describe('onSubmit', () => {
     const mockClearUser: UserSettings = {
       uuid: 'mock-uuid',
       email: 'mock@email.com',
-      privateKey: Buffer.from(decryptedPrivateKey).toString('base64'),
       mnemonic: encryptedMockMnemonic,
       userId: 'mock-userId',
       name: 'mock-name',
@@ -327,8 +322,6 @@ describe('onSubmit', () => {
       rootFolderUuid: undefined,
       sharedWorkspace: false,
       credit: 0,
-      publicKey: keys.ecc.publicKey,
-      revocationKey: keys.revocationCertificate,
       keys: {
         ecc: {
           publicKey: keys.ecc.publicKey,
@@ -337,107 +330,6 @@ describe('onSubmit', () => {
         kyber: {
           publicKey: keys.kyber.publicKey ?? '',
           privateKey: decryptedPrivateKyberKey,
-        },
-      },
-      appSumoDetails: null,
-      registerCompleted: false,
-      hasReferralsProgram: false,
-      createdAt: creationDate,
-      avatar: null,
-      emailVerified: false,
-    };
-    expect(spy).toBeCalledWith(mockClearUser);
-  });
-
-  it('when called with old valid data, then user with decrypted keys is saved in local storage', async () => {
-    const mockMnemonic = generateMnemonic(256);
-    const keys = await keysService.getKeys(mockPassword);
-    const encryptedMockMnemonic = encryptTextWithKey(mockMnemonic, mockPassword);
-    const creationDate = new Date();
-
-    const mockUser: Partial<UserSettings> = {
-      uuid: 'mock-uuid',
-      email: mockEmal,
-      privateKey: keys.ecc.privateKeyEncrypted,
-      mnemonic: encryptedMockMnemonic,
-      userId: 'mock-userId',
-      name: 'mock-name',
-      lastname: 'mock-lastname',
-      username: 'mock-username',
-      bridgeUser: 'mock-bridgeUser',
-      bucket: 'mock-bucket',
-      backupsBucket: null,
-      root_folder_id: 0,
-      rootFolderId: 'mock-rootFolderId',
-      rootFolderUuid: undefined,
-      sharedWorkspace: false,
-      credit: 0,
-      publicKey: keys.ecc.publicKey,
-      revocationKey: keys.revocationCertificate,
-      appSumoDetails: null,
-      registerCompleted: false,
-      hasReferralsProgram: false,
-      createdAt: creationDate,
-      avatar: null,
-      emailVerified: false,
-    };
-
-    (useSignUp as Mock).mockImplementation(() => ({
-      doRegisterPreCreatedUser: vi.fn().mockResolvedValue({
-        xUser: mockUser as UserSettings,
-        xToken: mockToken,
-        mnemonic: mockMnemonic,
-      }),
-    }));
-
-    const spy = vi.spyOn(userActions, 'setUser').mockImplementation((user) => {
-      return {
-        payload: user,
-        type: 'user/setUser',
-      };
-    });
-    const { container } = render(<ShareGuestSignUpView />);
-    const form = container.querySelector('form');
-
-    if (!form) {
-      throw new Error('Form not found in component');
-    }
-
-    fireEvent.submit(form);
-
-    await vi.waitFor(() => {
-      expect(spy).toHaveBeenCalledTimes(1);
-    });
-
-    const decryptedPrivateKey = keysService.decryptPrivateKey(keys.ecc.privateKeyEncrypted, mockPassword);
-
-    const mockClearUser: UserSettings = {
-      uuid: 'mock-uuid',
-      email: 'mock@email.com',
-      privateKey: Buffer.from(decryptedPrivateKey).toString('base64'),
-      mnemonic: encryptedMockMnemonic,
-      userId: 'mock-userId',
-      name: 'mock-name',
-      lastname: 'mock-lastname',
-      username: 'mock-username',
-      bridgeUser: 'mock-bridgeUser',
-      bucket: 'mock-bucket',
-      backupsBucket: null,
-      root_folder_id: 0,
-      rootFolderId: 'mock-rootFolderId',
-      rootFolderUuid: undefined,
-      sharedWorkspace: false,
-      credit: 0,
-      publicKey: keys.ecc.publicKey,
-      revocationKey: keys.revocationCertificate,
-      keys: {
-        ecc: {
-          publicKey: keys.ecc.publicKey,
-          privateKey: Buffer.from(decryptedPrivateKey).toString('base64'),
-        },
-        kyber: {
-          publicKey: '',
-          privateKey: '',
         },
       },
       appSumoDetails: null,

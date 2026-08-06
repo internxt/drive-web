@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 
-import { AppView, LocalStorageItem } from 'app/core/types';
+import { AppView } from 'app/core/types';
 import fileService from 'app/drive/services/file.service';
 import newStorageService from 'app/drive/services/new-storage.service';
 import { DriveItemData, FolderPath } from 'app/drive/types';
@@ -19,20 +19,22 @@ import { Helmet } from 'react-helmet-async';
 import { useHistory } from 'react-router-dom';
 import envService from 'services/env.service';
 import errorService from 'services/error.service';
-import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
 import workspacesService from 'services/workspace.service';
 import DriveExplorer from 'views/Drive/components/DriveExplorer/DriveExplorer';
+import encryptedStorageService from 'services/encrypted-storage.service';
+import { Loader } from '@internxt/ui';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
   isLoading: boolean;
   items: DriveItemData[];
   dispatch: AppDispatch;
+  currentFolderId: string;
 }
 
 const DriveView = (props: DriveViewProps) => {
-  const { dispatch, namePath, items, isLoading } = props;
+  const { dispatch, namePath, items, isLoading, currentFolderId } = props;
   const [title, setTitle] = useState('Internxt Drive');
   const { isFileView, isFolderView, itemUuid, workspaceUuid, isOverviewSubsection } = useDriveNavigation();
   const credentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
@@ -43,12 +45,21 @@ const DriveView = (props: DriveViewProps) => {
   const isSelectedWorkspace = selectedWorkspace?.workspace.id === workspaceUuid;
   const history = useHistory();
 
+  const isWorkspaceContextReady = !workspaceUuid || isSelectedWorkspace;
+  const isFolderContextReady = !isFolderView || !itemUuid || currentFolderId === itemUuid;
+  const isDriveContextReady = isWorkspaceContextReady && isFolderContextReady;
+
   useEffect(() => {
     dispatch(uiActions.setIsGlobalSearch(false));
-    dispatch(storageThunks.resetNamePathThunk());
     dispatch(storageActions.clearSelectedItems());
     dispatch(fetchVersionLimitsThunk({}));
   }, []);
+
+  useEffect(() => {
+    if (!workspaceUuid || isSelectedWorkspace) {
+      dispatch(storageThunks.resetNamePathThunk());
+    }
+  }, [workspaceUuid, isSelectedWorkspace]);
 
   useEffect(() => {
     if (fileViewer) {
@@ -106,9 +117,9 @@ const DriveView = (props: DriveViewProps) => {
       const credentials = await workspacesService.getWorkspaceCredentials(workspaceId);
       const workspace = workspaces.find((workspace) => workspace.workspace.id === workspaceUuid);
       dispatch(workspacesActions.setCredentials(credentials));
-      localStorageService.set(LocalStorageItem.WorkspaceCredentials, JSON.stringify(credentials));
+      await encryptedStorageService.setWorkspaceCredentials(credentials);
       dispatch(workspacesActions.setSelectedWorkspace(workspace ?? null));
-      if (workspace) localStorageService.setB2BWorkspace(workspace.workspace.id, workspace.workspaceUser.key);
+      if (workspace) await encryptedStorageService.setB2BWorkspace(workspace.workspace.id, workspace.workspaceUser.key);
       setTokenHeader(credentials.tokenHeader);
     } catch (error) {
       errorService.reportError(error);
@@ -118,8 +129,7 @@ const DriveView = (props: DriveViewProps) => {
   const setPersonalWithUrl = () => {
     dispatch(workspacesActions.setCredentials(null));
     dispatch(workspacesActions.setSelectedWorkspace(null));
-    localStorageService.set(LocalStorageItem.WorkspaceCredentials, 'null');
-    localStorageService.set(LocalStorageItem.WorkspaceCredentials, 'null');
+    encryptedStorageService.clearWorkspaceCredentials();
   };
 
   const goFolder = async (folderUuid: string, workspacesToken?: string) => {
@@ -188,7 +198,13 @@ const DriveView = (props: DriveViewProps) => {
         <title>{title}</title>
         <link rel="canonical" href={`${envService.getVariable('hostname')}`} />
       </Helmet>
-      <DriveExplorer title={<BreadcrumbsDriveView namePath={namePath} />} isLoading={isLoading} items={items} />
+      {isDriveContextReady ? (
+        <DriveExplorer title={<BreadcrumbsDriveView namePath={namePath} />} isLoading={isLoading} items={items} />
+      ) : (
+        <div className="flex h-full w-full items-center justify-center">
+          <Loader />
+        </div>
+      )}
     </>
   );
 };

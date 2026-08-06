@@ -2,7 +2,7 @@ import { UpdateProfilePayload } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
-import { authService, localStorageService, navigationService, userService } from 'services';
+import { authService, navigationService, userService } from 'services';
 import { RootState } from '../..';
 import { saveAvatarToDatabase } from '../../../../views/NewSettings/components/Sections/Account/Account/components/AvatarWrapper';
 import { AppView } from '../../../core/types';
@@ -17,6 +17,7 @@ import { uiActions } from '../ui';
 
 import { auth, TokenStatus } from '@internxt/lib';
 import errorService from 'services/error.service';
+import referralService from 'services/referral.service';
 import { UserUnauthorizedError } from 'services/errors/auth.errors';
 import { refreshAvatar } from 'utils/avatarUtils';
 import { ProductService } from 'views/Checkout/services';
@@ -65,7 +66,7 @@ export const initializeUserThunk = createAsyncThunk<
     await dispatch(referralsThunks.initializeThunk());
     dispatch(setIsUserInitialized(true));
   } else if (payload.redirectToLogin) {
-    navigationService.push(AppView.Login);
+    navigationService.push(AppView.Login, referralService.getReferralOpenQueryParams());
   }
 });
 
@@ -222,7 +223,7 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     initialize: (state: UserState) => {
-      state.user = localStorageService.getUser() || undefined;
+      state.user = encryptedStorageService.getUser() || undefined;
       state.isAuthenticated = !!state.user;
     },
     setIsUserInitialized: (state: UserState, action: PayloadAction<boolean>) => {
@@ -235,7 +236,7 @@ export const userSlice = createSlice({
       state.isAuthenticated = !!action.payload;
       state.user = action.payload;
 
-      localStorageService.setUser(action.payload);
+      encryptedStorageService.setUser(action.payload);
     },
     resetState: (state: UserState) => {
       Object.assign(state, initialState);

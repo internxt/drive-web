@@ -174,7 +174,8 @@
       "login": "Iniciar sesión",
       "success": "Has iniciado sesión correctamente",
       "error": "No se ha podido iniciar sesion, inténtelo de nuevo",
-      "closeWindow": "Puedes cerrar esta ventana"
+      "closeWindow": "Puedes cerrar esta ventana",
+      "invalidRedirectUri": "URL de redirección no válida"
     },
     "oauthLink": {
       "continueAs": "Continuar como",
@@ -200,6 +201,16 @@
         "password": "Tu contraseña"
       },
       "emailMustNotBeEmpty": "El correo electrónico no debe estar vacío",
+      "authError": {
+        "invalidCredentials": "El correo electrónico o la contraseña no son correctos. Inténtalo de nuevo.",
+        "twoFactorEnabled": "Esta cuenta usa verificación en dos pasos. Inicia sesión desde la página de inicio de sesión y vuelve para completar tu compra.",
+        "emailAlreadyRegistered": "Ya existe una cuenta con este correo electrónico. Selecciona “Iniciar sesión” para continuar con tu compra.",
+        "accountLocked": "Esta cuenta está bloqueada por seguridad. Revisa tu correo para desbloquearla antes de continuar.",
+        "tooManyAttempts": "Demasiados intentos. Espera un minuto e inténtalo de nuevo.",
+        "invalidData": "Comprueba que tu correo electrónico y tu contraseña son correctos e inténtalo de nuevo.",
+        "serverError": "No hemos podido completar este paso. Inténtalo de nuevo en unos minutos o contacta con soporte si el problema continúa.",
+        "unknown": "No hemos podido verificar tus datos. Comprueba tu correo electrónico y tu contraseña e inténtalo de nuevo."
+      },
       "privacyGuarantee": "Garantía de privacidad: No compartimos su información y solo contactaremos contigo cuando sea necesario para brindar nuestro servicio."
     },
     "addressBillingTitle": "Dirección de facturación",
@@ -1749,17 +1760,11 @@
               "Cleaner",
               "Meet"
             ],
-            "comingSoonFeatures": [
-              "Mail",
-              "Fotos"
-            ]
+            "comingSoonFeatures": ["Mail", "Fotos"]
           },
           "default": {
             "bytesTitle": "{{bytes}}",
-            "features": [
-              "{{bytes}} de almacenamiento en la nube cifrado",
-              "VPN cifrada"
-            ]
+            "features": ["{{bytes}} de almacenamiento en la nube cifrado", "VPN cifrada"]
           }
         },
         "businessPlanFeaturesList": {

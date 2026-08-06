@@ -1,15 +1,15 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import envService from 'services/env.service';
-import localStorageService from 'services/local-storage.service';
 import { EnvironmentConfig } from './types';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 /**
  * Returns required config to upload files to the Internxt Network
  * @param isWorkspace Flag to indicate if is a team or not
  */
-export function getEnvironmentConfig(isWorkspace?: boolean): EnvironmentConfig {
-  const workspaceCredentials = localStorageService.getWorkspaceCredentials();
-  const workspaceMnemonic = localStorageService.getB2BWorkspaceMnemonic();
+export async function getEnvironmentConfig(isWorkspace?: boolean): Promise<EnvironmentConfig> {
+  const workspaceCredentials = encryptedStorageService.getWorkspaceCredentials();
+  const workspaceMnemonic = await encryptedStorageService.getB2BWorkspaceMnemonic();
 
   if (isWorkspace && workspaceCredentials && workspaceMnemonic) {
     return {
@@ -21,7 +21,7 @@ export function getEnvironmentConfig(isWorkspace?: boolean): EnvironmentConfig {
     };
   }
 
-  const user = localStorageService.getUser() as UserSettings;
+  const user = encryptedStorageService.getUser() as UserSettings;
 
   return {
     bridgeUser: user.bridgeUser,

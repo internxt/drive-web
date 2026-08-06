@@ -124,7 +124,7 @@ export enum AppView {
 }
 
 export enum LocalStorageItem {
-  User = 'xUser',
+  UserUUID = 'xUserUUID',
   NewToken = 'xNewToken',
   Language = 'i18nextLng',
   ShowSummerBanner = 'showSummerBanner',
@@ -144,10 +144,6 @@ export enum LocalStorageItem {
   Theme = 'theme',
   IsThemeDark = 'theme:isDark',
   B2BworkspaceId = 'b2bWorkspaceId',
-  B2BworkspaceMnemonic = 'b2bWorkspaceMnemonic',
-  WorkspaceCredentials = 'workspace_credentials',
-  FolderAccessToken = 'folderAccessToken',
-  FileAccessToken = 'fileAccessToken',
   GCLID = 'gclid',
   HasSeenTrashDisposalDialog = 'hasSeenTrashDisposalDialog',
   IdManagementTheme = 'id_management_theme_enabled',
@@ -165,10 +161,10 @@ export enum LocalStorageItem {
 export enum LocalStorageProtectedItem {
   User = 'xUser',
   EncryptedToken = 'xTokenEncrypted',
-  B2Bworkspace = 'b2bWorkspace',
-  WorkspaceCredentials = 'workspace_credentials',
-  FolderAccessToken = 'folderAccessToken',
-  FileAccessToken = 'fileAccessToken',
+  EncryptedB2BworkspaceMnemonic = 'xEncryptedB2BWorkspaceMnemonic',
+  EncryptedWorkspaceCredentials = 'xEncryptedWorkspaceCredentials',
+  EncryptedFolderToken = 'xEncryptedFolderToken',
+  EncryptedFileToken = 'xEncryptedFileToken',
 }
 export enum OrderDirection {
   Asc = 'ASC',
