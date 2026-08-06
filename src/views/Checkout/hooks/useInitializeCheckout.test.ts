@@ -176,6 +176,41 @@ describe('Initialize checkout custom hook', () => {
     });
   });
 
+  describe('Updating the Stripe elements amount', () => {
+    test('When the price amount with tax changes (e.g. a coupon is applied), then the Stripe elements amount is updated without reloading the elements', async () => {
+      const { result, rerender } = renderHook((props) => useInitializeCheckout(props), {
+        initialProps: {
+          checkoutTheme: 'light',
+          price: mockPriceWithTax,
+          translate: mockTranslate,
+        },
+      });
+
+      await waitFor(() => {
+        expect(result.current.stripeElementsOptions?.amount).toBe(1210);
+      });
+
+      const discountedPrice: PriceWithTax = {
+        ...mockPriceWithTax,
+        taxes: {
+          ...mockPriceWithTax.taxes,
+          amountWithTax: 605,
+        },
+      };
+
+      rerender({
+        checkoutTheme: 'light',
+        price: discountedPrice,
+        translate: mockTranslate,
+      });
+
+      await waitFor(() => {
+        expect(result.current.stripeElementsOptions?.amount).toBe(605);
+      });
+      expect(checkoutService.loadStripeElements).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('Loading crypto currencies', () => {
     test('When the plan is lifetime, then crypto currencies are fetched', async () => {
       const props = {

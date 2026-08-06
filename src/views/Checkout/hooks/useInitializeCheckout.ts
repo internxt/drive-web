@@ -1,4 +1,4 @@
-import { Stripe, StripeElementsOptions } from '@stripe/stripe-js';
+import { Stripe, StripeElementsOptionsMode } from '@stripe/stripe-js';
 import { checkoutService, currencyService, paymentService } from '../services';
 import { useEffect, useState } from 'react';
 import { errorService, navigationService } from 'services';
@@ -20,7 +20,7 @@ interface UseInitializeCheckoutProps {
 
 export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }: UseInitializeCheckoutProps) => {
   const [stripeSdk, setStripeSdk] = useState<Stripe | null>(null);
-  const [stripeElementsOptions, setStripeElementsOptions] = useState<StripeElementsOptions>();
+  const [stripeElementsOptions, setStripeElementsOptions] = useState<StripeElementsOptionsMode>();
   const [isCheckoutReady, setIsCheckoutReady] = useState(false);
   const [availableCryptoCurrencies, setAvailableCryptoCurrencies] = useState<CryptoCurrency[] | undefined>(undefined);
 
@@ -41,6 +41,20 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
       loadStripeAndCrypto();
     }
   }, [stripeSdk, price?.price?.id]);
+
+  useEffect(() => {
+    const amount = price?.taxes?.amountWithTax;
+
+    if (amount === undefined) return;
+
+    setStripeElementsOptions((prevOptions) => {
+      if (!prevOptions || prevOptions.amount === amount) {
+        return prevOptions;
+      }
+
+      return { ...prevOptions, amount };
+    });
+  }, [price?.taxes?.amountWithTax]);
 
   const initCheckout = async () => {
     try {
@@ -93,7 +107,7 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
 
     try {
       const stripeElements = await checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme], price);
-      setStripeElementsOptions(stripeElements as StripeElementsOptions);
+      setStripeElementsOptions(stripeElements as StripeElementsOptionsMode);
     } catch (error) {
       const castedError = errorService.castError(error);
       throw new Error(castedError.message);
