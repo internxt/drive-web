@@ -13,6 +13,7 @@ import {
   handleExportBackupKey,
   prepareOldBackupRecoverPayloadForBackend,
 } from './backupKeyUtils';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 vi.mock('file-saver', async () => {
   const actual = await vi.importActual<typeof import('file-saver')>('file-saver');
@@ -25,6 +26,11 @@ vi.mock('file-saver', async () => {
 vi.mock('services/local-storage.service', () => ({
   default: {
     get: vi.fn(),
+  },
+}));
+
+vi.mock('services/encrypted-storage.service', () => ({
+  default: {
     getUser: vi.fn(),
   },
 }));
@@ -69,7 +75,6 @@ describe('backupKeyUtils', () => {
       const mockMnemonic =
         'whip pipe sphere rail witness sting hawk project east return unhappy focus shop dry midnight frog critic lion horror slide luxury consider vibrant timber';
       const mockUser = {
-        privateKey: 'test-private-key',
         keys: {
           ecc: {
             privateKey: 'test-ecc-private-key',
@@ -95,8 +100,6 @@ describe('backupKeyUtils', () => {
         rootFolderUuid: 'test-root-folder-uuid',
         sharedWorkspace: false,
         credit: 0,
-        publicKey: 'test-public-key',
-        revocationKey: 'test-revocation-key',
         appSumoDetails: null,
         registerCompleted: false,
         hasReferralsProgram: false,
@@ -106,7 +109,7 @@ describe('backupKeyUtils', () => {
       } as UserSettings;
 
       vi.mocked(localStorageService.get).mockReturnValue(mockMnemonic);
-      vi.mocked(localStorageService.getUser).mockReturnValue(mockUser);
+      vi.mocked(encryptedStorageService.getUser).mockReturnValue(mockUser);
 
       handleExportBackupKey(mockTranslate);
 
@@ -131,7 +134,6 @@ describe('backupKeyUtils', () => {
       const mockMnemonic =
         'whip pipe sphere rail witness sting hawk project east return unhappy focus shop dry midnight frog critic lion horror slide luxury consider vibrant timber';
       const mockUser = {
-        privateKey: 'test-private-key',
         keys: {
           ecc: {
             privateKey: 'test-ecc-private-key',
@@ -155,8 +157,6 @@ describe('backupKeyUtils', () => {
         rootFolderUuid: 'test-root-folder-uuid',
         sharedWorkspace: false,
         credit: 0,
-        publicKey: 'test-public-key',
-        revocationKey: 'test-revocation-key',
         appSumoDetails: null,
         registerCompleted: false,
         hasReferralsProgram: false,
@@ -166,11 +166,11 @@ describe('backupKeyUtils', () => {
       } as UserSettings;
 
       vi.mocked(localStorageService.get).mockReturnValue(mockMnemonic);
-      vi.mocked(localStorageService.getUser).mockReturnValue(mockUser);
+      vi.mocked(encryptedStorageService.getUser).mockReturnValue(mockUser);
 
       handleExportBackupKey(mockTranslate);
 
-      expect(localStorageService.getUser).toHaveBeenCalled();
+      expect(encryptedStorageService.getUser).toHaveBeenCalled();
 
       expect(saveAs).toHaveBeenCalledWith(expect.any(Blob), 'INTERNXT-BACKUP-KEY.txt');
 
@@ -190,7 +190,6 @@ describe('backupKeyUtils', () => {
       const mockMnemonic =
         'whip pipe sphere rail witness sting hawk project east return unhappy focus shop dry midnight frog critic lion horror slide luxury consider vibrant timber';
       const mockUser = {
-        privateKey: 'test-private-key',
         keys: {
           ecc: {
             privateKey: 'test-ecc-private-key',
@@ -215,8 +214,6 @@ describe('backupKeyUtils', () => {
         rootFolderUuid: 'test-root-folder-uuid',
         sharedWorkspace: false,
         credit: 0,
-        publicKey: 'test-public-key',
-        revocationKey: 'test-revocation-key',
         appSumoDetails: null,
         registerCompleted: false,
         hasReferralsProgram: false,
@@ -226,7 +223,7 @@ describe('backupKeyUtils', () => {
       } as UserSettings;
 
       vi.mocked(localStorageService.get).mockReturnValue(mockMnemonic);
-      vi.mocked(localStorageService.getUser).mockReturnValue(mockUser);
+      vi.mocked(encryptedStorageService.getUser).mockReturnValue(mockUser);
 
       handleExportBackupKey(mockTranslate);
 
@@ -239,7 +236,7 @@ describe('backupKeyUtils', () => {
 
     it('should handle missing mnemonic', () => {
       vi.mocked(localStorageService.get).mockReturnValue(null);
-      vi.mocked(localStorageService.getUser).mockReturnValue({} as any);
+      vi.mocked(encryptedStorageService.getUser).mockReturnValue({} as any);
 
       handleExportBackupKey(mockTranslate);
 
@@ -253,7 +250,7 @@ describe('backupKeyUtils', () => {
 
     it('should handle missing user', () => {
       vi.mocked(localStorageService.get).mockReturnValue('test-mnemonic');
-      vi.mocked(localStorageService.getUser).mockReturnValue(null);
+      vi.mocked(encryptedStorageService.getUser).mockReturnValue(null);
 
       handleExportBackupKey(mockTranslate);
 
@@ -262,47 +259,6 @@ describe('backupKeyUtils', () => {
       expect(notificationsService.show).toHaveBeenCalledWith({
         text: mockTranslate('views.account.tabs.security.backupKey.error'),
         type: ToastType.Error,
-      });
-    });
-
-    it('should handle missing key properties', () => {
-      const mockMnemonic = 'test mnemonic';
-      const mockUser = {
-        privateKey: 'test-private-key',
-        userId: 'test-user-id',
-        uuid: 'test-uuid',
-        email: 'test@example.com',
-        name: 'Test User',
-        lastname: 'User',
-        username: 'testuser',
-        bridgeUser: 'test-bridge-user',
-        bucket: 'test-bucket',
-        backupsBucket: null,
-        mnemonic: mockMnemonic,
-        root_folder_id: 0,
-        rootFolderId: 'test-root-folder-id',
-        rootFolderUuid: 'test-root-folder-uuid',
-        sharedWorkspace: false,
-        credit: 0,
-        publicKey: 'test-public-key',
-        revocationKey: 'test-revocation-key',
-        appSumoDetails: null,
-        registerCompleted: false,
-        hasReferralsProgram: false,
-        createdAt: new Date(),
-        avatar: null,
-        emailVerified: false,
-      } as UserSettings;
-
-      vi.mocked(localStorageService.getUser).mockReturnValue(mockUser);
-
-      handleExportBackupKey(mockTranslate);
-
-      expect(saveAs).toHaveBeenCalled();
-
-      expect(notificationsService.show).toHaveBeenCalledWith({
-        text: mockTranslate('views.account.tabs.security.backupKey.success'),
-        type: ToastType.Success,
       });
     });
   });
@@ -487,9 +443,6 @@ describe('backupKeyUtils', () => {
       vi.mocked(encryptTextWithKey).mockImplementation((text) => `encrypted-with-key-${text}`);
 
       const mockGeneratedKeys = {
-        publicKey: 'test-public-key',
-        privateKeyEncrypted: 'test-private-key-encrypted',
-        revocationCertificate: 'test-revocation-cert',
         ecc: {
           publicKey: 'test-ecc-public-key',
           privateKeyEncrypted: 'test-ecc-private-key-encrypted',
@@ -518,12 +471,12 @@ describe('backupKeyUtils', () => {
 
       expect(encryptMessageWithPublicKey).toHaveBeenCalledWith({
         message: mockMnemonic,
-        publicKeyInBase64: mockGeneratedKeys.publicKey,
+        publicKeyInBase64: mockGeneratedKeys.ecc.publicKey,
       });
 
       expect(hybridEncryptMessageWithPublicKey).toHaveBeenCalledWith({
         message: mockMnemonic,
-        publicKeyInBase64: mockGeneratedKeys.publicKey,
+        publicKeyInBase64: mockGeneratedKeys.ecc.publicKey,
         publicKyberKeyBase64: mockGeneratedKeys.kyber.publicKey,
       });
 
@@ -538,7 +491,6 @@ describe('backupKeyUtils', () => {
           ecc: {
             public: mockGeneratedKeys.ecc.publicKey,
             private: mockGeneratedKeys.ecc.privateKeyEncrypted,
-            revocationKey: mockGeneratedKeys.revocationCertificate,
           },
           kyber: {
             public: mockGeneratedKeys.kyber.publicKey,

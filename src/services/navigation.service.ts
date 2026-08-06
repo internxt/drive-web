@@ -2,13 +2,13 @@ import { BrowserHistoryBuildOptions, createBrowserHistory } from 'history';
 import queryString from 'query-string';
 
 import { SelectSectionProps } from 'views/NewSettings/types/types';
-import { AppView, LocalStorageItem } from 'app/core/types';
+import { AppView } from 'app/core/types';
 import configService from './config.service';
 import errorService from './error.service';
 import { AppDispatch } from 'app/store';
-import localStorageService from './local-storage.service';
 import { workspacesActions } from 'app/store/slices/workspaces/workspacesStore';
 import envService from './env.service';
+import encryptedStorageService from './encrypted-storage.service';
 
 const browserHistoryConfig: BrowserHistoryBuildOptions = {
   forceRefresh: false,
@@ -74,7 +74,7 @@ const navigationService = {
     }
   },
   setWorkspaceFromParams(workspaceThunks, dispatch: AppDispatch, updateUrl = true): void {
-    const user = localStorageService.getUser();
+    const user = encryptedStorageService.getUser();
     const params = new URLSearchParams(globalThis.location.search);
     const [currentWorkspaceUuid] = params.getAll('workspaceid');
     user &&
@@ -83,8 +83,8 @@ const navigationService = {
       dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId: currentWorkspaceUuid || null, updateUrl }));
   },
   resetB2BWorkspaceCredentials(dispatch): void {
-    localStorageService.set(LocalStorageItem.B2Bworkspace, 'null');
-    localStorageService.set(LocalStorageItem.WorkspaceCredentials, 'null');
+    encryptedStorageService.clearB2BWorkspace();
+    encryptedStorageService.clearWorkspaceCredentials();
     dispatch(workspacesActions.setSelectedWorkspace(null));
     dispatch(workspacesActions.setCredentials(null));
   },

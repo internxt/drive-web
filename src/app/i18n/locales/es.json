@@ -174,7 +174,8 @@
       "login": "Iniciar sesión",
       "success": "Has iniciado sesión correctamente",
       "error": "No se ha podido iniciar sesion, inténtelo de nuevo",
-      "closeWindow": "Puedes cerrar esta ventana"
+      "closeWindow": "Puedes cerrar esta ventana",
+      "invalidRedirectUri": "URL de redirección no válida"
     },
     "oauthLink": {
       "continueAs": "Continuar como",
@@ -184,10 +185,13 @@
     }
   },
   "checkout": {
-    "title": "¡Ya casi está! Finaliza tu compra de forma segura",
     "pay": "Pagar",
     "processing": "Procesando...",
     "checkout": "Finalizar compra",
+    "postalCode": {
+      "title": "Código postal",
+      "placeholder": "Código postal"
+    },
     "authComponent": {
       "signUp": {
         "emailAddress": "Tu dirección de correo electrónico",
@@ -196,12 +200,17 @@
       "signIn": {
         "password": "Tu contraseña"
       },
-      "title": {
-        "signUp": "Crea una cuenta",
-        "signIn": "Inicia sesión",
-        "userIsSignedIn": "Has iniciado sesión como"
-      },
       "emailMustNotBeEmpty": "El correo electrónico no debe estar vacío",
+      "authError": {
+        "invalidCredentials": "El correo electrónico o la contraseña no son correctos. Inténtalo de nuevo.",
+        "twoFactorEnabled": "Esta cuenta usa verificación en dos pasos. Inicia sesión desde la página de inicio de sesión y vuelve para completar tu compra.",
+        "emailAlreadyRegistered": "Ya existe una cuenta con este correo electrónico. Selecciona “Iniciar sesión” para continuar con tu compra.",
+        "accountLocked": "Esta cuenta está bloqueada por seguridad. Revisa tu correo para desbloquearla antes de continuar.",
+        "tooManyAttempts": "Demasiados intentos. Espera un minuto e inténtalo de nuevo.",
+        "invalidData": "Comprueba que tu correo electrónico y tu contraseña son correctos e inténtalo de nuevo.",
+        "serverError": "No hemos podido completar este paso. Inténtalo de nuevo en unos minutos o contacta con soporte si el problema continúa.",
+        "unknown": "No hemos podido verificar tus datos. Comprueba tu correo electrónico y tu contraseña e inténtalo de nuevo."
+      },
       "privacyGuarantee": "Garantía de privacidad: No compartimos su información y solo contactaremos contigo cuando sea necesario para brindar nuestro servicio."
     },
     "addressBillingTitle": "Dirección de facturación",
@@ -213,10 +222,7 @@
         "companyVatId": "VAT ID de la Empresa"
       }
     },
-    "paymentTitle": "Seleccione un método de pago",
     "productCard": {
-      "title": "Resumen del pedido",
-      "selectedPlan": "Plan seleccionado",
       "renewalTitle": {
         "month": "anual",
         "year": "anual",
@@ -228,7 +234,6 @@
         "lifetime": "Pago único"
       },
       "saving": "Estás ahorrando un {{percent}}%",
-      "planDetails": "Detalles del plan:",
       "total": "Total",
       "addCoupon": {
         "buttonTitle": "Añadir cupón",
@@ -261,7 +266,9 @@
       "invalidPlan": "Tipo de plan no soportado. Por favor, selecciona un plan válido.",
       "fetchingCryptoCurrencies": "No pudimos cargar las opciones de criptomonedas disponibles",
       "addressRequired": "Por favor, completa tu dirección de facturación para continuar",
-      "businessPlan": "El plan de empresa no está disponible"
+      "businessPlan": "El plan de empresa no está disponible",
+      "postalCodeRequired": "Introduce tu código postal para continuar",
+      "countryRequired": "No hemos podido determinar tu país de facturación. Inténtalo de nuevo más tarde."
     }
   },
   "general": {
@@ -435,17 +442,19 @@
         },
         "billing": {
           "cancelSubscriptionModal": {
+            "title": "Cancelar suscripción",
             "description": {
-              "individual": "Estás a punto de cancelar tu plan de Internxt {{currentPlanName}}. Al cancelar tu plan, pasarás al plan gratuito de Internxt {{freePlanName}}. Por favor, confirma tu elección para continuar.",
+              "individual": {
+                "line1": "Tu plan anual se factura mensualmente y termina el {{endDate}}. ",
+                "line2": "Puedes elegir cómo quieres continuar:"
+              },
               "business": "Al cancelar tu plan, el espacio de trabajo se eliminará junto con todos los datos. Por favor, confirma tu elección para continuar."
             },
+
             "commitment": {
-              "firstMonthDescription": "Como todavía estás en tu período de prueba de 30 días, tu cancelación será inmediata. Ya no se te cobrará y tu cuenta volverá al plan gratuito de 1 GB ahora.",
-              "description": "Tienes una suscripción anual facturada mensualmente. Si cancelas ahora, tu suscripción permanecerá activa hasta el {{end_date}}, y seguirás siendo cobrado mensualmente hasta esa fecha.",
-              "monthsRemaining": "Pagos restantes: {{monthsRemaining}}",
-              "amountPerMonth": "Importe por mes: €{{amount}}",
-              "afterLabel": "Después del {{monthsRemaining}}"
+              "firstMonthDescription": "Como todavía estás en tu período de prueba de 30 días, tu cancelación será inmediata. Ya no se te cobrará y tu cuenta volverá al plan gratuito de 1 GB ahora."
             },
+            "directCancellationDescription": "Estás a punto de cancelar tu suscripción. Perderás el acceso a tu plan y tu cuenta volverá al plan gratuito. Por favor, confirma tu elección para continuar.",
             "keepSubscription": "Mantener suscripción",
             "cancelSubscription": "Cancelar suscripción",
             "infoBox": {
@@ -460,7 +469,7 @@
                 "title": "Cancelar renovación",
                 "description": "Mantén el acceso completo hasta el {{endDate}}. Seguirás con los pagos mensuales hasta entonces, y tu plan no se renovará.",
                 "bulletedInfo": "Pagos restantes: {{remainingMonths}}",
-                "label": "Después del {{endDate}}",
+                "label": "Desde {{endDate}}",
                 "cta": "Cancelar renovación",
                 "confirmationModal": {
                   "description": "Tu plan permanecerá activo hasta el {{endDate}}. Seguirás siendo facturado mensualmente hasta entonces, y tu suscripción no se renovará después de esa fecha.",
@@ -489,6 +498,16 @@
                 }
               }
             }
+          },
+          "subscriptionEndingModal": {
+            "title": "Suscripción finaliza el {{endDate}}",
+            "description": {
+              "title": "Cuando tu plan finalice:",
+              "storageReturns": "Tu almacenamiento volverá al límite gratuito",
+              "featuresUnavailable": "Las funciones premium ya no estarán disponibles"
+            },
+            "maybeLater": "Quizás más tarde",
+            "renewSubscription": "Renovar suscripción"
           },
           "cancellationIncentive": {
             "title": {
@@ -1266,9 +1285,13 @@
     "verificationEmail": "Correo de verificación enviado",
     "successCancelSubscription": "Tu suscripción ha sido cancelada",
     "errorCancelSubscription": "Algo ha ido mal al cancelar la suscripción",
+    "successApplyCancellationIncentive": "¡Gracias por quedarte con nosotros! Disfruta del próximo mes gratis",
+    "errorApplyCancellationIncentive": "Algo ha ido mal al aplicar el incentivo de cancelación",
+    "successEarlyCancelSubscription": "Tu suscripción ha sido cancelada",
+    "errorEarlyCancelSubscription": "Algo ha ido mal al cancelar la suscripción",
+    "successReactivateSubscription": "Tu suscripción ha sido reactivada",
+    "errorReactivateSubscription": "Algo ha ido mal al reactivar la suscripción",
     "errorCreatingSubscription": "Algo salió mal al crear tu suscripción",
-    "successApplyCancellationIncentive": "¡Gracias por continuar con nosotros! Disfruta del próximo mes gratis",
-    "errorApplyCancellationIncentive": "Ha ocurrido un error al aplicar el incentivo de cancelación",
     "couponIsNotValidForUserError": "El cupón solo puede ser canjeado por nuevos clientes.",
     "errorApplyingCoupon": "Ocurrió un error al aplicar el cupón",
     "errorWhileFetchingMoreItems": "Algo salió mal al obtener más elementos",
@@ -1853,5 +1876,8 @@
   "linkExpired": {
     "title": "Enlace caducado o eliminado",
     "description": "El enlace o la invitación que visitaste ha caducado o se ha eliminado"
+  },
+  "common": {
+    "planCancelled": "Tu suscripción finaliza el {{end_date}}"
   }
 }

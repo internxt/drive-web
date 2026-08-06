@@ -17,6 +17,7 @@ import { BackupData } from 'utils/backupKeyUtils';
 import { beforeAll, beforeEach, describe, expect, it, test, vi } from 'vitest';
 import * as authService from './auth.service';
 import { PasswordMismatchError } from './errors/auth.errors';
+import encryptedStorageService from './encrypted-storage.service';
 
 const mockSecret = '123456789QWERTY';
 const mockApi = 'https://mock';
@@ -100,10 +101,15 @@ beforeAll(() => {
     default: {
       get: vi.fn(),
       clear: vi.fn(),
-      getUser: vi.fn(),
-      getToken: vi.fn(),
       set: vi.fn(),
+    },
+  }));
+  vi.mock('services/encrypted-storage.service', () => ({
+    default: {
+      getToken: vi.fn(),
       setToken: vi.fn(),
+      clear: vi.fn(),
+      getUser: vi.fn(),
     },
   }));
   vi.mock('./vpnAuth.service', () => ({
@@ -149,7 +155,6 @@ async function getMockUser(password: string, mnemonic: string) {
   const mockUser: UserSettings = {
     uuid: 'mock-uuid',
     email: 'mock@email.com',
-    privateKey: keys.ecc.privateKeyEncrypted,
     mnemonic: encryptedMnemonic,
     userId: 'mock-userId',
     name: 'mock-name',
@@ -163,8 +168,6 @@ async function getMockUser(password: string, mnemonic: string) {
     rootFolderUuid: undefined,
     sharedWorkspace: false,
     credit: 0,
-    publicKey: keys.ecc.publicKey,
-    revocationKey: keys.revocationCertificate,
     keys: {
       ecc: {
         publicKey: keys.ecc.publicKey,
@@ -222,7 +225,6 @@ describe('logIn', () => {
     const mockClearUser = {
       ...mockUser,
       mnemonic: mockMnemonic,
-      privateKey: plainPrivateKeyInBase64,
       keys: {
         ecc: {
           publicKey: mockUser.keys.ecc.publicKey,
@@ -231,91 +233,6 @@ describe('logIn', () => {
         kyber: {
           publicKey: mockUser.keys.kyber.publicKey,
           privateKey: plainPrivateKyberKeyInBase64,
-        },
-      },
-    };
-
-    expect(result).toEqual({
-      newToken: mockNewToken,
-      user: mockClearUser,
-      mnemonic: mockMnemonic,
-    });
-  });
-
-  it('log in should correctly decrypt keys for old user structure', async () => {
-    const mockToken = 'test-token';
-    const mockNewToken = 'test-new-token';
-    const mockLoginType = 'web';
-
-    const mockPassword = 'password123';
-    const mockMnemonic =
-      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
-    const keys = await keysService.getKeys(mockPassword);
-    const encryptedMnemonic = encryptTextWithKey(mockMnemonic, mockPassword);
-
-    const mockOlsUser: Partial<UserSettings> = {
-      uuid: 'mock-uuid',
-      email: 'mock@email.com',
-      privateKey: keys.ecc.privateKeyEncrypted,
-      mnemonic: encryptedMnemonic,
-      userId: 'mock-userId',
-      name: 'mock-name',
-      lastname: 'mock-lastname',
-      username: 'mock-username',
-      bridgeUser: 'mock-bridgeUser',
-      bucket: 'mock-bucket',
-      backupsBucket: null,
-      root_folder_id: 0,
-      rootFolderId: 'mock-rootFolderId',
-      rootFolderUuid: undefined,
-      sharedWorkspace: false,
-      credit: 0,
-      publicKey: keys.ecc.publicKey,
-      revocationKey: keys.revocationCertificate,
-      appSumoDetails: null,
-      registerCompleted: false,
-      hasReferralsProgram: false,
-      createdAt: new Date(),
-      avatar: null,
-      emailVerified: false,
-    };
-    const mockTwoFactorCode = '123456';
-
-    const mockUser = mockOlsUser as UserSettings;
-
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue({
-        login: vi.fn().mockResolvedValue({
-          user: mockUser,
-          newToken: mockNewToken,
-        }),
-      }),
-      createDesktopAuthClient: vi.fn().mockReturnValue({
-        login: vi.fn().mockResolvedValue({
-          user: mockUser,
-          newToken: mockNewToken,
-        }),
-      }),
-    } as any);
-
-    const result = await authService.doLogin(mockUser.email, mockPassword, mockTwoFactorCode, mockLoginType);
-
-    const plainPrivateKeyInBase64 = Buffer.from(
-      keysService.decryptPrivateKey(mockUser.privateKey, mockPassword),
-    ).toString('base64');
-
-    const mockClearUser = {
-      ...mockUser,
-      mnemonic: mockMnemonic,
-      privateKey: plainPrivateKeyInBase64,
-      keys: {
-        ecc: {
-          publicKey: mockUser.publicKey,
-          privateKey: plainPrivateKeyInBase64,
-        },
-        kyber: {
-          publicKey: '',
-          privateKey: '',
         },
       },
     };
@@ -374,7 +291,7 @@ describe('signUp', () => {
 
     const result = await authService.signUp(params);
 
-    expect(localStorageService.setToken).toHaveBeenCalledWith(mockNewToken);
+    expect(encryptedStorageService.setToken).toHaveBeenCalledWith(mockNewToken);
 
     const plainPrivateKeyInBase64 = Buffer.from(
       keysService.decryptPrivateKey(mockUser.keys.ecc.privateKey, mockPassword),
@@ -384,7 +301,6 @@ describe('signUp', () => {
     const mockClearUser = {
       ...mockUser,
       mnemonic: mockMnemonicNotEnc,
-      privateKey: plainPrivateKeyInBase64,
       keys: {
         ecc: {
           publicKey: mockUser.keys.ecc.publicKey,
@@ -407,129 +323,18 @@ describe('signUp', () => {
       mnemonic: mockMnemonicNotEnc,
     });
   });
-
-  it('signUp should work for old user structure', async () => {
-    const mockNewToken = 'test-new-token';
-    const mockEmail = 'test@example.com';
-
-    const mockPassword = 'password123';
-    const mockMnemonicNotEnc =
-      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
-    const keys = await keysService.getKeys(mockPassword);
-    const encryptedMnemonic = encryptTextWithKey(mockMnemonicNotEnc, mockPassword);
-    const mockOldUser: Partial<UserSettings> = {
-      uuid: 'mock-uuid',
-      email: 'mock@email.com',
-      privateKey: keys.ecc.privateKeyEncrypted,
-      mnemonic: encryptedMnemonic,
-      userId: 'mock-userId',
-      name: 'mock-name',
-      lastname: 'mock-lastname',
-      username: 'mock-username',
-      bridgeUser: 'mock-bridgeUser',
-      bucket: 'mock-bucket',
-      backupsBucket: null,
-      root_folder_id: 0,
-      rootFolderId: 'mock-rootFolderId',
-      rootFolderUuid: undefined,
-      sharedWorkspace: false,
-      credit: 0,
-      publicKey: keys.ecc.publicKey,
-      revocationKey: keys.revocationCertificate,
-      appSumoDetails: null,
-      registerCompleted: false,
-      hasReferralsProgram: false,
-      createdAt: new Date(),
-      avatar: null,
-      emailVerified: false,
-    };
-
-    const mockUser = mockOldUser as UserSettings;
-
-    const mockSignUpResponse = {
-      xUser: {
-        ...mockUser,
-        mnemonic: mockMnemonicNotEnc,
-      },
-      xNewToken: mockNewToken,
-      mnemonic: mockMnemonicNotEnc,
-    };
-
-    const params = {
-      doSignUp: vi.fn().mockResolvedValue(mockSignUpResponse),
-      email: mockEmail,
-      password: mockPassword,
-      token: mockNewToken,
-      redeemCodeObject: false,
-      dispatch: vi.fn(),
-    };
-
-    const mockRes = new Response(
-      JSON.stringify({
-        newToken: mockNewToken,
-      }),
-      {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      },
-    );
-
-    vi.spyOn(globalThis, 'fetch').mockReturnValue(Promise.resolve(mockRes));
-
-    const spy = vi.spyOn(userActions, 'setUser');
-
-    const result = await authService.signUp(params);
-
-    expect(localStorageService.setToken).toHaveBeenCalledWith(mockNewToken);
-
-    const plainPrivateKeyInBase64 = Buffer.from(
-      keysService.decryptPrivateKey(mockUser.privateKey, mockPassword),
-    ).toString('base64');
-
-    const mockClearUser = {
-      ...mockUser,
-      mnemonic: mockMnemonicNotEnc,
-      privateKey: plainPrivateKeyInBase64,
-      keys: {
-        ecc: {
-          publicKey: mockUser.publicKey,
-          privateKey: plainPrivateKeyInBase64,
-        },
-        kyber: {
-          publicKey: '',
-          privateKey: '',
-        },
-      },
-    };
-    expect(spy).toBeCalledWith(mockClearUser);
-
-    expect(result).toEqual({
-      newToken: mockNewToken,
-      user: {
-        ...mockUser,
-        mnemonic: mockMnemonicNotEnc,
-      },
-      mnemonic: mockMnemonicNotEnc,
-    });
-  });
 });
 
 describe('Change password', () => {
   it('changePassword should correctly re-encrypt keys', async () => {
     const mockOldPassword = 'password123';
     const mockNewPassword = 'newPassword123';
-    const mockEmail = 'test@example.com';
 
     const mockMnemonicNotEnc =
       'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
     const keys = await pgpService.generateNewKeys();
     const mockClearUser: Partial<UserSettings> = {
       mnemonic: mockMnemonicNotEnc,
-      publicKey: keys.publicKeyArmored,
-      revocationKey: keys.revocationCertificate,
-      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
       keys: {
         ecc: {
           publicKey: keys.publicKeyArmored,
@@ -543,7 +348,7 @@ describe('Change password', () => {
     };
 
     const mockUser = mockClearUser as UserSettings;
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUser);
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(mockUser);
 
     const mockSalt = 'mockSalt';
     const encryptedSalt = encryptText(mockSalt);
@@ -570,75 +375,22 @@ describe('Change password', () => {
     const privateKeyEncrypted = inputs.encryptedPrivateKey;
     const privateKey = keysService.decryptPrivateKey(privateKeyEncrypted, mockNewPassword);
     const privateKeyBase64 = Buffer.from(privateKey).toString('base64');
-    expect(privateKeyBase64).toBe(mockUser.privateKey);
+    expect(privateKeyBase64).toBe(mockUser.keys.ecc.privateKey);
 
     const privateKyberKeyEncrypted = inputs.keys.encryptedPrivateKyberKey;
     const privateKyberKey = keysService.decryptPrivateKey(privateKyberKeyEncrypted, mockNewPassword);
     expect(privateKyberKey).toBe(mockUser.keys.kyber.privateKey);
   });
 
-  it('changePassword should correctly re-encrypt keys for old users', async () => {
-    const mockOldPassword = 'password123';
-    const mockNewPassword = 'newPassword123';
-    const mockEmail = 'test@example.com';
-
-    const mockMnemonicNotEnc =
-      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
-    const keys = await pgpService.generateNewKeys();
-    const mockClearUser: Partial<UserSettings> = {
-      mnemonic: mockMnemonicNotEnc,
-      publicKey: keys.publicKeyArmored,
-      revocationKey: keys.revocationCertificate,
-      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
-    };
-
-    const mockUser = mockClearUser as UserSettings;
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUser);
-
-    const mockSalt = 'mockSalt';
-    const encryptedSalt = encryptText(mockSalt);
-
-    const changePasswordMock = vi.fn().mockReturnValue(Promise.resolve({ newToken: 'newMockToken' }));
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue({
-        changePassword: changePasswordMock,
-        securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
-      }),
-      createDesktopAuthClient: vi.fn().mockReturnValue({
-        changePassword: changePasswordMock,
-        securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
-      }),
-      createUsersClient: vi.fn().mockReturnValue({
-        changePassword: changePasswordMock,
-      }),
-    } as any);
-
-    await authService.changePassword(mockNewPassword, mockOldPassword);
-    expect(changePasswordMock).toBeCalled();
-    const [inputs] = changePasswordMock.mock.calls[0];
-
-    const privateKeyEncrypted = inputs.encryptedPrivateKey;
-    const privateKey = keysService.decryptPrivateKey(privateKeyEncrypted, mockNewPassword);
-    const privateKeyBase64 = Buffer.from(privateKey).toString('base64');
-    expect(privateKeyBase64).toBe(mockUser.privateKey);
-
-    const privateKyberKeyEncrypted = inputs.keys.encryptedPrivateKyberKey;
-    expect(privateKyberKeyEncrypted).toBe('');
-  });
-
   test('When the server rejects the password change with an internal server error, then a password mismatch error is raised', async () => {
     const mockOldPassword = 'password123';
     const mockNewPassword = 'newPassword123';
-    const mockEmail = 'test@example.com';
 
     const mockMnemonicNotEnc =
       'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
     const keys = await pgpService.generateNewKeys();
     const mockClearUser: Partial<UserSettings> = {
       mnemonic: mockMnemonicNotEnc,
-      publicKey: keys.publicKeyArmored,
-      revocationKey: keys.revocationCertificate,
-      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
       keys: {
         ecc: {
           publicKey: keys.publicKeyArmored,
@@ -652,7 +404,7 @@ describe('Change password', () => {
     };
 
     const mockUser = mockClearUser as UserSettings;
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUser);
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(mockUser);
 
     const encryptedSalt = encryptText('mockSalt');
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
@@ -677,16 +429,12 @@ describe('Change password', () => {
   test('When the server rejects the password change with a non-server error, then the original error is propagated', async () => {
     const mockOldPassword = 'password123';
     const mockNewPassword = 'newPassword123';
-    const mockEmail = 'test@example.com';
 
     const mockMnemonicNotEnc =
       'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
     const keys = await pgpService.generateNewKeys();
     const mockClearUser: Partial<UserSettings> = {
       mnemonic: mockMnemonicNotEnc,
-      publicKey: keys.publicKeyArmored,
-      revocationKey: keys.revocationCertificate,
-      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
       keys: {
         ecc: {
           publicKey: keys.publicKeyArmored,
@@ -700,7 +448,7 @@ describe('Change password', () => {
     };
 
     const mockUser = mockClearUser as UserSettings;
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUser);
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(mockUser);
 
     const encryptedSalt = encryptText('mockSalt');
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
@@ -731,7 +479,7 @@ describe('Change password', () => {
         sendUserDeactivationEmail: mockSendDeactivationEmail,
       }),
     } as any);
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue('token');
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue('token');
 
     await authService.cancelAccount();
     expect(mockSendDeactivationEmail).toHaveBeenCalledWith('token');
@@ -899,7 +647,7 @@ describe('areCredentialsCorrect', () => {
     const mockSalt = 'mockSalt';
     const mockToken = 'mockToken';
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue(mockToken);
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(mockToken);
 
     const encryptedSalt = encryptText(mockSalt);
     const mockAreCredentialsCorrect = vi.fn().mockResolvedValue(true);
@@ -922,7 +670,7 @@ describe('areCredentialsCorrect', () => {
     const mockSalt = 'mockSalt';
     const mockToken = 'mockToken';
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue(mockToken);
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(mockToken);
 
     const encryptedSalt = encryptText(mockSalt);
     const mockAreCredentialsCorrect = vi.fn().mockResolvedValue(false);
@@ -944,7 +692,7 @@ describe('areCredentialsCorrect', () => {
     const mockPassword = 'password123';
     const mockSalt = 'mockSalt';
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue(null);
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(undefined);
 
     const encryptedSalt = encryptText(mockSalt);
     const mockAreCredentialsCorrect = vi.fn().mockResolvedValue(true);
@@ -967,7 +715,7 @@ describe('areCredentialsCorrect', () => {
     const mockSalt = 'mockSalt';
     const mockToken = 'mockToken';
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue(mockToken);
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(mockToken);
 
     const encryptedSalt = encryptText(mockSalt);
     const mockError = new Error('API error');
@@ -990,11 +738,11 @@ describe('areCredentialsCorrect', () => {
     const mockEmail = 'test@example.com';
     const mockCreateAuthClient = vi.fn();
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue(mockToken);
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(mockToken);
 
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue({
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({
       email: mockEmail,
-    } as any);
+    } as UserSettings);
 
     const encryptedSalt = encryptText(mockSalt);
     const mockAreCredentialsCorrect = vi.fn().mockResolvedValue(true);
@@ -1100,17 +848,18 @@ describe('logOut', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue('test-token');
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue('test-token');
     vi.spyOn(localStorageService, 'clear').mockImplementation(() => {});
 
     await authService.logOut();
 
     expect(mockAuthClient.logout).toHaveBeenCalledWith('test-token');
     expect(localStorageService.clear).toHaveBeenCalled();
+    expect(encryptedStorageService.clear).toHaveBeenCalled();
   });
 
   it('should sign out user even when session has expired', async () => {
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue(null);
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(undefined);
     vi.spyOn(localStorageService, 'clear').mockImplementation(() => {});
 
     await authService.logOut();
@@ -1127,7 +876,7 @@ describe('logOut', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue('test-token');
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue('test-token');
     vi.spyOn(localStorageService, 'clear').mockImplementation(() => {});
 
     const loginParams = { redirect: 'dashboard' };
@@ -1147,7 +896,7 @@ describe('cancelAccount', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue('test-token');
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue('test-token');
 
     await authService.cancelAccount();
 
@@ -1163,7 +912,7 @@ describe('cancelAccount', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue(null);
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(undefined);
 
     await authService.cancelAccount();
 
@@ -1181,7 +930,7 @@ describe('getSalt', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue({ email: 'test@test.com' } as UserSettings);
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ email: 'test@test.com' } as UserSettings);
 
     const salt = await authService.getSalt();
 
@@ -1200,7 +949,7 @@ describe('getPasswordDetails', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue({ email: 'test@test.com' } as UserSettings);
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ email: 'test@test.com' } as UserSettings);
 
     const result = await authService.getPasswordDetails('test-password');
 
@@ -1219,7 +968,7 @@ describe('getPasswordDetails', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue({ email: 'test@test.com' } as UserSettings);
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ email: 'test@test.com' } as UserSettings);
 
     await expect(authService.getPasswordDetails('test-password')).rejects.toThrow(
       'Internal server error. Please reload.',
@@ -1278,7 +1027,7 @@ describe('userHas2FAStored', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue({ email: 'test@test.com' } as UserSettings);
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ email: 'test@test.com' } as UserSettings);
 
     const result = await authService.userHas2FAStored();
 
@@ -1297,7 +1046,7 @@ describe('generateNew2FA', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue('test-token');
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue('test-token');
 
     const result = await authService.generateNew2FA();
 
@@ -1314,7 +1063,7 @@ describe('generateNew2FA', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue(null);
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(undefined);
 
     const result = await authService.generateNew2FA();
 
@@ -1333,7 +1082,7 @@ describe('deactivate2FA', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue('test-token');
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue('test-token');
 
     const encryptedSalt = encryptText('test-salt');
     await authService.deactivate2FA(encryptedSalt, 'test-password', '123456');
@@ -1350,7 +1099,7 @@ describe('deactivate2FA', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue(null);
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(undefined);
 
     const encryptedSalt = encryptText('test-salt');
     await authService.deactivate2FA(encryptedSalt, 'test-password', '123456');
@@ -1457,7 +1206,7 @@ describe('authService default export', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue('auth-token');
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue('auth-token');
 
     await authService.default.store2FA('secret-code', '123456');
     expect(mockAuthClient.storeTwoFactorAuthKey).toHaveBeenCalledWith('secret-code', '123456', 'auth-token');
@@ -1477,7 +1226,7 @@ describe('authService default export', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue(null);
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(undefined);
 
     await authService.default.store2FA('secret-code', '123456');
     expect(mockAuthClient.storeTwoFactorAuthKey).toHaveBeenCalledWith('secret-code', '123456', undefined);
