@@ -33,7 +33,7 @@ describe('usePriceRefetchOnAddressChange', () => {
     vi.clearAllMocks();
   });
 
-  test('does not refetch when the billing country is missing', () => {
+  test('Given a selected plan and a known postal code, when the billing country is missing, then the price is not refetched', () => {
     const fetchSelectedPlan = vi.fn();
 
     renderHook(() =>
@@ -50,7 +50,7 @@ describe('usePriceRefetchOnAddressChange', () => {
     expect(fetchSelectedPlan).not.toHaveBeenCalled();
   });
 
-  test('does not refetch when the billing postal code is missing, even if the country is already known from geolocation', () => {
+  test('Given a selected plan and a country resolved from geolocation, when the billing postal code is missing, then the price is not refetched', () => {
     const fetchSelectedPlan = vi.fn();
 
     renderHook(() =>
@@ -67,7 +67,7 @@ describe('usePriceRefetchOnAddressChange', () => {
     expect(fetchSelectedPlan).not.toHaveBeenCalled();
   });
 
-  test('does not refetch when there is no selected plan yet', () => {
+  test('Given a known country and postal code, when there is no selected plan yet, then the price is not refetched', () => {
     const fetchSelectedPlan = vi.fn();
 
     renderHook(() =>
@@ -84,7 +84,7 @@ describe('usePriceRefetchOnAddressChange', () => {
     expect(fetchSelectedPlan).not.toHaveBeenCalled();
   });
 
-  test('refetches with both country and postal code once both are known, after debouncing', () => {
+  test('Given a selected plan, when both country and postal code become known, then the price is refetched with both after debouncing', () => {
     const fetchSelectedPlan = vi.fn();
 
     renderHook(() =>
@@ -110,7 +110,7 @@ describe('usePriceRefetchOnAddressChange', () => {
     });
   });
 
-  test('debounces rapid postal code changes into a single request', () => {
+  test('Given a selected plan, when the postal code changes rapidly, then only a single debounced request is sent with the latest value', () => {
     const fetchSelectedPlan = vi.fn();
 
     const { rerender } = renderHook(
