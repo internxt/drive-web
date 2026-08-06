@@ -9,7 +9,7 @@ import { RootState } from '../../..';
 import { prepareFilesToUpload } from '../fileUtils/prepareFilesToUpload';
 import { uploadFilesWithTasks } from 'app/tasks/upload/uploadFilesWithTasks';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import RetryManager from 'app/network/RetryManager';
+import RetryManager, { RetryableTaskType } from 'app/network/RetryManager';
 import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
 import { StorageState } from '../storage.model';
 import errorService from 'services/error.service';
@@ -350,7 +350,7 @@ describe('uploadItemsThunkExtraReducers', () => {
     const RetryChangeStatusSpy = vi.spyOn(RetryManager, 'changeStatus');
 
     RetryManager.addTask({
-      type: 'upload',
+      type: RetryableTaskType.Upload,
       taskId: sampleFile.taskId ?? 'task1',
       params: sampleFile,
     });

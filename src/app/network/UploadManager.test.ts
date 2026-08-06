@@ -5,7 +5,7 @@ import { AppError } from '@internxt/sdk';
 import uploadFile from 'app/drive/services/file.service/uploadFile';
 import DatabaseUploadRepository from 'app/repositories/DatabaseUploadRepository';
 import { DriveFileData } from 'app/drive/types';
-import RetryManager from './RetryManager';
+import RetryManager, { RetryableTaskType } from './RetryManager';
 import { TaskStatus } from 'app/tasks/types';
 import { ErrorMessages } from 'app/core/constants';
 
@@ -707,7 +707,9 @@ describe('uploadFileWithManager', () => {
       userEmail: '',
       parentFolderId: '',
     };
-    RetryManager.addTasks([{ taskId: 'retried-task', type: 'upload', params: fileParams, retryable: true }]);
+    RetryManager.addTasks([
+      { taskId: 'retried-task', type: RetryableTaskType.Upload, params: fileParams, retryable: true },
+    ]);
 
     await expect(
       uploadFileWithManager({
