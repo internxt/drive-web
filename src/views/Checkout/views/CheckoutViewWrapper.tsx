@@ -89,6 +89,7 @@ const CheckoutViewWrapper = () => {
     address,
     isCryptoAddressIncomplete,
     billingCountry,
+    billingPostalCode,
     getCustomerName,
     onUserAddressChanges,
     onUserNameChanges,
@@ -144,17 +145,22 @@ const CheckoutViewWrapper = () => {
       return;
     }
 
+    if (!billingCountry || !billingPostalCode) {
+      return;
+    }
+
     const debounceTimer = setTimeout(() => {
       fetchSelectedPlan({
         priceId: selectedPlan.price.id,
         currency: selectedPlan.price.currency,
         promotionCode: promotionCode ?? undefined,
+        postalCode: billingPostalCode,
         country: billingCountry,
       });
     }, 500);
 
     return () => clearTimeout(debounceTimer);
-  }, [billingCountry, selectedPlan?.price?.id, selectedPlan?.price?.currency]);
+  }, [billingCountry, billingPostalCode, selectedPlan?.price?.id, selectedPlan?.price?.currency]);
 
   useEffect(() => {
     if (isCheckoutReady && selectedPlan?.price) {
