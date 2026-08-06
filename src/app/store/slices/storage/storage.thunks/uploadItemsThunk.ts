@@ -14,7 +14,7 @@ import { storageActions } from '..';
 import { RootState } from '../../..';
 import errorService from 'services/error.service';
 import workspacesService from 'services/workspace.service';
-import { uploadFileWithManager } from '../../../../network/UploadManager';
+import { uploadFilesWithTasks } from 'app/tasks/upload/uploadFilesWithTasks';
 import DatabaseUploadRepository from '../../../../repositories/DatabaseUploadRepository';
 import shareService from '../../../../share/services/share.service';
 import { planSelectors, planThunks } from '../../plan';
@@ -212,7 +212,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     const openFileSizeLimitDialog = () => openReachedFileSizeLimitDialog(allowedFilesToUpload, dispatch);
 
     try {
-      await uploadFileWithManager({
+      await uploadFilesWithTasks({
         files: filesToUploadData,
         maxSpaceOccupiedCallback: () => notifyMaxSpaceOccupied(getState(), dispatch),
         fileSizeExceededCallback: openFileSizeLimitDialog,
@@ -398,7 +398,7 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
       );
 
     try {
-      await uploadFileWithManager({
+      await uploadFilesWithTasks({
         files: filesToUploadData,
         maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialog,
         uploadRepository: DatabaseUploadRepository.getInstance(),
@@ -499,7 +499,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
     const openFileSizeLimitDialog = () => openReachedFileSizeLimitDialog(allowedFilesToUpload, dispatch);
 
     try {
-      await uploadFileWithManager({
+      await uploadFilesWithTasks({
         files: filesToUploadData,
         maxSpaceOccupiedCallback: () => notifyMaxSpaceOccupied(getState(), dispatch),
         fileSizeExceededCallback: openFileSizeLimitDialog,
