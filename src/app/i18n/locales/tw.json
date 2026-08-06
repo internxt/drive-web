@@ -195,7 +195,8 @@
       "login": "登入",
       "success": "您已成功登入",
       "error": "無法登入，請再試一次",
-      "closeWindow": "您可以關閉此視窗"
+      "closeWindow": "您可以關閉此視窗",
+      "invalidRedirectUri": "無效的重新導向網址"
     },
     "oauthLink": {
       "continueAs": "繼續使用",
@@ -205,10 +206,13 @@
     }
   },
   "checkout": {
-    "title": "您快完成了！請安全結帳",
     "pay": "支付",
     "processing": "處理中...",
     "checkout": "結帳",
+    "postalCode": {
+      "title": "郵遞區號",
+      "placeholder": "郵遞區號"
+    },
     "authComponent": {
       "signUp": {
         "emailAddress": "您的電子郵件地址",
@@ -217,12 +221,17 @@
       "signIn": {
         "password": "您的密碼"
       },
-      "title": {
-        "signUp": "創建帳戶",
-        "signIn": "登錄",
-        "userIsSignedIn": "用戶已登錄為"
-      },
       "emailMustNotBeEmpty": "電子郵件不能為空",
+      "authError": {
+        "invalidCredentials": "電子郵件或密碼不正確，請再試一次。",
+        "twoFactorEnabled": "此帳戶已啟用雙重驗證。請先前往登入頁面登入，再回到這裡完成購買。",
+        "emailAlreadyRegistered": "此電子郵件已註冊帳戶。請選擇「登入」以繼續購買。",
+        "accountLocked": "基於安全考量，此帳戶已被鎖定。請先查看您的收件匣以解除鎖定，再繼續操作。",
+        "tooManyAttempts": "嘗試次數過多，請稍候一分鐘後再試。",
+        "invalidData": "請確認您的電子郵件和密碼是否正確，然後再試一次。",
+        "serverError": "我們無法完成此步驟。請於幾分鐘後再試，若問題持續發生請聯絡客服。",
+        "unknown": "我們無法驗證您的資料。請確認您的電子郵件和密碼，然後再試一次。"
+      },
       "privacyGuarantee": "隱私保證：我們不會分享您的信息，並且只會在提供服務時與您聯繫。"
     },
     "addressBillingTitle": "帳單地址",
@@ -234,10 +243,7 @@
         "companyVatId": "公司增值稅編號"
       }
     },
-    "paymentTitle": "選擇支付方式",
     "productCard": {
-      "title": "訂單摘要",
-      "selectedPlan": "選擇的計劃",
       "renewalTitle": {
         "month": "每年",
         "year": "每年",
@@ -249,7 +255,6 @@
         "lifetime": "一次性支付"
       },
       "saving": "您節省了 {{percent}}%",
-      "planDetails": "計劃詳情：",
       "total": "總計d",
       "addCoupon": {
         "buttonTitle": "添加優惠券",
@@ -282,7 +287,9 @@
       "invalidPlan": "不支援的方案類型。請選擇有效的方案。",
       "fetchingCryptoCurrencies": "無法載入可用的加密貨幣選項",
       "addressRequired": "請填寫您的帳單地址以繼續",
-      "businessPlan": "企業計劃不可用"
+      "businessPlan": "企業計劃不可用",
+      "postalCodeRequired": "請輸入您的郵遞區號以繼續",
+      "countryRequired": "我們無法確定您的國家/地區,請稍後再試"
     }
   },
   "general": {
@@ -486,17 +493,19 @@
         },
         "billing": {
           "cancelSubscriptionModal": {
+            "title": "取消訂閱",
             "description": {
-              "individual": "您即將取消您的 Internxt {{currentPlanName}} 方案。取消方案後，您將降級為免費的 Internxt {{freePlanName}} 方案。請確認您的選擇以繼續。",
+              "individual": {
+                "line1": "您的年度方案按月計費，並於 {{endDate}} 到期。",
+                "line2": "您可以選擇接下來的處理方式："
+              },
               "business": "取消方案後，工作區以及所有資料將被刪除。請確認您的選擇以繼續。"
             },
+
             "commitment": {
-              "firstMonthDescription": "由於您仍在 30 天試用期內，您的取消將立即生效。您將不再被收費，您的帳戶現在將恢復為免費的 1GB 方案。",
-              "description": "您擁有按月計費的年度訂閱。如果您現在取消，您的訂閱將保持有效至 {{end_date}}，且在該日期之前您將繼續被按月收費。",
-              "monthsRemaining": "剩餘付款次數：{{monthsRemaining}}",
-              "amountPerMonth": "每月金額：€{{amount}}",
-              "afterLabel": "{{monthsRemaining}} 之後"
+              "firstMonthDescription": "由於您仍在 30 天試用期內，您的取消將立即生效。您將不再被收費，您的帳戶現在將恢復為免費的 1GB 方案。"
             },
+            "directCancellationDescription": "您即將取消您的訂閱。您將失去對方案的存取權限，且您的帳戶將恢復為免費方案。請確認您的選擇以繼續。",
             "keepSubscription": "保留訂閱",
             "cancelSubscription": "取消訂閱",
             "infoBox": {
@@ -540,6 +549,16 @@
                 }
               }
             }
+          },
+          "subscriptionEndingModal": {
+            "title": "訂閱將於 {{endDate}} 結束",
+            "description": {
+              "title": "當您的方案結束時：",
+              "storageReturns": "您的儲存空間將恢復為免費限額",
+              "featuresUnavailable": "進階功能將無法再使用"
+            },
+            "maybeLater": "稍後再說",
+            "renewSubscription": "續訂方案"
           },
           "cancellationIncentive": {
             "title": {
@@ -1322,9 +1341,16 @@
     "verificationEmail": "驗證郵件已發送",
     "successCancelSubscription": "您的訂閱已取消",
     "errorCancelSubscription": "取消訂閱時出現問題",
+    "successApplyCancellationIncentive": "感謝您繼續與我們同行！下個月免費享用",
+    "errorApplyCancellationIncentive": "套用取消優惠時發生問題",
+    "successEarlyCancelSubscription": "您的訂閱已取消",
+    "errorEarlyCancelSubscription": "取消訂閱時出現問題",
+    "successReactivateSubscription": "您的訂閱已重新啟用",
+    "errorReactivateSubscription": "重新啟用訂閱時出現問題",
+    "successApplyCoupon": "免費使用3個月的優惠碼已應用",
+    "errorApplyCoupon": "應用折扣時出現錯誤",
+    "alreadyAppliedCoupon": "優惠碼已經應用",
     "errorCreatingSubscription": "建立您的訂閱時出現問題",
-    "successApplyCancellationIncentive": "感謝您繼續與我們同行！盡享下個月免費服務",
-    "errorApplyCancellationIncentive": "套用取消優惠時發生錯誤",
     "couponIsNotValidForUserError": "優惠券只能由新客戶兌換。",
     "errorApplyingCoupon": "應用優惠券時出錯",
     "errorWhileFetchingMoreItems": "獲取更多項目時出現錯誤",
@@ -1882,5 +1908,8 @@
   },
   "sdk": {
     "rateLimitToast": "這花費的時間比預期的長，請稍候..."
+  },
+  "common": {
+    "planCancelled": "您的訂閱將於 {{end_date}} 結束"
   }
 }

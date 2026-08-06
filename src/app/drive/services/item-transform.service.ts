@@ -1,7 +1,10 @@
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
-import { DriveItemData } from '../types';
 
-const getItemPlainNameWithExtension = (item: DriveItemData) => {
+const getItemPlainNameWithExtension = (item: {
+  plainName?: string | null;
+  plain_name?: string | null;
+  type?: string | null;
+}) => {
   const plainName = item?.plainName ?? item?.plain_name;
   const type = item.type;
 

@@ -1,6 +1,5 @@
 import { CouponCodeData, CreatedSubscriptionData } from '@internxt/sdk/dist/drive/payments/types/types';
 import axios from 'axios';
-import localStorageService from 'services/local-storage.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 import {
   CreateCustomerPayload,
@@ -15,6 +14,7 @@ import envService from 'services/env.service';
 import errorService from 'services/error.service';
 import { bytesToString } from 'app/drive/services/size.service';
 import userService from 'services/user.service';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 const BORDER_SHADOW = 'rgb(0 102 255)';
 
@@ -23,6 +23,12 @@ const fetchPromotionCodeByName = async (priceId: string, promotionCodeName: stri
 
   return paymentClient.fetchPromotionCodeByName(priceId, promotionCodeName);
 };
+
+export type CreateCheckoutCustomerPayload = Pick<
+  CreateCustomerPayload,
+  'country' | 'captchaToken' | 'companyVatId' | 'metadata' | 'lineAddress2'
+> &
+  Partial<Pick<CreateCustomerPayload, 'customerName' | 'lineAddress1' | 'city' | 'postalCode'>>;
 
 const createCustomer = async ({
   customerName,
@@ -34,7 +40,7 @@ const createCustomer = async ({
   captchaToken,
   companyVatId,
   metadata,
-}: CreateCustomerPayload): Promise<{
+}: CreateCheckoutCustomerPayload): Promise<{
   customerId: string;
   token: string;
 }> => {
@@ -49,7 +55,7 @@ const createCustomer = async ({
     captchaToken,
     companyVatId,
     metadata,
-  });
+  } as CreateCustomerPayload);
 };
 
 const getPriceById = async ({
@@ -113,7 +119,7 @@ export const createPaymentIntent = async ({
 
 const checkoutSetupIntent = async (customerId: string) => {
   try {
-    const newToken = localStorageService.getToken();
+    const newToken = encryptedStorageService.getToken();
 
     if (!newToken) {
       throw new Error('No authentication token available');
