@@ -1,131 +1,15 @@
-import { afterAll, beforeEach, describe, expect, it, test, vi, afterEach } from 'vitest';
+import { afterAll, beforeEach, describe, expect, it, test, vi } from 'vitest';
 import localStorageService from './local-storage.service';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { LocalStorageItem, LocalStorageProtectedItem } from 'app/core/types';
-import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
-import { createNewKey, deleteDb } from './local-storage-crypto';
+import { LocalStorageItem } from 'app/core/types';
 
-export const mockUserSettings: UserSettings = {
-  userId: 'user_123',
-  uuid: 'uuid-1234-5678',
-  email: 'test.user@example.com',
-  name: 'Test',
-  lastname: 'User',
-  username: 'testuser',
-  bridgeUser: 'bridge_user',
-  bucket: 'user-bucket',
-  backupsBucket: 'backups-bucket',
-  root_folder_id: 1,
-  rootFolderId: 'folder-id-123',
-  rootFolderUuid: 'folder-uuid-456',
-  sharedWorkspace: false,
-  credit: 100,
-  mnemonic: 'test mnemonic phrase',
-  privateKey: 'private-key-mock',
-  publicKey: 'public-key-mock',
-  revocationKey: 'revocation-key-mock',
-  keys: {
-    ecc: {
-      publicKey: 'ecc-public-key-mock',
-      privateKey: 'ecc-private-key-mock',
-    },
-    kyber: {
-      publicKey: 'kyber-public-key-mock',
-      privateKey: 'kyber-private-key-mock',
-    },
-  },
-  teams: true,
-  appSumoDetails: null,
-  registerCompleted: true,
-  hasReferralsProgram: true,
-  createdAt: new Date('2023-06-01T12:00:00.000Z'),
-  avatar: null,
-  emailVerified: true,
-};
-
-const mockWorkspaceCredentialsDetails: WorkspaceCredentialsDetails = {
-  workspaceId: 'workspace-123',
-  bucket: 'workspace-bucket',
-  workspaceUserId: 'workspace-user-456',
-  email: 'workspace.user@example.com',
-  credentials: {
-    networkPass: 'mockNetworkPassword123',
-    networkUser: 'workspace.network.user',
-  },
-  tokenHeader: 'Bearer mock-token-abc-123',
-};
-
-const mockWorkspaceData: WorkspaceData = {
-  workspaceUser: {
-    backupsUsage: '500000000', // 500 MB
-    createdAt: '2023-05-01T10:00:00.000Z',
-    deactivated: false,
-    driveUsage: '1200000000', // 1.2 GB
-    freeSpace: '8800000000', // 8.8 GB free
-    id: 'workspace-user-001',
-    isManager: true,
-    isOwner: false,
-    key: 'mock-encryption-key',
-    member: {
-      avatar: null,
-      backupsBucket: 'backups-bucket-id',
-      bridgeUser: 'bridge-user-mock',
-      credit: 100,
-      email: 'jane.doe@example.com',
-      errorLoginCount: 0,
-      id: 101,
-      isEmailActivitySended: true,
-      lastPasswordChangedAt: '2023-07-01T12:00:00.000Z',
-      lastResend: '2023-08-01T12:00:00.000Z',
-      lastname: 'Doe',
-      name: 'Jane',
-      referralCode: 'REF-JANE-123',
-      referrer: null,
-      registerCompleted: true,
-      rootFolderId: 2001,
-      sharedWorkspace: true,
-      syncDate: '2023-10-01T08:00:00.000Z',
-      userId: 'user-1234',
-      username: 'janedoe',
-      uuid: 'uuid-janedoe-5678',
-      welcomePack: true,
-    },
-    memberId: '101',
-    rootFolderId: 'folder-abc-123',
-    spaceLimit: '10000000000', // 10 GB
-    updatedAt: '2023-10-01T12:00:00.000Z',
-    usedSpace: '1700000000', // 1.7 GB
-    workspaceId: 'workspace-xyz-456',
-  },
-  workspace: {
-    id: 'workspace-xyz-456',
-    ownerId: 'user-1234',
-    address: '123 Main St, Example City',
-    name: 'Marketing Workspace',
-    description: 'Workspace for the marketing department',
-    defaultTeamId: 'team-789',
-    workspaceUserId: 'workspace-user-001',
-    setupCompleted: true,
-    createdAt: '2023-04-01T09:30:00.000Z',
-    updatedAt: '2023-10-01T12:30:00.000Z',
-    avatar: null,
-    rootFolderId: 'folder-abc-123',
-    phoneNumber: null,
-  },
-};
+const userUUID = 'user_123';
 
 const localStorageKey = LocalStorageItem.Language;
 const localStorageValue = 'item-exists';
 
-const stringifyMockedUser = JSON.stringify(mockUserSettings);
-const stringifyMockCredentials = JSON.stringify(mockWorkspaceCredentialsDetails);
-const stringifyWorkspaceData = JSON.stringify(mockWorkspaceData);
-
 beforeEach(() => {
   localStorage.setItem(localStorageKey, localStorageValue);
-  localStorageService.setUser(mockUserSettings);
-  localStorage.setItem(LocalStorageItem.WorkspaceCredentials, stringifyMockCredentials);
-  localStorage.setItem(LocalStorageItem.B2Bworkspace, stringifyWorkspaceData);
+  localStorage.setItem(LocalStorageItem.UserUUID, userUUID);
   localStorage.setItem(LocalStorageItem.Theme, 'starwars');
   vi.clearAllMocks();
   vi.resetModules();
@@ -133,10 +17,6 @@ beforeEach(() => {
 
 afterAll(() => {
   localStorage.clear();
-});
-
-afterEach(async () => {
-  await deleteDb();
 });
 
 describe('Testing the local storage service', () => {
@@ -194,115 +74,9 @@ describe('Testing the local storage service', () => {
     });
   });
 
-  describe('Get and set encrypted values', () => {
-    it('When sets protected value, then the value is stored encrypted', async () => {
-      await createNewKey();
-      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
-      const cryptoSpy = vi.spyOn(window.crypto.subtle, 'encrypt');
-
-      const key = LocalStorageProtectedItem.NewToken;
-      const value = 'test-value';
-      await localStorageService.setAndEncrypt(key, value);
-
-      const localStorageItem = localStorage.getItem(key);
-
-      expect(getFromLocalStorageSpy).toHaveBeenCalled();
-      expect(cryptoSpy).toHaveBeenCalled();
-      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(key);
-      expect(localStorageItem).not.toEqual(value);
-    });
-
-    it('When gets a protected value, then the result is decrypted', async () => {
-      await createNewKey();
-      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
-      const cryptoSpy = vi.spyOn(window.crypto.subtle, 'decrypt');
-
-      const key = LocalStorageProtectedItem.NewToken;
-      const value = 'test-value';
-      await localStorageService.setAndEncrypt(key, value);
-
-      const localStorageItem = await localStorageService.getAndDecrypt(key);
-
-      expect(getFromLocalStorageSpy).toHaveBeenCalled();
-      expect(cryptoSpy).toHaveBeenCalled();
-      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(key);
-      expect(localStorageItem).toBe(value);
-    });
-  });
-
-  describe('Fetching user data from local storage', () => {
-    it('When the user data exists in local storage, then the user is returned', () => {
-      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
-
-      const userFromLocalStorage = localStorageService.getUser();
-
-      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.User);
-      expect(userFromLocalStorage).toStrictEqual(JSON.parse(stringifyMockedUser));
-    });
-
-    it('When the user data does not exist in local storage, then nothing (null) is returned', () => {
-      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
-
-      localStorage.removeItem(LocalStorageItem.User);
-      const userFromLocalStorage = localStorageService.getUser();
-
-      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.User);
-      expect(userFromLocalStorage).toBeNull();
-    });
-  });
-
-  describe('Workspaces', () => {
-    describe('Get workspace credentials', () => {
-      it('When there are credentials from a workspace, then the credentials are returned', () => {
-        const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
-
-        const workspaceCredentials = localStorageService.getWorkspaceCredentials();
-
-        expect(getFromLocalStorageSpy).toHaveBeenCalled();
-        expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.WorkspaceCredentials);
-        expect(workspaceCredentials).toStrictEqual(JSON.parse(stringifyMockCredentials));
-      });
-
-      it('When there are not credentials from a workspace, then a value indicating so is returned (null)', () => {
-        const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
-
-        localStorage.removeItem(LocalStorageItem.WorkspaceCredentials);
-        const workspaceCredentials = localStorageService.getWorkspaceCredentials();
-
-        expect(getFromLocalStorageSpy).toHaveBeenCalled();
-        expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.WorkspaceCredentials);
-        expect(workspaceCredentials).toBeNull();
-      });
-    });
-
-    describe('Get workspace item data', () => {
-      it('When a workspace object exists, then the object is returned', () => {
-        const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
-
-        const workspaceCredentials = localStorageService.getB2BWorkspace();
-
-        expect(getFromLocalStorageSpy).toHaveBeenCalled();
-        expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.B2Bworkspace);
-        expect(workspaceCredentials).toStrictEqual(JSON.parse(stringifyWorkspaceData));
-      });
-
-      it('When a workspace object does not exist, then a value indicating so is returned (null)', () => {
-        const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
-
-        localStorage.removeItem(LocalStorageItem.B2Bworkspace);
-        const workspaceCredentials = localStorageService.getB2BWorkspace();
-
-        expect(getFromLocalStorageSpy).toHaveBeenCalled();
-        expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageItem.B2Bworkspace);
-        expect(workspaceCredentials).toBeNull();
-      });
-    });
-  });
-
   describe('Backup key acknowledgment', () => {
-    const userId = mockUserSettings.uuid;
-    const seenAtKey = `backup_key_seen_at_${userId}`;
-    const acknowledgedKey = `backup_key_acknowledged_at_${userId}`;
+    const seenAtKey = `backup_key_seen_at_${userUUID}`;
+    const acknowledgedKey = `backup_key_acknowledged_at_${userUUID}`;
 
     describe('Get backup keys', () => {
       test('When the user has never interacted with the backup keys dialog, then nothing is returned', () => {
@@ -369,9 +143,8 @@ describe('Testing the local storage service', () => {
 
       expect(clearSpy).toHaveBeenCalledTimes(1);
 
-      const userId = mockUserSettings.uuid;
-      const seenAtKey = `backup_key_seen_at_${userId}`;
-      const acknowledgedKey = `backup_key_acknowledged_at_${userId}`;
+      const seenAtKey = `backup_key_seen_at_${userUUID}`;
+      const acknowledgedKey = `backup_key_acknowledged_at_${userUUID}`;
       expect(localStorage.getItem(seenAtKey)).toBeNull();
       expect(localStorage.getItem(acknowledgedKey)).toBeNull();
     });

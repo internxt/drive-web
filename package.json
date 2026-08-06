@@ -1,6 +1,6 @@
 {
   "name": "drive-web",
-  "version": "v1.0.810",
+  "version": "v1.0.816",
   "private": true,
   "packageManager": "yarn@1.22.22",
   "dependencies": {
@@ -9,7 +9,7 @@
     "@iconscout/react-unicons": "^2.2.5",
     "@internxt/css-config": "1.1.1",
     "@internxt/lib": "=1.5.1",
-    "@internxt/sdk": "=1.17.14",
+    "@internxt/sdk": "=1.19.0",
     "@internxt/ui": "=0.1.21",
     "@phosphor-icons/react": "^2.1.10",
     "@popperjs/core": "^2.11.6",
@@ -18,7 +18,7 @@
     "@stripe/stripe-js": "^3.5.0",
     "@typeform/embed-react": "^1.19.0",
     "assert": "^2.1.0",
-    "axios": "^1.16.0",
+    "axios": "^1.18.0",
     "bip39": "^3.0.3",
     "browserify-zlib": "^0.2.0",
     "copy-to-clipboard": "^3.3.1",
@@ -137,7 +137,7 @@
     "@types/react-window": "^1.8.8",
     "@types/wicg-file-system-access": "^2023.10.7",
     "@vitejs/plugin-react": "=4.5.1",
-    "@vitest/browser": "4.1.8",
+    "@vitest/browser": "4.1.10",
     "@vitest/browser-playwright": "4.1.8",
     "@vitest/coverage-istanbul": "4.1.8",
     "autoprefixer": "^10.4.16",
@@ -149,7 +149,7 @@
     "eslint": "^7.32.0",
     "husky": "^7.0.2",
     "jsdom": "^29.1.1",
-    "postcss": "^8.5.10",
+    "postcss": "^8.5.23",
     "prettier": "^3.3.3",
     "process": "^0.11.10",
     "prop-types": "^15.7.2",
@@ -179,7 +179,8 @@
     "glob": "^10.5.0",
     "js-yaml": "^4.1.1",
     "readdir-glob/minimatch": "5.1.8",
-    "readdir-glob/brace-expansion": "2.0.3",
-    "babel-plugin-macros/yaml": "1.10.3"
+    "readdir-glob/minimatch/brace-expansion": "2.1.4",
+    "babel-plugin-macros/yaml": "1.10.3",
+    "xlsx-preview/exceljs/uuid": "^11.1.1"
   }
 }

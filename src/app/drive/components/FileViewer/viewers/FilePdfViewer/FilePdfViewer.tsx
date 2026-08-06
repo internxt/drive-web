@@ -3,6 +3,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useEffect, useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { FormatFileViewerProps } from '../../FileViewer';
+import { getPortraitFitWidth } from '../../utils/fileViewerUtils';
 
 import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?raw';
 const blob = new Blob([workerUrl], { type: 'application/javascript' });
@@ -24,6 +25,7 @@ const zoomRange = [0.85, 1, 1.5, 2, 3];
 
 const PageWithObserver: React.FC<PageWithObserverProps> = ({ pageNumber, zoom, onPageVisible, ...otherProps }) => {
   const [observerReady, setObserverReady] = useState(false);
+  const portraitFitWidth = getPortraitFitWidth();
 
   useEffect(() => {
     // If the zoom changes, we need to re-observe the page
@@ -50,6 +52,7 @@ const PageWithObserver: React.FC<PageWithObserverProps> = ({ pageNumber, zoom, o
         }
       }}
       pageNumber={pageNumber}
+      width={portraitFitWidth ? portraitFitWidth * zoomRange[zoom] : undefined}
       height={window.innerHeight * zoomRange[zoom]}
       renderAnnotationLayer={false}
       renderTextLayer={false}

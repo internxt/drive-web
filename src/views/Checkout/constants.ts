@@ -3,6 +3,8 @@ export const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
 export const IS_CRYPTO_PAYMENT_ENABLED = true;
 
+export const POSTAL_CODE_REQUIRED_COUNTRIES = ['US', 'CA', 'IN'];
+
 export const THEME_STYLES = {
   dark: {
     backgroundColor: 'rgb(17 17 17)',
@@ -25,5 +27,8 @@ export const STATUS_CODE_ERROR = {
   COUPON_NOT_VALID: 422,
   PROMO_CODE_BY_NAME_NOT_FOUND: 404,
   BAD_REQUEST: 400,
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
+  TOO_MANY_REQUESTS: 429,
   INTERNAL_SERVER_ERROR: 500,
 };

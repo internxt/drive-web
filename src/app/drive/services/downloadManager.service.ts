@@ -16,7 +16,6 @@ import { LRUFilesCacheManager } from 'app/database/services/database.service/LRU
 import { AdvancedSharedItem } from 'app/share/types';
 import { binaryStreamToBlob } from 'services/stream.service';
 import { downloadFile } from 'app/network/download';
-import localStorageService from 'services/local-storage.service';
 import date from 'services/date.service';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { ConnectionLostError } from 'app/network/requests';
@@ -32,6 +31,7 @@ import { downloadWorkerHandler } from './worker.service/downloadWorkerHandler';
 import { isFileEmpty } from 'utils/isFileEmpty';
 import deviceService from 'services/device.service';
 import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 export type DownloadCredentials = {
   credentials: NetworkCredentials;
@@ -181,7 +181,7 @@ export class DownloadManagerService {
       }
     }
 
-    const user = localStorageService.getUser();
+    const user = encryptedStorageService.getUser();
     if (!user) throw new Error('User not found');
 
     const userCredentials: DownloadCredentials = {
