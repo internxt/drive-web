@@ -5,7 +5,7 @@ import { errorService, navigationService } from 'services';
 import { AppView } from 'app/core/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { CryptoCurrency, PriceWithTax } from '@internxt/sdk/dist/payments/types';
-import { IS_CRYPTO_PAYMENT_ENABLED, THEME_STYLES } from '../constants';
+import { IS_CRYPTO_PAYMENT_ENABLED, STRIPE_MINIMUM_CHARGE_AMOUNT, THEME_STYLES } from '../constants';
 import { PlanInterval } from '../types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
@@ -45,7 +45,9 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
   useEffect(() => {
     const amount = price?.taxes?.amountWithTax;
 
-    if (amount === undefined) return;
+    // Stripe rejects amounts under its minimum charge, so a heavily discounted total (a 100% OFF
+    // coupon, for instance) is skipped instead of being pushed to the already mounted elements.
+    if (amount === undefined || amount < STRIPE_MINIMUM_CHARGE_AMOUNT) return;
 
     setStripeElementsOptions((prevOptions) => {
       if (!prevOptions || prevOptions.amount === amount) {
