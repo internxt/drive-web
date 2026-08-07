@@ -44,9 +44,13 @@ export const CryptoPaymentSection = ({
   const shouldShowAddressForm = cryptoSelected && !isDropdownOpen;
 
   return (
-    <div className="flex w-full flex-col items-start gap-3 rounded-2xl border border-gray-10 bg-surface p-2.5 px-3.5">
+    <div
+      data-cy="crypto-payment-section"
+      className="flex w-full flex-col items-start gap-3 rounded-2xl border border-gray-10 bg-surface p-2.5 px-3.5"
+    >
       <Menu>
         <MenuButton
+          data-cy="crypto-currency-dropdown"
           onKeyDown={(e) => e.preventDefault()}
           className={`flex h-full w-full flex-row items-center justify-between rounded-lg outline-none text-base transition-all duration-75 ease-in-out ${isDropdownOpen ? 'text-gray-100 dark:text-white' : 'text-[#6D6E78] hover:text-gray-100 hover:dark:text-white'}`}
           onClick={onDropdownClicked}
@@ -80,6 +84,7 @@ export const CryptoPaymentSection = ({
                 {({ focus }) => (
                   <button
                     type="button"
+                    data-cy={`crypto-currency-option-${cryptoCurrency.currencyId.toLowerCase()}`}
                     onClick={(e: MouseEvent<HTMLButtonElement>) => {
                       e.preventDefault();
                       onCryptoChanges(cryptoCurrency.currencyId.toLowerCase());
