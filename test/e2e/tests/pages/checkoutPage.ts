@@ -20,6 +20,20 @@ const TEST_CARD: Required<CardDetails> = {
 };
 
 /**
+ * Stripe inserts its own grouping characters as you type, so `4242424242424242` comes back as
+ * `4242 4242 4242 4242` and `1234` as `12 / 34`. Matching on the significant characters only keeps
+ * the assertion independent of that formatting.
+ */
+const withAnySeparators = (value: string): RegExp =>
+  new RegExp(`^\\W*${value.replace(/\W/g, '').split('').join('\\W*')}\\W*$`);
+
+/**
+ * How long to let the PaymentElement settle before re-checking that a change stuck. The price
+ * refetch behind a remount is debounced, so the window has to outlast that debounce.
+ */
+const SETTLE_MS = 1500;
+
+/**
  * Page object for `/checkout`. Mirrors the style of `pages/loginPage.ts`: locators are resolved in
  * the constructor, actions are small async methods that assert their own preconditions.
  */
@@ -130,10 +144,16 @@ export class CheckoutPage {
     await this.page.goto(`/checkout?${params.toString()}`);
   }
 
-  /** Waits for the checkout form to replace the loader. */
-  async waitForCheckoutReady(): Promise<void> {
-    await expect(this.payButton).toBeVisible();
-    await expect(this.totalAmount).toBeVisible();
+  /**
+   * Waits for the checkout form to replace the loader.
+   *
+   * Given its own timeout rather than the global 15s expect budget: booting checkout means a
+   * location lookup, a price lookup and Stripe.js, and against a real payments service under
+   * parallel load that chain has been seen to outrun 15s.
+   */
+  async waitForCheckoutReady(timeout = 45000): Promise<void> {
+    await expect(this.payButton).toBeVisible({ timeout });
+    await expect(this.totalAmount).toBeVisible({ timeout });
   }
 
   /* ---------------------------------------------------------------------- */
@@ -229,28 +249,141 @@ export class CheckoutPage {
     throw new Error(`No Stripe frame containing "${selector}" was found within ${timeout}ms`);
   }
 
+  /**
+   * Like `findStripeFrameWith`, but searches every frame on the page rather than only the mounted
+   * PaymentElement/AddressElement ones, and reports absence instead of throwing. `page.frames()` is
+   * flat and recursive, so this reaches frames nested inside a Stripe frame — notably the 3-D Secure
+   * challenge, which Stripe mounts as `stripe-challenge-frame` inside its own modal frame.
+   */
+  private async frameContaining(selector: string): Promise<Frame | null> {
+    for (const frame of this.page.frames()) {
+      const found = await frame
+        .locator(selector)
+        .count()
+        .catch(() => 0);
+
+      if (found > 0) return frame;
+    }
+
+    return null;
+  }
+
+  /**
+   * Resolves the accordion header for a payment method inside the PaymentElement.
+   *
+   * The headers are `div[role="button"]`, not real `<button>` elements, so they are only reachable
+   * by role. Which methods appear is decided by the Stripe account's settings and by
+   * `payment_method_types` in `checkout.service.ts`.
+   */
+  private async findPaymentMethodOption(method: string, timeout = 20000): Promise<Locator> {
+    const deadline = Date.now() + timeout;
+
+    while (Date.now() < deadline) {
+      for (const frame of this.page.frames()) {
+        if (!frame.name().startsWith('__privateStripeFrame')) continue;
+
+        const option = frame.getByRole('button', { name: method, exact: true });
+        const found = await option.count().catch(() => 0);
+
+        if (found > 0) return option.first();
+      }
+
+      await this.page.waitForTimeout(200);
+    }
+
+    throw new Error(`No Stripe payment-method option named "${method}" was found within ${timeout}ms`);
+  }
+
+  /** Asserts a payment method is offered, without selecting it. */
+  async expectPaymentMethodAvailable(method: string): Promise<void> {
+    const option = await this.findPaymentMethodOption(method);
+    await expect(option).toBeVisible();
+  }
+
+  /**
+   * Expands a payment method's accordion item.
+   *
+   * Retried for the same reason `selectCryptoCurrency` is: every non-collapsed PaymentElement
+   * `onChange` runs `onStripePaymentExpanded`, which refetches the price and can remount the
+   * element out from under the click.
+   */
+  async selectPaymentMethod(method: string): Promise<void> {
+    await this.waitForStripeReady();
+
+    await expect(async () => {
+      const option = await this.findPaymentMethodOption(method, 5000);
+      await option.click({ timeout: 3000 });
+      await expect(option).toHaveAttribute('aria-expanded', 'true', { timeout: 3000 });
+
+      // Expanding an item is itself an `onChange`, so the price refetch it triggers can remount the
+      // element and collapse the selection again. Re-check after the dust settles.
+      await this.page.waitForTimeout(SETTLE_MS);
+      const settled = await this.findPaymentMethodOption(method, 5000);
+      await expect(settled).toHaveAttribute('aria-expanded', 'true', { timeout: 3000 });
+    }).toPass({ timeout: 60000, intervals: [500, 1000, 2000] });
+  }
+
   /** Resolves once the card fields inside the PaymentElement are mounted and interactive. */
   async waitForStripeReady(): Promise<void> {
     const frame = await this.findStripeFrameWith('[name="number"]');
     await expect(frame.locator('[name="number"]')).toBeVisible();
+    await expect(frame.locator('[name="number"]')).toBeEditable();
+  }
+
+  /**
+   * Types a value into a Stripe field and only returns once the value has actually stuck.
+   *
+   * Stripe's fields are controlled inputs: an input event that lands before the element has finished
+   * hydrating is accepted by the DOM node and then dropped on Stripe's next render, leaving the field
+   * empty with no error. That window is widest for the first field touched, which is why a run under
+   * load could end up at "Your card number is incomplete" with the expiry and CVC typed milliseconds
+   * later still filled in. Re-resolving the frame on each attempt also covers a PaymentElement that
+   * remounts mid-fill.
+   */
+  private async fillStripeField(selector: string, value: string): Promise<void> {
+    await expect(async () => {
+      const frame = await this.findStripeFrameWith(selector, 5000);
+      const field = frame.locator(selector);
+
+      await field.fill('');
+      // Stripe re-formats as it goes, so only the significant characters are typed and its own
+      // separators are left to it.
+      await field.pressSequentially(value.replace(/\W/g, ''), { delay: 20 });
+
+      await expect(field).toHaveValue(withAnySeparators(value), { timeout: 2000 });
+    }).toPass({ timeout: 30000, intervals: [250, 500, 1000] });
   }
 
   /**
    * Fills the real Stripe card fields with a test card. Kept as a single implementation so iframe
    * flake only ever has to be fixed in one place.
+   *
+   * The fill is verified again after a settle window rather than just field by field. Every
+   * non-collapsed PaymentElement `onChange` runs `onStripePaymentExpanded`, which refetches the
+   * price and remounts the element; a remount that lands after the last field is typed silently
+   * empties the form, and the failure only shows up much later as a payment that never leaves the
+   * checkout page. Re-reading the values here turns that race into a retry.
    */
   async fillCardDetails(details: CardDetails = {}): Promise<void> {
     const card = { ...TEST_CARD, ...details };
-    const frame = await this.findStripeFrameWith('[name="number"]');
 
-    await frame.locator('[name="number"]').fill(card.number);
-    await frame.locator('[name="expiry"]').fill(card.expiry);
-    await frame.locator('[name="cvc"]').fill(card.cvc);
+    await expect(async () => {
+      await this.fillStripeField('[name="number"]', card.number);
+      await this.fillStripeField('[name="expiry"]', card.expiry);
+      await this.fillStripeField('[name="cvc"]', card.cvc);
 
-    const postalCode = frame.locator('[name="postalCode"]');
-    if ((await postalCode.count()) > 0) {
-      await postalCode.fill('28001');
-    }
+      const frame = await this.findStripeFrameWith('[name="number"]');
+      if ((await frame.locator('[name="postalCode"]').count()) > 0) {
+        await this.fillStripeField('[name="postalCode"]', '28001');
+      }
+
+      await this.page.waitForTimeout(SETTLE_MS);
+
+      const settled = await this.findStripeFrameWith('[name="number"]', 5000);
+      await expect(settled.locator('[name="number"]')).toHaveValue(withAnySeparators(card.number), { timeout: 3000 });
+      await expect(settled.locator('[name="expiry"]')).toHaveValue(withAnySeparators(card.expiry), { timeout: 3000 });
+      await expect(settled.locator('[name="cvc"]')).toHaveValue(withAnySeparators(card.cvc), { timeout: 3000 });
+    }).toPass({ timeout: 90000, intervals: [500, 1000, 2000] });
   }
 
   /**
@@ -284,6 +417,55 @@ export class CheckoutPage {
   async clickPay(): Promise<void> {
     await expect(this.payButton).toBeEnabled();
     await this.payButton.click();
+  }
+
+  /* ---------------------------------------------------------------------- */
+  /* Redirect and challenge flows (smoke suite only)                        */
+  /* ---------------------------------------------------------------------- */
+
+  /**
+   * Completes the 3-D Secure challenge Stripe raises for authentication-required test cards.
+   *
+   * In test mode the challenge is Stripe's own ACS simulator (`testmode-acs.stripe.com`) rather
+   * than a bank page, and it exposes two stable controls. It lives in `stripe-challenge-frame`,
+   * nested inside Stripe's modal frame, hence `findFrameWith` rather than the PaymentElement-only
+   * lookup.
+   */
+  async completeThreeDSChallenge(outcome: 'complete' | 'fail' = 'complete'): Promise<void> {
+    const selector = outcome === 'complete' ? '#test-source-authorize-3ds' : '#test-source-fail-3ds';
+
+    await expect
+      .poll(async () => !!(await this.frameContaining(selector)), {
+        timeout: 60000,
+        message: 'Stripe never opened the 3-D Secure challenge',
+      })
+      .toBe(true);
+
+    // Stripe re-renders the challenge as the ACS page finishes loading, which silently drops a click
+    // that lands too early. The challenge frame is torn down once the outcome is accepted, so its
+    // disappearance — not the click itself — is what marks the step as done.
+    await expect(async () => {
+      const frame = await this.frameContaining(selector);
+      if (!frame) return;
+
+      await frame.locator(selector).click({ timeout: 5000 });
+      expect(await this.frameContaining(selector)).toBeNull();
+    }).toPass({ timeout: 60000, intervals: [1000, 2000, 3000] });
+  }
+
+  /**
+   * Authorises the payment on Stripe's hosted test simulator for redirect-based methods (PayPal).
+   *
+   * Test mode never reaches the real provider: `confirmPayment` sends the top-level page to a
+   * Stripe-hosted page offering an authorise/fail pair, which then redirects on to `return_url`.
+   */
+  async authorizeRedirectTestPayment(outcome: 'authorize' | 'fail' = 'authorize'): Promise<void> {
+    await this.page.waitForURL(/payments\.stripe\.com\/payment_methods\/test_payment/, { timeout: 60000 });
+
+    const control = this.page.locator(outcome === 'authorize' ? '#authorize-test-payment' : '#fail-test-payment');
+
+    await expect(control).toBeVisible({ timeout: 30000 });
+    await control.click();
   }
 
   /* ---------------------------------------------------------------------- */

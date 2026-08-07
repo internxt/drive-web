@@ -426,9 +426,36 @@ export interface InlineSignUpMockOptions {
 }
 
 /**
- * Mocks the endpoints the inline sign-up path hits: registration itself plus the user refresh that
- * `initializeUserThunk` fires straight after (a rejected refresh triggers a logout and would tear
- * the checkout session down mid-payment).
+ * Serves the whole drive origin from fixtures, so a signed-in session survives.
+ *
+ * Registration is only the first call: `initializeUserThunk` immediately fans out to
+ * `/users/limit`, `/users/usage` and `/users/avatar/refresh`, and every SDK client is built with an
+ * `unauthorizedCallback` that dispatches `logoutThunk()`. Leaving those unrouted lets them reach
+ * whatever is actually listening on the drive port — a real drive-server answers 401 to a fixture
+ * token, the session is torn down, and the signed-in block renders with an empty email while the
+ * following payment call goes out with no `Authorization` header. Answering every drive request
+ * keeps the suites hermetic; anything unknown gets an empty 200 because only a non-2xx is harmful.
+ */
+export const mockDriveApi = async (page: Page, registration: ReturnType<typeof buildRegisterResponse>) => {
+  const fixtures: Array<{ matches: (url: URL) => boolean; body: unknown; status?: number }> = [
+    { matches: CHECKOUT_ENDPOINTS.register, body: registration, status: 201 },
+    { matches: CHECKOUT_ENDPOINTS.refreshUser, body: { user: registration.user } },
+    { matches: drivePath('/users/limit'), body: { maxSpaceBytes: 1073741824 } },
+    { matches: drivePath('/users/usage'), body: { drive: 0, backups: 0, total: 0 } },
+    { matches: drivePath('/users/avatar/refresh'), body: { avatar: null } },
+  ];
+
+  await page.route(`${DRIVE_NEW_API_URL}/**`, (route) => {
+    const url = new URL(route.request().url());
+    const fixture = fixtures.find((candidate) => candidate.matches(url));
+
+    return json(route, fixture?.body ?? {}, fixture?.status ?? 200);
+  });
+};
+
+/**
+ * Mocks the inline sign-up path: registration plus everything the session needs to stay alive
+ * afterwards (see `mockDriveApi`).
  */
 export const mockInlineSignUp = async (page: Page, options: InlineSignUpMockOptions): Promise<void> => {
   const response = buildRegisterResponse({
@@ -437,8 +464,7 @@ export const mockInlineSignUp = async (page: Page, options: InlineSignUpMockOpti
     encryptedMnemonic: encryptMnemonicWithPassword(MOCK_MNEMONIC, options.password),
   });
 
-  await page.route(CHECKOUT_ENDPOINTS.register, (route) => json(route, response, 201));
-  await page.route(CHECKOUT_ENDPOINTS.refreshUser, (route) => json(route, { user: response.user }));
+  await mockDriveApi(page, response);
 };
 
 /**
