@@ -1,11 +1,11 @@
-import { Stripe, StripeElementsOptions } from '@stripe/stripe-js';
+import { Stripe, StripeElementsOptionsMode } from '@stripe/stripe-js';
 import { checkoutService, currencyService, paymentService } from '../services';
 import { useEffect, useState } from 'react';
 import { errorService, navigationService } from 'services';
 import { AppView } from 'app/core/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { CryptoCurrency, PriceWithTax } from '@internxt/sdk/dist/payments/types';
-import { IS_CRYPTO_PAYMENT_ENABLED, THEME_STYLES } from '../constants';
+import { IS_CRYPTO_PAYMENT_ENABLED, STRIPE_MINIMUM_CHARGE_AMOUNT, THEME_STYLES } from '../constants';
 import { PlanInterval } from '../types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
@@ -20,7 +20,7 @@ interface UseInitializeCheckoutProps {
 
 export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }: UseInitializeCheckoutProps) => {
   const [stripeSdk, setStripeSdk] = useState<Stripe | null>(null);
-  const [stripeElementsOptions, setStripeElementsOptions] = useState<StripeElementsOptions>();
+  const [stripeElementsOptions, setStripeElementsOptions] = useState<StripeElementsOptionsMode>();
   const [isCheckoutReady, setIsCheckoutReady] = useState(false);
   const [availableCryptoCurrencies, setAvailableCryptoCurrencies] = useState<CryptoCurrency[] | undefined>(undefined);
 
@@ -41,6 +41,22 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
       loadStripeAndCrypto();
     }
   }, [stripeSdk, price?.price?.id]);
+
+  useEffect(() => {
+    const amount = price?.taxes?.amountWithTax;
+
+    // Stripe rejects amounts under its minimum charge, so a heavily discounted total (a 100% OFF
+    // coupon, for instance) is skipped instead of being pushed to the already mounted elements.
+    if (amount === undefined || amount < STRIPE_MINIMUM_CHARGE_AMOUNT) return;
+
+    setStripeElementsOptions((prevOptions) => {
+      if (!prevOptions || prevOptions.amount === amount) {
+        return prevOptions;
+      }
+
+      return { ...prevOptions, amount };
+    });
+  }, [price?.taxes?.amountWithTax]);
 
   const initCheckout = async () => {
     try {
@@ -93,7 +109,7 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
 
     try {
       const stripeElements = await checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme], price);
-      setStripeElementsOptions(stripeElements as StripeElementsOptions);
+      setStripeElementsOptions(stripeElements as StripeElementsOptionsMode);
     } catch (error) {
       const castedError = errorService.castError(error);
       throw new Error(castedError.message);
