@@ -146,6 +146,26 @@ describe('Custom hook to handle payments', () => {
   });
 
   describe('Handle Subscription Payment', () => {
+    const buildSubscriptionPayload = (overrides: Partial<ProcessPurchasePayload> = {}): ProcessPurchasePayload => ({
+      customerId: 'customer_id',
+      priceId: 'price_id',
+      token: 'token',
+      currency: 'currency',
+      confirmationTokenId: 'ctoken_123',
+      currentSelectedPlan: {
+        price: {
+          interval: 'year',
+          type: UserType.Individual,
+        },
+      } as any,
+      captchaToken: 'captcha_token',
+      userAddress: '1.1.1.1',
+      confirmPayment: vi.fn().mockResolvedValue({ error: undefined }),
+      confirmSetupIntent: vi.fn().mockResolvedValue({ error: undefined }),
+      translate: vi.fn(),
+      ...overrides,
+    });
+
     test('When the user attempts to purchase a subscription with 100% OFF, then the setup of the payment method is done, the sub is created and the user confirms the payment', async () => {
       const { handleSubscriptionPayment } = useUserPayment();
 
@@ -155,30 +175,11 @@ describe('Custom hook to handle payments', () => {
         paymentIntentId: 'pi_123',
         subscriptionId: 'sub_123',
       });
-      const confirmPayment = vi.fn().mockResolvedValue({ error: undefined });
       const setupIntent = vi.fn().mockResolvedValue({ error: undefined });
-      const translate = vi.fn().mockImplementation(() => {});
       // Spy for savePaymentDataInLocalStorage function
       const localStorageServiceSpy = vi.spyOn(localStorageService, 'set').mockImplementation(() => {});
 
-      const subscriptionPaymentPayload: ProcessPurchasePayload = {
-        customerId: 'customer_id',
-        priceId: 'price_id',
-        token: 'token',
-        currency: 'currency',
-        elements: vi.fn() as any,
-        currentSelectedPlan: {
-          price: {
-            interval: 'year',
-            type: UserType.Individual,
-          },
-        } as any,
-        captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
-        confirmPayment,
-        confirmSetupIntent: setupIntent,
-        translate: translate,
-      };
+      const subscriptionPaymentPayload = buildSubscriptionPayload({ confirmSetupIntent: setupIntent });
 
       await handleSubscriptionPayment(subscriptionPaymentPayload);
 
@@ -194,9 +195,9 @@ describe('Custom hook to handle payments', () => {
       expect(localStorageServiceSpy).toHaveBeenCalledTimes(6);
 
       expect(setupIntent).toHaveBeenCalledWith({
-        elements: subscriptionPaymentPayload.elements,
         clientSecret: 'client_secret',
         confirmParams: {
+          confirmation_token: subscriptionPaymentPayload.confirmationTokenId,
           return_url: `${envService.getVariable('hostname')}/checkout/success`,
         },
       });
@@ -212,29 +213,10 @@ describe('Custom hook to handle payments', () => {
         subscriptionId: 'sub_123',
       });
       const confirmPayment = vi.fn().mockResolvedValue({ error: undefined });
-      const setupIntent = vi.fn().mockResolvedValue({ error: undefined });
-      const translate = vi.fn().mockImplementation(() => {});
       // Spy for savePaymentDataInLocalStorage function
       const localStorageServiceSpy = vi.spyOn(localStorageService, 'set').mockImplementation(() => {});
 
-      const subscriptionPaymentPayload: ProcessPurchasePayload = {
-        customerId: 'customer_id',
-        priceId: 'price_id',
-        token: 'token',
-        currency: 'currency',
-        elements: vi.fn() as any,
-        currentSelectedPlan: {
-          price: {
-            interval: 'year',
-            type: UserType.Individual,
-          },
-        } as any,
-        captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
-        confirmPayment,
-        confirmSetupIntent: setupIntent,
-        translate: translate,
-      };
+      const subscriptionPaymentPayload = buildSubscriptionPayload({ confirmPayment });
 
       await handleSubscriptionPayment(subscriptionPaymentPayload);
 
@@ -250,12 +232,32 @@ describe('Custom hook to handle payments', () => {
       expect(localStorageServiceSpy).toHaveBeenCalledTimes(6);
 
       expect(confirmPayment).toHaveBeenCalledWith({
-        elements: subscriptionPaymentPayload.elements,
         clientSecret: 'client_secret',
         confirmParams: {
+          confirmation_token: subscriptionPaymentPayload.confirmationTokenId,
           return_url: `${envService.getVariable('hostname')}/checkout/success`,
         },
       });
+    });
+
+    test('When the payment details were never collected, then the payment is not confirmed and the purchase fails', async () => {
+      const { handleSubscriptionPayment } = useUserPayment();
+
+      vi.spyOn(checkoutService, 'createSubscription').mockResolvedValue({
+        clientSecret: 'client_secret',
+        type: 'payment',
+        paymentIntentId: 'pi_123',
+        subscriptionId: 'sub_123',
+      });
+      const confirmPayment = vi.fn().mockResolvedValue({ error: undefined });
+      vi.spyOn(localStorageService, 'set').mockImplementation(() => {});
+
+      const subscriptionPaymentPayload = buildSubscriptionPayload({ confirmationTokenId: undefined, confirmPayment });
+
+      await expect(handleSubscriptionPayment(subscriptionPaymentPayload)).rejects.toThrow(
+        'Missing payment details to confirm the payment',
+      );
+      expect(confirmPayment).not.toHaveBeenCalled();
     });
 
     test('When the user attempts to purchase a subscription which has a type different from payment or setup, then a toast notification is displayed indicating something went wrong', async () => {
@@ -269,29 +271,11 @@ describe('Custom hook to handle payments', () => {
       } as any);
       const confirmPayment = vi.fn().mockResolvedValue({ error: undefined });
       const setupIntent = vi.fn().mockResolvedValue({ error: undefined });
-      const translate = vi.fn().mockImplementation(() => {});
       // Spy for savePaymentDataInLocalStorage function
       const localStorageServiceSpy = vi.spyOn(localStorageService, 'set').mockImplementation(() => {});
       const notificationsServiceSpy = vi.spyOn(notificationsService, 'show').mockImplementation(() => '');
 
-      const subscriptionPaymentPayload: ProcessPurchasePayload = {
-        customerId: 'customer_id',
-        priceId: 'price_id',
-        token: 'token',
-        currency: 'currency',
-        elements: vi.fn() as any,
-        currentSelectedPlan: {
-          price: {
-            interval: 'year',
-            type: UserType.Individual,
-          },
-        } as any,
-        captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
-        confirmPayment,
-        confirmSetupIntent: setupIntent,
-        translate: translate,
-      };
+      const subscriptionPaymentPayload = buildSubscriptionPayload({ confirmPayment, confirmSetupIntent: setupIntent });
 
       await handleSubscriptionPayment(subscriptionPaymentPayload);
 
@@ -331,9 +315,7 @@ describe('Custom hook to handle payments', () => {
         priceId: 'price_id',
         token: 'token',
         currency: 'currency',
-        elements: {
-          confirmPayment: vi.fn(),
-        },
+        confirmationTokenId: 'ctoken_123',
         currentSelectedPlan: {
           price: {
             interval: 'lifetime',
@@ -356,9 +338,9 @@ describe('Custom hook to handle payments', () => {
       expect(localStorageServiceSpy).toHaveBeenCalledTimes(6);
 
       expect(confirmPayment).toHaveBeenCalledWith({
-        elements: lifetimePaymentPayload.elements,
         clientSecret: 'client_secret',
         confirmParams: {
+          confirmation_token: lifetimePaymentPayload.confirmationTokenId,
           return_url: `${envService.getVariable('hostname')}/checkout/success`,
         },
       });
@@ -383,9 +365,7 @@ describe('Custom hook to handle payments', () => {
         priceId: 'price_id',
         token: 'token',
         currency: 'currency',
-        elements: {
-          confirmPayment: vi.fn(),
-        },
+        confirmationTokenId: 'ctoken_123',
         currentSelectedPlan: {
           price: {
             interval: 'lifetime',
@@ -465,13 +445,7 @@ describe('Custom hook to handle payments', () => {
         token: 'token',
         translate: vi.fn(),
         currency: 'currency',
-        elements: {
-          create: vi.fn(),
-          fetchUpdates: vi.fn(),
-          getElement: vi.fn(),
-          submit: vi.fn(),
-          update: vi.fn(),
-        },
+        confirmationTokenId: 'ctoken_123',
         selectedPlan: {
           price: {
             interval: 'year',
@@ -512,13 +486,7 @@ describe('Custom hook to handle payments', () => {
         token: 'token',
         translate: vi.fn(),
         currency: 'currency',
-        elements: {
-          create: vi.fn(),
-          fetchUpdates: vi.fn(),
-          getElement: vi.fn(),
-          submit: vi.fn(),
-          update: vi.fn(),
-        },
+        confirmationTokenId: 'ctoken_123',
         selectedPlan: {
           price: {
             interval: 'lifetime',
@@ -555,13 +523,7 @@ describe('Custom hook to handle payments', () => {
         token: 'token',
         translate: vi.fn(),
         currency: 'currency',
-        elements: {
-          create: vi.fn(),
-          fetchUpdates: vi.fn(),
-          getElement: vi.fn(),
-          submit: vi.fn(),
-          update: vi.fn(),
-        },
+        confirmationTokenId: 'ctoken_123',
         selectedPlan: {
           price: {
             interval: 'object-storage',
