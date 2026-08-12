@@ -252,10 +252,15 @@ describe('Custom hook to handle payments', () => {
       const confirmPayment = vi.fn().mockResolvedValue({ error: undefined });
       vi.spyOn(localStorageService, 'set').mockImplementation(() => {});
 
-      const subscriptionPaymentPayload = buildSubscriptionPayload({ confirmationTokenId: undefined, confirmPayment });
+      const translate = vi.fn((key: string) => key);
+      const subscriptionPaymentPayload = buildSubscriptionPayload({
+        confirmationTokenId: undefined,
+        confirmPayment,
+        translate,
+      });
 
       await expect(handleSubscriptionPayment(subscriptionPaymentPayload)).rejects.toThrow(
-        'Missing payment details to confirm the payment',
+        'checkout.error.missingPaymentDetails',
       );
       expect(confirmPayment).not.toHaveBeenCalled();
     });

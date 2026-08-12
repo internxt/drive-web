@@ -1,5 +1,6 @@
 import { Stripe } from '@stripe/stripe-js';
 
+import { Translate } from 'app/i18n/types';
 import { savePaymentDataInLocalStorage } from 'app/analytics/impact.service';
 import checkoutService from '../services/checkout.service';
 import envService from 'services/env.service';
@@ -105,10 +106,10 @@ export const useUserPayment = () => {
     confirmationTokenId: string | undefined,
     clientSecret: string,
     confirmIntent: Stripe['confirmPayment'] | Stripe['confirmSetup'],
-    missingPaymentDetailsError: string,
+    translate: Translate,
   ) => {
     if (!confirmationTokenId) {
-      throw new Error(missingPaymentDetailsError);
+      throw new Error(translate('checkout.error.missingPaymentDetails'));
     }
 
     const RETURN_URL_DOMAIN = envService.getVariable('hostname');
@@ -159,21 +160,11 @@ export const useUserPayment = () => {
 
     switch (subscription.type) {
       case 'payment':
-        await confirmStripeIntent(
-          confirmationTokenId,
-          subscription.clientSecret,
-          confirmPayment,
-          'Missing payment details to confirm the payment',
-        );
+        await confirmStripeIntent(confirmationTokenId, subscription.clientSecret, confirmPayment, translate);
         break;
 
       case 'setup':
-        await confirmStripeIntent(
-          confirmationTokenId,
-          subscription.clientSecret,
-          confirmSetupIntent,
-          'Missing payment details to confirm the subscription',
-        );
+        await confirmStripeIntent(confirmationTokenId, subscription.clientSecret, confirmSetupIntent, translate);
         break;
 
       default:
@@ -195,6 +186,7 @@ export const useUserPayment = () => {
     confirmationTokenId,
     captchaToken,
     userAddress,
+    translate,
     confirmPayment,
     openCryptoPaymentDialog,
     isFirstPurchase,
@@ -234,12 +226,7 @@ export const useUserPayment = () => {
     }
 
     if (type === PaymentType.FIAT && clientSecret) {
-      await confirmStripeIntent(
-        confirmationTokenId,
-        clientSecret,
-        confirmPayment,
-        'Missing payment details to confirm the payment',
-      );
+      await confirmStripeIntent(confirmationTokenId, clientSecret, confirmPayment, translate);
     } else if (type === PaymentType.CRYPTO) {
       openCryptoPaymentDialog?.(ActionDialog.CryptoPayment, {
         closeAllDialogsFirst: true,

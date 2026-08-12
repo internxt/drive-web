@@ -289,7 +289,8 @@
       "addressRequired": "Please complete your billing address to continue",
       "businessPlan": "Business plan is not available",
       "postalCodeRequired": "Please enter your postal code to continue",
-      "countryRequired": "We couldn't determine your billing country. Please try again later."
+      "countryRequired": "We couldn't determine your billing country. Please try again later.",
+      "missingPaymentDetails": "Missing payment details to confirm the payment"
     }
   },
   "general": {
