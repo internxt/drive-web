@@ -18,6 +18,12 @@ interface UseInitializeCheckoutProps {
   translate: Translate;
 }
 
+const isAmountAcceptedByStripe = (amount: number, mode: StripeElementsOptionsMode['mode']): boolean => {
+  if (amount === 0) return mode === 'subscription';
+
+  return amount >= STRIPE_MINIMUM_CHARGE_AMOUNT;
+};
+
 export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }: UseInitializeCheckoutProps) => {
   const [stripeSdk, setStripeSdk] = useState<Stripe | null>(null);
   const [stripeElementsOptions, setStripeElementsOptions] = useState<StripeElementsOptionsMode>();
@@ -45,16 +51,13 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
   useEffect(() => {
     const amount = price?.taxes?.amountWithTax;
 
-    // Stripe rejects amounts under its minimum charge, so a heavily discounted total (a 100% OFF
-    // coupon, for instance) is skipped instead of being pushed to the already mounted elements.
-    if (amount === undefined || amount < STRIPE_MINIMUM_CHARGE_AMOUNT) return;
+    if (amount === undefined) return;
 
     setStripeElementsOptions((prevOptions) => {
-      if (!prevOptions || prevOptions.amount === amount) {
-        return prevOptions;
-      }
+      const isAmountWorthUpdating =
+        prevOptions && prevOptions.amount !== amount && isAmountAcceptedByStripe(amount, prevOptions.mode);
 
-      return { ...prevOptions, amount };
+      return isAmountWorthUpdating ? { ...prevOptions, amount } : prevOptions;
     });
   }, [price?.taxes?.amountWithTax]);
 
@@ -109,7 +112,7 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
 
     try {
       const stripeElements = await checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme], price);
-      setStripeElementsOptions(stripeElements as StripeElementsOptionsMode);
+      setStripeElementsOptions(stripeElements);
     } catch (error) {
       const castedError = errorService.castError(error);
       throw new Error(castedError.message);

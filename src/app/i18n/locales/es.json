@@ -268,7 +268,8 @@
       "addressRequired": "Por favor, completa tu dirección de facturación para continuar",
       "businessPlan": "El plan de empresa no está disponible",
       "postalCodeRequired": "Introduce tu código postal para continuar",
-      "countryRequired": "No hemos podido determinar tu país de facturación. Inténtalo de nuevo más tarde."
+      "countryRequired": "No hemos podido determinar tu país de facturación. Inténtalo de nuevo más tarde.",
+      "missingPaymentDetails": "Faltan los datos de pago para confirmar el pago"
     }
   },
   "general": {
