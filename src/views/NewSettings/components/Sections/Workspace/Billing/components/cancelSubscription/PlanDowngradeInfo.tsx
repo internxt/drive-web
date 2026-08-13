@@ -49,7 +49,7 @@ const PlanDowngradeInfo = ({ currentPlanName, currentPlanInfo, currentUsage }: P
 
       {isOverFreeLimit && (
         <div className="rounded-xl border border-red/20 bg-red/5 p-4 text-center">
-          <p className="mt-3 font-semibold text-red">
+          <p className="font-semibold text-red">
             {translate(
               'views.account.tabs.billing.cancelSubscriptionModal.options.endNow.confirmationModal.overStorage.title',
               { freeLimit: FreeStoragePlan.simpleName },
