@@ -176,6 +176,98 @@ describe('Initialize checkout custom hook', () => {
     });
   });
 
+  describe('Updating the Stripe elements amount', () => {
+    test('When the price amount with tax changes (e.g. a coupon is applied), then the Stripe elements amount is updated without reloading the elements', async () => {
+      const { result, rerender } = renderHook((props) => useInitializeCheckout(props), {
+        initialProps: {
+          checkoutTheme: 'light',
+          price: mockPriceWithTax,
+          translate: mockTranslate,
+        },
+      });
+
+      await waitFor(() => {
+        expect(result.current.stripeElementsOptions?.amount).toBe(1210);
+      });
+
+      const discountedPrice: PriceWithTax = {
+        ...mockPriceWithTax,
+        taxes: {
+          ...mockPriceWithTax.taxes,
+          amountWithTax: 605,
+        },
+      };
+
+      rerender({
+        checkoutTheme: 'light',
+        price: discountedPrice,
+        translate: mockTranslate,
+      });
+
+      await waitFor(() => {
+        expect(result.current.stripeElementsOptions?.amount).toBe(605);
+      });
+      expect(checkoutService.loadStripeElements).toHaveBeenCalledTimes(1);
+    });
+
+    test.each([
+      ['zero, because a 100% OFF coupon was applied', 0],
+      ['below the Stripe minimum charge', 49],
+    ])('When the price amount with tax is %s, then the Stripe elements amount is not updated', async (_, amount) => {
+      const { result, rerender } = renderHook((props) => useInitializeCheckout(props), {
+        initialProps: {
+          checkoutTheme: 'light',
+          price: mockPriceWithTax,
+          translate: mockTranslate,
+        },
+      });
+
+      await waitFor(() => {
+        expect(result.current.stripeElementsOptions?.amount).toBe(1210);
+      });
+
+      rerender({
+        checkoutTheme: 'light',
+        price: {
+          ...mockPriceWithTax,
+          taxes: { ...mockPriceWithTax.taxes, amountWithTax: amount },
+        },
+        translate: mockTranslate,
+      });
+
+      await waitFor(() => {
+        expect(result.current.stripeElementsOptions?.amount).toBe(1210);
+      });
+    });
+
+    test('When the price amount with tax is exactly the Stripe minimum charge, then the Stripe elements amount is updated', async () => {
+      const { result, rerender } = renderHook((props) => useInitializeCheckout(props), {
+        initialProps: {
+          checkoutTheme: 'light',
+          price: mockPriceWithTax,
+          translate: mockTranslate,
+        },
+      });
+
+      await waitFor(() => {
+        expect(result.current.stripeElementsOptions?.amount).toBe(1210);
+      });
+
+      rerender({
+        checkoutTheme: 'light',
+        price: {
+          ...mockPriceWithTax,
+          taxes: { ...mockPriceWithTax.taxes, amountWithTax: 50 },
+        },
+        translate: mockTranslate,
+      });
+
+      await waitFor(() => {
+        expect(result.current.stripeElementsOptions?.amount).toBe(50);
+      });
+    });
+  });
+
   describe('Loading crypto currencies', () => {
     test('When the plan is lifetime, then crypto currencies are fetched', async () => {
       const props = {
