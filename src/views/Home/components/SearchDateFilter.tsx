@@ -94,11 +94,7 @@ const SearchDateInput = ({ label, value, minDate, maxDate, onChange, onEnter }: 
         )}
       </div>
       {showCalendar && (
-        <div
-          role="presentation"
-          className="absolute left-0 top-full z-30 mt-1"
-          onMouseDown={(event) => event.preventDefault()}
-        >
+        <div role="none" className="absolute left-0 top-full z-30 mt-1" onMouseDown={(event) => event.preventDefault()}>
           <DateCalendar selected={value} minDate={minDate} maxDate={maxDate} onSelect={onChange} />
         </div>
       )}
