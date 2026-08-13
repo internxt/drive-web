@@ -380,8 +380,7 @@
         "referAndEarn": "Parrainez et gagnez",
         "earnReferral": "Gagnez 100 €",
         "spaceUsed": "{{space}}% d'espace utilisé",
-        "account": "Compte",
-        "giveFeedback": "Donner votre avis"
+        "account": "Compte"
       },
       "tabs": {
         "account": {

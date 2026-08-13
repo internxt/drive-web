@@ -401,8 +401,7 @@
         "referAndEarn": "Invita e guadagna",
         "earnReferral": "Guadagna 100 €",
         "spaceUsed": "{{space}}% spazio usato",
-        "account": "Account",
-        "giveFeedback": "Invia feedback"
+        "account": "Account"
       },
       "tabs": {
         "account": {

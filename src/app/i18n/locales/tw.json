@@ -401,8 +401,7 @@
         "referAndEarn": "推薦賺取",
         "earnReferral": "賺取 €100",
         "spaceUsed": "已使用 {{space}}% 的空間",
-        "account": "帳戶",
-        "giveFeedback": "提供意見回饋"
+        "account": "帳戶"
       },
       "tabs": {
         "account": {

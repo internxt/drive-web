@@ -401,8 +401,7 @@
         "referAndEarn": "Refer and Earn",
         "earnReferral": "Earn €100",
         "spaceUsed": "{{space}}% space used",
-        "account": "Account",
-        "giveFeedback": "Give Feedback"
+        "account": "Account"
       },
       "tabs": {
         "account": {
