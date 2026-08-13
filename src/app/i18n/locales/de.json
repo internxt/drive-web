@@ -268,7 +268,8 @@
       "addressRequired": "Bitte vervollständigen Sie Ihre Rechnungsadresse, um fortzufahren",
       "businessPlan": "Der Unternehmensplan ist nicht verfügbar",
       "postalCodeRequired": "Bitte geben Sie Ihre Postleitzahl ein, um fortzufahren",
-      "countryRequired": "Wir konnten Ihr Land nicht ermitteln. Bitte versuchen Sie es später erneut."
+      "countryRequired": "Wir konnten Ihr Land nicht ermitteln. Bitte versuchen Sie es später erneut.",
+      "missingPaymentDetails": "Fehlende Zahlungsdaten zur Bestätigung der Zahlung"
     }
   },
   "general": {
