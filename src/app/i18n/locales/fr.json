@@ -295,7 +295,37 @@
         "code": "Code",
         "csv": "CSV",
         "xml": "XML",
-        "figma": "Figma"
+        "figma": "Figma",
+        "date": {
+          "dateModified": "Date de modification",
+          "anyDate": "Toute date",
+          "today": "Aujourd'hui",
+          "last7days": "7 derniers jours",
+          "last30days": "30 derniers jours",
+          "thisYear": "Cette année ({{year}})",
+          "lastYear": "L'année dernière ({{year}})",
+          "specificDate": "Date spécifique",
+          "after": "Après",
+          "before": "Avant",
+          "selectToday": "Sélectionner aujourd'hui"
+        },
+        "size": {
+          "size": "Taille",
+          "anySize": "Toute taille",
+          "less5mb": "Moins de 5 MB",
+          "less100mb": "Moins de 100 MB",
+          "less1gb": "Moins de 1 GB",
+          "more1gb": "Plus de 1 GB",
+          "customRange": "Plage de taille personnalisée",
+          "biggerThan": "Supérieur à",
+          "smallerThan": "Inférieur à",
+          "unit": "Unité",
+          "bytes": "Octets",
+          "kilobytes": "Kilo-octets",
+          "megabytes": "Méga-octets",
+          "gigabytes": "Giga-octets",
+          "terabytes": "Téra-octets"
+        }
       },
       "emptyState": {
         "title": "Rechercher des fichiers et des dossiers",

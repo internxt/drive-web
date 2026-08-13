@@ -6,6 +6,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SearchResult } from '@internxt/sdk/dist/drive/storage/types';
 import { defaultSearchFilters, searchItems, SearchFileCategory, SearchFilters } from '../services';
 import { ArrowSquareOutIcon, GearIcon, GiftIcon, MagnifyingGlassIcon, XIcon } from '@phosphor-icons/react';
+import { Loader } from '@internxt/ui';
 import AccountPopover from './AccountPopover';
 import referralService from 'services/referral.service';
 import i18next from 'i18next';
@@ -20,7 +21,18 @@ import { uiActions } from 'app/store/slices/ui';
 import NotFoundState from './NotFoundState';
 import EmptyState from './EmptyState';
 import { toggleAllTypeCategories, toggleTypeCategory } from '../utils/typeFilterUtils';
+import { changeSpecificDate, datePresetToRange, SearchDatePreset, SpecificDateRange } from '../utils/dateFilterUtils';
+import {
+  changeCustomSize,
+  CustomSizeRange,
+  emptyCustomSizeRange,
+  SearchSizePreset,
+  sizePresetToRange,
+} from '../utils/sizeFilterUtils';
 import SearchTypeFilter from './SearchTypeFilter';
+import SearchDateFilter from './SearchDateFilter';
+import SearchSizeFilter from './SearchSizeFilter';
+import { Dayjs } from 'dayjs';
 import { getItemPlainName } from 'app/crypto/services/utils';
 import navigationService from 'services/navigation.service';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
@@ -31,6 +43,8 @@ interface NavbarProps {
   hideSearch?: boolean;
   plan: PlanState;
 }
+
+type SearchFilterName = 'type' | 'date' | 'size';
 
 const getSearchBoxClassName = (openSearchBox: boolean) => {
   const baseClass = 'relative flex w-full items-center rounded-lg transition-all duration-150 ease-out';
@@ -50,6 +64,13 @@ const getClearButtonClassName = (query: string, openSearchBox: boolean) => {
     'absolute right-2.5 top-1/2 z-1 -translate-y-1/2 cursor-pointer text-gray-60 transition-all duration-100 ease-out';
   const isHidden = query.length === 0 || !openSearchBox;
   const visibilityClass = isHidden ? 'pointer-events-none opacity-0' : '';
+  return `${baseClass} ${visibilityClass}`;
+};
+
+const getSearchLoaderClassName = (loadingSearch: boolean, openSearchBox: boolean) => {
+  const baseClass = 'absolute right-9 top-1/2 z-1 -translate-y-1/2 transition-all duration-100 ease-out';
+  const isHidden = !loadingSearch || !openSearchBox;
+  const visibilityClass = isHidden ? 'opacity-0' : '';
   return `${baseClass} ${visibilityClass}`;
 };
 
@@ -75,10 +96,15 @@ const Navbar = (props: NavbarProps) => {
 
   const dispatch = useAppDispatch();
   const searchInput = useRef<HTMLInputElement>(null);
+  const searchForm = useRef<HTMLFormElement>(null);
   const searchResultList = useRef<HTMLUListElement>(null);
   const [preventBlur, setPreventBlur] = useState<boolean>(false);
   const [openSearchBox, setOpenSearchBox] = useState<boolean>(false);
   const [filters, setFilters] = useState<SearchFilters>(defaultSearchFilters);
+  const [datePreset, setDatePreset] = useState<SearchDatePreset>('any');
+  const [specificDates, setSpecificDates] = useState<SpecificDateRange>({});
+  const [sizePreset, setSizePreset] = useState<SearchSizePreset>('any');
+  const [customSize, setCustomSize] = useState<CustomSizeRange>(emptyCustomSizeRange);
 
   const [query, setQuery] = useState('');
   const [searchResult, setSearchResult] = useState<SearchResult[]>([]);
@@ -128,12 +154,58 @@ const Navbar = (props: NavbarProps) => {
   const toggleAllTypeFilters = () =>
     setFilters((current) => ({ ...current, type: toggleAllTypeCategories(current.type) }));
 
+  const applyDateFilter = (preset: SearchDatePreset, specific: SpecificDateRange) => {
+    setDatePreset(preset);
+    setSpecificDates(specific);
+    setFilters((current) => {
+      const range = datePresetToRange(preset, specific);
+      const unchanged =
+        range.modifiedAfter === current.modifiedAfter && range.modifiedBefore === current.modifiedBefore;
+      return unchanged ? current : { ...current, ...range };
+    });
+  };
+
+  const selectDatePreset = (preset: SearchDatePreset) => {
+    if (preset !== datePreset) applyDateFilter(preset, {});
+  };
+
+  const changeDateFilterDate = (field: 'after' | 'before', date?: Dayjs) => {
+    const nextSpecificDates = changeSpecificDate(specificDates, field, date);
+    if (nextSpecificDates !== specificDates) applyDateFilter('specific', nextSpecificDates);
+  };
+
+  const applySizeFilter = (preset: SearchSizePreset, custom: CustomSizeRange) => {
+    setSizePreset(preset);
+    setCustomSize(custom);
+    setFilters((current) => {
+      const range = sizePresetToRange(preset, custom);
+      const unchanged = range.minSize === current.minSize && range.maxSize === current.maxSize;
+      return unchanged ? current : { ...current, ...range };
+    });
+  };
+
+  const selectSizePreset = (preset: SearchSizePreset) => {
+    if (preset !== sizePreset) applySizeFilter(preset, emptyCustomSizeRange);
+  };
+
+  const changeCustomSizeFilter = (changes: Partial<CustomSizeRange>) => {
+    const nextCustomSize = changeCustomSize(customSize, changes);
+    if (nextCustomSize !== customSize) applySizeFilter('custom', nextCustomSize);
+  };
+
   const openSearchBoxRef = useRef(openSearchBox);
   openSearchBoxRef.current = openSearchBox;
 
-  const refocusSearchInput = () => {
+  const openDropdown = useRef<SearchFilterName | null>(null);
+
+  const handleDropdownOpenChange = (name: SearchFilterName) => (open: boolean) => {
+    if (open) {
+      openDropdown.current = name;
+      return;
+    }
+    if (openDropdown.current === name) openDropdown.current = null;
     setTimeout(() => {
-      if (openSearchBoxRef.current) searchInput.current?.focus();
+      if (openSearchBoxRef.current && openDropdown.current === null) searchInput.current?.focus();
     }, 0);
   };
 
@@ -245,7 +317,11 @@ const Navbar = (props: NavbarProps) => {
         {hideSearch ? (
           <div />
         ) : (
-          <form className="relative flex h-full w-full pl-4 items-center" onSubmitCapture={handleSubmit}>
+          <form
+            ref={searchForm}
+            className="relative flex h-full w-full pl-4 items-center"
+            onSubmitCapture={handleSubmit}
+          >
             <label className={getSearchBoxClassName(openSearchBox)} htmlFor="globalSearchInput">
               <MagnifyingGlassIcon
                 className="pointer-events-none absolute left-2.5 top-1/2 z-1 -translate-y-1/2 text-gray-60 focus-within:text-gray-80"
@@ -259,7 +335,7 @@ const Navbar = (props: NavbarProps) => {
                 spellCheck="false"
                 type="text"
                 value={query}
-                className="inxt-input left-icon h-10 w-full appearance-none rounded-lg border border-transparent bg-gray-5 px-9 text-lg text-gray-100 placeholder-gray-60 outline-none ring-1 ring-gray-10 transition-all duration-150 ease-out hover:shadow-sm hover:ring-gray-20 focus:border-primary focus:bg-surface focus:placeholder-gray-80 focus:shadow-none focus:ring-3 focus:ring-primary/10 dark:focus:bg-gray-1 dark:focus:ring-primary/20"
+                className="inxt-input left-icon h-10 w-full appearance-none rounded-lg border border-transparent bg-gray-5 pl-9 pr-16 text-lg text-gray-100 placeholder-gray-60 outline-none ring-1 ring-gray-10 transition-all duration-150 ease-out hover:shadow-sm hover:ring-gray-20 focus:border-primary focus:bg-surface focus:placeholder-gray-80 focus:shadow-none focus:ring-3 focus:ring-primary/10 dark:focus:bg-gray-1 dark:focus:ring-primary/20"
                 onChange={(e) => {
                   setQuery(e.target.value);
                   handleSearch();
@@ -273,6 +349,7 @@ const Navbar = (props: NavbarProps) => {
                   }
                 }}
                 onBlurCapture={(e) => {
+                  if (searchForm.current?.contains(e.relatedTarget as Node | null)) return;
                   if (preventBlur) {
                     e.currentTarget.focus();
                   } else {
@@ -283,6 +360,11 @@ const Navbar = (props: NavbarProps) => {
                 placeholder={translate('general.searchBar.placeholder')}
               />
               <div className={getKeyboardShortcutClassName(openSearchBox)}>{isMacOs ? '⌘F' : 'Ctrl F'}</div>
+              <Loader
+                classNameContainer={getSearchLoaderClassName(loadingSearch, openSearchBox)}
+                classNameLoader="text-gray-60"
+                size={20}
+              />
               <XIcon
                 className={getClearButtonClassName(query, openSearchBox)}
                 onMouseDownCapture={() => {
@@ -300,12 +382,26 @@ const Navbar = (props: NavbarProps) => {
               onMouseEnter={() => setPreventBlur(true)}
               onMouseLeave={() => setPreventBlur(false)}
             >
-              <div className="flex w-full shrink-0 items-center space-x-2 border-b border-gray-5 px-2.5 py-2.5 dark:border-gray-10">
+              <div className="flex w-full shrink-0 flex-wrap items-center gap-2 border-b border-gray-5 px-2.5 py-2.5 dark:border-gray-10">
                 <SearchTypeFilter
                   selected={filters.type}
                   onToggle={toggleTypeFilter}
                   onToggleAll={toggleAllTypeFilters}
-                  onClose={refocusSearchInput}
+                  onOpenChange={handleDropdownOpenChange('type')}
+                />
+                <SearchDateFilter
+                  preset={datePreset}
+                  specific={specificDates}
+                  onSelectPreset={selectDatePreset}
+                  onChangeDate={changeDateFilterDate}
+                  onOpenChange={handleDropdownOpenChange('date')}
+                />
+                <SearchSizeFilter
+                  preset={sizePreset}
+                  custom={customSize}
+                  onSelectPreset={selectSizePreset}
+                  onChangeCustom={changeCustomSizeFilter}
+                  onOpenChange={handleDropdownOpenChange('size')}
                 />
               </div>
 
