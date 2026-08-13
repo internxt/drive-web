@@ -496,9 +496,10 @@
                 "cta": "End now",
                 "confirmationModal": {
                   "title": "End plan now",
-                  "description": "You are going to cancel your plan immediately by making a final payment of {{amount}}.",
+                  "description": "You are going to cancel your plan immediately by making a final payment of {{amount}}",
                   "afterThis": "After this:",
                   "accessEndsImmediately": "Your access will end immediately",
+                  "plusTaxes": " + taxes",
                   "noFurtherCharges": "No further charges will apply",
                   "overStorage": {
                     "title": "You are over {{freeLimit}}",

@@ -475,9 +475,10 @@
                 "cta": "Finalizar ahora",
                 "confirmationModal": {
                   "title": "Finalizar plan ahora",
-                  "description": "Vas a cancelar tu plan de inmediato realizando un pago final de {{amount}}.",
+                  "description": "Vas a cancelar tu plan de inmediato realizando un pago final de {{amount}}",
                   "afterThis": "Después de esto:",
                   "accessEndsImmediately": "Tu acceso terminará de inmediato",
+                  "plusTaxes": " + impuestos",
                   "noFurtherCharges": "No se aplicarán más cargos",
                   "overStorage": {
                     "title": "Has superado {{freeLimit}}",

@@ -1,6 +1,6 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { Desktop, SignOut, Gear, Gift, User, Megaphone } from '@phosphor-icons/react';
+import { Desktop, SignOut, Gear, Gift, User } from '@phosphor-icons/react';
 import i18next from 'i18next';
 import { ReactNode } from 'react';
 import { Popover } from '@internxt/ui';
@@ -45,8 +45,6 @@ export default function AccountPopover({ className = '', user, plan }: Readonly<
   const percentageUsed = Math.round((usage / limit) * 100) || 0;
 
   const separator = <div className="border-translate mx-3 my-0.5 bg-gray-10 h-[1px]" />;
-
-  const FEEDBACK_URL = 'https://internxt.userjot.com/';
 
   function onLogout() {
     dispatch(userThunks.logoutThunk());
@@ -142,10 +140,6 @@ export default function AccountPopover({ className = '', user, plan }: Readonly<
           <p className="ml-3 truncate">{translate('views.account.popover.referAndEarn')}</p>
         </Item>
       )}
-      <Item onClick={() => window.open(FEEDBACK_URL, '_blank', 'noopener,noreferrer')}>
-        <Megaphone size={20} className="-scale-x-100" />
-        <p className="ml-3 truncate">{translate('views.account.popover.giveFeedback')}</p>
-      </Item>
       {separator}
       <Item onClick={onLogout}>
         <SignOut size={20} />

@@ -496,9 +496,10 @@
                 "cta": "Termina ora",
                 "confirmationModal": {
                   "title": "Termina il piano ora",
-                  "description": "Stai per annullare il tuo piano immediatamente effettuando un pagamento finale di {{amount}}.",
+                  "description": "Stai per annullare il tuo piano immediatamente effettuando un pagamento finale di {{amount}}",
                   "afterThis": "Dopo di che:",
                   "accessEndsImmediately": "Il tuo accesso terminerà immediatamente",
+                  "plusTaxes": " + tasse",
                   "noFurtherCharges": "Non verranno applicati ulteriori addebiti",
                   "overStorage": {
                     "title": "Hai superato {{freeLimit}}",

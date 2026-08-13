@@ -1,6 +1,6 @@
 import { StoragePlan, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import CancelPlanModal from './components/cancelSubscription/paidPlanCancellation/CancelPlanModal';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import CancelRenewalModal from './components/cancelSubscription/paidPlanCancellation/CancelRenewalModal';
 import EndPlanNowModal from './components/cancelSubscription/paidPlanCancellation/EndPlanNowModal';
 import { CancellationIncentive } from './components/cancelSubscription/CancellationIncentive';
@@ -49,6 +49,7 @@ const CancelSubscriptionDialog = ({
   const [view, setView] = useState<View>('cancelPlan');
 
   const isBusiness = userType === UserType.Business;
+  const isTaxEnabled = individualPlan?.tax.enabled;
   const commitment = individualPlan?.commitment;
   const cancellationTrial = individualPlan?.cancellationTrial;
   const isCommitmentEnabled = commitment?.enabled;
@@ -124,12 +125,13 @@ const CancelSubscriptionDialog = ({
       <CancelPlanModal
         isCancelPlanModalDialogOpen={isModalOpen('cancelPlan')}
         currentPlanName={currentPlanName}
-        onClose={onClose}
-        onOpenCancelRenewalDialog={onOpenCancelRenewalDialog}
-        onOpenEndPlanNowDialog={earlyCancelSubscription ? onOpenEndPlanNowDialog : undefined}
         isCancellingSubscription={isCancellingSubscription}
         currentPlanInfo={currentPlanInfo}
         individualPlan={individualPlan}
+        isTaxEnabled={isTaxEnabled}
+        onClose={onClose}
+        onOpenCancelRenewalDialog={onOpenCancelRenewalDialog}
+        onOpenEndPlanNowDialog={earlyCancelSubscription ? onOpenEndPlanNowDialog : undefined}
       />
       <CancelRenewalModal
         isCancelRenewalOpen={isModalOpen('cancelRenewal')}
@@ -145,6 +147,7 @@ const CancelSubscriptionDialog = ({
           currentPlanInfo={currentPlanInfo}
           currentUsage={currentUsage}
           amountToPay={commitment?.earlyCancellationFee}
+          isTaxEnabled={isTaxEnabled}
           isCancellingSubscription={isCancellingSubscription}
           earlyCancellationClientSecret={earlyCancellationClientSecret ?? null}
           onEarlyCancel={earlyCancelSubscription}

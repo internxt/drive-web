@@ -496,9 +496,10 @@
                 "cta": "立即結束",
                 "confirmationModal": {
                   "title": "立即結束方案",
-                  "description": "您將支付 {{amount}} 的最終款項，立即取消方案。",
+                  "description": "您將支付 {{amount}} 的最終款項，立即取消方案",
                   "afterThis": "之後：",
                   "accessEndsImmediately": "您的存取權限將立即終止",
+                  "plusTaxes": " + 稅金",
                   "noFurtherCharges": "將不再產生任何費用",
                   "overStorage": {
                     "title": "您已超過 {{freeLimit}}",
