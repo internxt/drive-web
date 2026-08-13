@@ -289,7 +289,8 @@
       "addressRequired": "請填寫您的帳單地址以繼續",
       "businessPlan": "企業計劃不可用",
       "postalCodeRequired": "請輸入您的郵遞區號以繼續",
-      "countryRequired": "我們無法確定您的國家/地區,請稍後再試"
+      "countryRequired": "我們無法確定您的國家/地區,請稍後再試",
+      "missingPaymentDetails": "缺少確認付款所需的付款資訊"
     }
   },
   "general": {

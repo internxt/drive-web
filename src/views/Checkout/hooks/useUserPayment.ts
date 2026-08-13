@@ -1,5 +1,6 @@
-import { Stripe, StripeElements } from '@stripe/stripe-js';
+import { Stripe } from '@stripe/stripe-js';
 
+import { Translate } from 'app/i18n/types';
 import { savePaymentDataInLocalStorage } from 'app/analytics/impact.service';
 import checkoutService from '../services/checkout.service';
 import envService from 'services/env.service';
@@ -101,35 +102,21 @@ export const useUserPayment = () => {
     };
   };
 
-  const confirmStripePaymentIntent = async (
-    elements: StripeElements,
+  const confirmStripeIntent = async (
+    confirmationTokenId: string | undefined,
     clientSecret: string,
-    confirmPayment: Stripe['confirmPayment'],
+    confirmIntent: Stripe['confirmPayment'] | Stripe['confirmSetup'],
+    translate: Translate,
   ) => {
-    const RETURN_URL_DOMAIN = envService.getVariable('hostname');
-    const { error: confirmIntentError } = await confirmPayment({
-      elements,
-      clientSecret: clientSecret,
-      confirmParams: {
-        return_url: `${RETURN_URL_DOMAIN}/checkout/success`,
-      },
-    });
-
-    if (confirmIntentError) {
-      throw new Error(confirmIntentError.message);
+    if (!confirmationTokenId) {
+      throw new Error(translate('checkout.error.missingPaymentDetails'));
     }
-  };
 
-  const confirmStripeSetupIntent = async (
-    elements: StripeElements,
-    clientSecret: string,
-    setupIntent: Stripe['confirmSetup'],
-  ) => {
     const RETURN_URL_DOMAIN = envService.getVariable('hostname');
-    const { error: confirmIntentError } = await setupIntent({
-      elements,
+    const { error: confirmIntentError } = await confirmIntent({
       clientSecret: clientSecret,
       confirmParams: {
+        confirmation_token: confirmationTokenId,
         return_url: `${RETURN_URL_DOMAIN}/checkout/success`,
       },
     });
@@ -146,7 +133,7 @@ export const useUserPayment = () => {
     currency,
     currentSelectedPlan,
     couponCodeData,
-    elements,
+    confirmationTokenId,
     captchaToken,
     translate,
     confirmPayment,
@@ -173,11 +160,11 @@ export const useUserPayment = () => {
 
     switch (subscription.type) {
       case 'payment':
-        await confirmStripePaymentIntent(elements, subscription.clientSecret, confirmPayment);
+        await confirmStripeIntent(confirmationTokenId, subscription.clientSecret, confirmPayment, translate);
         break;
 
       case 'setup':
-        await confirmStripeSetupIntent(elements, subscription.clientSecret, confirmSetupIntent);
+        await confirmStripeIntent(confirmationTokenId, subscription.clientSecret, confirmSetupIntent, translate);
         break;
 
       default:
@@ -196,9 +183,10 @@ export const useUserPayment = () => {
     currency,
     currentSelectedPlan,
     couponCodeData,
-    elements,
+    confirmationTokenId,
     captchaToken,
     userAddress,
+    translate,
     confirmPayment,
     openCryptoPaymentDialog,
     isFirstPurchase,
@@ -238,7 +226,7 @@ export const useUserPayment = () => {
     }
 
     if (type === PaymentType.FIAT && clientSecret) {
-      await confirmStripePaymentIntent(elements, clientSecret, confirmPayment);
+      await confirmStripeIntent(confirmationTokenId, clientSecret, confirmPayment, translate);
     } else if (type === PaymentType.CRYPTO) {
       openCryptoPaymentDialog?.(ActionDialog.CryptoPayment, {
         closeAllDialogsFirst: true,
@@ -266,7 +254,7 @@ export const useUserPayment = () => {
     priceId,
     currency,
     couponCodeData,
-    elements,
+    confirmationTokenId,
     gclidStored,
     captchaToken,
     userAddress,
@@ -297,7 +285,7 @@ export const useUserPayment = () => {
           currency,
           currentSelectedPlan: selectedPlan,
           customerId,
-          elements,
+          confirmationTokenId,
           priceId,
           token,
           couponCodeData,
@@ -315,7 +303,7 @@ export const useUserPayment = () => {
           currency,
           currentSelectedPlan: selectedPlan,
           customerId,
-          elements,
+          confirmationTokenId,
           priceId,
           token,
           couponCodeData,
