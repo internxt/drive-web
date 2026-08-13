@@ -13,9 +13,9 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { trackSignUp } from 'app/analytics/impact.service';
 import { trackLead } from 'app/analytics/meta.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
-import { SdkFactory } from 'app/core/factory/sdk';
-import { AppView, LocalStorageItem } from 'app/core/types';
 import { HTTP_STATUS_CODES } from 'app/core/constants';
+import { SdkFactory } from 'app/core/factory/sdk';
+import { AppView } from 'app/core/types';
 import {
   assertPrivateKeyIsValid,
   assertValidateKeys,
@@ -41,13 +41,14 @@ import navigationService from 'services/navigation.service';
 import RealtimeService from 'services/sockets/socket.service';
 import { generateCaptchaToken } from 'utils';
 import { BackupData, detectBackupKeyFormat, prepareOldBackupRecoverPayloadForBackend } from 'utils/backupKeyUtils';
+import { TRUSTED_WEB_HOSTNAMES, TRUSTED_WEB_PROTOCOLS, validateUrl } from 'utils/urlValidation';
 import { AuthMethodTypes } from 'views/Checkout/types';
-import vpnAuthService from './vpnAuth.service';
+import encryptedStorageService from './encrypted-storage.service';
 import { PasswordMismatchError } from './errors/auth.errors';
+import vpnAuthService from './vpnAuth.service';
 
 type ProfileInfo = {
   user: UserSettings;
-  token: string;
   newToken: string;
   mnemonic: string;
 };
@@ -109,7 +110,7 @@ const getCurrentUrlParams = (): Record<string, string> => {
 
 export async function logOut(loginParams?: Record<string, string>): Promise<void> {
   try {
-    const token = localStorageService.get(LocalStorageItem.NewToken) ?? undefined;
+    const token = encryptedStorageService.getToken();
     if (token) {
       const authClient = SdkFactory.getNewApiInstance().createAuthClient();
       await authClient.logout(token);
@@ -121,6 +122,7 @@ export async function logOut(loginParams?: Record<string, string>): Promise<void
   vpnAuthService.logOut();
   await databaseService.clear();
   localStorageService.clear();
+  encryptedStorageService.clear();
   RealtimeService.getInstance().stop();
   if (!navigationService.isCurrentPath(AppView.BlockedAccount) && !navigationService.isCurrentPath(AppView.Checkout)) {
     const preservedParams = getCurrentUrlParams();
@@ -132,7 +134,7 @@ export async function logOut(loginParams?: Record<string, string>): Promise<void
 
 export function cancelAccount(): Promise<void> {
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
-  const token = localStorageService.get(LocalStorageItem.NewToken) ?? undefined;
+  const token = encryptedStorageService.getToken();
   return authClient.sendUserDeactivationEmail(token);
 }
 
@@ -180,9 +182,9 @@ export const doLogin = async (
   return authClient
     .login(loginDetails, cryptoProvider)
     .then(async (data) => {
-      const { user, token, newToken } = data;
+      const { user, newToken } = data;
 
-      const { privateKey: encryptedPrivateKey } = user;
+      const { privateKey: encryptedPrivateKey } = user.keys.ecc;
 
       const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(user, password);
 
@@ -198,7 +200,6 @@ export const doLogin = async (
       const clearUser = {
         ...user,
         mnemonic: clearMnemonic,
-        privateKey: privateKey,
         keys: {
           ecc: {
             publicKey: publicKey,
@@ -211,13 +212,10 @@ export const doLogin = async (
         },
       };
 
-      localStorageService.set(LocalStorageItem.UserToken, token);
-      localStorageService.set(LocalStorageItem.UserMnemonic, clearMnemonic);
-      localStorageService.set(LocalStorageItem.NewToken, newToken);
+      await encryptedStorageService.setToken(newToken);
 
       return {
         user: clearUser,
-        token: token,
         newToken,
         mnemonic: clearMnemonic,
       };
@@ -234,7 +232,7 @@ export const readReferalCookie = (): string | undefined => {
 };
 
 export const getSalt = async (): Promise<string> => {
-  const email = localStorageService.getUser()?.email;
+  const email = encryptedStorageService.getUser()?.email;
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(String(email));
   return decryptText(securityDetails.encryptedSalt);
@@ -381,8 +379,11 @@ const resetAccountWithToken = async (token: string | undefined, newPassword: str
   );
 };
 
-export const changePassword = async (newPassword: string, currentPassword: string, email: string): Promise<void> => {
-  const user = localStorageService.getUser() as UserSettings;
+export const changePassword = async (newPassword: string, currentPassword: string): Promise<void> => {
+  const user = encryptedStorageService.getUser();
+  if (!user) {
+    throw new Error('No user in local storage');
+  }
 
   const { encryptedCurrentPassword } = await getPasswordDetails(currentPassword);
 
@@ -393,14 +394,9 @@ export const changePassword = async (newPassword: string, currentPassword: strin
 
   // Encrypt the mnemonic
   const encryptedMnemonic = encryptTextWithKey(user.mnemonic, newPassword);
-  const privateKey = Buffer.from(user.privateKey, 'base64').toString();
+  const privateKey = Buffer.from(user.keys.ecc.privateKey, 'base64').toString();
   const privateKeyEncrypted = aes.encrypt(privateKey, newPassword);
-
-  let privateKyberKeyEncrypted = '';
-
-  if (user.keys?.kyber?.privateKey) {
-    privateKyberKeyEncrypted = aes.encrypt(user.keys.kyber.privateKey, newPassword);
-  }
+  const privateKyberKeyEncrypted = aes.encrypt(user.keys.kyber.privateKey, newPassword);
 
   const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
 
@@ -417,10 +413,9 @@ export const changePassword = async (newPassword: string, currentPassword: strin
       },
       encryptVersion: StorageTypes.EncryptionVersion.Aes03,
     })
-    .then((res) => {
-      const { token, newToken } = res;
-      if (token) localStorageService.set(LocalStorageItem.UserToken, token);
-      if (newToken) localStorageService.set(LocalStorageItem.NewToken, newToken);
+    .then(async (res) => {
+      const { newToken } = res;
+      if (newToken) await encryptedStorageService.setToken(newToken);
     })
     .catch((error) => {
       const appErr = errorService.castError(error);
@@ -432,13 +427,13 @@ export const changePassword = async (newPassword: string, currentPassword: strin
 };
 
 export const userHas2FAStored = (): Promise<SecurityDetails> => {
-  const email = localStorageService.getUser()?.email;
+  const email = encryptedStorageService.getUser()?.email;
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   return authClient.securityDetails(<string>email);
 };
 
 export const generateNew2FA = (): Promise<TwoFactorAuthQR> => {
-  const token = localStorageService.get(LocalStorageItem.NewToken) || undefined;
+  const token = encryptedStorageService.getToken();
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   return authClient.generateTwoFactorAuthQR(token);
 };
@@ -451,7 +446,7 @@ export const deactivate2FA = (
   const salt = decryptText(passwordSalt);
   const hashObj = passToHash({ password: deactivationPassword, salt });
   const encPass = encryptText(hashObj.hash);
-  const token = localStorageService.get(LocalStorageItem.NewToken) || undefined;
+  const token = encryptedStorageService.getToken();
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   return authClient.disableTwoFactorAuth(encPass, deactivationCode, token);
 };
@@ -462,18 +457,25 @@ export async function areCredentialsCorrect(password: string): Promise<boolean> 
   const authClient = SdkFactory.getNewApiInstance().createAuthClient({
     unauthorizedCallback: () => undefined,
   });
-  const token = localStorageService.get(LocalStorageItem.NewToken) ?? undefined;
+  const token = encryptedStorageService.getToken();
   return authClient.areCredentialsCorrect(hashedPassword, token);
 }
 
 export const getRedirectUrl = (urlSearchParams: URLSearchParams, token: string): string | null => {
-  const ALLOWED_DOMAINS = ['https://internxt.com', 'https://drive.internxt.com'];
   const redirectUrl = urlSearchParams.get('redirectUrl');
 
-  if (!redirectUrl) return null;
-  const allowed = ALLOWED_DOMAINS.some((allowedDomain) => redirectUrl.includes(allowedDomain));
-
-  if (!allowed) return null;
+  if (!redirectUrl) {
+    return null;
+  }
+  if (
+    !validateUrl({
+      urlString: redirectUrl,
+      allowedProtocols: TRUSTED_WEB_PROTOCOLS,
+      allowedHostnames: TRUSTED_WEB_HOSTNAMES,
+    })
+  ) {
+    return null;
+  }
 
   const url = new URL(redirectUrl);
   const currentParams = url.searchParams;
@@ -487,7 +489,7 @@ export const getRedirectUrl = (urlSearchParams: URLSearchParams, token: string):
 };
 
 const store2FA = async (code: string, twoFactorCode: string): Promise<void> => {
-  const token = localStorageService.get(LocalStorageItem.NewToken) || undefined;
+  const token = encryptedStorageService.getToken();
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   return authClient.storeTwoFactorAuthKey(code, twoFactorCode, token);
 };
@@ -556,19 +558,16 @@ export const unblockAccount = (token: string): Promise<void> => {
 
 export const signUp = async (params: SignUpParams) => {
   const { doSignUp, email, password, token, redeemCodeObject, dispatch } = params;
-  const { xUser, xToken, xNewToken, mnemonic } = await doSignUp(email, password, token);
+  const { xUser, xNewToken, mnemonic } = await doSignUp(email, password, token);
 
   localStorageService.clear();
 
-  localStorageService.set(LocalStorageItem.UserToken, xToken);
-  localStorageService.set(LocalStorageItem.UserMnemonic, mnemonic);
-  localStorageService.set(LocalStorageItem.NewToken, xNewToken);
+  await encryptedStorageService.setToken(xNewToken);
 
   const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(xUser, password);
 
-  const user = {
+  const user: UserSettings = {
     ...xUser,
-    privateKey,
     keys: {
       ecc: {
         publicKey: publicKey,
@@ -579,7 +578,7 @@ export const signUp = async (params: SignUpParams) => {
         privateKey: privateKyberKey,
       },
     },
-  } as UserSettings;
+  };
 
   dispatch(userActions.setUser(user));
   await dispatch(userThunks.initializeUserThunk());
@@ -588,18 +587,18 @@ export const signUp = async (params: SignUpParams) => {
   await trackSignUp(xUser.uuid);
   trackLead(xUser.email, xUser.userId);
 
-  return { token: xToken, user: xUser, mnemonic, newToken: xNewToken };
+  return { user: xUser, mnemonic, newToken: xNewToken };
 };
 
 export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
   const { email, password, twoFactorCode, dispatch, loginType = 'web' } = params;
-  const { token, newToken, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType);
+  const { newToken, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType);
   dispatch(userActions.setUser(user));
 
   try {
     dispatch(planThunks.initializeThunk());
     await dispatch(initializeUserThunk())?.unwrap();
-    dispatch(workspaceThunks.fetchWorkspaces());
+    await dispatch(workspaceThunks.fetchWorkspaces());
     dispatch(workspaceThunks.checkAndSetLocalWorkspace());
   } catch (e: unknown) {
     const error = e as Error;
@@ -609,7 +608,7 @@ export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
 
   userActions.setUser(user);
 
-  return { token, user, mnemonic, newToken };
+  return { user, mnemonic, newToken };
 };
 
 export const authenticateUser = async (params: AuthenticateUserParams): Promise<ProfileInfo> => {

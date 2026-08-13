@@ -67,11 +67,6 @@ export interface AppViewConfig {
   hideSearch?: boolean;
 }
 
-export enum Workspace {
-  Individuals = 'personal',
-  Business = 'business',
-}
-
 export enum DragAndDropType {
   DriveItem = 'drive-item',
 }
@@ -129,19 +124,48 @@ export enum AppView {
 }
 
 export enum LocalStorageItem {
-  Workspace = 'workspace',
-  User = 'xUser',
-  UserMnemonic = 'xMnemonic',
-  UserToken = 'xToken',
-  Team = 'xTeam',
-  TeamToken = 'xTokenTeam',
+  UserUUID = 'xUserUUID',
   NewToken = 'xNewToken',
-  Language = 'language',
+  Language = 'i18nextLng',
   ShowSummerBanner = 'showSummerBanner',
-  InvitedToken = 'xInvitedToken',
-  ResourcesToken = 'xResourcesToken',
+  CheckoutItemData = 'checkout_item_data',
+  SubscriptionID = 'subscriptionId',
+  PaymentIntentID = 'paymentIntentId',
+  PriceId = 'priceId',
+  Currency = 'currency',
+  AmountPaid = 'amountPaid',
+  ItemOriginalPrice = 'itemOriginalPrice',
+  CouponCode = 'couponCode',
+  IsFirstPurchase = 'isFirstPurchase',
+  ProductName = 'productName',
+  BannerNameForFreeUsers = 'show_free_users_banner',
+  BannerStateKey = 'referral_banner_state',
+  UccStorageKey = 'cello_ucc',
+  Theme = 'theme',
+  IsThemeDark = 'theme:isDark',
+  B2BworkspaceId = 'b2bWorkspaceId',
+  GCLID = 'gclid',
+  HasSeenTrashDisposalDialog = 'hasSeenTrashDisposalDialog',
+  IdManagementTheme = 'id_management_theme_enabled',
+  EnvironmentTheme = 'environment_theme_enabled',
+  SummerTheme = 'summer_theme_enabled',
+  StarWarsTheme = 'star_wars_theme_enabled',
+  HalloweenTheme = 'halloween_theme_enabled',
+  ChristmasTheme = 'christmas_theme_enabled',
+  SuperbawlTheme = 'superbowl_theme_enabled',
+  StpatricksTheme = 'stpatricks_theme_enabled',
+  AnniversaryTheme = 'anniversary_theme_enabled',
+  SubscriptionEndingModalClosed = 'subscription_ending_modal_closed',
 }
 
+export enum LocalStorageProtectedItem {
+  User = 'xUser',
+  EncryptedToken = 'xTokenEncrypted',
+  EncryptedB2BworkspaceMnemonic = 'xEncryptedB2BWorkspaceMnemonic',
+  EncryptedWorkspaceCredentials = 'xEncryptedWorkspaceCredentials',
+  EncryptedFolderToken = 'xEncryptedFolderToken',
+  EncryptedFileToken = 'xEncryptedFileToken',
+}
 export enum OrderDirection {
   Asc = 'ASC',
   Desc = 'DESC',

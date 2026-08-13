@@ -33,11 +33,13 @@
         color-scheme: dark;
       }
     </style>
-    <script>
+    <script type="module">
+      import localStorageService from 'services/local-storage.service';
+      import { LocalStorageItem } from 'app/core/types';
       (function () {
         try {
-          var storedTheme = localStorage.getItem('theme');
-          var persistedIsDark = localStorage.getItem('theme:isDark');
+          var storedTheme = localStorageService.get(LocalStorageItem.Theme);
+          var persistedIsDark = localStorageService.get(LocalStorageItem.IsDark);
           var systemPrefersDark = false;
 
           try {
@@ -75,6 +77,10 @@
       gtag('js', new Date());
       gtag('config', '%REACT_APP_GA_ID%', { debug_mode: '%NODE_ENV%' === 'development' });
       gtag('config', '%REACT_APP_GA_BLOG_ID%', { debug_mode: '%NODE_ENV%' === 'development', groups: 'Blog' });
+      var adsAccountId = '%REACT_APP_GA_CONVERSION_TAG%'.split('/')[0];
+      if (adsAccountId.indexOf('AW-') === 0) {
+        gtag('config', adsAccountId, { allow_enhanced_conversions: true });
+      }
     </script>
 
     <!-- MailerLite Universal -->

@@ -7,13 +7,14 @@ import { Card } from '@internxt/ui';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { PlanState } from 'app/store/slices/plan';
 import { getNextBillingDate, getSubscriptionData } from '../../../../../utils';
+import { LocalStorageItem } from 'app/core/types';
 
 interface BillingWorkspaceOverviewProps {
   plan: PlanState;
 }
 
 const BillingWorkspaceOverview = ({ plan }: BillingWorkspaceOverviewProps) => {
-  const local = localStorageService.get('i18nextLng') ?? navigator.language.split('-')[0];
+  const local = localStorageService.get(LocalStorageItem.Language) ?? navigator.language.split('-')[0];
   const isFreeSubscription = plan.businessSubscription?.type === 'free';
 
   const subscriptionData: { amountInterval: string; interval: 'monthly' | 'yearly'; renewDate: string } | undefined =

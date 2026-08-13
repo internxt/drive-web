@@ -2,7 +2,6 @@
  * @jest-environment jsdom
  */
 import { describe, expect, it, vi, Mock, beforeEach, beforeAll, test } from 'vitest';
-import localStorageService from 'services/local-storage.service';
 import { Buffer } from 'buffer';
 import {
   generateNewKeys,
@@ -11,12 +10,64 @@ import {
 } from '../../crypto/services/pgp.service';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import shareService, { decryptMnemonic, getPublicShareLink } from './share.service';
-import { stringUtils } from '@internxt/lib';
+import { downloadFolderAsZip } from 'app/drive/services/folder.service';
+import downloadService from 'app/drive/services/download.service';
+import { downloadFile } from 'app/network/download';
+import { FlatFolderZip } from 'services/zip.service';
+import { AdvancedSharedItem } from '../types';
+import shareService, {
+  decryptMnemonic,
+  derivePublicSharingKey,
+  downloadPublicSharedFolder,
+  downloadPublicSharedItems,
+  getPublicShareLink,
+} from './share.service';
+import { stringUtils, aes } from '@internxt/lib';
 import notificationsService from 'app/notifications/services/notifications.service';
+import { SharedFiles, SharingMeta } from '@internxt/sdk/dist/drive/share/types';
+import { generateFileBucketKey } from 'app/network/crypto';
+import { domainManager } from './DomainManager';
+import { copyTextToClipboard } from 'utils/copyToClipboard.utils';
+import referralService from 'services/referral.service';
+import { ToastType } from 'app/notifications/services/notifications.service';
+import encryptedStorageService from 'services/encrypted-storage.service';
+
+vi.mock('utils/copyToClipboard.utils', () => ({
+  copyTextToClipboard: vi.fn(),
+}));
+
+vi.mock('services/referral.service', () => ({
+  default: {
+    trackShareCreated: vi.fn(),
+  },
+}));
 
 vi.mock('utils', () => ({
   generateCaptchaToken: vi.fn(() => 'mocked-captcha-token'),
+}));
+
+vi.mock('app/network/download', () => ({
+  downloadFile: vi.fn(),
+  downloadFileWithBucketKey: vi.fn(),
+  multipartDownloadFile: vi.fn(),
+  getDecryptedStream: vi.fn(),
+  FileVersionOneError: class FileVersionOneError extends Error {},
+}));
+
+vi.mock('app/drive/services/download.service', () => ({
+  default: {
+    downloadFileFromBlob: vi.fn(),
+  },
+}));
+
+vi.mock('services/zip.service', () => ({
+  FlatFolderZip: vi.fn().mockImplementation(function () {
+    return {
+      addFile: vi.fn(),
+      close: vi.fn().mockResolvedValue(undefined),
+    };
+  }),
+  createFolderWithFilesWritable: vi.fn(),
 }));
 
 describe('Encryption and Decryption', () => {
@@ -38,13 +89,14 @@ describe('Encryption and Decryption', () => {
     }));
     vi.mock('services/error.service', () => ({
       default: {
-        castError: vi
-          .fn()
-          .mockImplementation((e) => ({ message: e.message || 'Default error message', requestId: 'test-request-id' })),
+        castError: vi.fn().mockImplementation((e) => ({
+          message: typeof e === 'string' ? e : e.message || 'Default error message',
+          requestId: 'test-request-id',
+        })),
         reportError: vi.fn(),
       },
     }));
-    vi.mock('services/local-storage.service', () => ({
+    vi.mock('services/encrypted-storage.service', () => ({
       default: {
         getUser: vi.fn(),
       },
@@ -55,7 +107,7 @@ describe('Encryption and Decryption', () => {
         getAllWorkspaceTeamSharedFolderFiles: vi.fn(),
       },
     }));
-    vi.mock('./DomainManager', () => ({ domainManager: vi.fn() }));
+    vi.mock('./DomainManager', () => ({ domainManager: { getDomainsList: vi.fn() } }));
   });
 
   beforeEach(() => {
@@ -67,7 +119,6 @@ describe('Encryption and Decryption', () => {
     keys: {
       privateKeyArmored: string;
       publicKeyArmored: string;
-      revocationCertificate: string;
       publicKyberKeyBase64: string;
       privateKyberKeyBase64: string;
     },
@@ -76,7 +127,6 @@ describe('Encryption and Decryption', () => {
     const mockUser: UserSettings = {
       uuid: 'mock-uuid',
       email: 'mock@test.com',
-      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
       mnemonic: encryptedMnemonicInBase64,
       userId: 'mock-user-id',
       name: 'mock-name',
@@ -90,8 +140,6 @@ describe('Encryption and Decryption', () => {
       rootFolderUuid: undefined,
       sharedWorkspace: false,
       credit: 0,
-      publicKey: keys.publicKeyArmored,
-      revocationKey: keys.revocationCertificate,
       keys: {
         ecc: {
           publicKey: keys.publicKeyArmored,
@@ -123,11 +171,11 @@ describe('Encryption and Decryption', () => {
 
     const mockUser = await getMockUser(keys, encryptedMnemonicInBase64);
 
-    (localStorageService.getUser as Mock).mockReturnValue(mockUser);
-    expect(localStorageService.getUser() as UserSettings).toEqual(mockUser);
+    (encryptedStorageService.getUser as Mock).mockReturnValue(mockUser);
+    expect(encryptedStorageService.getUser() as UserSettings).toEqual(mockUser);
 
     const ownerMnemonic = await decryptMnemonic(mockUser.mnemonic);
-    expect(localStorageService.getUser).toHaveBeenCalled();
+    expect(encryptedStorageService.getUser).toHaveBeenCalled();
     expect(ownerMnemonic).toEqual(mnemonic);
   });
 
@@ -143,58 +191,11 @@ describe('Encryption and Decryption', () => {
 
     const mockUser = await getMockUser(keys, encriptedMnemonic);
 
-    (localStorageService.getUser as Mock).mockReturnValue(mockUser);
-    expect(localStorageService.getUser() as UserSettings).toEqual(mockUser);
+    (encryptedStorageService.getUser as Mock).mockReturnValue(mockUser);
+    expect(encryptedStorageService.getUser() as UserSettings).toEqual(mockUser);
 
     const ownerMnemonic = await decryptMnemonic(mockUser.mnemonic);
-    expect(localStorageService.getUser).toHaveBeenCalled();
-    expect(ownerMnemonic).toEqual(mnemonic);
-  });
-
-  it('should decrypt mnemonic encrypted without key field', async () => {
-    const mnemonic =
-      'truck arch rather sell tilt return warm nurse rack vacuum rubber tribe unfold scissors copper sock panel ozone harsh ahead danger soda legal state';
-    const keys = await generateNewKeys();
-    const encriptedMnemonic = await encryptMessageWithPublicKey({
-      message: mnemonic,
-      publicKeyInBase64: keys.publicKeyArmored,
-    });
-    const encryptedMnemonicInBase64 = btoa(encriptedMnemonic as string);
-
-    const mockOldUser: Partial<UserSettings> = {
-      uuid: 'mock-uuid',
-      email: 'mock@test.com',
-      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
-      mnemonic: encryptedMnemonicInBase64,
-      userId: 'mock-user-id',
-      name: 'mock-name',
-      lastname: 'mock-lastname',
-      username: 'mock-username',
-      bridgeUser: 'mock-bridgeUser',
-      bucket: 'mock-bucket',
-      backupsBucket: null,
-      root_folder_id: 0,
-      rootFolderId: 'mock-rootFolderId',
-      rootFolderUuid: undefined,
-      sharedWorkspace: false,
-      credit: 0,
-      publicKey: keys.publicKeyArmored,
-      revocationKey: keys.revocationCertificate,
-      appSumoDetails: null,
-      registerCompleted: false,
-      hasReferralsProgram: false,
-      createdAt: new Date(),
-      avatar: null,
-      emailVerified: false,
-    };
-
-    const mockUser = mockOldUser as UserSettings;
-
-    (localStorageService.getUser as Mock).mockReturnValue(mockUser);
-    expect(localStorageService.getUser() as UserSettings).toEqual(mockUser);
-
-    const ownerMnemonic = await decryptMnemonic(mockUser.mnemonic);
-    expect(localStorageService.getUser).toHaveBeenCalled();
+    expect(encryptedStorageService.getUser).toHaveBeenCalled();
     expect(ownerMnemonic).toEqual(mnemonic);
   });
 
@@ -307,5 +308,558 @@ describe('Get shared link', () => {
     await getPublicShareLink('uuid', 'file');
 
     expect(showNotificationSpy).toHaveBeenCalledWith(expect.objectContaining({ requestId: 'test-request-id' }));
+  });
+});
+
+describe('Get public shared link', async () => {
+  beforeAll(() => {
+    vi.restoreAllMocks();
+    vi.clearAllMocks();
+  });
+
+  const bucket = 'test bucket';
+  const mnemonic = 'test mnemonic';
+  const mockPlainCode = 'mock plain code';
+  const bucketKey = await generateFileBucketKey(mnemonic, bucket);
+  const bucketKeyHex = Buffer.from(bucketKey.subarray(0, 32)).toString('hex');
+  const encryptedCode = aes.encrypt(mockPlainCode, bucketKeyHex);
+
+  const mockSharedFile = {
+    bucket,
+  } as SharedFiles;
+
+  const validSharingId = 'f32a91da-c799-4e13-aa17-8c4d9e0323c9';
+
+  const mockSharingMeta = {
+    id: validSharingId,
+    itemId: 'mock item id',
+    itemType: 'file',
+    ownerId: 'mock owner id',
+    sharedWith: 'user id',
+    encryptionKey: 'mock encryption key',
+    encryptedCode: encryptedCode,
+    encryptedPassword: null,
+    encryptionAlgorithm: 'inxt-v3',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    type: 'public',
+    item: mockSharedFile,
+    itemToken: 'mock token',
+  } as SharingMeta;
+
+  test('When encrypted code does no change, do not decrypt code', async () => {
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
+    const spyDecrypt = vi.spyOn(aes, 'decrypt');
+
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    const mockCreatePublicSharingItemFn = vi.fn(async (payload) => {
+      return {
+        ...mockSharingMeta,
+        encryptedCode: payload.encryptedCode,
+      };
+    });
+
+    const mockCreateShareClientFn = vi.fn(() => ({
+      createSharing: mockCreatePublicSharingItemFn,
+    }));
+
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
+      createShareClient: mockCreateShareClientFn,
+    } as any);
+
+    const { createPublicShareFromOwnerUser } = await import('./share.service');
+    const { publicSharingItemData, plainCode } = await createPublicShareFromOwnerUser('uuid', 'file');
+
+    expect(plainCode).toBeDefined();
+    expect(publicSharingItemData).toBeDefined();
+    expect(spyDecrypt).not.toHaveBeenCalled();
+  });
+
+  test('When user is invited and mnemonic is available in sharing v2, decrypt the mnemonic and use it', async () => {
+    const keys = await generateNewKeys();
+    const publicKeyInBase64 = keys.publicKeyArmored;
+    const publicKyberKeyBase64 = keys.publicKyberKeyBase64;
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({
+      bucket,
+      mnemonic,
+      uuid: 'test-uuid',
+      keys: {
+        ecc: {
+          publicKey: keys.publicKeyArmored,
+          privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+        },
+        kyber: {
+          publicKey: keys.publicKyberKeyBase64,
+          privateKey: keys.privateKyberKeyBase64,
+        },
+      },
+    } as UserSettings);
+    const spyDecrypt = vi.spyOn(aes, 'decrypt');
+    const mockDifferentMnemonic = 'mock mnemonic';
+    const encryptedMnemonic = await hybridEncryptMessageWithPublicKey({
+      message: mockDifferentMnemonic,
+      publicKeyInBase64,
+      publicKyberKeyBase64,
+    });
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    const mockSharingMetaWithEncryptedMnemonic = {
+      ...mockSharingMeta,
+      encryptedCode: aes.encrypt(mockPlainCode, mockDifferentMnemonic),
+      encryptionAlgorithm: 'inxt-v2',
+    };
+
+    const mockCreatePublicSharingItemFn = vi.fn().mockResolvedValue(mockSharingMetaWithEncryptedMnemonic);
+    const mockCreateShareClientFn = vi.fn(() => ({
+      createSharing: mockCreatePublicSharingItemFn,
+    }));
+
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
+      createShareClient: mockCreateShareClientFn,
+    } as any);
+
+    const { createPublicShareFromOwnerUser } = await import('./share.service');
+    const { publicSharingItemData, plainCode } = await createPublicShareFromOwnerUser('uuid', 'file', {
+      encryptedMnemonic,
+    });
+
+    expect(plainCode).toBeDefined();
+    expect(publicSharingItemData).toBeDefined();
+    expect(spyDecrypt).toHaveBeenCalled();
+    expect(plainCode).toBe(mockPlainCode);
+  });
+
+  test('When user is invited and mnemonic is available in sharing v3, decrypt the mnemonic and compute bucketKey from it', async () => {
+    const keys = await generateNewKeys();
+    const publicKeyInBase64 = keys.publicKeyArmored;
+    const publicKyberKeyBase64 = keys.publicKyberKeyBase64;
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({
+      bucket,
+      mnemonic,
+      uuid: 'test-uuid',
+      keys: {
+        ecc: {
+          publicKey: keys.publicKeyArmored,
+          privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+        },
+        kyber: {
+          publicKey: keys.publicKyberKeyBase64,
+          privateKey: keys.privateKyberKeyBase64,
+        },
+      },
+    } as UserSettings);
+    const spyDecrypt = vi.spyOn(aes, 'decrypt');
+    const mockDifferentMnemonic = 'mock mnemonic';
+    const encryptedMnemonic = await hybridEncryptMessageWithPublicKey({
+      message: mockDifferentMnemonic,
+      publicKeyInBase64,
+      publicKyberKeyBase64,
+    });
+    const newBucketKey = await generateFileBucketKey(mockDifferentMnemonic, bucket);
+    const newBucketKeyHex = Buffer.from(newBucketKey.subarray(0, 32)).toString('hex');
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    const mockSharingMetaWithEncryptedMnemonic = {
+      ...mockSharingMeta,
+      encryptedCode: aes.encrypt(mockPlainCode, newBucketKeyHex),
+    };
+
+    const mockCreatePublicSharingItemFn = vi.fn().mockResolvedValue(mockSharingMetaWithEncryptedMnemonic);
+    const mockCreateShareClientFn = vi.fn(() => ({
+      createSharing: mockCreatePublicSharingItemFn,
+    }));
+
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
+      createShareClient: mockCreateShareClientFn,
+    } as any);
+
+    const { createPublicShareFromOwnerUser } = await import('./share.service');
+    const { publicSharingItemData, plainCode } = await createPublicShareFromOwnerUser('uuid', 'file', {
+      encryptedMnemonic,
+    });
+
+    expect(plainCode).toBeDefined();
+    expect(publicSharingItemData).toBeDefined();
+    expect(spyDecrypt).toHaveBeenCalled();
+    expect(plainCode).toBe(mockPlainCode);
+  });
+
+  test('When encrypted code changes, decrypt code', async () => {
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
+    const spyDecrypt = vi.spyOn(aes, 'decrypt');
+
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    const mockCreatePublicSharingItemFn = vi.fn().mockResolvedValue(mockSharingMeta);
+    const mockCreateShareClientFn = vi.fn(() => ({
+      createSharing: mockCreatePublicSharingItemFn,
+    }));
+
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
+      createShareClient: mockCreateShareClientFn,
+    } as any);
+
+    const { createPublicShareFromOwnerUser } = await import('./share.service');
+    const { publicSharingItemData, plainCode } = await createPublicShareFromOwnerUser('uuid', 'file');
+
+    expect(plainCode).toBeDefined();
+    expect(publicSharingItemData).toBeDefined();
+    expect(spyDecrypt).toHaveBeenCalled();
+    expect(plainCode).toBe(mockPlainCode);
+  });
+  test('When an error occurs fetching a shared link, then a notification is shown', async () => {
+    vi.spyOn(shareService, 'createPublicShareFromOwnerUser').mockRejectedValue(new Error('Unexpected error'));
+    const showNotificationSpy = vi.spyOn(notificationsService, 'show');
+
+    await getPublicShareLink('uuid', 'file');
+
+    expect(showNotificationSpy).toHaveBeenCalledWith(expect.objectContaining({ requestId: 'test-request-id' }));
+  });
+
+  test('When domains list is not empty, use it', async () => {
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
+
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    const mockCreatePublicSharingItemFn = vi.fn().mockResolvedValue(mockSharingMeta);
+    const mockCreateShareClientFn = vi.fn(() => ({
+      createSharing: mockCreatePublicSharingItemFn,
+    }));
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
+      createShareClient: mockCreateShareClientFn,
+    } as any);
+
+    vi.mocked(domainManager.getDomainsList).mockReturnValue(['https://mock-domain.com']);
+    vi.mocked(copyTextToClipboard).mockResolvedValue(undefined);
+
+    const showNotificationSpy = vi.spyOn(notificationsService, 'show');
+    const trackShareCreatedSpy = vi.spyOn(referralService, 'trackShareCreated');
+
+    const { getPublicShareLink } = await import('./share.service');
+    const result = await getPublicShareLink('uuid', 'file');
+
+    expect(copyTextToClipboard).toHaveBeenCalledWith(
+      expect.stringContaining('https://mock-domain.com/sh/file/8yqR2seZThOqF4xNngMjyQ/'),
+    );
+    expect(showNotificationSpy).toHaveBeenCalledWith(expect.objectContaining({ type: ToastType.Success }));
+    expect(trackShareCreatedSpy).toHaveBeenCalledTimes(1);
+    expect(result).toEqual(expect.objectContaining({ id: validSharingId }));
+  });
+
+  test('When domains list is empty, use the fallback domain', async () => {
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
+
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    const mockCreatePublicSharingItemFn = vi.fn().mockResolvedValue(mockSharingMeta);
+    const mockCreateShareClientFn = vi.fn(() => ({
+      createSharing: mockCreatePublicSharingItemFn,
+    }));
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
+      createShareClient: mockCreateShareClientFn,
+    } as any);
+
+    vi.mocked(domainManager.getDomainsList).mockReturnValue([]);
+    vi.mocked(copyTextToClipboard).mockResolvedValue(undefined);
+
+    const { getPublicShareLink } = await import('./share.service');
+    await getPublicShareLink('uuid', 'file');
+
+    expect(copyTextToClipboard).toHaveBeenCalledWith(
+      expect.stringContaining(`${window.location.origin}/sh/file/8yqR2seZThOqF4xNngMjyQ/`),
+    );
+  });
+
+  test('When copyTextToClipboard rejects, an error notification is shown and the error is reported', async () => {
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
+
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    const mockCreatePublicSharingItemFn = vi.fn().mockResolvedValue(mockSharingMeta);
+    const mockCreateShareClientFn = vi.fn(() => ({
+      createSharing: mockCreatePublicSharingItemFn,
+    }));
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
+      createShareClient: mockCreateShareClientFn,
+    } as any);
+
+    vi.mocked(domainManager.getDomainsList).mockReturnValue(['https://mock-domain.com']);
+    vi.mocked(copyTextToClipboard).mockRejectedValueOnce(new Error('Clipboard unavailable'));
+
+    const errorService = (await import('services/error.service')).default;
+    const showNotificationSpy = vi.spyOn(notificationsService, 'show');
+
+    const { getPublicShareLink } = await import('./share.service');
+    const result = await getPublicShareLink('uuid', 'file');
+
+    expect(result).toBeUndefined();
+    expect(showNotificationSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ type: ToastType.Error, requestId: 'test-request-id' }),
+    );
+    expect(errorService.reportError).toHaveBeenCalled();
+  });
+});
+
+describe('decryptPublicSharingCodeWithOwner', () => {
+  const bucket = 'test bucket';
+  const mnemonic = 'test mnemonic';
+  const plainCode = 'test plain code';
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  test('When encryptionAlgorithm is NEW_SHARING_VERSION, then code is decrypted using bucket key', async () => {
+    const bucketKey = await generateFileBucketKey(mnemonic, bucket);
+    const bucketKeyHex = Buffer.from(bucketKey.subarray(0, 32)).toString('hex');
+    const encryptedCode = aes.encrypt(plainCode, bucketKeyHex);
+
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
+
+    const result = await shareService.decryptPublicSharingCodeWithOwner(encryptedCode, 'inxt-v3');
+
+    expect(result).toBe(plainCode);
+  });
+
+  test('When encryptionAlgorithm is not NEW_SHARING_VERSION, then code is decrypted using mnemonic directly', async () => {
+    const encryptedCode = aes.encrypt(plainCode, mnemonic);
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
+
+    const result = await shareService.decryptPublicSharingCodeWithOwner(encryptedCode, 'inxt-v2');
+    expect(result).toBe(plainCode);
+  });
+
+  test('When decryption fails, then an error is thrown', async () => {
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ bucket, mnemonic } as UserSettings);
+
+    await expect(shareService.decryptPublicSharingCodeWithOwner('bad-encrypted-code', 'inxt-v3')).rejects.toThrow(
+      'Length 0, cannot decrypt',
+    );
+  });
+
+  describe('when user is not found', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+      vi.restoreAllMocks();
+    });
+
+    test('createPublicShareFromOwnerUser throws and reports error when user is not found', async () => {
+      vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(undefined as any);
+      const errorService = (await import('services/error.service')).default;
+
+      await expect(shareService.createPublicShareFromOwnerUser('uuid', 'file')).rejects.toEqual(
+        expect.objectContaining({ message: 'User Not Found' }),
+      );
+      expect(errorService.reportError).toHaveBeenCalled();
+    });
+
+    test('decryptPublicSharingCodeWithOwner throws and reports error when user is not found', async () => {
+      vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(undefined as any);
+      const errorService = (await import('services/error.service')).default;
+
+      await expect(shareService.decryptPublicSharingCodeWithOwner('encrypted-code', 'inxt-v3')).rejects.toEqual(
+        expect.objectContaining({ message: 'User Not Found' }),
+      );
+      expect(errorService.reportError).toHaveBeenCalled();
+    });
+  });
+});
+
+describe('derivePublicSharingKey', () => {
+  const code = 'plain-code';
+
+  test('When sharingVersion is the new sharing version, then the decrypted hex is returned as bucketKey', () => {
+    const bucketKeyHex = Buffer.from('public-sharing-bucket-key-32-byt').toString('hex');
+    const encryptionKey = aes.encrypt(bucketKeyHex, code);
+
+    const result = derivePublicSharingKey({ encryptionKey, code, sharingVersion: 'inxt-v3' });
+
+    expect(result).toEqual({ bucketKey: Buffer.from(bucketKeyHex, 'hex') });
+  });
+
+  test('When sharingVersion is not the new sharing version, then the decrypted value is returned as mnemonic', () => {
+    const mnemonic = 'test mnemonic phrase';
+    const encryptionKey = aes.encrypt(mnemonic, code);
+
+    const result = derivePublicSharingKey({ encryptionKey, code, sharingVersion: 'inxt-v2' });
+
+    expect(result).toEqual({ mnemonic });
+  });
+
+  test('When the code does not match the encryption key, then an error is thrown', () => {
+    expect(() =>
+      derivePublicSharingKey({ encryptionKey: 'bad-encrypted-key', code, sharingVersion: 'inxt-v3' }),
+    ).toThrow();
+  });
+});
+
+describe('Download public shared items', () => {
+  const CREDENTIALS = { user: 'network-user', pass: 'network-pass' };
+  const KEY = { mnemonic: 'test mnemonic' };
+  const CODE = 'plain-code';
+
+  const createStream = (content: Uint8Array) =>
+    new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(content);
+        controller.close();
+      },
+    });
+
+  const createPublicFile = (plainName: string, fileId: string): AdvancedSharedItem =>
+    ({
+      uuid: `${plainName}-uuid`,
+      plainName,
+      name: 'encrypted-name',
+      type: 'png',
+      bucket: 'bucket-id',
+      fileId,
+      isFolder: false,
+    }) as unknown as AdvancedSharedItem;
+
+  const createPublicFolder = (plainName: string): AdvancedSharedItem =>
+    ({
+      id: 10,
+      uuid: `${plainName}-uuid`,
+      plainName,
+      name: 'encrypted-name',
+      isFolder: true,
+    }) as unknown as AdvancedSharedItem;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  test('When a single file is downloaded, then it is fetched with the share credentials and key and saved with its plain name', async () => {
+    const file = createPublicFile('photo', 'network-file-id');
+    const updateNumItems = vi.fn();
+    vi.mocked(downloadFile).mockResolvedValueOnce(createStream(new Uint8Array([1, 2, 3])));
+
+    await downloadPublicSharedItems({
+      items: [file],
+      credentials: CREDENTIALS,
+      key: KEY,
+      code: CODE,
+      updateNumItems,
+    });
+
+    expect(downloadFile).toHaveBeenCalledWith({
+      bucketId: 'bucket-id',
+      fileId: 'network-file-id',
+      creds: CREDENTIALS,
+      key: KEY,
+    });
+    expect(downloadService.downloadFileFromBlob).toHaveBeenCalledWith(expect.any(Blob), 'photo.png');
+    expect(updateNumItems).toHaveBeenCalledTimes(1);
+    expect(FlatFolderZip).not.toHaveBeenCalled();
+  });
+
+  test('When a single folder is downloaded, then it is zipped with the share credentials and key through the public iterators', async () => {
+    const folder = createPublicFolder('Documents');
+
+    await downloadPublicSharedItems({
+      items: [folder],
+      credentials: CREDENTIALS,
+      key: KEY,
+      code: CODE,
+      resourcesToken: 'level-token',
+    });
+
+    expect(downloadFolderAsZip).toHaveBeenCalledWith(
+      expect.objectContaining({
+        folder,
+        isSharedFolder: true,
+        options: { credentials: CREDENTIALS, key: KEY, isPublicShare: true },
+      }),
+    );
+    expect(downloadService.downloadFileFromBlob).not.toHaveBeenCalled();
+  });
+
+  test('When several items are downloaded, then files and folders are packed into a single zip that is closed at the end', async () => {
+    const file = createPublicFile('photo', 'network-file-id');
+    const folder = createPublicFolder('Documents');
+    vi.mocked(downloadFile).mockResolvedValueOnce(createStream(new Uint8Array([1, 2, 3])));
+
+    await downloadPublicSharedItems({
+      items: [folder, file],
+      credentials: CREDENTIALS,
+      key: KEY,
+      code: CODE,
+    });
+
+    const zipInstance = vi.mocked(FlatFolderZip).mock.results[0].value;
+    expect(downloadFolderAsZip).toHaveBeenCalledWith(
+      expect.objectContaining({
+        folder,
+        options: expect.objectContaining({ destination: zipInstance, closeWhenFinished: false }),
+      }),
+    );
+    expect(zipInstance.addFile).toHaveBeenCalledWith('photo.png', expect.anything());
+    expect(zipInstance.close).toHaveBeenCalledTimes(1);
+  });
+
+  test('When a folder is downloaded, then the folders/files iterator factories build public iterators without throwing', async () => {
+    const folder = createPublicFolder('Documents');
+
+    await downloadPublicSharedItems({
+      items: [folder],
+      credentials: CREDENTIALS,
+      key: KEY,
+      code: CODE,
+      resourcesToken: 'level-token',
+    });
+
+    const { foldersIterator, filesIterator } = vi.mocked(downloadFolderAsZip).mock.calls[0][0] as {
+      foldersIterator: (directoryUuid: string, token?: string) => unknown;
+      filesIterator: (directoryUuid: string, token?: string) => unknown;
+    };
+
+    expect(() => foldersIterator('sub-folder-uuid')).not.toThrow();
+    expect(() => filesIterator('sub-folder-uuid')).not.toThrow();
+  });
+});
+
+describe('Download public shared folder', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  test('When credentials are returned, then the folder contents are downloaded with the derived key', async () => {
+    vi.spyOn(shareService, 'getPublicSharedFolderContent').mockResolvedValueOnce({
+      items: [],
+      token: '',
+      credentials: { networkUser: 'net-user', networkPass: 'net-pass' },
+    } as any);
+    const encryptionKey = aes.encrypt('bucket-key-hex', 'plain-code');
+
+    await downloadPublicSharedFolder({
+      encryptionKey,
+      item: { uuid: 'folder-uuid', plainName: 'Documents' },
+      code: 'plain-code',
+      incrementItemCount: vi.fn(),
+      sharingVersion: 'inxt-v2',
+    });
+
+    expect(downloadFolderAsZip).toHaveBeenCalledWith(
+      expect.objectContaining({
+        options: expect.objectContaining({
+          credentials: { user: 'net-user', pass: 'net-pass' },
+          isPublicShare: true,
+        }),
+      }),
+    );
+  });
+
+  test('When no credentials are returned, then an error is thrown', async () => {
+    vi.spyOn(shareService, 'getPublicSharedFolderContent').mockResolvedValueOnce({
+      items: [],
+      token: '',
+      credentials: null,
+    } as any);
+    const encryptionKey = aes.encrypt('bucket-key-hex', 'plain-code');
+
+    await expect(
+      downloadPublicSharedFolder({
+        encryptionKey,
+        item: { uuid: 'folder-uuid', plainName: 'Documents' },
+        code: 'plain-code',
+        incrementItemCount: vi.fn(),
+        sharingVersion: 'inxt-v2',
+      }),
+    ).rejects.toThrow('No Credentials!');
   });
 });

@@ -5,9 +5,10 @@ import { MAX_PASSWORD_LENGTH } from 'components/ValidPassword';
 import { FieldError, UseFormRegister } from 'react-hook-form';
 import { IFormValues } from '../../../app/core/types';
 import { PasswordState } from '../hooks/useGuestSignupState';
+import { Translate } from 'app/i18n/types';
 
 interface PasswordFieldWithInfoProps {
-  translate: (key: string) => string;
+  translate: Translate;
   register: UseFormRegister<IFormValues>;
   error?: FieldError;
   passwordState: PasswordState | null;

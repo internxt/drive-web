@@ -8,7 +8,6 @@ import { AdvancedSharedItem, PreviewFileItem, SharedNamePath } from '../../../ap
 import { OrderField, SharedItemList } from './SharedItemList';
 
 import errorService from 'services/error.service';
-import localStorageService from 'services/local-storage.service';
 import workspacesService from 'services/workspace.service';
 import { OrderDirection } from '../../../app/core/types';
 import { sharedThunks } from '../../../app/store/slices/sharedLinks';
@@ -18,6 +17,7 @@ import { setOrderBy, setPage, setSelectedItems } from '../context/SharedViewCont
 import { useShareViewContext } from '../context/SharedViewContextProvider';
 import useSharedContextMenu from '../hooks/useSharedContextMenu';
 import { isItemsOwnedByCurrentUser, sortSharedItems } from '../utils/sharedViewUtils';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 type ShareItemListContainerProps = {
   disableKeyboardShortcuts: boolean;
@@ -71,7 +71,7 @@ const SharedItemListContainer = ({
 
   const hasMoreItems = hasMoreFiles || hasMoreFolders;
   const isAwaitingInitialFilesLoad = !hasMoreFolders && hasMoreFiles && shareFiles.length === 0;
-  const currentUser = localStorageService.getUser();
+  const currentUser = encryptedStorageService.getUser();
 
   const openShareAccessSettings = (shareItem: AdvancedSharedItem) => {
     const shareItemWithEmail = shareItem.user?.email

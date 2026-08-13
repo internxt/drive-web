@@ -1,5 +1,5 @@
 import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
-import { NetworkCredentials } from '../../network/download';
+import { NetworkCredentials } from 'app/network/types/helper-types';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 
 export type AdvancedSharedItem = SharedFolders &
@@ -10,6 +10,7 @@ export type AdvancedSharedItem = SharedFolders &
     sharingId?: string;
     sharingType: 'public' | 'private';
     encryptedPassword: string | null;
+    fileId?: string;
   };
 
 export type SharedNetworkCredentials = {

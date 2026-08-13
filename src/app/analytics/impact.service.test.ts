@@ -13,13 +13,19 @@ import {
   trackPaymentConversion,
   trackSignUp,
 } from './impact.service';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 vi.mock('services/local-storage.service', () => ({
   default: {
     get: vi.fn(),
     clear: vi.fn(),
-    getUser: vi.fn(),
     set: vi.fn(),
+  },
+}));
+
+vi.mock('services/encrypted-storage.service', () => ({
+  default: {
+    getUser: vi.fn(),
   },
 }));
 
@@ -92,10 +98,10 @@ beforeEach(() => {
     return 'no mock implementation';
   });
 
-  vi.spyOn(localStorageService, 'getUser').mockReturnValue({
+  vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({
     uuid: mockedUserUuid,
     email: 'usuario@ejemplo.com',
-  } as unknown as UserSettings);
+  } as UserSettings);
 
   vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
     if (key === 'paymentIntentId') return paymentIntentId;
@@ -420,7 +426,7 @@ describe('Testing Impact Service', () => {
     describe('Error handling', () => {
       it('When user settings are missing, then it resolves without throwing', async () => {
         const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-        vi.spyOn(localStorageService, 'getUser').mockReturnValue(null);
+        vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(null);
 
         await expect(trackPaymentConversion()).resolves.not.toThrow();
 
@@ -435,7 +441,7 @@ describe('Testing Impact Service', () => {
 
       it('When an unexpected error occurs, then it resolves without throwing', async () => {
         const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-        vi.spyOn(localStorageService, 'getUser').mockImplementation(() => {
+        vi.spyOn(encryptedStorageService, 'getUser').mockImplementation(() => {
           throw new Error('Storage Error');
         });
 

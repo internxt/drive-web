@@ -4,13 +4,14 @@ import dayjs from 'dayjs';
 import { getCookie, setImpactCookies } from './utils';
 import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import envService from 'services/env.service';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
 import { bytesToString } from 'app/drive/services/size.service';
 import { getProductAmount } from 'views/Checkout/utils';
 import { sendAddShoppersConversion } from './addShoppers.services';
+import { LocalStorageItem } from 'app/core/types';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 /**
  * Stores relevant payment data in local storage to be retrieved later,
@@ -46,28 +47,28 @@ export function savePaymentDataInLocalStorage({
   isFirstPurchase,
 }: SavePaymentDataParams) {
   if (subscriptionId && selectedPlan?.price.interval !== 'lifetime') {
-    localStorageService.set('subscriptionId', subscriptionId);
+    localStorageService.set(LocalStorageItem.SubscriptionID, subscriptionId);
   }
 
   if (paymentIntentId && selectedPlan?.price.interval === 'lifetime') {
-    localStorageService.set('paymentIntentId', paymentIntentId);
+    localStorageService.set(LocalStorageItem.PaymentIntentID, paymentIntentId);
   }
 
   if (selectedPlan) {
     const planName = bytesToString(selectedPlan.price.bytes) + selectedPlan.price.interval;
     const amountToPay = getProductAmount(selectedPlan.price.decimalAmount, users, couponCodeData);
 
-    localStorageService.set('productName', planName);
-    localStorageService.set('amountPaid', amountToPay);
-    localStorageService.set('priceId', selectedPlan.price.id);
-    localStorageService.set('currency', selectedPlan.price.currency);
+    localStorageService.set(LocalStorageItem.ProductName, planName);
+    localStorageService.set(LocalStorageItem.AmountPaid, amountToPay);
+    localStorageService.set(LocalStorageItem.PriceId, selectedPlan.price.id);
+    localStorageService.set(LocalStorageItem.Currency, selectedPlan.price.currency);
   }
 
   if (couponCodeData?.codeName) {
-    localStorageService.set('couponCode', couponCodeData.codeName);
+    localStorageService.set(LocalStorageItem.CouponCode, couponCodeData.codeName);
   }
 
-  localStorageService.set('isFirstPurchase', String(isFirstPurchase));
+  localStorageService.set(LocalStorageItem.IsFirstPurchase, String(isFirstPurchase));
 }
 
 export async function handleImpactDTCCheckout({
@@ -136,20 +137,20 @@ export async function trackSignUp(uuid: string): Promise<void> {
 
 export async function trackPaymentConversion(): Promise<void> {
   try {
-    const userSettings = localStorageService.getUser() as UserSettings;
+    const userSettings = encryptedStorageService.getUser();
     if (!userSettings) {
       console.warn('[Impact Service] No user settings found');
       return;
     }
 
     const { uuid, email: userEmail } = userSettings;
-    const subscription = localStorageService.get('subscriptionId');
-    const paymentIntent = localStorageService.get('paymentIntentId');
-    const currency = localStorageService.get('currency');
-    const amountPaidStr = localStorageService.get('amountPaid');
+    const subscription = localStorageService.get(LocalStorageItem.SubscriptionID);
+    const paymentIntent = localStorageService.get(LocalStorageItem.PaymentIntentID);
+    const currency = localStorageService.get(LocalStorageItem.Currency);
+    const amountPaidStr = localStorageService.get(LocalStorageItem.AmountPaid);
     const amount = Number.parseFloat(amountPaidStr ?? '0');
-    const couponCode = localStorageService.get('couponCode');
-    const isFirstPurchase = localStorageService.get('isFirstPurchase') === 'true';
+    const couponCode = localStorageService.get(LocalStorageItem.CouponCode);
+    const isFirstPurchase = localStorageService.get(LocalStorageItem.IsFirstPurchase) === 'true';
 
     try {
       sendAddShoppersConversion({
@@ -167,7 +168,7 @@ export async function trackPaymentConversion(): Promise<void> {
     const anonymousID = getCookie('impactAnonymousId') || uuidV4();
     const source = getCookie('impactSource');
 
-    const IMPACT_COUPON_WHITELIST = ['CNINTERNXT', 'CNINTERNXTL', 'CLOUDOFF', 'SPECIAL', 'ANTIV', 'SAVE'];
+    const IMPACT_COUPON_WHITELIST = ['CNINTERNXT', 'CNINTERNXTL', 'CLOUDOFF', 'SPECIAL', 'ANTIV', 'SAVE', 'OFFER'];
     const isImpactCoupon = couponCode && IMPACT_COUPON_WHITELIST.includes(couponCode.toUpperCase());
 
     if (isFirstPurchase && ((source && source !== 'direct') || isImpactCoupon)) {

@@ -1,5 +1,6 @@
 import dayjs, { Dayjs } from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { Translate } from 'app/i18n/types';
 
 dayjs.extend(relativeTime);
 
@@ -19,7 +20,7 @@ function getExpirationDate(expiresValue: number): Dayjs {
   return dayjs.unix(expiresValue);
 }
 
-export const formatDefaultDate = (date: Date | string | number, translate: (key: string) => string): string => {
+export const formatDefaultDate = (date: Date | string | number, translate: Translate): string => {
   const translatedAt = translate('general.at');
   return dayjs(date).format(`D MMM, YYYY [${translatedAt}] HH:mm`);
 };

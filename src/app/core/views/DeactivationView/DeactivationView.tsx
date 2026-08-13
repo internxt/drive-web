@@ -10,9 +10,9 @@ import notificationsService, { ToastType } from '../../../notifications/services
 
 import { match } from 'react-router-dom';
 import navigationService from 'services/navigation.service';
-import { AppView, LocalStorageItem } from '../../types';
+import { AppView } from '../../types';
 import { SdkFactory } from '../../factory/sdk';
-import localStorageService from 'services/local-storage.service';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 export interface DeactivationViewProps {
   match?: match<{ token: string }>;
@@ -43,7 +43,7 @@ class DeactivationView extends React.Component<DeactivationViewProps> {
 
   ConfirmDeactivateUser = (token: string) => {
     const authClient = SdkFactory.getNewApiInstance().createAuthClient();
-    const userToken = localStorageService.get(LocalStorageItem.NewToken) ?? undefined;
+    const userToken = encryptedStorageService.getToken();
     return authClient
       .confirmUserDeactivation(token, userToken)
       .then(() => {

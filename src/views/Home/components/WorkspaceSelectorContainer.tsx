@@ -9,8 +9,7 @@ import workspacesService from 'services/workspace.service';
 import { RootState } from 'app/store';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import WorkspaceSelector, { Workspace } from './WorkspaceSelector';
-import localStorageService from 'services/local-storage.service';
-import { STORAGE_KEYS } from 'services/storage-keys';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 interface WorkspaceSelectorContainerProps {
   user: UserSettings | undefined;
@@ -55,8 +54,8 @@ const WorkspaceSelectorContainer = ({ user, isCollapsed }: WorkspaceSelectorCont
     }
     dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId }));
     dispatch(planThunks.fetchBusinessLimitUsageThunk());
-    localStorageService.set(STORAGE_KEYS.FOLDER_ACCESS_TOKEN, '');
-    localStorageService.set(STORAGE_KEYS.FILE_ACCESS_TOKEN, '');
+    encryptedStorageService.clearFolderToken();
+    encryptedStorageService.clearFileToken();
   };
 
   if (!user) return null;

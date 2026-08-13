@@ -490,7 +490,6 @@ const Navbar = (props: NavbarProps) => {
 export default connect((state: RootState) => {
   return {
     user: state.user.user,
-    workspace: state.session.workspace,
     storageFilters: state.storage.filters,
     currentFolderId: storageSelectors.currentFolderId(state),
     plan: state.plan,

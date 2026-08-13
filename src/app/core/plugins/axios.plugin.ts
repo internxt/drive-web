@@ -1,30 +1,22 @@
 import axios, { AxiosHeaders } from 'axios';
 import packageJson from '../../../../package.json';
-import { AppPlugin, LocalStorageItem, Workspace } from '../../core/types';
+import { AppPlugin } from '../../core/types';
 import { userThunks } from '../../store/slices/user';
-import localStorageService from 'services/local-storage.service';
 import envService from 'services/env.service';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 const axiosPlugin: AppPlugin = {
   install(store): void {
     axios.defaults.baseURL = envService.getVariable('newApi');
 
     axios.interceptors.request.use((requestConfig) => {
-      const tokenByWorkspace: { [key in Workspace]: string } = {
-        [Workspace.Individuals]: localStorageService.get(LocalStorageItem.UserToken) || '',
-        [Workspace.Business]: localStorageService.get(LocalStorageItem.TeamToken) || '',
-      };
-
-      const workspace =
-        requestConfig.authWorkspace ||
-        (localStorageService.get(LocalStorageItem.Workspace) as Workspace) ||
-        Workspace.Individuals;
+      const token = encryptedStorageService.getToken();
 
       const headers = new AxiosHeaders({
         'content-type': 'application/json; charset=utf-8',
         'internxt-version': packageJson.version,
         'internxt-client': 'drive-web',
-        Authorization: `Bearer ${tokenByWorkspace[workspace]}`,
+        Authorization: `Bearer ${token}`,
       });
 
       if (requestConfig.headers) {

@@ -20,9 +20,6 @@ const mockUserSettings: UserSettings = {
   sharedWorkspace: false,
   credit: 100,
   mnemonic: 'test mnemonic phrase',
-  privateKey: 'private-key-mock',
-  publicKey: 'public-key-mock',
-  revocationKey: 'revocation-key-mock',
   keys: {
     ecc: {
       publicKey: 'ecc-public-key-mock',
@@ -73,7 +70,7 @@ describe('OAuth authentication service', () => {
     it('when origins are requested, then a safe copy of allowed domains is provided', () => {
       const origins = oauthService.getAllowedOrigins();
 
-      expect(origins).toEqual(['https://meet.internxt.com']);
+      expect(origins).toEqual(oauthService.ALLOWED_TARGET_ORIGINS);
       expect(origins).not.toBe(oauthService.getAllowedOrigins());
     });
   });

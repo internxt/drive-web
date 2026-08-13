@@ -1,8 +1,9 @@
 import { DriveItemData, SortField } from 'app/drive/types';
 import { HeaderProps } from '@internxt/ui/dist/components/data-display/list/ListHeader';
+import { Translate } from 'app/i18n/types';
 
 export const getListHeaders = (
-  translate: (key: string) => string,
+  translate: Translate,
   isRecents: boolean,
   isTrash: boolean,
 ): HeaderProps<DriveItemData, SortField>[] => {

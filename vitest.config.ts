@@ -65,6 +65,7 @@ export default defineConfig({
             headless: true,
             fileParallelism: false,
             instances: [{ browser: 'chromium' }],
+            screenshotFailures: false,
           },
           server: {
             deps: {

@@ -1,4 +1,4 @@
-import localStorageService from 'services/local-storage.service';
+import encryptedStorageService from './encrypted-storage.service';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import userService from './user.service';
 
@@ -29,6 +29,12 @@ vi.mock('services/local-storage.service', () => ({
   },
 }));
 
+vi.mock('services/encrypted-storage.service', () => ({
+  default: {
+    getToken: vi.fn(),
+  },
+}));
+
 vi.mock('../app/core/factory/sdk', () => ({
   SdkFactory: {
     getNewApiInstance: vi.fn(() => ({
@@ -49,7 +55,7 @@ describe('userService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
-    vi.spyOn(localStorageService, 'get').mockReturnValue(testToken);
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(testToken);
   });
 
   it('should pre-create user', async () => {

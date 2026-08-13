@@ -34,7 +34,10 @@ describe('_.concat', () => {
 
 describe('_.chunk', () => {
   it('splits array into chunks of given size', () => {
-    expect(_.chunk([1, 2, 3, 4], 2)).toEqual([[1, 2], [3, 4]]);
+    expect(_.chunk([1, 2, 3, 4], 2)).toEqual([
+      [1, 2],
+      [3, 4],
+    ]);
   });
 
   it('last chunk is smaller if array length is not divisible', () => {

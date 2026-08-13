@@ -98,11 +98,19 @@ export const useShareItemActions = ({
         let sharingInfo = sharingMeta;
 
         if (sharingInfo?.encryptedCode) {
-          await shareService.saveSharingPassword(sharingInfo.id, plainPassword, sharingInfo.encryptedCode);
+          await shareService.saveSharingPassword(
+            sharingInfo.id,
+            plainPassword,
+            sharingInfo.encryptedCode,
+            sharingInfo.encryptionAlgorithm,
+          );
         } else {
           const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
           const itemId = itemToShare?.item.uuid ?? '';
-          sharingInfo = await shareService.createPublicShareFromOwnerUser(itemId, itemType, plainPassword);
+          const { publicSharingItemData } = await shareService.createPublicShareFromOwnerUser(itemId, itemType, {
+            plainPassword,
+          });
+          sharingInfo = publicSharingItemData;
           actionDispatch(setSharingMeta(sharingInfo));
         }
 

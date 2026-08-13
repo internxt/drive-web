@@ -174,10 +174,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
 
           if (allFilesExceedSizeLimit && hasNoChildFolders) {
             await stopUploadTask(uploadFolderAbortController, dispatch, taskId, rootFolderItem);
-            notificationsService.show({
-              text: t('notificationMessages.reachedFileSizeLimit'),
-              type: ToastType.Warning,
-            });
+
             dispatch(
               uiActions.setOpenFileSizeLimitReachedDialog({ open: true, info: { exceededFiles: level.childrenFiles } }),
             );

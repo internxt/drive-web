@@ -1,7 +1,6 @@
 import { PendingInvitesResponse } from '@internxt/sdk/dist/workspaces';
 import { CheckCircle, X } from '@phosphor-icons/react';
 import errorService from 'services/error.service';
-import localStorageService from 'services/local-storage.service';
 import workspacesService from 'services/workspace.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Button, Modal } from '@internxt/ui';
@@ -10,7 +9,7 @@ import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import dayjs from 'dayjs';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { wait } from 'utils/timeUtils';
-import { LocalStorageItem } from 'app/core/types';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 const WORKSPACE_INVITATION_BAD_REQUEST = 400;
 
@@ -29,7 +28,7 @@ const PendingInvitationsDialog = ({
 }) => {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
-  const token = localStorageService.get(LocalStorageItem.NewToken);
+  const token = encryptedStorageService.getToken();
 
   function formatDate(dateString) {
     const date = dayjs(dateString);

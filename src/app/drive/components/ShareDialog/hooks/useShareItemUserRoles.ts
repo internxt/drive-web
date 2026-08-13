@@ -44,7 +44,10 @@ export const useShareItemUserRoles = ({ isRestrictedSharingAvailable, itemToShar
         await shareService.updateSharingType(itemId, itemType, sharingType);
 
         if (sharingType === 'public') {
-          const shareInfo = await shareService.createPublicShareFromOwnerUser(itemId, itemType);
+          const { publicSharingItemData: shareInfo } = await shareService.createPublicShareFromOwnerUser(
+            itemId,
+            itemType,
+          );
           actionDispatch(setSharingMeta(shareInfo));
           actionDispatch(setIsPasswordProtected(false));
         }

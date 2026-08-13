@@ -8,11 +8,12 @@ import envService from 'services/env.service';
 import { FieldErrors, UseFormHandleSubmit, UseFormRegister } from 'react-hook-form';
 import { IFormValues } from '../../../app/core/types';
 import { PasswordState } from '../hooks/useGuestSignupState';
+import { Translate } from 'app/i18n/types';
 
 interface CreateAccountFormProps {
   handleSubmit: UseFormHandleSubmit<IFormValues>;
   onSubmit: (data: IFormValues, event?: React.BaseSyntheticEvent) => void;
-  translate: (key: string) => string;
+  translate: Translate;
   hasEmailParam: boolean;
   register: UseFormRegister<IFormValues>;
   errors: FieldErrors<IFormValues>;

@@ -20,30 +20,34 @@ import {
   UpdateUserRolePayload,
   UpdateUserRoleResponse,
 } from '@internxt/sdk/dist/drive/share/types';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { t } from 'i18next';
 import { Iterator } from '../../core/collections';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from 'services/error.service';
-import localStorageService from 'services/local-storage.service';
 import workspacesService from 'services/workspace.service';
 import { hybridDecryptMessageWithPrivateKey } from '../../crypto/services/pgp.service';
 import { downloadFolderAsZip } from 'app/drive/services/folder.service';
-import { DriveFolderData } from 'app/drive/types';
 import { DownloadManager } from '../../network/DownloadManager';
+import { downloadFile } from 'app/network/download';
+import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
+import downloadService from 'app/drive/services/download.service';
+import { binaryStreamToBlob } from 'services/stream.service';
+import { FlatFolderZip } from 'services/zip.service';
 import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
 import { AdvancedSharedItem } from '../types';
 import { domainManager } from './DomainManager';
 import { generateCaptchaToken } from 'utils';
 import { copyTextToClipboard } from 'utils/copyToClipboard.utils';
 import referralService from 'services/referral.service';
+import { generateFileBucketKey } from 'app/network/crypto';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 interface CreateShareResponse {
   created: boolean;
   token: string;
 }
-
+const NEW_SHARING_VERSION = 'inxt-v3';
 export async function createShare(params: ShareTypes.GenerateShareLinkPayload): Promise<CreateShareResponse> {
   return await SdkFactory.getNewApiInstance().createShareClient().createShareLink(params);
 }
@@ -274,32 +278,79 @@ export function stopSharingItem(itemType: string, itemId: string): Promise<void>
 export const createPublicShareFromOwnerUser = async (
   uuid: string,
   itemType: 'folder' | 'file',
-  plainPassword?: string,
-  encryptionAlgorithm?: string,
-): Promise<SharingMeta> => {
-  const user = localStorageService.getUser() as UserSettings;
-  const { mnemonic } = user;
-  const code = stringUtils.generateRandomStringUrlSafe(8);
+  options?: {
+    plainPassword?: string;
+    encryptedMnemonic?: string;
+  },
+): Promise<{ publicSharingItemData: SharingMeta; plainCode: string }> => {
+  const user = encryptedStorageService.getUser();
+  if (!user) {
+    const error = errorService.castError('User Not Found');
+    errorService.reportError(error);
+    throw error;
+  }
+  const { mnemonic, bucket } = user;
+  const { plainPassword, encryptedMnemonic } = options ?? {};
 
-  const encryptedMnemonic = aes.encrypt(mnemonic, code);
-  const encryptedCode = aes.encrypt(code, mnemonic);
-  const encryptedPassword = plainPassword ? aes.encrypt(plainPassword, code) : null;
+  let plainCode = stringUtils.generateRandomStringUrlSafe(8);
+  const bucketKey = await generateFileBucketKey(mnemonic, bucket);
+  const bucketKeyHex = Buffer.from(bucketKey.subarray(0, 32)).toString('hex');
 
-  return createPublicSharingItem({
-    encryptionAlgorithm: encryptionAlgorithm ?? 'inxt-v2',
-    encryptionKey: encryptedMnemonic,
+  const encryptedKey = aes.encrypt(bucketKeyHex, plainCode);
+  const encryptedCode = aes.encrypt(plainCode, bucketKeyHex);
+  const encryptedPassword = plainPassword ? aes.encrypt(plainPassword, plainCode) : null;
+
+  const publicSharingItemData = await createPublicSharingItem({
+    encryptionAlgorithm: NEW_SHARING_VERSION,
+    encryptionKey: encryptedKey,
     itemType,
     itemId: uuid,
     encryptedCode,
     persistPreviousSharing: true,
     ...(encryptedPassword && { encryptedPassword }),
   });
+
+  const { encryptedCode: encryptedCodeFromResponse, encryptionAlgorithm: encryptionAlgorithmFromResponse } =
+    publicSharingItemData;
+
+  let mnemonicToUse = mnemonic;
+  let bucketKeyToUse = bucketKeyHex;
+  const isUserInvited = publicSharingItemData.ownerId !== user.uuid;
+  if (isUserInvited && encryptedMnemonic) {
+    const ownerMnemonic = await decryptMnemonic(encryptedMnemonic);
+    if (ownerMnemonic) {
+      mnemonicToUse = ownerMnemonic;
+      if (encryptionAlgorithmFromResponse === NEW_SHARING_VERSION) {
+        const newBucketKey = await generateFileBucketKey(mnemonicToUse, bucket);
+        bucketKeyToUse = Buffer.from(newBucketKey.subarray(0, 32)).toString('hex');
+      }
+    }
+  }
+  if (encryptedCodeFromResponse !== encryptedCode) {
+    const key = encryptionAlgorithmFromResponse === NEW_SHARING_VERSION ? bucketKeyToUse : mnemonicToUse;
+    plainCode = aes.decrypt(encryptedCodeFromResponse, key);
+  }
+
+  return { publicSharingItemData, plainCode };
 };
 
-export const decryptPublicSharingCodeWithOwner = (encryptedCode: string) => {
-  const user = localStorageService.getUser() as UserSettings;
+const decryptPublicSharingCodeWithOwner = async (encryptedCode: string, encryptionAlgorithm: string) => {
+  const user = encryptedStorageService.getUser();
+  if (!user) {
+    const error = errorService.castError('User Not Found');
+    errorService.reportError(error);
+    throw error;
+  }
   const { mnemonic } = user;
-  return aes.decrypt(encryptedCode, mnemonic);
+  let key = mnemonic;
+  if (encryptionAlgorithm === NEW_SHARING_VERSION) {
+    const { bucket } = user;
+    const bucketKey = await generateFileBucketKey(mnemonic, bucket);
+    const bucketKeyHex = Buffer.from(bucketKey.subarray(0, 32)).toString('hex');
+
+    key = bucketKeyHex;
+  }
+  return aes.decrypt(encryptedCode, key);
 };
 
 const getRandomElement = (list: string[]) => {
@@ -315,21 +366,13 @@ const getRandomElement = (list: string[]) => {
 export const getPublicShareLink = async (
   uuid: string,
   itemType: 'folder' | 'file',
-  encriptedMnemonic?: string,
+  encryptedMnemonic?: string,
 ): Promise<SharingMeta | void> => {
-  const user = localStorageService.getUser() as UserSettings;
-  let { mnemonic } = user;
-
   try {
-    const publicSharingItemData = await createPublicShareFromOwnerUser(uuid, itemType);
-    const { id: sharingId, encryptedCode: encryptedCodeFromResponse } = publicSharingItemData;
-    const isUserInvited = publicSharingItemData.ownerId !== user.uuid;
-
-    if (isUserInvited && encriptedMnemonic) {
-      const ownerMnemonic = await decryptMnemonic(encriptedMnemonic);
-      if (ownerMnemonic) mnemonic = ownerMnemonic;
-    }
-    const plainCode = aes.decrypt(encryptedCodeFromResponse, mnemonic);
+    const { publicSharingItemData, plainCode } = await createPublicShareFromOwnerUser(uuid, itemType, {
+      encryptedMnemonic,
+    });
+    const { id: sharingId } = publicSharingItemData;
 
     const domains = domainManager.getDomainsList();
     let selectedDomain = getRandomElement(domains);
@@ -551,12 +594,12 @@ class DirectoryPublicSharedFilesIterator implements Iterator<SharedFiles> {
 }
 
 export const decryptMnemonic = async (encryptionKey: string): Promise<string | undefined> => {
-  const user = localStorageService.getUser();
+  const user = encryptedStorageService.getUser();
   if (user) {
     let decryptedKey;
-    const privateKeyInBase64 = user.keys?.ecc?.privateKey ?? user.privateKey;
-    const privateKyberKeyInBase64 = user.keys?.kyber?.privateKey ?? '';
     try {
+      const privateKeyInBase64 = user.keys.ecc.privateKey;
+      const privateKyberKeyInBase64 = user.keys.kyber.privateKey;
       decryptedKey = await hybridDecryptMessageWithPrivateKey({
         encryptedMessageInBase64: encryptionKey,
         privateKeyInBase64,
@@ -596,7 +639,9 @@ export async function downloadSharedFiles({
 }): Promise<void> {
   const sharingCredentials = {
     credentials: { ...creds },
-    mnemonic: decryptedEncryptionKey,
+    key: {
+      mnemonic: decryptedEncryptionKey,
+    },
   };
 
   if (selectedItems.length === 1 && !selectedItems[0].isFolder) {
@@ -655,23 +700,133 @@ export async function downloadSharedFiles({
   }
 }
 
+export function derivePublicSharingKey({
+  encryptionKey,
+  code,
+  sharingVersion,
+}: {
+  encryptionKey: string;
+  code: string;
+  sharingVersion: string;
+}): FileKey {
+  const decrypted = aes.decrypt(encryptionKey, code);
+
+  if (sharingVersion === NEW_SHARING_VERSION) {
+    return { bucketKey: Buffer.from(decrypted, 'hex') };
+  }
+
+  return { mnemonic: decrypted };
+}
+
+const getPublicItemDownloadName = (item: AdvancedSharedItem): string => {
+  const extension = item.type ? `.${item.type}` : '';
+  return `${item.plainName ?? item.name}${extension}`;
+};
+
+export async function downloadPublicSharedItems({
+  items,
+  credentials,
+  key,
+  code,
+  resourcesToken,
+  updateNumItems,
+}: {
+  items: AdvancedSharedItem[];
+  credentials: NetworkCredentials;
+  key: FileKey;
+  code: string;
+  resourcesToken?: string;
+  updateNumItems?: () => void;
+}): Promise<void> {
+  const initPage = 0;
+  const itemsPerPage = 15;
+
+  const createFoldersIterator = (directoryUuid: string, token?: string) => {
+    return new DirectoryPublicSharedFolderIterator(
+      { directoryId: directoryUuid, resourcesToken: token ?? resourcesToken },
+      initPage,
+      itemsPerPage,
+    );
+  };
+
+  const createFilesIterator = (directoryUuid: string, token?: string) => {
+    return new DirectoryPublicSharedFilesIterator(
+      { directoryId: directoryUuid, resourcesToken: token ?? resourcesToken, code },
+      initPage,
+      itemsPerPage,
+    );
+  };
+
+  const downloadFileStream = (file: AdvancedSharedItem) => {
+    if (!file.bucket || !file.fileId) {
+      throw new Error(`Missing network data to download shared file '${getPublicItemDownloadName(file)}'`);
+    }
+
+    return downloadFile({
+      bucketId: file.bucket,
+      fileId: file.fileId,
+      creds: credentials,
+      key,
+    });
+  };
+
+  if (items.length === 1 && !items[0].isFolder) {
+    const [file] = items;
+    const fileStream = await downloadFileStream(file);
+    const fileBlob = await binaryStreamToBlob(fileStream, file.type || '');
+    updateNumItems?.();
+    return downloadService.downloadFileFromBlob(fileBlob, getPublicItemDownloadName(file));
+  }
+
+  const downloadFolderToZip = (folder: AdvancedSharedItem, destination?: FlatFolderZip) =>
+    downloadFolderAsZip({
+      folder,
+      isSharedFolder: true,
+      foldersIterator: createFoldersIterator,
+      filesIterator: createFilesIterator,
+      updateProgress: () => {},
+      updateNumItems: updateNumItems ?? (() => {}),
+      options: destination
+        ? { credentials, key, isPublicShare: true, destination, closeWhenFinished: false }
+        : { credentials, key, isPublicShare: true },
+    });
+
+  if (items.length === 1) {
+    await downloadFolderToZip(items[0]);
+    return;
+  }
+
+  const zip = new FlatFolderZip('Internxt', {});
+
+  for (const item of items) {
+    if (item.isFolder) {
+      await downloadFolderToZip(item, zip);
+    } else {
+      const fileStream = await downloadFileStream(item);
+      zip.addFile(getPublicItemDownloadName(item), fileStream);
+      updateNumItems?.();
+    }
+  }
+
+  await zip.close();
+}
+
 export async function downloadPublicSharedFolder({
   encryptionKey,
   item,
   token,
   code,
   incrementItemCount,
+  sharingVersion,
 }: {
   encryptionKey: string;
   item;
   token?: string;
   code: string;
   incrementItemCount: () => void;
+  sharingVersion: string;
 }): Promise<void> {
-  const initPage = 0;
-  const itemsPerPage = 15;
-
-  const decrypted = aes.decrypt(encryptionKey, code);
+  const key = derivePublicSharingKey({ encryptionKey, code, sharingVersion });
 
   const { credentials } = await shareService.getPublicSharedFolderContent(
     // folderUUID
@@ -687,39 +842,16 @@ export async function downloadPublicSharedFolder({
     throw Error('No Credentials!');
   }
 
-  const createFoldersIterator = (directoryUuid: string, resourcesToken?: string) => {
-    return new DirectoryPublicSharedFolderIterator(
-      { directoryId: directoryUuid, resourcesToken: resourcesToken ?? token },
-      initPage,
-      itemsPerPage,
-    );
-  };
-
-  const createFilesIterator = (directoryUuid: string, resourcesToken?: string) => {
-    return new DirectoryPublicSharedFilesIterator(
-      { directoryId: directoryUuid, resourcesToken: resourcesToken ?? token, code: code },
-      initPage,
-      itemsPerPage,
-    );
-  };
-
-  const options = {
+  await downloadPublicSharedItems({
+    items: [{ ...item, isFolder: true } as AdvancedSharedItem],
     credentials: {
       user: credentials.networkUser,
       pass: credentials.networkPass,
     },
-    mnemonic: decrypted,
-    isPublicShare: true,
-  };
-
-  await downloadFolderAsZip({
-    folder: item as DriveFolderData,
-    isSharedFolder: true,
-    foldersIterator: createFoldersIterator,
-    filesIterator: createFilesIterator,
-    updateProgress: () => {},
+    key,
+    code,
+    resourcesToken: token,
     updateNumItems: incrementItemCount,
-    options,
   });
 }
 
@@ -781,12 +913,13 @@ export function getSharingInfo(itemId: string, itemType: 'file' | 'folder'): Pro
   });
 }
 
-export function saveSharingPassword(
+export async function saveSharingPassword(
   sharingId: string,
   plainPassword: string,
   encryptedCode: string,
+  encryptionAlgorithm: string,
 ): Promise<SharingMeta> {
-  const code = shareService.decryptPublicSharingCodeWithOwner(encryptedCode);
+  const code = await decryptPublicSharingCodeWithOwner(encryptedCode, encryptionAlgorithm);
   const encryptedPassword = aes.encrypt(plainPassword, code);
 
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
@@ -825,6 +958,7 @@ const shareService = {
   removeUserRole,
   getSharedFolderContent,
   downloadSharedFiles,
+  decryptPublicSharingCodeWithOwner,
   getUsersOfSharedFolder,
   updateUserRoleOfSharedFolder,
   getUserRoleOfSharedFolder,
@@ -839,7 +973,6 @@ const shareService = {
   getPublicShareLink,
   saveSharingPassword,
   removeSharingPassword,
-  decryptPublicSharingCodeWithOwner,
   validateSharingInvitation,
   getPublicSharedItemInfo,
   getSharedFolderSize,

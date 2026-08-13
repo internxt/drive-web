@@ -84,7 +84,9 @@ describe('Folder Service', () => {
       const stream = await getFileStream({
         file: mockEmptyFile,
         creds: { user: 'test-user', pass: 'test-pass' },
-        mnemonic: 'test-mnemonic',
+        key: {
+          mnemonic: 'test-mnemonic',
+        },
       });
 
       expect(stream).toBeInstanceOf(ReadableStream);
@@ -108,7 +110,9 @@ describe('Folder Service', () => {
       const stream = await getFileStream({
         file: mockFile,
         creds: { user: 'test-user', pass: 'test-pass' },
-        mnemonic: 'test-mnemonic',
+        key: {
+          mnemonic: 'test-mnemonic',
+        },
       });
 
       expect(stream).toBeInstanceOf(ReadableStream);
@@ -145,7 +149,9 @@ describe('Folder Service', () => {
         await getFileStream({
           file: mockFile,
           creds: { user: 'test-user', pass: 'test-pass' },
-          mnemonic: 'test-mnemonic',
+          key: {
+            mnemonic: 'test-mnemonic',
+          },
           downloadProgress: mockDownloadProgress,
         });
 
@@ -172,7 +178,9 @@ describe('Folder Service', () => {
         const stream = await getFileStream({
           file: mockFile,
           creds: { user: 'test-user', pass: 'test-pass' },
-          mnemonic: 'test-mnemonic',
+          key: {
+            mnemonic: 'test-mnemonic',
+          },
         });
 
         expect(stream).toBeInstanceOf(ReadableStream);
@@ -180,7 +188,9 @@ describe('Folder Service', () => {
           bucketId: mockFile.bucket,
           fileId: mockFile.fileId,
           creds: { user: 'test-user', pass: 'test-pass' },
-          mnemonic: 'test-mnemonic',
+          key: {
+            mnemonic: 'test-mnemonic',
+          },
           options: {
             notifyProgress: expect.any(Function),
             abortController: undefined,

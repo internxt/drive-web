@@ -27,7 +27,7 @@ import { CreateFolderDialog } from 'views/Drive/components';
 import DeleteItemsDialog from 'views/Trash/components/DeleteItemsDialog';
 import { useTrashPagination } from 'views/Trash/hooks/useTrashPagination';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { uploadFoldersWithManager } from 'app/network/UploadFolderManager';
+import { uploadFoldersWithTracking } from 'app/drive/services/folder.service/uploadFoldersWithTracking';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { AdvancedSharedItem } from 'app/share/types';
 import { Tutorial } from 'components/Tutorial';
@@ -60,6 +60,7 @@ import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import { ShareDialogWrapper } from 'app/drive/components/ShareDialog/ShareDialogWrapper';
 import { fileVersionsSelectors } from 'app/store/slices/fileVersions';
+import { TranslationKey } from 'app/i18n/types';
 
 const MenuItemToGetSize = ({
   isTrash,
@@ -67,7 +68,7 @@ const MenuItemToGetSize = ({
   menuItemsRef,
 }: {
   isTrash: boolean;
-  translate: (key: string) => string;
+  translate: (key: TranslationKey) => string;
   menuItemsRef: React.RefObject<HTMLDivElement>;
 }) => (
   <div
@@ -790,7 +791,7 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
         options: { onSuccess: onDragAndDropEnd },
       }));
 
-      await uploadFoldersWithManager({
+      await uploadFoldersWithTracking({
         payload: folderDataToUpload,
         selectedWorkspace: props.selectedWorkspace,
         dispatch,
@@ -859,7 +860,6 @@ export default connect((state: RootState) => {
     isClearTrashDialogOpen: state.ui.isClearTrashDialogOpen,
     viewMode: state.storage.viewMode,
     namePath: state.storage.namePath,
-    workspace: state.session.workspace,
     selectedWorkspace: selectedWorkspace,
     planLimit: planSelectors.planLimitToShow(state),
     planUsage: planSelectors.planUsageToShow(state),

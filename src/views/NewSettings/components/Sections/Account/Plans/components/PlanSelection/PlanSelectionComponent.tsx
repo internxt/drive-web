@@ -4,6 +4,7 @@ import { bytesToString } from 'app/drive/services/size.service';
 import { displayAmount } from '../../../../../../utils/planUtils';
 import { PlanSelectionCardSkeleton } from './skeletons/PlanSelectionCardSkeleton';
 import { currencyService } from 'views/Checkout/services';
+import { Translate } from 'app/i18n/types';
 
 interface PlanSelectionComponentProps {
   pricesToRender: DisplayPrice[];
@@ -12,7 +13,7 @@ interface PlanSelectionComponentProps {
   showFreePriceCard: boolean;
   isFreePlan: boolean;
   isCurrentSubscriptionPlan: (plan: DisplayPrice) => boolean;
-  translate: (key: string, props?: Record<string, unknown>) => string;
+  translate: Translate;
   onPriceSelected: (plan) => void;
 }
 

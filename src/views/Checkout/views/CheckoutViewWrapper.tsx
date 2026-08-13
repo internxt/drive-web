@@ -3,16 +3,14 @@ import { Elements } from '@stripe/react-stripe-js';
 import { Stripe, StripeElements } from '@stripe/stripe-js';
 import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-
 import { useCheckout } from 'views/Checkout/hooks/useCheckout';
 import { useSignUp } from 'views/Signup/hooks/useSignup';
 import envService from 'services/env.service';
 import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
-import { STORAGE_KEYS } from 'services/storage-keys';
 import { AppError } from '@internxt/sdk';
-import { AppView, IFormValues } from 'app/core/types';
+import { AppView, IFormValues, LocalStorageItem } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import ChangePlanDialog from 'views/NewSettings/components/Sections/Account/Plans/components/ChangePlanDialog';
 import longNotificationsService from 'app/notifications/services/longNotification.service';
@@ -23,7 +21,7 @@ import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { planThunks } from 'app/store/slices/plan';
 import { useThemeContext } from 'app/theme/ThemeProvider';
 import { PaymentType } from 'views/Checkout/types';
-import { AddressProvider, CheckoutViewManager, UserInfoProps } from '../types/checkout.types';
+import { CheckoutViewManager, UserInfoProps } from '../types/checkout.types';
 import CheckoutView from './CheckoutView';
 import { useUserPayment } from 'views/Checkout/hooks/useUserPayment';
 import { CRYPTO_PAYMENT_DIALOG_KEY, CryptoPaymentDialog } from 'views/Checkout/components/CryptoPaymentDialog';
@@ -43,6 +41,7 @@ import {
   MILLISECONDS_PER_DAY,
   STATUS_CODE_ERROR,
 } from '../constants';
+import { useBillingDetails } from '../hooks/useBillingDetails';
 import { usePromotionalCode } from '../hooks/usePromotionalCode';
 import { useAuthCheckout } from '../hooks/useAuthCheckout';
 import { checkoutReducer, initialStateForCheckout } from '../store';
@@ -86,22 +85,30 @@ const CheckoutViewWrapper = () => {
   });
 
   const dispatch = useAppDispatch();
-  const [address, setAddress] = useState<AddressProvider>();
-  const [userName, setUserName] = useState(user?.name ?? '');
+  const {
+    address,
+    isCryptoAddressIncomplete,
+    billingCountry,
+    billingPostalCode,
+    getCustomerName,
+    onUserAddressChanges,
+    onUserNameChanges,
+    onPostalCodeChanges,
+  } = useBillingDetails({ user, userLocation: userLocationData?.location });
 
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const { doRegister } = useSignUp('activate');
   const { handleUserPayment } = useUserPayment();
   const userAuthComponentRef = useRef<HTMLDivElement>(null);
   const { isDialogOpen, openDialog: openCryptoPaymentDialog } = useActionDialog();
-  const [selectedCurrency, setSelectedCurrency] = useState<string>('eur');
+  const [selectedCurrency, setSelectedCurrency] = useState<string>(currency ?? 'eur');
   const [currencyType, setCurrencyType] = useState<PaymentType>();
 
   const userAccountName = user?.name ?? '';
   const lastName = user?.lastname ?? '';
   const fullName = userAccountName + ' ' + lastName;
 
-  const gclidStored = localStorageService.get(STORAGE_KEYS.GCLID);
+  const gclidStored = localStorageService.get(LocalStorageItem.GCLID);
 
   const canChangePlanDialogBeOpened = selectedPlan?.price && isUpdateSubscriptionDialogOpen;
   const isCryptoPaymentDialogOpen = isDialogOpen(CRYPTO_PAYMENT_DIALOG_KEY);
@@ -118,8 +125,8 @@ const CheckoutViewWrapper = () => {
     if (gclid) {
       const expiryDate = new Date();
       expiryDate.setTime(expiryDate.getTime() + GCLID_COOKIE_LIFESPAN_DAYS * MILLISECONDS_PER_DAY);
-      document.cookie = `gclid=${gclid}; expires=${expiryDate.toUTCString()}; path=/; Secure`;
-      localStorageService.set(STORAGE_KEYS.GCLID, gclid);
+      document.cookie = `gclid=${gclid}; expires=${expiryDate.toUTCString()}; path=/; domain=.internxt.com; Secure`;
+      localStorageService.set(LocalStorageItem.GCLID, gclid);
     }
     if (irclickid) {
       handleImpactDTCCheckout({ irclickid, utmMedium });
@@ -138,16 +145,22 @@ const CheckoutViewWrapper = () => {
       return;
     }
 
-    if (userLocationData?.location !== address?.country && address?.postal_code) {
+    if (!billingCountry || !billingPostalCode) {
+      return;
+    }
+
+    const debounceTimer = setTimeout(() => {
       fetchSelectedPlan({
         priceId: selectedPlan.price.id,
         currency: selectedPlan.price.currency,
         promotionCode: promotionCode ?? undefined,
-        postalCode: address.postal_code,
-        country: address.country,
+        postalCode: billingPostalCode,
+        country: billingCountry,
       });
-    }
-  }, [address?.country, address?.postal_code, selectedPlan?.price?.id, selectedPlan?.price?.currency]);
+    }, 500);
+
+    return () => clearTimeout(debounceTimer);
+  }, [billingCountry, billingPostalCode, selectedPlan?.price?.id, selectedPlan?.price?.currency]);
 
   useEffect(() => {
     if (isCheckoutReady && selectedPlan?.price) {
@@ -204,9 +217,9 @@ const CheckoutViewWrapper = () => {
     }
   };
 
-  const onChangePlanClicked = async (priceId: string) => {
+  const onChangePlanClicked = async () => {
     setIsUpdatingSubscription(true);
-    await handleSubscriptionPayment(priceId);
+    await handleSubscriptionPayment();
     setIsUpdateSubscriptionDialogOpen(false);
     setIsUpdatingSubscription(false);
     navigationService.push(AppView.Drive);
@@ -238,7 +251,7 @@ const CheckoutViewWrapper = () => {
     }
   };
 
-  const handleSubscriptionPayment = async (priceId: string) => {
+  const handleSubscriptionPayment = async () => {
     if (!selectedPlan?.price?.type) {
       console.error('No selected plan available for subscription payment');
       return;
@@ -266,49 +279,39 @@ const CheckoutViewWrapper = () => {
   ) => {
     event?.preventDefault();
 
+    const isStripeNotLoaded = !stripeSDK || !elements;
+
     if (!selectedPlan?.price?.id) {
       console.error('No selected plan available for checkout');
       setIsUserPaying(false);
       return;
     }
 
+    if (isStripeNotLoaded) {
+      console.error('Stripe.js has not loaded yet. Please try again later.');
+      return;
+    }
+
     setIsUserPaying(true);
 
     const { email, password, companyName, companyVatId } = formData;
-    const isStripeNotLoaded = !stripeSDK || !elements;
-    const customerName = companyName ?? userName;
-
-    const captchaToken = await generateCaptchaToken();
-
-    let authenticatedUser = user;
-
-    if (authMethod !== 'userIsSignedIn') {
-      const result = await onAuthenticateUser({
-        email,
-        password,
-        authMethod,
-        dispatch,
-        authCaptcha: captchaToken,
-        doRegister,
-        onAuthenticationFail: () => {
-          userAuthComponentRef.current?.scrollIntoView();
-          setIsUserPaying(false);
-        },
-      });
-
-      if (result) {
-        authenticatedUser = result;
-      }
-    }
 
     try {
-      if (isStripeNotLoaded) {
-        console.error('Stripe.js has not loaded yet. Please try again later.');
-        return;
+      const isCryptoPurchase = currencyType === PaymentType['CRYPTO'];
+
+      if (isCryptoPurchase && isCryptoAddressIncomplete) {
+        throw new Error(translate('checkout.error.addressRequired'));
       }
 
-      if (!address?.line1 || !address?.city || !address.country) {
-        throw new Error(translate('checkout.error.addressRequired'));
+      if (!billingCountry) {
+        throw new Error(translate('checkout.error.countryRequired'));
+      }
+
+      let paymentPostalCode: string | undefined;
+      let confirmationTokenId: string | undefined;
+
+      if (isCryptoPurchase) {
+        paymentPostalCode = address?.postal_code;
       }
 
       if (currencyType === PaymentType['FIAT']) {
@@ -316,6 +319,40 @@ const CheckoutViewWrapper = () => {
 
         if (elementsError) {
           throw new Error(elementsError.message);
+        }
+
+        const { confirmationToken, error: confirmationTokenError } = await stripeSDK.createConfirmationToken({
+          elements,
+        });
+
+        if (confirmationTokenError) {
+          throw new Error(confirmationTokenError.message);
+        }
+
+        confirmationTokenId = confirmationToken.id;
+        paymentPostalCode = confirmationToken.payment_method_preview.billing_details.address?.postal_code ?? undefined;
+      }
+
+      const captchaToken = await generateCaptchaToken();
+
+      let authenticatedUser = user;
+
+      if (authMethod !== 'userIsSignedIn') {
+        const result = await onAuthenticateUser({
+          email,
+          password,
+          authMethod,
+          dispatch,
+          authCaptcha: captchaToken,
+          doRegister,
+          onAuthenticationFail: () => {
+            userAuthComponentRef.current?.scrollIntoView();
+            setIsUserPaying(false);
+          },
+        });
+
+        if (result) {
+          authenticatedUser = result;
         }
       }
 
@@ -329,12 +366,14 @@ const CheckoutViewWrapper = () => {
             ...(userUuid && { new_user_id: userUuid }),
           }
         : undefined;
+      const customerName = getCustomerName({ companyName, authenticatedUser, email });
+
       const { customerId, token } = await checkoutService.createCustomer({
-        customerName,
+        customerName: customerName || undefined,
         lineAddress1: address?.line1,
         lineAddress2: address?.line2 ?? undefined,
-        country: address?.country,
-        postalCode: address?.postal_code,
+        country: billingCountry,
+        postalCode: paymentPostalCode,
         city: address?.city,
         companyVatId,
         captchaToken: customerToken,
@@ -348,7 +387,7 @@ const CheckoutViewWrapper = () => {
         currency: selectedCurrency ?? selectedPlan.price.currency,
         priceId: selectedPlan.price.id,
         customerId,
-        elements,
+        confirmationTokenId,
         translate,
         selectedPlan,
         token,
@@ -376,14 +415,6 @@ const CheckoutViewWrapper = () => {
     }
   };
 
-  const onUserAddressChanges = (address: AddressProvider) => {
-    setAddress(address);
-  };
-
-  const onUserNameChanges = (userName: string) => {
-    setUserName(userName);
-  };
-
   const onCurrencyTypeChanges = (currency: PaymentType) => {
     setCurrencyType(currency);
   };
@@ -397,12 +428,13 @@ const CheckoutViewWrapper = () => {
     handleAuthMethodChange: setAuthMethod,
     onCurrencyChange: setSelectedCurrency,
     onUserNameChanges,
+    onPostalCodeChanges,
   };
 
   return (
     <>
       {isCheckoutReady && stripeElementsOptions && stripeSdk && selectedPlan?.price && selectedPlan?.taxes ? (
-        <Elements stripe={stripeSdk} options={{ ...stripeElementsOptions }}>
+        <Elements stripe={stripeSdk} options={stripeElementsOptions}>
           <CheckoutView
             checkoutViewVariables={{
               isPaying,
@@ -411,7 +443,7 @@ const CheckoutViewWrapper = () => {
               couponCodeError: couponError ?? undefined,
               authError: authError ?? undefined,
               currentSelectedPlan: selectedPlan,
-              selectedCurrency: currency ?? selectedPlan.price.currency,
+              selectedCurrency,
             }}
             userAuthComponentRef={userAuthComponentRef}
             showCouponCode={!paramMobileToken}

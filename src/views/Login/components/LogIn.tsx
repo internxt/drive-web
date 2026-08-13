@@ -10,14 +10,13 @@ import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
 import { userActions } from 'app/store/slices/user';
 import authService, { authenticateUser, is2FANeeded } from 'services/auth.service';
-import localStorageService from 'services/local-storage.service';
 import { twoFactorRegexPattern } from 'services/validation.service';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Button } from '@internxt/ui';
 import { WarningCircle } from '@phosphor-icons/react';
 import { AppError } from '@internxt/sdk';
-import { AppView, IFormValues, LocalStorageItem } from 'app/core/types';
+import { AppView, IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import shareService from 'app/share/services/share.service';
@@ -27,6 +26,7 @@ import { envService, errorService, navigationService, vpnAuthService, workspaces
 import { AuthMethodTypes } from 'views/Checkout/types';
 import { useOAuthFlow } from 'views/Login/hooks/useOAuthFlow';
 import useLoginRedirections from '../hooks/useLoginRedirections';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 const showNotification = ({ text, isError }: { text: string; isError: boolean }) => {
   notificationsService.show({
@@ -45,8 +45,8 @@ export default function LogIn(): JSX.Element {
   const [loginError, setLoginError] = useState<string[]>([]);
   const [showErrors, setShowErrors] = useState(false);
 
-  const user = useSelector((state: RootState) => state.user.user) as UserSettings;
-  const mnemonic = localStorageService.get(LocalStorageItem.UserMnemonic);
+  const user = useSelector((state: RootState) => state.user.user);
+  const mnemonic = user?.mnemonic;
 
   const {
     isUniversalLinkMode,
@@ -148,10 +148,13 @@ export default function LogIn(): JSX.Element {
     }
   };
 
-  const handleSuccessfulAuth = (token: string, user: UserSettings, mnemonic: string): void => {
-    const newToken = localStorageService.get(LocalStorageItem.NewToken);
+  const handleSuccessfulAuth = (user: UserSettings, mnemonic: string): void => {
+    const newToken = encryptedStorageService.getToken();
 
-    if (isOAuthFlow && newToken) {
+    if (!newToken) {
+      throw new Error('No authentication token available');
+    }
+    if (isOAuthFlow) {
       const success = handleOAuthSuccess(user, newToken);
       if (!success) {
         setIsLoggingIn(false);
@@ -162,7 +165,7 @@ export default function LogIn(): JSX.Element {
       return;
     }
 
-    const redirectUrl = authService.getRedirectUrl(urlParams, token);
+    const redirectUrl = authService.getRedirectUrl(urlParams, newToken);
 
     if (redirectUrl && !isUniversalLinkMode && !isSharingInvitation) {
       globalThis.location.replace(redirectUrl);
@@ -195,8 +198,8 @@ export default function LogIn(): JSX.Element {
           loginType,
         };
 
-        const { token, user, mnemonic } = await authenticateUser(authParams);
-        handleSuccessfulAuth(token, user, mnemonic);
+        const { user, mnemonic } = await authenticateUser(authParams);
+        handleSuccessfulAuth(user, mnemonic);
       } else {
         setShowTwoFactor(true);
         setLoginError([]);

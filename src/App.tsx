@@ -8,7 +8,7 @@ import { Portal } from '@headlessui/react';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { ActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.context';
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
-import { AppView, LocalStorageItem } from 'app/core/types';
+import { AppView } from 'app/core/types';
 import { FolderPath } from 'app/drive/types';
 import { ModifyStorageModal } from './views/NewSettings/components/Sections/Workspace/Members/components/ModifyStorageModal';
 import { useAppSelector } from 'app/store/hooks';
@@ -20,7 +20,7 @@ import authService from './services/auth.service';
 import configService from 'services/config.service';
 import envService from 'services/env.service';
 import errorService from 'services/error.service';
-import localStorageService from 'services/local-storage.service';
+import encryptedStorageService from 'services/encrypted-storage.service';
 import navigationService from 'services/navigation.service';
 
 import { AppViewConfig } from './app/core/types';
@@ -72,8 +72,7 @@ const App = (props: AppProps): JSX.Element => {
   const { isDialogOpen } = useActionDialog();
   const isOpen = isDialogOpen(ActionDialog.ModifyStorage);
   const { openBackupKeysDialog } = useDownloadBackupKeys(t);
-  const token = localStorageService.get(LocalStorageItem.UserToken);
-  const newToken = localStorageService.get(LocalStorageItem.NewToken);
+  const newToken = encryptedStorageService.getToken();
   const params = new URLSearchParams(window.location.search);
   const isVpnAuth = params.get('vpnAuth') === 'true';
   const skipSignupIfLoggedIn = params.get('skipSignupIfLoggedIn') === 'true';
@@ -108,11 +107,11 @@ const App = (props: AppProps): JSX.Element => {
     }
   }, [params]);
 
-  if ((token && skipSignupIfLoggedIn) || (token && navigationService.history.location.pathname !== '/new')) {
+  if ((newToken && skipSignupIfLoggedIn) || (newToken && navigationService.history.location.pathname !== '/new')) {
     /**
      * In case we receive a valid redirectUrl param, we return to that URL with the current token
      */
-    const redirectUrl = authService.getRedirectUrl(params, token);
+    const redirectUrl = authService.getRedirectUrl(params, newToken);
 
     if (redirectUrl) {
       window.location.replace(redirectUrl);
@@ -133,7 +132,7 @@ const App = (props: AppProps): JSX.Element => {
 
       await domainManager.fetchDomains();
 
-      dispatch(workspaceThunks.fetchWorkspaces());
+      await dispatch(workspaceThunks.fetchWorkspaces());
       navigationService.setWorkspaceFromParams(workspaceThunks, dispatch, false);
 
       await props.dispatch(
@@ -178,8 +177,9 @@ const App = (props: AppProps): JSX.Element => {
 
     dispatch(uiActions.setFileViewerItem(null));
   };
+  const isPublicRoute = currentRouteConfig?.auth === false;
 
-  if (!isAuthenticated || isInitialized) {
+  if (!isAuthenticated || isInitialized || isPublicRoute) {
     template = (
       <DndProvider manager={manager}>
         <Router history={navigationService.history}>

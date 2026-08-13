@@ -1,6 +1,5 @@
 import { CouponCodeData, CreatedSubscriptionData } from '@internxt/sdk/dist/drive/payments/types/types';
 import axios from 'axios';
-import localStorageService from 'services/local-storage.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 import {
   CreateCustomerPayload,
@@ -11,11 +10,12 @@ import {
   PaymentIntentCrypto,
   PriceWithTax,
 } from '@internxt/sdk/dist/payments/types';
+import { StripeElementsOptionsMode } from '@stripe/stripe-js';
 import envService from 'services/env.service';
 import errorService from 'services/error.service';
 import { bytesToString } from 'app/drive/services/size.service';
 import userService from 'services/user.service';
-import { LocalStorageItem } from 'app/core/types';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 const BORDER_SHADOW = 'rgb(0 102 255)';
 
@@ -24,6 +24,12 @@ const fetchPromotionCodeByName = async (priceId: string, promotionCodeName: stri
 
   return paymentClient.fetchPromotionCodeByName(priceId, promotionCodeName);
 };
+
+export type CreateCheckoutCustomerPayload = Pick<
+  CreateCustomerPayload,
+  'country' | 'captchaToken' | 'companyVatId' | 'metadata' | 'lineAddress2'
+> &
+  Partial<Pick<CreateCustomerPayload, 'customerName' | 'lineAddress1' | 'city' | 'postalCode'>>;
 
 const createCustomer = async ({
   customerName,
@@ -35,7 +41,7 @@ const createCustomer = async ({
   captchaToken,
   companyVatId,
   metadata,
-}: CreateCustomerPayload): Promise<{
+}: CreateCheckoutCustomerPayload): Promise<{
   customerId: string;
   token: string;
 }> => {
@@ -50,7 +56,7 @@ const createCustomer = async ({
     captchaToken,
     companyVatId,
     metadata,
-  });
+  } as CreateCustomerPayload);
 };
 
 const getPriceById = async ({
@@ -114,7 +120,7 @@ export const createPaymentIntent = async ({
 
 const checkoutSetupIntent = async (customerId: string) => {
   try {
-    const newToken = localStorageService.get(LocalStorageItem.NewToken);
+    const newToken = encryptedStorageService.getToken();
 
     if (!newToken) {
       throw new Error('No authentication token available');
@@ -154,7 +160,7 @@ const loadStripeElements = async (
     labelTextColor: string;
   },
   plan: PriceWithTax,
-) => {
+): Promise<StripeElementsOptionsMode> => {
   const { backgroundColor, textColor, borderColor, borderInputColor, labelTextColor } = theme;
 
   return {

@@ -1,25 +1,18 @@
-export const STORAGE_KEYS = {
-  TUTORIAL_COMPLETED_ID: 'signUpTutorialCompleted',
-  B2B_WORKSPACE: 'b2bWorkspace',
-  WORKSPACE_CREDENTIALS: 'workspace_credentials',
-  FOLDER_ACCESS_TOKEN: 'folderAccessToken',
-  FILE_ACCESS_TOKEN: 'fileAccessToken',
-  GCLID: 'gclid',
-  HAS_SEEN_TRASH_DISPOSAL_DIALOG: 'hasSeenTrashDisposalDialog',
-  BACKUP_KEY: {
-    SEEN_AT: 'backup_key_seen_at',
-    ACKNOWLEDGED_AT: 'backup_key_acknowledged_at',
-  },
-  THEMES: {
-    MANAGEMENTID_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'managementid_theme_enabled',
-    ID_MANAGEMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'id_management_theme_enabled',
-    ENVIRONMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'environment_theme_enabled',
-    SUMMER_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'summer_theme_enabled',
-    STAR_WARS_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'star_wars_theme_enabled',
-    HALLOWEEN_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'halloween_theme_enabled',
-    CHRISTMAS_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'christmas_theme_enabled',
-    SUPERBOWL_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'superbowl_theme_enabled',
-    STPATRICKS_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'stpatricks_theme_enabled',
-    ANNIVERSARY_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'anniversary_theme_enabled',
-  },
+import { LocalStorageItem } from 'app/core/types';
+
+export const BACKUP_KEY = {
+  SEEN_AT: 'backup_key_seen_at',
+  ACKNOWLEDGED_AT: 'backup_key_acknowledged_at',
+};
+
+export const THEMES = {
+  ID_MANAGEMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY: LocalStorageItem.IdManagementTheme,
+  ENVIRONMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY: LocalStorageItem.EnvironmentTheme,
+  SUMMER_THEME_AVAILABLE_LOCAL_STORAGE_KEY: LocalStorageItem.SummerTheme,
+  STAR_WARS_THEME_AVAILABLE_LOCAL_STORAGE_KEY: LocalStorageItem.StarWarsTheme,
+  HALLOWEEN_THEME_AVAILABLE_LOCAL_STORAGE_KEY: LocalStorageItem.HalloweenTheme,
+  CHRISTMAS_THEME_AVAILABLE_LOCAL_STORAGE_KEY: LocalStorageItem.ChristmasTheme,
+  SUPERBOWL_THEME_AVAILABLE_LOCAL_STORAGE_KEY: LocalStorageItem.SuperbawlTheme,
+  STPATRICKS_THEME_AVAILABLE_LOCAL_STORAGE_KEY: LocalStorageItem.StpatricksTheme,
+  ANNIVERSARY_THEME_AVAILABLE_LOCAL_STORAGE_KEY: LocalStorageItem.AnniversaryTheme,
 };

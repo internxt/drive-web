@@ -1,5 +1,4 @@
 import { RootState } from 'app/store';
-import { Workspace } from 'app/core/types';
 import { useAppSelector } from 'app/store/hooks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import { DriveItemData, FolderPath } from 'app/drive/types';
@@ -10,7 +9,6 @@ interface DriveItemStoreProps {
   namePath: FolderPath[];
   currentFolderId: string;
   isItemSelected: (item: DriveItemData) => boolean;
-  workspace: Workspace;
   isSidenavCollapsed: boolean;
   isDriveItemInfoMenuOpen: boolean;
   isEditingName: (item: DriveItemData) => boolean;
@@ -32,7 +30,6 @@ const useDriveItemStoreProps = (): DriveItemStoreProps => {
   const namePath = useAppSelector((state: RootState) => state.storage.namePath);
   const currentFolderId = useAppSelector(storageSelectors.currentFolderId);
   const isItemSelected = useAppSelector(storageSelectors.isItemSelected);
-  const workspace = useAppSelector((state: RootState) => state.session.workspace);
   const isSidenavCollapsed = useAppSelector((state: RootState) => state.ui.isSidenavCollapsed);
   const isDriveItemInfoMenuOpen = useAppSelector((state: RootState) => state.ui.isDriveItemInfoMenuOpen);
   const isEditingName = useAppSelector(isEditingNameSelector);
@@ -44,7 +41,6 @@ const useDriveItemStoreProps = (): DriveItemStoreProps => {
     namePath,
     currentFolderId,
     isItemSelected,
-    workspace,
     isSidenavCollapsed,
     isDriveItemInfoMenuOpen,
     isEditingName,

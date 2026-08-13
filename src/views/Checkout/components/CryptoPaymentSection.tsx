@@ -1,28 +1,47 @@
 import { Fragment, MouseEvent } from 'react';
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react';
 import { CryptoCurrency } from '@internxt/sdk/dist/payments/types';
+import { AddressElement } from '@stripe/react-stripe-js';
+import { StripeAddressElementOptions } from '@stripe/stripe-js';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import BitcoinLogo from 'assets/icons/checkout/bitcoin-logo.svg?react';
+import { AddressProvider } from '../types/checkout.types';
 
-interface AvailableCryptoCurrenciesDropdownProps {
+const CRYPTO_ADDRESS_ELEMENT_OPTIONS: StripeAddressElementOptions = {
+  mode: 'billing',
+  display: {
+    name: 'split',
+  },
+  fields: {
+    phone: 'never',
+  },
+};
+
+interface CryptoPaymentSectionProps {
   availableCryptoCurrencies: CryptoCurrency[];
   selectedCurrency: string;
   isDropdownOpen: boolean;
   onDropdownClicked: () => void;
   onCryptoChanges: (crypto: string) => void;
+  onUserAddressChanges: (address: AddressProvider) => void;
+  onUserNameChanges: (userName: string) => void;
 }
 
-export const AvailableCryptoCurrenciesDropdown = ({
+export const CryptoPaymentSection = ({
   availableCryptoCurrencies,
   selectedCurrency,
   isDropdownOpen,
   onDropdownClicked,
   onCryptoChanges,
-}: AvailableCryptoCurrenciesDropdownProps) => {
+  onUserAddressChanges,
+  onUserNameChanges,
+}: CryptoPaymentSectionProps) => {
   const { translate } = useTranslationContext();
   const cryptoSelected = availableCryptoCurrencies.find(
     (crypto) => crypto.currencyId.toLowerCase() === selectedCurrency,
   );
+
+  const shouldShowAddressForm = cryptoSelected && !isDropdownOpen;
 
   return (
     <div className="flex w-full flex-col items-start gap-3 rounded-2xl border border-gray-10 bg-surface p-2.5 px-3.5">
@@ -60,6 +79,7 @@ export const AvailableCryptoCurrenciesDropdown = ({
               <MenuItem key={cryptoCurrency.currencyId}>
                 {({ focus }) => (
                   <button
+                    type="button"
                     onClick={(e: MouseEvent<HTMLButtonElement>) => {
                       e.preventDefault();
                       onCryptoChanges(cryptoCurrency.currencyId.toLowerCase());
@@ -78,6 +98,21 @@ export const AvailableCryptoCurrenciesDropdown = ({
           </MenuItems>
         </Transition>
       </Menu>
+      {shouldShowAddressForm && (
+        <div className="flex w-full flex-col gap-3">
+          <div className="flex w-full border-t border-gray-10" />
+          <AddressElement
+            options={CRYPTO_ADDRESS_ELEMENT_OPTIONS}
+            onChange={(event) => {
+              const { firstName, lastName, name, address } = event.value;
+              const fullName = [firstName, lastName].filter(Boolean).join(' ').trim();
+
+              onUserNameChanges(fullName || name);
+              onUserAddressChanges(address);
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };

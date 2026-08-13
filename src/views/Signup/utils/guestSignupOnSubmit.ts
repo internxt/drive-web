@@ -1,5 +1,5 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { IFormValues, AppView, LocalStorageItem } from 'app/core/types';
+import { IFormValues, AppView } from 'app/core/types';
 import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
@@ -7,6 +7,7 @@ import { parseAndDecryptUserKeys } from 'app/crypto/services/keys.service';
 import { userActions, userThunks } from 'app/store/slices/user';
 import { planThunks } from 'app/store/slices/plan';
 import { AppDispatch } from 'app/store';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 interface GuestSignupOnSubmitParams {
   formData: IFormValues;
@@ -17,7 +18,7 @@ interface GuestSignupOnSubmitParams {
     password: string,
     invitationId: string,
     token: string,
-  ) => Promise<{ xUser: any; xToken: string; xNewToken: string; mnemonic: string }>;
+  ) => Promise<{ xUser: UserSettings; xToken: string; xNewToken: string; mnemonic: string }>;
   dispatch: AppDispatch;
   setIsLoading: (loading: boolean) => void;
   setSignupError: (error: string) => void;
@@ -41,24 +42,16 @@ export const guestSignupOnSubmit = async ({
 
   try {
     const { email, password, token } = formData;
-    const { xUser, xToken, xNewToken, mnemonic } = await doRegisterPreCreatedUser(
-      email,
-      password,
-      invitationId,
-      token || '',
-    );
+    const { xUser, xNewToken } = await doRegisterPreCreatedUser(email, password, invitationId, token || '');
 
     localStorageService.clear();
 
-    localStorageService.set(LocalStorageItem.UserToken, xToken);
-    localStorageService.set(LocalStorageItem.UserMnemonic, mnemonic);
-    localStorageService.set(LocalStorageItem.NewToken, xNewToken);
+    await encryptedStorageService.setToken(xNewToken);
 
     const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(xUser, password);
 
-    const user = {
+    const user: UserSettings = {
       ...xUser,
-      privateKey,
       keys: {
         ecc: {
           publicKey: publicKey,
@@ -69,7 +62,7 @@ export const guestSignupOnSubmit = async ({
           privateKey: privateKyberKey,
         },
       },
-    } as UserSettings;
+    };
 
     dispatch(userActions.setUser(user));
     await dispatch(userThunks.initializeUserThunk());

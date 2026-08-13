@@ -20,6 +20,7 @@ import UsageContainer from '../../../containers/UsageContainer';
 import { getProductCaptions, getSubscriptionData } from '../../../../utils';
 import UploadAvatarModal from '../../Account/Account/components/UploadAvatarModal';
 import WorkspaceAvatarWrapper from './components/WorkspaceAvatarWrapper';
+import { LocalStorageItem } from 'app/core/types';
 
 const MIN_NAME_LENGTH = 3;
 
@@ -44,7 +45,7 @@ const OverviewSection = ({ onClosePreferences, changeSection }: OverviewSectionP
   const [planUsage, setPlanUsage] = useState<UsageDetailsProps | null>(null);
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
 
-  const local = localStorageService.get('i18nextLng') ?? navigator.language.split('-')[0];
+  const local = localStorageService.get(LocalStorageItem.Language) ?? navigator.language.split('-')[0];
   const products = planUsage ? getProductCaptions(planUsage) : null;
   const subscriptionData: { amountInterval: string; interval: 'monthly' | 'yearly'; renewDate: string } | undefined =
     getSubscriptionData({ userSubscription: plan.businessSubscription, plan, local, userType: UserType.Business });

@@ -1,3 +1,4 @@
+import { NetworkCredentials } from 'app/network/types/helper-types';
 import { VideoSessionDestroyedError } from '../errors/video-streaming.errors';
 import { VideoStreamingService } from './index';
 
@@ -7,10 +8,7 @@ export interface VideoStreamingSessionConfig {
   fileSize: number;
   fileType: string;
   mnemonic: string;
-  credentials: {
-    user: string;
-    pass: string;
-  };
+  credentials: NetworkCredentials;
 }
 
 const PLAYER_URL = '/video-stream/player.html';

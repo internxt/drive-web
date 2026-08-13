@@ -8,8 +8,9 @@ import ItemsDropdown from './ItemsDropdown';
 import MenuItem from './MenuItem';
 import Section from './Section';
 import { Card } from '@internxt/ui';
+import { LocalStorageItem } from 'app/core/types';
 
-const localStorageLanguage = localStorageService.get('i18nextLng');
+const localStorageLanguage = localStorageService.get(LocalStorageItem.Language);
 
 const languages = ['en', 'es', 'fr', 'it', 'zh', 'ru', 'de', 'zh-tw'];
 

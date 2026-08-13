@@ -8,15 +8,14 @@ import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selector
 import { SidenavOption } from '@internxt/ui/dist/components/navigation/sidenav/SidenavOptions';
 import { AppView } from 'app/core/types';
 import { RootState } from 'app/store';
-import localStorageService from 'services/local-storage.service';
-import { STORAGE_KEYS } from 'services/storage-keys';
 import desktopService from 'services/desktop.service';
 import { Translate } from 'app/i18n/types';
 import { navigationService } from 'services';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 const resetAccessTokenFileFolder = () => {
-  localStorageService.set(STORAGE_KEYS.FOLDER_ACCESS_TOKEN, '');
-  localStorageService.set(STORAGE_KEYS.FILE_ACCESS_TOKEN, '');
+  encryptedStorageService.clearFileToken();
+  encryptedStorageService.clearFolderToken();
 };
 
 const isActiveButton = (path: string) => {

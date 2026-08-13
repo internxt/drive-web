@@ -21,7 +21,7 @@ interface UserRoleSelectionProps {
   isStopSharingAvailable: boolean;
   onCopyLink: () => void;
   changeAccess: (accessMode: AccessMode) => void;
-  setShowStopSharingConfirmation: (show: boolean) => void;
+  onOpenStopSharingDialog: (show: boolean) => void;
 }
 
 export const UserRoleSelection = ({
@@ -33,7 +33,7 @@ export const UserRoleSelection = ({
   isRestrictedSharingAvailable,
   isStopSharingAvailable,
   onCopyLink,
-  setShowStopSharingConfirmation,
+  onOpenStopSharingDialog,
 }: UserRoleSelectionProps) => {
   const { translate } = useTranslationContext();
 
@@ -125,7 +125,7 @@ export const UserRoleSelection = ({
                       <button
                         className="flex h-11 w-full cursor-pointer items-center justify-start rounded-lg pl-14 pr-3 hover:bg-gray-5"
                         onClick={() => {
-                          setShowStopSharingConfirmation(true);
+                          onOpenStopSharingDialog(true);
                           close();
                         }}
                       >

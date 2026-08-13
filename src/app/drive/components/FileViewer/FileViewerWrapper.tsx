@@ -1,7 +1,6 @@
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { DriveFileData, DriveItemData } from 'app/drive/types';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
-import localStorageService from 'services/local-storage.service';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import errorService from 'services/error.service';
 import { OrderDirection } from 'app/core/types';
@@ -31,8 +30,7 @@ import { MenuItemType } from '@internxt/ui';
 import { DownloadManager } from 'app/network/DownloadManager';
 import { getIsTypeAllowedAndFileExtensionGroupValues } from './utils/fileViewerUtils';
 import { FileExtensionGroup } from 'app/drive/types/file-types';
-
-type pathProps = 'drive' | 'trash' | 'shared' | 'recents';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 const SPECIAL_MIME_TYPES = ['heic'];
 
@@ -74,8 +72,7 @@ const FileViewerWrapper = ({
 
   const [blob, setBlob] = useState<Blob | null>(null);
 
-  const user = localStorageService.getUser();
-  const userEmail = user?.email;
+  const user = encryptedStorageService.getUser();
 
   const driveItemActions = useDriveItemActions(currentFile);
   const fileContentManager = getFileContentManager(currentFile, downloadFile);
@@ -96,6 +93,12 @@ const FileViewerWrapper = ({
 
     const extensionGroup = getIsTypeAllowedAndFileExtensionGroupValues(currentFile);
     const isVideo = extensionGroup?.fileExtensionGroup === FileExtensionGroup['Video'];
+
+    if (currentFile && Number(currentFile.size) === 0) {
+      setBlob(new Blob([]));
+      setUpdateProgress(0);
+      return;
+    }
 
     if (currentFile && !updateProgress && !isDownloadStarted && !isVideo) {
       setIsDownloadStarted(true);
@@ -281,7 +284,7 @@ const FileViewerWrapper = ({
         content: thumbnailGenerated.file,
       };
 
-      const thumbnailUploaded = await uploadThumbnail(userEmail as string, thumbnailToUpload, isWorkspace, () => {});
+      const thumbnailUploaded = await uploadThumbnail(thumbnailToUpload, isWorkspace, () => {});
 
       setCurrentThumbnail(thumbnailGenerated.file, thumbnailUploaded, driveFile as DriveItemData, dispatch);
 
