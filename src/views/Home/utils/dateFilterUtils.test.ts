@@ -1,6 +1,12 @@
 import dayjs from 'dayjs';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { changeSpecificDate, datePresetToRange, SpecificDateRange } from './dateFilterUtils';
+import {
+  changeSpecificDate,
+  datePresetToRange,
+  formatDateInput,
+  isDateFilterActive,
+  SpecificDateRange,
+} from './dateFilterUtils';
 
 describe('datePresetToRange', () => {
   beforeEach(() => {
@@ -96,5 +102,47 @@ describe('changeSpecificDate', () => {
     const next = changeSpecificDate(current, 'before', dayjs('2026-07-10'));
 
     expect(next.before?.isSame(dayjs('2026-07-10'), 'day')).toBe(true);
+  });
+});
+
+describe('isDateFilterActive', () => {
+  test('When the preset is any, then the filter is not active', () => {
+    expect(isDateFilterActive('any', {})).toBe(false);
+  });
+
+  test('When a bounded preset is selected, then the filter is active', () => {
+    expect(isDateFilterActive('today', {})).toBe(true);
+    expect(isDateFilterActive('lastYear', {})).toBe(true);
+  });
+
+  test('When the specific preset is selected with no dates, then the filter is not active', () => {
+    expect(isDateFilterActive('specific', {})).toBe(false);
+  });
+
+  test('When the specific preset is selected with one date, then the filter is active', () => {
+    expect(isDateFilterActive('specific', { after: dayjs('2026-07-10') })).toBe(true);
+    expect(isDateFilterActive('specific', { before: dayjs('2026-07-10') })).toBe(true);
+  });
+});
+
+describe('formatDateInput', () => {
+  test('When only digits are typed, then the separators are added as the date is completed', () => {
+    expect(formatDateInput('0')).toBe('0');
+    expect(formatDateInput('010')).toBe('01/0');
+    expect(formatDateInput('01072026')).toBe('01/07/2026');
+  });
+
+  test('When characters that are not digits are typed, then they are dropped', () => {
+    expect(formatDateInput('abc')).toBe('');
+    expect(formatDateInput('01-07-2026')).toBe('01/07/2026');
+    expect(formatDateInput('1a/b7')).toBe('17');
+  });
+
+  test('When more than eight digits are typed, then the extra ones are dropped', () => {
+    expect(formatDateInput('010720261234')).toBe('01/07/2026');
+  });
+
+  test('When the text is emptied, then an empty string is returned', () => {
+    expect(formatDateInput('')).toBe('');
   });
 });

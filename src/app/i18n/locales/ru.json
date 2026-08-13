@@ -308,6 +308,23 @@
           "after": "После",
           "before": "До",
           "selectToday": "Выбрать сегодня"
+        },
+        "size": {
+          "size": "Размер",
+          "anySize": "Любой размер",
+          "less5mb": "Менее 5 MB",
+          "less100mb": "Менее 100 MB",
+          "less1gb": "Менее 1 GB",
+          "more1gb": "Более 1 GB",
+          "customRange": "Пользовательский диапазон размера",
+          "biggerThan": "Больше чем",
+          "smallerThan": "Меньше чем",
+          "unit": "Единица",
+          "bytes": "Байты",
+          "kilobytes": "Килобайты",
+          "megabytes": "Мегабайты",
+          "gigabytes": "Гигабайты",
+          "terabytes": "Терабайты"
         }
       },
       "emptyState": {
