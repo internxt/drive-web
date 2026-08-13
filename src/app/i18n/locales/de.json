@@ -381,8 +381,7 @@
         "referAndEarn": "Empfehlen und verdienen",
         "earnReferral": "Verdiene 100 €",
         "spaceUsed": "{{space}}% Platz verbraucht",
-        "account": "Konto",
-        "giveFeedback": "Feedback geben"
+        "account": "Konto"
       },
       "tabs": {
         "account": {
@@ -476,9 +475,10 @@
                 "cta": "Jetzt beenden",
                 "confirmationModal": {
                   "title": "Plan jetzt beenden",
-                  "description": "Sie werden Ihren Plan sofort kündigen, indem Sie eine letzte Zahlung von {{amount}} leisten.",
+                  "description": "Sie werden Ihren Plan sofort kündigen, indem Sie eine letzte Zahlung von {{amount}} leisten",
                   "afterThis": "Danach:",
                   "accessEndsImmediately": "Ihr Zugriff endet sofort",
+                  "plusTaxes": " + Steuern",
                   "noFurtherCharges": "Es fallen keine weiteren Kosten an",
                   "overStorage": {
                     "title": "Sie überschreiten {{freeLimit}}",

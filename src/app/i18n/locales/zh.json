@@ -402,8 +402,7 @@
         "referAndEarn": "推荐赚取",
         "earnReferral": "赚取 €100",
         "spaceUsed": "已用存储空间{{space}}%",
-        "account": "账户",
-        "giveFeedback": "提供反馈"
+        "account": "账户"
       },
       "tabs": {
         "account": {
@@ -497,9 +496,10 @@
                 "cta": "立即结束",
                 "confirmationModal": {
                   "title": "立即结束计划",
-                  "description": "您将支付 {{amount}} 的最终款项，立即取消计划。",
+                  "description": "您将支付 {{amount}} 的最终款项，立即取消计划",
                   "afterThis": "之后：",
                   "accessEndsImmediately": "您的访问权限将立即终止",
+                  "plusTaxes": " + 税费",
                   "noFurtherCharges": "将不再产生任何费用",
                   "overStorage": {
                     "title": "您已超过 {{freeLimit}}",

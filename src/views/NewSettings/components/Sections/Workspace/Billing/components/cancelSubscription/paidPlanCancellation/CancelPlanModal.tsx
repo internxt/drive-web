@@ -11,6 +11,7 @@ interface CancelPlanModalProps {
   isCancellingSubscription: boolean;
   individualPlan: StoragePlan | null;
   isCancelPlanModalDialogOpen: boolean;
+  isTaxEnabled?: boolean;
   onOpenCancelRenewalDialog: () => void;
   onOpenEndPlanNowDialog?: () => void;
   onClose: () => void;
@@ -22,6 +23,7 @@ const CancelPlanModal = ({
   isCancellingSubscription,
   individualPlan,
   isCancelPlanModalDialogOpen,
+  isTaxEnabled,
   onOpenCancelRenewalDialog,
   onOpenEndPlanNowDialog,
   onClose,
@@ -53,7 +55,12 @@ const CancelPlanModal = ({
   const endNowBulletedInfo = [
     translate('views.account.tabs.billing.cancelSubscriptionModal.options.endNow.bulletedInfo', {
       amountToPay: earlyCancellationFee?.toFixed(2),
-    }),
+    }) +
+      (isTaxEnabled
+        ? ` ${translate(
+            'views.account.tabs.billing.cancelSubscriptionModal.options.endNow.confirmationModal.plusTaxes',
+          )}`
+        : ''),
   ];
 
   const cancelRenewalLabel = translate(
