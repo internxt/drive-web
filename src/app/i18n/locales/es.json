@@ -503,7 +503,7 @@
           "cancellationIncentive": {
             "title": {
               "normal": "EL PRÓXIMO MES",
-              "blue": "VA POR NOSOTROS"
+              "blue": "GRATIS"
             },
             "description": "Si mantienes tu suscripción, obtendrás el próximo mes gratis y una ampliación de la prueba hasta el {{newDate}}. Esta es una oferta única.",
             "cta": {

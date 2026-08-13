@@ -1,6 +1,6 @@
 import { StoragePlan, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import CancelPlanModal from './components/cancelSubscription/paidPlanCancellation/CancelPlanModal';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import CancelRenewalModal from './components/cancelSubscription/paidPlanCancellation/CancelRenewalModal';
 import EndPlanNowModal from './components/cancelSubscription/paidPlanCancellation/EndPlanNowModal';
 import { CancellationIncentive } from './components/cancelSubscription/CancellationIncentive';
