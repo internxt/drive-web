@@ -70,7 +70,7 @@ async function bootstrap() {
   SdkFactory.initialize(store.dispatch, localStorageService, encryptedStorageService);
 
   // Initializes store
-  store.dispatch(userThunks.initializeThunk());
+  await store.dispatch(userThunks.initializeThunk());
   store.dispatch(storageThunks.initializeThunk());
   store.dispatch(planThunks.initializeThunk());
   store.dispatch(taskManagerThunks.initializeThunk());
