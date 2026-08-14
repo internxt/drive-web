@@ -42,7 +42,7 @@ const initialState: UserState = {
 };
 
 const initializeThunk = createAsyncThunk<void, undefined, { state: RootState }>(
-  'user/initializeLagacy',
+  'user/bootstrapInitialize',
   async (_, { dispatch }) => {
     const user = await encryptedStorageService.getUser();
     if (user) {
