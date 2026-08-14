@@ -2,7 +2,6 @@ import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../../app/store';
 import { DriveItemData, DriveItemDetails } from '../../../app/drive/types';
-import { toggleFavoriteThunk } from 'views/Favorites/store/toggleFavoriteThunk';
 import { storageActions } from '../../../app/store/slices/storage';
 import { uiActions } from '../../../app/store/slices/ui';
 import EmptySharedView from './EmptySharedView';
@@ -19,7 +18,6 @@ import shareService, { decryptMnemonic } from '../../../app/share/services/share
 import { setOrderBy, setPage, setSelectedItems } from '../context/SharedViewContext.actions';
 import { useShareViewContext } from '../context/SharedViewContextProvider';
 import useSharedContextMenu from '../hooks/useSharedContextMenu';
-import { useToggleFavoriteHotkey } from 'hooks';
 import { isItemsOwnedByCurrentUser, sortSharedItems } from '../utils/sharedViewUtils';
 
 type ShareItemListContainerProps = {
@@ -232,18 +230,6 @@ const SharedItemListContainer = ({
     actionDispatch(setOrderBy({ field: value.field, direction }));
   };
 
-  const toggleFavorite = useCallback(
-    (items: AdvancedSharedItem[]) => {
-      dispatch(toggleFavoriteThunk(items as unknown as DriveItemData[]));
-    },
-    [dispatch],
-  );
-
-  useToggleFavoriteHotkey({
-    enabled: !disableKeyboardShortcuts,
-    selectedItems: selectedItems as unknown as DriveItemData[],
-  });
-
   const contextMenu = useSharedContextMenu({
     selectedItems,
     sharedContextMenuActions: {
@@ -257,7 +243,6 @@ const SharedItemListContainer = ({
       openPreview(item) {
         openPreview(item);
       },
-      toggleFavorite,
     },
     isItemsOwnedByCurrentUser: checkIfIsItemsOwnedByCurrentUser(),
     isCurrentUserViewer: isCurrentUserViewer(),

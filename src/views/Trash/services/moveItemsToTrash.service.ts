@@ -14,6 +14,13 @@ const MAX_CONCURRENT_REQUESTS = 3;
 
 const isFolder = (item: DriveItemData) => item?.type === 'folder' || item?.isFolder;
 
+const refetchFavoritesIfNeeded = (items: DriveItemData[]) => {
+  if (items.some(isFolder) && store.getState().storage.favorites.length > 0) {
+    store.dispatch(storageActions.resetFavoritesPagination());
+    store.dispatch(storageThunks.fetchFavoritesThunk());
+  }
+};
+
 const moveItemsToTrash = async (itemsToTrash: DriveItemData[], onSuccess?: () => void): Promise<void> => {
   const items: Array<{ uuid: string; type: 'file' | 'folder' }> = itemsToTrash.map((item) => {
     return {
@@ -44,6 +51,7 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[], onSuccess?: () =>
 
     store.dispatch(storageActions.popItems({ updateRecents: true, items: itemsToTrash }));
     store.dispatch(storageActions.clearSelectedItems());
+    refetchFavoritesIfNeeded(itemsToTrash);
     onSuccess?.();
     notificationsService.dismiss(movingItemsToastId);
 
@@ -89,6 +97,7 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[], onSuccess?: () =>
                 destinationFolderId: destinationId,
               }),
             );
+            refetchFavoritesIfNeeded(itemsToTrash);
           }
         },
       },
