@@ -270,7 +270,7 @@ export async function downloadFolderAsZip({
   abortController,
   downloadProgress,
 }: {
-  folder: DriveFolderData;
+  folder: Pick<DriveFolderData, 'id' | 'name' | 'uuid'> & { plainName?: string | null; plain_name?: string | null };
   isSharedFolder: boolean;
   foldersIterator: FolderIterator | SharedFolderIterator;
   filesIterator: FileIterator | SharedFileIterator;

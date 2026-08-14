@@ -5,6 +5,13 @@ export const IS_CRYPTO_PAYMENT_ENABLED = true;
 
 export const POSTAL_CODE_REQUIRED_COUNTRIES = ['US', 'CA', 'IN'];
 
+/**
+ * Smallest amount, in minor units, that Stripe accepts for the `amount` option of an Elements
+ * instance (0.50 EUR / 0.50 USD). Amounts below it are rejected, so they must never be sent.
+ * See https://docs.stripe.com/currencies#minimum-and-maximum-charge-amounts
+ */
+export const STRIPE_MINIMUM_CHARGE_AMOUNT = 50;
+
 export const THEME_STYLES = {
   dark: {
     backgroundColor: 'rgb(17 17 17)',

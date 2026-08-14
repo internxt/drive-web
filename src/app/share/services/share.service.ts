@@ -28,8 +28,12 @@ import errorService from 'services/error.service';
 import workspacesService from 'services/workspace.service';
 import { hybridDecryptMessageWithPrivateKey } from '../../crypto/services/pgp.service';
 import { downloadFolderAsZip } from 'app/drive/services/folder.service';
-import { DriveFolderData } from 'app/drive/types';
 import { DownloadManager } from '../../network/DownloadManager';
+import { downloadFile } from 'app/network/download';
+import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
+import downloadService from 'app/drive/services/download.service';
+import { binaryStreamToBlob } from 'services/stream.service';
+import { FlatFolderZip } from 'services/zip.service';
 import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
 import { AdvancedSharedItem } from '../types';
 import { domainManager } from './DomainManager';
@@ -696,6 +700,117 @@ export async function downloadSharedFiles({
   }
 }
 
+export function derivePublicSharingKey({
+  encryptionKey,
+  code,
+  sharingVersion,
+}: {
+  encryptionKey: string;
+  code: string;
+  sharingVersion: string;
+}): FileKey {
+  const decrypted = aes.decrypt(encryptionKey, code);
+
+  if (sharingVersion === NEW_SHARING_VERSION) {
+    return { bucketKey: Buffer.from(decrypted, 'hex') };
+  }
+
+  return { mnemonic: decrypted };
+}
+
+const getPublicItemDownloadName = (item: AdvancedSharedItem): string => {
+  const extension = item.type ? `.${item.type}` : '';
+  return `${item.plainName ?? item.name}${extension}`;
+};
+
+export async function downloadPublicSharedItems({
+  items,
+  credentials,
+  key,
+  code,
+  resourcesToken,
+  updateNumItems,
+}: {
+  items: AdvancedSharedItem[];
+  credentials: NetworkCredentials;
+  key: FileKey;
+  code: string;
+  resourcesToken?: string;
+  updateNumItems?: () => void;
+}): Promise<void> {
+  const initPage = 0;
+  const itemsPerPage = 15;
+
+  const createFoldersIterator = (directoryUuid: string, token?: string) => {
+    return new DirectoryPublicSharedFolderIterator(
+      { directoryId: directoryUuid, resourcesToken: token ?? resourcesToken },
+      initPage,
+      itemsPerPage,
+    );
+  };
+
+  const createFilesIterator = (directoryUuid: string, token?: string) => {
+    return new DirectoryPublicSharedFilesIterator(
+      { directoryId: directoryUuid, resourcesToken: token ?? resourcesToken, code },
+      initPage,
+      itemsPerPage,
+    );
+  };
+
+  const downloadFileStream = (file: AdvancedSharedItem) => {
+    if (!file.bucket || !file.fileId) {
+      throw new Error(`Missing network data to download shared file '${getPublicItemDownloadName(file)}'`);
+    }
+
+    return downloadFile({
+      bucketId: file.bucket,
+      fileId: file.fileId,
+      creds: credentials,
+      key,
+    });
+  };
+
+  if (items.length === 1 && !items[0].isFolder) {
+    const [file] = items;
+    const fileStream = await downloadFileStream(file);
+    const fileBlob = await binaryStreamToBlob(fileStream, file.type || '');
+    updateNumItems?.();
+    return downloadService.downloadFileFromBlob(fileBlob, getPublicItemDownloadName(file));
+  }
+
+  const downloadFolderToZip = (folder: AdvancedSharedItem, destination?: FlatFolderZip) =>
+    downloadFolderAsZip({
+      folder,
+      isSharedFolder: true,
+      foldersIterator: createFoldersIterator,
+      filesIterator: createFilesIterator,
+      updateProgress: () => {},
+      updateNumItems: updateNumItems ?? (() => {}),
+      options: destination
+        ? { credentials, key, isPublicShare: true, destination, closeWhenFinished: false }
+        : { credentials, key, isPublicShare: true },
+    });
+
+  if (items.length === 1) {
+    await downloadFolderToZip(items[0]);
+    return;
+  }
+
+  const zip = new FlatFolderZip('Internxt', {});
+
+  for (const item of items) {
+    if (item.isFolder) {
+      await downloadFolderToZip(item, zip);
+    } else {
+      const fileStream = await downloadFileStream(item);
+      zip.addFile(getPublicItemDownloadName(item), fileStream);
+      updateNumItems?.();
+    }
+  }
+
+  await zip.close();
+}
+
 export async function downloadPublicSharedFolder({
   encryptionKey,
   item,
@@ -711,19 +826,7 @@ export async function downloadPublicSharedFolder({
   incrementItemCount: () => void;
   sharingVersion: string;
 }): Promise<void> {
-  const initPage = 0;
-  const itemsPerPage = 15;
-
-  const decrypted = aes.decrypt(encryptionKey, code);
-
-  let bucketKey;
-  let mnemonic;
-
-  if (sharingVersion === NEW_SHARING_VERSION) {
-    bucketKey = Buffer.from(decrypted, 'hex');
-  } else {
-    mnemonic = decrypted;
-  }
+  const key = derivePublicSharingKey({ encryptionKey, code, sharingVersion });
 
   const { credentials } = await shareService.getPublicSharedFolderContent(
     // folderUUID
@@ -739,42 +842,16 @@ export async function downloadPublicSharedFolder({
     throw Error('No Credentials!');
   }
 
-  const createFoldersIterator = (directoryUuid: string, resourcesToken?: string) => {
-    return new DirectoryPublicSharedFolderIterator(
-      { directoryId: directoryUuid, resourcesToken: resourcesToken ?? token },
-      initPage,
-      itemsPerPage,
-    );
-  };
-
-  const createFilesIterator = (directoryUuid: string, resourcesToken?: string) => {
-    return new DirectoryPublicSharedFilesIterator(
-      { directoryId: directoryUuid, resourcesToken: resourcesToken ?? token, code: code },
-      initPage,
-      itemsPerPage,
-    );
-  };
-
-  const options = {
+  await downloadPublicSharedItems({
+    items: [{ ...item, isFolder: true } as AdvancedSharedItem],
     credentials: {
       user: credentials.networkUser,
       pass: credentials.networkPass,
     },
-    key: {
-      mnemonic,
-      bucketKey,
-    },
-    isPublicShare: true,
-  };
-
-  await downloadFolderAsZip({
-    folder: item as DriveFolderData,
-    isSharedFolder: true,
-    foldersIterator: createFoldersIterator,
-    filesIterator: createFilesIterator,
-    updateProgress: () => {},
+    key,
+    code,
+    resourcesToken: token,
     updateNumItems: incrementItemCount,
-    options,
   });
 }
 

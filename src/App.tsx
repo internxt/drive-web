@@ -177,8 +177,9 @@ const App = (props: AppProps): JSX.Element => {
 
     dispatch(uiActions.setFileViewerItem(null));
   };
+  const isPublicRoute = currentRouteConfig?.auth === false;
 
-  if (!isAuthenticated || isInitialized) {
+  if (!isAuthenticated || isInitialized || isPublicRoute) {
     template = (
       <DndProvider manager={manager}>
         <Router history={navigationService.history}>

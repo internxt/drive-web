@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import xlsxPreview from 'xlsx-preview';
+import { PORTRAIT_VIEWER_PADDING_CLASS } from '../../utils/fileViewerUtils';
 
 interface FileDocumentsViewerProps {
   blob: Blob;
@@ -24,7 +25,7 @@ const FileXlsxViewer: React.FC<FileDocumentsViewerProps> = ({ blob, setIsPreview
   }, [blob]);
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden px-20 pt-20">
+    <div className={`flex h-screen w-screen overflow-hidden px-20 pt-20 ${PORTRAIT_VIEWER_PADDING_CLASS}`}>
       <object className="h-full w-full bg-white" data={htmlContent}></object>
     </div>
   );

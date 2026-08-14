@@ -289,7 +289,8 @@
       "addressRequired": "請填寫您的帳單地址以繼續",
       "businessPlan": "企業計劃不可用",
       "postalCodeRequired": "請輸入您的郵遞區號以繼續",
-      "countryRequired": "我們無法確定您的國家/地區,請稍後再試"
+      "countryRequired": "我們無法確定您的國家/地區,請稍後再試",
+      "missingPaymentDetails": "缺少確認付款所需的付款資訊"
     }
   },
   "general": {
@@ -306,7 +307,47 @@
         "image": "圖片",
         "video": "視頻",
         "audio": "音頻",
-        "clear": "清除"
+        "attachments": "附件",
+        "anyType": "任何類型",
+        "zip": "壓縮檔 (zip)",
+        "document": "文件",
+        "powerpoint": "Powerpoint",
+        "excel": "Excel",
+        "text": "文字 (txt)",
+        "code": "程式碼",
+        "csv": "CSV",
+        "xml": "XML",
+        "figma": "Figma",
+        "date": {
+          "dateModified": "修改日期",
+          "anyDate": "任何日期",
+          "today": "今天",
+          "last7days": "最近 7 天",
+          "last30days": "最近 30 天",
+          "thisYear": "今年（{{year}}）",
+          "lastYear": "去年（{{year}}）",
+          "specificDate": "特定日期",
+          "after": "之後",
+          "before": "之前",
+          "selectToday": "選擇今天"
+        },
+        "size": {
+          "size": "大小",
+          "anySize": "任何大小",
+          "less5mb": "小於 5 MB",
+          "less100mb": "小於 100 MB",
+          "less1gb": "小於 1 GB",
+          "more1gb": "大於 1 GB",
+          "customRange": "自訂大小範圍",
+          "biggerThan": "大於",
+          "smallerThan": "小於",
+          "unit": "單位",
+          "bytes": "位元組",
+          "kilobytes": "KB",
+          "megabytes": "MB",
+          "gigabytes": "GB",
+          "terabytes": "TB"
+        }
       },
       "emptyState": {
         "title": "尋找檔案和資料夾",
@@ -401,8 +442,7 @@
         "referAndEarn": "推薦賺取",
         "earnReferral": "賺取 €100",
         "spaceUsed": "已使用 {{space}}% 的空間",
-        "account": "帳戶",
-        "giveFeedback": "提供意見回饋"
+        "account": "帳戶"
       },
       "tabs": {
         "account": {
@@ -496,9 +536,10 @@
                 "cta": "立即結束",
                 "confirmationModal": {
                   "title": "立即結束方案",
-                  "description": "您將支付 {{amount}} 的最終款項，立即取消方案。",
+                  "description": "您將支付 {{amount}} 的最終款項，立即取消方案",
                   "afterThis": "之後：",
                   "accessEndsImmediately": "您的存取權限將立即終止",
+                  "plusTaxes": " + 稅金",
                   "noFurtherCharges": "將不再產生任何費用",
                   "overStorage": {
                     "title": "您已超過 {{freeLimit}}",
