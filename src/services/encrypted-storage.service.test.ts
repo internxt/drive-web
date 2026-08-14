@@ -249,12 +249,9 @@ describe('Testing the encrypted storage service', () => {
       expect(userFromLocalStorage).toStrictEqual(mockUserSettings);
     });
 
-    test('When the user data exists in encrypted storage, then the user is returned', async () => {
+    test('When the user data exists in local storage, then the user is migrated to encrypted storage and returned', async () => {
       const key = LocalStorageProtectedItem.User;
-      await encryptedStorageService.setUser(mockUserSettings);
-      const data = localStorage.getItem(key);
-      encryptedStorageService.clear();
-      localStorage.setItem(key, data as string);
+      localStorage.setItem(key, JSON.stringify(mockUserSettings));
 
       const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
 

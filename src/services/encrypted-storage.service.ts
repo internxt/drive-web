@@ -97,6 +97,7 @@ const clear = (): void => {
   clearFolderToken();
   clearB2BWorkspace();
   clearWorkspaceCredentials();
+  clearUser();
 };
 
 const getB2BWorkspaceMnemonic = async (): Promise<string | null> => {
@@ -135,9 +136,12 @@ const setWorkspaceCredentials = async (credentials: WorkspaceCredentialsDetails)
 const clearWorkspaceCredentials = (): void => {
   workspaceCredentialsCache = null;
   localStorage.removeItem(LocalStorageProtectedItem.EncryptedWorkspaceCredentials);
-  localStorage.removeItem(LocalStorageProtectedItem.User);
-  localStorage.removeItem(LocalStorageItem.UserUUID);
+};
+
+const clearUser = (): void => {
+  userCache = null;
   localStorage.removeItem(LocalStorageProtectedItem.EncryptedUser);
+  localStorage.removeItem(LocalStorageItem.UserUUID);
 };
 
 const getUser = (): UserSettings | null => {
@@ -175,6 +179,7 @@ const encryptedStorageService = {
   clearWorkspaceCredentials,
   getUser,
   setUser,
+  clearUser,
 };
 
 export default encryptedStorageService;
@@ -197,4 +202,5 @@ export interface EncryptedStorageService {
   clearWorkspaceCredentials: () => void;
   getUser: () => UserSettings | null;
   setUser: (user: UserSettings) => void;
+  clearUser: () => void;
 }
