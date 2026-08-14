@@ -12,25 +12,21 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 const OAuthLinkView = (): JSX.Element => {
   const { translate } = useTranslationContext();
   const [user, setUser] = useState<UserSettings | null>(null);
-  const [isUserLoaded, setIsUserLoaded] = useState(false);
 
   const urlParams = new URLSearchParams(globalThis.location.search);
 
   useEffect(() => {
     encryptedStorageService.getUser().then((fetchedUser) => {
+      if (!fetchedUser) {
+        const params = urlParams.toString();
+        navigationService.history.replace(`${AppView.Login}${params ? '?' + params : ''}`);
+        return;
+      }
       setUser(fetchedUser);
-      setIsUserLoaded(true);
     });
   }, []);
 
-  useEffect(() => {
-    if (isUserLoaded && !user) {
-      const params = urlParams.toString();
-      navigationService.history.replace(`${AppView.Login}${params ? '?' + params : ''}`);
-    }
-  }, [isUserLoaded, user]);
-
-  if (!isUserLoaded || !user) return <></>;
+  if (!user) return <></>;
 
   const handleGoToLogin = () => {
     const params: Record<string, string> = {};
