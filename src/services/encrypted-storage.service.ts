@@ -75,15 +75,6 @@ const hydrateEncryptedStorageCache = async (): Promise<void> => {
   } catch {
     workspaceCredentialsCache = null;
   }
-
-  //migration from unencrypted version, remove once completed
-  if (!tokenCache) {
-    const unencryptedToken = localStorage.getItem(LocalStorageItem.NewToken);
-    if (unencryptedToken) {
-      await setToken(unencryptedToken);
-      localStorage.removeItem(LocalStorageItem.NewToken);
-    }
-  }
 };
 
 const getToken = (): string | undefined => tokenCache ?? undefined;
