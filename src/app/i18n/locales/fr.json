@@ -174,7 +174,8 @@
       "login": "Connexion",
       "success": "Vous vous êtes connecté avec succès",
       "error": "Échec de la connexion, veuillez réessayer",
-      "closeWindow": "Vous pouvez fermer cette fenêtre"
+      "closeWindow": "Vous pouvez fermer cette fenêtre",
+      "invalidRedirectUri": "URL de redirection invalide"
     },
     "oauthLink": {
       "continueAs": "Continuer en tant que",
@@ -184,10 +185,13 @@
     }
   },
   "checkout": {
-    "title": "Vous y êtes presque ! Finalisez votre achat en toute sécurité",
     "pay": "Payer",
     "processing": "Traitement en cours...",
     "checkout": "Commander",
+    "postalCode": {
+      "title": "Code postal",
+      "placeholder": "Code postal"
+    },
     "authComponent": {
       "signUp": {
         "emailAddress": "Votre adresse email",
@@ -196,12 +200,17 @@
       "signIn": {
         "password": "Votre mot de passe"
       },
-      "title": {
-        "signUp": "Créer un compte",
-        "signIn": "Se connecter",
-        "userIsSignedIn": "Utilisateur connecté en tant que"
-      },
       "emailMustNotBeEmpty": "L'email ne doit pas être vide",
+      "authError": {
+        "invalidCredentials": "L'email ou le mot de passe est incorrect. Veuillez réessayer.",
+        "twoFactorEnabled": "Ce compte utilise l'authentification à deux facteurs. Connectez-vous depuis la page de connexion, puis revenez pour finaliser votre achat.",
+        "emailAlreadyRegistered": "Un compte existe déjà avec cette adresse email. Sélectionnez « Se connecter » pour poursuivre votre achat.",
+        "accountLocked": "Ce compte est bloqué pour des raisons de sécurité. Consultez votre boîte de réception pour le débloquer avant de continuer.",
+        "tooManyAttempts": "Trop de tentatives. Veuillez patienter une minute et réessayer.",
+        "invalidData": "Veuillez vérifier que votre email et votre mot de passe sont corrects, puis réessayer.",
+        "serverError": "Nous n'avons pas pu finaliser cette étape. Veuillez réessayer dans quelques minutes ou contacter le support si le problème persiste.",
+        "unknown": "Nous n'avons pas pu vérifier vos informations. Veuillez vérifier votre email et votre mot de passe, puis réessayer."
+      },
       "privacyGuarantee": "Garantie de confidentialité : Nous ne partageons pas vos informations et ne vous contacterons que si nécessaire pour fournir notre service."
     },
     "addressBillingTitle": "Facturation d'Adresse",
@@ -213,10 +222,7 @@
         "companyVatId": "Numéro de TVA de l'entreprise"
       }
     },
-    "paymentTitle": "Sélectionnez un mode de paiement",
     "productCard": {
-      "title": "Récapitulatif de la commande",
-      "selectedPlan": "Plan sélectionné",
       "renewalTitle": {
         "month": "annuel",
         "year": "annuel",
@@ -228,7 +234,6 @@
         "lifetime": "Paiement unique"
       },
       "saving": "Vous économisez {{percent}}%",
-      "planDetails": "Détails du plan :",
       "total": "Total ",
       "addCoupon": {
         "buttonTitle": "Ajouter un coupon",
@@ -261,7 +266,10 @@
       "invalidPlan": "Type de plan non pris en charge. Veuillez sélectionner un plan valide.",
       "fetchingCryptoCurrencies": "Nous n'avons pas pu charger les options de crypto-monnaies disponibles",
       "addressRequired": "Veuillez compléter votre adresse de facturation pour continuer",
-      "businessPlan": "Le plan d’entreprise n’est pas disponible"
+      "businessPlan": "Le plan d’entreprise n’est pas disponible",
+      "postalCodeRequired": "Veuillez saisir votre code postal pour continuer",
+      "countryRequired": "Nous n'avons pas pu déterminer votre pays. Veuillez réessayer plus tard.",
+      "missingPaymentDetails": "Informations de paiement manquantes pour confirmer le paiement"
     }
   },
   "general": {
@@ -278,7 +286,47 @@
         "image": "Image",
         "video": "Vidéo",
         "audio": "Audio",
-        "clear": "Clair"
+        "attachments": "Pièces jointes",
+        "anyType": "Tout type",
+        "zip": "Archive (zip)",
+        "document": "Document",
+        "powerpoint": "Powerpoint",
+        "excel": "Excel",
+        "text": "Texte (txt)",
+        "code": "Code",
+        "csv": "CSV",
+        "xml": "XML",
+        "figma": "Figma",
+        "date": {
+          "dateModified": "Date de modification",
+          "anyDate": "Toute date",
+          "today": "Aujourd'hui",
+          "last7days": "7 derniers jours",
+          "last30days": "30 derniers jours",
+          "thisYear": "Cette année ({{year}})",
+          "lastYear": "L'année dernière ({{year}})",
+          "specificDate": "Date spécifique",
+          "after": "Après",
+          "before": "Avant",
+          "selectToday": "Sélectionner aujourd'hui"
+        },
+        "size": {
+          "size": "Taille",
+          "anySize": "Toute taille",
+          "less5mb": "Moins de 5 MB",
+          "less100mb": "Moins de 100 MB",
+          "less1gb": "Moins de 1 GB",
+          "more1gb": "Plus de 1 GB",
+          "customRange": "Plage de taille personnalisée",
+          "biggerThan": "Supérieur à",
+          "smallerThan": "Inférieur à",
+          "unit": "Unité",
+          "bytes": "Octets",
+          "kilobytes": "Kilo-octets",
+          "megabytes": "Méga-octets",
+          "gigabytes": "Giga-octets",
+          "terabytes": "Téra-octets"
+        }
       },
       "emptyState": {
         "title": "Rechercher des fichiers et des dossiers",
@@ -373,8 +421,7 @@
         "referAndEarn": "Parrainez et gagnez",
         "earnReferral": "Gagnez 100 €",
         "spaceUsed": "{{space}}% d'espace utilisé",
-        "account": "Compte",
-        "giveFeedback": "Donner votre avis"
+        "account": "Compte"
       },
       "tabs": {
         "account": {
@@ -425,17 +472,19 @@
         },
         "billing": {
           "cancelSubscriptionModal": {
+            "title": "Annuler l’abonnement",
             "description": {
-              "individual": "Vous êtes sur le point d’annuler votre abonnement Internxt {{currentPlanName}}. En annulant votre abonnement, vous serez rétrogradé(e) à l’abonnement gratuit Internxt {{freePlanName}}. Veuillez confirmer votre choix pour continuer.",
+              "individual": {
+                "line1": "Votre abonnement annuel est facturé mensuellement et se termine le {{endDate}}. ",
+                "line2": "Vous pouvez choisir comment vous souhaitez procéder :"
+              },
               "business": "En annulant votre abonnement, l’espace de travail sera supprimé ainsi que toutes les données. Veuillez confirmer votre choix pour continuer."
             },
+
             "commitment": {
-              "firstMonthDescription": "Comme vous êtes encore dans votre période d'essai de 30 jours, votre annulation sera immédiate. Vous ne serez plus facturé et votre compte reviendra au plan gratuit de 1 Go maintenant.",
-              "description": "Vous avez un abonnement annuel facturé mensuellement. Si vous annulez maintenant, votre abonnement restera actif jusqu’au {{end_date}}, et vous continuerez à être facturé mensuellement jusqu’à cette date.",
-              "monthsRemaining": "Paiements restants : {{monthsRemaining}}",
-              "amountPerMonth": "Montant par mois : €{{amount}}",
-              "afterLabel": "Après le {{monthsRemaining}}"
+              "firstMonthDescription": "Comme vous êtes encore dans votre période d'essai de 30 jours, votre annulation sera immédiate. Vous ne serez plus facturé et votre compte reviendra au plan gratuit de 1 Go maintenant."
             },
+            "directCancellationDescription": "Vous êtes sur le point d’annuler votre abonnement. Vous perdrez l’accès à votre plan et votre compte reviendra au plan gratuit. Veuillez confirmer votre choix pour continuer.",
             "keepSubscription": "Conserver l’abonnement",
             "cancelSubscription": "Annuler l’abonnement",
             "infoBox": {
@@ -450,7 +499,7 @@
                 "title": "Annuler le renouvellement",
                 "description": "Conservez un accès complet jusqu’au {{endDate}}. Vous continuerez les paiements mensuels jusqu’à cette date, et votre abonnement ne sera pas renouvelé.",
                 "bulletedInfo": "Paiements restants : {{remainingMonths}}",
-                "label": "Après le {{endDate}}",
+                "label": "À partir du {{endDate}}",
                 "cta": "Annuler le renouvellement",
                 "confirmationModal": {
                   "description": "Votre abonnement restera actif jusqu’au {{endDate}}. Vous continuerez à être facturé mensuellement jusqu’à cette date, et votre abonnement ne sera pas renouvelé après cette date.",
@@ -466,9 +515,10 @@
                 "cta": "Terminer maintenant",
                 "confirmationModal": {
                   "title": "Mettre fin au plan maintenant",
-                  "description": "Vous allez annuler votre abonnement immédiatement en effectuant un dernier paiement de {{amount}}.",
+                  "description": "Vous allez annuler votre abonnement immédiatement en effectuant un dernier paiement de {{amount}}",
                   "afterThis": "Après cela :",
                   "accessEndsImmediately": "Votre accès prendra fin immédiatement",
+                  "plusTaxes": " + taxes",
                   "noFurtherCharges": "Aucun autre frais ne sera appliqué",
                   "overStorage": {
                     "title": "Vous dépassez {{freeLimit}}",
@@ -479,6 +529,16 @@
                 }
               }
             }
+          },
+          "subscriptionEndingModal": {
+            "title": "Abonnement se terminant le {{endDate}}",
+            "description": {
+              "title": "Lorsque votre abonnement se termine :",
+              "storageReturns": "Votre stockage reviendra à la limite gratuite",
+              "featuresUnavailable": "Les fonctionnalités premium ne seront plus disponibles"
+            },
+            "maybeLater": "Peut-être plus tard",
+            "renewSubscription": "Renouveler l’abonnement"
           },
           "cancellationIncentive": {
             "title": {
@@ -1264,6 +1324,11 @@
     "verificationEmail": "Courriel de vérification envoyé",
     "successCancelSubscription": "Votre abonnement a été annulé",
     "errorCancelSubscription": "Quelque chose s'est mal passé lors de l'annulation de votre abonnement",
+    "successEarlyCancelSubscription": "Votre abonnement a été annulé",
+    "errorEarlyCancelSubscription": "Quelque chose s'est mal passé lors de l'annulation de votre abonnement",
+    "successReactivateSubscription": "Votre abonnement a été réactivé",
+    "errorReactivateSubscription": "Quelque chose s'est mal passé lors de la réactivation de votre abonnement",
+    "errorPurchaseBusinessPlan": "Vous avez déjà un plan d'affaires.",
     "couponIsNotValidForUserError": "Le coupon ne peut être utilisé que par de nouveaux clients.",
     "errorApplyingCoupon": "Une erreur s'est produite lors de l'application du coupon",
     "errorWhileFetchingMoreItems": "Une erreur est survenue lors de la récupération d'éléments supplémentaires",
@@ -1842,5 +1907,8 @@
   "linkExpired": {
     "title": "Lien expiré ou supprimé",
     "description": "Le lien ou l'invitation que vous avez consulté a expiré ou a été supprimé"
+  },
+  "common": {
+    "planCancelled": "Votre abonnement se termine le {{end_date}}"
   }
 }

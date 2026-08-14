@@ -4,7 +4,6 @@ import dayjs from 'dayjs';
 import { getCookie, setImpactCookies } from './utils';
 import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import envService from 'services/env.service';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
@@ -12,6 +11,7 @@ import { bytesToString } from 'app/drive/services/size.service';
 import { getProductAmount } from 'views/Checkout/utils';
 import { sendAddShoppersConversion } from './addShoppers.services';
 import { LocalStorageItem } from 'app/core/types';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 /**
  * Stores relevant payment data in local storage to be retrieved later,
@@ -137,7 +137,7 @@ export async function trackSignUp(uuid: string): Promise<void> {
 
 export async function trackPaymentConversion(): Promise<void> {
   try {
-    const userSettings = localStorageService.getUser() as UserSettings;
+    const userSettings = encryptedStorageService.getUser();
     if (!userSettings) {
       console.warn('[Impact Service] No user settings found');
       return;
@@ -168,7 +168,7 @@ export async function trackPaymentConversion(): Promise<void> {
     const anonymousID = getCookie('impactAnonymousId') || uuidV4();
     const source = getCookie('impactSource');
 
-    const IMPACT_COUPON_WHITELIST = ['CNINTERNXT', 'CNINTERNXTL', 'CLOUDOFF', 'SPECIAL', 'ANTIV', 'SAVE'];
+    const IMPACT_COUPON_WHITELIST = ['CNINTERNXT', 'CNINTERNXTL', 'CLOUDOFF', 'SPECIAL', 'ANTIV', 'SAVE', 'OFFER'];
     const isImpactCoupon = couponCode && IMPACT_COUPON_WHITELIST.includes(couponCode.toUpperCase());
 
     if (isFirstPurchase && ((source && source !== 'direct') || isImpactCoupon)) {

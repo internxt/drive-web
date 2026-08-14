@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { localStorageService } from 'services';
 import { FormatFileViewerProps } from '../../FileViewer';
 import { VideoStreamingSession } from 'app/drive/services/video-streaming.service/VideoStreamingSession';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 const PROGRESS_INCREMENT = 0.2;
 const PROGRESS_INTERVAL_MS = 500;
@@ -66,7 +66,7 @@ const FileVideoViewer = ({
   useEffect(() => {
     if (disableVideoStream || !containerRef.current) return;
 
-    const user = localStorageService.getUser();
+    const user = encryptedStorageService.getUser();
     const mnemonic = user?.mnemonic ?? '';
     const bridgeUser = user?.bridgeUser ?? '';
     const userId = user?.userId ?? '';

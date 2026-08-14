@@ -2,25 +2,28 @@ import { UpdateProfilePayload } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
+import { authService, navigationService, userService } from 'services';
 import { RootState } from '../..';
-import { authService, userService, localStorageService, navigationService } from 'services';
+import { saveAvatarToDatabase } from '../../../../views/NewSettings/components/Sections/Account/Account/components/AvatarWrapper';
 import { AppView } from '../../../core/types';
 import { deleteDatabaseProfileAvatar } from '../../../drive/services/database.service';
-import { saveAvatarToDatabase } from '../../../../views/NewSettings/components/Sections/Account/Account/components/AvatarWrapper';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { workspacesActions } from '../../../store/slices/workspaces/workspacesStore';
 import tasksService from '../../../tasks/services/tasks.service';
 import { referralsActions, referralsThunks } from '../referrals';
 import { sessionActions } from '../session';
 import { storageActions } from '../storage';
 import { uiActions } from '../ui';
-import { workspacesActions } from '../../../store/slices/workspaces/workspacesStore';
 
+import { auth, TokenStatus } from '@internxt/lib';
 import errorService from 'services/error.service';
-import { isTokenExpired } from '../../utils';
+import referralService from 'services/referral.service';
+import { UserUnauthorizedError } from 'services/errors/auth.errors';
 import { refreshAvatar } from 'utils/avatarUtils';
 import { ProductService } from 'views/Checkout/services';
 import { UserTierFeatures } from 'views/Checkout/services/products.service';
 import { t } from 'i18next';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 export interface UserState {
   isInitializing: boolean;
@@ -51,34 +54,52 @@ export const initializeUserThunk = createAsyncThunk<
   payload = { ...defaultPayload, ...payload };
 
   if (user && isAuthenticated) {
-    dispatch(refreshUserThunk());
+    const result = await dispatch(refreshUserThunk());
+
+    if (refreshUserThunk.rejected.match(result)) {
+      dispatch(logoutThunk());
+      return;
+    }
+
     dispatch(getUserTierFeaturesThunk());
     dispatch(refreshAvatarThunk());
     await dispatch(referralsThunks.initializeThunk());
     dispatch(setIsUserInitialized(true));
   } else if (payload.redirectToLogin) {
-    navigationService.push(AppView.Login);
+    navigationService.push(AppView.Login, referralService.getReferralOpenQueryParams());
   }
 });
 
 export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean } | undefined, { state: RootState }>(
   'user/refresh',
   async ({ forceRefresh } = {}, { dispatch, getState }) => {
-    const userToken = localStorageService.getToken();
-    const isExpired = isTokenExpired(userToken);
-
+    const userToken = encryptedStorageService.getToken();
     const currentUser = getState().user.user;
-    if (!currentUser) throw new Error('Current user is not defined');
+
+    if (!currentUser || !userToken) throw new UserUnauthorizedError();
+
+    const tokenStatus = auth.validateTokenAndCheckExpiration(userToken);
+
+    const isTokenInvalid = tokenStatus === TokenStatus.INVALID;
+    const isTokenExpired = tokenStatus === TokenStatus.EXPIRED;
+
+    const isTokenUnauthorized = isTokenInvalid || isTokenExpired;
+
+    if (isTokenUnauthorized) {
+      throw new UserUnauthorizedError();
+    }
+
+    const isRefreshRequired = tokenStatus === TokenStatus.REFRESH_REQUIRED;
 
     try {
-      if (isExpired || forceRefresh) {
+      if (isRefreshRequired || forceRefresh) {
         const { user, newToken } = await userService.refreshUserData(currentUser.uuid);
 
         const { emailVerified, name, lastname, uuid, createdAt } = user;
         const avatar = await refreshAvatar(uuid);
 
         dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname, createdAt }));
-        dispatch(userActions.setToken(newToken));
+        await encryptedStorageService.setToken(newToken);
       }
     } catch (err) {
       errorService.reportError(err);
@@ -193,7 +214,7 @@ const updateUserEmailCredentialsThunk = createAsyncThunk<
     bridgeUser: newUserData.email,
     username: newUserData.email,
   };
-  localStorageService.setToken(newToken);
+  await encryptedStorageService.setToken(newToken);
   dispatch(userActions.setUser(user));
 });
 
@@ -202,7 +223,7 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     initialize: (state: UserState) => {
-      state.user = localStorageService.getUser() || undefined;
+      state.user = encryptedStorageService.getUser() || undefined;
       state.isAuthenticated = !!state.user;
     },
     setIsUserInitialized: (state: UserState, action: PayloadAction<boolean>) => {
@@ -215,10 +236,7 @@ export const userSlice = createSlice({
       state.isAuthenticated = !!action.payload;
       state.user = action.payload;
 
-      localStorageService.setUser(action.payload);
-    },
-    setToken: (state: UserState, action: PayloadAction<string>) => {
-      localStorageService.setToken(action.payload);
+      encryptedStorageService.setUser(action.payload);
     },
     resetState: (state: UserState) => {
       Object.assign(state, initialState);

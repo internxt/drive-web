@@ -174,7 +174,8 @@
       "login": "Anmelden",
       "success": "Du hast dich erfolgreich angemeldet",
       "error": "Anmeldung fehlgeschlagen, bitte versuche es erneut",
-      "closeWindow": "Du kannst dieses Fenster schließen"
+      "closeWindow": "Du kannst dieses Fenster schließen",
+      "invalidRedirectUri": "Ungültige Weiterleitungs-URL"
     },
     "oauthLink": {
       "continueAs": "Fortfahren als",
@@ -184,10 +185,13 @@
     }
   },
   "checkout": {
-    "title": "Sie sind fast da! Sicher zur Kasse gehen",
     "pay": "Bezahlen",
     "processing": "Verarbeitung läuft...",
     "checkout": "Zur Kasse",
+    "postalCode": {
+      "title": "Postleitzahl",
+      "placeholder": "Postleitzahl"
+    },
     "authComponent": {
       "signUp": {
         "emailAddress": "Ihre E-Mail-Adresse",
@@ -196,12 +200,17 @@
       "signIn": {
         "password": "Ihr Passwort"
       },
-      "title": {
-        "signUp": "Ein Konto erstellen",
-        "signIn": "Anmelden",
-        "userIsSignedIn": "Benutzer angemeldet als"
-      },
       "emailMustNotBeEmpty": "Die E-Mail darf nicht leer sein",
+      "authError": {
+        "invalidCredentials": "Die E-Mail-Adresse oder das Passwort ist falsch. Bitte versuche es erneut.",
+        "twoFactorEnabled": "Dieses Konto verwendet die Zwei-Faktor-Authentifizierung. Melde dich auf der Anmeldeseite an und kehre zurück, um deinen Kauf abzuschließen.",
+        "emailAlreadyRegistered": "Es existiert bereits ein Konto mit dieser E-Mail-Adresse. Wähle „Anmelden“, um mit deinem Kauf fortzufahren.",
+        "accountLocked": "Dieses Konto ist aus Sicherheitsgründen gesperrt. Überprüfe deinen Posteingang, um es zu entsperren, bevor du fortfährst.",
+        "tooManyAttempts": "Zu viele Versuche. Bitte warte eine Minute und versuche es erneut.",
+        "invalidData": "Bitte überprüfe, ob deine E-Mail-Adresse und dein Passwort korrekt sind, und versuche es erneut.",
+        "serverError": "Wir konnten diesen Schritt nicht abschließen. Bitte versuche es in einigen Minuten erneut oder wende dich an den Support, wenn das Problem weiterhin besteht.",
+        "unknown": "Wir konnten deine Daten nicht überprüfen. Bitte überprüfe deine E-Mail-Adresse und dein Passwort und versuche es erneut."
+      },
       "privacyGuarantee": "Datenschutzgarantie: Wir teilen Ihre Informationen nicht und werden Sie nur kontaktieren, wenn es notwendig ist, um unseren Service zu bieten."
     },
     "addressBillingTitle": "Rechnungsadresse",
@@ -213,10 +222,7 @@
         "companyVatId": "USt-ID der Firma"
       }
     },
-    "paymentTitle": "Wählen Sie eine Zahlungsmethode",
     "productCard": {
-      "title": "Bestellübersicht",
-      "selectedPlan": "Ausgewählter Plan",
       "renewalTitle": {
         "month": "jährlich",
         "year": "jährlich",
@@ -228,7 +234,6 @@
         "lifetime": "Einmalige Zahlung"
       },
       "saving": "Sie sparen {{percent}}%",
-      "planDetails": "Plandetails:",
       "total": "Gesamt ",
       "addCoupon": {
         "buttonTitle": "Gutschein hinzufügen",
@@ -261,7 +266,10 @@
       "invalidPlan": "Nicht unterstützter Plantyp. Bitte wählen Sie einen gültigen Plan.",
       "fetchingCryptoCurrencies": "Die verfügbaren Kryptowährungsoptionen konnten nicht geladen werden",
       "addressRequired": "Bitte vervollständigen Sie Ihre Rechnungsadresse, um fortzufahren",
-      "businessPlan": "Der Unternehmensplan ist nicht verfügbar"
+      "businessPlan": "Der Unternehmensplan ist nicht verfügbar",
+      "postalCodeRequired": "Bitte geben Sie Ihre Postleitzahl ein, um fortzufahren",
+      "countryRequired": "Wir konnten Ihr Land nicht ermitteln. Bitte versuchen Sie es später erneut.",
+      "missingPaymentDetails": "Fehlende Zahlungsdaten zur Bestätigung der Zahlung"
     }
   },
   "general": {
@@ -278,7 +286,47 @@
         "image": "Bild",
         "video": "Video",
         "audio": "Audio",
-        "clear": "Löschen"
+        "attachments": "Anhänge",
+        "anyType": "Beliebiger Typ",
+        "zip": "Archiv (zip)",
+        "document": "Dokument",
+        "powerpoint": "Powerpoint",
+        "excel": "Excel",
+        "text": "Text (txt)",
+        "code": "Code",
+        "csv": "CSV",
+        "xml": "XML",
+        "figma": "Figma",
+        "date": {
+          "dateModified": "Änderungsdatum",
+          "anyDate": "Beliebiges Datum",
+          "today": "Heute",
+          "last7days": "Letzte 7 Tage",
+          "last30days": "Letzte 30 Tage",
+          "thisYear": "Dieses Jahr ({{year}})",
+          "lastYear": "Letztes Jahr ({{year}})",
+          "specificDate": "Bestimmtes Datum",
+          "after": "Nach",
+          "before": "Vor",
+          "selectToday": "Heute auswählen"
+        },
+        "size": {
+          "size": "Größe",
+          "anySize": "Beliebige Größe",
+          "less5mb": "Weniger als 5 MB",
+          "less100mb": "Weniger als 100 MB",
+          "less1gb": "Weniger als 1 GB",
+          "more1gb": "Mehr als 1 GB",
+          "customRange": "Benutzerdefinierter Größenbereich",
+          "biggerThan": "Größer als",
+          "smallerThan": "Kleiner als",
+          "unit": "Einheit",
+          "bytes": "Bytes",
+          "kilobytes": "Kilobytes",
+          "megabytes": "Megabytes",
+          "gigabytes": "Gigabytes",
+          "terabytes": "Terabytes"
+        }
       },
       "emptyState": {
         "title": "Dateien und Ordner finden",
@@ -373,8 +421,7 @@
         "referAndEarn": "Empfehlen und verdienen",
         "earnReferral": "Verdiene 100 €",
         "spaceUsed": "{{space}}% Platz verbraucht",
-        "account": "Konto",
-        "giveFeedback": "Feedback geben"
+        "account": "Konto"
       },
       "tabs": {
         "account": {
@@ -425,17 +472,19 @@
         },
         "billing": {
           "cancelSubscriptionModal": {
+            "title": "Abonnement kündigen",
             "description": {
-              "individual": "Sie sind dabei, Ihren Internxt-Tarif {{currentPlanName}} zu kündigen. Durch die Kündigung Ihres Tarifs werden Sie auf den kostenlosen Internxt-Tarif {{freePlanName}} herabgestuft. Bitte bestätigen Sie Ihre Wahl, um fortzufahren.",
+              "individual": {
+                "line1": "Ihr Jahresplan wird monatlich abgerechnet und läuft bis zum {{endDate}}. ",
+                "line2": "Sie können wählen, wie Sie fortfahren möchten:"
+              },
               "business": "Durch die Kündigung Ihres Tarifs wird der Workspace zusammen mit allen Daten gelöscht. Bitte bestätigen Sie Ihre Wahl, um fortzufahren."
             },
+
             "commitment": {
-              "firstMonthDescription": "Da Sie sich noch in Ihrer 30-tägigen Testphase befinden, wird Ihre Kündigung sofort wirksam. Sie werden nicht mehr belastet und Ihr Konto wird jetzt auf den kostenlosen 1-GB-Plan zurückgesetzt.",
-              "description": "Sie haben ein Jahresabonnement, das monatlich abgerechnet wird. Wenn Sie jetzt kündigen, bleibt Ihr Abonnement bis zum {{end_date}} aktiv, und Sie werden bis zu diesem Datum weiterhin monatlich belastet.",
-              "monthsRemaining": "Verbleibende Zahlungen: {{monthsRemaining}}",
-              "amountPerMonth": "Betrag pro Monat: €{{amount}}",
-              "afterLabel": "Nach dem {{monthsRemaining}}"
+              "firstMonthDescription": "Da Sie sich noch in Ihrer 30-tägigen Testphase befinden, wird Ihre Kündigung sofort wirksam. Sie werden nicht mehr belastet und Ihr Konto wird jetzt auf den kostenlosen 1-GB-Plan zurückgesetzt."
             },
+            "directCancellationDescription": "Sie sind dabei, Ihr Abonnement zu kündigen. Sie verlieren den Zugang zu Ihrem Tarif und Ihr Konto wird auf den kostenlosen Tarif zurückgesetzt. Bitte bestätigen Sie Ihre Wahl, um fortzufahren.",
             "keepSubscription": "Abonnement behalten",
             "cancelSubscription": "Abonnement beenden",
             "infoBox": {
@@ -450,7 +499,7 @@
                 "title": "Verlängerung kündigen",
                 "description": "Behalten Sie vollen Zugriff bis zum {{endDate}}. Sie zahlen bis dahin weiterhin monatlich, und Ihr Plan wird nicht verlängert.",
                 "bulletedInfo": "Verbleibende Zahlungen: {{remainingMonths}}",
-                "label": "Nach dem {{endDate}}",
+                "label": "Ab {{endDate}}",
                 "cta": "Verlängerung kündigen",
                 "confirmationModal": {
                   "description": "Ihr Plan bleibt bis zum {{endDate}} aktiv. Bis dahin werden Sie weiterhin monatlich belastet, und Ihr Abonnement wird nach diesem Datum nicht verlängert.",
@@ -466,9 +515,10 @@
                 "cta": "Jetzt beenden",
                 "confirmationModal": {
                   "title": "Plan jetzt beenden",
-                  "description": "Sie werden Ihren Plan sofort kündigen, indem Sie eine letzte Zahlung von {{amount}} leisten.",
+                  "description": "Sie werden Ihren Plan sofort kündigen, indem Sie eine letzte Zahlung von {{amount}} leisten",
                   "afterThis": "Danach:",
                   "accessEndsImmediately": "Ihr Zugriff endet sofort",
+                  "plusTaxes": " + Steuern",
                   "noFurtherCharges": "Es fallen keine weiteren Kosten an",
                   "overStorage": {
                     "title": "Sie überschreiten {{freeLimit}}",
@@ -479,6 +529,16 @@
                 }
               }
             }
+          },
+          "subscriptionEndingModal": {
+            "title": "Abonnement endet am {{endDate}}",
+            "description": {
+              "title": "Wenn Ihr Tarif endet:",
+              "storageReturns": "Ihr Speicher wird auf das kostenlose Limit zurückgesetzt",
+              "featuresUnavailable": "Premium-Funktionen stehen nicht mehr zur Verfügung"
+            },
+            "maybeLater": "Vielleicht später",
+            "renewSubscription": "Abonnement erneuern"
           },
           "cancellationIncentive": {
             "title": {
@@ -1258,9 +1318,13 @@
     "verificationEmail": "Bestätigungs-E-Mail wurde gesendet",
     "successCancelSubscription": "Dein Abonnement wurde gekündigt",
     "errorCancelSubscription": "Bei der Kündigung deines Abonnements ist ein Fehler aufgetreten",
-    "errorCreatingSubscription": "Beim Erstellen Ihres Abonnements ist ein Fehler aufgetreten",
-    "successApplyCancellationIncentive": "Danke, dass Sie bei uns bleiben! Genießen Sie den nächsten Monat kostenlos",
+    "successApplyCancellationIncentive": "Danke, dass du bei uns bleibst! Genieße den nächsten Monat kostenlos",
     "errorApplyCancellationIncentive": "Beim Anwenden des Kündigungsanreizes ist ein Fehler aufgetreten",
+    "successEarlyCancelSubscription": "Dein Abonnement wurde gekündigt",
+    "errorEarlyCancelSubscription": "Bei der Kündigung deines Abonnements ist ein Fehler aufgetreten",
+    "successReactivateSubscription": "Dein Abonnement wurde reaktiviert",
+    "errorReactivateSubscription": "Bei der Reaktivierung deines Abonnements ist ein Fehler aufgetreten",
+    "errorCreatingSubscription": "Beim Erstellen Ihres Abonnements ist ein Fehler aufgetreten",
     "couponIsNotValidForUserError": "Der Gutschein kann nur von neuen Kunden eingelöst werden.",
     "errorApplyingCoupon": "Beim Anwenden des Coupons ist ein Fehler aufgetreten",
     "errorWhileFetchingMoreItems": "Beim Abrufen weiterer Elemente ist ein Fehler aufgetreten",
@@ -1845,5 +1909,8 @@
       "folderNotExists": "Dieser Ordner existiert nicht",
       "generic": "Auf den Ordner konnte nicht zugegriffen werden"
     }
+  },
+  "common": {
+    "planCancelled": "Ihr Abonnement endet am {{end_date}}"
   }
 }

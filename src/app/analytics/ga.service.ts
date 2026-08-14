@@ -4,8 +4,8 @@ import { getProductAmount } from 'views/Checkout/utils/getProductAmount';
 import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
 import envService from 'services/env.service';
 import localStorageService from 'services/local-storage.service';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { LocalStorageItem } from 'app/core/types';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 interface BaseTrackParams {
   planId: string;
@@ -125,9 +125,9 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
       ecommerce: ecommerceData,
     });
 
-    if (globalThis.window.gtag && SEND_TO.length > 0) {
+    if (globalThis.window.gtag && GA_ID) {
       globalThis.window.gtag('event', 'begin_checkout', {
-        send_to: SEND_TO,
+        send_to: [GA_ID],
         value: totalAmount,
         currency: currencyCode,
         items: [item],
@@ -141,7 +141,7 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
 
 function trackPurchase(): void {
   try {
-    const userSettings = localStorageService.getUser() as UserSettings;
+    const userSettings = encryptedStorageService.getUser();
     if (!userSettings) {
       console.warn('[GA Service] No user settings found, aborting purchase tracking');
       return;
@@ -174,7 +174,7 @@ function trackPurchase(): void {
       console.error('[GA Service] Error parsing checkout_item_data:', parseError);
     }
 
-    const transactionId = paymentIntentId || subscriptionId || uuid;
+    const transactionId = paymentIntentId || subscriptionId || `${uuid}-${Date.now()}`;
     const currencyCode = currency ?? 'EUR';
 
     const itemName = checkoutItemData?.item_name || 'Unknown Plan';

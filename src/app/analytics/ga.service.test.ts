@@ -3,6 +3,8 @@ import gaService from './ga.service';
 import { bytesToString } from 'app/drive/services/size.service';
 import localStorageService from 'services/local-storage.service';
 import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
+import encryptedStorageService from 'services/encrypted-storage.service';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 vi.mock('app/drive/services/size.service', () => ({
   bytesToString: vi.fn((bytes) => {
@@ -42,10 +44,15 @@ vi.mock('services/env.service', () => ({
 
 vi.mock('services/local-storage.service', () => ({
   default: {
-    getUser: vi.fn(),
     get: vi.fn(),
     set: vi.fn(),
     removeItem: vi.fn(),
+  },
+}));
+
+vi.mock('services/encrypted-storage.service', () => ({
+  default: {
+    getUser: vi.fn(),
   },
 }));
 
@@ -204,10 +211,10 @@ describe('Testing GA Service', () => {
   describe('trackPurchase function', () => {
     describe('Successful tracking', () => {
       it('should push purchase event to dataLayer with correct transaction and item data', () => {
-        vi.mocked(localStorageService.getUser).mockReturnValue({
+        vi.mocked(encryptedStorageService.getUser).mockReturnValue({
           uuid: 'user_uuid_123',
           email: 'test@example.com',
-        } as any);
+        } as UserSettings);
 
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           const store: Record<string, string> = {
@@ -257,7 +264,7 @@ describe('Testing GA Service', () => {
       });
 
       it('should use payment intent as transaction ID when available (lifetime plan)', () => {
-        vi.mocked(localStorageService.getUser).mockReturnValue({ uuid: 'user_uuid' } as any);
+        vi.mocked(encryptedStorageService.getUser).mockReturnValue({ uuid: 'user_uuid' } as UserSettings);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'paymentIntentId') return 'pi_999';
           if (key === 'subscriptionId') return 'sub_888';
@@ -280,7 +287,7 @@ describe('Testing GA Service', () => {
       });
 
       it('should use subscription ID when payment intent is not available', () => {
-        vi.mocked(localStorageService.getUser).mockReturnValue({ uuid: 'user_uuid' } as any);
+        vi.mocked(encryptedStorageService.getUser).mockReturnValue({ uuid: 'user_uuid' } as UserSettings);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'paymentIntentId') return null;
           if (key === 'subscriptionId') return 'sub_888';
@@ -302,8 +309,8 @@ describe('Testing GA Service', () => {
         expect(event.ecommerce.transaction_id).toBe('sub_888');
       });
 
-      it('should fallback to user UUID when neither payment intent nor subscription ID are available', () => {
-        vi.mocked(localStorageService.getUser).mockReturnValue({ uuid: 'user_fallback_uuid' } as any);
+      it('should build a unique transaction ID per purchase when payment identifiers are missing, so repeat purchases by the same user are not discarded as duplicates', () => {
+        vi.mocked(encryptedStorageService.getUser).mockReturnValue({ uuid: 'user_fallback_uuid' } as UserSettings);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'paymentIntentId') return null;
           if (key === 'subscriptionId') return null;
@@ -322,14 +329,14 @@ describe('Testing GA Service', () => {
         gaService.trackPurchase();
 
         const event = globalThis.window.dataLayer[0] as any;
-        expect(event.ecommerce.transaction_id).toBe('user_fallback_uuid');
+        expect(event.ecommerce.transaction_id).toMatch(/^user_fallback_uuid-\d+$/);
       });
 
       it('should set user email for Enhanced Conversions when available', () => {
-        vi.mocked(localStorageService.getUser).mockReturnValue({
+        vi.mocked(encryptedStorageService.getUser).mockReturnValue({
           uuid: 'user_123',
           email: 'customer@example.com',
-        } as any);
+        } as UserSettings);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'amountPaid') return '100';
           if (key === 'itemOriginalPrice') return '119.88';
@@ -351,7 +358,7 @@ describe('Testing GA Service', () => {
       });
 
       it('should clean up localStorage after successful tracking', () => {
-        vi.mocked(localStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as any);
+        vi.mocked(encryptedStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as UserSettings);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'amountPaid') return '100';
           if (key === 'itemOriginalPrice') return '119.88';
@@ -372,7 +379,7 @@ describe('Testing GA Service', () => {
       });
 
       it('should use fallback values when checkout item data is not available', () => {
-        vi.mocked(localStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as any);
+        vi.mocked(encryptedStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as UserSettings);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'checkout_item_data') return null;
           if (key === 'amountPaid') return '100';
@@ -386,7 +393,7 @@ describe('Testing GA Service', () => {
       });
 
       it('should use original price from localStorage instead of amount paid', () => {
-        vi.mocked(localStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as any);
+        vi.mocked(encryptedStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as UserSettings);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'amountPaid') return '0';
           if (key === 'itemOriginalPrice') return '119.88';
@@ -409,7 +416,7 @@ describe('Testing GA Service', () => {
 
       it('should not track when checkout data is missing (already tracked)', () => {
         const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-        vi.mocked(localStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as any);
+        vi.mocked(encryptedStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as UserSettings);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'checkout_item_data') return null;
           return 'dummy';
@@ -429,7 +436,7 @@ describe('Testing GA Service', () => {
     describe('Validation & Error Handling', () => {
       it('should not track when user is not logged in', () => {
         const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-        vi.mocked(localStorageService.getUser).mockReturnValue(null);
+        vi.mocked(encryptedStorageService.getUser).mockReturnValue(null);
 
         gaService.trackPurchase();
 
@@ -442,7 +449,7 @@ describe('Testing GA Service', () => {
 
       it('should not track when gtag is not available', () => {
         const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-        vi.mocked(localStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as any);
+        vi.mocked(encryptedStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as UserSettings);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'amountPaid') return '100';
           if (key === 'itemOriginalPrice') return '119.88';
@@ -466,7 +473,7 @@ describe('Testing GA Service', () => {
 
       it('should handle errors gracefully when dataLayer fails', () => {
         const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-        vi.mocked(localStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as any);
+        vi.mocked(encryptedStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as UserSettings);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'amountPaid') return '100';
           if (key === 'itemOriginalPrice') return '119.88';
@@ -496,7 +503,7 @@ describe('Testing GA Service', () => {
       it('should handle invalid JSON in checkout_item_data gracefully', () => {
         const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
         const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-        vi.mocked(localStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as any);
+        vi.mocked(encryptedStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as UserSettings);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'checkout_item_data') return 'invalid-json{';
           if (key === 'amountPaid') return '100';

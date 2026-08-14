@@ -13,7 +13,7 @@ import fileExtensionService from 'app/drive/services/file-extension.service';
 import { fileExtensionPreviewableGroups } from 'app/drive/types/file-types';
 
 import UilArrowRight from '@iconscout/react-unicons/icons/uil-arrow-right';
-import { Check, DownloadSimple, Eye } from '@phosphor-icons/react';
+import { CheckIcon, DownloadSimpleIcon, EyeIcon } from '@phosphor-icons/react';
 
 import downloadService from 'app/drive/services/download.service';
 import { MIN_DOWNLOAD_MULTIPART_SIZE } from 'app/network/networkConstants';
@@ -30,6 +30,7 @@ import { HTTP_STATUS_CODES } from 'app/core/constants';
 import { Button, Loader } from '@internxt/ui';
 import { stringUtils } from '@internxt/lib';
 import { SendBanner, ShareItemPwdView } from './components';
+import useBeforeUnload from 'hooks/useBeforeUnload';
 import { isFileSizePreviewable } from 'services';
 
 export interface ShareViewProps extends ShareViewState {
@@ -106,7 +107,7 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
       return (
         <>
           {/* Download completed */}
-          <Check size={24} />
+          <CheckIcon size={24} />
           <span>{translate('actions.downloaded')}</span>
         </>
       );
@@ -126,7 +127,7 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
     return (
       <>
         {/* Download button */}
-        <DownloadSimple size={24} />
+        <DownloadSimpleIcon size={24} />
         <span>{translate('actions.download')}</span>
       </>
     );
@@ -232,20 +233,7 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
     }
   };
 
-  const handleLeavePage = (e) => {
-    const confirmationMessage = '';
-
-    e.returnValue = confirmationMessage; //Trident, Chrome 34+
-    return confirmationMessage; // WebKit, Chrome <34
-  };
-
-  useEffect(() => {
-    if (isDownloading && progress < 100) {
-      window.addEventListener('beforeunload', handleLeavePage);
-
-      return () => window.removeEventListener('beforeunload', handleLeavePage);
-    }
-  }, [progress]);
+  useBeforeUnload(() => isDownloading && progress < 100);
 
   if (isError) {
     const ItemIconComponent = iconService.getItemIcon(false, 'default');
@@ -324,7 +312,7 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
                   });
               }}
             >
-              <Eye size={24} className="text-gray-80" />
+              <EyeIcon size={24} className="text-gray-80" />
               <span className="ml-2">{translate('actions.view')}</span>
             </Button>
           )}
