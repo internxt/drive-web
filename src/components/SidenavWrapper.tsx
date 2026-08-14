@@ -23,7 +23,7 @@ import { useReferralParamsChange } from 'views/Drive/hooks/useReferralParamsChan
 import WorkspaceSelectorContainer from 'views/Home/components/WorkspaceSelectorContainer';
 import WorkspaceSelectorSkeleton from 'views/Home/components/WorkspaceSelectorSkeleton';
 import ReferralBanner from './ReferralBanner';
-import { CloudWarning } from '@phosphor-icons/react';
+import { CloudWarningIcon } from '@phosphor-icons/react';
 import {
   calculateUsedPercentage,
   getReachedStorageWarningStage,
@@ -103,7 +103,7 @@ const SidenavWrapper = () => {
 
   const storageAdvertisement = reachedStorageStage?.advertisementKey ? (
     <span className="flex flex-row gap-0.5 items-center">
-      <CloudWarning
+      <CloudWarningIcon
         className="size-5 text-yellow-60"
         weight={reachedStorageStage.key === 'highWarning' ? 'fill' : 'regular'}
       />
