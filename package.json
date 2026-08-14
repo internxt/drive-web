@@ -10,7 +10,7 @@
     "@internxt/css-config": "1.1.1",
     "@internxt/lib": "=1.5.1",
     "@internxt/sdk": "=1.20.1",
-    "@internxt/ui": "=0.1.21",
+    "@internxt/ui": "=0.1.27",
     "@phosphor-icons/react": "^2.1.10",
     "@popperjs/core": "^2.11.6",
     "@reduxjs/toolkit": "^1.6.0",
