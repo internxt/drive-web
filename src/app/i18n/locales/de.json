@@ -268,7 +268,8 @@
       "addressRequired": "Bitte vervollständigen Sie Ihre Rechnungsadresse, um fortzufahren",
       "businessPlan": "Der Unternehmensplan ist nicht verfügbar",
       "postalCodeRequired": "Bitte geben Sie Ihre Postleitzahl ein, um fortzufahren",
-      "countryRequired": "Wir konnten Ihr Land nicht ermitteln. Bitte versuchen Sie es später erneut."
+      "countryRequired": "Wir konnten Ihr Land nicht ermitteln. Bitte versuchen Sie es später erneut.",
+      "missingPaymentDetails": "Fehlende Zahlungsdaten zur Bestätigung der Zahlung"
     }
   },
   "general": {
@@ -285,7 +286,47 @@
         "image": "Bild",
         "video": "Video",
         "audio": "Audio",
-        "clear": "Löschen"
+        "attachments": "Anhänge",
+        "anyType": "Beliebiger Typ",
+        "zip": "Archiv (zip)",
+        "document": "Dokument",
+        "powerpoint": "Powerpoint",
+        "excel": "Excel",
+        "text": "Text (txt)",
+        "code": "Code",
+        "csv": "CSV",
+        "xml": "XML",
+        "figma": "Figma",
+        "date": {
+          "dateModified": "Änderungsdatum",
+          "anyDate": "Beliebiges Datum",
+          "today": "Heute",
+          "last7days": "Letzte 7 Tage",
+          "last30days": "Letzte 30 Tage",
+          "thisYear": "Dieses Jahr ({{year}})",
+          "lastYear": "Letztes Jahr ({{year}})",
+          "specificDate": "Bestimmtes Datum",
+          "after": "Nach",
+          "before": "Vor",
+          "selectToday": "Heute auswählen"
+        },
+        "size": {
+          "size": "Größe",
+          "anySize": "Beliebige Größe",
+          "less5mb": "Weniger als 5 MB",
+          "less100mb": "Weniger als 100 MB",
+          "less1gb": "Weniger als 1 GB",
+          "more1gb": "Mehr als 1 GB",
+          "customRange": "Benutzerdefinierter Größenbereich",
+          "biggerThan": "Größer als",
+          "smallerThan": "Kleiner als",
+          "unit": "Einheit",
+          "bytes": "Bytes",
+          "kilobytes": "Kilobytes",
+          "megabytes": "Megabytes",
+          "gigabytes": "Gigabytes",
+          "terabytes": "Terabytes"
+        }
       },
       "emptyState": {
         "title": "Dateien und Ordner finden",
@@ -380,8 +421,7 @@
         "referAndEarn": "Empfehlen und verdienen",
         "earnReferral": "Verdiene 100 €",
         "spaceUsed": "{{space}}% Platz verbraucht",
-        "account": "Konto",
-        "giveFeedback": "Feedback geben"
+        "account": "Konto"
       },
       "tabs": {
         "account": {
@@ -475,9 +515,10 @@
                 "cta": "Jetzt beenden",
                 "confirmationModal": {
                   "title": "Plan jetzt beenden",
-                  "description": "Sie werden Ihren Plan sofort kündigen, indem Sie eine letzte Zahlung von {{amount}} leisten.",
+                  "description": "Sie werden Ihren Plan sofort kündigen, indem Sie eine letzte Zahlung von {{amount}} leisten",
                   "afterThis": "Danach:",
                   "accessEndsImmediately": "Ihr Zugriff endet sofort",
+                  "plusTaxes": " + Steuern",
                   "noFurtherCharges": "Es fallen keine weiteren Kosten an",
                   "overStorage": {
                     "title": "Sie überschreiten {{freeLimit}}",

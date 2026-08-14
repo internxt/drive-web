@@ -11,6 +11,7 @@ interface EndPlanNowModalProps {
   currentPlanInfo: string;
   currentUsage: number;
   amountToPay?: number;
+  isTaxEnabled?: boolean;
   isCancellingSubscription: boolean;
   earlyCancellationClientSecret: string | null;
   onEarlyCancel: () => void;
@@ -24,6 +25,7 @@ const EndPlanNowModal = ({
   currentPlanInfo,
   currentUsage,
   amountToPay,
+  isTaxEnabled,
   isCancellingSubscription,
   earlyCancellationClientSecret,
   onEarlyCancel,
@@ -44,7 +46,12 @@ const EndPlanNowModal = ({
             {translate(
               'views.account.tabs.billing.cancelSubscriptionModal.options.endNow.confirmationModal.description',
               { amount: amountToPay?.toFixed(2) },
-            )}
+            )}{' '}
+            {isTaxEnabled &&
+              translate(
+                'views.account.tabs.billing.cancelSubscriptionModal.options.endNow.confirmationModal.plusTaxes',
+              )}
+            .
           </p>
           <p className="mt-2">
             {translate('views.account.tabs.billing.cancelSubscriptionModal.options.endNow.confirmationModal.afterThis')}
