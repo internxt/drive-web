@@ -12,7 +12,7 @@ import notificationsService from 'app/notifications/services/notifications.servi
 const { setupWorkspace, setSelectedWorkspace } = workspaceThunks;
 import { workspacesActions } from './workspacesStore';
 import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
-import { decryptMnemonic } from '../../../share/services/share.service';
+import { decryptMnemonic } from '../../../share/services/share.crypto';
 import encryptedStorageService from 'services/encrypted-storage.service';
 
 vi.mock('i18next', () => ({
@@ -23,7 +23,7 @@ vi.mock('../../../core/types', () => ({
   AppView: vi.fn(),
   LocalStorageItem: vi.fn(),
 }));
-vi.mock('../../../share/services/share.service', () => ({
+vi.mock('../../../share/services/share.crypto', () => ({
   decryptMnemonic: vi.fn(),
 }));
 vi.mock('../plan', () => ({
