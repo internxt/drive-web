@@ -1,4 +1,7 @@
-import { hybridDecryptMessageWithPrivateKey } from '../../crypto/services/pgp.service';
+import {
+  hybridDecryptMessageWithPrivateKey,
+  hybridEncryptMessageWithPublicKey,
+} from '../../crypto/services/pgp.service';
 import encryptedStorageService from 'services/encrypted-storage.service';
 import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
 import { t } from 'i18next';
@@ -29,4 +32,16 @@ export const decryptMnemonic = async (encryptionKey: string): Promise<string | u
       type: ToastType.Error,
     });
   }
+};
+
+export const encryptMnemonic = async (
+  mnemonic: string,
+  publicKeyInBase64: string,
+  publicKyberKeyBase64: string,
+): Promise<string> => {
+  return hybridEncryptMessageWithPublicKey({
+    message: mnemonic,
+    publicKeyInBase64,
+    publicKyberKeyBase64,
+  });
 };

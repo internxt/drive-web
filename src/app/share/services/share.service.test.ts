@@ -3,7 +3,7 @@
  */
 import { describe, expect, it, vi, beforeEach, beforeAll, test } from 'vitest';
 import { Buffer } from 'buffer';
-import { generateNewKeys, hybridEncryptMessageWithPublicKey } from '../../crypto/services/pgp.service';
+import { generateNewKeys } from '../../crypto/services/pgp.service';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { downloadFolderAsZip } from 'app/drive/services/folder.service';
@@ -26,6 +26,7 @@ import { copyTextToClipboard } from 'utils/copyToClipboard.utils';
 import referralService from 'services/referral.service';
 import { ToastType } from 'app/notifications/services/notifications.service';
 import encryptedStorageService from 'services/encrypted-storage.service';
+import { encryptMnemonic } from './share.crypto';
 
 vi.mock('utils/copyToClipboard.utils', () => ({
   copyTextToClipboard: vi.fn(),
@@ -307,11 +308,7 @@ describe('Get public shared link', async () => {
     } as UserSettings);
     const spyDecrypt = vi.spyOn(aes, 'decrypt');
     const mockDifferentMnemonic = 'mock mnemonic';
-    const encryptedMnemonic = await hybridEncryptMessageWithPublicKey({
-      message: mockDifferentMnemonic,
-      publicKeyInBase64,
-      publicKyberKeyBase64,
-    });
+    const encryptedMnemonic = await encryptMnemonic(mockDifferentMnemonic, publicKeyInBase64, publicKyberKeyBase64);
     const { SdkFactory } = await import('../../core/factory/sdk');
     const mockSharingMetaWithEncryptedMnemonic = {
       ...mockSharingMeta,
@@ -360,11 +357,7 @@ describe('Get public shared link', async () => {
     } as UserSettings);
     const spyDecrypt = vi.spyOn(aes, 'decrypt');
     const mockDifferentMnemonic = 'mock mnemonic';
-    const encryptedMnemonic = await hybridEncryptMessageWithPublicKey({
-      message: mockDifferentMnemonic,
-      publicKeyInBase64,
-      publicKyberKeyBase64,
-    });
+    const encryptedMnemonic = await encryptMnemonic(mockDifferentMnemonic, publicKeyInBase64, publicKyberKeyBase64);
     const newBucketKey = await generateFileBucketKey(mockDifferentMnemonic, bucket);
     const newBucketKeyHex = Buffer.from(newBucketKey.subarray(0, 32)).toString('hex');
     const { SdkFactory } = await import('../../core/factory/sdk');

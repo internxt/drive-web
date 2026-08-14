@@ -1,13 +1,9 @@
 import { describe, expect, vi, Mock, beforeEach, test } from 'vitest';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
-import {
-  generateNewKeys,
-  encryptMessageWithPublicKey,
-  hybridEncryptMessageWithPublicKey,
-} from '../../crypto/services/pgp.service';
+import { generateNewKeys, encryptMessageWithPublicKey } from '../../crypto/services/pgp.service';
 import encryptedStorageService from 'services/encrypted-storage.service';
-import { decryptMnemonic } from './share.crypto';
+import { decryptMnemonic, encryptMnemonic } from './share.crypto';
 
 vi.mock('services/error.service', () => ({
   default: {
@@ -100,11 +96,7 @@ describe('should decrypt mnemonics', () => {
     const mnemonic =
       'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
     const keys = await generateNewKeys();
-    const encriptedMnemonic = await hybridEncryptMessageWithPublicKey({
-      message: mnemonic,
-      publicKeyInBase64: keys.publicKeyArmored,
-      publicKyberKeyBase64: keys.publicKyberKeyBase64,
-    });
+    const encriptedMnemonic = await encryptMnemonic(mnemonic, keys.publicKeyArmored, keys.publicKyberKeyBase64);
 
     const mockUser = await getMockUser(keys, encriptedMnemonic);
 
