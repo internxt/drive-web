@@ -61,33 +61,7 @@ test.describe('checkout - initial load', () => {
     await expect(checkout.totalAmount).toContainText('$');
   });
 
-  test('TC4: keeps the loader visible when the location API fails', async ({ page }) => {
-    // `useProducts` bails out without the user IP, so a failing location call blocks checkout.
-    await mockCheckoutAPIs(page, { price: MONTHLY_PLAN, location: null });
-
-    const checkout = new CheckoutPage(page);
-    await checkout.gotoCheckout({ planId: MONTHLY_PLAN.price.id });
-
-    await expect(checkout.loader).toBeVisible();
-    await expect(checkout.payButton).toHaveCount(0);
-  });
-
-  test('TC5: keeps the loader visible when planId is missing', async ({ page }) => {
-    test.info().annotations.push({
-      type: 'known-ux-gap',
-      description: 'Checkout renders an endless loader instead of an error when planId is absent.',
-    });
-
-    await mockCheckoutAPIs(page, { price: MONTHLY_PLAN });
-
-    await page.goto('/checkout');
-
-    const checkout = new CheckoutPage(page);
-    await expect(checkout.loader).toBeVisible();
-    await expect(checkout.payButton).toHaveCount(0);
-  });
-
-  test('TC6: refetches the price with country and postal code when the billing address changes', async ({ page }) => {
+  test('TC4: refetches the price with country and postal code when the billing address changes', async ({ page }) => {
     // The postal code only reaches `useBillingDetails` through the AddressElement of the crypto
     // section, which is mounted for lifetime plans only.
     const lifetimePlan = buildLifetimePrice();

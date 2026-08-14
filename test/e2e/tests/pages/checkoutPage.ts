@@ -71,7 +71,6 @@ export class CheckoutPage {
   readonly logOutButton: Locator;
 
   // Payment / crypto
-  readonly loader: Locator;
   readonly paymentElement: Locator;
   readonly cryptoSection: Locator;
   readonly cryptoDropdown: Locator;
@@ -115,8 +114,6 @@ export class CheckoutPage {
     this.signedInEmail = page.locator('[data-cy="checkout-signed-in-email"]');
     this.logOutButton = page.locator('[data-cy="checkout-logout-button"]');
 
-    // `CheckoutLoader` is the only full-height centered block rendered while checkout boots.
-    this.loader = page.locator('div.flex.h-full.items-center.justify-center.bg-gray-1');
     this.paymentElement = page.locator('iframe[name^="__privateStripeFrame"]').first();
     this.cryptoSection = page.locator('[data-cy="crypto-payment-section"]');
     this.cryptoDropdown = page.locator('[data-cy="crypto-currency-dropdown"]');
@@ -247,25 +244,6 @@ export class CheckoutPage {
     }
 
     throw new Error(`No Stripe frame containing "${selector}" was found within ${timeout}ms`);
-  }
-
-  /**
-   * Like `findStripeFrameWith`, but searches every frame on the page rather than only the mounted
-   * PaymentElement/AddressElement ones, and reports absence instead of throwing. `page.frames()` is
-   * flat and recursive, so this reaches frames nested inside a Stripe frame — notably the 3-D Secure
-   * challenge, which Stripe mounts as `stripe-challenge-frame` inside its own modal frame.
-   */
-  private async frameContaining(selector: string): Promise<Frame | null> {
-    for (const frame of this.page.frames()) {
-      const found = await frame
-        .locator(selector)
-        .count()
-        .catch(() => 0);
-
-      if (found > 0) return frame;
-    }
-
-    return null;
   }
 
   /**
@@ -417,55 +395,6 @@ export class CheckoutPage {
   async clickPay(): Promise<void> {
     await expect(this.payButton).toBeEnabled();
     await this.payButton.click();
-  }
-
-  /* ---------------------------------------------------------------------- */
-  /* Redirect and challenge flows (smoke suite only)                        */
-  /* ---------------------------------------------------------------------- */
-
-  /**
-   * Completes the 3-D Secure challenge Stripe raises for authentication-required test cards.
-   *
-   * In test mode the challenge is Stripe's own ACS simulator (`testmode-acs.stripe.com`) rather
-   * than a bank page, and it exposes two stable controls. It lives in `stripe-challenge-frame`,
-   * nested inside Stripe's modal frame, hence `findFrameWith` rather than the PaymentElement-only
-   * lookup.
-   */
-  async completeThreeDSChallenge(outcome: 'complete' | 'fail' = 'complete'): Promise<void> {
-    const selector = outcome === 'complete' ? '#test-source-authorize-3ds' : '#test-source-fail-3ds';
-
-    await expect
-      .poll(async () => !!(await this.frameContaining(selector)), {
-        timeout: 60000,
-        message: 'Stripe never opened the 3-D Secure challenge',
-      })
-      .toBe(true);
-
-    // Stripe re-renders the challenge as the ACS page finishes loading, which silently drops a click
-    // that lands too early. The challenge frame is torn down once the outcome is accepted, so its
-    // disappearance — not the click itself — is what marks the step as done.
-    await expect(async () => {
-      const frame = await this.frameContaining(selector);
-      if (!frame) return;
-
-      await frame.locator(selector).click({ timeout: 5000 });
-      expect(await this.frameContaining(selector)).toBeNull();
-    }).toPass({ timeout: 60000, intervals: [1000, 2000, 3000] });
-  }
-
-  /**
-   * Authorises the payment on Stripe's hosted test simulator for redirect-based methods (PayPal).
-   *
-   * Test mode never reaches the real provider: `confirmPayment` sends the top-level page to a
-   * Stripe-hosted page offering an authorise/fail pair, which then redirects on to `return_url`.
-   */
-  async authorizeRedirectTestPayment(outcome: 'authorize' | 'fail' = 'authorize'): Promise<void> {
-    await this.page.waitForURL(/payments\.stripe\.com\/payment_methods\/test_payment/, { timeout: 60000 });
-
-    const control = this.page.locator(outcome === 'authorize' ? '#authorize-test-payment' : '#fail-test-payment');
-
-    await expect(control).toBeVisible({ timeout: 30000 });
-    await control.click();
   }
 
   /* ---------------------------------------------------------------------- */

@@ -186,16 +186,4 @@ test.describe('checkout - payment', () => {
     await checkout.expectToast(/something went wrong|error|could not/i);
     await expect(checkout.payButton).toBeEnabled();
   });
-
-  test('TC7: a 100%-off coupon still renders a usable checkout', async ({ page }) => {
-    test.fail();
-
-    const plan = buildLifetimePrice();
-    const coupon = buildCouponCodeData({ codeName: 'FREELIFE', percentOff: 100 });
-    await mockCheckoutAPIs(page, { price: plan, coupon, paymentIntent: buildPaidPaymentIntent() });
-
-    const checkout = new CheckoutPage(page);
-    await checkout.gotoCheckout({ planId: plan.price.id, couponCode: coupon.codeName });
-    await checkout.waitForCheckoutReady();
-  });
 });

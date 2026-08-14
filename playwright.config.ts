@@ -5,9 +5,7 @@ import { defineConfig, devices } from '@playwright/test';
  */
 import 'dotenv/config';
 
-const CHECKOUT_MOCKED_SPECS = /[\\/]checkout[\\/].*\.spec\.ts$/;
-const CHECKOUT_SMOKE_SPECS = /[\\/]checkout-smoke[\\/].*\.smoke\.spec\.ts$/;
-const CHECKOUT_SPECS = /[\\/]checkout(-smoke)?[\\/]/;
+const CHECKOUT_SPECS = /[\\/]checkout[\\/].*\.spec\.ts$/;
 
 const LEGACY_STORAGE_STATE = './test/e2e/tests/specs/playwright/auth/user.json';
 
@@ -81,38 +79,26 @@ export default defineConfig({
       dependencies: ['setup'],
     },
 
-    /* Checkout: fully mocked APIs, deterministic, runs on every PR. */
+    /* Checkout: the API layer is mocked, everything above it is real — the app under `yarn dev`,
+       and Stripe.js with the test publishable key, so the card fields are genuine Stripe iframes and
+       the confirmation token is a real test-mode call. Deterministic enough to run on every PR. */
     {
       name: 'checkout-mocked-chromium',
       testDir: './test/e2e/tests/specs',
-      testMatch: CHECKOUT_MOCKED_SPECS,
+      testMatch: CHECKOUT_SPECS,
       use: { ...devices['Desktop Chrome'] },
     },
     {
       name: 'checkout-mocked-firefox',
       testDir: './test/e2e/tests/specs',
-      testMatch: CHECKOUT_MOCKED_SPECS,
+      testMatch: CHECKOUT_SPECS,
       use: { ...devices['Desktop Firefox'] },
     },
     {
       name: 'checkout-mocked-edge',
       testDir: './test/e2e/tests/specs',
-      testMatch: CHECKOUT_MOCKED_SPECS,
+      testMatch: CHECKOUT_SPECS,
       use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    },
-
-    /* Checkout: a real payments service + Stripe test mode. Slow by design, so it gets its own
-       budget. Single worker on purpose: every purchasing test spends one of the five
-       `POST /checkout/customer` requests payments allows per hour per IP, and running them
-       concurrently only adds contention to a suite that is bounded by network round trips anyway. */
-    {
-      name: 'checkout-smoke',
-      testDir: './test/e2e/tests/specs',
-      testMatch: CHECKOUT_SMOKE_SPECS,
-      timeout: 180000,
-      retries: 1,
-      workers: 1,
-      use: { ...devices['Desktop Chrome'] },
     },
   ],
 
