@@ -10,9 +10,9 @@ import {
   STORAGE_WARNING_STAGES,
   StorageWarningStage,
 } from './storageWarning';
+import { LocalStorageItem } from 'app/core/types';
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
-const DISMISSALS_STORAGE_KEY = 'storageWarningBannerDismissals';
 
 const stageByKey = (key: StorageWarningStage['key']): StorageWarningStage =>
   STORAGE_WARNING_STAGES.find((stage) => stage.key === key) as StorageWarningStage;
@@ -96,13 +96,13 @@ describe('storage warning dismissals persistence', () => {
   });
 
   test('When the stored dismissals are corrupted, then reading them falls back to an empty record', () => {
-    localStorage.setItem(DISMISSALS_STORAGE_KEY, 'not-valid-json');
+    LocalStorageItem.StorageWarningBannerDismissals;
 
     expect(readDismissals()).toEqual({});
   });
 
   test('When the stored dismissals are not an object, then reading them falls back to an empty record', () => {
-    localStorage.setItem(DISMISSALS_STORAGE_KEY, JSON.stringify('a string'));
+    LocalStorageItem.StorageWarningBannerDismissals;
 
     expect(readDismissals()).toEqual({});
   });

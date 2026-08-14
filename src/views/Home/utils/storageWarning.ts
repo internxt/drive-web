@@ -1,7 +1,7 @@
 import localStorageService from 'services/local-storage.service';
+import { LocalStorageItem } from 'app/core/types';
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
-const DISMISSALS_STORAGE_KEY = 'storageWarningBannerDismissals';
 
 export type StorageWarning = 'lowWarning' | 'midWarning' | 'highWarning';
 
@@ -55,7 +55,8 @@ export const openUpgradeSpecialOffer = (): void => {
 
 export const readDismissals = (): StorageWarningDismissals => {
   try {
-    const raw = localStorageService.get(DISMISSALS_STORAGE_KEY);
+    const raw = localStorageService.get(LocalStorageItem.StorageWarningBannerDismissals);
+
     const parsed = raw ? JSON.parse(raw) : null;
     return typeof parsed === 'object' && parsed !== null ? parsed : {};
   } catch (error) {
@@ -68,7 +69,7 @@ export const writeDismissal = (stageKey: StorageWarning, dismissedAt: number): v
   try {
     const dismissals = readDismissals();
     dismissals[stageKey] = dismissedAt;
-    localStorageService.set(DISMISSALS_STORAGE_KEY, JSON.stringify(dismissals));
+    localStorageService.set(LocalStorageItem.StorageWarningBannerDismissals, JSON.stringify(dismissals));
   } catch (error) {
     console.error('Failed to write storage warning dismissal', error);
   }

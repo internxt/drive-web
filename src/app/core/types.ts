@@ -156,6 +156,8 @@ export enum LocalStorageItem {
   StpatricksTheme = 'stpatricks_theme_enabled',
   AnniversaryTheme = 'anniversary_theme_enabled',
   SubscriptionEndingModalClosed = 'subscription_ending_modal_closed',
+  StorageWarningBannerDismissals = 'storageWarningBannerDismissals',
+
 }
 
 export enum LocalStorageProtectedItem {
