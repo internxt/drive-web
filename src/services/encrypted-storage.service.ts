@@ -91,7 +91,6 @@ const getToken = (): string | undefined => tokenCache ?? undefined;
 
 const clear = (): void => {
   tokenCache = null;
-  userCache = null;
   localStorage.removeItem(LocalStorageProtectedItem.EncryptedToken);
   clearFileToken();
   clearFolderToken();
