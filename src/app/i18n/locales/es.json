@@ -268,7 +268,8 @@
       "addressRequired": "Por favor, completa tu dirección de facturación para continuar",
       "businessPlan": "El plan de empresa no está disponible",
       "postalCodeRequired": "Introduce tu código postal para continuar",
-      "countryRequired": "No hemos podido determinar tu país de facturación. Inténtalo de nuevo más tarde."
+      "countryRequired": "No hemos podido determinar tu país de facturación. Inténtalo de nuevo más tarde.",
+      "missingPaymentDetails": "Faltan los datos de pago para confirmar el pago"
     }
   },
   "general": {
@@ -420,8 +421,7 @@
         "referAndEarn": "Recomienda y gana",
         "earnReferral": "Gana 100 €",
         "spaceUsed": "{{space}}% espacio usado",
-        "account": "Cuenta",
-        "giveFeedback": "Enviar comentarios"
+        "account": "Cuenta"
       },
       "tabs": {
         "account": {
@@ -515,9 +515,10 @@
                 "cta": "Finalizar ahora",
                 "confirmationModal": {
                   "title": "Finalizar plan ahora",
-                  "description": "Vas a cancelar tu plan de inmediato realizando un pago final de {{amount}}.",
+                  "description": "Vas a cancelar tu plan de inmediato realizando un pago final de {{amount}}",
                   "afterThis": "Después de esto:",
                   "accessEndsImmediately": "Tu acceso terminará de inmediato",
+                  "plusTaxes": " + impuestos",
                   "noFurtherCharges": "No se aplicarán más cargos",
                   "overStorage": {
                     "title": "Has superado {{freeLimit}}",
@@ -542,7 +543,7 @@
           "cancellationIncentive": {
             "title": {
               "normal": "EL PRÓXIMO MES",
-              "blue": "VA POR NOSOTROS"
+              "blue": "GRATIS"
             },
             "description": "Si mantienes tu suscripción, obtendrás el próximo mes gratis y una ampliación de la prueba hasta el {{newDate}}. Esta es una oferta única.",
             "cta": {

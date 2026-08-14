@@ -289,7 +289,8 @@
       "addressRequired": "Please complete your billing address to continue",
       "businessPlan": "Business plan is not available",
       "postalCodeRequired": "Please enter your postal code to continue",
-      "countryRequired": "We couldn't determine your billing country. Please try again later."
+      "countryRequired": "We couldn't determine your billing country. Please try again later.",
+      "missingPaymentDetails": "Missing payment details to confirm the payment"
     }
   },
   "general": {
@@ -441,8 +442,7 @@
         "referAndEarn": "Refer and Earn",
         "earnReferral": "Earn €100",
         "spaceUsed": "{{space}}% space used",
-        "account": "Account",
-        "giveFeedback": "Give Feedback"
+        "account": "Account"
       },
       "tabs": {
         "account": {
@@ -536,9 +536,10 @@
                 "cta": "End now",
                 "confirmationModal": {
                   "title": "End plan now",
-                  "description": "You are going to cancel your plan immediately by making a final payment of {{amount}}.",
+                  "description": "You are going to cancel your plan immediately by making a final payment of {{amount}}",
                   "afterThis": "After this:",
                   "accessEndsImmediately": "Your access will end immediately",
+                  "plusTaxes": " + taxes",
                   "noFurtherCharges": "No further charges will apply",
                   "overStorage": {
                     "title": "You are over {{freeLimit}}",

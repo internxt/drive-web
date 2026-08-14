@@ -268,7 +268,8 @@
       "addressRequired": "Veuillez compléter votre adresse de facturation pour continuer",
       "businessPlan": "Le plan d’entreprise n’est pas disponible",
       "postalCodeRequired": "Veuillez saisir votre code postal pour continuer",
-      "countryRequired": "Nous n'avons pas pu déterminer votre pays. Veuillez réessayer plus tard."
+      "countryRequired": "Nous n'avons pas pu déterminer votre pays. Veuillez réessayer plus tard.",
+      "missingPaymentDetails": "Informations de paiement manquantes pour confirmer le paiement"
     }
   },
   "general": {
@@ -420,8 +421,7 @@
         "referAndEarn": "Parrainez et gagnez",
         "earnReferral": "Gagnez 100 €",
         "spaceUsed": "{{space}}% d'espace utilisé",
-        "account": "Compte",
-        "giveFeedback": "Donner votre avis"
+        "account": "Compte"
       },
       "tabs": {
         "account": {
@@ -515,9 +515,10 @@
                 "cta": "Terminer maintenant",
                 "confirmationModal": {
                   "title": "Mettre fin au plan maintenant",
-                  "description": "Vous allez annuler votre abonnement immédiatement en effectuant un dernier paiement de {{amount}}.",
+                  "description": "Vous allez annuler votre abonnement immédiatement en effectuant un dernier paiement de {{amount}}",
                   "afterThis": "Après cela :",
                   "accessEndsImmediately": "Votre accès prendra fin immédiatement",
+                  "plusTaxes": " + taxes",
                   "noFurtherCharges": "Aucun autre frais ne sera appliqué",
                   "overStorage": {
                     "title": "Vous dépassez {{freeLimit}}",

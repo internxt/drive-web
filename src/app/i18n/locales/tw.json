@@ -289,7 +289,8 @@
       "addressRequired": "請填寫您的帳單地址以繼續",
       "businessPlan": "企業計劃不可用",
       "postalCodeRequired": "請輸入您的郵遞區號以繼續",
-      "countryRequired": "我們無法確定您的國家/地區,請稍後再試"
+      "countryRequired": "我們無法確定您的國家/地區,請稍後再試",
+      "missingPaymentDetails": "缺少確認付款所需的付款資訊"
     }
   },
   "general": {
@@ -441,8 +442,7 @@
         "referAndEarn": "推薦賺取",
         "earnReferral": "賺取 €100",
         "spaceUsed": "已使用 {{space}}% 的空間",
-        "account": "帳戶",
-        "giveFeedback": "提供意見回饋"
+        "account": "帳戶"
       },
       "tabs": {
         "account": {
@@ -536,9 +536,10 @@
                 "cta": "立即結束",
                 "confirmationModal": {
                   "title": "立即結束方案",
-                  "description": "您將支付 {{amount}} 的最終款項，立即取消方案。",
+                  "description": "您將支付 {{amount}} 的最終款項，立即取消方案",
                   "afterThis": "之後：",
                   "accessEndsImmediately": "您的存取權限將立即終止",
+                  "plusTaxes": " + 稅金",
                   "noFurtherCharges": "將不再產生任何費用",
                   "overStorage": {
                     "title": "您已超過 {{freeLimit}}",
