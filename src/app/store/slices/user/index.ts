@@ -48,7 +48,6 @@ const initializeThunk = createAsyncThunk<void, undefined, { state: RootState }>(
     if (user) {
       dispatch(userActions.setUser(user));
     }
-    dispatch(userActions.setIsUserInitialized(true));
   },
 );
 
