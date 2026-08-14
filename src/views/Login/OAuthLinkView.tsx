@@ -32,15 +32,6 @@ const OAuthLinkView = (): JSX.Element => {
 
   if (!isUserLoaded || !user) return <></>;
 
-  useEffect(() => {
-    if (!user) {
-      const params = urlParams.toString();
-      navigationService.history.replace(`${AppView.Login}${params ? '?' + params : ''}`);
-    }
-  }, [user]);
-
-  if (!user) return <></>;
-
   const handleGoToLogin = () => {
     const params: Record<string, string> = {};
     urlParams.forEach((value, key) => {
