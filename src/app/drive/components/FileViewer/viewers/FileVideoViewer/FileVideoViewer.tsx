@@ -102,11 +102,17 @@ const FileVideoViewer = ({
     };
 
     let sessionRef: VideoStreamingSession | undefined;
+    let cancelled = false;
     setupStreaming().then((session) => {
+      if (cancelled) {
+        session?.destroy();
+        return;
+      }
       sessionRef = session;
     });
 
     return () => {
+      cancelled = true;
       sessionRef?.destroy();
       setCanPlay(false);
     };
