@@ -42,10 +42,12 @@ type DownloadFileFunction = (
   params: DownloadSharedFileParams | DownloadOwnFileWithMnemonicParams | DownloadOwnFileWithBucketKeyParams,
 ) => DownloadFileResponse;
 
-const downloadSharedFile: DownloadSharedFileFunction = (params) => {
-  const { bucketId, fileId, encryptionKey, token, options } = params;
-
-  return new NetworkFacade(
+/**
+ * Creates a NetworkFacade for the bridge. Pass auth for downloads of the user's own files;
+ * omit it for shared-link downloads, which authenticate through the share token instead.
+ */
+const createNetworkFacade = (auth?: { username: string; password: string }): NetworkFacade =>
+  new NetworkFacade(
     Network.client(
       envService.getVariable('storjBridge'),
       {
@@ -53,11 +55,16 @@ const downloadSharedFile: DownloadSharedFileFunction = (params) => {
         clientVersion: '1.0',
       },
       {
-        bridgeUser: '',
-        userId: '',
+        bridgeUser: auth?.username ?? '',
+        userId: auth?.password ?? '',
       },
     ),
-  ).download(bucketId, fileId, '', {
+  );
+
+const downloadSharedFile: DownloadSharedFileFunction = (params) => {
+  const { bucketId, fileId, encryptionKey, token, options } = params;
+
+  return createNetworkFacade().download(bucketId, fileId, '', {
     key: Buffer.from(encryptionKey, 'hex'),
     token,
     downloadingCallback: options?.notifyProgress,
@@ -81,19 +88,7 @@ const downloadOwnFile = async (params: DownloadOwnFileWithMnemonicParams) => {
   } = params;
   const auth = await getAuthFromCredentials(params.creds);
 
-  return new NetworkFacade(
-    Network.client(
-      envService.getVariable('storjBridge'),
-      {
-        clientName: 'drive-web',
-        clientVersion: '1.0',
-      },
-      {
-        bridgeUser: auth.username,
-        userId: auth.password,
-      },
-    ),
-  ).download(bucketId, fileId, mnemonic, {
+  return createNetworkFacade(auth).download(bucketId, fileId, mnemonic, {
     downloadingCallback: options?.notifyProgress,
     abortController: options?.abortController,
   });
@@ -108,19 +103,7 @@ const downloadOwnFileWithBucketKey = async (params: DownloadOwnFileWithBucketKey
   } = params;
   const auth = await getAuthFromCredentials(params.creds);
 
-  return new NetworkFacade(
-    Network.client(
-      envService.getVariable('storjBridge'),
-      {
-        clientName: 'drive-web',
-        clientVersion: '1.0',
-      },
-      {
-        bridgeUser: auth.username,
-        userId: auth.password,
-      },
-    ),
-  ).downloadWithBucketKey(bucketId, fileId, bucketKey, {
+  return createNetworkFacade(auth).downloadWithBucketKey(bucketId, fileId, bucketKey, {
     downloadingCallback: options?.notifyProgress,
     abortController: options?.abortController,
   });
@@ -138,23 +121,7 @@ async function multipartDownloadOwnFile(
   } = params;
   const auth = await getAuthFromCredentials(params.creds);
 
-  const networkFacade = new NetworkFacade(
-    Network.client(
-      envService.getVariable('storjBridge'),
-      {
-        clientName: 'drive-web',
-        clientVersion: '1.0',
-      },
-      {
-        bridgeUser: auth.username,
-        userId: auth.password,
-      },
-    ),
-  );
-
-  const multipartDownload = new MultipartDownload(networkFacade);
-
-  return multipartDownload.downloadFile({
+  return new MultipartDownload(createNetworkFacade(auth)).downloadFile({
     bucketId,
     fileId,
     mnemonic,
@@ -166,28 +133,17 @@ async function multipartDownloadOwnFile(
   });
 }
 
+/**
+ * Downloads a shared file in chunks. The mnemonic is intentionally empty: shared downloads
+ * authenticate through the share token, and options.key overrides the mnemonic-derived
+ * decryption key downstream in NetworkFacade.downloadChunk.
+ */
 async function multipartDownloadSharedFile(
   params: DownloadSharedFileParams & { fileSize: number },
 ): Promise<FileStream> {
   const { bucketId, fileId, encryptionKey, token, fileSize, options } = params;
 
-  const networkFacade = new NetworkFacade(
-    Network.client(
-      envService.getVariable('storjBridge'),
-      {
-        clientName: 'drive-web',
-        clientVersion: '1.0',
-      },
-      {
-        bridgeUser: '',
-        userId: '',
-      },
-    ),
-  );
-
-  const multipartDownload = new MultipartDownload(networkFacade);
-
-  return multipartDownload.downloadFile({
+  return new MultipartDownload(createNetworkFacade()).downloadFile({
     bucketId,
     fileId,
     mnemonic: '',
@@ -201,14 +157,23 @@ async function multipartDownloadSharedFile(
   });
 }
 
+/**
+ * Downloads a file in chunks, dispatching to the shared-link flow when the params carry
+ * a share token and encryption key, or to the own-file flow when they carry credentials.
+ */
 export async function multipartDownload(
   params: (DownloadOwnFileWithMnemonicParams | DownloadSharedFileParams) & { fileSize: number },
 ): Promise<FileStream> {
-  if (params.token && params.encryptionKey) {
-    return multipartDownloadSharedFile(params);
-  }
+  const isSharedDownload = Boolean(params.token && params.encryptionKey);
+  const isOwnFileDownload = Boolean(params.creds && params.key.mnemonic);
 
-  return multipartDownloadOwnFile(params as DownloadOwnFileWithMnemonicParams & { fileSize: number });
+  if (isSharedDownload) {
+    return multipartDownloadSharedFile(params as DownloadSharedFileParams & { fileSize: number });
+  } else if (isOwnFileDownload) {
+    return multipartDownloadOwnFile(params as DownloadOwnFileWithMnemonicParams & { fileSize: number });
+  } else {
+    throw new Error('DOWNLOAD ERRNO. 0');
+  }
 }
 
 export async function downloadChunkFile(
@@ -224,19 +189,7 @@ export async function downloadChunkFile(
   } = params;
   const auth = await getAuthFromCredentials(params.creds);
 
-  return new NetworkFacade(
-    Network.client(
-      envService.getVariable('storjBridge'),
-      {
-        clientName: 'drive-web',
-        clientVersion: '1.0',
-      },
-      {
-        bridgeUser: auth.username,
-        userId: auth.password,
-      },
-    ),
-  ).downloadChunk({
+  return createNetworkFacade(auth).downloadChunk({
     bucketId,
     fileId,
     mnemonic,
