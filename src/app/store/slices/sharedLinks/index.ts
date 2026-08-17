@@ -11,9 +11,10 @@ import { UserRoles } from 'app/share/types';
 import referralService from 'services/referral.service';
 import { t } from 'i18next';
 import userService from 'services/user.service';
-import { encryptMnemonic } from 'app/share/services/share.crypto';
+import { encryptBucketKey } from 'app/share/services/share.crypto';
 
 export const HYBRID_ALGORITHM = 'hybrid';
+export const HYBRID_ALGORITHM_WITH_BUCKET_KEY = 'hybrid-v2';
 export const STANDARD_ALGORITHM = 'ed25519';
 
 export interface ShareLinksState {
@@ -53,16 +54,16 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
         navigationService.push(AppView.Login);
         return;
       }
-      const { mnemonic } = user;
+      const { mnemonic, bucket } = user;
 
       const publicKeyResponse = await userService.getPublicKeyWithPrecreation(payload.sharedWith);
 
       const publicKey = publicKeyResponse.publicKey;
       const publicKyberKey = publicKeyResponse?.publicKyberKey ?? '';
 
-      const encryptedMnemonicInBase64 = await encryptMnemonic(mnemonic, publicKey, publicKyberKey);
+      const encryptedBucketKeyInBase64 = await encryptBucketKey(mnemonic, bucket, publicKey, publicKyberKey);
 
-      const encryptionAlgorithm = publicKyberKey ? HYBRID_ALGORITHM : STANDARD_ALGORITHM;
+      const encryptionAlgorithm = publicKyberKey ? HYBRID_ALGORITHM_WITH_BUCKET_KEY : STANDARD_ALGORITHM;
 
       await shareService.inviteUserToSharedFolder({
         itemId: payload.itemId,
@@ -70,7 +71,7 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
         sharedWith: payload.sharedWith,
         notifyUser: payload.notifyUser,
         notificationMessage: payload.notificationMessage,
-        encryptionKey: encryptedMnemonicInBase64,
+        encryptionKey: encryptedBucketKeyInBase64,
         encryptionAlgorithm,
         roleId: payload.roleId,
         persistPreviousSharing: true,

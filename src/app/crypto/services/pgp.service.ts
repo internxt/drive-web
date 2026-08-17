@@ -5,6 +5,7 @@ import kemBuilder from '@dashlane/pqc-kem-kyber512-browser';
 import { extendSecret } from './utils';
 
 const WORDS_HYBRID_MODE_IN_BASE64 = 'SHlicmlkTW9kZQ=='; // 'HybridMode' in BASE64 format
+const WORDS_HYBRID_BUCKET_KEY_IN_BASE64 = 'SHlicmlkQnVja2V0S2V5'; // 'HybridBucketKey' in BASE64 format
 type Data = Uint8Array | string;
 
 export async function getOpenpgp(): Promise<typeof import('openpgp')> {
@@ -201,4 +202,117 @@ export const decryptMessageWithPrivateKey = async ({
   });
 
   return decryptedMessage;
+};
+
+function xorUint8Arrays(a: Uint8Array, b: Uint8Array): Uint8Array {
+  const result = new Uint8Array(a.length);
+  for (let i = 0; i < a.length; i++) {
+    result[i] = a[i] ^ b[i];
+  }
+  return result;
+}
+
+/**
+ * Encrypts bucket key using hybrid method (ecc and kyber) if kyber key is given, else uses ecc only
+ * @param {Uint8Array} bucketKey - The bucket key to encrypt
+ * @param {string} publicKeyInBase64 - The ecc public key in Base64
+ * @param {string}[publicKyberKeyBase64] - The kyber public key in Base64
+ * @returns {Promise<string>} The encrypted message.
+ */
+export const encryptBucketKeyHybrid = async ({
+  bucketKey,
+  publicKeyInBase64,
+  publicKyberKeyBase64,
+}: {
+  bucketKey: Uint8Array;
+  publicKeyInBase64: string;
+  publicKyberKeyBase64?: string;
+}): Promise<string> => {
+  let result = '';
+  let plaintext: Uint8Array = bucketKey.subarray(0, 32);
+  if (publicKyberKeyBase64) {
+    const kem = await kemBuilder();
+
+    const publicKyberKey = Buffer.from(publicKyberKeyBase64, 'base64');
+    const { ciphertext, sharedSecret: secret } = await kem.encapsulate(new Uint8Array(publicKyberKey));
+    const kyberCiphertextStr = Buffer.from(ciphertext).toString('base64');
+
+    plaintext = xorUint8Arrays(plaintext, secret);
+    result = WORDS_HYBRID_BUCKET_KEY_IN_BASE64.concat('$', kyberCiphertextStr, '$');
+  }
+
+  const openpgp = await getOpenpgp();
+
+  const publicKeyArmored = Buffer.from(publicKeyInBase64, 'base64').toString();
+  const publicKey = await openpgp.readKey({ armoredKey: publicKeyArmored });
+
+  const encryptedMessage = await openpgp.encrypt({
+    message: await openpgp.createMessage({ binary: plaintext }),
+    encryptionKeys: publicKey,
+  });
+  const eccCiphertextStr = btoa(encryptedMessage as string);
+
+  result = result.concat(eccCiphertextStr);
+
+  return result;
+};
+
+/**
+ * Decrypts ciphertext using hybrid method (ecc and kyber) if kyber key is given, else uses ecc only
+ * @param {string} encryptedMessageInBase64 - The encrypted message
+ * @param {string} privateKeyInBase64 - The ecc private key in Base64
+ * @param {string}[privateKyberKeyInBase64] - The kyber private key in Base64
+ * @returns {Promise<Uint8Array>} The decrypted bucket key.
+ */
+export const decryptBucketKeyHybrid = async ({
+  encryptedMessageInBase64,
+  privateKeyInBase64,
+  privateKyberKeyInBase64,
+}: {
+  encryptedMessageInBase64: string;
+  privateKeyInBase64: string;
+  privateKyberKeyInBase64?: string;
+}): Promise<Uint8Array> => {
+  let eccCiphertextStr = encryptedMessageInBase64;
+  let kyberSecret;
+  const ciphertexts = encryptedMessageInBase64.split('$');
+  const prefix = ciphertexts[0];
+  const isHybridMode = prefix === WORDS_HYBRID_BUCKET_KEY_IN_BASE64;
+
+  if (isHybridMode) {
+    if (!privateKyberKeyInBase64) {
+      return Promise.reject(new Error('Attempted to decrypt hybrid ciphertex without Kyber key'));
+    }
+    const kem = await kemBuilder();
+
+    const kyberCiphertextBase64 = ciphertexts[1];
+    eccCiphertextStr = ciphertexts[2];
+
+    const privateKyberKey = Buffer.from(privateKyberKeyInBase64, 'base64');
+    const kyberCiphertext = Buffer.from(kyberCiphertextBase64, 'base64');
+    const decapsulate = await kem.decapsulate(new Uint8Array(kyberCiphertext), new Uint8Array(privateKyberKey));
+    kyberSecret = decapsulate.sharedSecret;
+  }
+  const openpgp = await getOpenpgp();
+
+  const privateKeyArmored = Buffer.from(privateKeyInBase64, 'base64').toString();
+  const privateKey = await openpgp.readPrivateKey({ armoredKey: privateKeyArmored });
+
+  const message = await openpgp.readMessage({
+    armoredMessage: atob(eccCiphertextStr),
+  });
+
+  const { data: decryptedMessage } = await openpgp.decrypt({
+    message,
+    decryptionKeys: privateKey,
+    format: 'binary',
+  });
+
+  let result = decryptedMessage;
+  if (isHybridMode) {
+    const xored = xorUint8Arrays(result, kyberSecret);
+    result = xored;
+  }
+
+  return result;
 };
