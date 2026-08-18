@@ -10,6 +10,7 @@ import {
   PaymentIntentCrypto,
   PriceWithTax,
 } from '@internxt/sdk/dist/payments/types';
+import { StripeElementsOptionsMode } from '@stripe/stripe-js';
 import envService from 'services/env.service';
 import errorService from 'services/error.service';
 import { bytesToString } from 'app/drive/services/size.service';
@@ -159,7 +160,7 @@ const loadStripeElements = async (
     labelTextColor: string;
   },
   plan: PriceWithTax,
-) => {
+): Promise<StripeElementsOptionsMode> => {
   const { backgroundColor, textColor, borderColor, borderInputColor, labelTextColor } = theme;
 
   return {

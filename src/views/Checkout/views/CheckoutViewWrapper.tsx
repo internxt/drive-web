@@ -308,6 +308,7 @@ const CheckoutViewWrapper = () => {
       }
 
       let paymentPostalCode: string | undefined;
+      let confirmationTokenId: string | undefined;
 
       if (isCryptoPurchase) {
         paymentPostalCode = address?.postal_code;
@@ -315,18 +316,20 @@ const CheckoutViewWrapper = () => {
 
       if (currencyType === PaymentType['FIAT']) {
         const { error: elementsError } = await elements.submit();
-        const { confirmationToken, error: confirmationTokenError } = await stripeSDK.createConfirmationToken({
-          elements,
-        });
 
         if (elementsError) {
           throw new Error(elementsError.message);
         }
 
+        const { confirmationToken, error: confirmationTokenError } = await stripeSDK.createConfirmationToken({
+          elements,
+        });
+
         if (confirmationTokenError) {
           throw new Error(confirmationTokenError.message);
         }
 
+        confirmationTokenId = confirmationToken.id;
         paymentPostalCode = confirmationToken.payment_method_preview.billing_details.address?.postal_code ?? undefined;
       }
 
@@ -384,7 +387,7 @@ const CheckoutViewWrapper = () => {
         currency: selectedCurrency ?? selectedPlan.price.currency,
         priceId: selectedPlan.price.id,
         customerId,
-        elements,
+        confirmationTokenId,
         translate,
         selectedPlan,
         token,
@@ -431,7 +434,7 @@ const CheckoutViewWrapper = () => {
   return (
     <>
       {isCheckoutReady && stripeElementsOptions && stripeSdk && selectedPlan?.price && selectedPlan?.taxes ? (
-        <Elements stripe={stripeSdk} options={{ ...stripeElementsOptions }}>
+        <Elements stripe={stripeSdk} options={stripeElementsOptions}>
           <CheckoutView
             checkoutViewVariables={{
               isPaying,

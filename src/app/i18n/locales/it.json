@@ -289,7 +289,8 @@
       "addressRequired": "Completa il tuo indirizzo di fatturazione per continuare",
       "businessPlan": "Il piano aziendale non è disponibile",
       "postalCodeRequired": "Inserisci il tuo codice postale per continuare",
-      "countryRequired": "Non siamo riusciti a determinare il tuo paese. Riprova più tardi."
+      "countryRequired": "Non siamo riusciti a determinare il tuo paese. Riprova più tardi.",
+      "missingPaymentDetails": "Dati di pagamento mancanti per confermare il pagamento"
     }
   },
   "general": {
@@ -306,7 +307,47 @@
         "image": "Immagine",
         "video": "Video",
         "audio": "Audio",
-        "clear": "Libero"
+        "attachments": "Allegati",
+        "anyType": "Qualsiasi tipo",
+        "zip": "Archivio (zip)",
+        "document": "Documento",
+        "powerpoint": "Powerpoint",
+        "excel": "Excel",
+        "text": "Testo (txt)",
+        "code": "Codice",
+        "csv": "CSV",
+        "xml": "XML",
+        "figma": "Figma",
+        "date": {
+          "dateModified": "Data di modifica",
+          "anyDate": "Qualsiasi data",
+          "today": "Oggi",
+          "last7days": "Ultimi 7 giorni",
+          "last30days": "Ultimi 30 giorni",
+          "thisYear": "Quest'anno ({{year}})",
+          "lastYear": "L'anno scorso ({{year}})",
+          "specificDate": "Data specifica",
+          "after": "Dopo",
+          "before": "Prima",
+          "selectToday": "Seleziona oggi"
+        },
+        "size": {
+          "size": "Dimensione",
+          "anySize": "Qualsiasi dimensione",
+          "less5mb": "Meno di 5 MB",
+          "less100mb": "Meno di 100 MB",
+          "less1gb": "Meno di 1 GB",
+          "more1gb": "Più di 1 GB",
+          "customRange": "Intervallo di dimensioni personalizzato",
+          "biggerThan": "Maggiore di",
+          "smallerThan": "Minore di",
+          "unit": "Unità",
+          "bytes": "Byte",
+          "kilobytes": "Kilobyte",
+          "megabytes": "Megabyte",
+          "gigabytes": "Gigabyte",
+          "terabytes": "Terabyte"
+        }
       },
       "emptyState": {
         "title": "Trovare file e cartelle",
@@ -401,8 +442,7 @@
         "referAndEarn": "Invita e guadagna",
         "earnReferral": "Guadagna 100 €",
         "spaceUsed": "{{space}}% spazio usato",
-        "account": "Account",
-        "giveFeedback": "Invia feedback"
+        "account": "Account"
       },
       "tabs": {
         "account": {
@@ -496,9 +536,10 @@
                 "cta": "Termina ora",
                 "confirmationModal": {
                   "title": "Termina il piano ora",
-                  "description": "Stai per annullare il tuo piano immediatamente effettuando un pagamento finale di {{amount}}.",
+                  "description": "Stai per annullare il tuo piano immediatamente effettuando un pagamento finale di {{amount}}",
                   "afterThis": "Dopo di che:",
                   "accessEndsImmediately": "Il tuo accesso terminerà immediatamente",
+                  "plusTaxes": " + tasse",
                   "noFurtherCharges": "Non verranno applicati ulteriori addebiti",
                   "overStorage": {
                     "title": "Hai superato {{freeLimit}}",

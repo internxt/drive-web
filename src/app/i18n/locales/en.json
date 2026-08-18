@@ -289,7 +289,8 @@
       "addressRequired": "Please complete your billing address to continue",
       "businessPlan": "Business plan is not available",
       "postalCodeRequired": "Please enter your postal code to continue",
-      "countryRequired": "We couldn't determine your billing country. Please try again later."
+      "countryRequired": "We couldn't determine your billing country. Please try again later.",
+      "missingPaymentDetails": "Missing payment details to confirm the payment"
     }
   },
   "general": {
@@ -306,7 +307,47 @@
         "image": "Image",
         "video": "Video",
         "audio": "Audio",
-        "clear": "Clear"
+        "attachments": "Attachments",
+        "anyType": "Any type",
+        "zip": "Archive (zip)",
+        "document": "Document",
+        "powerpoint": "Powerpoint",
+        "excel": "Excel",
+        "text": "Text (txt)",
+        "code": "Code",
+        "csv": "CSV",
+        "xml": "XML",
+        "figma": "Figma",
+        "date": {
+          "dateModified": "Date modified",
+          "anyDate": "Any date",
+          "today": "Today",
+          "last7days": "Last 7 days",
+          "last30days": "Last 30 days",
+          "thisYear": "This year ({{year}})",
+          "lastYear": "Last year ({{year}})",
+          "specificDate": "Specific date",
+          "after": "After",
+          "before": "Before",
+          "selectToday": "Select today"
+        },
+        "size": {
+          "size": "Size",
+          "anySize": "Any size",
+          "less5mb": "Less than 5 MB",
+          "less100mb": "Less than 100 MB",
+          "less1gb": "Less than 1 GB",
+          "more1gb": "More than 1 GB",
+          "customRange": "Custom size range",
+          "biggerThan": "Bigger than",
+          "smallerThan": "Smaller than",
+          "unit": "Unit",
+          "bytes": "Bytes",
+          "kilobytes": "Kilobytes",
+          "megabytes": "Megabytes",
+          "gigabytes": "Gigabytes",
+          "terabytes": "Terabytes"
+        }
       },
       "emptyState": {
         "title": "Find files and folders",
@@ -401,8 +442,7 @@
         "referAndEarn": "Refer and Earn",
         "earnReferral": "Earn €100",
         "spaceUsed": "{{space}}% space used",
-        "account": "Account",
-        "giveFeedback": "Give Feedback"
+        "account": "Account"
       },
       "tabs": {
         "account": {
@@ -496,9 +536,10 @@
                 "cta": "End now",
                 "confirmationModal": {
                   "title": "End plan now",
-                  "description": "You are going to cancel your plan immediately by making a final payment of {{amount}}.",
+                  "description": "You are going to cancel your plan immediately by making a final payment of {{amount}}",
                   "afterThis": "After this:",
                   "accessEndsImmediately": "Your access will end immediately",
+                  "plusTaxes": " + taxes",
                   "noFurtherCharges": "No further charges will apply",
                   "overStorage": {
                     "title": "You are over {{freeLimit}}",
