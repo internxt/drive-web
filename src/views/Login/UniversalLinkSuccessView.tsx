@@ -20,18 +20,17 @@ export default function UniversalLinkView(): JSX.Element {
   const dispatch = useAppDispatch();
   const [user, setUser] = useState<UserSettings | null>(null);
 
-  useEffect(() => {
-    encryptedStorageService.getUser().then(setUser);
-  }, []);
-
   const urlParams = new URLSearchParams(globalThis.location.search);
   const redirectUri = urlParams.get('redirectUri');
 
   useEffect(() => {
-    if (!user) {
-      const params = urlParams.toString();
-      navigationService.history.replace(`${AppView.Login}${params ? '?' + params : ''}`);
-    }
+    encryptedStorageService.getUser().then((fetchedUser) => {
+      if (!fetchedUser) {
+        const params = urlParams.toString();
+        navigationService.history.replace(`${AppView.Login}${params ? '?' + params : ''}`);
+      }
+      setUser(fetchedUser);
+    });
   }, [user]);
 
   const getUniversalLinkAuthUrl = (user: UserSettings): string | null => {

@@ -131,7 +131,7 @@ const ItemDetailsDialog = ({
           errorService.reportError(error);
         });
     }
-  }, [item, isOpen]);
+  }, [item, isOpen, user]);
 
   const onClose = () => {
     dispatch(uiActions.setIsItemDetailsDialogOpen(false));

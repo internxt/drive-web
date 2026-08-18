@@ -247,9 +247,14 @@ export const userSlice = createSlice({
     setUserTierFeatures(state: UserState, action: PayloadAction<UserTierFeatures>) {
       state.userTierFeatures = action.payload;
     },
-    setUser: (state: UserState, action: PayloadAction<UserSettings>) => {
-      state.isAuthenticated = !!action.payload;
-      state.user = action.payload;
+    setUser: {
+      reducer: (state: UserState, action: PayloadAction<UserSettings>) => {
+        state.isAuthenticated = !!action.payload;
+        state.user = action.payload;
+      },
+      prepare: (user: UserSettings) => ({
+        payload: { ...user, createdAt: new Date(user.createdAt).toISOString() } as unknown as UserSettings,
+      }),
     },
     resetState: (state: UserState) => {
       Object.assign(state, initialState);
