@@ -32,7 +32,7 @@ import {
 import databaseService from 'app/database/services/database.service';
 import { AppDispatch } from 'app/store';
 import { planThunks } from 'app/store/slices/plan';
-import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/user';
+import { initializeUserThunk, userThunks } from 'app/store/slices/user';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { generateMnemonic, validateMnemonic } from 'bip39';
 import errorService from 'services/error.service';
@@ -580,7 +580,7 @@ export const signUp = async (params: SignUpParams) => {
     },
   };
 
-  dispatch(userActions.setUser(user));
+  await dispatch(userThunks.setUserThunk(user));
   await dispatch(userThunks.initializeUserThunk());
 
   if (!redeemCodeObject) dispatch(planThunks.initializeThunk());
@@ -593,7 +593,7 @@ export const signUp = async (params: SignUpParams) => {
 export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
   const { email, password, twoFactorCode, dispatch, loginType = 'web' } = params;
   const { newToken, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType);
-  dispatch(userActions.setUser(user));
+  await dispatch(userThunks.setUserThunk(user));
 
   try {
     dispatch(planThunks.initializeThunk());
@@ -606,7 +606,7 @@ export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
     throw new Error(error.message);
   }
 
-  userActions.setUser(user);
+  userThunks.setUserThunk(user);
 
   return { user, mnemonic, newToken };
 };

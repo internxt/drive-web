@@ -200,7 +200,7 @@ describe('Testing the encrypted storage service', () => {
     });
   });
 
-  describe('Fetching user data from local storage', () => {
+  describe('Fetching user data from encrypted storage', () => {
     const mockUserSettings: UserSettings = {
       userId: 'user_123',
       uuid: 'uuid-1234-5678',
@@ -237,8 +237,22 @@ describe('Testing the encrypted storage service', () => {
     };
 
     const stringifyMockedUser = JSON.stringify(mockUserSettings);
-    test('When the user data exists in local storage, then the user is returned', () => {
-      encryptedStorageService.setUser(mockUserSettings);
+
+    test('When the user data exists in cache, then the user is returned', async () => {
+      await encryptedStorageService.setUser(mockUserSettings);
+
+      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
+
+      const userFromLocalStorage = encryptedStorageService.getUser();
+
+      expect(getFromLocalStorageSpy).not.toHaveBeenCalled();
+      expect(userFromLocalStorage).toStrictEqual(mockUserSettings);
+    });
+
+    test('When the user data exists in local storage, then the user is migrated to encrypted storage and returned', async () => {
+      const key = LocalStorageProtectedItem.User;
+      localStorage.setItem(key, JSON.stringify(mockUserSettings));
+
       const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
 
       const userFromLocalStorage = encryptedStorageService.getUser();

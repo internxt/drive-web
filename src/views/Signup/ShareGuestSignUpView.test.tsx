@@ -1,7 +1,7 @@
-import { beforeEach, beforeAll, describe, expect, it, vi, Mock } from 'vitest';
+import { beforeEach, describe, expect, it, vi, Mock } from 'vitest';
 import { fireEvent, render } from '@testing-library/react';
 import ShareGuestSignUpView from './ShareGuestSignUpView';
-import { userActions } from 'app/store/slices/user';
+import { userThunks } from 'app/store/slices/user';
 import * as keysService from 'app/crypto/services/keys.service';
 import { encryptTextWithKey } from 'app/crypto/services/utils';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
@@ -208,20 +208,13 @@ vi.mock('app/store/slices/referrals', () => ({
 }));
 
 vi.mock('app/store/slices/user', () => ({
-  initializeUserThunk: vi.fn(),
-  userActions: {
-    setUser: vi.fn(),
-  },
   userThunks: {
     initializeUserThunk: vi.fn(),
+    setUserThunk: vi.fn(),
   },
 }));
 
 describe('onSubmit', () => {
-  beforeAll(() => {
-    globalThis.Buffer = Buffer;
-  });
-
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
@@ -281,12 +274,7 @@ describe('onSubmit', () => {
       }),
     }));
 
-    const spy = vi.spyOn(userActions, 'setUser').mockImplementation((user) => {
-      return {
-        payload: user,
-        type: 'user/setUser',
-      };
-    });
+    const spy = vi.spyOn(userThunks, 'setUserThunk');
     const { container } = render(<ShareGuestSignUpView />);
     const form = container.querySelector('form');
 
@@ -339,6 +327,6 @@ describe('onSubmit', () => {
       avatar: null,
       emailVerified: false,
     };
-    expect(spy).toBeCalledWith(mockClearUser);
+    expect(spy).toHaveBeenCalledWith(mockClearUser);
   });
 });

@@ -92,10 +92,13 @@ export const uploadFoldersWithTasks = (props: UploadFoldersWithTasksProps): Prom
     onFolderUploadProgress: (taskId, progress, stopUpload) =>
       tasksService.updateTask({ taskId, merge: { progress, stop: stopUpload } }),
 
-    onFolderUploadSuccess: (taskId, { folderName, rootFolderUUID }) => {
+    onFolderUploadSuccess: (taskId, { folderName, rootFolderUUID, hasFailedFiles }) => {
       tasksService.updateTask({ taskId, merge: { status: TaskStatus.Success, itemUUID: { rootFolderUUID } } });
-      referralService.trackFolderUpload();
-      logNetworkInfoForUpload({ folderName });
+
+      if (!hasFailedFiles) {
+        referralService.trackFolderUpload();
+        logNetworkInfoForUpload({ folderName });
+      }
       onFolderUploadSucceeded?.(taskId);
     },
 

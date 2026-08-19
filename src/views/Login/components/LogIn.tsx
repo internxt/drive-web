@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 
 import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
-import { userActions } from 'app/store/slices/user';
+import { userThunks } from 'app/store/slices/user';
 import authService, { authenticateUser, is2FANeeded } from 'services/auth.service';
 import { twoFactorRegexPattern } from 'services/validation.service';
 
@@ -81,14 +81,16 @@ export default function LogIn(): JSX.Element {
 
   useEffect(() => {
     if (user && mnemonic && !isOAuthFlow) {
-      dispatch(userActions.setUser(user));
-      redirectWithCredentials(
-        user,
-        mnemonic,
-        isUniversalLinkMode || isSharingInvitation
-          ? { universalLinkMode: isUniversalLinkMode, isSharingInvitation }
-          : undefined,
-      );
+      (async () => {
+        await dispatch(userThunks.setUserThunk(user));
+        redirectWithCredentials(
+          user,
+          mnemonic,
+          isUniversalLinkMode || isSharingInvitation
+            ? { universalLinkMode: isUniversalLinkMode, isSharingInvitation }
+            : undefined,
+        );
+      })();
     }
   }, []);
 
