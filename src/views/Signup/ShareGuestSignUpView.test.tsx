@@ -16,209 +16,206 @@ const mockHostname = 'hostname';
 const mockPassword = 'mock-password';
 const mockEmal = 'mock@email.com';
 const mockToken = 'mock-token';
-describe('onSubmit', () => {
-  beforeAll(() => {
-    globalThis.Buffer = Buffer;
 
-    vi.spyOn(globalThis, 'decodeURIComponent').mockImplementation((value) => {
+vi.spyOn(globalThis, 'decodeURIComponent').mockImplementation((value) => {
+  return value;
+});
+
+vi.mock('services/local-storage.service', () => ({
+  default: {
+    get: vi.fn(),
+    clear: vi.fn(),
+    set: vi.fn(),
+  },
+}));
+vi.mock('services/encrypted-storage.service', () => ({
+  default: {
+    getToken: vi.fn(),
+    setToken: vi.fn(),
+    getUser: vi.fn(),
+  },
+}));
+
+vi.mock('react-helmet-async', () => ({
+  Helmet: vi.fn(),
+}));
+
+vi.mock('@phosphor-icons/react', () => ({
+  Info: () => <div>Mocked Info Icon</div>,
+  WarningCircle: () => <div>Mocked Warning Circle Icon</div>,
+  CheckCircle: () => <div>Mocked Check Circle Icon</div>,
+  Eye: () => <div>Mocked Eye Icon</div>,
+  EyeSlash: () => <div>Mocked Eye Slash Icon</div>,
+  MagnifyingGlass: () => <div>Mocked Magnifyin Glass Icon</div>,
+  Warning: () => <div>Mocked Warning Icon</div>,
+  WarningOctagon: () => <div>Mocked Warning Octagon Icon</div>,
+  X: () => <div>Mocked X Icon</div>,
+}));
+
+vi.mock('components/PasswordInput', () => {
+  return {
+    __esModule: true,
+    default: vi.fn(({ register, ...props }) => (
+      <input
+        data-testid="password-input"
+        type="password"
+        placeholder={props.placeholder}
+        className={props.className}
+        onFocus={props.onFocus}
+        maxLength={props.maxLength}
+        ref={register}
+      />
+    )),
+  };
+});
+
+vi.mock('./components/SignupForm', () => ({
+  Views: vi.fn(),
+}));
+
+vi.mock('./hooks/useSignup', () => ({
+  useSignUp: vi.fn().mockReturnValue({ doRegisterPreCreatedUser: vi.fn() }),
+}));
+
+vi.mock('./hooks/useGuestSignupState', () => ({
+  useGuestSignupState: vi.fn(() => ({
+    isValidPassword: true,
+    setIsValidPassword: vi.fn(),
+    signupError: undefined,
+    setSignupError: vi.fn(),
+    showError: false,
+    setShowError: vi.fn(),
+    isLoading: false,
+    setIsLoading: vi.fn(),
+    passwordState: { tag: 'success', label: 'Password is strong' } as const,
+    setPasswordState: vi.fn(),
+    invitationId: 'test-invitation',
+    setInvitationId: vi.fn(),
+    showPasswordIndicator: true,
+    setShowPasswordIndicator: vi.fn(),
+    user: null,
+    mnemonic: null,
+  })),
+}));
+
+vi.mock('./hooks/useInvitationValidation', () => ({
+  useInvitationValidation: vi.fn().mockReturnValue({
+    invitationValidation: { isLoading: false, isValid: true },
+  }),
+}));
+
+vi.mock('components/PasswordStrengthIndicator', () => ({
+  default: () => <div>Mocked Password Strength Indicator</div>,
+}));
+
+vi.mock('services/error.service', () => ({
+  default: {
+    castError: vi.fn().mockImplementation((e) => ({ message: e.message || 'Default error message' })),
+    reportError: vi.fn(),
+  },
+}));
+
+vi.mock('app/share/services/share.service', () => ({
+  default: {
+    validateSharingInvitation: vi.fn(),
+  },
+  validateSharingInvitation: vi.fn(),
+  decryptMnemonic: vi.fn(),
+}));
+
+vi.mock('services/navigation.service', () => ({
+  default: {
+    push: vi.fn(),
+    history: {
+      location: {
+        search: '?email=mock@email.com&invitation=test-invitation',
+      },
+    },
+  },
+}));
+
+vi.mock('app/i18n/provider/TranslationProvider', () => ({
+  useTranslationContext: vi.fn().mockReturnValue({
+    translate: vi.fn().mockImplementation((value: string) => {
       return value;
-    });
+    }),
+  }),
+}));
 
-    vi.mock('services/local-storage.service', () => ({
-      default: {
-        get: vi.fn(),
-        clear: vi.fn(),
-        set: vi.fn(),
-      },
-    }));
-    vi.mock('services/encrypted-storage.service', () => ({
-      default: {
-        getToken: vi.fn(),
-        setToken: vi.fn(),
-        getUser: vi.fn(),
-      },
-    }));
+vi.mock('components', () => ({
+  ExpiredLinkView: vi.fn(() => <div>Mocked Expired Link View</div>),
+  MAX_PASSWORD_LENGTH: 256,
+}));
 
-    vi.mock('react-helmet-async', () => ({
-      Helmet: vi.fn(),
-    }));
+vi.mock('query-string', () => ({
+  parse: vi.fn().mockImplementation((input: string) => input),
+}));
 
-    vi.mock('@phosphor-icons/react', () => ({
-      Info: () => <div>Mocked Info Icon</div>,
-      WarningCircle: () => <div>Mocked Warning Circle Icon</div>,
-      CheckCircle: () => <div>Mocked Check Circle Icon</div>,
-      Eye: () => <div>Mocked Eye Icon</div>,
-      EyeSlash: () => <div>Mocked Eye Slash Icon</div>,
-      MagnifyingGlass: () => <div>Mocked Magnifyin Glass Icon</div>,
-      Warning: () => <div>Mocked Warning Icon</div>,
-      WarningOctagon: () => <div>Mocked Warning Octagon Icon</div>,
-      X: () => <div>Mocked X Icon</div>,
-    }));
+vi.mock('react-hook-form', () => {
+  const mockEmail = 'mock@email.com';
+  const mockToken = 'mock-token';
+  const mockPassword = 'mock-password';
+  const mockValues = { email: mockEmail, token: mockToken, password: mockPassword };
 
-    vi.mock('components/PasswordInput', () => {
+  return {
+    SubmitHandler: vi.fn(),
+    useForm() {
       return {
-        __esModule: true,
-        default: vi.fn(({ register, ...props }) => (
-          <input
-            data-testid="password-input"
-            type="password"
-            placeholder={props.placeholder}
-            className={props.className}
-            onFocus={props.onFocus}
-            maxLength={props.maxLength}
-            ref={register}
-          />
-        )),
-      };
-    });
-
-    vi.mock('./components/SignupForm', () => ({
-      Views: vi.fn(),
-    }));
-
-    vi.mock('./hooks/useSignup', () => ({
-      useSignUp: vi.fn().mockReturnValue({ doRegisterPreCreatedUser: vi.fn() }),
-    }));
-
-    vi.mock('./hooks/useGuestSignupState', () => ({
-      useGuestSignupState: vi.fn(() => ({
-        isValidPassword: true,
-        setIsValidPassword: vi.fn(),
-        signupError: undefined,
-        setSignupError: vi.fn(),
-        showError: false,
-        setShowError: vi.fn(),
-        isLoading: false,
-        setIsLoading: vi.fn(),
-        passwordState: { tag: 'success', label: 'Password is strong' } as const,
-        setPasswordState: vi.fn(),
-        invitationId: 'test-invitation',
-        setInvitationId: vi.fn(),
-        showPasswordIndicator: true,
-        setShowPasswordIndicator: vi.fn(),
-        user: null,
-        mnemonic: null,
-      })),
-    }));
-
-    vi.mock('./hooks/useInvitationValidation', () => ({
-      useInvitationValidation: vi.fn().mockReturnValue({
-        invitationValidation: { isLoading: false, isValid: true },
-      }),
-    }));
-
-    vi.mock('components/PasswordStrengthIndicator', () => ({
-      default: () => <div>Mocked Password Strength Indicator</div>,
-    }));
-
-    vi.mock('services/error.service', () => ({
-      default: {
-        castError: vi.fn().mockImplementation((e) => ({ message: e.message || 'Default error message' })),
-        reportError: vi.fn(),
-      },
-    }));
-
-    vi.mock('app/share/services/share.service', () => ({
-      default: {
-        validateSharingInvitation: vi.fn(),
-      },
-      validateSharingInvitation: vi.fn(),
-      decryptMnemonic: vi.fn(),
-    }));
-
-    vi.mock('services/navigation.service', () => ({
-      default: {
-        push: vi.fn(),
-        history: {
-          location: {
-            search: '?email=mock@email.com&invitation=test-invitation',
-          },
-        },
-      },
-    }));
-
-    vi.mock('app/i18n/provider/TranslationProvider', () => ({
-      useTranslationContext: vi.fn().mockReturnValue({
-        translate: vi.fn().mockImplementation((value: string) => {
-          return value;
+        register: vi.fn((name: string) => ({ onChange: vi.fn(), onBlur: vi.fn(), ref: vi.fn(), name })),
+        handleSubmit: vi.fn((fn) => (event: Event) => {
+          event?.preventDefault();
+          return fn(mockValues, event);
         }),
-      }),
-    }));
-
-    vi.mock('components', () => ({
-      ExpiredLinkView: vi.fn(() => <div>Mocked Expired Link View</div>),
-      MAX_PASSWORD_LENGTH: 256,
-    }));
-
-    vi.mock('query-string', () => ({
-      parse: vi.fn().mockImplementation((input: string) => input),
-    }));
-
-    vi.mock('react-hook-form', () => {
-      const mockEmail = 'mock@email.com';
-      const mockToken = 'mock-token';
-      const mockPassword = 'mock-password';
-      const mockValues = { email: mockEmail, token: mockToken, password: mockPassword };
-
-      return {
-        SubmitHandler: vi.fn(),
-        useForm() {
-          return {
-            register: vi.fn((name: string) => ({ onChange: vi.fn(), onBlur: vi.fn(), ref: vi.fn(), name })),
-            handleSubmit: vi.fn((fn) => (event: Event) => {
-              event?.preventDefault();
-              return fn(mockValues, event);
-            }),
-            formState: { errors: {}, isValid: true },
-            control: {},
-            watch: vi.fn((name: string) => mockValues[name]),
-          };
-        },
-        useWatch: vi.fn(() => mockPassword),
+        formState: { errors: {}, isValid: true },
+        control: {},
+        watch: vi.fn((name: string) => mockValues[name]),
       };
-    });
+    },
+    useWatch: vi.fn(() => mockPassword),
+  };
+});
 
-    vi.mock('react-redux', () => ({
-      useSelector: vi.fn(),
-      useDispatch: vi.fn(() => vi.fn()),
-    }));
+vi.mock('react-redux', () => ({
+  useSelector: vi.fn(),
+  useDispatch: vi.fn(() => vi.fn()),
+}));
 
-    vi.mock('../../utils', () => ({
-      onChangePasswordHandler: vi.fn(),
-    }));
+vi.mock('../../utils', () => ({
+  onChangePasswordHandler: vi.fn(),
+}));
 
-    vi.mock('services/workspace.service', () => ({
-      default: {
-        validateWorkspaceInvitation: vi.fn().mockImplementation(() => {
-          return true;
-        }),
-      },
-    }));
+vi.mock('services/workspace.service', () => ({
+  default: {
+    validateWorkspaceInvitation: vi.fn().mockImplementation(() => {
+      return true;
+    }),
+  },
+}));
 
-    vi.mock('app/store/hooks', () => ({
-      useAppDispatch: vi.fn().mockReturnValue(vi.fn()),
-    }));
+vi.mock('app/store/hooks', () => ({
+  useAppDispatch: vi.fn().mockReturnValue(vi.fn()),
+}));
 
-    vi.mock('app/store/slices/plan', () => ({
-      planThunks: {
-        initializeThunk: vi.fn(),
-      },
-    }));
+vi.mock('app/store/slices/plan', () => ({
+  planThunks: {
+    initializeThunk: vi.fn(),
+  },
+}));
 
-    vi.mock('app/store/slices/referrals', () => ({
-      referralsThunks: {
-        initializeThunk: vi.fn(),
-      },
-    }));
+vi.mock('app/store/slices/referrals', () => ({
+  referralsThunks: {
+    initializeThunk: vi.fn(),
+  },
+}));
 
-    vi.mock('app/store/slices/user', () => ({
-      userThunks: {
-        initializeUserThunk: vi.fn(),
-        setUserThunk: vi.fn(),
-      },
-    }));
-  });
+vi.mock('app/store/slices/user', () => ({
+  userThunks: {
+    initializeUserThunk: vi.fn(),
+    setUserThunk: vi.fn(),
+  },
+}));
 
+describe('onSubmit', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
