@@ -1,7 +1,7 @@
 import { render, fireEvent } from '@testing-library/react';
 import { describe, it, vi, expect, beforeEach } from 'vitest';
 import TaskToRetry from './TaskToRetry';
-import RetryManager, { RetryableTask } from '../../../network/RetryManager';
+import RetryManager, { RetryableTask, RetryableTaskStatus, RetryableTaskType } from '../../../network/RetryManager';
 
 vi.mock('../../../store/hooks', () => ({
   useAppDispatch: vi.fn(),
@@ -42,7 +42,7 @@ describe('TaskToRetry', () => {
   const files: RetryableTask[] = [
     {
       taskId: 'task-1',
-      type: 'upload',
+      type: RetryableTaskType.Upload,
       params: {
         filecontent: {
           content: 'file-content' as any,
@@ -55,7 +55,7 @@ describe('TaskToRetry', () => {
         taskId: 'task-1',
         userEmail: 'user@example.com',
       },
-      status: 'failed',
+      status: RetryableTaskStatus.Failed,
     },
   ];
 
@@ -98,7 +98,7 @@ describe('TaskToRetry', () => {
 
     if (downloadItem) fireEvent.click(downloadItem);
 
-    expect(mockChangeStatus).toHaveBeenCalledWith('task-1', 'retrying');
+    expect(mockChangeStatus).toHaveBeenCalledWith('task-1', RetryableTaskStatus.Retrying);
     expect(mockUploadRetryItem).toHaveBeenCalledWith({
       uploadFile: 'file-content',
       parentFolderId: 'folder-1',
@@ -118,7 +118,7 @@ describe('TaskToRetry', () => {
 
     if (downloadItem) fireEvent.click(downloadItem);
 
-    expect(mockChangeStatus).toHaveBeenCalledWith('task-1', 'retrying');
-    expect(mockChangeStatus).toHaveBeenCalledWith('task-1', 'failed');
+    expect(mockChangeStatus).toHaveBeenCalledWith('task-1', RetryableTaskStatus.Retrying);
+    expect(mockChangeStatus).toHaveBeenCalledWith('task-1', RetryableTaskStatus.Failed);
   });
 });
