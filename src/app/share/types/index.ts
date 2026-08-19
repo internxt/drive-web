@@ -17,6 +17,7 @@ export type SharedNetworkCredentials = {
   networkUser: string;
   networkPass: string;
   mnemonic?: string;
+  bucketKey?: Buffer;
 };
 
 export type PreviewFileItem = DriveFileData & {

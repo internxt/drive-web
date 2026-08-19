@@ -337,6 +337,12 @@ export class DownloadManagerService {
       const failedItems: DownloadItemType[] = [];
       let downloadedProgress = 0;
 
+      const resolveItemKey = (driveItem: DownloadItemType): FileKey => {
+        const shareCredentials = (driveItem as AdvancedSharedItem).credentials;
+        if (shareCredentials?.bucketKey) return { bucketKey: shareCredentials.bucketKey };
+        return { mnemonic: shareCredentials?.mnemonic ?? credentials.key.mnemonic };
+      };
+
       items.forEach((_, index) => {
         downloadProgress[index] = 0;
         lastReportedBytes[index] = 0;
@@ -391,9 +397,7 @@ export class DownloadManagerService {
             user: (driveItem as AdvancedSharedItem).credentials?.networkUser ?? credentials.credentials.user,
             pass: (driveItem as AdvancedSharedItem).credentials?.networkPass ?? credentials.credentials.pass,
           },
-          key: {
-            mnemonic: (driveItem as AdvancedSharedItem).credentials?.mnemonic ?? credentials.key.mnemonic,
-          },
+          key: resolveItemKey(driveItem),
           options: {
             abortController,
             notifyProgress: notifyProgressCallback,
@@ -431,9 +435,7 @@ export class DownloadManagerService {
               user: (driveItem as AdvancedSharedItem).credentials?.networkUser ?? credentials.credentials.user,
               pass: (driveItem as AdvancedSharedItem).credentials?.networkPass ?? credentials.credentials.pass,
             },
-            key: {
-              mnemonic: (driveItem as AdvancedSharedItem).credentials?.mnemonic ?? credentials.key.mnemonic,
-            },
+            key: resolveItemKey(driveItem),
             workspaceId: credentials.workspaceId,
           },
           abortController,

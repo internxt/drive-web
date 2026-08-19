@@ -19,6 +19,8 @@ import { useShareViewContext } from '../context/SharedViewContextProvider';
 import useSharedContextMenu from '../hooks/useSharedContextMenu';
 import { isItemsOwnedByCurrentUser, sortSharedItems } from '../utils/sharedViewUtils';
 import encryptedStorageService from 'services/encrypted-storage.service';
+import { FileKey } from 'app/network/types/helper-types';
+import { decryptSharingKey } from 'app/share/services/share.crypto';
 
 type ShareItemListContainerProps = {
   disableKeyboardShortcuts: boolean;
@@ -101,13 +103,15 @@ const SharedItemListContainer = ({
       console.log('CHECK: downloadItem is called');
       if (shareItem.isRootLink) {
         console.log('CHECK: downloadItem with if');
-        const encryptionKey = selectedWorkspace?.workspaceUser?.key ?? (await decryptMnemonic(shareItem.encryptionKey));
+        const key: FileKey | undefined = selectedWorkspace?.workspaceUser?.key
+          ? { mnemonic: selectedWorkspace.workspaceUser.key }
+          : await decryptSharingKey(shareItem.encryptionKey);
         await shareService.downloadSharedFiles({
           creds: {
             user: shareItem.credentials.networkUser,
             pass: shareItem.credentials.networkPass,
           },
-          decryptedEncryptionKey: encryptionKey as string,
+          key: key as FileKey,
           selectedItems,
           token: undefined,
           teamId: defaultTeamId,
@@ -139,13 +143,15 @@ const SharedItemListContainer = ({
           );
           sharedToken = token;
         }
-        const encryptionKey = selectedWorkspace?.workspaceUser?.key ?? (await decryptMnemonic(sharedItemEncryptionKey));
+        const key: FileKey | undefined = selectedWorkspace?.workspaceUser?.key
+          ? { mnemonic: selectedWorkspace.workspaceUser.key }
+          : await decryptSharingKey(sharedItemEncryptionKey);
         await shareService.downloadSharedFiles({
           creds: {
             user: shareItem.credentials.networkUser,
             pass: shareItem.credentials.networkPass,
           },
-          decryptedEncryptionKey: encryptionKey as string,
+          key: key as FileKey,
           selectedItems,
           token: sharedToken,
           teamId: defaultTeamId,

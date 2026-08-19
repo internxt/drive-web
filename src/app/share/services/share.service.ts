@@ -595,7 +595,7 @@ class DirectoryPublicSharedFilesIterator implements Iterator<SharedFiles> {
 
 export async function downloadSharedFiles({
   creds,
-  decryptedEncryptionKey,
+  key,
   selectedItems,
   token,
   teamId,
@@ -603,7 +603,7 @@ export async function downloadSharedFiles({
   workspaceCredentials,
 }: {
   creds: { user: string; pass: string };
-  decryptedEncryptionKey: string;
+  key: FileKey;
   selectedItems: AdvancedSharedItem[];
   token?: string;
   teamId?: string;
@@ -612,9 +612,7 @@ export async function downloadSharedFiles({
 }): Promise<void> {
   const sharingCredentials = {
     credentials: { ...creds },
-    key: {
-      mnemonic: decryptedEncryptionKey,
-    },
+    key,
   };
 
   if (selectedItems.length === 1 && !selectedItems[0].isFolder) {

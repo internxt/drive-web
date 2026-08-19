@@ -154,8 +154,7 @@ describe('Download V2', () => {
         { clientName: 'drive-web', clientVersion: '1.0' },
         { bridgeUser: '', userId: '' },
       );
-      expect(downloadSpy).toHaveBeenCalledWith('test-bucket', 'test-file', '', {
-        key: Buffer.from(encryptionKey, 'hex'),
+      expect(downloadSpy).toHaveBeenCalledWith('test-bucket', 'test-file', encryptionKey, {
         token,
         downloadingCallback: progressCallback,
         abortController,

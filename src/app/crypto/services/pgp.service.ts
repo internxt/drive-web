@@ -316,3 +316,7 @@ export const decryptBucketKeyHybrid = async ({
 
   return result;
 };
+
+export function isBucketKeyCiphertext(encryptedMessageInBase64: string): boolean {
+  return encryptedMessageInBase64.split('$')[0] === WORDS_HYBRID_BUCKET_KEY_IN_BASE64;
+}

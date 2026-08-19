@@ -3,12 +3,14 @@ import {
   hybridEncryptMessageWithPublicKey,
   encryptBucketKeyHybrid,
   decryptBucketKeyHybrid,
+  isBucketKeyCiphertext,
 } from '../../crypto/services/pgp.service';
 import encryptedStorageService from 'services/encrypted-storage.service';
 import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
 import { t } from 'i18next';
 import errorService from 'services/error.service';
 import { generateFileBucketKey } from 'app/network/crypto';
+import { FileKey } from 'app/network/types/helper-types';
 
 export const decryptMnemonic = async (encryptionKey: string): Promise<string | undefined> => {
   const user = encryptedStorageService.getUser();
@@ -87,4 +89,14 @@ export const decryptBucketKey = async (encryptionKey: string): Promise<Uint8Arra
   } else {
     handleError('User Not Found', 'error.decryptBucketKey');
   }
+};
+
+export const decryptSharingKey = async (encryptionKey: string): Promise<FileKey | undefined> => {
+  if (isBucketKeyCiphertext(encryptionKey)) {
+    const bucketKey = await decryptBucketKey(encryptionKey);
+    return bucketKey ? { bucketKey: Buffer.from(bucketKey) } : undefined;
+  }
+
+  const mnemonic = await decryptMnemonic(encryptionKey);
+  return mnemonic ? { mnemonic } : undefined;
 };

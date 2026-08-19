@@ -49,16 +49,14 @@ const downloadSharedFile: DownloadSharedFileFunction = (params) => {
     ),
   );
   if (key.mnemonic) {
-    return networkFacade.download(bucketId, fileId, '', {
-      key: Buffer.from(key.mnemonic, 'hex'),
+    return networkFacade.download(bucketId, fileId, key.mnemonic, {
       token,
       downloadingCallback: options?.notifyProgress,
       abortController: options?.abortController,
     });
   }
   if (key.bucketKey) {
-    return networkFacade.download(bucketId, fileId, '', {
-      key: key.bucketKey,
+    return networkFacade.downloadWithBucketKey(bucketId, fileId, key.bucketKey, {
       token,
       downloadingCallback: options?.notifyProgress,
       abortController: options?.abortController,
