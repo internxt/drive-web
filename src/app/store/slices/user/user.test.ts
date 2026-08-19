@@ -217,4 +217,31 @@ describe('user thunks', () => {
       expect(dispatchMock).toHaveBeenCalledWith(userActions.setUser(baseUser as UserSettings));
     });
   });
+
+  describe('updateUserEmailCredentialsThunk', () => {
+    it('updates token, encrypts and stores the user, then dispatches setUser', async () => {
+      const setTokenSpy = vi.spyOn(encryptedStorageService, 'setToken').mockResolvedValue(undefined);
+      const setUserSpy = vi.spyOn(encryptedStorageService, 'setUser').mockResolvedValue(undefined);
+
+      const newUserData = { ...baseUser, email: 'new@example.com' } as UserSettings;
+
+      await userThunks.updateUserEmailCredentialsThunk({ newUserData, newToken: 'new-token' })(
+        dispatchMock,
+        getStateWithUser,
+        undefined,
+      );
+
+      expect(setTokenSpy).toHaveBeenCalledWith('new-token');
+      expect(setUserSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          email: 'new@example.com',
+          bridgeUser: 'new@example.com',
+          username: 'new@example.com',
+        }),
+      );
+      expect(dispatchMock).toHaveBeenCalledWith(
+        userActions.setUser(expect.objectContaining({ email: 'new@example.com' }) as unknown as UserSettings),
+      );
+    });
+  });
 });
