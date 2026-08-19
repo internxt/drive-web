@@ -61,7 +61,7 @@ const TaskToRetyItem = ({ index, style, data }: ListChildComponentProps) => {
   return (
     <div
       style={style}
-      className={`flex items-center justify-between px-1 py-3 ${isLastItem ? '' : 'border-b border-gray-5'}`}
+      className={`flex items-center justify-between pl-1 pr-5 py-3 ${isLastItem ? '' : 'border-b border-gray-5'}`}
     >
       <div className="flex items-center gap-4">
         {isFolder ? getFolderIcon : getFileIcon(type ?? '')}
