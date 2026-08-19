@@ -50,7 +50,6 @@ export class VideoStreamingService {
 
   private async downloadChunk(start: number, end: number, cacheKey: string): Promise<Uint8Array> {
     try {
-      console.log('CHECK: Downloading chunk with mnemonic');
       const stream = await downloadChunkFile({
         bucketId: this.config.bucketId,
         fileId: this.config.fileId,

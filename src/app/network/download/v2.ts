@@ -32,7 +32,6 @@ type DownloadSharedFileFunction = (params: DownloadSharedFileParams) => Download
 type DownloadFileFunction = (params: DownloadSharedFileParams | DownloadOwnFile) => DownloadFileResponse;
 
 const downloadSharedFile: DownloadSharedFileFunction = (params) => {
-  console.log('CHECK: downloadSharedFile is called');
   const { bucketId, fileId, key, token, options } = params;
 
   const networkFacade = new NetworkFacade(
@@ -174,10 +173,8 @@ export async function downloadChunkFile(
 
 const downloadFile: DownloadFileFunction = (params) => {
   if (params.token) {
-    console.log('CHECK: downloadSharedFile called with params:', params);
     return downloadSharedFile(params as DownloadSharedFileParams);
   } else if (params.creds) {
-    console.log('CHECK: downloadOwnFile called with params:', params);
     return downloadOwnFile(params as DownloadOwnFile);
   } else {
     throw new Error('DOWNLOAD ERRNO. 0');

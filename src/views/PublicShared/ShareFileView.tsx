@@ -29,8 +29,8 @@ import { stringUtils } from '@internxt/lib';
 import { SendBanner, ShareItemPwdView } from './components';
 import useBeforeUnload from 'hooks/useBeforeUnload';
 import { isFileSizePreviewable } from 'services';
-import { HYBRID_ALGORITHM_WITH_BUCKET_KEY } from 'app/store/slices/sharedLinks';
 import { IDownloadParams } from 'app/network/download';
+import { isBucketKeyCiphertext } from 'app/crypto/services/pgp.service';
 
 export interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -164,12 +164,10 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
   };
 
   const getSharedFileKeyParams = (fileInfo: SharingMeta): Pick<IDownloadParams, 'key'> => {
-    if (fileInfo.encryptionAlgorithm === HYBRID_ALGORITHM_WITH_BUCKET_KEY) {
-      console.log('CHECK: Using bucket key for download');
+    if (isBucketKeyCiphertext(fileInfo.encryptionKey)) {
       return { key: { bucketKey: Buffer.from(fileInfo.encryptionKey, 'hex') } };
     }
 
-    console.log('CHECK: Using encryption key for download');
     return { key: { mnemonic: fileInfo.encryptionKey } };
   };
 

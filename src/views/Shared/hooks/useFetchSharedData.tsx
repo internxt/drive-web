@@ -41,7 +41,6 @@ const parseSharedFolderResponseItems = ({
   isFromRootFolder: boolean;
 }) => {
   return sharedFolderResponseItems.map((file) => {
-    console.log('CHECK: enc version', file.encryptVersion);
     const shareItem = file as AdvancedSharedItem;
     shareItem.isFolder = isFolder;
     shareItem.isRootLink = isFromRootFolder;

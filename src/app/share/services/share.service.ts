@@ -41,7 +41,7 @@ import { copyTextToClipboard } from 'utils/copyToClipboard.utils';
 import referralService from 'services/referral.service';
 import { generateFileBucketKey } from 'app/network/crypto';
 import encryptedStorageService from 'services/encrypted-storage.service';
-import { decryptMnemonic } from './share.crypto';
+import { decryptMnemonic, decryptSharingKey } from './share.crypto';
 
 interface CreateShareResponse {
   created: boolean;
@@ -648,11 +648,13 @@ export async function downloadSharedFiles({
 
     for (const selectedItem of selectedItems) {
       const item = selectedItem;
+      const itemKey = await decryptSharingKey(item.encryptionKey);
       payload.push({
         ...item,
         credentials: {
           ...item.credentials,
-          mnemonic: await decryptMnemonic(item.encryptionKey),
+          mnemonic: itemKey?.mnemonic,
+          bucketKey: itemKey?.bucketKey,
         },
       });
     }

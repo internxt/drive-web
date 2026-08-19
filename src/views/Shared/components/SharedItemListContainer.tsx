@@ -13,7 +13,6 @@ import { OrderDirection } from '../../../app/core/types';
 import { sharedThunks } from '../../../app/store/slices/sharedLinks';
 import workspacesSelectors from '../../../app/store/slices/workspaces/workspaces.selectors';
 import shareService from '../../../app/share/services/share.service';
-import { decryptMnemonic } from '../../../app/share/services/share.crypto';
 import { setOrderBy, setPage, setSelectedItems } from '../context/SharedViewContext.actions';
 import { useShareViewContext } from '../context/SharedViewContextProvider';
 import useSharedContextMenu from '../hooks/useSharedContextMenu';
@@ -100,9 +99,7 @@ const SharedItemListContainer = ({
 
   const downloadItem = async (shareItem: AdvancedSharedItem): Promise<void> => {
     try {
-      console.log('CHECK: downloadItem is called');
       if (shareItem.isRootLink) {
-        console.log('CHECK: downloadItem with if');
         const key: FileKey | undefined = selectedWorkspace?.workspaceUser?.key
           ? { mnemonic: selectedWorkspace.workspaceUser.key }
           : await decryptSharingKey(shareItem.encryptionKey);
@@ -119,7 +116,6 @@ const SharedItemListContainer = ({
           workspaceCredentials,
         });
       } else {
-        console.log('CHECK: downloadItem with else');
         const pageItemsNumber = 5;
         let sharedToken;
         if (workspaceCredentials && workspaceId) {
@@ -185,10 +181,11 @@ const SharedItemListContainer = ({
     };
 
     try {
-      const mnemonic =
-        selectedWorkspace?.workspaceUser.key ??
-        (await decryptMnemonic(shareItem.encryptionKey ? shareItem.encryptionKey : sharedItemEncryptionKey));
-      onOpenItemPreview({ ...previewItem, key: { mnemonic } });
+      const encryptionKey = shareItem.encryptionKey ? shareItem.encryptionKey : sharedItemEncryptionKey;
+      const key: FileKey | undefined = selectedWorkspace?.workspaceUser.key
+        ? { mnemonic: selectedWorkspace.workspaceUser.key }
+        : await decryptSharingKey(encryptionKey);
+      onOpenItemPreview({ ...previewItem, key });
     } catch (err) {
       const error = errorService.castError(err);
       errorService.reportError(error);
