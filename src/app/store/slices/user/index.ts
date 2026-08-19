@@ -41,6 +41,14 @@ const initialState: UserState = {
   userTierFeatures: undefined,
 };
 
+const setUserThunk = createAsyncThunk<void, UserSettings, { state: RootState }>(
+  'user/setUser',
+  async (user, { dispatch }) => {
+    await encryptedStorageService.setUser(user);
+    dispatch(userActions.setUser(user));
+  },
+);
+
 export const initializeUserThunk = createAsyncThunk<
   void,
   { redirectToLogin: boolean } | undefined,
@@ -98,7 +106,7 @@ export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean 
         const { emailVerified, name, lastname, uuid, createdAt } = user;
         const avatar = await refreshAvatar(uuid);
 
-        dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname, createdAt }));
+        dispatch(userThunks.setUserThunk({ ...currentUser, avatar, emailVerified, name, lastname, createdAt }));
         await encryptedStorageService.setToken(newToken);
       }
     } catch (err) {
@@ -136,7 +144,7 @@ export const refreshAvatarThunk = createAsyncThunk<void, { forceRefresh?: boolea
         const refreshedAvatar = await refreshAvatar(uuid);
 
         dispatch(
-          userActions.setUser({
+          userThunks.setUserThunk({
             ...currentUser,
             avatar: refreshedAvatar,
           }),
@@ -171,7 +179,7 @@ export const updateUserProfileThunk = createAsyncThunk<void, Required<UpdateProf
     if (!currentUser) throw new Error('User is not defined');
 
     await userService.updateUserProfile(payload);
-    dispatch(userActions.setUser({ ...currentUser, ...payload }));
+    dispatch(userThunks.setUserThunk({ ...currentUser, ...payload }));
   },
 );
 
@@ -184,7 +192,7 @@ export const updateUserAvatarThunk = createAsyncThunk<void, { avatar: Blob }, { 
     const { avatar } = await userService.updateUserAvatar(payload);
 
     await saveAvatarToDatabase(avatar, payload.avatar);
-    dispatch(userActions.setUser({ ...currentUser, avatar }));
+    dispatch(userThunks.setUserThunk({ ...currentUser, avatar }));
   },
 );
 
@@ -196,7 +204,7 @@ export const deleteUserAvatarThunk = createAsyncThunk<void, void, { state: RootS
 
     await deleteDatabaseProfileAvatar();
     await userService.deleteUserAvatar();
-    dispatch(userActions.setUser({ ...currentUser, avatar: null }));
+    dispatch(userThunks.setUserThunk({ ...currentUser, avatar: null }));
   },
 );
 
@@ -215,6 +223,7 @@ const updateUserEmailCredentialsThunk = createAsyncThunk<
     username: newUserData.email,
   };
   await encryptedStorageService.setToken(newToken);
+  await encryptedStorageService.setUser(user);
   dispatch(userActions.setUser(user));
 });
 
@@ -235,8 +244,6 @@ export const userSlice = createSlice({
     setUser: (state: UserState, action: PayloadAction<UserSettings>) => {
       state.isAuthenticated = !!action.payload;
       state.user = action.payload;
-
-      encryptedStorageService.setUser(action.payload);
     },
     resetState: (state: UserState) => {
       Object.assign(state, initialState);
@@ -289,6 +296,7 @@ export const { initialize, resetState, setIsUserInitialized } = userSlice.action
 export const userActions = userSlice.actions;
 
 export const userThunks = {
+  setUserThunk,
   initializeUserThunk,
   refreshUserThunk,
   logoutThunk,
