@@ -1,4 +1,4 @@
-import { beforeEach, beforeAll, describe, expect, it, vi, Mock } from 'vitest';
+import { beforeEach, describe, expect, it, vi, Mock } from 'vitest';
 import { fireEvent, render } from '@testing-library/react';
 import ShareGuestSignUpView from './ShareGuestSignUpView';
 import { userThunks } from 'app/store/slices/user';
