@@ -281,7 +281,7 @@ export const decryptBucketKeyHybrid = async ({
 
   if (isHybridMode) {
     if (!privateKyberKeyInBase64) {
-      return Promise.reject(new Error('Attempted to decrypt hybrid ciphertex without Kyber key'));
+      throw new Error('Attempted to decrypt hybrid ciphertex without Kyber key');
     }
     const kem = await kemBuilder();
 

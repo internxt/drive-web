@@ -5,7 +5,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import navigationService from 'services/navigation.service';
 import shareService from 'app/share/services/share.service';
 import { Buffer } from 'buffer';
-import { beforeAll, beforeEach, describe, expect, it, test, vi } from 'vitest';
+import { beforeEach, describe, expect, it, test, vi } from 'vitest';
 import { RootState } from '../..';
 import userService from 'services/user.service';
 import { decryptBucketKeyHybrid, generateNewKeys } from '../../../crypto/services/pgp.service';
@@ -21,44 +21,41 @@ import notificationsService from 'app/notifications/services/notifications.servi
 import { generateFileBucketKey } from 'app/network/crypto';
 const { shareItemWithUser } = sharedThunks;
 
+vi.mock('services/navigation.service', () => ({
+  default: { push: vi.fn() },
+}));
+vi.mock('app/share/services/share.service', () => ({
+  default: {
+    inviteUserToSharedFolder: vi.fn(),
+    getSharedFolderInvitationsAsInvitedUser: vi.fn(),
+    getSharingRoles: vi.fn(),
+    stopSharingItem: vi.fn(),
+    removeUserRole: vi.fn(),
+  },
+}));
+vi.mock('services/user.service', () => ({
+  default: {
+    getPublicKeyWithPrecreation: vi.fn(),
+  },
+}));
+vi.mock('utils', () => ({
+  generateCaptchaToken: vi.fn().mockResolvedValue('mock-captcha-token'),
+}));
+
+vi.mock('services/referral.service', () => ({
+  default: {
+    trackShareCreated: vi.fn(),
+  },
+}));
+vi.mock('services/error.service', () => ({
+  default: {
+    castError: vi
+      .fn()
+      .mockImplementation((e) => ({ message: e.message || 'Default error message', requestId: 'test-request-id' })),
+    reportError: vi.fn(),
+  },
+}));
 describe('Encryption and Decryption', async () => {
-  beforeAll(() => {
-    vi.mock('services/navigation.service', () => ({
-      default: { push: vi.fn() },
-    }));
-    vi.mock('app/share/services/share.service', () => ({
-      default: {
-        inviteUserToSharedFolder: vi.fn(),
-        getSharedFolderInvitationsAsInvitedUser: vi.fn(),
-        getSharingRoles: vi.fn(),
-        stopSharingItem: vi.fn(),
-        removeUserRole: vi.fn(),
-      },
-    }));
-    vi.mock('services/user.service', () => ({
-      default: {
-        getPublicKeyWithPrecreation: vi.fn(),
-      },
-    }));
-    vi.mock('utils', () => ({
-      generateCaptchaToken: vi.fn().mockResolvedValue('mock-captcha-token'),
-    }));
-
-    vi.mock('services/referral.service', () => ({
-      default: {
-        trackShareCreated: vi.fn(),
-      },
-    }));
-    vi.mock('services/error.service', () => ({
-      default: {
-        castError: vi
-          .fn()
-          .mockImplementation((e) => ({ message: e.message || 'Default error message', requestId: 'test-request-id' })),
-        reportError: vi.fn(),
-      },
-    }));
-  });
-
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();

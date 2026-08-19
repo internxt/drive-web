@@ -2,7 +2,6 @@ import { downloadChunkFile } from 'app/network/download/v2';
 import { binaryStreamToUint8Array } from 'services';
 import { VideoSessionDestroyedError } from '../errors/video-streaming.errors';
 import { VideoStreamingSessionConfig } from './VideoStreamingSession';
-import { FileKey } from 'app/network/types/helper-types';
 
 export interface VideoStreamSession {
   fileSize: number;
