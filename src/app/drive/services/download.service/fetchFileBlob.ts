@@ -16,7 +16,7 @@ export default async function fetchFileBlob(
   credentials?: NetworkCredentials,
   key?: FileKey,
 ): Promise<Blob> {
-  const { bridgeUser, bridgePass } = await getEnvironmentConfig(!!options.isWorkspace);
+  const { bridgeUser, bridgePass, encryptionKey } = await getEnvironmentConfig(!!options.isWorkspace);
 
   const creds = credentials ? credentials : { pass: bridgePass, user: bridgeUser };
 
@@ -24,7 +24,7 @@ export default async function fetchFileBlob(
     bucketId: item.bucketId,
     fileId: item.fileId,
     creds,
-    key,
+    key: key ?? { mnemonic: encryptionKey },
     options: {
       notifyProgress: (totalBytes, downloadedBytes) => {
         options.updateProgressCallback(downloadedBytes / totalBytes);
