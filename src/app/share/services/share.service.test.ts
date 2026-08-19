@@ -70,44 +70,45 @@ vi.mock('services/zip.service', () => ({
   createFolderWithFilesWritable: vi.fn(),
 }));
 
+vi.mock('app/drive/services/folder.service', () => ({
+  default: {},
+  downloadFolderAsZip: vi.fn(),
+  createFilesIterator: vi.fn(),
+  createFoldersIterator: vi.fn(),
+  checkIfCachedSourceIsOlder: vi.fn(),
+}));
+vi.mock('../../core/factory/sdk', () => ({
+  SdkFactory: {
+    getNewApiInstance: vi.fn(() => ({
+      createShareClient: vi.fn(),
+    })),
+  },
+}));
+vi.mock('services/error.service', () => ({
+  default: {
+    castError: vi.fn().mockImplementation((e) => ({
+      message: typeof e === 'string' ? e : e.message || 'Default error message',
+      requestId: 'test-request-id',
+    })),
+    reportError: vi.fn(),
+  },
+}));
+vi.mock('services/encrypted-storage.service', () => ({
+  default: {
+    getUser: vi.fn(),
+  },
+}));
+vi.mock('services/workspace.service', () => ({
+  default: {
+    getAllWorkspaceTeamSharedFolderFolders: vi.fn(),
+    getAllWorkspaceTeamSharedFolderFiles: vi.fn(),
+  },
+}));
+vi.mock('./DomainManager', () => ({ domainManager: { getDomainsList: vi.fn() } }));
+
 describe('Encryption and Decryption', () => {
   beforeAll(() => {
     globalThis.Buffer = Buffer;
-    vi.mock('app/drive/services/folder.service', () => ({
-      default: {},
-      downloadFolderAsZip: vi.fn(),
-      createFilesIterator: vi.fn(),
-      createFoldersIterator: vi.fn(),
-      checkIfCachedSourceIsOlder: vi.fn(),
-    }));
-    vi.mock('../../core/factory/sdk', () => ({
-      SdkFactory: {
-        getNewApiInstance: vi.fn(() => ({
-          createShareClient: vi.fn(),
-        })),
-      },
-    }));
-    vi.mock('services/error.service', () => ({
-      default: {
-        castError: vi.fn().mockImplementation((e) => ({
-          message: typeof e === 'string' ? e : e.message || 'Default error message',
-          requestId: 'test-request-id',
-        })),
-        reportError: vi.fn(),
-      },
-    }));
-    vi.mock('services/encrypted-storage.service', () => ({
-      default: {
-        getUser: vi.fn(),
-      },
-    }));
-    vi.mock('services/workspace.service', () => ({
-      default: {
-        getAllWorkspaceTeamSharedFolderFolders: vi.fn(),
-        getAllWorkspaceTeamSharedFolderFiles: vi.fn(),
-      },
-    }));
-    vi.mock('./DomainManager', () => ({ domainManager: { getDomainsList: vi.fn() } }));
   });
 
   beforeEach(() => {
