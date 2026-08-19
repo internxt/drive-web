@@ -8,11 +8,11 @@ const WORDS_HYBRID_MODE_IN_BASE64 = 'SHlicmlkTW9kZQ=='; // 'HybridMode' in BASE6
 const WORDS_HYBRID_BUCKET_KEY_IN_BASE64 = 'SHlicmlkQnVja2V0S2V5'; // 'HybridBucketKey' in BASE64 format
 type Data = Uint8Array | string;
 
-export async function getOpenpgp(): Promise<typeof import('openpgp')> {
+export const getOpenpgp = async (): Promise<typeof import('openpgp')> => {
   return import('openpgp');
-}
+};
 
-export function comparePrivateKeyCiphertextIDs(privateKey: PrivateKey, encryptedMessage: Message<string>): boolean {
+export const comparePrivateKeyCiphertextIDs = (privateKey: PrivateKey, encryptedMessage: Message<string>): boolean => {
   const [messageKeyId] = encryptedMessage.getEncryptionKeyIDs();
   const [privateSubkey] = privateKey.getSubkeys();
 
@@ -21,9 +21,9 @@ export function comparePrivateKeyCiphertextIDs(privateKey: PrivateKey, encrypted
   }
 
   return messageKeyId.toHex() === privateSubkey.getKeyID().toHex();
-}
+};
 
-export function compareKeyPairIDs(privateKey: PrivateKey, publicKey: PublicKey): boolean {
+export const compareKeyPairIDs = (privateKey: PrivateKey, publicKey: PublicKey): boolean => {
   const [publicSubkey] = publicKey.getSubkeys();
   const [privateSubkey] = privateKey.getSubkeys();
 
@@ -32,21 +32,21 @@ export function compareKeyPairIDs(privateKey: PrivateKey, publicKey: PublicKey):
   }
 
   return publicSubkey.getKeyID().toHex() === privateSubkey.getKeyID().toHex();
-}
+};
 
-async function kyberEncapsulate(
+export const kyberEncapsulate = async (
   publicKyberKeyBase64: string,
-): Promise<{ ciphertextBase64: string; secret: Uint8Array }> {
+): Promise<{ ciphertextBase64: string; secret: Uint8Array }> => {
   const kem = await kemBuilder();
   const publicKyberKey = Buffer.from(publicKyberKeyBase64, 'base64');
   const { ciphertext, sharedSecret } = await kem.encapsulate(new Uint8Array(publicKyberKey));
   return { ciphertextBase64: Buffer.from(ciphertext).toString('base64'), secret: sharedSecret };
-}
+};
 
-async function kyberDecapsulate(
+export const kyberDecapsulate = async (
   kyberCiphertextBase64: string,
   privateKyberKeyBase64: string | undefined,
-): Promise<Uint8Array> {
+): Promise<Uint8Array> => {
   if (!privateKyberKeyBase64) throw new Error('Attempted to decrypt hybrid ciphertex without Kyber key');
 
   const kem = await kemBuilder();
@@ -54,14 +54,14 @@ async function kyberDecapsulate(
   const kyberCiphertext = Buffer.from(kyberCiphertextBase64, 'base64');
   const { sharedSecret } = await kem.decapsulate(new Uint8Array(kyberCiphertext), new Uint8Array(privateKyberKey));
   return sharedSecret;
-}
+};
 
 interface HybridSplitResult {
   kyberCiphertextBase64?: string;
   eccCiphertextStr: string;
 }
 
-function splitHybridCiphertext(input: string, hybridPrefix: string): HybridSplitResult {
+const splitHybridCiphertext = (input: string, hybridPrefix: string): HybridSplitResult => {
   const parts = input.split('$');
   const isHybridMode = parts[0] === hybridPrefix;
 
@@ -72,14 +72,14 @@ function splitHybridCiphertext(input: string, hybridPrefix: string): HybridSplit
     throw new Error('Malformed hybrid ciphertext');
   }
   return { kyberCiphertextBase64: parts[1], eccCiphertextStr: parts[2] };
-}
+};
 
-export async function generateNewKeys(): Promise<{
+export const generateNewKeys = async (): Promise<{
   privateKeyArmored: string;
   publicKeyArmored: string;
   publicKyberKeyBase64: string;
   privateKyberKeyBase64: string;
-}> {
+}> => {
   const openpgp = await getOpenpgp();
 
   const { privateKey, publicKey } = await openpgp.generateKey({
@@ -96,7 +96,7 @@ export async function generateNewKeys(): Promise<{
     publicKyberKeyBase64: Buffer.from(publicKyberKey).toString('base64'),
     privateKyberKeyBase64: Buffer.from(privateKyberKey).toString('base64'),
   };
-}
+};
 
 /**
  * XORs two strings of the identical length
@@ -104,11 +104,11 @@ export async function generateNewKeys(): Promise<{
  * @param {string} b - The second string
  * @returns {Uint8Array} The result of XOR of strings a and b.
  */
-export function XORhex(a: string, b: string): Uint8Array {
+export const XORhex = (a: string, b: string): Uint8Array => {
   const aBytes = Buffer.from(a, 'hex');
   const bBytes = Buffer.from(b, 'hex');
   return xorUint8Arrays(new Uint8Array(aBytes), new Uint8Array(bBytes));
-}
+};
 
 /**
  * Encrypts message using hybrid method (ecc and kyber) if kyber key is given, else uses ecc only
@@ -190,7 +190,7 @@ export const encryptMessageWithPublicKey = async ({
   message,
   publicKeyInBase64,
 }: {
-  message: string | Uint8Array;
+  message: Data;
   publicKeyInBase64: string;
 }): Promise<WebStream<string>> => {
   const openpgp = await getOpenpgp();
@@ -241,7 +241,7 @@ export const decryptMessageWithPrivateKey = async ({
   return decryptedMessage;
 };
 
-function xorUint8Arrays(a: Uint8Array, b: Uint8Array): Uint8Array {
+const xorUint8Arrays = (a: Uint8Array, b: Uint8Array): Uint8Array => {
   if (a.length !== b.length) {
     throw new Error('Can XOR only identical lengths');
   }
@@ -250,7 +250,7 @@ function xorUint8Arrays(a: Uint8Array, b: Uint8Array): Uint8Array {
     result[i] = a[i] ^ b[i];
   }
   return result;
-}
+};
 
 /**
  * Encrypts bucket key using hybrid method (ecc and kyber) if kyber key is given, else uses ecc only
@@ -326,6 +326,6 @@ export const decryptBucketKeyHybrid = async ({
   return result;
 };
 
-export function isBucketKeyCiphertext(encryptedMessageInBase64: string): boolean {
+export const isBucketKeyCiphertext = (encryptedMessageInBase64: string): boolean => {
   return encryptedMessageInBase64.split('$')[0] === WORDS_HYBRID_BUCKET_KEY_IN_BASE64;
-}
+};
