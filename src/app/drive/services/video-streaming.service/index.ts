@@ -2,6 +2,7 @@ import { downloadChunkFile } from 'app/network/download/v2';
 import { binaryStreamToUint8Array } from 'services';
 import { VideoSessionDestroyedError } from '../errors/video-streaming.errors';
 import { VideoStreamingSessionConfig } from './VideoStreamingSession';
+import { FileKey } from 'app/network/types/helper-types';
 
 export interface VideoStreamSession {
   fileSize: number;
@@ -49,10 +50,11 @@ export class VideoStreamingService {
 
   private async downloadChunk(start: number, end: number, cacheKey: string): Promise<Uint8Array> {
     try {
+      console.log('CHECK: Downloading chunk with mnemonic');
       const stream = await downloadChunkFile({
         bucketId: this.config.bucketId,
         fileId: this.config.fileId,
-        key: { mnemonic: this.config.mnemonic },
+        key: this.config.key,
         creds: this.config.credentials,
         chunkStart: start,
         chunkEnd: end,

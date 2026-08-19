@@ -14,7 +14,7 @@ import userService from 'services/user.service';
 import { encryptBucketKey } from 'app/share/services/share.crypto';
 
 export const HYBRID_ALGORITHM = 'hybrid';
-export const HYBRID_ALGORITHM_WITH_BUCKET_KEY = 'hybrid-v2';
+export const HYBRID_ALGORITHM_WITH_BUCKET_KEY = 'hybrid';
 export const STANDARD_ALGORITHM = 'ed25519';
 
 export interface ShareLinksState {

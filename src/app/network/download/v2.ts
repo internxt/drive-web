@@ -16,36 +16,26 @@ interface DownloadFileParams {
   options?: DownloadFileOptions;
 }
 
-interface DownloadOwnFileWithMnemonicParams extends DownloadFileParams {
+interface DownloadOwnFile extends DownloadFileParams {
   creds: NetworkCredentials;
-  key: { mnemonic: string; bucketKey?: never };
+  key: FileKey;
   token?: never;
-  encryptionKey?: never;
-}
-
-interface DownloadOwnFileWithBucketKeyParams extends DownloadFileParams {
-  creds: NetworkCredentials;
-  key: { bucketKey: Buffer; mnemonic?: never };
-  token?: never;
-  encryptionKey?: never;
 }
 
 interface DownloadSharedFileParams extends DownloadFileParams {
   creds?: never;
   key: FileKey;
   token: string;
-  encryptionKey: string;
 }
 
 type DownloadSharedFileFunction = (params: DownloadSharedFileParams) => DownloadFileResponse;
-type DownloadFileFunction = (
-  params: DownloadSharedFileParams | DownloadOwnFileWithMnemonicParams | DownloadOwnFileWithBucketKeyParams,
-) => DownloadFileResponse;
+type DownloadFileFunction = (params: DownloadSharedFileParams | DownloadOwnFile) => DownloadFileResponse;
 
 const downloadSharedFile: DownloadSharedFileFunction = (params) => {
-  const { bucketId, fileId, encryptionKey, token, options } = params;
+  console.log('CHECK: downloadSharedFile is called');
+  const { bucketId, fileId, key, token, options } = params;
 
-  return new NetworkFacade(
+  const networkFacade = new NetworkFacade(
     Network.client(
       envService.getVariable('storjBridge'),
       {
@@ -57,12 +47,25 @@ const downloadSharedFile: DownloadSharedFileFunction = (params) => {
         userId: '',
       },
     ),
-  ).download(bucketId, fileId, '', {
-    key: Buffer.from(encryptionKey, 'hex'),
-    token,
-    downloadingCallback: options?.notifyProgress,
-    abortController: options?.abortController,
-  });
+  );
+  if (key.mnemonic) {
+    return networkFacade.download(bucketId, fileId, '', {
+      key: Buffer.from(key.mnemonic, 'hex'),
+      token,
+      downloadingCallback: options?.notifyProgress,
+      abortController: options?.abortController,
+    });
+  }
+  if (key.bucketKey) {
+    return networkFacade.download(bucketId, fileId, '', {
+      key: key.bucketKey,
+      token,
+      downloadingCallback: options?.notifyProgress,
+      abortController: options?.abortController,
+    });
+  } else {
+    throw new Error('DOWNLOAD ERRNO. 1');
+  }
 };
 
 async function getAuthFromCredentials(creds: NetworkCredentials): Promise<{ username: string; password: string }> {
@@ -72,16 +75,11 @@ async function getAuthFromCredentials(creds: NetworkCredentials): Promise<{ user
   };
 }
 
-const downloadOwnFile = async (params: DownloadOwnFileWithMnemonicParams) => {
-  const {
-    bucketId,
-    fileId,
-    key: { mnemonic },
-    options,
-  } = params;
+const downloadOwnFile = async (params: DownloadOwnFile) => {
+  const { bucketId, fileId, key, options } = params;
   const auth = await getAuthFromCredentials(params.creds);
 
-  return new NetworkFacade(
+  const networkFacade = new NetworkFacade(
     Network.client(
       envService.getVariable('storjBridge'),
       {
@@ -93,49 +91,26 @@ const downloadOwnFile = async (params: DownloadOwnFileWithMnemonicParams) => {
         userId: auth.password,
       },
     ),
-  ).download(bucketId, fileId, mnemonic, {
-    downloadingCallback: options?.notifyProgress,
-    abortController: options?.abortController,
-  });
+  );
+
+  if (key.mnemonic) {
+    return networkFacade.download(bucketId, fileId, key.mnemonic, {
+      downloadingCallback: options?.notifyProgress,
+      abortController: options?.abortController,
+    });
+  }
+  if (key.bucketKey) {
+    return networkFacade.downloadWithBucketKey(bucketId, fileId, key.bucketKey, {
+      downloadingCallback: options?.notifyProgress,
+      abortController: options?.abortController,
+    });
+  } else {
+    throw new Error('DOWNLOAD ERRNO. 1');
+  }
 };
 
-const downloadOwnFileWithBucketKey = async (params: DownloadOwnFileWithBucketKeyParams) => {
-  const {
-    bucketId,
-    fileId,
-    key: { bucketKey },
-    options,
-  } = params;
-  const auth = await getAuthFromCredentials(params.creds);
-
-  return new NetworkFacade(
-    Network.client(
-      envService.getVariable('storjBridge'),
-      {
-        clientName: 'drive-web',
-        clientVersion: '1.0',
-      },
-      {
-        bridgeUser: auth.username,
-        userId: auth.password,
-      },
-    ),
-  ).downloadWithBucketKey(bucketId, fileId, bucketKey, {
-    downloadingCallback: options?.notifyProgress,
-    abortController: options?.abortController,
-  });
-};
-
-export async function multipartDownload(
-  params: DownloadOwnFileWithMnemonicParams & { fileSize: number },
-): Promise<FileStream> {
-  const {
-    bucketId,
-    fileId,
-    key: { mnemonic },
-    fileSize,
-    options,
-  } = params;
+export async function multipartDownload(params: DownloadOwnFile & { fileSize: number }): Promise<FileStream> {
+  const { bucketId, fileId, key, fileSize, options } = params;
   const auth = await getAuthFromCredentials(params.creds);
 
   const networkFacade = new NetworkFacade(
@@ -157,7 +132,7 @@ export async function multipartDownload(
   return multipartDownload.downloadFile({
     bucketId,
     fileId,
-    mnemonic,
+    key,
     fileSize,
     options: {
       downloadingCallback: options?.notifyProgress,
@@ -167,19 +142,12 @@ export async function multipartDownload(
 }
 
 export async function downloadChunkFile(
-  params: DownloadOwnFileWithMnemonicParams & { chunkStart: number; chunkEnd: number },
+  params: DownloadOwnFile & { chunkStart: number; chunkEnd: number },
 ): Promise<FileStream> {
-  const {
-    bucketId,
-    fileId,
-    key: { mnemonic },
-    chunkStart,
-    chunkEnd,
-    options,
-  } = params;
+  const { bucketId, fileId, key, chunkStart, chunkEnd, options } = params;
   const auth = await getAuthFromCredentials(params.creds);
 
-  return new NetworkFacade(
+  const networkFacade = new NetworkFacade(
     Network.client(
       envService.getVariable('storjBridge'),
       {
@@ -191,10 +159,12 @@ export async function downloadChunkFile(
         userId: auth.password,
       },
     ),
-  ).downloadChunk({
+  );
+
+  return networkFacade.downloadChunk({
     bucketId,
     fileId,
-    mnemonic,
+    key,
     chunkStart,
     chunkEnd,
     options: {
@@ -205,12 +175,12 @@ export async function downloadChunkFile(
 }
 
 const downloadFile: DownloadFileFunction = (params) => {
-  if (params.token && params.encryptionKey) {
-    return downloadSharedFile(params);
-  } else if (params.creds && params.key.mnemonic) {
-    return downloadOwnFile(params as DownloadOwnFileWithMnemonicParams);
-  } else if (params.creds && params.key.bucketKey) {
-    return downloadOwnFileWithBucketKey(params as DownloadOwnFileWithBucketKeyParams);
+  if (params.token) {
+    console.log('CHECK: downloadSharedFile called with params:', params);
+    return downloadSharedFile(params as DownloadSharedFileParams);
+  } else if (params.creds) {
+    console.log('CHECK: downloadOwnFile called with params:', params);
+    return downloadOwnFile(params as DownloadOwnFile);
   } else {
     throw new Error('DOWNLOAD ERRNO. 0');
   }

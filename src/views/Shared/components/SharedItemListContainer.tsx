@@ -98,7 +98,9 @@ const SharedItemListContainer = ({
 
   const downloadItem = async (shareItem: AdvancedSharedItem): Promise<void> => {
     try {
+      console.log('CHECK: downloadItem is called');
       if (shareItem.isRootLink) {
+        console.log('CHECK: downloadItem with if');
         const encryptionKey = selectedWorkspace?.workspaceUser?.key ?? (await decryptMnemonic(shareItem.encryptionKey));
         await shareService.downloadSharedFiles({
           creds: {
@@ -113,6 +115,7 @@ const SharedItemListContainer = ({
           workspaceCredentials,
         });
       } else {
+        console.log('CHECK: downloadItem with else');
         const pageItemsNumber = 5;
         let sharedToken;
         if (workspaceCredentials && workspaceId) {
@@ -179,7 +182,7 @@ const SharedItemListContainer = ({
       const mnemonic =
         selectedWorkspace?.workspaceUser.key ??
         (await decryptMnemonic(shareItem.encryptionKey ? shareItem.encryptionKey : sharedItemEncryptionKey));
-      onOpenItemPreview({ ...previewItem, mnemonic });
+      onOpenItemPreview({ ...previewItem, key: { mnemonic } });
     } catch (err) {
       const error = errorService.castError(err);
       errorService.reportError(error);

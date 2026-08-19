@@ -371,7 +371,7 @@ export class NetworkFacade {
   async downloadChunk({
     bucketId,
     fileId,
-    mnemonic,
+    key: { mnemonic, bucketKey },
     chunkStart,
     chunkEnd,
     options,
@@ -379,46 +379,90 @@ export class NetworkFacade {
     const encryptedContentStreams: ReadableStream<Uint8Array>[] = [];
     let fileStream: ReadableStream<Uint8Array>;
 
-    await downloadFile(
-      fileId,
-      bucketId,
-      mnemonic,
-      this.network,
-      this.cryptoLib,
-      Buffer.from,
-      async (downloadables) => {
-        for (const downloadable of downloadables) {
-          if (options?.abortController?.signal.aborted) {
-            throw new DownloadAbortedByUserError();
+    if (mnemonic) {
+      await downloadFile(
+        fileId,
+        bucketId,
+        mnemonic,
+        this.network,
+        this.cryptoLib,
+        Buffer.from,
+        async (downloadables) => {
+          for (const downloadable of downloadables) {
+            if (options?.abortController?.signal.aborted) {
+              throw new DownloadAbortedByUserError();
+            }
+
+            const response = await fetch(downloadable.url, {
+              signal: options?.abortController?.signal,
+              headers: {
+                Range: `bytes=${chunkStart}-${chunkEnd}`,
+                Connection: 'keep-alive',
+              },
+              keepalive: true,
+            });
+
+            const statusCode = response.status;
+
+            if (statusCode !== 206 && statusCode !== 200) {
+              throw new DownloadFailedWithUnknownError(statusCode);
+            }
+
+            if (!response.body) {
+              throw new NoContentReceivedError();
+            }
+
+            encryptedContentStreams.push(response.body);
           }
+        },
+        async (algorithm, key, iv, fileSize) => {
+          fileStream = decryptStream(encryptedContentStreams, key as Buffer, iv as Buffer, chunkStart);
+        },
+        (options?.token && { token: options.token }) || undefined,
+      );
+    }
+    if (bucketKey) {
+      await downloadFileWithBucketKey(
+        fileId,
+        bucketId,
+        bucketKey,
+        this.network,
+        this.cryptoLibBucketKey,
+        Buffer.from,
+        async (downloadables) => {
+          for (const downloadable of downloadables) {
+            if (options?.abortController?.signal.aborted) {
+              throw new DownloadAbortedByUserError();
+            }
 
-          const response = await fetch(downloadable.url, {
-            signal: options?.abortController?.signal,
-            headers: {
-              Range: `bytes=${chunkStart}-${chunkEnd}`,
-              Connection: 'keep-alive',
-            },
-            keepalive: true,
-          });
+            const response = await fetch(downloadable.url, {
+              signal: options?.abortController?.signal,
+              headers: {
+                Range: `bytes=${chunkStart}-${chunkEnd}`,
+                Connection: 'keep-alive',
+              },
+              keepalive: true,
+            });
 
-          const statusCode = response.status;
+            const statusCode = response.status;
 
-          if (statusCode !== 206 && statusCode !== 200) {
-            throw new DownloadFailedWithUnknownError(statusCode);
+            if (statusCode !== 206 && statusCode !== 200) {
+              throw new DownloadFailedWithUnknownError(statusCode);
+            }
+
+            if (!response.body) {
+              throw new NoContentReceivedError();
+            }
+
+            encryptedContentStreams.push(response.body);
           }
-
-          if (!response.body) {
-            throw new NoContentReceivedError();
-          }
-
-          encryptedContentStreams.push(response.body);
-        }
-      },
-      async (algorithm, key, iv, fileSize) => {
-        fileStream = decryptStream(encryptedContentStreams, key as Buffer, iv as Buffer, chunkStart);
-      },
-      (options?.token && { token: options.token }) || undefined,
-    );
+        },
+        async (algorithm, key, iv, fileSize) => {
+          fileStream = decryptStream(encryptedContentStreams, key as Buffer, iv as Buffer, chunkStart);
+        },
+        (options?.token && { token: options.token }) || undefined,
+      );
+    }
 
     return fileStream!;
   }

@@ -186,7 +186,7 @@ describe('NetworkFacade', () => {
       );
       vi.mocked(decryptStream).mockReturnValue(mockDecryptedStream);
 
-      const result = await networkFacade.downloadChunk({ bucketId, fileId, mnemonic, chunkStart, chunkEnd });
+      const result = await networkFacade.downloadChunk({ bucketId, fileId, key: { mnemonic }, chunkStart, chunkEnd });
 
       expect(result).toStrictEqual(mockDecryptedStream);
 
@@ -215,9 +215,9 @@ describe('NetworkFacade', () => {
         },
       );
 
-      await expect(networkFacade.downloadChunk({ bucketId, fileId, mnemonic, chunkStart, chunkEnd })).rejects.toThrow(
-        new DownloadFailedWithUnknownError(mockResponse.status),
-      );
+      await expect(
+        networkFacade.downloadChunk({ bucketId, fileId, key: { mnemonic }, chunkStart, chunkEnd }),
+      ).rejects.toThrow(new DownloadFailedWithUnknownError(mockResponse.status));
     });
 
     test('When there is no body in the response, then an error indicating so is thrown', async () => {
@@ -233,9 +233,9 @@ describe('NetworkFacade', () => {
         },
       );
 
-      await expect(networkFacade.downloadChunk({ bucketId, fileId, mnemonic, chunkStart, chunkEnd })).rejects.toThrow(
-        NoContentReceivedError,
-      );
+      await expect(
+        networkFacade.downloadChunk({ bucketId, fileId, key: { mnemonic }, chunkStart, chunkEnd }),
+      ).rejects.toThrow(NoContentReceivedError);
     });
 
     it('When the download is aborted, then an DownloadAbortedByUserError error is thrown', async () => {
@@ -251,7 +251,7 @@ describe('NetworkFacade', () => {
         networkFacade.downloadChunk({
           bucketId,
           fileId,
-          mnemonic,
+          key: { mnemonic },
           chunkStart,
           chunkEnd,
           options: {

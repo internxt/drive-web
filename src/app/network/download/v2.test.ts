@@ -5,6 +5,7 @@ import envService from 'services/env.service';
 import { Network } from '@internxt/sdk/dist/network';
 import { NetworkFacade } from '../NetworkFacade';
 import downloadFile from './v2';
+import { FileKey } from '../types/helper-types';
 
 vi.mock('../../crypto/services/utils');
 
@@ -65,7 +66,7 @@ describe('Download V2', () => {
       expect(downloadFileSpy).toHaveBeenCalledWith({
         bucketId: params.bucketId,
         fileId: params.fileId,
-        mnemonic: params.key.mnemonic,
+        key: { mnemonic: params.key.mnemonic },
         fileSize: params.fileSize,
         options: {
           downloadingCallback: progressCallback,
@@ -116,7 +117,9 @@ describe('Download V2', () => {
       expect(downloadSingleFileSpy).toHaveBeenCalledWith({
         bucketId: params.bucketId,
         fileId: params.fileId,
-        mnemonic: params.key.mnemonic,
+        key: {
+          mnemonic: params.key.mnemonic,
+        },
         chunkStart: params.chunkStart,
         chunkEnd: params.chunkEnd,
         options: {
@@ -141,9 +144,8 @@ describe('Download V2', () => {
       const result = await downloadFile({
         bucketId: 'test-bucket',
         fileId: 'test-file',
-        key: { fileEncryptionKey: 'unused' } as any,
+        key: { mnemonic: encryptionKey } as FileKey,
         token,
-        encryptionKey,
         options: { notifyProgress: progressCallback, abortController },
       } as any);
 

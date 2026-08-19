@@ -357,7 +357,7 @@ function SharedView({
       const mnemonic =
         selectedWorkspace?.workspaceUser.key ??
         (await decryptMnemonic(shareItem.encryptionKey ? shareItem.encryptionKey : clickedShareItemEncryptionKey));
-      handleOpenItemPreview(true, { ...previewItem, mnemonic });
+      handleOpenItemPreview(true, { ...previewItem, key: { mnemonic } });
     } catch (err) {
       const error = errorService.castError(err);
       errorService.reportError(error);
