@@ -20,6 +20,10 @@ export async function getOpenpgp(): Promise<typeof import('openpgp')> {
   return import('openpgp');
 }
 
+const toHex = (buffer: Uint8Array): string => {
+  return Buffer.from(buffer).toString('hex');
+};
+
 describe('Encryption and Decryption', () => {
   it('should generate new keys', async () => {
     const keys = await generateNewKeys();
@@ -53,7 +57,7 @@ describe('Encryption and Decryption', () => {
 
     expect(() => {
       XORhex(messageHex, secretHex);
-    }).toThrow('Can XOR only strings with identical length');
+    }).toThrow('Can XOR only identical lengths');
   });
 
   it('XOR should work for the given fixed example', () => {
@@ -63,7 +67,7 @@ describe('Encryption and Decryption', () => {
 
     const xoredMessage = XORhex(firstHex, secondHex);
 
-    expect(xoredMessage).toEqual(resultHex);
+    expect(toHex(xoredMessage)).toEqual(resultHex);
   });
 
   it('XOR of two identical strings should result in zero string', () => {
@@ -72,17 +76,19 @@ describe('Encryption and Decryption', () => {
 
     const xoredMessage = XORhex(strHex, strHex);
 
-    expect(xoredMessage).toEqual(resultHex);
+    expect(toHex(xoredMessage)).toEqual(resultHex);
   });
 
   it('XOR of str1, str2 and str1 should result in str2', () => {
     const str1 = '74686973206973207468652074657374206d657373616765';
     const str2 = '7468697320697320746865207365636f6e64206d65737361';
 
-    const str3 = XORhex(str1, str2);
+    const xored = XORhex(str1, str2);
+
+    const str3 = toHex(xored);
     const should_be_str2 = XORhex(str3, str1);
 
-    expect(should_be_str2).toEqual(str2);
+    expect(toHex(should_be_str2)).toEqual(str2);
   });
 
   it('should generate keys, encrypt and decrypt a message using hybrid encryption', async () => {
@@ -126,7 +132,7 @@ describe('Encryption and Decryption', () => {
         encryptedMessageInBase64,
         privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
       }),
-    ).rejects.toThrowError('Attempted to decrypt hybrid ciphertex without Kyber key');
+    ).rejects.toThrow('Attempted to decrypt hybrid ciphertex without Kyber key');
   });
 
   it('hybrid decryption should decrypt old ciphertexts', async () => {
