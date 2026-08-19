@@ -11,6 +11,7 @@ import {
 } from './UploadFolderManager';
 import { FilesExceedsSizeLimitError } from 'app/drive/services/file.service/upload.errors';
 import { uploadItemsParallelThunk } from 'app/store/slices/storage/storage.thunks/uploadItemsThunk';
+import { deleteItemsThunk } from '../store/slices/storage/storage.thunks/deleteItemsThunk';
 
 vi.mock('app/drive/services/new-storage.service', () => ({
   default: {
@@ -128,8 +129,98 @@ describe('uploadFoldersWithManager', () => {
     expect(events.onFolderUploadSuccess).toHaveBeenCalledWith(taskId, {
       folderName: 'MyFolder',
       rootFolderUUID: mockFolder.uuid,
+      hasFailedFiles: false,
     });
     expect(events.onFolderUploadError).not.toHaveBeenCalled();
+  });
+
+  test('When a file inside the folder fails to upload, then the uploaded content is kept and the folder finishes with a partial failure', async () => {
+    const mockFolder = buildFolderData({ name: 'MyFolder', plain_name: 'MyFolder' });
+    const taskId = 'task-id';
+    const smallFile = new File([new ArrayBuffer(10)], 'small.txt');
+
+    (createFolder as Mock).mockResolvedValueOnce(mockFolder);
+    (checkFolderDuplicated as Mock).mockResolvedValueOnce({
+      duplicatedFoldersResponse: [],
+      foldersWithDuplicates: [],
+      foldersWithoutDuplicates: [mockFolder],
+    });
+    const dispatchWithFailingUnwrap = vi
+      .fn()
+      .mockReturnValue({ unwrap: () => Promise.reject(new Error('file failed')) });
+
+    const events: UploadFolderManagerEvents = {
+      onFolderUploadSuccess: vi.fn(),
+      onFolderUploadError: vi.fn(),
+    };
+
+    await uploadFoldersWithManager({
+      payload: [
+        {
+          currentFolderId: 'currentFolderId',
+          root: {
+            folderId: mockFolder.uuid,
+            childrenFiles: [smallFile],
+            childrenFolders: [],
+            name: mockFolder.name,
+            fullPathEdited: 'path1',
+          },
+          options: { taskId },
+        },
+      ],
+      selectedWorkspace: null,
+      dispatch: dispatchWithFailingUnwrap,
+      maxUploadFileSize: 100,
+      events,
+    });
+
+    expect(events.onFolderUploadSuccess).toHaveBeenCalledWith(taskId, {
+      folderName: 'MyFolder',
+      rootFolderUUID: mockFolder.uuid,
+      hasFailedFiles: true,
+    });
+    expect(events.onFolderUploadError).not.toHaveBeenCalled();
+    expect(deleteItemsThunk).not.toHaveBeenCalled();
+  });
+
+  test('When the folder itself cannot be created, then the failure is notified and no success is announced afterwards', async () => {
+    const taskId = 'task-id';
+
+    (createFolder as Mock).mockRejectedValue(new Error('folder creation failed'));
+    (checkFolderDuplicated as Mock).mockResolvedValueOnce({
+      duplicatedFoldersResponse: [],
+      foldersWithDuplicates: [],
+      foldersWithoutDuplicates: [],
+    });
+
+    const events: UploadFolderManagerEvents = {
+      onFolderUploadSuccess: vi.fn(),
+      onFolderUploadError: vi.fn(),
+    };
+
+    await uploadFoldersWithManager({
+      payload: [
+        {
+          currentFolderId: 'currentFolderId',
+          root: {
+            folderId: 'folder-uuid',
+            childrenFiles: [],
+            childrenFolders: [],
+            name: 'MyFolder',
+            fullPathEdited: 'path1',
+          },
+          options: { taskId },
+        },
+      ],
+      selectedWorkspace: null,
+      dispatch: mockDispatch,
+      maxUploadFileSize: 100,
+      events,
+    });
+
+    expect(events.onFolderUploadError).toHaveBeenCalledOnce();
+    expect(events.onFolderUploadError).toHaveBeenCalledWith(taskId, 'upload-failed');
+    expect(events.onFolderUploadSuccess).not.toHaveBeenCalled();
   });
 
   test('When a folder name already exists, then the folder is uploaded and announced with a new unique name', async () => {
@@ -242,7 +333,7 @@ describe('uploadFoldersWithManager', () => {
         dispatch: mockDispatch,
         maxUploadFileSize: maxUploadFileSize ?? 100,
       });
-      manager['tasksInfo'][taskId] = { cancelled: false, progress: { itemsUploaded: 0, totalItems: 1 } };
+      manager['tasksInfo'][taskId] = { isCancelled: false, progress: { itemsUploaded: 0, totalItems: 1 } };
       return manager;
     };
 
@@ -265,7 +356,7 @@ describe('uploadFoldersWithManager', () => {
         dispatch: dispatchWithUnwrap,
         maxUploadFileSize: 100,
       });
-      manager['tasksInfo'][taskId] = { cancelled: false, progress: { itemsUploaded: 0, totalItems: 1 } };
+      manager['tasksInfo'][taskId] = { isCancelled: false, progress: { itemsUploaded: 0, totalItems: 1 } };
       const level = {
         childrenFiles: [bigFile],
         childrenFolders: [{ folderId: 'c', childrenFiles: [], childrenFolders: [], name: 'Child', fullPathEdited: '' }],
@@ -337,7 +428,7 @@ describe('uploadFoldersWithManager', () => {
     const renameFolderSpy = (getUniqueFolderName as Mock).mockResolvedValueOnce('');
 
     manager['tasksInfo'][taskId] = {
-      cancelled: false,
+      isCancelled: false,
       progress: {
         itemsUploaded: 0,
         totalItems: 2,
