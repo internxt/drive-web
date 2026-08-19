@@ -8,6 +8,7 @@ let workspaceMnemonicCache: string | null = null;
 let workspaceCredentialsCache: WorkspaceCredentialsDetails | null = null;
 let folderTokenCache: string | null = null;
 let fileTokenCache: string | null = null;
+let userCache: UserSettings | null = null;
 
 const getAndDecrypt = async (key: LocalStorageProtectedItem): Promise<string | null> => {
   const item = localStorage.getItem(key);
@@ -95,6 +96,7 @@ const clear = (): void => {
   clearFolderToken();
   clearB2BWorkspace();
   clearWorkspaceCredentials();
+  clearUser();
 };
 
 const getB2BWorkspaceMnemonic = async (): Promise<string | null> => {
@@ -135,15 +137,27 @@ const clearWorkspaceCredentials = (): void => {
   localStorage.removeItem(LocalStorageProtectedItem.EncryptedWorkspaceCredentials);
 };
 
+const clearUser = (): void => {
+  userCache = null;
+  localStorage.removeItem(LocalStorageProtectedItem.EncryptedUser);
+  localStorage.removeItem(LocalStorageItem.UserUUID);
+};
+
 const getUser = (): UserSettings | null => {
+  if (userCache !== null) return userCache;
   const stringUser: string | null = localStorage.getItem(LocalStorageProtectedItem.User);
 
   return stringUser ? JSON.parse(stringUser) : null;
 };
 
-const setUser = (user: UserSettings): void => {
+const setUser = async (user: UserSettings): Promise<void> => {
   localStorage.setItem(LocalStorageItem.UserUUID, user.uuid);
+
+  //migration from unencrypted version, remove once completed
   localStorage.setItem(LocalStorageProtectedItem.User, JSON.stringify(user));
+
+  userCache = user;
+  await setAndEncrypt(LocalStorageProtectedItem.EncryptedUser, JSON.stringify(user));
 };
 
 const encryptedStorageService = {
@@ -164,6 +178,7 @@ const encryptedStorageService = {
   clearWorkspaceCredentials,
   getUser,
   setUser,
+  clearUser,
 };
 
 export default encryptedStorageService;
@@ -186,4 +201,5 @@ export interface EncryptedStorageService {
   clearWorkspaceCredentials: () => void;
   getUser: () => UserSettings | null;
   setUser: (user: UserSettings) => void;
+  clearUser: () => void;
 }

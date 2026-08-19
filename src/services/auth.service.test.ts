@@ -7,7 +7,7 @@ import { SdkFactory } from 'app/core/factory/sdk';
 import * as keysService from 'app/crypto/services/keys.service';
 import * as pgpService from 'app/crypto/services/pgp.service';
 import { encryptText, encryptTextWithKey } from 'app/crypto/services/utils';
-import { userActions } from 'app/store/slices/user';
+import { userThunks } from 'app/store/slices/user';
 import { validateMnemonic } from 'bip39';
 import { Buffer } from 'node:buffer';
 import errorService from 'services/error.service';
@@ -72,11 +72,9 @@ beforeAll(() => {
 
   vi.mock('app/store/slices/user', () => ({
     initializeUserThunk: vi.fn(),
-    userActions: {
-      setUser: vi.fn(),
-    },
     userThunks: {
       initializeUserThunk: vi.fn(),
+      setUserThunk: vi.fn(),
     },
   }));
 
@@ -287,7 +285,7 @@ describe('signUp', () => {
 
     vi.spyOn(globalThis, 'fetch').mockReturnValue(Promise.resolve(mockRes));
 
-    const spy = vi.spyOn(userActions, 'setUser');
+    const spy = vi.spyOn(userThunks, 'setUserThunk');
 
     const result = await authService.signUp(params);
 
