@@ -56,7 +56,7 @@ describe('Retired checkout prices', () => {
 
     rewriteDeprecatedPlanId(DEPRECATED_PLAN_IDS);
 
-    expect(window.history.length).toBe(entriesBefore);
+    expect(window.history).toHaveLength(entriesBefore);
   });
 
   it('leaves a checkout opened with a price still on sale untouched', () => {

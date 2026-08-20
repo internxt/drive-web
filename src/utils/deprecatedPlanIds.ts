@@ -14,7 +14,7 @@ export function rewriteDeprecatedPlanId(deprecatedPlanIds: Record<string, string
   const params = new URLSearchParams(currentLocation.search);
   const planId = params.get('planId');
 
-  if (!planId || !Object.prototype.hasOwnProperty.call(deprecatedPlanIds, planId)) {
+  if (!planId || !Object.hasOwn(deprecatedPlanIds, planId)) {
     return;
   }
 
