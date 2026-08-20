@@ -5,8 +5,9 @@ import { ChangePasswordWithLinkPayload } from '@internxt/sdk';
 import { getKeys } from 'app/crypto/services/keys.service';
 import { encryptText, encryptTextWithKey, passToHash } from 'app/crypto/services/utils';
 import { validateMnemonic } from 'bip39';
-import { encryptMessageWithPublicKey, hybridEncryptMessageWithPublicKey } from 'app/crypto/services/pgp.service';
+import { encryptMessageWithPublicKey } from 'app/crypto/services/pgp.service';
 import encryptedStorageService from 'services/encrypted-storage.service';
+import { encryptMnemonic } from 'app/share/services/share.crypto';
 
 /**
  * Interface representing the backup data structure
@@ -39,8 +40,8 @@ export interface BackupData {
  * @returns {void}
  * @throws {Error} Implicitly throws if file saving fails
  */
-export function handleExportBackupKey(translate) {
-  const user = encryptedStorageService.getUser();
+export async function handleExportBackupKey(translate) {
+  const user = await encryptedStorageService.getUser();
   const mnemonic = user?.mnemonic;
 
   if (!mnemonic || !user) {
@@ -161,7 +162,7 @@ export const prepareOldBackupRecoverPayloadForBackend = async ({
 
     const generatedKeys = await getKeys(password);
     const eccPublicKeyInBase64 = generatedKeys.ecc.publicKey;
-    const kyberPublicKeyInBase64 = generatedKeys.kyber.publicKey;
+    const kyberPublicKeyInBase64 = generatedKeys.kyber.publicKey ?? undefined;
     const eccEncryptedMnemonic = await encryptMessageWithPublicKey({
       message: mnemonic,
       publicKeyInBase64: generatedKeys.ecc.publicKey,
@@ -169,11 +170,7 @@ export const prepareOldBackupRecoverPayloadForBackend = async ({
 
     const base64EccEncryptedMnemonic = btoa(eccEncryptedMnemonic as string);
 
-    const hybridEncryptedMnemonic = await hybridEncryptMessageWithPublicKey({
-      message: mnemonic,
-      publicKeyInBase64: eccPublicKeyInBase64,
-      publicKyberKeyBase64: kyberPublicKeyInBase64 as string,
-    });
+    const hybridEncryptedMnemonic = await encryptMnemonic(mnemonic, eccPublicKeyInBase64, kyberPublicKeyInBase64);
 
     return {
       token,

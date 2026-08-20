@@ -58,7 +58,7 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
       const publicKeyResponse = await userService.getPublicKeyWithPrecreation(payload.sharedWith);
 
       const publicKey = publicKeyResponse.publicKey;
-      const publicKyberKey = publicKeyResponse?.publicKyberKey ?? '';
+      const publicKyberKey = publicKeyResponse?.publicKyberKey ?? undefined;
 
       const encryptedBucketKeyInBase64 = await encryptBucketKey(mnemonic, bucket, publicKey, publicKyberKey);
 
