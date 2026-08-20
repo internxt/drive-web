@@ -236,65 +236,38 @@ describe('Testing the encrypted storage service', () => {
       emailVerified: true,
     };
 
+    const stringifyMockedUser = JSON.stringify(mockUserSettings);
+
     test('When the user data exists in cache, then the user is returned', async () => {
       await encryptedStorageService.setUser(mockUserSettings);
 
       const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
 
-      const userFromLocalStorage = await encryptedStorageService.getUser();
+      const userFromLocalStorage = encryptedStorageService.getUser();
 
       expect(getFromLocalStorageSpy).not.toHaveBeenCalled();
       expect(userFromLocalStorage).toStrictEqual(mockUserSettings);
     });
 
-    test('When the user data exists in encryptede storage but not in cache, then the user is decrypted and returned', async () => {
-      const key = LocalStorageProtectedItem.EncryptedUser;
-      await encryptedStorageService.setUser(mockUserSettings);
-      const data = localStorage.getItem(key);
-      encryptedStorageService.clear();
-      localStorage.setItem(key, data as string);
-
-      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
-      const cryptoSpy = vi.spyOn(window.crypto.subtle, 'decrypt');
-
-      const userFromLocalStorage = await encryptedStorageService.getUser();
-
-      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(key);
-      expect(cryptoSpy).toHaveBeenCalled();
-      expect(data).not.toBe(JSON.stringify(mockUserSettings));
-      expect(userFromLocalStorage).toStrictEqual(mockUserSettings);
-    });
-
-    test('When encrypted user is missing but unencrypted legacy user exists, then it migrates and returns it', async () => {
+    test('When the user data exists in local storage, then the user is migrated to encrypted storage and returned', async () => {
       const key = LocalStorageProtectedItem.User;
       localStorage.setItem(key, JSON.stringify(mockUserSettings));
 
       const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
 
-      const userFromLocalStorage = await encryptedStorageService.getUser();
+      const userFromLocalStorage = encryptedStorageService.getUser();
 
-      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(key);
-      expect(userFromLocalStorage).toStrictEqual(mockUserSettings);
-      expect(localStorage.getItem(LocalStorageProtectedItem.User)).toBeNull();
-      expect(localStorage.getItem(LocalStorageProtectedItem.EncryptedUser)).not.toBeNull();
+      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageProtectedItem.User);
+      expect(userFromLocalStorage).toStrictEqual(JSON.parse(stringifyMockedUser));
     });
 
-    test('When the user data does not exist in encrypted storage, then nothing (null) is returned', async () => {
+    test('When the user data does not exist in local storage, then nothing (null) is returned', () => {
       const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
 
-      encryptedStorageService.clear();
-      const userFromLocalStorage = await encryptedStorageService.getUser();
+      localStorage.removeItem(LocalStorageProtectedItem.User);
+      const userFromLocalStorage = encryptedStorageService.getUser();
 
-      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageProtectedItem.EncryptedUser);
-      expect(userFromLocalStorage).toBeNull();
-    });
-
-    test('When legacy unencrypted user is invalid JSON, then getUser returns null', async () => {
-      encryptedStorageService.clear();
-      localStorage.setItem(LocalStorageProtectedItem.User, 'not-valid-json');
-
-      const userFromLocalStorage = await encryptedStorageService.getUser();
-
+      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(LocalStorageProtectedItem.User);
       expect(userFromLocalStorage).toBeNull();
     });
   });

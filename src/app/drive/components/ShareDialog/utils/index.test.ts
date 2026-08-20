@@ -1,5 +1,6 @@
 import { describe, expect, test, vi, beforeEach, afterEach } from 'vitest';
 import { cropSharedName, isAdvancedShareItem, getLocalUserData, filterEditorAndReader } from '.';
+import { localStorageService } from 'services';
 import { DriveItemData } from 'app/drive/types';
 import { AdvancedSharedItem } from 'app/share/types';
 import { Role } from '@internxt/sdk/dist/drive/share/types';
@@ -92,7 +93,7 @@ describe('Get the local user data', () => {
     vi.clearAllMocks();
   });
 
-  test('When user data exists in local storage, then returns formatted owner data', async () => {
+  test('When user data exists in local storage, then returns formatted owner data', () => {
     const mockUser = {
       name: 'John',
       lastname: 'Doe',
@@ -100,9 +101,9 @@ describe('Get the local user data', () => {
       avatar: 'avatar-url',
       uuid: 'user-uuid-123',
     } as UserSettings;
-    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue(mockUser);
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(mockUser);
 
-    const result = await getLocalUserData();
+    const result = getLocalUserData();
 
     expect(result).toEqual({
       name: 'John',
@@ -120,7 +121,7 @@ describe('Get the local user data', () => {
     });
   });
 
-  test('When user has no avatar, then returns owner data with null avatar', async () => {
+  test('When user has no avatar, then returns owner data with null avatar', () => {
     const mockUser = {
       name: 'Bob',
       lastname: 'Johnson',
@@ -128,9 +129,9 @@ describe('Get the local user data', () => {
       avatar: null,
       uuid: 'user-uuid-789',
     } as UserSettings;
-    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue(mockUser);
+    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(mockUser);
 
-    const result = await getLocalUserData();
+    const result = getLocalUserData();
 
     expect(result.avatar).toBeNull();
   });

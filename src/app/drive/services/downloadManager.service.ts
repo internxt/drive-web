@@ -181,7 +181,7 @@ export class DownloadManagerService {
       }
     }
 
-    const user = await encryptedStorageService.getUser();
+    const user = encryptedStorageService.getUser();
     if (!user) throw new Error('User not found');
 
     const userCredentials: DownloadCredentials = {

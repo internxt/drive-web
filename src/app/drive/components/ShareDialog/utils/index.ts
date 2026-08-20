@@ -17,8 +17,8 @@ export const isAdvancedShareItem = (item: DriveItemData | AdvancedSharedItem): i
   return item['encryptionKey'];
 };
 
-export const getLocalUserData = async () => {
-  const user = (await encryptedStorageService.getUser()) as UserSettings;
+export const getLocalUserData = () => {
+  const user = encryptedStorageService.getUser() as UserSettings;
   const ownerData = {
     name: user.name,
     lastname: user.lastname,

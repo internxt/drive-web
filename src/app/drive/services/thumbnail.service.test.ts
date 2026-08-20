@@ -6,7 +6,6 @@ import fetchFileBlob from './download.service/fetchFileBlob';
 import { ErrorLoadingVideoFileError } from './errors/thumbnail.service.errors';
 import { downloadPublicThumbnail, downloadThumbnail, getImageThumbnail, getVideoFrame } from './thumbnail.service';
 import encryptedStorageService from 'services/encrypted-storage.service';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 vi.mock('react-image-file-resizer', () => ({
   default: { imageFileResizer: vi.fn() },
@@ -283,7 +282,7 @@ describe('Thumbnail Service', () => {
     });
 
     test('When downloading thumbnail in workspace context with workspace bucket, then it uses workspace credentials', async () => {
-      vi.mocked(encryptedStorageService.getUser).mockResolvedValue({ bucket: personalBucket } as UserSettings);
+      vi.mocked(encryptedStorageService.getUser).mockReturnValue({ bucket: personalBucket } as any);
 
       await downloadThumbnail(mockThumbnail, true);
 
@@ -304,7 +303,7 @@ describe('Thumbnail Service', () => {
         bucket_id: personalBucket,
       };
 
-      vi.mocked(encryptedStorageService.getUser).mockResolvedValue({ bucket: personalBucket } as UserSettings);
+      vi.mocked(encryptedStorageService.getUser).mockReturnValue({ bucket: personalBucket } as any);
 
       await downloadThumbnail(thumbnailInPersonalBucket, true);
 
@@ -320,7 +319,7 @@ describe('Thumbnail Service', () => {
     });
 
     test('When downloading thumbnail in personal context, then it uses personal credentials', async () => {
-      vi.mocked(encryptedStorageService.getUser).mockResolvedValue({ bucket: personalBucket } as UserSettings);
+      vi.mocked(encryptedStorageService.getUser).mockReturnValue({ bucket: personalBucket } as any);
 
       await downloadThumbnail(mockThumbnail, false);
 

@@ -73,8 +73,8 @@ const navigationService = {
       errorService.reportError(error);
     }
   },
-  async setWorkspaceFromParams(workspaceThunks, dispatch: AppDispatch, updateUrl = true): Promise<void> {
-    const user = await encryptedStorageService.getUser();
+  setWorkspaceFromParams(workspaceThunks, dispatch: AppDispatch, updateUrl = true): void {
+    const user = encryptedStorageService.getUser();
     const params = new URLSearchParams(globalThis.location.search);
     const [currentWorkspaceUuid] = params.getAll('workspaceid');
     user &&

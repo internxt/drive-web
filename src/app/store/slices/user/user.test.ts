@@ -7,7 +7,7 @@ import { beforeEach, describe, expect, it, test, vi } from 'vitest';
 
 import { vi as _vi } from 'vitest';
 import { auth, TokenStatus } from '@internxt/lib';
-import { refreshAvatarThunk, refreshUserThunk, userThunks } from 'app/store/slices/user';
+import { refreshAvatarThunk, refreshUserThunk, userActions, userThunks } from 'app/store/slices/user';
 import { errorService, userService } from 'services';
 import encryptedStorageService from 'services/encrypted-storage.service';
 
@@ -22,7 +22,6 @@ describe('user thunks', () => {
     name: 'John',
     lastname: 'Doe',
     emailVerified: false,
-    createdAt: new Date(),
   };
 
   let getStateWithUser: () => RootState;
@@ -30,7 +29,6 @@ describe('user thunks', () => {
   let setUserThunkSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    vi.restoreAllMocks();
     const state: Partial<RootState> = {
       user: {
         isAuthenticated: true,
@@ -216,7 +214,7 @@ describe('user thunks', () => {
       await userThunks.setUserThunk(baseUser as UserSettings)(dispatchMock, getStateWithUser, undefined);
 
       expect(setUserSpy).toHaveBeenCalledWith(baseUser);
-      expect(setUserThunkSpy).toHaveBeenCalledWith(baseUser as UserSettings);
+      expect(dispatchMock).toHaveBeenCalledWith(userActions.setUser(baseUser as UserSettings));
     });
   });
 
@@ -242,10 +240,7 @@ describe('user thunks', () => {
         }),
       );
       expect(dispatchMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          type: 'user/setUser',
-          payload: expect.objectContaining({ email: 'new@example.com' }),
-        }),
+        userActions.setUser(expect.objectContaining({ email: 'new@example.com' }) as unknown as UserSettings),
       );
     });
   });

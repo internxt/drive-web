@@ -210,8 +210,8 @@ describe('Testing GA Service', () => {
 
   describe('trackPurchase function', () => {
     describe('Successful tracking', () => {
-      it('should push purchase event to dataLayer with correct transaction and item data', async () => {
-        vi.mocked(encryptedStorageService.getUser).mockResolvedValue({
+      it('should push purchase event to dataLayer with correct transaction and item data', () => {
+        vi.mocked(encryptedStorageService.getUser).mockReturnValue({
           uuid: 'user_uuid_123',
           email: 'test@example.com',
         } as UserSettings);
@@ -235,7 +235,7 @@ describe('Testing GA Service', () => {
           return store[key] || null;
         });
 
-        await gaService.trackPurchase();
+        gaService.trackPurchase();
 
         expect(globalThis.window.dataLayer).toHaveLength(1);
         const event = globalThis.window.dataLayer[0] as any;
@@ -263,8 +263,8 @@ describe('Testing GA Service', () => {
         });
       });
 
-      it('should use payment intent as transaction ID when available (lifetime plan)', async () => {
-        vi.mocked(encryptedStorageService.getUser).mockResolvedValue({ uuid: 'user_uuid' } as UserSettings);
+      it('should use payment intent as transaction ID when available (lifetime plan)', () => {
+        vi.mocked(encryptedStorageService.getUser).mockReturnValue({ uuid: 'user_uuid' } as UserSettings);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'paymentIntentId') return 'pi_999';
           if (key === 'subscriptionId') return 'sub_888';
@@ -280,14 +280,14 @@ describe('Testing GA Service', () => {
           return '';
         });
 
-        await gaService.trackPurchase();
+        gaService.trackPurchase();
 
         const event = globalThis.window.dataLayer[0] as any;
         expect(event.ecommerce.transaction_id).toBe('pi_999');
       });
 
-      it('should use subscription ID when payment intent is not available', async () => {
-        vi.mocked(encryptedStorageService.getUser).mockResolvedValue({ uuid: 'user_uuid' } as UserSettings);
+      it('should use subscription ID when payment intent is not available', () => {
+        vi.mocked(encryptedStorageService.getUser).mockReturnValue({ uuid: 'user_uuid' } as UserSettings);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'paymentIntentId') return null;
           if (key === 'subscriptionId') return 'sub_888';
@@ -303,14 +303,14 @@ describe('Testing GA Service', () => {
           return '';
         });
 
-        await gaService.trackPurchase();
+        gaService.trackPurchase();
 
         const event = globalThis.window.dataLayer[0] as any;
         expect(event.ecommerce.transaction_id).toBe('sub_888');
       });
 
-      it('should build a unique transaction ID per purchase when payment identifiers are missing, so repeat purchases by the same user are not discarded as duplicates', async () => {
-        vi.mocked(encryptedStorageService.getUser).mockResolvedValueOnce({ uuid: 'user_fallback_uuid' } as any);
+      it('should build a unique transaction ID per purchase when payment identifiers are missing, so repeat purchases by the same user are not discarded as duplicates', () => {
+        vi.mocked(encryptedStorageService.getUser).mockReturnValue({ uuid: 'user_fallback_uuid' } as UserSettings);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'paymentIntentId') return null;
           if (key === 'subscriptionId') return null;
@@ -326,14 +326,14 @@ describe('Testing GA Service', () => {
           return '';
         });
 
-        await gaService.trackPurchase();
+        gaService.trackPurchase();
 
         const event = globalThis.window.dataLayer[0] as any;
         expect(event.ecommerce.transaction_id).toMatch(/^user_fallback_uuid-\d+$/);
       });
 
-      it('should set user email for Enhanced Conversions when available', async () => {
-        vi.mocked(encryptedStorageService.getUser).mockResolvedValue({
+      it('should set user email for Enhanced Conversions when available', () => {
+        vi.mocked(encryptedStorageService.getUser).mockReturnValue({
           uuid: 'user_123',
           email: 'customer@example.com',
         } as UserSettings);
@@ -350,15 +350,15 @@ describe('Testing GA Service', () => {
           return 'dummy_value';
         });
 
-        await gaService.trackPurchase();
+        gaService.trackPurchase();
 
         expect(globalThis.window.gtag).toHaveBeenCalledWith('set', 'user_data', {
           email: 'customer@example.com',
         });
       });
 
-      it('should clean up localStorage after successful tracking', async () => {
-        vi.mocked(encryptedStorageService.getUser).mockResolvedValue({ uuid: 'user_123' } as UserSettings);
+      it('should clean up localStorage after successful tracking', () => {
+        vi.mocked(encryptedStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as UserSettings);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'amountPaid') return '100';
           if (key === 'itemOriginalPrice') return '119.88';
@@ -372,14 +372,14 @@ describe('Testing GA Service', () => {
           return 'dummy';
         });
 
-        await gaService.trackPurchase();
+        gaService.trackPurchase();
 
         expect(localStorageService.removeItem).toHaveBeenCalledWith('checkout_item_data');
         expect(localStorageService.removeItem).toHaveBeenCalledWith('itemOriginalPrice');
       });
 
-      it('should use fallback values when checkout item data is not available', async () => {
-        vi.mocked(encryptedStorageService.getUser).mockResolvedValue({ uuid: 'user_123' } as UserSettings);
+      it('should use fallback values when checkout item data is not available', () => {
+        vi.mocked(encryptedStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as UserSettings);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'checkout_item_data') return null;
           if (key === 'amountPaid') return '100';
@@ -387,13 +387,13 @@ describe('Testing GA Service', () => {
           return 'dummy';
         });
 
-        await gaService.trackPurchase();
+        gaService.trackPurchase();
 
         expect(globalThis.window.dataLayer).toHaveLength(0);
       });
 
-      it('should use original price from localStorage instead of amount paid', async () => {
-        vi.mocked(encryptedStorageService.getUser).mockResolvedValue({ uuid: 'user_123' } as UserSettings);
+      it('should use original price from localStorage instead of amount paid', () => {
+        vi.mocked(encryptedStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as UserSettings);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'amountPaid') return '0';
           if (key === 'itemOriginalPrice') return '119.88';
@@ -407,22 +407,22 @@ describe('Testing GA Service', () => {
           return 'dummy';
         });
 
-        await gaService.trackPurchase();
+        gaService.trackPurchase();
 
         const event = globalThis.window.dataLayer[0] as any;
         expect(event.ecommerce.items[0].price).toBe(119.88);
         expect(event.ecommerce.value).toBe(0);
       });
 
-      it('should not track when checkout data is missing (already tracked)', async () => {
+      it('should not track when checkout data is missing (already tracked)', () => {
         const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-        vi.mocked(encryptedStorageService.getUser).mockResolvedValue({ uuid: 'user_123' } as UserSettings);
+        vi.mocked(encryptedStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as UserSettings);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'checkout_item_data') return null;
           return 'dummy';
         });
 
-        await gaService.trackPurchase();
+        gaService.trackPurchase();
 
         expect(globalThis.window.dataLayer).toHaveLength(0);
         expect(consoleWarnSpy).toHaveBeenCalledWith(
@@ -434,11 +434,11 @@ describe('Testing GA Service', () => {
     });
 
     describe('Validation & Error Handling', () => {
-      it('should not track when user is not logged in', async () => {
+      it('should not track when user is not logged in', () => {
         const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-        vi.mocked(encryptedStorageService.getUser).mockResolvedValue(null);
+        vi.mocked(encryptedStorageService.getUser).mockReturnValue(null);
 
-        await gaService.trackPurchase();
+        gaService.trackPurchase();
 
         expect(globalThis.window.dataLayer).toHaveLength(0);
         expect(globalThis.window.gtag).not.toHaveBeenCalled();
@@ -447,9 +447,9 @@ describe('Testing GA Service', () => {
         consoleWarnSpy.mockRestore();
       });
 
-      it('should not track when gtag is not available', async () => {
+      it('should not track when gtag is not available', () => {
         const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-        vi.mocked(encryptedStorageService.getUser).mockResolvedValue({ uuid: 'user_123' } as UserSettings);
+        vi.mocked(encryptedStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as UserSettings);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'amountPaid') return '100';
           if (key === 'itemOriginalPrice') return '119.88';
@@ -464,16 +464,16 @@ describe('Testing GA Service', () => {
         });
         globalThis.window.gtag = undefined as any;
 
-        await gaService.trackPurchase();
+        gaService.trackPurchase();
 
         expect(consoleWarnSpy).toHaveBeenCalled();
 
         consoleWarnSpy.mockRestore();
       });
 
-      it('should handle errors gracefully when dataLayer fails', async () => {
+      it('should handle errors gracefully when dataLayer fails', () => {
         const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-        vi.mocked(encryptedStorageService.getUser).mockResolvedValue({ uuid: 'user_123' } as UserSettings);
+        vi.mocked(encryptedStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as UserSettings);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'amountPaid') return '100';
           if (key === 'itemOriginalPrice') return '119.88';
@@ -493,17 +493,17 @@ describe('Testing GA Service', () => {
         };
         globalThis.window.dataLayer = mockDataLayer as any;
 
-        await expect(gaService.trackPurchase()).resolves.not.toThrow();
+        expect(() => gaService.trackPurchase()).not.toThrow();
         expect(mockDataLayer.push).toHaveBeenCalled();
         expect(consoleErrorSpy).toHaveBeenCalled();
 
         consoleErrorSpy.mockRestore();
       });
 
-      it('should handle invalid JSON in checkout_item_data gracefully', async () => {
+      it('should handle invalid JSON in checkout_item_data gracefully', () => {
         const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
         const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-        vi.mocked(encryptedStorageService.getUser).mockResolvedValue({ uuid: 'user_123' } as UserSettings);
+        vi.mocked(encryptedStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as UserSettings);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'checkout_item_data') return 'invalid-json{';
           if (key === 'amountPaid') return '100';
@@ -511,7 +511,7 @@ describe('Testing GA Service', () => {
           return 'dummy';
         });
 
-        await gaService.trackPurchase();
+        gaService.trackPurchase();
 
         expect(consoleErrorSpy).toHaveBeenCalled();
 

@@ -31,7 +31,6 @@ import { DownloadManager } from 'app/network/DownloadManager';
 import { getIsTypeAllowedAndFileExtensionGroupValues } from './utils/fileViewerUtils';
 import { FileExtensionGroup } from 'app/drive/types/file-types';
 import encryptedStorageService from 'services/encrypted-storage.service';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 const SPECIAL_MIME_TYPES = ['heic'];
 
@@ -73,11 +72,7 @@ const FileViewerWrapper = ({
 
   const [blob, setBlob] = useState<Blob | null>(null);
 
-  const [user, setUser] = useState<UserSettings | null>(null);
-
-  useEffect(() => {
-    encryptedStorageService.getUser().then(setUser);
-  }, []);
+  const user = encryptedStorageService.getUser();
 
   const driveItemActions = useDriveItemActions(currentFile);
   const fileContentManager = getFileContentManager(currentFile, downloadFile);

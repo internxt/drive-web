@@ -4,27 +4,22 @@ import { AppView } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import { isMobile } from 'react-device-detect';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import AnimatedBackground from 'components/AnimatedBackground';
 import encryptedStorageService from 'services/encrypted-storage.service';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 const OAuthLinkView = (): JSX.Element => {
   const { translate } = useTranslationContext();
-  const [user, setUser] = useState<UserSettings | null>(null);
+  const user = useMemo(() => encryptedStorageService.getUser(), []);
 
   const urlParams = new URLSearchParams(globalThis.location.search);
 
   useEffect(() => {
-    encryptedStorageService.getUser().then((fetchedUser) => {
-      if (!fetchedUser) {
-        const params = urlParams.toString();
-        navigationService.history.replace(`${AppView.Login}${params ? '?' + params : ''}`);
-        return;
-      }
-      setUser(fetchedUser);
-    });
-  }, []);
+    if (!user) {
+      const params = urlParams.toString();
+      navigationService.history.replace(`${AppView.Login}${params ? '?' + params : ''}`);
+    }
+  }, [user]);
 
   if (!user) return <></>;
 

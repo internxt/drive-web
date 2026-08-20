@@ -68,10 +68,10 @@ const DriveView = (props: DriveViewProps) => {
   }, [fileViewer]);
 
   useEffect(() => {
-    const handlePopState = async (e: PopStateEvent) => {
+    const handlePopState = (e: PopStateEvent) => {
       e.preventDefault();
       if (!isFileView && !isFolderView && !isOverviewSubsection) {
-        await navigationService.setWorkspaceFromParams(workspaceThunks, dispatch, false);
+        navigationService.setWorkspaceFromParams(workspaceThunks, dispatch, false);
       }
     };
     globalThis.addEventListener('popstate', handlePopState);

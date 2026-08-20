@@ -45,8 +45,8 @@ export const useDownloadBackupKeys = (translate: Translate) => {
     closeDialog(ActionDialog.DownloadBackupKey, { closeAllDialogsFirst: true });
   };
 
-  const onDownloadBackupKeysButtonClicked = async () => {
-    await handleExportBackupKey(translate);
+  const onDownloadBackupKeysButtonClicked = () => {
+    handleExportBackupKey(translate);
     setIsDownloadedKeys(true);
   };
 

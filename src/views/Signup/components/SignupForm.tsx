@@ -211,7 +211,7 @@ function SignUpForm(): JSX.Element {
     handleVPNAuth(isVPNAuth, xNewToken);
 
     if (isOAuthFlow && xNewToken) {
-      const user = await encryptedStorageService.getUser();
+      const user = encryptedStorageService.getUser();
       if (user) {
         const success = handleOAuthSuccess(user, xNewToken);
         if (!success) {
