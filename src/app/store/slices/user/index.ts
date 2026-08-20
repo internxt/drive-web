@@ -252,9 +252,13 @@ export const userSlice = createSlice({
         state.isAuthenticated = !!action.payload;
         state.user = action.payload;
       },
-      prepare: (user: UserSettings) => ({
-        payload: { ...user, createdAt: new Date(user.createdAt).toISOString() } as unknown as UserSettings,
-      }),
+      prepare: (user: UserSettings) => {
+        const createdAt =
+          user.createdAt && !Number.isNaN(new Date(user.createdAt).getTime())
+            ? new Date(user.createdAt).toISOString()
+            : new Date().toISOString();
+        return { payload: { ...user, createdAt } as unknown as UserSettings };
+      },
     },
     resetState: (state: UserState) => {
       Object.assign(state, initialState);
