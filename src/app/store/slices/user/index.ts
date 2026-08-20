@@ -254,7 +254,7 @@ export const userSlice = createSlice({
       },
       prepare: (user: UserSettings) => {
         const createdAt =
-          user.createdAt && !isNaN(new Date(user.createdAt).getTime())
+          user.createdAt && !Number.isNaN(new Date(user.createdAt).getTime())
             ? new Date(user.createdAt).toISOString()
             : new Date().toISOString();
         return { payload: { ...user, createdAt } as unknown as UserSettings };
