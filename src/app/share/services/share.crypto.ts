@@ -25,6 +25,7 @@ export const decryptMnemonic = async (encryptionKey: string): Promise<string | u
         privateKyberKeyInBase64,
       });
     } catch (err) {
+      console.error('Mnemonic decryptin failed, falling back to user mnemonic', err);
       decryptedKey = user.mnemonic;
     }
     return decryptedKey;
