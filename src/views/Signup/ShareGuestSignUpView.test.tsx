@@ -122,10 +122,6 @@ vi.mock('app/share/services/share.service', () => ({
   validateSharingInvitation: vi.fn(),
 }));
 
-vi.mock('app/share/services/share.crypto', () => ({
-  decryptMnemonic: vi.fn(),
-}));
-
 vi.mock('services/navigation.service', () => ({
   default: {
     push: vi.fn(),
