@@ -13,7 +13,7 @@ import { generateFileBucketKey } from 'app/network/crypto';
 import { FileKey } from 'app/network/types/helper-types';
 
 export const decryptMnemonic = async (encryptionKey: string): Promise<string | undefined> => {
-  const user = encryptedStorageService.getUser();
+  const user = await encryptedStorageService.getUser();
   if (user) {
     let decryptedKey;
     try {
@@ -25,6 +25,7 @@ export const decryptMnemonic = async (encryptionKey: string): Promise<string | u
         privateKyberKeyInBase64,
       });
     } catch (err) {
+      console.error('Mnemonic decryptin failed, falling back to user mnemonic', err);
       decryptedKey = user.mnemonic;
     }
     return decryptedKey;
@@ -36,7 +37,7 @@ export const decryptMnemonic = async (encryptionKey: string): Promise<string | u
 export const encryptMnemonic = async (
   mnemonic: string,
   publicKeyInBase64: string,
-  publicKyberKeyBase64: string,
+  publicKyberKeyBase64?: string,
 ): Promise<string> => {
   return hybridEncryptMessageWithPublicKey({
     message: mnemonic,
@@ -70,7 +71,7 @@ const handleError = (err: unknown, keyLabel: string) => {
 };
 
 export const decryptBucketKey = async (encryptionKey: string): Promise<Uint8Array | undefined> => {
-  const user = encryptedStorageService.getUser();
+  const user = await encryptedStorageService.getUser();
   if (user) {
     let decryptedKey;
     try {
