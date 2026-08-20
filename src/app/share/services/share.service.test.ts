@@ -16,12 +16,12 @@ import { downloadFile } from 'app/network/download';
 import { FlatFolderZip } from 'services/zip.service';
 import { AdvancedSharedItem } from '../types';
 import shareService, {
-  decryptMnemonic,
   derivePublicSharingKey,
   downloadPublicSharedFolder,
   downloadPublicSharedItems,
   getPublicShareLink,
 } from './share.service';
+import { decryptMnemonic } from './share.crypto';
 import { stringUtils, aes } from '@internxt/lib';
 import notificationsService from 'app/notifications/services/notifications.service';
 import { SharedFiles, SharingMeta } from '@internxt/sdk/dist/drive/share/types';

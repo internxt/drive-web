@@ -12,7 +12,7 @@ import {
   saveWorkspaceAvatarToDatabase,
 } from '../../../../views/NewSettings/components/Sections/Workspace/Overview/components/WorkspaceAvatarWrapper';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
-import { decryptMnemonic } from '../../../share/services/share.service';
+import { decryptMnemonic } from '../../../share/services/share.crypto';
 import { planThunks } from '../plan';
 import sessionThunks from '../session/session.thunks';
 import workspacesSelectors from './workspaces.selectors';
