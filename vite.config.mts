@@ -2,19 +2,33 @@ import react from '@vitejs/plugin-react';
 import dotenv from 'dotenv';
 import fs from 'node:fs';
 import path from 'node:path';
-import { defineConfig } from 'vite';
+import { defineConfig, Plugin } from 'vite';
 import obfuscator from 'vite-plugin-bundle-obfuscator';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 import svgr from 'vite-plugin-svgr';
+import { DEPRECATED_PLAN_IDS, rewriteDeprecatedPlanId } from './src/utils/deprecatedPlanIds';
 
 dotenv.config();
 
 const ASSETS_DIR = 'static';
 
+const deprecatedPlanIdsPlugin = (): Plugin => ({
+  name: 'deprecated-plan-ids',
+  transformIndexHtml: () => [
+    {
+      tag: 'script',
+      attrs: { 'data-cfasync': 'false' },
+      children: `(${rewriteDeprecatedPlanId.toString()})(${JSON.stringify(DEPRECATED_PLAN_IDS)});`,
+      injectTo: 'head-prepend',
+    },
+  ],
+});
+
 export default defineConfig({
   base: process.env.PUBLIC_URL ?? '/',
   plugins: [
+    deprecatedPlanIdsPlugin(),
     react(),
     svgr(),
     nodePolyfills({
