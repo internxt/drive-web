@@ -21,7 +21,7 @@ export async function getEnvironmentConfig(isWorkspace?: boolean): Promise<Envir
     };
   }
 
-  const user = encryptedStorageService.getUser() as UserSettings;
+  const user = (await encryptedStorageService.getUser()) as UserSettings;
 
   return {
     bridgeUser: user.bridgeUser,
