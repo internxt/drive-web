@@ -232,7 +232,7 @@ export const readReferalCookie = (): string | undefined => {
 };
 
 export const getSalt = async (): Promise<string> => {
-  const email = encryptedStorageService.getUser()?.email;
+  const email = (await encryptedStorageService.getUser())?.email;
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(String(email));
   return decryptText(securityDetails.encryptedSalt);
@@ -380,7 +380,7 @@ const resetAccountWithToken = async (token: string | undefined, newPassword: str
 };
 
 export const changePassword = async (newPassword: string, currentPassword: string): Promise<void> => {
-  const user = encryptedStorageService.getUser();
+  const user = await encryptedStorageService.getUser();
   if (!user) {
     throw new Error('No user in local storage');
   }
@@ -426,8 +426,8 @@ export const changePassword = async (newPassword: string, currentPassword: strin
     });
 };
 
-export const userHas2FAStored = (): Promise<SecurityDetails> => {
-  const email = encryptedStorageService.getUser()?.email;
+export const userHas2FAStored = async (): Promise<SecurityDetails> => {
+  const email = (await encryptedStorageService.getUser())?.email;
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   return authClient.securityDetails(<string>email);
 };
