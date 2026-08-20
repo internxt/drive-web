@@ -50,7 +50,7 @@ export const encryptBucketKey = async (
   mnemonic: string,
   bucketId: string,
   publicKeyInBase64: string,
-  publicKyberKeyBase64: string,
+  publicKyberKeyBase64?: string,
 ): Promise<string> => {
   const bucketKey = await generateFileBucketKey(mnemonic, bucketId);
   return encryptBucketKeyHybrid({

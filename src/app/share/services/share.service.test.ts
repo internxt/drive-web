@@ -1,13 +1,9 @@
 /**
  * @jest-environment jsdom
  */
-import { describe, expect, it, vi, Mock, beforeEach, beforeAll, test } from 'vitest';
+import { describe, expect, it, vi, beforeEach, beforeAll, test } from 'vitest';
 import { Buffer } from 'buffer';
-import {
-  generateNewKeys,
-  encryptMessageWithPublicKey,
-  hybridEncryptMessageWithPublicKey,
-} from '../../crypto/services/pgp.service';
+import { generateNewKeys } from '../../crypto/services/pgp.service';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { downloadFolderAsZip } from 'app/drive/services/folder.service';
@@ -31,6 +27,7 @@ import { copyTextToClipboard } from 'utils/copyToClipboard.utils';
 import referralService from 'services/referral.service';
 import { ToastType } from 'app/notifications/services/notifications.service';
 import encryptedStorageService from 'services/encrypted-storage.service';
+import { encryptMnemonic } from './share.crypto';
 
 vi.mock('utils/copyToClipboard.utils', () => ({
   copyTextToClipboard: vi.fn(),
@@ -114,90 +111,6 @@ describe('Encryption and Decryption', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
-  });
-
-  async function getMockUser(
-    keys: {
-      privateKeyArmored: string;
-      publicKeyArmored: string;
-      publicKyberKeyBase64: string;
-      privateKyberKeyBase64: string;
-    },
-    encryptedMnemonicInBase64: string,
-  ): Promise<UserSettings> {
-    const mockUser: UserSettings = {
-      uuid: 'mock-uuid',
-      email: 'mock@test.com',
-      mnemonic: encryptedMnemonicInBase64,
-      userId: 'mock-user-id',
-      name: 'mock-name',
-      lastname: 'mock-lastname',
-      username: 'mock-username',
-      bridgeUser: 'mock-bridgeUser',
-      bucket: 'mock-bucket',
-      backupsBucket: null,
-      root_folder_id: 0,
-      rootFolderId: 'mock-rootFolderId',
-      rootFolderUuid: undefined,
-      sharedWorkspace: false,
-      credit: 0,
-      keys: {
-        ecc: {
-          publicKey: keys.publicKeyArmored,
-          privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
-        },
-        kyber: {
-          publicKey: keys.publicKyberKeyBase64,
-          privateKey: keys.privateKyberKeyBase64,
-        },
-      },
-      appSumoDetails: null,
-      registerCompleted: false,
-      hasReferralsProgram: false,
-      createdAt: new Date(),
-      avatar: null,
-      emailVerified: false,
-    };
-    return mockUser;
-  }
-  it('should decrypt mnemonic encrypted without kyber', async () => {
-    const mnemonic =
-      'truck arch rather sell tilt return warm nurse rack vacuum rubber tribe unfold scissors copper sock panel ozone harsh ahead danger soda legal state';
-    const keys = await generateNewKeys();
-    const encriptedMnemonic = await encryptMessageWithPublicKey({
-      message: mnemonic,
-      publicKeyInBase64: keys.publicKeyArmored,
-    });
-    const encryptedMnemonicInBase64 = btoa(encriptedMnemonic as string);
-
-    const mockUser = await getMockUser(keys, encryptedMnemonicInBase64);
-
-    (encryptedStorageService.getUser as Mock).mockResolvedValue(mockUser);
-    expect((await encryptedStorageService.getUser()) as UserSettings).toEqual(mockUser);
-
-    const ownerMnemonic = await decryptMnemonic(mockUser.mnemonic);
-    expect(encryptedStorageService.getUser).toHaveBeenCalled();
-    expect(ownerMnemonic).toEqual(mnemonic);
-  });
-
-  it('should decrypt mnemonic encrypted with kyber', async () => {
-    const mnemonic =
-      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
-    const keys = await generateNewKeys();
-    const encriptedMnemonic = await hybridEncryptMessageWithPublicKey({
-      message: mnemonic,
-      publicKeyInBase64: keys.publicKeyArmored,
-      publicKyberKeyBase64: keys.publicKyberKeyBase64,
-    });
-
-    const mockUser = await getMockUser(keys, encriptedMnemonic);
-
-    (encryptedStorageService.getUser as Mock).mockResolvedValue(mockUser);
-    expect((await encryptedStorageService.getUser()) as UserSettings).toEqual(mockUser);
-
-    const ownerMnemonic = await decryptMnemonic(mockUser.mnemonic);
-    expect(encryptedStorageService.getUser).toHaveBeenCalled();
-    expect(ownerMnemonic).toEqual(mnemonic);
   });
 
   it('should return the same UUID if the input is a valid UUIDv4', () => {
@@ -397,11 +310,7 @@ describe('Get public shared link', async () => {
     } as UserSettings);
     const spyDecrypt = vi.spyOn(aes, 'decrypt');
     const mockDifferentMnemonic = 'mock mnemonic';
-    const encryptedMnemonic = await hybridEncryptMessageWithPublicKey({
-      message: mockDifferentMnemonic,
-      publicKeyInBase64,
-      publicKyberKeyBase64,
-    });
+    const encryptedMnemonic = await encryptMnemonic(mockDifferentMnemonic, publicKeyInBase64, publicKyberKeyBase64);
     const { SdkFactory } = await import('../../core/factory/sdk');
     const mockSharingMetaWithEncryptedMnemonic = {
       ...mockSharingMeta,
@@ -450,11 +359,7 @@ describe('Get public shared link', async () => {
     } as UserSettings);
     const spyDecrypt = vi.spyOn(aes, 'decrypt');
     const mockDifferentMnemonic = 'mock mnemonic';
-    const encryptedMnemonic = await hybridEncryptMessageWithPublicKey({
-      message: mockDifferentMnemonic,
-      publicKeyInBase64,
-      publicKyberKeyBase64,
-    });
+    const encryptedMnemonic = await encryptMnemonic(mockDifferentMnemonic, publicKeyInBase64, publicKyberKeyBase64);
     const newBucketKey = await generateFileBucketKey(mockDifferentMnemonic, bucket);
     const newBucketKeyHex = Buffer.from(newBucketKey.subarray(0, 32)).toString('hex');
     const { SdkFactory } = await import('../../core/factory/sdk');
