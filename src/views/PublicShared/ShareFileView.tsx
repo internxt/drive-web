@@ -16,6 +16,8 @@ import UilArrowRight from '@iconscout/react-unicons/icons/uil-arrow-right';
 import { CheckIcon, DownloadSimpleIcon, EyeIcon } from '@phosphor-icons/react';
 
 import downloadService from 'app/drive/services/download.service';
+import { MIN_DOWNLOAD_MULTIPART_SIZE } from 'app/network/networkConstants';
+import { IDownloadParams } from 'app/network/download';
 import './components/ShareView.scss';
 
 import { ShareTypes } from '@internxt/sdk/dist/drive';
@@ -196,10 +198,12 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
 
       if (fileInfo) {
         const encryptionKey = fileInfo.encryptionKey;
+        const fileSize = fileInfo.item.size;
 
         setProgress(MIN_PROGRESS);
         setIsDownloading(true);
-        const readable = await network.downloadFile({
+
+        const downloadParams: IDownloadParams = {
           bucketId: fileInfo.item.bucket,
           fileId: fileInfo.item.fileId,
           encryptionKey: Buffer.from(encryptionKey, 'hex'),
@@ -213,7 +217,12 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
               }
             },
           },
-        });
+        };
+
+        const shouldUseMultipart = fileSize >= MIN_DOWNLOAD_MULTIPART_SIZE;
+        const readable = shouldUseMultipart
+          ? await network.multipartDownloadFile({ ...downloadParams, fileSize })
+          : await network.downloadFile(downloadParams);
         const fileBlob = await binaryStreamToBlob(readable);
 
         await downloadService.downloadFileFromBlob(fileBlob, getFormatFileName());

@@ -202,6 +202,33 @@ describe('NetworkFacade', () => {
       );
     });
 
+    test('When options.key is provided, it overrides the SDK-provided key', async () => {
+      const mockStream = new ReadableStream();
+      const mockResponse = { status: 206, body: mockStream };
+      const sdkDerivedKey = Buffer.alloc(32, 0x01);
+      const overrideKey = Buffer.alloc(32, 0x02);
+      const iv = Buffer.alloc(16);
+
+      (global.fetch as any).mockResolvedValue(mockResponse);
+      (downloadFile as any).mockImplementation(
+        async (fileId, bucketId, mnemonic, network, cryptoLib, bufferFrom, downloadCallback, decryptCallback) => {
+          await downloadCallback([{ url: downloadExample }]);
+          await decryptCallback('aes256ctr', sdkDerivedKey, iv, 2048);
+        },
+      );
+
+      await networkFacade.downloadChunk({
+        bucketId,
+        fileId,
+        mnemonic,
+        chunkStart,
+        chunkEnd,
+        options: { key: overrideKey },
+      });
+
+      expect(decryptStream).toHaveBeenCalledWith([mockStream], overrideKey, iv, chunkStart);
+    });
+
     it('When the status is not 200 or 206 (successfully downloaded), then an error indicating so is thrown', async () => {
       const mockResponse = {
         status: 404,
