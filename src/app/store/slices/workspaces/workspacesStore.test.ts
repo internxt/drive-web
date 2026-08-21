@@ -1,6 +1,6 @@
 import { describe, expect, test, vi, beforeEach } from 'vitest';
-import { workspaceThunks } from './workspacesStore';
-import { PendingWorkspace } from '@internxt/sdk/dist/workspaces';
+import workspacesReducer, { workspaceThunks } from './workspacesStore';
+import { PendingInvitesResponse, PendingWorkspace } from '@internxt/sdk/dist/workspaces';
 import { generateNewKeys, hybridDecryptMessageWithPrivateKey } from '../../../crypto/services/pgp.service';
 import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
@@ -211,6 +211,31 @@ describe('fetchPendingWorkspacesInvites', () => {
     expect(dispatchMock).not.toHaveBeenCalledWith(
       workspacesActions.setPendingWorkspacesInvites(expect.anything() as never),
     );
+  });
+});
+
+describe('fetchWorkspaces', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  test('when the workspaces are fetched, then the pending invites are refreshed too', async () => {
+    const dispatchMock = vi.fn();
+    const getStateMock = vi.fn(() => ({ user: { user: { uuid: 'user-uuid' } } }) as RootState);
+
+    await workspaceThunks.fetchWorkspaces()(dispatchMock, getStateMock, undefined);
+
+    expect(dispatchMock).toHaveBeenCalledWith(expect.any(Function));
+  });
+});
+
+describe('setPendingWorkspacesInvites', () => {
+  test('when the action is dispatched, then the invites replace the ones in the state', () => {
+    const mockInvites = [{ id: 'invite-1', workspace: { name: 'My Workspace' } }] as unknown as PendingInvitesResponse;
+
+    const state = workspacesReducer(undefined, workspacesActions.setPendingWorkspacesInvites(mockInvites));
+
+    expect(state.pendingWorkspacesInvites).toEqual(mockInvites);
   });
 });
 
