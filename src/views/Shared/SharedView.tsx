@@ -7,7 +7,7 @@ import { DriveItemData } from '../../app/drive/types';
 import { useTranslationContext } from '../../app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../app/notifications/services/notifications.service';
 import shareService from '../../app/share/services/share.service';
-import { decryptMnemonic } from '../../app/share/services/share.crypto';
+import { decryptMnemonic, decryptSharingKey } from '../../app/share/services/share.crypto';
 import { useAppDispatch, useAppSelector } from '../../app/store/hooks';
 import { storageActions } from '../../app/store/slices/storage';
 import { uiActions } from '../../app/store/slices/ui';
@@ -69,6 +69,7 @@ import {
 import { ShareDialogWrapper } from 'app/drive/components/ShareDialog/ShareDialogWrapper';
 import encryptedStorageService from 'services/encrypted-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { FileKey } from 'app/network/types/helper-types';
 
 export const MAX_SHARED_NAME_LENGTH = 32;
 
@@ -359,10 +360,11 @@ function SharedView({
     };
 
     try {
-      const mnemonic =
-        selectedWorkspace?.workspaceUser.key ??
-        (await decryptMnemonic(shareItem.encryptionKey ? shareItem.encryptionKey : clickedShareItemEncryptionKey));
-      handleOpenItemPreview(true, { ...previewItem, key: { mnemonic } });
+      const key: FileKey | undefined = selectedWorkspace?.workspaceUser?.key
+        ? { mnemonic: selectedWorkspace.workspaceUser.key }
+        : await decryptSharingKey(shareItem.encryptionKey ? shareItem.encryptionKey : clickedShareItemEncryptionKey);
+
+      handleOpenItemPreview(true, { ...previewItem, key });
     } catch (err) {
       const error = errorService.castError(err);
       errorService.reportError(error);
