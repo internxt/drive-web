@@ -32,6 +32,7 @@ import { DownloadChunkPayload } from './types/index';
 import { uploadFileUint8Array, UploadProgressCallback } from './upload-utils';
 import { getFileHmacFromShardHashes, getRipemd160FromHex } from 'app/crypto/services/utils';
 import { DecryptFileFunction, DownloadFileFunction } from '@internxt/sdk/dist/network/types';
+import { FileKey } from './types/helper-types';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
@@ -336,46 +337,43 @@ export class NetworkFacade {
   async download(
     bucketId: string,
     fileId: string,
-    mnemonic: string,
+    key: FileKey,
     options?: DownloadOptions,
+    fetchOptions?: { range?: { start: number; end: number } },
   ): Promise<ReadableStream> {
+    const sdkOptions = options?.token ? { token: options.token } : undefined;
     return this.downloadInternal(
-      (onDownloadables, onDecrypt) =>
-        downloadFile(
-          fileId,
-          bucketId,
-          mnemonic,
-          this.network,
-          this.cryptoLib,
-          Buffer.from,
-          onDownloadables,
-          onDecrypt,
-          options?.token ? { token: options.token } : undefined,
-        ),
+      (onDownloadables, onDecrypt) => {
+        if (key.mnemonic) {
+          return downloadFile(
+            fileId,
+            bucketId,
+            key.mnemonic,
+            this.network,
+            this.cryptoLib,
+            Buffer.from,
+            onDownloadables,
+            onDecrypt,
+            sdkOptions,
+          );
+        }
+        if (key.bucketKey) {
+          return downloadFileWithBucketKey(
+            fileId,
+            bucketId,
+            key.bucketKey,
+            this.network,
+            this.cryptoLibBucketKey,
+            Buffer.from,
+            onDownloadables,
+            onDecrypt,
+            sdkOptions,
+          );
+        }
+        throw new Error('No bucket key or mnemonic is given');
+      },
       options,
-    );
-  }
-
-  async downloadWithBucketKey(
-    bucketId: string,
-    fileId: string,
-    bucketKey: Buffer,
-    options?: DownloadOptions,
-  ): Promise<ReadableStream> {
-    return this.downloadInternal(
-      (onDownloadables, onDecrypt) =>
-        downloadFileWithBucketKey(
-          fileId,
-          bucketId,
-          bucketKey,
-          this.network,
-          this.cryptoLibBucketKey,
-          Buffer.from,
-          onDownloadables,
-          onDecrypt,
-          options?.token ? { token: options.token } : undefined,
-        ),
-      options,
+      fetchOptions,
     );
   }
 
@@ -392,46 +390,11 @@ export class NetworkFacade {
   async downloadChunk({
     bucketId,
     fileId,
-    key: { mnemonic, bucketKey },
+    key,
     chunkStart,
     chunkEnd,
     options,
   }: DownloadChunkPayload): Promise<ReadableStream<Uint8Array>> {
-    if (mnemonic) {
-      return this.downloadInternal(
-        (onDownloadables, onDecrypt) =>
-          downloadFile(
-            fileId,
-            bucketId,
-            mnemonic,
-            this.network,
-            this.cryptoLib,
-            Buffer.from,
-            onDownloadables,
-            onDecrypt,
-            options?.token ? { token: options.token } : undefined,
-          ),
-        options,
-        { range: { start: chunkStart, end: chunkEnd } },
-      );
-    }
-    if (bucketKey) {
-      return this.downloadInternal(
-        (onDownloadables, onDecrypt) =>
-          downloadFileWithBucketKey(
-            fileId,
-            bucketId,
-            bucketKey,
-            this.network,
-            this.cryptoLibBucketKey,
-            Buffer.from,
-            onDownloadables,
-            onDecrypt,
-            options?.token ? { token: options.token } : undefined,
-          ),
-        options,
-        { range: { start: chunkStart, end: chunkEnd } },
-      );
-    } else throw new Error('No bucket key or mnemonic is given');
+    return this.download(bucketId, fileId, key, options, { range: { start: chunkStart, end: chunkEnd } });
   }
 }

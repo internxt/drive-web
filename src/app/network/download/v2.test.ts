@@ -130,7 +130,7 @@ describe('Download V2', () => {
   });
 
   describe('downloadFile dispatcher', () => {
-    test('When token and mnemonic are provided, downloadSharedFile is called', async () => {
+    test('When token and mnemonic are provided, downloadSharedFile forwards the mnemonic key', async () => {
       const abortController = new AbortController();
       const progressCallback = vi.fn();
       const downloadSpy = vi.spyOn(NetworkFacade.prototype, 'download').mockResolvedValue(mockStream);
@@ -149,21 +149,24 @@ describe('Download V2', () => {
         { clientName: 'drive-web', clientVersion: '1.0' },
         { bridgeUser: '', userId: '' },
       );
-      expect(downloadSpy).toHaveBeenCalledWith(bucketId, fileId, mnemonic, {
-        token,
-        downloadingCallback: progressCallback,
-        abortController,
-      });
+      expect(downloadSpy).toHaveBeenCalledWith(
+        bucketId,
+        fileId,
+        { mnemonic },
+        {
+          token,
+          downloadingCallback: progressCallback,
+          abortController,
+        },
+      );
       expect(result).toStrictEqual(mockStream);
     });
 
-    test('When token and key.bucketKey are provided, downloadSharedFile is called with the bucket key', async () => {
+    test('When token and key.bucketKey are provided, downloadSharedFile forwards the bucket key', async () => {
       const abortController = new AbortController();
       const progressCallback = vi.fn();
 
-      const downloadWithBucketKeySpy = vi
-        .spyOn(NetworkFacade.prototype, 'downloadWithBucketKey')
-        .mockResolvedValue(mockStream);
+      const downloadWithBucketKeySpy = vi.spyOn(NetworkFacade.prototype, 'download').mockResolvedValue(mockStream);
       const networkClientSpy = vi.spyOn(Network, 'client').mockReturnValue(mockNetworkClient as any);
 
       const result = await downloadFile({
@@ -179,11 +182,16 @@ describe('Download V2', () => {
         { clientName: 'drive-web', clientVersion: '1.0' },
         { bridgeUser: '', userId: '' },
       );
-      expect(downloadWithBucketKeySpy).toHaveBeenCalledWith(bucketId, fileId, bucketKey, {
-        token,
-        downloadingCallback: progressCallback,
-        abortController,
-      });
+      expect(downloadWithBucketKeySpy).toHaveBeenCalledWith(
+        bucketId,
+        fileId,
+        { bucketKey },
+        {
+          token,
+          downloadingCallback: progressCallback,
+          abortController,
+        },
+      );
       expect(result).toStrictEqual(mockStream);
     });
 
@@ -207,10 +215,15 @@ describe('Download V2', () => {
         { clientName: 'drive-web', clientVersion: '1.0' },
         { bridgeUser: mockCredentials.user, userId: mockHashedPassword },
       );
-      expect(downloadSpy).toHaveBeenCalledWith(bucketId, fileId, 'test mnemonic', {
-        downloadingCallback: progressCallback,
-        abortController,
-      });
+      expect(downloadSpy).toHaveBeenCalledWith(
+        bucketId,
+        fileId,
+        { mnemonic },
+        {
+          downloadingCallback: progressCallback,
+          abortController,
+        },
+      );
       expect(result).toStrictEqual(mockStream);
     });
 
@@ -292,12 +305,10 @@ describe('Download V2', () => {
       expect(result).toStrictEqual(mockStream);
     });
 
-    test('When creds and key.bucketKey are provided, downloadOwnFileWithBucketKey is called', async () => {
+    test('When creds and key.bucketKey are provided, download is called with bucket key', async () => {
       const abortController = new AbortController();
       const progressCallback = vi.fn();
-      const downloadWithBucketKeySpy = vi
-        .spyOn(NetworkFacade.prototype, 'downloadWithBucketKey')
-        .mockResolvedValue(mockStream);
+      const downloadWithBucketKeySpy = vi.spyOn(NetworkFacade.prototype, 'download').mockResolvedValue(mockStream);
       const networkClientSpy = vi.spyOn(Network, 'client').mockReturnValue(mockNetworkClient as any);
 
       const result = await downloadFile({
@@ -313,10 +324,15 @@ describe('Download V2', () => {
         { clientName: 'drive-web', clientVersion: '1.0' },
         { bridgeUser: mockCredentials.user, userId: mockHashedPassword },
       );
-      expect(downloadWithBucketKeySpy).toHaveBeenCalledWith(bucketId, fileId, bucketKey, {
-        downloadingCallback: progressCallback,
-        abortController,
-      });
+      expect(downloadWithBucketKeySpy).toHaveBeenCalledWith(
+        bucketId,
+        fileId,
+        { bucketKey },
+        {
+          downloadingCallback: progressCallback,
+          abortController,
+        },
+      );
       expect(result).toStrictEqual(mockStream);
     });
 

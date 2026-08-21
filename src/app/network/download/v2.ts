@@ -54,22 +54,11 @@ const downloadSharedFile: DownloadSharedFileFunction = (params) => {
   const { bucketId, fileId, key, token, options } = params;
 
   const networkFacade = createNetworkFacade();
-  if (key.mnemonic) {
-    return networkFacade.download(bucketId, fileId, key.mnemonic, {
-      token,
-      downloadingCallback: options?.notifyProgress,
-      abortController: options?.abortController,
-    });
-  }
-  if (key.bucketKey) {
-    return networkFacade.downloadWithBucketKey(bucketId, fileId, key.bucketKey, {
-      token,
-      downloadingCallback: options?.notifyProgress,
-      abortController: options?.abortController,
-    });
-  } else {
-    throw new Error('DOWNLOAD ERRNO. 1');
-  }
+  return networkFacade.download(bucketId, fileId, key, {
+    token,
+    downloadingCallback: options?.notifyProgress,
+    abortController: options?.abortController,
+  });
 };
 
 async function getAuthFromCredentials(creds: NetworkCredentials): Promise<{ username: string; password: string }> {
@@ -85,20 +74,10 @@ const downloadOwnFile = async (params: DownloadOwnFile) => {
 
   const networkFacade = createNetworkFacade(auth);
 
-  if (key.mnemonic) {
-    return networkFacade.download(bucketId, fileId, key.mnemonic, {
-      downloadingCallback: options?.notifyProgress,
-      abortController: options?.abortController,
-    });
-  }
-  if (key.bucketKey) {
-    return networkFacade.downloadWithBucketKey(bucketId, fileId, key.bucketKey, {
-      downloadingCallback: options?.notifyProgress,
-      abortController: options?.abortController,
-    });
-  } else {
-    throw new Error('DOWNLOAD ERRNO. 1');
-  }
+  return networkFacade.download(bucketId, fileId, key, {
+    downloadingCallback: options?.notifyProgress,
+    abortController: options?.abortController,
+  });
 };
 
 async function multipartDownloadOwnFile(params: DownloadOwnFile & { fileSize: number }): Promise<FileStream> {
