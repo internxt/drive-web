@@ -57,10 +57,11 @@ const SidenavWrapper = () => {
   const workspaces = useSelector((state: RootState) => state.workspaces.workspaces);
   const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
   const pendingWorkspaces = useSelector((state: RootState) => state.workspaces.pendingWorkspaces);
+  const pendingWorkspacesInvites = useSelector((state: RootState) => state.workspaces.pendingWorkspacesInvites);
   const parsedWorkspaces = parseWorkspaces(workspaces);
   const parsedPendingWorkspaces = parsePendingWorkspaces(pendingWorkspaces);
   const allParsedWorkspaces = [...parsedWorkspaces, ...parsedPendingWorkspaces];
-  const isWorkspaceDropdownAvailable = allParsedWorkspaces.length > 0;
+  const isWorkspaceDropdownAvailable = allParsedWorkspaces.length > 0 || pendingWorkspacesInvites.length > 0;
   const workspaceUuid = selectedWorkspace?.workspaceUser.workspaceId;
   const { itemsNavigation } = useSidenavNavigation();
   const { suiteArray } = useSuiteLauncher();

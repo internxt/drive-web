@@ -9,6 +9,7 @@ import { RootState } from '../..';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Buffer } from 'buffer';
 import notificationsService from 'app/notifications/services/notifications.service';
+import { errorService } from 'services';
 const { setupWorkspace, setSelectedWorkspace } = workspaceThunks;
 import { workspacesActions } from './workspacesStore';
 import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
@@ -53,6 +54,7 @@ vi.mock('services/workspace.service', () => ({
         pendingWorkspaces: [],
       }),
     ),
+    getPendingInvites: vi.fn(() => Promise.resolve([])),
     updateWorkspaceAvatar: vi.fn(),
     deleteWorkspaceAvatar: vi.fn(),
     editWorkspace: vi.fn(),
@@ -178,6 +180,37 @@ describe('setSelectedWorkspace', () => {
     expect(getStateMock).toHaveBeenCalledTimes(2);
     expect(encryptedStorageService.setB2BWorkspace).toHaveBeenCalledWith('ws-1', 'decrypted-key');
     expect(dispatchMock).toHaveBeenCalledWith(workspacesActions.setSelectedWorkspace(mockWorkspace));
+  });
+});
+
+describe('fetchPendingWorkspacesInvites', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  test('when the invites request succeeds, then the invites are stored in the slice', async () => {
+    const mockInvites = [{ id: 'invite-1', workspace: { name: 'My Workspace' } }];
+    vi.mocked(workspacesService.getPendingInvites).mockResolvedValueOnce(mockInvites as never);
+    const dispatchMock = vi.fn();
+    const getStateMock = vi.fn();
+
+    await workspaceThunks.fetchPendingWorkspacesInvites()(dispatchMock, getStateMock, undefined);
+
+    expect(dispatchMock).toHaveBeenCalledWith(workspacesActions.setPendingWorkspacesInvites(mockInvites as never));
+  });
+
+  test('when the invites request fails, then the error is reported and the slice is not updated', async () => {
+    const requestError = new Error('request failed');
+    vi.mocked(workspacesService.getPendingInvites).mockRejectedValueOnce(requestError);
+    const dispatchMock = vi.fn();
+    const getStateMock = vi.fn();
+
+    await workspaceThunks.fetchPendingWorkspacesInvites()(dispatchMock, getStateMock, undefined);
+
+    expect(errorService.reportError).toHaveBeenCalledWith(requestError);
+    expect(dispatchMock).not.toHaveBeenCalledWith(
+      workspacesActions.setPendingWorkspacesInvites(expect.anything() as never),
+    );
   });
 });
 
