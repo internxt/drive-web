@@ -397,7 +397,6 @@ export class NetworkFacade {
     chunkEnd,
     options,
   }: DownloadChunkPayload): Promise<ReadableStream<Uint8Array>> {
-    console.log('TEST', mnemonic, bucketKey);
     if (mnemonic) {
       return this.downloadInternal(
         (onDownloadables, onDecrypt) =>

@@ -502,4 +502,10 @@ describe('NetworkFacade', () => {
       ).rejects.toThrow('Download aborted');
     });
   });
+
+  test('When neither mnemonic nor bucketKey is provided, throws', async () => {
+    await expect(
+      networkFacade.downloadChunk({ bucketId, fileId, key: {}, chunkStart: 2, chunkEnd: 5 } as any),
+    ).rejects.toThrow('No bucket key or mnemonic is given');
+  });
 });
