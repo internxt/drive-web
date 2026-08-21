@@ -101,20 +101,37 @@ const downloadOwnFile = async (params: DownloadOwnFile) => {
   }
 };
 
-export async function multipartDownload(params: DownloadOwnFile & { fileSize: number }): Promise<FileStream> {
+async function multipartDownloadOwnFile(params: DownloadOwnFile & { fileSize: number }): Promise<FileStream> {
   const { bucketId, fileId, key, fileSize, options } = params;
   const auth = await getAuthFromCredentials(params.creds);
-
   const networkFacade = createNetworkFacade(auth);
 
-  const multipartDownload = new MultipartDownload(networkFacade);
-
-  return multipartDownload.downloadFile({
+  return new MultipartDownload(networkFacade).downloadFile({
     bucketId,
     fileId,
     key,
     fileSize,
     options: {
+      downloadingCallback: options?.notifyProgress,
+      abortController: options?.abortController,
+    },
+  });
+}
+
+async function multipartDownloadSharedFile(
+  params: DownloadSharedFileParams & { fileSize: number },
+): Promise<FileStream> {
+  const { bucketId, fileId, key, token, fileSize, options } = params;
+
+  const networkFacade = createNetworkFacade();
+
+  return new MultipartDownload(networkFacade).downloadFile({
+    bucketId,
+    fileId,
+    key,
+    fileSize,
+    options: {
+      token,
       downloadingCallback: options?.notifyProgress,
       abortController: options?.abortController,
     },
@@ -142,7 +159,7 @@ export async function downloadChunkFile(
   });
 }
 
-const downloadFile: DownloadFileFunction = (params) => {
+export const downloadFile: DownloadFileFunction = (params) => {
   if (params.token) {
     return downloadSharedFile(params as DownloadSharedFileParams);
   } else if (params.creds) {
@@ -153,3 +170,15 @@ const downloadFile: DownloadFileFunction = (params) => {
 };
 
 export default downloadFile;
+
+export const multipartDownload = async (
+  params: (DownloadOwnFile | DownloadSharedFileParams) & { fileSize: number },
+): Promise<FileStream> => {
+  if (params.token) {
+    return multipartDownloadSharedFile(params as DownloadSharedFileParams & { fileSize: number });
+  } else if (params.creds) {
+    return multipartDownloadOwnFile(params as DownloadOwnFile & { fileSize: number });
+  } else {
+    throw new Error('DOWNLOAD ERRNO. 0');
+  }
+};

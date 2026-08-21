@@ -31,6 +31,7 @@ import useBeforeUnload from 'hooks/useBeforeUnload';
 import { isFileSizePreviewable } from 'services';
 import { IDownloadParams } from 'app/network/download';
 import { isBucketKeyCiphertext } from 'app/crypto/services/pgp.service';
+import { MIN_DOWNLOAD_MULTIPART_SIZE } from 'app/network/networkConstants';
 
 export interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -202,9 +203,10 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
       const MIN_PROGRESS = 0;
 
       if (fileInfo) {
+        const fileSize = fileInfo.item.size;
         setProgress(MIN_PROGRESS);
         setIsDownloading(true);
-        const readable = await network.downloadFile({
+        const downloadParams: IDownloadParams = {
           bucketId: fileInfo.item.bucket,
           fileId: fileInfo.item.fileId,
           ...getSharedFileKeyParams(fileInfo as SharingMeta),
@@ -218,7 +220,12 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
               }
             },
           },
-        });
+        };
+
+        const shouldUseMultipart = fileSize >= MIN_DOWNLOAD_MULTIPART_SIZE;
+        const readable = shouldUseMultipart
+          ? await network.multipartDownloadFile({ ...downloadParams, fileSize })
+          : await network.downloadFile(downloadParams);
         const fileBlob = await binaryStreamToBlob(readable);
 
         await downloadService.downloadFileFromBlob(fileBlob, getFormatFileName());
