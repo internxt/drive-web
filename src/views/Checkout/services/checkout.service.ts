@@ -27,7 +27,7 @@ const fetchPromotionCodeByName = async (priceId: string, promotionCodeName: stri
 
 export type CreateCheckoutCustomerPayload = Pick<
   CreateCustomerPayload,
-  'country' | 'captchaToken' | 'companyVatId' | 'metadata' | 'lineAddress2'
+  'country' | 'captchaToken' | 'turnstileToken' | 'companyVatId' | 'metadata' | 'lineAddress2'
 > &
   Partial<Pick<CreateCustomerPayload, 'customerName' | 'lineAddress1' | 'city' | 'postalCode'>>;
 
@@ -39,6 +39,7 @@ const createCustomer = async ({
   lineAddress2,
   postalCode,
   captchaToken,
+  turnstileToken,
   companyVatId,
   metadata,
 }: CreateCheckoutCustomerPayload): Promise<{
@@ -54,6 +55,7 @@ const createCustomer = async ({
     country,
     postalCode,
     captchaToken,
+    turnstileToken,
     companyVatId,
     metadata,
   } as CreateCustomerPayload);
@@ -84,6 +86,7 @@ const createSubscription = async ({
   token,
   currency,
   captchaToken,
+  turnstileToken,
   promoCodeId,
 }: CreateSubscriptionPayload): Promise<CreatedSubscriptionData> => {
   const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
@@ -93,6 +96,7 @@ const createSubscription = async ({
     token,
     currency,
     captchaToken,
+    turnstileToken,
     promoCodeId,
   });
 };
@@ -103,6 +107,7 @@ export const createPaymentIntent = async ({
   token,
   currency,
   captchaToken,
+  turnstileToken,
   userAddress,
   promoCodeId,
 }: CreatePaymentIntentPayload): Promise<PaymentIntent> => {
@@ -113,6 +118,7 @@ export const createPaymentIntent = async ({
     token,
     currency,
     captchaToken,
+    turnstileToken,
     userAddress,
     promoCodeId,
   });
