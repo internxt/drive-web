@@ -31,10 +31,12 @@ interface DownloadSharedFileParams extends DownloadFileParams {
 type DownloadSharedFileFunction = (params: DownloadSharedFileParams) => DownloadFileResponse;
 type DownloadFileFunction = (params: DownloadSharedFileParams | DownloadOwnFile) => DownloadFileResponse;
 
-const downloadSharedFile: DownloadSharedFileFunction = (params) => {
-  const { bucketId, fileId, key, token, options } = params;
-
-  const networkFacade = new NetworkFacade(
+/**
+ * Creates a NetworkFacade for the bridge. Pass auth for downloads of the user's own files;
+ * omit it for shared-link downloads, which authenticate through the share token instead.
+ */
+const createNetworkFacade = (auth?: { username: string; password: string }): NetworkFacade =>
+  new NetworkFacade(
     Network.client(
       envService.getVariable('storjBridge'),
       {
@@ -42,11 +44,16 @@ const downloadSharedFile: DownloadSharedFileFunction = (params) => {
         clientVersion: '1.0',
       },
       {
-        bridgeUser: '',
-        userId: '',
+        bridgeUser: auth?.username ?? '',
+        userId: auth?.password ?? '',
       },
     ),
   );
+
+const downloadSharedFile: DownloadSharedFileFunction = (params) => {
+  const { bucketId, fileId, key, token, options } = params;
+
+  const networkFacade = createNetworkFacade();
   if (key.mnemonic) {
     return networkFacade.download(bucketId, fileId, key.mnemonic, {
       token,
@@ -76,19 +83,7 @@ const downloadOwnFile = async (params: DownloadOwnFile) => {
   const { bucketId, fileId, key, options } = params;
   const auth = await getAuthFromCredentials(params.creds);
 
-  const networkFacade = new NetworkFacade(
-    Network.client(
-      envService.getVariable('storjBridge'),
-      {
-        clientName: 'drive-web',
-        clientVersion: '1.0',
-      },
-      {
-        bridgeUser: auth.username,
-        userId: auth.password,
-      },
-    ),
-  );
+  const networkFacade = createNetworkFacade(auth);
 
   if (key.mnemonic) {
     return networkFacade.download(bucketId, fileId, key.mnemonic, {
@@ -110,19 +105,7 @@ export async function multipartDownload(params: DownloadOwnFile & { fileSize: nu
   const { bucketId, fileId, key, fileSize, options } = params;
   const auth = await getAuthFromCredentials(params.creds);
 
-  const networkFacade = new NetworkFacade(
-    Network.client(
-      envService.getVariable('storjBridge'),
-      {
-        clientName: 'drive-web',
-        clientVersion: '1.0',
-      },
-      {
-        bridgeUser: auth.username,
-        userId: auth.password,
-      },
-    ),
-  );
+  const networkFacade = createNetworkFacade(auth);
 
   const multipartDownload = new MultipartDownload(networkFacade);
 
@@ -144,19 +127,7 @@ export async function downloadChunkFile(
   const { bucketId, fileId, key, chunkStart, chunkEnd, options } = params;
   const auth = await getAuthFromCredentials(params.creds);
 
-  const networkFacade = new NetworkFacade(
-    Network.client(
-      envService.getVariable('storjBridge'),
-      {
-        clientName: 'drive-web',
-        clientVersion: '1.0',
-      },
-      {
-        bridgeUser: auth.username,
-        userId: auth.password,
-      },
-    ),
-  );
+  const networkFacade = createNetworkFacade(auth);
 
   return networkFacade.downloadChunk({
     bucketId,
