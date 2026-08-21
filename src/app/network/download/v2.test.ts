@@ -214,6 +214,84 @@ describe('Download V2', () => {
       expect(result).toStrictEqual(mockStream);
     });
 
+    test('When token and key.mnemonic are provided, multipartDownloadSharedFile is called  with the mnemonic', async () => {
+      const abortController = new AbortController();
+      const progressCallback = vi.fn();
+      const params = {
+        bucketId,
+        fileId,
+        key: { mnemonic },
+        token,
+        fileSize: 1024,
+        options: {
+          notifyProgress: progressCallback,
+          abortController,
+        },
+      };
+
+      const networkClientSpy = vi.spyOn(Network, 'client').mockReturnValue(mockNetworkClient as any);
+      const downloadFileSpy = vi.spyOn(MultipartDownload.prototype, 'downloadFile').mockResolvedValue(mockStream);
+
+      const result = await multipartDownload(params as any);
+
+      expect(networkClientSpy).toHaveBeenCalledWith(
+        mockBridgeUrl,
+        { clientName: 'drive-web', clientVersion: '1.0' },
+        { bridgeUser: '', userId: '' },
+      );
+      expect(downloadFileSpy).toHaveBeenCalledWith({
+        bucketId: params.bucketId,
+        fileId: params.fileId,
+        key: params.key,
+        fileSize: params.fileSize,
+        options: {
+          token,
+          downloadingCallback: progressCallback,
+          abortController,
+        },
+      });
+      expect(result).toStrictEqual(mockStream);
+    });
+
+    test('When token and key.bucketKey are provided, multipartDownloadSharedFile is called with the bucket key', async () => {
+      const abortController = new AbortController();
+      const progressCallback = vi.fn();
+      const params = {
+        bucketId,
+        fileId,
+        key: { bucketKey },
+        token,
+        fileSize: 1024,
+        options: {
+          notifyProgress: progressCallback,
+          abortController,
+        },
+      };
+
+      const networkClientSpy = vi.spyOn(Network, 'client').mockReturnValue(mockNetworkClient as any);
+      const downloadFileSpy = vi.spyOn(MultipartDownload.prototype, 'downloadFile').mockResolvedValue(mockStream);
+
+      const result = await multipartDownload(params as any);
+
+      expect(networkClientSpy).toHaveBeenCalledWith(
+        mockBridgeUrl,
+        { clientName: 'drive-web', clientVersion: '1.0' },
+        { bridgeUser: '', userId: '' },
+      );
+      expect(downloadFileSpy).toHaveBeenCalledWith({
+        bucketId: params.bucketId,
+        fileId: params.fileId,
+        key: params.key,
+        fileSize: params.fileSize,
+        options: {
+          token,
+          downloadingCallback: progressCallback,
+          abortController,
+        },
+      });
+      expect(result).toStrictEqual(mockStream);
+    });
+
     test('When creds and key.bucketKey are provided, downloadOwnFileWithBucketKey is called', async () => {
       const abortController = new AbortController();
       const progressCallback = vi.fn();
