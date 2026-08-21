@@ -360,9 +360,10 @@ function SharedView({
     };
 
     try {
+      const encryptionKey = shareItem.encryptionKey || clickedShareItemEncryptionKey;
       const key: FileKey | undefined = selectedWorkspace?.workspaceUser?.key
         ? { mnemonic: selectedWorkspace.workspaceUser.key }
-        : await decryptSharingKey(shareItem.encryptionKey ? shareItem.encryptionKey : clickedShareItemEncryptionKey);
+        : await decryptSharingKey(encryptionKey);
 
       handleOpenItemPreview(true, { ...previewItem, key });
     } catch (err) {

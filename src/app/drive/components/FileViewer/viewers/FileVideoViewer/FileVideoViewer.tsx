@@ -90,7 +90,7 @@ const FileVideoViewer = ({
         bucketId: file.bucket,
         fileSize: file.size,
         fileType: file.type,
-        key: { mnemonic: file.key?.mnemonic ?? mnemonic, bucketKey: file.key?.bucketKey },
+        key: file.key ?? { mnemonic },
         credentials: file.credentials
           ? { user: file.credentials?.user, pass: file.credentials?.pass }
           : { user: bridgeUser, pass: userId },
