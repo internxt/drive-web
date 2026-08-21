@@ -29,6 +29,7 @@ import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 import { generateCaptchaToken } from 'utils/generateCaptchaToken';
 import gaService from 'app/analytics/ga.service';
 import { handleImpactDTCCheckout } from 'app/analytics/impact.service';
+import { getCookie } from 'app/analytics/utils';
 import referralService from 'services/referral.service';
 import metaService from 'app/analytics/meta.service';
 import { useCheckoutQueryParams } from '../hooks/useCheckoutQueryParams';
@@ -378,7 +379,10 @@ const CheckoutViewWrapper = () => {
         companyVatId,
         captchaToken: customerToken,
         metadata,
-      });
+      }); 
+
+      const impactClickId = irclickid ?? getCookie('impactClickId');
+      
 
       await handleUserPayment({
         confirmPayment: stripeSDK.confirmPayment,
@@ -395,6 +399,7 @@ const CheckoutViewWrapper = () => {
         captchaToken,
         openCryptoPaymentDialog,
         userAddress: userLocationData?.ip as string,
+        impactClickId
       });
     } catch (err) {
       const statusCode = (err as any).status;

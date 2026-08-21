@@ -41,6 +41,7 @@ export const useUserPayment = () => {
     currency,
     captchaToken,
     promoCodeId,
+    impactClickId
   }: CreateSubscriptionPayload) => {
     const {
       type: paymentType,
@@ -54,6 +55,7 @@ export const useUserPayment = () => {
       currency,
       captchaToken,
       promoCodeId,
+      impactClickId
     });
 
     return {
@@ -72,6 +74,7 @@ export const useUserPayment = () => {
     userAddress,
     captchaToken,
     promoCodeId,
+    impactClickId,
   }: CreatePaymentIntentPayload) => {
     const paymentIntentResponse = await checkoutService.createPaymentIntent({
       customerId,
@@ -81,6 +84,7 @@ export const useUserPayment = () => {
       token,
       captchaToken,
       promoCodeId: promoCodeId,
+      impactClickId,
     });
 
     if (paymentIntentResponse.type === PaymentType['CRYPTO']) {
@@ -139,6 +143,7 @@ export const useUserPayment = () => {
     confirmPayment,
     confirmSetupIntent,
     isFirstPurchase,
+    impactClickId,
   }: ProcessPurchasePayload) => {
     const subscription = await getSubscriptionPaymentIntent({
       customerId,
@@ -147,6 +152,7 @@ export const useUserPayment = () => {
       captchaToken,
       promoCodeId: couponCodeData?.codeId,
       currency,
+      impactClickId
     });
 
     savePaymentDataInLocalStorage({
@@ -190,6 +196,7 @@ export const useUserPayment = () => {
     confirmPayment,
     openCryptoPaymentDialog,
     isFirstPurchase,
+    impactClickId
   }: ProcessPurchasePayload) => {
     const {
       id: paymentIntentId,
@@ -206,6 +213,7 @@ export const useUserPayment = () => {
       promoCodeId: couponCodeData?.codeId,
       userAddress,
       currency,
+      impactClickId
     });
 
     savePaymentDataInLocalStorage({
@@ -258,6 +266,7 @@ export const useUserPayment = () => {
     gclidStored,
     captchaToken,
     userAddress,
+    impactClickId,
     translate,
     confirmPayment,
     openCryptoPaymentDialog,
@@ -295,6 +304,7 @@ export const useUserPayment = () => {
           confirmPayment,
           confirmSetupIntent,
           isFirstPurchase,
+          impactClickId,
         });
         break;
 
@@ -314,6 +324,7 @@ export const useUserPayment = () => {
           openCryptoPaymentDialog,
           confirmSetupIntent,
           isFirstPurchase,
+          impactClickId,
         });
         break;
 
