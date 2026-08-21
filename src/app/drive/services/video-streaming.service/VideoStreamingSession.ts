@@ -1,4 +1,4 @@
-import { NetworkCredentials } from 'app/network/types/helper-types';
+import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
 import { VideoSessionDestroyedError } from '../errors/video-streaming.errors';
 import { VideoStreamingService } from './index';
 
@@ -7,7 +7,7 @@ export interface VideoStreamingSessionConfig {
   bucketId: string;
   fileSize: number;
   fileType: string;
-  mnemonic: string;
+  key: FileKey;
   credentials: NetworkCredentials;
 }
 

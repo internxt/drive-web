@@ -18,7 +18,6 @@ import { CheckIcon, DownloadSimpleIcon, EyeIcon } from '@phosphor-icons/react';
 import downloadService from 'app/drive/services/download.service';
 import './components/ShareView.scss';
 
-import { ShareTypes } from '@internxt/sdk/dist/drive';
 import { PublicSharedItemInfo, SharingMeta } from '@internxt/sdk/dist/drive/share/types';
 import errorService from 'services/error.service';
 import { binaryStreamToBlob } from 'services/stream.service';
@@ -30,6 +29,9 @@ import { stringUtils } from '@internxt/lib';
 import { SendBanner, ShareItemPwdView } from './components';
 import useBeforeUnload from 'hooks/useBeforeUnload';
 import { isFileSizePreviewable } from 'services';
+import { IDownloadParams } from 'app/network/download';
+import { isBucketKeyCiphertext } from 'app/crypto/services/pgp.service';
+import { MIN_DOWNLOAD_MULTIPART_SIZE } from 'app/network/networkConstants';
 
 export interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -162,16 +164,22 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
     }
   };
 
-  function getBlob(abortController: AbortController): Promise<Blob> {
-    const fileInfo = info as unknown as ShareTypes.ShareLink;
+  const getSharedFileKeyParams = (fileInfo: SharingMeta): Pick<IDownloadParams, 'key'> => {
+    if (isBucketKeyCiphertext(fileInfo.encryptionKey)) {
+      return { key: { bucketKey: Buffer.from(fileInfo.encryptionKey, 'hex') } };
+    }
 
-    const encryptionKey = fileInfo.encryptionKey;
+    return { key: { mnemonic: fileInfo.encryptionKey } };
+  };
+
+  function getBlob(abortController: AbortController): Promise<Blob> {
+    const fileInfo = info;
 
     const readable = network.downloadFile({
       bucketId: fileInfo.item.bucket,
       fileId: fileInfo.item?.fileId,
-      encryptionKey: Buffer.from(encryptionKey, 'hex'),
       token: fileInfo.itemToken,
+      ...getSharedFileKeyParams(fileInfo as SharingMeta),
       options: {
         abortController,
         notifyProgress: (totalBytes, downloadedBytes) => {
@@ -195,14 +203,13 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
       const MIN_PROGRESS = 0;
 
       if (fileInfo) {
-        const encryptionKey = fileInfo.encryptionKey;
-
+        const fileSize = fileInfo.item.size;
         setProgress(MIN_PROGRESS);
         setIsDownloading(true);
-        const readable = await network.downloadFile({
+        const downloadParams: IDownloadParams = {
           bucketId: fileInfo.item.bucket,
           fileId: fileInfo.item.fileId,
-          encryptionKey: Buffer.from(encryptionKey, 'hex'),
+          ...getSharedFileKeyParams(fileInfo as SharingMeta),
           token: fileInfo.itemToken,
           options: {
             notifyProgress: (totalProgress, downloadedBytes) => {
@@ -213,7 +220,12 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
               }
             },
           },
-        });
+        };
+
+        const shouldUseMultipart = fileSize >= MIN_DOWNLOAD_MULTIPART_SIZE;
+        const readable = shouldUseMultipart
+          ? await network.multipartDownloadFile({ ...downloadParams, fileSize })
+          : await network.downloadFile(downloadParams);
         const fileBlob = await binaryStreamToBlob(readable);
 
         await downloadService.downloadFileFromBlob(fileBlob, getFormatFileName());
