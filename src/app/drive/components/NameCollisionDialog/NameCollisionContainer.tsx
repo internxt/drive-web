@@ -19,6 +19,7 @@ import { checkFolderDuplicated } from 'app/store/slices/storage/folderUtils/chec
 import { getUniqueFolderName } from 'app/store/slices/storage/folderUtils/getUniqueFolderName';
 import { getUniqueFilename } from 'app/store/slices/storage/fileUtils/getUniqueFilename';
 import { checkDuplicatedFiles } from 'app/store/slices/storage/fileUtils/checkDuplicatedFiles';
+import { items as itemUtils } from '@internxt/lib';
 import { CollisionGroup } from 'app/store/slices/storage/storage.model';
 import {
   handleRepeatedUploadingFiles,
@@ -46,6 +47,35 @@ const NameCollisionContainer: FC = () => {
     dispatch(uiActions.setIsNameCollisionDialogOpen({ open: false, info: undefined }));
   };
 
+  const matchesName = (existing: DriveItemData, name: string) => (existing.plainName ?? existing.name) === name;
+
+  const matchesType = (existing: DriveItemData, type?: string | null) => (existing.type ?? null) === (type ?? null);
+
+  const findExistingItemFor = (
+    itemToUpload: File | IRoot | DriveItemData,
+    existingItems: DriveItemData[],
+  ): DriveItemData | undefined => {
+    const isUploadedFolder = !!(itemToUpload as IRoot).fullPathEdited;
+    if (isUploadedFolder) {
+      const folder = itemToUpload as IRoot;
+      return existingItems.find((existing) => matchesName(existing, folder.name));
+    }
+
+    const isUploadedFile = itemToUpload instanceof File;
+    if (isUploadedFile) {
+      const { filename, extension } = itemUtils.getFilenameAndExt(itemToUpload.name);
+      return existingItems.find((existing) => matchesName(existing, filename) && matchesType(existing, extension));
+    }
+
+    const movedItem = itemToUpload as DriveItemData;
+    return existingItems.find(
+      (existing) =>
+        !!existing.isFolder === !!movedItem.isFolder &&
+        matchesName(existing, movedItem.plainName ?? movedItem.name) &&
+        (movedItem.isFolder || matchesType(existing, movedItem.type)),
+    );
+  };
+
   const replaceAndMoveSingleItem = async (
     itemToUpload: DriveItemData,
     itemToReplace: DriveItemData,
@@ -61,11 +91,11 @@ const NameCollisionContainer: FC = () => {
   };
 
   const replaceAndMoveItem = async (group: CollisionGroup) => {
-    const itemsToUpload = group.duplicatedItems as DriveItemData[];
-    const itemsToReplace = group.existingItems;
-
-    for (let i = 0; i < itemsToUpload.length; i++) {
-      await replaceAndMoveSingleItem(itemsToUpload[i], itemsToReplace[i], group.destinationUuid);
+    for (const itemToMove of group.duplicatedItems as DriveItemData[]) {
+      const itemToReplace = findExistingItemFor(itemToMove, group.existingItems);
+      if (itemToReplace) {
+        await replaceAndMoveSingleItem(itemToMove, itemToReplace, group.destinationUuid);
+      }
     }
   };
 
@@ -152,11 +182,11 @@ const NameCollisionContainer: FC = () => {
   };
 
   const replaceAndUploadItem = async (group: CollisionGroup) => {
-    const itemsToUpload = group.duplicatedItems as (IRoot | File)[];
-    const itemsToReplace = group.existingItems;
-
-    for (let i = 0; i < itemsToUpload.length; i++) {
-      await replaceAndUploadSingleItem(itemsToUpload[i], itemsToReplace[i], group.destinationUuid);
+    for (const itemToUpload of group.duplicatedItems as (IRoot | File)[]) {
+      const itemToReplace = findExistingItemFor(itemToUpload, group.existingItems);
+      if (itemToReplace) {
+        await replaceAndUploadSingleItem(itemToUpload, itemToReplace, group.destinationUuid);
+      }
     }
   };
 
@@ -226,11 +256,11 @@ const NameCollisionContainer: FC = () => {
   };
 
   const skipAndUploadItem = async (group: CollisionGroup) => {
-    const itemsToUpload = group.duplicatedItems as (IRoot | File)[];
-    const itemsToReplace = group.existingItems;
-
-    for (let i = 0; i < itemsToUpload.length; i++) {
-      await skipAndUploadSingleItem(itemsToUpload[i], itemsToReplace[i], group.destinationUuid);
+    for (const itemToUpload of group.duplicatedItems as (IRoot | File)[]) {
+      const itemToReplace = findExistingItemFor(itemToUpload, group.existingItems);
+      if (itemToReplace) {
+        await skipAndUploadSingleItem(itemToUpload, itemToReplace, group.destinationUuid);
+      }
     }
   };
 
@@ -296,7 +326,7 @@ const NameCollisionContainer: FC = () => {
 
     const group = collisionGroups[groupIndex];
     const itemToUpload = group.duplicatedItems[0];
-    const itemToReplace = group.existingItems[0];
+    const itemToReplace = findExistingItemFor(itemToUpload, group.existingItems) ?? group.existingItems[0];
 
     switch (operationType + operation) {
       case 'move' + 'keep':
@@ -323,7 +353,11 @@ const NameCollisionContainer: FC = () => {
     const remainingGroups = collisionGroups
       .map((g, idx) =>
         idx === groupIndex
-          ? { ...g, duplicatedItems: g.duplicatedItems.slice(1), existingItems: g.existingItems.slice(1) }
+          ? {
+              ...g,
+              duplicatedItems: g.duplicatedItems.slice(1),
+              existingItems: g.existingItems.filter((existing) => existing !== itemToReplace),
+            }
           : g,
       )
       .filter((g) => g.duplicatedItems.length > 0);
