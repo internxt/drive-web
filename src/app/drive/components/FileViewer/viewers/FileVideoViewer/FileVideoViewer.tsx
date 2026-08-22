@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { localStorageService } from 'services';
 import { FormatFileViewerProps } from '../../FileViewer';
 import { VideoStreamingSession } from 'app/drive/services/video-streaming.service/VideoStreamingSession';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 const PROGRESS_INCREMENT = 0.2;
 const PROGRESS_INTERVAL_MS = 500;
@@ -65,39 +65,55 @@ const FileVideoViewer = ({
 
   useEffect(() => {
     if (disableVideoStream || !containerRef.current) return;
+    const container = containerRef.current;
 
-    const user = localStorageService.getUser();
-    const mnemonic = user?.mnemonic ?? '';
-    const bridgeUser = user?.bridgeUser ?? '';
-    const userId = user?.userId ?? '';
+    const setupStreaming = async () => {
+      const user = await encryptedStorageService.getUser();
+      const mnemonic = user?.mnemonic ?? '';
+      const bridgeUser = user?.bridgeUser ?? '';
+      const userId = user?.userId ?? '';
 
-    if (!bridgeUser || !userId || !mnemonic) {
-      console.error('[FileVideoViewer] Missing credentials');
-      handleOnError('Missing credentials');
-      return;
-    }
+      if (!bridgeUser || !userId || !mnemonic) {
+        console.error('[FileVideoViewer] Missing credentials');
+        handleOnError('Missing credentials');
+        return;
+      }
 
-    if (!file.fileId) {
-      console.error('[FileVideoViewer] Missing fileId');
-      handleOnError('Missing fileId');
-      return;
-    }
+      if (!file.fileId) {
+        console.error('[FileVideoViewer] Missing fileId');
+        handleOnError('Missing fileId');
+        return;
+      }
 
-    const session = new VideoStreamingSession({
-      fileId: file.fileId,
-      bucketId: file.bucket,
-      fileSize: file.size,
-      fileType: file.type,
-      mnemonic: file.mnemonic ?? mnemonic,
-      credentials: file.credentials
-        ? { user: file.credentials?.user, pass: file.credentials?.pass }
-        : { user: bridgeUser, pass: userId },
+      const session = new VideoStreamingSession({
+        fileId: file.fileId,
+        bucketId: file.bucket,
+        fileSize: file.size,
+        fileType: file.type,
+        mnemonic: file.mnemonic ?? mnemonic,
+        credentials: file.credentials
+          ? { user: file.credentials?.user, pass: file.credentials?.pass }
+          : { user: bridgeUser, pass: userId },
+      });
+
+      session.init(container, handleOnReady, handleOnError);
+
+      return session;
+    };
+
+    let sessionRef: VideoStreamingSession | undefined;
+    let cancelled = false;
+    setupStreaming().then((session) => {
+      if (cancelled) {
+        session?.destroy();
+        return;
+      }
+      sessionRef = session;
     });
 
-    session.init(containerRef.current, handleOnReady, handleOnError);
-
     return () => {
-      session.destroy();
+      cancelled = true;
+      sessionRef?.destroy();
       setCanPlay(false);
     };
   }, [file.fileId, file.bucket, file.size, file.type, disableVideoStream]);

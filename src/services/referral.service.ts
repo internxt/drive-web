@@ -8,6 +8,9 @@ import { userService } from 'services';
 import { t } from 'i18next';
 import { LocalStorageItem } from 'app/core/types';
 
+const REFERRAL_URL_PARAM = 'referral';
+const REFERRAL_URL_PARAM_OPEN_VALUE = 'open';
+
 const MAX_BANNER_SHOW_COUNT = 2;
 const MIN_FILE_UPLOADS_FOR_BANNER = 3;
 const MIN_APP_OPEN_DAYS_FOR_BANNER = 3;
@@ -292,6 +295,17 @@ const boot = async (user: ReferralUser, language?: string): Promise<void> => {
   }
 };
 
+/**
+ * Returns the `referral=open` query param when present in the current URL, so redirects
+ * (e.g. to the login view and back to drive after authenticating) can preserve the
+ * intent to open the referral panel. Returns an empty object otherwise.
+ */
+const getReferralOpenQueryParams = (): Record<string, string> => {
+  const params = new URLSearchParams(globalThis.location.search);
+  const isReferralOpenRequested = params.get(REFERRAL_URL_PARAM) === REFERRAL_URL_PARAM_OPEN_VALUE;
+  return isReferralOpenRequested ? { [REFERRAL_URL_PARAM]: REFERRAL_URL_PARAM_OPEN_VALUE } : {};
+};
+
 const MIN_ACCOUNT_AGE_DAYS = 30;
 
 const isEligibleForReferral = async (accountCreatedAt?: Date): Promise<boolean> => {
@@ -325,6 +339,7 @@ const referralService = {
   shouldShowBanner,
   onTrigger,
   isEligibleForReferral,
+  getReferralOpenQueryParams,
 };
 
 export default referralService;

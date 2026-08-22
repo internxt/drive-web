@@ -1,18 +1,20 @@
 /**
  * @jest-environment jsdom
  */
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { RootState } from 'app/store';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { RootState } from 'app/store';
+import { beforeEach, describe, expect, it, test, vi } from 'vitest';
 
 import { vi as _vi } from 'vitest';
+import { auth, TokenStatus } from '@internxt/lib';
+import { refreshAvatarThunk, refreshUserThunk, userThunks } from 'app/store/slices/user';
+import { errorService, userService } from 'services';
+import encryptedStorageService from 'services/encrypted-storage.service';
+
 _vi.mock('app/drive/services/database.service', () => ({
   updateDatabaseProfileAvatar: _vi.fn(),
   deleteDatabaseProfileAvatar: _vi.fn(),
 }));
-
-import { refreshUserThunk, refreshAvatarThunk, userActions } from 'app/store/slices/user';
-import { localStorageService, userService, errorService } from 'services';
 
 describe('user thunks', () => {
   const baseUser: Partial<UserSettings> = {
@@ -20,12 +22,15 @@ describe('user thunks', () => {
     name: 'John',
     lastname: 'Doe',
     emailVerified: false,
+    createdAt: new Date(),
   };
 
   let getStateWithUser: () => RootState;
   let dispatchMock: any;
+  let setUserThunkSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
+    vi.restoreAllMocks();
     const state: Partial<RootState> = {
       user: {
         isAuthenticated: true,
@@ -37,30 +42,66 @@ describe('user thunks', () => {
     getStateWithUser = () => state as RootState;
     dispatchMock = vi.fn();
 
-    const futureExp = Math.floor(Date.now() / 1000) + 60 * 60; // +1 hour
-    const base64 = (str: string) => (typeof btoa === 'function' ? btoa(str) : Buffer.from(str).toString('base64'));
-    const payloadB64 = base64(JSON.stringify({ exp: futureExp }));
-    const validToken = `aaa.${payloadB64}.bbb`;
-    vi.spyOn(localStorageService, 'getToken').mockReturnValue(validToken);
+    vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue('mock-token');
+    vi.spyOn(encryptedStorageService, 'setToken').mockResolvedValue(undefined);
+    vi.spyOn(auth, 'validateTokenAndCheckExpiration').mockReturnValue(TokenStatus.VALID);
 
     vi.spyOn(userService, 'refreshAvatarUser').mockResolvedValue({ avatar: null });
 
     vi.spyOn(errorService, 'reportError').mockImplementation(() => {});
+    setUserThunkSpy = vi.spyOn(userThunks, 'setUserThunk');
   });
 
-  describe('refreshUserThunk', () => {
-    it('does nothing when token not expired and no forceRefresh', async () => {
+  describe('Refresh token Thunk', () => {
+    test('does nothing when token not expired and no forceRefresh', async () => {
       vi.spyOn(userService, 'refreshUserData');
 
       const thunk = refreshUserThunk();
       await thunk(dispatchMock, getStateWithUser, undefined);
 
       expect(userService.refreshUserData).not.toHaveBeenCalled();
-      expect(dispatchMock).not.toHaveBeenCalledWith(expect.objectContaining({ type: userActions.setUser.type }));
-      expect(dispatchMock).not.toHaveBeenCalledWith(expect.objectContaining({ type: userActions.setToken.type }));
+      expect(setUserThunkSpy).not.toHaveBeenCalled();
+      expect(encryptedStorageService.setToken).not.toHaveBeenCalled();
     });
 
-    it('refreshes user and token when forced', async () => {
+    test('When token is missing, then an error indicating so is thrown', async () => {
+      vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(undefined);
+
+      const thunk = refreshUserThunk();
+      const result = await thunk(dispatchMock, getStateWithUser, undefined);
+
+      expect(result.type).toBe('user/refresh/rejected');
+    });
+
+    test('When token needs to be refreshed, then refreshes user and token', async () => {
+      vi.spyOn(auth, 'validateTokenAndCheckExpiration').mockReturnValue(TokenStatus.REFRESH_REQUIRED);
+      const refreshed = {
+        user: { emailVerified: true, name: 'Jane', lastname: 'Smith', uuid: baseUser.uuid },
+        newToken: 'refreshed-token',
+        oldToken: 'mock-token',
+      } as unknown as Awaited<ReturnType<typeof userService.refreshUserData>>;
+      vi.spyOn(userService, 'refreshUserData').mockResolvedValue(refreshed);
+      vi.spyOn(userService, 'refreshAvatarUser').mockResolvedValue({ avatar: 'avatar-url' });
+      vi.spyOn(userService, 'downloadAvatar').mockResolvedValue(new Blob(['x']));
+
+      const thunk = refreshUserThunk();
+      await thunk(dispatchMock, getStateWithUser, undefined);
+
+      expect(userService.refreshUserData).toHaveBeenCalledWith(baseUser.uuid);
+      expect(encryptedStorageService.setToken).toHaveBeenCalledWith('refreshed-token');
+    });
+
+    test('When token is expired, then rejects as unauthorized', async () => {
+      vi.spyOn(auth, 'validateTokenAndCheckExpiration').mockReturnValue(TokenStatus.EXPIRED);
+
+      const thunk = refreshUserThunk();
+      const result = await thunk(dispatchMock, getStateWithUser, undefined);
+
+      expect(result.type).toBe('user/refresh/rejected');
+      expect((result as any).error?.name).toBe('UserUnauthorizedError');
+    });
+
+    test('refreshes user and token when forced', async () => {
       const refreshed = {
         user: { emailVerified: true, name: 'Jane', lastname: 'Smith', uuid: baseUser.uuid },
         newToken: 'new-token-abc',
@@ -69,6 +110,7 @@ describe('user thunks', () => {
       vi.spyOn(userService, 'refreshUserData').mockResolvedValue(refreshed);
       vi.spyOn(userService, 'refreshAvatarUser').mockResolvedValue({ avatar: 'avatar-url' });
       vi.spyOn(userService, 'downloadAvatar').mockResolvedValue(new Blob(['x']));
+      const setTokenSpy = vi.spyOn(encryptedStorageService, 'setToken');
 
       const thunk = refreshUserThunk({ forceRefresh: true });
       await thunk(dispatchMock, getStateWithUser, undefined);
@@ -76,21 +118,16 @@ describe('user thunks', () => {
       expect(userService.refreshUserData).toHaveBeenCalledWith(baseUser.uuid);
       expect(userService.refreshAvatarUser).toHaveBeenCalled();
 
-      expect(dispatchMock).toHaveBeenCalledWith(
+      expect(setUserThunkSpy).toHaveBeenCalledWith(
         expect.objectContaining({
-          type: userActions.setUser.type,
-          payload: expect.objectContaining({
-            uuid: baseUser.uuid,
-            name: 'Jane',
-            lastname: 'Smith',
-            emailVerified: true,
-            avatar: 'avatar-url',
-          }),
+          uuid: baseUser.uuid,
+          name: 'Jane',
+          lastname: 'Smith',
+          emailVerified: true,
+          avatar: 'avatar-url',
         }),
       );
-      expect(dispatchMock).toHaveBeenCalledWith(
-        expect.objectContaining({ type: userActions.setToken.type, payload: 'new-token-abc' }),
-      );
+      expect(setTokenSpy).toHaveBeenCalledWith('new-token-abc');
     });
 
     it('still refreshes when forceRefresh is true (independent of token)', async () => {
@@ -102,6 +139,7 @@ describe('user thunks', () => {
       vi.spyOn(userService, 'refreshUserData').mockResolvedValue(refreshed);
       vi.spyOn(userService, 'refreshAvatarUser').mockResolvedValue({ avatar: 'forced-avatar-url' });
       vi.spyOn(userService, 'downloadAvatar').mockResolvedValue(new Blob(['y']));
+      const setTokenSpy = vi.spyOn(encryptedStorageService, 'setToken');
 
       const thunk = refreshUserThunk({ forceRefresh: true });
       await thunk(dispatchMock, getStateWithUser, undefined);
@@ -109,21 +147,16 @@ describe('user thunks', () => {
       expect(userService.refreshUserData).toHaveBeenCalledWith(baseUser.uuid);
       expect(userService.refreshAvatarUser).toHaveBeenCalled();
 
-      expect(dispatchMock).toHaveBeenCalledWith(
+      expect(setUserThunkSpy).toHaveBeenCalledWith(
         expect.objectContaining({
-          type: userActions.setUser.type,
-          payload: expect.objectContaining({
-            uuid: baseUser.uuid,
-            name: 'Alice',
-            lastname: 'Johnson',
-            emailVerified: true,
-            avatar: 'forced-avatar-url',
-          }),
+          uuid: baseUser.uuid,
+          name: 'Alice',
+          lastname: 'Johnson',
+          emailVerified: true,
+          avatar: 'forced-avatar-url',
         }),
       );
-      expect(dispatchMock).toHaveBeenCalledWith(
-        expect.objectContaining({ type: userActions.setToken.type, payload: 'forced-token-xyz' }),
-      );
+      expect(setTokenSpy).toHaveBeenCalledWith('forced-token-xyz');
     });
 
     it('reports error when refresh fails', async () => {
@@ -140,7 +173,7 @@ describe('user thunks', () => {
       const thunk = refreshUserThunk();
       const result = await thunk(dispatchMock, getStateNoUser, undefined);
       expect(result.type).toBe('user/refresh/rejected');
-      expect((result as any).error?.message).toBe('Current user is not defined');
+      expect((result as any).error?.name).toBe('UserUnauthorizedError');
     });
   });
 
@@ -153,11 +186,8 @@ describe('user thunks', () => {
       await thunk(dispatchMock, getStateWithUser, undefined);
 
       expect(userService.refreshAvatarUser).toHaveBeenCalled();
-      expect(dispatchMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          type: userActions.setUser.type,
-          payload: expect.objectContaining({ uuid: baseUser.uuid, avatar: 'new-avatar-url' }),
-        }),
+      expect(setUserThunkSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ uuid: baseUser.uuid, avatar: 'new-avatar-url' }),
       );
     });
 
@@ -176,6 +206,47 @@ describe('user thunks', () => {
       await thunk(dispatchMock, getStateWithUser, undefined);
 
       expect(errorService.reportError).toHaveBeenCalled();
+    });
+  });
+
+  describe('setUserThunk', () => {
+    it('encrypts and stores the user, then dispatches setUser', async () => {
+      const setUserSpy = vi.spyOn(encryptedStorageService, 'setUser').mockResolvedValue(undefined);
+
+      await userThunks.setUserThunk(baseUser as UserSettings)(dispatchMock, getStateWithUser, undefined);
+
+      expect(setUserSpy).toHaveBeenCalledWith(baseUser);
+      expect(setUserThunkSpy).toHaveBeenCalledWith(baseUser as UserSettings);
+    });
+  });
+
+  describe('updateUserEmailCredentialsThunk', () => {
+    it('updates token, encrypts and stores the user, then dispatches setUser', async () => {
+      const setTokenSpy = vi.spyOn(encryptedStorageService, 'setToken').mockResolvedValue(undefined);
+      const setUserSpy = vi.spyOn(encryptedStorageService, 'setUser').mockResolvedValue(undefined);
+
+      const newUserData = { ...baseUser, email: 'new@example.com' } as UserSettings;
+
+      await userThunks.updateUserEmailCredentialsThunk({ newUserData, newToken: 'new-token' })(
+        dispatchMock,
+        getStateWithUser,
+        undefined,
+      );
+
+      expect(setTokenSpy).toHaveBeenCalledWith('new-token');
+      expect(setUserSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          email: 'new@example.com',
+          bridgeUser: 'new@example.com',
+          username: 'new@example.com',
+        }),
+      );
+      expect(dispatchMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'user/setUser',
+          payload: expect.objectContaining({ email: 'new@example.com' }),
+        }),
+      );
     });
   });
 });

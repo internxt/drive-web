@@ -195,7 +195,8 @@
       "login": "Login",
       "success": "You have successfully logged in",
       "error": "Login failed, please try again",
-      "closeWindow": "You can close this window"
+      "closeWindow": "You can close this window",
+      "invalidRedirectUri": "Invalid redirect URL"
     },
     "oauthLink": {
       "continueAs": "Continue as",
@@ -205,10 +206,13 @@
     }
   },
   "checkout": {
-    "title": "You're almost there! Checkout securely",
     "pay": "Pay",
     "processing": "Processing...",
     "checkout": "Checkout",
+    "postalCode": {
+      "title": "Postal code",
+      "placeholder": "Postal code"
+    },
     "authComponent": {
       "signUp": {
         "emailAddress": "Your email address",
@@ -217,12 +221,17 @@
       "signIn": {
         "password": "Your password"
       },
-      "title": {
-        "signUp": "Create an account",
-        "signIn": "Login",
-        "userIsSignedIn": "User signed in as"
-      },
       "emailMustNotBeEmpty": "Email must not be empty",
+      "authError": {
+        "invalidCredentials": "The email or password is incorrect. Please try again.",
+        "twoFactorEnabled": "This account uses two-factor authentication. Log in from the login page and come back to complete your purchase.",
+        "emailAlreadyRegistered": "There is already an account with this email address. Select “Log in” to continue with your purchase.",
+        "accountLocked": "This account is locked for security reasons. Check your inbox to unlock it before continuing.",
+        "tooManyAttempts": "Too many attempts. Please wait a minute and try again.",
+        "invalidData": "Please check that your email and password are correct and try again.",
+        "serverError": "We could not complete this step. Please try again in a few minutes or contact support if the problem persists.",
+        "unknown": "We could not verify your details. Please check your email and password and try again."
+      },
       "privacyGuarantee": "Privacy guarantee: We do not share your information and will contact you only as needed to provide our service."
     },
     "addressBillingTitle": "Billing Address",
@@ -234,22 +243,18 @@
         "companyVatId": "Company Vat ID"
       }
     },
-    "paymentTitle": "Select a payment method",
     "productCard": {
       "renewalTitle": {
         "month": "annual",
         "year": "annual",
         "lifetime": "lifetime"
       },
-      "title": "Order summary",
-      "selectedPlan": "Selected plan",
       "billed": {
         "month": "Billed monthly",
         "year": "Billed annually",
         "lifetime": "One-time payment"
       },
       "saving": "You're saving {{percent}}%",
-      "planDetails": "Plan details:",
       "total": "Total ",
       "addCoupon": {
         "buttonTitle": "Add coupon",
@@ -282,7 +287,10 @@
       "invalidPlan": "Unsupported plan type. Please select a valid plan.",
       "fetchingCryptoCurrencies": "We couldn't load the available cryptocurrency options",
       "addressRequired": "Please complete your billing address to continue",
-      "businessPlan": "Business plan is not available"
+      "businessPlan": "Business plan is not available",
+      "postalCodeRequired": "Please enter your postal code to continue",
+      "countryRequired": "We couldn't determine your billing country. Please try again later.",
+      "missingPaymentDetails": "Missing payment details to confirm the payment"
     }
   },
   "general": {
@@ -299,7 +307,47 @@
         "image": "Image",
         "video": "Video",
         "audio": "Audio",
-        "clear": "Clear"
+        "attachments": "Attachments",
+        "anyType": "Any type",
+        "zip": "Archive (zip)",
+        "document": "Document",
+        "powerpoint": "Powerpoint",
+        "excel": "Excel",
+        "text": "Text (txt)",
+        "code": "Code",
+        "csv": "CSV",
+        "xml": "XML",
+        "figma": "Figma",
+        "date": {
+          "dateModified": "Date modified",
+          "anyDate": "Any date",
+          "today": "Today",
+          "last7days": "Last 7 days",
+          "last30days": "Last 30 days",
+          "thisYear": "This year ({{year}})",
+          "lastYear": "Last year ({{year}})",
+          "specificDate": "Specific date",
+          "after": "After",
+          "before": "Before",
+          "selectToday": "Select today"
+        },
+        "size": {
+          "size": "Size",
+          "anySize": "Any size",
+          "less5mb": "Less than 5 MB",
+          "less100mb": "Less than 100 MB",
+          "less1gb": "Less than 1 GB",
+          "more1gb": "More than 1 GB",
+          "customRange": "Custom size range",
+          "biggerThan": "Bigger than",
+          "smallerThan": "Smaller than",
+          "unit": "Unit",
+          "bytes": "Bytes",
+          "kilobytes": "Kilobytes",
+          "megabytes": "Megabytes",
+          "gigabytes": "Gigabytes",
+          "terabytes": "Terabytes"
+        }
       },
       "emptyState": {
         "title": "Find files and folders",
@@ -394,8 +442,7 @@
         "referAndEarn": "Refer and Earn",
         "earnReferral": "Earn €100",
         "spaceUsed": "{{space}}% space used",
-        "account": "Account",
-        "giveFeedback": "Give Feedback"
+        "account": "Account"
       },
       "tabs": {
         "account": {
@@ -446,17 +493,19 @@
         },
         "billing": {
           "cancelSubscriptionModal": {
+            "title": "Cancel subscription",
             "description": {
-              "individual": "You are about to cancel your {{currentPlanName}} Internxt plan. By cancelling your plan, you will be downgraded to free Internxt {{freePlanName}} plan. Confirm your choice to proceed, please.",
+              "individual": {
+                "line1": "Your annual plan is billed monthly and runs until {{endDate}}. ",
+                "line2": "You can choose how you’d like to proceed:"
+              },
               "business": "By cancelling your plan, the workspace will be deleted along with all data. Confirm your choice to proceed, please."
             },
+
             "commitment": {
-              "firstMonthDescription": "As you're still in your 30 day trial period, your cancellation will be immediate. You will no longer be billed and your account will revert to a free 1GB plan now.",
-              "description": "You have an annual subscription billed monthly. If you cancel now, your subscription will remain active until {{end_date}}, and you will continue to be charged monthly until that date.",
-              "monthsRemaining": "Remaining payments: {{monthsRemaining}}",
-              "amountPerMonth": "Amount per month: €{{amount}}",
-              "afterLabel": "After {{monthsRemaining}}"
+              "firstMonthDescription": "As you're still in your 30 day trial period, your cancellation will be immediate. You will no longer be billed and your account will revert to a free 1GB plan now."
             },
+            "directCancellationDescription": "You are about to cancel your subscription. You will lose access to your plan and your account will revert to the free plan. Confirm your choice to proceed, please.",
             "keepSubscription": "Keep subscription",
             "cancelSubscription": "Cancel subscription",
             "infoBox": {
@@ -487,9 +536,10 @@
                 "cta": "End now",
                 "confirmationModal": {
                   "title": "End plan now",
-                  "description": "You are going to cancel your plan immediately by making a final payment of {{amount}}.",
+                  "description": "You are going to cancel your plan immediately by making a final payment of {{amount}}",
                   "afterThis": "After this:",
                   "accessEndsImmediately": "Your access will end immediately",
+                  "plusTaxes": " + taxes",
                   "noFurtherCharges": "No further charges will apply",
                   "overStorage": {
                     "title": "You are over {{freeLimit}}",
@@ -500,6 +550,16 @@
                 }
               }
             }
+          },
+          "subscriptionEndingModal": {
+            "title": "Subscription ending in {{endDate}}",
+            "description": {
+              "title": "When your plan ends:",
+              "storageReturns": "Your storage will return to the free limit",
+              "featuresUnavailable": "Premium features will no longer be available"
+            },
+            "maybeLater": "Maybe later",
+            "renewSubscription": "Renew subscription"
           },
           "cancellationIncentive": {
             "title": {
@@ -1121,7 +1181,8 @@
       "allProcessesHaveFinished": "All processes have finished",
       "processing": "Processing {{pending}} of {{finished}}",
       "failedToUpload": "Failed to upload",
-      "failedToDownload": "Failed to download"
+      "failedToDownload": "Failed to download",
+      "notAllowed": "Not allowed"
     },
     "waiting": "Waiting",
     "paused": "Paused",
@@ -1282,9 +1343,13 @@
     "verificationEmail": "Verification email has been sent",
     "successCancelSubscription": "Your subscription has been cancelled",
     "errorCancelSubscription": "Something went wrong while cancelling your subscription",
-    "errorCreatingSubscription": "Something went wrong while creating your subscription",
     "successApplyCancellationIncentive": "Thank you for staying with us! Enjoy the next month for free",
     "errorApplyCancellationIncentive": "Something went wrong while applying the cancellation incentive",
+    "successEarlyCancelSubscription": "Your subscription has been cancelled",
+    "errorEarlyCancelSubscription": "Something went wrong while cancelling your subscription",
+    "successReactivateSubscription": "Your subscription has been reactivated",
+    "errorReactivateSubscription": "Something went wrong while reactivating your subscription",
+    "errorCreatingSubscription": "Something went wrong while creating your subscription",
     "couponIsNotValidForUserError": "Coupon can only be redeemed by new customers",
     "errorApplyingCoupon": "Something went wrong while applying the coupon",
     "errorWhileFetchingMoreItems": "Something went wrong while fetching more items",
@@ -1842,5 +1907,8 @@
   },
   "sdk": {
     "rateLimitToast": "This is taking longer than expected. Please wait..."
+  },
+  "common": {
+    "planCancelled": "Your subscription ends {{end_date}}"
   }
 }

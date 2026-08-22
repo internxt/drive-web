@@ -32,7 +32,7 @@ const CheckoutSuccessView = (): JSX.Element => {
 
     try {
       metaService.trackPurchase();
-      gaService.trackPurchase();
+      await gaService.trackPurchase();
       await trackPaymentConversion();
 
       removePaymentsStorage();

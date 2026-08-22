@@ -124,8 +124,7 @@ export enum AppView {
 }
 
 export enum LocalStorageItem {
-  User = 'xUser',
-  NewToken = 'xNewToken',
+  UserUUID = 'xUserUUID',
   Language = 'i18nextLng',
   ShowSummerBanner = 'showSummerBanner',
   CheckoutItemData = 'checkout_item_data',
@@ -143,10 +142,7 @@ export enum LocalStorageItem {
   UccStorageKey = 'cello_ucc',
   Theme = 'theme',
   IsThemeDark = 'theme:isDark',
-  B2Bworkspace = 'b2bWorkspace',
-  WorkspaceCredentials = 'workspace_credentials',
-  FolderAccessToken = 'folderAccessToken',
-  FileAccessToken = 'fileAccessToken',
+  B2BworkspaceId = 'b2bWorkspaceId',
   GCLID = 'gclid',
   HasSeenTrashDisposalDialog = 'hasSeenTrashDisposalDialog',
   IdManagementTheme = 'id_management_theme_enabled',
@@ -158,15 +154,17 @@ export enum LocalStorageItem {
   SuperbawlTheme = 'superbowl_theme_enabled',
   StpatricksTheme = 'stpatricks_theme_enabled',
   AnniversaryTheme = 'anniversary_theme_enabled',
+  SubscriptionEndingModalClosed = 'subscription_ending_modal_closed',
 }
 
 export enum LocalStorageProtectedItem {
   User = 'xUser',
-  NewToken = 'xNewToken',
-  B2Bworkspace = 'b2bWorkspace',
-  WorkspaceCredentials = 'workspace_credentials',
-  FolderAccessToken = 'folderAccessToken',
-  FileAccessToken = 'fileAccessToken',
+  EncryptedUser = 'xEncryptedUser',
+  EncryptedToken = 'xTokenEncrypted',
+  EncryptedB2BworkspaceMnemonic = 'xEncryptedB2BWorkspaceMnemonic',
+  EncryptedWorkspaceCredentials = 'xEncryptedWorkspaceCredentials',
+  EncryptedFolderToken = 'xEncryptedFolderToken',
+  EncryptedFileToken = 'xEncryptedFileToken',
 }
 export enum OrderDirection {
   Asc = 'ASC',

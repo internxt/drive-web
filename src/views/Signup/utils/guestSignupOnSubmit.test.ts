@@ -1,16 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { guestSignupOnSubmit } from './guestSignupOnSubmit';
-import { AppView, IFormValues, LocalStorageItem } from 'app/core/types';
+import { AppView, IFormValues } from 'app/core/types';
 import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
 import { parseAndDecryptUserKeys } from 'app/crypto/services/keys.service';
-import { userActions, userThunks } from 'app/store/slices/user';
+import { userThunks } from 'app/store/slices/user';
 import { planThunks } from 'app/store/slices/plan';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 vi.mock(import('services/error.service'));
 vi.mock(import('services/local-storage.service'));
+vi.mock(import('services/encrypted-storage.service'));
 vi.mock(import('services/navigation.service'));
 vi.mock(import('app/crypto/services/keys.service'));
 vi.mock(import('app/store/slices/user'));
@@ -70,6 +72,7 @@ describe('guestSignupOnSubmit', () => {
   });
 
   it('should successfully register user and navigate to redirect page', async () => {
+    const setUserThunkSpy = vi.spyOn(userThunks, 'setUserThunk');
     mockDoRegisterPreCreatedUser.mockResolvedValue(mockRegistrationResponse);
 
     await guestSignupOnSubmit({
@@ -93,9 +96,9 @@ describe('guestSignupOnSubmit', () => {
       'recaptcha-token',
     );
     expect(localStorageService.clear).toHaveBeenCalled();
-    expect(localStorageService.setToken).toHaveBeenCalledWith('refresh-token');
+    expect(encryptedStorageService.setToken).toHaveBeenCalledWith('refresh-token');
     expect(parseAndDecryptUserKeys).toHaveBeenCalledWith(mockRegistrationResponse.xUser, 'password123');
-    expect(mockDispatch).toHaveBeenCalledWith(userActions.setUser(expect.objectContaining({ uuid: 'user-uuid' })));
+    expect(setUserThunkSpy).toHaveBeenCalledWith(expect.objectContaining({ uuid: 'user-uuid' }));
     expect(mockDispatch).toHaveBeenCalledWith(userThunks.initializeUserThunk());
     expect(mockDispatch).toHaveBeenCalledWith(planThunks.initializeThunk());
     expect(navigationService.push).toHaveBeenCalledWith(AppView.Drive);

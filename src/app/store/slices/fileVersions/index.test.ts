@@ -51,6 +51,7 @@ describe('File history state', () => {
       const limits: FileLimitsResponse = {
         versioning: { enabled: true, maxFileSize: 0, retentionDays: 0, maxVersions: 0 },
         maxUploadFileSize: 0,
+        photosAccess: false,
       };
       const getLimitsSpy = vi.spyOn(fileVersionService, 'getLimits').mockResolvedValueOnce(limits);
       const dispatch = vi.fn();
@@ -145,6 +146,7 @@ describe('File history state', () => {
       const limits: FileLimitsResponse = {
         versioning: { enabled: true, maxFileSize: 0, retentionDays: 0, maxVersions: 0 },
         maxUploadFileSize: 0,
+        photosAccess: false,
       };
       const fulfilledState = fileVersionsReducer(
         pendingState,

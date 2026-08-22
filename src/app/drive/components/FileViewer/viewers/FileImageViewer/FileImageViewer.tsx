@@ -2,6 +2,7 @@ import heic2any from 'heic2any';
 import { useEffect, useState } from 'react';
 
 import { FormatFileViewerProps } from '../../FileViewer';
+import { PORTRAIT_VIEWER_PADDING_CLASS } from '../../utils/fileViewerUtils';
 
 import './FileImageViewer.scss';
 
@@ -61,13 +62,15 @@ const FileImageViewer = ({
   const fileUrl = imageBlob ? URL.createObjectURL(imageBlob) : '';
 
   return (
-    <div className="flex max-h-screen max-w-full flex-col items-center justify-center text-white">
+    <div
+      className={`flex max-h-screen max-w-full flex-col items-center justify-center text-white ${PORTRAIT_VIEWER_PADDING_CLASS}`}
+    >
       <div className="relative max-h-screen max-w-full">
         {fileUrl && (
           <img
             src={fileUrl}
             alt={file.name}
-            className="relative max-h-screen object-contain"
+            className="relative max-h-screen object-contain portrait:max-w-full"
             draggable={false}
             onError={() => setIsPreviewAvailable(false)}
           />

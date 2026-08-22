@@ -1,10 +1,11 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { renderHook } from '@testing-library/react';
-import { localStorageService, navigationService } from 'services';
+import { renderHook, act } from '@testing-library/react';
+import { navigationService } from 'services';
 import { AppView } from 'app/core/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import oauthService from 'services/oauth.service';
 import { useOAuthFlow } from './useOAuthFlow';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 vi.mock('services/navigation.service', () => ({
   default: { push: vi.fn() },
@@ -26,9 +27,6 @@ const mockUserSettings: UserSettings = {
   sharedWorkspace: false,
   credit: 100,
   mnemonic: 'test mnemonic phrase',
-  privateKey: 'private-key-mock',
-  publicKey: 'public-key-mock',
-  revocationKey: 'revocation-key-mock',
   keys: {
     ecc: {
       publicKey: 'ecc-public-key-mock',
@@ -77,18 +75,20 @@ describe('OAuth custom hook', () => {
   });
 
   describe('On component mount', () => {
-    it('when OAuth is active and user credentials exist, then user is redirected to OAuthLink view', () => {
+    it('when OAuth is active and user credentials exist, then user is redirected to OAuthLink view', async () => {
       const mockNewToken = 'test-new-token';
       const mockPush = vi.fn();
 
-      vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUserSettings);
-      vi.spyOn(localStorageService, 'getToken').mockReturnValue(mockNewToken);
+      vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue(mockUserSettings);
+      vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(mockNewToken);
       vi.mocked(navigationService.push).mockImplementation(mockPush);
 
-      renderHook(() => useOAuthFlow({ authOrigin: 'https://meet.internxt.com' }));
+      await act(async () => {
+        renderHook(() => useOAuthFlow({ authOrigin: 'https://meet.internxt.com' }));
+      });
 
-      expect(localStorageService.getUser).toHaveBeenCalled();
-      expect(localStorageService.getToken).toHaveBeenCalled();
+      expect(encryptedStorageService.getUser).toHaveBeenCalled();
+      expect(encryptedStorageService.getToken).toHaveBeenCalled();
       expect(mockPush).toHaveBeenCalledWith(AppView.OAuthLink, expect.any(Object));
       expect(mockSendAuthSuccess).not.toHaveBeenCalled();
     });
@@ -96,12 +96,12 @@ describe('OAuth custom hook', () => {
     it('when OAuth is not active, then no credentials are sent', () => {
       const mockNewToken = 'test-new-token';
 
-      vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUserSettings);
-      vi.spyOn(localStorageService, 'getToken').mockReturnValue(mockNewToken);
+      vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue(mockUserSettings);
+      vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(mockNewToken);
 
       renderHook(() => useOAuthFlow({ authOrigin: null }));
 
-      expect(localStorageService.getUser).not.toHaveBeenCalled();
+      expect(encryptedStorageService.getUser).not.toHaveBeenCalled();
       expect(mockSendAuthSuccess).not.toHaveBeenCalled();
     });
   });
@@ -111,7 +111,7 @@ describe('OAuth custom hook', () => {
       const mockNewToken = 'test-new-token';
       mockSendAuthSuccess.mockReturnValue(true);
 
-      vi.spyOn(localStorageService, 'getUser').mockReturnValue(null);
+      vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue(null);
 
       const { result } = renderHook(() => useOAuthFlow({ authOrigin: 'https://meet.internxt.com' }));
 
@@ -126,7 +126,7 @@ describe('OAuth custom hook', () => {
       const mockNewToken = 'test-new-token';
       mockSendAuthSuccess.mockReturnValue(false);
 
-      vi.spyOn(localStorageService, 'getUser').mockReturnValue(null);
+      vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue(null);
 
       const { result } = renderHook(() => useOAuthFlow({ authOrigin: 'https://meet.internxt.com' }));
 
@@ -142,7 +142,7 @@ describe('OAuth custom hook', () => {
     it('when OAuth is triggered multiple times, then each attempt is handled independently', () => {
       mockSendAuthSuccess.mockReturnValue(true);
 
-      vi.spyOn(localStorageService, 'getUser').mockReturnValue(null);
+      vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue(null);
 
       const { result } = renderHook(() => useOAuthFlow({ authOrigin: 'https://meet.internxt.com' }));
 
