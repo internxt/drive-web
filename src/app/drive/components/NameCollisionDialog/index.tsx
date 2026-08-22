@@ -148,11 +148,14 @@ const NameCollisionDialog: FC<NameCollisionDialogProps> = ({
         </RadioGroup>
 
         {remainingItemsCount > 1 && (
-          <div className="flex cursor-pointer items-center" onClick={() => setApplyToAll((prev) => !prev)}>
-            <Checkbox checked={applyToAll} />
-            <p className="ml-2 select-none text-base font-medium text-gray-80">
+          <div className="flex items-center">
+            <Checkbox id="apply-to-all" checked={applyToAll} onClick={() => setApplyToAll((prev) => !prev)} />
+            <label
+              htmlFor="apply-to-all"
+              className="ml-2 cursor-pointer select-none text-base font-medium text-gray-80"
+            >
               {translate('modals.alreadyExistsModal.applyToAll')}
-            </p>
+            </label>
           </div>
         )}
         <div className="flex flex-row items-center justify-end space-x-2">
