@@ -20,6 +20,10 @@ import { getUniqueFolderName } from 'app/store/slices/storage/folderUtils/getUni
 import { getUniqueFilename } from 'app/store/slices/storage/fileUtils/getUniqueFilename';
 import { checkDuplicatedFiles } from 'app/store/slices/storage/fileUtils/checkDuplicatedFiles';
 import { CollisionGroup } from 'app/store/slices/storage/storage.model';
+import {
+  handleRepeatedUploadingFiles,
+  handleRepeatedUploadingFolders,
+} from 'app/store/slices/storage/storage.thunks/renameItemsThunk';
 import { MoveItemPayload } from 'app/store/slices/storage/storage.thunks/moveItemsThunk';
 
 const NameCollisionContainer: FC = () => {
@@ -156,6 +160,80 @@ const NameCollisionContainer: FC = () => {
     }
   };
 
+  const uploadNewFilesOnly = async (files: File[], destinationUuid: string) => {
+    const { unrepeatedItems: newFiles } = await handleRepeatedUploadingFiles(files, destinationUuid);
+    if (newFiles.length === 0) return;
+
+    await dispatch(
+      storageThunks.uploadItemsThunk({
+        files: newFiles as File[],
+        parentFolderId: destinationUuid,
+        options: { disableDuplicatedNamesCheck: true },
+      }),
+    );
+  };
+
+  const uploadNewFolders = async (folders: IRoot[], destinationUuid: string) => {
+    if (folders.length === 0) return;
+
+    await uploadFoldersWithTracking({
+      payload: folders.map((root) => ({ root, currentFolderId: destinationUuid })),
+      selectedWorkspace,
+      dispatch,
+      maxUploadFileSize,
+    });
+  };
+
+  /**
+   * Merges a skipped folder upload into its existing counterpart: files that already
+   * exist are left untouched, new files and new subfolders are uploaded into the
+   * existing folder, and colliding subfolders are merged recursively so the folder
+   * structure is preserved.
+   */
+  const mergeSkipFolderUpload = async (root: IRoot, existingFolderUuid: string) => {
+    await uploadNewFilesOnly(root.childrenFiles, existingFolderUuid);
+
+    const {
+      unrepeatedItems: newFolders,
+      repeatedItems: collidingFolders,
+      existingItems: existingFolders,
+    } = await handleRepeatedUploadingFolders(root.childrenFolders, existingFolderUuid);
+
+    await uploadNewFolders(newFolders as IRoot[], existingFolderUuid);
+
+    for (const collidingFolder of collidingFolders as IRoot[]) {
+      const existingFolder = existingFolders.find((folder) => folder.plainName === collidingFolder.name);
+      if (existingFolder) {
+        await mergeSkipFolderUpload(collidingFolder, existingFolder.uuid);
+      }
+    }
+  };
+
+  /**
+   * Skipping an uploaded file is a no-op (the existing file stays untouched), while
+   * skipping an uploaded folder merges its new content into the existing folder.
+   */
+  const skipAndUploadSingleItem = async (
+    itemToUpload: IRoot | File,
+    itemToReplace: DriveItemData,
+    destinationUuid: string,
+  ) => {
+    const isFolderUpload = !!(itemToUpload as IRoot).fullPathEdited;
+    if (!isFolderUpload) return;
+
+    await mergeSkipFolderUpload(itemToUpload as IRoot, itemToReplace.uuid);
+    dispatch(fetchSortedFolderContentThunk(destinationUuid));
+  };
+
+  const skipAndUploadItem = async (group: CollisionGroup) => {
+    const itemsToUpload = group.duplicatedItems as (IRoot | File)[];
+    const itemsToReplace = group.existingItems;
+
+    for (let i = 0; i < itemsToUpload.length; i++) {
+      await skipAndUploadSingleItem(itemsToUpload[i], itemsToReplace[i], group.destinationUuid);
+    }
+  };
+
   const keepAndUploadSingleItem = async (itemToUpload: IRoot | File, destinationUuid: string) => {
     if ((itemToUpload as IRoot).fullPathEdited) {
       await uploadFoldersWithTracking({
@@ -200,6 +278,9 @@ const NameCollisionContainer: FC = () => {
             await replaceAndUploadItem(group);
             break;
           case 'upload' + 'skip':
+            await skipAndUploadItem(group);
+            break;
+          case 'move' + 'skip':
             break;
         }
       }
@@ -233,6 +314,9 @@ const NameCollisionContainer: FC = () => {
         await replaceAndUploadSingleItem(itemToUpload as IRoot | File, itemToReplace, group.destinationUuid);
         break;
       case 'upload' + 'skip':
+        await skipAndUploadSingleItem(itemToUpload as IRoot | File, itemToReplace, group.destinationUuid);
+        break;
+      case 'move' + 'skip':
         break;
     }
 

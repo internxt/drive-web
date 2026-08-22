@@ -764,10 +764,10 @@
     "alreadyExistsModal": {
       "title": "L'élément existe déjà",
       "selectOption": "Sélectionnez une option",
-      "description": "{{itemName}} existe déjà à cet endroit. Voulez-vous le remplacer par celui que vous déplacez ?",
+      "description": "{{itemName}} existe déjà à cet endroit. Que voulez-vous faire ?",
       "replaceItem": "Remplacer l'élément actuel",
       "keepBoth": "Garder les deux",
-      "skipFile": "Ignorer le fichier",
+      "skipItem": "Ignorer cet élément",
       "applyToAll": "Appliquer cette action à tous les doublons",
       "upload": "Télécharger",
       "move": "Déplacer"

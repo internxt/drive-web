@@ -785,10 +785,10 @@
     "alreadyExistsModal": {
       "title": "項目已存在",
       "selectOption": "選擇一個選項",
-      "description": "{{itemName}} 已存在於此位置。您要用正在移動的項目替換它嗎？",
+      "description": "{{itemName}} 已存在於此位置。您要如何處理？",
       "replaceItem": "替換當前項目",
       "keepBoth": "保留兩者",
-      "skipFile": "跳過檔案",
+      "skipItem": "跳過此項目",
       "applyToAll": "將此操作套用至所有重複項目",
       "upload": "上傳",
       "move": "移動"
