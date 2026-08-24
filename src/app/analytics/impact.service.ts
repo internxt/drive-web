@@ -168,7 +168,7 @@ export async function trackPaymentConversion(): Promise<void> {
     const anonymousID = getCookie('impactAnonymousId') || uuidV4();
     const source = getCookie('impactSource');
 
-    const IMPACT_COUPON_WHITELIST = ['CNINTERNXT', 'CNINTERNXTL', 'CLOUDOFF', 'SPECIAL', 'ANTIV', 'SAVE', 'OFFER'];
+    const IMPACT_COUPON_WHITELIST = ['CNINTERNXT', 'CNINTERNXTL', 'CLOUDOFF', 'SPECIAL', 'ANTIV', 'SAVE', 'OFFER', 'GOTZHAOFFER'];
     const isImpactCoupon = couponCode && IMPACT_COUPON_WHITELIST.includes(couponCode.toUpperCase());
 
     if (isFirstPurchase && ((source && source !== 'direct') || isImpactCoupon)) {

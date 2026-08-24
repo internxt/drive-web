@@ -120,7 +120,6 @@ vi.mock('app/share/services/share.service', () => ({
     validateSharingInvitation: vi.fn(),
   },
   validateSharingInvitation: vi.fn(),
-  decryptMnemonic: vi.fn(),
 }));
 
 vi.mock('services/navigation.service', () => ({
