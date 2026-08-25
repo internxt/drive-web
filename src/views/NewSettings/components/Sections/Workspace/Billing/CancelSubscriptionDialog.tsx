@@ -49,7 +49,7 @@ const CancelSubscriptionDialog = ({
   const [view, setView] = useState<View>('cancelPlan');
 
   const isBusiness = userType === UserType.Business;
-  const isTaxEnabled = individualPlan?.tax?.enabled;
+  const isTaxEnabled = individualPlan?.tax.enabled;
   const commitment = individualPlan?.commitment;
   const cancellationTrial = individualPlan?.cancellationTrial;
   const isCommitmentEnabled = commitment?.enabled;
