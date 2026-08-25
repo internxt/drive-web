@@ -31,10 +31,6 @@ interface DownloadSharedFileParams extends DownloadFileParams {
 type DownloadSharedFileFunction = (params: DownloadSharedFileParams) => DownloadFileResponse;
 type DownloadFileFunction = (params: DownloadSharedFileParams | DownloadOwnFile) => DownloadFileResponse;
 
-/**
- * Creates a NetworkFacade for the bridge. Pass auth for downloads of the user's own files;
- * omit it for shared-link downloads, which authenticate through the share token instead.
- */
 const createNetworkFacade = (auth?: { username: string; password: string }): NetworkFacade =>
   new NetworkFacade(
     Network.client(
@@ -61,12 +57,12 @@ const downloadSharedFile: DownloadSharedFileFunction = (params) => {
   });
 };
 
-async function getAuthFromCredentials(creds: NetworkCredentials): Promise<{ username: string; password: string }> {
+const getAuthFromCredentials = async (creds: NetworkCredentials): Promise<{ username: string; password: string }> => {
   return {
     username: creds.user,
     password: await getSha256(creds.pass),
   };
-}
+};
 
 const downloadOwnFile = async (params: DownloadOwnFile) => {
   const { bucketId, fileId, key, options } = params;
@@ -80,7 +76,7 @@ const downloadOwnFile = async (params: DownloadOwnFile) => {
   });
 };
 
-async function multipartDownloadOwnFile(params: DownloadOwnFile & { fileSize: number }): Promise<FileStream> {
+const multipartDownloadOwnFile = async (params: DownloadOwnFile & { fileSize: number }): Promise<FileStream> => {
   const { bucketId, fileId, key, fileSize, options } = params;
   const auth = await getAuthFromCredentials(params.creds);
   const networkFacade = createNetworkFacade(auth);
@@ -95,11 +91,11 @@ async function multipartDownloadOwnFile(params: DownloadOwnFile & { fileSize: nu
       abortController: options?.abortController,
     },
   });
-}
+};
 
-async function multipartDownloadSharedFile(
+const multipartDownloadSharedFile = async (
   params: DownloadSharedFileParams & { fileSize: number },
-): Promise<FileStream> {
+): Promise<FileStream> => {
   const { bucketId, fileId, key, token, fileSize, options } = params;
 
   const networkFacade = createNetworkFacade();
@@ -115,11 +111,11 @@ async function multipartDownloadSharedFile(
       abortController: options?.abortController,
     },
   });
-}
+};
 
-export async function downloadChunkFile(
+export const downloadChunkFile = async (
   params: DownloadOwnFile & { chunkStart: number; chunkEnd: number },
-): Promise<FileStream> {
+): Promise<FileStream> => {
   const { bucketId, fileId, key, chunkStart, chunkEnd, options } = params;
   const auth = await getAuthFromCredentials(params.creds);
 
@@ -136,7 +132,7 @@ export async function downloadChunkFile(
       abortController: options?.abortController,
     },
   });
-}
+};
 
 export const downloadFile: DownloadFileFunction = (params) => {
   if (params.token) {
