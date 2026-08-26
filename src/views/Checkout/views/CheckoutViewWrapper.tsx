@@ -34,6 +34,7 @@ import metaService from 'app/analytics/meta.service';
 import { useCheckoutQueryParams } from '../hooks/useCheckoutQueryParams';
 import { useInitializeCheckout } from '../hooks/useInitializeCheckout';
 import { useProducts } from '../hooks/useProducts';
+import { usePriceRefetchOnAddressChange } from '../hooks/usePriceRefetchOnAddressChange';
 import { useUserLocation } from 'hooks/useUserLocation';
 import {
   GCLID_COOKIE_LIFESPAN_DAYS,
@@ -140,27 +141,13 @@ const CheckoutViewWrapper = () => {
     }
   }, [isAuthenticated, user]);
 
-  useEffect(() => {
-    if (!selectedPlan?.price?.id || !selectedPlan?.price?.currency) {
-      return;
-    }
-
-    if (!billingCountry || !billingPostalCode) {
-      return;
-    }
-
-    const debounceTimer = setTimeout(() => {
-      fetchSelectedPlan({
-        priceId: selectedPlan.price.id,
-        currency: selectedPlan.price.currency,
-        promotionCode: promotionCode ?? undefined,
-        postalCode: billingPostalCode,
-        country: billingCountry,
-      });
-    }, 500);
-
-    return () => clearTimeout(debounceTimer);
-  }, [billingCountry, billingPostalCode, selectedPlan?.price?.id, selectedPlan?.price?.currency]);
+  usePriceRefetchOnAddressChange({
+    selectedPlan,
+    billingCountry,
+    billingPostalCode,
+    promotionCode: promotionCode ?? undefined,
+    fetchSelectedPlan,
+  });
 
   useEffect(() => {
     if (isCheckoutReady && selectedPlan?.price) {
