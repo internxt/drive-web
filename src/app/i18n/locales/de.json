@@ -764,10 +764,10 @@
     "alreadyExistsModal": {
       "title": "Objekt existiert bereits",
       "selectOption": "Wähle eine Option",
-      "description": "{{itemName}} existiert bereits an diesem Ort. Möchtest du es durch die Datei ersetzen, die du gerade verschiebst?",
+      "description": "{{itemName}} existiert bereits an diesem Ort. Was möchtest du tun?",
       "replaceItem": "Aktuelles Element ersetzen",
       "keepBoth": "Behalte beide",
-      "skipFile": "Datei überspringen",
+      "skipItem": "Dieses Element überspringen",
       "applyToAll": "Diese Aktion auf alle Duplikate anwenden",
       "upload": "Upload",
       "move": "Verschieben"

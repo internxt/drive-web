@@ -764,10 +764,10 @@
     "alreadyExistsModal": {
       "title": "El item ya existe",
       "selectOption": "Selecciona una opción",
-      "description": "{{itemName}} ya existe en esta ubicación. ¿Deseas reemplazarlo por el que estás moviendo?",
+      "description": "{{itemName}} ya existe en esta ubicación. ¿Qué deseas hacer?",
       "replaceItem": "Reemplazar el ítem",
       "keepBoth": "Mantener ambos",
-      "skipFile": "Omitir archivo",
+      "skipItem": "Omitir este ítem",
       "applyToAll": "Aplicar esta acción a todos los duplicados",
       "upload": "Subir",
       "move": "Mover"

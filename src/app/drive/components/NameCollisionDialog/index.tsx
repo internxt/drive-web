@@ -47,27 +47,23 @@ const NameCollisionDialog: FC<NameCollisionDialogProps> = ({
   onSubmitButtonPressed,
 }: NameCollisionDialogProps) => {
   const { translate } = useTranslationContext();
-  const options = useMemo(() => {
-    const collisionOptions: { operation: 'replace' | 'keep' | 'skip'; name: string }[] = [
+  const options = useMemo(
+    () => [
       {
-        operation: 'replace',
+        operation: 'replace' as const,
         name: translate('modals.alreadyExistsModal.replaceItem'),
       },
       {
-        operation: 'keep',
+        operation: 'keep' as const,
         name: translate('modals.alreadyExistsModal.keepBoth'),
       },
-    ];
-
-    if (operationType === OPERATION_TYPE.UPLOAD) {
-      collisionOptions.push({
-        operation: 'skip',
-        name: translate('modals.alreadyExistsModal.skipFile'),
-      });
-    }
-
-    return collisionOptions;
-  }, [operationType, translate]);
+      {
+        operation: 'skip' as const,
+        name: translate('modals.alreadyExistsModal.skipItem'),
+      },
+    ],
+    [translate],
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [selectedOption, setSelectedOption] = useState(options[0]);
   const [applyToAll, setApplyToAll] = useState(false);
@@ -135,7 +131,9 @@ const NameCollisionDialog: FC<NameCollisionDialogProps> = ({
                   >
                     <div
                       className={`h-2.5 w-2.5 rounded-full ${
-                        option.operation === selectedOption.operation ? 'bg-white' : 'bg-white dark:bg-transparent group-hover:bg-gray-5'
+                        option.operation === selectedOption.operation
+                          ? 'bg-white'
+                          : 'bg-white dark:bg-transparent group-hover:bg-gray-5'
                       }`}
                     />
                   </div>
@@ -151,10 +149,13 @@ const NameCollisionDialog: FC<NameCollisionDialogProps> = ({
 
         {remainingItemsCount > 1 && (
           <div className="flex items-center">
-            <Checkbox checked={applyToAll} onClick={() => setApplyToAll((prev) => !prev)} />
-            <p className="ml-2 select-none text-base font-medium text-gray-80">
+            <Checkbox id="apply-to-all" checked={applyToAll} onClick={() => setApplyToAll((prev) => !prev)} />
+            <label
+              htmlFor="apply-to-all"
+              className="ml-2 cursor-pointer select-none text-base font-medium text-gray-80"
+            >
               {translate('modals.alreadyExistsModal.applyToAll')}
-            </p>
+            </label>
           </div>
         )}
         <div className="flex flex-row items-center justify-end space-x-2">
