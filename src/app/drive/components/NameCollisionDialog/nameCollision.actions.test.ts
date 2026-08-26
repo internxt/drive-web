@@ -19,6 +19,8 @@ const mocks = vi.hoisted(() => ({
   getEnvironmentConfig: vi.fn(),
   networkUploadFile: vi.fn(),
   replaceFile: vi.fn(),
+  handleRepeatedUploadingFiles: vi.fn(),
+  handleRepeatedUploadingFolders: vi.fn(),
 }));
 
 vi.mock('views/Trash/services', () => ({ moveItemsToTrash: mocks.moveItemsToTrash }));
@@ -39,6 +41,10 @@ vi.mock('app/store/slices/storage/folderUtils/checkFolderDuplicated', () => ({
 }));
 vi.mock('app/store/slices/storage/folderUtils/getUniqueFolderName', () => ({
   getUniqueFolderName: mocks.getUniqueFolderName,
+}));
+vi.mock('app/store/slices/storage/storage.thunks/renameItemsThunk', () => ({
+  handleRepeatedUploadingFiles: mocks.handleRepeatedUploadingFiles,
+  handleRepeatedUploadingFolders: mocks.handleRepeatedUploadingFolders,
 }));
 vi.mock('app/drive/services/folder.service/uploadFoldersWithTracking', () => ({
   uploadFoldersWithTracking: mocks.uploadFoldersWithTracking,
@@ -62,12 +68,13 @@ const asUploadAction = (payload: unknown) => ({ type: 'upload', payload });
 const asRefreshAction = (payload: unknown) => ({ type: 'refresh', payload });
 const asInvalidateCacheAction = (payload: unknown) => ({ type: 'invalidateCache', payload });
 
-const getRoot = (name = 'Photos'): IRoot => ({
+const getRoot = (name = 'Photos', children: Partial<Pick<IRoot, 'childrenFiles' | 'childrenFolders'>> = {}): IRoot => ({
   name,
   folderId: null,
   childrenFiles: [],
   childrenFolders: [],
   fullPathEdited: `/${name}`,
+  ...children,
 });
 
 const getContext = (overrides: Partial<NameCollisionContext> = {}): NameCollisionContext => ({
@@ -250,6 +257,48 @@ describe('resolveCollision', () => {
     expect(mocks.dispatch.mock.calls).toEqual([
       [asUploadAction(expect.objectContaining({ files: [image], options: { disableDuplicatedNamesCheck: true } }))],
       [asInvalidateCacheAction('existing-pdf')],
+      [asRefreshAction(DESTINATION)],
+    ]);
+  });
+
+  test('when uploading with skip, then skipped files are ignored and skipped folders merge their new content into the existing folder recursively', async () => {
+    const existingFile = new File(['a'], 'a.txt');
+    const newFile = new File(['b'], 'b.txt');
+    const nestedFile = new File(['c'], 'c.txt');
+    const collidingSubfolder = getRoot('Sub', { childrenFiles: [nestedFile] });
+    const newSubfolder = getRoot('New');
+    const root = getRoot('Photos', {
+      childrenFiles: [existingFile, newFile],
+      childrenFolders: [collidingSubfolder, newSubfolder],
+    });
+    const existingPdf = getDriveItemData({ uuid: 'existing-pdf', plainName: 'report', type: 'pdf' });
+    const existingFolder = getDriveItemData({ uuid: 'photos-uuid', plainName: 'Photos', isFolder: true });
+    mocks.handleRepeatedUploadingFiles.mockImplementation(async (files: File[]) => ({
+      unrepeatedItems: files.filter((file) => file !== existingFile),
+      repeatedItems: [],
+      existingItems: [],
+    }));
+    mocks.handleRepeatedUploadingFolders.mockImplementation(async (folders: IRoot[]) => ({
+      unrepeatedItems: folders.filter((folder) => folder !== collidingSubfolder),
+      repeatedItems: folders.filter((folder) => folder === collidingSubfolder),
+      existingItems: folders.includes(collidingSubfolder) ? [{ uuid: 'sub-uuid', plainName: 'Sub' }] : [],
+    }));
+
+    await resolve({
+      operationType: 'upload',
+      operation: 'skip',
+      items: [new File(['content'], 'report.pdf'), root],
+      existingItems: [existingPdf, existingFolder],
+    });
+
+    expect(mocks.moveItemsToTrash).not.toHaveBeenCalled();
+    expect(mocks.uploadFoldersWithTracking).toHaveBeenCalledTimes(1);
+    expect(mocks.uploadFoldersWithTracking).toHaveBeenCalledWith(
+      expect.objectContaining({ payload: [{ root: { ...newSubfolder }, currentFolderId: 'photos-uuid' }] }),
+    );
+    expect(mocks.dispatch.mock.calls).toEqual([
+      [asUploadAction({ files: [newFile], parentFolderId: 'photos-uuid', options: { disableDuplicatedNamesCheck: true } })],
+      [asUploadAction({ files: [nestedFile], parentFolderId: 'sub-uuid', options: { disableDuplicatedNamesCheck: true } })],
       [asRefreshAction(DESTINATION)],
     ]);
   });
