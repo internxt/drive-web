@@ -25,6 +25,7 @@ export class DrivePage {
   private uploadDownloadWidget: Locator;
   private uploadWidgetBorder: Locator;
   private movingToTrashAndMovedSign: Locator;
+  private fileInput: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -67,6 +68,7 @@ export class DrivePage {
       '[class$="rounded-xl border border-gray-10 bg-surface dark:bg-gray-1 "]',
     );
     this.uploadWidgetBorder = this.page.locator('[class$="border-b border-gray-10 bg-gray-5 px-3 py-2.5"]');
+    this.fileInput = this.page.locator('[data-test="input-file"]');
   }
   async checkFolder(folderName: string) {
     const folderLocator = this.allFolderNamesInDrive.filter({ hasText: folderName });
@@ -170,5 +172,11 @@ export class DrivePage {
     await expect(item).toBeVisible();
     const checkBox = item.locator('[class$="text-white border-gray-30 hover:border-gray-40"]');
     await checkBox.click();
+  }
+  async uploadFiles(files: { name: string; mimeType: string; buffer: Buffer }[]) {
+    await this.fileInput.setInputFiles(files);
+  }
+  fileRow(fileName: string) {
+    return this.page.locator(`[title="${fileName}"]`);
   }
 }
