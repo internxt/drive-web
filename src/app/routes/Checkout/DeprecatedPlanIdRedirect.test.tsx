@@ -2,9 +2,13 @@ import { render, screen } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import { Route, Router, Switch, useLocation } from 'react-router-dom';
 import { describe, expect, test } from 'vitest';
-import DeprecatedPlanIdRedirect, { DEPRECATED_PLAN_IDS } from './DeprecatedPlanIdRedirect';
+import DeprecatedPlanIdRedirect, {
+  DEPRECATED_PLAN_IDS,
+  REDIRECT_BLOCKING_COUPON_CODES,
+} from './DeprecatedPlanIdRedirect';
 
 const [RETIRED_PLAN_ID, CURRENT_PLAN_ID] = Object.entries(DEPRECATED_PLAN_IDS)[0];
+const [BLOCKING_COUPON] = REDIRECT_BLOCKING_COUPON_CODES;
 const ACTIVE_PLAN_ID = 'price_1SomeOtherActivePriceId';
 
 const CAMPAIGN_SEARCH =
@@ -68,6 +72,21 @@ describe('Landing on the checkout with a price that is no longer on sale', () =>
     expect(params.get('utm_source')).toBe('Impact');
     expect(params.get('utm_medium')).toBe('referral');
     expect(params.get('utm_campaign')).toBe('312695');
+  });
+
+  test('When the retired price arrives with a coupon that opts out of the redirect, then the address bar is left untouched', () => {
+    landOn(`/checkout?planId=${RETIRED_PLAN_ID}&couponCode=${BLOCKING_COUPON}`);
+
+    expect(screen.getByTestId(CHECKOUT)).toHaveTextContent(
+      `/checkout?planId=${RETIRED_PLAN_ID}&couponCode=${BLOCKING_COUPON}`,
+    );
+  });
+
+  test('When a coupon opts out of the redirect, then the retired link is left as it arrived in the browser history', () => {
+    const history = landOn(`/checkout?planId=${RETIRED_PLAN_ID}&couponCode=${BLOCKING_COUPON}`);
+
+    expect(history.entries).toHaveLength(1);
+    expect(history.action).toBe('POP');
   });
 
   test('When the price that replaced it takes over, then the retired link is not left behind in the browser history', () => {
