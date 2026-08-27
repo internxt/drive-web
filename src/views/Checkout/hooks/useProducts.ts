@@ -25,7 +25,14 @@ interface FetchSelectedPlanPayload {
   mobileToken?: string;
 }
 
-export const useProducts = ({ currency, planId, promotionCode, userLocation, userAddress }: UseProductsProps) => {
+export const useProducts = ({
+  currency,
+  planId,
+  promotionCode,
+  userLocation,
+  userAddress,
+  country,
+}: UseProductsProps) => {
   const [selectedPlan, setSelectedPlan] = useState<PriceWithTax>();
 
   useEffect(() => {
@@ -33,8 +40,8 @@ export const useProducts = ({ currency, planId, promotionCode, userLocation, use
 
     const currencyPlan = currencyService.getCurrencyForLocation(userLocation, currency);
 
-    fetchSelectedPlan({ priceId: planId, currency: currencyPlan, userAddress, promotionCode });
-  }, [userLocation, userAddress, promotionCode]);
+    fetchSelectedPlan({ priceId: planId, currency: currencyPlan, userAddress, promotionCode, country });
+  }, [userLocation, userAddress, promotionCode, country]);
 
   const fetchSelectedPlan = async ({
     priceId,
