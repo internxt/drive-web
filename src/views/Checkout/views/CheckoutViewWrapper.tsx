@@ -71,6 +71,7 @@ const CheckoutViewWrapper = () => {
     promotionCode: promoCodeData?.codeName ?? undefined,
     userLocation: userLocationData?.location,
     userAddress: userLocationData?.ip,
+    country: userLocationData?.location,
   });
 
   const { isCheckoutReady, stripeElementsOptions, availableCryptoCurrencies, stripeSdk } = useInitializeCheckout({
@@ -145,7 +146,7 @@ const CheckoutViewWrapper = () => {
       return;
     }
 
-    if (!billingCountry || !billingPostalCode) {
+    if (!billingCountry) {
       return;
     }
 
@@ -156,11 +157,12 @@ const CheckoutViewWrapper = () => {
         promotionCode: promotionCode ?? undefined,
         postalCode: billingPostalCode,
         country: billingCountry,
+        userAddress: userLocationData?.ip,
       });
     }, 500);
 
     return () => clearTimeout(debounceTimer);
-  }, [billingCountry, billingPostalCode, selectedPlan?.price?.id, selectedPlan?.price?.currency]);
+  }, [billingCountry, billingPostalCode, selectedPlan?.price?.id, selectedPlan?.price?.currency, userLocationData]);
 
   useEffect(() => {
     if (isCheckoutReady && selectedPlan?.price) {
@@ -211,6 +213,7 @@ const CheckoutViewWrapper = () => {
         userAddress: userLocationData?.ip,
         currency: selectedPlan.price.currency,
         promotionCode: promoCodeName,
+        country: billingCountry,
       });
     } catch (error) {
       console.error('Error fetching price with taxes', error);
