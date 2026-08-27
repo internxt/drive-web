@@ -60,7 +60,7 @@ export const CheckoutProductCard = ({
   const derivedTax = Math.max(0, Number(totalAmountFormatted) - Number(planAmountWithoutTaxes));
   const derivedTaxFormatted = formatPrice(derivedTax);
 
-  const HIDDEN_COUPON_CODES = ['SPECIAL', 'ANTIV', 'SAVE', 'OFFER', 'CIPIAIDISCOUNT','THEFELLASADSOFFER', 'GOTZHAOFFER', 'TFA','REOFFER', 'WEWE'];
+  const HIDDEN_COUPON_CODES = ['SPECIAL', 'ANTIV', 'SAVE', 'OFFER', 'CIPIAIDISCOUNT','THEFELLASADSOFFER', 'GOTZHAOFFER', 'TFA','REOFFER', 'WEWE','AMIOFFER'];
   const isHiddenCoupon = HIDDEN_COUPON_CODES.includes(couponCodeData?.codeName ?? '');
 
   const discountPercentage =
