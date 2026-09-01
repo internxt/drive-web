@@ -1013,6 +1013,10 @@
         "title": "Desbloquear Meet",
         "description": "Mejora tu plan ahora para organizar y unirte a videollamadas totalmente cifradas — privadas, seguras y sin límites."
       },
+      "mail": {
+        "title": "Desbloquear Mail",
+        "description": "Mejora tu plan ahora para conseguir tu servicio de email privado con cifrado de extremo a extremo."
+      },
       "vpn": {
         "title": "Desbloquear VPN",
         "description": "Mejora tu plan ahora para proteger tu tráfico con navegación privada y cifrada."

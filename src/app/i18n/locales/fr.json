@@ -1013,6 +1013,10 @@
         "title": "Débloquer Meet",
         "description": "Mettez à niveau pour organiser et rejoindre des appels vidéo entièrement chiffrés — privés, sécurisés et illimités."
       },
+      "mail": {
+        "title": "Débloquer Mail",
+        "description": "Débloquez votre service d'e-mail privé avec chiffrement de bout en bout."
+      },
       "vpn": {
         "title": "Débloquer VPN",
         "description": "Mettez à niveau votre offre pour protéger votre trafic avec une navigation privée et chiffrée."

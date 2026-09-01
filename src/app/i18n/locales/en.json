@@ -1034,6 +1034,10 @@
         "title": "Unlock Meet",
         "description": "Upgrade now to host and join fully encrypted video calls — private, secure, and unlimited."
       },
+      "mail": {
+        "title": "Unlock Mail",
+        "description": "Unlock your private email service with end-to-end encryption."
+      },
       "vpn": {
         "title": "Unlock VPN",
         "description": "Upgrade to protect your traffic with private, encrypted browsing."

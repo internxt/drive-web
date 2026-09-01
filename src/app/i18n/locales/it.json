@@ -1034,6 +1034,10 @@
         "title": "Sblocca Meet",
         "description": "Aggiorna ora per ospitare e partecipare a videochiamate completamente crittografate — private, sicure e illimitate."
       },
+      "mail": {
+        "title": "Sblocca Mail",
+        "description": "Sblocca il tuo servizio email privato con crittografia end-to-end."
+      },
       "vpn": {
         "title": "Sblocca VPN",
         "description": "Aggiorna il piano per proteggere il tuo traffico con navigazione privata e crittografata."

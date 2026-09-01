@@ -1013,6 +1013,10 @@
         "title": "Meet freischalten",
         "description": "Upgrade jetzt, um vollständig verschlüsselte Videoanrufe zu hosten und beizutreten — privat, sicher und unbegrenzt."
       },
+      "mail": {
+        "title": "Mail freischalten",
+        "description": "Schalte deinen privaten E-Mail-Dienst mit Ende-zu-Ende-Verschlüsselung frei."
+      },
       "vpn": {
         "title": "VPN freischalten",
         "description": "Upgrade, um deinen Datenverkehr mit privatem, verschlüsseltem Browsing zu schützen."
