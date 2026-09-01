@@ -1034,6 +1034,10 @@
         "title": "解鎖 Meet",
         "description": "升級後可發起並加入完全加密的視訊通話——私密、安全、無限制。"
       },
+      "mail": {
+        "title": "解鎖 Mail",
+        "description": "解鎖具有端對端加密的私密電子郵件服務。"
+      },
       "vpn": {
         "title": "解鎖 VPN",
         "description": "升級以使用私密加密的網路流量保護。"
