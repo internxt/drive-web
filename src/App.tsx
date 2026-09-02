@@ -33,7 +33,7 @@ import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapp
 import Mobile from './app/drive/views/MobileView/MobileView';
 import PreferencesDialog from './views/NewSettings';
 import { usePreferencesParamsChange } from './views/NewSettings/hooks/usePreferencesParamsChange';
-import DeprecatedPlanIdRedirect from './app/routes/Checkout/DeprecatedPlanIdRedirect';
+import DeprecatedPlanIdRedirect from './app/routes/Checkout/PlanRedirect';
 import SharingRedirect from './app/routes/Share/ShareRedirection';
 import WorkspacesRedirect from './app/routes/Workspaces/WorkspacesRedirection';
 import { getRoutes } from './app/routes/routes';
