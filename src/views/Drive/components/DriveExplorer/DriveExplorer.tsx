@@ -415,7 +415,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       if (isFileViewerOpen) {
         dispatch(uiActions.setCurrentEditingNameDirty(newItem.plainName ?? newItem.name));
       } else if (itemToRename && editNameItem.isFolder) {
-        getAncestorsAndSetNamePath(newItem.uuid, dispatch);
+        getAncestorsAndSetNamePath(newItem.uuid, dispatch, selectedWorkspace);
       }
     }
     dispatch(storageActions.setItemToRename(null));
