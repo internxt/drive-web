@@ -33,7 +33,7 @@ import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapp
 import Mobile from './app/drive/views/MobileView/MobileView';
 import PreferencesDialog from './views/NewSettings';
 import { usePreferencesParamsChange } from './views/NewSettings/hooks/usePreferencesParamsChange';
-import DeprecatedPlanIdRedirect from './app/routes/Checkout/PlanRedirect';
+import PlanRedirect from './app/routes/Checkout/PlanRedirect';
 import SharingRedirect from './app/routes/Share/ShareRedirection';
 import WorkspacesRedirect from './app/routes/Workspaces/WorkspacesRedirection';
 import { getRoutes } from './app/routes/routes';
@@ -193,7 +193,7 @@ const App = (props: AppProps): JSX.Element => {
               {t('general.stage.development')}
             </span>
           )}
-          <DeprecatedPlanIdRedirect>
+          <PlanRedirect>
             <Switch>
               <Route path="/workspaces/:invitationId/:action" component={WorkspacesRedirect} />
               <Route path="/sharings/:sharingId/:action" component={SharingRedirect} />
@@ -228,7 +228,7 @@ const App = (props: AppProps): JSX.Element => {
                 routes
               )}
             </Switch>
-          </DeprecatedPlanIdRedirect>
+          </PlanRedirect>
 
           <Portal>
             <Toaster
