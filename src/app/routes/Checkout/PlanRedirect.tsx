@@ -15,6 +15,10 @@ export const REDIRECT_PLANS: Readonly<Record<string, RedirectPlan>> = {
     targetPlanId: 'price_1UAwSbFAOdcgaBMQkJhPExCz',
     couponRule: 'unlessBlocked'
   },
+  price_1U6Ev3FAOdcgaBMQHxOAmWPO: {
+    targetPlanId: 'price_1UAwSbFAOdcgaBMQkJhPExCz',
+    couponRule: 'unlessBlocked'
+  },
   price_1TRoAJFAOdcgaBMQveT6cebN: {
     targetPlanId: 'price_1UAsSAFAOdcgaBMQNF0j8UfV',
     couponRule: 'onlyIfAllowed'
