@@ -213,7 +213,7 @@ describe('Landing on the checkout with a price that only a campaign coupon can l
 describe('Reading the catalogue of retired prices', () => {
   test('When the price of the ended campaign is read, then it points to its replacement and any coupon but the blocking one lets it go', () => {
     expect(REDIRECT_PLANS['price_1T1xQtFAOdcgaBMQ1r2JnHsE']).toEqual({
-      targetPlanId: 'price_1U6Ev3FAOdcgaBMQHxOAmWPO',
+      targetPlanId: 'price_1UAwSbFAOdcgaBMQkJhPExCz',
       couponRule: 'unlessBlocked',
     });
   });
