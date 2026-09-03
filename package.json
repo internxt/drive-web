@@ -116,7 +116,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@faker-js/faker": "^9.0.0",
+    "@faker-js/faker": "^10.5.0",
     "@internxt/eslint-config-internxt": "1.0.10",
     "@internxt/prettier-config": "2.0.1",
     "@playwright/test": "^1.56.1",
@@ -141,7 +141,7 @@
     "@vitest/browser-playwright": "4.1.8",
     "@vitest/coverage-istanbul": "4.1.8",
     "autoprefixer": "^10.4.16",
-    "browserslist": "^4.25.0",
+    "browserslist": "^4.28.7",
     "buffer": "^6.0.3",
     "cross-env": "^7.0.3",
     "crypto": "npm:crypto-browserify",
