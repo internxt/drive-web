@@ -141,7 +141,7 @@
     "@vitest/browser-playwright": "4.1.8",
     "@vitest/coverage-istanbul": "4.1.8",
     "autoprefixer": "^10.4.16",
-    "browserslist": "^4.25.0",
+    "browserslist": "^4.28.7",
     "buffer": "^6.0.3",
     "cross-env": "^7.0.3",
     "crypto": "npm:crypto-browserify",
