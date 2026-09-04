@@ -13,16 +13,16 @@ export interface RedirectPlan {
 export const REDIRECT_PLANS: Readonly<Record<string, RedirectPlan>> = {
   price_1T1xQtFAOdcgaBMQ1r2JnHsE: {
     targetPlanId: 'price_1UAwSbFAOdcgaBMQkJhPExCz',
-    couponRule: 'unlessBlocked'
+    couponRule: 'unlessBlocked',
   },
   price_1U6Ev3FAOdcgaBMQHxOAmWPO: {
     targetPlanId: 'price_1UAwSbFAOdcgaBMQkJhPExCz',
-    couponRule: 'unlessBlocked'
+    couponRule: 'unlessBlocked',
   },
   price_1TRoAJFAOdcgaBMQveT6cebN: {
     targetPlanId: 'price_1UAsSAFAOdcgaBMQNF0j8UfV',
-    couponRule: 'onlyIfAllowed'
-  }
+    couponRule: 'onlyIfAllowed',
+  },
 };
 
 export const REDIRECT_BLOCKING_COUPON_CODES: ReadonlySet<string> = new Set(['GOTZHAOFFER']);
@@ -31,7 +31,7 @@ export const REDIRECT_ALLOWED_COUPON_CODES: ReadonlySet<string> = new Set([
   'WEWE',
   'GOTZHA',
   'TFA',
-  'REOFFER'
+  'REOFFER',
 ]);
 
 function getCouponCode(search: string): string {
@@ -46,7 +46,7 @@ function canRedirect(rule: CouponRule, couponCode: string): boolean {
 
 function getRedirectPlanIdSearch(
   search: string,
-  plans: Readonly<Record<string, RedirectPlan>> = REDIRECT_PLANS
+  plans: Readonly<Record<string, RedirectPlan>> = REDIRECT_PLANS,
 ): string | null {
   const params = new URLSearchParams(search);
   const planId = params.get('planId');
@@ -72,11 +72,7 @@ const PlanIdRedirect = ({ children }: { children: ReactNode }): JSX.Element => {
   const search = isCheckout ? getRedirectPlanIdSearch(location.search) : null;
 
   if (search) {
-    return (
-      <Redirect
-        to={{ pathname: location.pathname, search, hash: location.hash, state: location.state }}
-      />
-    );
+    return <Redirect to={{ pathname: location.pathname, search, hash: location.hash, state: location.state }} />;
   }
 
   return <>{children}</>;
