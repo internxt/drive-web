@@ -118,7 +118,10 @@ export const CryptoPaymentDialog = () => {
       onClose={onCloseDialog}
       className="flex w-full max-h-[95vh] md:max-h-full"
     >
-      <div className="flex flex-col items-center w-full gap-6 p-2 md:p-5 overflow-y-auto md:overflow-hidden ">
+      <div
+        data-cy="crypto-dialog-root"
+        className="flex flex-col items-center w-full gap-6 p-2 md:p-5 overflow-y-auto md:overflow-hidden "
+      >
         <p className="text-3xl font-bold">{translate('checkout.confirmCryptoPayment.title')}</p>
 
         <div className="flex flex-col gap-2">
@@ -131,6 +134,7 @@ export const CryptoPaymentDialog = () => {
             })()}`}
           >
             <p
+              data-cy="crypto-dialog-countdown"
               className={`text-2xl font-bold ${(() => {
                 if (isTimeExpired) return 'text-red-600';
                 if (isHalfTimeLeft) return 'text-orange/80';
@@ -142,7 +146,7 @@ export const CryptoPaymentDialog = () => {
           </div>
         </div>
 
-        <img src={qrUrl} alt="Crypto QR Code" className="w-[200px] h-[200px]" />
+        <img data-cy="crypto-dialog-qr" src={qrUrl} alt="Crypto QR Code" className="w-[200px] h-[200px]" />
 
         <div className="flex flex-row gap-6 w-full justify-center items-center">
           <div className="flex flex-col gap-2 items-start justify-center">
@@ -176,7 +180,13 @@ export const CryptoPaymentDialog = () => {
         <div className="flex flex-col gap-2 items-center w-full">
           <p className="text-lg font-semibold">{translate('checkout.confirmCryptoPayment.copyAddress')}</p>
           <div className="flex flex-row gap-4 items-center w-full">
-            <input readOnly value={paymentAddress} onClick={onCopyAddress} className="w-full flex truncate" />
+            <input
+              data-cy="crypto-dialog-address"
+              readOnly
+              value={paymentAddress}
+              onClick={onCopyAddress}
+              className="w-full flex truncate"
+            />
             <button onClick={onCopyAddress}>
               <Copy size={20} />
             </button>
@@ -191,10 +201,10 @@ export const CryptoPaymentDialog = () => {
         </div>
 
         <div className="flex flex-row gap-2 justify-end w-full">
-          <Button variant="secondary" onClick={onCloseDialog}>
+          <Button buttonDataCy="crypto-dialog-cancel" variant="secondary" onClick={onCloseDialog}>
             {translate('checkout.confirmCryptoPayment.cancel')}
           </Button>
-          <Button disabled={isTimeExpired} onClick={onConfirmPayment}>
+          <Button buttonDataCy="crypto-dialog-confirm" disabled={isTimeExpired} onClick={onConfirmPayment}>
             {isTimeExpired
               ? translate('checkout.confirmCryptoPayment.sessionExpired')
               : translate('checkout.confirmCryptoPayment.confirm')}

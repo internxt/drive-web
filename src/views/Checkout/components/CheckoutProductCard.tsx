@@ -99,43 +99,46 @@ export const CheckoutProductCard = ({
           <p className="text-2xl font-bold text-gray-100">
             {productLabel + ' - ' + translate(`checkout.productCard.renewalTitle.${priceData.interval}`)}
           </p>
-          <div className="flex flex-row items-center justify-between text-gray-100">
+          <div data-cy="checkout-billed-row" className="flex flex-row items-center justify-between text-gray-100">
             <p className="font-medium">{translate(`checkout.productCard.billed.${priceData.interval}`)}</p>
-            <p className="font-semibold">
+            <p data-cy="checkout-billed-amount" className="font-semibold">
               {currencySymbol}
               {planAmountWithoutTaxes}
             </p>
           </div>
 
           {Number(derivedTaxFormatted) > 0 && (
-            <div className="flex flex-row items-center justify-between text-gray-100">
+            <div data-cy="checkout-tax-row" className="flex flex-row items-center justify-between text-gray-100">
               <p className="font-medium">{translate('checkout.productCard.taxes')}</p>
-              <p className="font-semibold">
+              <p data-cy="checkout-tax-amount" className="font-semibold">
                 {currencySymbol}
                 {derivedTaxFormatted}
               </p>
             </div>
           )}
           {couponCodeData && !isHiddenCoupon && (
-            <div className="flex flex-row items-center justify-between font-semibold">
+            <div data-cy="checkout-discount-row" className="flex flex-row items-center justify-between font-semibold">
               <div className="flex flex-row items-center space-x-2 text-green-dark">
                 <SealPercentIcon weight="fill" size={24} />
-                <p>
+                <p data-cy="checkout-discount-label">
                   {translate('checkout.productCard.saving', {
                     percent: couponCodeData?.percentOff ?? discountPercentage,
                   })}
                 </p>
               </div>
-              <p className="text-gray-50 line-through">
+              <p data-cy="checkout-normal-price" className="text-gray-50 line-through">
                 {currencySymbol}
                 {normalPriceAmount}
               </p>
             </div>
           )}
           <Separator />
-          <div className="flex flex-row items-center justify-between text-2xl font-semibold text-gray-100">
+          <div
+            data-cy="checkout-total-row"
+            className="flex flex-row items-center justify-between text-2xl font-semibold text-gray-100"
+          >
             <p>{totalLabel}</p>
-            <p>
+            <p data-cy="checkout-total-amount">
               {currencySymbol}
               {totalAmountFormatted}
             </p>
@@ -144,11 +147,14 @@ export const CheckoutProductCard = ({
           {showCouponCode && !isHiddenCoupon && (
             <>
               {couponCodeData?.codeName ? (
-                <div className="flex w-full flex-row justify-between">
+                <div data-cy="checkout-applied-coupon" className="flex w-full flex-row justify-between">
                   <p className={'font-medium text-gray-50'}>{translate('checkout.productCard.addCoupon.inputText')}</p>
                   <div className="flex flex-row items-center gap-2">
-                    <p className="text-lg font-medium text-gray-50">{couponCodeData.codeName}</p>
+                    <p data-cy="checkout-applied-coupon-name" className="text-lg font-medium text-gray-50">
+                      {couponCodeData.codeName}
+                    </p>
                     <button
+                      data-cy="checkout-remove-coupon"
                       onClick={(e) => {
                         e.preventDefault();
                         onRemoveAppliedCouponCode();
@@ -162,6 +168,7 @@ export const CheckoutProductCard = ({
               ) : (
                 <div className="flex flex-col gap-5">
                   <button
+                    data-cy="checkout-open-coupon"
                     onClick={(e) => {
                       e.preventDefault();
                       setOpenCouponCodeDropdown(!openCouponCodeDropdown);
@@ -202,13 +209,14 @@ export const CheckoutProductCard = ({
                                 setCouponName('');
                               }
                             }}
-                            data-cy={'coupon-code-input'}
+                            inputDataCy="coupon-code-input"
                             className={'flex-1'}
                             inputClassName={
                               'dark:bg-transparent placeholder:text-[16px] border-gray-30 text-[16px] dark:text-white pl-3'
                             }
                           />
                           <Button
+                            buttonDataCy="checkout-apply-coupon"
                             disabled={!couponName?.length}
                             onClick={() => {
                               if (couponName) onCouponInputChange(couponName.toUpperCase().trim());
@@ -217,7 +225,11 @@ export const CheckoutProductCard = ({
                             {translate('checkout.productCard.apply')}
                           </Button>
                         </div>
-                        {couponError && <p className="text-red-dark">{couponError}</p>}
+                        {couponError && (
+                          <p data-cy="checkout-coupon-error" className="text-red-dark">
+                            {couponError}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </Transition>
@@ -225,7 +237,13 @@ export const CheckoutProductCard = ({
               )}
             </>
           )}
-          <Button type="submit" id="submit-create-account" className="flex" disabled={isPaymentProcessing}>
+          <Button
+            type="submit"
+            id="submit-create-account"
+            buttonDataCy="checkout-pay-button"
+            className="flex"
+            disabled={isPaymentProcessing}
+          >
             {isPaymentProcessing ? translate('checkout.processing') : translate('checkout.pay')}
           </Button>
         </div>
