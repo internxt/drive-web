@@ -87,6 +87,7 @@ export interface CreatePaymentIntentPayload {
   captchaToken: string;
   userAddress: string;
   promoCodeId?: string;
+  impactClickId?: string;
 }
 
 export interface ProcessPurchasePayload {
@@ -104,6 +105,7 @@ export interface ProcessPurchasePayload {
   currentSelectedPlan: PriceWithTax;
   couponCodeData?: CouponCodeData;
   isFirstPurchase?: boolean;
+  impactClickId?: string;
 }
 
 export interface UseUserPaymentPayload {
@@ -121,6 +123,7 @@ export interface UseUserPaymentPayload {
   captchaToken: string;
   translate: Translate;
   couponCodeData?: CouponCodeData;
+  impactClickId?: string;
 }
 
 export enum PlanInterval {
