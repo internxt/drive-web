@@ -41,7 +41,7 @@ import { copyTextToClipboard } from 'utils/copyToClipboard.utils';
 import referralService from 'services/referral.service';
 import { generateFileBucketKey } from 'app/network/crypto';
 import encryptedStorageService from 'services/encrypted-storage.service';
-import { decryptMnemonic } from './share.crypto';
+import { decryptMnemonic, decryptSharingKey } from './share.crypto';
 
 interface CreateShareResponse {
   created: boolean;
@@ -595,7 +595,7 @@ class DirectoryPublicSharedFilesIterator implements Iterator<SharedFiles> {
 
 export async function downloadSharedFiles({
   creds,
-  decryptedEncryptionKey,
+  key,
   selectedItems,
   token,
   teamId,
@@ -603,7 +603,7 @@ export async function downloadSharedFiles({
   workspaceCredentials,
 }: {
   creds: { user: string; pass: string };
-  decryptedEncryptionKey: string;
+  key: FileKey;
   selectedItems: AdvancedSharedItem[];
   token?: string;
   teamId?: string;
@@ -612,9 +612,7 @@ export async function downloadSharedFiles({
 }): Promise<void> {
   const sharingCredentials = {
     credentials: { ...creds },
-    key: {
-      mnemonic: decryptedEncryptionKey,
-    },
+    key,
   };
 
   if (selectedItems.length === 1 && !selectedItems[0].isFolder) {
@@ -650,11 +648,13 @@ export async function downloadSharedFiles({
 
     for (const selectedItem of selectedItems) {
       const item = selectedItem;
+      const itemKey = await decryptSharingKey(item.encryptionKey);
       payload.push({
         ...item,
         credentials: {
           ...item.credentials,
-          mnemonic: await decryptMnemonic(item.encryptionKey),
+          mnemonic: itemKey?.mnemonic,
+          bucketKey: itemKey?.bucketKey,
         },
       });
     }

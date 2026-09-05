@@ -1,7 +1,7 @@
 import { binaryStreamToBlob } from 'services/stream.service';
 import { Downloadable, downloadFile } from 'app/network/download';
 import { getEnvironmentConfig } from '../network.service';
-import { NetworkCredentials } from 'app/network/types/helper-types';
+import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
 
 type FetchFileBlobOptions = {
   updateProgressCallback: (progress: number) => void;
@@ -14,7 +14,7 @@ export default async function fetchFileBlob(
   item: Downloadable,
   options: FetchFileBlobOptions,
   credentials?: NetworkCredentials,
-  mnemonic?: string,
+  key?: FileKey,
 ): Promise<Blob> {
   const { bridgeUser, bridgePass, encryptionKey } = await getEnvironmentConfig(!!options.isWorkspace);
 
@@ -24,9 +24,7 @@ export default async function fetchFileBlob(
     bucketId: item.bucketId,
     fileId: item.fileId,
     creds,
-    key: {
-      mnemonic: mnemonic ? mnemonic : encryptionKey,
-    },
+    key: key ?? { mnemonic: encryptionKey },
     options: {
       notifyProgress: (totalBytes, downloadedBytes) => {
         options.updateProgressCallback(downloadedBytes / totalBytes);

@@ -13,13 +13,14 @@ import { OrderDirection } from '../../../app/core/types';
 import { sharedThunks } from '../../../app/store/slices/sharedLinks';
 import workspacesSelectors from '../../../app/store/slices/workspaces/workspaces.selectors';
 import shareService from '../../../app/share/services/share.service';
-import { decryptMnemonic } from '../../../app/share/services/share.crypto';
 import { setOrderBy, setPage, setSelectedItems } from '../context/SharedViewContext.actions';
 import { useShareViewContext } from '../context/SharedViewContextProvider';
 import useSharedContextMenu from '../hooks/useSharedContextMenu';
 import { isItemsOwnedByCurrentUser, sortSharedItems } from '../utils/sharedViewUtils';
 import encryptedStorageService from 'services/encrypted-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { FileKey } from 'app/network/types/helper-types';
+import { decryptSharingKey } from 'app/share/services/share.crypto';
 
 type ShareItemListContainerProps = {
   disableKeyboardShortcuts: boolean;
@@ -104,13 +105,15 @@ const SharedItemListContainer = ({
   const downloadItem = async (shareItem: AdvancedSharedItem): Promise<void> => {
     try {
       if (shareItem.isRootLink) {
-        const encryptionKey = selectedWorkspace?.workspaceUser?.key ?? (await decryptMnemonic(shareItem.encryptionKey));
+        const key: FileKey | undefined = selectedWorkspace?.workspaceUser?.key
+          ? { mnemonic: selectedWorkspace.workspaceUser.key }
+          : await decryptSharingKey(shareItem.encryptionKey);
         await shareService.downloadSharedFiles({
           creds: {
             user: shareItem.credentials.networkUser,
             pass: shareItem.credentials.networkPass,
           },
-          decryptedEncryptionKey: encryptionKey as string,
+          key: key as FileKey,
           selectedItems,
           token: undefined,
           teamId: defaultTeamId,
@@ -141,13 +144,15 @@ const SharedItemListContainer = ({
           );
           sharedToken = token;
         }
-        const encryptionKey = selectedWorkspace?.workspaceUser?.key ?? (await decryptMnemonic(sharedItemEncryptionKey));
+        const key: FileKey | undefined = selectedWorkspace?.workspaceUser?.key
+          ? { mnemonic: selectedWorkspace.workspaceUser.key }
+          : await decryptSharingKey(sharedItemEncryptionKey);
         await shareService.downloadSharedFiles({
           creds: {
             user: shareItem.credentials.networkUser,
             pass: shareItem.credentials.networkPass,
           },
-          decryptedEncryptionKey: encryptionKey as string,
+          key: key as FileKey,
           selectedItems,
           token: sharedToken,
           teamId: defaultTeamId,
@@ -181,10 +186,11 @@ const SharedItemListContainer = ({
     };
 
     try {
-      const mnemonic =
-        selectedWorkspace?.workspaceUser.key ??
-        (await decryptMnemonic(shareItem.encryptionKey ? shareItem.encryptionKey : sharedItemEncryptionKey));
-      onOpenItemPreview({ ...previewItem, mnemonic });
+      const encryptionKey = shareItem.encryptionKey ? shareItem.encryptionKey : sharedItemEncryptionKey;
+      const key: FileKey | undefined = selectedWorkspace?.workspaceUser.key
+        ? { mnemonic: selectedWorkspace.workspaceUser.key }
+        : await decryptSharingKey(encryptionKey);
+      onOpenItemPreview({ ...previewItem, key });
     } catch (err) {
       const error = errorService.castError(err);
       errorService.reportError(error);
