@@ -83,7 +83,7 @@ export default function ShareLayout(props: Readonly<ShareLayoutProps>): JSX.Elem
         </div>
 
         {/* Download container */}
-        <div className="flex flex-1 flex-col">
+        <div className="flex min-w-0 flex-1 flex-col">
           {/* Top bar */}
           <div className="hidden h-20 shrink-0 flex-row items-center justify-end px-6 sm:flex">
             {isAuthenticated ? (
@@ -110,7 +110,7 @@ export default function ShareLayout(props: Readonly<ShareLayoutProps>): JSX.Elem
                     leaveFrom="opacity-100 scale-100"
                     leaveTo="opacity-0 scale-95"
                   >
-                    <MenuItems className="absolute right-0 origin-top-right whitespace-nowrap rounded-md bg-surface p-1 shadow-lg ring-1 ring-gray-100/5 outline-none focus:outline-none dark:bg-gray-5">
+                    <MenuItems className="absolute right-0 z-50 origin-top-right whitespace-nowrap rounded-md bg-surface p-1 shadow-lg ring-1 ring-gray-100/5 outline-none focus:outline-none dark:bg-gray-5">
                       <MenuItem>
                         {({ focus }) => (
                           <Link to="/" className="text-gray-90 no-underline hover:text-gray-90">
@@ -192,7 +192,9 @@ export default function ShareLayout(props: Readonly<ShareLayoutProps>): JSX.Elem
           </div>
 
           {/* File container */}
-          <div className="mb-20 flex h-full flex-col items-center justify-center space-y-10">{props.children}</div>
+          <div className="mb-20 flex min-h-0 flex-1 flex-col items-center justify-center space-y-10">
+            {props.children}
+          </div>
 
           {/* Bottom bar */}
           <div className="hidden h-20 shrink-0 flex-row items-center justify-end px-6 sm:flex">

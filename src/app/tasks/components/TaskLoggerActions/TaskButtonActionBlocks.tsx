@@ -84,14 +84,13 @@ const PendingBlock = (): JSX.Element => {
 
 const SuccessBlock = ({ isHovered, magnifyingAction, infoAction, taskType, haveWarnings }): JSX.Element => {
   if (isHovered && taskType.includes('upload')) {
-    return (
-      <>
-        {haveWarnings && <TaskLoggerButton onClick={infoAction} Icon={InfoIcon} />}
-        <TaskLoggerButton onClick={magnifyingAction} Icon={MagnifyingGlass} />
-      </>
+    return haveWarnings ? (
+      <TaskLoggerButton onClick={infoAction} Icon={InfoIcon} iconSize={20} />
+    ) : (
+      <TaskLoggerButton onClick={magnifyingAction} Icon={MagnifyingGlass} />
     );
   } else if (isHovered && taskType.includes('download')) {
-    return <>{haveWarnings && <TaskLoggerButton onClick={infoAction} Icon={InfoIcon} />}</>;
+    return <>{haveWarnings && <TaskLoggerButton onClick={infoAction} Icon={InfoIcon} iconSize={20} />}</>;
   } else {
     return (
       <div className="flex h-8 w-8 items-center justify-center">

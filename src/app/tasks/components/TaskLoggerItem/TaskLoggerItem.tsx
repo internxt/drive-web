@@ -11,7 +11,7 @@ import { TaskData, TaskNotification, TaskStatus, TaskType, UploadFileData, Uploa
 import { TaskLoggerActions } from '../TaskLoggerActions/TaskLoggerActions';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import TaskToRetry from '../TaskToRetry/TaskToRetry';
-import { RetryableTask } from 'app/network/RetryManager';
+import { RetryableTask, RetryableTaskType } from 'app/network/RetryManager';
 
 const THREE_HUNDRED_MB_IN_BYTES = 3 * 100 * 1024 * 1024;
 interface TaskLoggerItemProps {
@@ -132,7 +132,7 @@ const TaskLoggerItem = ({ notification, task, filesToRetry }: TaskLoggerItemProp
     [TaskStatus.Error, TaskStatus.Cancelled].includes(notification.status) &&
     (notification.action === TaskType.DownloadFile || notification.action === TaskType.DownloadFolder);
   const someFileIsDownloaded = filesToRetry?.some(
-    (file) => file.taskId === notification.taskId && file.type === 'download',
+    (file) => file.taskId === notification.taskId && file.type === RetryableTaskType.Download,
   );
 
   const isDownloadError = isDownloadAction || someFileIsDownloaded;

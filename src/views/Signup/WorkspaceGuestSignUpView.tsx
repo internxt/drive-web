@@ -8,7 +8,7 @@ import { AppView, IFormValues } from '../../app/core/types';
 import { useTranslationContext } from '../../app/i18n/provider/TranslationProvider';
 import { ExpiredLinkView } from 'components';
 import { useAppDispatch } from '../../app/store/hooks';
-import { userActions } from '../../app/store/slices/user';
+import { userThunks } from '../../app/store/slices/user';
 import queryString from 'query-string';
 import { useEffect } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
@@ -76,10 +76,12 @@ function WorkspaceGuestSingUpView(): JSX.Element {
 
   useEffect(() => {
     if (user && mnemonic) {
-      dispatch(userActions.setUser(user));
-      if (mnemonic) {
-        return navigationService.push(AppView.Drive);
-      }
+      (async () => {
+        await dispatch(userThunks.setUserThunk(user));
+        if (mnemonic) {
+          return navigationService.push(AppView.Drive);
+        }
+      })();
     }
   }, []);
 

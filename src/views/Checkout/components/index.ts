@@ -1,4 +1,4 @@
-export { AvailableCryptoCurrenciesDropdown } from './AvailableCryptoCurrenciesDropdown';
+export { CryptoPaymentSection } from './CryptoPaymentSection';
 export { CheckoutProductCard } from './CheckoutProductCard';
 export { CheckoutUserAuth } from './CheckoutUserAuth';
 export { CryptoPaymentDialog, CRYPTO_PAYMENT_DIALOG_KEY } from './CryptoPaymentDialog';

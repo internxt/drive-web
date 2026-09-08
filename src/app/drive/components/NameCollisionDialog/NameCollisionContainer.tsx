@@ -10,7 +10,7 @@ import { uiActions } from 'app/store/slices/ui';
 import { DriveItemData } from 'app/drive/types';
 import { IRoot } from 'app/store/slices/storage/types';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-import { uploadFoldersWithManager } from 'app/network/UploadFolderManager';
+import { uploadFoldersWithTracking } from 'app/drive/services/folder.service/uploadFoldersWithTracking';
 import replaceFileService from 'views/Drive/services/replaceFile.service';
 import { Network, getEnvironmentConfig } from 'app/drive/services/network.service';
 import { fileVersionsActions, fileVersionsSelectors } from 'app/store/slices/fileVersions';
@@ -79,7 +79,7 @@ const NameCollisionContainer: FC = () => {
   };
 
   const uploadFileAndGetFileId = async (file: File, itemToReplace: DriveItemData) => {
-    const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(!!selectedWorkspace);
+    const { bridgeUser, bridgePass, encryptionKey, bucketId } = await getEnvironmentConfig(!!selectedWorkspace);
     const network = new Network(bridgeUser, bridgePass, encryptionKey);
     const taskId = `replace-${itemToReplace.uuid}-${Date.now()}`;
     const [uploadPromise] = network.uploadFile(
@@ -106,7 +106,7 @@ const NameCollisionContainer: FC = () => {
 
       if ((itemToUpload as IRoot).fullPathEdited) {
         await moveItemsToTrash([itemToReplace]);
-        await uploadFoldersWithManager({
+        await uploadFoldersWithTracking({
           payload: [{ root: { ...(itemToUpload as IRoot) }, currentFolderId: group.destinationUuid }],
           selectedWorkspace,
           dispatch,
@@ -136,7 +136,7 @@ const NameCollisionContainer: FC = () => {
   const keepAndUploadItem = async (group: CollisionGroup) => {
     for (const itemToUpload of group.duplicatedItems as (IRoot | File)[]) {
       if ((itemToUpload as IRoot).fullPathEdited) {
-        await uploadFoldersWithManager({
+        await uploadFoldersWithTracking({
           payload: [{ root: { ...(itemToUpload as IRoot) }, currentFolderId: group.destinationUuid }],
           selectedWorkspace,
           dispatch,

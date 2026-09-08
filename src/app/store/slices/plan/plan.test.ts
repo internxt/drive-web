@@ -25,6 +25,7 @@ const mockBusinessPlan: StoragePlan = getStoragePlan({
   currency: 'USD',
   isTeam: true,
   storageLimit: 5000000000,
+  cancellationTrial: { redeemed: false },
   amountOfSeats: 5,
 });
 

@@ -137,6 +137,23 @@ const paymentService = {
     return paymentsClient.cancelSubscription(userType);
   },
 
+  async applyCancellationTrial(): Promise<void> {
+    const paymentsClient = await SdkFactory.getNewApiInstance().createPaymentsClient();
+    return paymentsClient.applyCancellationTrial();
+  },
+
+  async cancelSubscriptionEarly(): Promise<{ clientSecret: string }> {
+    const paymentsClient = await SdkFactory.getNewApiInstance().createPaymentsClient();
+    const { clientSecret } = await paymentsClient.cancelSubscriptionEarly();
+
+    return { clientSecret };
+  },
+
+  async reactivateUserSubscription(): Promise<void> {
+    const paymentsClient = await SdkFactory.getNewApiInstance().createPaymentsClient();
+    return paymentsClient.reactivateUserSubscription();
+  },
+
   async updateCustomerBillingInfo(payload: CustomerBillingInfo): Promise<void> {
     const paymentsClient = await SdkFactory.getNewApiInstance().createPaymentsClient();
     return paymentsClient.updateCustomerBillingInfo(payload);

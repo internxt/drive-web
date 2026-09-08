@@ -1,9 +1,8 @@
 import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
 import { Loader } from '@internxt/ui';
-import { AddressElement, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { StripePaymentElementOptions } from '@stripe/stripe-js';
 import { IFormValues } from 'app/core/types';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { LegacyRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { CheckoutProductCard } from '../components/CheckoutProductCard';
@@ -12,8 +11,7 @@ import { HeaderComponent } from '../components/Header';
 import { AuthMethodTypes, PaymentType } from '../types';
 import { CheckoutViewManager, UserInfoProps } from '../types/checkout.types';
 import { CryptoCurrency, PriceWithTax } from '@internxt/sdk/dist/payments/types';
-import { AvailableCryptoCurrenciesDropdown } from '../components/AvailableCryptoCurrenciesDropdown';
-import TextInput from 'components/TextInput';
+import { CryptoPaymentSection } from '../components/CryptoPaymentSection';
 
 export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
   wallets: {
@@ -44,7 +42,6 @@ interface CheckoutViewProps {
   checkoutViewManager: CheckoutViewManager;
   availableCryptoCurrencies?: CryptoCurrency[];
   onCurrencyTypeChanges: (currency: PaymentType) => void;
-  isPostalCodeRequired?: boolean;
 }
 
 const AUTH_METHOD_VALUES = {
@@ -60,15 +57,12 @@ const CheckoutView = ({
   checkoutViewManager,
   availableCryptoCurrencies,
   onCurrencyTypeChanges,
-  isPostalCodeRequired,
 }: CheckoutViewProps) => {
-  const { translate } = useTranslationContext();
   // Those custom hooks should be here.
   // They cannot be moved to the Parent, because it must be wrapped by <Elements> component.
   const stripeSDK = useStripe();
   const elements = useElements();
   const [isCryptoDropdownOpen, setIsCryptoDropdownOpen] = useState<boolean>(false);
-  const [postalCode, setPostalCode] = useState<string>('');
   const { isPaying, couponCodeError, authError, authMethod, couponCodeData, currentSelectedPlan, selectedCurrency } =
     checkoutViewVariables;
 
@@ -125,10 +119,10 @@ const CheckoutView = ({
       onSubmit={handleSubmit(handleFormSubmit)}
     >
       <div className="mx-auto flex w-full max-w-screen-xl px-5 py-10">
-        <div className="flex w-full flex-col space-y-8 lg:space-y-16">
+        <div className="flex w-full flex-col space-y-6">
           <HeaderComponent isUserAuthenticated={isUserAuthenticated} />
           <div className="flex flex-col items-center justify-center gap-10 lg:flex-row lg:items-start lg:justify-between">
-            <div className="flex w-full max-w-xl flex-col space-y-10" ref={userAuthComponentRef}>
+            <div className="flex w-full max-w-xl flex-col gap-6" ref={userAuthComponentRef}>
               <CheckoutUserAuth
                 errors={errors}
                 register={register}
@@ -138,7 +132,7 @@ const CheckoutView = ({
                 userData={userInfo}
                 onLogOut={checkoutViewManager.onLogOut}
               />
-              <div className="flex flex-col">
+              <div className="flex flex-col pb-10">
                 <div className="flex flex-col w-full gap-2">
                   <PaymentElement
                     options={PAYMENT_ELEMENT_OPTIONS}
@@ -149,47 +143,15 @@ const CheckoutView = ({
                     }}
                   />
                   {availableCryptoCurrencies && (
-                    <AvailableCryptoCurrenciesDropdown
+                    <CryptoPaymentSection
                       availableCryptoCurrencies={availableCryptoCurrencies}
                       selectedCurrency={selectedCurrency}
                       isDropdownOpen={isCryptoDropdownOpen}
                       onDropdownClicked={onCryptoDropdownToggle}
                       onCryptoChanges={checkoutViewManager.onCurrencyChange}
+                      onUserAddressChanges={checkoutViewManager.onUserAddressChanges}
+                      onUserNameChanges={checkoutViewManager.onUserNameChanges}
                     />
-                  )}
-                  {isPostalCodeRequired && !isCryptoDropdownOpen && (
-                    <div className="mt-6 flex w-full flex-col space-y-4 rounded-2xl border border-gray-10 bg-surface p-5">
-                      <div className="flex w-full flex-col gap-1">
-                        <p className="text-sm text-gray-80">{translate('checkout.postalCode.title')}</p>
-                        <TextInput
-                          placeholder={translate('checkout.postalCode.placeholder')}
-                          type="text"
-                          autoComplete="postal-code"
-                          value={postalCode}
-                          onChange={(e) => {
-                            setPostalCode(e.target.value);
-                            checkoutViewManager.onPostalCodeChanges(e.target.value);
-                          }}
-                        />
-                      </div>
-                    </div>
-                  )}
-                  {isCryptoDropdownOpen && (
-                    <div className="mt-2 flex w-full flex-col space-y-4 rounded-2xl border border-gray-10 bg-surface p-5">
-                      <p className="font-medium text-gray-100">{translate('checkout.addressBillingTitle')}</p>
-                      <AddressElement
-                        onChange={(e) => {
-                          checkoutViewManager.onUserNameChanges(e.value.name);
-                          checkoutViewManager.onUserAddressChanges(e.value.address);
-                        }}
-                        options={{
-                          mode: 'billing',
-                          autocomplete: {
-                            mode: 'automatic',
-                          },
-                        }}
-                      />
-                    </div>
                   )}
                 </div>
               </div>

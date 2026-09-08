@@ -1,18 +1,27 @@
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 import Resizer from 'react-image-file-resizer';
-import localStorageService from 'services/local-storage.service';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { downloadFile } from 'app/network/download';
 import fetchFileBlob from './download.service/fetchFileBlob';
 import { ErrorLoadingVideoFileError } from './errors/thumbnail.service.errors';
-import { downloadThumbnail, getImageThumbnail, getVideoFrame } from './thumbnail.service';
+import { downloadPublicThumbnail, downloadThumbnail, getImageThumbnail, getVideoFrame } from './thumbnail.service';
+import encryptedStorageService from 'services/encrypted-storage.service';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 vi.mock('react-image-file-resizer', () => ({
   default: { imageFileResizer: vi.fn() },
 }));
-vi.mock('services/local-storage.service', () => ({
+vi.mock('services/encrypted-storage.service', () => ({
   default: { getUser: vi.fn() },
 }));
 vi.mock('./download.service/fetchFileBlob');
+vi.mock('app/network/download', () => ({
+  downloadFile: vi.fn(),
+  downloadFileWithBucketKey: vi.fn(),
+  multipartDownloadFile: vi.fn(),
+  getDecryptedStream: vi.fn(),
+  FileVersionOneError: class FileVersionOneError extends Error {},
+}));
 
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -274,7 +283,7 @@ describe('Thumbnail Service', () => {
     });
 
     test('When downloading thumbnail in workspace context with workspace bucket, then it uses workspace credentials', async () => {
-      vi.mocked(localStorageService.getUser).mockReturnValue({ bucket: personalBucket } as any);
+      vi.mocked(encryptedStorageService.getUser).mockResolvedValue({ bucket: personalBucket } as UserSettings);
 
       await downloadThumbnail(mockThumbnail, true);
 
@@ -295,7 +304,7 @@ describe('Thumbnail Service', () => {
         bucket_id: personalBucket,
       };
 
-      vi.mocked(localStorageService.getUser).mockReturnValue({ bucket: personalBucket } as any);
+      vi.mocked(encryptedStorageService.getUser).mockResolvedValue({ bucket: personalBucket } as UserSettings);
 
       await downloadThumbnail(thumbnailInPersonalBucket, true);
 
@@ -311,7 +320,7 @@ describe('Thumbnail Service', () => {
     });
 
     test('When downloading thumbnail in personal context, then it uses personal credentials', async () => {
-      vi.mocked(localStorageService.getUser).mockReturnValue({ bucket: personalBucket } as any);
+      vi.mocked(encryptedStorageService.getUser).mockResolvedValue({ bucket: personalBucket } as UserSettings);
 
       await downloadThumbnail(mockThumbnail, false);
 
@@ -324,6 +333,55 @@ describe('Thumbnail Service', () => {
           isWorkspace: false,
         }),
       );
+    });
+  });
+
+  describe('Download Public Thumbnail', () => {
+    test('When downloading a public thumbnail, then it downloads the thumbnail file with the share credentials and key', async () => {
+      const thumbnail = { bucket_id: 'thumbnail-bucket-id', bucket_file: 'thumbnail-file-id' } as Thumbnail;
+      const creds = { user: 'network-user', pass: 'network-pass' };
+      const key = { mnemonic: 'test mnemonic' };
+      const thumbnailContent = new Uint8Array([1, 2, 3]);
+
+      vi.mocked(downloadFile).mockResolvedValueOnce(
+        new ReadableStream<Uint8Array>({
+          start(controller) {
+            controller.enqueue(thumbnailContent);
+            controller.close();
+          },
+        }),
+      );
+
+      const thumbnailBlob = await downloadPublicThumbnail(thumbnail, creds, key);
+
+      expect(downloadFile).toHaveBeenCalledWith({
+        bucketId: thumbnail.bucket_id,
+        fileId: thumbnail.bucket_file,
+        creds,
+        key,
+      });
+      expect(new Uint8Array(await thumbnailBlob.arrayBuffer())).toEqual(thumbnailContent);
+    });
+
+    test('When downloading a public thumbnail with an abort controller, then it is forwarded to the download options', async () => {
+      const thumbnail = { bucket_id: 'thumbnail-bucket-id', bucket_file: 'thumbnail-file-id' } as Thumbnail;
+      const creds = { user: 'network-user', pass: 'network-pass' };
+      const key = { mnemonic: 'test mnemonic' };
+      const abortController = new AbortController();
+
+      vi.mocked(downloadFile).mockResolvedValueOnce(
+        new ReadableStream<Uint8Array>({
+          start(controller) {
+            controller.close();
+          },
+        }),
+      );
+
+      await downloadPublicThumbnail(thumbnail, creds, key, abortController);
+
+      const params = vi.mocked(downloadFile).mock.lastCall?.[0];
+      expect(params?.options?.abortController).toBe(abortController);
+      expect(params?.options?.notifyProgress(100, 50)).toBeUndefined();
     });
   });
 });

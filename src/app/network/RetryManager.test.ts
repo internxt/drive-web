@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import RetryManager, { RetryableTask } from './RetryManager';
+import RetryManager, { RetryableTask, RetryableTaskStatus, RetryableTaskType } from './RetryManager';
 
 describe('RetryManager', () => {
-  const sampleTask: RetryableTask = { taskId: 'task1', type: 'upload', params: {} };
-  const anotherTask: RetryableTask = { taskId: 'task2', type: 'download', params: {} };
+  const sampleTask: RetryableTask = { taskId: 'task1', type: RetryableTaskType.Upload, params: {} };
+  const anotherTask: RetryableTask = { taskId: 'task2', type: RetryableTaskType.Download, params: {} };
 
   beforeEach(() => {
     RetryManager.clearTasks();
@@ -13,29 +13,39 @@ describe('RetryManager', () => {
     RetryManager.addTask(sampleTask);
     const tasks = RetryManager.getTasks();
     expect(tasks).toHaveLength(1);
-    expect(tasks[0]).toEqual({ ...sampleTask, status: 'failed' });
+    expect(tasks[0]).toEqual({ ...sampleTask, status: RetryableTaskStatus.Failed });
   });
 
   it('should add multiple tasks with failed status', () => {
     RetryManager.addTasks([sampleTask, anotherTask]);
     const tasks = RetryManager.getTasks();
     expect(tasks).toHaveLength(2);
-    expect(tasks).toContainEqual({ ...sampleTask, status: 'failed' });
-    expect(tasks).toContainEqual({ ...anotherTask, status: 'failed' });
+    expect(tasks).toContainEqual({ ...sampleTask, status: RetryableTaskStatus.Failed });
+    expect(tasks).toContainEqual({ ...anotherTask, status: RetryableTaskStatus.Failed });
+  });
+
+  it('should replace an existing task instead of duplicating it when re-added', () => {
+    RetryManager.addTasks([sampleTask, anotherTask]);
+    RetryManager.addTasks([{ ...sampleTask, retryable: false }]);
+    const tasks = RetryManager.getTasks();
+    expect(tasks).toHaveLength(2);
+    expect(tasks.filter((task) => task.taskId === 'task1')).toEqual([
+      { ...sampleTask, retryable: false, status: RetryableTaskStatus.Failed },
+    ]);
   });
 
   it('should change the status of a task', () => {
     RetryManager.addTask(sampleTask);
-    RetryManager.changeStatus('task1', 'retrying');
+    RetryManager.changeStatus('task1', RetryableTaskStatus.Retrying);
     const tasks = RetryManager.getTasks();
-    expect(tasks[0].status).toBe('retrying');
+    expect(tasks[0].status).toBe(RetryableTaskStatus.Retrying);
   });
 
   it('should not change status if taskId does not exist', () => {
     RetryManager.addTask(sampleTask);
-    RetryManager.changeStatus('invalidTask', 'retrying');
+    RetryManager.changeStatus('invalidTask', RetryableTaskStatus.Retrying);
     const tasks = RetryManager.getTasks();
-    expect(tasks[0].status).toBe('failed');
+    expect(tasks[0].status).toBe(RetryableTaskStatus.Failed);
   });
 
   it('should remove a task by taskId', () => {
@@ -69,7 +79,7 @@ describe('RetryManager', () => {
     RetryManager.addTask(sampleTask);
     expect(listener).toHaveBeenCalledTimes(1);
 
-    RetryManager.changeStatus('task1', 'retrying');
+    RetryManager.changeStatus('task1', RetryableTaskStatus.Retrying);
     expect(listener).toHaveBeenCalledTimes(2);
 
     RetryManager.removeTask('task1');
@@ -102,46 +112,46 @@ describe('RetryManager', () => {
 
   it('should return all tasks if no type is specified', () => {
     RetryManager.addTasks([
-      { taskId: 'task1', type: 'upload', params: {} },
-      { taskId: 'task2', type: 'download', params: {} },
+      { taskId: 'task1', type: RetryableTaskType.Upload, params: {} },
+      { taskId: 'task2', type: RetryableTaskType.Download, params: {} },
     ]);
 
     const tasks = RetryManager.getTasks();
     expect(tasks).toHaveLength(2);
     expect(tasks).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ taskId: 'task1', type: 'upload' }),
-        expect.objectContaining({ taskId: 'task2', type: 'download' }),
+        expect.objectContaining({ taskId: 'task1', type: RetryableTaskType.Upload }),
+        expect.objectContaining({ taskId: 'task2', type: RetryableTaskType.Download }),
       ]),
     );
   });
 
   it('should return only upload tasks when type is upload', () => {
     RetryManager.addTasks([
-      { taskId: 'task1', type: 'upload', params: {} },
-      { taskId: 'task2', type: 'download', params: {} },
+      { taskId: 'task1', type: RetryableTaskType.Upload, params: {} },
+      { taskId: 'task2', type: RetryableTaskType.Download, params: {} },
     ]);
 
-    const tasks = RetryManager.getTasks('upload');
+    const tasks = RetryManager.getTasks(RetryableTaskType.Upload);
     expect(tasks).toHaveLength(1);
-    expect(tasks[0]).toEqual(expect.objectContaining({ taskId: 'task1', type: 'upload' }));
+    expect(tasks[0]).toEqual(expect.objectContaining({ taskId: 'task1', type: RetryableTaskType.Upload }));
   });
 
   it('should return only download tasks when type is download', () => {
     RetryManager.addTasks([
-      { taskId: 'task1', type: 'upload', params: {} },
-      { taskId: 'task2', type: 'download', params: {} },
+      { taskId: 'task1', type: RetryableTaskType.Upload, params: {} },
+      { taskId: 'task2', type: RetryableTaskType.Download, params: {} },
     ]);
 
-    const tasks = RetryManager.getTasks('download');
+    const tasks = RetryManager.getTasks(RetryableTaskType.Download);
     expect(tasks).toHaveLength(1);
-    expect(tasks[0]).toEqual(expect.objectContaining({ taskId: 'task2', type: 'download' }));
+    expect(tasks[0]).toEqual(expect.objectContaining({ taskId: 'task2', type: RetryableTaskType.Download }));
   });
 
   it('should return an empty array if no tasks match the specified type', () => {
-    RetryManager.addTask({ taskId: 'task1', type: 'upload', params: {} });
+    RetryManager.addTask({ taskId: 'task1', type: RetryableTaskType.Upload, params: {} });
 
-    const tasks = RetryManager.getTasks('download');
+    const tasks = RetryManager.getTasks(RetryableTaskType.Download);
     expect(tasks).toHaveLength(0);
   });
 });

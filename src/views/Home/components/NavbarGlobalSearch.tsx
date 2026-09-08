@@ -4,7 +4,9 @@ import { RootState } from 'app/store';
 import { storageSelectors } from 'app/store/slices/storage';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SearchResult } from '@internxt/sdk/dist/drive/storage/types';
-import { ArrowSquareOut, Gear, Gift, MagnifyingGlass, X } from '@phosphor-icons/react';
+import { defaultSearchFilters, searchItems, SearchFileCategory, SearchFilters } from '../services';
+import { ArrowSquareOutIcon, GearIcon, GiftIcon, MagnifyingGlassIcon, XIcon } from '@phosphor-icons/react';
+import { Loader } from '@internxt/ui';
 import AccountPopover from './AccountPopover';
 import referralService from 'services/referral.service';
 import i18next from 'i18next';
@@ -13,14 +15,24 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import iconService from 'app/drive/services/icon.service';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { isMacOs } from 'react-device-detect';
-import { SdkFactory } from 'app/core/factory/sdk';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { uiActions } from 'app/store/slices/ui';
-import fileExtensionGroups, { FileExtensionGroup, FileExtensionMap } from 'app/drive/types/file-types';
 import NotFoundState from './NotFoundState';
 import EmptyState from './EmptyState';
-import FilterItem from './FilterItem';
+import { toggleAllTypeCategories, toggleTypeCategory } from '../utils/typeFilterUtils';
+import { changeSpecificDate, datePresetToRange, SearchDatePreset, SpecificDateRange } from '../utils/dateFilterUtils';
+import {
+  changeCustomSize,
+  CustomSizeRange,
+  emptyCustomSizeRange,
+  SearchSizePreset,
+  sizePresetToRange,
+} from '../utils/sizeFilterUtils';
+import SearchTypeFilter from './SearchTypeFilter';
+import SearchDateFilter from './SearchDateFilter';
+import SearchSizeFilter from './SearchSizeFilter';
+import { Dayjs } from 'dayjs';
 import { getItemPlainName } from 'app/crypto/services/utils';
 import navigationService from 'services/navigation.service';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
@@ -32,7 +44,7 @@ interface NavbarProps {
   plan: PlanState;
 }
 
-type FilterType = 'folder' | 'pdf' | 'image' | 'video' | 'audio' | null;
+type SearchFilterName = 'type' | 'date' | 'size';
 
 const getSearchBoxClassName = (openSearchBox: boolean) => {
   const baseClass = 'relative flex w-full items-center rounded-lg transition-all duration-150 ease-out';
@@ -55,43 +67,26 @@ const getClearButtonClassName = (query: string, openSearchBox: boolean) => {
   return `${baseClass} ${visibilityClass}`;
 };
 
+const getSearchLoaderClassName = (loadingSearch: boolean, openSearchBox: boolean) => {
+  const baseClass = 'absolute right-9 top-1/2 z-1 -translate-y-1/2 transition-all duration-100 ease-out';
+  const isHidden = !loadingSearch || !openSearchBox;
+  const visibilityClass = isHidden ? 'opacity-0' : '';
+  return `${baseClass} ${visibilityClass}`;
+};
+
 const getSearchResultsClassName = (openSearchBox: boolean) => {
   const baseClass =
-    'absolute top-12 z-10 flex h-80 w-full max-w-screen-sm origin-top flex-col overflow-hidden rounded-xl bg-surface text-gray-100 shadow-subtle-hard ring-1 ring-gray-10 transition-all duration-150 ease-out dark:bg-gray-5';
+    'absolute top-12 z-10 flex h-80 w-full max-w-screen-sm origin-top flex-col rounded-xl bg-surface text-gray-100 shadow-subtle-hard ring-1 ring-gray-10 transition-all duration-150 ease-out dark:bg-gray-5';
   if (openSearchBox) {
     return `${baseClass} translate-y-1.5 scale-100 opacity-100`;
   }
   return `${baseClass} pointer-events-none -translate-y-0.5 scale-98 opacity-0`;
 };
 
-const getClearFiltersClassName = (filtersLength: number) => {
-  const baseClass =
-    'flex h-8 cursor-pointer items-center space-x-2 rounded-full bg-gray-1 px-3 text-sm font-medium text-gray-60 transition-all duration-100 ease-out hover:bg-gray-5 dark:hover:bg-surface';
-  const visibilityClass = filtersLength === 0 ? 'pointer-events-none opacity-0' : '';
-  return `${baseClass} ${visibilityClass}`;
-};
-
 const getSearchResultItemClassName = (isSelected: boolean) => {
   const baseClass = 'flex h-11 shrink-0 cursor-pointer items-center space-x-2.5 px-4 text-gray-100';
   const selectedClass = isSelected ? 'bg-gray-5 dark:bg-gray-10' : '';
   return `${baseClass} ${selectedClass}`;
-};
-
-const fileExtension = {
-  image: fileExtensionGroups[FileExtensionGroup.Image],
-  audio: fileExtensionGroups[FileExtensionGroup.Audio],
-  pdf: fileExtensionGroups[FileExtensionGroup.Pdf],
-  video: fileExtensionGroups[FileExtensionGroup.Video],
-  default: fileExtensionGroups[FileExtensionGroup.Default],
-};
-
-const isSelectedType = (extension: string, extensionMap: FileExtensionMap) => {
-  for (const fileType in extensionMap) {
-    if (extensionMap[fileType].includes(extension.toLowerCase())) {
-      return true;
-    }
-  }
-  return false;
 };
 
 const Navbar = (props: NavbarProps) => {
@@ -101,14 +96,18 @@ const Navbar = (props: NavbarProps) => {
 
   const dispatch = useAppDispatch();
   const searchInput = useRef<HTMLInputElement>(null);
+  const searchForm = useRef<HTMLFormElement>(null);
   const searchResultList = useRef<HTMLUListElement>(null);
   const [preventBlur, setPreventBlur] = useState<boolean>(false);
   const [openSearchBox, setOpenSearchBox] = useState<boolean>(false);
-  const [filters, setFilters] = useState<FilterType[]>([]);
+  const [filters, setFilters] = useState<SearchFilters>(defaultSearchFilters);
+  const [datePreset, setDatePreset] = useState<SearchDatePreset>('any');
+  const [specificDates, setSpecificDates] = useState<SpecificDateRange>({});
+  const [sizePreset, setSizePreset] = useState<SearchSizePreset>('any');
+  const [customSize, setCustomSize] = useState<CustomSizeRange>(emptyCustomSizeRange);
 
   const [query, setQuery] = useState('');
   const [searchResult, setSearchResult] = useState<SearchResult[]>([]);
-  const [filteredResults, setFilteredResults] = useState<SearchResult[]>([]);
   const [selectedResult, setSelectedResult] = useState<number>(0);
   const [loadingSearch, setLoadingSearch] = useState<boolean>(false);
   const [typingTimerID, setTypingTimerID] = useState<NodeJS.Timeout | null>(null);
@@ -149,15 +148,70 @@ const Navbar = (props: NavbarProps) => {
     { enableOnFormTags: ['INPUT'] },
   );
 
-  useEffect(() => {
-    if (filters.length > 0) {
-      setFilteredResults(filteredSearchResults);
+  const toggleTypeFilter = (category: SearchFileCategory) =>
+    setFilters((current) => ({ ...current, type: toggleTypeCategory(current.type, category) }));
+
+  const toggleAllTypeFilters = () =>
+    setFilters((current) => ({ ...current, type: toggleAllTypeCategories(current.type) }));
+
+  const applyDateFilter = (preset: SearchDatePreset, specific: SpecificDateRange) => {
+    setDatePreset(preset);
+    setSpecificDates(specific);
+    setFilters((current) => {
+      const range = datePresetToRange(preset, specific);
+      const unchanged =
+        range.modifiedAfter === current.modifiedAfter && range.modifiedBefore === current.modifiedBefore;
+      return unchanged ? current : { ...current, ...range };
+    });
+  };
+
+  const selectDatePreset = (preset: SearchDatePreset) => {
+    if (preset !== datePreset) applyDateFilter(preset, {});
+  };
+
+  const changeDateFilterDate = (field: 'after' | 'before', date?: Dayjs) => {
+    const nextSpecificDates = changeSpecificDate(specificDates, field, date);
+    if (nextSpecificDates !== specificDates) applyDateFilter('specific', nextSpecificDates);
+  };
+
+  const applySizeFilter = (preset: SearchSizePreset, custom: CustomSizeRange) => {
+    setSizePreset(preset);
+    setCustomSize(custom);
+    setFilters((current) => {
+      const range = sizePresetToRange(preset, custom);
+      const unchanged = range.minSize === current.minSize && range.maxSize === current.maxSize;
+      return unchanged ? current : { ...current, ...range };
+    });
+  };
+
+  const selectSizePreset = (preset: SearchSizePreset) => {
+    if (preset !== sizePreset) applySizeFilter(preset, emptyCustomSizeRange);
+  };
+
+  const changeCustomSizeFilter = (changes: Partial<CustomSizeRange>) => {
+    const nextCustomSize = changeCustomSize(customSize, changes);
+    if (nextCustomSize !== customSize) applySizeFilter('custom', nextCustomSize);
+  };
+
+  const openSearchBoxRef = useRef(openSearchBox);
+  openSearchBoxRef.current = openSearchBox;
+
+  const openDropdown = useRef<SearchFilterName | null>(null);
+
+  const handleDropdownOpenChange = (name: SearchFilterName) => (open: boolean) => {
+    if (open) {
+      openDropdown.current = name;
+      return;
     }
-  }, [filters, searchResult]);
+    if (openDropdown.current === name) openDropdown.current = null;
+    setTimeout(() => {
+      if (openSearchBoxRef.current && openDropdown.current === null) searchInput.current?.focus();
+    }, 0);
+  };
 
   useEffect(() => {
-    if (filters.length === 0) {
-      setFilteredResults([]);
+    if (query.length > 0) {
+      handleSearch();
     }
   }, [filters]);
 
@@ -172,19 +226,8 @@ const Navbar = (props: NavbarProps) => {
     setSearchResult([]);
   };
 
-  const matchesFilter = (result: SearchResult, filter: FilterType) => {
-    if (filter === 'folder') {
-      return result.itemType?.toLowerCase() === 'folder';
-    }
-    return result.item.type && isSelectedType(result.item.type, fileExtension[filter || 'default']);
-  };
-
-  const filteredSearchResults = searchResult.filter((result) => {
-    return filters.some((filter) => matchesFilter(result, filter));
-  });
-
   const shouldShowResults = () => {
-    return (filters.length === 0 && searchResult.length > 0) || (filters.length > 0 && filteredResults.length > 0);
+    return searchResult.length > 0;
   };
 
   const shouldShowNotFound = () => {
@@ -198,19 +241,11 @@ const Navbar = (props: NavbarProps) => {
     return <EmptyState />;
   };
 
-  const getDisplayResults = () => {
-    return filteredResults.length > 0 ? filteredResults : searchResult;
-  };
-
   const search = async () => {
     const query = searchInput.current?.value ?? '';
     const workspaceId = selectedWorkspace?.workspaceUser.workspaceId;
     if (query.length > 0) {
-      const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-      const [itemsPromise] = storageClient.getGlobalSearchItems(query, workspaceId);
-      const items = await itemsPromise;
-      const resultItems: SearchResult[] = Array.isArray(items) ? items : items.data;
-      setSearchResult(resultItems);
+      setSearchResult(await searchItems(query, workspaceId, filters));
     } else {
       setSearchResult([]);
     }
@@ -276,43 +311,19 @@ const Navbar = (props: NavbarProps) => {
     if (item) document.querySelector(`#searchResult_${item}`)?.scrollIntoView();
   };
 
-  const filterItems = [
-    {
-      id: 'folder',
-      Icon: iconService.getItemIcon(true),
-      name: translate('general.searchBar.filters.folder'),
-    },
-    {
-      id: 'pdf',
-      Icon: iconService.getItemIcon(false, 'pdf'),
-      name: translate('general.searchBar.filters.pdf'),
-    },
-    {
-      id: 'image',
-      Icon: iconService.getItemIcon(false, 'jpg'),
-      name: translate('general.searchBar.filters.image'),
-    },
-    {
-      id: 'video',
-      Icon: iconService.getItemIcon(false, 'mp4'),
-      name: translate('general.searchBar.filters.video'),
-    },
-    {
-      id: 'audio',
-      Icon: iconService.getItemIcon(false, 'mp3'),
-      name: translate('general.searchBar.filters.audio'),
-    },
-  ];
-
   return (
     <div className="flex h-14 w-full items-center justify-between border-b border-gray-5 text-gray-40 dark:bg-gray-1">
       <div className="flex h-full w-full items-center justify-between z-20">
         {hideSearch ? (
           <div />
         ) : (
-          <form className="relative flex h-full w-full pl-4 items-center" onSubmitCapture={handleSubmit}>
+          <form
+            ref={searchForm}
+            className="relative flex h-full w-full pl-4 items-center"
+            onSubmitCapture={handleSubmit}
+          >
             <label className={getSearchBoxClassName(openSearchBox)} htmlFor="globalSearchInput">
-              <MagnifyingGlass
+              <MagnifyingGlassIcon
                 className="pointer-events-none absolute left-2.5 top-1/2 z-1 -translate-y-1/2 text-gray-60 focus-within:text-gray-80"
                 size={20}
               />
@@ -324,7 +335,7 @@ const Navbar = (props: NavbarProps) => {
                 spellCheck="false"
                 type="text"
                 value={query}
-                className="inxt-input left-icon h-10 w-full appearance-none rounded-lg border border-transparent bg-gray-5 px-9 text-lg text-gray-100 placeholder-gray-60 outline-none ring-1 ring-gray-10 transition-all duration-150 ease-out hover:shadow-sm hover:ring-gray-20 focus:border-primary focus:bg-surface focus:placeholder-gray-80 focus:shadow-none focus:ring-3 focus:ring-primary/10 dark:focus:bg-gray-1 dark:focus:ring-primary/20"
+                className="inxt-input left-icon h-10 w-full appearance-none rounded-lg border border-transparent bg-gray-5 pl-9 pr-16 text-lg text-gray-100 placeholder-gray-60 outline-none ring-1 ring-gray-10 transition-all duration-150 ease-out hover:shadow-sm hover:ring-gray-20 focus:border-primary focus:bg-surface focus:placeholder-gray-80 focus:shadow-none focus:ring-3 focus:ring-primary/10 dark:focus:bg-gray-1 dark:focus:ring-primary/20"
                 onChange={(e) => {
                   setQuery(e.target.value);
                   handleSearch();
@@ -338,6 +349,7 @@ const Navbar = (props: NavbarProps) => {
                   }
                 }}
                 onBlurCapture={(e) => {
+                  if (searchForm.current?.contains(e.relatedTarget as Node | null)) return;
                   if (preventBlur) {
                     e.currentTarget.focus();
                   } else {
@@ -348,7 +360,12 @@ const Navbar = (props: NavbarProps) => {
                 placeholder={translate('general.searchBar.placeholder')}
               />
               <div className={getKeyboardShortcutClassName(openSearchBox)}>{isMacOs ? '⌘F' : 'Ctrl F'}</div>
-              <X
+              <Loader
+                classNameContainer={getSearchLoaderClassName(loadingSearch, openSearchBox)}
+                classNameLoader="text-gray-60"
+                size={20}
+              />
+              <XIcon
                 className={getClearButtonClassName(query, openSearchBox)}
                 onMouseDownCapture={() => {
                   setQuery('');
@@ -365,32 +382,32 @@ const Navbar = (props: NavbarProps) => {
               onMouseEnter={() => setPreventBlur(true)}
               onMouseLeave={() => setPreventBlur(false)}
             >
-              <div className="flex w-full shrink-0 items-center justify-between border-b border-gray-5 px-2.5 py-2.5 dark:border-gray-10">
-                <div className="flex items-center space-x-2">
-                  {filterItems.map((item) => (
-                    <FilterItem
-                      key={item.id}
-                      id={item.id}
-                      Icon={item.Icon}
-                      name={item.name}
-                      filters={filters}
-                      setFilters={setFilters}
-                    />
-                  ))}
-                </div>
-
-                <button
-                  type="button"
-                  className={getClearFiltersClassName(filters.length)}
-                  onClick={() => setFilters([])}
-                >
-                  {translate('general.searchBar.filters.clear')}
-                </button>
+              <div className="flex w-full shrink-0 flex-wrap items-center gap-2 border-b border-gray-5 px-2.5 py-2.5 dark:border-gray-10">
+                <SearchTypeFilter
+                  selected={filters.type}
+                  onToggle={toggleTypeFilter}
+                  onToggleAll={toggleAllTypeFilters}
+                  onOpenChange={handleDropdownOpenChange('type')}
+                />
+                <SearchDateFilter
+                  preset={datePreset}
+                  specific={specificDates}
+                  onSelectPreset={selectDatePreset}
+                  onChangeDate={changeDateFilterDate}
+                  onOpenChange={handleDropdownOpenChange('date')}
+                />
+                <SearchSizeFilter
+                  preset={sizePreset}
+                  custom={customSize}
+                  onSelectPreset={selectSizePreset}
+                  onChangeCustom={changeCustomSizeFilter}
+                  onOpenChange={handleDropdownOpenChange('size')}
+                />
               </div>
 
               {shouldShowResults() ? (
-                <ul ref={searchResultList} className="flex h-full flex-col overflow-y-auto pb-4">
-                  {getDisplayResults().map((item, index) => {
+                <ul ref={searchResultList} className="flex h-full flex-col overflow-y-auto rounded-b-xl pb-4">
+                  {searchResult.map((item, index) => {
                     const isFolder = item.itemType === 'FOLDER' || item.itemType === 'folder';
                     const Icon = iconService.getItemIcon(isFolder, item.item.type);
                     return (
@@ -430,7 +447,7 @@ const Navbar = (props: NavbarProps) => {
           style={{ display: isReferralEligible ? 'flex' : 'none', position: 'relative' }}
           className="flex h-10 cursor-pointer items-center gap-2 border-none bg-transparent px-3"
         >
-          <Gift size={20} className="text-primary" />
+          <GiftIcon size={20} className="text-primary" />
           <span className="text-sm font-medium whitespace-nowrap text-primary">{referralLauncherLabel}</span>
         </button>
         <button
@@ -447,7 +464,7 @@ const Navbar = (props: NavbarProps) => {
             'text-gray-80 hover:bg-gray-5 hover:text-gray-80 active:bg-gray-10'
           }
         >
-          <Gear size={24} />
+          <GearIcon size={24} />
         </button>
         <AccountPopover
           className="z-40 mr-5"
@@ -476,7 +493,7 @@ const Navbar = (props: NavbarProps) => {
           }
           primaryAction={
             <span className="flex items-center">
-              {translate('modals.upgradePlanDialog.upgrade')} <ArrowSquareOut className="ml-1.5" weight="bold" />
+              {translate('modals.upgradePlanDialog.upgrade')} <ArrowSquareOutIcon className="ml-1.5" weight="bold" />
             </span>
           }
           secondaryAction={translate('modals.upgradePlanDialog.cancel')}

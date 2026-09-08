@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import vpnAuthService from 'services/vpnAuth.service';
 
-const useVpnAuth = (isVpnAuth: boolean, newToken: string | null) => {
+const useVpnAuth = (isVpnAuth: boolean, newToken: string | undefined) => {
   useEffect(() => {
     if (!newToken) return;
 

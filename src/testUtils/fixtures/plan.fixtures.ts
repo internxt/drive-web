@@ -23,6 +23,9 @@ export const getStoragePlan = (overrides: Partial<StoragePlan> = {}): StoragePla
   cancellationTrial: {
     redeemed: false,
   },
+  tax: {
+    enabled: false,
+  },
   ...overrides,
 });
 

@@ -1,5 +1,6 @@
 import { renderAsync } from 'docx-preview';
 import { useEffect } from 'react';
+import { getPortraitFitWidth } from '../../utils/fileViewerUtils';
 
 interface FileDocumentViewerProps {
   blob: Blob;
@@ -18,6 +19,14 @@ const FileDocumentViewer = ({ blob, setIsPreviewAvailable }: FileDocumentViewerP
           docxWrapper.style.background = 'none';
           docxWrapper.style.padding = '0px';
           docxWrapper.style.paddingTop = '80px';
+
+          const portraitFitWidth = getPortraitFitWidth();
+          if (portraitFitWidth) {
+            docxWrapper.querySelectorAll<HTMLElement>('section.docx').forEach((page) => {
+              const scale = Math.min(1, portraitFitWidth / page.offsetWidth);
+              page.style.setProperty('zoom', String(scale));
+            });
+          }
         }
       })
       .catch((err) => {

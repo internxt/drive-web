@@ -14,7 +14,7 @@ import { useAppDispatch } from 'app/store/hooks';
 import { WorkspacesState, workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import BillingPaymentMethodCard from '../../../BillingPaymentMethodCard';
 import Invoices from '../../../containers/InvoicesContainer';
-import CancelSubscription from '../../Account/Billing/components/CancelSubscription';
+import CancelSubscriptionSection from '../../Account/Billing/components/CancelSubscriptionSection';
 import { getPlanInfo, getPlanName } from '../../../../utils/planUtils';
 import BillingDetailsCard from './BillingDetailsCard';
 import EditBillingDetailsModal from './components/EditBillingDetailsModal';
@@ -44,7 +44,7 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
   const subscriptionId = plan.businessSubscription?.type === 'subscription' && plan.businessSubscription.subscriptionId;
 
   const [isSubscription, setIsSubscription] = useState<boolean>(false);
-  const [cancellingSubscription, setCancellingSubscription] = useState<boolean>(false);
+  const [isCancellingSubscription, setIsCancellingSubscription] = useState<boolean>(false);
   const [isCancelSubscriptionModalOpen, setIsCancelSubscriptionModalOpen] = useState<boolean>(false);
   const [planName, setPlanName] = useState<string>('');
   const [planInfo, setPlanInfo] = useState<string>('');
@@ -91,7 +91,7 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
   };
 
   const cancelSubscription = async () => {
-    setCancellingSubscription(true);
+    setIsCancellingSubscription(true);
     try {
       await paymentService.cancelSubscription(UserType.Business);
       notificationsService.show({ text: translate('notificationMessages.successCancelSubscription'), duration: 8000 });
@@ -248,10 +248,10 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
       <BillingPaymentMethodCard subscription={plan.businessSubscription?.type} userType={UserType.Business} />
       <Invoices userType={UserType.Business} />
       {isSubscription && (
-        <CancelSubscription
+        <CancelSubscriptionSection
           isCancelSubscriptionModalOpen={isCancelSubscriptionModalOpen}
           setIsCancelSubscriptionModalOpen={setIsCancelSubscriptionModalOpen}
-          cancellingSubscription={cancellingSubscription}
+          isCancellingSubscription={isCancellingSubscription}
           cancelSubscription={cancelSubscription}
           planName={planName}
           planInfo={planInfo}

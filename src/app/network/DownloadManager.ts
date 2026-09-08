@@ -13,7 +13,7 @@ import {
   isLostConnectionError,
   areItemArraysEqual,
 } from 'app/drive/services/downloadManager.service';
-import RetryManager, { RetryableTask } from './RetryManager';
+import RetryManager, { RetryableTask, RetryableTaskType } from './RetryManager';
 import { ErrorMessages } from 'app/core/constants';
 
 /**
@@ -175,7 +175,7 @@ export class DownloadManager {
             ({
               taskId: downloadTask.taskId,
               params: item,
-              type: 'download',
+              type: RetryableTaskType.Download,
             }) as RetryableTask,
         );
         RetryManager.addTasks(failedTasks);

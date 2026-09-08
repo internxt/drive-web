@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../../app/store';
 import { DriveItemData, DriveItemDetails } from '../../../app/drive/types';
@@ -9,16 +9,18 @@ import { AdvancedSharedItem, PreviewFileItem, SharedNamePath } from '../../../ap
 import { OrderField, SharedItemList } from './SharedItemList';
 
 import errorService from 'services/error.service';
-import localStorageService from 'services/local-storage.service';
 import workspacesService from 'services/workspace.service';
 import { OrderDirection } from '../../../app/core/types';
 import { sharedThunks } from '../../../app/store/slices/sharedLinks';
 import workspacesSelectors from '../../../app/store/slices/workspaces/workspaces.selectors';
-import shareService, { decryptMnemonic } from '../../../app/share/services/share.service';
+import shareService from '../../../app/share/services/share.service';
+import { decryptMnemonic } from '../../../app/share/services/share.crypto';
 import { setOrderBy, setPage, setSelectedItems } from '../context/SharedViewContext.actions';
 import { useShareViewContext } from '../context/SharedViewContextProvider';
 import useSharedContextMenu from '../hooks/useSharedContextMenu';
 import { isItemsOwnedByCurrentUser, sortSharedItems } from '../utils/sharedViewUtils';
+import encryptedStorageService from 'services/encrypted-storage.service';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 type ShareItemListContainerProps = {
   disableKeyboardShortcuts: boolean;
@@ -51,6 +53,11 @@ const SharedItemListContainer = ({
   const defaultTeamId = selectedWorkspace?.workspace.defaultTeamId;
   const workspaceCredentials = useSelector(workspacesSelectors.getWorkspaceCredentials);
   const { state, actionDispatch } = useShareViewContext();
+  const [currentUser, setCurrentUser] = useState<UserSettings | null>(null);
+
+  useEffect(() => {
+    encryptedStorageService.getUser().then(setCurrentUser);
+  }, []);
 
   const {
     page,
@@ -72,7 +79,6 @@ const SharedItemListContainer = ({
 
   const hasMoreItems = hasMoreFiles || hasMoreFolders;
   const isAwaitingInitialFilesLoad = !hasMoreFolders && hasMoreFiles && shareFiles.length === 0;
-  const currentUser = localStorageService.getUser();
 
   const openShareAccessSettings = (shareItem: AdvancedSharedItem) => {
     const shareItemWithEmail = shareItem.user?.email

@@ -92,7 +92,7 @@ export async function uploadFile(
   },
 ): Promise<DriveFileData> {
   const { bridgeUser, bridgePass, encryptionKey, bucketId } =
-    options.ownerUserAuthenticationData ?? getEnvironmentConfig(options.isTeam);
+    options.ownerUserAuthenticationData ?? (await getEnvironmentConfig(options.isTeam));
   const workspaceId = options?.ownerUserAuthenticationData?.workspaceId;
   const workspacesToken = options?.ownerUserAuthenticationData?.workspacesToken;
   const resourcesToken = options?.ownerUserAuthenticationData?.resourcesToken;

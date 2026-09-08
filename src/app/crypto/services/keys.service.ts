@@ -6,15 +6,11 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 const MINIMAL_ENCRYPTED_KEY_LEN = 129;
 
 export async function getKeys(password: string): Promise<Keys> {
-  const { privateKeyArmored, publicKeyArmored, revocationCertificate, publicKyberKeyBase64, privateKyberKeyBase64 } =
-    await generateNewKeys();
+  const { privateKeyArmored, publicKeyArmored, publicKyberKeyBase64, privateKyberKeyBase64 } = await generateNewKeys();
   const encPrivateKey = aes.encrypt(privateKeyArmored, password);
   const encPrivateKyberKey = aes.encrypt(privateKyberKeyBase64, password);
 
   const keys: Keys = {
-    privateKeyEncrypted: encPrivateKey,
-    publicKey: publicKeyArmored,
-    revocationCertificate: revocationCertificate,
     ecc: {
       privateKeyEncrypted: encPrivateKey,
       publicKey: publicKeyArmored,
@@ -104,16 +100,13 @@ export function parseAndDecryptUserKeys(
   user: UserSettings,
   password: string,
 ): { publicKey: string; privateKey: string; publicKyberKey: string; privateKyberKey: string } {
-  const decryptedPrivateKey = decryptPrivateKey(user.privateKey, password);
-  const privateKey = user.privateKey ? Buffer.from(decryptedPrivateKey).toString('base64') : '';
+  const decryptedPrivateKey = decryptPrivateKey(user.keys.ecc.privateKey, password);
+  const privateKey = user.keys.ecc.privateKey ? Buffer.from(decryptedPrivateKey).toString('base64') : '';
 
-  let privateKyberKey = '';
-  if (user.keys?.kyber?.privateKey) {
-    privateKyberKey = decryptPrivateKey(user.keys.kyber.privateKey, password);
-  }
+  const privateKyberKey = user.keys.kyber.privateKey ? decryptPrivateKey(user.keys.kyber.privateKey, password) : '';
 
-  const publicKey = user.keys?.ecc?.publicKey ?? user.publicKey;
-  const publicKyberKey = user.keys?.kyber?.publicKey ?? '';
+  const publicKey = user.keys.ecc.publicKey ?? '';
+  const publicKyberKey = user.keys.kyber.publicKey ?? '';
 
   return { publicKey, privateKey, publicKyberKey, privateKyberKey };
 }

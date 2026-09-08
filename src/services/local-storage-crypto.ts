@@ -7,6 +7,17 @@ import {
 } from './local-storage-errors';
 import { KEY_ID, KEY_LENGTH, IV_LENGTH, ALGORITHM } from './local-storage-constants';
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
+import { Buffer } from 'buffer';
+
+async function ensureKey(): Promise<CryptoKey> {
+  const existing = await getKey();
+  if (existing) return existing;
+  else return createNewKey();
+}
+
+export async function ensureKeyExists(): Promise<void> {
+  await ensureKey();
+}
 
 async function getKey(): Promise<CryptoKey | undefined> {
   return databaseService.get(DatabaseCollection.CryptoKeys, KEY_ID);
@@ -31,10 +42,7 @@ export async function createNewKey(): Promise<CryptoKey> {
 }
 
 export async function encryptEntry(plaintext: string): Promise<string> {
-  const key = await getKey();
-  if (!key) {
-    throw new FailedToFindKey('No encryption key found');
-  }
+  const key = await ensureKey();
   try {
     const iv = crypto.getRandomValues(new Uint8Array(IV_LENGTH));
     const encoded = new TextEncoder().encode(plaintext);
@@ -43,7 +51,7 @@ export async function encryptEntry(plaintext: string): Promise<string> {
     const result = new Uint8Array(iv.length + buf.length);
     result.set(iv, 0);
     result.set(buf, iv.length);
-    return result.toBase64();
+    return Buffer.from(result).toString('base64');
   } catch (error) {
     throw new FailedToEncryptEntry(error instanceof Error ? error.message : String(error));
   }
@@ -56,10 +64,10 @@ export async function decryptEntry(ciphertextBase64: string): Promise<string> {
   }
 
   try {
-    const input = Uint8Array.fromBase64(ciphertextBase64);
+    const input = Buffer.from(ciphertextBase64, 'base64');
 
-    const iv = input.slice(0, IV_LENGTH);
-    const data = input.slice(IV_LENGTH);
+    const iv = input.subarray(0, IV_LENGTH);
+    const data = input.subarray(IV_LENGTH);
     const buf = await crypto.subtle.decrypt({ name: ALGORITHM, iv }, key, data);
     return new TextDecoder().decode(buf);
   } catch (error) {

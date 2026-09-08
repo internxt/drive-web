@@ -36,8 +36,6 @@ vi.mock('app/core/factory/sdk', () => ({
           user: {
             userId: 'mock-user-id',
             mnemonic: 'mock-decrypted-mnemonic',
-            privateKey: 'mock-private-key',
-            publicKey: 'mock-public-key',
             appSumoDetails: 'mock-appSumoDetails',
             avatar: 'mock-avatar',
             keys: {
@@ -57,8 +55,6 @@ vi.mock('app/core/factory/sdk', () => ({
           user: {
             userId: 'mock-user-id',
             mnemonic: 'mock-encrypted-mnemonic',
-            privateKey: 'mock-private-key',
-            publicKey: 'mock-public-key',
             keys: {
               ecc: {
                 privateKey: 'mock-private-key',
@@ -78,9 +74,6 @@ vi.mock('app/core/factory/sdk', () => ({
 
 vi.mock('app/crypto/services/keys.service', () => ({
   getKeys: vi.fn().mockResolvedValue({
-    privateKeyArmored: 'mock-private-key',
-    publicKeyArmored: 'mock-public-key',
-    revocationCertificate: 'mock-revocation-cert',
     ecc: {
       privateKey: 'mock-private-key',
       publicKeyEncrypted: 'mock-public-key',
@@ -121,18 +114,8 @@ describe('useSignUp', () => {
       xUser: {
         userId: 'mock-user-id',
         mnemonic: 'mock-decrypted-mnemonic',
-        privateKey: 'mock-private-key',
-        publicKey: 'mock-public-key',
         appSumoDetails: 'mock-appSumoDetails',
         avatar: 'mock-avatar',
-        backupsBucket: undefined,
-        bridgeUser: undefined,
-        bucket: undefined,
-        createdAt: expect.any(String),
-        credit: undefined,
-        email: undefined,
-        emailVerified: undefined,
-        hasReferralsProgram: undefined,
         keys: {
           ecc: {
             privateKey: 'mock-private-key',
@@ -145,6 +128,7 @@ describe('useSignUp', () => {
         },
       },
       xToken: 'mock-token',
+      xNewToken: undefined,
       mnemonic: 'mock-decrypted-mnemonic',
     });
 
@@ -167,19 +151,6 @@ describe('useSignUp', () => {
       xUser: {
         userId: 'mock-user-id',
         mnemonic: 'mock-decrypted-mnemonic',
-        rootFolderId: undefined,
-        privateKey: 'mock-private-key',
-        publicKey: 'mock-public-key',
-        appSumoDetails: null,
-        avatar: undefined,
-        backupsBucket: undefined,
-        bridgeUser: undefined,
-        bucket: undefined,
-        createdAt: expect.any(String),
-        credit: undefined,
-        email: undefined,
-        emailVerified: undefined,
-        hasReferralsProgram: undefined,
         keys: {
           ecc: {
             privateKey: 'mock-private-key',
@@ -190,19 +161,11 @@ describe('useSignUp', () => {
             privateKey: '',
           },
         },
+        rootFolderId: undefined,
       },
       xToken: 'mock-token',
+      xNewToken: undefined,
       mnemonic: 'mock-decrypted-mnemonic',
-      lastname: undefined,
-      name: undefined,
-      registerCompleted: undefined,
-      revocationKey: undefined,
-      rootFolderUuid: undefined,
-      root_folder_id: undefined,
-      sharedWorkspace: undefined,
-      teams: undefined,
-      username: undefined,
-      uuid: undefined,
     });
 
     expect(bip39.generateMnemonic).toHaveBeenCalledWith(256);

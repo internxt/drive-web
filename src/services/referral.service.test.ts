@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, test, vi } from 'vitest';
 import envService from './env.service';
 import dateService from './date.service';
 import { loadExternalScript } from 'utils/loadExternalScript';
@@ -355,6 +355,30 @@ describe('referralService', () => {
       const result = await referralService.captureUcc();
 
       expect(result).toBeNull();
+    });
+  });
+
+  describe('getReferralOpenQueryParams', () => {
+    afterEach(() => {
+      globalThis.history.replaceState({}, '', '/');
+    });
+
+    test('when the URL contains referral=open, then the referral query param is returned', () => {
+      globalThis.history.replaceState({}, '', '/?referral=open');
+
+      expect(referralService.getReferralOpenQueryParams()).toEqual({ referral: 'open' });
+    });
+
+    test('when the URL does not contain the referral param, then an empty object is returned', () => {
+      globalThis.history.replaceState({}, '', '/?workspaceid=123');
+
+      expect(referralService.getReferralOpenQueryParams()).toEqual({});
+    });
+
+    test('when the referral param has a different value, then an empty object is returned', () => {
+      globalThis.history.replaceState({}, '', '/?referral=closed');
+
+      expect(referralService.getReferralOpenQueryParams()).toEqual({});
     });
   });
 

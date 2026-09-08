@@ -1,6 +1,6 @@
 import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
-import { Stripe, StripeElements } from '@stripe/stripe-js';
+import { Stripe } from '@stripe/stripe-js';
 import { ActionDialog, DialogActionConfig } from 'app/contexts/dialog-manager/ActionDialogManager.context';
 import { Translate } from 'app/i18n/types';
 
@@ -94,7 +94,7 @@ export interface ProcessPurchasePayload {
   priceId: string;
   token: string;
   currency: string;
-  elements: StripeElements;
+  confirmationTokenId?: string;
   captchaToken: string;
   userAddress: string;
   confirmPayment: Stripe['confirmPayment'];
@@ -112,7 +112,7 @@ export interface UseUserPaymentPayload {
   token: string;
   currency: string;
   selectedPlan: PriceWithTax;
-  elements: StripeElements;
+  confirmationTokenId?: string;
   userAddress: string;
   confirmPayment: Stripe['confirmPayment'];
   confirmSetupIntent: Stripe['confirmSetup'];

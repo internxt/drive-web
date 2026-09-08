@@ -3,6 +3,10 @@
   top: 50%;
 }
 
+.public-shared-list .min-w-max {
+  min-width: 0;
+}
+
 .hide-scroll {
   &::-webkit-scrollbar {
     width: 0;

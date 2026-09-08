@@ -1,47 +1,21 @@
-import errorService from 'services/error.service';
-import { AppError } from '@internxt/sdk';
 import { DriveFolderData } from 'app/drive/types';
 import { createFolder } from 'app/store/slices/storage/folderUtils/createFolder';
 import { checkFolderDuplicated } from 'app/store/slices/storage/folderUtils/checkFolderDuplicated';
 import { getUniqueFolderName } from 'app/store/slices/storage/folderUtils/getUniqueFolderName';
-import tasksService from 'app/tasks/services/tasks.service';
-import { beforeEach, describe, expect, it, Mock, test, vi } from 'vitest';
-import { TaskFolder, UploadFoldersManager, uploadFoldersWithManager } from './UploadFolderManager';
-import * as networkInformation from './networkInformation';
+import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import {
+  TaskFolder,
+  UploadFolderManagerEvents,
+  UploadFoldersManager,
+  uploadFoldersWithManager,
+} from './UploadFolderManager';
 import { FilesExceedsSizeLimitError } from 'app/drive/services/file.service/upload.errors';
 import { uploadItemsParallelThunk } from 'app/store/slices/storage/storage.thunks/uploadItemsThunk';
+import { deleteItemsThunk } from '../store/slices/storage/storage.thunks/deleteItemsThunk';
 
 vi.mock('app/drive/services/new-storage.service', () => ({
   default: {
     deleteFolderByUuid: vi.fn(),
-  },
-}));
-
-vi.mock('app/tasks/services/tasks.service', () => ({
-  default: {
-    create: vi.fn(),
-    updateTask: vi.fn(),
-    getTasks: vi.fn(),
-    findTask: vi.fn(),
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
-  },
-}));
-
-vi.mock('app/store/slices/plan', () => ({
-  default: {
-    initializeThunk: vi.fn(),
-    fetchLimitThunk: vi.fn(),
-    fetchUsageThunk: vi.fn(),
-    fetchSubscriptionThunk: vi.fn(),
-    fetchBusinessLimitUsageThunk: vi.fn(),
-  },
-  planThunks: {
-    initializeThunk: vi.fn(),
-    fetchLimitThunk: vi.fn(),
-    fetchUsageThunk: vi.fn(),
-    fetchSubscriptionThunk: vi.fn(),
-    fetchBusinessLimitUsageThunk: vi.fn(),
   },
 }));
 
@@ -65,16 +39,6 @@ vi.mock('app/store/slices/storage/folderUtils/getUniqueFolderName', () => ({
   getUniqueFolderName: vi.fn(),
 }));
 
-vi.mock('services/referral.service', () => ({
-  default: {
-    trackFolderUpload: vi.fn(),
-  },
-}));
-
-vi.mock('./networkInformation', () => ({
-  logNetworkInfoForUpload: vi.fn(),
-}));
-
 vi.mock('services/error.service', () => ({
   default: {
     castError: vi.fn().mockImplementation((e) => e),
@@ -82,50 +46,54 @@ vi.mock('services/error.service', () => ({
   },
 }));
 
-describe('checkUploadFolders', () => {
+describe('uploadFoldersWithManager', () => {
   const mockDispatch = vi.fn();
+
+  const buildFolderData = (overrides: Partial<DriveFolderData> = {}): DriveFolderData =>
+    ({
+      id: 0,
+      uuid: 'uuid',
+      name: 'Folder1',
+      bucket: 'bucket',
+      parentId: 0,
+      parent_id: 0,
+      parentUuid: 'parentUuid',
+      userId: 0,
+      user_id: 0,
+      icon: null,
+      iconId: null,
+      icon_id: null,
+      isFolder: true,
+      color: null,
+      encrypt_version: null,
+      plain_name: 'Folder1',
+      deleted: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      ...overrides,
+    }) as DriveFolderData;
 
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
   });
 
-  it('should upload folder using an async queue', async () => {
-    const mockFolder: DriveFolderData = {
-      id: 0,
-      uuid: 'uuid',
-      name: 'Folder1',
-      bucket: 'bucket',
-      parentId: 0,
-      parent_id: 0,
-      parentUuid: 'parentUuid',
-      userId: 0,
-      user_id: 0,
-      icon: null,
-      iconId: null,
-      icon_id: null,
-      isFolder: true,
-      color: null,
-      encrypt_version: null,
-      plain_name: 'Folder1',
-      deleted: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+  test('When a folder upload completes, then the folder is created and the upload is notified from start to success', async () => {
+    const mockFolder = buildFolderData({ name: 'MyFolder', plain_name: 'MyFolder' });
     const taskId = 'task-id';
 
     const createFolderSpy = (createFolder as Mock).mockResolvedValueOnce(mockFolder);
-
     (checkFolderDuplicated as Mock).mockResolvedValueOnce({
-      duplicatedFoldersResponse: [] as DriveFolderData[],
-      foldersWithDuplicates: [] as DriveFolderData[],
+      duplicatedFoldersResponse: [],
+      foldersWithDuplicates: [],
       foldersWithoutDuplicates: [mockFolder],
     });
-    vi.spyOn(tasksService, 'create').mockReturnValue(taskId);
-    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
-    vi.spyOn(tasksService, 'addListener').mockReturnValue();
-    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
-    vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
+
+    const events: UploadFolderManagerEvents = {
+      onFolderUploadStarted: vi.fn(),
+      onFolderUploadSuccess: vi.fn(),
+      onFolderUploadError: vi.fn(),
+    };
 
     await uploadFoldersWithManager({
       payload: [
@@ -138,58 +106,136 @@ describe('checkUploadFolders', () => {
             name: mockFolder.name,
             fullPathEdited: 'path1',
           },
-          options: {
-            taskId,
-          },
+          options: { taskId },
         },
       ],
       selectedWorkspace: null,
       dispatch: mockDispatch,
       maxUploadFileSize: 100,
+      events,
     });
 
     expect(createFolderSpy).toHaveBeenCalledOnce();
+    expect(events.onFolderUploadStarted).toHaveBeenCalledWith(
+      taskId,
+      expect.objectContaining({ name: 'MyFolder' }),
+      expect.objectContaining({
+        cancelUpload: expect.any(Function),
+        pauseUpload: expect.any(Function),
+        resumeUpload: expect.any(Function),
+      }),
+    );
+    expect(events.onFolderUploadSuccess).toHaveBeenCalledOnce();
+    expect(events.onFolderUploadSuccess).toHaveBeenCalledWith(taskId, {
+      folderName: 'MyFolder',
+      rootFolderUUID: mockFolder.uuid,
+      hasFailedFiles: false,
+    });
+    expect(events.onFolderUploadError).not.toHaveBeenCalled();
   });
 
-  it('should rename folder before upload using an async queue', async () => {
-    const mockFolder: DriveFolderData = {
-      id: 0,
-      uuid: 'uuid',
-      name: 'Folder1',
-      bucket: 'bucket',
-      parentId: 0,
-      parent_id: 0,
-      parentUuid: 'parentUuid',
-      userId: 0,
-      user_id: 0,
-      icon: null,
-      iconId: null,
-      icon_id: null,
-      isFolder: true,
-      color: null,
-      encrypt_version: null,
-      plain_name: 'Folder1',
-      deleted: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+  test('When a file inside the folder fails to upload, then the uploaded content is kept and the folder finishes with a partial failure', async () => {
+    const mockFolder = buildFolderData({ name: 'MyFolder', plain_name: 'MyFolder' });
+    const taskId = 'task-id';
+    const smallFile = new File([new ArrayBuffer(10)], 'small.txt');
+
+    (createFolder as Mock).mockResolvedValueOnce(mockFolder);
+    (checkFolderDuplicated as Mock).mockResolvedValueOnce({
+      duplicatedFoldersResponse: [],
+      foldersWithDuplicates: [],
+      foldersWithoutDuplicates: [mockFolder],
+    });
+    const dispatchWithFailingUnwrap = vi
+      .fn()
+      .mockReturnValue({ unwrap: () => Promise.reject(new Error('file failed')) });
+
+    const events: UploadFolderManagerEvents = {
+      onFolderUploadSuccess: vi.fn(),
+      onFolderUploadError: vi.fn(),
     };
+
+    await uploadFoldersWithManager({
+      payload: [
+        {
+          currentFolderId: 'currentFolderId',
+          root: {
+            folderId: mockFolder.uuid,
+            childrenFiles: [smallFile],
+            childrenFolders: [],
+            name: mockFolder.name,
+            fullPathEdited: 'path1',
+          },
+          options: { taskId },
+        },
+      ],
+      selectedWorkspace: null,
+      dispatch: dispatchWithFailingUnwrap,
+      maxUploadFileSize: 100,
+      events,
+    });
+
+    expect(events.onFolderUploadSuccess).toHaveBeenCalledWith(taskId, {
+      folderName: 'MyFolder',
+      rootFolderUUID: mockFolder.uuid,
+      hasFailedFiles: true,
+    });
+    expect(events.onFolderUploadError).not.toHaveBeenCalled();
+    expect(deleteItemsThunk).not.toHaveBeenCalled();
+  });
+
+  test('When the folder itself cannot be created, then the failure is notified and no success is announced afterwards', async () => {
     const taskId = 'task-id';
 
-    const createFolderSpy = (createFolder as Mock).mockResolvedValueOnce(mockFolder);
+    (createFolder as Mock).mockRejectedValue(new Error('folder creation failed'));
+    (checkFolderDuplicated as Mock).mockResolvedValueOnce({
+      duplicatedFoldersResponse: [],
+      foldersWithDuplicates: [],
+      foldersWithoutDuplicates: [],
+    });
 
+    const events: UploadFolderManagerEvents = {
+      onFolderUploadSuccess: vi.fn(),
+      onFolderUploadError: vi.fn(),
+    };
+
+    await uploadFoldersWithManager({
+      payload: [
+        {
+          currentFolderId: 'currentFolderId',
+          root: {
+            folderId: 'folder-uuid',
+            childrenFiles: [],
+            childrenFolders: [],
+            name: 'MyFolder',
+            fullPathEdited: 'path1',
+          },
+          options: { taskId },
+        },
+      ],
+      selectedWorkspace: null,
+      dispatch: mockDispatch,
+      maxUploadFileSize: 100,
+      events,
+    });
+
+    expect(events.onFolderUploadError).toHaveBeenCalledOnce();
+    expect(events.onFolderUploadError).toHaveBeenCalledWith(taskId, 'upload-failed');
+    expect(events.onFolderUploadSuccess).not.toHaveBeenCalled();
+  });
+
+  test('When a folder name already exists, then the folder is uploaded and announced with a new unique name', async () => {
+    const mockFolder = buildFolderData();
+    const taskId = 'task-id';
+
+    (createFolder as Mock).mockResolvedValueOnce(mockFolder);
     (checkFolderDuplicated as Mock).mockResolvedValueOnce({
       duplicatedFoldersResponse: [mockFolder] as DriveFolderData[],
       foldersWithDuplicates: [mockFolder] as DriveFolderData[],
       foldersWithoutDuplicates: [],
     });
-
     const renameFolderSpy = (getUniqueFolderName as Mock).mockResolvedValueOnce('renamed-folder1');
 
-    vi.spyOn(tasksService, 'create').mockReturnValue(taskId);
-    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
-    vi.spyOn(tasksService, 'addListener').mockReturnValue();
-    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
-    vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
+    const events: UploadFolderManagerEvents = { onFolderUploadStarted: vi.fn() };
 
     await uploadFoldersWithManager({
       payload: [
@@ -202,63 +248,34 @@ describe('checkUploadFolders', () => {
             name: mockFolder.name,
             fullPathEdited: 'path1',
           },
-          options: {
-            taskId,
-          },
+          options: { taskId },
         },
       ],
       selectedWorkspace: null,
       dispatch: mockDispatch,
       maxUploadFileSize: 100,
+      events,
     });
 
-    expect(createFolderSpy).toHaveBeenCalledOnce();
     expect(renameFolderSpy).toHaveBeenCalledOnce();
+    expect(events.onFolderUploadStarted).toHaveBeenCalledWith(
+      taskId,
+      expect.objectContaining({ name: 'renamed-folder1' }),
+      expect.any(Object),
+    );
   });
 
-  it('should upload multiple folders using an async queue', async () => {
-    const mockParentFolder: DriveFolderData = {
-      id: 1,
-      uuid: 'uuid1',
-      name: 'Folder1',
-      bucket: 'bucket',
-      parentId: 0,
-      parent_id: 0,
-      parentUuid: 'parentUuid',
-      userId: 0,
-      user_id: 0,
-      icon: null,
-      iconId: null,
-      icon_id: null,
-      isFolder: true,
-      color: null,
-      encrypt_version: null,
-      plain_name: 'Folder1',
-      deleted: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    const mockChildFolder: DriveFolderData = {
+  test('When a folder has subfolders, then every level is uploaded', async () => {
+    const mockParentFolder = buildFolderData({ id: 1, uuid: 'uuid1' });
+    const mockChildFolder = buildFolderData({
       id: 2,
       uuid: 'uuid2',
       name: 'Folder2',
-      bucket: 'bucket',
       parentId: 1,
       parent_id: 1,
       parentUuid: 'uuid1',
-      userId: 0,
-      user_id: 0,
-      icon: null,
-      iconId: null,
-      icon_id: null,
-      isFolder: true,
-      color: null,
-      encrypt_version: null,
       plain_name: 'Folder2',
-      deleted: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    });
     const taskId = 'task-id';
 
     const createFolderSpy = (createFolder as Mock)
@@ -271,11 +288,7 @@ describe('checkUploadFolders', () => {
       foldersWithoutDuplicates: [mockParentFolder],
     });
 
-    const renameFolderSpy = (getUniqueFolderName as Mock).mockResolvedValueOnce('');
-
-    vi.spyOn(tasksService, 'create').mockReturnValue(taskId);
-    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
-    vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
+    (getUniqueFolderName as Mock).mockResolvedValueOnce('');
 
     await uploadFoldersWithManager({
       payload: [
@@ -307,102 +320,25 @@ describe('checkUploadFolders', () => {
     });
 
     expect(createFolderSpy).toHaveBeenCalledTimes(2);
-    expect(renameFolderSpy).not.toHaveBeenCalled();
-  });
-
-  it('should log network information on successful folder upload', async () => {
-    const logNetworkInfoMock = networkInformation.logNetworkInfoForUpload as Mock;
-    const mockFolder: DriveFolderData = {
-      id: 0,
-      uuid: 'uuid',
-      name: 'MyFolder',
-      bucket: 'bucket',
-      parentId: 0,
-      parent_id: 0,
-      parentUuid: 'parentUuid',
-      userId: 0,
-      user_id: 0,
-      icon: null,
-      iconId: null,
-      icon_id: null,
-      isFolder: true,
-      color: null,
-      encrypt_version: null,
-      plain_name: 'MyFolder',
-      deleted: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    const taskId = 'task-id';
-
-    (createFolder as Mock).mockResolvedValueOnce(mockFolder);
-    (checkFolderDuplicated as Mock).mockResolvedValueOnce({
-      duplicatedFoldersResponse: [],
-      foldersWithDuplicates: [],
-      foldersWithoutDuplicates: [mockFolder],
-    });
-    vi.spyOn(tasksService, 'create').mockReturnValue(taskId);
-    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
-    vi.spyOn(tasksService, 'addListener').mockReturnValue();
-    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
-
-    await uploadFoldersWithManager({
-      payload: [
-        {
-          currentFolderId: 'currentFolderId',
-          root: {
-            folderId: mockFolder.uuid,
-            childrenFiles: [],
-            childrenFolders: [],
-            name: mockFolder.name,
-            fullPathEdited: 'path1',
-          },
-          options: { taskId },
-        },
-      ],
-      selectedWorkspace: null,
-      dispatch: mockDispatch,
-      maxUploadFileSize: 100,
-    });
-
-    expect(logNetworkInfoMock).toHaveBeenCalledOnce();
-    expect(logNetworkInfoMock).toHaveBeenCalledWith({ folderName: 'MyFolder' });
   });
 
   describe('Handle File Uploads', () => {
     const taskId = 'task-id';
-    const mockCreatedFolder: DriveFolderData = {
-      id: 0,
-      uuid: 'folder-uuid',
-      name: 'Folder1',
-      bucket: 'bucket',
-      parentId: 0,
-      parent_id: 0,
-      parentUuid: 'parentUuid',
-      userId: 0,
-      user_id: 0,
-      icon: null,
-      iconId: null,
-      icon_id: null,
-      isFolder: true,
-      color: null,
-      encrypt_version: null,
-      plain_name: 'Folder1',
-      deleted: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    const mockCreatedFolder = buildFolderData({ uuid: 'folder-uuid' });
 
     const buildManager = (maxUploadFileSize?: number) => {
-      const manager = new UploadFoldersManager([], null, mockDispatch, maxUploadFileSize ?? 100);
-      manager['tasksInfo'][taskId] = { progress: { itemsUploaded: 0, totalItems: 1 } };
+      const manager = new UploadFoldersManager({
+        payload: [],
+        selectedWorkspace: null,
+        dispatch: mockDispatch,
+        maxUploadFileSize: maxUploadFileSize ?? 100,
+      });
+      manager['tasksInfo'][taskId] = { isCancelled: false, progress: { itemsUploaded: 0, totalItems: 1 } };
       return manager;
     };
 
     test('When all files exceed the size limit and there are no subfolders, then an error indicating so is thrown', async () => {
       const bigFile = new File([new ArrayBuffer(200)], 'big.mp4');
-      vi.spyOn(tasksService, 'updateTask').mockReturnValue();
-      vi.spyOn(tasksService, 'getTasks').mockReturnValue([]);
       const manager = buildManager(100);
       const level = { childrenFiles: [bigFile], childrenFolders: [], folderId: 'f', name: 'F', fullPathEdited: '' };
 
@@ -411,12 +347,16 @@ describe('checkUploadFolders', () => {
       ).rejects.toThrow(FilesExceedsSizeLimitError);
     });
 
-    test('When a folder has files exceeding the size limit but also has subfolders, then it dispatches the upload', async () => {
+    test('When a folder has files exceeding the size limit but also has subfolders, then the upload continues', async () => {
       const bigFile = new File([new ArrayBuffer(200)], 'big.mp4');
       const dispatchWithUnwrap = vi.fn().mockReturnValue({ unwrap: () => Promise.resolve() });
-      vi.spyOn(tasksService, 'updateTask').mockReturnValue();
-      const manager = new UploadFoldersManager([], null, dispatchWithUnwrap, 100);
-      manager['tasksInfo'][taskId] = { progress: { itemsUploaded: 0, totalItems: 1 } };
+      const manager = new UploadFoldersManager({
+        payload: [],
+        selectedWorkspace: null,
+        dispatch: dispatchWithUnwrap,
+        maxUploadFileSize: 100,
+      });
+      manager['tasksInfo'][taskId] = { isCancelled: false, progress: { itemsUploaded: 0, totalItems: 1 } };
       const level = {
         childrenFiles: [bigFile],
         childrenFolders: [{ folderId: 'c', childrenFiles: [], childrenFolders: [], name: 'Child', fullPathEdited: '' }],
@@ -433,54 +373,25 @@ describe('checkUploadFolders', () => {
     });
   });
 
-  it('should abort the upload if abortController is called', async () => {
-    const mockParentFolder: DriveFolderData = {
-      id: 1,
-      uuid: 'uuid1',
-      name: 'Folder1',
-      bucket: 'bucket',
-      parentId: 0,
-      parent_id: 0,
-      parentUuid: 'parentUuid',
-      userId: 0,
-      user_id: 0,
-      icon: null,
-      iconId: null,
-      icon_id: null,
-      isFolder: true,
-      color: null,
-      encrypt_version: null,
-      plain_name: 'Folder1',
-      deleted: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    const mockChildFolder: DriveFolderData = {
+  test('When the upload was already cancelled, then the folder is not uploaded', async () => {
+    const mockParentFolder = buildFolderData({ id: 1, uuid: 'uuid1' });
+    const mockChildFolder = buildFolderData({
       id: 2,
       uuid: 'uuid2',
       name: 'Folder2',
-      bucket: 'bucket',
       parentId: 1,
       parent_id: 1,
       parentUuid: 'uuid1',
-      userId: 0,
-      user_id: 0,
-      icon: null,
-      iconId: null,
-      icon_id: null,
-      isFolder: true,
-      color: null,
-      encrypt_version: null,
       plain_name: 'Folder2',
-      deleted: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    const payload = [];
-    const selectedWorkspace = null;
+    });
     const taskId = 'task-id';
 
-    const manager = new UploadFoldersManager(payload, selectedWorkspace, mockDispatch, 100);
+    const manager = new UploadFoldersManager({
+      payload: [],
+      selectedWorkspace: null,
+      dispatch: mockDispatch,
+      maxUploadFileSize: 100,
+    });
     const abortController = new AbortController();
 
     const taskFolder: TaskFolder = {
@@ -517,6 +428,7 @@ describe('checkUploadFolders', () => {
     const renameFolderSpy = (getUniqueFolderName as Mock).mockResolvedValueOnce('');
 
     manager['tasksInfo'][taskId] = {
+      isCancelled: false,
       progress: {
         itemsUploaded: 0,
         totalItems: 2,
@@ -529,7 +441,6 @@ describe('checkUploadFolders', () => {
     const uploadPromise = manager['uploadFolderAsync'](taskFolder);
 
     await expect(uploadPromise).resolves.toBeUndefined();
-    expect(abortController.signal.aborted).toBe(true);
     expect(createFolderSpy).not.toHaveBeenCalled();
     expect(renameFolderSpy).not.toHaveBeenCalled();
   });

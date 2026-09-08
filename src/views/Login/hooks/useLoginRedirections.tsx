@@ -2,6 +2,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { t } from 'i18next';
 import { AppView } from 'app/core/types';
 import { workspacesService, errorService } from 'services';
+import referralService from 'services/referral.service';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { AppDispatch } from 'app/store';
 import { wait } from 'utils/timeUtils';
@@ -102,7 +103,7 @@ const useLoginRedirections = ({
     }
 
     if (mnemonic && !options?.universalLinkMode) {
-      return navigateTo(AppView.Drive);
+      return navigateTo(AppView.Drive, referralService.getReferralOpenQueryParams());
     }
 
     // This is a redirect for the universal link mode.

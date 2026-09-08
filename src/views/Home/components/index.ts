@@ -1,5 +1,4 @@
 export { Sidenav } from 'components';
-export { default as FilterItem } from './FilterItem';
 export { default as WorkspaceSelector } from './WorkspaceSelector';
 export { default as WorkspaceSelectorSkeleton } from './WorkspaceSelectorSkeleton';
 export { default as Topbar } from './NavbarGlobalSearch';

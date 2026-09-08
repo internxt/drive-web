@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useSelector } from 'react-redux';
 import { RootState } from 'app/store';
 
@@ -17,7 +16,7 @@ export const useGuestSignupState = () => {
   const [invitationId, setInvitationId] = useState<string>();
   const [showPasswordIndicator, setShowPasswordIndicator] = useState(false);
 
-  const user = useSelector((state: RootState) => state.user.user) as UserSettings;
+  const user = useSelector((state: RootState) => state.user.user);
   const mnemonic = user?.mnemonic;
 
   return {

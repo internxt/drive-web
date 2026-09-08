@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FormatFileViewerProps } from '../../FileViewer';
+import { PORTRAIT_VIEWER_PADDING_CLASS } from '../../utils/fileViewerUtils';
 
 const CHUNK_SIZE = 2 * 1024 * 1024;
 
@@ -52,7 +53,7 @@ const FileTxtViewer: React.FC<FormatFileViewerProps> = ({ blob, setIsPreviewAvai
   }, [blob, readChunk]);
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden px-20 pt-20">
+    <div className={`flex h-screen w-screen overflow-hidden px-20 pt-20 ${PORTRAIT_VIEWER_PADDING_CLASS}`}>
       <div ref={rootRef} className="h-full w-full overflow-auto bg-surface p-6">
         <pre className="whitespace-pre-wrap break-words font-mono text-sm text-gray-100">{content}</pre>
         <div ref={sentinelRef} />

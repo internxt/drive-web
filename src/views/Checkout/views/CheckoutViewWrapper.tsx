@@ -3,7 +3,6 @@ import { Elements } from '@stripe/react-stripe-js';
 import { Stripe, StripeElements } from '@stripe/stripe-js';
 import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-
 import { useCheckout } from 'views/Checkout/hooks/useCheckout';
 import { useSignUp } from 'views/Signup/hooks/useSignup';
 import envService from 'services/env.service';
@@ -72,6 +71,7 @@ const CheckoutViewWrapper = () => {
     promotionCode: promoCodeData?.codeName ?? undefined,
     userLocation: userLocationData?.location,
     userAddress: userLocationData?.ip,
+    country: userLocationData?.location,
   });
 
   const { isCheckoutReady, stripeElementsOptions, availableCryptoCurrencies, stripeSdk } = useInitializeCheckout({
@@ -88,7 +88,6 @@ const CheckoutViewWrapper = () => {
   const dispatch = useAppDispatch();
   const {
     address,
-    isPostalCodeRequired,
     isCryptoAddressIncomplete,
     billingCountry,
     billingPostalCode,
@@ -103,7 +102,7 @@ const CheckoutViewWrapper = () => {
   const { handleUserPayment } = useUserPayment();
   const userAuthComponentRef = useRef<HTMLDivElement>(null);
   const { isDialogOpen, openDialog: openCryptoPaymentDialog } = useActionDialog();
-  const [selectedCurrency, setSelectedCurrency] = useState<string>('eur');
+  const [selectedCurrency, setSelectedCurrency] = useState<string>(currency ?? 'eur');
   const [currencyType, setCurrencyType] = useState<PaymentType>();
 
   const userAccountName = user?.name ?? '';
@@ -147,7 +146,7 @@ const CheckoutViewWrapper = () => {
       return;
     }
 
-    if (!billingCountry || !billingPostalCode) {
+    if (!billingCountry) {
       return;
     }
 
@@ -158,11 +157,12 @@ const CheckoutViewWrapper = () => {
         promotionCode: promotionCode ?? undefined,
         postalCode: billingPostalCode,
         country: billingCountry,
+        userAddress: userLocationData?.ip,
       });
     }, 500);
 
     return () => clearTimeout(debounceTimer);
-  }, [billingCountry, billingPostalCode, selectedPlan?.price?.id, selectedPlan?.price?.currency]);
+  }, [billingCountry, billingPostalCode, selectedPlan?.price?.id, selectedPlan?.price?.currency, userLocationData]);
 
   useEffect(() => {
     if (isCheckoutReady && selectedPlan?.price) {
@@ -213,15 +213,16 @@ const CheckoutViewWrapper = () => {
         userAddress: userLocationData?.ip,
         currency: selectedPlan.price.currency,
         promotionCode: promoCodeName,
+        country: billingCountry,
       });
     } catch (error) {
       console.error('Error fetching price with taxes', error);
     }
   };
 
-  const onChangePlanClicked = async (priceId: string) => {
+  const onChangePlanClicked = async () => {
     setIsUpdatingSubscription(true);
-    await handleSubscriptionPayment(priceId);
+    await handleSubscriptionPayment();
     setIsUpdateSubscriptionDialogOpen(false);
     setIsUpdatingSubscription(false);
     navigationService.push(AppView.Drive);
@@ -253,7 +254,7 @@ const CheckoutViewWrapper = () => {
     }
   };
 
-  const handleSubscriptionPayment = async (priceId: string) => {
+  const handleSubscriptionPayment = async () => {
     if (!selectedPlan?.price?.type) {
       console.error('No selected plan available for subscription payment');
       return;
@@ -309,8 +310,11 @@ const CheckoutViewWrapper = () => {
         throw new Error(translate('checkout.error.countryRequired'));
       }
 
-      if (isPostalCodeRequired && !billingPostalCode) {
-        throw new Error(translate('checkout.error.postalCodeRequired'));
+      let paymentPostalCode: string | undefined;
+      let confirmationTokenId: string | undefined;
+
+      if (isCryptoPurchase) {
+        paymentPostalCode = address?.postal_code;
       }
 
       if (currencyType === PaymentType['FIAT']) {
@@ -319,6 +323,17 @@ const CheckoutViewWrapper = () => {
         if (elementsError) {
           throw new Error(elementsError.message);
         }
+
+        const { confirmationToken, error: confirmationTokenError } = await stripeSDK.createConfirmationToken({
+          elements,
+        });
+
+        if (confirmationTokenError) {
+          throw new Error(confirmationTokenError.message);
+        }
+
+        confirmationTokenId = confirmationToken.id;
+        paymentPostalCode = confirmationToken.payment_method_preview.billing_details.address?.postal_code ?? undefined;
       }
 
       const captchaToken = await generateCaptchaToken();
@@ -361,7 +376,7 @@ const CheckoutViewWrapper = () => {
         lineAddress1: address?.line1,
         lineAddress2: address?.line2 ?? undefined,
         country: billingCountry,
-        postalCode: billingPostalCode,
+        postalCode: paymentPostalCode,
         city: address?.city,
         companyVatId,
         captchaToken: customerToken,
@@ -375,7 +390,7 @@ const CheckoutViewWrapper = () => {
         currency: selectedCurrency ?? selectedPlan.price.currency,
         priceId: selectedPlan.price.id,
         customerId,
-        elements,
+        confirmationTokenId,
         translate,
         selectedPlan,
         token,
@@ -422,7 +437,7 @@ const CheckoutViewWrapper = () => {
   return (
     <>
       {isCheckoutReady && stripeElementsOptions && stripeSdk && selectedPlan?.price && selectedPlan?.taxes ? (
-        <Elements stripe={stripeSdk} options={{ ...stripeElementsOptions }}>
+        <Elements stripe={stripeSdk} options={stripeElementsOptions}>
           <CheckoutView
             checkoutViewVariables={{
               isPaying,
@@ -431,7 +446,7 @@ const CheckoutViewWrapper = () => {
               couponCodeError: couponError ?? undefined,
               authError: authError ?? undefined,
               currentSelectedPlan: selectedPlan,
-              selectedCurrency: currency ?? selectedPlan.price.currency,
+              selectedCurrency,
             }}
             userAuthComponentRef={userAuthComponentRef}
             showCouponCode={!paramMobileToken}
@@ -440,7 +455,6 @@ const CheckoutViewWrapper = () => {
             checkoutViewManager={checkoutViewManager}
             availableCryptoCurrencies={availableCryptoCurrencies}
             onCurrencyTypeChanges={onCurrencyTypeChanges}
-            isPostalCodeRequired={isPostalCodeRequired}
           />
           {canChangePlanDialogBeOpened ? (
             <ChangePlanDialog

@@ -9,7 +9,6 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import iconService from 'app/drive/services/icon.service';
 import { Button, Modal } from '@internxt/ui';
 import { bytesToString } from 'app/drive/services/size.service';
-import localStorageService from 'services/local-storage.service';
 import { DriveItemData, DriveItemDetails, ItemDetailsProps } from 'app/drive/types';
 import newStorageService from 'app/drive/services/new-storage.service';
 import errorService from 'services/error.service';
@@ -22,6 +21,8 @@ import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selector
 import dateService from 'services/date.service';
 import { getLocation } from 'utils/locationUtils';
 import { Translate } from 'app/i18n/types';
+import encryptedStorageService from 'services/encrypted-storage.service';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
   return (
@@ -103,7 +104,12 @@ const ItemDetailsDialog = ({
   const isItemFolder = item?.type === 'folder' || item?.isFolder;
   const IconComponent = iconService.getItemIcon(isItemFolder ?? false, item?.type);
   const itemName = `${item?.plainName ?? item?.name}` + `${item?.type && !item.isFolder ? '.' + item?.type : ''}`;
-  const user = localStorageService.getUser();
+  const [user, setUser] = useState<UserSettings | null>(null);
+
+  useEffect(() => {
+    encryptedStorageService.getUser().then(setUser);
+  }, []);
+
   const isFolder = item?.isFolder;
   const workspaceSelected = useSelector(workspacesSelectors.getSelectedWorkspace);
   const isWorkspaceSelected = !!workspaceSelected;
@@ -125,7 +131,7 @@ const ItemDetailsDialog = ({
           errorService.reportError(error);
         });
     }
-  }, [item, isOpen]);
+  }, [item, isOpen, user]);
 
   const onClose = () => {
     dispatch(uiActions.setIsItemDetailsDialogOpen(false));
@@ -192,7 +198,7 @@ const ItemDetailsDialog = ({
     const itemType: ItemType = item.isFolder ? 'folder' : 'file';
     const itemUuid = item.uuid;
     const itemFolderUuid = item.isFolder ? itemUuid : item.folderUuid;
-    const token = localStorageService.getStorageToken(item.isFolder) || undefined;
+    const token = await encryptedStorageService.getSharedItemAccessToken(item.isFolder);
 
     const [location, folderStats] = await Promise.all([
       getItemLocation(item, itemType, itemUuid, itemFolderUuid, token),

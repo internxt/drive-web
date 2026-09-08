@@ -1,8 +1,8 @@
-import { WarningCircle } from '@phosphor-icons/react';
+import { WarningCircleIcon } from '@phosphor-icons/react';
 import { t } from 'i18next';
 import { Button } from '@internxt/ui';
 
-const handleReportShare = () => {
+export const handleReportShare = () => {
   const email = 'hello@internxt.com';
   const subject = 'Report Share Link';
   const linkURL = globalThis.location.href;
@@ -14,7 +14,7 @@ const handleReportShare = () => {
 
 const ReportButton = (): JSX.Element => (
   <Button variant="secondary" onClick={handleReportShare}>
-    <WarningCircle height={24} width={24} className="text-gray-80" />
+    <WarningCircleIcon height={24} width={24} className="text-gray-80" />
     <span className="ml-2">{t('actions.report')}</span>
   </Button>
 );

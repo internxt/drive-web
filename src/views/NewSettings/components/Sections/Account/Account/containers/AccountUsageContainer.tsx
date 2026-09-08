@@ -27,6 +27,8 @@ const AccountUsageContainer = ({
 
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const planUsage = useAppSelector((state: RootState) => state.plan.planUsage);
+  const planCancelled = plan.individualPlan?.cancellation?.scheduled ?? false;
+  const cancellationDate = plan.individualPlan?.commitment?.cancellationDate;
 
   const planLimitInBytes = plan.planLimit;
   const products = getProductCaptions(usageDetails);
@@ -67,6 +69,8 @@ const AccountUsageContainer = ({
             spaceLimit={planLimitInBytes}
             driveUsage={driveUsage}
             backupsUsage={backupsUsage}
+            planCancelled={planCancelled}
+            cancellationDate={cancellationDate}
           />
         ) : (
           <div className="flex h-36 w-full items-center justify-center">

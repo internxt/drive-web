@@ -1,15 +1,20 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import tasksService from '../app/tasks/services/tasks.service';
 import { TaskStatus } from '../app/tasks/types';
 import { t } from 'i18next';
 
-const useBeforeUnload = () => {
-  useEffect(() => {
-    const handleBeforeUnload = (event) => {
-      const inProcessTasks = tasksService.getNotifications({ status: [TaskStatus.InProcess] });
-      const areTaskRunning = inProcessTasks?.length > 0;
+const hasTasksInProcess = () => {
+  const inProcessTasks = tasksService.getNotifications({ status: [TaskStatus.InProcess] });
+  return inProcessTasks?.length > 0;
+};
 
-      if (areTaskRunning) {
+const useBeforeUnload = (shouldWarn: () => boolean = hasTasksInProcess) => {
+  const shouldWarnRef = useRef(shouldWarn);
+  shouldWarnRef.current = shouldWarn;
+
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (shouldWarnRef.current()) {
         event.preventDefault();
         const message = t('general.reloadPageMessage');
         event.returnValue = message;

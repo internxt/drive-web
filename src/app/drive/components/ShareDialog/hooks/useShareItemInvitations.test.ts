@@ -155,7 +155,7 @@ describe('Share item Invitations', () => {
     test('When an error occurs and user is owner, then sets owner data as invited user', async () => {
       const unexpectedError = new Error('No users found');
       vi.spyOn(shareService, 'getUsersOfSharedFolder').mockRejectedValue(unexpectedError);
-      vi.mocked(utils.getLocalUserData).mockReturnValue(mockOwnerData);
+      vi.mocked(utils.getLocalUserData).mockResolvedValue(mockOwnerData);
 
       const itemToShare = createItemToShare(true);
       const { result } = renderHook(() => useShareItemInvitations({ itemToShare, isUserOwner: true }));

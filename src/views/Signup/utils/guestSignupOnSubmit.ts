@@ -4,9 +4,10 @@ import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
 import { parseAndDecryptUserKeys } from 'app/crypto/services/keys.service';
-import { userActions, userThunks } from 'app/store/slices/user';
+import { userThunks } from 'app/store/slices/user';
 import { planThunks } from 'app/store/slices/plan';
 import { AppDispatch } from 'app/store';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 interface GuestSignupOnSubmitParams {
   formData: IFormValues;
@@ -45,13 +46,12 @@ export const guestSignupOnSubmit = async ({
 
     localStorageService.clear();
 
-    localStorageService.setToken(xNewToken);
+    await encryptedStorageService.setToken(xNewToken);
 
     const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(xUser, password);
 
-    const user = {
+    const user: UserSettings = {
       ...xUser,
-      privateKey,
       keys: {
         ecc: {
           publicKey: publicKey,
@@ -62,9 +62,9 @@ export const guestSignupOnSubmit = async ({
           privateKey: privateKyberKey,
         },
       },
-    } as UserSettings;
+    };
 
-    dispatch(userActions.setUser(user));
+    await dispatch(userThunks.setUserThunk(user));
     await dispatch(userThunks.initializeUserThunk());
     dispatch(planThunks.initializeThunk());
 

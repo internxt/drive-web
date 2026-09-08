@@ -1,8 +1,8 @@
 import io, { Socket } from 'socket.io-client';
-import localStorageService from '../local-storage.service';
 import envService from '../env.service';
 
 import type { EventHandler } from './event-handler.service';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 export default class RealtimeService {
   private socket?: Socket;
@@ -71,5 +71,5 @@ export default class RealtimeService {
 }
 
 function getToken(): string {
-  return localStorageService.getToken() as string;
+  return encryptedStorageService.getToken() ?? '';
 }

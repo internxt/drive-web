@@ -3,7 +3,7 @@ import { AdvancedSharedItem } from 'app/share/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Role } from '@internxt/sdk/dist/drive/share/types';
 import { MAX_SHARED_NAME_LENGTH } from 'views/Shared/SharedView';
-import localStorageService from 'services/local-storage.service';
+import encryptedStorageService from 'services/encrypted-storage.service';
 
 export const cropSharedName = (name: string) => {
   if (name.length > MAX_SHARED_NAME_LENGTH) {
@@ -17,8 +17,8 @@ export const isAdvancedShareItem = (item: DriveItemData | AdvancedSharedItem): i
   return item['encryptionKey'];
 };
 
-export const getLocalUserData = () => {
-  const user = localStorageService.getUser() as UserSettings;
+export const getLocalUserData = async () => {
+  const user = (await encryptedStorageService.getUser()) as UserSettings;
   const ownerData = {
     name: user.name,
     lastname: user.lastname,
