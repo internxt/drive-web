@@ -2,6 +2,7 @@ import { useAppSelector } from 'app/store/hooks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import { toggleFavoriteThunk } from 'views/Favorites/store/toggleFavoriteThunk';
+import { fetchFavoritesThunk } from 'views/Favorites/store/fetchFavoritesThunk';
 import React, { memo, useCallback, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 import { getListHeaders } from './getListHeaders';
@@ -143,8 +144,14 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
 
   const currentFolderId = useAppSelector(storageSelectors.currentFolderId);
   const isRecents = props.title === translate('views.recents.head');
+  const isFavorites = props.title === translate('views.favorites.head');
   const isTrash = props.title === translate('trash.trash');
   const skeleton = isTrash ? skinSkeletonTrash : skinSkeleton;
+
+  const resetFavoritesOrder = () => {
+    dispatch(storageActions.resetFavoritesPagination());
+    dispatch(fetchFavoritesThunk());
+  };
 
   const sortBy = (value: { field: SortField; direction: 'ASC' | 'DESC' }) => {
     let direction = OrderDirection.Asc;
@@ -157,6 +164,8 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     if (value.field === 'name') {
       if (isTrash) {
         props.resetPaginationState();
+      } else if (isFavorites) {
+        resetFavoritesOrder();
       } else {
         resetDriveOrder({ dispatch, orderType: 'plainName', direction, currentFolderId });
       }
@@ -165,6 +174,8 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     if (value.field === 'updatedAt') {
       if (isTrash) {
         props.resetPaginationState();
+      } else if (isFavorites) {
+        resetFavoritesOrder();
       } else {
         resetDriveOrder({ dispatch, orderType: 'updatedAt', direction, currentFolderId });
       }

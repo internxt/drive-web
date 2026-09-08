@@ -15,7 +15,6 @@ interface SharedContextMenuActions {
   renameItem: (item: AdvancedSharedItem) => void;
   moveItem: (item: AdvancedSharedItem) => void;
   openPreview: (item: AdvancedSharedItem) => void;
-  toggleFavorite: (items: AdvancedSharedItem[]) => void;
 }
 
 interface SharedContextMenuProps {
@@ -38,7 +37,6 @@ const useSharedContextMenu = ({
     renameItem,
     moveItem,
     openPreview,
-    toggleFavorite,
   },
   isItemsOwnedByCurrentUser,
   isItemOwnedByCurrentUser,
@@ -70,8 +68,6 @@ const useSharedContextMenu = ({
         copyLink,
         showDetails,
         downloadItem,
-        toggleFavorite: (target) => toggleFavorite([target as AdvancedSharedItem]),
-        isFavorited: !!folder.isFavorite,
         renameItem: isEditorUser && !isRootFolder ? renameItem : undefined,
         ...ownerCurrentUserOptions,
       });
@@ -100,8 +96,6 @@ const useSharedContextMenu = ({
         showDetails,
         copyLink,
         downloadItem: handleDownload,
-        toggleFavorite: (target) => toggleFavorite([target as AdvancedSharedItem]),
-        isFavorited: !!item.isFavorite,
         renameItem: isEditorUser && !isRootFolder ? renameItem : undefined,
         ...ownerCurrentUserOptions,
       });
@@ -132,7 +126,6 @@ const useSharedContextMenu = ({
     renameItem,
     moveItem,
     openPreview,
-    toggleFavorite,
     isItemsOwnedByCurrentUser,
     isItemOwnedByCurrentUser,
     isCurrentUserViewer,

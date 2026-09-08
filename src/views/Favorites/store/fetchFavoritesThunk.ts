@@ -8,12 +8,25 @@ import { excludeHiddenItems, getItemPlainName } from 'app/crypto/services/utils'
 import errorService from 'services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { DriveItemData } from 'app/drive/types';
+import { OrderSettings } from 'app/core/types';
 import { fetchFavoriteFolders, fetchFavoriteFiles } from '../services';
+import { FavoritesSortOptions } from '../services/fetchFavorites.service';
 
 const DEFAULT_LIMIT = 50;
 
 const filterFolderItems = (item: DriveItemData) => item.isFolder;
 const filterFilesItems = (item: DriveItemData) => !item.isFolder;
+
+const getSortOptions = (order?: OrderSettings): FavoritesSortOptions | undefined => {
+  if (!order) {
+    return undefined;
+  }
+
+  return {
+    sort: order.by === 'name' ? 'plainName' : 'updatedAt',
+    order: order.direction,
+  };
+};
 
 export const fetchFavoritesThunk = createAsyncThunk<void, void, { state: RootState }>(
   'storage/fetchFavorites',
@@ -25,20 +38,21 @@ export const fetchFavoritesThunk = createAsyncThunk<void, void, { state: RootSta
 
     const foldersOffset = storageState.favorites.filter(filterFolderItems).length;
     const filesOffset = storageState.favorites.filter(filterFilesItems).length;
+    const sortOptions = getSortOptions(storageState.order);
 
     try {
       let parsedItems: DriveItemData[];
       let itemsLength: number;
 
       if (hasMoreFavoriteFolders) {
-        const folders = await fetchFavoriteFolders(DEFAULT_LIMIT, foldersOffset);
+        const folders = await fetchFavoriteFolders(DEFAULT_LIMIT, foldersOffset, sortOptions);
 
         parsedItems = folders.map(
           (folder) => ({ ...folder, isFolder: true, isFavorite: true }) as unknown as DriveItemData,
         );
         itemsLength = folders.length;
       } else if (hasMoreFavoriteFiles) {
-        const files = await fetchFavoriteFiles(DEFAULT_LIMIT, filesOffset);
+        const files = await fetchFavoriteFiles(DEFAULT_LIMIT, filesOffset, sortOptions);
 
         parsedItems = files.map(
           (file) =>

@@ -20,7 +20,6 @@ describe('useSharedContextMenu', () => {
     renameItem: vi.fn(),
     moveItem: vi.fn(),
     openPreview: vi.fn(),
-    toggleFavorite: vi.fn(),
   };
 
   const mockIsItemOwnedByCurrentUser = vi.fn();
@@ -89,8 +88,6 @@ describe('useSharedContextMenu', () => {
         openShareAccessSettings: mockActions.openShareAccessSettings,
         moveItem: mockActions.moveItem,
         moveToTrash: mockActions.onOpenStopSharingDialog,
-        toggleFavorite: expect.any(Function),
-        isFavorited: false,
       });
     });
 
@@ -110,8 +107,6 @@ describe('useSharedContextMenu', () => {
         showDetails: mockActions.showDetails,
         downloadItem: mockActions.downloadItem,
         renameItem: mockActions.renameItem,
-        toggleFavorite: expect.any(Function),
-        isFavorited: false,
       });
     });
   });
