@@ -5,7 +5,7 @@ import {
   Link,
   Rows,
   SquaresFour,
-  Star,
+  StarIcon,
   Trash,
   Users,
 } from '@phosphor-icons/react';
@@ -353,7 +353,11 @@ const DriveTopBarActions = ({
                 data-tooltip-place="bottom"
               >
                 <Button variant="ghost" className="aspect-square" onClick={onToggleFavoriteButtonClicked}>
-                  {favoriteAction === 'remove' ? <StarSlashIcon className="h-6 w-6" /> : <Star className="h-6 w-6" />}
+                  {favoriteAction === 'remove' ? (
+                    <StarSlashIcon className="h-6 w-6" />
+                  ) : (
+                    <StarIcon className="h-6 w-6" />
+                  )}
                 </Button>
                 <TooltipElement id="favorite-tooltip" delayShow={DELAY_SHOW_MS} />
               </div>
