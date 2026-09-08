@@ -8,6 +8,7 @@ import { DriveItemData, DriveItemDetails } from 'app/drive/types';
 import shareService from 'app/share/services/share.service';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { storageActions } from 'app/store/slices/storage';
+import { toggleFavoriteThunk } from 'views/Favorites/store/toggleFavoriteThunk';
 import { uiActions } from 'app/store/slices/ui';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { DownloadManager } from 'app/network/DownloadManager';
@@ -26,6 +27,7 @@ export interface DriveItemActions {
   onViewVersionHistoryButtonClicked: () => void;
   onShowDetailsButtonClicked: () => void;
   onMoveToTrashButtonClicked: () => void;
+  onToggleFavoriteButtonClicked: () => void;
   onNameClicked: (e) => void;
   onItemClicked: () => void;
   onItemDoubleClicked: () => void;
@@ -110,6 +112,10 @@ const useDriveItemActions = (item): DriveItemActions => {
     moveItemsToTrash([item as DriveItemData]);
   };
 
+  const onToggleFavoriteButtonClicked = () => {
+    dispatch(toggleFavoriteThunk([item as DriveItemData]));
+  };
+
   const onItemClicked = (): void => {
     dispatch(storageActions.clearSelectedItems());
     dispatch(storageActions.selectItems([item]));
@@ -168,6 +174,7 @@ const useDriveItemActions = (item): DriveItemActions => {
     onViewVersionHistoryButtonClicked,
     onShowDetailsButtonClicked,
     onMoveToTrashButtonClicked,
+    onToggleFavoriteButtonClicked,
     onNameClicked,
     onItemClicked,
     onItemDoubleClicked,

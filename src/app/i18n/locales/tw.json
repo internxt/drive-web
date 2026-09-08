@@ -401,6 +401,7 @@
   },
   "sideNav": {
     "drive": "雲端硬碟",
+    "favorites": "收藏",
     "backups": "備份",
     "shared": "共享",
     "recents": "最近",
@@ -412,6 +413,13 @@
     }
   },
   "views": {
+    "favorites": {
+      "head": "收藏",
+      "empty": {
+        "title": "尚無收藏",
+        "description": "將檔案或資料夾加入收藏,以便更快存取"
+      }
+    },
     "recents": {
       "head": "Recents",
       "empty": {
@@ -1034,6 +1042,10 @@
         "title": "解鎖 Meet",
         "description": "升級後可發起並加入完全加密的視訊通話——私密、安全、無限制。"
       },
+      "mail": {
+        "title": "解鎖 Mail",
+        "description": "解鎖具有端對端加密的私密電子郵件服務。"
+      },
       "vpn": {
         "title": "解鎖 VPN",
         "description": "升級以使用私密加密的網路流量保護。"
@@ -1059,6 +1071,8 @@
     "fileCannotBeEmpty": "檔案名稱不能為空",
     "creatingFolder": "創建文件夾時出錯",
     "fetchingFolderContent": "獲取文件夾內容時出錯",
+    "togglingFavorite": "更新我的最愛時發生錯誤",
+    "togglingSomeFavorites": "部分我的最愛無法更新",
     "uploadingFolder": "上傳文件夾時出錯",
     "uploadingFile": "上傳文件時出錯：{{reason}}",
     "uploadingItems": "部分元素無法上傳",
@@ -1438,6 +1452,8 @@
       "shareLink": "分享",
       "shareTeam": "与团队分享",
       "manageLinkAccess": "管理訪問權限",
+      "addToFavorites": "加入我的最愛",
+      "removeFromFavorites": "從我的最愛移除",
       "rename": "重新命名",
       "share": "分享",
       "download": "下載",

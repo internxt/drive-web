@@ -147,7 +147,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     }
 
     if (shouldUpdateBreadcrumb) {
-      await getAncestorsAndSetNamePath(item.isFolder ? itemUuid : itemFolderUuid, dispatch);
+      await getAncestorsAndSetNamePath(item.isFolder ? itemUuid : itemFolderUuid, dispatch, workspaceSelected);
     }
   };
 
