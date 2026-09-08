@@ -44,12 +44,11 @@ const useSharedContextMenu = ({
   isCurrentUserViewer,
 }: SharedContextMenuProps) => {
   const menu = useMemo(() => {
-    const getMultipleItemsContextMenu = () => {
-      return contextMenuMultipleSharedViewAFS({
+    const getMultipleItemsContextMenu = () =>
+      contextMenuMultipleSharedViewAFS({
         downloadItem,
         moveToTrash: isItemsOwnedByCurrentUser ? onOpenStopSharingDialog : undefined,
       });
-    };
 
     const getFolderContextMenu = (folder: AdvancedSharedItem) => {
       const userUUID = folder?.user?.uuid;

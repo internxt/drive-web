@@ -401,6 +401,7 @@
   },
   "sideNav": {
     "drive": "Drive",
+    "favorites": "Favorites",
     "backups": "Backups",
     "shared": "Shared",
     "recents": "Recents",
@@ -412,6 +413,13 @@
     }
   },
   "views": {
+    "favorites": {
+      "head": "Favorites",
+      "empty": {
+        "title": "No favorites yet",
+        "description": "Add files or folders to your favorites to access them faster"
+      }
+    },
     "recents": {
       "head": "Recents",
       "empty": {
@@ -1063,6 +1071,8 @@
     "fileCannotBeEmpty": "File name cannot be empty",
     "creatingFolder": "Error during folder creation",
     "fetchingFolderContent": "Error fetching folder content",
+    "togglingFavorite": "There was an error updating favorites",
+    "togglingSomeFavorites": "Some favorites could not be updated",
     "uploadingFolder": "Error uploading folder",
     "uploadingFile": "Error uploading file: {{reason}}",
     "uploadingItems": "Some of the elements could not be uploaded",
@@ -1438,6 +1448,8 @@
       "shareLink": "Share",
       "shareTeam": "Share with team",
       "manageLinkAccess": "Manage access",
+      "addToFavorites": "Add to Favorites",
+      "removeFromFavorites": "Remove from Favorites",
       "rename": "Rename",
       "share": "Share",
       "download": "Download",

@@ -380,6 +380,7 @@
   },
   "sideNav": {
     "drive": "Drive",
+    "favorites": "Favoritos",
     "backups": "Backups",
     "shared": "Compartido",
     "recents": "Recientes",
@@ -391,6 +392,13 @@
     }
   },
   "views": {
+    "favorites": {
+      "head": "Favoritos",
+      "empty": {
+        "title": "Aún no tienes favoritos",
+        "description": "Añade archivos o carpetas a tus favoritos para acceder a ellos más rápido"
+      }
+    },
     "recents": {
       "head": "Recientes",
       "empty": {
@@ -1042,6 +1050,8 @@
     "fileCannotBeEmpty": "El nombre del archivo no puede estar vacío",
     "creatingFolder": "Error durante la creación de la carpeta",
     "fetchingFolderContent": "Error al obtener la carpeta",
+    "togglingFavorite": "Hubo un error al actualizar favoritos",
+    "togglingSomeFavorites": "Algunos favoritos no se pudieron actualizar",
     "uploadingFolder": "Error al subir la carpeta",
     "uploadingFile": "Error al subir el archivo: {{reason}}",
     "uploadingItems": "No se ha podido subir alguno de los elementos",
@@ -1417,6 +1427,8 @@
       "shareLink": "Compartir",
       "shareTeam": "Compartir con el equipo",
       "details": "Detalles",
+      "addToFavorites": "Añadir a favoritos",
+      "removeFromFavorites": "Quitar de favoritos",
       "rename": "Renombrar",
       "manageLinkAccess": "Gestionar acceso",
       "download": "Descargar",

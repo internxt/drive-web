@@ -380,6 +380,7 @@
   },
   "sideNav": {
     "drive": "Drive",
+    "favorites": "Favoriten",
     "backups": "Backups",
     "shared": "Geteilt",
     "recents": "Neueste",
@@ -391,6 +392,13 @@
     }
   },
   "views": {
+    "favorites": {
+      "head": "Favoriten",
+      "empty": {
+        "title": "Noch keine Favoriten",
+        "description": "Füge Dateien oder Ordner zu deinen Favoriten hinzu, um schneller auf sie zuzugreifen"
+      }
+    },
     "recents": {
       "head": "Neueste",
       "empty": {
@@ -1042,6 +1050,8 @@
     "fileCannotBeEmpty": "Der Dateiname darf nicht leer sein",
     "creatingFolder": "Fehler beim Erstellen des Ordners",
     "fetchingFolderContent": "Fehler beim Abrufen des Ordnerinhalts",
+    "togglingFavorite": "Beim Aktualisieren der Favoriten ist ein Fehler aufgetreten",
+    "togglingSomeFavorites": "Einige Favoriten konnten nicht aktualisiert werden",
     "uploadingFolder": "Fehler beim Hochladen des Ordners",
     "uploadingFile": "Fehler beim Hochladen der Datei: {{reason}}",
     "uploadingItems": "Einige Elemente konnten nicht hochgeladen werden",
@@ -1413,6 +1423,8 @@
       "details": "Einzelheiten",
       "shareLink": "Teilen",
       "shareTeam": "Mit Team teilen",
+      "addToFavorites": "Zu Favoriten hinzufügen",
+      "removeFromFavorites": "Aus Favoriten entfernen",
       "rename": "Umbenennen",
       "download": "Herunterladen",
       "manageLinkAccess": "Zugang verwalten",
