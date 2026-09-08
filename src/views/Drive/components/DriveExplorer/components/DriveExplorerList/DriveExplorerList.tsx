@@ -1,6 +1,7 @@
 import { useAppSelector } from 'app/store/hooks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
+import { toggleFavoriteThunk } from 'views/Favorites/store/toggleFavoriteThunk';
 import React, { memo, useCallback, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 import { getListHeaders } from './getListHeaders';
@@ -275,6 +276,13 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     [selectedWorkspace, workspaceCredentials],
   );
 
+  const toggleFavorite = useCallback(
+    (item: ContextMenuDriveItem) => {
+      dispatch(toggleFavoriteThunk([item as DriveItemData]));
+    },
+    [dispatch],
+  );
+
   const viewVersionHistory = useCallback(
     (item: ContextMenuDriveItem) => {
       dispatch(uiActions.setVersionHistoryItem(item as DriveItemData));
@@ -345,6 +353,8 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     viewVersionHistory: viewVersionHistory,
     moveToTrash: props.onOpenStopSharingAndMoveToTrashDialog,
     versionHistoryConfig: versionHistoryMenuConfig,
+    toggleFavorite: toggleFavorite,
+    isFavorited: !!props.selectedItems[0]?.isFavorite,
   });
 
   const selectedSharedFileMenu = contextMenuDriveItemShared({
@@ -360,6 +370,8 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     viewVersionHistory: viewVersionHistory,
     moveToTrash: props.onOpenStopSharingAndMoveToTrashDialog,
     versionHistoryConfig: versionHistoryMenuConfig,
+    toggleFavorite: toggleFavorite,
+    isFavorited: !!props.selectedItems[0]?.isFavorite,
   });
 
   const selectedFolderMenu = contextMenuDriveFolderNotSharedLink({
@@ -372,6 +384,8 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     moveToTrash: () => moveToTrash(props.selectedItems),
     viewVersionHistory: viewVersionHistory,
     versionHistoryConfig: versionHistoryMenuConfig,
+    toggleFavorite: toggleFavorite,
+    isFavorited: !!props.selectedItems[0]?.isFavorite,
   });
 
   const selectedFileMenu = contextMenuDriveNotSharedLink({
@@ -385,6 +399,8 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     moveToTrash: () => moveToTrash(props.selectedItems),
     viewVersionHistory: viewVersionHistory,
     versionHistoryConfig: versionHistoryMenuConfig,
+    toggleFavorite: toggleFavorite,
+    isFavorited: !!props.selectedItems[0]?.isFavorite,
   });
 
   const shareWithTeam = () => {

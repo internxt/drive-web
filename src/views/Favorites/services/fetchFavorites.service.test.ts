@@ -1,5 +1,5 @@
 import { describe, expect, test, vi, beforeEach } from 'vitest';
-import { fetchFavoriteFolders, fetchFavoriteFiles } from './fetchFavorites';
+import { fetchFavoriteFolders, fetchFavoriteFiles } from './fetchFavorites.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 
 describe('fetchFavorites services', () => {

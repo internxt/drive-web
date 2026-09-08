@@ -44,6 +44,7 @@ import { storageActions } from 'app/store/slices/storage';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { fetchPaginatedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchFolderContentThunk';
+import { useToggleFavoriteHotkey } from 'hooks';
 import { FavoritesEmptyState } from 'views/Favorites/components';
 import { useFavoritesPagination } from 'views/Favorites/hooks';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
@@ -232,6 +233,18 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const tutorialState = useTutorialState();
 
   const itemToRename = useAppSelector((state: RootState) => state.storage.itemToRename);
+  const isSomeDialogOpen = useAppSelector(
+    (state: RootState) =>
+      state.ui.isShareDialogOpen ||
+      state.ui.isEditFolderNameDialog ||
+      state.ui.isFileViewerOpen ||
+      state.ui.isMoveItemsDialogOpen ||
+      state.ui.isCreateFolderDialogOpen ||
+      state.ui.isNameCollisionDialogOpen ||
+      state.ui.isReachedPlanLimitDialogOpen ||
+      state.ui.isItemDetailsDialogOpen ||
+      state.ui.isPreferencesDialogOpen,
+  );
   const isFileViewerOpen = useAppSelector((state: RootState) => state.ui.isFileViewerOpen);
 
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
@@ -532,6 +545,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       onCreateFolderButtonClicked();
     }
   });
+
+  useToggleFavoriteHotkey({ enabled: !isTrash && !isSomeDialogOpen, selectedItems });
 
   const driveExplorer = (
     <div
