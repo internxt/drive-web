@@ -5,10 +5,12 @@ import {
   Link,
   Rows,
   SquaresFour,
+  Star,
   Trash,
   Users,
 } from '@phosphor-icons/react';
 import MoveActionIcon from 'assets/icons/move.svg?react';
+import StarSlashIcon from 'assets/icons/star-slash.svg?react';
 import { useSelector } from 'react-redux';
 import { moveItemsToTrash } from 'views/Trash/services';
 import navigationService from 'services/navigation.service';
@@ -33,6 +35,8 @@ import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selector
 import { DownloadManager } from 'app/network/DownloadManager';
 import { useVersionHistoryMenuConfig } from 'views/Drive/hooks/useVersionHistoryMenuConfig';
 import { useMoveItems } from 'hooks/moveItems/useMoveItems';
+import { toggleFavoriteThunk } from 'views/Favorites/store/toggleFavoriteThunk';
+import { getFavoriteToolbarAction } from './getFavoriteToolbarAction';
 
 const DriveTopBarActions = ({
   selectedItems,
@@ -66,6 +70,8 @@ const DriveTopBarActions = ({
   const hasItemsAndIsNotTrash = hasAnyItemSelected && !isTrash;
   const hasItemsAndIsTrash = hasAnyItemSelected && isTrash;
 
+  const favoriteAction = getFavoriteToolbarAction(selectedItems);
+
   const versionHistoryMenuConfig = useVersionHistoryMenuConfig(selectedItems[0]);
 
   const viewModesIcons = {
@@ -93,6 +99,10 @@ const DriveTopBarActions = ({
     const setViewMode: FileViewMode = viewMode === FileViewMode.List ? FileViewMode.Grid : FileViewMode.List;
 
     dispatch(storageActions.setViewMode(setViewMode));
+  };
+
+  const onToggleFavoriteButtonClicked = (): void => {
+    dispatch(toggleFavoriteThunk(selectedItems));
   };
 
   const onDownloadButtonClicked = (): void => {
@@ -333,6 +343,21 @@ const DriveTopBarActions = ({
               </Button>
               <TooltipElement id="download-tooltip" delayShow={DELAY_SHOW_MS} />
             </div>
+            {favoriteAction && !isWorkspaceSelected && (
+              <div
+                className="flex items-center justify-center"
+                data-tooltip-id="favorite-tooltip"
+                data-tooltip-content={translate(
+                  favoriteAction === 'remove' ? 'drive.dropdown.removeFromFavorites' : 'drive.dropdown.addToFavorites',
+                )}
+                data-tooltip-place="bottom"
+              >
+                <Button variant="ghost" className="aspect-square" onClick={onToggleFavoriteButtonClicked}>
+                  {favoriteAction === 'remove' ? <StarSlashIcon className="h-6 w-6" /> : <Star className="h-6 w-6" />}
+                </Button>
+                <TooltipElement id="favorite-tooltip" delayShow={DELAY_SHOW_MS} />
+              </div>
+            )}
             <div
               className="flex items-center justify-center"
               data-tooltip-id="trash-tooltip"
