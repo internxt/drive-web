@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import axios, { AxiosError } from 'axios';
-import { uploadFileUint8Array } from './upload-utils';
+import { afterEach, beforeEach, describe, expect, it, test, vi } from 'vitest';
+import axios, { AxiosError, AxiosInstance } from 'axios';
+import { UPLOAD_STALLED_ERROR_MESSAGE, uploadFileUint8Array } from './upload-utils';
 
 vi.mock('axios', async () => {
   const { AxiosError } = await vi.importActual<typeof import('axios')>('axios');
@@ -58,5 +58,71 @@ describe('uploadFileUint8Array error handling', () => {
     await expect(
       uploadFileUint8Array(new Uint8Array([1]), 'https://test.com', { progressCallback: mockProgressCallback }),
     ).rejects.toThrow('Unknown error');
+  });
+});
+
+describe('uploadFileUint8Array stall handling', () => {
+  type RequestConfig = {
+    signal: AbortSignal;
+    onUploadProgress: (progress: { loaded: number; total: number }) => void;
+  };
+  type UploadResponse = { headers: { etag: string } };
+  const IDLE_TIMEOUT_MS = 1000;
+
+  const createPendingRequest = () => {
+    let config: RequestConfig;
+    let resolve: (value: UploadResponse) => void;
+
+    const request = (requestConfig: RequestConfig) =>
+      new Promise<UploadResponse>((res, reject) => {
+        config = requestConfig;
+        resolve = res;
+        requestConfig.signal.addEventListener('abort', () => reject(new Error('canceled')));
+      });
+
+    return {
+      request,
+      reportProgress: (loaded: number) => config.onUploadProgress({ loaded, total: 10 }),
+      succeed: (etag: string) => resolve({ headers: { etag } }),
+    };
+  };
+
+  const uploadWith = (request: (config: RequestConfig) => Promise<UploadResponse>) => {
+    vi.mocked(axios.create).mockReturnValue(request as unknown as AxiosInstance);
+
+    return uploadFileUint8Array(new Uint8Array([1, 2, 3]), 'https://storage.test/part', {
+      progressCallback: vi.fn(),
+      idleTimeoutMs: IDLE_TIMEOUT_MS,
+    });
+  };
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  test('when no bytes move for the idle window, then it rejects as stalled', async () => {
+    const { request } = createPendingRequest();
+    const outcome = expect(uploadWith(request)).rejects.toThrow(UPLOAD_STALLED_ERROR_MESSAGE);
+
+    await vi.advanceTimersByTimeAsync(IDLE_TIMEOUT_MS);
+
+    await outcome;
+  });
+
+  test('when progress keeps arriving, then the idle window restarts and the etag is returned', async () => {
+    const { request, reportProgress, succeed } = createPendingRequest();
+    const upload = uploadWith(request);
+
+    for (let tick = 1; tick <= 5; tick++) {
+      await vi.advanceTimersByTimeAsync(IDLE_TIMEOUT_MS - 100);
+      reportProgress(tick);
+    }
+    succeed('etag-1');
+
+    await expect(upload).resolves.toEqual({ etag: 'etag-1' });
   });
 });
