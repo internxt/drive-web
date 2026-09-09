@@ -165,7 +165,6 @@ export class NetworkFacade {
     const uploadsAbortController = new AbortController();
     options.abortController?.signal.addEventListener('abort', () => uploadsAbortController.abort());
 
-    let realError: Error | null = null;
     let fileReadable: ReadableStream<Uint8Array>;
     const fileParts: { PartNumber: number; ETag: string }[] = [];
 
@@ -179,8 +178,24 @@ export class NetworkFacade {
     const uploadFileMultipart: UploadFileMultipartFunction = async (urls: string[]) => {
       let partIndex = 0;
       const limitConcurrency = 6;
+      let firstPartError: Error | null = null;
+
+      const isUploadAborted = () => uploadsAbortController.signal.aborted;
+
+      const failUpload = (error: Error) => {
+        if (isUploadAborted()) return;
+        firstPartError = error;
+        uploadsAbortController.abort();
+      };
+
+      const throwIfUploadFailed = () => {
+        if (firstPartError) throw firstPartError;
+        if (isUploadAborted()) throw new Error('Upload cancelled by user');
+      };
 
       const worker = async (upload: UploadTask) => {
+        throwIfUploadFailed();
+
         postMessage({ result: WORKER_MESSAGE_STATES.CHECK_UPLOAD_STATUS });
         if (this.isPaused && options?.continueUploadOptions?.taskId) {
           await waitForContinueUploadSignal(options.continueUploadOptions.taskId);
@@ -219,12 +234,7 @@ export class NetworkFacade {
           await uploadQueue.unsaturated();
         }
 
-        if (uploadsAbortController.signal.aborted) {
-          if (realError) throw realError;
-          else throw new Error('Upload cancelled by user');
-        }
-
-        let errorAlreadyThrown = false;
+        throwIfUploadFailed();
 
         uploadQueue
           .pushAsync({
@@ -232,26 +242,14 @@ export class NetworkFacade {
             urlToUpload: urls[partIndex],
             index: partIndex++,
           })
-          .catch((err) => {
-            if (errorAlreadyThrown) return;
-
-            errorAlreadyThrown = true;
-            if (err) {
-              uploadQueue.kill();
-              if (!uploadsAbortController?.signal.aborted) {
-                // Failed due to other reason, so abort requests
-                uploadsAbortController.abort();
-                // TODO: Do it properly with ```options.abortController?.abort(err.message);``` available from Node 17.2.0 in advance
-                // https://github.com/node-fetch/node-fetch/issues/1462
-                realError = err;
-              }
-            }
-          });
+          .catch(failUpload);
       });
 
       while (uploadQueue.running() > 0 || uploadQueue.length() > 0) {
         await uploadQueue.drain();
       }
+
+      throwIfUploadFailed();
 
       return {
         hash: fileHash,
