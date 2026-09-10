@@ -36,4 +36,8 @@ export const staticData = {
   needHelpLinkText: 'Need help?',
   driveTitle: 'Drive',
   itemMovedToTrash: 'moved to trash',
+
+  //UPLOAD WIDGET
+  uploadInProgress: 'Processing 1 of 1',
+  uploadsFinished: 'All processes have finished',
 };
