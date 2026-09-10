@@ -32,6 +32,7 @@ import { DownloadChunkPayload } from './types/index';
 import { uploadFileUint8Array, UploadProgressCallback } from './upload-utils';
 import { getFileHmacFromShardHashes, getRipemd160FromHex } from 'app/crypto/services/utils';
 import { DecryptFileFunction, DownloadFileFunction } from '@internxt/sdk/dist/network/types';
+import { FileKey } from './types/helper-types';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
@@ -275,6 +276,7 @@ export class NetworkFacade {
   private async downloadInternal(
     execute: (onDownloadables: DownloadFileFunction, onDecrypt: DecryptFileFunction) => Promise<void>,
     options?: DownloadOptions,
+    fetchOptions?: { range?: { start: number; end: number } },
   ): Promise<ReadableStream> {
     const encryptedContentStreams: ReadableStream<Uint8Array>[] = [];
     const sha256Hashes: string[] = [];
@@ -284,14 +286,34 @@ export class NetworkFacade {
     const onDownloadables: DownloadFileFunction = async (downloadables, fileInfo) => {
       fileInfoRef = fileInfo;
       for (const downloadable of downloadables) {
-        if (options?.abortController?.signal.aborted) throw new Error('Download aborted');
-        const res = await fetch(downloadable.url, { signal: options?.abortController?.signal });
-        if (!res.body) throw new Error('No content received');
-        encryptedContentStreams.push(await createSha256HashingStream(res.body, (h) => sha256Hashes.push(h)));
+        if (options?.abortController?.signal.aborted) throw new DownloadAbortedByUserError();
+
+        const headers = fetchOptions?.range
+          ? { Range: `bytes=${fetchOptions.range.start}-${fetchOptions.range.end}`, Connection: 'keep-alive' }
+          : undefined;
+
+        const res = await fetch(downloadable.url, {
+          signal: options?.abortController?.signal,
+          headers,
+          keepalive: !!fetchOptions?.range,
+        });
+
+        if (fetchOptions?.range) {
+          if (res.status !== 206 && res.status !== 200) throw new DownloadFailedWithUnknownError(res.status);
+        }
+        if (!res.body) throw new NoContentReceivedError();
+
+        encryptedContentStreams.push(
+          fetchOptions?.range ? res.body : await createSha256HashingStream(res.body, (h) => sha256Hashes.push(h)),
+        );
       }
     };
 
     const onDecrypt: DecryptFileFunction = async (_algorithm, key, iv, fileSize) => {
+      if (fetchOptions?.range) {
+        fileStream = decryptStream(encryptedContentStreams, key as Buffer, iv as Buffer, fetchOptions.range.start);
+        return;
+      }
       fileStream = buildProgressStream(
         getDecryptedStream(
           encryptedContentStreams,
@@ -315,46 +337,43 @@ export class NetworkFacade {
   async download(
     bucketId: string,
     fileId: string,
-    mnemonic: string,
+    key: FileKey,
     options?: DownloadOptions,
+    fetchOptions?: { range?: { start: number; end: number } },
   ): Promise<ReadableStream> {
+    const sdkOptions = options?.token ? { token: options.token } : undefined;
     return this.downloadInternal(
-      (onDownloadables, onDecrypt) =>
-        downloadFile(
-          fileId,
-          bucketId,
-          mnemonic,
-          this.network,
-          this.cryptoLib,
-          Buffer.from,
-          onDownloadables,
-          onDecrypt,
-          options?.token ? { token: options.token } : undefined,
-        ),
+      (onDownloadables, onDecrypt) => {
+        if (key.mnemonic) {
+          return downloadFile(
+            fileId,
+            bucketId,
+            key.mnemonic,
+            this.network,
+            this.cryptoLib,
+            Buffer.from,
+            onDownloadables,
+            onDecrypt,
+            sdkOptions,
+          );
+        }
+        if (key.bucketKey) {
+          return downloadFileWithBucketKey(
+            fileId,
+            bucketId,
+            key.bucketKey,
+            this.network,
+            this.cryptoLibBucketKey,
+            Buffer.from,
+            onDownloadables,
+            onDecrypt,
+            sdkOptions,
+          );
+        }
+        throw new Error('No bucket key or mnemonic is given');
+      },
       options,
-    );
-  }
-
-  async downloadWithBucketKey(
-    bucketId: string,
-    fileId: string,
-    bucketKey: Buffer,
-    options?: DownloadOptions,
-  ): Promise<ReadableStream> {
-    return this.downloadInternal(
-      (onDownloadables, onDecrypt) =>
-        downloadFileWithBucketKey(
-          fileId,
-          bucketId,
-          bucketKey,
-          this.network,
-          this.cryptoLibBucketKey,
-          Buffer.from,
-          onDownloadables,
-          onDecrypt,
-          options?.token ? { token: options.token } : undefined,
-        ),
-      options,
+      fetchOptions,
     );
   }
 
@@ -371,55 +390,11 @@ export class NetworkFacade {
   async downloadChunk({
     bucketId,
     fileId,
-    mnemonic,
+    key,
     chunkStart,
     chunkEnd,
     options,
   }: DownloadChunkPayload): Promise<ReadableStream<Uint8Array>> {
-    const encryptedContentStreams: ReadableStream<Uint8Array>[] = [];
-    let fileStream: ReadableStream<Uint8Array>;
-
-    await downloadFile(
-      fileId,
-      bucketId,
-      mnemonic,
-      this.network,
-      this.cryptoLib,
-      Buffer.from,
-      async (downloadables) => {
-        for (const downloadable of downloadables) {
-          if (options?.abortController?.signal.aborted) {
-            throw new DownloadAbortedByUserError();
-          }
-
-          const response = await fetch(downloadable.url, {
-            signal: options?.abortController?.signal,
-            headers: {
-              Range: `bytes=${chunkStart}-${chunkEnd}`,
-              Connection: 'keep-alive',
-            },
-            keepalive: true,
-          });
-
-          const statusCode = response.status;
-
-          if (statusCode !== 206 && statusCode !== 200) {
-            throw new DownloadFailedWithUnknownError(statusCode);
-          }
-
-          if (!response.body) {
-            throw new NoContentReceivedError();
-          }
-
-          encryptedContentStreams.push(response.body);
-        }
-      },
-      async (algorithm, key, iv, fileSize) => {
-        fileStream = decryptStream(encryptedContentStreams, key as Buffer, iv as Buffer, chunkStart);
-      },
-      (options?.token && { token: options.token }) || undefined,
-    );
-
-    return fileStream!;
+    return this.download(bucketId, fileId, key, options, { range: { start: chunkStart, end: chunkEnd } });
   }
 }

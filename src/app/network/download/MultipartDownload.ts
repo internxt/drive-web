@@ -2,11 +2,12 @@ import { queue, QueueObject } from 'async';
 import { DownloadOptions, DownloadChunkTask } from '../types/index';
 import { USE_MULTIPART_THRESHOLD_BYTES as FIFTY_MEGABYTES } from '../networkConstants';
 import { NetworkFacade } from '../NetworkFacade';
+import { FileKey } from '../types/helper-types';
 
 export interface DownloadFilePayload {
   bucketId: string;
   fileId: string;
-  mnemonic: string;
+  key: FileKey;
   fileSize: number;
   options?: DownloadOptions;
 }
@@ -32,7 +33,7 @@ export class MultipartDownload {
    * @returns A promise that resolves to a readable stream of the file.
    */
   public downloadFile(params: DownloadFilePayload): ReadableStream<Uint8Array> {
-    const { bucketId, fileId, mnemonic, fileSize, options } = params;
+    const { bucketId, fileId, key, fileSize, options } = params;
 
     const tasks = this.createDownloadTasks(fileSize);
 
@@ -44,7 +45,7 @@ export class MultipartDownload {
           tasks,
           bucketId,
           fileId,
-          mnemonic,
+          key,
           fileSize,
           controller,
           options,
@@ -89,12 +90,12 @@ export class MultipartDownload {
     tasks: DownloadChunkTask[];
     bucketId: string;
     fileId: string;
-    mnemonic: string;
+    key: FileKey;
     fileSize: number;
     controller: ReadableStreamDefaultController<Uint8Array>;
     options?: DownloadOptions;
   }): Promise<void> {
-    const { tasks, bucketId, fileId, mnemonic, fileSize, controller, options } = params;
+    const { tasks, bucketId, fileId, key, fileSize, controller, options } = params;
 
     this.downloadQueue = queue(
       async (task: DownloadChunkTask) =>
@@ -102,7 +103,7 @@ export class MultipartDownload {
           task,
           bucketId,
           fileId,
-          mnemonic,
+          key,
           fileSize,
           controller,
           options,
@@ -182,7 +183,7 @@ export class MultipartDownload {
   private async downloadChunk(
     bucketId: string,
     fileId: string,
-    mnemonic: string,
+    key: FileKey,
     chunkStart: number,
     chunkEnd: number,
     options?: DownloadOptions,
@@ -190,7 +191,7 @@ export class MultipartDownload {
     const chunkStream = await this.network.downloadChunk({
       bucketId,
       fileId,
-      mnemonic,
+      key,
       chunkStart,
       chunkEnd,
       options,
@@ -209,14 +210,14 @@ export class MultipartDownload {
     task: DownloadChunkTask;
     bucketId: string;
     fileId: string;
-    mnemonic: string;
+    key: FileKey;
     fileSize: number;
     controller: ReadableStreamDefaultController<Uint8Array>;
     options?: DownloadOptions;
   }): Promise<void> {
-    const { task, bucketId, fileId, mnemonic, fileSize, controller, options } = params;
+    const { task, bucketId, fileId, key, fileSize, controller, options } = params;
 
-    const chunkData = await this.downloadChunk(bucketId, fileId, mnemonic, task.chunkStart, task.chunkEnd, options);
+    const chunkData = await this.downloadChunk(bucketId, fileId, key, task.chunkStart, task.chunkEnd, options);
 
     this.registerCompletedChunk(task.index, chunkData);
 
