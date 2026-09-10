@@ -37,6 +37,7 @@ const variableList = {
   segmentKey: 'REACT_APP_SEGMENT_KEY',
   intercomProviderKey: 'REACT_APP_INTERCOM_PROVIDER_KEY',
   recaptchaV3: 'REACT_APP_RECAPTCHA_V3',
+  turnstileSiteKey: 'REACT_APP_TURNSTILE_SITE_KEY',
   shareLinksDomain: 'REACT_APP_SHARE_LINKS_DOMAIN',
   proxy: 'REACT_APP_PROXY',
   dontUseProxy: 'REACT_APP_DONT_USE_PROXY',

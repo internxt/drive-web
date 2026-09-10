@@ -27,6 +27,7 @@ import { useUserPayment } from 'views/Checkout/hooks/useUserPayment';
 import { CRYPTO_PAYMENT_DIALOG_KEY, CryptoPaymentDialog } from 'views/Checkout/components/CryptoPaymentDialog';
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 import { generateCaptchaToken } from 'utils/generateCaptchaToken';
+import { generateTurnstileToken } from 'utils/generateTurnstileToken';
 import gaService from 'app/analytics/ga.service';
 import { handleImpactDTCCheckout } from 'app/analytics/impact.service';
 import referralService from 'services/referral.service';
@@ -360,6 +361,7 @@ const CheckoutViewWrapper = () => {
       }
 
       const customerToken = await generateCaptchaToken();
+      const customerTurnstileToken = await generateTurnstileToken();
       const ucc = referralService.getStoredUcc();
       const userUuid = authenticatedUser?.uuid;
       const hasMetadata = ucc || userUuid;
@@ -380,8 +382,11 @@ const CheckoutViewWrapper = () => {
         city: address?.city,
         companyVatId,
         captchaToken: customerToken,
+        turnstileToken: customerTurnstileToken,
         metadata,
       });
+
+      const paymentTurnstileToken = await generateTurnstileToken();
 
       await handleUserPayment({
         confirmPayment: stripeSDK.confirmPayment,
@@ -396,6 +401,7 @@ const CheckoutViewWrapper = () => {
         token,
         gclidStored,
         captchaToken,
+        turnstileToken: paymentTurnstileToken,
         openCryptoPaymentDialog,
         userAddress: userLocationData?.ip as string,
       });
