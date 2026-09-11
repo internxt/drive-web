@@ -101,14 +101,18 @@ beforeEach(() => {
 
 describe('resolveCollision', () => {
   test.each<[ResolveCollisionParams['operationType'], ResolveCollisionParams['operation'], unknown[][]]>([
+    ['move', 'skip', []],
+    ['upload', 'skip', []],
     ['move', 'keep', [[asPopAction([])]]],
     ['move', 'replace', [[asPopAction([])]]],
     ['upload', 'keep', []],
     ['upload', 'replace', []],
   ])(
-    'when %s + %s gets no items, then nothing is moved, trashed or uploaded',
+    'when %s + %s has nothing to resolve, then nothing is moved, trashed or uploaded',
     async (operationType, operation, expectedDispatchCalls) => {
-      await resolve({ operationType, operation, items: [], existingItems: [] });
+      const items = operation === 'skip' ? [getDriveItemData()] : [];
+
+      await resolve({ operationType, operation, items, existingItems: [] });
 
       expect(mocks.moveItemsToTrash).not.toHaveBeenCalled();
       expect(mocks.uploadFoldersWithTracking).not.toHaveBeenCalled();
