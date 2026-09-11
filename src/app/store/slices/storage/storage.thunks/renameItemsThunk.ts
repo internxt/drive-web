@@ -17,6 +17,13 @@ import { getUniqueFolderName } from '../folderUtils/getUniqueFolderName';
 import { CollisionGroup, StorageState } from '../storage.model';
 import { IRoot } from '../types';
 
+/**
+ * The duplicate checks return raw API items without isFolder, so existing items are tagged
+ * here to let consumers tell colliding files and folders apart.
+ */
+const asExistingItems = (items: (DriveFileData | DriveFolderData)[], isFolder: boolean): DriveItemData[] =>
+  items.map((item) => ({ ...item, isFolder })) as DriveItemData[];
+
 export const getCollisionGroups = async (
   groups: { destinationUuid: string; items: DriveItemData[] }[],
 ): Promise<CollisionGroup[]> => {
@@ -39,8 +46,8 @@ export const getCollisionGroups = async (
         ...(foldersResult.foldersWithDuplicates as DriveItemData[]),
       ];
       const existingItems = [
-        ...(filesResult.duplicatedFilesResponse as DriveItemData[]),
-        ...(foldersResult.duplicatedFoldersResponse as DriveItemData[]),
+        ...asExistingItems(filesResult.duplicatedFilesResponse, false),
+        ...asExistingItems(foldersResult.duplicatedFoldersResponse, true),
       ];
       const unrepeatedItems = [
         ...(filesResult.filesWithoutDuplicates as DriveItemData[]),
@@ -62,7 +69,7 @@ export const handleRepeatedUploadingFiles = async (
   destinationFolderUuid: string,
 ): Promise<{
   repeatedItems: (DriveFileData | File)[];
-  existingItems: DriveFileData[];
+  existingItems: DriveItemData[];
   unrepeatedItems: (DriveFileData | File)[];
 }> => {
   const batchs = getFilesByBatchs(files);
@@ -73,13 +80,13 @@ export const handleRepeatedUploadingFiles = async (
   return results.reduce(
     (acc, cur) => {
       acc.repeatedItems.push(...cur.filesWithDuplicates);
-      acc.existingItems.push(...cur.duplicatedFilesResponse);
+      acc.existingItems.push(...asExistingItems(cur.duplicatedFilesResponse, false));
       acc.unrepeatedItems.push(...cur.filesWithoutDuplicates);
       return acc;
     },
     {
       repeatedItems: [] as (DriveFileData | File)[],
-      existingItems: [] as DriveFileData[],
+      existingItems: [] as DriveItemData[],
       unrepeatedItems: [] as (DriveFileData | File)[],
     },
   );
@@ -90,7 +97,7 @@ export const handleRepeatedUploadingFolders = async (
   destinationFolderUuid: string,
 ): Promise<{
   repeatedItems: (DriveFolderData | IRoot)[];
-  existingItems: DriveFolderData[];
+  existingItems: DriveItemData[];
   unrepeatedItems: (DriveFolderData | IRoot)[];
 }> => {
   const batchs = getFilesByBatchs(folders as (IRoot | DriveFolderData)[]);
@@ -101,13 +108,13 @@ export const handleRepeatedUploadingFolders = async (
   return results.reduce(
     (acc, cur) => {
       acc.repeatedItems.push(...cur.foldersWithDuplicates);
-      acc.existingItems.push(...cur.duplicatedFoldersResponse);
+      acc.existingItems.push(...asExistingItems(cur.duplicatedFoldersResponse, true));
       acc.unrepeatedItems.push(...cur.foldersWithoutDuplicates);
       return acc;
     },
     {
       repeatedItems: [] as (DriveFolderData | IRoot)[],
-      existingItems: [] as DriveFolderData[],
+      existingItems: [] as DriveItemData[],
       unrepeatedItems: [] as (DriveFolderData | IRoot)[],
     },
   );
