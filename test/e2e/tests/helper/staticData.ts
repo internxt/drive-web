@@ -47,4 +47,11 @@ export const staticData = {
   loadingPreviewText: 'Loading preview',
   downloadButtonText: 'Download',
   blobUrlPattern: /^blob:/,
+
+  //NAME COLLISION DIALOG
+  collisionDialogTitle: 'Item already exists',
+  collisionReplaceOption: 'Replace current item',
+  collisionKeepBothOption: 'Keep both',
+  collisionSkipOption: 'Skip this item',
+  collisionApplyToAll: 'Apply this action to all duplicates',
 };

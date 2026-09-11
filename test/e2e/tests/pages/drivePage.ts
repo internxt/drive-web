@@ -201,6 +201,14 @@ export class DrivePage {
     await expect(thumbnail).toHaveAttribute('src', staticData.blobUrlPattern);
   }
 
+  fileRow(fileName: string) {
+    return this.page.locator(`[title="${fileName}"]`);
+  }
+
+  taskItem(itemName: string) {
+    return this.page.locator(`[data-test="task-logger"] [title="${itemName}"]`);
+  }
+
   private fileListElement(fileName: string, element: FileListElement) {
     return this.page.locator(`[data-test="file-list-file-${fileName}-${element}"]`);
   }

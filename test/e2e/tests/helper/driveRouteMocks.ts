@@ -13,6 +13,7 @@ const BRIDGE_FILE_INFO_ID_PATTERN = /\/files\/([^/]+)\/info/;
 const FILES_LISTING_PATH = '/files/';
 const START_UPLOAD_PATH = '/files/start';
 const FINISH_UPLOAD_PATH = '/files/finish';
+const FILES_EXISTENCE_PATH = '/files/existence';
 
 const HTTP_METHOD = { get: 'GET', post: 'POST', put: 'PUT' };
 const HTTP_NOT_FOUND = 404;
@@ -22,6 +23,7 @@ const BRIDGE_FILE_VERSION = 2;
 const BRIDGE_FILE_ID_BYTES = 12;
 const FIRST_UPLOADED_FILE_ID = 5000;
 const FIRST_THUMBNAIL_ID = 9000;
+const EXISTING_FILE_SIZE = 1024;
 const ITEM_TIMESTAMP = '2026-08-01T10:00:00.000Z';
 const ITEM_STATUS = 'EXISTS';
 
@@ -68,12 +70,21 @@ type FinishUploadRequest = {
   hmac?: { type: string; value: string };
 };
 
+type ExistenceCheckRequest = { files: { plainName: string; type: string }[] };
+export type TrashRequest = { items: { uuid: string; type: string }[] };
+
+/**
+ * Uploads only reach the bridge, and so `fileEntries`, in Chromium: Playwright cannot route
+ * the bridge CORS preflight in Firefox.
+ */
 type RecordedRequests = {
   fileEntries: FileEntryRequest[];
   thumbnailEntries: ThumbnailEntryRequest[];
   downloadedFileIds: string[];
+  trash: TrashRequest[];
 };
 export type MockedDriveOptions = {
+  files?: ExistingFile[];
   declaredSizes?: Record<string, number>;
 };
 
@@ -90,12 +101,16 @@ const buildThumbnail = (id: number, fileId: number, entry: ThumbnailEntryRequest
 });
 type StoredThumbnail = ReturnType<typeof buildThumbnail>;
 
-const buildFile = (id: number, { fileId, type, size, plainName, bucket, folderUuid }: FileEntryRequest) => {
+const buildFile = (
+  id: number,
+  { fileId, type, size, plainName, bucket, folderUuid }: FileEntryRequest,
+  uuid: string = randomUUID(),
+) => {
   const thumbnails: StoredThumbnail[] = [];
 
   return {
     id,
-    uuid: randomUUID(),
+    uuid,
     fileId,
     name: plainName,
     plainName,
@@ -112,14 +127,48 @@ const buildFile = (id: number, { fileId, type, size, plainName, bucket, folderUu
 };
 type StoredFile = ReturnType<typeof buildFile>;
 
+export const buildExistingFile = (id: number, plainName: string, type: string) =>
+  buildFile(
+    id,
+    {
+      fileId: `existing-bridge-file-${id}`,
+      type,
+      size: EXISTING_FILE_SIZE,
+      plainName,
+      bucket: loggedUser.user.bucket,
+      folderUuid: loggedUser.user.rootFolderId,
+    },
+    `existing-file-uuid-${id}`,
+  );
+export type ExistingFile = StoredFile;
+
+/**
+ * Trashing removes files, so follow-up listings and existence checks see the new state.
+ */
 class InMemoryDrive {
-  private readonly files: StoredFile[] = [];
+  private files: StoredFile[];
+  private readonly declaredSizes: Record<string, number>;
+  private uploadedFilesCount = 0;
   private thumbnailsCount = 0;
 
-  constructor(private readonly declaredSizes: Record<string, number> = {}) {}
+  constructor({ files = [], declaredSizes = {} }: MockedDriveOptions) {
+    this.files = [...files];
+    this.declaredSizes = declaredSizes;
+  }
 
   filesIn(folderUuid: string) {
     return this.files.filter((file) => file.folderUuid === folderUuid);
+  }
+
+  existingFilesIn(folderUuid: string, candidates: ExistenceCheckRequest['files']) {
+    return this.filesIn(folderUuid).filter((existing) =>
+      candidates.some(({ plainName, type }) => plainName === existing.plainName && type === existing.type),
+    );
+  }
+
+  trash(uuids: string[]) {
+    const trashed = new Set(uuids);
+    this.files = this.files.filter((file) => !trashed.has(file.uuid));
   }
 
   findFile(uuid: string) {
@@ -128,7 +177,8 @@ class InMemoryDrive {
 
   addFile(entry: FileEntryRequest) {
     const size = this.declaredSizes[entry.plainName] ?? entry.size;
-    const file = buildFile(FIRST_UPLOADED_FILE_ID + this.files.length, { ...entry, size });
+    const file = buildFile(FIRST_UPLOADED_FILE_ID + this.uploadedFilesCount, { ...entry, size });
+    this.uploadedFilesCount += 1;
     this.files.push(file);
     return file;
   }
@@ -210,6 +260,15 @@ const mockAppBootstrapCalls = async (page: Page) => {
   }
 };
 
+const fulfillExistenceCheck = (route: Route, request: Request, drive: InMemoryDrive) => {
+  const url = request.url();
+  if (!url.endsWith(FILES_EXISTENCE_PATH)) return route.fulfill({ json: NO_DUPLICATES });
+
+  const { files } = request.postDataJSON() as ExistenceCheckRequest;
+  const existentFiles = drive.existingFilesIn(firstCapture(FOLDER_CONTENT_UUID_PATTERN, url), files);
+  return route.fulfill({ json: { existentFiles } });
+};
+
 const mockFolderContentRoutes = async (page: Page, drive: InMemoryDrive) => {
   const folderContentUrl = `${BASE_API_URL}/folders/content/**`;
 
@@ -219,7 +278,9 @@ const mockFolderContentRoutes = async (page: Page, drive: InMemoryDrive) => {
     const files = drive.filesIn(firstCapture(FOLDER_CONTENT_UUID_PATTERN, url));
     return route.fulfill({ json: isFilesListing ? { files } : { folders: [] } });
   });
-  await mockRouteForMethod(page, folderContentUrl, HTTP_METHOD.post, (route) => route.fulfill({ json: NO_DUPLICATES }));
+  await mockRouteForMethod(page, folderContentUrl, HTTP_METHOD.post, (route, request) =>
+    fulfillExistenceCheck(route, request, drive),
+  );
 };
 
 const mockFileEntryRoutes = async (page: Page, drive: InMemoryDrive, requests: RecordedRequests) => {
@@ -239,6 +300,14 @@ const mockFileEntryRoutes = async (page: Page, drive: InMemoryDrive, requests: R
     fulfillJsonIfFound(route, drive.findFile(firstCapture(FILE_META_UUID_PATTERN, request.url()))),
   );
 };
+
+const mockTrashRoute = (page: Page, drive: InMemoryDrive, requests: RecordedRequests) =>
+  mockRouteForMethod(page, `${BASE_API_URL}/storage/trash/add`, HTTP_METHOD.post, (route, request) => {
+    const trashRequest = request.postDataJSON() as TrashRequest;
+    drive.trash(trashRequest.items.map((item) => item.uuid));
+    requests.trash.push(trashRequest);
+    return route.fulfill({ json: {} });
+  });
 
 const fulfillBridgeCall = (route: Route, request: Request, bridge: InMemoryBridge, requests: RecordedRequests) => {
   const url = request.url();
@@ -274,13 +343,14 @@ const mockBridgeStorageRoutes = async (page: Page, requests: RecordedRequests) =
 };
 
 export const mockDriveRoutes = async (page: Page, options: MockedDriveOptions = {}): Promise<RecordedRequests> => {
-  const drive = new InMemoryDrive(options.declaredSizes);
-  const requests: RecordedRequests = { fileEntries: [], thumbnailEntries: [], downloadedFileIds: [] };
+  const drive = new InMemoryDrive(options);
+  const requests: RecordedRequests = { fileEntries: [], thumbnailEntries: [], downloadedFileIds: [], trash: [] };
 
   await mockAppBootstrapCalls(page);
   await mockAuthRoutes(page);
   await mockFolderContentRoutes(page, drive);
   await mockFileEntryRoutes(page, drive, requests);
+  await mockTrashRoute(page, drive, requests);
   await mockBridgeStorageRoutes(page, requests);
 
   return requests;
