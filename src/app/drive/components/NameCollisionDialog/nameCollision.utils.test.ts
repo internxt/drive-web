@@ -1,7 +1,15 @@
 import { describe, expect, test } from 'vitest';
 import { getDriveItemData } from 'testUtils/fixtures/drive.fixtures';
+import { CollisionGroup } from 'app/store/slices/storage/storage.model';
 import { IRoot } from 'app/store/slices/storage/types';
-import { CollisionItem, findExistingItemFor, getCollisionPairs, isFolderUpload } from './nameCollision.utils';
+import {
+  CollisionItem,
+  findExistingItemFor,
+  findPendingGroupIndex,
+  getCollisionPairs,
+  getRemainingGroups,
+  isFolderUpload,
+} from './nameCollision.utils';
 
 const getRoot = (name = 'Photos'): IRoot => ({
   name,
@@ -9,6 +17,14 @@ const getRoot = (name = 'Photos'): IRoot => ({
   childrenFiles: [],
   childrenFolders: [],
   fullPathEdited: `/${name}`,
+});
+
+const getGroup = (overrides: Partial<CollisionGroup> = {}): CollisionGroup => ({
+  destinationUuid: 'destination-uuid',
+  duplicatedItems: [],
+  existingItems: [],
+  unrepeatedItems: [],
+  ...overrides,
 });
 
 const existingFile = getDriveItemData({ uuid: 'file', plainName: 'report', type: 'pdf', isFolder: false });
@@ -68,5 +84,40 @@ describe('getCollisionPairs', () => {
     expect(getCollisionPairs([matched, new File([''], 'unknown.txt')], existingItems)).toEqual([
       { item: matched, existing: existingFile },
     ]);
+  });
+});
+
+describe('findPendingGroupIndex', () => {
+  test('when several groups exist, then the first one with duplicated items is returned', () => {
+    const pending = getGroup({ duplicatedItems: [new File([''], 'a.txt')] });
+
+    expect(findPendingGroupIndex([getGroup(), pending, getGroup()])).toBe(1);
+    expect(findPendingGroupIndex([getGroup()])).toBe(-1);
+  });
+});
+
+describe('getRemainingGroups', () => {
+  const otherGroup = getGroup({ destinationUuid: 'other', duplicatedItems: [new File([''], 'c.txt')] });
+
+  test('when the handled group still has items, then it keeps the rest and drops the resolved existing item', () => {
+    const [first, second] = [new File([''], 'a.txt'), new File([''], 'b.txt')];
+    const groups = [
+      getGroup({ duplicatedItems: [first, second], existingItems: [existingFile, existingFolder] }),
+      otherGroup,
+    ];
+
+    expect(getRemainingGroups(groups, 0, existingFile)).toEqual([
+      { ...groups[0], duplicatedItems: [second], existingItems: [existingFolder] },
+      otherGroup,
+    ]);
+  });
+
+  test('when the handled group had a single item, then it is dropped from the result', () => {
+    const groups = [
+      getGroup({ duplicatedItems: [new File([''], 'a.txt')], existingItems: [existingFile] }),
+      otherGroup,
+    ];
+
+    expect(getRemainingGroups(groups, 0, undefined)).toEqual([otherGroup]);
   });
 });
