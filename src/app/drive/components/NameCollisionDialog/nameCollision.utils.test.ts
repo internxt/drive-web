@@ -31,7 +31,8 @@ describe('isFolderUpload', () => {
 
 describe('findExistingItemFor', () => {
   test.each<[string, CollisionItem, ReturnType<typeof getDriveItemData> | undefined]>([
-    ['an uploaded folder with the same name', getRoot('report'), existingFile],
+    ['an uploaded folder with the same name', getRoot('report'), existingFolder],
+    ['an uploaded folder whose name only matches a file', getRoot('README'), undefined],
     ['an uploaded file with the same name and extension', new File([''], 'report.pdf'), existingFile],
     ['an uploaded file with the same name but another extension', new File([''], 'report.docx'), undefined],
     [

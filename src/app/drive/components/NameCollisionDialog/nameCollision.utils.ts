@@ -13,17 +13,20 @@ const matchesName = (existing: DriveItemData, name: string) => (existing.plainNa
 const matchesType = (existing: DriveItemData, type?: string | null) => (existing.type ?? null) === (type ?? null);
 
 /**
- * Finds the drive item that collides with the given item. Uploaded folders match by name only,
- * uploaded files by name and extension, and moved items by kind, name and (for files) extension.
+ * Finds the drive item that collides with the given item. Folders only match folders and files
+ * only match files; uploaded folders match by name, uploaded files by name and extension, and
+ * moved items by name and (for files) extension.
  */
 export const findExistingItemFor = (item: CollisionItem, existingItems: DriveItemData[]): DriveItemData | undefined => {
   if (isFolderUpload(item)) {
-    return existingItems.find((existing) => matchesName(existing, item.name));
+    return existingItems.find((existing) => existing.isFolder && matchesName(existing, item.name));
   }
 
   if (item instanceof File) {
     const { filename, extension } = itemUtils.getFilenameAndExt(item.name);
-    return existingItems.find((existing) => matchesName(existing, filename) && matchesType(existing, extension));
+    return existingItems.find(
+      (existing) => !existing.isFolder && matchesName(existing, filename) && matchesType(existing, extension),
+    );
   }
 
   return existingItems.find(
