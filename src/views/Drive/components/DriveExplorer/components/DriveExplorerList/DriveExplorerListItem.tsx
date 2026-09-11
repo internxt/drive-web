@@ -196,7 +196,13 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
 
       {
         /* DROPPABLE ZONE */
-        isInteractive && connectDropTarget(<div className="absolute top-0 h-full w-1/2 group-hover:invisible"></div>)
+        isInteractive &&
+          connectDropTarget(
+            <div
+              className="absolute top-0 h-full w-1/2 group-hover:invisible"
+              data-test={`${basicFileDataTest}-drop-zone`}
+            ></div>,
+          )
       }
 
       {/* AUTO-DELETE (only for trash) */}

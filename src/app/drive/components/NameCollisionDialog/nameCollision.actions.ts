@@ -12,6 +12,10 @@ import { getUniqueFolderName } from 'app/store/slices/storage/folderUtils/getUni
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import { MoveItemPayload } from 'app/store/slices/storage/storage.thunks/moveItemsThunk';
+import {
+  handleRepeatedUploadingFiles,
+  handleRepeatedUploadingFolders,
+} from 'app/store/slices/storage/storage.thunks/renameItemsThunk';
 import { IRoot } from 'app/store/slices/storage/types';
 import { isVersioningExtensionAllowed } from 'views/Drive/components/VersionHistory/utils';
 import replaceFileService from 'views/Drive/services/replaceFile.service';
@@ -227,6 +231,52 @@ const replaceAndUploadItems = async (
   context.dispatch(fetchSortedFolderContentThunk(destinationUuid));
 };
 
+const uploadNewFilesOnly = async (files: File[], destinationUuid: string, context: NameCollisionContext) => {
+  const { unrepeatedItems: newFiles } = await handleRepeatedUploadingFiles(files, destinationUuid);
+  await uploadFiles(newFiles as File[], destinationUuid, context, true);
+};
+
+/**
+ * Merges a skipped folder upload into its existing counterpart: files that already
+ * exist are left untouched, new files and new subfolders are uploaded into the
+ * existing folder, and colliding subfolders are merged recursively so the folder
+ * structure is preserved.
+ */
+const mergeSkipFolderUpload = async (root: IRoot, existingFolderUuid: string, context: NameCollisionContext) => {
+  await uploadNewFilesOnly(root.childrenFiles, existingFolderUuid, context);
+
+  const {
+    unrepeatedItems: newFolders,
+    repeatedItems: collidingFolders,
+    existingItems: existingFolders,
+  } = await handleRepeatedUploadingFolders(root.childrenFolders, existingFolderUuid);
+
+  await uploadFolders(newFolders as IRoot[], existingFolderUuid, context);
+
+  for (const collidingFolder of collidingFolders as IRoot[]) {
+    const existingFolder = existingFolders.find((folder) => folder.plainName === collidingFolder.name);
+    if (existingFolder) {
+      await mergeSkipFolderUpload(collidingFolder, existingFolder.uuid, context);
+    }
+  }
+};
+
+/**
+ * Skipping uploaded files is a no-op (the existing files stay untouched), while
+ * skipping uploaded folders merges their new content into the existing folders.
+ */
+const skipAndUploadItems = async (
+  pairs: CollisionPair<IRoot | File>[],
+  destinationUuid: string,
+  context: NameCollisionContext,
+): Promise<void> => {
+  const folderPairs = pairs.filter((pair) => isFolderUpload(pair.item));
+  if (folderPairs.length === 0) return;
+
+  await Promise.all(folderPairs.map((pair) => mergeSkipFolderUpload(pair.item as IRoot, pair.existing.uuid, context)));
+  context.dispatch(fetchSortedFolderContentThunk(destinationUuid));
+};
+
 /**
  * Uploads the items next to the existing ones, letting the upload flow pick a unique name.
  */
@@ -242,19 +292,23 @@ const keepAndUploadItems = async (
 };
 
 /**
- * Applies the chosen resolution to items that collide while being uploaded. Skipped items are
- * left untouched.
+ * Applies the chosen resolution to items that collide while being uploaded. Skipped files are
+ * left untouched, while skipped folders merge their new content into the existing folder.
  */
 const resolveUploadCollision = async (
   { operation, items, existingItems, destinationUuid }: ResolveUploadCollisionParams,
   context: NameCollisionContext,
 ) => {
-  if (operation === 'skip') return;
-
   if (operation === 'keep') {
     await keepAndUploadItems(items, destinationUuid, context);
+    return;
+  }
+
+  const pairs = getCollisionPairs(items, existingItems);
+  if (operation === 'replace') {
+    await replaceAndUploadItems(pairs, destinationUuid, context);
   } else {
-    await replaceAndUploadItems(getCollisionPairs(items, existingItems), destinationUuid, context);
+    await skipAndUploadItems(pairs, destinationUuid, context);
   }
 };
 
