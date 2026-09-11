@@ -179,4 +179,12 @@ export class DrivePage {
   async expectUploadWidgetStatus(status: string, timeout: number) {
     await expect.poll(async () => await this.uploadWidgetBorder.textContent(), { timeout }).toContain(status);
   }
+
+  fileRow(fileName: string) {
+    return this.page.locator(`[title="${fileName}"]`);
+  }
+
+  taskItem(itemName: string) {
+    return this.page.locator(`[data-test="task-logger"] [title="${itemName}"]`);
+  }
 }
