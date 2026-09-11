@@ -1,54 +1,17 @@
-import { expect, Request, Route, test } from '@playwright/test';
-import { getLoggedUser, getUserCredentials } from '../helper/getUser';
+import { expect, test } from '@playwright/test';
+import { INVALID_EMAIL, mockAuthRoutes } from '../helper/authRouteMocks';
+import { getUserCredentials } from '../helper/getUser';
 import { staticData } from '../helper/staticData';
 import { LoginPage } from '../pages/loginPage';
-const BASE_API_URL = process.env.REACT_APP_DRIVE_NEW_API_URL;
 
 const credentialsFile = getUserCredentials();
-const user = getLoggedUser();
-const invalidEmail = 'invalid@internxt.com';
-
-const mockLoginCall = async (route: Route, request: Request) => {
-  await route.fulfill({
-    status: 200,
-    contentType: 'application/json',
-    body: JSON.stringify({
-      hasKeys: true,
-      sKey: '53616c7465645f5f2aa5386bc0b15f6f69a733acdd46a6551dc004f6c1cb6352390535de3ec17e9b96da7de984e5d27e79ad04a88a2cc8c6315f03dc0b0d174c',
-      tfa: false,
-      hasKyberKeys: true,
-      hasEccKeys: true,
-    }),
-  });
-};
-
-const mockAccessCall = async (route: Route, request: Request) => {
-  const { email } = request.postDataJSON();
-
-  if (invalidEmail === email) {
-    return route.fulfill({
-      status: 400,
-      body: JSON.stringify({ message: 'Wrong login credentials' }),
-    });
-  }
-
-  await route.fulfill({
-    status: 200,
-    body: JSON.stringify({
-      user: user.user,
-      token: user.token,
-      newToken: user.newToken,
-      userTeam: user.userTeam,
-    }),
-  });
-};
+const invalidEmail = INVALID_EMAIL;
 
 test.describe('internxt login', async () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
   test.beforeEach('Visiting Internxt', async ({ page }) => {
-    await page.route(`${BASE_API_URL}/auth/login`, mockLoginCall);
-    await page.route(`${BASE_API_URL}/auth/login/access`, mockAccessCall);
+    await mockAuthRoutes(page);
 
     await page.goto('/');
     await expect(page).toHaveURL('http://localhost:3000/login');
