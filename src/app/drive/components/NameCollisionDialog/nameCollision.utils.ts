@@ -1,5 +1,6 @@
 import { items as itemUtils } from '@internxt/lib';
 import { DriveItemData } from 'app/drive/types';
+import { CollisionGroup } from 'app/store/slices/storage/storage.model';
 import { IRoot } from 'app/store/slices/storage/types';
 
 export type CollisionItem = File | IRoot | DriveItemData;
@@ -48,3 +49,28 @@ export const getCollisionPairs = <T extends CollisionItem>(
     const existing = findExistingItemFor(item, existingItems);
     return existing ? [{ item, existing }] : [];
   });
+
+export const hasDuplicatedItems = (group: CollisionGroup): boolean => group.duplicatedItems.length > 0;
+
+export const findPendingGroupIndex = (groups: CollisionGroup[]): number => groups.findIndex(hasDuplicatedItems);
+
+/**
+ * Returns the groups still waiting for a decision after the first duplicated item of the group
+ * at `groupIndex` has been handled. Groups left without duplicated items are dropped.
+ */
+export const getRemainingGroups = (
+  groups: CollisionGroup[],
+  groupIndex: number,
+  resolvedExistingItem?: DriveItemData,
+): CollisionGroup[] =>
+  groups
+    .map((group, index) =>
+      index === groupIndex
+        ? {
+            ...group,
+            duplicatedItems: group.duplicatedItems.slice(1),
+            existingItems: group.existingItems.filter((existing) => existing !== resolvedExistingItem),
+          }
+        : group,
+    )
+    .filter(hasDuplicatedItems);
