@@ -89,19 +89,26 @@ beforeEach(() => {
 
 describe('resolveCollision', () => {
   test.each<[ResolveCollisionParams['operationType'], ResolveCollisionParams['operation']]>([
+    ['move', 'skip'],
+    ['upload', 'skip'],
     ['move', 'keep'],
     ['move', 'replace'],
     ['upload', 'keep'],
     ['upload', 'replace'],
-  ])('when %s + %s gets no items, then nothing is moved, trashed or uploaded', async (operationType, operation) => {
-    await resolve({ operationType, operation, items: [], existingItems: [] });
+  ])(
+    'when %s + %s has nothing to resolve, then nothing is moved, trashed or uploaded',
+    async (operationType, operation) => {
+      const items = operation === 'skip' ? [getDriveItemData()] : [];
 
-    expect(mocks.moveItemsToTrash).not.toHaveBeenCalled();
-    expect(mocks.moveItemsThunk).not.toHaveBeenCalled();
-    expect(mocks.uploadItemsThunk).not.toHaveBeenCalled();
-    expect(mocks.uploadFoldersWithTracking).not.toHaveBeenCalled();
-    expect(mocks.fetchSortedFolderContentThunk).not.toHaveBeenCalled();
-  });
+      await resolve({ operationType, operation, items, existingItems: [] });
+
+      expect(mocks.moveItemsToTrash).not.toHaveBeenCalled();
+      expect(mocks.moveItemsThunk).not.toHaveBeenCalled();
+      expect(mocks.uploadItemsThunk).not.toHaveBeenCalled();
+      expect(mocks.uploadFoldersWithTracking).not.toHaveBeenCalled();
+      expect(mocks.fetchSortedFolderContentThunk).not.toHaveBeenCalled();
+    },
+  );
 
   test('when moving with keep, then items get a unique name and leave the pending deletion list', async () => {
     const file = getDriveItemData({ plainName: 'report', name: 'report', type: 'pdf', isFolder: false });
