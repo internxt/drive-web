@@ -22,7 +22,7 @@ test.describe('Internxt name collision skip option', () => {
   let drive: Awaited<ReturnType<typeof openMockedDrive>>;
 
   test.beforeEach('Logging in with existing files in Drive', async ({ page }) => {
-    drive = await openMockedDrive(page, [existingReport, existingInvoice]);
+    drive = await openMockedDrive(page, { files: [existingReport, existingInvoice] });
   });
 
   test('TC1: Validate that skipping a single duplicated file keeps the existing file and uploads nothing', async () => {
