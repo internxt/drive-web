@@ -46,8 +46,8 @@ test.describe('Internxt name collision resolutions', () => {
     await drivePage.uploadFiles([buildUploadFile('report.txt')]);
     await collisionDialog.resolve('report.txt', staticData.collisionKeepBothOption);
 
-    await collisionDialog.expectClosed();
     await expect(drivePage.taskItem('report (1).txt')).toBeVisible({ timeout: 10000 });
+    await collisionDialog.expectClosed();
     expect(requests.trash).toHaveLength(0);
   });
 
