@@ -26,6 +26,7 @@ export class DrivePage {
   private uploadWidgetBorder: Locator;
   private movingToTrashAndMovedSign: Locator;
   private fileInput: Locator;
+  private folderInput: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -69,6 +70,7 @@ export class DrivePage {
     );
     this.uploadWidgetBorder = this.page.locator('[class$="border-b border-gray-10 bg-gray-5 px-3 py-2.5"]');
     this.fileInput = this.page.locator('[data-test="input-file"]');
+    this.folderInput = this.page.locator('[data-test="input-folder"]');
   }
   async checkFolder(folderName: string) {
     const folderLocator = this.allFolderNamesInDrive.filter({ hasText: folderName });
@@ -175,6 +177,26 @@ export class DrivePage {
   }
   async uploadFiles(files: { name: string; mimeType: string; buffer: Buffer }[]) {
     await this.fileInput.setInputFiles(files);
+  }
+  async uploadFolder(directoryPath: string) {
+    await this.folderInput.setInputFiles(directoryPath);
+  }
+  itemRow(itemName: string) {
+    return this.page.locator('[data-test$="-parent"]', {
+      has: this.page.getByRole('button', { name: itemName, exact: true }),
+    });
+  }
+
+  async dragItemToFolder(itemName: string, folderName: string) {
+    const source = this.itemRow(itemName);
+    const dropZone = this.itemRow(folderName).locator('[data-test$="-drop-zone"]');
+    const dataTransfer = await this.page.evaluateHandle(() => new DataTransfer());
+
+    await source.dispatchEvent('dragstart', { dataTransfer });
+    await dropZone.dispatchEvent('dragenter', { dataTransfer });
+    await dropZone.dispatchEvent('dragover', { dataTransfer });
+    await dropZone.dispatchEvent('drop', { dataTransfer });
+    await source.dispatchEvent('dragend', { dataTransfer });
   }
   fileRow(fileName: string) {
     return this.page.locator(`[title="${fileName}"]`);
