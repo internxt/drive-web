@@ -12,10 +12,9 @@ export async function uploadFileUint8Array(
   opts: {
     progressCallback: UploadProgressCallback;
     abortController?: AbortController;
-    idleTimeoutMs?: number;
   },
 ): Promise<{ etag: string | undefined }> {
-  const watchdog = createStallWatchdog(opts.idleTimeoutMs ?? UPLOAD_IDLE_TIMEOUT_MS, opts.abortController?.signal);
+  const watchdog = createStallWatchdog(UPLOAD_IDLE_TIMEOUT_MS, opts.abortController?.signal);
 
   try {
     const res = await axios.create()({

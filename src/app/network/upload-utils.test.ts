@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, test, vi } from 'vitest';
 import axios, { AxiosError, AxiosInstance } from 'axios';
+import { UPLOAD_IDLE_TIMEOUT_MS } from './networkConstants';
 import { UPLOAD_STALLED_ERROR_MESSAGE, uploadFileUint8Array } from './upload-utils';
 
 vi.mock('axios', async () => {
@@ -67,7 +68,6 @@ describe('uploadFileUint8Array stall handling', () => {
     onUploadProgress: (progress: { loaded: number; total: number }) => void;
   };
   type UploadResponse = { headers: { etag: string } };
-  const IDLE_TIMEOUT_MS = 1000;
 
   const createPendingRequest = () => {
     let config: RequestConfig;
@@ -92,7 +92,6 @@ describe('uploadFileUint8Array stall handling', () => {
 
     return uploadFileUint8Array(new Uint8Array([1, 2, 3]), 'https://storage.test/part', {
       progressCallback: vi.fn(),
-      idleTimeoutMs: IDLE_TIMEOUT_MS,
     });
   };
 
@@ -108,7 +107,7 @@ describe('uploadFileUint8Array stall handling', () => {
     const { request } = createPendingRequest();
     const outcome = expect(uploadWith(request)).rejects.toThrow(UPLOAD_STALLED_ERROR_MESSAGE);
 
-    await vi.advanceTimersByTimeAsync(IDLE_TIMEOUT_MS);
+    await vi.advanceTimersByTimeAsync(UPLOAD_IDLE_TIMEOUT_MS);
 
     await outcome;
   });
@@ -118,7 +117,7 @@ describe('uploadFileUint8Array stall handling', () => {
     const upload = uploadWith(request);
 
     for (let tick = 1; tick <= 5; tick++) {
-      await vi.advanceTimersByTimeAsync(IDLE_TIMEOUT_MS - 100);
+      await vi.advanceTimersByTimeAsync(UPLOAD_IDLE_TIMEOUT_MS - 100);
       reportProgress(tick);
     }
     succeed('etag-1');
