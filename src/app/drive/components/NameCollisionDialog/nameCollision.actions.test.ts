@@ -3,6 +3,7 @@ import { getDriveItemData } from 'testUtils/fixtures/drive.fixtures';
 import { NameCollisionContext, ResolveMoveCollisionParams, resolveMoveCollision } from './nameCollision.actions';
 
 const mocks = vi.hoisted(() => ({
+  dispatch: vi.fn(),
   moveItemsToTrash: vi.fn(),
   moveItemsThunk: vi.fn(),
   popItemsToDelete: vi.fn(),
@@ -28,8 +29,11 @@ vi.mock('app/store/slices/storage/folderUtils/getUniqueFolderName', () => ({
 
 const DESTINATION = 'destination-uuid';
 
+const asMoveAction = (payload: unknown) => ({ type: 'move', payload });
+const asPopAction = (payload: unknown) => ({ type: 'pop', payload });
+
 const getContext = (): NameCollisionContext => ({
-  dispatch: vi.fn() as unknown as NameCollisionContext['dispatch'],
+  dispatch: mocks.dispatch as unknown as NameCollisionContext['dispatch'],
   selectedWorkspace: null,
   maxUploadFileSize: 5000,
   isVersioningEnabled: false,
@@ -47,29 +51,35 @@ beforeEach(() => {
   mocks.getUniqueFilename.mockResolvedValue('report (1)');
   mocks.checkFolderDuplicated.mockResolvedValue({ duplicatedFoldersResponse: ['folder-dup'] });
   mocks.getUniqueFolderName.mockResolvedValue('Photos (1)');
+  mocks.moveItemsThunk.mockImplementation(asMoveAction);
+  mocks.popItemsToDelete.mockImplementation(asPopAction);
 });
 
 describe('resolveMoveCollision', () => {
   test('when keeping both, then each item is moved under a unique name and leaves the pending deletion list', async () => {
     const file = getDriveItemData({ plainName: 'report', name: 'report', type: 'pdf', isFolder: false });
     const folder = getDriveItemData({ plainName: 'Photos', name: 'Photos', isFolder: true });
+    const renamedFileMove = {
+      items: [
+        { ...file, name: 'report (1)', plainName: 'report (1)', plain_name: 'report (1)', newItemName: 'report (1)' },
+      ],
+      destinationFolderId: DESTINATION,
+    };
+    const renamedFolderMove = {
+      items: [{ ...folder, name: 'Photos (1)', plain_name: 'Photos (1)', newItemName: 'Photos (1)' }],
+      destinationFolderId: DESTINATION,
+    };
 
     await resolve({ operation: 'keep', items: [file, folder], existingItems: [] });
 
     expect(mocks.getUniqueFilename).toHaveBeenCalledWith('report', 'pdf', ['file-dup'], DESTINATION);
     expect(mocks.getUniqueFolderName).toHaveBeenCalledWith('Photos', ['folder-dup'], DESTINATION);
-    expect(mocks.moveItemsThunk).toHaveBeenNthCalledWith(1, {
-      items: [
-        { ...file, name: 'report (1)', plainName: 'report (1)', plain_name: 'report (1)', newItemName: 'report (1)' },
-      ],
-      destinationFolderId: DESTINATION,
-    });
-    expect(mocks.moveItemsThunk).toHaveBeenNthCalledWith(2, {
-      items: [{ ...folder, name: 'Photos (1)', plain_name: 'Photos (1)', newItemName: 'Photos (1)' }],
-      destinationFolderId: DESTINATION,
-    });
     expect(mocks.moveItemsToTrash).not.toHaveBeenCalled();
-    expect(mocks.popItemsToDelete).toHaveBeenCalledWith([file, folder]);
+    expect(mocks.dispatch.mock.calls).toEqual([
+      [asMoveAction(renamedFileMove)],
+      [asMoveAction(renamedFolderMove)],
+      [asPopAction([file, folder])],
+    ]);
   });
 
   test('when replacing, then existing items are trashed before moving and moved items leave the pending deletion list', async () => {
@@ -77,13 +87,18 @@ describe('resolveMoveCollision', () => {
     const existing = getDriveItemData({ uuid: 'existing' });
     const callOrder: string[] = [];
     mocks.moveItemsToTrash.mockImplementation(async () => callOrder.push('trash'));
-    mocks.moveItemsThunk.mockImplementation(() => callOrder.push('move'));
+    mocks.moveItemsThunk.mockImplementation((payload: unknown) => {
+      callOrder.push('move');
+      return asMoveAction(payload);
+    });
 
     await resolve({ operation: 'replace', items: [item], existingItems: [existing] });
 
     expect(mocks.moveItemsToTrash).toHaveBeenCalledWith([existing]);
-    expect(mocks.moveItemsThunk).toHaveBeenCalledWith({ items: [item], destinationFolderId: DESTINATION });
     expect(callOrder).toEqual(['trash', 'move']);
-    expect(mocks.popItemsToDelete).toHaveBeenCalledWith([item]);
+    expect(mocks.dispatch.mock.calls).toEqual([
+      [asMoveAction({ items: [item], destinationFolderId: DESTINATION })],
+      [asPopAction([item])],
+    ]);
   });
 });
