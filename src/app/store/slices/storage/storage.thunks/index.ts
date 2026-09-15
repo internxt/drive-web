@@ -6,6 +6,14 @@ import { deleteItemsThunk, deleteItemsThunkExtraReducers } from './deleteItemsTh
 import { fetchDeletedThunk, fetchDeletedThunkExtraReducers } from './fetchDeletedThunk';
 import { fetchFolderContentThunkExtraReducers, fetchPaginatedFolderContentThunk } from './fetchFolderContentThunk';
 import {
+  fetchFavoritesThunk,
+  fetchFavoritesThunkExtraReducers,
+} from '../../../../../views/Favorites/store/fetchFavoritesThunk';
+import {
+  toggleFavoriteThunk,
+  toggleFavoriteThunkExtraReducers,
+} from '../../../../../views/Favorites/store/toggleFavoriteThunk';
+import {
   fetchRecentsThunk,
   fetchRecentsThunkExtraReducers,
 } from '../../../../../views/Recents/store/fetchRecentsThunk';
@@ -28,6 +36,8 @@ const storageThunks = {
   uploadFolderThunk,
   updateItemMetadataThunk,
   fetchRecentsThunk,
+  fetchFavoritesThunk,
+  toggleFavoriteThunk,
   createFolderThunk,
   moveItemsThunk,
   fetchDeletedThunk,
@@ -45,6 +55,8 @@ export const storageExtraReducers = (builder: ActionReducerMapBuilder<StorageSta
   uploadFolderThunkExtraReducers(builder);
   updateItemMetadataThunkExtraReducers(builder);
   fetchRecentsThunkExtraReducers(builder);
+  fetchFavoritesThunkExtraReducers(builder);
+  toggleFavoriteThunkExtraReducers(builder);
   createFolderThunkExtraReducers(builder);
   moveItemsThunkExtraReducers(builder);
   fetchDeletedThunkExtraReducers(builder);

@@ -401,6 +401,7 @@
   },
   "sideNav": {
     "drive": "云盘",
+    "favorites": "收藏",
     "backups": "备份",
     "shared": "共享的",
     "recents": "最近",
@@ -412,6 +413,13 @@
     }
   },
   "views": {
+    "favorites": {
+      "head": "收藏",
+      "empty": {
+        "title": "暂无收藏",
+        "description": "将文件或文件夹添加到收藏,以便更快地访问"
+      }
+    },
     "recents": {
       "head": "最近",
       "empty": {
@@ -1063,6 +1071,8 @@
     "fileCannotBeEmpty": "文件名不能为空",
     "creatingFolder": "创建文件夹时出错",
     "fetchingFolderContent": "获取文件夹内容时出错",
+    "togglingFavorite": "更新收藏时出错",
+    "togglingSomeFavorites": "部分收藏无法更新",
     "uploadingFolder": "上传文件夹时出错",
     "uploadingFile": "上传文件时出错: {{reason}}",
     "uploadingItems": "部分元素无法上传",
@@ -1437,6 +1447,8 @@
       "shareLink": "分享",
       "shareTeam": "与团队分享",
       "manageLinkAccess": "管理访问权限",
+      "addToFavorites": "添加到收藏",
+      "removeFromFavorites": "从收藏中移除",
       "rename": "重命名",
       "details": "详细信息",
       "share": "分享",

@@ -401,6 +401,7 @@
   },
   "sideNav": {
     "drive": "Drive",
+    "favorites": "Preferiti",
     "backups": "Backup",
     "shared": "Condiviso",
     "recents": "Recenti",
@@ -412,6 +413,13 @@
     }
   },
   "views": {
+    "favorites": {
+      "head": "Preferiti",
+      "empty": {
+        "title": "Ancora nessun preferito",
+        "description": "Aggiungi file o cartelle ai tuoi preferiti per accedervi più velocemente"
+      }
+    },
     "recents": {
       "head": "Recenti",
       "empty": {
@@ -1063,6 +1071,8 @@
     "fileCannotBeEmpty": "Il nome del file non può essere vuoto",
     "creatingFolder": "Errore durante la creazione della cartella",
     "fetchingFolderContent": "Errore nel recupero del contenuto della cartella",
+    "togglingFavorite": "Si è verificato un errore durante l'aggiornamento dei preferiti",
+    "togglingSomeFavorites": "Non è stato possibile aggiornare alcuni preferiti",
     "uploadingFolder": "Errore nel caricamento della cartella",
     "uploadingFile": "Errore nel caricamento del file: {{reason}}",
     "uploadingItems": "Non è stato possibile caricare alcuni elementi",
@@ -1436,6 +1446,8 @@
       "openPreview": "Anteprima aperta",
       "shareLink": "Condividi",
       "shareTeam": "Condividi con il team",
+      "addToFavorites": "Aggiungi ai preferiti",
+      "removeFromFavorites": "Rimuovi dai preferiti",
       "rename": "Rinomina",
       "download": "Scarica",
       "details": "Dettagli",

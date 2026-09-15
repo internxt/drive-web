@@ -1,12 +1,11 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { PendingInvitesResponse, PendingWorkspace, WorkspaceData } from '@internxt/sdk/dist/workspaces';
+import { PendingWorkspace, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { planThunks } from 'app/store/slices/plan';
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import PendingInvitationsDialog from './PendingInvitationsDialog';
-import errorService from 'services/error.service';
-import workspacesService from 'services/workspace.service';
 import { RootState } from 'app/store';
+import { useAppDispatch } from 'app/store/hooks';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import WorkspaceSelector, { Workspace } from './WorkspaceSelector';
 import encryptedStorageService from 'services/encrypted-storage.service';
@@ -17,30 +16,21 @@ interface WorkspaceSelectorContainerProps {
 }
 
 const WorkspaceSelectorContainer = ({ user, isCollapsed }: WorkspaceSelectorContainerProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const workspaces = useSelector((state: RootState) => state.workspaces.workspaces);
   const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
   const pendingWorkspaces = useSelector((state: RootState) => state.workspaces.pendingWorkspaces);
+  const pendingWorkspacesInvites = useSelector((state: RootState) => state.workspaces.pendingWorkspacesInvites);
   const parsedWorkspaces = parseWorkspaces(workspaces);
   const parsedPendingWorkspaces = parsePendingWorkspaces(pendingWorkspaces);
   const allParsedWorkspaces = [...parsedWorkspaces, ...parsedPendingWorkspaces];
-  const [pendingWorkspacesInvites, setPendingWorkspacesInvites] = useState<PendingInvitesResponse>([]);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isWorkspaceSelectorOpen, setIsWorkspaceSelectorOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    (isDialogOpen || isWorkspaceSelectorOpen) && getPendingInvites();
+    (isDialogOpen || isWorkspaceSelectorOpen) && dispatch(workspaceThunks.fetchPendingWorkspacesInvites());
   }, [isLoading, isWorkspaceSelectorOpen]);
-
-  const getPendingInvites = async () => {
-    try {
-      const pendingWorkspacesInvites = await workspacesService.getPendingInvites();
-      setPendingWorkspacesInvites(pendingWorkspacesInvites);
-    } catch (error) {
-      errorService.reportError(error);
-    }
-  };
 
   const handleWorkspaceChange = (workspaceId: string | null) => {
     const selectedWorkspace = allParsedWorkspaces.find((workspace) => workspace.uuid === workspaceId);

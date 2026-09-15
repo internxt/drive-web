@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '../../../app/store';
 import { DriveItemData, DriveItemDetails } from '../../../app/drive/types';
 import { storageActions } from '../../../app/store/slices/storage';
 import { uiActions } from '../../../app/store/slices/ui';
@@ -46,7 +47,7 @@ const SharedItemListContainer = ({
   onRenameSelectedItem,
   onOpenItemPreview,
 }: ShareItemListContainerProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
   const workspaceId = selectedWorkspace?.workspace.id;
   const defaultTeamId = selectedWorkspace?.workspace.defaultTeamId;

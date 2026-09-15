@@ -380,6 +380,7 @@
   },
   "sideNav": {
     "drive": "Drive",
+    "favorites": "Favoris",
     "backups": "Sauvegardes",
     "shared": "Partagé",
     "recents": "Récent",
@@ -391,6 +392,13 @@
     }
   },
   "views": {
+    "favorites": {
+      "head": "Favoris",
+      "empty": {
+        "title": "Aucun favori pour l'instant",
+        "description": "Ajoutez des fichiers ou des dossiers à vos favoris pour y accéder plus rapidement"
+      }
+    },
     "recents": {
       "head": "Recents",
       "empty": {
@@ -1042,6 +1050,8 @@
     "fileCannotBeEmpty": "Le nom du fichier ne peut pas être vide",
     "creatingFolder": "Erreur lors de la création d'un dossier",
     "fetchingFolderContent": "Erreur dans l'extraction du contenu d'un dossier",
+    "togglingFavorite": "Une erreur s'est produite lors de la mise à jour des favoris",
+    "togglingSomeFavorites": "Certains favoris n'ont pas pu être mis à jour",
     "uploadingFolder": "Erreur lors du téléchargement d'un dossier",
     "uploadingFile": "Erreur lors du téléchargement du fichier : {{reason}}",
     "uploadingItems": "Certains éléments n'ont pas pu être téléchargés",
@@ -1417,6 +1427,8 @@
       "details": "Détails",
       "shareLink": "Partager",
       "shareTeam": "Partager avec l'équipe",
+      "addToFavorites": "Ajouter aux favoris",
+      "removeFromFavorites": "Retirer des favoris",
       "rename": "Renommer",
       "manageLinkAccess": "Gestion de l'accès",
       "download": "Télécharger",

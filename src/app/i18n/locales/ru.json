@@ -380,6 +380,7 @@
   },
   "sideNav": {
     "drive": "Drive",
+    "favorites": "Избранное",
     "backups": "Резервные копии",
     "shared": "Общий",
     "recents": "Недавние",
@@ -391,6 +392,13 @@
     }
   },
   "views": {
+    "favorites": {
+      "head": "Избранное",
+      "empty": {
+        "title": "Пока нет избранного",
+        "description": "Добавляйте файлы и папки в избранное, чтобы получать к ним доступ быстрее"
+      }
+    },
     "recents": {
       "head": "Недавние",
       "empty": {
@@ -1042,6 +1050,8 @@
     "fileCannotBeEmpty": "Имя файла не может быть пустым",
     "creatingFolder": "Ошибка при создании папки",
     "fetchingFolderContent": "Ошибка при получении содержимого папки",
+    "togglingFavorite": "Произошла ошибка при обновлении избранного",
+    "togglingSomeFavorites": "Не удалось обновить некоторые элементы избранного",
     "uploadingFolder": "Ошибка при загрузке папки",
     "uploadingFile": "Ошибка при загрузке файла: {{reason}}",
     "uploadingItems": "Некоторые элементы не удалось загрузить",
@@ -1416,6 +1426,8 @@
       "details": "Подробности",
       "shareLink": "Поделиться",
       "shareTeam": "Поделиться с командой",
+      "addToFavorites": "Добавить в избранное",
+      "removeFromFavorites": "Убрать из избранного",
       "rename": "Переименовать",
       "manageLinkAccess": "Управление доступом",
       "download": "Загрузить",
