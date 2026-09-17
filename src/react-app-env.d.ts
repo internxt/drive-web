@@ -16,6 +16,8 @@ declare namespace NodeJS {
     REACT_APP_SEGMENT_KEY: string;
     REACT_APP_SEGMENT_DEBUG: string;
     REACT_APP_RECAPTCHA_V3: string;
+    REACT_APP_TURNSTILE_SITE_KEY: string;
+    REACT_APP_TURNSTILE_ENABLED: string;
     REACT_APP_SHARE_LINKS_DOMAIN: string;
     REACT_APP_HOSTNAME: string;
   }
@@ -33,6 +35,12 @@ interface Window {
   grecaptcha: {
     ready: (cb: () => void) => void;
     execute: (siteKey: string, { action: string }) => Promise<string>;
+  };
+  turnstile?: {
+    render: (el: HTMLElement, opts: Record<string, unknown>) => string;
+    execute: (id: string, opts?: { action?: string }) => void;
+    reset: (id: string) => void;
+    remove: (id: string) => void;
   };
   performance: {
     memory?: {

@@ -26,6 +26,7 @@ import { envService, errorService, navigationService, vpnAuthService, workspaces
 import { AuthMethodTypes } from 'views/Checkout/types';
 import { useOAuthFlow } from 'views/Login/hooks/useOAuthFlow';
 import useLoginRedirections from '../hooks/useLoginRedirections';
+import useTurnstile from '../hooks/useTurnstile';
 import encryptedStorageService from 'services/encrypted-storage.service';
 
 const showNotification = ({ text, isError }: { text: string; isError: boolean }) => {
@@ -67,6 +68,8 @@ export default function LogIn(): JSX.Element {
   const { isOAuthFlow, handleOAuthSuccess } = useOAuthFlow({
     authOrigin: isAuthOrigin,
   });
+
+  const { getToken: getTurnstileToken } = useTurnstile();
 
   useEffect(() => {
     handleShareInvitation();
@@ -187,7 +190,8 @@ export default function LogIn(): JSX.Element {
     const { email, password } = formData;
 
     try {
-      const isTfaEnabled = await is2FANeeded(email);
+      const turnstileToken = await getTurnstileToken();
+      const isTfaEnabled = await is2FANeeded(email, turnstileToken);
 
       if (!isTfaEnabled || showTwoFactor) {
         const loginType: 'desktop' | 'web' = isUniversalLinkMode ? 'desktop' : 'web';
@@ -198,6 +202,7 @@ export default function LogIn(): JSX.Element {
           twoFactorCode,
           dispatch,
           loginType,
+          turnstileToken,
         };
 
         const { user, mnemonic } = await authenticateUser(authParams);
