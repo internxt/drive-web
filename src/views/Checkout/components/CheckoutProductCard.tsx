@@ -75,6 +75,7 @@ export const CheckoutProductCard = ({
     'VIPOFFER',
     'VAOFFER',
     'VEOFFER',
+    'AFFIOFFER',
   ];
   const isHiddenCoupon = HIDDEN_COUPON_CODES.includes(couponCodeData?.codeName ?? '');
 

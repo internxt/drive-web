@@ -26,7 +26,11 @@ const COUPON_ONLY_RETIRED_PLANS = retiredPlansRuledBy('onlyIfAllowed');
 
 const [{ retiredPlanId: ANY_RETIRED_PLAN_ID }] = RETIRED_PLANS;
 
-const [BLOCKING_COUPON] = REDIRECT_BLOCKING_COUPON_CODES;
+const blockedLandingsOn = (plans: typeof RETIRED_PLANS) =>
+  plans.flatMap(({ retiredPlanId }) =>
+    [...REDIRECT_BLOCKING_COUPON_CODES].map((blockingCoupon) => ({ retiredPlanId, blockingCoupon })),
+  );
+
 const [ALLOWED_COUPON] = REDIRECT_ALLOWED_COUPON_CODES;
 const UNLISTED_COUPON = 'A_COUPON_NOBODY_LISTED';
 const ACTIVE_PLAN_ID = 'price_1SomeOtherActivePriceId';
@@ -102,34 +106,34 @@ describe('Landing on the checkout with a price that is no longer on sale', () =>
     },
   );
 
-  test.each(RETIRED_PLANS)(
-    'When the retired price $retiredPlanId arrives with a coupon that opts out of the redirect, then the address bar is left untouched',
-    ({ retiredPlanId }) => {
-      landOn(`/checkout?planId=${retiredPlanId}&couponCode=${BLOCKING_COUPON}`);
+  test.each(blockedLandingsOn(RETIRED_PLANS))(
+    'When the retired price $retiredPlanId arrives with $blockingCoupon, the coupon that opts out of the redirect, then the address bar is left untouched',
+    ({ retiredPlanId, blockingCoupon }) => {
+      landOn(`/checkout?planId=${retiredPlanId}&couponCode=${blockingCoupon}`);
 
       expect(screen.getByTestId(CHECKOUT)).toHaveTextContent(
-        `/checkout?planId=${retiredPlanId}&couponCode=${BLOCKING_COUPON}`,
+        `/checkout?planId=${retiredPlanId}&couponCode=${blockingCoupon}`,
       );
     },
   );
 
-  test.each(RETIRED_PLANS)(
-    'When a coupon opts out of the redirect of $retiredPlanId, then the retired link is left as it arrived in the browser history',
-    ({ retiredPlanId }) => {
-      const history = landOn(`/checkout?planId=${retiredPlanId}&couponCode=${BLOCKING_COUPON}`);
+  test.each(blockedLandingsOn(RETIRED_PLANS))(
+    'When $blockingCoupon opts out of the redirect of $retiredPlanId, then the retired link is left as it arrived in the browser history',
+    ({ retiredPlanId, blockingCoupon }) => {
+      const history = landOn(`/checkout?planId=${retiredPlanId}&couponCode=${blockingCoupon}`);
 
       expect(history.entries).toHaveLength(1);
       expect(history.action).toBe('POP');
     },
   );
 
-  test.each(RETIRED_PLANS)(
-    'When the coupon that opts out of the redirect of $retiredPlanId is typed in lower case, then it still opts out',
-    ({ retiredPlanId }) => {
-      landOn(`/checkout?planId=${retiredPlanId}&couponCode=${BLOCKING_COUPON.toLowerCase()}`);
+  test.each(blockedLandingsOn(RETIRED_PLANS))(
+    'When $blockingCoupon, the coupon that opts out of the redirect of $retiredPlanId, is typed in lower case, then it still opts out',
+    ({ retiredPlanId, blockingCoupon }) => {
+      landOn(`/checkout?planId=${retiredPlanId}&couponCode=${blockingCoupon.toLowerCase()}`);
 
       expect(screen.getByTestId(CHECKOUT)).toHaveTextContent(
-        `/checkout?planId=${retiredPlanId}&couponCode=${BLOCKING_COUPON.toLowerCase()}`,
+        `/checkout?planId=${retiredPlanId}&couponCode=${blockingCoupon.toLowerCase()}`,
       );
     },
   );
@@ -222,13 +226,13 @@ describe('Landing on the checkout with a price that only a campaign coupon can l
     },
   );
 
-  test.each(COUPON_ONLY_RETIRED_PLANS)(
-    'When the coupon that opts out of the other retired price comes along with $retiredPlanId, then the address bar is left untouched',
-    ({ retiredPlanId }) => {
-      landOn(`/checkout?planId=${retiredPlanId}&couponCode=${BLOCKING_COUPON}`);
+  test.each(blockedLandingsOn(COUPON_ONLY_RETIRED_PLANS))(
+    'When $blockingCoupon, the coupon that opts out of the other retired price, comes along with $retiredPlanId, then the address bar is left untouched',
+    ({ retiredPlanId, blockingCoupon }) => {
+      landOn(`/checkout?planId=${retiredPlanId}&couponCode=${blockingCoupon}`);
 
       expect(screen.getByTestId(CHECKOUT)).toHaveTextContent(
-        `/checkout?planId=${retiredPlanId}&couponCode=${BLOCKING_COUPON}`,
+        `/checkout?planId=${retiredPlanId}&couponCode=${blockingCoupon}`,
       );
     },
   );
@@ -255,8 +259,9 @@ describe('Landing on the checkout with a price that only a campaign coupon can l
 });
 
 describe('Reading the catalogue of retired prices', () => {
-  // The ids below are spelled out on purpose: this is the only test that notices a price being
-  // added to or dropped from the catalogue, so adding one has to be declared here to pass.
+  // The ids and the codes below are spelled out on purpose: these are the only tests that notice a
+  // price or a coupon code being added to or dropped from the catalogue, so a change to either one
+  // has to be declared here to pass.
   test('When the whole catalogue is read, then every retired price on it points to its replacement under a known coupon rule', () => {
     expect(REDIRECT_PLANS).toEqual({
       price_1T1xQtFAOdcgaBMQ1r2JnHsE: {
@@ -272,6 +277,11 @@ describe('Reading the catalogue of retired prices', () => {
         couponRule: 'onlyIfAllowed',
       },
     });
+  });
+
+  test('When the lists of coupon codes are read, then they hold the codes that rule the redirects today', () => {
+    expect([...REDIRECT_BLOCKING_COUPON_CODES]).toEqual([]);
+    expect([...REDIRECT_ALLOWED_COUPON_CODES]).toEqual(['SPECIAL', 'WEWE', 'GOTZHAOFFER', 'TFA', 'REOFFER']);
   });
 
   test('When a price that replaced a retired one is looked up, then it is not itself retired', () => {
