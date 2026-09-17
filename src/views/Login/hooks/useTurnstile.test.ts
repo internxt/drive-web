@@ -5,8 +5,6 @@ import useTurnstile from './useTurnstile';
 
 vi.mock('services/env.service');
 
-// Cloudflare's documented testing key and dummy token.
-// https://developers.cloudflare.com/turnstile/troubleshooting/testing/
 const ALWAYS_PASSES_SITE_KEY = '1x00000000000000000000AA';
 const DUMMY_TOKEN = 'XXXX.DUMMY.TOKEN.XXXX';
 
