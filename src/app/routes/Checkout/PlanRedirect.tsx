@@ -25,11 +25,11 @@ export const REDIRECT_PLANS: Readonly<Record<string, RedirectPlan>> = {
   },
 };
 
-export const REDIRECT_BLOCKING_COUPON_CODES: ReadonlySet<string> = new Set(['GOTZHAOFFER']);
+export const REDIRECT_BLOCKING_COUPON_CODES: ReadonlySet<string> = new Set([]);
 export const REDIRECT_ALLOWED_COUPON_CODES: ReadonlySet<string> = new Set([
   'SPECIAL',
   'WEWE',
-  'GOTZHA',
+  'GOTZHAOFFER',
   'TFA',
   'REOFFER',
 ]);
