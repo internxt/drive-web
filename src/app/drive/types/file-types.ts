@@ -212,10 +212,6 @@ export const heicImageExtensions: string[] = imageExtensions['heic'];
 export const tiffImageExtensions: string[] = imageExtensions['tiff'];
 export const rawImageExtensions: string[] = imageExtensions['raw'];
 
-/**
- * Image formats browsers cannot render natively. The file viewer converts them
- * to a browser-friendly image (JPEG/PNG) before showing the preview.
- */
 export const convertibleImageExtensions: string[] = [
   ...heicImageExtensions,
   ...tiffImageExtensions,
