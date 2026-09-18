@@ -36,12 +36,6 @@ interface Window {
     ready: (cb: () => void) => void;
     execute: (siteKey: string, { action: string }) => Promise<string>;
   };
-  turnstile?: {
-    render: (el: HTMLElement, opts: Record<string, unknown>) => string;
-    execute: (id: string, opts?: { action?: string }) => void;
-    reset: (id: string) => void;
-    remove: (id: string) => void;
-  };
   performance: {
     memory?: {
       jsHeapSizeLimit: number;
