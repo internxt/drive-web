@@ -100,17 +100,30 @@ beforeEach(() => {
 });
 
 describe('resolveCollision', () => {
-  test('when moving with keep, then each item is moved under a unique name and leaves the pending deletion list', async () => {
+  test.each<[ResolveCollisionParams['operationType'], ResolveCollisionParams['operation'], unknown[][]]>([
+    ['move', 'keep', [[asPopAction([])]]],
+    ['move', 'replace', [[asPopAction([])]]],
+    ['upload', 'keep', []],
+    ['upload', 'replace', []],
+  ])(
+    'when %s + %s gets no items, then nothing is moved, trashed or uploaded',
+    async (operationType, operation, expectedDispatchCalls) => {
+      await resolve({ operationType, operation, items: [], existingItems: [] });
+
+      expect(mocks.moveItemsToTrash).not.toHaveBeenCalled();
+      expect(mocks.uploadFoldersWithTracking).not.toHaveBeenCalled();
+      expect(mocks.dispatch.mock.calls).toEqual(expectedDispatchCalls);
+    },
+  );
+
+  test('when moving with keep, then items get a unique name and leave the pending deletion list', async () => {
     const file = getDriveItemData({ plainName: 'report', name: 'report', type: 'pdf', isFolder: false });
     const folder = getDriveItemData({ plainName: 'Photos', name: 'Photos', isFolder: true });
-    const renamedFileMove = {
+    const renamedMove = {
       items: [
         { ...file, name: 'report (1)', plainName: 'report (1)', plain_name: 'report (1)', newItemName: 'report (1)' },
+        { ...folder, name: 'Photos (1)', plain_name: 'Photos (1)', newItemName: 'Photos (1)' },
       ],
-      destinationFolderId: DESTINATION,
-    };
-    const renamedFolderMove = {
-      items: [{ ...folder, name: 'Photos (1)', plain_name: 'Photos (1)', newItemName: 'Photos (1)' }],
       destinationFolderId: DESTINATION,
     };
 
@@ -119,16 +132,13 @@ describe('resolveCollision', () => {
     expect(mocks.getUniqueFilename).toHaveBeenCalledWith('report', 'pdf', ['file-dup'], DESTINATION);
     expect(mocks.getUniqueFolderName).toHaveBeenCalledWith('Photos', ['folder-dup'], DESTINATION);
     expect(mocks.moveItemsToTrash).not.toHaveBeenCalled();
-    expect(mocks.dispatch.mock.calls).toEqual([
-      [asMoveAction(renamedFileMove)],
-      [asMoveAction(renamedFolderMove)],
-      [asPopAction([file, folder])],
-    ]);
+    expect(mocks.dispatch.mock.calls).toEqual([[asMoveAction(renamedMove)], [asPopAction([file, folder])]]);
   });
 
-  test('when moving with replace, then existing items are trashed before moving and moved items leave the pending deletion list', async () => {
-    const item = getDriveItemData({ uuid: 'new' });
-    const existing = getDriveItemData({ uuid: 'existing' });
+  test('when moving with replace, then matched existing items are trashed before moving and every moved item leaves the pending deletion list', async () => {
+    const matched = getDriveItemData({ uuid: 'matched', plainName: 'report', type: 'pdf' });
+    const unmatched = getDriveItemData({ uuid: 'unmatched', plainName: 'other', type: 'pdf' });
+    const existing = getDriveItemData({ uuid: 'existing', plainName: 'report', type: 'pdf' });
     const callOrder: string[] = [];
     mocks.moveItemsToTrash.mockImplementation(async () => callOrder.push('trash'));
     mocks.moveItemsThunk.mockImplementation((payload: unknown) => {
@@ -136,13 +146,18 @@ describe('resolveCollision', () => {
       return asMoveAction(payload);
     });
 
-    await resolve({ operationType: 'move', operation: 'replace', items: [item], existingItems: [existing] });
+    await resolve({
+      operationType: 'move',
+      operation: 'replace',
+      items: [matched, unmatched],
+      existingItems: [existing],
+    });
 
     expect(mocks.moveItemsToTrash).toHaveBeenCalledWith([existing]);
     expect(callOrder).toEqual(['trash', 'move']);
     expect(mocks.dispatch.mock.calls).toEqual([
-      [asMoveAction({ items: [item], destinationFolderId: DESTINATION })],
-      [asPopAction([item])],
+      [asMoveAction({ items: [matched], destinationFolderId: DESTINATION })],
+      [asPopAction([matched, unmatched])],
     ]);
   });
 
@@ -160,56 +175,67 @@ describe('resolveCollision', () => {
       maxUploadFileSize: 123,
     });
     expect(mocks.dispatch.mock.calls).toEqual([
-      [asUploadAction({ files: [file], parentFolderId: DESTINATION, options: undefined })],
-      [asRefreshAction(DESTINATION)],
+      [asUploadAction({ files: [file], parentFolderId: DESTINATION, options: { disableDuplicatedNamesCheck: false } })],
       [asRefreshAction(DESTINATION)],
     ]);
     expect(mocks.popItemsToDelete).not.toHaveBeenCalled();
   });
 
-  test('when uploading with replace and versioning is off, then each existing item is trashed and the new one is uploaded without the duplicates check', async () => {
-    const file = new File(['content'], 'report.pdf');
-    const root = getRoot();
-    const existingFile = getDriveItemData({ uuid: 'existing-file', type: 'pdf' });
-    const existingFolder = getDriveItemData({ uuid: 'existing-folder', isFolder: true });
+  test('when uploading with replace and versioning is off, then only matched existing items are trashed and re-uploaded without the duplicates check', async () => {
+    const matched = new File(['content'], 'report.pdf');
+    const unmatched = new File(['content'], 'other.txt');
+    const existing = getDriveItemData({ uuid: 'existing', plainName: 'report', type: 'pdf' });
 
     await resolve({
       operationType: 'upload',
       operation: 'replace',
-      items: [file, root],
-      existingItems: [existingFile, existingFolder],
+      items: [matched, unmatched],
+      existingItems: [existing],
     });
 
-    expect(mocks.moveItemsToTrash).toHaveBeenNthCalledWith(1, [existingFile]);
-    expect(mocks.moveItemsToTrash).toHaveBeenNthCalledWith(2, [existingFolder]);
-    expect(mocks.uploadFoldersWithTracking).toHaveBeenCalledWith(
-      expect.objectContaining({ payload: [{ root: { ...root }, currentFolderId: DESTINATION }] }),
-    );
+    expect(mocks.moveItemsToTrash).toHaveBeenCalledWith([existing]);
+    expect(mocks.uploadFoldersWithTracking).not.toHaveBeenCalled();
     expect(mocks.networkUploadFile).not.toHaveBeenCalled();
     expect(mocks.dispatch.mock.calls).toEqual([
-      [asUploadAction({ files: [file], parentFolderId: DESTINATION, options: { disableDuplicatedNamesCheck: true } })],
-      [asRefreshAction(DESTINATION)],
+      [
+        asUploadAction({
+          files: [matched],
+          parentFolderId: DESTINATION,
+          options: { disableDuplicatedNamesCheck: true },
+        }),
+      ],
       [asRefreshAction(DESTINATION)],
     ]);
   });
 
-  test('when uploading with replace and versioning is on, then allowed extensions become a new version while the rest are trashed and re-uploaded', async () => {
+  test('when uploading with replace and versioning is on, then allowed extensions become a new version while folders and other files are trashed and re-uploaded', async () => {
     const context = getContext({ isVersioningEnabled: true, selectedWorkspace: { id: 'ws' } as never });
     const pdf = new File(['content'], 'report.pdf');
     const image = new File(['content'], 'photo.png');
-    const existingPdf = getDriveItemData({ uuid: 'existing-pdf', type: 'pdf' });
-    const existingImage = getDriveItemData({ uuid: 'existing-png', type: 'png' });
+    const root = getRoot();
+    const existingPdf = getDriveItemData({ uuid: 'existing-pdf', plainName: 'report', type: 'pdf' });
+    const existingImage = getDriveItemData({ uuid: 'existing-png', plainName: 'photo', type: 'png' });
+    const existingFolder = getDriveItemData({
+      uuid: 'existing-folder',
+      plainName: 'Photos',
+      isFolder: true,
+      type: 'pdf',
+    });
 
     await resolve(
       {
         operationType: 'upload',
         operation: 'replace',
-        items: [pdf, image],
-        existingItems: [existingPdf, existingImage],
+        items: [pdf, image, root],
+        existingItems: [existingPdf, existingImage, existingFolder],
       },
       context,
     );
 
+    expect(mocks.moveItemsToTrash).toHaveBeenCalledWith([existingImage, existingFolder]);
+    expect(mocks.uploadFoldersWithTracking).toHaveBeenCalledWith(
+      expect.objectContaining({ payload: [{ root: { ...root }, currentFolderId: DESTINATION }] }),
+    );
     expect(mocks.getEnvironmentConfig).toHaveBeenCalledWith(true);
     expect(mocks.networkUploadFile).toHaveBeenCalledWith(
       'b',
@@ -217,11 +243,42 @@ describe('resolveCollision', () => {
       { taskId: expect.stringMatching(/^replace-existing-pdf-\d+$/) },
     );
     expect(mocks.replaceFile).toHaveBeenCalledWith('existing-pdf', { fileId: 'new-file-id', size: pdf.size });
-    expect(mocks.moveItemsToTrash).toHaveBeenCalledWith([existingImage]);
     expect(mocks.dispatch.mock.calls).toEqual([
+      [asUploadAction(expect.objectContaining({ files: [image], options: { disableDuplicatedNamesCheck: true } }))],
       [asInvalidateCacheAction('existing-pdf')],
       [asRefreshAction(DESTINATION)],
-      [asUploadAction(expect.objectContaining({ files: [image] }))],
+    ]);
+  });
+
+  test('when several files are versioned, then they are replaced one at a time', async () => {
+    let inFlight = 0;
+    let maxInFlight = 0;
+    mocks.replaceFile.mockImplementation(async () => {
+      inFlight += 1;
+      maxInFlight = Math.max(maxInFlight, inFlight);
+      await Promise.resolve();
+      inFlight -= 1;
+    });
+
+    await resolve(
+      {
+        operationType: 'upload',
+        operation: 'replace',
+        items: [new File(['a'], 'a.pdf'), new File(['b'], 'b.pdf')],
+        existingItems: [
+          getDriveItemData({ uuid: 'a', plainName: 'a', type: 'pdf' }),
+          getDriveItemData({ uuid: 'b', plainName: 'b', type: 'pdf' }),
+        ],
+      },
+      getContext({ isVersioningEnabled: true }),
+    );
+
+    expect(mocks.replaceFile).toHaveBeenCalledTimes(2);
+    expect(maxInFlight).toBe(1);
+    expect(mocks.moveItemsToTrash).not.toHaveBeenCalled();
+    expect(mocks.dispatch.mock.calls).toEqual([
+      [asInvalidateCacheAction('a')],
+      [asInvalidateCacheAction('b')],
       [asRefreshAction(DESTINATION)],
     ]);
   });
