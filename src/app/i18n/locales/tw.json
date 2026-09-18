@@ -206,6 +206,68 @@
     }
   },
   "checkout": {
+    "bfCheckout": {
+      "header": {
+        "tagline": "您的私人雲端",
+        "europeanBased": "歐洲營運",
+        "gdprCompliant": "符合 GDPR",
+        "trustedByMillions": "數百萬使用者信賴"
+      },
+      "hero": {
+        "offerPill": "立減 {{percent}}% — 限時專屬優惠",
+        "offerPillNoDiscount": "限時專屬優惠",
+        "title": "讓您的檔案、照片和影片",
+        "titleHighlight": "100% 私密。",
+        "subtitle": "首月僅需 {{price}}，即可獲得 {{storage}} 私人雲端儲存空間。",
+        "imageAlt": "筆記型電腦和手機上的 Internxt Drive",
+        "points": {
+          "privacy": {
+            "title": "只有您能存取自己的檔案",
+            "description": "零知識加密意味著連 Internxt 也無法存取您的內容。"
+          },
+          "storage": {
+            "title": "您的私人雲端，安全無虞",
+            "description": "儲存您的照片、影片、文件和個人檔案，隱私保護內建其中。"
+          },
+          "offer": {
+            "title": "立減 {{percent}}% — 限時優惠",
+            "titleNoDiscount": "專屬優惠 — 限時開放",
+            "description": "僅需 {{price}} 即可獲得 {{storage}}。此專屬優惠不會持續太久。"
+          }
+        },
+        "badges": {
+          "basedInEu": "總部位於歐盟",
+          "openSource": "開放原始碼",
+          "audited": "經 Securitum 稽核",
+          "privacyPriority": "您的隱私，我們的首要任務。"
+        }
+      },
+      "countdown": {
+        "title": "您的 {{percent}}% 專屬優惠將於以下時間後結束：",
+        "titleNoDiscount": "您的專屬優惠將於以下時間後結束：",
+        "footer": "在優惠結束前，以 {{price}} 獲得 {{storage}}。"
+      },
+      "summary": {
+        "discountApplied": "已套用 {{percent}}% 優惠",
+        "estimatedTax": "預估稅金"
+      },
+      "form": {
+        "emailLabel": "您的電子郵件地址",
+        "emailPlaceholder": "name@email.com",
+        "createPasswordLabel": "建立密碼",
+        "passwordLabel": "您的密碼",
+        "passwordPlaceholder": "密碼",
+        "togglePasswordVisibility": "顯示或隱藏密碼",
+        "incompleteDetails": "請輸入您的電子郵件地址和密碼以繼續。",
+        "encryptedTitle": "您的檔案已加密且完全私密。",
+        "encryptedDescription": "Internxt 無法存取您的內容。"
+      },
+      "cta": {
+        "button": "以 {{price}} 獲得 {{storage}}",
+        "renewalNoteMonthly": "首月 {{price}}，之後以 {{renewalPrice}}/月續訂。可隨時取消。",
+        "renewalNoteYearly": "首年 {{price}}，之後以 {{renewalPrice}}/年續訂。可隨時取消。"
+      }
+    },
     "pay": "支付",
     "processing": "處理中...",
     "checkout": "結帳",

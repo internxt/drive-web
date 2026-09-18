@@ -206,6 +206,68 @@
     }
   },
   "checkout": {
+    "bfCheckout": {
+      "header": {
+        "tagline": "Your private cloud",
+        "europeanBased": "European based",
+        "gdprCompliant": "GDPR compliant",
+        "trustedByMillions": "Trusted by millions"
+      },
+      "hero": {
+        "offerPill": "{{percent}}% OFF — Limited-time exclusive offer",
+        "offerPillNoDiscount": "Limited-time exclusive offer",
+        "title": "Keep your files, photos & videos",
+        "titleHighlight": "100% private.",
+        "subtitle": "Get {{storage}} of private cloud storage for just {{price}} for your first month.",
+        "imageAlt": "Internxt Drive on a laptop and a phone",
+        "points": {
+          "privacy": {
+            "title": "Only you can access your files",
+            "description": "Zero-knowledge encryption means even Internxt cannot access your content."
+          },
+          "storage": {
+            "title": "Your private cloud, protected",
+            "description": "Store your photos, videos, documents and personal files with privacy built in."
+          },
+          "offer": {
+            "title": "{{percent}}% OFF — for a limited time",
+            "titleNoDiscount": "Exclusive offer — for a limited time",
+            "description": "Get {{storage}} for just {{price}}. This exclusive offer won't last."
+          }
+        },
+        "badges": {
+          "basedInEu": "Based in the EU",
+          "openSource": "Open source",
+          "audited": "Audited by Securitum",
+          "privacyPriority": "Your privacy. Our priority."
+        }
+      },
+      "countdown": {
+        "title": "Your exclusive {{percent}}% OFF offer expires in:",
+        "titleNoDiscount": "Your exclusive offer expires in:",
+        "footer": "Get {{storage}} for {{price}} before this offer ends."
+      },
+      "summary": {
+        "discountApplied": "{{percent}}% OFF applied",
+        "estimatedTax": "Estimated tax"
+      },
+      "form": {
+        "emailLabel": "Your email address",
+        "emailPlaceholder": "you@email.com",
+        "createPasswordLabel": "Create a password",
+        "passwordLabel": "Your password",
+        "passwordPlaceholder": "Password",
+        "togglePasswordVisibility": "Show or hide password",
+        "incompleteDetails": "Please enter your email and password to continue.",
+        "encryptedTitle": "Your files are encrypted and private.",
+        "encryptedDescription": "Internxt cannot access your content."
+      },
+      "cta": {
+        "button": "Get {{storage}} for {{price}}",
+        "renewalNoteMonthly": "First month {{price}}, then renews at {{renewalPrice}}/month. Cancel anytime.",
+        "renewalNoteYearly": "First year {{price}}, then renews at {{renewalPrice}}/year. Cancel anytime."
+      }
+    },
     "pay": "Pay",
     "processing": "Processing...",
     "checkout": "Checkout",

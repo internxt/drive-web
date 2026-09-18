@@ -206,6 +206,68 @@
     }
   },
   "checkout": {
+    "bfCheckout": {
+      "header": {
+        "tagline": "Il tuo cloud privato",
+        "europeanBased": "Con sede in Europa",
+        "gdprCompliant": "Conforme al GDPR",
+        "trustedByMillions": "Scelto da milioni di utenti"
+      },
+      "hero": {
+        "offerPill": "{{percent}}% DI SCONTO — Offerta esclusiva a tempo limitato",
+        "offerPillNoDiscount": "Offerta esclusiva a tempo limitato",
+        "title": "Mantieni i tuoi file, foto e video",
+        "titleHighlight": "100% privati.",
+        "subtitle": "Ottieni {{storage}} di spazio cloud privato a soli {{price}} per il primo mese.",
+        "imageAlt": "Internxt Drive su un laptop e uno smartphone",
+        "points": {
+          "privacy": {
+            "title": "Solo tu puoi accedere ai tuoi file",
+            "description": "La crittografia zero-knowledge fa sì che nemmeno Internxt possa accedere ai tuoi contenuti."
+          },
+          "storage": {
+            "title": "Il tuo cloud privato, protetto",
+            "description": "Conserva le tue foto, i video, i documenti e i file personali con la privacy integrata."
+          },
+          "offer": {
+            "title": "{{percent}}% DI SCONTO — per un tempo limitato",
+            "titleNoDiscount": "Offerta esclusiva — per un tempo limitato",
+            "description": "Ottieni {{storage}} a soli {{price}}. Questa offerta esclusiva non durerà."
+          }
+        },
+        "badges": {
+          "basedInEu": "Con sede nell'UE",
+          "openSource": "Open source",
+          "audited": "Verificato da Securitum",
+          "privacyPriority": "La tua privacy. La nostra priorità."
+        }
+      },
+      "countdown": {
+        "title": "La tua offerta esclusiva del {{percent}}% di sconto scade tra:",
+        "titleNoDiscount": "La tua offerta esclusiva scade tra:",
+        "footer": "Ottieni {{storage}} a {{price}} prima che l'offerta finisca."
+      },
+      "summary": {
+        "discountApplied": "{{percent}}% di sconto applicato",
+        "estimatedTax": "Tasse stimate"
+      },
+      "form": {
+        "emailLabel": "Il tuo indirizzo email",
+        "emailPlaceholder": "tu@email.com",
+        "createPasswordLabel": "Crea una password",
+        "passwordLabel": "La tua password",
+        "passwordPlaceholder": "Password",
+        "togglePasswordVisibility": "Mostra o nascondi la password",
+        "incompleteDetails": "Inserisci la tua email e la tua password per continuare.",
+        "encryptedTitle": "I tuoi file sono crittografati e privati.",
+        "encryptedDescription": "Internxt non può accedere ai tuoi contenuti."
+      },
+      "cta": {
+        "button": "Ottieni {{storage}} a {{price}}",
+        "renewalNoteMonthly": "Primo mese {{price}}, poi si rinnova a {{renewalPrice}}/mese. Disdici quando vuoi.",
+        "renewalNoteYearly": "Primo anno {{price}}, poi si rinnova a {{renewalPrice}}/anno. Disdici quando vuoi."
+      }
+    },
     "pay": "Paga",
     "processing": "Elaborazione in corso...",
     "checkout": "Pagamento",

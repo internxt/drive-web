@@ -23,6 +23,7 @@ import RecentsView from 'views/Recents';
 import RequestAccess from 'app/drive/views/RequestAccess/RequestAccess';
 import TrashView from 'views/Trash';
 import { CheckoutCancelView, CheckoutSessionId, CheckoutSuccessView, CheckoutViewWrapper } from 'views/Checkout';
+import { BfCheckoutViewWrapper } from 'views/BfCheckout';
 import { ShareFileView, ShareFolderView } from 'views/PublicShared';
 import RedirectToAppView from '../../core/views/RedirectToAppView/RedirectToAppView';
 import SharedViewWrapper from 'views/Shared/SharedViewWrapper';
@@ -57,6 +58,7 @@ const views: Array<{
   { id: AppView.CheckoutCancel, component: CheckoutCancelView },
   { id: AppView.CheckoutSession, component: CheckoutSessionId },
   { id: AppView.Checkout, component: CheckoutViewWrapper },
+  { id: AppView.BfCheckout, component: BfCheckoutViewWrapper },
   { id: AppView.RecoveryLink, component: RecoveryLinkView },
   { id: AppView.ShareFileToken, component: ShareFileView },
   { id: AppView.ShareFileToken2, component: ShareFileView },
