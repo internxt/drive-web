@@ -5,12 +5,18 @@ import { defineConfig, devices } from '@playwright/test';
  */
 import 'dotenv/config';
 
+const CHECKOUT_SPECS = /[\\/]checkout[\\/].*\.spec\.ts$/;
+
+const LEGACY_STORAGE_STATE = './test/e2e/tests/specs/playwright/auth/user.json';
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
   expect: {
-    timeout: 4000,
+    // Stripe renders its card fields in cross-origin iframes, which regularly need more than the
+    // previous 4s to become interactive.
+    timeout: 15000,
   },
   timeout: 70000,
 
@@ -21,8 +27,9 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  /* Opt out of parallel tests on CI. Locally the checkout specs each drive real Stripe iframes, so
+     the worker count is capped to keep browsers from being starved of resources. */
+  workers: process.env.CI ? 1 : 4,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
@@ -46,55 +53,60 @@ export default defineConfig({
     {
       name: 'Internxt E2E tests on chromium',
       testDir: './test/e2e/tests/specs',
-      use: { ...devices['Desktop Chrome'], storageState: './test/e2e/tests/specs/playwright/auth/user.json' },
+      testIgnore: CHECKOUT_SPECS,
+      use: { ...devices['Desktop Chrome'], storageState: LEGACY_STORAGE_STATE },
       dependencies: ['setup'],
     },
 
     {
       name: 'Internxt E2E tests on firefox',
       testDir: './test/e2e/tests/specs',
-      use: { ...devices['Desktop Firefox'], storageState: './test/e2e/tests/specs/playwright/auth/user.json' },
+      testIgnore: CHECKOUT_SPECS,
+      use: { ...devices['Desktop Firefox'], storageState: LEGACY_STORAGE_STATE },
       dependencies: ['setup'],
     },
-
-    // {
-    //   name: 'Internxt E2E tests on webkit',
-    //   testDir: './test/e2e/tests/specs',
-    //   use: { ...devices['Desktop Safari'], storageState: './test/e2e/tests/specs/playwright/auth/user.json' },
-    //   dependencies: ['setup'],
-    // },
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
 
     /* Test against branded browsers. */
     {
       name: 'Internxt E2E tests on Edge',
       testDir: './test/e2e/tests/specs',
+      testIgnore: CHECKOUT_SPECS,
       use: {
         ...devices['Desktop Edge'],
         channel: 'msedge',
-        storageState: './test/e2e/tests/specs/playwright/auth/user.json',
+        storageState: LEGACY_STORAGE_STATE,
       },
       dependencies: ['setup'],
     },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
+
+    /* Checkout: the API layer is mocked, everything above it is real — the app under `yarn dev`,
+       and Stripe.js with the test publishable key, so the card fields are genuine Stripe iframes and
+       the confirmation token is a real test-mode call. Deterministic enough to run on every PR. */
+    {
+      name: 'checkout-mocked-chromium',
+      testDir: './test/e2e/tests/specs',
+      testMatch: CHECKOUT_SPECS,
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'checkout-mocked-firefox',
+      testDir: './test/e2e/tests/specs',
+      testMatch: CHECKOUT_SPECS,
+      use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'checkout-mocked-edge',
+      testDir: './test/e2e/tests/specs',
+      testMatch: CHECKOUT_SPECS,
+      use: { ...devices['Desktop Edge'], channel: 'msedge' },
+    },
   ],
 
   /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://127.0.0.1:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
+  webServer: {
+    command: 'yarn dev',
+    url: 'http://localhost:3000',
+    reuseExistingServer: !process.env.CI,
+    timeout: 180000,
+  },
 });
