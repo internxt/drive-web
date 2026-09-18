@@ -1,6 +1,6 @@
 import { auth } from '@internxt/lib';
 import QueryString from 'qs';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { useSelector } from 'react-redux';
@@ -26,6 +26,7 @@ import { envService, errorService, navigationService, vpnAuthService, workspaces
 import { AuthMethodTypes } from 'views/Checkout/types';
 import { useOAuthFlow } from 'views/Login/hooks/useOAuthFlow';
 import useLoginRedirections from '../hooks/useLoginRedirections';
+import TurnstileWidget, { TurnstileWidgetHandle } from 'components/TurnstileWidget';
 import encryptedStorageService from 'services/encrypted-storage.service';
 
 const showNotification = ({ text, isError }: { text: string; isError: boolean }) => {
@@ -67,6 +68,8 @@ export default function LogIn(): JSX.Element {
   const { isOAuthFlow, handleOAuthSuccess } = useOAuthFlow({
     authOrigin: isAuthOrigin,
   });
+
+  const turnstileRef = useRef<TurnstileWidgetHandle>(null);
 
   useEffect(() => {
     handleShareInvitation();
@@ -187,7 +190,7 @@ export default function LogIn(): JSX.Element {
     const { email, password } = formData;
 
     try {
-      const isTfaEnabled = await is2FANeeded(email);
+      const isTfaEnabled = await is2FANeeded(email, await turnstileRef.current?.getToken());
 
       if (!isTfaEnabled || showTwoFactor) {
         const loginType: 'desktop' | 'web' = isUniversalLinkMode ? 'desktop' : 'web';
@@ -198,6 +201,7 @@ export default function LogIn(): JSX.Element {
           twoFactorCode,
           dispatch,
           loginType,
+          turnstileToken: await turnstileRef.current?.getToken(),
         };
 
         const { user, mnemonic } = await authenticateUser(authParams);
@@ -277,6 +281,7 @@ export default function LogIn(): JSX.Element {
               <span className="font-base w-56 text-sm text-red">{loginError}</span>
             </div>
           )}
+          <TurnstileWidget ref={turnstileRef} action="login" />
           <Button
             type="submit"
             loading={isLoggingIn}
