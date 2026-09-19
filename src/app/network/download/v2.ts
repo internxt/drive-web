@@ -16,36 +16,23 @@ interface DownloadFileParams {
   options?: DownloadFileOptions;
 }
 
-interface DownloadOwnFileWithMnemonicParams extends DownloadFileParams {
+interface DownloadOwnFile extends DownloadFileParams {
   creds: NetworkCredentials;
-  key: { mnemonic: string; bucketKey?: never };
+  key: FileKey;
   token?: never;
-  encryptionKey?: never;
-}
-
-interface DownloadOwnFileWithBucketKeyParams extends DownloadFileParams {
-  creds: NetworkCredentials;
-  key: { bucketKey: Buffer; mnemonic?: never };
-  token?: never;
-  encryptionKey?: never;
 }
 
 interface DownloadSharedFileParams extends DownloadFileParams {
   creds?: never;
   key: FileKey;
   token: string;
-  encryptionKey: string;
 }
 
 type DownloadSharedFileFunction = (params: DownloadSharedFileParams) => DownloadFileResponse;
-type DownloadFileFunction = (
-  params: DownloadSharedFileParams | DownloadOwnFileWithMnemonicParams | DownloadOwnFileWithBucketKeyParams,
-) => DownloadFileResponse;
+type DownloadFileFunction = (params: DownloadSharedFileParams | DownloadOwnFile) => DownloadFileResponse;
 
-const downloadSharedFile: DownloadSharedFileFunction = (params) => {
-  const { bucketId, fileId, encryptionKey, token, options } = params;
-
-  return new NetworkFacade(
+const createNetworkFacade = (auth?: { username: string; password: string }): NetworkFacade =>
+  new NetworkFacade(
     Network.client(
       envService.getVariable('storjBridge'),
       {
@@ -53,148 +40,91 @@ const downloadSharedFile: DownloadSharedFileFunction = (params) => {
         clientVersion: '1.0',
       },
       {
-        bridgeUser: '',
-        userId: '',
+        bridgeUser: auth?.username ?? '',
+        userId: auth?.password ?? '',
       },
     ),
-  ).download(bucketId, fileId, '', {
-    key: Buffer.from(encryptionKey, 'hex'),
+  );
+
+const downloadSharedFile: DownloadSharedFileFunction = (params) => {
+  const { bucketId, fileId, key, token, options } = params;
+
+  const networkFacade = createNetworkFacade();
+  return networkFacade.download(bucketId, fileId, key, {
     token,
     downloadingCallback: options?.notifyProgress,
     abortController: options?.abortController,
   });
 };
 
-async function getAuthFromCredentials(creds: NetworkCredentials): Promise<{ username: string; password: string }> {
+const getAuthFromCredentials = async (creds: NetworkCredentials): Promise<{ username: string; password: string }> => {
   return {
     username: creds.user,
     password: await getSha256(creds.pass),
   };
-}
+};
 
-const downloadOwnFile = async (params: DownloadOwnFileWithMnemonicParams) => {
-  const {
-    bucketId,
-    fileId,
-    key: { mnemonic },
-    options,
-  } = params;
+const downloadOwnFile = async (params: DownloadOwnFile) => {
+  const { bucketId, fileId, key, options } = params;
   const auth = await getAuthFromCredentials(params.creds);
 
-  return new NetworkFacade(
-    Network.client(
-      envService.getVariable('storjBridge'),
-      {
-        clientName: 'drive-web',
-        clientVersion: '1.0',
-      },
-      {
-        bridgeUser: auth.username,
-        userId: auth.password,
-      },
-    ),
-  ).download(bucketId, fileId, mnemonic, {
+  const networkFacade = createNetworkFacade(auth);
+
+  return networkFacade.download(bucketId, fileId, key, {
     downloadingCallback: options?.notifyProgress,
     abortController: options?.abortController,
   });
 };
 
-const downloadOwnFileWithBucketKey = async (params: DownloadOwnFileWithBucketKeyParams) => {
-  const {
-    bucketId,
-    fileId,
-    key: { bucketKey },
-    options,
-  } = params;
+const multipartDownloadOwnFile = async (params: DownloadOwnFile & { fileSize: number }): Promise<FileStream> => {
+  const { bucketId, fileId, key, fileSize, options } = params;
   const auth = await getAuthFromCredentials(params.creds);
+  const networkFacade = createNetworkFacade(auth);
 
-  return new NetworkFacade(
-    Network.client(
-      envService.getVariable('storjBridge'),
-      {
-        clientName: 'drive-web',
-        clientVersion: '1.0',
-      },
-      {
-        bridgeUser: auth.username,
-        userId: auth.password,
-      },
-    ),
-  ).downloadWithBucketKey(bucketId, fileId, bucketKey, {
-    downloadingCallback: options?.notifyProgress,
-    abortController: options?.abortController,
-  });
-};
-
-export async function multipartDownload(
-  params: DownloadOwnFileWithMnemonicParams & { fileSize: number },
-): Promise<FileStream> {
-  const {
+  return new MultipartDownload(networkFacade).downloadFile({
     bucketId,
     fileId,
-    key: { mnemonic },
-    fileSize,
-    options,
-  } = params;
-  const auth = await getAuthFromCredentials(params.creds);
-
-  const networkFacade = new NetworkFacade(
-    Network.client(
-      envService.getVariable('storjBridge'),
-      {
-        clientName: 'drive-web',
-        clientVersion: '1.0',
-      },
-      {
-        bridgeUser: auth.username,
-        userId: auth.password,
-      },
-    ),
-  );
-
-  const multipartDownload = new MultipartDownload(networkFacade);
-
-  return multipartDownload.downloadFile({
-    bucketId,
-    fileId,
-    mnemonic,
+    key,
     fileSize,
     options: {
       downloadingCallback: options?.notifyProgress,
       abortController: options?.abortController,
     },
   });
-}
+};
 
-export async function downloadChunkFile(
-  params: DownloadOwnFileWithMnemonicParams & { chunkStart: number; chunkEnd: number },
-): Promise<FileStream> {
-  const {
+const multipartDownloadSharedFile = async (
+  params: DownloadSharedFileParams & { fileSize: number },
+): Promise<FileStream> => {
+  const { bucketId, fileId, key, token, fileSize, options } = params;
+
+  const networkFacade = createNetworkFacade();
+
+  return new MultipartDownload(networkFacade).downloadFile({
     bucketId,
     fileId,
-    key: { mnemonic },
-    chunkStart,
-    chunkEnd,
-    options,
-  } = params;
+    key,
+    fileSize,
+    options: {
+      token,
+      downloadingCallback: options?.notifyProgress,
+      abortController: options?.abortController,
+    },
+  });
+};
+
+export const downloadChunkFile = async (
+  params: DownloadOwnFile & { chunkStart: number; chunkEnd: number },
+): Promise<FileStream> => {
+  const { bucketId, fileId, key, chunkStart, chunkEnd, options } = params;
   const auth = await getAuthFromCredentials(params.creds);
 
-  return new NetworkFacade(
-    Network.client(
-      envService.getVariable('storjBridge'),
-      {
-        clientName: 'drive-web',
-        clientVersion: '1.0',
-      },
-      {
-        bridgeUser: auth.username,
-        userId: auth.password,
-      },
-    ),
-  ).downloadChunk({
+  const networkFacade = createNetworkFacade(auth);
+
+  return networkFacade.downloadChunk({
     bucketId,
     fileId,
-    mnemonic,
+    key,
     chunkStart,
     chunkEnd,
     options: {
@@ -202,18 +132,28 @@ export async function downloadChunkFile(
       abortController: options?.abortController,
     },
   });
-}
+};
 
-const downloadFile: DownloadFileFunction = (params) => {
-  if (params.token && params.encryptionKey) {
-    return downloadSharedFile(params);
-  } else if (params.creds && params.key.mnemonic) {
-    return downloadOwnFile(params as DownloadOwnFileWithMnemonicParams);
-  } else if (params.creds && params.key.bucketKey) {
-    return downloadOwnFileWithBucketKey(params as DownloadOwnFileWithBucketKeyParams);
+export const downloadFile: DownloadFileFunction = (params) => {
+  if (params.token) {
+    return downloadSharedFile(params as DownloadSharedFileParams);
+  } else if (params.creds) {
+    return downloadOwnFile(params as DownloadOwnFile);
   } else {
     throw new Error('DOWNLOAD ERRNO. 0');
   }
 };
 
 export default downloadFile;
+
+export const multipartDownload = async (
+  params: (DownloadOwnFile | DownloadSharedFileParams) & { fileSize: number },
+): Promise<FileStream> => {
+  if (params.token) {
+    return multipartDownloadSharedFile(params as DownloadSharedFileParams & { fileSize: number });
+  } else if (params.creds) {
+    return multipartDownloadOwnFile(params as DownloadOwnFile & { fileSize: number });
+  } else {
+    throw new Error('DOWNLOAD ERRNO. 0');
+  }
+};

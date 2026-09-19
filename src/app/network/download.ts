@@ -93,7 +93,6 @@ export interface IDownloadParams {
   creds?: NetworkCredentials;
   key?: FileKey;
   token?: string;
-  encryptionKey?: Buffer;
   options?: {
     notifyProgress: DownloadProgressCallback;
     abortController?: AbortController;
@@ -175,9 +174,7 @@ export async function _downloadFile(params: IDownloadParams): Promise<ReadableSt
   const iv = index.slice(0, 16);
   let key: Buffer;
 
-  if (params.encryptionKey) {
-    key = params.encryptionKey;
-  } else if (params.key?.mnemonic) {
+  if (params.key?.mnemonic) {
     key = await generateFileKey(params.key.mnemonic, bucketId, index);
   } else if (params.key?.bucketKey) {
     key = await generateFileKeyFromBucketKey(params.key.bucketKey, index);

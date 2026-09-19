@@ -8,13 +8,9 @@ import { Buffer } from 'buffer';
 import { beforeEach, describe, expect, it, test, vi } from 'vitest';
 import { RootState } from '../..';
 import userService from 'services/user.service';
+import { decryptBucketKeyHybrid, generateNewKeys } from '../../../crypto/services/pgp.service';
 import {
-  decryptMessageWithPrivateKey,
-  generateNewKeys,
-  hybridDecryptMessageWithPrivateKey,
-} from '../../../crypto/services/pgp.service';
-import {
-  HYBRID_ALGORITHM,
+  HYBRID_ALGORITHM_WITH_BUCKET_KEY,
   removeUserFromSharedFolder,
   sharedThunks,
   ShareFileWithUserPayload,
@@ -22,6 +18,7 @@ import {
   stopSharingItem,
 } from './index';
 import notificationsService from 'app/notifications/services/notifications.service';
+import { generateFileBucketKey } from 'app/network/crypto';
 const { shareItemWithUser } = sharedThunks;
 
 vi.mock('services/navigation.service', () => ({
@@ -58,12 +55,22 @@ vi.mock('services/error.service', () => ({
     reportError: vi.fn(),
   },
 }));
-
-describe('Encryption and Decryption', () => {
+describe('Encryption and Decryption', async () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
   });
+
+  const bucket = 'mock-bucket';
+  const mnemonic =
+    'truck arch rather sell tilt return warm nurse rack vacuum rubber tribe unfold scissors copper sock panel ozone harsh ahead danger soda legal state';
+  const mockUser: Partial<UserSettings> = {
+    mnemonic,
+    bucket,
+  };
+
+  const mockKey = await generateFileBucketKey(mnemonic, bucket);
+  const mockBucketKey = new Uint8Array(mockKey).slice(0, 32);
 
   it('shareItemWithUser encrypts with kyber for an existing user', async () => {
     const keys = await generateNewKeys();
@@ -75,11 +82,6 @@ describe('Encryption and Decryption', () => {
       sharedWith: 'mock-sharedWith',
       encryptionAlgorithm: 'mock-ecc',
       roleId: 'mock-roleId',
-    };
-
-    const mockUser: Partial<UserSettings> = {
-      mnemonic:
-        'truck arch rather sell tilt return warm nurse rack vacuum rubber tribe unfold scissors copper sock panel ozone harsh ahead danger soda legal state',
     };
 
     const mockRootState: Partial<RootState> = {
@@ -114,13 +116,13 @@ describe('Encryption and Decryption', () => {
     expect(inviteUserToSharedFolderInput.encryptionKey).toBeDefined();
 
     const { encryptionKey = '' } = inviteUserToSharedFolderInput;
-    const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
+    const decryptedMessage = await decryptBucketKeyHybrid({
       encryptedMessageInBase64: encryptionKey,
       privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
       privateKyberKeyInBase64: keys.privateKyberKeyBase64,
     });
 
-    expect(decryptedMessage).toEqual(mockUser.mnemonic);
+    expect(decryptedMessage).toEqual(mockBucketKey);
     expect(mockShareService.inviteUserToSharedFolder).toHaveBeenCalledWith(
       expect.objectContaining({
         itemId: mockPayload.itemId,
@@ -129,7 +131,7 @@ describe('Encryption and Decryption', () => {
         notifyUser: mockPayload.notifyUser,
         notificationMessage: mockPayload.notificationMessage,
         encryptionKey: encryptionKey,
-        encryptionAlgorithm: HYBRID_ALGORITHM,
+        encryptionAlgorithm: HYBRID_ALGORITHM_WITH_BUCKET_KEY,
         roleId: mockPayload.roleId,
         persistPreviousSharing: true,
       }),
@@ -146,11 +148,6 @@ describe('Encryption and Decryption', () => {
       sharedWith: 'mock-sharedWith',
       encryptionAlgorithm: 'mock-ecc',
       roleId: 'mock-roleId',
-    };
-
-    const mockUser: Partial<UserSettings> = {
-      mnemonic:
-        'truck arch rather sell tilt return warm nurse rack vacuum rubber tribe unfold scissors copper sock panel ozone harsh ahead danger soda legal state',
     };
 
     const mockRootState: Partial<RootState> = {
@@ -186,12 +183,13 @@ describe('Encryption and Decryption', () => {
     expect(inviteUserToSharedFolderInput.encryptionKey).toBeDefined();
 
     const { encryptionKey = '' } = inviteUserToSharedFolderInput;
-    const decryptedMessage = await decryptMessageWithPrivateKey({
-      encryptedMessage: atob(encryptionKey),
+    const decryptedMessage = await decryptBucketKeyHybrid({
+      encryptedMessageInBase64: encryptionKey,
       privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKyberKeyInBase64: '',
     });
 
-    expect(decryptedMessage).toEqual(mockUser.mnemonic);
+    expect(decryptedMessage).toEqual(mockBucketKey);
     expect(mockShareService.inviteUserToSharedFolder).toHaveBeenCalledWith(
       expect.objectContaining({
         itemId: mockPayload.itemId,
@@ -217,11 +215,6 @@ describe('Encryption and Decryption', () => {
       sharedWith: 'mock-sharedWith',
       encryptionAlgorithm: 'mock-ecc',
       roleId: 'mock-roleId',
-    };
-
-    const mockUser: Partial<UserSettings> = {
-      mnemonic:
-        'truck arch rather sell tilt return warm nurse rack vacuum rubber tribe unfold scissors copper sock panel ozone harsh ahead danger soda legal state',
     };
 
     const mockRootState: Partial<RootState> = {
@@ -259,13 +252,13 @@ describe('Encryption and Decryption', () => {
     expect(inviteUserToSharedFolderInput.encryptionKey).toBeDefined();
 
     const { encryptionKey = '' } = inviteUserToSharedFolderInput;
-    const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
+    const decryptedMessage = await decryptBucketKeyHybrid({
       encryptedMessageInBase64: encryptionKey,
       privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
       privateKyberKeyInBase64: keys.privateKyberKeyBase64,
     });
 
-    expect(decryptedMessage).toEqual(mockUser.mnemonic);
+    expect(decryptedMessage).toEqual(mockBucketKey);
     expect(mockShareService.inviteUserToSharedFolder).toHaveBeenCalledWith(
       expect.objectContaining({
         itemId: mockPayload.itemId,
@@ -274,7 +267,7 @@ describe('Encryption and Decryption', () => {
         notifyUser: mockPayload.notifyUser,
         notificationMessage: mockPayload.notificationMessage,
         encryptionKey: encryptionKey,
-        encryptionAlgorithm: HYBRID_ALGORITHM,
+        encryptionAlgorithm: HYBRID_ALGORITHM_WITH_BUCKET_KEY,
         roleId: mockPayload.roleId,
         persistPreviousSharing: true,
       }),
@@ -291,11 +284,6 @@ describe('Encryption and Decryption', () => {
       sharedWith: 'mock-sharedWith',
       encryptionAlgorithm: 'mock-ecc',
       roleId: 'mock-roleId',
-    };
-
-    const mockUser: Partial<UserSettings> = {
-      mnemonic:
-        'truck arch rather sell tilt return warm nurse rack vacuum rubber tribe unfold scissors copper sock panel ozone harsh ahead danger soda legal state',
     };
 
     const mockRootState: Partial<RootState> = {
@@ -331,13 +319,13 @@ describe('Encryption and Decryption', () => {
     expect(inviteUserToSharedFolderInput.encryptionKey).toBeDefined();
 
     const { encryptionKey = '' } = inviteUserToSharedFolderInput;
-    const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
+    const decryptedMessage = await decryptBucketKeyHybrid({
       encryptedMessageInBase64: encryptionKey,
       privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
       privateKyberKeyInBase64: '',
     });
 
-    expect(decryptedMessage).toEqual(mockUser.mnemonic);
+    expect(decryptedMessage).toEqual(mockBucketKey);
     expect(mockShareService.inviteUserToSharedFolder).toHaveBeenCalledWith(
       expect.objectContaining({
         itemId: mockPayload.itemId,
@@ -363,11 +351,6 @@ describe('Encryption and Decryption', () => {
       sharedWith: 'mock-sharedWith',
       encryptionAlgorithm: 'mock-ecc',
       roleId: 'mock-roleId',
-    };
-
-    const mockUser: Partial<UserSettings> = {
-      mnemonic:
-        'truck arch rather sell tilt return warm nurse rack vacuum rubber tribe unfold scissors copper sock panel ozone harsh ahead danger soda legal state',
     };
 
     const mockRootState: Partial<RootState> = {
@@ -403,13 +386,13 @@ describe('Encryption and Decryption', () => {
     expect(inviteUserToSharedFolderInput.encryptionKey).toBeDefined();
 
     const { encryptionKey = '' } = inviteUserToSharedFolderInput;
-    const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
+    const decryptedMessage = await decryptBucketKeyHybrid({
       encryptedMessageInBase64: encryptionKey,
       privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
       privateKyberKeyInBase64: keys.privateKyberKeyBase64,
     });
 
-    expect(decryptedMessage).toEqual(mockUser.mnemonic);
+    expect(decryptedMessage).toEqual(mockBucketKey);
     expect(mockShareService.inviteUserToSharedFolder).toHaveBeenCalledWith(
       expect.objectContaining({
         itemId: mockPayload.itemId,
@@ -418,7 +401,7 @@ describe('Encryption and Decryption', () => {
         notifyUser: mockPayload.notifyUser,
         notificationMessage: mockPayload.notificationMessage,
         encryptionKey: encryptionKey,
-        encryptionAlgorithm: HYBRID_ALGORITHM,
+        encryptionAlgorithm: HYBRID_ALGORITHM_WITH_BUCKET_KEY,
         roleId: mockPayload.roleId,
         persistPreviousSharing: true,
       }),
@@ -435,11 +418,6 @@ describe('Encryption and Decryption', () => {
       sharedWith: 'mock-sharedWith',
       encryptionAlgorithm: 'mock-ecc',
       roleId: 'mock-roleId',
-    };
-
-    const mockUser: Partial<UserSettings> = {
-      mnemonic:
-        'truck arch rather sell tilt return warm nurse rack vacuum rubber tribe unfold scissors copper sock panel ozone harsh ahead danger soda legal state',
     };
 
     const mockRootState: Partial<RootState> = {
@@ -474,13 +452,13 @@ describe('Encryption and Decryption', () => {
     expect(inviteUserToSharedFolderInput.encryptionKey).toBeDefined();
 
     const { encryptionKey = '' } = inviteUserToSharedFolderInput;
-    const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
+    const decryptedMessage = await decryptBucketKeyHybrid({
       encryptedMessageInBase64: encryptionKey,
       privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
       privateKyberKeyInBase64: '',
     });
 
-    expect(decryptedMessage).toEqual(mockUser.mnemonic);
+    expect(decryptedMessage).toEqual(mockBucketKey);
     expect(mockShareService.inviteUserToSharedFolder).toHaveBeenCalledWith(
       expect.objectContaining({
         itemId: mockPayload.itemId,
@@ -505,11 +483,6 @@ describe('Encryption and Decryption', () => {
       sharedWith: 'mock-sharedWith',
       encryptionAlgorithm: 'mock-ecc',
       roleId: 'mock-roleId',
-    };
-
-    const mockUser: Partial<UserSettings> = {
-      mnemonic:
-        'truck arch rather sell tilt return warm nurse rack vacuum rubber tribe unfold scissors copper sock panel ozone harsh ahead danger soda legal state',
     };
 
     const mockRootState: Partial<RootState> = {

@@ -98,7 +98,7 @@ describe('NetworkFacade', () => {
       mockDownloadFile();
       vi.mocked(getFileHmacFromShardHashes).mockResolvedValue('any-hmac');
 
-      const result = await networkFacade.download(bucketId, fileId, mnemonic);
+      const result = await networkFacade.download(bucketId, fileId, { mnemonic });
 
       expect(result).toBeDefined();
       expect(buildProgressStream).toHaveBeenCalledOnce();
@@ -115,7 +115,7 @@ describe('NetworkFacade', () => {
         return new ReadableStream({ start: (c) => c.close() });
       });
 
-      await networkFacade.download(bucketId, fileId, mnemonic);
+      await networkFacade.download(bucketId, fileId, { mnemonic });
 
       await expect(capturedOnFinished?.()).resolves.toBeUndefined();
     });
@@ -130,7 +130,7 @@ describe('NetworkFacade', () => {
         return new ReadableStream({ start: (c) => c.close() });
       });
 
-      await networkFacade.download(bucketId, fileId, mnemonic);
+      await networkFacade.download(bucketId, fileId, { mnemonic });
 
       await expect(capturedOnFinished?.()).rejects.toThrow('File integrity check failed');
     });
@@ -139,7 +139,7 @@ describe('NetworkFacade', () => {
       mockDownloadFile();
       vi.mocked(getFileHmacFromShardHashes).mockResolvedValue('any-hmac');
 
-      await networkFacade.download(bucketId, fileId, mnemonic);
+      await networkFacade.download(bucketId, fileId, { mnemonic });
 
       expect(createSha256HashingStream).toHaveBeenCalledOnce();
     });
@@ -154,7 +154,7 @@ describe('NetworkFacade', () => {
         return new ReadableStream({ start: (c) => c.close() });
       });
 
-      await networkFacade.download(bucketId, fileId, mnemonic);
+      await networkFacade.download(bucketId, fileId, { mnemonic });
       await capturedOnFinished?.();
 
       expect(getFileHmacFromShardHashes).toHaveBeenCalledWith(fakeKey, [fakeRipemd160Hash]);
@@ -186,7 +186,7 @@ describe('NetworkFacade', () => {
       );
       vi.mocked(decryptStream).mockReturnValue(mockDecryptedStream);
 
-      const result = await networkFacade.downloadChunk({ bucketId, fileId, mnemonic, chunkStart, chunkEnd });
+      const result = await networkFacade.downloadChunk({ bucketId, fileId, key: { mnemonic }, chunkStart, chunkEnd });
 
       expect(result).toStrictEqual(mockDecryptedStream);
 
@@ -215,9 +215,9 @@ describe('NetworkFacade', () => {
         },
       );
 
-      await expect(networkFacade.downloadChunk({ bucketId, fileId, mnemonic, chunkStart, chunkEnd })).rejects.toThrow(
-        new DownloadFailedWithUnknownError(mockResponse.status),
-      );
+      await expect(
+        networkFacade.downloadChunk({ bucketId, fileId, key: { mnemonic }, chunkStart, chunkEnd }),
+      ).rejects.toThrow(new DownloadFailedWithUnknownError(mockResponse.status));
     });
 
     test('When there is no body in the response, then an error indicating so is thrown', async () => {
@@ -233,9 +233,9 @@ describe('NetworkFacade', () => {
         },
       );
 
-      await expect(networkFacade.downloadChunk({ bucketId, fileId, mnemonic, chunkStart, chunkEnd })).rejects.toThrow(
-        NoContentReceivedError,
-      );
+      await expect(
+        networkFacade.downloadChunk({ bucketId, fileId, key: { mnemonic }, chunkStart, chunkEnd }),
+      ).rejects.toThrow(NoContentReceivedError);
     });
 
     it('When the download is aborted, then an DownloadAbortedByUserError error is thrown', async () => {
@@ -251,7 +251,7 @@ describe('NetworkFacade', () => {
         networkFacade.downloadChunk({
           bucketId,
           fileId,
-          mnemonic,
+          key: { mnemonic },
           chunkStart,
           chunkEnd,
           options: {
@@ -338,7 +338,7 @@ describe('NetworkFacade', () => {
       mockDownloadFileWithBucketKey();
       vi.mocked(getFileHmacFromShardHashes).mockResolvedValue('any-hmac');
 
-      const result = await networkFacade.downloadWithBucketKey(bucketId, fileId, bucketKey);
+      const result = await networkFacade.download(bucketId, fileId, { bucketKey });
 
       expect(result).toBeDefined();
       expect(downloadFileWithBucketKey).toHaveBeenCalledWith(
@@ -362,7 +362,7 @@ describe('NetworkFacade', () => {
       mockDownloadFileWithBucketKey();
       vi.mocked(getFileHmacFromShardHashes).mockResolvedValue('any-hmac');
 
-      const result = await networkFacade.downloadWithBucketKey(bucketId, fileId, bucketKey);
+      const result = await networkFacade.download(bucketId, fileId, { bucketKey });
 
       expect(result).toBeDefined();
       expect(buildProgressStream).toHaveBeenCalledOnce();
@@ -379,7 +379,7 @@ describe('NetworkFacade', () => {
         return new ReadableStream({ start: (c) => c.close() });
       });
 
-      await networkFacade.downloadWithBucketKey(bucketId, fileId, bucketKey);
+      await networkFacade.download(bucketId, fileId, { bucketKey });
 
       await expect(capturedOnFinished?.()).resolves.toBeUndefined();
     });
@@ -394,7 +394,7 @@ describe('NetworkFacade', () => {
         return new ReadableStream({ start: (c) => c.close() });
       });
 
-      await networkFacade.downloadWithBucketKey(bucketId, fileId, bucketKey);
+      await networkFacade.download(bucketId, fileId, { bucketKey });
 
       await expect(capturedOnFinished?.()).rejects.toThrow('File integrity check failed');
     });
@@ -403,7 +403,7 @@ describe('NetworkFacade', () => {
       mockDownloadFileWithBucketKey();
       vi.mocked(getFileHmacFromShardHashes).mockResolvedValue('any-hmac');
 
-      await networkFacade.downloadWithBucketKey(bucketId, fileId, bucketKey);
+      await networkFacade.download(bucketId, fileId, { bucketKey });
 
       expect(createSha256HashingStream).toHaveBeenCalledOnce();
     });
@@ -418,7 +418,7 @@ describe('NetworkFacade', () => {
         return new ReadableStream({ start: (c) => c.close() });
       });
 
-      await networkFacade.downloadWithBucketKey(bucketId, fileId, bucketKey);
+      await networkFacade.download(bucketId, fileId, { bucketKey });
       await capturedOnFinished?.();
 
       expect(getFileHmacFromShardHashes).toHaveBeenCalledWith(fakeKey, [fakeRipemd160Hash]);
@@ -435,7 +435,7 @@ describe('NetworkFacade', () => {
         return new ReadableStream({ start: (c) => c.close() });
       });
 
-      await networkFacade.downloadWithBucketKey(bucketId, fileId, bucketKey, { key: overrideKey });
+      await networkFacade.download(bucketId, fileId, { bucketKey }, { key: overrideKey });
       await capturedOnFinished?.();
 
       expect(getFileHmacFromShardHashes).toHaveBeenCalledWith(overrideKey, [fakeRipemd160Hash]);
@@ -445,7 +445,7 @@ describe('NetworkFacade', () => {
       mockDownloadFileWithBucketKey();
       vi.mocked(getFileHmacFromShardHashes).mockResolvedValue('any-hmac');
 
-      await networkFacade.downloadWithBucketKey(bucketId, fileId, bucketKey, { token: 'test-token' });
+      await networkFacade.download(bucketId, fileId, { bucketKey }, { token: 'test-token' });
 
       expect(downloadFileWithBucketKey).toHaveBeenCalledWith(
         fileId,
@@ -464,7 +464,7 @@ describe('NetworkFacade', () => {
       mockDownloadFileWithBucketKey();
       vi.mocked(getFileHmacFromShardHashes).mockResolvedValue('any-hmac');
 
-      await networkFacade.downloadWithBucketKey(bucketId, fileId, bucketKey);
+      await networkFacade.download(bucketId, fileId, { bucketKey });
 
       expect(downloadFileWithBucketKey).toHaveBeenCalledWith(
         fileId,
@@ -497,9 +497,15 @@ describe('NetworkFacade', () => {
         return { body: new ReadableStream() };
       });
 
-      await expect(
-        networkFacade.downloadWithBucketKey(bucketId, fileId, bucketKey, { abortController }),
-      ).rejects.toThrow('Download aborted');
+      await expect(networkFacade.download(bucketId, fileId, { bucketKey }, { abortController })).rejects.toThrow(
+        'Download aborted',
+      );
     });
+  });
+
+  test('When neither mnemonic nor bucketKey is provided, throws', async () => {
+    await expect(
+      networkFacade.downloadChunk({ bucketId, fileId, key: {}, chunkStart: 2, chunkEnd: 5 } as any),
+    ).rejects.toThrow('No bucket key or mnemonic is given');
   });
 });
