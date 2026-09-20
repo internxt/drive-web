@@ -36,4 +36,11 @@ export const staticData = {
   needHelpLinkText: 'Need help?',
   driveTitle: 'Drive',
   itemMovedToTrash: 'moved to trash',
+
+  //NAME COLLISION DIALOG
+  collisionDialogTitle: 'Item already exists',
+  collisionReplaceOption: 'Replace current item',
+  collisionKeepBothOption: 'Keep both',
+  collisionSkipOption: 'Skip this item',
+  collisionApplyToAll: 'Apply this action to all duplicates',
 };
