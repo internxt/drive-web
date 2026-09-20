@@ -40,4 +40,10 @@ export const staticData = {
   //UPLOAD WIDGET
   uploadInProgress: 'Processing 1 of 1',
   uploadsFinished: 'All processes have finished',
+
+  //FILE PREVIEW
+  noFilePreviewText: 'No file preview available',
+  loadingPreviewText: 'Loading preview',
+  downloadButtonText: 'Download',
+  blobUrlPattern: /^blob:/,
 };
