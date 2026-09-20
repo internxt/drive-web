@@ -2,7 +2,14 @@ import { expect, test } from '@playwright/test';
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
-import { buildExistingFile, buildExistingFolder, ROOT_FOLDER_UUID } from '../helper/driveRouteMocks';
+import {
+  buildExistingFile,
+  buildExistingFolder,
+  buildTrashedFile,
+  failMovesOf,
+  ROOT_FOLDER_UUID,
+  TrashRequest,
+} from '../helper/driveRouteMocks';
 import { buildUploadFile, openMockedDrive } from '../helper/mockedDrive';
 import { staticData } from '../helper/staticData';
 
@@ -19,6 +26,25 @@ const existingDrive = {
   ],
   folders: [archive, photos, buildExistingFolder(3, 'Sub', photos.uuid)],
 };
+
+const archivedOther = buildExistingFile(5, 'other', 'txt', archive.uuid);
+const trashedReport = buildTrashedFile(10, 'report', 'txt', archive.uuid);
+const trashedReportCopy = buildTrashedFile(11, 'report', 'txt', archive.uuid);
+const trashedOther = buildTrashedFile(12, 'other', 'txt', archive.uuid);
+
+/**
+ * Archive holds report.txt and other.txt; the trash holds two report.txt and one other.txt deleted from it.
+ * Versioning is on only to keep the Playwright UI snapshots clean (see runbook §9, "Locked feature").
+ */
+const driveWithTrash = {
+  files: [...existingDrive.files, archivedOther],
+  folders: existingDrive.folders,
+  trashedFiles: [trashedReport, trashedReportCopy, trashedOther],
+  isVersioningEnabled: true,
+};
+
+const getTrashedUuids = (trashRequests: TrashRequest[]) =>
+  trashRequests.flatMap((trashRequest) => trashRequest.items.map((item) => item.uuid));
 
 /**
  * A local "Photos" folder that partially overlaps with the existing one:
@@ -171,5 +197,117 @@ test.describe('Internxt name collision resolutions', () => {
 
     await expect.poll(() => requests.bridge.length, { timeout: 15000 }).toBeGreaterThan(0);
     expect(requests.trash).toHaveLength(0);
+  });
+
+  test.describe('Restore collisions', () => {
+    test('TC9: Validate that keeping both on every restored file gives each same-name file its own numbered name', async ({
+      page,
+    }) => {
+      const { drivePage, collisionDialog, requests } = await openMockedDrive(page, driveWithTrash);
+
+      await drivePage.openTrash();
+      await expect(drivePage.fileRow('report.txt')).toHaveCount(2);
+      await drivePage.selectAllItems();
+      await drivePage.restoreSelectedItems();
+
+      await collisionDialog.expectOpenFor('report');
+      await collisionDialog.checkApplyToAllByClickingLabel();
+      await collisionDialog.selectOption(staticData.collisionKeepBothOption);
+      await collisionDialog.submit();
+
+      await collisionDialog.expectClosed();
+      await expect.poll(() => requests.moves, { timeout: 10000 }).toHaveLength(3);
+      expect(requests.moves).toEqual(
+        expect.arrayContaining([
+          { uuid: trashedReport.uuid, destinationFolder: archive.uuid, name: 'report (1)' },
+          { uuid: trashedReportCopy.uuid, destinationFolder: archive.uuid, name: 'report (2)' },
+          { uuid: trashedOther.uuid, destinationFolder: archive.uuid, name: 'other (1)' },
+        ]),
+      );
+      expect(requests.trash).toHaveLength(0);
+      await drivePage.expectListedItems([]);
+
+      await drivePage.openFolderFromDrive(archive.plainName);
+      await drivePage.expectListedItems([
+        'report.txt',
+        'report (1).txt',
+        'report (2).txt',
+        'other.txt',
+        'other (1).txt',
+      ]);
+    });
+
+    test('TC10: Validate that replacing with every restored file trashes each existing file once and keeps the second same-name file under a numbered name', async ({
+      page,
+    }) => {
+      const { drivePage, collisionDialog, requests } = await openMockedDrive(page, driveWithTrash);
+
+      await drivePage.openTrash();
+      await expect(drivePage.fileRow('report.txt')).toHaveCount(2);
+      await drivePage.selectAllItems();
+      await drivePage.restoreSelectedItems();
+
+      await collisionDialog.expectOpenFor('report');
+      await collisionDialog.checkApplyToAllByClickingLabel();
+      await collisionDialog.selectOption(staticData.collisionReplaceOption);
+      await collisionDialog.submit();
+
+      await collisionDialog.expectClosed();
+      await expect.poll(() => requests.moves, { timeout: 10000 }).toHaveLength(3);
+
+      const trashedUuids = getTrashedUuids(requests.trash);
+      expect(trashedUuids).toHaveLength(2);
+      expect(trashedUuids).toEqual(expect.arrayContaining([archivedReport.uuid, archivedOther.uuid]));
+
+      const [firstMove, secondMove, lastMove] = requests.moves;
+      expect([firstMove, secondMove]).toEqual(
+        expect.arrayContaining([
+          { uuid: trashedReport.uuid, destinationFolder: archive.uuid },
+          { uuid: trashedOther.uuid, destinationFolder: archive.uuid },
+        ]),
+      );
+      expect(lastMove).toEqual({ uuid: trashedReportCopy.uuid, destinationFolder: archive.uuid, name: 'report (1)' });
+      await drivePage.expectListedItems([]);
+
+      await drivePage.openFolderFromDrive(archive.plainName);
+      await drivePage.expectListedItems(['report.txt', 'report (1).txt', 'other.txt']);
+
+      await drivePage.reopenTrash();
+      await drivePage.expectListedItems(['report.txt', 'other.txt']);
+    });
+
+    test('TC11: Validate that a restored file whose move fails stays in the trash while the moved one leaves it', async ({
+      page,
+    }) => {
+      const { drivePage, collisionDialog, requests } = await openMockedDrive(page, {
+        ...driveWithTrash,
+        trashedFiles: [trashedReport, trashedOther],
+      });
+      const rejectedMoves = await failMovesOf(page, trashedOther);
+
+      await drivePage.openTrash();
+      await expect(drivePage.fileRow('report.txt')).toHaveCount(1);
+      await expect(drivePage.fileRow('other.txt')).toHaveCount(1);
+      await drivePage.selectAllItems();
+      await drivePage.restoreSelectedItems();
+
+      await collisionDialog.expectOpenFor('report');
+      await collisionDialog.checkApplyToAllByClickingLabel();
+      await collisionDialog.selectOption(staticData.collisionKeepBothOption);
+      await collisionDialog.submit();
+
+      await collisionDialog.expectClosed();
+      await expect
+        .poll(() => rejectedMoves, { timeout: 10000 })
+        .toEqual([{ uuid: trashedOther.uuid, destinationFolder: archive.uuid, name: 'other (1)' }]);
+      await drivePage.expectListedItems(['other.txt']);
+      expect(requests.moves).toEqual([
+        { uuid: trashedReport.uuid, destinationFolder: archive.uuid, name: 'report (1)' },
+      ]);
+
+      await drivePage.openFolderFromDrive(archive.plainName);
+      await drivePage.expectListedItems(['report.txt', 'report (1).txt', 'other.txt']);
+      await expect(drivePage.itemRow('other (1).txt')).toHaveCount(0);
+    });
   });
 });

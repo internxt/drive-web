@@ -16,6 +16,7 @@ export type MoveRequest = { uuid: string; destinationFolder: string; name?: stri
 export type CreateFolderRequest = { plainName: string; parentFolderUuid: string };
 export type ExistingFile = ReturnType<typeof buildExistingFile>;
 export type ExistingFolder = ReturnType<typeof buildExistingFolder>;
+export type TrashedFile = ReturnType<typeof buildTrashedFile>;
 
 /**
  * Every request the specs may want to assert on, recorded by the mocked routes.
@@ -32,6 +33,7 @@ export type RecordedRequests = {
 export type MockedDriveOptions = {
   files?: ExistingFile[];
   folders?: ExistingFolder[];
+  trashedFiles?: TrashedFile[];
   isVersioningEnabled?: boolean;
 };
 
@@ -52,6 +54,15 @@ export const buildExistingFile = (id: number, plainName: string, type: string, f
   thumbnails: [],
 });
 
+const toTrashedFile = (file: ExistingFile, originalFolderUuid: string) => ({
+  ...file,
+  status: 'TRASHED',
+  parent: { uuid: originalFolderUuid, status: 'EXISTS' },
+});
+
+export const buildTrashedFile = (id: number, plainName: string, type: string, originalFolderUuid = ROOT_FOLDER_UUID) =>
+  toTrashedFile(buildExistingFile(id, plainName, type, originalFolderUuid), originalFolderUuid);
+
 export const buildExistingFolder = (id: number, plainName: string, parentUuid = ROOT_FOLDER_UUID) => ({
   id,
   uuid: `existing-folder-uuid-${id}`,
@@ -67,18 +78,45 @@ export const buildExistingFolder = (id: number, plainName: string, parentUuid = 
   removed: false,
 });
 
+const ROOT_FOLDER: ExistingFolder = { ...buildExistingFolder(0, 'Drive', ''), uuid: ROOT_FOLDER_UUID };
+
 /**
- * The Drive the mocked API serves. Trashing removes items and creating a folder adds it,
- * so follow-up listings and duplicate checks see the new state.
+ * The Drive the mocked API serves. Trashing, creating and moving update it, so follow-up
+ * listings and duplicate checks see the new state.
  */
 class InMemoryDrive {
   private files: ExistingFile[];
   private folders: ExistingFolder[];
+  private trashedFiles: TrashedFile[];
   private createdFoldersCount = 0;
 
-  constructor({ files = [], folders = [] }: MockedDriveOptions) {
+  constructor({ files = [], folders = [], trashedFiles = [] }: MockedDriveOptions) {
     this.files = [...files];
     this.folders = [...folders];
+    this.trashedFiles = [...trashedFiles];
+  }
+
+  trashedFilesPage(offset: number, limit: number) {
+    return this.trashedFiles.slice(offset, offset + limit).map((file) => ({
+      ...file,
+      parent: { ...file.parent, plainName: this.findFolder(file.parent.uuid)?.plainName },
+    }));
+  }
+
+  moveFile({ uuid, destinationFolder, name }: MoveRequest) {
+    const file = [...this.files, ...this.trashedFiles].find((candidate) => candidate.uuid === uuid);
+    if (!file) return;
+
+    const movedName = name ?? file.plainName;
+    const movedFile: ExistingFile = {
+      ...buildExistingFile(file.id, movedName, file.type, destinationFolder),
+      uuid: file.uuid,
+      fileId: file.fileId,
+    };
+
+    this.files = this.files.filter((candidate) => candidate.uuid !== uuid);
+    this.trashedFiles = this.trashedFiles.filter((candidate) => candidate.uuid !== uuid);
+    this.files.push(movedFile);
   }
 
   filesIn(folderUuid: string) {
@@ -87,6 +125,22 @@ class InMemoryDrive {
 
   foldersIn(folderUuid: string) {
     return this.folders.filter((folder) => folder.parentUuid === folderUuid);
+  }
+
+  findFolder(folderUuid: string) {
+    return this.folders.find((folder) => folder.uuid === folderUuid);
+  }
+
+  ancestorsOf(folderUuid: string) {
+    const ancestors: ExistingFolder[] = [];
+    let folder = this.findFolder(folderUuid);
+
+    while (folder) {
+      ancestors.push(folder);
+      folder = this.findFolder(folder.parentUuid);
+    }
+
+    return [...ancestors, ROOT_FOLDER];
   }
 
   createFolder({ plainName, parentFolderUuid }: CreateFolderRequest) {
@@ -98,6 +152,11 @@ class InMemoryDrive {
 
   trash(uuids: string[]) {
     const trashed = new Set(uuids);
+    const newlyTrashedFiles = this.files
+      .filter((file) => trashed.has(file.uuid))
+      .map((file) => toTrashedFile(file, file.folderUuid));
+
+    this.trashedFiles.push(...newlyTrashedFiles);
     this.files = this.files.filter((file) => !trashed.has(file.uuid));
     this.folders = this.folders.filter((folder) => !trashed.has(folder.uuid));
   }
@@ -166,6 +225,21 @@ const mockFolderContentRoutes = (page: Page, drive: InMemoryDrive) =>
     return fulfillJson(route, {});
   });
 
+const mockFolderNavigationRoutes = async (page: Page, drive: InMemoryDrive) => {
+  const getFolderUuid = (url: string) => /\/folders\/([^/?]+)\/(meta|ancestors)/.exec(url)?.[1] ?? '';
+
+  await page.route(`${BASE_API_URL}/folders/*/meta`, (route, request) => {
+    const folder = drive.findFolder(getFolderUuid(request.url()));
+    if (!folder) return route.fulfill({ status: 404, contentType: 'application/json', body: '{}' });
+
+    return fulfillJson(route, folder);
+  });
+
+  await page.route(`${BASE_API_URL}/folders/*/ancestors`, (route, request) =>
+    fulfillJson(route, drive.ancestorsOf(getFolderUuid(request.url()))),
+  );
+};
+
 const mockCreateFolderRoute = (page: Page, drive: InMemoryDrive, requests: RecordedRequests) =>
   page.route(`${BASE_API_URL}/folders`, (route, request) => {
     if (request.method() !== 'POST') return route.fallback();
@@ -175,14 +249,44 @@ const mockCreateFolderRoute = (page: Page, drive: InMemoryDrive, requests: Recor
     return fulfillJson(route, drive.createFolder(createFolderRequest));
   });
 
-const mockMoveFileRoute = (page: Page, requests: RecordedRequests) =>
+const mockMoveFileRoute = (page: Page, drive: InMemoryDrive, requests: RecordedRequests) =>
   page.route(`${BASE_API_URL}/files/*`, (route, request) => {
     if (request.method() !== 'PATCH') return route.fallback();
 
     const uuid = request.url().split('/').pop() ?? '';
     const { destinationFolder, name } = request.postDataJSON() as Omit<MoveRequest, 'uuid'>;
-    requests.moves.push(name ? { uuid, destinationFolder, name } : { uuid, destinationFolder });
+    const moveRequest: MoveRequest = name ? { uuid, destinationFolder, name } : { uuid, destinationFolder };
+    drive.moveFile(moveRequest);
+    requests.moves.push(moveRequest);
     return fulfillJson(route, {});
+  });
+
+export const failMovesOf = async (page: Page, file: ExistingFile | TrashedFile): Promise<MoveRequest[]> => {
+  const rejectedMoves: MoveRequest[] = [];
+
+  await page.route(`${BASE_API_URL}/files/${file.uuid}`, (route, request) => {
+    if (request.method() !== 'PATCH') return route.fallback();
+
+    const { destinationFolder, name } = request.postDataJSON() as Omit<MoveRequest, 'uuid'>;
+    rejectedMoves.push({ uuid: file.uuid, destinationFolder, name });
+    return route.fulfill({
+      status: 500,
+      contentType: 'application/json',
+      body: JSON.stringify({ message: 'Internal Server Error' }),
+    });
+  });
+
+  return rejectedMoves;
+};
+
+const mockTrashListingRoute = (page: Page, drive: InMemoryDrive) =>
+  page.route(`${BASE_API_URL}/storage/trash/paginated**`, (route, request) => {
+    const query = new URL(request.url()).searchParams;
+    if (query.get('type') !== 'files') return fulfillJson(route, { result: [] });
+
+    const offset = Number(query.get('offset') ?? 0);
+    const limit = Number(query.get('limit') ?? 50);
+    return fulfillJson(route, { result: drive.trashedFilesPage(offset, limit) });
   });
 
 const mockTrashRoute = (page: Page, drive: InMemoryDrive, requests: RecordedRequests) =>
@@ -213,9 +317,11 @@ export const mockDriveRoutes = async (page: Page, options: MockedDriveOptions): 
   await mockAppBootstrapCalls(page, options.isVersioningEnabled ?? false);
   await mockAuthRoutes(page);
   await mockFolderContentRoutes(page, drive);
+  await mockFolderNavigationRoutes(page, drive);
   await mockCreateFolderRoute(page, drive, requests);
-  await mockMoveFileRoute(page, requests);
+  await mockMoveFileRoute(page, drive, requests);
   await mockTrashRoute(page, drive, requests);
+  await mockTrashListingRoute(page, drive);
   await mockBridgeRoute(page, requests);
 
   return requests;
