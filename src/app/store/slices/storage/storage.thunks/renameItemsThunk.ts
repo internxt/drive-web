@@ -17,11 +17,7 @@ import { getUniqueFolderName } from '../folderUtils/getUniqueFolderName';
 import { CollisionGroup, StorageState } from '../storage.model';
 import { IRoot } from '../types';
 
-/**
- * The duplicate checks return raw API items without isFolder, so existing items are tagged
- * here to let consumers tell colliding files and folders apart.
- */
-const asExistingItems = (items: (DriveFileData | DriveFolderData)[], isFolder: boolean): DriveItemData[] =>
+const addIsFolderField = (items: (DriveFileData | DriveFolderData)[], isFolder: boolean): DriveItemData[] =>
   items.map((item) => ({ ...item, isFolder })) as DriveItemData[];
 
 export const getCollisionGroups = async (
@@ -46,8 +42,8 @@ export const getCollisionGroups = async (
         ...(foldersResult.foldersWithDuplicates as DriveItemData[]),
       ];
       const existingItems = [
-        ...asExistingItems(filesResult.duplicatedFilesResponse, false),
-        ...asExistingItems(foldersResult.duplicatedFoldersResponse, true),
+        ...addIsFolderField(filesResult.duplicatedFilesResponse, false),
+        ...addIsFolderField(foldersResult.duplicatedFoldersResponse, true),
       ];
       const unrepeatedItems = [
         ...(filesResult.filesWithoutDuplicates as DriveItemData[]),
@@ -80,7 +76,7 @@ export const handleRepeatedUploadingFiles = async (
   return results.reduce(
     (acc, cur) => {
       acc.repeatedItems.push(...cur.filesWithDuplicates);
-      acc.existingItems.push(...asExistingItems(cur.duplicatedFilesResponse, false));
+      acc.existingItems.push(...addIsFolderField(cur.duplicatedFilesResponse, false));
       acc.unrepeatedItems.push(...cur.filesWithoutDuplicates);
       return acc;
     },
@@ -108,7 +104,7 @@ export const handleRepeatedUploadingFolders = async (
   return results.reduce(
     (acc, cur) => {
       acc.repeatedItems.push(...cur.foldersWithDuplicates);
-      acc.existingItems.push(...asExistingItems(cur.duplicatedFoldersResponse, true));
+      acc.existingItems.push(...addIsFolderField(cur.duplicatedFoldersResponse, true));
       acc.unrepeatedItems.push(...cur.foldersWithoutDuplicates);
       return acc;
     },
