@@ -20,7 +20,15 @@ import { IRoot } from 'app/store/slices/storage/types';
 import { isVersioningExtensionAllowed } from 'views/Drive/components/VersionHistory/utils';
 import replaceFileService from 'views/Drive/services/replaceFile.service';
 import { moveItemsToTrash } from 'views/Trash/services';
-import { CollisionItem, CollisionPair, getCollisionPairs, isFolderUpload } from './nameCollision.utils';
+import {
+  CollisionItem,
+  CollisionPair,
+  getCollisionPairs,
+  groupByNameSeries,
+  isFolderUpload,
+  isNameTakenBy,
+  splitReplacingPairs,
+} from './nameCollision.utils';
 
 export type CollisionOperationType = 'move' | 'upload';
 export type CollisionOperation = 'keep' | 'replace' | 'skip';
@@ -45,20 +53,107 @@ type ResolveUploadCollisionParams = Omit<ResolveCollisionParams, 'operationType'
   items: (IRoot | File)[];
 };
 
-const getUniqueNameMovePayload = async (item: DriveItemData, destinationUuid: string): Promise<MoveItemPayload> => {
+interface ItemMove {
+  item: DriveItemData;
+  payload: MoveItemPayload;
+}
+
+const getDestinationDuplicates = async (item: DriveItemData, destinationUuid: string): Promise<DriveItemData[]> => {
   if (item.isFolder) {
     const { duplicatedFoldersResponse } = await checkFolderDuplicated([item], destinationUuid);
-    const finalName = await getUniqueFolderName(
-      item.plainName ?? item.name,
-      duplicatedFoldersResponse as DriveItemData[],
-      destinationUuid,
-    );
-    return { ...item, name: finalName, plain_name: finalName, newItemName: finalName };
+    return duplicatedFoldersResponse as DriveItemData[];
   }
 
   const { duplicatedFilesResponse } = await checkDuplicatedFiles([item], destinationUuid);
-  const finalName = await getUniqueFilename(item.name, item.type, duplicatedFilesResponse, destinationUuid);
-  return { ...item, name: finalName, plainName: finalName, plain_name: finalName, newItemName: finalName };
+  return duplicatedFilesResponse as DriveItemData[];
+};
+
+const getLookupName = (item: DriveItemData): string => (item.isFolder ? (item.plainName ?? item.name) : item.name);
+
+const getNextUniqueName = (
+  item: DriveItemData,
+  name: string,
+  takenItems: DriveItemData[],
+  destinationUuid: string,
+): Promise<string> => {
+  if (item.isFolder) {
+    return getUniqueFolderName(name, takenItems, destinationUuid);
+  }
+
+  return getUniqueFilename(name, item.type, takenItems, destinationUuid);
+};
+
+/**
+ * Re-checks the names already assigned in this batch after every attempt, because the server knows
+ * nothing about names that are assigned but not moved yet.
+ */
+const getUniqueNameInBatch = async (
+  item: DriveItemData,
+  destinationUuid: string,
+  renamedItems: DriveItemData[],
+): Promise<string> => {
+  const destinationDuplicates = await getDestinationDuplicates(item, destinationUuid);
+  const takenItems = [...destinationDuplicates, ...renamedItems];
+  let uniqueName = getLookupName(item);
+
+  do {
+    uniqueName = await getNextUniqueName(item, uniqueName, takenItems, destinationUuid);
+  } while (isNameTakenBy(uniqueName, item, renamedItems));
+
+  return uniqueName;
+};
+
+const getRenamedMovePayload = (item: DriveItemData, newName: string): MoveItemPayload => {
+  const renamedItem = { ...item, name: newName, plain_name: newName, newItemName: newName };
+  return item.isFolder ? renamedItem : { ...renamedItem, plainName: newName };
+};
+
+const getSeriesMoves = async (seriesItems: DriveItemData[], destinationUuid: string): Promise<ItemMove[]> => {
+  const renamedItems: DriveItemData[] = [];
+  const moves: ItemMove[] = [];
+
+  for (const item of seriesItems) {
+    const uniqueName = await getUniqueNameInBatch(item, destinationUuid, renamedItems);
+    renamedItems.push({ ...item, name: uniqueName, plainName: uniqueName });
+    moves.push({ item, payload: getRenamedMovePayload(item, uniqueName) });
+  }
+
+  return moves;
+};
+
+const getUniqueNameMoves = async (items: DriveItemData[], destinationUuid: string): Promise<ItemMove[]> => {
+  const series = groupByNameSeries(items, getLookupName);
+  const movesBySeries = await Promise.all(series.map((seriesItems) => getSeriesMoves(seriesItems, destinationUuid)));
+
+  return movesBySeries.flat();
+};
+
+const moveItem = async (
+  payload: MoveItemPayload,
+  destinationUuid: string,
+  { dispatch }: NameCollisionContext,
+): Promise<boolean> => {
+  try {
+    await dispatch(storageThunks.moveItemsThunk({ items: [payload], destinationFolderId: destinationUuid })).unwrap();
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * Moves every item on its own, because the move thunk settles once for the whole batch and would
+ * hide which items made it to the destination when one of them fails.
+ */
+const moveItems = async (
+  moves: ItemMove[],
+  destinationUuid: string,
+  context: NameCollisionContext,
+): Promise<DriveItemData[]> => {
+  const isMovedByIndex = await Promise.all(moves.map(({ payload }) => moveItem(payload, destinationUuid, context)));
+  const succeededMoves = moves.filter((_, index) => isMovedByIndex[index]);
+
+  return succeededMoves.map(({ item }) => item);
 };
 
 /**
@@ -67,12 +162,12 @@ const getUniqueNameMovePayload = async (item: DriveItemData, destinationUuid: st
 const keepAndMoveItems = async (
   items: DriveItemData[],
   destinationUuid: string,
-  { dispatch }: NameCollisionContext,
-): Promise<void> => {
-  if (items.length === 0) return;
+  context: NameCollisionContext,
+): Promise<DriveItemData[]> => {
+  if (items.length === 0) return [];
 
-  const itemsParsed = await Promise.all(items.map((item) => getUniqueNameMovePayload(item, destinationUuid)));
-  await dispatch(storageThunks.moveItemsThunk({ items: itemsParsed, destinationFolderId: destinationUuid }));
+  const moves = await getUniqueNameMoves(items, destinationUuid);
+  return moveItems(moves, destinationUuid, context);
 };
 
 /**
@@ -81,22 +176,23 @@ const keepAndMoveItems = async (
 const replaceAndMoveItems = async (
   pairs: CollisionPair<DriveItemData>[],
   destinationUuid: string,
-  { dispatch }: NameCollisionContext,
-): Promise<void> => {
-  if (pairs.length === 0) return;
+  context: NameCollisionContext,
+): Promise<DriveItemData[]> => {
+  if (pairs.length === 0) return [];
 
-  await moveItemsToTrash(pairs.map((pair) => pair.existing));
-  await dispatch(
-    storageThunks.moveItemsThunk({
-      items: pairs.map((pair) => pair.item),
-      destinationFolderId: destinationUuid,
-    }),
-  );
+  const { replacingPairs, leftoverItems } = splitReplacingPairs(pairs);
+  const replacingMoves: ItemMove[] = replacingPairs.map(({ item }) => ({ item, payload: item }));
+
+  await moveItemsToTrash(replacingPairs.map((pair) => pair.existing));
+  const replacingItems = await moveItems(replacingMoves, destinationUuid, context);
+  const keptItems = await keepAndMoveItems(leftoverItems, destinationUuid, context);
+
+  return [...replacingItems, ...keptItems];
 };
 
 /**
  * Applies the chosen resolution to items that collide while being moved, then removes them
- * from the pending-deletion list. Skipped items are left untouched.
+ * from the pending-deletion list once moved. Skipped items are left untouched.
  */
 const resolveMoveCollision = async (
   { operation, items, existingItems, destinationUuid }: ResolveMoveCollisionParams,
@@ -104,12 +200,14 @@ const resolveMoveCollision = async (
 ) => {
   if (operation === 'skip') return;
 
+  let movedItems: DriveItemData[];
+
   if (operation === 'keep') {
-    await keepAndMoveItems(items, destinationUuid, context);
+    movedItems = await keepAndMoveItems(items, destinationUuid, context);
   } else {
-    await replaceAndMoveItems(getCollisionPairs(items, existingItems), destinationUuid, context);
+    movedItems = await replaceAndMoveItems(getCollisionPairs(items, existingItems), destinationUuid, context);
   }
-  context.dispatch(storageActions.popItemsToDelete(items));
+  context.dispatch(storageActions.popItemsToDelete(movedItems));
 };
 
 const uploadFileAndGetFileId = async (

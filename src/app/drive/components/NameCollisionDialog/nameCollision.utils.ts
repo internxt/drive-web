@@ -74,3 +74,52 @@ export const getRemainingGroups = (
         : group,
     )
     .filter(hasDuplicatedItems);
+
+export interface ReplacingPairsSplit<T extends CollisionItem = CollisionItem> {
+  replacingPairs: CollisionPair<T>[];
+  leftoverItems: T[];
+}
+
+export const splitReplacingPairs = <T extends CollisionItem>(pairs: CollisionPair<T>[]): ReplacingPairsSplit<T> => {
+  const replacedUuids = new Set<string>();
+
+  return pairs.reduce<ReplacingPairsSplit<T>>(
+    (split, pair) => {
+      if (replacedUuids.has(pair.existing.uuid)) {
+        split.leftoverItems.push(pair.item);
+      } else {
+        replacedUuids.add(pair.existing.uuid);
+        split.replacingPairs.push(pair);
+      }
+      return split;
+    },
+    { replacingPairs: [], leftoverItems: [] },
+  );
+};
+
+export const isNameTakenBy = (name: string, item: DriveItemData, takenItems: DriveItemData[]): boolean =>
+  !!findExistingItemFor({ ...item, name, plainName: name }, takenItems);
+
+const INCREMENT_SUFFIX_REGEX = / \(\d+\)$/;
+
+export const getNameSeriesKey = (item: DriveItemData, name: string): string => {
+  const baseName = name.replace(INCREMENT_SUFFIX_REGEX, '').toLowerCase();
+  const extension = (item.type ?? '').toLowerCase();
+
+  return JSON.stringify(item.isFolder ? ['folder', baseName] : ['file', baseName, extension]);
+};
+
+export const groupByNameSeries = (
+  items: DriveItemData[],
+  getName: (item: DriveItemData) => string,
+): DriveItemData[][] => {
+  const itemsBySeriesKey = new Map<string, DriveItemData[]>();
+
+  for (const item of items) {
+    const seriesKey = getNameSeriesKey(item, getName(item));
+    const seriesItems = itemsBySeriesKey.get(seriesKey) ?? [];
+    itemsBySeriesKey.set(seriesKey, [...seriesItems, item]);
+  }
+
+  return [...itemsBySeriesKey.values()];
+};
