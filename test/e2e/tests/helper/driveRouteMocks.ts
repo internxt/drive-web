@@ -9,8 +9,13 @@ const BRIDGE_URL = process.env.REACT_APP_STORJ_BRIDGE;
 
 const loggedUser = getLoggedUser();
 
+export const ROOT_FOLDER_UUID: string = loggedUser.user.rootFolderId;
+
 export type TrashRequest = { items: { uuid: string; type: string }[] };
+export type MoveRequest = { uuid: string; destinationFolder: string; name?: string };
+export type CreateFolderRequest = { plainName: string; parentFolderUuid: string };
 export type ExistingFile = ReturnType<typeof buildExistingFile>;
+export type ExistingFolder = ReturnType<typeof buildExistingFolder>;
 
 /**
  * Every request the specs may want to assert on, recorded by the mocked routes.
@@ -19,10 +24,18 @@ export type ExistingFile = ReturnType<typeof buildExistingFile>;
  */
 export type RecordedRequests = {
   trash: TrashRequest[];
+  moves: MoveRequest[];
+  createdFolders: CreateFolderRequest[];
   bridge: string[];
 };
 
-export const buildExistingFile = (id: number, plainName: string, type: string) => ({
+export type MockedDriveOptions = {
+  files?: ExistingFile[];
+  folders?: ExistingFolder[];
+  isVersioningEnabled?: boolean;
+};
+
+export const buildExistingFile = (id: number, plainName: string, type: string, folderUuid = ROOT_FOLDER_UUID) => ({
   id,
   uuid: `existing-file-uuid-${id}`,
   fileId: `existing-bridge-file-${id}`,
@@ -32,31 +45,61 @@ export const buildExistingFile = (id: number, plainName: string, type: string) =
   type,
   size: 1024,
   bucket: loggedUser.user.bucket,
-  folderUuid: loggedUser.user.rootFolderId,
+  folderUuid,
   createdAt: '2026-08-01T10:00:00.000Z',
   updatedAt: '2026-08-01T10:00:00.000Z',
   status: 'EXISTS',
   thumbnails: [],
 });
 
+export const buildExistingFolder = (id: number, plainName: string, parentUuid = ROOT_FOLDER_UUID) => ({
+  id,
+  uuid: `existing-folder-uuid-${id}`,
+  name: plainName,
+  plainName,
+  plain_name: plainName,
+  parentUuid,
+  parentId: null,
+  bucket: loggedUser.user.bucket,
+  createdAt: '2026-08-01T10:00:00.000Z',
+  updatedAt: '2026-08-01T10:00:00.000Z',
+  deleted: false,
+  removed: false,
+});
+
 /**
- * The Drive the mocked API serves. Trashing removes items, so follow-up listings and
- * duplicate checks see the new state.
+ * The Drive the mocked API serves. Trashing removes items and creating a folder adds it,
+ * so follow-up listings and duplicate checks see the new state.
  */
 class InMemoryDrive {
   private files: ExistingFile[];
+  private folders: ExistingFolder[];
+  private createdFoldersCount = 0;
 
-  constructor(files: ExistingFile[]) {
+  constructor({ files = [], folders = [] }: MockedDriveOptions) {
     this.files = [...files];
+    this.folders = [...folders];
   }
 
   filesIn(folderUuid: string) {
     return this.files.filter((file) => file.folderUuid === folderUuid);
   }
 
+  foldersIn(folderUuid: string) {
+    return this.folders.filter((folder) => folder.parentUuid === folderUuid);
+  }
+
+  createFolder({ plainName, parentFolderUuid }: CreateFolderRequest) {
+    this.createdFoldersCount += 1;
+    const folder = buildExistingFolder(1000 + this.createdFoldersCount, plainName, parentFolderUuid);
+    this.folders.push(folder);
+    return folder;
+  }
+
   trash(uuids: string[]) {
     const trashed = new Set(uuids);
     this.files = this.files.filter((file) => !trashed.has(file.uuid));
+    this.folders = this.folders.filter((folder) => !trashed.has(folder.uuid));
   }
 }
 
@@ -70,7 +113,7 @@ const getFolderUuidFromUrl = (url: string) => /\/folders\/content\/([^/?]+)/.exe
  * payloads, and any other API call with an empty 200. The app logs the user out on any
  * 401, and the mocked session token is not valid against a real backend.
  */
-const mockAppBootstrapCalls = async (page: Page) => {
+const mockAppBootstrapCalls = async (page: Page, isVersioningEnabled: boolean) => {
   for (const baseUrl of [BASE_API_URL, OLD_API_URL, PAYMENTS_API_URL]) {
     await page.route(`${baseUrl}/**`, (route) => fulfillJson(route, {}));
   }
@@ -79,7 +122,7 @@ const mockAppBootstrapCalls = async (page: Page) => {
     'workspaces/': { availableWorkspaces: [], pendingWorkspaces: [] },
     'sharings/invites**': { invites: [] },
     'sharings/roles': [],
-    'files/limits': { versioning: { enabled: false, maxVersions: 0 }, maxUploadFileSize: 21474836480 },
+    'files/limits': { versioning: { enabled: isVersioningEnabled, maxVersions: 5 }, maxUploadFileSize: 21474836480 },
     'users/limit': { maxSpaceBytes: 10737418240 },
     'users/usage': { drive: 3072, backups: 0, total: 3072 },
     'users/me/upload-status': { hasUploadedFiles: true },
@@ -93,7 +136,8 @@ const mockAppBootstrapCalls = async (page: Page) => {
 };
 
 /**
- * Folder listings and the file duplicate check, scoped to the folder in the URL.
+ * Folder listings and the file and folder duplicate checks, all scoped to the folder in
+ * the URL.
  */
 const mockFolderContentRoutes = (page: Page, drive: InMemoryDrive) =>
   page.route(`${BASE_API_URL}/folders/content/**`, (route, request) => {
@@ -111,9 +155,33 @@ const mockFolderContentRoutes = (page: Page, drive: InMemoryDrive) =>
       return fulfillJson(route, { existentFiles });
     }
 
-    if (isExistenceCheck) return fulfillJson(route, { existentFolders: [] });
+    if (isExistenceCheck && url.endsWith('/folders/existence')) {
+      const { plainNames } = request.postDataJSON() as { plainNames: string[] };
+      const existentFolders = drive.foldersIn(folderUuid).filter((existing) => plainNames.includes(existing.plainName));
+      return fulfillJson(route, { existentFolders });
+    }
+
     if (url.includes('/files/')) return fulfillJson(route, { files: drive.filesIn(folderUuid) });
-    if (url.includes('/folders/')) return fulfillJson(route, { folders: [] });
+    if (url.includes('/folders/')) return fulfillJson(route, { folders: drive.foldersIn(folderUuid) });
+    return fulfillJson(route, {});
+  });
+
+const mockCreateFolderRoute = (page: Page, drive: InMemoryDrive, requests: RecordedRequests) =>
+  page.route(`${BASE_API_URL}/folders`, (route, request) => {
+    if (request.method() !== 'POST') return route.fallback();
+
+    const createFolderRequest = request.postDataJSON() as CreateFolderRequest;
+    requests.createdFolders.push(createFolderRequest);
+    return fulfillJson(route, drive.createFolder(createFolderRequest));
+  });
+
+const mockMoveFileRoute = (page: Page, requests: RecordedRequests) =>
+  page.route(`${BASE_API_URL}/files/*`, (route, request) => {
+    if (request.method() !== 'PATCH') return route.fallback();
+
+    const uuid = request.url().split('/').pop() ?? '';
+    const { destinationFolder, name } = request.postDataJSON() as Omit<MoveRequest, 'uuid'>;
+    requests.moves.push(name ? { uuid, destinationFolder, name } : { uuid, destinationFolder });
     return fulfillJson(route, {});
   });
 
@@ -133,18 +201,20 @@ const mockBridgeRoute = (page: Page, requests: RecordedRequests) =>
 
 /**
  * Mocks everything a logged-in Drive view needs on top of an in-memory Drive made of the
- * given files, blocks bucket uploads to the bridge, and returns the recorder of every
- * request a spec may assert on.
+ * given files and folders, blocks bucket uploads to the bridge, and returns the recorder
+ * of every request a spec may assert on.
  * Routes are registered from the most generic to the most specific because Playwright
  * matches the last registered route first.
  */
-export const mockDriveRoutes = async (page: Page, files: ExistingFile[]): Promise<RecordedRequests> => {
-  const drive = new InMemoryDrive(files);
-  const requests: RecordedRequests = { trash: [], bridge: [] };
+export const mockDriveRoutes = async (page: Page, options: MockedDriveOptions): Promise<RecordedRequests> => {
+  const drive = new InMemoryDrive(options);
+  const requests: RecordedRequests = { trash: [], moves: [], createdFolders: [], bridge: [] };
 
-  await mockAppBootstrapCalls(page);
+  await mockAppBootstrapCalls(page, options.isVersioningEnabled ?? false);
   await mockAuthRoutes(page);
   await mockFolderContentRoutes(page, drive);
+  await mockCreateFolderRoute(page, drive, requests);
+  await mockMoveFileRoute(page, requests);
   await mockTrashRoute(page, drive, requests);
   await mockBridgeRoute(page, requests);
 
