@@ -19,7 +19,7 @@ import { moveItemsToTrash } from 'views/Trash/services';
 import { CollisionItem, CollisionPair, getCollisionPairs, isFolderUpload } from './nameCollision.utils';
 
 export type CollisionOperationType = 'move' | 'upload';
-export type CollisionOperation = 'keep' | 'replace';
+export type CollisionOperation = 'keep' | 'replace' | 'skip';
 
 export interface NameCollisionContext {
   dispatch: AppDispatch;
@@ -92,12 +92,14 @@ const replaceAndMoveItems = async (
 
 /**
  * Applies the chosen resolution to items that collide while being moved, then removes them
- * from the pending-deletion list.
+ * from the pending-deletion list. Skipped items are left untouched.
  */
 const resolveMoveCollision = async (
   { operation, items, existingItems, destinationUuid }: ResolveMoveCollisionParams,
   context: NameCollisionContext,
 ) => {
+  if (operation === 'skip') return;
+
   if (operation === 'keep') {
     await keepAndMoveItems(items, destinationUuid, context);
   } else {
@@ -240,12 +242,15 @@ const keepAndUploadItems = async (
 };
 
 /**
- * Applies the chosen resolution to items that collide while being uploaded.
+ * Applies the chosen resolution to items that collide while being uploaded. Skipped items are
+ * left untouched.
  */
 const resolveUploadCollision = async (
   { operation, items, existingItems, destinationUuid }: ResolveUploadCollisionParams,
   context: NameCollisionContext,
 ) => {
+  if (operation === 'skip') return;
+
   if (operation === 'keep') {
     await keepAndUploadItems(items, destinationUuid, context);
   } else {
