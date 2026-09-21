@@ -210,7 +210,7 @@ export default function LogIn(): JSX.Element {
           twoFactorCode,
           dispatch,
           loginType,
-          turnstileToken: await turnstileRef.current?.getToken(true),
+          turnstileToken: await turnstileRef.current?.getToken(),
           knownSecurityDetails: securityDetails,
         };
 

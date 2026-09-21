@@ -33,7 +33,7 @@ describe('TurnstileWidget', () => {
   const renderTurnstile = () => {
     const ref = createRef<TurnstileWidgetHandle>();
     const view = render(<TurnstileWidget ref={ref} action="login" />);
-    return { ...view, getToken: (forceRefresh?: boolean) => ref.current?.getToken(forceRefresh) };
+    return { ...view, getToken: () => ref.current?.getToken() };
   };
 
   beforeEach(() => {
@@ -60,7 +60,7 @@ describe('TurnstileWidget', () => {
     expect(await getToken()).toBeUndefined();
   });
 
-  it('When enabled, then the widget starts resolving the challenge as soon as it mounts', () => {
+  it('When enabled, then the widget waits for an explicit execute before resolving the challenge', () => {
     mockEnv();
 
     const { getByTestId } = renderTurnstile();
@@ -68,30 +68,31 @@ describe('TurnstileWidget', () => {
     expect(getByTestId('turnstile')).toBeInTheDocument();
     expect(widgetProps).toMatchObject({
       siteKey: SITE_KEY,
-      options: { execution: 'render', action: 'login', appearance: 'interaction-only' },
+      options: { execution: 'execute', action: 'login', appearance: 'interaction-only' },
     });
   });
 
-  it('When a token is requested without forcing a refresh, then it returns the token already in flight', async () => {
+  it('When a token is requested, then it resets and executes a fresh challenge', async () => {
     mockEnv();
     widget.getResponsePromise.mockResolvedValue(TOKEN);
 
     const { getToken } = renderTurnstile();
 
     expect(await getToken()).toBe(TOKEN);
-    expect(widget.execute).not.toHaveBeenCalled();
-    expect(widget.reset).toHaveBeenCalledTimes(1);
+    expect(widget.reset).toHaveBeenCalledTimes(2);
+    expect(widget.execute).toHaveBeenCalledTimes(1);
   });
 
-  it('When forceRefresh is set, then it forces a fresh challenge and hides the widget again once it succeeds', async () => {
+  it('When requested again, then it forces a fresh challenge every time', async () => {
     mockEnv();
     widget.getResponsePromise.mockResolvedValue(TOKEN);
 
     const { getToken } = renderTurnstile();
 
-    expect(await getToken(true)).toBe(TOKEN);
-    expect(widget.reset).toHaveBeenCalledTimes(2);
-    expect(widget.execute).toHaveBeenCalledTimes(1);
+    await getToken();
+    await getToken();
+
+    expect(widget.execute).toHaveBeenCalledTimes(2);
   });
 
   it('When the widget fails or times out, then it stays visible so the user can retry', async () => {
@@ -101,7 +102,6 @@ describe('TurnstileWidget', () => {
     const { getToken } = renderTurnstile();
 
     expect(await getToken()).toBeUndefined();
-    expect(widget.reset).not.toHaveBeenCalled();
   });
 
   it('When idle, then the widget stays hidden and takes up no space', () => {

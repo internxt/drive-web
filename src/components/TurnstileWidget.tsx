@@ -3,7 +3,7 @@ import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import { envService } from 'services';
 
 export interface TurnstileWidgetHandle {
-  getToken: (forceRefresh?: boolean) => Promise<string | undefined>;
+  getToken: () => Promise<string | undefined>;
 }
 
 interface TurnstileWidgetProps {
@@ -18,14 +18,12 @@ const TurnstileWidget = forwardRef<TurnstileWidgetHandle, TurnstileWidgetProps>(
   const [failed, setFailed] = useState(false);
 
   useImperativeHandle(ref, () => ({
-    getToken: async (forceRefresh = false) => {
+    getToken: async () => {
       if (failed) {
         return undefined;
       }
-      if (forceRefresh) {
-        widgetRef.current?.reset();
-        widgetRef.current?.execute();
-      }
+      widgetRef.current?.reset();
+      widgetRef.current?.execute();
 
       const token = await widgetRef.current?.getResponsePromise().catch(() => undefined);
       if (token) {
@@ -45,7 +43,7 @@ const TurnstileWidget = forwardRef<TurnstileWidgetHandle, TurnstileWidgetProps>(
       <Turnstile
         ref={widgetRef}
         siteKey={siteKey}
-        options={{ execution: 'render', action, appearance: 'interaction-only' }}
+        options={{ execution: 'execute', action, appearance: 'interaction-only' }}
         onBeforeInteractive={() => setIsChallengeVisible(true)}
         onError={() => setFailed(true)}
       />
