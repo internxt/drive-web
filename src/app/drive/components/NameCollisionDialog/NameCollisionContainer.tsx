@@ -18,7 +18,7 @@ const NameCollisionContainer: FC = () => {
   const operationType = collisionDialogInfo?.operation;
   const newItems = useMemo(() => collisionGroups.flatMap((g) => g.duplicatedItems), [collisionGroups]);
   const existingItems = useMemo(() => collisionGroups.flatMap((g) => g.existingItems), [collisionGroups]);
-  const remainingItemsCount = existingItems.length;
+  const remainingItemsCount = newItems.length;
 
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const limits = useAppSelector(fileVersionsSelectors.getLimits);
@@ -60,7 +60,9 @@ const NameCollisionContainer: FC = () => {
 
     const group = collisionGroups[groupIndex];
     const itemToUpload = group.duplicatedItems[0];
-    const itemToReplace = findExistingItemFor(itemToUpload, group.existingItems);
+    const collidingExistingItem = findExistingItemFor(itemToUpload, group.existingItems);
+    const isReplacing = operation === 'replace';
+    const replacedExistingItem = isReplacing ? collidingExistingItem : undefined;
 
     await resolveCollision(
       {
@@ -73,7 +75,7 @@ const NameCollisionContainer: FC = () => {
       context,
     );
 
-    const remainingGroups = getRemainingGroups(collisionGroups, groupIndex, itemToReplace);
+    const remainingGroups = getRemainingGroups(collisionGroups, groupIndex, replacedExistingItem);
     const hasRemainingGroups = remainingGroups.length > 0;
     if (hasRemainingGroups) {
       dispatch(
