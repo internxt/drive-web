@@ -15,13 +15,18 @@ const TurnstileWidget = forwardRef<TurnstileWidgetHandle, TurnstileWidgetProps>(
   const siteKey = envService.getVariable('turnstileSiteKey');
   const isEnabled = envService.getVariable('turnstileEnabled') === 'true' && !!siteKey;
   const [isChallengeVisible, setIsChallengeVisible] = useState(false);
+  const [failed, setFailed] = useState(false);
 
   useImperativeHandle(ref, () => ({
     getToken: async (forceRefresh = false) => {
+      if (failed) {
+        return undefined;
+      }
       if (forceRefresh) {
         widgetRef.current?.reset();
         widgetRef.current?.execute();
       }
+
       const token = await widgetRef.current?.getResponsePromise().catch(() => undefined);
       if (token) {
         widgetRef.current?.reset();
@@ -31,7 +36,7 @@ const TurnstileWidget = forwardRef<TurnstileWidgetHandle, TurnstileWidgetProps>(
     },
   }));
 
-  if (!isEnabled) {
+  if (!isEnabled || failed) {
     return null;
   }
 
@@ -42,6 +47,7 @@ const TurnstileWidget = forwardRef<TurnstileWidgetHandle, TurnstileWidgetProps>(
         siteKey={siteKey}
         options={{ execution: 'render', action, appearance: 'interaction-only' }}
         onBeforeInteractive={() => setIsChallengeVisible(true)}
+        onError={() => setFailed(true)}
       />
     </div>
   );
