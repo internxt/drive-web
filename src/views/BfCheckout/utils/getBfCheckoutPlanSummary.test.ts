@@ -86,4 +86,20 @@ describe('Building the BF checkout summary', () => {
 
     expect(summary.planLabel).toContain('preferences.account.plans.planFeaturesList.default.bytesTitle');
   });
+
+  it('When the currency has no symbol mapped, then the summary exposes an empty symbol', () => {
+    const plan = getPlan(29.99, 2.18);
+    const planInUnknownCurrency = { ...plan, price: { ...plan.price, currency: 'xyz' } };
+
+    const summary = getBfCheckoutPlanSummary(planInUnknownCurrency, translateMock);
+
+    expect(summary.currencySymbol).toBe('');
+  });
+
+  it('When the plan costs nothing, then there is no discount percentage', () => {
+    const summary = getBfCheckoutPlanSummary(getPlan(0, 0), translateMock);
+
+    expect(summary.discountPercent).toBeUndefined();
+    expect(summary.savingsAmount).toBe('0');
+  });
 });

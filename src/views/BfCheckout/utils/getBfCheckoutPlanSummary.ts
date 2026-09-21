@@ -61,9 +61,11 @@ export const getBfCheckoutPlanSummary = (
       ? translate('preferences.account.plans.planFeaturesList.default.bytesTitle', { bytes: storage })
       : translatedPlanTitle;
 
+  const renewalTitle = translate(`checkout.productCard.renewalTitle.${price.interval}`);
+
   return {
     storage,
-    planLabel: `${planName} — ${translate(`checkout.productCard.renewalTitle.${price.interval}`)}`,
+    planLabel: `${planName} — ${renewalTitle}`,
     billedLabel: translate(`checkout.productCard.billed.${price.interval}`),
     currencySymbol: Currency[price.currency] ?? '',
     discountedAmount: formatPrice(discountedAmount),
