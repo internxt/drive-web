@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
 import { userThunks } from 'app/store/slices/user';
-import authService, { authenticateUser, is2FANeeded } from 'services/auth.service';
+import authService, { authenticateUser, getSecurityDetails } from 'services/auth.service';
 import { twoFactorRegexPattern } from 'services/validation.service';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
@@ -123,6 +123,16 @@ export default function LogIn(): JSX.Element {
     defaultValue: '',
   });
 
+  const email = useWatch({
+    control,
+    name: 'email',
+    defaultValue: '',
+  });
+
+  useEffect(() => {
+    setShowTwoFactor(false);
+  }, [email]);
+
   const sendUnblockAccountEmail = async (email: string) => {
     try {
       await authService.requestUnblockAccount(email);
@@ -189,9 +199,9 @@ export default function LogIn(): JSX.Element {
     const { email, password } = formData;
 
     try {
-      const isTfaEnabled = await is2FANeeded(email, await turnstileRef.current?.getToken());
+      const securityDetails = await getSecurityDetails(email, await turnstileRef.current?.getToken());
 
-      if (!isTfaEnabled || showTwoFactor) {
+      if (!securityDetails.tfaEnabled || showTwoFactor) {
         const loginType: 'desktop' | 'web' = isUniversalLinkMode ? 'desktop' : 'web';
         const authParams = {
           email,
@@ -200,7 +210,8 @@ export default function LogIn(): JSX.Element {
           twoFactorCode,
           dispatch,
           loginType,
-          turnstileToken: await turnstileRef.current?.getToken(),
+          turnstileToken: await turnstileRef.current?.getToken(true),
+          knownSecurityDetails: securityDetails,
         };
 
         const { user, mnemonic } = await authenticateUser(authParams);

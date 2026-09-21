@@ -1,5 +1,5 @@
 import type { TurnstileInstance, TurnstileProps } from '@marsidev/react-turnstile';
-import { render } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import { createRef, forwardRef, useImperativeHandle } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import envService from 'services/env.service';
@@ -33,7 +33,7 @@ describe('TurnstileWidget', () => {
   const renderTurnstile = () => {
     const ref = createRef<TurnstileWidgetHandle>();
     const view = render(<TurnstileWidget ref={ref} action="login" />);
-    return { ...view, getToken: () => ref.current?.getToken() };
+    return { ...view, getToken: (forceRefresh?: boolean) => ref.current?.getToken(forceRefresh) };
   };
 
   beforeEach(() => {
@@ -60,7 +60,7 @@ describe('TurnstileWidget', () => {
     expect(await getToken()).toBeUndefined();
   });
 
-  it('When the flag is enabled, then the widget is rendered as an invisible challenge for the action', () => {
+  it('When the flag is enabled, then the widget is rendered so it starts resolving on mount', () => {
     mockEnv();
 
     const { getByTestId } = renderTurnstile();
@@ -68,17 +68,28 @@ describe('TurnstileWidget', () => {
     expect(getByTestId('turnstile')).toBeInTheDocument();
     expect(widgetProps).toMatchObject({
       siteKey: SITE_KEY,
-      options: { execution: 'execute', action: 'login', appearance: 'interaction-only' },
+      options: { execution: 'render', action: 'login', appearance: 'interaction-only' },
     });
   });
 
-  it('When a token is requested, then the widget is reset, executed, reset again after success and the token is returned', async () => {
+  it('When a token is requested without forcing a refresh, then the widget is not reset/executed and the already-resolving token is returned', async () => {
     mockEnv();
     widget.getResponsePromise.mockResolvedValue(TOKEN);
 
     const { getToken } = renderTurnstile();
 
     expect(await getToken()).toBe(TOKEN);
+    expect(widget.execute).not.toHaveBeenCalled();
+    expect(widget.reset).toHaveBeenCalledTimes(1);
+  });
+
+  it('When a token is requested with forceRefresh, then the widget is reset, executed, reset again after success and the token is returned', async () => {
+    mockEnv();
+    widget.getResponsePromise.mockResolvedValue(TOKEN);
+
+    const { getToken } = renderTurnstile();
+
+    expect(await getToken(true)).toBe(TOKEN);
     expect(widget.reset).toHaveBeenCalledTimes(2);
     expect(widget.execute).toHaveBeenCalledTimes(1);
   });
@@ -90,6 +101,38 @@ describe('TurnstileWidget', () => {
     const { getToken } = renderTurnstile();
 
     expect(await getToken()).toBeUndefined();
-    expect(widget.reset).toHaveBeenCalledTimes(1);
+    expect(widget.reset).not.toHaveBeenCalled();
+  });
+
+  it('When idle, then the widget wrapper takes up no space', () => {
+    mockEnv();
+
+    const { getByTestId } = renderTurnstile();
+
+    expect(getByTestId('turnstile').parentElement).toHaveClass('hidden');
+  });
+
+  it('When the challenge requires interaction, then the wrapper expands to show it', () => {
+    mockEnv();
+
+    const { getByTestId } = renderTurnstile();
+
+    act(() => widgetProps?.onBeforeInteractive?.());
+
+    expect(getByTestId('turnstile').parentElement).not.toHaveClass('hidden');
+  });
+
+  it('When a token is obtained after an interactive challenge, then the wrapper collapses again', async () => {
+    mockEnv();
+    widget.getResponsePromise.mockResolvedValue(TOKEN);
+
+    const { getByTestId, getToken } = renderTurnstile();
+    act(() => widgetProps?.onBeforeInteractive?.());
+
+    await act(async () => {
+      await getToken();
+    });
+
+    expect(getByTestId('turnstile').parentElement).toHaveClass('hidden');
   });
 });
