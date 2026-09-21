@@ -60,7 +60,7 @@ describe('TurnstileWidget', () => {
     expect(await getToken()).toBeUndefined();
   });
 
-  it('When the flag is enabled, then the widget is rendered so it starts resolving on mount', () => {
+  it('When enabled, then the widget starts resolving the challenge as soon as it mounts', () => {
     mockEnv();
 
     const { getByTestId } = renderTurnstile();
@@ -72,7 +72,7 @@ describe('TurnstileWidget', () => {
     });
   });
 
-  it('When a token is requested without forcing a refresh, then the widget is not reset/executed and the already-resolving token is returned', async () => {
+  it('When a token is requested without forcing a refresh, then it returns the token already in flight', async () => {
     mockEnv();
     widget.getResponsePromise.mockResolvedValue(TOKEN);
 
@@ -83,7 +83,7 @@ describe('TurnstileWidget', () => {
     expect(widget.reset).toHaveBeenCalledTimes(1);
   });
 
-  it('When a token is requested with forceRefresh, then the widget is reset, executed, reset again after success and the token is returned', async () => {
+  it('When forceRefresh is set, then it forces a fresh challenge and hides the widget again once it succeeds', async () => {
     mockEnv();
     widget.getResponsePromise.mockResolvedValue(TOKEN);
 
@@ -94,7 +94,7 @@ describe('TurnstileWidget', () => {
     expect(widget.execute).toHaveBeenCalledTimes(1);
   });
 
-  it('When the widget fails or times out, then no token is returned and the widget stays visible', async () => {
+  it('When the widget fails or times out, then it stays visible so the user can retry', async () => {
     mockEnv();
     widget.getResponsePromise.mockRejectedValue(new Error('timeout'));
 
@@ -104,7 +104,7 @@ describe('TurnstileWidget', () => {
     expect(widget.reset).not.toHaveBeenCalled();
   });
 
-  it('When idle, then the widget wrapper takes up no space', () => {
+  it('When idle, then the widget stays hidden and takes up no space', () => {
     mockEnv();
 
     const { getByTestId } = renderTurnstile();
@@ -112,7 +112,7 @@ describe('TurnstileWidget', () => {
     expect(getByTestId('turnstile').parentElement).toHaveClass('hidden');
   });
 
-  it('When the challenge requires interaction, then the wrapper expands to show it', () => {
+  it('When the challenge needs user interaction, then the widget becomes visible', () => {
     mockEnv();
 
     const { getByTestId } = renderTurnstile();
