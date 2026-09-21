@@ -22,4 +22,5 @@ export enum Locale {
   Russian = 'ru',
   Chinese = 'zh',
   Taiwanese = 'zh-tw',
+  BrazilianPortuguese = 'pt-br',
 }

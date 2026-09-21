@@ -17,6 +17,7 @@ enum CurrencySymbol {
   THB = '฿', // Thai Baht
   UAH = '₴', // Ukrainian Hryvnia
   VND = '₫', // Vietnamese Dong
+  BRL = 'R$', // Brazilian Real
 }
 
 const CURRENCY_BY_COUNTRY: Record<string, string> = {
@@ -28,6 +29,8 @@ const CURRENCY_BY_COUNTRY: Record<string, string> = {
   BH: 'usd', // Bahrain
   OM: 'usd', // Oman
   IR: 'usd', // Iran
+  IN: 'inr', // India
+  BR: 'brl', // Brazil
 };
 
 const DEFAULT_CURRENCY = 'eur';

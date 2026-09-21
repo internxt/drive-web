@@ -7,6 +7,8 @@ import { Translate } from 'app/i18n/types';
 export enum Currency {
   'eur' = '€',
   'usd' = '$',
+  'inr' = '₹',
+  'brl' = 'R$',
 }
 
 export interface ProductMetadata {

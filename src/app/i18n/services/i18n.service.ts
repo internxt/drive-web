@@ -11,6 +11,7 @@ import ru from 'dayjs/locale/ru';
 import de from 'dayjs/locale/de';
 import en from 'dayjs/locale/en';
 import tw from 'dayjs/locale/zh-tw';
+import ptBr from 'dayjs/locale/pt-br';
 
 import localStorageService from 'services/local-storage.service';
 import envService from 'services/env.service';
@@ -23,6 +24,7 @@ import zhJson from '../locales/zh.json';
 import ruJson from '../locales/ru.json';
 import deJson from '../locales/de.json';
 import twJson from '../locales/tw.json';
+import ptJson from '../locales/pt.json';
 import { LocalStorageItem } from 'app/core/types';
 
 const dayJsLocale = {
@@ -33,12 +35,13 @@ const dayJsLocale = {
   zh,
   ru,
   de,
-  tw,
+  'zh-tw': tw,
+  'pt-br': ptBr,
 };
 
-const deviceLang = localStorageService.get(LocalStorageItem.Language) ?? navigator.language.split('-')[0];
+const deviceLang = (localStorageService.get(LocalStorageItem.Language) ?? navigator.language).toLowerCase();
 
-dayjs.locale(dayJsLocale[deviceLang] || 'en');
+dayjs.locale(dayJsLocale[deviceLang] ?? dayJsLocale[deviceLang.split('-')[0]] ?? 'en');
 
 export default i18next
   .use(LanguageDetector)
@@ -53,6 +56,7 @@ export default i18next
       ru: { translation: ruJson },
       de: { translation: deJson },
       'zh-TW': { translation: twJson },
+      'pt-BR': { translation: ptJson },
     },
     debug: !envService.isProduction(),
     fallbackLng: 'en',
