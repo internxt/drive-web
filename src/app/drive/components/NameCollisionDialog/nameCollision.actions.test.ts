@@ -303,7 +303,7 @@ describe('resolveCollision', () => {
     expectMovesThenPop([first, other, asRenamed(second, 'report (1)')], [first, other, second]);
   });
 
-  test('when moving with replace, then matched existing items are trashed before moving and only the moved items leave the pending deletion list', async () => {
+  test('when moving with replace, then matched existing items are trashed first and unmatched items are moved under a unique name', async () => {
     const matched = getDriveItemData({ uuid: 'matched', plainName: 'report', type: 'pdf' });
     const unmatched = getDriveItemData({ uuid: 'unmatched', plainName: 'other', type: 'pdf' });
     const existing = getDriveItemData({ uuid: 'existing', plainName: 'report', type: 'pdf' });
@@ -313,6 +313,7 @@ describe('resolveCollision', () => {
       callOrder.push('move');
       return asMoveAction(payload);
     });
+    mocks.getUniqueFilename.mockResolvedValue('other (1)');
 
     await resolve({
       operationType: 'move',
@@ -322,8 +323,17 @@ describe('resolveCollision', () => {
     });
 
     expect(mocks.moveItemsToTrash).toHaveBeenCalledWith([existing]);
-    expect(callOrder).toEqual(['trash', 'move']);
-    expectMovesThenPop([matched], [matched]);
+    expect(callOrder).toEqual(['trash', 'move', 'move']);
+    expectMovesThenPop([matched, asRenamed(unmatched, 'other (1)')], [matched, unmatched]);
+  });
+
+  test('when a moved file has no existing file left to replace and the user replaces, then nothing is trashed and the file is moved under a unique name', async () => {
+    const file = getDriveItemData({ uuid: 'file', plainName: 'report', name: 'report', type: 'pdf' });
+
+    await resolve({ operationType: 'move', operation: 'replace', items: [file], existingItems: [] });
+
+    expect(mocks.moveItemsToTrash).not.toHaveBeenCalled();
+    expectMovesThenPop([asRenamed(file, 'report (1)')], [file]);
   });
 
   test('when uploading with keep, then folders upload with tracking, files upload with the duplicates check, and the folder is refreshed', async () => {
