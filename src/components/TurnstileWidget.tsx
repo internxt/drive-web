@@ -19,7 +19,11 @@ const TurnstileWidget = forwardRef<TurnstileWidgetHandle, TurnstileWidgetProps>(
     getToken: async () => {
       widgetRef.current?.reset();
       widgetRef.current?.execute();
-      return widgetRef.current?.getResponsePromise().catch(() => undefined);
+      const token = await widgetRef.current?.getResponsePromise().catch(() => undefined);
+      if (token) {
+        widgetRef.current?.reset();
+      }
+      return token;
     },
   }));
 

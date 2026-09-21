@@ -72,23 +72,24 @@ describe('TurnstileWidget', () => {
     });
   });
 
-  it('When a token is requested, then the widget is reset, executed and the token is returned', async () => {
+  it('When a token is requested, then the widget is reset, executed, reset again after success and the token is returned', async () => {
     mockEnv();
     widget.getResponsePromise.mockResolvedValue(TOKEN);
 
     const { getToken } = renderTurnstile();
 
     expect(await getToken()).toBe(TOKEN);
-    expect(widget.reset).toHaveBeenCalledTimes(1);
+    expect(widget.reset).toHaveBeenCalledTimes(2);
     expect(widget.execute).toHaveBeenCalledTimes(1);
   });
 
-  it('When the widget fails or times out, then no token is returned', async () => {
+  it('When the widget fails or times out, then no token is returned and the widget stays visible', async () => {
     mockEnv();
     widget.getResponsePromise.mockRejectedValue(new Error('timeout'));
 
     const { getToken } = renderTurnstile();
 
     expect(await getToken()).toBeUndefined();
+    expect(widget.reset).toHaveBeenCalledTimes(1);
   });
 });

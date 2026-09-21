@@ -15,7 +15,6 @@ import { twoFactorRegexPattern } from 'services/validation.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Button } from '@internxt/ui';
 import { WarningCircle } from '@phosphor-icons/react';
-import { AppError } from '@internxt/sdk';
 import { AppView, IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
@@ -144,7 +143,7 @@ export default function LogIn(): JSX.Element {
     setLoginError([castedError.message]);
     setShowErrors(true);
 
-    if ((err as AppError)?.status === 403) {
+    if (castedError.status === 403 && castedError.code === 'ACCOUNT_BLOCKED') {
       await sendUnblockAccountEmail(email);
       navigationService.history.push({
         pathname: AppView.BlockedAccount,
@@ -281,7 +280,6 @@ export default function LogIn(): JSX.Element {
               <span className="font-base w-56 text-sm text-red">{loginError}</span>
             </div>
           )}
-          <TurnstileWidget ref={turnstileRef} action="login" />
           <Button
             type="submit"
             loading={isLoggingIn}
@@ -328,6 +326,7 @@ export default function LogIn(): JSX.Element {
             </Button>
           </Link>
         </div>
+        <TurnstileWidget ref={turnstileRef} action="login" />
       </div>
     </div>
   );
