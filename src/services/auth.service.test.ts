@@ -19,6 +19,8 @@ import * as authService from './auth.service';
 import { PasswordMismatchError } from './errors/auth.errors';
 import encryptedStorageService from './encrypted-storage.service';
 
+const DUMMY_TOKEN = 'XXXX.DUMMY.TOKEN.XXXX';
+
 const mockSecret = '123456789QWERTY';
 const mockApi = 'https://mock';
 
@@ -240,6 +242,42 @@ describe('logIn', () => {
       user: mockClearUser,
       mnemonic: mockMnemonic,
     });
+  });
+
+  const mockAuthClients = async () => {
+    const mockPassword = 'password123';
+    const mockMnemonic =
+      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
+    const mockUser = await getMockUser(mockPassword, mockMnemonic);
+
+    const login = vi.fn().mockResolvedValue({ user: mockUser, newToken: 'test-new-token' });
+    const createAuthClient = vi.fn().mockReturnValue({ login });
+    const createDesktopAuthClient = vi.fn().mockReturnValue({ login });
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient,
+      createDesktopAuthClient,
+    } as any);
+
+    return { mockUser, mockPassword, createAuthClient, createDesktopAuthClient };
+  };
+
+  it('When logging in from the web, then the turnstile token is forwarded to the web auth client', async () => {
+    const { mockUser, mockPassword, createAuthClient, createDesktopAuthClient } = await mockAuthClients();
+
+    await authService.doLogin(mockUser.email, mockPassword, '123456', 'web', DUMMY_TOKEN);
+
+    expect(createAuthClient).toHaveBeenCalledWith({ turnstileToken: DUMMY_TOKEN });
+    expect(createDesktopAuthClient).not.toHaveBeenCalled();
+  });
+
+  it('When logging in from the desktop, then the turnstile token is forwarded to the desktop auth client', async () => {
+    const { mockUser, mockPassword, createAuthClient, createDesktopAuthClient } = await mockAuthClients();
+
+    await authService.doLogin(mockUser.email, mockPassword, '123456', 'desktop', DUMMY_TOKEN);
+
+    expect(createDesktopAuthClient).toHaveBeenCalledWith({ turnstileToken: DUMMY_TOKEN });
+    expect(createAuthClient).not.toHaveBeenCalled();
   });
 });
 
@@ -809,6 +847,18 @@ describe('Security and validation', () => {
 
       mockAuthClient.securityDetails.mockRejectedValue({ message: 'User not found', status: 404 });
       await expect(authService.is2FANeeded('test@example.com')).rejects.toThrow('User not found');
+    });
+
+    it('When a turnstile token is given, then it is forwarded to the auth client', async () => {
+      const createAuthClient = vi.fn().mockReturnValue({
+        securityDetails: vi.fn().mockResolvedValue({ tfaEnabled: false }),
+      });
+
+      vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({ createAuthClient } as any);
+
+      await authService.is2FANeeded('test@example.com', DUMMY_TOKEN);
+
+      expect(createAuthClient).toHaveBeenCalledWith({ turnstileToken: DUMMY_TOKEN });
     });
   });
 
