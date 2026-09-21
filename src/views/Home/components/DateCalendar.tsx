@@ -16,11 +16,14 @@ const getMondayFirstGridStart = (month: Dayjs): Dayjs => {
   return firstDayOfMonth.subtract((firstDayOfMonth.day() + 6) % 7, 'day');
 };
 
-const REGIONAL_DAYJS_LOCALES = ['zh-tw', 'pt-br'];
+const REGIONAL_DAYJS_LOCALES = new Set(['zh-tw', 'pt-br']);
 
 export const getCalendarLocale = (language: string): string => {
   const lowerCaseLanguage = language.toLowerCase();
-  return REGIONAL_DAYJS_LOCALES.includes(lowerCaseLanguage) ? lowerCaseLanguage : lowerCaseLanguage.split('-')[0];
+  
+  return REGIONAL_DAYJS_LOCALES.has(lowerCaseLanguage) 
+    ? lowerCaseLanguage 
+    : lowerCaseLanguage.split('-')[0];
 };
 
 const getDayClassName = (isSelected: boolean, isCurrentMonth: boolean, isDisabled: boolean) => {
