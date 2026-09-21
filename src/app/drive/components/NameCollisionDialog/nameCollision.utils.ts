@@ -50,18 +50,21 @@ export const getCollisionPairs = <T extends CollisionItem>(
     return existing ? [{ item, existing }] : [];
   });
 
+export const getUnpairedItems = <T extends CollisionItem>(items: T[], existingItems: DriveItemData[]): T[] =>
+  items.filter((item) => !findExistingItemFor(item, existingItems));
+
 export const hasDuplicatedItems = (group: CollisionGroup): boolean => group.duplicatedItems.length > 0;
 
 export const findPendingGroupIndex = (groups: CollisionGroup[]): number => groups.findIndex(hasDuplicatedItems);
 
 /**
- * Returns the groups still waiting for a decision after the first duplicated item of the group
- * at `groupIndex` has been handled. Groups left without duplicated items are dropped.
+ * Returns the groups still waiting for a decision once the first duplicated item of the group at
+ * `groupIndex` has been handled, without the existing item it replaced.
  */
 export const getRemainingGroups = (
   groups: CollisionGroup[],
   groupIndex: number,
-  resolvedExistingItem?: DriveItemData,
+  replacedExistingItem?: DriveItemData,
 ): CollisionGroup[] =>
   groups
     .map((group, index) =>
@@ -69,7 +72,7 @@ export const getRemainingGroups = (
         ? {
             ...group,
             duplicatedItems: group.duplicatedItems.slice(1),
-            existingItems: group.existingItems.filter((existing) => existing !== resolvedExistingItem),
+            existingItems: group.existingItems.filter((existing) => existing !== replacedExistingItem),
           }
         : group,
     )

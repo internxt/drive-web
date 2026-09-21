@@ -24,6 +24,7 @@ import {
   CollisionItem,
   CollisionPair,
   getCollisionPairs,
+  getUnpairedItems,
   groupByNameSeries,
   isFolderUpload,
   isNameTakenBy,
@@ -173,19 +174,32 @@ const keepAndMoveItems = async (
 /**
  * Trashes the colliding drive items and then moves the incoming ones into their place.
  */
-const replaceAndMoveItems = async (
-  pairs: CollisionPair<DriveItemData>[],
+const trashAndMoveItems = async (
+  replacingPairs: CollisionPair<DriveItemData>[],
   destinationUuid: string,
   context: NameCollisionContext,
 ): Promise<DriveItemData[]> => {
-  if (pairs.length === 0) return [];
+  if (replacingPairs.length === 0) return [];
 
-  const { replacingPairs, leftoverItems } = splitReplacingPairs(pairs);
   const replacingMoves: ItemMove[] = replacingPairs.map(({ item }) => ({ item, payload: item }));
 
   await moveItemsToTrash(replacingPairs.map((pair) => pair.existing));
-  const replacingItems = await moveItems(replacingMoves, destinationUuid, context);
-  const keptItems = await keepAndMoveItems(leftoverItems, destinationUuid, context);
+  return moveItems(replacingMoves, destinationUuid, context);
+};
+
+const replaceAndMoveItems = async (
+  items: DriveItemData[],
+  existingItems: DriveItemData[],
+  destinationUuid: string,
+  context: NameCollisionContext,
+): Promise<DriveItemData[]> => {
+  const pairs = getCollisionPairs(items, existingItems);
+  const unpairedItems = getUnpairedItems(items, existingItems);
+  const { replacingPairs, leftoverItems } = splitReplacingPairs(pairs);
+  const itemsToKeep = [...leftoverItems, ...unpairedItems];
+
+  const replacingItems = await trashAndMoveItems(replacingPairs, destinationUuid, context);
+  const keptItems = await keepAndMoveItems(itemsToKeep, destinationUuid, context);
 
   return [...replacingItems, ...keptItems];
 };
@@ -205,7 +219,7 @@ const resolveMoveCollision = async (
   if (operation === 'keep') {
     movedItems = await keepAndMoveItems(items, destinationUuid, context);
   } else {
-    movedItems = await replaceAndMoveItems(getCollisionPairs(items, existingItems), destinationUuid, context);
+    movedItems = await replaceAndMoveItems(items, existingItems, destinationUuid, context);
   }
   context.dispatch(storageActions.popItemsToDelete(movedItems));
 };
