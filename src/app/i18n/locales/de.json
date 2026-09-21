@@ -272,6 +272,68 @@
       "missingPaymentDetails": "Fehlende Zahlungsdaten zur Bestätigung der Zahlung"
     }
   },
+  "bfCheckout": {
+    "header": {
+      "tagline": "Ihre private Cloud",
+      "europeanBased": "Europäischer Anbieter",
+      "gdprCompliant": "DSGVO-konform",
+      "trustedByMillions": "Millionen vertrauen uns"
+    },
+    "hero": {
+      "offerPill": "{{percent}}% RABATT — Exklusives Angebot für kurze Zeit",
+      "offerPillNoDiscount": "Exklusives Angebot für kurze Zeit",
+      "title": "Halten Sie Ihre Dateien, Fotos und Videos",
+      "titleHighlight": "100% privat.",
+      "subtitle": "Sichern Sie sich {{storage}} privaten Cloud-Speicher für nur {{price}} im ersten Monat.",
+      "imageAlt": "Internxt Drive auf einem Laptop und einem Smartphone",
+      "points": {
+        "privacy": {
+          "title": "Nur Sie haben Zugriff auf Ihre Dateien",
+          "description": "Dank Zero-Knowledge-Verschlüsselung kann nicht einmal Internxt auf Ihre Inhalte zugreifen."
+        },
+        "storage": {
+          "title": "Ihre private Cloud, geschützt",
+          "description": "Speichern Sie Ihre Fotos, Videos, Dokumente und persönlichen Dateien mit integriertem Datenschutz."
+        },
+        "offer": {
+          "title": "{{percent}}% RABATT — für kurze Zeit",
+          "titleNoDiscount": "Exklusives Angebot — für kurze Zeit",
+          "description": "Sichern Sie sich {{storage}} für nur {{price}}. Dieses exklusive Angebot ist bald vorbei."
+        }
+      },
+      "badges": {
+        "basedInEu": "Sitz in der EU",
+        "openSource": "Open Source",
+        "audited": "Von Securitum geprüft",
+        "privacyPriority": "Ihre Privatsphäre. Unsere Priorität."
+      }
+    },
+    "countdown": {
+      "title": "Ihr exklusives Angebot mit {{percent}}% Rabatt endet in:",
+      "titleNoDiscount": "Ihr exklusives Angebot endet in:",
+      "footer": "Sichern Sie sich {{storage}} für {{price}}, bevor dieses Angebot endet."
+    },
+    "summary": {
+      "discountApplied": "{{percent}}% Rabatt angewendet",
+      "estimatedTax": "Voraussichtliche Steuern"
+    },
+    "form": {
+      "emailLabel": "Ihre E-Mail-Adresse",
+      "emailPlaceholder": "name@email.com",
+      "createPasswordLabel": "Passwort erstellen",
+      "passwordLabel": "Ihr Passwort",
+      "passwordPlaceholder": "Passwort",
+      "togglePasswordVisibility": "Passwort anzeigen oder ausblenden",
+      "incompleteDetails": "Bitte geben Sie Ihre E-Mail-Adresse und Ihr Passwort ein, um fortzufahren.",
+      "encryptedTitle": "Ihre Dateien sind verschlüsselt und privat.",
+      "encryptedDescription": "Internxt kann nicht auf Ihre Inhalte zugreifen."
+    },
+    "cta": {
+      "button": "{{storage}} für {{price}} sichern",
+      "renewalNoteMonthly": "Erster Monat {{price}}, danach {{renewalPrice}}/Monat. Jederzeit kündbar.",
+      "renewalNoteYearly": "Erstes Jahr {{price}}, danach {{renewalPrice}}/Jahr. Jederzeit kündbar."
+    }
+  },
   "general": {
     "of": "von",
     "at": "um",
