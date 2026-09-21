@@ -33,6 +33,8 @@ jobs:
       - run: echo REACT_APP_SEGMENT_KEY=${{ secrets.REACT_APP_SEGMENT_KEY }} >> .env
       - run: echo GENERATE_SOURCEMAP=${{ secrets.GENERATE_SOURCEMAP }} >> .env
       - run: echo REACT_APP_RECAPTCHA_V3=${{ secrets.REACT_APP_RECAPTCHA_V3 }} >> .env
+      - run: echo REACT_APP_TURNSTILE_SITE_KEY=${{ secrets.REACT_APP_TURNSTILE_SITE_KEY }} >> .env
+      - run: echo REACT_APP_TURNSTILE_ENABLED=${{ secrets.REACT_APP_TURNSTILE_ENABLED }} >> .env
       - run: echo REACT_APP_STORJ_BRIDGE=${{ secrets.REACT_APP_STORJ_BRIDGE }} >> .env
       - run: echo REACT_APP_HOSTNAME=${{ secrets.REACT_APP_HOSTNAME }} >> .env
       - run: echo REACT_APP_PROXY=${{ secrets.REACT_APP_PROXY }} >> .env
@@ -45,7 +47,7 @@ jobs:
         run: yarn install
 
       - name: Check and Install Playwright
-        run: yarn playwright install
+        run: yarn playwright install --with-deps
 
       - name: Unit test run
         run: yarn test:coverage
