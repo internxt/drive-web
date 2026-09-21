@@ -9,6 +9,7 @@ import {
   getCollisionPairs,
   getNameSeriesKey,
   getRemainingGroups,
+  getUnpairedItems,
   groupByNameSeries,
   isFolderUpload,
   isNameTakenBy,
@@ -91,6 +92,14 @@ describe('getCollisionPairs', () => {
   });
 });
 
+describe('getUnpairedItems', () => {
+  test('when only some items collide, then the items without an existing item are returned', () => {
+    const unmatched = new File([''], 'unknown.txt');
+
+    expect(getUnpairedItems([new File([''], 'report.pdf'), unmatched], existingItems)).toEqual([unmatched]);
+  });
+});
+
 describe('findPendingGroupIndex', () => {
   test('when several groups exist, then the first one with duplicated items is returned', () => {
     const pending = getGroup({ duplicatedItems: [new File([''], 'a.txt')] });
@@ -103,7 +112,7 @@ describe('findPendingGroupIndex', () => {
 describe('getRemainingGroups', () => {
   const otherGroup = getGroup({ destinationUuid: 'other', duplicatedItems: [new File([''], 'c.txt')] });
 
-  test('when the handled group still has items, then it keeps the rest and drops the resolved existing item', () => {
+  test('when the handled group still has items, then it keeps the rest and drops the replaced existing item', () => {
     const [first, second] = [new File([''], 'a.txt'), new File([''], 'b.txt')];
     const groups = [
       getGroup({ duplicatedItems: [first, second], existingItems: [existingFile, existingFolder] }),
@@ -113,6 +122,15 @@ describe('getRemainingGroups', () => {
     expect(getRemainingGroups(groups, 0, existingFile)).toEqual([
       { ...groups[0], duplicatedItems: [second], existingItems: [existingFolder] },
       otherGroup,
+    ]);
+  });
+
+  test('when the handled item did not replace any existing item, then every existing item stays in the group', () => {
+    const [first, second] = [new File([''], 'a.txt'), new File([''], 'b.txt')];
+    const groups = [getGroup({ duplicatedItems: [first, second], existingItems: [existingFile, existingFolder] })];
+
+    expect(getRemainingGroups(groups, 0, undefined)).toEqual([
+      { ...groups[0], duplicatedItems: [second], existingItems: [existingFile, existingFolder] },
     ]);
   });
 
