@@ -57,6 +57,7 @@ const views: Array<{
   { id: AppView.CheckoutCancel, component: CheckoutCancelView },
   { id: AppView.CheckoutSession, component: CheckoutSessionId },
   { id: AppView.Checkout, component: CheckoutViewWrapper },
+  { id: AppView.BfCheckout, component: CheckoutViewWrapper },
   { id: AppView.RecoveryLink, component: RecoveryLinkView },
   { id: AppView.ShareFileToken, component: ShareFileView },
   { id: AppView.ShareFileToken2, component: ShareFileView },
