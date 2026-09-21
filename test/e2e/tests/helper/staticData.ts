@@ -43,4 +43,6 @@ export const staticData = {
   collisionKeepBothOption: 'Keep both',
   collisionSkipOption: 'Skip this item',
   collisionApplyToAll: 'Apply this action to all duplicates',
+
+  trashDisposalAnnouncementTitle: 'Automatic Trash disposal',
 };
