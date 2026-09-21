@@ -7,11 +7,14 @@ import {
   buildExistingFolder,
   buildTrashedFile,
   failMovesOf,
+  MoveRequest,
   ROOT_FOLDER_UUID,
+  TrashedFile,
   TrashRequest,
 } from '../helper/driveRouteMocks';
 import { buildUploadFile, openMockedDrive } from '../helper/mockedDrive';
 import { staticData } from '../helper/staticData';
+import { DrivePage } from '../pages/drivePage';
 
 const archive = buildExistingFolder(1, 'Archive');
 const photos = buildExistingFolder(2, 'Photos');
@@ -43,8 +46,34 @@ const driveWithTrash = {
   isVersioningEnabled: true,
 };
 
+/** Archive holds one report.txt; the trash holds two report.txt deleted from it and nothing else collides. */
+const driveWithSameNameTrash = {
+  ...driveWithTrash,
+  files: existingDrive.files,
+  trashedFiles: [trashedReport, trashedReportCopy],
+};
+
 const getTrashedUuids = (trashRequests: TrashRequest[]) =>
   trashRequests.flatMap((trashRequest) => trashRequest.items.map((item) => item.uuid));
+
+const archivedReportTrashedOnce: TrashRequest[] = [{ items: [{ uuid: archivedReport.uuid, type: 'file' }] }];
+
+const buildMoveToArchive = (trashedFile: TrashedFile, newName?: string): MoveRequest => {
+  const move = { uuid: trashedFile.uuid, destinationFolder: archive.uuid };
+  return newName ? { ...move, name: newName } : move;
+};
+
+/** Reloads both lists from the server the way a user would: Drive → Archive, then back to the trash. */
+const expectArchiveAndTrash = async (
+  drivePage: DrivePage,
+  { archiveItems, trashItems }: { archiveItems: string[]; trashItems: string[] },
+) => {
+  await drivePage.openFolderFromDrive(archive.plainName);
+  await drivePage.expectListedItems(archiveItems);
+
+  await drivePage.reopenTrash();
+  await drivePage.expectListedItems(trashItems);
+};
 
 /**
  * A local "Photos" folder that partially overlaps with the existing one:
@@ -308,6 +337,55 @@ test.describe('Internxt name collision resolutions', () => {
       await drivePage.openFolderFromDrive(archive.plainName);
       await drivePage.expectListedItems(['report.txt', 'report (1).txt', 'other.txt']);
       await expect(drivePage.itemRow('other (1).txt')).toHaveCount(0);
+    });
+
+    test('TC12: Validate that replacing with two same-name restored files one at a time trashes the existing file only once', async ({
+      page,
+    }) => {
+      const { drivePage, collisionDialog, requests } = await openMockedDrive(page, driveWithSameNameTrash);
+      const replacingMove = buildMoveToArchive(trashedReport);
+      const numberedMove = buildMoveToArchive(trashedReportCopy, 'report (1)');
+
+      await drivePage.restoreAllFromTrash(['report.txt', 'report.txt']);
+      await collisionDialog.expectApplyToAllVisible(true);
+      await collisionDialog.resolve('report', staticData.collisionReplaceOption);
+      await expect.poll(() => requests.moves, { timeout: 10000 }).toEqual([replacingMove]);
+      expect(requests.trash).toEqual(archivedReportTrashedOnce);
+
+      await collisionDialog.resolveLastItem(staticData.collisionReplaceOption);
+      await collisionDialog.expectClosed();
+      await expect.poll(() => requests.moves, { timeout: 10000 }).toEqual([replacingMove, numberedMove]);
+      expect(requests.trash).toEqual(archivedReportTrashedOnce);
+
+      await drivePage.expectListedItems([]);
+      await expectArchiveAndTrash(drivePage, {
+        archiveItems: ['report.txt', 'report (1).txt'],
+        trashItems: ['report.txt'],
+      });
+    });
+
+    test('TC13: Validate that replacing after keeping both on a same-name restored file still trashes the existing file', async ({
+      page,
+    }) => {
+      const { drivePage, collisionDialog, requests } = await openMockedDrive(page, driveWithSameNameTrash);
+      const numberedMove = buildMoveToArchive(trashedReport, 'report (1)');
+      const replacingMove = buildMoveToArchive(trashedReportCopy);
+
+      await drivePage.restoreAllFromTrash(['report.txt', 'report.txt']);
+      await collisionDialog.resolve('report', staticData.collisionKeepBothOption);
+      await expect.poll(() => requests.moves, { timeout: 10000 }).toEqual([numberedMove]);
+      expect(requests.trash).toHaveLength(0);
+
+      await collisionDialog.resolveLastItem(staticData.collisionReplaceOption);
+      await collisionDialog.expectClosed();
+      await expect.poll(() => requests.moves, { timeout: 10000 }).toEqual([numberedMove, replacingMove]);
+      expect(requests.trash).toEqual(archivedReportTrashedOnce);
+
+      await drivePage.expectListedItems([]);
+      await expectArchiveAndTrash(drivePage, {
+        archiveItems: ['report.txt', 'report (1).txt'],
+        trashItems: ['report.txt'],
+      });
     });
   });
 });

@@ -37,6 +37,13 @@ export class NameCollisionDialogPage {
     await expect(this.applyToAllLabel).toBeVisible({ visible: isVisible });
   }
 
+  /** Between two same-name items the dialog text does not change: only "apply to all" disappears. */
+  async expectReadyForLastItem() {
+    await expect(this.applyToAllLabel).toBeHidden({ timeout: 10000 });
+    await expect(this.title).toBeVisible();
+    await expect(this.submitButton).toBeEnabled();
+  }
+
   async selectOption(optionName: string) {
     await this.dialog.getByRole('radio', { name: optionName }).click();
   }
@@ -53,6 +60,12 @@ export class NameCollisionDialogPage {
 
   async resolve(itemName: string, optionName: string) {
     await this.expectOpenFor(itemName);
+    await this.selectOption(optionName);
+    await this.submit();
+  }
+
+  async resolveLastItem(optionName: string) {
+    await this.expectReadyForLastItem();
     await this.selectOption(optionName);
     await this.submit();
   }

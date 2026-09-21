@@ -275,6 +275,13 @@ export class DrivePage {
     await this.restoreHeaderButton.click();
   }
 
+  async restoreAllFromTrash(trashedItemNames: string[]) {
+    await this.openTrash();
+    await this.expectListedItems(trashedItemNames);
+    await this.selectAllItems();
+    await this.restoreSelectedItems();
+  }
+
   fileRow(fileName: string) {
     return this.page.locator(`[title="${fileName}"]`);
   }
