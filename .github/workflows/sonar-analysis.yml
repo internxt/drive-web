@@ -47,7 +47,7 @@ jobs:
         run: yarn install
 
       - name: Check and Install Playwright
-        run: yarn playwright install
+        run: yarn playwright install --with-deps
 
       - name: Unit test run
         run: yarn test:coverage
