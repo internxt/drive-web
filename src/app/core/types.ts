@@ -104,6 +104,7 @@ export enum AppView {
   CheckoutSuccess = 'checkout-success',
   CheckoutCancel = 'checkout-cancel',
   Checkout = 'checkout',
+  BfCheckout = 'checkout-bf',
   CheckoutSession = 'checkout-session',
   RecoveryLink = 'recovery-link',
   ShareFileToken = 'share-token',

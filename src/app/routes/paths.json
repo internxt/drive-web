@@ -164,6 +164,13 @@
       "auth": false
     },
     {
+      "id": "checkout-bf",
+      "layout": "empty",
+      "path": "/checkout-bf",
+      "exact": false,
+      "auth": false
+    },
+    {
       "id": "checkout-session",
       "layout": "empty",
       "path": "/checkout/:sessionId",
