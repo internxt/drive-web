@@ -72,8 +72,8 @@ test.describe('Internxt upload stall recovery', () => {
   test.use({ storageState: { cookies: [], origins: [] } });
   test.setTimeout(STALL_DETECTION_TIMEOUT + 60000);
   test.skip(
-    ({ browserName }) => browserName !== 'chromium',
-    'Only Chromium lets Playwright intercept the CORS preflights the bridge relay depends on',
+    ({ browserName, channel }) => browserName !== 'chromium' || channel !== undefined,
+    'Only Chromium lets Playwright intercept the CORS preflights the bridge relay depends on; the branded channels run the same engine, so running it once is enough',
   );
 
   test.beforeEach('Logging in', async ({ page }) => {
