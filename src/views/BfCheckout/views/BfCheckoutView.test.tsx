@@ -108,7 +108,7 @@ describe('BF checkout view', () => {
 
     expect(screen.getByText('Your exclusive 94% OFF offer expires in:')).toBeTruthy();
     expect(screen.getByText('01')).toBeTruthy();
-    expect(screen.getAllByText('00').length).toBe(2);
+    expect(screen.getAllByText('00')).toHaveLength(2);
   });
 
   it('When a coupon is applied, then the summary shows the discount, the taxes and the total', () => {
