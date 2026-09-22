@@ -293,7 +293,7 @@
       "missingPaymentDetails": "缺少确认付款所需的支付信息"
     }
   },
-  "bfCheckout": {
+  "urgentCheckout": {
     "header": {
       "tagline": "您的私人云",
       "europeanBased": "欧洲运营",

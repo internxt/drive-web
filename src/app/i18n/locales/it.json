@@ -293,7 +293,7 @@
       "missingPaymentDetails": "Dati di pagamento mancanti per confermare il pagamento"
     }
   },
-  "bfCheckout": {
+  "urgentCheckout": {
     "header": {
       "tagline": "Il tuo cloud privato",
       "europeanBased": "Con sede in Europa",

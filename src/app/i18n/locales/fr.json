@@ -272,7 +272,7 @@
       "missingPaymentDetails": "Informations de paiement manquantes pour confirmer le paiement"
     }
   },
-  "bfCheckout": {
+  "urgentCheckout": {
     "header": {
       "tagline": "Votre cloud privé",
       "europeanBased": "Basé en Europe",

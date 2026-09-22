@@ -293,7 +293,7 @@
       "missingPaymentDetails": "缺少確認付款所需的付款資訊"
     }
   },
-  "bfCheckout": {
+  "urgentCheckout": {
     "header": {
       "tagline": "您的私人雲端",
       "europeanBased": "歐洲營運",
