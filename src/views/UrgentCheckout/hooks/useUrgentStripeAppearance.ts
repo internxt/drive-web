@@ -2,11 +2,11 @@ import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { StripeElementsOptionsMode } from '@stripe/stripe-js';
 import { useEffect, useMemo, useState } from 'react';
 import { checkoutService } from 'views/Checkout/services';
-import { BF_CHECKOUT_THEME_STYLES } from '../constants';
+import { URGENT_CHECKOUT_THEME_STYLES } from '../constants';
 
 type StripeAppearance = StripeElementsOptionsMode['appearance'];
 
-export const useBfStripeAppearance = (
+export const useUrgentStripeAppearance = (
   stripeElementsOptions: StripeElementsOptionsMode | undefined,
   price?: PriceWithTax,
 ): StripeElementsOptionsMode | undefined => {
@@ -18,8 +18,8 @@ export const useBfStripeAppearance = (
     }
 
     checkoutService
-      .loadStripeElements(BF_CHECKOUT_THEME_STYLES, price)
-      .then((bfElementsOptions) => setAppearance(bfElementsOptions.appearance));
+      .loadStripeElements(URGENT_CHECKOUT_THEME_STYLES, price)
+      .then((urgentElementsOptions) => setAppearance(urgentElementsOptions.appearance));
   }, [price?.price?.id]);
 
   return useMemo(() => {

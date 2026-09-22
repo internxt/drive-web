@@ -2,7 +2,7 @@ import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { Translate } from 'app/i18n/types';
 import { describe, expect, it } from 'vitest';
-import { getBfCheckoutPlanSummary } from './getBfCheckoutPlanSummary';
+import { getUrgentCheckoutPlanSummary } from './getUrgentCheckoutPlanSummary';
 
 const BYTES_IN_5TB = 5497558138880;
 const ONE_TERABYTE_IN_BYTES = 1099511627776;
@@ -38,9 +38,9 @@ const percentOffCoupon: CouponCodeData = {
   codeName: 'OFFER94',
 };
 
-describe('Building the BF checkout summary', () => {
+describe('Building the urgent checkout summary', () => {
   it('When a percentage coupon is applied, then the discounted price, tax, total and savings are derived from the plan', () => {
-    const summary = getBfCheckoutPlanSummary(getPlan(29.99, 2.18), translateMock, percentOffCoupon);
+    const summary = getUrgentCheckoutPlanSummary(getPlan(29.99, 2.18), translateMock, percentOffCoupon);
 
     expect(summary.storage).toBe('5TB');
     expect(summary.planLabel).toBe('Ultimate — annual');
@@ -56,7 +56,7 @@ describe('Building the BF checkout summary', () => {
   });
 
   it('When no coupon is applied, then there is no discount and no savings', () => {
-    const summary = getBfCheckoutPlanSummary(getPlan(29.99, 36.29), translateMock);
+    const summary = getUrgentCheckoutPlanSummary(getPlan(29.99, 36.29), translateMock);
 
     expect(summary.discountPercent).toBeUndefined();
     expect(summary.discountedAmount).toBe('29.99');
@@ -72,7 +72,7 @@ describe('Building the BF checkout summary', () => {
       codeName: 'OFFER15',
     };
 
-    const summary = getBfCheckoutPlanSummary(getPlan(30, 15), translateMock, amountOffCoupon);
+    const summary = getUrgentCheckoutPlanSummary(getPlan(30, 15), translateMock, amountOffCoupon);
 
     expect(summary.discountedAmount).toBe('15');
     expect(summary.discountPercent).toBe(50);
@@ -82,7 +82,7 @@ describe('Building the BF checkout summary', () => {
     const plan = getPlan(9.99, 9.99);
     plan.price.bytes = ONE_TERABYTE_IN_BYTES;
 
-    const summary = getBfCheckoutPlanSummary(plan, translateMock);
+    const summary = getUrgentCheckoutPlanSummary(plan, translateMock);
 
     expect(summary.planLabel).toContain('preferences.account.plans.planFeaturesList.default.bytesTitle');
   });
@@ -91,13 +91,13 @@ describe('Building the BF checkout summary', () => {
     const plan = getPlan(29.99, 2.18);
     const planInUnknownCurrency = { ...plan, price: { ...plan.price, currency: 'xyz' } };
 
-    const summary = getBfCheckoutPlanSummary(planInUnknownCurrency, translateMock);
+    const summary = getUrgentCheckoutPlanSummary(planInUnknownCurrency, translateMock);
 
     expect(summary.currencySymbol).toBe('');
   });
 
   it('When the plan costs nothing, then there is no discount percentage', () => {
-    const summary = getBfCheckoutPlanSummary(getPlan(0, 0), translateMock);
+    const summary = getUrgentCheckoutPlanSummary(getPlan(0, 0), translateMock);
 
     expect(summary.discountPercent).toBeUndefined();
     expect(summary.savingsAmount).toBe('0');

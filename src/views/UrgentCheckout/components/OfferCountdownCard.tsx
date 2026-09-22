@@ -19,8 +19,8 @@ export const OfferCountdownCard = ({ storage, priceLabel, discountPercent }: Off
   const { hours, minutes, seconds } = useOfferCountdown();
 
   const title = discountPercent
-    ? translate('bfCheckout.countdown.title', { percent: discountPercent })
-    : translate('bfCheckout.countdown.titleNoDiscount');
+    ? translate('urgentCheckout.countdown.title', { percent: discountPercent })
+    : translate('urgentCheckout.countdown.titleNoDiscount');
 
   return (
     <section className="flex flex-col items-center gap-4 rounded-2xl border border-[#1E4A8F] bg-[#0E1E38] p-5">
@@ -36,7 +36,7 @@ export const OfferCountdownCard = ({ storage, priceLabel, discountPercent }: Off
         <CountdownUnit value={seconds} />
       </div>
       <p className="text-center text-sm text-[#8FB6EE]">
-        {translate('bfCheckout.countdown.footer', { storage, price: priceLabel })}
+        {translate('urgentCheckout.countdown.footer', { storage, price: priceLabel })}
       </p>
     </section>
   );
