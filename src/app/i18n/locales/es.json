@@ -272,7 +272,7 @@
       "missingPaymentDetails": "Faltan los datos de pago para confirmar el pago"
     }
   },
-  "bfCheckout": {
+  "urgentCheckout": {
     "header": {
       "tagline": "Tu nube privada",
       "europeanBased": "Con base en Europa",

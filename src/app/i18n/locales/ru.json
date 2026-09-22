@@ -272,7 +272,7 @@
       "missingPaymentDetails": "Отсутствуют данные платежа для подтверждения оплаты"
     }
   },
-  "bfCheckout": {
+  "urgentCheckout": {
     "header": {
       "tagline": "Ваше частное облако",
       "europeanBased": "Европейский сервис",

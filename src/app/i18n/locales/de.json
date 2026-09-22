@@ -272,7 +272,7 @@
       "missingPaymentDetails": "Fehlende Zahlungsdaten zur Bestätigung der Zahlung"
     }
   },
-  "bfCheckout": {
+  "urgentCheckout": {
     "header": {
       "tagline": "Ihre private Cloud",
       "europeanBased": "Europäischer Anbieter",
