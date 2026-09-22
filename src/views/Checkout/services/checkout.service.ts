@@ -16,8 +16,63 @@ import errorService from 'services/error.service';
 import { bytesToString } from 'app/drive/services/size.service';
 import userService from 'services/user.service';
 import encryptedStorageService from 'services/encrypted-storage.service';
+import { CurrencyCode, PlanInterval, PaymentMethod } from '../types';
 
 const BORDER_SHADOW = 'rgb(0 102 255)';
+const UPI_MAX_DECIMAL_AMOUNT = 99000;
+const PIX_MAX_DECIMAL_AMOUNT = 14600;
+
+const PAYMENT_METHOD_LIMITS: Partial<
+  Record<CurrencyCode, Partial<Record<PlanInterval, Partial<Record<PaymentMethod, number>>>>>
+> = {
+  inr: {
+    [PlanInterval.LIFETIME]: { upi: UPI_MAX_DECIMAL_AMOUNT },
+  },
+  brl: {
+    [PlanInterval.LIFETIME]: { pix: PIX_MAX_DECIMAL_AMOUNT },
+  },
+};
+
+const PAYMENT_METHODS: Record<CurrencyCode, Record<PlanInterval, PaymentMethod[]>> = {
+  eur: {
+    [PlanInterval.MONTH]: ['card', 'paypal'],
+    [PlanInterval.LIFETIME]: ['card', 'paypal', 'klarna'],
+    [PlanInterval.YEAR]: ['card', 'paypal'],
+  },
+  usd: {
+    [PlanInterval.MONTH]: ['card', 'paypal'],
+    [PlanInterval.LIFETIME]: ['card', 'paypal'],
+    [PlanInterval.YEAR]: ['card', 'paypal'],
+  },
+  inr: {
+    [PlanInterval.MONTH]: ['card', 'upi'],
+    [PlanInterval.LIFETIME]: ['card', 'upi'],
+    [PlanInterval.YEAR]: ['card', 'upi'],
+  },
+  brl: {
+    [PlanInterval.MONTH]: ['card', 'pix'],
+    [PlanInterval.LIFETIME]: ['card', 'pix'],
+    [PlanInterval.YEAR]: ['card', 'pix'],
+  },
+};
+
+const getPaymentMethods = (plan: PriceWithTax): PaymentMethod[] => {
+  const currency = plan.price?.currency as CurrencyCode;
+  const interval = plan.price?.interval as PlanInterval;
+
+  const methods = PAYMENT_METHODS[currency]?.[interval] ?? ['card'];
+  const limits = PAYMENT_METHOD_LIMITS[currency]?.[interval];
+
+  if (!limits) return methods;
+
+  const amount = plan.taxes?.decimalAmountWithTax ?? plan.price?.decimalAmount ?? 0;
+  const allowed = methods.filter((method) => {
+    const max = limits[method];
+    return max === undefined || amount < max;
+  });
+
+  return allowed.length > 0 ? allowed : ['card'];
+};
 
 const fetchPromotionCodeByName = async (priceId: string, promotionCodeName: string): Promise<CouponCodeData> => {
   const paymentClient = await SdkFactory.getNewApiInstance().createPaymentsClient();
@@ -216,10 +271,7 @@ const loadStripeElements = async (
     mode: plan.price?.interval === 'lifetime' ? 'payment' : 'subscription',
     amount: plan.taxes?.amountWithTax,
     currency: plan.price?.currency,
-    payment_method_types:
-      plan?.price?.interval === 'lifetime' && plan.price?.currency === 'eur'
-        ? ['card', 'paypal', 'klarna']
-        : ['card', 'paypal'],
+    payment_method_types: getPaymentMethods(plan),
   };
 };
 
