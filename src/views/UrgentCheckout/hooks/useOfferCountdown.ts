@@ -1,6 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { OFFER_COUNTDOWN_DURATION_MS, OFFER_COUNTDOWN_STORAGE_KEY } from '../constants';
 
+export interface OfferCountdown {
+  hours: string;
+  minutes: string;
+  seconds: string;
+  hasExpired: boolean;
+}
+
 const MILLISECONDS_PER_SECOND = 1000;
 const SECONDS_PER_MINUTE = 60;
 const MINUTES_PER_HOUR = 60;
@@ -15,7 +22,7 @@ const readStoredDeadline = (): number | null => {
   }
 };
 
-const storeDeadline = (deadline: number): void => {
+const WriteStoreDeadline = (deadline: number): void => {
   try {
     globalThis.sessionStorage?.setItem(OFFER_COUNTDOWN_STORAGE_KEY, String(deadline));
   } catch {
@@ -31,7 +38,7 @@ const getDeadline = (durationMs: number): number => {
   }
 
   const deadline = Date.now() + durationMs;
-  storeDeadline(deadline);
+  WriteStoreDeadline(deadline);
 
   return deadline;
 };
@@ -39,13 +46,6 @@ const getDeadline = (durationMs: number): number => {
 const getRemainingMs = (deadline: number): number => Math.max(0, deadline - Date.now());
 
 const padTimeUnit = (value: number): string => String(value).padStart(2, '0');
-
-export interface OfferCountdown {
-  hours: string;
-  minutes: string;
-  seconds: string;
-  hasExpired: boolean;
-}
 
 export const useOfferCountdown = (durationMs: number = OFFER_COUNTDOWN_DURATION_MS): OfferCountdown => {
   const deadline = useMemo(() => getDeadline(durationMs), [durationMs]);
