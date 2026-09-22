@@ -5,7 +5,7 @@ import { Translate } from 'app/i18n/types';
 import { Currency } from 'views/Checkout/types';
 import { formatPrice, getProductAmount } from 'views/Checkout/utils';
 
-export interface BfCheckoutPlanSummary {
+export interface UrgentCheckoutPlanSummary {
   storage: string;
   planLabel: string;
   billedLabel: string;
@@ -40,11 +40,11 @@ const getDiscountPercent = (
   return Math.round((savings / normalAmount) * PERCENTAGE);
 };
 
-export const getBfCheckoutPlanSummary = (
+export const getUrgentCheckoutPlanSummary = (
   selectedPlan: PriceWithTax,
   translate: Translate,
   couponCodeData?: CouponCodeData,
-): BfCheckoutPlanSummary => {
+): UrgentCheckoutPlanSummary => {
   const { price, taxes } = selectedPlan;
 
   const storage = bytesToString(price.bytes);
