@@ -7,6 +7,7 @@ import { SdkFactory } from 'app/core/factory/sdk';
 import * as keysService from 'app/crypto/services/keys.service';
 import * as pgpService from 'app/crypto/services/pgp.service';
 import { encryptText, encryptTextWithKey } from 'app/crypto/services/utils';
+import { AppDispatch } from 'app/store';
 import { userThunks } from 'app/store/slices/user';
 import { validateMnemonic } from 'bip39';
 import { Buffer } from 'node:buffer';
@@ -81,7 +82,10 @@ beforeAll(() => {
   }));
 
   vi.mock('app/store/slices/workspaces/workspacesStore', () => ({
-    workspaceThunks: vi.fn(),
+    workspaceThunks: {
+      fetchWorkspaces: vi.fn(),
+      checkAndSetLocalWorkspace: vi.fn(),
+    },
   }));
 
   vi.mock('services/sockets/socket.service', () => ({
@@ -278,6 +282,44 @@ describe('logIn', () => {
 
     expect(createDesktopAuthClient).toHaveBeenCalledWith({ turnstileToken: DUMMY_TOKEN });
     expect(createAuthClient).not.toHaveBeenCalled();
+  });
+
+  it('When the security details are already known, then it reuses them instead of fetching them again', async () => {
+    const { mockUser, mockPassword, createAuthClient } = await mockAuthClients();
+    const login = createAuthClient.mock.results[0]?.value?.login ?? createAuthClient().login;
+    const knownSecurityDetails = { encryptedSalt: 'known-salt', tfaEnabled: false };
+
+    await authService.doLogin(mockUser.email, mockPassword, '123456', 'web', DUMMY_TOKEN, knownSecurityDetails);
+
+    expect(login).toHaveBeenCalledWith(expect.anything(), expect.anything(), knownSecurityDetails);
+  });
+
+  it('When logging in via authService.logIn, then it decrypts the user, dispatches the post-login setup and returns their profile', async () => {
+    const mockPassword = 'password123';
+    const mockMnemonic =
+      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
+    const mockUser = await getMockUser(mockPassword, mockMnemonic);
+    const mockNewToken = 'test-new-token';
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue({
+        login: vi.fn().mockResolvedValue({ user: mockUser, newToken: mockNewToken }),
+      }),
+      createDesktopAuthClient: vi.fn(),
+    } as any);
+
+    const mockDispatch = vi.fn().mockReturnValue({ unwrap: vi.fn().mockResolvedValue(undefined) }) as unknown as AppDispatch;
+
+    const result = await authService.logIn({
+      email: mockUser.email,
+      password: mockPassword,
+      twoFactorCode: '',
+      dispatch: mockDispatch,
+    });
+
+    expect(result.newToken).toBe(mockNewToken);
+    expect(result.mnemonic).toBe(mockMnemonic);
+    expect(mockDispatch).toHaveBeenCalled();
   });
 });
 
@@ -570,7 +612,7 @@ describe('updateCredentialsWithToken', () => {
 
     (validateMnemonic as any).mockReturnValue(true);
 
-    vi.spyOn(aes, 'encrypt').mockReturnValue('mock-encrypted-data');
+    const aesEncryptSpy = vi.spyOn(aes, 'encrypt').mockReturnValue('mock-encrypted-data');
 
     const mockChangePasswordWithLink = vi.fn().mockResolvedValue({ success: true });
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
@@ -593,6 +635,8 @@ describe('updateCredentialsWithToken', () => {
     expect(keys.private.ecc).toBe('mock-encrypted-data');
     expect(keys.public).toBeUndefined();
     expect(keys.private.kyber).toBeUndefined();
+
+    aesEncryptSpy.mockRestore();
   });
 
   it('should send both private and public keys when backup data has publicKeys', async () => {
@@ -615,7 +659,7 @@ describe('updateCredentialsWithToken', () => {
 
     (validateMnemonic as any).mockReturnValue(true);
 
-    vi.spyOn(aes, 'encrypt').mockReturnValue('mock-encrypted-data');
+    const aesEncryptSpy = vi.spyOn(aes, 'encrypt').mockReturnValue('mock-encrypted-data');
 
     const mockChangePasswordWithLink = vi.fn().mockResolvedValue({ success: true });
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
@@ -641,6 +685,8 @@ describe('updateCredentialsWithToken', () => {
       ecc: 'test-ecc-public-key',
       kyber: 'test-kyber-public-key',
     });
+
+    aesEncryptSpy.mockRestore();
   });
 
   it('should throw an error when mnemonic is invalid', async () => {
@@ -1201,6 +1247,35 @@ describe('authenticateUser', () => {
         dispatch: mockDispatch,
       }),
     ).rejects.toThrow('Unknown authMethod: unknown');
+  });
+
+  it('When authMethod is signIn, then it logs the user in and passes along the known security details', async () => {
+    const mockPassword = 'password123';
+    const mockMnemonic =
+      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
+    const mockUser = await getMockUser(mockPassword, mockMnemonic);
+    const mockNewToken = 'test-new-token';
+    const login = vi.fn().mockResolvedValue({ user: mockUser, newToken: mockNewToken });
+    const knownSecurityDetails = { encryptedSalt: 'known-salt', tfaEnabled: false };
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue({ login }),
+      createDesktopAuthClient: vi.fn(),
+    } as any);
+
+    const mockDispatch = vi.fn().mockReturnValue({ unwrap: vi.fn().mockResolvedValue(undefined) }) as unknown as AppDispatch;
+
+    const result = await authService.authenticateUser({
+      email: mockUser.email,
+      password: mockPassword,
+      authMethod: 'signIn',
+      twoFactorCode: '',
+      dispatch: mockDispatch,
+      knownSecurityDetails,
+    });
+
+    expect(result.newToken).toBe(mockNewToken);
+    expect(login).toHaveBeenCalledWith(expect.anything(), expect.anything(), knownSecurityDetails);
   });
 });
 
