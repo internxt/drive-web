@@ -45,6 +45,54 @@ describe('Promotional Codes Custom Hook', () => {
       });
     });
 
+    test('When there is no initial promo code name, then it is resolved from the first render', () => {
+      const props = {
+        priceId: 'price_123',
+        promoCodeName: null,
+      };
+
+      const { result } = renderHook(() => usePromotionalCode(props));
+
+      expect(result.current.isInitialPromoCodeResolved).toBe(true);
+    });
+
+    test('When the initial promo code is fetched successfully, then it is marked as resolved', async () => {
+      const initialCouponCode = 'INITIAL_COUPON_CODE';
+      vi.spyOn(checkoutService, 'fetchPromotionCodeByName').mockResolvedValue({
+        ...mockPromoCodeData,
+        codeName: initialCouponCode,
+      });
+      const props = {
+        priceId: 'price_123',
+        promoCodeName: initialCouponCode,
+      };
+
+      const { result } = renderHook(() => usePromotionalCode(props));
+
+      await waitFor(() => {
+        expect(result.current.isInitialPromoCodeResolved).toBe(true);
+      });
+    });
+
+    test('When the initial promo code fetch fails, then it is marked as resolved and the error is stored', async () => {
+      const initialCouponCode = 'INVALID_COUPON_CODE';
+      const error = Object.assign(new Error('Promo code not found'), { status: 404 });
+      vi.spyOn(checkoutService, 'fetchPromotionCodeByName').mockRejectedValue(error);
+      const props = {
+        priceId: 'price_123',
+        promoCodeName: initialCouponCode,
+      };
+
+      const { result } = renderHook(() => usePromotionalCode(props));
+
+      await waitFor(() => {
+        expect(result.current.isInitialPromoCodeResolved).toBe(true);
+      });
+
+      expect(result.current.couponError).toBe('Promo code not found');
+      expect(result.current.promoCodeData).toBeUndefined();
+    });
+
     test('When fetching a promotional code, then promo code data is saved', async () => {
       vi.spyOn(checkoutService, 'fetchPromotionCodeByName').mockResolvedValue(mockPromoCodeData);
       const props = {

@@ -15,11 +15,17 @@ export const usePromotionalCode = ({ priceId, promoCodeName }: UsePromotionalCod
   const { translate } = useTranslationContext();
   const [promoCodeData, setPromoCodeData] = useState<CouponCodeData | undefined>();
   const [couponError, setCouponError] = useState<string | null>(null);
+  const [isInitialPromoCodeResolved, setIsInitialPromoCodeResolved] = useState(!promoCodeName);
 
   useEffect(() => {
-    if (priceId && promoCodeName) {
-      fetchPromotionCode({ priceId, promotionCode: promoCodeName });
+    if (!priceId || !promoCodeName) {
+      setIsInitialPromoCodeResolved(true);
+      return;
     }
+
+    fetchPromotionCode({ priceId, promotionCode: promoCodeName })
+      .catch(onPromoCodeError)
+      .finally(() => setIsInitialPromoCodeResolved(true));
   }, [promoCodeName]);
 
   const fetchPromotionCode = async ({
@@ -73,6 +79,7 @@ export const usePromotionalCode = ({ priceId, promoCodeName }: UsePromotionalCod
   return {
     promoCodeData,
     couponError,
+    isInitialPromoCodeResolved,
     fetchPromotionCode,
     removeCouponCode,
     onPromoCodeError,
