@@ -59,7 +59,14 @@ const CheckoutViewWrapper = () => {
   const { planId, promotionCode, currency, paramMobileToken, gclid, irclickid, utmMedium } = useCheckoutQueryParams();
   const { location: userLocationData } = useUserLocation();
 
-  const { couponError, promoCodeData, onPromoCodeError, removeCouponCode, fetchPromotionCode } = usePromotionalCode({
+  const {
+    couponError,
+    promoCodeData,
+    isInitialPromoCodeResolved,
+    onPromoCodeError,
+    removeCouponCode,
+    fetchPromotionCode,
+  } = usePromotionalCode({
     priceId: planId,
     promoCodeName: promotionCode,
   });
@@ -72,6 +79,7 @@ const CheckoutViewWrapper = () => {
     userLocation: userLocationData?.location,
     userAddress: userLocationData?.ip,
     country: userLocationData?.location,
+    isPromoCodeResolved: isInitialPromoCodeResolved,
   });
 
   const { isCheckoutReady, stripeElementsOptions, availableCryptoCurrencies, stripeSdk } = useInitializeCheckout({
