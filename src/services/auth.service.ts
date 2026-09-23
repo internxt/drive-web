@@ -80,6 +80,7 @@ type LogInParams = {
   dispatch: AppDispatch;
   loginType?: 'web' | 'desktop';
   turnstileToken?: string;
+  knownSecurityDetails?: SecurityDetails;
 };
 
 type AuthenticateUserParams = {
@@ -93,6 +94,7 @@ type AuthenticateUserParams = {
   redeemCodeObject?: boolean;
   doSignUp?: RegisterFunction;
   turnstileToken?: string;
+  knownSecurityDetails?: SecurityDetails;
 };
 
 const getCurrentUrlParams = (): Record<string, string> => {
@@ -140,11 +142,15 @@ export function cancelAccount(): Promise<void> {
   return authClient.sendUserDeactivationEmail(token);
 }
 
-export const is2FANeeded = async (email: string, turnstileToken?: string): Promise<boolean> => {
+export const getSecurityDetails = async (email: string, turnstileToken?: string): Promise<SecurityDetails> => {
   const authClient = SdkFactory.getNewApiInstance().createAuthClient({ turnstileToken });
-  const securityDetails = await authClient.securityDetails(email).catch((error) => {
+  return authClient.securityDetails(email).catch((error) => {
     throw errorService.castError(error);
   });
+};
+
+export const is2FANeeded = async (email: string, turnstileToken?: string): Promise<boolean> => {
+  const securityDetails = await getSecurityDetails(email, turnstileToken);
 
   return securityDetails.tfaEnabled;
 };
@@ -161,6 +167,7 @@ export const doLogin = async (
   twoFactorCode: string,
   loginType: 'web' | 'desktop' | undefined = 'web',
   turnstileToken?: string,
+  knownSecurityDetails?: SecurityDetails,
 ): Promise<ProfileInfo> => {
   const authClient = getAuthClient(loginType, turnstileToken);
   const loginDetails: LoginDetails = {
@@ -180,7 +187,7 @@ export const doLogin = async (
   };
 
   return authClient
-    .login(loginDetails, cryptoProvider)
+    .login(loginDetails, cryptoProvider, knownSecurityDetails)
     .then(async (data) => {
       const { user, newToken } = data;
 
@@ -591,8 +598,15 @@ export const signUp = async (params: SignUpParams) => {
 };
 
 export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
-  const { email, password, twoFactorCode, dispatch, loginType = 'web', turnstileToken } = params;
-  const { newToken, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType, turnstileToken);
+  const { email, password, twoFactorCode, dispatch, loginType = 'web', turnstileToken, knownSecurityDetails } = params;
+  const { newToken, user, mnemonic } = await doLogin(
+    email,
+    password,
+    twoFactorCode,
+    loginType,
+    turnstileToken,
+    knownSecurityDetails,
+  );
   await dispatch(userThunks.setUserThunk(user));
 
   try {
@@ -623,9 +637,18 @@ export const authenticateUser = async (params: AuthenticateUserParams): Promise<
     redeemCodeObject = false,
     doSignUp,
     turnstileToken,
+    knownSecurityDetails,
   } = params;
   if (authMethod === 'signIn') {
-    const profileInfo = await logIn({ email, password, twoFactorCode, dispatch, loginType, turnstileToken });
+    const profileInfo = await logIn({
+      email,
+      password,
+      twoFactorCode,
+      dispatch,
+      loginType,
+      turnstileToken,
+      knownSecurityDetails,
+    });
     globalThis.gtag('event', 'User Signin', { method: 'email' });
     return profileInfo;
   } else if (authMethod === 'signUp' && doSignUp) {
