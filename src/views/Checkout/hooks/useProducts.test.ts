@@ -87,6 +87,53 @@ describe('Products custom hook', () => {
         expect(getPriceByIdSpy).toHaveBeenCalled();
       });
     });
+
+    test('When the promotional code is not resolved yet, then the plan is not fetched', () => {
+      const getPriceByIdSpy = vi.spyOn(checkoutService, 'getPriceById').mockResolvedValue(mockPriceWithTax);
+      const props = {
+        planId: 'price_123',
+        promotionCode: undefined,
+        currency: 'eur',
+        userAddress: '1.1.1.1',
+        isPromoCodeResolved: false,
+        translate: mockTranslate,
+      };
+
+      renderHook(() => useProducts(props));
+
+      expect(getPriceByIdSpy).not.toHaveBeenCalled();
+    });
+
+    test('When the promotional code is resolved, then the plan is fetched once with the promo code', async () => {
+      const getPriceByIdSpy = vi.spyOn(checkoutService, 'getPriceById').mockResolvedValue(mockPriceWithTax);
+      const props = {
+        planId: 'price_123',
+        promotionCode: undefined as string | undefined,
+        currency: 'eur',
+        userAddress: '1.1.1.1',
+        isPromoCodeResolved: false,
+        translate: mockTranslate,
+      };
+
+      const { rerender } = renderHook((hookProps: typeof props) => useProducts(hookProps), {
+        initialProps: props,
+      });
+
+      expect(getPriceByIdSpy).not.toHaveBeenCalled();
+
+      rerender({ ...props, promotionCode: 'SUMMER20', isPromoCodeResolved: true });
+
+      await waitFor(() => {
+        expect(getPriceByIdSpy).toHaveBeenCalledTimes(1);
+      });
+
+      expect(getPriceByIdSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          priceId: 'price_123',
+          promoCodeName: 'SUMMER20',
+        }),
+      );
+    });
   });
 
   describe('Fetching the selected plan', () => {
