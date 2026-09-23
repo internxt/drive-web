@@ -1,5 +1,5 @@
 import type { TurnstileInstance, TurnstileProps } from '@marsidev/react-turnstile';
-import { render } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import { createRef, forwardRef, useImperativeHandle } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import envService from 'services/env.service';
@@ -60,7 +60,7 @@ describe('TurnstileWidget', () => {
     expect(await getToken()).toBeUndefined();
   });
 
-  it('When the flag is enabled, then the widget is rendered as an invisible challenge for the action', () => {
+  it('When enabled, then the widget waits for an explicit execute before resolving the challenge', () => {
     mockEnv();
 
     const { getByTestId } = renderTurnstile();
@@ -72,23 +72,67 @@ describe('TurnstileWidget', () => {
     });
   });
 
-  it('When a token is requested, then the widget is reset, executed and the token is returned', async () => {
+  it('When a token is requested, then it resets and executes a fresh challenge', async () => {
     mockEnv();
     widget.getResponsePromise.mockResolvedValue(TOKEN);
 
     const { getToken } = renderTurnstile();
 
     expect(await getToken()).toBe(TOKEN);
-    expect(widget.reset).toHaveBeenCalledTimes(1);
+    expect(widget.reset).toHaveBeenCalledTimes(2);
     expect(widget.execute).toHaveBeenCalledTimes(1);
   });
 
-  it('When the widget fails or times out, then no token is returned', async () => {
+  it('When requested again, then it forces a fresh challenge every time', async () => {
+    mockEnv();
+    widget.getResponsePromise.mockResolvedValue(TOKEN);
+
+    const { getToken } = renderTurnstile();
+
+    await getToken();
+    await getToken();
+
+    expect(widget.execute).toHaveBeenCalledTimes(2);
+  });
+
+  it('When the widget fails or times out, then it stays visible so the user can retry', async () => {
     mockEnv();
     widget.getResponsePromise.mockRejectedValue(new Error('timeout'));
 
     const { getToken } = renderTurnstile();
 
     expect(await getToken()).toBeUndefined();
+  });
+
+  it('When idle, then the widget stays hidden and takes up no space', () => {
+    mockEnv();
+
+    const { getByTestId } = renderTurnstile();
+
+    expect(getByTestId('turnstile').parentElement).toHaveClass('hidden');
+  });
+
+  it('When the challenge needs user interaction, then the widget becomes visible', () => {
+    mockEnv();
+
+    const { getByTestId } = renderTurnstile();
+
+    act(() => widgetProps?.onBeforeInteractive?.());
+
+    expect(getByTestId('turnstile').parentElement).not.toHaveClass('hidden');
+  });
+
+  it('When a token is obtained after an interactive challenge, then the wrapper collapses again', async () => {
+    mockEnv();
+    widget.getResponsePromise.mockResolvedValue(TOKEN);
+
+    const { getByTestId, getToken } = renderTurnstile();
+    act(() => widgetProps?.onBeforeInteractive?.());
+
+    await act(async () => {
+      await getToken();
+    });
+
+    expect(getByTestId('turnstile').parentElement).toHaveClass('hidden');
   });
 });

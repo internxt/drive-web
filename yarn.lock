@@ -1939,10 +1939,10 @@
   resolved "https://registry.yarnpkg.com/@internxt/prettier-config/-/prettier-config-2.0.1.tgz#a25e7a16f62a990aed2bd1804e04140cc8c33e77"
   integrity sha512-sCnOMX7GR7BYDJ5OH1RiV/JaOBLE3uhL6QN6tYhMKi7QXK/cnM/77qmDlIEBlhTNIFEMLFljSkc0vZEvf6m2xA==
 
-"@internxt/sdk@=1.20.1":
-  version "1.20.1"
-  resolved "https://registry.yarnpkg.com/@internxt/sdk/-/sdk-1.20.1.tgz#2e787656b2e56dff3871a527f09f4b9eba782306"
-  integrity sha512-Xfgz/dLncfQ81ytx+y69OVF+IJwpxxQPIIF/VdHWWQy3W5WiN3J6CmMRAb8J7AOPDy2UPVhVq4KM7PyOdP+QxQ==
+"@internxt/sdk@^1.21.1":
+  version "1.21.1"
+  resolved "https://registry.yarnpkg.com/@internxt/sdk/-/sdk-1.21.1.tgz#4f6ee22a7815e05f2e6d4b8f528b117d738ed37f"
+  integrity sha512-Pw5bq4j/hmgT5ANDr88S7mUbSsNSPdwzr1m+a92pVa6I2GYYA2+erWI4eKHZpXadylP4o5Yst0pn9W2nbKRQ6Q==
   dependencies:
     axios "^1.16.0"
 
@@ -4221,7 +4221,17 @@ available-typed-arrays@^1.0.7:
   dependencies:
     possible-typed-array-names "^1.0.0"
 
-axios@^1.16.0, axios@^1.18.0:
+axios@^1.16.0:
+  version "1.20.0"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.20.0.tgz#515513445aa60e71d04b6521ca6210829ccb4786"
+  integrity sha512-r8aOh8j9cGKpgQAqpzrUHnSIc6a59Y3Xf/cv8sy1DrHCkZHzQGEuoq1tARk6qSyDdtQGSDgpb9kFlruzPvrgwg==
+  dependencies:
+    follow-redirects "^1.16.0"
+    form-data "^4.0.6"
+    https-proxy-agent "^5.0.1"
+    proxy-from-env "^2.1.0"
+
+axios@^1.18.0:
   version "1.18.0"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.18.0.tgz#8a7f8854af280fcaae063272df2ed9f3837d2398"
   integrity sha512-E32NzpYKp++W7XRe52rHiXV2ehxmh3wbdgO7MHeFM+vqxLBYHzt0ElkiImtOBxtOmyp0yoC8C6uESVV84Y2/hw==
@@ -5950,7 +5960,7 @@ foreground-child@^3.1.0:
     cross-spawn "^7.0.0"
     signal-exit "^4.0.1"
 
-form-data@^4.0.5:
+form-data@^4.0.5, form-data@^4.0.6:
   version "4.0.6"
   resolved "https://registry.yarnpkg.com/form-data/-/form-data-4.0.6.tgz#28e864e1b786dbebb68db1f452f9635278665827"
   integrity sha512-vKatAh4SlVfgbv+YtmhiRjhEMJsYpsG1Y2rMQtR+SVSbytsSD1YGzDIcrAJmdFec88u/+VoGmxnl+80gL1tRCQ==
