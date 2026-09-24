@@ -69,4 +69,33 @@ describe('Offer countdown', () => {
     expect(result.current.seconds).toBe('00');
     expect(result.current.hasExpired).toBe(true);
   });
+
+  it('When reading the stored deadline fails, then a new countdown window starts', () => {
+    const getItem = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new Error('Session storage is not available');
+    });
+
+    const { result } = renderHook(() => useOfferCountdown());
+
+    expect(getItem).toHaveBeenCalledWith(OFFER_COUNTDOWN_STORAGE_KEY);
+    expect(result.current.hours).toBe('01');
+    expect(result.current.hasExpired).toBe(false);
+  });
+
+  it('When storing the deadline fails, then the countdown still runs', () => {
+    const setItem = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('Session storage is full');
+    });
+
+    const { result } = renderHook(() => useOfferCountdown());
+
+    expect(setItem).toHaveBeenCalled();
+    expect(result.current.hours).toBe('01');
+
+    act(() => {
+      vi.advanceTimersByTime(5 * 1000);
+    });
+
+    expect(result.current.seconds).toBe('55');
+  });
 });
