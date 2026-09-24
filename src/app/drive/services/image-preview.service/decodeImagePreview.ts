@@ -21,9 +21,9 @@ const decodeTiff = (buffer: ArrayBuffer): DecodedImagePreview | null => {
 
 const extractEmbeddedJpeg = (bytes: Uint8Array<ArrayBuffer>): DecodedImagePreview | null => {
   const jpeg = findLargestEmbeddedJpeg(bytes);
-  return jpeg
-    ? { kind: PREVIEW_KIND.jpeg, bytes: applyExifOrientation(jpeg, readContainerOrientation(bytes.buffer)) }
-    : null;
+  if (!jpeg) return null;
+
+  return { kind: PREVIEW_KIND.jpeg, bytes: applyExifOrientation(jpeg, readContainerOrientation(bytes.buffer)) };
 };
 
 export const decodeImagePreview = (buffer: ArrayBuffer, extension: string): DecodedImagePreview | null => {
