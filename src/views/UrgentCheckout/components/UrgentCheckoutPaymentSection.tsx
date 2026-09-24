@@ -76,11 +76,7 @@ export const UrgentCheckoutPaymentSection = ({
           }}
         />
         {availableCryptoCurrencies && (
-          <div
-            data-testid="bf-crypto-section"
-            className={URGENT_CHECKOUT_CRYPTO_SECTION_CLASSNAME}
-            style={URGENT_CHECKOUT_CRYPTO_SECTION_STYLE}
-          >
+          <div className={URGENT_CHECKOUT_CRYPTO_SECTION_CLASSNAME} style={URGENT_CHECKOUT_CRYPTO_SECTION_STYLE}>
             <CryptoPaymentSection
               availableCryptoCurrencies={availableCryptoCurrencies}
               selectedCurrency={selectedCurrency}
