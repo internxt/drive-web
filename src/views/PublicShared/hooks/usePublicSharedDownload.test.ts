@@ -113,7 +113,7 @@ describe('usePublicSharedDownload', () => {
       );
     });
 
-    test('When an empty file is opened, then an empty blob is exposed without requesting the network', () => {
+    test('When an empty file is opened, then it is not previewable and the network is not requested', () => {
       const item = createFileItem({ size: '0', fileId: null } as unknown as Partial<AdvancedSharedItem>);
 
       const { result } = renderDownloadHook();
@@ -122,8 +122,7 @@ describe('usePublicSharedDownload', () => {
       });
 
       expect(result.current.previewItem).toBe(item);
-      expect(result.current.previewBlob?.size).toBe(0);
-      expect(result.current.previewProgress).toBe(1);
+      expect(result.current.previewBlob).toBeNull();
       expect(mockedDownloadFile).not.toHaveBeenCalled();
     });
 

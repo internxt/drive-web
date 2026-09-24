@@ -43,6 +43,10 @@ describe('isFileSizePreviewable', () => {
   it('returns false for size larger than threshold', () => {
     expect(isFileSizePreviewable(limit + 1)).toBe(false);
   });
+
+  it('returns false for empty files', () => {
+    expect(isFileSizePreviewable(0)).toBe(false);
+  });
 });
 
 describe('Get video MIME type', () => {
