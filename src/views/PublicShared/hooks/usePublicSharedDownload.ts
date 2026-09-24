@@ -68,8 +68,20 @@ const usePublicSharedDownload = ({
     setPreviewBlob(null);
     setPreviewProgress(0);
 
+    if (!isTypeAllowed(shareItem)) {
+      return;
+    }
+
     const { bucket, fileId } = shareItem;
-    if (!isTypeAllowed(shareItem) || !isFileSizePreviewable(Number(shareItem.size)) || !bucket || !fileId) return;
+    if (Number(shareItem.size) === 0 || !fileId) {
+      setPreviewBlob(new Blob([]));
+      setPreviewProgress(1);
+      return;
+    }
+
+    if (!isFileSizePreviewable(Number(shareItem.size)) || !bucket) {
+      return;
+    }
 
     downloadFile({
       bucketId: bucket,
