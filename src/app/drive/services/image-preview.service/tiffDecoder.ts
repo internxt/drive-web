@@ -6,7 +6,13 @@ export interface RgbaImage {
   data: Uint8Array<ArrayBuffer>;
 }
 
-const TIFF_TAG = { width: 't256', height: 't257', compression: 't259', photometric: 't262' };
+export const TIFF_TAG = {
+  width: 't256',
+  height: 't257',
+  compression: 't259',
+  photometric: 't262',
+  orientation: 't274',
+};
 const PHOTOMETRIC = { colorFilterArray: 32803, linearRaw: 34892 };
 const RAW_SENSOR_PHOTOMETRICS = new Set(Object.values(PHOTOMETRIC));
 const COMPRESSION = {
@@ -35,7 +41,7 @@ const MAX_DECODABLE_PIXELS = 120_000_000;
 /** Previews are downsampled to roughly 5000x4000 to keep canvas and memory usage bounded. */
 export const MAX_PREVIEW_PIXELS = 20_000_000;
 
-const readTag = (ifd: UTIF.IFD, tag: string): number => Number((ifd[tag] as number[] | undefined)?.[0]);
+export const readTag = (ifd: UTIF.IFD, tag: string): number => Number((ifd[tag] as number[] | undefined)?.[0]);
 
 const getPixelCount = (ifd: UTIF.IFD): number =>
   (readTag(ifd, TIFF_TAG.width) || 0) * (readTag(ifd, TIFF_TAG.height) || 0);

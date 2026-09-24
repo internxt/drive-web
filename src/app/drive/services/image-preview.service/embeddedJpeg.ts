@@ -1,4 +1,4 @@
-const MARKER_PREFIX = 0xff;
+export const MARKER_PREFIX = 0xff;
 const START_OF_IMAGE = 0xd8;
 const END_OF_IMAGE = 0xd9;
 const START_OF_SCAN = 0xda;
@@ -8,7 +8,7 @@ const STANDALONE_MARKERS = new Set([0x01, 0xd0, 0xd1, 0xd2, 0xd3, 0xd4, 0xd5, 0x
 const EIGHT_BIT_PRECISION = 8;
 const COLOR_COMPONENT_COUNT = 3;
 const MIN_PREVIEW_LONG_SIDE = 64;
-const MARKER_SIZE = 2;
+export const MARKER_SIZE = 2;
 const MARKER_CODE_OFFSET = 1;
 const FILL_BYTE_SIZE = 1;
 const SEGMENT_LENGTH_SIZE = 2;
