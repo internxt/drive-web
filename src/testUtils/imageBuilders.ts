@@ -31,7 +31,7 @@ export const concatBytes = (...chunks: Uint8Array[]): Uint8Array<ArrayBuffer> =>
   return result;
 };
 
-export const asciiBytes = (text: string): number[] => [...text].map((char) => char.charCodeAt(0));
+export const asciiBytes = (text: string): number[] => Array.from(new TextEncoder().encode(text));
 
 export const buildBmffBox = (type: string, payload: Uint8Array): Uint8Array<ArrayBuffer> => {
   const header = new Uint8Array(8);

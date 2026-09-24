@@ -2,7 +2,7 @@ import UTIF from 'utif2';
 import { MARKER_PREFIX, MARKER_SIZE } from './embeddedJpeg';
 import { hasTiffSignature, readTag, TIFF_TAG } from './tiffDecoder';
 
-const asciiBytes = (text: string): number[] => [...text].map((char) => char.charCodeAt(0));
+const asciiBytes = (text: string): number[] => Array.from(new TextEncoder().encode(text));
 
 const NORMAL_ORIENTATION = 1;
 const MAX_ORIENTATION = 8;
