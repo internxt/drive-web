@@ -128,7 +128,10 @@ export async function logOut(loginParams?: Record<string, string>): Promise<void
   localStorageService.clear();
   encryptedStorageService.clear();
   RealtimeService.getInstance().stop();
-  if (!navigationService.isCurrentPath(AppView.BlockedAccount) && !navigationService.isCurrentPath(AppView.Checkout)) {
+  const isCheckoutPath =
+    navigationService.isCurrentPath(AppView.Checkout) || navigationService.isCurrentPath(AppView.UrgentCheckout);
+
+  if (!navigationService.isCurrentPath(AppView.BlockedAccount) && !isCheckoutPath) {
     const preservedParams = getCurrentUrlParams();
     const urlParams = { ...preservedParams, ...loginParams };
 
