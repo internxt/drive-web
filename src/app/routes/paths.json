@@ -164,6 +164,13 @@
       "auth": false
     },
     {
+      "id": "checkout-uc",
+      "layout": "empty",
+      "path": "/checkout-uc",
+      "exact": false,
+      "auth": false
+    },
+    {
       "id": "checkout-session",
       "layout": "empty",
       "path": "/checkout/:sessionId",

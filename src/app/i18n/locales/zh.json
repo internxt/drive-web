@@ -294,6 +294,68 @@
       "missingPaymentDetails": "缺少确认付款所需的支付信息"
     }
   },
+  "urgentCheckout": {
+    "header": {
+      "tagline": "您的私人云",
+      "europeanBased": "欧洲运营",
+      "gdprCompliant": "符合 GDPR",
+      "trustedByMillions": "数百万用户信赖"
+    },
+    "hero": {
+      "offerPill": "立减 {{percent}}% — 限时专属优惠",
+      "offerPillNoDiscount": "限时专属优惠",
+      "title": "让您的文件、照片和视频",
+      "titleHighlight": "100% 私密。",
+      "subtitle": "首月仅需 {{price}}，即可获得 {{storage}} 私人云存储空间。",
+      "imageAlt": "笔记本电脑和手机上的 Internxt Drive",
+      "points": {
+        "privacy": {
+          "title": "只有您能访问自己的文件",
+          "description": "零知识加密意味着连 Internxt 也无法访问您的内容。"
+        },
+        "storage": {
+          "title": "您的私人云，安全无忧",
+          "description": "存储您的照片、视频、文档和个人文件，隐私保护内置其中。"
+        },
+        "offer": {
+          "title": "立减 {{percent}}% — 限时优惠",
+          "titleNoDiscount": "专属优惠 — 限时开放",
+          "description": "仅需 {{price}} 即可获得 {{storage}}。此专属优惠不会持续太久。"
+        }
+      },
+      "badges": {
+        "basedInEu": "总部位于欧盟",
+        "openSource": "开源",
+        "audited": "经 Securitum 审计",
+        "privacyPriority": "您的隐私，我们的首要任务。"
+      }
+    },
+    "countdown": {
+      "title": "您的 {{percent}}% 专属优惠将在以下时间后结束：",
+      "titleNoDiscount": "您的专属优惠将在以下时间后结束：",
+      "footer": "在优惠结束前，以 {{price}} 获得 {{storage}}。"
+    },
+    "summary": {
+      "discountApplied": "已应用 {{percent}}% 优惠",
+      "estimatedTax": "预估税费"
+    },
+    "form": {
+      "emailLabel": "您的电子邮件地址",
+      "emailPlaceholder": "name@email.com",
+      "createPasswordLabel": "创建密码",
+      "passwordLabel": "您的密码",
+      "passwordPlaceholder": "密码",
+      "togglePasswordVisibility": "显示或隐藏密码",
+      "incompleteDetails": "请输入您的电子邮件地址和密码以继续。",
+      "encryptedTitle": "您的文件已加密且完全私密。",
+      "encryptedDescription": "Internxt 无法访问您的内容。"
+    },
+    "cta": {
+      "button": "以 {{price}} 获得 {{storage}}",
+      "renewalNoteMonthly": "首月 {{price}}，之后按 {{renewalPrice}}/月续订。可随时取消。",
+      "renewalNoteYearly": "首年 {{price}}，之后按 {{renewalPrice}}/年续订。可随时取消。"
+    }
+  },
   "general": {
     "of": "/",
     "at": "在",

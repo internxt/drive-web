@@ -273,6 +273,68 @@
       "missingPaymentDetails": "Отсутствуют данные платежа для подтверждения оплаты"
     }
   },
+  "urgentCheckout": {
+    "header": {
+      "tagline": "Ваше частное облако",
+      "europeanBased": "Европейский сервис",
+      "gdprCompliant": "Соответствие GDPR",
+      "trustedByMillions": "Нам доверяют миллионы"
+    },
+    "hero": {
+      "offerPill": "СКИДКА {{percent}}% — эксклюзивное предложение ограничено по времени",
+      "offerPillNoDiscount": "Эксклюзивное предложение ограничено по времени",
+      "title": "Храните свои файлы, фото и видео",
+      "titleHighlight": "на 100% приватно.",
+      "subtitle": "Получите {{storage}} приватного облачного хранилища всего за {{price}} в первый месяц.",
+      "imageAlt": "Internxt Drive на ноутбуке и смартфоне",
+      "points": {
+        "privacy": {
+          "title": "Только вы имеете доступ к своим файлам",
+          "description": "Шифрование с нулевым разглашением означает, что даже Internxt не может получить доступ к вашему содержимому."
+        },
+        "storage": {
+          "title": "Ваше частное облако под защитой",
+          "description": "Храните фото, видео, документы и личные файлы с приватностью по умолчанию."
+        },
+        "offer": {
+          "title": "СКИДКА {{percent}}% — ограниченное время",
+          "titleNoDiscount": "Эксклюзивное предложение — ограниченное время",
+          "description": "Получите {{storage}} всего за {{price}}. Это эксклюзивное предложение скоро закончится."
+        }
+      },
+      "badges": {
+        "basedInEu": "Базируется в ЕС",
+        "openSource": "Открытый исходный код",
+        "audited": "Проверено Securitum",
+        "privacyPriority": "Ваша приватность. Наш приоритет."
+      }
+    },
+    "countdown": {
+      "title": "Ваше эксклюзивное предложение со скидкой {{percent}}% истекает через:",
+      "titleNoDiscount": "Ваше эксклюзивное предложение истекает через:",
+      "footer": "Получите {{storage}} за {{price}}, пока действует предложение."
+    },
+    "summary": {
+      "discountApplied": "Скидка {{percent}}% применена",
+      "estimatedTax": "Примерные налоги"
+    },
+    "form": {
+      "emailLabel": "Ваш адрес электронной почты",
+      "emailPlaceholder": "name@email.com",
+      "createPasswordLabel": "Создайте пароль",
+      "passwordLabel": "Ваш пароль",
+      "passwordPlaceholder": "Пароль",
+      "togglePasswordVisibility": "Показать или скрыть пароль",
+      "incompleteDetails": "Введите адрес электронной почты и пароль, чтобы продолжить.",
+      "encryptedTitle": "Ваши файлы зашифрованы и защищены.",
+      "encryptedDescription": "Internxt не может получить доступ к вашему содержимому."
+    },
+    "cta": {
+      "button": "Получить {{storage}} за {{price}}",
+      "renewalNoteMonthly": "Первый месяц {{price}}, далее {{renewalPrice}}/месяц. Отмена в любое время.",
+      "renewalNoteYearly": "Первый год {{price}}, далее {{renewalPrice}}/год. Отмена в любое время."
+    }
+  },
   "general": {
     "of": "из",
     "at": "в",
