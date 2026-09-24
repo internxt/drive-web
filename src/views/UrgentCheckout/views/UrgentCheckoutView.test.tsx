@@ -1,6 +1,6 @@
 import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
 import { CryptoCurrency, PriceWithTax } from '@internxt/sdk/dist/payments/types';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import enTranslations from 'app/i18n/locales/en.json';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import UrgentCheckoutView from './UrgentCheckoutView';
@@ -140,6 +140,8 @@ describe('urgent checkout view', () => {
   });
 
   describe('Crypto payments', () => {
+    const getCryptoSection = () => screen.getByText('Crypto').closest<HTMLElement>('[style*="--color-surface"]');
+
     it('When no crypto currencies are available, then the crypto payment option is not shown', () => {
       renderUrgentCheckout();
 
@@ -148,10 +150,11 @@ describe('urgent checkout view', () => {
 
     it('When crypto currencies are available, then the section is shown and repainted dark', () => {
       renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { cryptoCurrencies: availableCryptoCurrencies });
+      const cryptoSection = getCryptoSection();
 
-      expect(screen.getByText('Crypto')).toBeTruthy();
-      expect(screen.getByTestId('bf-crypto-section').className).toContain('text-white');
-      expect(screen.getByTestId('bf-crypto-section').style.getPropertyValue('--color-surface')).toBe('10 17 32');
+      expect(cryptoSection).toBeTruthy();
+      expect(cryptoSection?.className).toContain('text-white');
+      expect(cryptoSection?.style.getPropertyValue('--color-surface')).toBe('10 17 32');
     });
 
     it('When the crypto dropdown is opened, then the currencies are listed and the payment type changes', () => {
@@ -163,12 +166,18 @@ describe('urgent checkout view', () => {
 
       fireEvent.click(screen.getByText('Crypto'));
 
-      expect(screen.getByTestId('bf-crypto-section').contains(screen.getByText('Bitcoin'))).toBe(true);
+      expect(getCryptoSection()?.contains(screen.getByText('Bitcoin'))).toBe(true);
       expect(onCurrencyTypeChanges).toHaveBeenCalledWith(PaymentType.CRYPTO);
     });
   });
 
   describe('Signing up and logging in', () => {
+    const renderSignedInUrgentCheckout = async () => {
+      await act(async () => {
+        renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { authMethod: 'userIsSignedIn' });
+      });
+    };
+
     it.each<[AuthMethodTypes, string, string, string]>([
       ['signUp', 'Create a password', 'Already have an account?', 'Login'],
       ['signIn', 'Your password', 'Don’t have an account?', 'Create account'],
@@ -226,16 +235,16 @@ describe('urgent checkout view', () => {
       expect(screen.getByText('Wrong credentials')).toBeTruthy();
     });
 
-    it('When the user is already signed in, then their account is shown instead of the credentials form', () => {
-      renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { authMethod: 'userIsSignedIn' });
+    it('When the user is already signed in, then their account is shown instead of the credentials form', async () => {
+      await renderSignedInUrgentCheckout();
 
       expect(screen.getByText('Test User')).toBeTruthy();
       expect(screen.getByText('test@internxt.com')).toBeTruthy();
       expect(screen.queryByPlaceholderText('you@email.com')).toBeNull();
     });
 
-    it('When the signed in user logs out, then the checkout is asked to log them out', () => {
-      renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { authMethod: 'userIsSignedIn' });
+    it('When the signed in user logs out, then the checkout is asked to log them out', async () => {
+      await renderSignedInUrgentCheckout();
 
       fireEvent.click(screen.getByText('Log out'));
 

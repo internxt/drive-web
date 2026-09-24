@@ -150,7 +150,13 @@ const App = (props: AppProps): JSX.Element => {
   };
 
   const pathName = window.location.pathname.split('/')[1];
-  const MOBILE_EXCLUDED_PATHS = ['checkout', 'checkout-uc', 'new', AppView.Login, AppView.UniversalLinkSuccess];
+  const MOBILE_EXCLUDED_PATHS = [
+    'checkout',
+    AppView.UrgentCheckout,
+    'new',
+    AppView.Login,
+    AppView.UniversalLinkSuccess,
+  ];
   let template = <PreparingWorkspaceAnimation />;
   let isMobile = false;
 
