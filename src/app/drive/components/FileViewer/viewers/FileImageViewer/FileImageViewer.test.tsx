@@ -14,6 +14,8 @@ vi.mock('app/i18n/provider/TranslationProvider', () => ({
 const IMAGE_WIDTH = 64;
 const IMAGE_HEIGHT = 48;
 const FILE_NAME = 'photo';
+const ROTATED_90_CW = 6;
+const RAW_PADDING = new Uint8Array(3000);
 
 const file = (type: string): PreviewFileItem =>
   ({
@@ -39,9 +41,9 @@ const createJpegBytes = (): Promise<Uint8Array<ArrayBuffer>> =>
     canvas.toBlob(async (blob) => resolve(new Uint8Array(await (blob as Blob).arrayBuffer())), 'image/jpeg');
   });
 
-const waitForLoadedImage = async (): Promise<HTMLImageElement> => {
+const waitForLoadedImage = async (expectedWidth = IMAGE_WIDTH): Promise<HTMLImageElement> => {
   const image = (await screen.findByAltText(FILE_NAME)) as HTMLImageElement;
-  await waitFor(() => expect(image.naturalWidth).toBe(IMAGE_WIDTH));
+  await waitFor(() => expect(image.naturalWidth).toBe(expectedWidth));
   return image;
 };
 
@@ -80,7 +82,7 @@ describe('FileImageViewer', () => {
 
   test('when a RAW file embeds a JPEG preview, then that preview is shown without altering the original blob', async () => {
     const handlers = createHandlers();
-    const originalBlob = new Blob([concatBytes(new Uint8Array(3000), jpegBytes, new Uint8Array(3000))]);
+    const originalBlob = new Blob([concatBytes(RAW_PADDING, jpegBytes, RAW_PADDING)]);
     const originalSize = originalBlob.size;
 
     render(
@@ -97,6 +99,23 @@ describe('FileImageViewer', () => {
     await waitFor(() => expect(handlers.handleUpdateThumbnail).toHaveBeenCalled());
     const [, thumbnailSource] = handlers.handleUpdateThumbnail.mock.calls[0];
     expect((thumbnailSource as Blob).size).toBe(jpegBytes.length);
+  });
+
+  test('when a RAW file was shot in portrait, then the preview is shown rotated like the camera intended', async () => {
+    const container = new Uint8Array(buildTiff([{ width: 8, height: 8, orientation: ROTATED_90_CW }]));
+    const rawBlob = new Blob([concatBytes(container, RAW_PADDING, jpegBytes, RAW_PADDING)]);
+
+    render(
+      <FileImageViewer
+        file={file('nef')}
+        blob={rawBlob}
+        handlersForSpecialItems={createHandlers()}
+        setIsPreviewAvailable={vi.fn()}
+      />,
+    );
+
+    const image = await waitForLoadedImage(IMAGE_HEIGHT);
+    expect(image.naturalHeight).toBe(IMAGE_WIDTH);
   });
 
   test('when a HEIC file is opened, then it is converted with heic2any as before', async () => {

@@ -31,6 +31,15 @@ export const concatBytes = (...chunks: Uint8Array[]): Uint8Array<ArrayBuffer> =>
   return result;
 };
 
+export const asciiBytes = (text: string): number[] => [...text].map((char) => char.charCodeAt(0));
+
+export const buildBmffBox = (type: string, payload: Uint8Array): Uint8Array<ArrayBuffer> => {
+  const header = new Uint8Array(8);
+  new DataView(header.buffer).setUint32(0, header.length + payload.length);
+  header.set(asciiBytes(type), 4);
+  return concatBytes(header, payload);
+};
+
 interface JpegOptions {
   width: number;
   height: number;
@@ -86,30 +95,41 @@ export interface TiffPage {
   height: number;
   photometric?: number;
   compression?: number;
+  orientation?: number;
 }
 
-const TIFF_ENTRY_COUNT = 9;
+type TiffEntry = [tag: number, type: number, count: number, value: number];
+
 const TIFF_ENTRY_SIZE = 12;
-const TIFF_IFD_SIZE = 2 + TIFF_ENTRY_COUNT * TIFF_ENTRY_SIZE + 4;
 const TIFF_BITS_PER_SAMPLE_SIZE = 6;
 const SHORT = 3;
 const LONG = 4;
 
-const writeTiffPage = (view: DataView, bytes: Uint8Array, ifdOffset: number, page: TiffPage, nextIfdOffset: number) => {
-  const { width, height, photometric = TIFF_PHOTOMETRIC.rgb, compression = TIFF_COMPRESSION.none } = page;
-  const bitsOffset = ifdOffset + TIFF_IFD_SIZE;
-  const pixelsOffset = bitsOffset + TIFF_BITS_PER_SAMPLE_SIZE;
-  const entries: Array<[tag: number, type: number, count: number, value: number]> = [
+const tiffEntries = (page: TiffPage, bitsOffset: number, pixelsOffset: number): TiffEntry[] => {
+  const { width, height, photometric = TIFF_PHOTOMETRIC.rgb, compression = TIFF_COMPRESSION.none, orientation } = page;
+  const orientationEntry: TiffEntry[] = orientation === undefined ? [] : [[274, SHORT, 1, orientation]];
+
+  return [
     [256, LONG, 1, width],
     [257, LONG, 1, height],
     [258, SHORT, RGB_CHANNELS, bitsOffset],
     [259, SHORT, 1, compression],
     [262, SHORT, 1, photometric],
     [273, LONG, 1, pixelsOffset],
+    ...orientationEntry,
     [277, SHORT, 1, RGB_CHANNELS],
     [278, LONG, 1, height],
     [279, LONG, 1, width * height * RGB_CHANNELS],
   ];
+};
+
+const tiffIfdSize = (page: TiffPage): number => 2 + tiffEntries(page, 0, 0).length * TIFF_ENTRY_SIZE + 4;
+
+const writeTiffPage = (view: DataView, bytes: Uint8Array, ifdOffset: number, page: TiffPage, nextIfdOffset: number) => {
+  const { width, height } = page;
+  const bitsOffset = ifdOffset + tiffIfdSize(page);
+  const pixelsOffset = bitsOffset + TIFF_BITS_PER_SAMPLE_SIZE;
+  const entries = tiffEntries(page, bitsOffset, pixelsOffset);
 
   view.setUint16(ifdOffset, entries.length);
   entries.forEach(([tag, type, count, value], index) => {
@@ -137,7 +157,7 @@ const writeTiffPage = (view: DataView, bytes: Uint8Array, ifdOffset: number, pag
 /** Builds a big-endian, uncompressed RGB TIFF with one single-strip page per entry. */
 export const buildTiff = (pages: TiffPage[]): ArrayBuffer => {
   const pageSize = (page: TiffPage) =>
-    TIFF_IFD_SIZE + TIFF_BITS_PER_SAMPLE_SIZE + page.width * page.height * RGB_CHANNELS;
+    tiffIfdSize(page) + TIFF_BITS_PER_SAMPLE_SIZE + page.width * page.height * RGB_CHANNELS;
   const buffer = new ArrayBuffer(8 + pages.reduce((total, page) => total + pageSize(page), 0));
   const view = new DataView(buffer);
   const bytes = new Uint8Array(buffer);

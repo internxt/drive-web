@@ -1,5 +1,6 @@
 import { tiffImageExtensions } from 'app/drive/types/file-types';
 import { findLargestEmbeddedJpeg } from './embeddedJpeg';
+import { applyExifOrientation, readContainerOrientation } from './jpegOrientation';
 import { decodeTiffToRgba, hasTiffSignature, RgbaImage } from './tiffDecoder';
 
 export const PREVIEW_KIND = { jpeg: 'jpeg', rgba: 'rgba' } as const;
@@ -18,9 +19,11 @@ const decodeTiff = (buffer: ArrayBuffer): DecodedImagePreview | null => {
   }
 };
 
-const extractEmbeddedJpeg = (bytes: Uint8Array): DecodedImagePreview | null => {
+const extractEmbeddedJpeg = (bytes: Uint8Array<ArrayBuffer>): DecodedImagePreview | null => {
   const jpeg = findLargestEmbeddedJpeg(bytes);
-  return jpeg ? { kind: PREVIEW_KIND.jpeg, bytes: jpeg } : null;
+  return jpeg
+    ? { kind: PREVIEW_KIND.jpeg, bytes: applyExifOrientation(jpeg, readContainerOrientation(bytes.buffer)) }
+    : null;
 };
 
 export const decodeImagePreview = (buffer: ArrayBuffer, extension: string): DecodedImagePreview | null => {
