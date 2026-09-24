@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node_version: [22.x]
+        node-version: [24.x]
 
     steps:
       - name: Checkout
