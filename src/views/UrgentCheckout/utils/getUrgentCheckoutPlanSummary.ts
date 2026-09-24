@@ -20,7 +20,7 @@ export interface UrgentCheckoutPlanSummary {
   isRecurring: boolean;
 }
 
-const PERCENTAGE = 100;
+const PERCENTAGE_MULTIPLIER = 100;
 
 const getDiscountPercent = (
   normalAmount: number,
@@ -37,7 +37,7 @@ const getDiscountPercent = (
     return undefined;
   }
 
-  return Math.round((savings / normalAmount) * PERCENTAGE);
+  return Math.round((savings / normalAmount) * PERCENTAGE_MULTIPLIER);
 };
 
 export const getUrgentCheckoutPlanSummary = (

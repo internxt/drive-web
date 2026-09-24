@@ -22,7 +22,7 @@ const readStoredDeadline = (): number | null => {
   }
 };
 
-const WriteStoreDeadline = (deadline: number): void => {
+const writeStoreDeadline = (deadline: number): void => {
   try {
     globalThis.sessionStorage?.setItem(OFFER_COUNTDOWN_STORAGE_KEY, String(deadline));
   } catch {
@@ -38,7 +38,7 @@ const getDeadline = (durationMs: number): number => {
   }
 
   const deadline = Date.now() + durationMs;
-  WriteStoreDeadline(deadline);
+  writeStoreDeadline(deadline);
 
   return deadline;
 };
