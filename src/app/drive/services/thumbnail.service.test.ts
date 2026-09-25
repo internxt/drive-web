@@ -236,6 +236,11 @@ describe('Thumbnail Service', () => {
       );
     });
 
+    afterEach(() => {
+      vi.unstubAllGlobals();
+      URL.createObjectURL = originalCreateObjectURL;
+    });
+
     test('When image is valid, then it should return a resized thumbnail', async () => {
       const imageFile = new File(['image-content'], 'test-image.jpg', { type: 'image/jpeg' });
       const mockThumbnailFile = new File(['thumbnail'], 'thumbnail.png', { type: 'image/png' });
@@ -262,11 +267,6 @@ describe('Thumbnail Service', () => {
         expect.any(Function),
         'file',
       );
-    });
-
-    afterEach(() => {
-      vi.unstubAllGlobals();
-      URL.createObjectURL = originalCreateObjectURL;
     });
 
     test('When image is invalid, then it should return nothing', async () => {
