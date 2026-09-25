@@ -2,6 +2,7 @@ import { AppError } from '@internxt/sdk';
 import { act, renderHook } from '@testing-library/react';
 import databaseService from 'app/database/services/database.service';
 import { localStorageService, RealtimeService } from 'services';
+import { ATTRIBUTION_LOCAL_STORAGE_ITEMS, PURCHASE_LOCAL_STORAGE_ITEMS } from 'services/storage-keys';
 import { authenticateUser, is2FANeeded } from 'services/auth.service';
 import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
 import enTranslations from 'app/i18n/locales/en.json';
@@ -222,7 +223,7 @@ describe('Authentication Checkout Custom hook', () => {
     const changeAuthMethod = vi.fn();
 
     const stopRealTimeServiceSpy = vi.spyOn(RealtimeService.prototype, 'stop').mockResolvedValue();
-    const clearLocalServiceSpy = vi.spyOn(localStorageService, 'clear').mockReturnValue();
+    const clearLocalServiceSpy = vi.spyOn(localStorageService, 'clearExcept').mockReturnValue();
     const clearDatabaseSpy = vi.spyOn(databaseService, 'clear').mockResolvedValue();
 
     const { result: hookState } = renderHook(() =>
@@ -236,7 +237,10 @@ describe('Authentication Checkout Custom hook', () => {
     });
 
     expect(clearDatabaseSpy).toHaveBeenCalled();
-    expect(clearLocalServiceSpy).toHaveBeenCalled();
+    expect(clearLocalServiceSpy).toHaveBeenCalledWith([
+      ...PURCHASE_LOCAL_STORAGE_ITEMS,
+      ...ATTRIBUTION_LOCAL_STORAGE_ITEMS,
+    ]);
     expect(stopRealTimeServiceSpy).toHaveBeenCalled();
     expect(changeAuthMethod).toHaveBeenCalledWith('signUp');
   });
