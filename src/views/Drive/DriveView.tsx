@@ -1,10 +1,11 @@
+import { FileMeta } from '@internxt/sdk/dist/drive/storage/types';
 import { useEffect, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 
 import { AppView } from 'app/core/types';
 import fileService from 'app/drive/services/file.service';
 import newStorageService from 'app/drive/services/new-storage.service';
-import { DriveItemData, FolderPath } from 'app/drive/types';
+import { DriveFileData, DriveItemData, FolderPath } from 'app/drive/types';
 import useDriveNavigation from 'app/routes/hooks/Drive/useDrive';
 import { AppDispatch, RootState } from 'app/store';
 import { useAppSelector } from 'app/store/hooks';
@@ -25,6 +26,8 @@ import DriveExplorer from 'views/Drive/components/DriveExplorer/DriveExplorer';
 import encryptedStorageService from 'services/encrypted-storage.service';
 import { Loader } from '@internxt/ui';
 
+type FileMetaWithThumbnails = FileMeta & Partial<Pick<DriveFileData, 'thumbnails'>>;
+
 export interface DriveViewProps {
   namePath: FolderPath[];
   isLoading: boolean;
@@ -39,6 +42,7 @@ const DriveView = (props: DriveViewProps) => {
   const { isFileView, isFolderView, itemUuid, workspaceUuid, isOverviewSubsection } = useDriveNavigation();
   const credentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
   const fileViewer = useAppSelector((state: RootState) => state.ui.fileViewerItem);
+  const folderLevels = useAppSelector((state: RootState) => state.storage.levels);
   const workspaces = useSelector((state: RootState) => state.workspaces.workspaces);
   const [tokenHeader, setTokenHeader] = useState<string>('');
   const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
@@ -153,7 +157,8 @@ const DriveView = (props: DriveViewProps) => {
 
   const showFile = async (fileUUID: string, workspacesToken?: string) => {
     try {
-      const fileMeta = await fileService.getFile(fileUUID, workspacesToken);
+      const fileMeta: FileMetaWithThumbnails = await fileService.getFile(fileUUID, workspacesToken);
+      const listedFile = folderLevels[fileMeta.folderUuid]?.find((item) => item.uuid === fileMeta.uuid);
       dispatch(uiActions.setIsFileViewerOpen(true));
       /*
        * PreviewFileItem and FileMeta properties do not match, so we need to manually map them.
@@ -168,7 +173,6 @@ const DriveView = (props: DriveViewProps) => {
           type: fileMeta.type,
           created_at: fileMeta.createdAt,
           createdAt: fileMeta.createdAt,
-          currentThumbnail: null,
           deleted: false,
           deletedAt: null,
           encrypt_version: fileMeta.encryptVersion,
@@ -181,8 +185,9 @@ const DriveView = (props: DriveViewProps) => {
           plain_name: fileMeta.plainName,
           status: fileMeta.status,
           uuid: fileMeta.uuid,
-          thumbnails: [],
           updatedAt: fileMeta.updatedAt,
+          thumbnails: listedFile?.thumbnails ?? fileMeta.thumbnails ?? [],
+          currentThumbnail: listedFile?.currentThumbnail ?? null,
         }),
       );
       fileMeta.plainName && setTitle(`${fileMeta.plainName}.${fileMeta.type} - Internxt Drive`);

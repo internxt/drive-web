@@ -400,12 +400,15 @@ export const thumbnailableImageExtension: string[] = [
   ...imageExtensions['gif'],
 ];
 
+export const thumbnailableConvertibleImageExtension: string[] = [...tiffImageExtensions, ...rawImageExtensions];
+
 export const thumbnailablePdfExtension: string[] = pdfExtensions['pdf'];
 
 export const thumbnailableVideoExtension: string[] = Object.values(videoExtensions).flat();
 
 export const thumbnailableExtension: string[] = [
   ...thumbnailableImageExtension,
+  ...thumbnailableConvertibleImageExtension,
   ...thumbnailablePdfExtension,
   ...thumbnailableVideoExtension,
 ];

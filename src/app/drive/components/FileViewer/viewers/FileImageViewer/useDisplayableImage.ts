@@ -46,6 +46,7 @@ export const useDisplayableImage = ({
   const [isConverting, setIsConverting] = useState(false);
 
   const isConvertibleImage = convertibleImageExtensions.includes(extension);
+  const hasThumbnail = (file.thumbnails?.length ?? 0) > 0;
 
   useEffect(() => {
     if (!blob) {
@@ -69,10 +70,12 @@ export const useDisplayableImage = ({
 
         setImageBlob(convertedBlob);
         handlersForSpecialItems?.handleUpdateProgress(PROGRESS_BAR_STATUS.COMPLETED);
-        await handlersForSpecialItems?.handleUpdateThumbnail(
-          { ...file, type: getConvertedFileType(convertedBlob) },
-          convertedBlob,
-        );
+        if (!hasThumbnail) {
+          await handlersForSpecialItems?.handleUpdateThumbnail(
+            { ...file, type: getConvertedFileType(convertedBlob) },
+            convertedBlob,
+          );
+        }
       } catch (error) {
         if (isCancelled) return;
 

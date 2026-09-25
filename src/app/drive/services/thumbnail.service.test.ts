@@ -2,14 +2,29 @@ import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 import Resizer from 'react-image-file-resizer';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { downloadFile } from 'app/network/download';
+import { buildTiff } from 'testUtils/imageBuilders';
 import fetchFileBlob from './download.service/fetchFileBlob';
 import { ErrorLoadingVideoFileError } from './errors/thumbnail.service.errors';
-import { downloadPublicThumbnail, downloadThumbnail, getImageThumbnail, getVideoFrame } from './thumbnail.service';
+import { FileToUpload } from './file.service/types';
+import {
+  downloadPublicThumbnail,
+  downloadThumbnail,
+  getImageThumbnail,
+  getThumbnailFrom,
+  getVideoFrame,
+  MAX_CONVERTIBLE_THUMBNAIL_SOURCE_BYTES,
+} from './thumbnail.service';
 import encryptedStorageService from 'services/encrypted-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
+const { convertImageForPreviewSpy } = vi.hoisted(() => ({ convertImageForPreviewSpy: vi.fn() }));
+
 vi.mock('react-image-file-resizer', () => ({
   default: { imageFileResizer: vi.fn() },
+}));
+vi.mock(import('./image-preview.service'), async (importOriginal) => ({
+  ...(await importOriginal()),
+  convertImageForPreview: convertImageForPreviewSpy,
 }));
 vi.mock('services/encrypted-storage.service', () => ({
   default: { getUser: vi.fn() },
@@ -24,6 +39,8 @@ vi.mock('app/network/download', () => ({
 }));
 
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0));
+const originalCreateObjectURL = URL.createObjectURL;
+const originalRevokeObjectURL = URL.revokeObjectURL;
 
 const createMockVideoElement = (options: { duration?: number; videoWidth?: number; videoHeight?: number } = {}) => {
   const { duration = 10, videoWidth = 1920, videoHeight = 1080 } = options;
@@ -68,8 +85,6 @@ describe('Thumbnail Service', () => {
     let mockVideoElement: ReturnType<typeof createMockVideoElement>;
     let mockCanvas: ReturnType<typeof createMockCanvas>;
     const originalCreateElement = document.createElement.bind(document);
-    const originalCreateObjectURL = URL.createObjectURL;
-    const originalRevokeObjectURL = URL.revokeObjectURL;
 
     beforeEach(() => {
       vi.clearAllMocks();
@@ -249,6 +264,11 @@ describe('Thumbnail Service', () => {
       );
     });
 
+    afterEach(() => {
+      vi.unstubAllGlobals();
+      URL.createObjectURL = originalCreateObjectURL;
+    });
+
     test('When image is invalid, then it should return nothing', async () => {
       const invalidImageFile = new File(['corrupted'], 'corrupted.jpg', { type: 'image/jpeg' });
 
@@ -258,6 +278,53 @@ describe('Thumbnail Service', () => {
       const result = await promise;
 
       expect(result).toBeNull();
+    });
+  });
+
+  describe('Get Thumbnail From a convertible image', () => {
+    const fileToUpload = (type: string, bytes: BlobPart, size = 1024): FileToUpload => ({
+      name: 'landscape',
+      size,
+      type,
+      content: new File([bytes], `landscape.${type}`),
+      parentFolderId: 'folder-uuid',
+    });
+
+    beforeEach(async () => {
+      vi.clearAllMocks();
+      const { convertImageForPreview } =
+        await vi.importActual<typeof import('./image-preview.service')>('./image-preview.service');
+      const realResizer = await vi.importActual<typeof import('react-image-file-resizer')>('react-image-file-resizer');
+      convertImageForPreviewSpy.mockImplementation(convertImageForPreview);
+      vi.mocked(Resizer.imageFileResizer).mockImplementation(realResizer.default.imageFileResizer);
+    });
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    test('When a TIFF is uploaded, then a thumbnail is generated from its converted preview', async () => {
+      const tiff = fileToUpload('tif', buildTiff([{ width: 16, height: 8 }]));
+
+      const thumbnail = await getThumbnailFrom(tiff);
+
+      expect(thumbnail.file).toBeInstanceOf(File);
+      expect(convertImageForPreviewSpy).toHaveBeenCalledWith(tiff.content, 'tif');
+    });
+
+    test('When a RAW without a usable preview is uploaded, then no thumbnail is generated and nothing throws', async () => {
+      const thumbnail = await getThumbnailFrom(fileToUpload('nef', new Uint8Array(4096)));
+
+      expect(thumbnail.file).toBeNull();
+    });
+
+    test('When the source exceeds the size budget, then it is not converted', async () => {
+      const oversized = fileToUpload('cr2', new Uint8Array(16), MAX_CONVERTIBLE_THUMBNAIL_SOURCE_BYTES + 1);
+
+      const thumbnail = await getThumbnailFrom(oversized);
+
+      expect(thumbnail.file).toBeNull();
+      expect(convertImageForPreviewSpy).not.toHaveBeenCalled();
     });
   });
 
