@@ -12,10 +12,12 @@ import { LocalStorageItem } from 'app/core/types';
 
 const localStorageLanguage = localStorageService.get(LocalStorageItem.Language);
 
-const languages = ['en', 'es', 'fr', 'it', 'zh', 'ru', 'de', 'zh-tw'];
+const languages = ['en', 'es', 'fr', 'it', 'zh', 'ru', 'de', 'zh-tw', 'pt-br'];
 
 const sanitizeLanguage = (language: string): string => {
-  return language.toLowerCase().includes('en') ? 'en' : language;
+  const lower = language.toLowerCase();
+  if (lower.includes('en')) return 'en';
+  return languages.includes(lower) ? lower : language;
 };
 
 export default function Language(): JSX.Element {
