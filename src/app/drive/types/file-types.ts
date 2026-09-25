@@ -176,10 +176,47 @@ const imageExtensions: FileExtensionMap = {
   gif: ['gif'],
   png: ['png'],
   eps: ['eps'],
-  raw: ['raw', 'cr2', 'nef', 'orf', 'sr2'],
+  raw: [
+    'raw',
+    'cr2',
+    'cr3',
+    'crw',
+    'nef',
+    'nrw',
+    'arw',
+    'srf',
+    'sr2',
+    'raf',
+    'dng',
+    'orf',
+    'rw2',
+    'pef',
+    'srw',
+    '3fr',
+    'fff',
+    'x3f',
+    'erf',
+    'mrw',
+    'kdc',
+    'dcr',
+    'mos',
+    'iiq',
+    'rwl',
+    'mef',
+  ],
   webp: ['webp'],
 };
 const previewableImageExtensionGroups: string[] = ['jpg', 'png', 'bmp', 'gif', 'webp', 'heic'];
+
+export const heicImageExtensions: string[] = imageExtensions['heic'];
+export const tiffImageExtensions: string[] = imageExtensions['tiff'];
+export const rawImageExtensions: string[] = imageExtensions['raw'];
+
+export const convertibleImageExtensions: string[] = [
+  ...heicImageExtensions,
+  ...tiffImageExtensions,
+  ...rawImageExtensions,
+];
 
 const pdfExtensions: FileExtensionMap = {
   pdf: ['pdf'],
