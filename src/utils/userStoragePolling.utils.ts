@@ -1,31 +1,53 @@
 import { store } from 'app/store';
 import { planThunks } from 'app/store/slices/plan';
 
-const POLLING_INTERVAL_MS = 5 * 1000;
-const MAX_POLLING_DURATION_MS = 30 * 1000;
+const INITIAL_INTERVAL_MS = 2 * 1000;
+const MAX_INTERVAL_MS = 15 * 1000;
+const BACKOFF_FACTOR = 1.5;
+const MAX_POLLING_DURATION_MS = 2 * 60 * 1000;
 
 export const userStoragePolling = () => {
-  const initialLimit = store.getState().plan.planLimit;
+  let baseline = store.getState().plan.planLimit || null;
 
-  let interval: ReturnType<typeof setInterval> | null = null;
+  let nextDelay = INITIAL_INTERVAL_MS;
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  let stopped = false;
 
   const stop = () => {
-    if (interval !== null) {
-      clearInterval(interval);
-      interval = null;
+    stopped = true;
+    if (timer !== null) {
+      clearTimeout(timer);
+      timer = null;
     }
-    clearTimeout(timeout);
+    clearTimeout(maxDurationTimeout);
   };
 
-  const timeout = setTimeout(stop, MAX_POLLING_DURATION_MS);
-
-  interval = setInterval(async () => {
-    await store.dispatch(planThunks.fetchLimitThunk());
-    const newLimit = store.getState().plan.planLimit;
-    if (newLimit !== initialLimit) {
-      stop();
+  const scheduleNext = () => {
+    if (stopped) {
+      return;
     }
-  }, POLLING_INTERVAL_MS);
+    timer = setTimeout(runCheck, nextDelay);
+    nextDelay = Math.min(nextDelay * BACKOFF_FACTOR, MAX_INTERVAL_MS);
+  };
+
+  const runCheck = async () => {
+    await store.dispatch(planThunks.fetchLimitThunk());
+    const currentLimit = store.getState().plan.planLimit;
+
+    if (currentLimit) {
+      if (baseline === null) {
+        baseline = currentLimit;
+      } else if (currentLimit !== baseline) {
+        stop();
+        return;
+      }
+    }
+
+    scheduleNext();
+  };
+
+  const maxDurationTimeout = setTimeout(stop, MAX_POLLING_DURATION_MS);
+  void runCheck();
 
   return stop;
 };
