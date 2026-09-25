@@ -1,22 +1,17 @@
 import useEffectAsync from 'hooks/useEffectAsync';
 import navigationService from 'services/navigation.service';
-import { AppView, LocalStorageItem } from 'app/core/types';
+import { AppView } from 'app/core/types';
 import { useAppDispatch } from 'app/store/hooks';
 import { useCallback, useRef } from 'react';
 import localStorageService from 'services/local-storage.service';
 import { trackPaymentConversion } from 'app/analytics/impact.service';
 import gaService from 'app/analytics/ga.service';
+import { PURCHASE_LOCAL_STORAGE_ITEMS } from 'services/storage-keys';
 import metaService from 'app/analytics/meta.service';
 import { userStoragePolling } from 'utils/userStoragePolling.utils';
 
 export function removePaymentsStorage() {
-  localStorageService.removeItem(LocalStorageItem.SubscriptionID);
-  localStorageService.removeItem(LocalStorageItem.PaymentIntentID);
-  localStorageService.removeItem(LocalStorageItem.AmountPaid);
-  localStorageService.removeItem(LocalStorageItem.ProductName);
-  localStorageService.removeItem(LocalStorageItem.PriceId);
-  localStorageService.removeItem(LocalStorageItem.Currency);
-  localStorageService.removeItem(LocalStorageItem.CouponCode);
+  PURCHASE_LOCAL_STORAGE_ITEMS.forEach((item) => localStorageService.removeItem(item));
 }
 
 const CheckoutSuccessView = (): JSX.Element => {
