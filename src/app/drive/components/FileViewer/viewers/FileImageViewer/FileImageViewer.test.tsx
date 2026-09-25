@@ -1,3 +1,4 @@
+import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 import { render, screen, waitFor } from '@testing-library/react';
 import { buildTiff, concatBytes } from 'testUtils/imageBuilders';
 import { beforeAll, describe, expect, test, vi } from 'vitest';
@@ -16,8 +17,19 @@ const IMAGE_HEIGHT = 48;
 const FILE_NAME = 'photo';
 const ROTATED_90_CW = 6;
 const RAW_PADDING = new Uint8Array(3000);
+const EXISTING_THUMBNAIL: Thumbnail = {
+  id: 1,
+  file_id: 1,
+  max_width: 300,
+  max_height: 300,
+  type: 'png',
+  size: 1024,
+  bucket_id: 'bucket',
+  bucket_file: 'bucket-file',
+  encrypt_version: '03-aes',
+};
 
-const file = (type: string): PreviewFileItem =>
+const file = (type: string, thumbnails: Thumbnail[] = []): PreviewFileItem =>
   ({
     id: 1,
     name: FILE_NAME,
@@ -25,6 +37,7 @@ const file = (type: string): PreviewFileItem =>
     type,
     size: 1024,
     folderUuid: 'folder',
+    thumbnails,
   }) as unknown as PreviewFileItem;
 
 const createHandlers = () => ({
@@ -78,6 +91,23 @@ describe('FileImageViewer', () => {
       ),
     );
     expect(setIsPreviewAvailable).not.toHaveBeenCalledWith(false);
+  });
+
+  test('when the file already has a thumbnail, then no thumbnail is regenerated after conversion', async () => {
+    const handlers = createHandlers();
+
+    render(
+      <FileImageViewer
+        file={file('tif', [EXISTING_THUMBNAIL])}
+        blob={tiffBlob}
+        handlersForSpecialItems={handlers}
+        setIsPreviewAvailable={vi.fn()}
+      />,
+    );
+
+    await waitForLoadedImage();
+    await waitFor(() => expect(handlers.handleUpdateProgress).toHaveBeenLastCalledWith(1));
+    expect(handlers.handleUpdateThumbnail).not.toHaveBeenCalled();
   });
 
   test('when a RAW file embeds a JPEG preview, then that preview is shown without altering the original blob', async () => {

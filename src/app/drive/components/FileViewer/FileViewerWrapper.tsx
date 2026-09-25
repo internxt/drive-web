@@ -106,6 +106,7 @@ const FileViewerWrapper = ({
     }
 
     if (currentFile && !updateProgress && !isDownloadStarted && !isVideo) {
+      const isConvertibleImage = convertibleImageExtensions.includes(currentFile.type.toLowerCase());
       setIsDownloadStarted(true);
       fileContentManager
         .download()
@@ -113,7 +114,7 @@ const FileViewerWrapper = ({
           setBlob(downloadedFile.blob);
           setUpdateProgress(0);
           setIsDownloadStarted(false);
-          if (downloadedFile.shouldHandleFileThumbnail) {
+          if (downloadedFile.shouldHandleFileThumbnail && !isConvertibleImage) {
             handleFileThumbnail(currentFile, downloadedFile.blob).catch(errorService.reportError);
           }
         })
