@@ -3,7 +3,6 @@ import NameCollisionDialog, { OnSubmitPressed } from '.';
 import { moveItemsToTrash } from 'views/Trash/services';
 import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { storageActions } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import { uiActions } from 'app/store/slices/ui';
@@ -15,12 +14,8 @@ import replaceFileService from 'views/Drive/services/replaceFile.service';
 import { Network, getEnvironmentConfig } from 'app/drive/services/network.service';
 import { fileVersionsActions, fileVersionsSelectors } from 'app/store/slices/fileVersions';
 import { isVersioningExtensionAllowed } from 'views/Drive/components/VersionHistory/utils';
-import { checkFolderDuplicated } from 'app/store/slices/storage/folderUtils/checkFolderDuplicated';
-import { getUniqueFolderName } from 'app/store/slices/storage/folderUtils/getUniqueFolderName';
-import { getUniqueFilename } from 'app/store/slices/storage/fileUtils/getUniqueFilename';
-import { checkDuplicatedFiles } from 'app/store/slices/storage/fileUtils/checkDuplicatedFiles';
 import { CollisionGroup } from 'app/store/slices/storage/storage.model';
-import { MoveItemPayload } from 'app/store/slices/storage/storage.thunks/moveItemsThunk';
+import { NameCollisionContext, resolveMoveCollision } from './nameCollision.actions';
 
 const NameCollisionContainer: FC = () => {
   const dispatch = useAppDispatch();
@@ -37,45 +32,10 @@ const NameCollisionContainer: FC = () => {
   const maxUploadFileSize = useAppSelector(fileVersionsSelectors.getMaxFileSizeLimit);
   const isVersioningEnabled = limits?.versioning?.enabled ?? false;
 
+  const context: NameCollisionContext = { dispatch, selectedWorkspace, maxUploadFileSize, isVersioningEnabled };
+
   const closeDialog = () => {
     dispatch(uiActions.setIsNameCollisionDialogOpen({ open: false, info: undefined }));
-  };
-
-  const replaceAndMoveItem = async (group: CollisionGroup) => {
-    await moveItemsToTrash(group.existingItems);
-    await dispatch(
-      storageThunks.moveItemsThunk({
-        items: group.duplicatedItems as DriveItemData[],
-        destinationFolderId: group.destinationUuid,
-      }),
-    );
-  };
-
-  const keepAndMoveItem = async (group: CollisionGroup) => {
-    for (const item of group.duplicatedItems as DriveItemData[]) {
-      let itemParsed: MoveItemPayload;
-
-      if (item.isFolder) {
-        const { duplicatedFoldersResponse } = await checkFolderDuplicated([item], group.destinationUuid);
-        const finalName = await getUniqueFolderName(
-          item.plainName ?? item.name,
-          duplicatedFoldersResponse as DriveItemData[],
-          group.destinationUuid,
-        );
-        itemParsed = { ...item, name: finalName, plain_name: finalName, newItemName: finalName };
-      } else {
-        const { duplicatedFilesResponse } = await checkDuplicatedFiles([item], group.destinationUuid);
-        const finalName = await getUniqueFilename(item.name, item.type, duplicatedFilesResponse, group.destinationUuid);
-        itemParsed = { ...item, name: finalName, plainName: finalName, plain_name: finalName, newItemName: finalName };
-      }
-
-      await dispatch(
-        storageThunks.moveItemsThunk({
-          items: [itemParsed],
-          destinationFolderId: group.destinationUuid,
-        }),
-      );
-    }
   };
 
   const uploadFileAndGetFileId = async (file: File, itemToReplace: DriveItemData) => {
@@ -156,21 +116,23 @@ const NameCollisionContainer: FC = () => {
 
   const triggerSelectedOptionsOnSubmit = async ({ operationType, operation }: OnSubmitPressed) => {
     for (const group of collisionGroups) {
-      switch (operationType + operation) {
-        case 'move' + 'keep':
-          await keepAndMoveItem(group);
-          dispatch(storageActions.popItemsToDelete(group.duplicatedItems as DriveItemData[]));
-          break;
-        case 'move' + 'replace':
-          await replaceAndMoveItem(group);
-          dispatch(storageActions.popItemsToDelete(group.duplicatedItems as DriveItemData[]));
-          break;
-        case 'upload' + 'keep':
-          await keepAndUploadItem(group);
-          break;
-        case 'upload' + 'replace':
-          await replaceAndUploadItem(group);
-          break;
+      if (operationType === 'move') {
+        await resolveMoveCollision(
+          {
+            operation,
+            items: group.duplicatedItems as DriveItemData[],
+            existingItems: group.existingItems,
+            destinationUuid: group.destinationUuid,
+          },
+          context,
+        );
+        continue;
+      }
+
+      if (operation === 'keep') {
+        await keepAndUploadItem(group);
+      } else {
+        await replaceAndUploadItem(group);
       }
     }
     closeDialog();
