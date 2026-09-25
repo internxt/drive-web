@@ -29,11 +29,11 @@ import { FileToUpload } from 'app/drive/services/file.service/types';
 import { MenuItemType } from '@internxt/ui';
 import { DownloadManager } from 'app/network/DownloadManager';
 import { getIsTypeAllowedAndFileExtensionGroupValues } from './utils/fileViewerUtils';
-import { FileExtensionGroup } from 'app/drive/types/file-types';
+import { FileExtensionGroup, convertibleImageExtensions } from 'app/drive/types/file-types';
 import encryptedStorageService from 'services/encrypted-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
-const SPECIAL_MIME_TYPES = ['heic'];
+const SPECIAL_MIME_TYPES = convertibleImageExtensions;
 
 interface FileViewerWrapperProps {
   file: PreviewFileItem;

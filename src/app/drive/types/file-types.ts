@@ -206,7 +206,7 @@ const imageExtensions: FileExtensionMap = {
   ],
   webp: ['webp'],
 };
-const previewableImageExtensionGroups: string[] = ['jpg', 'png', 'bmp', 'gif', 'webp', 'heic'];
+const previewableImageExtensionGroups: string[] = ['jpg', 'png', 'bmp', 'gif', 'webp', 'heic', 'tiff', 'raw'];
 
 export const heicImageExtensions: string[] = imageExtensions['heic'];
 export const tiffImageExtensions: string[] = imageExtensions['tiff'];
