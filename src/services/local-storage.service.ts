@@ -52,6 +52,18 @@ function clear(): void {
   localStorage.clear();
 }
 
+function clearExcept(keysToPreserve: LocalStorageItem[]): void {
+  const preservedItems = keysToPreserve
+    .map((key) => ({ key, value: localStorage.getItem(key) }))
+    .filter((item): item is { key: LocalStorageItem; value: string } => item.value !== null);
+
+  localStorage.clear();
+
+  preservedItems.forEach(({ key, value }) => {
+    localStorage.setItem(key, value);
+  });
+}
+
 const localStorageService = {
   set,
   get,
@@ -61,6 +73,7 @@ const localStorageService = {
   getBackupKeys,
   removeItem,
   clear,
+  clearExcept,
 };
 
 export default localStorageService;
@@ -77,4 +90,5 @@ export interface LocalStorageService {
   };
   removeItem: (key: LocalStorageItem) => void;
   clear: () => void;
+  clearExcept: (keysToPreserve: LocalStorageItem[]) => void;
 }
