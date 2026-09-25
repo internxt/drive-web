@@ -78,85 +78,92 @@ const ChangePlanDialog = ({
 
   return (
     <Modal isOpen={isDialogOpen} onClose={onClose}>
-      <h3 className="mb-5 text-2xl font-medium">{translate('views.account.tabs.plans.dialog.title')}</h3>
-      <p className="font-regular mb-9 text-lg">
-        {translate('views.account.tabs.plans.dialog.subtitle1')}
-        <span className="font-semibold">{currentPlanSizeString}</span>
-        {translate('views.account.tabs.plans.dialog.subtitle2')}
-        <span className="font-semibold">{selectedPlanSizeString}</span>
-        {translate('views.account.tabs.plans.dialog.subtitle3')}
-      </p>
-      <div className="mb-9 flex items-center justify-center">
-        <div className="flex w-40 flex-col items-center rounded-xl border border-gray-10 p-4 shadow-soft">
-          <p className="mb-2.5 rounded-xl border border-gray-10 bg-gray-5 px-2 py-1 text-xs font-medium text-gray-80">
-            {translate('views.account.tabs.plans.dialog.plan.current')}
-          </p>
-          <p className="text-2xl font-medium text-primary">{currentPlanSizeString}</p>
-          {subscription?.type === 'subscription' ? (
-            <div>
-              <span className="text-base font-medium">{`${displayAmount(currentAmountMonthly)} ${
-                subscriptionCurrencySymbol || ''
-              }`}</span>
-              <span>/</span>
-              <span className="text-xs font-medium">{translate('views.account.tabs.plans.dialog.plan.interval')}</span>
-            </div>
-          ) : (
-            <p className="text-base font-medium capitalize">{subscription?.type}</p>
-          )}
+      <div data-cy="checkout-change-plan-dialog">
+        <h3 className="mb-5 text-2xl font-medium">{translate('views.account.tabs.plans.dialog.title')}</h3>
+        <p className="font-regular mb-9 text-lg">
+          {translate('views.account.tabs.plans.dialog.subtitle1')}
+          <span className="font-semibold">{currentPlanSizeString}</span>
+          {translate('views.account.tabs.plans.dialog.subtitle2')}
+          <span className="font-semibold">{selectedPlanSizeString}</span>
+          {translate('views.account.tabs.plans.dialog.subtitle3')}
+        </p>
+        <div className="mb-9 flex items-center justify-center">
+          <div className="flex w-40 flex-col items-center rounded-xl border border-gray-10 p-4 shadow-soft">
+            <p className="mb-2.5 rounded-xl border border-gray-10 bg-gray-5 px-2 py-1 text-xs font-medium text-gray-80">
+              {translate('views.account.tabs.plans.dialog.plan.current')}
+            </p>
+            <p className="text-2xl font-medium text-primary">{currentPlanSizeString}</p>
+            {subscription?.type === 'subscription' ? (
+              <div>
+                <span className="text-base font-medium">{`${displayAmount(currentAmountMonthly)} ${
+                  subscriptionCurrencySymbol || ''
+                }`}</span>
+                <span>/</span>
+                <span className="text-xs font-medium">
+                  {translate('views.account.tabs.plans.dialog.plan.interval')}
+                </span>
+              </div>
+            ) : (
+              <p className="text-base font-medium capitalize">{subscription?.type}</p>
+            )}
+          </div>
+          <ArrowRight size={32} className="mx-5 font-semibold text-gray-20" />
+          <div className="flex w-40 flex-col items-center rounded-xl border border-gray-10 p-4 shadow-soft">
+            <p className="mb-2.5 rounded-xl border border-gray-10 bg-gray-5 px-2 py-1 text-xs font-medium text-gray-80">
+              {translate('views.account.tabs.plans.dialog.plan.new')}
+            </p>
+            <p className={`text-2xl font-medium ${isStorageExceeded ? 'text-red' : 'text-primary'}`}>
+              {selectedPlanSizeString}
+            </p>
+            {selectedPlanInterval === 'lifetime' ? (
+              <div>
+                <span className="text-base font-medium">{`${displayAmount(selectedPlanAmount)} ${
+                  subscriptionCurrencySymbol || ''
+                }`}</span>
+              </div>
+            ) : (
+              <div>
+                <span className="text-base font-medium">{`${displayAmount(amountMonthly)} ${
+                  subscriptionCurrencySymbol || ''
+                }`}</span>
+                <span>/</span>
+                <span className="text-xs font-medium">
+                  {translate('views.account.tabs.plans.dialog.plan.interval')}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
-        <ArrowRight size={32} className="mx-5 font-semibold text-gray-20" />
-        <div className="flex w-40 flex-col items-center rounded-xl border border-gray-10 p-4 shadow-soft">
-          <p className="mb-2.5 rounded-xl border border-gray-10 bg-gray-5 px-2 py-1 text-xs font-medium text-gray-80">
-            {translate('views.account.tabs.plans.dialog.plan.new')}
-          </p>
-          <p className={`text-2xl font-medium ${isStorageExceeded ? 'text-red' : 'text-primary'}`}>
-            {selectedPlanSizeString}
-          </p>
-          {selectedPlanInterval === 'lifetime' ? (
-            <div>
-              <span className="text-base font-medium">{`${displayAmount(selectedPlanAmount)} ${
-                subscriptionCurrencySymbol || ''
-              }`}</span>
-            </div>
-          ) : (
-            <div>
-              <span className="text-base font-medium">{`${displayAmount(amountMonthly)} ${
-                subscriptionCurrencySymbol || ''
-              }`}</span>
-              <span>/</span>
-              <span className="text-xs font-medium">{translate('views.account.tabs.plans.dialog.plan.interval')}</span>
-            </div>
-          )}
+        {isStorageExceeded && (
+          <div className="mb-5 flex flex-col items-center rounded-xl border border-red/20 bg-red/10 px-4 py-5 text-red">
+            <h4 className="mb-1.5 text-center text-xl font-semibold">
+              {translate('views.account.tabs.plans.dialog.alert.title')}
+              {selectedPlanSizeString}
+            </h4>
+            <p className="font-regular text-center text-base">
+              {translate('views.account.tabs.plans.dialog.alert.text1')}
+              <span className="font-semibold">{bytesToString(currentPlanUsage)}</span>
+              {translate('views.account.tabs.plans.dialog.alert.text2')}
+            </p>
+          </div>
+        )}
+        <div className="font-regular mb-5  rounded-xl bg-gray-5 p-4 text-center text-base">
+          <p>{translate('views.account.tabs.plans.dialog.message.text')}</p>
         </div>
-      </div>
-      {isStorageExceeded && (
-        <div className="mb-5 flex flex-col items-center rounded-xl border border-red/20 bg-red/10 px-4 py-5 text-red">
-          <h4 className="mb-1.5 text-center text-xl font-semibold">
-            {translate('views.account.tabs.plans.dialog.alert.title')}
-            {selectedPlanSizeString}
-          </h4>
-          <p className="font-regular text-center text-base">
-            {translate('views.account.tabs.plans.dialog.alert.text1')}
-            <span className="font-semibold">{bytesToString(currentPlanUsage)}</span>
-            {translate('views.account.tabs.plans.dialog.alert.text2')}
-          </p>
+        <div className="flex w-full justify-end">
+          <Button className="mr-2" variant="secondary" onClick={onClose}>
+            {translate('views.account.tabs.plans.dialog.button.back')}
+          </Button>
+          <Button
+            variant="primary"
+            buttonDataCy="checkout-change-plan-confirm"
+            onClick={() => onPlanClick(priceSelected.id, priceSelected?.currency)}
+            loading={isLoading}
+            disabled={isUpdatingSubscription}
+          >
+            {translate('views.account.tabs.plans.dialog.button.continue')}
+          </Button>
         </div>
-      )}
-      <div className="font-regular mb-5  rounded-xl bg-gray-5 p-4 text-center text-base">
-        <p>{translate('views.account.tabs.plans.dialog.message.text')}</p>
-      </div>
-      <div className="flex w-full justify-end">
-        <Button className="mr-2" variant="secondary" onClick={onClose}>
-          {translate('views.account.tabs.plans.dialog.button.back')}
-        </Button>
-        <Button
-          variant="primary"
-          onClick={() => onPlanClick(priceSelected.id, priceSelected?.currency)}
-          loading={isLoading}
-          disabled={isUpdatingSubscription}
-        >
-          {translate('views.account.tabs.plans.dialog.button.continue')}
-        </Button>
       </div>
     </Modal>
   );
