@@ -16,3 +16,20 @@ export const THEMES = {
   STPATRICKS_THEME_AVAILABLE_LOCAL_STORAGE_KEY: LocalStorageItem.StpatricksTheme,
   ANNIVERSARY_THEME_AVAILABLE_LOCAL_STORAGE_KEY: LocalStorageItem.AnniversaryTheme,
 };
+
+export const PURCHASE_LOCAL_STORAGE_ITEMS: LocalStorageItem[] = [
+  LocalStorageItem.CheckoutItemData,
+  LocalStorageItem.ItemOriginalPrice,
+  LocalStorageItem.SubscriptionID,
+  LocalStorageItem.PaymentIntentID,
+  LocalStorageItem.PriceId,
+  LocalStorageItem.ProductName,
+  LocalStorageItem.Currency,
+  LocalStorageItem.AmountPaid,
+  LocalStorageItem.CouponCode,
+];
+
+export const ATTRIBUTION_LOCAL_STORAGE_ITEMS: LocalStorageItem[] = [
+  LocalStorageItem.GCLID,
+  LocalStorageItem.UccStorageKey,
+];

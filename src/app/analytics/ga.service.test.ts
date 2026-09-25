@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import gaService from './ga.service';
+import { ATTRIBUTION_LOCAL_STORAGE_ITEMS, PURCHASE_LOCAL_STORAGE_ITEMS } from 'services/storage-keys';
 import { bytesToString } from 'app/drive/services/size.service';
 import localStorageService from 'services/local-storage.service';
 import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
@@ -357,7 +358,7 @@ describe('Testing GA Service', () => {
         });
       });
 
-      it('should clean up localStorage after successful tracking', async () => {
+      it('should leave the purchase data in localStorage, as it is removed once every tracker has read it', async () => {
         vi.mocked(encryptedStorageService.getUser).mockResolvedValue({ uuid: 'user_123' } as UserSettings);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'amountPaid') return '100';
@@ -374,17 +375,21 @@ describe('Testing GA Service', () => {
 
         await gaService.trackPurchase();
 
-        expect(localStorageService.removeItem).toHaveBeenCalledWith('checkout_item_data');
-        expect(localStorageService.removeItem).toHaveBeenCalledWith('itemOriginalPrice');
+        expect(globalThis.window.dataLayer[0].event).toBe('purchase');
+        expect(localStorageService.removeItem).not.toHaveBeenCalled();
       });
 
-      it('should use fallback values when checkout item data is not available', async () => {
+      it('should not track when checkout item data is gone, even if the payment data is still stored', async () => {
         vi.mocked(encryptedStorageService.getUser).mockResolvedValue({ uuid: 'user_123' } as UserSettings);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'checkout_item_data') return null;
-          if (key === 'amountPaid') return '100';
           if (key === 'itemOriginalPrice') return null;
-          return 'dummy';
+          if (key === 'amountPaid') return '100';
+          if (key === 'productName') return '2TByear';
+          if (key === 'priceId') return 'price_123';
+          if (key === 'paymentIntentId') return 'pi_123';
+          if (key === 'currency') return 'eur';
+          return null;
         });
 
         await gaService.trackPurchase();
@@ -417,10 +422,7 @@ describe('Testing GA Service', () => {
       it('should not track when checkout data is missing (already tracked)', async () => {
         const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
         vi.mocked(encryptedStorageService.getUser).mockResolvedValue({ uuid: 'user_123' } as UserSettings);
-        vi.mocked(localStorageService.get).mockImplementation((key) => {
-          if (key === 'checkout_item_data') return null;
-          return 'dummy';
-        });
+        vi.mocked(localStorageService.get).mockImplementation(() => null);
 
         await gaService.trackPurchase();
 
@@ -430,6 +432,33 @@ describe('Testing GA Service', () => {
         );
 
         consoleWarnSpy.mockRestore();
+      });
+    });
+
+    describe('Local storage items the purchase depends on', () => {
+      it('should declare every item read while tracking a purchase, so flows that wipe the storage keep them', async () => {
+        vi.mocked(encryptedStorageService.getUser).mockResolvedValue({ uuid: 'user_123' } as UserSettings);
+        vi.mocked(localStorageService.get).mockImplementation((key) => {
+          if (key === 'amountPaid') return '100';
+          if (key === 'itemOriginalPrice') return '119.88';
+          if (key === 'checkout_item_data')
+            return JSON.stringify({
+              item_name: '2TB Year Plan',
+              item_category: 'Individual',
+              item_variant: 'year',
+              discount: 0,
+            });
+          return 'dummy';
+        });
+
+        await gaService.trackPurchase();
+
+        const readItems = vi.mocked(localStorageService.get).mock.calls.map(([key]) => key);
+
+        expect(readItems.length).toBeGreaterThan(0);
+        readItems.forEach((item) => {
+          expect([...PURCHASE_LOCAL_STORAGE_ITEMS, ...ATTRIBUTION_LOCAL_STORAGE_ITEMS]).toContain(item);
+        });
       });
     });
 

@@ -3,6 +3,7 @@
  */
 import { aes } from '@internxt/lib';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { ATTRIBUTION_LOCAL_STORAGE_ITEMS, PURCHASE_LOCAL_STORAGE_ITEMS } from 'services/storage-keys';
 import { SdkFactory } from 'app/core/factory/sdk';
 import * as keysService from 'app/crypto/services/keys.service';
 import * as pgpService from 'app/crypto/services/pgp.service';
@@ -107,6 +108,7 @@ beforeAll(() => {
     default: {
       get: vi.fn(),
       clear: vi.fn(),
+      clearExcept: vi.fn(),
       set: vi.fn(),
     },
   }));
@@ -404,6 +406,38 @@ describe('signUp', () => {
       },
       mnemonic: mockMnemonicNotEnc,
     });
+  });
+
+  it('signUp should wipe the previous session without dropping the checkout and analytics context', async () => {
+    const mockNewToken = 'test-new-token';
+    const mockPassword = 'password123';
+    const mockMnemonicNotEnc =
+      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
+    const mockUser = await getMockUser(mockPassword, mockMnemonicNotEnc);
+
+    const params = {
+      doSignUp: vi.fn().mockResolvedValue({
+        xUser: { ...mockUser, mnemonic: mockMnemonicNotEnc },
+        xNewToken: mockNewToken,
+        mnemonic: mockMnemonicNotEnc,
+      }),
+      email: 'test@example.com',
+      password: mockPassword,
+      token: mockNewToken,
+      redeemCodeObject: false,
+      dispatch: vi.fn(),
+    };
+
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify({ newToken: mockNewToken })));
+
+    await authService.signUp(params);
+
+    expect(localStorageService.clear).not.toHaveBeenCalled();
+    expect(localStorageService.clearExcept).toHaveBeenCalledTimes(1);
+    expect(localStorageService.clearExcept).toHaveBeenCalledWith([
+      ...PURCHASE_LOCAL_STORAGE_ITEMS,
+      ...ATTRIBUTION_LOCAL_STORAGE_ITEMS,
+    ]);
   });
 });
 
