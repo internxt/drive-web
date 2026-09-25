@@ -164,7 +164,7 @@ describe('Testing the local storage service', () => {
       localStorageService.clearExcept([LocalStorageItem.AmountPaid]);
 
       expect(localStorage.getItem(LocalStorageItem.AmountPaid)).toBeNull();
-      expect(localStorage.length).toStrictEqual(0);
+      expect(localStorage).toHaveLength(0);
     });
   });
 });
