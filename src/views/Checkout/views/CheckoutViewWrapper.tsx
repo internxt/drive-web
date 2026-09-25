@@ -1,7 +1,7 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Elements } from '@stripe/react-stripe-js';
 import { Stripe, StripeElements } from '@stripe/stripe-js';
-import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef, useState } from 'react';
+import { BaseSyntheticEvent, useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useCheckout } from 'views/Checkout/hooks/useCheckout';
 import { useSignUp } from 'views/Signup/hooks/useSignup';
@@ -46,10 +46,14 @@ import { usePromotionalCode } from '../hooks/usePromotionalCode';
 import { useAuthCheckout } from '../hooks/useAuthCheckout';
 import { checkoutReducer, initialStateForCheckout } from '../store';
 import { CheckoutLoader } from '../components/CheckoutLoader';
+import UrgentCheckoutView from 'views/UrgentCheckout/views/UrgentCheckoutView';
+import { getUrgentCheckoutVariant } from 'views/UrgentCheckout/constants';
+import { useUrgentStripeAppearance } from 'views/UrgentCheckout/hooks/useUrgentStripeAppearance';
 
 const CheckoutViewWrapper = () => {
   const { translate } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
+  const isUrgentCheckoutRoute = navigationService.isCurrentPath(AppView.UrgentCheckout);
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
   const [state, dispatchReducer] = useReducer(checkoutReducer, initialStateForCheckout);
   const { authMethod, isPaying, isUpdateSubscriptionDialogOpen, isUpdatingSubscription } = state;
@@ -85,9 +89,19 @@ const CheckoutViewWrapper = () => {
   const { isCheckoutReady, stripeElementsOptions, availableCryptoCurrencies, stripeSdk } = useInitializeCheckout({
     user,
     price: selectedPlan,
-    checkoutTheme: checkoutTheme ?? 'light',
+    checkoutTheme: isUrgentCheckoutRoute ? 'dark' : (checkoutTheme ?? 'light'),
     translate,
   });
+
+  const urgentStripeElementsOptions = useUrgentStripeAppearance(
+    stripeElementsOptions,
+    isUrgentCheckoutRoute ? selectedPlan : undefined,
+  );
+  const elementsOptions = isUrgentCheckoutRoute ? urgentStripeElementsOptions : stripeElementsOptions;
+  const urgentVariant = useMemo(
+    () => getUrgentCheckoutVariant(new URLSearchParams(globalThis.location.search).get('variant')),
+    [],
+  );
 
   const { onAuthenticateUser, onLogOut, authError } = useAuthCheckout({
     changeAuthMethod: setAuthMethod,
@@ -444,26 +458,45 @@ const CheckoutViewWrapper = () => {
 
   return (
     <>
-      {isCheckoutReady && stripeElementsOptions && stripeSdk && selectedPlan?.price && selectedPlan?.taxes ? (
-        <Elements stripe={stripeSdk} options={stripeElementsOptions}>
-          <CheckoutView
-            checkoutViewVariables={{
-              isPaying,
-              authMethod,
-              couponCodeData: promoCodeData,
-              couponCodeError: couponError ?? undefined,
-              authError: authError ?? undefined,
-              currentSelectedPlan: selectedPlan,
-              selectedCurrency,
-            }}
-            userAuthComponentRef={userAuthComponentRef}
-            showCouponCode={!paramMobileToken}
-            userInfo={userInfo}
-            isUserAuthenticated={isAuthenticated}
-            checkoutViewManager={checkoutViewManager}
-            availableCryptoCurrencies={availableCryptoCurrencies}
-            onCurrencyTypeChanges={onCurrencyTypeChanges}
-          />
+      {isCheckoutReady && elementsOptions && stripeSdk && selectedPlan?.price && selectedPlan?.taxes ? (
+        <Elements stripe={stripeSdk} options={elementsOptions}>
+          {isUrgentCheckoutRoute ? (
+            <UrgentCheckoutView
+              checkoutViewVariables={{
+                isPaying,
+                authMethod,
+                couponCodeData: promoCodeData,
+                authError: authError ?? undefined,
+                currentSelectedPlan: selectedPlan,
+                selectedCurrency,
+              }}
+              variant={urgentVariant}
+              userAuthComponentRef={userAuthComponentRef}
+              userInfo={userInfo}
+              checkoutViewManager={checkoutViewManager}
+              availableCryptoCurrencies={availableCryptoCurrencies}
+              onCurrencyTypeChanges={onCurrencyTypeChanges}
+            />
+          ) : (
+            <CheckoutView
+              checkoutViewVariables={{
+                isPaying,
+                authMethod,
+                couponCodeData: promoCodeData,
+                couponCodeError: couponError ?? undefined,
+                authError: authError ?? undefined,
+                currentSelectedPlan: selectedPlan,
+                selectedCurrency,
+              }}
+              userAuthComponentRef={userAuthComponentRef}
+              showCouponCode={!paramMobileToken}
+              userInfo={userInfo}
+              isUserAuthenticated={isAuthenticated}
+              checkoutViewManager={checkoutViewManager}
+              availableCryptoCurrencies={availableCryptoCurrencies}
+              onCurrencyTypeChanges={onCurrencyTypeChanges}
+            />
+          )}
           {canChangePlanDialogBeOpened ? (
             <ChangePlanDialog
               isDialogOpen={isUpdateSubscriptionDialogOpen}

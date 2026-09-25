@@ -7,6 +7,7 @@ import { SdkFactory } from 'app/core/factory/sdk';
 import * as keysService from 'app/crypto/services/keys.service';
 import * as pgpService from 'app/crypto/services/pgp.service';
 import { encryptText, encryptTextWithKey } from 'app/crypto/services/utils';
+import { AppView } from 'app/core/types';
 import { AppDispatch } from 'app/store';
 import { userThunks } from 'app/store/slices/user';
 import { validateMnemonic } from 'bip39';
@@ -14,6 +15,7 @@ import { Buffer } from 'node:buffer';
 import errorService from 'services/error.service';
 import envService from 'services/env.service';
 import localStorageService from 'services/local-storage.service';
+import navigationService from 'services/navigation.service';
 import { BackupData } from 'utils/backupKeyUtils';
 import { beforeAll, beforeEach, describe, expect, it, test, vi } from 'vitest';
 import * as authService from './auth.service';
@@ -308,7 +310,9 @@ describe('logIn', () => {
       createDesktopAuthClient: vi.fn(),
     } as any);
 
-    const mockDispatch = vi.fn().mockReturnValue({ unwrap: vi.fn().mockResolvedValue(undefined) }) as unknown as AppDispatch;
+    const mockDispatch = vi
+      .fn()
+      .mockReturnValue({ unwrap: vi.fn().mockResolvedValue(undefined) }) as unknown as AppDispatch;
 
     const result = await authService.logIn({
       email: mockUser.email,
@@ -978,6 +982,92 @@ describe('logOut', () => {
 
     expect(localStorageService.clear).toHaveBeenCalled();
   });
+
+  describe('redirection to the login page', () => {
+    const mockCurrentPath = (currentView: AppView | null) => {
+      vi.mocked(navigationService.isCurrentPath).mockImplementation((view) => view === currentView);
+    };
+
+    beforeEach(() => {
+      vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(undefined);
+      vi.spyOn(localStorageService, 'clear').mockImplementation(() => {});
+      globalThis.history.replaceState({}, '', '/');
+    });
+
+    it('should redirect to the login page when the user is not in an excluded path', async () => {
+      mockCurrentPath(AppView.Drive);
+
+      await authService.logOut();
+
+      expect(navigationService.push).toHaveBeenCalledWith(AppView.Login, {});
+    });
+
+    it('should not redirect to the login page when the user is in the checkout path', async () => {
+      mockCurrentPath(AppView.Checkout);
+
+      await authService.logOut();
+
+      expect(navigationService.push).not.toHaveBeenCalled();
+    });
+
+    it('should not redirect to the login page when the user is in the urgent checkout path', async () => {
+      mockCurrentPath(AppView.UrgentCheckout);
+
+      await authService.logOut();
+
+      expect(navigationService.push).not.toHaveBeenCalled();
+    });
+
+    it('should not redirect to the login page when the user is in the blocked account path', async () => {
+      mockCurrentPath(AppView.BlockedAccount);
+
+      await authService.logOut();
+
+      expect(navigationService.push).not.toHaveBeenCalled();
+    });
+
+    it('should clear the user session even when the user is in the urgent checkout path', async () => {
+      mockCurrentPath(AppView.UrgentCheckout);
+
+      await authService.logOut();
+
+      expect(localStorageService.clear).toHaveBeenCalled();
+      expect(encryptedStorageService.clear).toHaveBeenCalled();
+    });
+
+    it('should keep only the safe url params when redirecting to the login page', async () => {
+      mockCurrentPath(AppView.Drive);
+      globalThis.history.replaceState({}, '', '/?universalLink=true&folderuuid=uuid&unsafeParam=value');
+
+      await authService.logOut();
+
+      expect(navigationService.push).toHaveBeenCalledWith(AppView.Login, {
+        universalLink: 'true',
+        folderuuid: 'uuid',
+      });
+    });
+
+    it('should give priority to the given login params over the preserved url params', async () => {
+      mockCurrentPath(AppView.Drive);
+      globalThis.history.replaceState({}, '', '/?redirectUri=/preserved&authOrigin=web');
+
+      await authService.logOut({ redirectUri: '/from-login-params' });
+
+      expect(navigationService.push).toHaveBeenCalledWith(AppView.Login, {
+        redirectUri: '/from-login-params',
+        authOrigin: 'web',
+      });
+    });
+
+    it('should not preserve the url params when the user is in the urgent checkout path', async () => {
+      mockCurrentPath(AppView.UrgentCheckout);
+      globalThis.history.replaceState({}, '', '/checkout-uc?universalLink=true');
+
+      await authService.logOut();
+
+      expect(navigationService.push).not.toHaveBeenCalled();
+    });
+  });
 });
 
 describe('cancelAccount', () => {
@@ -1263,7 +1353,9 @@ describe('authenticateUser', () => {
       createDesktopAuthClient: vi.fn(),
     } as any);
 
-    const mockDispatch = vi.fn().mockReturnValue({ unwrap: vi.fn().mockResolvedValue(undefined) }) as unknown as AppDispatch;
+    const mockDispatch = vi
+      .fn()
+      .mockReturnValue({ unwrap: vi.fn().mockResolvedValue(undefined) }) as unknown as AppDispatch;
 
     const result = await authService.authenticateUser({
       email: mockUser.email,
