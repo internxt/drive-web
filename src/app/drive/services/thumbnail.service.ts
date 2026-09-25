@@ -46,10 +46,7 @@ interface ThumbnailGenerated {
 }
 
 const VIDEO_FRAME_QUALITY = 0.75;
-/**
- * RAW/TIFF sources above this are left for the viewer to backfill on first preview,
- * which also bounds decode memory when several uploads run in parallel.
- */
+
 export const MAX_CONVERTIBLE_THUMBNAIL_SOURCE_BYTES = 50 * 1024 * 1024;
 
 export const isValidImage = (file: File): Promise<boolean> => {
