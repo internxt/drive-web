@@ -20,7 +20,7 @@ describe('Multipart Download File', () => {
       bucketId: 'test-bucket',
       fileId: 'test-file',
       token: 'test-token',
-      encryptionKey: Buffer.from('0'.repeat(64), 'hex'),
+      key: { mnemonic: '0'.repeat(64) },
       fileSize: 1024,
       options: {
         notifyProgress: vi.fn(),
@@ -43,7 +43,7 @@ describe('Multipart Download File', () => {
       bucketId: 'test-bucket',
       fileId: 'test-file',
       token: 'test-token',
-      encryptionKey: Buffer.from('0'.repeat(64), 'hex'),
+      key: { mnemonic: '0'.repeat(64) },
       fileSize: 1024,
       options: {
         notifyProgress: vi.fn(),

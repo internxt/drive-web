@@ -1,4 +1,4 @@
 import { uploadFile } from './upload';
-import { downloadFile } from './download';
+import { downloadFile, multipartDownloadFile } from './download';
 
-export default { uploadFile, downloadFile };
+export default { uploadFile, downloadFile, multipartDownloadFile };

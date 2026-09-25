@@ -1,4 +1,5 @@
 import { DownloadProgressCallback } from '../download';
+import { FileKey } from './helper-types';
 
 export interface LegacyShardMeta {
   hash: string;
@@ -28,7 +29,7 @@ export interface DownloadChunkTask {
 export interface DownloadChunkPayload {
   bucketId: string;
   fileId: string;
-  mnemonic: string;
+  key: FileKey;
   chunkStart: number;
   chunkEnd: number;
   options?: DownloadOptions;

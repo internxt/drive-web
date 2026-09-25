@@ -219,7 +219,7 @@ const FileViewerWrapper = ({
         abortController,
       },
       currentFile.credentials,
-      currentFile.mnemonic,
+      currentFile.key,
     );
   }
 

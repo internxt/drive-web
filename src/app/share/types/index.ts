@@ -1,5 +1,5 @@
 import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
-import { NetworkCredentials } from 'app/network/types/helper-types';
+import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 
 export type AdvancedSharedItem = SharedFolders &
@@ -17,11 +17,12 @@ export type SharedNetworkCredentials = {
   networkUser: string;
   networkPass: string;
   mnemonic?: string;
+  bucketKey?: Buffer;
 };
 
 export type PreviewFileItem = DriveFileData & {
   credentials?: NetworkCredentials;
-  mnemonic?: string;
+  key?: FileKey;
   folderUuid: string;
 };
 

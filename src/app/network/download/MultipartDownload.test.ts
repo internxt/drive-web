@@ -45,7 +45,7 @@ function executeDownload(
   return multipartDownload.downloadFile({
     bucketId: params?.bucketId ?? TEST_BUCKET_ID,
     fileId: params?.fileId ?? TEST_FILE_ID,
-    mnemonic: params?.mnemonic ?? TEST_MNEMONIC,
+    key: { mnemonic: params?.key?.mnemonic ?? TEST_MNEMONIC, bucketKey: params?.key?.bucketKey },
     fileSize: params?.fileSize ?? TEST_FILE_SIZE,
     options: params?.options,
   });
