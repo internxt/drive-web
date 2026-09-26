@@ -4,6 +4,7 @@ import { SdkFactory } from 'app/core/factory/sdk';
 enum CurrencySymbol {
   USD = '$', // US Dollar
   EUR = '€', // Euro
+  BRL = 'R$', // Brazilian Real
   CRC = '₡', // Costa Rican Colón
   GBP = '£', // British Pound Sterling
   ILS = '₪', // Israeli New Sheqel
@@ -28,6 +29,8 @@ const CURRENCY_BY_COUNTRY: Record<string, string> = {
   BH: 'usd', // Bahrain
   OM: 'usd', // Oman
   IR: 'usd', // Iran
+  IN: 'inr', // India
+  BR: 'brl', // Brazil
 };
 
 const DEFAULT_CURRENCY = 'eur';
