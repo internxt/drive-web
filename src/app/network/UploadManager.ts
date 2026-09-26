@@ -151,29 +151,34 @@ class UploadManager {
 
         let unsubscribeAbortListener: (() => void) | void;
 
-        uploadFile(
-          {
-            name: file.name,
-            size: file.size,
-            type: retryUploadType ?? file.type,
-            content: file.content,
-            parentFolderId: file.parentFolderId,
-          },
-          (uploadProgress) => {
-            this.uploadsProgress[uploadId] = uploadProgress;
-            this.events?.onUploadProgress?.(fileData, uploadProgress);
-          },
-          {
-            isTeam: !!this.options?.ownerUserAuthenticationData?.workspaceId,
-            abortController: this.abortController ?? fileData.abortController,
-            ownerUserAuthenticationData: this.options?.ownerUserAuthenticationData,
-            abortCallback: (abort?: () => void) => {
-              unsubscribeAbortListener = this.events?.registerUploadAbort?.(fileData, () => abort?.());
-            },
-            isUploadedFromFolder: fileData.isUploadedFromFolder,
-          },
-          continueUploadOptions,
-        )
+        // TODO: remove — temporary hook to force a failure for testing the retry modal
+        const uploadPromise = UploadManager.isForcedFailureTestFile(file.name)
+          ? Promise.reject(new Error(`Forced upload failure for test file "${file.name}"`))
+          : uploadFile(
+              {
+                name: file.name,
+                size: file.size,
+                type: retryUploadType ?? file.type,
+                content: file.content,
+                parentFolderId: file.parentFolderId,
+              },
+              (uploadProgress) => {
+                this.uploadsProgress[uploadId] = uploadProgress;
+                this.events?.onUploadProgress?.(fileData, uploadProgress);
+              },
+              {
+                isTeam: !!this.options?.ownerUserAuthenticationData?.workspaceId,
+                abortController: this.abortController ?? fileData.abortController,
+                ownerUserAuthenticationData: this.options?.ownerUserAuthenticationData,
+                abortCallback: (abort?: () => void) => {
+                  unsubscribeAbortListener = this.events?.registerUploadAbort?.(fileData, () => abort?.());
+                },
+                isUploadedFromFolder: fileData.isUploadedFromFolder,
+              },
+              continueUploadOptions,
+            );
+
+        uploadPromise
           .then(async (driveFileData) => {
             const isUploadAborted = this.abortController?.signal.aborted ?? fileData.abortController?.signal.aborted;
 
@@ -236,6 +241,14 @@ class UploadManager {
     this.uploadRepository = props.uploadRepository;
     this.onFileUploadCallback = props.onFileUploadCallback;
     this.events = props.events;
+  }
+
+  /**
+   * TODO: remove — temporary hook for manually testing the retry modal.
+   * Any file named "FAIL-TEST" (with or without extension) fails to upload on purpose.
+   */
+  private static isForcedFailureTestFile(fileName: string): boolean {
+    return fileName === 'FAIL-TEST' || fileName.startsWith('FAIL-TEST.');
   }
 
   private static isNonRetryableError(error: unknown): boolean {
