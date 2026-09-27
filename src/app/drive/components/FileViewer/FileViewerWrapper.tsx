@@ -28,7 +28,7 @@ import {
 import { FileToUpload } from 'app/drive/services/file.service/types';
 import { MenuItemType } from '@internxt/ui';
 import { DownloadManager } from 'app/network/DownloadManager';
-import { getIsTypeAllowedAndFileExtensionGroupValues } from './utils/fileViewerUtils';
+import { getIsTypeAllowedAndFileExtensionGroupValues, isPreviewableBySize } from './utils/fileViewerUtils';
 import { FileExtensionGroup, convertibleImageExtensions } from 'app/drive/types/file-types';
 import encryptedStorageService from 'services/encrypted-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
@@ -98,6 +98,7 @@ const FileViewerWrapper = ({
 
     const extensionGroup = getIsTypeAllowedAndFileExtensionGroupValues(currentFile);
     const isVideo = extensionGroup?.fileExtensionGroup === FileExtensionGroup['Video'];
+    const isDownloadable = isPreviewableBySize(currentFile);
 
     if (currentFile && Number(currentFile.size) === 0) {
       setBlob(new Blob([]));
@@ -105,7 +106,7 @@ const FileViewerWrapper = ({
       return;
     }
 
-    if (currentFile && !updateProgress && !isDownloadStarted && !isVideo) {
+    if (currentFile && !updateProgress && !isDownloadStarted && !isVideo && isDownloadable) {
       const isConvertibleImage = convertibleImageExtensions.includes(currentFile.type.toLowerCase());
       setIsDownloadStarted(true);
       fileContentManager

@@ -71,6 +71,10 @@ type FinishUploadRequest = {
 type RecordedRequests = {
   fileEntries: FileEntryRequest[];
   thumbnailEntries: ThumbnailEntryRequest[];
+  downloadedFileIds: string[];
+};
+export type MockedDriveOptions = {
+  declaredSizes?: Record<string, number>;
 };
 
 const buildThumbnail = (id: number, fileId: number, entry: ThumbnailEntryRequest) => ({
@@ -112,6 +116,8 @@ class InMemoryDrive {
   private readonly files: StoredFile[] = [];
   private thumbnailsCount = 0;
 
+  constructor(private readonly declaredSizes: Record<string, number> = {}) {}
+
   filesIn(folderUuid: string) {
     return this.files.filter((file) => file.folderUuid === folderUuid);
   }
@@ -121,7 +127,8 @@ class InMemoryDrive {
   }
 
   addFile(entry: FileEntryRequest) {
-    const file = buildFile(FIRST_UPLOADED_FILE_ID + this.files.length, entry);
+    const size = this.declaredSizes[entry.plainName] ?? entry.size;
+    const file = buildFile(FIRST_UPLOADED_FILE_ID + this.files.length, { ...entry, size });
     this.files.push(file);
     return file;
   }
@@ -233,13 +240,16 @@ const mockFileEntryRoutes = async (page: Page, drive: InMemoryDrive, requests: R
   );
 };
 
-const fulfillBridgeCall = (route: Route, request: Request, bridge: InMemoryBridge) => {
+const fulfillBridgeCall = (route: Route, request: Request, bridge: InMemoryBridge, requests: RecordedRequests) => {
   const url = request.url();
   if (url.includes(START_UPLOAD_PATH)) return route.fulfill({ json: { uploads: [bridge.startUpload()] } });
   if (url.endsWith(FINISH_UPLOAD_PATH)) {
     return route.fulfill({ json: bridge.finishUpload(request.postDataJSON() as FinishUploadRequest) });
   }
-  return fulfillJsonIfFound(route, bridge.fileInfo(firstCapture(BRIDGE_FILE_INFO_ID_PATTERN, url)));
+
+  const fileId = firstCapture(BRIDGE_FILE_INFO_ID_PATTERN, url);
+  requests.downloadedFileIds.push(fileId);
+  return fulfillJsonIfFound(route, bridge.fileInfo(fileId));
 };
 
 const fulfillShardCall = (route: Route, request: Request, bridge: InMemoryBridge) => {
@@ -254,22 +264,24 @@ const fulfillShardCall = (route: Route, request: Request, bridge: InMemoryBridge
   return shard ? route.fulfill({ contentType: SHARD_CONTENT_TYPE, body: shard }) : fulfillNotFound(route);
 };
 
-const mockBridgeStorageRoutes = async (page: Page) => {
+const mockBridgeStorageRoutes = async (page: Page, requests: RecordedRequests) => {
   const bridge = new InMemoryBridge();
 
-  await page.route(`${BRIDGE_URL}/**buckets/**`, (route, request) => fulfillBridgeCall(route, request, bridge));
+  await page.route(`${BRIDGE_URL}/**buckets/**`, (route, request) =>
+    fulfillBridgeCall(route, request, bridge, requests),
+  );
   await page.route(`${SHARDS_URL}/**`, (route, request) => fulfillShardCall(route, request, bridge));
 };
 
-export const mockDriveRoutes = async (page: Page): Promise<RecordedRequests> => {
-  const drive = new InMemoryDrive();
-  const requests: RecordedRequests = { fileEntries: [], thumbnailEntries: [] };
+export const mockDriveRoutes = async (page: Page, options: MockedDriveOptions = {}): Promise<RecordedRequests> => {
+  const drive = new InMemoryDrive(options.declaredSizes);
+  const requests: RecordedRequests = { fileEntries: [], thumbnailEntries: [], downloadedFileIds: [] };
 
   await mockAppBootstrapCalls(page);
   await mockAuthRoutes(page);
   await mockFolderContentRoutes(page, drive);
   await mockFileEntryRoutes(page, drive, requests);
-  await mockBridgeStorageRoutes(page);
+  await mockBridgeStorageRoutes(page, requests);
 
   return requests;
 };
