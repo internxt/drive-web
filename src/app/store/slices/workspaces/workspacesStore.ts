@@ -1,4 +1,10 @@
-import { PendingWorkspace, Workspace, WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
+import {
+  PendingInvitesResponse,
+  PendingWorkspace,
+  Workspace,
+  WorkspaceCredentialsDetails,
+  WorkspaceData,
+} from '@internxt/sdk/dist/workspaces';
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { t } from 'i18next';
 import { RootState } from '../..';
@@ -12,7 +18,7 @@ import {
   saveWorkspaceAvatarToDatabase,
 } from '../../../../views/NewSettings/components/Sections/Workspace/Overview/components/WorkspaceAvatarWrapper';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
-import { decryptMnemonic } from '../../../share/services/share.service';
+import { decryptMnemonic } from '../../../share/services/share.crypto';
 import { planThunks } from '../plan';
 import sessionThunks from '../session/session.thunks';
 import workspacesSelectors from './workspaces.selectors';
@@ -23,6 +29,7 @@ export interface WorkspacesState {
   workspaces: WorkspaceData[];
   workspaceCredentials: WorkspaceCredentialsDetails | null;
   pendingWorkspaces: PendingWorkspace[];
+  pendingWorkspacesInvites: PendingInvitesResponse;
   selectedWorkspace: WorkspaceData | null;
   isOwner: boolean;
   isLoadingWorkspaces: boolean;
@@ -33,6 +40,7 @@ const initialState: WorkspacesState = {
   workspaces: [],
   workspaceCredentials: null,
   pendingWorkspaces: [],
+  pendingWorkspacesInvites: [],
   selectedWorkspace: null,
   isOwner: false,
   isLoadingWorkspaces: false,
@@ -64,7 +72,20 @@ const fetchWorkspaces = createAsyncThunk<void, undefined, { state: RootState }>(
       const workspacesWithDecryptedMnemonic = await decryptWorkspacesMnemonic(workspaces.availableWorkspaces);
       dispatch(workspacesActions.setWorkspaces(workspacesWithDecryptedMnemonic));
       dispatch(workspacesActions.setPendingWorkspaces([...workspaces.pendingWorkspaces]));
+      dispatch(fetchPendingWorkspacesInvites());
       dispatch(planThunks.initializeThunk());
+    }
+  },
+);
+
+const fetchPendingWorkspacesInvites = createAsyncThunk<void, undefined, { state: RootState }>(
+  'workspaces/fetchPendingWorkspacesInvites',
+  async (_, { dispatch }) => {
+    try {
+      const pendingWorkspacesInvites = await workspacesService.getPendingInvites();
+      dispatch(workspacesActions.setPendingWorkspacesInvites(pendingWorkspacesInvites));
+    } catch (error) {
+      errorService.reportError(error);
     }
   },
 );
@@ -254,6 +275,9 @@ export const workspacesSlice = createSlice({
     setPendingWorkspaces: (state: WorkspacesState, action: PayloadAction<PendingWorkspace[]>) => {
       state.pendingWorkspaces = action.payload;
     },
+    setPendingWorkspacesInvites: (state: WorkspacesState, action: PayloadAction<PendingInvitesResponse>) => {
+      state.pendingWorkspacesInvites = action.payload;
+    },
     setSelectedWorkspace: (state: WorkspacesState, action: PayloadAction<WorkspaceData | null>) => {
       state.selectedWorkspace = action.payload;
     },
@@ -390,6 +414,7 @@ export const workspacesActions = workspacesSlice.actions;
 
 export const workspaceThunks = {
   fetchWorkspaces,
+  fetchPendingWorkspacesInvites,
   setupWorkspace,
   fetchCredentials,
   setSelectedWorkspace,

@@ -26,7 +26,6 @@ import { Iterator } from '../../core/collections';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from 'services/error.service';
 import workspacesService from 'services/workspace.service';
-import { hybridDecryptMessageWithPrivateKey } from '../../crypto/services/pgp.service';
 import { downloadFolderAsZip } from 'app/drive/services/folder.service';
 import { DownloadManager } from '../../network/DownloadManager';
 import { downloadFile } from 'app/network/download';
@@ -42,6 +41,7 @@ import { copyTextToClipboard } from 'utils/copyToClipboard.utils';
 import referralService from 'services/referral.service';
 import { generateFileBucketKey } from 'app/network/crypto';
 import encryptedStorageService from 'services/encrypted-storage.service';
+import { decryptMnemonic } from './share.crypto';
 
 interface CreateShareResponse {
   created: boolean;
@@ -283,7 +283,7 @@ export const createPublicShareFromOwnerUser = async (
     encryptedMnemonic?: string;
   },
 ): Promise<{ publicSharingItemData: SharingMeta; plainCode: string }> => {
-  const user = encryptedStorageService.getUser();
+  const user = await encryptedStorageService.getUser();
   if (!user) {
     const error = errorService.castError('User Not Found');
     errorService.reportError(error);
@@ -335,7 +335,7 @@ export const createPublicShareFromOwnerUser = async (
 };
 
 const decryptPublicSharingCodeWithOwner = async (encryptedCode: string, encryptionAlgorithm: string) => {
-  const user = encryptedStorageService.getUser();
+  const user = await encryptedStorageService.getUser();
   if (!user) {
     const error = errorService.castError('User Not Found');
     errorService.reportError(error);
@@ -593,33 +593,6 @@ class DirectoryPublicSharedFilesIterator implements Iterator<SharedFiles> {
   }
 }
 
-export const decryptMnemonic = async (encryptionKey: string): Promise<string | undefined> => {
-  const user = encryptedStorageService.getUser();
-  if (user) {
-    let decryptedKey;
-    try {
-      const privateKeyInBase64 = user.keys.ecc.privateKey;
-      const privateKyberKeyInBase64 = user.keys.kyber.privateKey;
-      decryptedKey = await hybridDecryptMessageWithPrivateKey({
-        encryptedMessageInBase64: encryptionKey,
-        privateKeyInBase64,
-        privateKyberKeyInBase64,
-      });
-    } catch (err) {
-      decryptedKey = user.mnemonic;
-    }
-    return decryptedKey;
-  } else {
-    const error = errorService.castError('User Not Found');
-    errorService.reportError(error);
-
-    notificationsService.show({
-      text: t('error.decryptMnemonic', { message: error.message }),
-      type: ToastType.Error,
-    });
-  }
-};
-
 export async function downloadSharedFiles({
   creds,
   decryptedEncryptionKey,
@@ -757,8 +730,12 @@ export async function downloadPublicSharedItems({
     );
   };
 
-  const downloadFileStream = (file: AdvancedSharedItem) => {
-    if (!file.bucket || !file.fileId) {
+  const downloadFileStream = async (file: AdvancedSharedItem) => {
+    if (Number(file.size) === 0 || !file.fileId) {
+      return new Blob([]).stream();
+    }
+
+    if (!file.bucket) {
       throw new Error(`Missing network data to download shared file '${getPublicItemDownloadName(file)}'`);
     }
 

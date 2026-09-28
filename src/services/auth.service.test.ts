@@ -7,17 +7,22 @@ import { SdkFactory } from 'app/core/factory/sdk';
 import * as keysService from 'app/crypto/services/keys.service';
 import * as pgpService from 'app/crypto/services/pgp.service';
 import { encryptText, encryptTextWithKey } from 'app/crypto/services/utils';
-import { userActions } from 'app/store/slices/user';
+import { AppView } from 'app/core/types';
+import { AppDispatch } from 'app/store';
+import { userThunks } from 'app/store/slices/user';
 import { validateMnemonic } from 'bip39';
 import { Buffer } from 'node:buffer';
 import errorService from 'services/error.service';
 import envService from 'services/env.service';
 import localStorageService from 'services/local-storage.service';
+import navigationService from 'services/navigation.service';
 import { BackupData } from 'utils/backupKeyUtils';
 import { beforeAll, beforeEach, describe, expect, it, test, vi } from 'vitest';
 import * as authService from './auth.service';
 import { PasswordMismatchError } from './errors/auth.errors';
 import encryptedStorageService from './encrypted-storage.service';
+
+const DUMMY_TOKEN = 'XXXX.DUMMY.TOKEN.XXXX';
 
 const mockSecret = '123456789QWERTY';
 const mockApi = 'https://mock';
@@ -72,16 +77,17 @@ beforeAll(() => {
 
   vi.mock('app/store/slices/user', () => ({
     initializeUserThunk: vi.fn(),
-    userActions: {
-      setUser: vi.fn(),
-    },
     userThunks: {
       initializeUserThunk: vi.fn(),
+      setUserThunk: vi.fn(),
     },
   }));
 
   vi.mock('app/store/slices/workspaces/workspacesStore', () => ({
-    workspaceThunks: vi.fn(),
+    workspaceThunks: {
+      fetchWorkspaces: vi.fn(),
+      checkAndSetLocalWorkspace: vi.fn(),
+    },
   }));
 
   vi.mock('services/sockets/socket.service', () => ({
@@ -243,6 +249,82 @@ describe('logIn', () => {
       mnemonic: mockMnemonic,
     });
   });
+
+  const mockAuthClients = async () => {
+    const mockPassword = 'password123';
+    const mockMnemonic =
+      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
+    const mockUser = await getMockUser(mockPassword, mockMnemonic);
+
+    const login = vi.fn().mockResolvedValue({ user: mockUser, newToken: 'test-new-token' });
+    const createAuthClient = vi.fn().mockReturnValue({ login });
+    const createDesktopAuthClient = vi.fn().mockReturnValue({ login });
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient,
+      createDesktopAuthClient,
+    } as any);
+
+    return { mockUser, mockPassword, createAuthClient, createDesktopAuthClient };
+  };
+
+  it('When logging in from the web, then the turnstile token is forwarded to the web auth client', async () => {
+    const { mockUser, mockPassword, createAuthClient, createDesktopAuthClient } = await mockAuthClients();
+
+    await authService.doLogin(mockUser.email, mockPassword, '123456', 'web', DUMMY_TOKEN);
+
+    expect(createAuthClient).toHaveBeenCalledWith({ turnstileToken: DUMMY_TOKEN });
+    expect(createDesktopAuthClient).not.toHaveBeenCalled();
+  });
+
+  it('When logging in from the desktop, then the turnstile token is forwarded to the desktop auth client', async () => {
+    const { mockUser, mockPassword, createAuthClient, createDesktopAuthClient } = await mockAuthClients();
+
+    await authService.doLogin(mockUser.email, mockPassword, '123456', 'desktop', DUMMY_TOKEN);
+
+    expect(createDesktopAuthClient).toHaveBeenCalledWith({ turnstileToken: DUMMY_TOKEN });
+    expect(createAuthClient).not.toHaveBeenCalled();
+  });
+
+  it('When the security details are already known, then it reuses them instead of fetching them again', async () => {
+    const { mockUser, mockPassword, createAuthClient } = await mockAuthClients();
+    const login = createAuthClient.mock.results[0]?.value?.login ?? createAuthClient().login;
+    const knownSecurityDetails = { encryptedSalt: 'known-salt', tfaEnabled: false };
+
+    await authService.doLogin(mockUser.email, mockPassword, '123456', 'web', DUMMY_TOKEN, knownSecurityDetails);
+
+    expect(login).toHaveBeenCalledWith(expect.anything(), expect.anything(), knownSecurityDetails);
+  });
+
+  it('When logging in via authService.logIn, then it decrypts the user, dispatches the post-login setup and returns their profile', async () => {
+    const mockPassword = 'password123';
+    const mockMnemonic =
+      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
+    const mockUser = await getMockUser(mockPassword, mockMnemonic);
+    const mockNewToken = 'test-new-token';
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue({
+        login: vi.fn().mockResolvedValue({ user: mockUser, newToken: mockNewToken }),
+      }),
+      createDesktopAuthClient: vi.fn(),
+    } as any);
+
+    const mockDispatch = vi
+      .fn()
+      .mockReturnValue({ unwrap: vi.fn().mockResolvedValue(undefined) }) as unknown as AppDispatch;
+
+    const result = await authService.logIn({
+      email: mockUser.email,
+      password: mockPassword,
+      twoFactorCode: '',
+      dispatch: mockDispatch,
+    });
+
+    expect(result.newToken).toBe(mockNewToken);
+    expect(result.mnemonic).toBe(mockMnemonic);
+    expect(mockDispatch).toHaveBeenCalled();
+  });
 });
 
 describe('signUp', () => {
@@ -287,7 +369,7 @@ describe('signUp', () => {
 
     vi.spyOn(globalThis, 'fetch').mockReturnValue(Promise.resolve(mockRes));
 
-    const spy = vi.spyOn(userActions, 'setUser');
+    const spy = vi.spyOn(userThunks, 'setUserThunk');
 
     const result = await authService.signUp(params);
 
@@ -348,7 +430,7 @@ describe('Change password', () => {
     };
 
     const mockUser = mockClearUser as UserSettings;
-    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(mockUser);
+    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue(mockUser);
 
     const mockSalt = 'mockSalt';
     const encryptedSalt = encryptText(mockSalt);
@@ -404,7 +486,7 @@ describe('Change password', () => {
     };
 
     const mockUser = mockClearUser as UserSettings;
-    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(mockUser);
+    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue(mockUser);
 
     const encryptedSalt = encryptText('mockSalt');
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
@@ -448,7 +530,7 @@ describe('Change password', () => {
     };
 
     const mockUser = mockClearUser as UserSettings;
-    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(mockUser);
+    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue(mockUser);
 
     const encryptedSalt = encryptText('mockSalt');
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
@@ -534,7 +616,7 @@ describe('updateCredentialsWithToken', () => {
 
     (validateMnemonic as any).mockReturnValue(true);
 
-    vi.spyOn(aes, 'encrypt').mockReturnValue('mock-encrypted-data');
+    const aesEncryptSpy = vi.spyOn(aes, 'encrypt').mockReturnValue('mock-encrypted-data');
 
     const mockChangePasswordWithLink = vi.fn().mockResolvedValue({ success: true });
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
@@ -557,6 +639,8 @@ describe('updateCredentialsWithToken', () => {
     expect(keys.private.ecc).toBe('mock-encrypted-data');
     expect(keys.public).toBeUndefined();
     expect(keys.private.kyber).toBeUndefined();
+
+    aesEncryptSpy.mockRestore();
   });
 
   it('should send both private and public keys when backup data has publicKeys', async () => {
@@ -579,7 +663,7 @@ describe('updateCredentialsWithToken', () => {
 
     (validateMnemonic as any).mockReturnValue(true);
 
-    vi.spyOn(aes, 'encrypt').mockReturnValue('mock-encrypted-data');
+    const aesEncryptSpy = vi.spyOn(aes, 'encrypt').mockReturnValue('mock-encrypted-data');
 
     const mockChangePasswordWithLink = vi.fn().mockResolvedValue({ success: true });
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
@@ -605,6 +689,8 @@ describe('updateCredentialsWithToken', () => {
       ecc: 'test-ecc-public-key',
       kyber: 'test-kyber-public-key',
     });
+
+    aesEncryptSpy.mockRestore();
   });
 
   it('should throw an error when mnemonic is invalid', async () => {
@@ -740,7 +826,7 @@ describe('areCredentialsCorrect', () => {
 
     vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(mockToken);
 
-    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({
+    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue({
       email: mockEmail,
     } as UserSettings);
 
@@ -811,6 +897,18 @@ describe('Security and validation', () => {
 
       mockAuthClient.securityDetails.mockRejectedValue({ message: 'User not found', status: 404 });
       await expect(authService.is2FANeeded('test@example.com')).rejects.toThrow('User not found');
+    });
+
+    it('When a turnstile token is given, then it is forwarded to the auth client', async () => {
+      const createAuthClient = vi.fn().mockReturnValue({
+        securityDetails: vi.fn().mockResolvedValue({ tfaEnabled: false }),
+      });
+
+      vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({ createAuthClient } as any);
+
+      await authService.is2FANeeded('test@example.com', DUMMY_TOKEN);
+
+      expect(createAuthClient).toHaveBeenCalledWith({ turnstileToken: DUMMY_TOKEN });
     });
   });
 
@@ -884,6 +982,92 @@ describe('logOut', () => {
 
     expect(localStorageService.clear).toHaveBeenCalled();
   });
+
+  describe('redirection to the login page', () => {
+    const mockCurrentPath = (currentView: AppView | null) => {
+      vi.mocked(navigationService.isCurrentPath).mockImplementation((view) => view === currentView);
+    };
+
+    beforeEach(() => {
+      vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(undefined);
+      vi.spyOn(localStorageService, 'clear').mockImplementation(() => {});
+      globalThis.history.replaceState({}, '', '/');
+    });
+
+    it('should redirect to the login page when the user is not in an excluded path', async () => {
+      mockCurrentPath(AppView.Drive);
+
+      await authService.logOut();
+
+      expect(navigationService.push).toHaveBeenCalledWith(AppView.Login, {});
+    });
+
+    it('should not redirect to the login page when the user is in the checkout path', async () => {
+      mockCurrentPath(AppView.Checkout);
+
+      await authService.logOut();
+
+      expect(navigationService.push).not.toHaveBeenCalled();
+    });
+
+    it('should not redirect to the login page when the user is in the urgent checkout path', async () => {
+      mockCurrentPath(AppView.UrgentCheckout);
+
+      await authService.logOut();
+
+      expect(navigationService.push).not.toHaveBeenCalled();
+    });
+
+    it('should not redirect to the login page when the user is in the blocked account path', async () => {
+      mockCurrentPath(AppView.BlockedAccount);
+
+      await authService.logOut();
+
+      expect(navigationService.push).not.toHaveBeenCalled();
+    });
+
+    it('should clear the user session even when the user is in the urgent checkout path', async () => {
+      mockCurrentPath(AppView.UrgentCheckout);
+
+      await authService.logOut();
+
+      expect(localStorageService.clear).toHaveBeenCalled();
+      expect(encryptedStorageService.clear).toHaveBeenCalled();
+    });
+
+    it('should keep only the safe url params when redirecting to the login page', async () => {
+      mockCurrentPath(AppView.Drive);
+      globalThis.history.replaceState({}, '', '/?universalLink=true&folderuuid=uuid&unsafeParam=value');
+
+      await authService.logOut();
+
+      expect(navigationService.push).toHaveBeenCalledWith(AppView.Login, {
+        universalLink: 'true',
+        folderuuid: 'uuid',
+      });
+    });
+
+    it('should give priority to the given login params over the preserved url params', async () => {
+      mockCurrentPath(AppView.Drive);
+      globalThis.history.replaceState({}, '', '/?redirectUri=/preserved&authOrigin=web');
+
+      await authService.logOut({ redirectUri: '/from-login-params' });
+
+      expect(navigationService.push).toHaveBeenCalledWith(AppView.Login, {
+        redirectUri: '/from-login-params',
+        authOrigin: 'web',
+      });
+    });
+
+    it('should not preserve the url params when the user is in the urgent checkout path', async () => {
+      mockCurrentPath(AppView.UrgentCheckout);
+      globalThis.history.replaceState({}, '', '/checkout-uc?universalLink=true');
+
+      await authService.logOut();
+
+      expect(navigationService.push).not.toHaveBeenCalled();
+    });
+  });
 });
 
 describe('cancelAccount', () => {
@@ -930,7 +1114,7 @@ describe('getSalt', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ email: 'test@test.com' } as UserSettings);
+    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue({ email: 'test@test.com' } as UserSettings);
 
     const salt = await authService.getSalt();
 
@@ -949,7 +1133,7 @@ describe('getPasswordDetails', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ email: 'test@test.com' } as UserSettings);
+    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue({ email: 'test@test.com' } as UserSettings);
 
     const result = await authService.getPasswordDetails('test-password');
 
@@ -968,7 +1152,7 @@ describe('getPasswordDetails', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ email: 'test@test.com' } as UserSettings);
+    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue({ email: 'test@test.com' } as UserSettings);
 
     await expect(authService.getPasswordDetails('test-password')).rejects.toThrow(
       'Internal server error. Please reload.',
@@ -1027,7 +1211,7 @@ describe('userHas2FAStored', () => {
       createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({ email: 'test@test.com' } as UserSettings);
+    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue({ email: 'test@test.com' } as UserSettings);
 
     const result = await authService.userHas2FAStored();
 
@@ -1153,6 +1337,37 @@ describe('authenticateUser', () => {
         dispatch: mockDispatch,
       }),
     ).rejects.toThrow('Unknown authMethod: unknown');
+  });
+
+  it('When authMethod is signIn, then it logs the user in and passes along the known security details', async () => {
+    const mockPassword = 'password123';
+    const mockMnemonic =
+      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
+    const mockUser = await getMockUser(mockPassword, mockMnemonic);
+    const mockNewToken = 'test-new-token';
+    const login = vi.fn().mockResolvedValue({ user: mockUser, newToken: mockNewToken });
+    const knownSecurityDetails = { encryptedSalt: 'known-salt', tfaEnabled: false };
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue({ login }),
+      createDesktopAuthClient: vi.fn(),
+    } as any);
+
+    const mockDispatch = vi
+      .fn()
+      .mockReturnValue({ unwrap: vi.fn().mockResolvedValue(undefined) }) as unknown as AppDispatch;
+
+    const result = await authService.authenticateUser({
+      email: mockUser.email,
+      password: mockPassword,
+      authMethod: 'signIn',
+      twoFactorCode: '',
+      dispatch: mockDispatch,
+      knownSecurityDetails,
+    });
+
+    expect(result.newToken).toBe(mockNewToken);
+    expect(login).toHaveBeenCalledWith(expect.anything(), expect.anything(), knownSecurityDetails);
   });
 });
 

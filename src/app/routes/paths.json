@@ -82,6 +82,14 @@
       "auth": true
     },
     {
+      "id": "favorites",
+      "layout": "header-and-sidenav",
+      "path": "/favorites",
+      "exact": true,
+      "auth": true,
+      "hideSearch": true
+    },
+    {
       "id": "recents",
       "layout": "header-and-sidenav",
       "path": "/recents",
@@ -152,6 +160,13 @@
       "id": "checkout",
       "layout": "empty",
       "path": "/checkout",
+      "exact": false,
+      "auth": false
+    },
+    {
+      "id": "checkout-uc",
+      "layout": "empty",
+      "path": "/checkout-uc",
       "exact": false,
       "auth": false
     },

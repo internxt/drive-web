@@ -1,7 +1,7 @@
 import { beforeEach, beforeAll, describe, expect, it, vi, Mock } from 'vitest';
 import { screen, fireEvent, render } from '@testing-library/react';
 import WorkspaceGuestSingUpView from './WorkspaceGuestSignUpView';
-import { userActions } from '../../app/store/slices/user';
+import { userThunks } from '../../app/store/slices/user';
 import * as keysService from '../../app/crypto/services/keys.service';
 import { encryptTextWithKey } from '../../app/crypto/services/utils';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
@@ -132,7 +132,6 @@ describe('onSubmit', () => {
         get: vi.fn(),
         clear: vi.fn(),
         set: vi.fn(),
-        setToken: vi.fn(),
       },
     }));
     vi.mock('services/encrypted-storage.service', () => ({
@@ -209,12 +208,9 @@ describe('onSubmit', () => {
     }));
 
     vi.mock('../../app/store/slices/user', () => ({
-      initializeUserThunk: vi.fn(),
-      userActions: {
-        setUser: vi.fn(),
-      },
       userThunks: {
         initializeUserThunk: vi.fn(),
+        setUserThunk: vi.fn(),
       },
     }));
   });
@@ -278,12 +274,7 @@ describe('onSubmit', () => {
       }),
     }));
 
-    const spy = vi.spyOn(userActions, 'setUser').mockImplementation((user) => {
-      return {
-        payload: user,
-        type: 'user/setUser',
-      };
-    });
+    const spy = vi.spyOn(userThunks, 'setUserThunk');
     render(<WorkspaceGuestSingUpView />);
     const submitButton = screen.getByRole('button');
     fireEvent.click(submitButton);

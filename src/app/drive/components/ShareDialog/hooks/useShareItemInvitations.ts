@@ -34,7 +34,7 @@ export const useShareItemInvitations = ({ itemToShare, isUserOwner }: ShareItemI
       // the server throws an error when there are no users with shared item,
       // that means that the local user is the owner as there is nobody else with this shared file.
       if (isUserOwner) {
-        const ownerData = getLocalUserData();
+        const ownerData = await getLocalUserData();
         actionDispatch(setInvitedUsers([{ ...ownerData, roleName: 'owner' }]));
       }
     }

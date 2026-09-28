@@ -272,6 +272,68 @@
       "missingPaymentDetails": "Informations de paiement manquantes pour confirmer le paiement"
     }
   },
+  "urgentCheckout": {
+    "header": {
+      "tagline": "Votre cloud privé",
+      "europeanBased": "Basé en Europe",
+      "gdprCompliant": "Conforme au RGPD",
+      "trustedByMillions": "Des millions d'utilisateurs nous font confiance"
+    },
+    "hero": {
+      "offerPill": "{{percent}}% DE RÉDUCTION — Offre exclusive à durée limitée",
+      "offerPillNoDiscount": "Offre exclusive à durée limitée",
+      "title": "Gardez vos fichiers, photos et vidéos",
+      "titleHighlight": "100% privés.",
+      "subtitle": "Obtenez {{storage}} de stockage cloud privé pour seulement {{price}} le premier mois.",
+      "imageAlt": "Internxt Drive sur un ordinateur portable et un téléphone",
+      "points": {
+        "privacy": {
+          "title": "Vous seul pouvez accéder à vos fichiers",
+          "description": "Le chiffrement à connaissance nulle fait que même Internxt ne peut pas accéder à votre contenu."
+        },
+        "storage": {
+          "title": "Votre cloud privé, protégé",
+          "description": "Stockez vos photos, vidéos, documents et fichiers personnels avec la confidentialité intégrée."
+        },
+        "offer": {
+          "title": "{{percent}}% DE RÉDUCTION — pour une durée limitée",
+          "titleNoDiscount": "Offre exclusive — pour une durée limitée",
+          "description": "Obtenez {{storage}} pour seulement {{price}}. Cette offre exclusive ne durera pas."
+        }
+      },
+      "badges": {
+        "basedInEu": "Basé dans l'UE",
+        "openSource": "Open source",
+        "audited": "Audité par Securitum",
+        "privacyPriority": "Votre confidentialité. Notre priorité."
+      }
+    },
+    "countdown": {
+      "title": "Votre offre exclusive de {{percent}}% de réduction expire dans :",
+      "titleNoDiscount": "Votre offre exclusive expire dans :",
+      "footer": "Obtenez {{storage}} pour {{price}} avant la fin de cette offre."
+    },
+    "summary": {
+      "discountApplied": "{{percent}}% de réduction appliquée",
+      "estimatedTax": "Taxes estimées"
+    },
+    "form": {
+      "emailLabel": "Votre adresse email",
+      "emailPlaceholder": "vous@email.com",
+      "createPasswordLabel": "Créer un mot de passe",
+      "passwordLabel": "Votre mot de passe",
+      "passwordPlaceholder": "Mot de passe",
+      "togglePasswordVisibility": "Afficher ou masquer le mot de passe",
+      "incompleteDetails": "Veuillez saisir votre email et votre mot de passe pour continuer.",
+      "encryptedTitle": "Vos fichiers sont chiffrés et privés.",
+      "encryptedDescription": "Internxt ne peut pas accéder à votre contenu."
+    },
+    "cta": {
+      "button": "Obtenez {{storage}} pour {{price}}",
+      "renewalNoteMonthly": "Premier mois {{price}}, puis renouvellement à {{renewalPrice}}/mois. Annulez à tout moment.",
+      "renewalNoteYearly": "Première année {{price}}, puis renouvellement à {{renewalPrice}}/an. Annulez à tout moment."
+    }
+  },
   "general": {
     "of": "de",
     "at": "à",
@@ -380,6 +442,7 @@
   },
   "sideNav": {
     "drive": "Drive",
+    "favorites": "Favoris",
     "backups": "Sauvegardes",
     "shared": "Partagé",
     "recents": "Récent",
@@ -391,6 +454,13 @@
     }
   },
   "views": {
+    "favorites": {
+      "head": "Favoris",
+      "empty": {
+        "title": "Aucun favori pour l'instant",
+        "description": "Ajoutez des fichiers ou des dossiers à vos favoris pour y accéder plus rapidement"
+      }
+    },
     "recents": {
       "head": "Recents",
       "empty": {
@@ -1013,6 +1083,10 @@
         "title": "Débloquer Meet",
         "description": "Mettez à niveau pour organiser et rejoindre des appels vidéo entièrement chiffrés — privés, sécurisés et illimités."
       },
+      "mail": {
+        "title": "Débloquer Mail",
+        "description": "Débloquez votre service d'e-mail privé avec chiffrement de bout en bout."
+      },
       "vpn": {
         "title": "Débloquer VPN",
         "description": "Mettez à niveau votre offre pour protéger votre trafic avec une navigation privée et chiffrée."
@@ -1038,6 +1112,8 @@
     "fileCannotBeEmpty": "Le nom du fichier ne peut pas être vide",
     "creatingFolder": "Erreur lors de la création d'un dossier",
     "fetchingFolderContent": "Erreur dans l'extraction du contenu d'un dossier",
+    "togglingFavorite": "Une erreur s'est produite lors de la mise à jour des favoris",
+    "togglingSomeFavorites": "Certains favoris n'ont pas pu être mis à jour",
     "uploadingFolder": "Erreur lors du téléchargement d'un dossier",
     "uploadingFile": "Erreur lors du téléchargement du fichier : {{reason}}",
     "uploadingItems": "Certains éléments n'ont pas pu être téléchargés",
@@ -1160,7 +1236,8 @@
       "allProcessesHaveFinished": "Tous les processus ont été complétés",
       "processing": "Traitement {{pending}} de {{finished}}",
       "failedToUpload": "Échec du téléchargement",
-      "failedToDownload": "Échec du téléchargement"
+      "failedToDownload": "Échec du téléchargement",
+      "notAllowed": "Non autorisé"
     },
     "waiting": "En attente",
     "paused": "En pause",
@@ -1412,6 +1489,8 @@
       "details": "Détails",
       "shareLink": "Partager",
       "shareTeam": "Partager avec l'équipe",
+      "addToFavorites": "Ajouter aux favoris",
+      "removeFromFavorites": "Retirer des favoris",
       "rename": "Renommer",
       "manageLinkAccess": "Gestion de l'accès",
       "download": "Télécharger",

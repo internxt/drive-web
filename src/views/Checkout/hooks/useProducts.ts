@@ -12,6 +12,7 @@ interface UseProductsProps {
   userAddress?: string;
   country?: string;
   postalCode?: string;
+  isPromoCodeResolved?: boolean;
   translate: Translate;
 }
 
@@ -25,16 +26,25 @@ interface FetchSelectedPlanPayload {
   mobileToken?: string;
 }
 
-export const useProducts = ({ currency, planId, promotionCode, userLocation, userAddress }: UseProductsProps) => {
+export const useProducts = ({
+  currency,
+  planId,
+  promotionCode,
+  userLocation,
+  userAddress,
+  country,
+  isPromoCodeResolved,
+}: UseProductsProps) => {
   const [selectedPlan, setSelectedPlan] = useState<PriceWithTax>();
 
   useEffect(() => {
     if (!planId || !userAddress) return;
+    if (isPromoCodeResolved === false) return;
 
     const currencyPlan = currencyService.getCurrencyForLocation(userLocation, currency);
 
-    fetchSelectedPlan({ priceId: planId, currency: currencyPlan, userAddress, promotionCode });
-  }, [userLocation, userAddress, promotionCode]);
+    fetchSelectedPlan({ priceId: planId, currency: currencyPlan, userAddress, promotionCode, country });
+  }, [userLocation, userAddress, promotionCode, country, isPromoCodeResolved]);
 
   const fetchSelectedPlan = async ({
     priceId,

@@ -127,7 +127,11 @@ describe('uploadFoldersWithTasks', () => {
     const onFolderUploadSucceeded = vi.fn();
     const { events } = await runUpload([{ root, currentFolderId: 'parent' }], { onFolderUploadSucceeded });
 
-    events.onFolderUploadSuccess?.('task-1', { folderName: 'MyFolder', rootFolderUUID: 'root-uuid' });
+    events.onFolderUploadSuccess?.('task-1', {
+      folderName: 'MyFolder',
+      rootFolderUUID: 'root-uuid',
+      hasFailedFiles: false,
+    });
 
     expect(tasksService.updateTask).toHaveBeenCalledWith({
       taskId: 'task-1',
@@ -135,6 +139,26 @@ describe('uploadFoldersWithTasks', () => {
     });
     expect(referralService.trackFolderUpload).toHaveBeenCalledOnce();
     expect(networkInformation.logNetworkInfoForUpload).toHaveBeenCalledWith({ folderName: 'MyFolder' });
+    expect(onFolderUploadSucceeded).toHaveBeenCalledWith('task-1');
+  });
+
+  test('When a folder finishes uploading but some files failed, then its task still succeeds so the failed files can be retried', async () => {
+    (tasksService.create as Mock).mockReturnValue('task-1');
+    const onFolderUploadSucceeded = vi.fn();
+    const { events } = await runUpload([{ root, currentFolderId: 'parent' }], { onFolderUploadSucceeded });
+
+    events.onFolderUploadSuccess?.('task-1', {
+      folderName: 'MyFolder',
+      rootFolderUUID: 'root-uuid',
+      hasFailedFiles: true,
+    });
+
+    expect(tasksService.updateTask).toHaveBeenCalledWith({
+      taskId: 'task-1',
+      merge: { status: TaskStatus.Success, itemUUID: { rootFolderUUID: 'root-uuid' } },
+    });
+    expect(referralService.trackFolderUpload).not.toHaveBeenCalled();
+    expect(networkInformation.logNetworkInfoForUpload).not.toHaveBeenCalled();
     expect(onFolderUploadSucceeded).toHaveBeenCalledWith('task-1');
   });
 

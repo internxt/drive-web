@@ -6,7 +6,7 @@ import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
 import { parseAndDecryptUserKeys } from 'app/crypto/services/keys.service';
-import { userActions, userThunks } from 'app/store/slices/user';
+import { userThunks } from 'app/store/slices/user';
 import { planThunks } from 'app/store/slices/plan';
 import encryptedStorageService from 'services/encrypted-storage.service';
 
@@ -72,6 +72,7 @@ describe('guestSignupOnSubmit', () => {
   });
 
   it('should successfully register user and navigate to redirect page', async () => {
+    const setUserThunkSpy = vi.spyOn(userThunks, 'setUserThunk');
     mockDoRegisterPreCreatedUser.mockResolvedValue(mockRegistrationResponse);
 
     await guestSignupOnSubmit({
@@ -97,7 +98,7 @@ describe('guestSignupOnSubmit', () => {
     expect(localStorageService.clear).toHaveBeenCalled();
     expect(encryptedStorageService.setToken).toHaveBeenCalledWith('refresh-token');
     expect(parseAndDecryptUserKeys).toHaveBeenCalledWith(mockRegistrationResponse.xUser, 'password123');
-    expect(mockDispatch).toHaveBeenCalledWith(userActions.setUser(expect.objectContaining({ uuid: 'user-uuid' })));
+    expect(setUserThunkSpy).toHaveBeenCalledWith(expect.objectContaining({ uuid: 'user-uuid' }));
     expect(mockDispatch).toHaveBeenCalledWith(userThunks.initializeUserThunk());
     expect(mockDispatch).toHaveBeenCalledWith(planThunks.initializeThunk());
     expect(navigationService.push).toHaveBeenCalledWith(AppView.Drive);

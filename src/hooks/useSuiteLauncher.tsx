@@ -17,6 +17,7 @@ import { store } from 'app/store';
 import { envService } from 'services';
 
 const MEET_URL = 'https://meet.internxt.com';
+const MAIL_URL = 'https://mail.internxt.com';
 const SEND_URL = 'https://send.internxt.com';
 
 export const useSuiteLauncher = () => {
@@ -66,8 +67,13 @@ export const useSuiteLauncher = () => {
     {
       icon: <EnvelopeSimple />,
       title: 'Mail',
-      onClick: () => {},
-      availableSoon: true,
+      onClick: () =>
+        openSuite({
+          enabled: userFeatures?.[Service.Mail].enabled ?? false,
+          onOpenSuite: () => window.open(MAIL_URL, '_blank', 'noopener'),
+          upgradeTitle: translate('modals.upgradePlanDialog.mail.title'),
+          upgradeDescription: translate('modals.upgradePlanDialog.mail.description'),
+        }),
       isLocked: !userFeatures?.[Service.Mail].enabled,
     },
     {

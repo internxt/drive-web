@@ -14,6 +14,8 @@ import dateService from 'services/date.service';
 import { EncryptedStorageService } from 'services/encrypted-storage.service';
 import { WorkspaceCredentialsDetails } from '@internxt/sdk/dist/workspaces';
 
+const DUMMY_TOKEN = 'XXXX.DUMMY.TOKEN.XXXX';
+
 const MOCKED_NEW_API = 'https://api.internxt.com';
 const MOCKED_PAYMENTS = 'https://payments.internxt.com';
 const MOCKED_LOCATION = 'https://location.internxt.com';
@@ -348,6 +350,88 @@ describe('SdkFactory', () => {
             customHeaders: {
               'x-internxt-captcha': captchaToken,
             },
+          },
+          expect.any(Object),
+        );
+      });
+
+      test('When the Auth creates the client with a turnstile token, then the app details include the turnstile header', () => {
+        const turnstileToken = DUMMY_TOKEN;
+
+        vi.spyOn(mockEncryptedStorage, 'getToken').mockReturnValue('test-token');
+
+        const instance = SdkFactory.getNewApiInstance();
+        instance.createAuthClient({ turnstileToken });
+
+        expect(Auth.client).toHaveBeenCalledWith(
+          MOCKED_NEW_API,
+          {
+            clientName: packageJson.name,
+            clientVersion: packageJson.version,
+            customHeaders: {
+              'x-internxt-turnstile': turnstileToken,
+            },
+          },
+          expect.any(Object),
+        );
+      });
+
+      test('When the Auth creates the client with both tokens, then both headers are included', () => {
+        const captchaToken = 'captcha-token-123';
+        const turnstileToken = DUMMY_TOKEN;
+
+        vi.spyOn(mockEncryptedStorage, 'getToken').mockReturnValue('test-token');
+
+        const instance = SdkFactory.getNewApiInstance();
+        instance.createAuthClient({ captchaToken, turnstileToken });
+
+        expect(Auth.client).toHaveBeenCalledWith(
+          MOCKED_NEW_API,
+          {
+            clientName: packageJson.name,
+            clientVersion: packageJson.version,
+            customHeaders: {
+              'x-internxt-captcha': captchaToken,
+              'x-internxt-turnstile': turnstileToken,
+            },
+          },
+          expect.any(Object),
+        );
+      });
+
+      test('When the desktop Auth client is created with a turnstile token, then the app details include the turnstile header', () => {
+        const turnstileToken = DUMMY_TOKEN;
+
+        vi.spyOn(mockEncryptedStorage, 'getToken').mockReturnValue('test-token');
+
+        const instance = SdkFactory.getNewApiInstance();
+        instance.createDesktopAuthClient({ turnstileToken });
+
+        expect(Auth.client).toHaveBeenCalledWith(
+          MOCKED_NEW_API,
+          {
+            clientName: 'drive-desktop',
+            clientVersion: packageJson.version,
+            customHeaders: {
+              'x-internxt-turnstile': turnstileToken,
+            },
+          },
+          expect.any(Object),
+        );
+      });
+
+      test('When the desktop Auth client is created without a turnstile token, then it has no custom headers', () => {
+        vi.spyOn(mockEncryptedStorage, 'getToken').mockReturnValue('test-token');
+
+        const instance = SdkFactory.getNewApiInstance();
+        instance.createDesktopAuthClient();
+
+        expect(Auth.client).toHaveBeenCalledWith(
+          MOCKED_NEW_API,
+          {
+            clientName: 'drive-desktop',
+            clientVersion: packageJson.version,
+            customHeaders: undefined,
           },
           expect.any(Object),
         );

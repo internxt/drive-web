@@ -98,7 +98,7 @@ beforeEach(() => {
     return 'no mock implementation';
   });
 
-  vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue({
+  vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue({
     uuid: mockedUserUuid,
     email: 'usuario@ejemplo.com',
   } as UserSettings);
@@ -426,7 +426,7 @@ describe('Testing Impact Service', () => {
     describe('Error handling', () => {
       it('When user settings are missing, then it resolves without throwing', async () => {
         const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-        vi.spyOn(encryptedStorageService, 'getUser').mockReturnValue(null);
+        vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue(null);
 
         await expect(trackPaymentConversion()).resolves.not.toThrow();
 

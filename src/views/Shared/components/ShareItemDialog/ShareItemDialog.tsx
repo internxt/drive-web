@@ -140,7 +140,7 @@ const ShareItemDialog = ({ share, item, isPreviewView }: ShareItemDialogProps): 
               className={`${
                 isLinkCopied ? ' z-10 flex bg-primary/5' : ''
               } flex h-10 flex-row items-center justify-center rounded-md border border-primary px-5`}
-              onClick={() => {
+              onClick={async () => {
                 setIsLinkCopied(true);
                 setTimeout(() => {
                   setIsLinkCopied(false);
@@ -148,7 +148,7 @@ const ShareItemDialog = ({ share, item, isPreviewView }: ShareItemDialogProps): 
                 const temporaryShare = share as ShareLink & { is_folder: boolean; encryptedCode?: string };
                 const itemType = share?.isFolder || temporaryShare.is_folder ? 'folder' : 'file';
                 const encryptedCode = share?.code || (temporaryShare?.encryptedCode as string);
-                const user = encryptedStorageService.getUser();
+                const user = await encryptedStorageService.getUser();
                 const plainCode = user ? aes.decrypt(encryptedCode, user.mnemonic) : '';
                 copyShareLink(itemType, plainCode, share?.token as string, translate as TFunction);
               }}

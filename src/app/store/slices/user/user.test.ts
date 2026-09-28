@@ -7,7 +7,7 @@ import { beforeEach, describe, expect, it, test, vi } from 'vitest';
 
 import { vi as _vi } from 'vitest';
 import { auth, TokenStatus } from '@internxt/lib';
-import { refreshAvatarThunk, refreshUserThunk, userActions } from 'app/store/slices/user';
+import { refreshAvatarThunk, refreshUserThunk, userThunks } from 'app/store/slices/user';
 import { errorService, userService } from 'services';
 import encryptedStorageService from 'services/encrypted-storage.service';
 
@@ -22,12 +22,15 @@ describe('user thunks', () => {
     name: 'John',
     lastname: 'Doe',
     emailVerified: false,
+    createdAt: new Date(),
   };
 
   let getStateWithUser: () => RootState;
   let dispatchMock: any;
+  let setUserThunkSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
+    vi.restoreAllMocks();
     const state: Partial<RootState> = {
       user: {
         isAuthenticated: true,
@@ -46,6 +49,7 @@ describe('user thunks', () => {
     vi.spyOn(userService, 'refreshAvatarUser').mockResolvedValue({ avatar: null });
 
     vi.spyOn(errorService, 'reportError').mockImplementation(() => {});
+    setUserThunkSpy = vi.spyOn(userThunks, 'setUserThunk');
   });
 
   describe('Refresh token Thunk', () => {
@@ -56,7 +60,7 @@ describe('user thunks', () => {
       await thunk(dispatchMock, getStateWithUser, undefined);
 
       expect(userService.refreshUserData).not.toHaveBeenCalled();
-      expect(dispatchMock).not.toHaveBeenCalledWith(expect.objectContaining({ type: userActions.setUser.type }));
+      expect(setUserThunkSpy).not.toHaveBeenCalled();
       expect(encryptedStorageService.setToken).not.toHaveBeenCalled();
     });
 
@@ -114,16 +118,13 @@ describe('user thunks', () => {
       expect(userService.refreshUserData).toHaveBeenCalledWith(baseUser.uuid);
       expect(userService.refreshAvatarUser).toHaveBeenCalled();
 
-      expect(dispatchMock).toHaveBeenCalledWith(
+      expect(setUserThunkSpy).toHaveBeenCalledWith(
         expect.objectContaining({
-          type: userActions.setUser.type,
-          payload: expect.objectContaining({
-            uuid: baseUser.uuid,
-            name: 'Jane',
-            lastname: 'Smith',
-            emailVerified: true,
-            avatar: 'avatar-url',
-          }),
+          uuid: baseUser.uuid,
+          name: 'Jane',
+          lastname: 'Smith',
+          emailVerified: true,
+          avatar: 'avatar-url',
         }),
       );
       expect(setTokenSpy).toHaveBeenCalledWith('new-token-abc');
@@ -146,16 +147,13 @@ describe('user thunks', () => {
       expect(userService.refreshUserData).toHaveBeenCalledWith(baseUser.uuid);
       expect(userService.refreshAvatarUser).toHaveBeenCalled();
 
-      expect(dispatchMock).toHaveBeenCalledWith(
+      expect(setUserThunkSpy).toHaveBeenCalledWith(
         expect.objectContaining({
-          type: userActions.setUser.type,
-          payload: expect.objectContaining({
-            uuid: baseUser.uuid,
-            name: 'Alice',
-            lastname: 'Johnson',
-            emailVerified: true,
-            avatar: 'forced-avatar-url',
-          }),
+          uuid: baseUser.uuid,
+          name: 'Alice',
+          lastname: 'Johnson',
+          emailVerified: true,
+          avatar: 'forced-avatar-url',
         }),
       );
       expect(setTokenSpy).toHaveBeenCalledWith('forced-token-xyz');
@@ -188,11 +186,8 @@ describe('user thunks', () => {
       await thunk(dispatchMock, getStateWithUser, undefined);
 
       expect(userService.refreshAvatarUser).toHaveBeenCalled();
-      expect(dispatchMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          type: userActions.setUser.type,
-          payload: expect.objectContaining({ uuid: baseUser.uuid, avatar: 'new-avatar-url' }),
-        }),
+      expect(setUserThunkSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ uuid: baseUser.uuid, avatar: 'new-avatar-url' }),
       );
     });
 
@@ -211,6 +206,47 @@ describe('user thunks', () => {
       await thunk(dispatchMock, getStateWithUser, undefined);
 
       expect(errorService.reportError).toHaveBeenCalled();
+    });
+  });
+
+  describe('setUserThunk', () => {
+    it('encrypts and stores the user, then dispatches setUser', async () => {
+      const setUserSpy = vi.spyOn(encryptedStorageService, 'setUser').mockResolvedValue(undefined);
+
+      await userThunks.setUserThunk(baseUser as UserSettings)(dispatchMock, getStateWithUser, undefined);
+
+      expect(setUserSpy).toHaveBeenCalledWith(baseUser);
+      expect(setUserThunkSpy).toHaveBeenCalledWith(baseUser as UserSettings);
+    });
+  });
+
+  describe('updateUserEmailCredentialsThunk', () => {
+    it('updates token, encrypts and stores the user, then dispatches setUser', async () => {
+      const setTokenSpy = vi.spyOn(encryptedStorageService, 'setToken').mockResolvedValue(undefined);
+      const setUserSpy = vi.spyOn(encryptedStorageService, 'setUser').mockResolvedValue(undefined);
+
+      const newUserData = { ...baseUser, email: 'new@example.com' } as UserSettings;
+
+      await userThunks.updateUserEmailCredentialsThunk({ newUserData, newToken: 'new-token' })(
+        dispatchMock,
+        getStateWithUser,
+        undefined,
+      );
+
+      expect(setTokenSpy).toHaveBeenCalledWith('new-token');
+      expect(setUserSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          email: 'new@example.com',
+          bridgeUser: 'new@example.com',
+          username: 'new@example.com',
+        }),
+      );
+      expect(dispatchMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'user/setUser',
+          payload: expect.objectContaining({ email: 'new@example.com' }),
+        }),
+      );
     });
   });
 });

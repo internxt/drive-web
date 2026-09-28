@@ -29,6 +29,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
     onLinkSettingsButtonClicked,
     onRenameItemButtonClicked,
     onOpenPreviewButtonClicked,
+    onToggleFavoriteButtonClicked,
   } = useDriveItemActions(item as DriveItemData);
 
   const menuItemStyle = (focus: boolean, disabled: boolean) => {
@@ -53,6 +54,8 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
           downloadItem: onDownloadItemButtonClicked,
           viewVersionHistory: onViewVersionHistoryButtonClicked,
           moveToTrash: onMoveToTrashButtonClicked,
+          toggleFavorite: onToggleFavoriteButtonClicked,
+          isFavorited: !!item?.isFavorite,
         });
       }
       return contextMenuDriveItemShared({
@@ -65,6 +68,8 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
         downloadItem: onDownloadItemButtonClicked,
         viewVersionHistory: onViewVersionHistoryButtonClicked,
         moveToTrash: onMoveToTrashButtonClicked,
+        toggleFavorite: onToggleFavoriteButtonClicked,
+        isFavorited: !!item?.isFavorite,
       });
     } else if (item?.isFolder) {
       return contextMenuDriveFolderNotSharedLink({
@@ -76,6 +81,8 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
         downloadItem: onDownloadItemButtonClicked,
         viewVersionHistory: onViewVersionHistoryButtonClicked,
         moveToTrash: onMoveToTrashButtonClicked,
+        toggleFavorite: onToggleFavoriteButtonClicked,
+        isFavorited: !!item?.isFavorite,
       });
     }
     return contextMenuDriveNotSharedLink({
@@ -88,6 +95,8 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
       downloadItem: onDownloadItemButtonClicked,
       viewVersionHistory: onViewVersionHistoryButtonClicked,
       moveToTrash: onMoveToTrashButtonClicked,
+      toggleFavorite: onToggleFavoriteButtonClicked,
+      isFavorited: !!item?.isFavorite,
     });
   };
 

@@ -124,20 +124,20 @@ describe('Download Backup Keys - Custom hook', () => {
   });
 
   describe('Downloading keys', () => {
-    test('When the user clicks the download button, then the key download starts', () => {
+    test('When the user clicks the download button, then the key download starts', async () => {
       vi.spyOn(localStorageService, 'getBackupKeys').mockReturnValue({ saved: false, seenAt: null });
 
       const { result } = renderHook(() => useDownloadBackupKeys(translate));
-      act(() => result.current.onDownloadBackupKeysButtonClicked());
+      await act(async () => result.current.onDownloadBackupKeysButtonClicked());
 
       expect(handleExportBackupKey).toHaveBeenCalledWith(translate);
     });
 
-    test('When the user clicks the download button, then the downloaded state is marked as true', () => {
+    test('When the user clicks the download button, then the downloaded state is marked as true', async () => {
       vi.spyOn(localStorageService, 'getBackupKeys').mockReturnValue({ saved: false, seenAt: null });
 
       const { result } = renderHook(() => useDownloadBackupKeys(translate));
-      act(() => result.current.onDownloadBackupKeysButtonClicked());
+      await act(async () => result.current.onDownloadBackupKeysButtonClicked());
 
       expect(result.current.isDownloadedKeys).toBe(true);
     });

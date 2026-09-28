@@ -287,7 +287,7 @@ export const downloadThumbnail = async (thumbnailToDownload: Thumbnail, isWorksp
   let useWorkspaceCredentials = isWorkspace;
 
   if (isWorkspace) {
-    const user = encryptedStorageService.getUser();
+    const user = await encryptedStorageService.getUser();
     if (user) {
       const isInPersonalBucket = thumbnailToDownload.bucket_id === user.bucket;
 

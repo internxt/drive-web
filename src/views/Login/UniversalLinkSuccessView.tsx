@@ -7,10 +7,10 @@ import { useAppDispatch } from 'app/store/hooks';
 import { userThunks } from 'app/store/slices/user';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import AnimatedBackground from 'components/AnimatedBackground';
-import { useEffect, useMemo } from 'react';
 import { isMobile } from 'react-device-detect';
-import encryptedStorageService from 'services/encrypted-storage.service';
+import { useEffect, useState } from 'react';
 import navigationService from 'services/navigation.service';
+import encryptedStorageService from 'services/encrypted-storage.service';
 import { TRUSTED_LOCALHOST_HOSTNAMES, TRUSTED_LOCALHOST_PROTOCOLS, validateUrl } from 'utils/urlValidation';
 
 const DEEPLINK_SUCCESS_REDIRECT_BASE = 'internxt://login-success';
@@ -18,16 +18,19 @@ const DEEPLINK_SUCCESS_REDIRECT_BASE = 'internxt://login-success';
 export default function UniversalLinkView(): JSX.Element {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
-  const user = useMemo(() => encryptedStorageService.getUser(), []);
+  const [user, setUser] = useState<UserSettings | null>(null);
 
   const urlParams = new URLSearchParams(globalThis.location.search);
   const redirectUri = urlParams.get('redirectUri');
 
   useEffect(() => {
-    if (!user) {
-      const params = urlParams.toString();
-      navigationService.history.replace(`${AppView.Login}${params ? '?' + params : ''}`);
-    }
+    encryptedStorageService.getUser().then((fetchedUser) => {
+      if (!fetchedUser) {
+        const params = urlParams.toString();
+        navigationService.history.replace(`${AppView.Login}${params ? '?' + params : ''}`);
+      }
+      setUser(fetchedUser);
+    });
   }, [user]);
 
   const getUniversalLinkAuthUrl = (user: UserSettings): string | null => {
