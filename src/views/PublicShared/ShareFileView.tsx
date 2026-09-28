@@ -162,7 +162,14 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
     }
   };
 
+  const isEmptySharedFile = !info?.encryptionKey || Number(info?.item?.size) === 0 || !info?.item?.fileId;
+
   function getBlob(abortController: AbortController): Promise<Blob> {
+    if (isEmptySharedFile) {
+      setBlobProgress(1);
+      return Promise.resolve(new Blob([]));
+    }
+
     const fileInfo = info as unknown as ShareTypes.ShareLink;
 
     const encryptionKey = fileInfo.encryptionKey;
@@ -195,26 +202,31 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
       const MIN_PROGRESS = 0;
 
       if (fileInfo) {
-        const encryptionKey = fileInfo.encryptionKey;
+        let fileBlob: Blob;
 
-        setProgress(MIN_PROGRESS);
-        setIsDownloading(true);
-        const readable = await network.downloadFile({
-          bucketId: fileInfo.item.bucket,
-          fileId: fileInfo.item.fileId,
-          encryptionKey: Buffer.from(encryptionKey, 'hex'),
-          token: fileInfo.itemToken,
-          options: {
-            notifyProgress: (totalProgress, downloadedBytes) => {
-              const progress = Math.trunc((downloadedBytes / totalProgress) * 100);
-              setProgress(progress);
-              if (progress == 100) {
-                setIsDownloading(false);
-              }
+        if (isEmptySharedFile) {
+          setProgress(100 as TaskProgress);
+          fileBlob = new Blob([]);
+        } else {
+          setProgress(MIN_PROGRESS);
+          setIsDownloading(true);
+          const readable = await network.downloadFile({
+            bucketId: fileInfo.item.bucket,
+            fileId: fileInfo.item.fileId,
+            encryptionKey: Buffer.from(fileInfo.encryptionKey, 'hex'),
+            token: fileInfo.itemToken,
+            options: {
+              notifyProgress: (totalProgress, downloadedBytes) => {
+                const progress = Math.trunc((downloadedBytes / totalProgress) * 100);
+                setProgress(progress);
+                if (progress == 100) {
+                  setIsDownloading(false);
+                }
+              },
             },
-          },
-        });
-        const fileBlob = await binaryStreamToBlob(readable);
+          });
+          fileBlob = await binaryStreamToBlob(readable);
+        }
 
         await downloadService.downloadFileFromBlob(fileBlob, getFormatFileName());
         setTimeout(() => {

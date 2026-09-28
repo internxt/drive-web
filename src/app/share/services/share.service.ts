@@ -730,8 +730,12 @@ export async function downloadPublicSharedItems({
     );
   };
 
-  const downloadFileStream = (file: AdvancedSharedItem) => {
-    if (!file.bucket || !file.fileId) {
+  const downloadFileStream = async (file: AdvancedSharedItem) => {
+    if (Number(file.size) === 0 || !file.fileId) {
+      return new Blob([]).stream();
+    }
+
+    if (!file.bucket) {
       throw new Error(`Missing network data to download shared file '${getPublicItemDownloadName(file)}'`);
     }
 
