@@ -91,6 +91,45 @@ vi.mock('utils/userLocation', () => ({
   }),
 }));
 
+const THEME = {
+  backgroundColor: '#000',
+  textColor: '#fff',
+  borderColor: '#ccc',
+  borderInputColor: '#aaa',
+  labelTextColor: '#eee',
+};
+
+const buildPlan = ({
+  currency,
+  interval,
+  decimalAmountWithTax,
+  decimalAmount,
+}: {
+  currency: string;
+  interval: string;
+  decimalAmountWithTax?: number;
+  decimalAmount?: number;
+}) =>
+  ({
+    price: {
+      interval,
+      currency,
+      ...(decimalAmount !== undefined && { decimalAmount }),
+    },
+    ...(decimalAmountWithTax !== undefined && {
+      taxes: {
+        amountWithTax: 1500,
+        decimalAmountWithTax,
+      },
+    }),
+  }) as any;
+
+const getPaymentMethodsFor = async (plan: ReturnType<typeof buildPlan>) => {
+  const options = await checkoutService.loadStripeElements(THEME, plan);
+
+  return options.payment_method_types;
+};
+
 describe('Checkout Service tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -330,6 +369,144 @@ describe('Checkout Service tests', () => {
         amount: 1500,
         currency: 'eur',
         payment_method_types: ['card', 'paypal'],
+      });
+    });
+
+    describe('Payment methods per currency and interval', () => {
+      test('When the currency is EUR and the interval is monthly, then PayPal is allowed alongside card', async () => {
+        const result = await getPaymentMethodsFor(buildPlan({ currency: 'eur', interval: 'month' }));
+
+        expect(result).toStrictEqual(['card', 'paypal']);
+      });
+
+      test('When the currency is EUR and the interval is lifetime, then Klarna is allowed as well', async () => {
+        const result = await getPaymentMethodsFor(buildPlan({ currency: 'eur', interval: 'lifetime' }));
+
+        expect(result).toStrictEqual(['card', 'paypal', 'klarna']);
+      });
+
+      test('When the currency is USD and the interval is monthly, then PayPal is allowed alongside card', async () => {
+        const result = await getPaymentMethodsFor(buildPlan({ currency: 'usd', interval: 'month' }));
+
+        expect(result).toStrictEqual(['card', 'paypal']);
+      });
+
+      test('When the currency is USD and the interval is lifetime, then Klarna is not allowed', async () => {
+        const result = await getPaymentMethodsFor(buildPlan({ currency: 'usd', interval: 'lifetime' }));
+
+        expect(result).toStrictEqual(['card', 'paypal']);
+      });
+
+      test('When the currency is INR and the interval is monthly, then UPI is allowed alongside card', async () => {
+        const result = await getPaymentMethodsFor(buildPlan({ currency: 'inr', interval: 'month' }));
+
+        expect(result).toStrictEqual(['card', 'upi']);
+      });
+
+      test('When the currency is BRL and the interval is monthly, then PIX is allowed alongside card', async () => {
+        const result = await getPaymentMethodsFor(buildPlan({ currency: 'brl', interval: 'month' }));
+
+        expect(result).toStrictEqual(['card', 'pix']);
+      });
+
+      test.each([
+        ['eur', ['card', 'paypal']],
+        ['usd', ['card', 'paypal']],
+        ['inr', ['card', 'upi']],
+        ['brl', ['card', 'pix']],
+      ])(
+        'When the currency is %s and the interval is yearly, then its alternative method is allowed alongside card',
+        async (currency, expected) => {
+          const result = await getPaymentMethodsFor(buildPlan({ currency: currency as string, interval: 'year' }));
+
+          expect(result).toStrictEqual(expected);
+        },
+      );
+
+      test('When the interval is yearly, then the amount caps do not apply', async () => {
+        const result = await getPaymentMethodsFor(
+          buildPlan({ currency: 'inr', interval: 'year', decimalAmountWithTax: 150000 }),
+        );
+
+        expect(result).toStrictEqual(['card', 'upi']);
+      });
+
+      test('When the currency is not supported, then it falls back to card only', async () => {
+        const result = await getPaymentMethodsFor(buildPlan({ currency: 'gbp', interval: 'month' }));
+
+        expect(result).toStrictEqual(['card']);
+      });
+    });
+
+    describe('Payment methods capped by the charged amount', () => {
+      test('When an INR lifetime amount is below the UPI cap, then UPI is kept', async () => {
+        const result = await getPaymentMethodsFor(
+          buildPlan({ currency: 'inr', interval: 'lifetime', decimalAmountWithTax: 50000 }),
+        );
+
+        expect(result).toStrictEqual(['card', 'upi']);
+      });
+
+      test('When an INR lifetime amount is exactly the UPI cap, then UPI is dropped', async () => {
+        const result = await getPaymentMethodsFor(
+          buildPlan({ currency: 'inr', interval: 'lifetime', decimalAmountWithTax: 99000 }),
+        );
+
+        expect(result).toStrictEqual(['card']);
+      });
+
+      test('When an INR lifetime amount exceeds the UPI cap, then UPI is dropped', async () => {
+        const result = await getPaymentMethodsFor(
+          buildPlan({ currency: 'inr', interval: 'lifetime', decimalAmountWithTax: 150000 }),
+        );
+
+        expect(result).toStrictEqual(['card']);
+      });
+
+      test('When a BRL lifetime amount is below the PIX cap, then PIX is kept', async () => {
+        const result = await getPaymentMethodsFor(
+          buildPlan({ currency: 'brl', interval: 'lifetime', decimalAmountWithTax: 5000 }),
+        );
+
+        expect(result).toStrictEqual(['card', 'pix']);
+      });
+
+      test('When a BRL lifetime amount is exactly the PIX cap, then PIX is dropped', async () => {
+        const result = await getPaymentMethodsFor(
+          buildPlan({ currency: 'brl', interval: 'lifetime', decimalAmountWithTax: 14600 }),
+        );
+
+        expect(result).toStrictEqual(['card']);
+      });
+
+      test('When a BRL lifetime amount exceeds the PIX cap, then PIX is dropped', async () => {
+        const result = await getPaymentMethodsFor(
+          buildPlan({ currency: 'brl', interval: 'lifetime', decimalAmountWithTax: 20000 }),
+        );
+
+        expect(result).toStrictEqual(['card']);
+      });
+
+      test('When the amount is large but the currency has no caps, then every method is kept', async () => {
+        const result = await getPaymentMethodsFor(
+          buildPlan({ currency: 'eur', interval: 'lifetime', decimalAmountWithTax: 150000 }),
+        );
+
+        expect(result).toStrictEqual(['card', 'paypal', 'klarna']);
+      });
+
+      test('When there are no taxes, then the cap is applied to the price decimal amount', async () => {
+        const result = await getPaymentMethodsFor(
+          buildPlan({ currency: 'inr', interval: 'lifetime', decimalAmount: 150000 }),
+        );
+
+        expect(result).toStrictEqual(['card']);
+      });
+
+      test('When no amount is available, then the capped method is kept', async () => {
+        const result = await getPaymentMethodsFor(buildPlan({ currency: 'inr', interval: 'lifetime' }));
+
+        expect(result).toStrictEqual(['card', 'upi']);
       });
     });
   });
