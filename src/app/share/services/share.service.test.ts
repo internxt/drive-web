@@ -654,6 +654,25 @@ describe('Download public shared items', () => {
     expect(FlatFolderZip).not.toHaveBeenCalled();
   });
 
+  test('When a single empty file is downloaded, then it is saved as an empty blob without requesting the network', async () => {
+    const file = { ...createPublicFile('empty', null as unknown as string), size: 0 } as AdvancedSharedItem;
+    const updateNumItems = vi.fn();
+
+    await downloadPublicSharedItems({
+      items: [file],
+      credentials: CREDENTIALS,
+      key: KEY,
+      code: CODE,
+      updateNumItems,
+    });
+
+    expect(downloadFile).not.toHaveBeenCalled();
+    const [blob, name] = vi.mocked(downloadService.downloadFileFromBlob).mock.calls[0];
+    expect((blob as Blob).size).toBe(0);
+    expect(name).toBe('empty.png');
+    expect(updateNumItems).toHaveBeenCalledTimes(1);
+  });
+
   test('When a single folder is downloaded, then it is zipped with the share credentials and key through the public iterators', async () => {
     const folder = createPublicFolder('Documents');
 
