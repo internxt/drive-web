@@ -43,6 +43,7 @@ export const staticData = {
 
   //FILE PREVIEW
   noFilePreviewText: 'No file preview available',
+  filePreviewTooLargeText: 'File too large to preview (over 200MB)',
   loadingPreviewText: 'Loading preview',
   downloadButtonText: 'Download',
   blobUrlPattern: /^blob:/,

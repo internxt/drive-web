@@ -1143,6 +1143,7 @@
     "ownerStorageIsFullDescription": "Vous ne pouvez pas téléverser de fichiers dans ce dossier partagé.",
     "storageIsFullDescription": "Vous ne pouvez pas télécharger, synchroniser ou sauvegarder des fichiers.",
     "noFilePreview": "Pas d'aperçu de fichier disponible",
+    "filePreviewTooLarge": "Fichier trop volumineux pour l'aperçu (plus de {{limit}})",
     "errorMovingToTrash": "Error lors du déplacement des éléments.",
     "connectionLostError": "Lost Internet connection",
     "errorLoadingTrashItems": "Erreur de chargement des éléments de la corbeille",
