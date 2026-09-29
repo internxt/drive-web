@@ -1,6 +1,7 @@
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 import {
+  thumbnailableConvertibleImageExtension,
   thumbnailableExtension,
   thumbnailableImageExtension,
   thumbnailablePdfExtension,
@@ -22,6 +23,7 @@ import { AppView } from 'app/core/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { DriveItemData, ThumbnailConfig } from '../types';
 import fetchFileBlob from './download.service/fetchFileBlob';
+import { convertImageForPreview } from './image-preview.service';
 import { getEnvironmentConfig } from './network.service';
 import { FileToUpload } from './file.service/types';
 import { ErrorLoadingVideoFileError } from './errors/thumbnail.service.errors';
@@ -44,6 +46,8 @@ interface ThumbnailGenerated {
 }
 
 const VIDEO_FRAME_QUALITY = 0.75;
+
+export const MAX_CONVERTIBLE_THUMBNAIL_SOURCE_BYTES = 50 * 1024 * 1024;
 
 export const isValidImage = (file: File): Promise<boolean> => {
   return new Promise((resolve) => {
@@ -201,6 +205,21 @@ export const uploadThumbnail = async (
   return await storageClient.createThumbnailEntryWithUUID(thumbnailEntry);
 };
 
+const getConvertibleImageThumbnail = async (
+  fileToUpload: FileToUpload,
+  fileType: string,
+): Promise<ThumbnailGenerated['file']> => {
+  const isTooLargeToConvert = fileToUpload.size > MAX_CONVERTIBLE_THUMBNAIL_SOURCE_BYTES;
+  if (isTooLargeToConvert) return null;
+
+  try {
+    const previewBlob = await convertImageForPreview(fileToUpload.content, fileType);
+    return await getImageThumbnail(new File([previewBlob], fileToUpload.name, { type: previewBlob.type }));
+  } catch {
+    return null;
+  }
+};
+
 /**
  * Generates a thumbnail from the given file to upload.
  * @async
@@ -214,6 +233,8 @@ export const getThumbnailFrom = async (fileToUpload: FileToUpload): Promise<Thum
 
   if (thumbnailableImageExtension.includes(fileType)) {
     thumbnailFile = await getImageThumbnail(fileToUpload.content);
+  } else if (thumbnailableConvertibleImageExtension.includes(fileType)) {
+    thumbnailFile = await getConvertibleImageThumbnail(fileToUpload, fileType);
   } else if (thumbnailablePdfExtension.includes(fileType)) {
     const firstPDFpageImage = await getPDFThumbnail(fileToUpload.content);
 
