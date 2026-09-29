@@ -1558,6 +1558,30 @@
       }
     }
   },
+  "accountSetup": {
+    "form": {
+      "title": "Configurez votre compte",
+      "description": "Créez un mot de passe pour terminer la configuration de votre compte Internxt.",
+      "confirmPassword": "Confirmer le mot de passe",
+      "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
+      "submit": "Créer un compte",
+      "genericError": "Une erreur s'est produite lors de la configuration de votre compte. Veuillez réessayer."
+    },
+    "invalidLink": {
+      "title": "Ce lien n'est plus valide",
+      "description": "Le lien a expiré ou a déjà été utilisé. Saisissez votre e-mail et nous vous en enverrons un nouveau.",
+      "emailLabel": "E-mail",
+      "resendButton": "M'envoyer un nouveau lien",
+      "resendError": "Nous n'avons pas pu envoyer l'e-mail. Veuillez réessayer.",
+      "emailSentTitle": "Vérifiez vos e-mails",
+      "emailSentDescription": "Si {{email}} a un compte en attente de configuration, vous recevrez bientôt un nouveau lien."
+    },
+    "accountAlreadyExists": {
+      "title": "Votre compte est déjà configuré",
+      "description": "Ce compte existe déjà. Connectez-vous avec votre e-mail et votre mot de passe pour y accéder.",
+      "loginButton": "Aller à la connexion"
+    }
+  },
   "blockedAccount": {
     "title": "Vérifier que c'est bien vous",
     "text1": "Trop d'échecs de connexion ont été tentés",

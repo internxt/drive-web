@@ -1578,6 +1578,30 @@
       }
     }
   },
+  "accountSetup": {
+    "form": {
+      "title": "Set up your account",
+      "description": "Create a password to finish setting up your Internxt account.",
+      "confirmPassword": "Confirm password",
+      "passwordsDoNotMatch": "Passwords don't match",
+      "submit": "Create account",
+      "genericError": "Something went wrong while setting up your account. Please try again."
+    },
+    "invalidLink": {
+      "title": "This link is no longer valid",
+      "description": "The link has expired or has already been used. Enter your email and we will send you a new one.",
+      "emailLabel": "Email",
+      "resendButton": "Send me a new link",
+      "resendError": "We couldn't send the email. Please try again.",
+      "emailSentTitle": "Check your email",
+      "emailSentDescription": "If {{email}} has an account waiting to be set up, you will receive a new link shortly."
+    },
+    "accountAlreadyExists": {
+      "title": "Your account is already set up",
+      "description": "This account already exists. Log in with your email and password to access it.",
+      "loginButton": "Go to log in"
+    }
+  },
   "blockedAccount": {
     "title": "Verify it’s you",
     "text1": "Too many failed logins were attempted.",

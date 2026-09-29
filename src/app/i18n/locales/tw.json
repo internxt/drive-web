@@ -1581,6 +1581,30 @@
       }
     }
   },
+  "accountSetup": {
+    "form": {
+      "title": "設定您的帳戶",
+      "description": "建立密碼以完成 Internxt 帳戶的設定。",
+      "confirmPassword": "確認密碼",
+      "passwordsDoNotMatch": "密碼不相符",
+      "submit": "建立帳戶",
+      "genericError": "設定帳戶時發生錯誤，請再試一次。"
+    },
+    "invalidLink": {
+      "title": "此連結已失效",
+      "description": "此連結已過期或已被使用。輸入您的電子郵件，我們會寄送新的連結給您。",
+      "emailLabel": "電子郵件",
+      "resendButton": "寄送新連結給我",
+      "resendError": "無法寄送電子郵件，請再試一次。",
+      "emailSentTitle": "請查看您的電子郵件",
+      "emailSentDescription": "如果 {{email}} 有待設定的帳戶，您很快就會收到新的連結。"
+    },
+    "accountAlreadyExists": {
+      "title": "您的帳戶已設定完成",
+      "description": "此帳戶已存在。請使用您的電子郵件和密碼登入。",
+      "loginButton": "前往登入"
+    }
+  },
   "blockedAccount": {
     "title": "驗證您的身份",
     "text1": "嘗試了太多次失敗的登錄。",
