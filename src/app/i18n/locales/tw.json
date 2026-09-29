@@ -299,7 +299,12 @@
       "cryptoRequiresSignIn": "請登入後使用加密貨幣付款。",
       "resendEmail": "重新寄送郵件",
       "emailResent": "我們已重新寄送郵件",
-      "resendEmailError": "無法寄送郵件，請稍後再試。"
+      "resendEmailError": "無法寄送郵件，請稍後再試。",
+      "checkEmail": {
+        "title": "請查看你的電子郵件",
+        "description": "付款成功。我們已將完成帳戶設定的連結寄送至：",
+        "spamHint": "找不到郵件？請檢查垃圾郵件資料夾。"
+      }
     }
   },
   "urgentCheckout": {

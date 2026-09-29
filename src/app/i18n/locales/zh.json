@@ -299,7 +299,12 @@
       "cryptoRequiresSignIn": "请登录后使用加密货币付款。",
       "resendEmail": "重新发送邮件",
       "emailResent": "我们已重新发送邮件",
-      "resendEmailError": "无法发送邮件，请稍后重试。"
+      "resendEmailError": "无法发送邮件，请稍后重试。",
+      "checkEmail": {
+        "title": "请查看你的电子邮件",
+        "description": "付款成功。我们已将完成账户设置的链接发送至：",
+        "spamHint": "找不到邮件？请检查垃圾邮件文件夹。"
+      }
     }
   },
   "urgentCheckout": {

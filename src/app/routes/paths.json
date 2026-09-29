@@ -147,7 +147,7 @@
       "layout": "empty",
       "path": "/checkout/success",
       "exact": false,
-      "auth": true
+      "auth": false
     },
     {
       "id": "checkout-cancel",

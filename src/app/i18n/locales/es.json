@@ -278,7 +278,12 @@
       "cryptoRequiresSignIn": "Inicia sesión para pagar con criptomonedas.",
       "resendEmail": "Reenviar correo",
       "emailResent": "Te hemos vuelto a enviar el correo",
-      "resendEmailError": "No hemos podido enviar el correo. Inténtalo de nuevo más tarde."
+      "resendEmailError": "No hemos podido enviar el correo. Inténtalo de nuevo más tarde.",
+      "checkEmail": {
+        "title": "Revisa tu correo",
+        "description": "El pago se ha completado. Hemos enviado un enlace para terminar de configurar tu cuenta a:",
+        "spamHint": "¿No lo encuentras? Revisa la carpeta de spam."
+      }
     }
   },
   "urgentCheckout": {
