@@ -1366,6 +1366,7 @@
     "title": "Configuración del enlace",
     "access": "Acceso",
     "protect": "Proteger con contraseña",
+    "expiringDate": "Fecha de caducidad",
     "addSecurePassword": "Añade una contraseña al enlace para más seguridad",
     "password": "Contraseña",
     "views": "Visitas",

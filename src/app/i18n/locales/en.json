@@ -1392,6 +1392,7 @@
     "title": "Link settings",
     "access": "Access",
     "protect": "Protect with password",
+    "expiringDate": "Expiration date",
     "addSecurePassword": "Secure this link by setting up a password",
     "password": "Password",
     "views": "Views",

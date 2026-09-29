@@ -1368,6 +1368,7 @@
     "title": "Link Einstellungen",
     "access": "Zugriff",
     "protect": "Passwortgeschützt",
+    "expiringDate": "Ablaufdatum",
     "addSecurePassword": "Sichere diesen Link, indem du ein Passwort einrichtest",
     "password": "Passwort",
     "views": "Ansichten",

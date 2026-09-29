@@ -1392,6 +1392,7 @@
     "title": "鏈接設置",
     "access": "訪問權限",
     "protect": "設置密碼保護",
+    "expiringDate": "過期日期",
     "addSecurePassword": "設置密碼以保護此鏈接",
     "password": "密碼",
     "views": "查看次數",

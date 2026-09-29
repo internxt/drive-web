@@ -5,7 +5,7 @@ import { Button, Modal } from '@internxt/ui';
 import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
-import { MouseEvent, useCallback, useEffect, useRef } from 'react';
+import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import errorService from 'services/error.service';
 import shareService, { getSharingRoles } from 'app/share/services/share.service';
@@ -51,6 +51,8 @@ import { useShareItemActions } from './hooks/useShareItemActions';
 import { useShareItemInvitations } from './hooks/useShareItemInvitations';
 import { useShareItemUserRoles } from './hooks/useShareItemUserRoles';
 import AccessRequests from './components/AccessRequests';
+import { LinkExpirationSelector } from './components/GeneralView/LinkExpirationSelector';
+import { Dayjs } from 'dayjs';
 
 export type ShareDialogProps = {
   user: UserSettings;
@@ -234,8 +236,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     }
   };
 
-  const onOpenPendingAccess = () => actionDispatch(setView('requests'));
-
   const onOpenStopSharingDialog = useCallback(() => {
     actionDispatch(setShowStopSharingConfirmation(true));
   }, [actionDispatch]);
@@ -243,6 +243,8 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const onCloseStopSharingDialog = useCallback(() => {
     actionDispatch(setShowStopSharingConfirmation(false));
   }, [actionDispatch]);
+
+  const [linkExpirationDate, setLinkExpirationDate] = useState<Dayjs>();
 
   const View = (viewProps: ViewProps): JSX.Element => {
     const view: Record<ViewProps['view'], JSX.Element> = {
@@ -308,6 +310,8 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
               onPasswordCheckboxChange={onPasswordCheckboxChange}
             />
           )}
+
+          <LinkExpirationSelector isLoading={isLoading} value={linkExpirationDate} onChange={setLinkExpirationDate} />
 
           <UserRoleSelection
             isStopSharingAvailable={(currentUserFolderRole === 'owner' || isUserOwner || props.isDriveItem) ?? false}

@@ -1392,6 +1392,7 @@
     "title": "链接设置",
     "access": "访问",
     "protect": "密码保护",
+    "expiringDate": "过期日期",
     "addSecurePassword": "在链接中添加一个密码以提高安全性",
     "password": "密码",
     "views": "浏览量",
