@@ -54,6 +54,13 @@
     "valentines": "Valentinstag"
   },
   "auth": {
+    "accountSetupPending": {
+      "title": "Schließen Sie die Einrichtung Ihres Kontos ab",
+      "message": "Ihr Konto ist bereits bezahlt. Öffnen Sie die E-Mail, die wir Ihnen gesendet haben, um Ihr Passwort festzulegen und die Einrichtung abzuschließen.",
+      "resend": "E-Mail erneut senden",
+      "emailSent": "E-Mail gesendet. Sehen Sie in Ihrem Posteingang nach.",
+      "resendFailed": "Wir konnten die E-Mail nicht senden. Bitte versuchen Sie es erneut."
+    },
     "emailFloatingLabel": "E-Mail-Adresse",
     "email": "E-Mail",
     "passwordFloatingLabel": "Passwort",

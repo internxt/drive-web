@@ -75,6 +75,13 @@
     "environment": "Giornata Mondiale dell'Ambiente"
   },
   "auth": {
+    "accountSetupPending": {
+      "title": "Completa la configurazione del tuo account",
+      "message": "Il tuo account è già pagato. Apri l'email che ti abbiamo inviato per impostare la password e completare la configurazione.",
+      "resend": "Invia di nuovo l'email",
+      "emailSent": "Email inviata. Controlla la tua casella di posta.",
+      "resendFailed": "Non è stato possibile inviare l'email. Riprova."
+    },
     "emailFloatingLabel": "Indirizzo email",
     "email": "Email",
     "passwordFloatingLabel": "Password",
