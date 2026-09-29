@@ -12,6 +12,7 @@ interface NoPreviewIsAvailableProps {
   onDownload: () => void;
   translate: Translate;
   ItemIconComponent: FunctionComponent<SVGProps<SVGSVGElement>>;
+  reason?: string;
 }
 
 const DownloadItemComponent = ({ onDownload, translate }: DownloadItemComponentProps) => (
@@ -34,6 +35,7 @@ export const NoPreviewIsAvailableComponent = ({
   onDownload,
   translate,
   ItemIconComponent,
+  reason,
 }: NoPreviewIsAvailableProps) => {
   return (
     <div
@@ -47,7 +49,7 @@ export const NoPreviewIsAvailableComponent = ({
         <span className="w-96 truncate pt-4 text-center text-lg" title={fileName}>
           {fileName}
         </span>
-        <span className="text-white/50">{translate('error.noFilePreview')}</span>
+        <span className="text-white/50">{reason ?? translate('error.noFilePreview')}</span>
       </div>
 
       <DownloadItemComponent onDownload={onDownload} translate={translate} />
