@@ -271,4 +271,16 @@ describe('Authentication Checkout Custom hook', () => {
     });
     expect(hookState.current.authError).toBeNull();
   });
+
+  test('When a buyer paying without a password uses an email that already has an account, then the checkout switches to log in and explains why', () => {
+    const changeAuthMethod = vi.fn();
+    const { result: hookState } = renderHook(() => useAuthCheckout({ changeAuthMethod }));
+
+    act(() => {
+      hookState.current.onEmailAlreadyHasAccount();
+    });
+
+    expect(changeAuthMethod).toHaveBeenCalledWith('signIn');
+    expect(hookState.current.authError).toBe('checkout.accountSetup.emailHasAccount');
+  });
 });

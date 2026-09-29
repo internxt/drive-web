@@ -38,6 +38,8 @@ interface CheckoutViewProps {
     couponCodeData?: CouponCodeData;
     currentSelectedPlan: PriceWithTax | null;
     selectedCurrency: string;
+    isPasswordlessSignUp?: boolean;
+    pendingAccountSetupEmail?: string;
   };
   checkoutViewManager: CheckoutViewManager;
   availableCryptoCurrencies?: CryptoCurrency[];
@@ -63,8 +65,17 @@ const CheckoutView = ({
   const stripeSDK = useStripe();
   const elements = useElements();
   const [isCryptoDropdownOpen, setIsCryptoDropdownOpen] = useState<boolean>(false);
-  const { isPaying, couponCodeError, authError, authMethod, couponCodeData, currentSelectedPlan, selectedCurrency } =
-    checkoutViewVariables;
+  const {
+    isPaying,
+    couponCodeError,
+    authError,
+    authMethod,
+    couponCodeData,
+    currentSelectedPlan,
+    selectedCurrency,
+    isPasswordlessSignUp,
+    pendingAccountSetupEmail,
+  } = checkoutViewVariables;
 
   const onCryptoDropdownToggle = () => {
     if (!isCryptoDropdownOpen) {
@@ -128,6 +139,8 @@ const CheckoutView = ({
                 register={register}
                 authMethod={authMethod}
                 authError={authError}
+                isPasswordlessSignUp={isPasswordlessSignUp}
+                pendingAccountSetupEmail={pendingAccountSetupEmail}
                 onAuthMethodToggled={onAuthMethodToggled}
                 userData={userInfo}
                 onLogOut={checkoutViewManager.onLogOut}
