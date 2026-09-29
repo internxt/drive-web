@@ -1,4 +1,5 @@
 import { Network } from '@internxt/sdk/dist/network';
+import packageJson from '../../../../package.json';
 import { getSha256 } from '../../crypto/services/utils';
 import { NetworkFacade } from '../NetworkFacade';
 import envService from 'services/env.service';
@@ -50,7 +51,7 @@ const downloadSharedFile: DownloadSharedFileFunction = (params) => {
       envService.getVariable('storjBridge'),
       {
         clientName: 'drive-web',
-        clientVersion: '1.0',
+        clientVersion: packageJson.version,
       },
       {
         bridgeUser: '',
@@ -86,7 +87,7 @@ const downloadOwnFile = async (params: DownloadOwnFileWithMnemonicParams) => {
       envService.getVariable('storjBridge'),
       {
         clientName: 'drive-web',
-        clientVersion: '1.0',
+        clientVersion: packageJson.version,
       },
       {
         bridgeUser: auth.username,
@@ -113,7 +114,7 @@ const downloadOwnFileWithBucketKey = async (params: DownloadOwnFileWithBucketKey
       envService.getVariable('storjBridge'),
       {
         clientName: 'drive-web',
-        clientVersion: '1.0',
+        clientVersion: packageJson.version,
       },
       {
         bridgeUser: auth.username,
@@ -143,7 +144,7 @@ export async function multipartDownload(
       envService.getVariable('storjBridge'),
       {
         clientName: 'drive-web',
-        clientVersion: '1.0',
+        clientVersion: packageJson.version,
       },
       {
         bridgeUser: auth.username,
@@ -184,7 +185,7 @@ export async function downloadChunkFile(
       envService.getVariable('storjBridge'),
       {
         clientName: 'drive-web',
-        clientVersion: '1.0',
+        clientVersion: packageJson.version,
       },
       {
         bridgeUser: auth.username,
