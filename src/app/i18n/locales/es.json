@@ -1143,6 +1143,7 @@
     "ownerStorageIsFullDescription": "No puedes subir archivos en esta carpeta compartida.",
     "storageIsFullDescription": "No puedes subir, sincronizar ni respaldar archivos.",
     "noFilePreview": "No hay vista previa de archivos disponible",
+    "filePreviewTooLarge": "Archivo demasiado grande para la vista previa (más de {{limit}})",
     "errorMovingToTrash": "Ha ocurrido un error mientras se movian los items a la basura.",
     "errorDeletingFromTrash": "Ha ocurrido un error mientras se eliminaban los items de la basura.",
     "connectionLostError": "Conexión a internet perdida",

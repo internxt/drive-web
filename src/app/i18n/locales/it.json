@@ -1164,6 +1164,7 @@
     "ownerStorageIsFullDescription": "Non puoi caricare file in questa cartella condivisa.",
     "storageIsFullDescription": "Non puoi caricare, sincronizzare o eseguire il backup dei file",
     "noFilePreview": "Non è disponibile un'anteprima del file",
+    "filePreviewTooLarge": "File troppo grande per l'anteprima (oltre {{limit}})",
     "errorMovingToTrash": "Si è verificato un errore durante lo spostamento degli elementi nel cestino.",
     "errorDeletingFromTrash": "Si è verificato un errore durante l'eliminazione degli elementi dal cestino.",
     "connectionLostError": "Connessione Internet persa",

@@ -5,10 +5,13 @@ const PREVIEW_TIMEOUT = 30000;
 const CONVERSION_LOADER_TEST_ID = 'image-conversion-loader';
 const CLOSE_KEY = 'Escape';
 
+export type ImageSize = { width: number; height: number };
+
 export class FilePreviewPage {
   private page: Page;
   private dialog: Locator;
   private noPreviewText: Locator;
+  private tooLargeText: Locator;
   private loadingPreviewText: Locator;
   private conversionLoader: Locator;
   private downloadButtons: Locator;
@@ -19,6 +22,7 @@ export class FilePreviewPage {
     this.page = page;
     this.dialog = this.page.getByRole('dialog');
     this.noPreviewText = this.dialog.getByText(staticData.noFilePreviewText);
+    this.tooLargeText = this.dialog.getByText(staticData.filePreviewTooLargeText);
     this.loadingPreviewText = this.dialog.getByText(staticData.loadingPreviewText);
     this.conversionLoader = this.dialog.getByTestId(CONVERSION_LOADER_TEST_ID);
     this.downloadButtons = this.dialog.getByRole('button', { name: staticData.downloadButtonText, exact: true });
@@ -39,21 +43,33 @@ export class FilePreviewPage {
     await expect(this.dialog).toBeVisible({ timeout: PREVIEW_TIMEOUT });
   }
 
-  async expectRenderedImage(fileName: string, naturalWidth: number) {
+  async expectRenderedImage(fileName: string, naturalSize: ImageSize) {
     const image = this.renderedImage(fileName);
 
     await expect(image).toBeVisible({ timeout: PREVIEW_TIMEOUT });
     await expect(image).toHaveAttribute('src', staticData.blobUrlPattern);
-    await expect(image).toHaveJSProperty('naturalWidth', naturalWidth);
+    await expect(image).toHaveJSProperty('naturalWidth', naturalSize.width);
+    await expect(image).toHaveJSProperty('naturalHeight', naturalSize.height);
     await expect(this.noPreviewText).toBeHidden();
     await this.expectNoLoader();
   }
 
-  async expectNoPreviewFallback(fileName: string) {
-    await expect(this.noPreviewText).toBeVisible({ timeout: PREVIEW_TIMEOUT });
+  private async expectFallbackWithoutImage(fileName: string) {
     await expect(this.fallbackDownloadButton).toBeVisible();
     await this.expectNoLoader();
     await expect(this.renderedImage(fileName)).toHaveCount(0);
+  }
+
+  async expectNoPreviewFallback(fileName: string) {
+    await expect(this.noPreviewText).toBeVisible({ timeout: PREVIEW_TIMEOUT });
+    await this.expectFallbackWithoutImage(fileName);
+  }
+
+  /** The fallback names the size limit as the reason instead of the generic "no preview" text. */
+  async expectTooLargeFallback(fileName: string) {
+    await expect(this.tooLargeText).toBeVisible({ timeout: PREVIEW_TIMEOUT });
+    await expect(this.noPreviewText).toBeHidden();
+    await this.expectFallbackWithoutImage(fileName);
   }
 
   async downloadFromTopBar(): Promise<Download> {
