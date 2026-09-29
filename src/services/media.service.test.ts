@@ -1,5 +1,6 @@
-import { describe, it, expect, test } from 'vitest';
+import { describe, it, expect, test, vi } from 'vitest';
 import { audioTypes, isFileSizePreviewable, videoTypes, getVideoMimeType } from './media.service';
+import envService from './env.service';
 
 describe('videoTypes mapping', () => {
   it('should contain correct MIME for webm', () => {
@@ -31,6 +32,7 @@ describe('audioTypes mapping', () => {
 
 describe('isFileSizePreviewable', () => {
   const limit = 512 * 1024 * 1024;
+  const envLimit = 100 * 1024 * 1024;
 
   it('returns true for size smaller than threshold', () => {
     expect(isFileSizePreviewable(limit - 1)).toBe(true);
@@ -46,6 +48,31 @@ describe('isFileSizePreviewable', () => {
 
   it('returns false for empty files', () => {
     expect(isFileSizePreviewable(0)).toBe(false);
+  });
+
+  it('returns true for size smaller than env threshold', () => {
+    vi.spyOn(envService, 'getVariable').mockReturnValue(String(envLimit));
+    expect(isFileSizePreviewable(envLimit - 1)).toBe(true);
+  });
+
+  it('returns false for size equal to env threshold', () => {
+    vi.spyOn(envService, 'getVariable').mockReturnValue(String(envLimit));
+    expect(isFileSizePreviewable(envLimit)).toBe(false);
+  });
+
+  it('returns false for size larger than env threshold', () => {
+    vi.spyOn(envService, 'getVariable').mockReturnValue(String(envLimit));
+    expect(isFileSizePreviewable(envLimit + 1)).toBe(false);
+  });
+
+  it('returns true for size smaller than threshold when env value is invalid', () => {
+    vi.spyOn(envService, 'getVariable').mockReturnValue('invalid');
+    expect(isFileSizePreviewable(limit - 1)).toBe(true);
+  });
+
+  it('returns false for size equal to threshold when env value is invalid', () => {
+    vi.spyOn(envService, 'getVariable').mockReturnValue('invalid');
+    expect(isFileSizePreviewable(limit)).toBe(false);
   });
 });
 
