@@ -58,4 +58,13 @@ describe('i18n service', () => {
     onLanguageChanged('es');
     expect(dayjs.locale()).toBe('es');
   });
+
+  test('When the language has no dayjs locale, then dayjs falls back to English', () => {
+    const onLanguageChanged = mockOn.mock.calls.find(([event]) => event === 'languageChanged')?.[1];
+
+    onLanguageChanged('es');
+    onLanguageChanged('ja');
+
+    expect(dayjs.locale()).toBe('en');
+  });
 });
