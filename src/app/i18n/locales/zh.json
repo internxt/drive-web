@@ -1564,6 +1564,30 @@
       }
     }
   },
+  "accountSetup": {
+    "form": {
+      "title": "设置您的账户",
+      "description": "创建密码以完成 Internxt 账户的设置。",
+      "confirmPassword": "确认密码",
+      "passwordsDoNotMatch": "密码不匹配",
+      "submit": "创建账户",
+      "genericError": "设置账户时出错，请重试。"
+    },
+    "invalidLink": {
+      "title": "此链接已失效",
+      "description": "该链接已过期或已被使用。输入您的邮箱，我们将向您发送新链接。",
+      "emailLabel": "邮箱",
+      "resendButton": "给我发送新链接",
+      "resendError": "无法发送邮件，请重试。",
+      "emailSentTitle": "请查收邮件",
+      "emailSentDescription": "如果 {{email}} 有待设置的账户，您将很快收到新链接。"
+    },
+    "accountAlreadyExists": {
+      "title": "您的账户已设置完成",
+      "description": "该账户已存在。请使用您的邮箱和密码登录。",
+      "loginButton": "前往登录"
+    }
+  },
   "blockedAccount": {
     "title": "确认是你",
     "text1": "尝试登录失败次数过多",
