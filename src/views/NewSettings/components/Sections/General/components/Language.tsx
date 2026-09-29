@@ -1,45 +1,19 @@
 import { CaretDown } from '@phosphor-icons/react';
-import dayjs from 'dayjs';
 import i18next from 'i18next';
-import React, { useEffect } from 'react';
-import localStorageService from 'services/local-storage.service';
+import React from 'react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import ItemsDropdown from './ItemsDropdown';
 import MenuItem from './MenuItem';
 import Section from './Section';
 import { Card } from '@internxt/ui';
-import { LocalStorageItem } from 'app/core/types';
-
-const localStorageLanguage = localStorageService.get(LocalStorageItem.Language);
 
 const languages = ['en', 'es', 'fr', 'it', 'zh', 'ru', 'de', 'zh-tw', 'pt-br'];
 
-const sanitizeLanguage = (language: string): string => {
-  const lower = language.toLowerCase();
-  if (lower.includes('en')) return 'en';
-  return languages.includes(lower) ? lower : language;
-};
-
 export default function Language(): JSX.Element {
   const { translate } = useTranslationContext();
-  const [lang, setLang] = React.useState<string>();
-
-  function changeLang(lang: string = localStorageLanguage ?? i18next.language) {
-    const sanitizedLang = sanitizeLanguage(lang);
-    setLang(sanitizedLang);
-  }
-
-  useEffect(() => {
-    if (localStorageLanguage) {
-      changeLang(localStorageLanguage);
-    } else {
-      changeLang(i18next.language);
-    }
-  }, []);
-
-  useEffect(() => {
-    changeLang(i18next.language);
-  }, [lang]);
+  const [lang, setLang] = React.useState<string>(() =>
+    (i18next.resolvedLanguage ?? i18next.language ?? 'en').toLowerCase(),
+  );
 
   return (
     <Section className="" title={translate('lang.title')}>
@@ -57,7 +31,6 @@ export default function Language(): JSX.Element {
               onClick={() => {
                 setLang(lang);
                 i18next.changeLanguage(lang);
-                dayjs.locale(lang);
               }}
             >
               <p>{translate(`lang.${lang}`)}</p>
