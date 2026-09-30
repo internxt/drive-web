@@ -3,6 +3,7 @@ import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 import { isFileSizePreviewable } from 'services/media.service';
 import iconService from 'app/drive/services/icon.service';
+import { bytesToString } from 'app/drive/services/size.service';
 import { DriveFileData, DriveItemData } from 'app/drive/types';
 import { FileExtensionGroup } from 'app/drive/types/file-types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -17,7 +18,11 @@ import { setItemsToMove, storageActions } from 'app/store/slices/storage';
 import { TopBarActionsMenu } from './types';
 import { NoPreviewIsAvailableComponent } from './components/NoPreviewIsAvailableComponent';
 import TopBarActions from './components/TopBarActions';
-import { getIsTypeAllowedAndFileExtensionGroupValues } from './utils/fileViewerUtils';
+import {
+  getIsTypeAllowedAndFileExtensionGroupValues,
+  getPreviewSizeLimitBytes,
+  isPreviewableBySize,
+} from './utils/fileViewerUtils';
 import viewers from './viewers';
 import { MenuItemType } from '@internxt/ui';
 
@@ -103,7 +108,8 @@ const FileViewer = ({
   const isSafari = navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome');
   const isVideoStreaming = isVideo && !disableVideoStream && (!isSafari || isFileSizePreviewable(file.size));
 
-  const shouldRenderThePreview = isTypeAllowed && (isVideoStreaming || isFileSizePreviewable(file.size));
+  const shouldRenderThePreview = isTypeAllowed && (isVideoStreaming || isPreviewableBySize(file));
+  const isTooLargeToPreview = isTypeAllowed && !isPreviewableBySize(file);
 
   const ItemIconComponent = iconService.getItemIcon(false, file.type);
 
@@ -270,6 +276,11 @@ const FileViewer = ({
               fileName={filename}
               onDownload={onDownload}
               translate={translate}
+              reason={
+                isTooLargeToPreview
+                  ? translate('error.filePreviewTooLarge', { limit: bytesToString(getPreviewSizeLimitBytes(file)) })
+                  : undefined
+              }
             />
           )}
           {isLastItemOrShareView ? null : (
