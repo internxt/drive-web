@@ -865,6 +865,7 @@
         "uploaded": "Subido",
         "uploadedBy": "Subido por",
         "shared": "Compartido",
+        "expiration": "Caducidad del enlace",
         "size": "Tamaño",
         "numberOfFiles": "Número de archivos",
         "modified": "Modificado",
@@ -1175,6 +1176,7 @@
       "name": "Nombre",
       "created": "Creado",
       "size": "Tamaño",
+      "expiration": "Caducidad del enlace",
       "owner": "Propietario"
     },
     "empty-state": {
@@ -1429,6 +1431,7 @@
       "uploadFiles": "Subir archivos",
       "uploadFolder": "Subir carpeta"
     },
+    "expirationDate": "Caduca:",
     "change": "Cambiar",
     "download": "Descargar",
     "downloading": "Descargando",
@@ -1477,6 +1480,7 @@
         "name": "Nombre",
         "modified": "Modificado",
         "size": "Tamaño",
+        "expiration": "Caducidad del enlace",
         "autoDelete": "Eliminación automática",
         "originalLocation": "Ubicación original"
       }

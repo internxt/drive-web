@@ -859,6 +859,7 @@
         "uploaded": "Téléchargé",
         "uploadedBy": "Téléchargé par",
         "shared": "Partagé",
+        "expiration": "Expiration du lien",
         "size": "Taille",
         "numberOfFiles": "Nombre de fichiers",
         "modified": "Modifié",
@@ -1175,6 +1176,7 @@
       "name": "Nom",
       "created": "Créé",
       "size": "Taille",
+      "expiration": "Expiration du lien",
       "owner": "Propriétaire"
     },
     "empty-state": {
@@ -1429,6 +1431,7 @@
       "uploadFiles": "Télécharger des fichiers",
       "uploadFolder": "Télécharger le dossier"
     },
+    "expirationDate": "Expire :",
     "change": "Changer",
     "download": "Télécharger",
     "downloading": "Téléchargement",
@@ -1477,6 +1480,7 @@
         "name": "Nom",
         "modified": "Modifié",
         "size": "Taille",
+        "expiration": "Expiration du lien",
         "autoDelete": "Suppression automatique",
         "originalLocation": "Emplacement d'origine"
       }

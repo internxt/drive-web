@@ -885,6 +885,7 @@
         "uploaded": "Caricato",
         "uploadedBy": "Caricato da",
         "shared": "Condiviso",
+        "expiration": "Scadenza del link",
         "numberOfFiles": "Numero di file",
         "location": "Posizione",
         "name": "Nome",
@@ -1196,6 +1197,7 @@
       "name": "Nome",
       "created": "Creato",
       "size": "Dimensione",
+      "expiration": "Scadenza del link",
       "owner": "Propietario"
     },
     "empty-state": {
@@ -1449,6 +1451,7 @@
       "uploadFiles": "Carica file",
       "uploadFolder": "Carica cartella"
     },
+    "expirationDate": "Scade:",
     "change": "Cambia",
     "download": "Scarica",
     "downloading": "Downloading",
@@ -1497,6 +1500,7 @@
         "name": "Nome",
         "modified": "Ultima modifica",
         "size": "Dimensione",
+        "expiration": "Scadenza del link",
         "autoDelete": "Eliminazione automatica",
         "originalLocation": "Posizione originale"
       }

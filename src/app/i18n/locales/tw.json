@@ -886,6 +886,7 @@
         "uploaded": "上傳時間",
         "uploadedBy": "上傳者",
         "shared": "已共享",
+        "expiration": "鏈接過期時間",
         "size": "大小",
         "numberOfFiles": "文件數量",
         "modified": "修改時間",
@@ -1196,6 +1197,7 @@
       "name": "名稱",
       "created": "創建時間",
       "size": "大小",
+      "expiration": "鏈接過期時間",
       "owner": "擁有者"
     },
     "empty-state": {
@@ -1452,6 +1454,7 @@
       "uploadFiles": "上傳檔案",
       "uploadFolder": "上傳資料夾"
     },
+    "expirationDate": "過期時間：",
     "change": "更改",
     "download": "下載",
     "downloading": "下載中",
@@ -1500,6 +1503,7 @@
         "name": "名稱",
         "modified": "修改日期",
         "size": "大小",
+        "expiration": "鏈接過期時間",
         "autoDelete": "自動刪除",
         "originalLocation": "原始位置"
       }

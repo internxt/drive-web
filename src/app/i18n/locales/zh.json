@@ -886,6 +886,7 @@
         "uploaded": "已上传",
         "uploadedBy": "上传者",
         "shared": "共享",
+        "expiration": "链接过期时间",
         "size": "大小",
         "numberOfFiles": "文件数量",
         "modified": "已修改",
@@ -1196,6 +1197,7 @@
       "name": "名称",
       "created": "已创建的",
       "size": "大小",
+      "expiration": "链接过期时间",
       "owner": "所有者"
     },
     "empty-state": {
@@ -1449,6 +1451,7 @@
       "uploadFiles": "上传文件",
       "uploadFolder": "上传文件夹"
     },
+    "expirationDate": "过期时间：",
     "change": "更改",
     "download": "下载",
     "downloading": "正在下载",
@@ -1497,6 +1500,7 @@
         "name": "名称",
         "modified": "修改日期",
         "size": "大小",
+        "expiration": "链接过期时间",
         "autoDelete": "自动删除",
         "originalLocation": "原始位置"
       }

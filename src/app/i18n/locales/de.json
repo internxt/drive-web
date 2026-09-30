@@ -865,6 +865,7 @@
         "uploaded": "Hochgeladen",
         "uploadedBy": "Hochgeladen von",
         "shared": "Freigegeben",
+        "expiration": "Link-Ablaufdatum",
         "size": "Größe",
         "numberOfFiles": "Anzahl der Dateien",
         "modified": "Geändert",
@@ -1168,6 +1169,7 @@
     "list": {
       "created": "Erstellt",
       "size": "Größe",
+      "expiration": "Link-Ablaufdatum",
       "name": "Name",
       "owner": "Eigentümer"
     },
@@ -1425,6 +1427,7 @@
       "uploadFiles": "Dateien hochladen",
       "uploadFolder": "Ordner hochladen"
     },
+    "expirationDate": "Läuft ab:",
     "change": "Ändern",
     "download": "Download",
     "downloading": "Runterladen",
@@ -1473,6 +1476,7 @@
         "name": "Name",
         "modified": "Modifiziert",
         "size": "Größe",
+        "expiration": "Link-Ablaufdatum",
         "autoDelete": "Automatisches Löschen",
         "originalLocation": "Ursprünglicher Speicherort"
       }

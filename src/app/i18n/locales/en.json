@@ -886,6 +886,7 @@
         "uploaded": "Uploaded",
         "uploadedBy": "Uploaded by",
         "shared": "Shared",
+        "expiration": "Link expiration",
         "size": "Size",
         "numberOfFiles": "Number of files",
         "modified": "Modified",
@@ -1196,6 +1197,7 @@
       "name": "Name",
       "created": "Created",
       "size": "Size",
+      "expiration": "Link expiration",
       "owner": "Owner"
     },
     "empty-state": {
@@ -1449,6 +1451,7 @@
       "uploadFiles": "Upload files",
       "uploadFolder": "Upload folder"
     },
+    "expirationDate": "Expires:",
     "change": "Change",
     "download": "Download",
     "downloading": "Downloading",
@@ -1497,6 +1500,7 @@
         "name": "Name",
         "modified": "Modified",
         "size": "Size",
+        "expiration": "Link expiration",
         "autoDelete": "Auto-delete",
         "originalLocation": "Original location"
       }

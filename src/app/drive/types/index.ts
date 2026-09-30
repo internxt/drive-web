@@ -33,6 +33,7 @@ export interface DriveFolderData {
   user?: UserResumeData;
   expiresAt?: string;
   isFavorite?: boolean;
+  expirationData?: string;
 }
 
 export interface DriveFolderMetadataPayload {
@@ -68,6 +69,7 @@ export interface DriveFileData {
   user?: UserResumeData;
   expiresAt?: string;
   isFavorite?: boolean;
+  expirationData?: string;
 }
 
 interface Thumbnail {
@@ -114,6 +116,7 @@ export interface DriveItemPatch {
   size?: number;
   sizeComputed?: boolean;
   isFavorite?: boolean;
+  expirationData?: string;
 }
 
 export interface ReachedPlanLimitDialogInfo {
@@ -200,6 +203,7 @@ export type ItemDetailsProps = {
   uploaded: string;
   modified: string;
   shared: string;
+  expiration?: string;
   type?: string;
   size?: string;
   numberOfFiles?: string;
