@@ -1,6 +1,6 @@
 import useEffectAsync from 'hooks/useEffectAsync';
 import navigationService from 'services/navigation.service';
-import { AppView } from 'app/core/types';
+import { AppView, LocalStorageItem } from 'app/core/types';
 import { useAppDispatch } from 'app/store/hooks';
 import { useCallback, useRef } from 'react';
 import localStorageService from 'services/local-storage.service';
@@ -9,9 +9,24 @@ import gaService from 'app/analytics/ga.service';
 import { PURCHASE_LOCAL_STORAGE_ITEMS } from 'services/storage-keys';
 import metaService from 'app/analytics/meta.service';
 import { userStoragePolling } from 'utils/userStoragePolling.utils';
+import { paymentService } from '../services';
 
 export function removePaymentsStorage() {
   PURCHASE_LOCAL_STORAGE_ITEMS.forEach((item) => localStorageService.removeItem(item));
+}
+async function isPaymentSuccessful(): Promise<boolean> {
+  const clientSecret = localStorageService.get(LocalStorageItem.CheckoutIntentSecret);
+
+  if (!clientSecret) {
+    return true;
+  }
+
+  const stripe = await paymentService.getStripe();
+  const intent = clientSecret.startsWith('seti_')
+    ? (await stripe.retrieveSetupIntent(clientSecret)).setupIntent
+    : (await stripe.retrievePaymentIntent(clientSecret)).paymentIntent;
+
+  return intent?.status === 'succeeded';
 }
 
 const CheckoutSuccessView = (): JSX.Element => {
@@ -26,9 +41,11 @@ const CheckoutSuccessView = (): JSX.Element => {
     hasTrackedRef.current = true;
 
     try {
-      metaService.trackPurchase();
-      await gaService.trackPurchase();
-      await trackPaymentConversion();
+      if (await isPaymentSuccessful()) {
+        metaService.trackPurchase();
+        await gaService.trackPurchase();
+        await trackPaymentConversion();
+      }
 
       removePaymentsStorage();
     } catch (err) {

@@ -5,7 +5,7 @@ import localStorageService from 'services/local-storage.service';
 import envService from 'services/env.service';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import navigationService from 'services/navigation.service';
-import { AppView } from 'app/core/types';
+import { AppView, LocalStorageItem } from 'app/core/types';
 import { PaymentType, ProcessPurchasePayload, UseUserPaymentPayload } from '../types';
 import { CreateSubscriptionPayload } from '@internxt/sdk/dist/payments/types';
 import notificationsService from 'app/notifications/services/notifications.service';
@@ -192,7 +192,8 @@ describe('Custom hook to handle payments', () => {
         captchaToken: subscriptionPaymentPayload.captchaToken,
       });
 
-      expect(localStorageServiceSpy).toHaveBeenCalledTimes(6);
+      expect(localStorageServiceSpy).toHaveBeenCalledTimes(7);
+      expect(localStorageServiceSpy).toHaveBeenCalledWith(LocalStorageItem.CheckoutIntentSecret, 'client_secret');
 
       expect(setupIntent).toHaveBeenCalledWith({
         clientSecret: 'client_secret',
@@ -229,7 +230,8 @@ describe('Custom hook to handle payments', () => {
         captchaToken: subscriptionPaymentPayload.captchaToken,
       });
 
-      expect(localStorageServiceSpy).toHaveBeenCalledTimes(6);
+      expect(localStorageServiceSpy).toHaveBeenCalledTimes(7);
+      expect(localStorageServiceSpy).toHaveBeenCalledWith(LocalStorageItem.CheckoutIntentSecret, 'client_secret');
 
       expect(confirmPayment).toHaveBeenCalledWith({
         clientSecret: 'client_secret',
@@ -340,7 +342,8 @@ describe('Custom hook to handle payments', () => {
         promoCodeId: undefined,
       });
 
-      expect(localStorageServiceSpy).toHaveBeenCalledTimes(6);
+      expect(localStorageServiceSpy).toHaveBeenCalledTimes(7);
+      expect(localStorageServiceSpy).toHaveBeenCalledWith(LocalStorageItem.CheckoutIntentSecret, 'client_secret');
 
       expect(confirmPayment).toHaveBeenCalledWith({
         clientSecret: 'client_secret',
