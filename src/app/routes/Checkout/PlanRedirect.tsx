@@ -12,11 +12,11 @@ export interface RedirectPlan {
 
 export const REDIRECT_PLANS: Readonly<Record<string, RedirectPlan>> = {
   price_1T1xQtFAOdcgaBMQ1r2JnHsE: {
-    targetPlanId: 'price_1UAwSbFAOdcgaBMQkJhPExCz',
+    targetPlanId: 'price_1U6Ev3FAOdcgaBMQHxOAmWPO',
     couponRule: 'unlessBlocked',
   },
-  price_1U6Ev3FAOdcgaBMQHxOAmWPO: {
-    targetPlanId: 'price_1UAwSbFAOdcgaBMQkJhPExCz',
+  price_1UAwSbFAOdcgaBMQkJhPExCz: {
+    targetPlanId: 'price_1U6Ev3FAOdcgaBMQHxOAmWPO',
     couponRule: 'unlessBlocked',
   },
   price_1TRoAJFAOdcgaBMQveT6cebN: {
