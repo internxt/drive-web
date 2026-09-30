@@ -291,6 +291,15 @@
       "postalCodeRequired": "请输入您的邮政编码以继续",
       "countryRequired": "我们无法确定您的国家/地区,请稍后再试",
       "missingPaymentDetails": "缺少确认付款所需的支付信息"
+    },
+    "accountSetup": {
+      "passwordAfterPayment": "现在还不需要密码。付款后，我们会向你发送一封电子邮件，以完成账户设置。",
+      "emailHasAccount": "该电子邮件已有 Internxt 账户。请登录以继续购买。",
+      "pendingSetup": "{{email}} 已有一个待设置的付费套餐。请查看你的电子邮件以完成账户设置。",
+      "cryptoRequiresSignIn": "请登录后使用加密货币付款。",
+      "resendEmail": "重新发送邮件",
+      "emailResent": "我们已重新发送邮件",
+      "resendEmailError": "无法发送邮件，请稍后重试。"
     }
   },
   "urgentCheckout": {

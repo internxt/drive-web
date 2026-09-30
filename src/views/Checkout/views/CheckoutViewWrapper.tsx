@@ -44,11 +44,20 @@ import {
 import { useBillingDetails } from '../hooks/useBillingDetails';
 import { usePromotionalCode } from '../hooks/usePromotionalCode';
 import { useAuthCheckout } from '../hooks/useAuthCheckout';
+import { usePasswordlessCheckout } from '../hooks/usePasswordlessCheckout';
 import { checkoutReducer, initialStateForCheckout } from '../store';
 import { CheckoutLoader } from '../components/CheckoutLoader';
 import UrgentCheckoutView from 'views/UrgentCheckout/views/UrgentCheckoutView';
 import { getUrgentCheckoutVariant } from 'views/UrgentCheckout/constants';
 import { useUrgentStripeAppearance } from 'views/UrgentCheckout/hooks/useUrgentStripeAppearance';
+
+interface CustomerDetails {
+  email: string;
+  companyName: string;
+  companyVatId: string;
+  country: string;
+  postalCode?: string;
+}
 
 const CheckoutViewWrapper = () => {
   const { translate } = useTranslationContext();
@@ -103,8 +112,20 @@ const CheckoutViewWrapper = () => {
     [],
   );
 
-  const { onAuthenticateUser, onLogOut, authError } = useAuthCheckout({
+  const { onAuthenticateUser, onEmailAlreadyHasAccount, onLogOut, authError } = useAuthCheckout({
     changeAuthMethod: setAuthMethod,
+  });
+
+  const {
+    isPasswordlessSignUp,
+    pendingAccountSetupEmail,
+    createCustomerWithoutAccount,
+    forgetAccountSetupEmail,
+    handlePasswordlessPurchaseError,
+  } = usePasswordlessCheckout({
+    authMethod,
+    isUrgentCheckout: isUrgentCheckoutRoute,
+    onEmailAlreadyHasAccount,
   });
 
   const dispatch = useAppDispatch();
@@ -296,6 +317,85 @@ const CheckoutViewWrapper = () => {
     }
   };
 
+  const createCustomerForBuyerWithoutAccount = async (
+    { email, companyName, companyVatId, country, postalCode }: CustomerDetails,
+    confirmationTokenId: string | undefined,
+  ) => {
+    if (!confirmationTokenId) {
+      throw new Error(translate('checkout.error.missingPaymentDetails'));
+    }
+
+    const ucc = referralService.getStoredUcc();
+    const customerName = getCustomerName({ companyName, authenticatedUser: undefined, email });
+
+    return createCustomerWithoutAccount({
+      email,
+      confirmationTokenId,
+      customerName: customerName || undefined,
+      lineAddress1: address?.line1,
+      lineAddress2: address?.line2 ?? undefined,
+      country,
+      postalCode,
+      city: address?.city,
+      companyVatId,
+      captchaToken: await generateCaptchaToken(),
+      metadata: ucc ? { cello_ucc: ucc } : undefined,
+    });
+  };
+
+  const createCustomerForAccount = async (
+    { email, companyName, companyVatId, country, postalCode }: CustomerDetails,
+    password: string,
+    captchaToken: string,
+  ) => {
+    forgetAccountSetupEmail();
+
+    let authenticatedUser = user;
+
+    if (authMethod !== 'userIsSignedIn') {
+      const result = await onAuthenticateUser({
+        email,
+        password,
+        authMethod,
+        dispatch,
+        authCaptcha: captchaToken,
+        doRegister,
+        onAuthenticationFail: () => {
+          userAuthComponentRef.current?.scrollIntoView();
+          setIsUserPaying(false);
+        },
+      });
+
+      if (result) {
+        authenticatedUser = result;
+      }
+    }
+
+    const customerToken = await generateCaptchaToken();
+    const ucc = referralService.getStoredUcc();
+    const userUuid = authenticatedUser?.uuid;
+    const hasMetadata = ucc || userUuid;
+    const metadata = hasMetadata
+      ? {
+          ...(ucc && { cello_ucc: ucc }),
+          ...(userUuid && { new_user_id: userUuid }),
+        }
+      : undefined;
+    const customerName = getCustomerName({ companyName, authenticatedUser, email });
+
+    return checkoutService.createCustomer({
+      customerName: customerName || undefined,
+      lineAddress1: address?.line1,
+      lineAddress2: address?.line2 ?? undefined,
+      country,
+      postalCode,
+      city: address?.city,
+      companyVatId,
+      captchaToken: customerToken,
+      metadata,
+    });
+  };
+
   const onCheckoutButtonClicked = async (
     formData: IFormValues,
     event: BaseSyntheticEvent<object, any, any> | undefined,
@@ -323,6 +423,10 @@ const CheckoutViewWrapper = () => {
 
     try {
       const isCryptoPurchase = currencyType === PaymentType['CRYPTO'];
+
+      if (isCryptoPurchase && isPasswordlessSignUp) {
+        throw new Error(translate('checkout.accountSetup.cryptoRequiresSignIn'));
+      }
 
       if (isCryptoPurchase && isCryptoAddressIncomplete) {
         throw new Error(translate('checkout.error.addressRequired'));
@@ -359,51 +463,17 @@ const CheckoutViewWrapper = () => {
       }
 
       const captchaToken = await generateCaptchaToken();
-
-      let authenticatedUser = user;
-
-      if (authMethod !== 'userIsSignedIn') {
-        const result = await onAuthenticateUser({
-          email,
-          password,
-          authMethod,
-          dispatch,
-          authCaptcha: captchaToken,
-          doRegister,
-          onAuthenticationFail: () => {
-            userAuthComponentRef.current?.scrollIntoView();
-            setIsUserPaying(false);
-          },
-        });
-
-        if (result) {
-          authenticatedUser = result;
-        }
-      }
-
-      const customerToken = await generateCaptchaToken();
-      const ucc = referralService.getStoredUcc();
-      const userUuid = authenticatedUser?.uuid;
-      const hasMetadata = ucc || userUuid;
-      const metadata = hasMetadata
-        ? {
-            ...(ucc && { cello_ucc: ucc }),
-            ...(userUuid && { new_user_id: userUuid }),
-          }
-        : undefined;
-      const customerName = getCustomerName({ companyName, authenticatedUser, email });
-
-      const { customerId, token } = await checkoutService.createCustomer({
-        customerName: customerName || undefined,
-        lineAddress1: address?.line1,
-        lineAddress2: address?.line2 ?? undefined,
+      const customerDetails: CustomerDetails = {
+        email,
+        companyName,
+        companyVatId,
         country: billingCountry,
         postalCode: paymentPostalCode,
-        city: address?.city,
-        companyVatId,
-        captchaToken: customerToken,
-        metadata,
-      });
+      };
+
+      const { customerId, token } = isPasswordlessSignUp
+        ? await createCustomerForBuyerWithoutAccount(customerDetails, confirmationTokenId)
+        : await createCustomerForAccount(customerDetails, password, captchaToken);
 
       await handleUserPayment({
         confirmPayment: stripeSDK.confirmPayment,
@@ -420,10 +490,16 @@ const CheckoutViewWrapper = () => {
         captchaToken,
         openCryptoPaymentDialog,
         userAddress: userLocationData?.ip as string,
+        isFirstPurchase: isPasswordlessSignUp ? true : undefined,
+        isPasswordlessSignUp,
       });
     } catch (err) {
       const statusCode = (err as any).status;
       const castedError = errorService.castError(err);
+
+      if (isPasswordlessSignUp && handlePasswordlessPurchaseError(err, email)) {
+        return;
+      }
 
       if (statusCode === STATUS_CODE_ERROR.USER_EXISTS) {
         setIsUpdateSubscriptionDialogOpen(true);
@@ -487,13 +563,15 @@ const CheckoutViewWrapper = () => {
                 authError: authError ?? undefined,
                 currentSelectedPlan: selectedPlan,
                 selectedCurrency,
+                isPasswordlessSignUp,
+                pendingAccountSetupEmail,
               }}
               userAuthComponentRef={userAuthComponentRef}
               showCouponCode={!paramMobileToken}
               userInfo={userInfo}
               isUserAuthenticated={isAuthenticated}
               checkoutViewManager={checkoutViewManager}
-              availableCryptoCurrencies={availableCryptoCurrencies}
+              availableCryptoCurrencies={isPasswordlessSignUp ? undefined : availableCryptoCurrencies}
               onCurrencyTypeChanges={onCurrencyTypeChanges}
             />
           )}

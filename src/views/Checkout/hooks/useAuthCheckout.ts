@@ -116,6 +116,11 @@ export const useAuthCheckout = ({ changeAuthMethod }: Pick<AuthCheckoutProps, 'c
     }
   };
 
+  const onEmailAlreadyHasAccount = () => {
+    setAuthError(translate('checkout.accountSetup.emailHasAccount'));
+    changeAuthMethod('signIn');
+  };
+
   const onLogOut = async () => {
     await databaseService.clear();
     localStorageService.clear();
@@ -126,6 +131,7 @@ export const useAuthCheckout = ({ changeAuthMethod }: Pick<AuthCheckoutProps, 'c
   return {
     authError,
     onAuthenticateUser,
+    onEmailAlreadyHasAccount,
     onLogOut,
   };
 };

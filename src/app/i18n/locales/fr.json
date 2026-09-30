@@ -270,6 +270,15 @@
       "postalCodeRequired": "Veuillez saisir votre code postal pour continuer",
       "countryRequired": "Nous n'avons pas pu déterminer votre pays. Veuillez réessayer plus tard.",
       "missingPaymentDetails": "Informations de paiement manquantes pour confirmer le paiement"
+    },
+    "accountSetup": {
+      "passwordAfterPayment": "Vous n'avez pas encore besoin de mot de passe. Après le paiement, nous vous enverrons un e-mail pour finaliser la configuration de votre compte.",
+      "emailHasAccount": "Cet e-mail a déjà un compte Internxt. Connectez-vous pour poursuivre votre achat.",
+      "pendingSetup": "{{email}} a déjà un forfait payé en attente de configuration. Consultez vos e-mails pour finaliser la configuration de votre compte.",
+      "cryptoRequiresSignIn": "Connectez-vous pour payer en cryptomonnaie.",
+      "resendEmail": "Renvoyer l'e-mail",
+      "emailResent": "Nous vous avons renvoyé l'e-mail",
+      "resendEmailError": "Nous n'avons pas pu envoyer l'e-mail. Veuillez réessayer plus tard."
     }
   },
   "urgentCheckout": {
