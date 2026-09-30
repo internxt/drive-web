@@ -40,4 +40,10 @@ export const staticData = {
   //UPLOAD WIDGET
   uploadInProgress: 'Processing 1 of 1',
   uploadsFinished: 'All processes have finished',
+  //NAME COLLISION DIALOG
+  collisionDialogTitle: 'Item already exists',
+  collisionReplaceOption: 'Replace current item',
+  collisionKeepBothOption: 'Keep both',
+  collisionSkipOption: 'Skip this item',
+  collisionApplyToAll: 'Apply this action to all duplicates',
 };
