@@ -7,7 +7,8 @@ import envService from 'services/env.service';
 import { sendConversionToAPI } from 'app/analytics/googleSheet.service';
 import navigationService from 'services/navigation.service';
 import errorService from 'services/error.service';
-import { AppView } from 'app/core/types';
+import localStorageService from 'services/local-storage.service';
+import { AppView, LocalStorageItem } from 'app/core/types';
 import {
   CreatePaymentIntentPayload,
   InvoiceStatus,
@@ -111,6 +112,8 @@ export const useUserPayment = () => {
     if (!confirmationTokenId) {
       throw new Error(translate('checkout.error.missingPaymentDetails'));
     }
+
+    localStorageService.set(LocalStorageItem.CheckoutIntentSecret, clientSecret);
 
     const RETURN_URL_DOMAIN = envService.getVariable('hostname');
     const { error: confirmIntentError } = await confirmIntent({
