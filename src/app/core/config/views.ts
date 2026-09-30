@@ -15,6 +15,7 @@ import {
   UniversalLinkOkView,
 } from '../../../views/Login';
 import SignUpView, { ShareGuestSignUpView, WorkspaceGuestSignUpView } from '../../../views/Signup';
+import AccountSetupView from 'views/AccountSetup';
 import DeactivationView from '../../core/views/DeactivationView/DeactivationView';
 import DriveView from 'views/Drive';
 import FavoritesView from 'views/Favorites';
@@ -46,6 +47,7 @@ const views: Array<{
   { id: AppView.Auth, component: AuthView },
   { id: AppView.ButtonAuth, component: ButtonAuth },
   { id: AppView.RecoverAccount, component: RecoverAccountView },
+  { id: AppView.CompleteAccount, component: AccountSetupView },
   { id: AppView.Favorites, component: FavoritesView },
   { id: AppView.Recents, component: RecentsView },
   { id: AppView.Trash, component: TrashView },
