@@ -87,7 +87,7 @@ export const useDisplayableImage = ({
       }
     };
 
-    convert();
+    void convert();
 
     return () => {
       isCancelled = true;
