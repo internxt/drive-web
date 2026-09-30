@@ -265,11 +265,11 @@ describe('Reading the catalogue of retired prices', () => {
   test('When the whole catalogue is read, then every retired price on it points to its replacement under a known coupon rule', () => {
     expect(REDIRECT_PLANS).toEqual({
       price_1T1xQtFAOdcgaBMQ1r2JnHsE: {
-        targetPlanId: 'price_1UAwSbFAOdcgaBMQkJhPExCz',
+        targetPlanId: 'price_1U6Ev3FAOdcgaBMQHxOAmWPO',
         couponRule: 'unlessBlocked',
       },
-      price_1U6Ev3FAOdcgaBMQHxOAmWPO: {
-        targetPlanId: 'price_1UAwSbFAOdcgaBMQkJhPExCz',
+      price_1UAwSbFAOdcgaBMQkJhPExCz: {
+        targetPlanId: 'price_1U6Ev3FAOdcgaBMQHxOAmWPO',
         couponRule: 'unlessBlocked',
       },
       price_1TRoAJFAOdcgaBMQveT6cebN: {

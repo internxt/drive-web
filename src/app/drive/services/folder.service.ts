@@ -408,6 +408,11 @@ export async function downloadFolderAsZip({
             return cachedFile.source.stream();
           }
 
+          if (Number(file.size) === 0) {
+            updateProgress(1);
+            return new Blob([]).stream();
+          }
+
           const downloadedFileStream = await downloadFile({
             bucketId: file.bucket as string,
             // TODO: TO WORK UNTIL SDK TYPE CORRECT THE field fileiId -> fileId
