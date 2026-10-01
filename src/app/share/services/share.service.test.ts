@@ -537,6 +537,49 @@ describe('Get public shared link', async () => {
   });
 });
 
+describe('Sharing expiration', () => {
+  const sharingId = 'sharing-id';
+
+  test('When saving a link expiration date, then it is sent to the sharing', async () => {
+    const linkExpirationDate = '2026-10-31T22:59:59.999Z';
+    const mockSaveSharingExpirationFn = vi.fn().mockResolvedValue({ id: sharingId, expirationAt: linkExpirationDate });
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
+      createShareClient: vi.fn(() => ({ saveSharingExpiration: mockSaveSharingExpirationFn })),
+    } as any);
+
+    const sharing = await shareService.saveSharingExpiration(sharingId, linkExpirationDate);
+
+    expect(mockSaveSharingExpirationFn).toHaveBeenCalledWith(sharingId, linkExpirationDate);
+    expect(sharing).toEqual({ id: sharingId, expirationAt: linkExpirationDate });
+  });
+
+  test('When removing the link expiration date, then the sharing no longer expires', async () => {
+    const mockRemoveSharingExpirationFn = vi.fn().mockResolvedValue({ id: sharingId, expirationAt: null });
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
+      createShareClient: vi.fn(() => ({ removeSharingExpiration: mockRemoveSharingExpirationFn })),
+    } as any);
+
+    const sharing = await shareService.removeSharingExpiration(sharingId);
+
+    expect(mockRemoveSharingExpirationFn).toHaveBeenCalledWith(sharingId);
+    expect(sharing).toEqual({ id: sharingId, expirationAt: null });
+  });
+
+  test('When saving the link expiration date fails, then the error is thrown', async () => {
+    const error = new Error('The expiration date must be in the future');
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
+      createShareClient: vi.fn(() => ({ saveSharingExpiration: vi.fn().mockRejectedValue(error) })),
+    } as any);
+
+    await expect(shareService.saveSharingExpiration(sharingId, '2020-01-01T00:00:00.000Z')).rejects.toThrow(
+      error.message,
+    );
+  });
+});
+
 describe('decryptPublicSharingCodeWithOwner', () => {
   const bucket = 'test bucket';
   const mnemonic = 'test mnemonic';

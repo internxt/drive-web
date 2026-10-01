@@ -444,6 +444,94 @@ describe('Share Item Actions', () => {
     });
   });
 
+  describe('Change Link Expiration Date', () => {
+    const linkExpirationDate = '2026-10-31T22:59:59.999Z';
+    const publicSharingMeta = { ...mockSharingMeta, type: 'public' } as SharingMeta;
+
+    const renderWithSharingMeta = (sharingMeta: SharingMeta | null) => {
+      mockUseShareDialogContext.mockReturnValue({
+        state: {
+          accessMode: 'public',
+          sharingMeta,
+          isPasswordProtected: false,
+        },
+        dispatch: mockActionDispatch,
+      });
+
+      return renderHook(() =>
+        useShareItemActions({
+          itemToShare: createItemToShare(false),
+          isPasswordSharingAvailable: true,
+          dispatch: mockDispatch,
+          onClose: mockOnClose,
+          onShareItem: mockOnShareItem,
+        }),
+      );
+    };
+
+    test('When the public link does not exist yet, then nothing is saved until it is created', async () => {
+      const saveSharingExpirationSpy = vi.spyOn(shareService, 'saveSharingExpiration');
+      const { result } = renderWithSharingMeta(null);
+
+      const isSaved = await result.current.onChangeLinkExpirationDate(linkExpirationDate);
+
+      expect(isSaved).toBe(true);
+      expect(saveSharingExpirationSpy).not.toHaveBeenCalled();
+    });
+
+    test('When the public link exists and a date is selected, then it saves the new date', async () => {
+      const saveSharingExpirationSpy = vi
+        .spyOn(shareService, 'saveSharingExpiration')
+        .mockResolvedValue({ ...publicSharingMeta, expirationAt: linkExpirationDate });
+      const { result } = renderWithSharingMeta(publicSharingMeta);
+
+      const isSaved = await result.current.onChangeLinkExpirationDate(linkExpirationDate);
+
+      expect(isSaved).toBe(true);
+      expect(saveSharingExpirationSpy).toHaveBeenCalledWith('sharing-id-123', linkExpirationDate);
+      expect(mockOnShareItem).toHaveBeenCalled();
+    });
+
+    test('When the public link exists and the date is removed, then the link no longer expires', async () => {
+      const removeSharingExpirationSpy = vi
+        .spyOn(shareService, 'removeSharingExpiration')
+        .mockResolvedValue({ ...publicSharingMeta, expirationAt: null });
+      const { result } = renderWithSharingMeta(publicSharingMeta);
+
+      const isSaved = await result.current.onChangeLinkExpirationDate(undefined);
+
+      expect(isSaved).toBe(true);
+      expect(removeSharingExpirationSpy).toHaveBeenCalledWith('sharing-id-123');
+      expect(mockOnShareItem).toHaveBeenCalled();
+    });
+
+    test('When the sharing is private, then nothing is saved', async () => {
+      const saveSharingExpirationSpy = vi.spyOn(shareService, 'saveSharingExpiration');
+      const { result } = renderWithSharingMeta({ ...mockSharingMeta, type: 'private' } as SharingMeta);
+
+      await result.current.onChangeLinkExpirationDate(linkExpirationDate);
+
+      expect(saveSharingExpirationSpy).not.toHaveBeenCalled();
+    });
+
+    test('When saving the date fails, then shows an error and reports it was not saved', async () => {
+      vi.spyOn(shareService, 'saveSharingExpiration').mockRejectedValue(new Error('Bad request'));
+      const reportErrorSpy = vi.spyOn(errorService, 'reportError').mockImplementation(() => undefined);
+      const showNotificationSpy = vi.spyOn(notificationsService, 'show');
+      const { result } = renderWithSharingMeta(publicSharingMeta);
+
+      const isSaved = await result.current.onChangeLinkExpirationDate(linkExpirationDate);
+
+      expect(isSaved).toBe(false);
+      expect(reportErrorSpy).toHaveBeenCalled();
+      expect(showNotificationSpy).toHaveBeenCalledWith({
+        text: 'modals.shareModal.errors.update-link-expiration',
+        type: ToastType.Error,
+      });
+      expect(mockOnShareItem).not.toHaveBeenCalled();
+    });
+  });
+
   describe('Stop Sharing', () => {
     test('When stopping sharing, then triggers the action and closes dialog', async () => {
       mockDispatch.mockResolvedValue({ payload: true });

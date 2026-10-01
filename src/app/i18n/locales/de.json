@@ -1021,7 +1021,8 @@
       "errors": {
         "updatingRole": "Die Rolle konnte nicht aktualisiert werden, bitte später erneut versuchen.",
         "copy-to-clipboard": "Fehler beim Teilen des Elements, bitte später erneut versuchen.",
-        "update-sharing-access": "Der Zugriffsmodus konnte nicht aktualisiert werden, bitte später erneut versuchen"
+        "update-sharing-access": "Der Zugriffsmodus konnte nicht aktualisiert werden, bitte später erneut versuchen",
+        "update-link-expiration": "Das Ablaufdatum konnte nicht aktualisiert werden, bitte versuchen Sie es später erneut"
       }
     },
     "sharedInvitationsModal": {

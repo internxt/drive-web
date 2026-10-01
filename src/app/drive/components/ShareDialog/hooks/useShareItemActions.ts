@@ -142,6 +142,33 @@ export const useShareItemActions = ({
     }
   }, [sharingMeta]);
 
+  const onChangeLinkExpirationDate = useCallback(
+    async (newLinkExpirationDate?: string): Promise<boolean> => {
+      if (sharingMeta?.type !== 'public') {
+        return true;
+      }
+
+      try {
+        if (newLinkExpirationDate) {
+          await shareService.saveSharingExpiration(sharingMeta.id, newLinkExpirationDate);
+        } else {
+          await shareService.removeSharingExpiration(sharingMeta.id);
+        }
+
+        props.onShareItem?.();
+        return true;
+      } catch (error) {
+        errorService.reportError(error);
+        notificationsService.show({
+          text: translate('modals.shareModal.errors.update-link-expiration'),
+          type: ToastType.Error,
+        });
+        return false;
+      }
+    },
+    [sharingMeta],
+  );
+
   const onStopSharing = async () => {
     actionDispatch(setIsLoading(true));
     const itemName = cropSharedName(itemToShare?.item.name as string);
@@ -181,6 +208,7 @@ export const useShareItemActions = ({
     onPasswordCheckboxChange,
     onSavePublicSharePassword,
     onDisablePassword,
+    onChangeLinkExpirationDate,
     onCopyLink,
     onStopSharing,
     getPrivateShareLink,

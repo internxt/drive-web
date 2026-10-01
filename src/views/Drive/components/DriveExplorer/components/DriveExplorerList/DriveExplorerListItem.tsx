@@ -14,6 +14,7 @@ import { FileStatus } from '@internxt/sdk/dist/drive/storage/types';
 import { Translate } from 'app/i18n/types';
 import { useAppSelector } from 'app/store/hooks';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import { getLinkExpirationDate } from 'utils/driveItemsUtils';
 
 const getItemClassNames = (isSelected: boolean, isDraggingOver: boolean, isDragging: boolean): string => {
   const selectedClass = isSelected ? 'selected' : '';
@@ -127,6 +128,7 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
   }, [item]);
 
   const isItemShared = (item.sharings?.length ?? 0) > 0;
+  const linkExpirationDate = getLinkExpirationDate(item);
   const isInteractive = isItemInteractive(item);
   const itemClassNames = getItemClassNames(isItemSelected(item), isDraggingOverThisItem, isDraggingThisItem);
   const hasExistingParent = item.parent?.status === FileStatus.EXISTS;
@@ -232,8 +234,8 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
       
       {/* EXPIRATION */}
       <div className="block shrink-0 w-date items-center whitespace-nowrap">
-        {item.linkExpirationDate ? (
-          dateService.format(item.linkExpirationDate, 'D MMM, YYYY')
+        {linkExpirationDate ? (
+          dateService.format(linkExpirationDate, 'D MMM, YYYY')
         ) : (
           <span className="opacity-25">—</span>
         )}

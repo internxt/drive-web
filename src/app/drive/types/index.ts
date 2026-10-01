@@ -27,7 +27,7 @@ export interface DriveFolderData {
   userId: number;
   user_id: number;
   shares?: Array<ShareLink>;
-  sharings?: { type: string; id: string }[];
+  sharings?: { type: string; id: string; expirationAt?: string | null }[];
   uuid: string;
   type?: string;
   user?: UserResumeData;
@@ -64,7 +64,7 @@ export interface DriveFileData {
   thumbnails: Array<Thumbnail>;
   currentThumbnail: Thumbnail | null;
   shares?: Array<ShareLink>;
-  sharings?: { type: string; id: string }[];
+  sharings?: { type: string; id: string; expirationAt?: string | null }[];
   uuid: string;
   user?: UserResumeData;
   expiresAt?: string;

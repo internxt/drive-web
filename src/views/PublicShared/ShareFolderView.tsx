@@ -64,7 +64,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   const [folderSize, setFolderSize] = useState<string | null>(null);
   const [isGetFolderSizeError, setIsGetFolderSizeError] = useState<boolean>(false);
   const [isPreviewingContent, setIsPreviewingContent] = useState(false);
-  const expirationDate: string | undefined = info?.expiresAt;
+  const expirationDate: string | undefined = info?.expirationAt ?? undefined;
 
   let body, downloadButton;
 

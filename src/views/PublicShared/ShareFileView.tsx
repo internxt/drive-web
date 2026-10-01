@@ -61,7 +61,7 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
   const [itemPassword, setItemPassword] = useState('');
   const [sendBannerVisible, setSendBannerVisible] = useState(false);
   const [blob, setBlob] = useState<Blob | null>(null);
-  const expirationDate: string | undefined = info?.expiresAt;
+  const expirationDate: string | undefined = info?.expirationAt ?? undefined;
 
   let body;
 

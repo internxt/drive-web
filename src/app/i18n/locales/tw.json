@@ -941,7 +941,8 @@
       "errors": {
         "updatingRole": "無法更新角色，請稍後再試。",
         "copy-to-clipboard": "共享項目時發生錯誤，請稍後再試。",
-        "update-sharing-access": "無法更新訪問模式，請稍後再試"
+        "update-sharing-access": "無法更新訪問模式，請稍後再試",
+        "update-link-expiration": "無法更新到期日，請稍後再試"
       },
       "general": {
         "generalAccess": "一般訪問權限",

@@ -941,7 +941,8 @@
       "errors": {
         "updatingRole": "Impossibile aggiornare il ruolo, per favore riprova più tardi.",
         "copy-to-clipboard": "Errore durante la condivisione dell'elemento, riprova più tardi.",
-        "update-sharing-access": "La modalità di accesso non ha potuto essere aggiornata, riprova più tardi"
+        "update-sharing-access": "La modalità di accesso non ha potuto essere aggiornata, riprova più tardi",
+        "update-link-expiration": "Non è stato possibile aggiornare la data di scadenza, riprova più tardi"
       },
       "general": {
         "generalAccess": "Accesso generale",

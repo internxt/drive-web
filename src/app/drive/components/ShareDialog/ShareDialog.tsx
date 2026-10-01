@@ -52,7 +52,7 @@ import { useShareItemInvitations } from './hooks/useShareItemInvitations';
 import { useShareItemUserRoles } from './hooks/useShareItemUserRoles';
 import AccessRequests from './components/AccessRequests';
 import { LinkExpirationSelector } from './components/GeneralView/LinkExpirationSelector';
-import { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 
 export type ShareDialogProps = {
   user: UserSettings;
@@ -111,6 +111,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const closeSelectedUserPopover = () => actionDispatch(setSelectedUserListIndex(null));
   const {
     onCopyLink,
+    onChangeLinkExpirationDate,
     onDisablePassword,
     onPasswordCheckboxChange,
     onSavePublicSharePassword,
@@ -184,6 +185,8 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
     const sharingType = sharingInfo?.type ?? 'public';
     const isAlreadyPasswordProtected = sharingInfo?.publicSharing?.isPasswordProtected ?? false;
+    const currentLinkExpirationDate = sharingInfo?.publicSharing?.expirationAt;
+    setLinkExpirationDate(currentLinkExpirationDate ? dayjs(currentLinkExpirationDate) : undefined);
 
     if (!isItemNotSharedYet) {
       try {
@@ -211,6 +214,16 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
   const onClose = (): void => {
     dispatch(uiActions.setIsShareDialogOpen(false));
+  };
+
+  const onLinkExpirationDateChange = async (date?: Dayjs) => {
+    const previousDate = linkExpirationDate;
+    setLinkExpirationDate(date);
+
+    const isSaved = await onChangeLinkExpirationDate(date?.toISOString());
+    if (!isSaved) {
+      setLinkExpirationDate(previousDate);
+    }
   };
 
   const onUpgradePlan = () => {
@@ -314,7 +327,11 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
           )}
 
           {isLinkExpirationOptionAvailable && (
-            <LinkExpirationSelector isLoading={isLoading} value={linkExpirationDate} onChange={setLinkExpirationDate} />
+            <LinkExpirationSelector
+              isLoading={isLoading}
+              value={linkExpirationDate}
+              onChange={onLinkExpirationDateChange}
+            />
           )}
 
           <UserRoleSelection

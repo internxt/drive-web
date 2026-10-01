@@ -916,6 +916,20 @@ export function removeSharingPassword(sharingId: string): Promise<void> {
   });
 }
 
+export function saveSharingExpiration(sharingId: string, linkExpirationDate: string): Promise<SharingMeta> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.saveSharingExpiration(sharingId, linkExpirationDate).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function removeSharingExpiration(sharingId: string): Promise<SharingMeta> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.removeSharingExpiration(sharingId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 export async function getSharedFolderSize(id: string): Promise<SharedFolderSize> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getSharedFolderSize(id).catch((error) => {
@@ -954,6 +968,8 @@ const shareService = {
   getPublicShareLink,
   saveSharingPassword,
   removeSharingPassword,
+  saveSharingExpiration,
+  removeSharingExpiration,
   validateSharingInvitation,
   getPublicSharedItemInfo,
   getSharedFolderSize,
