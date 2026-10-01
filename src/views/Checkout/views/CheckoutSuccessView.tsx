@@ -9,34 +9,36 @@ import gaService from 'app/analytics/ga.service';
 import { PURCHASE_LOCAL_STORAGE_ITEMS } from 'services/storage-keys';
 import metaService from 'app/analytics/meta.service';
 import { userStoragePolling } from 'utils/userStoragePolling.utils';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { paymentService } from '../services';
 
 export function removePaymentsStorage() {
   PURCHASE_LOCAL_STORAGE_ITEMS.forEach((item) => localStorageService.removeItem(item));
 }
 
-async function isPaymentSuccessful(): Promise<boolean> {
+const isPaymentSuccessful = async (): Promise<boolean> => {
   const params = new URLSearchParams(globalThis.location.search);
   const setupIntentSecret = params.get('setup_intent_client_secret');
   const paymentIntentSecret = params.get('payment_intent_client_secret');
 
-  if (setupIntentSecret) {
-    const stripe = await paymentService.getStripe();
-    const { setupIntent } = await stripe.retrieveSetupIntent(setupIntentSecret);
-    return setupIntent?.status === 'succeeded';
-  }
+  let intentStatus: string | undefined;
+  const stripe = await paymentService.getStripe();
 
   if (paymentIntentSecret) {
-    const stripe = await paymentService.getStripe();
     const { paymentIntent } = await stripe.retrievePaymentIntent(paymentIntentSecret);
-    return paymentIntent?.status === 'succeeded';
+    intentStatus = paymentIntent?.status;
+  } else if (setupIntentSecret) {
+    const { setupIntent } = await stripe.retrieveSetupIntent(setupIntentSecret);
+    intentStatus = setupIntent?.status;
   }
 
-  return true;
-}
+  return intentStatus === 'succeeded';
+};
 
 const CheckoutSuccessView = (): JSX.Element => {
   const dispatch = useAppDispatch();
+  const { translate } = useTranslationContext();
   const hasTrackedRef = useRef(false);
 
   const onCheckoutSuccess = useCallback(async () => {
@@ -51,6 +53,8 @@ const CheckoutSuccessView = (): JSX.Element => {
         metaService.trackPurchase();
         await gaService.trackPurchase();
         await trackPaymentConversion();
+      } else {
+        notificationsService.show({ text: translate('checkout.error.paymentFailed'), type: ToastType.Error });
       }
 
       removePaymentsStorage();
@@ -61,7 +65,7 @@ const CheckoutSuccessView = (): JSX.Element => {
     userStoragePolling();
 
     navigationService.push(AppView.Drive);
-  }, [dispatch]);
+  }, [dispatch, translate]);
 
   useEffectAsync(onCheckoutSuccess, []);
 
