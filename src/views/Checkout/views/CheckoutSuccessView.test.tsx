@@ -1,11 +1,10 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { render, waitFor } from '@testing-library/react';
 import CheckoutSuccessView from './CheckoutSuccessView';
-import { AppView, LocalStorageItem } from 'app/core/types';
+import { AppView } from 'app/core/types';
 import { PURCHASE_LOCAL_STORAGE_ITEMS } from 'services/storage-keys';
 
 const mocks = vi.hoisted(() => ({
-  localStorageGet: vi.fn(),
   localStorageRemoveItem: vi.fn(),
   navigationPush: vi.fn(),
   retrievePaymentIntent: vi.fn(),
@@ -18,9 +17,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('app/store/hooks', () => ({ useAppDispatch: () => vi.fn() }));
 vi.mock('services/navigation.service', () => ({ default: { push: mocks.navigationPush } }));
-vi.mock('services/local-storage.service', () => ({
-  default: { get: mocks.localStorageGet, removeItem: mocks.localStorageRemoveItem },
-}));
+vi.mock('services/local-storage.service', () => ({ default: { removeItem: mocks.localStorageRemoveItem } }));
 vi.mock('app/analytics/meta.service', () => ({ default: { trackPurchase: mocks.metaTrackPurchase } }));
 vi.mock('app/analytics/ga.service', () => ({ default: { trackPurchase: mocks.gaTrackPurchase } }));
 vi.mock('app/analytics/impact.service', () => ({ trackPaymentConversion: mocks.trackPaymentConversion }));
@@ -34,10 +31,16 @@ vi.mock('../services', () => ({
   },
 }));
 
-const storeCheckoutIntentSecret = (secret: string | null) => {
-  mocks.localStorageGet.mockImplementation((key: LocalStorageItem) =>
-    key === LocalStorageItem.CheckoutIntentSecret ? secret : null,
-  );
+const SUCCESS_PATH = '/checkout/success';
+
+// Stripe appends these params to `return_url` when it redirects the customer back after confirming an intent
+const returnFromStripeWithPaymentIntent = (clientSecret: string) =>
+  `${SUCCESS_PATH}?payment_intent=pi_123&payment_intent_client_secret=${clientSecret}&redirect_status=succeeded`;
+const returnFromStripeWithSetupIntent = (clientSecret: string) =>
+  `${SUCCESS_PATH}?setup_intent=seti_123&setup_intent_client_secret=${clientSecret}&redirect_status=succeeded`;
+
+const landOn = (url: string) => {
+  globalThis.history.replaceState(null, '', url);
 };
 
 const renderAndWaitForRedirect = async () => {
@@ -60,11 +63,10 @@ const expectPurchaseNotTracked = () => {
 describe('Checkout success view', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    landOn(SUCCESS_PATH);
   });
 
-  test('When no intent was confirmed with Stripe, then the purchase is tracked without asking Stripe', async () => {
-    storeCheckoutIntentSecret(null);
-
+  test('When the user lands without being redirected by Stripe, then the purchase is tracked without asking Stripe', async () => {
     await renderAndWaitForRedirect();
 
     expect(mocks.retrievePaymentIntent).not.toHaveBeenCalled();
@@ -73,7 +75,7 @@ describe('Checkout success view', () => {
   });
 
   test('When Stripe reports the payment intent succeeded, then the purchase is tracked', async () => {
-    storeCheckoutIntentSecret('pi_123_secret_abc');
+    landOn(returnFromStripeWithPaymentIntent('pi_123_secret_abc'));
     mocks.retrievePaymentIntent.mockResolvedValue({ paymentIntent: { status: 'succeeded' } });
 
     await renderAndWaitForRedirect();
@@ -83,7 +85,7 @@ describe('Checkout success view', () => {
   });
 
   test('When Stripe reports the payment intent did not succeed, then the purchase is not tracked but the storage is cleaned up', async () => {
-    storeCheckoutIntentSecret('pi_123_secret_abc');
+    landOn(returnFromStripeWithPaymentIntent('pi_123_secret_abc'));
     mocks.retrievePaymentIntent.mockResolvedValue({ paymentIntent: { status: 'requires_payment_method' } });
 
     await renderAndWaitForRedirect();
@@ -94,7 +96,7 @@ describe('Checkout success view', () => {
   });
 
   test('When the confirmed intent is a setup intent, then it is verified through its own endpoint', async () => {
-    storeCheckoutIntentSecret('seti_123_secret_abc');
+    landOn(returnFromStripeWithSetupIntent('seti_123_secret_abc'));
     mocks.retrieveSetupIntent.mockResolvedValue({ setupIntent: { status: 'succeeded' } });
 
     await renderAndWaitForRedirect();
@@ -105,7 +107,7 @@ describe('Checkout success view', () => {
   });
 
   test('When Stripe cannot return the intent, then the purchase is not tracked', async () => {
-    storeCheckoutIntentSecret('pi_123_secret_abc');
+    landOn(returnFromStripeWithPaymentIntent('pi_123_secret_abc'));
     mocks.retrievePaymentIntent.mockResolvedValue({ error: { message: 'Invalid client secret' } });
 
     await renderAndWaitForRedirect();
