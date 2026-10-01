@@ -1165,6 +1165,7 @@
     "ownerStorageIsFullDescription": "您無法在此共享資料夾中上傳檔案。",
     "storageIsFullDescription": "您無法上傳、同步或備份文件。",
     "noFilePreview": "無法預覽文件",
+    "filePreviewTooLarge": "檔案過大，無法預覽（超過 {{limit}}）",
     "errorMovingToTrash": "將項目移動到垃圾桶時出錯。",
     "errorDeletingFromTrash": "從垃圾桶中刪除項目時出錯。",
     "connectionLostError": "網絡連接已丟失",
