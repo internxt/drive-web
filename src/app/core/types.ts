@@ -132,7 +132,6 @@ export enum LocalStorageItem {
   CheckoutItemData = 'checkout_item_data',
   SubscriptionID = 'subscriptionId',
   PaymentIntentID = 'paymentIntentId',
-  CheckoutIntentSecret = 'checkoutIntentSecret',
   PriceId = 'priceId',
   Currency = 'currency',
   AmountPaid = 'amountPaid',

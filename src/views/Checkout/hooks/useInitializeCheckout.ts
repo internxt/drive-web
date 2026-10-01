@@ -1,8 +1,8 @@
 import { Stripe, StripeElementsOptionsMode } from '@stripe/stripe-js';
 import { checkoutService, currencyService, paymentService } from '../services';
 import { useEffect, useState } from 'react';
-import { errorService, localStorageService, navigationService } from 'services';
-import { AppView, LocalStorageItem } from 'app/core/types';
+import { errorService, navigationService } from 'services';
+import { AppView } from 'app/core/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { CryptoCurrency, PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { IS_CRYPTO_PAYMENT_ENABLED, STRIPE_MINIMUM_CHARGE_AMOUNT, THEME_STYLES } from '../constants';
@@ -31,7 +31,6 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
   const [availableCryptoCurrencies, setAvailableCryptoCurrencies] = useState<CryptoCurrency[] | undefined>(undefined);
 
   useEffect(() => {
-    localStorageService.removeItem(LocalStorageItem.CheckoutIntentSecret);
     initCheckout();
   }, []);
 

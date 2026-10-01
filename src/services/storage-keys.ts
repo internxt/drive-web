@@ -25,7 +25,6 @@ export const CHECKOUT_LOCAL_STORAGE_ITEMS: LocalStorageItem[] = [
 export const PAYMENT_LOCAL_STORAGE_ITEMS: LocalStorageItem[] = [
   LocalStorageItem.SubscriptionID,
   LocalStorageItem.PaymentIntentID,
-  LocalStorageItem.CheckoutIntentSecret,
   LocalStorageItem.PriceId,
   LocalStorageItem.ProductName,
   LocalStorageItem.Currency,

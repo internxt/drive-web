@@ -1,6 +1,6 @@
 import useEffectAsync from 'hooks/useEffectAsync';
 import navigationService from 'services/navigation.service';
-import { AppView, LocalStorageItem } from 'app/core/types';
+import { AppView } from 'app/core/types';
 import { useAppDispatch } from 'app/store/hooks';
 import { useCallback, useRef } from 'react';
 import localStorageService from 'services/local-storage.service';
@@ -14,19 +14,25 @@ import { paymentService } from '../services';
 export function removePaymentsStorage() {
   PURCHASE_LOCAL_STORAGE_ITEMS.forEach((item) => localStorageService.removeItem(item));
 }
-async function isPaymentSuccessful(): Promise<boolean> {
-  const clientSecret = localStorageService.get(LocalStorageItem.CheckoutIntentSecret);
 
-  if (!clientSecret) {
-    return true;
+async function isPaymentSuccessful(): Promise<boolean> {
+  const params = new URLSearchParams(globalThis.location.search);
+  const setupIntentSecret = params.get('setup_intent_client_secret');
+  const paymentIntentSecret = params.get('payment_intent_client_secret');
+
+  if (setupIntentSecret) {
+    const stripe = await paymentService.getStripe();
+    const { setupIntent } = await stripe.retrieveSetupIntent(setupIntentSecret);
+    return setupIntent?.status === 'succeeded';
   }
 
-  const stripe = await paymentService.getStripe();
-  const intent = clientSecret.startsWith('seti_')
-    ? (await stripe.retrieveSetupIntent(clientSecret)).setupIntent
-    : (await stripe.retrievePaymentIntent(clientSecret)).paymentIntent;
+  if (paymentIntentSecret) {
+    const stripe = await paymentService.getStripe();
+    const { paymentIntent } = await stripe.retrievePaymentIntent(paymentIntentSecret);
+    return paymentIntent?.status === 'succeeded';
+  }
 
-  return intent?.status === 'succeeded';
+  return true;
 }
 
 const CheckoutSuccessView = (): JSX.Element => {
