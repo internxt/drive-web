@@ -10,7 +10,7 @@ import { getListHeaders } from './getListHeaders';
 import { ListShareLinksItem, Role } from '@internxt/sdk/dist/drive/share/types';
 import navigationService from 'services/navigation.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { skinSkeleton, skinSkeletonTrash } from 'components/Skeleton';
+import { skinSkeletonDrive, skinSkeletonTrash } from 'components/Skeleton';
 import { moveItemsToTrash } from 'views/Trash/services';
 import { OrderDirection, OrderSettings } from 'app/core/types';
 import shareService from 'app/share/services/share.service';
@@ -146,7 +146,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const isRecents = props.title === translate('views.recents.head');
   const isFavorites = props.title === translate('views.favorites.head');
   const isTrash = props.title === translate('trash.trash');
-  const skeleton = isTrash ? skinSkeletonTrash : skinSkeleton;
+  const skeleton = isTrash ? skinSkeletonTrash : skinSkeletonDrive;
 
   const resetFavoritesOrder = () => {
     dispatch(storageActions.resetFavoritesPagination());

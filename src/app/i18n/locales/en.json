@@ -1395,6 +1395,7 @@
     "access": "Access",
     "protect": "Protect with password",
     "expiringDate": "Expiration date",
+    "removeExpiringDate": "Remove expiration date",
     "addSecurePassword": "Secure this link by setting up a password",
     "password": "Password",
     "views": "Views",

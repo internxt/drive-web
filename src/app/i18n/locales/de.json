@@ -1371,6 +1371,7 @@
     "access": "Zugriff",
     "protect": "Passwortgeschützt",
     "expiringDate": "Ablaufdatum",
+    "removeExpiringDate": "Ablaufdatum entfernen",
     "addSecurePassword": "Sichere diesen Link, indem du ein Passwort einrichtest",
     "password": "Passwort",
     "views": "Ansichten",

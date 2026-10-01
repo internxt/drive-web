@@ -78,6 +78,7 @@ const calculateItemSize = (
  * The data is:
  * - Name
  * - Shared
+ * - Link expiration (only if the shared link has one)
  * - Size (for files and folders)
  * - Type (only for files)
  * - Number of files (only for folders)
@@ -221,6 +222,7 @@ const ItemDetailsDialog = ({
     return {
       name: item.name,
       shared: isShared,
+      expiration: item.linkExpirationDate ? dateService.format(item.linkExpirationDate, 'D MMM, YYYY') : undefined,
       type: item.isFolder ? undefined : item.type,
       numberOfFiles: item.isFolder ? formatFileCount(folderStats) : undefined,
       size,

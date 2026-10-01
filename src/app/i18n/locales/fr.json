@@ -1374,6 +1374,7 @@
     "access": "Accès",
     "protect": "Protection par mot de passe",
     "expiringDate": "Date d'expiration",
+    "removeExpiringDate": "Supprimer la date d'expiration",
     "addSecurePassword": "Ajouter un mot de passe au lien pour plus de sécurité",
     "password": "Mot de passe",
     "views": "Vues",

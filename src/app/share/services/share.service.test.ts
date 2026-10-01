@@ -289,6 +289,43 @@ describe('Get public shared link', async () => {
     expect(spyDecrypt).not.toHaveBeenCalled();
   });
 
+  test('When a link expiration date is provided, then it is sent when creating the sharing', async () => {
+    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue({ bucket, mnemonic } as UserSettings);
+    const linkExpirationDate = '2026-10-31T22:59:59.999Z';
+
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    const mockCreatePublicSharingItemFn = vi.fn(async (payload) => ({
+      ...mockSharingMeta,
+      encryptedCode: payload.encryptedCode,
+    }));
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
+      createShareClient: vi.fn(() => ({ createSharing: mockCreatePublicSharingItemFn })),
+    } as any);
+
+    const { createPublicShareFromOwnerUser } = await import('./share.service');
+    await createPublicShareFromOwnerUser('uuid', 'file', { linkExpirationDate });
+
+    expect(mockCreatePublicSharingItemFn).toHaveBeenCalledWith(expect.objectContaining({ linkExpirationDate }));
+  });
+
+  test('When no link expiration date is provided, then it is not sent when creating the sharing', async () => {
+    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue({ bucket, mnemonic } as UserSettings);
+
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    const mockCreatePublicSharingItemFn = vi.fn(async (payload) => ({
+      ...mockSharingMeta,
+      encryptedCode: payload.encryptedCode,
+    }));
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
+      createShareClient: vi.fn(() => ({ createSharing: mockCreatePublicSharingItemFn })),
+    } as any);
+
+    const { createPublicShareFromOwnerUser } = await import('./share.service');
+    await createPublicShareFromOwnerUser('uuid', 'file');
+
+    expect(mockCreatePublicSharingItemFn.mock.calls[0][0]).not.toHaveProperty('linkExpirationDate');
+  });
+
   test('When user is invited and mnemonic is available in sharing v2, decrypt the mnemonic and use it', async () => {
     const keys = await generateNewKeys();
     const publicKeyInBase64 = keys.publicKeyArmored;

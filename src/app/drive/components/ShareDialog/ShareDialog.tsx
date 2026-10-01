@@ -107,6 +107,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     userEmail: props?.user?.email,
   });
   const isProtectWithPasswordOptionAvailable = accessMode === 'public' && !isLoading && isUserOwner;
+  const isLinkExpirationOptionAvailable = accessMode === 'public' && isUserOwner;
   const closeSelectedUserPopover = () => actionDispatch(setSelectedUserListIndex(null));
   const {
     onCopyLink,
@@ -150,6 +151,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
     if (!isOpen) {
       actionDispatch(resetDialogData());
+      setLinkExpirationDate(undefined);
       onCloseDialog?.();
     }
   }, [isOpen]);
@@ -311,7 +313,9 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
             />
           )}
 
-          <LinkExpirationSelector isLoading={isLoading} value={linkExpirationDate} onChange={setLinkExpirationDate} />
+          {isLinkExpirationOptionAvailable && (
+            <LinkExpirationSelector isLoading={isLoading} value={linkExpirationDate} onChange={setLinkExpirationDate} />
+          )}
 
           <UserRoleSelection
             isStopSharingAvailable={(currentUserFolderRole === 'owner' || isUserOwner || props.isDriveItem) ?? false}

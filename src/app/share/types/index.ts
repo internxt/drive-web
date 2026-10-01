@@ -11,6 +11,7 @@ export type AdvancedSharedItem = SharedFolders &
     sharingType: 'public' | 'private';
     encryptedPassword: string | null;
     fileId?: string;
+    linkExpirationDate?: string;
   };
 
 export type SharedNetworkCredentials = {

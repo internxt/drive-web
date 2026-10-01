@@ -231,9 +231,9 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
       </div>
       
       {/* EXPIRATION */}
-      <div className="w-size shrink-0 items-center whitespace-nowrap">
-        {item.expirationData ? (
-          dateService.formatDefaultDate(item.expirationData, translate)
+      <div className="block shrink-0 w-date items-center whitespace-nowrap">
+        {item.linkExpirationDate ? (
+          dateService.format(item.linkExpirationDate, 'D MMM, YYYY')
         ) : (
           <span className="opacity-25">—</span>
         )}
