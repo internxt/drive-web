@@ -13,6 +13,7 @@ const mocks = vi.hoisted(() => ({
   gaTrackPurchase: vi.fn().mockResolvedValue(undefined),
   trackPaymentConversion: vi.fn().mockResolvedValue(undefined),
   userStoragePolling: vi.fn(),
+  notificationsShow: vi.fn(),
 }));
 
 vi.mock('app/store/hooks', () => ({ useAppDispatch: () => vi.fn() }));
@@ -22,6 +23,13 @@ vi.mock('app/analytics/meta.service', () => ({ default: { trackPurchase: mocks.m
 vi.mock('app/analytics/ga.service', () => ({ default: { trackPurchase: mocks.gaTrackPurchase } }));
 vi.mock('app/analytics/impact.service', () => ({ trackPaymentConversion: mocks.trackPaymentConversion }));
 vi.mock('utils/userStoragePolling.utils', () => ({ userStoragePolling: mocks.userStoragePolling }));
+vi.mock('app/i18n/provider/TranslationProvider', () => ({
+  useTranslationContext: () => ({ translate: (key: string) => key, translateList: () => [] }),
+}));
+vi.mock('app/notifications/services/notifications.service', () => ({
+  default: { show: mocks.notificationsShow },
+  ToastType: { Error: 'error' },
+}));
 vi.mock('../services', () => ({
   paymentService: {
     getStripe: vi.fn().mockResolvedValue({
@@ -60,18 +68,33 @@ const expectPurchaseNotTracked = () => {
   expect(mocks.trackPaymentConversion).not.toHaveBeenCalled();
 };
 
+const expectPaymentFailedNotified = () => {
+  expect(mocks.notificationsShow).toHaveBeenCalledWith({ text: 'checkout.error.paymentFailed', type: 'error' });
+};
+
 describe('Checkout success view', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     landOn(SUCCESS_PATH);
   });
 
-  test('When the user lands without being redirected by Stripe, then the purchase is tracked without asking Stripe', async () => {
+  test('When the user lands without a Stripe client secret, then the payment is treated as failed and the purchase is not tracked', async () => {
     await renderAndWaitForRedirect();
 
     expect(mocks.retrievePaymentIntent).not.toHaveBeenCalled();
     expect(mocks.retrieveSetupIntent).not.toHaveBeenCalled();
-    expectPurchaseTracked();
+    expectPaymentFailedNotified();
+    expectPurchaseNotTracked();
+    PURCHASE_LOCAL_STORAGE_ITEMS.forEach((item) => expect(mocks.localStorageRemoveItem).toHaveBeenCalledWith(item));
+  });
+
+  test('When Stripe reports the payment intent succeeded, then the user is not notified of any failure', async () => {
+    landOn(returnFromStripeWithPaymentIntent('pi_123_secret_abc'));
+    mocks.retrievePaymentIntent.mockResolvedValue({ paymentIntent: { status: 'succeeded' } });
+
+    await renderAndWaitForRedirect();
+
+    expect(mocks.notificationsShow).not.toHaveBeenCalled();
   });
 
   test('When Stripe reports the payment intent succeeded, then the purchase is tracked', async () => {
@@ -84,12 +107,13 @@ describe('Checkout success view', () => {
     expectPurchaseTracked();
   });
 
-  test('When Stripe reports the payment intent did not succeed, then the purchase is not tracked but the storage is cleaned up', async () => {
+  test('When Stripe reports the payment intent did not succeed, then the user is notified, the purchase is not tracked and the storage is cleaned up', async () => {
     landOn(returnFromStripeWithPaymentIntent('pi_123_secret_abc'));
     mocks.retrievePaymentIntent.mockResolvedValue({ paymentIntent: { status: 'requires_payment_method' } });
 
     await renderAndWaitForRedirect();
 
+    expectPaymentFailedNotified();
     expectPurchaseNotTracked();
     PURCHASE_LOCAL_STORAGE_ITEMS.forEach((item) => expect(mocks.localStorageRemoveItem).toHaveBeenCalledWith(item));
     expect(mocks.userStoragePolling).toHaveBeenCalledOnce();
@@ -106,12 +130,13 @@ describe('Checkout success view', () => {
     expectPurchaseTracked();
   });
 
-  test('When Stripe cannot return the intent, then the purchase is not tracked', async () => {
+  test('When Stripe cannot return the intent, then the user is notified and the purchase is not tracked', async () => {
     landOn(returnFromStripeWithPaymentIntent('pi_123_secret_abc'));
     mocks.retrievePaymentIntent.mockResolvedValue({ error: { message: 'Invalid client secret' } });
 
     await renderAndWaitForRedirect();
 
+    expectPaymentFailedNotified();
     expectPurchaseNotTracked();
   });
 });
