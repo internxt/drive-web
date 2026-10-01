@@ -75,6 +75,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const userFeatures = useAppSelector((state) => state.user.userTierFeatures);
   const isRestrictedSharingAvailable = userFeatures?.[Service.Drive].restrictedItemsSharing.enabled ?? false;
   const isPasswordSharingAvailable = userFeatures?.[Service.Drive].passwordProtectedSharing.enabled ?? false;
+  const [linkExpirationDate, setLinkExpirationDate] = useState<Dayjs>();
 
   const { state, dispatch: actionDispatch } = useShareDialogContext();
 
@@ -117,6 +118,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   } = useShareItemActions({
     itemToShare,
     isPasswordSharingAvailable,
+    linkExpirationDate: linkExpirationDate?.toISOString(),
     dispatch,
     onClose: () => dispatch(uiActions.setIsShareDialogOpen(false)),
     onShareItem: props.onShareItem,
@@ -243,8 +245,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const onCloseStopSharingDialog = useCallback(() => {
     actionDispatch(setShowStopSharingConfirmation(false));
   }, [actionDispatch]);
-
-  const [linkExpirationDate, setLinkExpirationDate] = useState<Dayjs>();
 
   const View = (viewProps: ViewProps): JSX.Element => {
     const view: Record<ViewProps['view'], JSX.Element> = {

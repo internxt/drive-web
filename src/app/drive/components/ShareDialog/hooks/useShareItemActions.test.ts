@@ -159,11 +159,40 @@ describe('Share Item Actions', () => {
 
       await result.current.onCopyLink();
 
-      expect(getPublicShareLinkSpy).toHaveBeenCalledWith('item-uuid-123', 'file', undefined);
+      expect(getPublicShareLinkSpy).toHaveBeenCalledWith('item-uuid-123', 'file', undefined, undefined);
       expect(mockActionDispatch).toHaveBeenCalledWith(
         expect.objectContaining({ type: 'SET_SHARING_META', payload: mockSharingMeta }),
       );
       expect(mockOnShareItem).toHaveBeenCalled();
+    });
+
+    test('When access mode is public and a link expiration date is selected, then gets public share link with it', async () => {
+      mockUseShareDialogContext.mockReturnValue({
+        state: {
+          accessMode: 'public',
+          sharingMeta: null,
+          isPasswordProtected: false,
+        },
+        dispatch: mockActionDispatch,
+      });
+      const getPublicShareLinkSpy = vi.spyOn(shareService, 'getPublicShareLink').mockResolvedValue(mockSharingMeta);
+      const linkExpirationDate = '2026-10-31T22:59:59.999Z';
+
+      const itemToShare = createItemToShare(false);
+      const { result } = renderHook(() =>
+        useShareItemActions({
+          itemToShare,
+          isPasswordSharingAvailable: true,
+          linkExpirationDate,
+          dispatch: mockDispatch,
+          onClose: mockOnClose,
+          onShareItem: mockOnShareItem,
+        }),
+      );
+
+      await result.current.onCopyLink();
+
+      expect(getPublicShareLinkSpy).toHaveBeenCalledWith('item-uuid-123', 'file', undefined, linkExpirationDate);
     });
   });
 
@@ -297,6 +326,36 @@ describe('Share Item Actions', () => {
       expect(mockActionDispatch).toHaveBeenCalledWith(
         expect.objectContaining({ type: 'SET_IS_PASSWORD_PROTECTED', payload: true }),
       );
+    });
+
+    test('When the link expiration date changes, then creates new public share with the latest date', async () => {
+      const plainCode = 'test plain code';
+      const createPublicShareFromOwnerUserSpy = vi
+        .spyOn(shareService, 'createPublicShareFromOwnerUser')
+        .mockResolvedValue({ publicSharingItemData: mockSharingMeta, plainCode });
+      const linkExpirationDate = '2026-10-31T22:59:59.999Z';
+
+      const itemToShare = createItemToShare(false);
+      const { result, rerender } = renderHook(
+        ({ linkExpirationDate }: { linkExpirationDate?: string }) =>
+          useShareItemActions({
+            itemToShare,
+            isPasswordSharingAvailable: true,
+            linkExpirationDate,
+            dispatch: mockDispatch,
+            onClose: mockOnClose,
+            onShareItem: mockOnShareItem,
+          }),
+        { initialProps: {} },
+      );
+
+      rerender({ linkExpirationDate });
+      await result.current.onSavePublicSharePassword('my-password');
+
+      expect(createPublicShareFromOwnerUserSpy).toHaveBeenCalledWith('item-uuid-123', 'file', {
+        plainPassword: 'my-password',
+        linkExpirationDate,
+      });
     });
 
     test('When error occurs, then casts error and closes password input', async () => {
