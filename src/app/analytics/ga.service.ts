@@ -230,6 +230,9 @@ async function trackPurchase(): Promise<void> {
         coupon: couponCode ?? undefined,
       });
     }
+
+    localStorageService.removeItem(LocalStorageItem.CheckoutItemData);
+    localStorageService.removeItem(LocalStorageItem.ItemOriginalPrice);
   } catch (error) {
     console.error('[GA Service] Error in trackPurchase:', error);
   }

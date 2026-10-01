@@ -17,9 +17,12 @@ export const THEMES = {
   ANNIVERSARY_THEME_AVAILABLE_LOCAL_STORAGE_KEY: LocalStorageItem.AnniversaryTheme,
 };
 
-export const PURCHASE_LOCAL_STORAGE_ITEMS: LocalStorageItem[] = [
+export const CHECKOUT_LOCAL_STORAGE_ITEMS: LocalStorageItem[] = [
   LocalStorageItem.CheckoutItemData,
   LocalStorageItem.ItemOriginalPrice,
+];
+
+export const PAYMENT_LOCAL_STORAGE_ITEMS: LocalStorageItem[] = [
   LocalStorageItem.SubscriptionID,
   LocalStorageItem.PaymentIntentID,
   LocalStorageItem.PriceId,
@@ -27,6 +30,11 @@ export const PURCHASE_LOCAL_STORAGE_ITEMS: LocalStorageItem[] = [
   LocalStorageItem.Currency,
   LocalStorageItem.AmountPaid,
   LocalStorageItem.CouponCode,
+];
+
+export const PURCHASE_LOCAL_STORAGE_ITEMS: LocalStorageItem[] = [
+  ...CHECKOUT_LOCAL_STORAGE_ITEMS,
+  ...PAYMENT_LOCAL_STORAGE_ITEMS,
 ];
 
 export const ATTRIBUTION_LOCAL_STORAGE_ITEMS: LocalStorageItem[] = [

@@ -1,8 +1,8 @@
 import { AppError } from '@internxt/sdk';
 import { act, renderHook } from '@testing-library/react';
 import databaseService from 'app/database/services/database.service';
-import { localStorageService, RealtimeService } from 'services';
-import { ATTRIBUTION_LOCAL_STORAGE_ITEMS, PURCHASE_LOCAL_STORAGE_ITEMS } from 'services/storage-keys';
+import { RealtimeService } from 'services';
+import { LocalStorageItem } from 'app/core/types';
 import { authenticateUser, is2FANeeded } from 'services/auth.service';
 import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
 import enTranslations from 'app/i18n/locales/en.json';
@@ -219,12 +219,16 @@ describe('Authentication Checkout Custom hook', () => {
     expect(is2FANeeded).not.toHaveBeenCalled();
   });
 
-  test('When the user wants to log out, then all services are cleared and the auth method is set to ‘sign up’', async () => {
+  test('When the user wants to log out, then the session is cleared, the checkout context is kept and the auth method is set to ‘sign up’', async () => {
     const changeAuthMethod = vi.fn();
+    const checkoutItemData = '{"item_name":"2TB Year Plan"}';
 
     const stopRealTimeServiceSpy = vi.spyOn(RealtimeService.prototype, 'stop').mockResolvedValue();
-    const clearLocalServiceSpy = vi.spyOn(localStorageService, 'clearExcept').mockReturnValue();
     const clearDatabaseSpy = vi.spyOn(databaseService, 'clear').mockResolvedValue();
+    localStorage.setItem(LocalStorageItem.UserUUID, 'user_123');
+    localStorage.setItem(LocalStorageItem.AmountPaid, '100');
+    localStorage.setItem(LocalStorageItem.CheckoutItemData, checkoutItemData);
+    localStorage.setItem(LocalStorageItem.GCLID, 'gclid_123');
 
     const { result: hookState } = renderHook(() =>
       useAuthCheckout({
@@ -237,12 +241,14 @@ describe('Authentication Checkout Custom hook', () => {
     });
 
     expect(clearDatabaseSpy).toHaveBeenCalled();
-    expect(clearLocalServiceSpy).toHaveBeenCalledWith([
-      ...PURCHASE_LOCAL_STORAGE_ITEMS,
-      ...ATTRIBUTION_LOCAL_STORAGE_ITEMS,
-    ]);
+    expect(localStorage.getItem(LocalStorageItem.UserUUID)).toBeNull();
+    expect(localStorage.getItem(LocalStorageItem.AmountPaid)).toBeNull();
+    expect(localStorage.getItem(LocalStorageItem.CheckoutItemData)).toBe(checkoutItemData);
+    expect(localStorage.getItem(LocalStorageItem.GCLID)).toBe('gclid_123');
     expect(stopRealTimeServiceSpy).toHaveBeenCalled();
     expect(changeAuthMethod).toHaveBeenCalledWith('signUp');
+
+    localStorage.clear();
   });
 
   test('When signing up a new user, then the user is signed up correctly', async () => {

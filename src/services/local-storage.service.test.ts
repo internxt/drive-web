@@ -160,7 +160,21 @@ describe('Testing the local storage service', () => {
       expect(localStorage.getItem(LocalStorageItem.Theme)).toBeNull();
     });
 
-    it('When a key meant to be preserved does not exist, then it is not written back to the storage', () => {
+    it('When some keys are meant to be preserved, then they are never removed nor rewritten', () => {
+      const clearSpy = vi.spyOn(Storage.prototype, 'clear');
+      const removeItemSpy = vi.spyOn(Storage.prototype, 'removeItem');
+      const setItemSpy = vi.spyOn(Storage.prototype, 'setItem');
+
+      localStorageService.clearExcept([localStorageKey]);
+
+      expect(clearSpy).not.toHaveBeenCalled();
+      expect(setItemSpy).not.toHaveBeenCalled();
+      expect(removeItemSpy).not.toHaveBeenCalledWith(localStorageKey);
+      expect(removeItemSpy).toHaveBeenCalledWith(LocalStorageItem.UserUUID);
+      expect(removeItemSpy).toHaveBeenCalledWith(LocalStorageItem.Theme);
+    });
+
+    it('When a key meant to be preserved does not exist, then the storage ends up empty', () => {
       localStorageService.clearExcept([LocalStorageItem.AmountPaid]);
 
       expect(localStorage.getItem(LocalStorageItem.AmountPaid)).toBeNull();

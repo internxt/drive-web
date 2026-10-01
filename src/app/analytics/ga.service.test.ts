@@ -358,7 +358,7 @@ describe('Testing GA Service', () => {
         });
       });
 
-      it('should leave the purchase data in localStorage, as it is removed once every tracker has read it', async () => {
+      it('should clean up the checkout data it owns after successful tracking, so the event is not sent twice', async () => {
         vi.mocked(encryptedStorageService.getUser).mockResolvedValue({ uuid: 'user_123' } as UserSettings);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'amountPaid') return '100';
@@ -376,7 +376,9 @@ describe('Testing GA Service', () => {
         await gaService.trackPurchase();
 
         expect(globalThis.window.dataLayer[0].event).toBe('purchase');
-        expect(localStorageService.removeItem).not.toHaveBeenCalled();
+        expect(localStorageService.removeItem).toHaveBeenCalledTimes(2);
+        expect(localStorageService.removeItem).toHaveBeenCalledWith('checkout_item_data');
+        expect(localStorageService.removeItem).toHaveBeenCalledWith('itemOriginalPrice');
       });
 
       it('should not track when checkout item data is gone, even if the payment data is still stored', async () => {

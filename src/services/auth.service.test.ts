@@ -3,7 +3,7 @@
  */
 import { aes } from '@internxt/lib';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { ATTRIBUTION_LOCAL_STORAGE_ITEMS, PURCHASE_LOCAL_STORAGE_ITEMS } from 'services/storage-keys';
+import { ATTRIBUTION_LOCAL_STORAGE_ITEMS, CHECKOUT_LOCAL_STORAGE_ITEMS } from 'services/storage-keys';
 import { SdkFactory } from 'app/core/factory/sdk';
 import * as keysService from 'app/crypto/services/keys.service';
 import * as pgpService from 'app/crypto/services/pgp.service';
@@ -435,7 +435,7 @@ describe('signUp', () => {
     expect(localStorageService.clear).not.toHaveBeenCalled();
     expect(localStorageService.clearExcept).toHaveBeenCalledTimes(1);
     expect(localStorageService.clearExcept).toHaveBeenCalledWith([
-      ...PURCHASE_LOCAL_STORAGE_ITEMS,
+      ...CHECKOUT_LOCAL_STORAGE_ITEMS,
       ...ATTRIBUTION_LOCAL_STORAGE_ITEMS,
     ]);
   });
