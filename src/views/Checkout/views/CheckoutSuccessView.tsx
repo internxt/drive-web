@@ -12,15 +12,20 @@ import { userStoragePolling } from 'utils/userStoragePolling.utils';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { paymentService } from '../services';
+import envService from 'services/env.service';
 
 export function removePaymentsStorage() {
   PURCHASE_LOCAL_STORAGE_ITEMS.forEach((item) => localStorageService.removeItem(item));
 }
 
-const isPaymentSuccessful = async (): Promise<boolean> => {
+const hasStripeReportedPaymentFailed = async (): Promise<boolean> => {
   const params = new URLSearchParams(globalThis.location.search);
   const setupIntentSecret = params.get('setup_intent_client_secret');
   const paymentIntentSecret = params.get('payment_intent_client_secret');
+
+  if (!paymentIntentSecret && !setupIntentSecret) {
+    return false;
+  }
 
   let intentStatus: string | undefined;
   const stripe = await paymentService.getStripe();
@@ -33,7 +38,18 @@ const isPaymentSuccessful = async (): Promise<boolean> => {
     intentStatus = setupIntent?.status;
   }
 
-  return intentStatus === 'succeeded';
+  return intentStatus !== 'succeeded';
+};
+
+const sendPurchaseEvents = async (): Promise<void> => {
+  if (!envService.isProduction()) {
+    console.info('[Analytics] Purchase events are not sent outside production');
+    return;
+  }
+
+  metaService.trackPurchase();
+  await gaService.trackPurchase();
+  await trackPaymentConversion();
 };
 
 const CheckoutSuccessView = (): JSX.Element => {
@@ -49,12 +65,10 @@ const CheckoutSuccessView = (): JSX.Element => {
     hasTrackedRef.current = true;
 
     try {
-      if (await isPaymentSuccessful()) {
-        metaService.trackPurchase();
-        await gaService.trackPurchase();
-        await trackPaymentConversion();
-      } else {
+      if (await hasStripeReportedPaymentFailed()) {
         notificationsService.show({ text: translate('checkout.error.paymentFailed'), type: ToastType.Error });
+      } else {
+        await sendPurchaseEvents();
       }
 
       removePaymentsStorage();

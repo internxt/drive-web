@@ -14,6 +14,7 @@ const mocks = vi.hoisted(() => ({
   trackPaymentConversion: vi.fn().mockResolvedValue(undefined),
   userStoragePolling: vi.fn(),
   notificationsShow: vi.fn(),
+  isProduction: vi.fn(() => true),
 }));
 
 vi.mock('app/store/hooks', () => ({ useAppDispatch: () => vi.fn() }));
@@ -23,6 +24,7 @@ vi.mock('app/analytics/meta.service', () => ({ default: { trackPurchase: mocks.m
 vi.mock('app/analytics/ga.service', () => ({ default: { trackPurchase: mocks.gaTrackPurchase } }));
 vi.mock('app/analytics/impact.service', () => ({ trackPaymentConversion: mocks.trackPaymentConversion }));
 vi.mock('utils/userStoragePolling.utils', () => ({ userStoragePolling: mocks.userStoragePolling }));
+vi.mock('services/env.service', () => ({ default: { isProduction: mocks.isProduction, getVariable: vi.fn() } }));
 vi.mock('app/i18n/provider/TranslationProvider', () => ({
   useTranslationContext: () => ({ translate: (key: string) => key, translateList: () => [] }),
 }));
@@ -41,11 +43,19 @@ vi.mock('../services', () => ({
 
 const SUCCESS_PATH = '/checkout/success';
 
-// Stripe appends these params to `return_url` when it redirects the customer back after confirming an intent
+// How the customer reaches this view depends on the payment method:
+// - One-time payments (card, PayPal, Klarna, UPI, Pix on lifetime plans) are confirmed with a payment intent.
+//   Stripe always redirects back to `return_url` and appends the payment intent secret.
+// - Subscriptions set up through a setup intent (card, PayPal) come back with the setup intent secret instead.
+// - Crypto payments and lifetime plans with a 100% off coupon are confirmed before the app navigates here,
+//   so the URL carries no secret at all.
 const returnFromStripeWithPaymentIntent = (clientSecret: string) =>
   `${SUCCESS_PATH}?payment_intent=pi_123&payment_intent_client_secret=${clientSecret}&redirect_status=succeeded`;
 const returnFromStripeWithSetupIntent = (clientSecret: string) =>
   `${SUCCESS_PATH}?setup_intent=seti_123&setup_intent_client_secret=${clientSecret}&redirect_status=succeeded`;
+
+// Statuses a customer can bring back after declining, abandoning or failing the payment at the provider
+const FAILED_INTENT_STATUSES = ['requires_payment_method', 'canceled'];
 
 const landOn = (url: string) => {
   globalThis.history.replaceState(null, '', url);
@@ -72,71 +82,140 @@ const expectPaymentFailedNotified = () => {
   expect(mocks.notificationsShow).toHaveBeenCalledWith({ text: 'checkout.error.paymentFailed', type: 'error' });
 };
 
+const expectNoFailureNotified = () => {
+  expect(mocks.notificationsShow).not.toHaveBeenCalled();
+};
+
+const expectCheckoutFinished = () => {
+  PURCHASE_LOCAL_STORAGE_ITEMS.forEach((item) => expect(mocks.localStorageRemoveItem).toHaveBeenCalledWith(item));
+  expect(mocks.userStoragePolling).toHaveBeenCalledOnce();
+};
+
 describe('Checkout success view', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     landOn(SUCCESS_PATH);
   });
 
-  test('When the user lands without a Stripe client secret, then the payment is treated as failed and the purchase is not tracked', async () => {
-    await renderAndWaitForRedirect();
+  describe('When the customer paid without Stripe redirecting back (crypto, lifetime with a 100% off coupon)', () => {
+    test('then the purchase is tracked without asking Stripe and the checkout is finished', async () => {
+      await renderAndWaitForRedirect();
 
-    expect(mocks.retrievePaymentIntent).not.toHaveBeenCalled();
-    expect(mocks.retrieveSetupIntent).not.toHaveBeenCalled();
-    expectPaymentFailedNotified();
-    expectPurchaseNotTracked();
-    PURCHASE_LOCAL_STORAGE_ITEMS.forEach((item) => expect(mocks.localStorageRemoveItem).toHaveBeenCalledWith(item));
+      expect(mocks.retrievePaymentIntent).not.toHaveBeenCalled();
+      expect(mocks.retrieveSetupIntent).not.toHaveBeenCalled();
+      expectPurchaseTracked();
+      expectNoFailureNotified();
+      expectCheckoutFinished();
+    });
   });
 
-  test('When Stripe reports the payment intent succeeded, then the user is not notified of any failure', async () => {
-    landOn(returnFromStripeWithPaymentIntent('pi_123_secret_abc'));
-    mocks.retrievePaymentIntent.mockResolvedValue({ paymentIntent: { status: 'succeeded' } });
+  describe('When Stripe redirects back after a one-time payment (card, PayPal, Klarna, UPI, Pix)', () => {
+    beforeEach(() => {
+      landOn(returnFromStripeWithPaymentIntent('pi_123_secret_abc'));
+    });
 
-    await renderAndWaitForRedirect();
+    test('and the payment intent succeeded, then the purchase is tracked and the checkout is finished', async () => {
+      mocks.retrievePaymentIntent.mockResolvedValue({ paymentIntent: { status: 'succeeded' } });
 
-    expect(mocks.notificationsShow).not.toHaveBeenCalled();
+      await renderAndWaitForRedirect();
+
+      expect(mocks.retrievePaymentIntent).toHaveBeenCalledWith('pi_123_secret_abc');
+      expect(mocks.retrieveSetupIntent).not.toHaveBeenCalled();
+      expectPurchaseTracked();
+      expectNoFailureNotified();
+      expectCheckoutFinished();
+    });
+
+    test.each(FAILED_INTENT_STATUSES)(
+      'and the payment intent ended as %s, then the user is notified, the purchase is not tracked and the checkout is still finished',
+      async (status) => {
+        mocks.retrievePaymentIntent.mockResolvedValue({ paymentIntent: { status } });
+
+        await renderAndWaitForRedirect();
+
+        expectPaymentFailedNotified();
+        expectPurchaseNotTracked();
+        expectCheckoutFinished();
+      },
+    );
+
+    test('and Stripe cannot return the payment intent, then the user is notified and the purchase is not tracked', async () => {
+      mocks.retrievePaymentIntent.mockResolvedValue({ error: { message: 'Invalid client secret' } });
+
+      await renderAndWaitForRedirect();
+
+      expectPaymentFailedNotified();
+      expectPurchaseNotTracked();
+      expectCheckoutFinished();
+    });
   });
 
-  test('When Stripe reports the payment intent succeeded, then the purchase is tracked', async () => {
-    landOn(returnFromStripeWithPaymentIntent('pi_123_secret_abc'));
-    mocks.retrievePaymentIntent.mockResolvedValue({ paymentIntent: { status: 'succeeded' } });
+  describe('When Stripe redirects back after a subscription set up through a setup intent (card, PayPal)', () => {
+    beforeEach(() => {
+      landOn(returnFromStripeWithSetupIntent('seti_123_secret_abc'));
+    });
 
-    await renderAndWaitForRedirect();
+    test('and the setup intent succeeded, then it is verified through its own endpoint and the purchase is tracked', async () => {
+      mocks.retrieveSetupIntent.mockResolvedValue({ setupIntent: { status: 'succeeded' } });
 
-    expect(mocks.retrievePaymentIntent).toHaveBeenCalledWith('pi_123_secret_abc');
-    expectPurchaseTracked();
+      await renderAndWaitForRedirect();
+
+      expect(mocks.retrieveSetupIntent).toHaveBeenCalledWith('seti_123_secret_abc');
+      expect(mocks.retrievePaymentIntent).not.toHaveBeenCalled();
+      expectPurchaseTracked();
+      expectNoFailureNotified();
+      expectCheckoutFinished();
+    });
+
+    test.each(FAILED_INTENT_STATUSES)(
+      'and the setup intent ended as %s, then the user is notified, the purchase is not tracked and the checkout is still finished',
+      async (status) => {
+        mocks.retrieveSetupIntent.mockResolvedValue({ setupIntent: { status } });
+
+        await renderAndWaitForRedirect();
+
+        expect(mocks.retrievePaymentIntent).not.toHaveBeenCalled();
+        expectPaymentFailedNotified();
+        expectPurchaseNotTracked();
+        expectCheckoutFinished();
+      },
+    );
+
+    test('and Stripe cannot return the setup intent, then the user is notified and the purchase is not tracked', async () => {
+      mocks.retrieveSetupIntent.mockResolvedValue({ error: { message: 'Invalid client secret' } });
+
+      await renderAndWaitForRedirect();
+
+      expectPaymentFailedNotified();
+      expectPurchaseNotTracked();
+      expectCheckoutFinished();
+    });
   });
 
-  test('When Stripe reports the payment intent did not succeed, then the user is notified, the purchase is not tracked and the storage is cleaned up', async () => {
-    landOn(returnFromStripeWithPaymentIntent('pi_123_secret_abc'));
-    mocks.retrievePaymentIntent.mockResolvedValue({ paymentIntent: { status: 'requires_payment_method' } });
+  describe('When the app is not running in production', () => {
+    beforeEach(() => {
+      mocks.isProduction.mockReturnValueOnce(false);
+      landOn(returnFromStripeWithPaymentIntent('pi_123_secret_abc'));
+    });
 
-    await renderAndWaitForRedirect();
+    test('then no purchase event is sent even though the payment succeeded, and the checkout is still finished', async () => {
+      mocks.retrievePaymentIntent.mockResolvedValue({ paymentIntent: { status: 'succeeded' } });
 
-    expectPaymentFailedNotified();
-    expectPurchaseNotTracked();
-    PURCHASE_LOCAL_STORAGE_ITEMS.forEach((item) => expect(mocks.localStorageRemoveItem).toHaveBeenCalledWith(item));
-    expect(mocks.userStoragePolling).toHaveBeenCalledOnce();
-  });
+      await renderAndWaitForRedirect();
 
-  test('When the confirmed intent is a setup intent, then it is verified through its own endpoint', async () => {
-    landOn(returnFromStripeWithSetupIntent('seti_123_secret_abc'));
-    mocks.retrieveSetupIntent.mockResolvedValue({ setupIntent: { status: 'succeeded' } });
+      expect(mocks.retrievePaymentIntent).toHaveBeenCalledWith('pi_123_secret_abc');
+      expectPurchaseNotTracked();
+      expectNoFailureNotified();
+      expectCheckoutFinished();
+    });
 
-    await renderAndWaitForRedirect();
+    test('and the payment failed, then the user is still notified', async () => {
+      mocks.retrievePaymentIntent.mockResolvedValue({ paymentIntent: { status: 'requires_payment_method' } });
 
-    expect(mocks.retrieveSetupIntent).toHaveBeenCalledWith('seti_123_secret_abc');
-    expect(mocks.retrievePaymentIntent).not.toHaveBeenCalled();
-    expectPurchaseTracked();
-  });
+      await renderAndWaitForRedirect();
 
-  test('When Stripe cannot return the intent, then the user is notified and the purchase is not tracked', async () => {
-    landOn(returnFromStripeWithPaymentIntent('pi_123_secret_abc'));
-    mocks.retrievePaymentIntent.mockResolvedValue({ error: { message: 'Invalid client secret' } });
-
-    await renderAndWaitForRedirect();
-
-    expectPaymentFailedNotified();
-    expectPurchaseNotTracked();
+      expectPaymentFailedNotified();
+      expectPurchaseNotTracked();
+    });
   });
 });
