@@ -16,7 +16,7 @@ import { IRoot } from 'app/store/slices/storage/types';
 import { isVersioningExtensionAllowed } from 'views/Drive/components/VersionHistory/utils';
 import replaceFileService from 'views/Drive/services/replaceFile.service';
 import { moveItemsToTrash } from 'views/Trash/services';
-import { CollisionItem, CollisionPair, isFolderUpload } from './nameCollision.utils';
+import { CollisionItem, CollisionPair, getCollisionPairs, isFolderUpload } from './nameCollision.utils';
 
 export type CollisionOperationType = 'move' | 'upload';
 export type CollisionOperation = 'keep' | 'replace';
@@ -58,30 +58,36 @@ const getUniqueNameMovePayload = async (item: DriveItemData, destinationUuid: st
 };
 
 /**
- * Moves each item to the destination under a name that does not collide with anything there.
+ * Moves the items to the destination under a name that does not collide with anything there.
  */
 const keepAndMoveItems = async (
   items: DriveItemData[],
   destinationUuid: string,
   { dispatch }: NameCollisionContext,
-) => {
-  for (const item of items) {
-    const itemParsed = await getUniqueNameMovePayload(item, destinationUuid);
-    await dispatch(storageThunks.moveItemsThunk({ items: [itemParsed], destinationFolderId: destinationUuid }));
-  }
+): Promise<void> => {
+  if (items.length === 0) return;
+
+  const itemsParsed = await Promise.all(items.map((item) => getUniqueNameMovePayload(item, destinationUuid)));
+  await dispatch(storageThunks.moveItemsThunk({ items: itemsParsed, destinationFolderId: destinationUuid }));
 };
 
 /**
  * Trashes the colliding drive items and then moves the incoming ones into their place.
  */
 const replaceAndMoveItems = async (
-  items: DriveItemData[],
-  existingItems: DriveItemData[],
+  pairs: CollisionPair<DriveItemData>[],
   destinationUuid: string,
   { dispatch }: NameCollisionContext,
-) => {
-  await moveItemsToTrash(existingItems);
-  await dispatch(storageThunks.moveItemsThunk({ items, destinationFolderId: destinationUuid }));
+): Promise<void> => {
+  if (pairs.length === 0) return;
+
+  await moveItemsToTrash(pairs.map((pair) => pair.existing));
+  await dispatch(
+    storageThunks.moveItemsThunk({
+      items: pairs.map((pair) => pair.item),
+      destinationFolderId: destinationUuid,
+    }),
+  );
 };
 
 /**
@@ -95,7 +101,7 @@ const resolveMoveCollision = async (
   if (operation === 'keep') {
     await keepAndMoveItems(items, destinationUuid, context);
   } else {
-    await replaceAndMoveItems(items, existingItems, destinationUuid, context);
+    await replaceAndMoveItems(getCollisionPairs(items, existingItems), destinationUuid, context);
   }
   context.dispatch(storageActions.popItemsToDelete(items));
 };
@@ -122,84 +128,119 @@ const replaceFileVersion = async (file: File, itemToReplace: DriveItemData, cont
   context.dispatch(fileVersionsActions.invalidateCache(itemToReplace.uuid));
 };
 
-const uploadFolder = async (
-  root: IRoot,
+const uploadFiles = async (
+  files: File[],
+  destinationUuid: string,
+  { dispatch }: NameCollisionContext,
+  shouldSkipDuplicatesCheck = false,
+) => {
+  if (files.length === 0) return;
+
+  await dispatch(
+    storageThunks.uploadItemsThunk({
+      files,
+      parentFolderId: destinationUuid,
+      options: { disableDuplicatedNamesCheck: shouldSkipDuplicatesCheck },
+    }),
+  );
+};
+
+const uploadFolders = async (
+  folders: IRoot[],
   destinationUuid: string,
   { dispatch, selectedWorkspace, maxUploadFileSize }: NameCollisionContext,
-) =>
-  uploadFoldersWithTracking({
-    payload: [{ root: { ...root }, currentFolderId: destinationUuid }],
+) => {
+  if (folders.length === 0) return;
+
+  await uploadFoldersWithTracking({
+    payload: folders.map((root) => ({ root: { ...root }, currentFolderId: destinationUuid })),
     selectedWorkspace,
     dispatch,
     maxUploadFileSize,
   });
+};
 
-const uploadFile = async (
-  file: File,
-  destinationUuid: string,
-  { dispatch }: NameCollisionContext,
-  shouldSkipDuplicatesCheck = false,
-) =>
-  dispatch(
-    storageThunks.uploadItemsThunk({
-      files: [file],
-      parentFolderId: destinationUuid,
-      options: shouldSkipDuplicatesCheck ? { disableDuplicatedNamesCheck: true } : undefined,
-    }),
-  );
-
-const canReplaceVersion = (pair: CollisionPair<IRoot | File>, { isVersioningEnabled }: NameCollisionContext) =>
-  !isFolderUpload(pair.item) && isVersioningEnabled && isVersioningExtensionAllowed(pair.existing);
-
-const trashAndUpload = async (
-  pair: CollisionPair<IRoot | File>,
+const uploadItems = async (
+  items: (IRoot | File)[],
   destinationUuid: string,
   context: NameCollisionContext,
+  shouldSkipDuplicatesCheck = false,
 ) => {
-  await moveItemsToTrash([pair.existing]);
-  if (isFolderUpload(pair.item)) {
-    await uploadFolder(pair.item, destinationUuid, context);
-  } else {
-    await uploadFile(pair.item, destinationUuid, context, true);
+  const folders = items.filter(isFolderUpload);
+  const files = items.filter((item): item is File => !isFolderUpload(item));
+
+  await uploadFolders(folders, destinationUuid, context);
+  await uploadFiles(files, destinationUuid, context, shouldSkipDuplicatesCheck);
+};
+
+const isVersionedFilePair = (pair: CollisionPair<IRoot | File>, { isVersioningEnabled }: NameCollisionContext) =>
+  !isFolderUpload(pair.item) && isVersioningEnabled && isVersioningExtensionAllowed(pair.existing);
+
+/**
+ * Versioned files are replaced one at a time because that upload bypasses the upload queue.
+ */
+const replaceFileVersions = async (pairs: CollisionPair<IRoot | File>[], context: NameCollisionContext) => {
+  for (const pair of pairs) {
+    await replaceFileVersion(pair.item as File, pair.existing, context);
   }
 };
 
+const trashAndUploadItems = async (
+  pairs: CollisionPair<IRoot | File>[],
+  destinationUuid: string,
+  context: NameCollisionContext,
+) => {
+  if (pairs.length === 0) return;
+
+  await moveItemsToTrash(pairs.map((pair) => pair.existing));
+  await uploadItems(
+    pairs.map((pair) => pair.item),
+    destinationUuid,
+    context,
+    true,
+  );
+};
+
 /**
- * Replaces each colliding drive item with the uploaded one. Files whose extension supports
+ * Replaces the colliding drive items with the uploaded ones. Files whose extension supports
  * versioning become a new version of the existing file; everything else is trashed and re-uploaded.
  */
 const replaceAndUploadItems = async (
   pairs: CollisionPair<IRoot | File>[],
   destinationUuid: string,
   context: NameCollisionContext,
-) => {
-  for (const pair of pairs) {
-    if (canReplaceVersion(pair, context)) {
-      await replaceFileVersion(pair.item as File, pair.existing, context);
-    } else {
-      await trashAndUpload(pair, destinationUuid, context);
-    }
-    context.dispatch(fetchSortedFolderContentThunk(destinationUuid));
-  }
+): Promise<void> => {
+  if (pairs.length === 0) return;
+
+  await trashAndUploadItems(
+    pairs.filter((pair) => !isVersionedFilePair(pair, context)),
+    destinationUuid,
+    context,
+  );
+  await replaceFileVersions(
+    pairs.filter((pair) => isVersionedFilePair(pair, context)),
+    context,
+  );
+
+  context.dispatch(fetchSortedFolderContentThunk(destinationUuid));
 };
 
 /**
- * Uploads each item next to the existing one, letting the upload flow pick a unique name.
+ * Uploads the items next to the existing ones, letting the upload flow pick a unique name.
  */
-const keepAndUploadItems = async (items: (IRoot | File)[], destinationUuid: string, context: NameCollisionContext) => {
-  for (const item of items) {
-    if (isFolderUpload(item)) {
-      await uploadFolder(item, destinationUuid, context);
-    } else {
-      await uploadFile(item, destinationUuid, context);
-    }
-    context.dispatch(fetchSortedFolderContentThunk(destinationUuid));
-  }
+const keepAndUploadItems = async (
+  items: (IRoot | File)[],
+  destinationUuid: string,
+  context: NameCollisionContext,
+): Promise<void> => {
+  if (items.length === 0) return;
+
+  await uploadItems(items, destinationUuid, context);
+  context.dispatch(fetchSortedFolderContentThunk(destinationUuid));
 };
 
 /**
- * Applies the chosen resolution to items that collide while being uploaded. Existing items are
- * matched to the uploaded ones by position.
+ * Applies the chosen resolution to items that collide while being uploaded.
  */
 const resolveUploadCollision = async (
   { operation, items, existingItems, destinationUuid }: ResolveUploadCollisionParams,
@@ -207,11 +248,9 @@ const resolveUploadCollision = async (
 ) => {
   if (operation === 'keep') {
     await keepAndUploadItems(items, destinationUuid, context);
-    return;
+  } else {
+    await replaceAndUploadItems(getCollisionPairs(items, existingItems), destinationUuid, context);
   }
-
-  const pairs = items.map((item, index) => ({ item, existing: existingItems[index] }));
-  await replaceAndUploadItems(pairs, destinationUuid, context);
 };
 
 /**
