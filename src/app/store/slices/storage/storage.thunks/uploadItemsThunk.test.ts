@@ -9,7 +9,7 @@ import { RootState } from '../../..';
 import { prepareFilesToUpload } from '../fileUtils/prepareFilesToUpload';
 import { uploadFilesWithTasks } from 'app/tasks/upload/uploadFilesWithTasks';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import RetryManager from 'app/network/RetryManager';
+import RetryManager, { RetryableTaskType } from 'app/network/RetryManager';
 import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
 import { StorageState } from '../storage.model';
 import errorService from 'services/error.service';
@@ -350,7 +350,7 @@ describe('uploadItemsThunkExtraReducers', () => {
     const RetryChangeStatusSpy = vi.spyOn(RetryManager, 'changeStatus');
 
     RetryManager.addTask({
-      type: 'upload',
+      type: RetryableTaskType.Upload,
       taskId: sampleFile.taskId ?? 'task1',
       params: sampleFile,
     });
@@ -374,6 +374,32 @@ describe('uploadItemsThunkExtraReducers', () => {
       text: expect.stringContaining('Upload failed'),
       type: ToastType.Error,
     });
+  });
+
+  it('should not leak a failed request options into later dispatches through DEFAULT_OPTIONS', () => {
+    const notificationsServiceSpy = vi.spyOn(notificationsService, 'show');
+    const cases = new Map();
+    const builder = {
+      addCase: (action, reducer) => {
+        cases.set(action, reducer);
+        return builder;
+      },
+    };
+
+    uploadItemsThunkExtraReducers(builder as unknown as ActionReducerMapBuilder<StorageState>);
+    const rejectedHandler = cases.get(uploadItemsParallelThunk.rejected);
+
+    rejectedHandler(
+      {},
+      {
+        meta: { arg: { options: { showErrors: false, relatedTaskId: 'folder-task-id' } } },
+        error: { message: 'folder upload failed' },
+      },
+    );
+    expect(notificationsServiceSpy).not.toHaveBeenCalled();
+
+    rejectedHandler({}, { meta: { arg: {} }, error: { message: 'other upload failed' } });
+    expect(notificationsServiceSpy).toHaveBeenCalledOnce();
   });
 
   it('should handle rejected case and not call RetryManager if file is not retrying', () => {

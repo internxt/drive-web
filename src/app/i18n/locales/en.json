@@ -293,6 +293,68 @@
       "missingPaymentDetails": "Missing payment details to confirm the payment"
     }
   },
+  "urgentCheckout": {
+    "header": {
+      "tagline": "Your private cloud",
+      "europeanBased": "European based",
+      "gdprCompliant": "GDPR compliant",
+      "trustedByMillions": "Trusted by millions"
+    },
+    "hero": {
+      "offerPill": "{{percent}}% OFF — Limited-time exclusive offer",
+      "offerPillNoDiscount": "Limited-time exclusive offer",
+      "title": "Keep your files, photos & videos",
+      "titleHighlight": "100% private.",
+      "subtitle": "Get {{storage}} of private cloud storage for just {{price}} for your first month.",
+      "imageAlt": "Internxt Drive on a laptop and a phone",
+      "points": {
+        "privacy": {
+          "title": "Only you can access your files",
+          "description": "Zero-knowledge encryption means even Internxt cannot access your content."
+        },
+        "storage": {
+          "title": "Your private cloud, protected",
+          "description": "Store your photos, videos, documents and personal files with privacy built in."
+        },
+        "offer": {
+          "title": "{{percent}}% OFF — for a limited time",
+          "titleNoDiscount": "Exclusive offer — for a limited time",
+          "description": "Get {{storage}} for just {{price}}. This exclusive offer won't last."
+        }
+      },
+      "badges": {
+        "basedInEu": "Based in the EU",
+        "openSource": "Open source",
+        "audited": "Audited by Securitum",
+        "privacyPriority": "Your privacy. Our priority."
+      }
+    },
+    "countdown": {
+      "title": "Your exclusive {{percent}}% OFF offer expires in:",
+      "titleNoDiscount": "Your exclusive offer expires in:",
+      "footer": "Get {{storage}} for {{price}} before this offer ends."
+    },
+    "summary": {
+      "discountApplied": "{{percent}}% OFF applied",
+      "estimatedTax": "Estimated tax"
+    },
+    "form": {
+      "emailLabel": "Your email address",
+      "emailPlaceholder": "you@email.com",
+      "createPasswordLabel": "Create a password",
+      "passwordLabel": "Your password",
+      "passwordPlaceholder": "Password",
+      "togglePasswordVisibility": "Show or hide password",
+      "incompleteDetails": "Please enter your email and password to continue.",
+      "encryptedTitle": "Your files are encrypted and private.",
+      "encryptedDescription": "Internxt cannot access your content."
+    },
+    "cta": {
+      "button": "Get {{storage}} for {{price}}",
+      "renewalNoteMonthly": "First month {{price}}, then renews at {{renewalPrice}}/month. Cancel anytime.",
+      "renewalNoteYearly": "First year {{price}}, then renews at {{renewalPrice}}/year. Cancel anytime."
+    }
+  },
   "general": {
     "of": "of",
     "at": "at",
@@ -401,6 +463,7 @@
   },
   "sideNav": {
     "drive": "Drive",
+    "favorites": "Favorites",
     "backups": "Backups",
     "shared": "Shared",
     "recents": "Recents",
@@ -412,6 +475,13 @@
     }
   },
   "views": {
+    "favorites": {
+      "head": "Favorites",
+      "empty": {
+        "title": "No favorites yet",
+        "description": "Add files or folders to your favorites to access them faster"
+      }
+    },
     "recents": {
       "head": "Recents",
       "empty": {
@@ -1034,6 +1104,10 @@
         "title": "Unlock Meet",
         "description": "Upgrade now to host and join fully encrypted video calls — private, secure, and unlimited."
       },
+      "mail": {
+        "title": "Unlock Mail",
+        "description": "Unlock your private email service with end-to-end encryption."
+      },
       "vpn": {
         "title": "Unlock VPN",
         "description": "Upgrade to protect your traffic with private, encrypted browsing."
@@ -1080,6 +1154,8 @@
     "fileCannotBeEmpty": "File name cannot be empty",
     "creatingFolder": "Error during folder creation",
     "fetchingFolderContent": "Error fetching folder content",
+    "togglingFavorite": "There was an error updating favorites",
+    "togglingSomeFavorites": "Some favorites could not be updated",
     "uploadingFolder": "Error uploading folder",
     "uploadingFile": "Error uploading file: {{reason}}",
     "uploadingItems": "Some of the elements could not be uploaded",
@@ -1109,6 +1185,7 @@
     },
     "storageIsFullDescription": "You can’t upload, sync or backup files.",
     "noFilePreview": "No file preview available",
+    "filePreviewTooLarge": "File too large to preview (over {{limit}})",
     "errorMovingToTrash": "An error occurred while moving the items to trash.",
     "errorDeletingFromTrash": "An error occurred while deleting the items from trash.",
     "connectionLostError": "Internet connection lost",
@@ -1202,7 +1279,8 @@
       "allProcessesHaveFinished": "All processes have finished",
       "processing": "Processing {{pending}} of {{finished}}",
       "failedToUpload": "Failed to upload",
-      "failedToDownload": "Failed to download"
+      "failedToDownload": "Failed to download",
+      "notAllowed": "Not allowed"
     },
     "waiting": "Waiting",
     "paused": "Paused",
@@ -1454,6 +1532,8 @@
       "shareLink": "Share",
       "shareTeam": "Share with team",
       "manageLinkAccess": "Manage access",
+      "addToFavorites": "Add to Favorites",
+      "removeFromFavorites": "Remove from Favorites",
       "rename": "Rename",
       "share": "Share",
       "download": "Download",

@@ -33,6 +33,7 @@ import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapp
 import Mobile from './app/drive/views/MobileView/MobileView';
 import PreferencesDialog from './views/NewSettings';
 import { usePreferencesParamsChange } from './views/NewSettings/hooks/usePreferencesParamsChange';
+import PlanRedirect from './app/routes/Checkout/PlanRedirect';
 import SharingRedirect from './app/routes/Share/ShareRedirection';
 import WorkspacesRedirect from './app/routes/Workspaces/WorkspacesRedirection';
 import { getRoutes } from './app/routes/routes';
@@ -133,7 +134,7 @@ const App = (props: AppProps): JSX.Element => {
       await domainManager.fetchDomains();
 
       await dispatch(workspaceThunks.fetchWorkspaces());
-      navigationService.setWorkspaceFromParams(workspaceThunks, dispatch, false);
+      await navigationService.setWorkspaceFromParams(workspaceThunks, dispatch, false);
 
       await props.dispatch(
         initializeUserThunk({
@@ -149,7 +150,13 @@ const App = (props: AppProps): JSX.Element => {
   };
 
   const pathName = window.location.pathname.split('/')[1];
-  const MOBILE_EXCLUDED_PATHS = ['checkout', 'new', AppView.Login, AppView.UniversalLinkSuccess];
+  const MOBILE_EXCLUDED_PATHS = [
+    'checkout',
+    AppView.UrgentCheckout,
+    'new',
+    AppView.Login,
+    AppView.UniversalLinkSuccess,
+  ];
   let template = <PreparingWorkspaceAnimation />;
   let isMobile = false;
 
@@ -192,40 +199,42 @@ const App = (props: AppProps): JSX.Element => {
               {t('general.stage.development')}
             </span>
           )}
-          <Switch>
-            <Route path="/workspaces/:invitationId/:action" component={WorkspacesRedirect} />
-            <Route path="/sharings/:sharingId/:action" component={SharingRedirect} />
-            <Redirect from="/d/sh/file/:token/:code?" to="/sh/file/:token/:code?" />
-            <Redirect from="/d/sh/folder/:token/:code?" to="/sh/folder/:token/:code?" />
-            <Redirect from="/s/file/:token([a-z0-9]{20})/:code?" to="/sh/file/:token([a-z0-9]{20})/:code?" />
-            <Redirect from="/s/folder/:token([a-z0-9]{20})/:code?" to="/sh/folder/:token([a-z0-9]{20})/:code?" />
-            <Redirect from="/s/photos/:token([a-z0-9]{20})/:code?" to="/sh/photos/:token([a-z0-9]{20})/:code?" />
-            <Redirect from="/account" to="/?preferences=open&section=account&subsection=account" />
-            <Redirect
-              from="/preferences"
-              to={`/?preferences=open&section=account&subsection=${params.get('tab') ?? 'account'}`}
-            />
-            <Redirect from="/app/:section?" to={{ pathname: '/:section?', search: `${queryParameters}` }} />
-            <Route
-              path={['/login', '/new']}
-              exact
-              render={() => (
-                <AuthShell>
-                  <Switch>
-                    <Route path="/login" component={LogIn} />
-                    <Route path="/new" component={SignUpForm} />
-                  </Switch>
-                </AuthShell>
+          <PlanRedirect>
+            <Switch>
+              <Route path="/workspaces/:invitationId/:action" component={WorkspacesRedirect} />
+              <Route path="/sharings/:sharingId/:action" component={SharingRedirect} />
+              <Redirect from="/d/sh/file/:token/:code?" to="/sh/file/:token/:code?" />
+              <Redirect from="/d/sh/folder/:token/:code?" to="/sh/folder/:token/:code?" />
+              <Redirect from="/s/file/:token([a-z0-9]{20})/:code?" to="/sh/file/:token([a-z0-9]{20})/:code?" />
+              <Redirect from="/s/folder/:token([a-z0-9]{20})/:code?" to="/sh/folder/:token([a-z0-9]{20})/:code?" />
+              <Redirect from="/s/photos/:token([a-z0-9]{20})/:code?" to="/sh/photos/:token([a-z0-9]{20})/:code?" />
+              <Redirect from="/account" to="/?preferences=open&section=account&subsection=account" />
+              <Redirect
+                from="/preferences"
+                to={`/?preferences=open&section=account&subsection=${params.get('tab') ?? 'account'}`}
+              />
+              <Redirect from="/app/:section?" to={{ pathname: '/:section?', search: `${queryParameters}` }} />
+              <Route
+                path={['/login', '/new']}
+                exact
+                render={() => (
+                  <AuthShell>
+                    <Switch>
+                      <Route path="/login" component={LogIn} />
+                      <Route path="/new" component={SignUpForm} />
+                    </Switch>
+                  </AuthShell>
+                )}
+              />
+              {!MOBILE_EXCLUDED_PATHS.includes(pathName) && isMobile && isAuthenticated ? (
+                <Route path="*">
+                  <Mobile user={props.user} />
+                </Route>
+              ) : (
+                routes
               )}
-            />
-            {!MOBILE_EXCLUDED_PATHS.includes(pathName) && isMobile && isAuthenticated ? (
-              <Route path="*">
-                <Mobile user={props.user} />
-              </Route>
-            ) : (
-              routes
-            )}
-          </Switch>
+            </Switch>
+          </PlanRedirect>
 
           <Portal>
             <Toaster

@@ -22,6 +22,7 @@ import dateService from 'services/date.service';
 import { getLocation } from 'utils/locationUtils';
 import { Translate } from 'app/i18n/types';
 import encryptedStorageService from 'services/encrypted-storage.service';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
   return (
@@ -103,7 +104,12 @@ const ItemDetailsDialog = ({
   const isItemFolder = item?.type === 'folder' || item?.isFolder;
   const IconComponent = iconService.getItemIcon(isItemFolder ?? false, item?.type);
   const itemName = `${item?.plainName ?? item?.name}` + `${item?.type && !item.isFolder ? '.' + item?.type : ''}`;
-  const user = encryptedStorageService.getUser();
+  const [user, setUser] = useState<UserSettings | null>(null);
+
+  useEffect(() => {
+    encryptedStorageService.getUser().then(setUser);
+  }, []);
+
   const isFolder = item?.isFolder;
   const workspaceSelected = useSelector(workspacesSelectors.getSelectedWorkspace);
   const isWorkspaceSelected = !!workspaceSelected;
@@ -125,7 +131,7 @@ const ItemDetailsDialog = ({
           errorService.reportError(error);
         });
     }
-  }, [item, isOpen]);
+  }, [item, isOpen, user]);
 
   const onClose = () => {
     dispatch(uiActions.setIsItemDetailsDialogOpen(false));

@@ -32,7 +32,7 @@ import {
 import databaseService from 'app/database/services/database.service';
 import { AppDispatch } from 'app/store';
 import { planThunks } from 'app/store/slices/plan';
-import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/user';
+import { initializeUserThunk, userThunks } from 'app/store/slices/user';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { generateMnemonic, validateMnemonic } from 'bip39';
 import errorService from 'services/error.service';
@@ -79,6 +79,8 @@ type LogInParams = {
   twoFactorCode: string;
   dispatch: AppDispatch;
   loginType?: 'web' | 'desktop';
+  turnstileToken?: string;
+  knownSecurityDetails?: SecurityDetails;
 };
 
 type AuthenticateUserParams = {
@@ -91,6 +93,8 @@ type AuthenticateUserParams = {
   token?: string;
   redeemCodeObject?: boolean;
   doSignUp?: RegisterFunction;
+  turnstileToken?: string;
+  knownSecurityDetails?: SecurityDetails;
 };
 
 const getCurrentUrlParams = (): Record<string, string> => {
@@ -124,7 +128,10 @@ export async function logOut(loginParams?: Record<string, string>): Promise<void
   localStorageService.clear();
   encryptedStorageService.clear();
   RealtimeService.getInstance().stop();
-  if (!navigationService.isCurrentPath(AppView.BlockedAccount) && !navigationService.isCurrentPath(AppView.Checkout)) {
+  const isCheckoutPath =
+    navigationService.isCurrentPath(AppView.Checkout) || navigationService.isCurrentPath(AppView.UrgentCheckout);
+
+  if (!navigationService.isCurrentPath(AppView.BlockedAccount) && !isCheckoutPath) {
     const preservedParams = getCurrentUrlParams();
     const urlParams = { ...preservedParams, ...loginParams };
 
@@ -138,22 +145,23 @@ export function cancelAccount(): Promise<void> {
   return authClient.sendUserDeactivationEmail(token);
 }
 
-export const is2FANeeded = async (email: string): Promise<boolean> => {
-  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
-  const securityDetails = await authClient.securityDetails(email).catch((error) => {
+export const getSecurityDetails = async (email: string, turnstileToken?: string): Promise<SecurityDetails> => {
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient({ turnstileToken });
+  return authClient.securityDetails(email).catch((error) => {
     throw errorService.castError(error);
   });
+};
+
+export const is2FANeeded = async (email: string, turnstileToken?: string): Promise<boolean> => {
+  const securityDetails = await getSecurityDetails(email, turnstileToken);
 
   return securityDetails.tfaEnabled;
 };
 
-const getAuthClient = (authType: 'web' | 'desktop') => {
-  const AUTH_CLIENT = {
-    web: SdkFactory.getNewApiInstance().createAuthClient(),
-    desktop: SdkFactory.getNewApiInstance().createDesktopAuthClient(),
-  };
-
-  return AUTH_CLIENT[authType];
+const getAuthClient = (authType: 'web' | 'desktop', turnstileToken?: string) => {
+  return authType === 'desktop'
+    ? SdkFactory.getNewApiInstance().createDesktopAuthClient({ turnstileToken })
+    : SdkFactory.getNewApiInstance().createAuthClient({ turnstileToken });
 };
 
 export const doLogin = async (
@@ -161,8 +169,10 @@ export const doLogin = async (
   password: string,
   twoFactorCode: string,
   loginType: 'web' | 'desktop' | undefined = 'web',
+  turnstileToken?: string,
+  knownSecurityDetails?: SecurityDetails,
 ): Promise<ProfileInfo> => {
-  const authClient = getAuthClient(loginType);
+  const authClient = getAuthClient(loginType, turnstileToken);
   const loginDetails: LoginDetails = {
     email: email.toLowerCase(),
     password: password,
@@ -180,7 +190,7 @@ export const doLogin = async (
   };
 
   return authClient
-    .login(loginDetails, cryptoProvider)
+    .login(loginDetails, cryptoProvider, knownSecurityDetails)
     .then(async (data) => {
       const { user, newToken } = data;
 
@@ -232,7 +242,7 @@ export const readReferalCookie = (): string | undefined => {
 };
 
 export const getSalt = async (): Promise<string> => {
-  const email = encryptedStorageService.getUser()?.email;
+  const email = (await encryptedStorageService.getUser())?.email;
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(String(email));
   return decryptText(securityDetails.encryptedSalt);
@@ -380,7 +390,7 @@ const resetAccountWithToken = async (token: string | undefined, newPassword: str
 };
 
 export const changePassword = async (newPassword: string, currentPassword: string): Promise<void> => {
-  const user = encryptedStorageService.getUser();
+  const user = await encryptedStorageService.getUser();
   if (!user) {
     throw new Error('No user in local storage');
   }
@@ -426,8 +436,8 @@ export const changePassword = async (newPassword: string, currentPassword: strin
     });
 };
 
-export const userHas2FAStored = (): Promise<SecurityDetails> => {
-  const email = encryptedStorageService.getUser()?.email;
+export const userHas2FAStored = async (): Promise<SecurityDetails> => {
+  const email = (await encryptedStorageService.getUser())?.email;
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   return authClient.securityDetails(<string>email);
 };
@@ -580,7 +590,7 @@ export const signUp = async (params: SignUpParams) => {
     },
   };
 
-  dispatch(userActions.setUser(user));
+  await dispatch(userThunks.setUserThunk(user));
   await dispatch(userThunks.initializeUserThunk());
 
   if (!redeemCodeObject) dispatch(planThunks.initializeThunk());
@@ -591,9 +601,16 @@ export const signUp = async (params: SignUpParams) => {
 };
 
 export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
-  const { email, password, twoFactorCode, dispatch, loginType = 'web' } = params;
-  const { newToken, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType);
-  dispatch(userActions.setUser(user));
+  const { email, password, twoFactorCode, dispatch, loginType = 'web', turnstileToken, knownSecurityDetails } = params;
+  const { newToken, user, mnemonic } = await doLogin(
+    email,
+    password,
+    twoFactorCode,
+    loginType,
+    turnstileToken,
+    knownSecurityDetails,
+  );
+  await dispatch(userThunks.setUserThunk(user));
 
   try {
     dispatch(planThunks.initializeThunk());
@@ -606,7 +623,7 @@ export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
     throw new Error(error.message);
   }
 
-  userActions.setUser(user);
+  userThunks.setUserThunk(user);
 
   return { user, mnemonic, newToken };
 };
@@ -622,9 +639,19 @@ export const authenticateUser = async (params: AuthenticateUserParams): Promise<
     token = '',
     redeemCodeObject = false,
     doSignUp,
+    turnstileToken,
+    knownSecurityDetails,
   } = params;
   if (authMethod === 'signIn') {
-    const profileInfo = await logIn({ email, password, twoFactorCode, dispatch, loginType });
+    const profileInfo = await logIn({
+      email,
+      password,
+      twoFactorCode,
+      dispatch,
+      loginType,
+      turnstileToken,
+      knownSecurityDetails,
+    });
     globalThis.gtag('event', 'User Signin', { method: 'email' });
     return profileInfo;
   } else if (authMethod === 'signUp' && doSignUp) {

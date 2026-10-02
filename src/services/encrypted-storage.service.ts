@@ -8,6 +8,7 @@ let workspaceMnemonicCache: string | null = null;
 let workspaceCredentialsCache: WorkspaceCredentialsDetails | null = null;
 let folderTokenCache: string | null = null;
 let fileTokenCache: string | null = null;
+let userCache: UserSettings | null = null;
 
 const getAndDecrypt = async (key: LocalStorageProtectedItem): Promise<string | null> => {
   const item = localStorage.getItem(key);
@@ -75,15 +76,6 @@ const hydrateEncryptedStorageCache = async (): Promise<void> => {
   } catch {
     workspaceCredentialsCache = null;
   }
-
-  //migration from unencrypted version, remove once completed
-  if (!tokenCache) {
-    const unencryptedToken = localStorage.getItem(LocalStorageItem.NewToken);
-    if (unencryptedToken) {
-      await setToken(unencryptedToken);
-      localStorage.removeItem(LocalStorageItem.NewToken);
-    }
-  }
 };
 
 const getToken = (): string | undefined => tokenCache ?? undefined;
@@ -95,6 +87,7 @@ const clear = (): void => {
   clearFolderToken();
   clearB2BWorkspace();
   clearWorkspaceCredentials();
+  clearUser();
 };
 
 const getB2BWorkspaceMnemonic = async (): Promise<string | null> => {
@@ -135,15 +128,50 @@ const clearWorkspaceCredentials = (): void => {
   localStorage.removeItem(LocalStorageProtectedItem.EncryptedWorkspaceCredentials);
 };
 
-const getUser = (): UserSettings | null => {
-  const stringUser: string | null = localStorage.getItem(LocalStorageProtectedItem.User);
-
-  return stringUser ? JSON.parse(stringUser) : null;
+const clearUser = (): void => {
+  userCache = null;
+  localStorage.removeItem(LocalStorageProtectedItem.EncryptedUser);
+  localStorage.removeItem(LocalStorageItem.UserUUID);
 };
 
-const setUser = (user: UserSettings): void => {
+const getUser = async (): Promise<UserSettings | null> => {
+  if (userCache !== null) return userCache;
+
+  try {
+    const value = await getAndDecrypt(LocalStorageProtectedItem.EncryptedUser);
+    if (!value) {
+      userCache = null;
+    } else {
+      const parsed = JSON.parse(value) as UserSettings;
+      userCache = { ...parsed, createdAt: new Date(parsed.createdAt) };
+    }
+  } catch {
+    userCache = null;
+  }
+
+  //migration from unencrypted version, remove once completed
+  if (!userCache) {
+    try {
+      const unencryptedUser = localStorage.getItem(LocalStorageProtectedItem.User);
+      if (unencryptedUser) {
+        const parsedUser = JSON.parse(unencryptedUser) as UserSettings;
+        const user = { ...parsedUser, createdAt: new Date(parsedUser.createdAt) };
+        await setUser(user);
+        localStorage.removeItem(LocalStorageProtectedItem.User);
+      }
+    } catch {
+      userCache = null;
+    }
+  }
+
+  return userCache;
+};
+
+const setUser = async (user: UserSettings): Promise<void> => {
   localStorage.setItem(LocalStorageItem.UserUUID, user.uuid);
-  localStorage.setItem(LocalStorageProtectedItem.User, JSON.stringify(user));
+
+  userCache = user;
+  await setAndEncrypt(LocalStorageProtectedItem.EncryptedUser, JSON.stringify(user));
 };
 
 const encryptedStorageService = {
@@ -164,6 +192,7 @@ const encryptedStorageService = {
   clearWorkspaceCredentials,
   getUser,
   setUser,
+  clearUser,
 };
 
 export default encryptedStorageService;
@@ -184,6 +213,7 @@ export interface EncryptedStorageService {
   getWorkspaceCredentials: () => WorkspaceCredentialsDetails | null;
   setWorkspaceCredentials: (credentials: WorkspaceCredentialsDetails) => Promise<void>;
   clearWorkspaceCredentials: () => void;
-  getUser: () => UserSettings | null;
-  setUser: (user: UserSettings) => void;
+  getUser: () => Promise<UserSettings | null>;
+  setUser: (user: UserSettings) => Promise<void>;
+  clearUser: () => void;
 }

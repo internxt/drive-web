@@ -1,6 +1,6 @@
 import { auth } from '@internxt/lib';
 import QueryString from 'qs';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { useSelector } from 'react-redux';
@@ -8,14 +8,13 @@ import { Link } from 'react-router-dom';
 
 import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
-import { userActions } from 'app/store/slices/user';
-import authService, { authenticateUser, is2FANeeded } from 'services/auth.service';
+import { userThunks } from 'app/store/slices/user';
+import authService, { authenticateUser, getSecurityDetails } from 'services/auth.service';
 import { twoFactorRegexPattern } from 'services/validation.service';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Button } from '@internxt/ui';
 import { WarningCircle } from '@phosphor-icons/react';
-import { AppError } from '@internxt/sdk';
 import { AppView, IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
@@ -26,6 +25,7 @@ import { envService, errorService, navigationService, vpnAuthService, workspaces
 import { AuthMethodTypes } from 'views/Checkout/types';
 import { useOAuthFlow } from 'views/Login/hooks/useOAuthFlow';
 import useLoginRedirections from '../hooks/useLoginRedirections';
+import TurnstileWidget, { TurnstileWidgetHandle } from 'components/TurnstileWidget';
 import encryptedStorageService from 'services/encrypted-storage.service';
 
 const showNotification = ({ text, isError }: { text: string; isError: boolean }) => {
@@ -68,6 +68,8 @@ export default function LogIn(): JSX.Element {
     authOrigin: isAuthOrigin,
   });
 
+  const turnstileRef = useRef<TurnstileWidgetHandle>(null);
+
   useEffect(() => {
     handleShareInvitation();
     handleWorkspaceInvitation(dispatch);
@@ -81,14 +83,16 @@ export default function LogIn(): JSX.Element {
 
   useEffect(() => {
     if (user && mnemonic && !isOAuthFlow) {
-      dispatch(userActions.setUser(user));
-      redirectWithCredentials(
-        user,
-        mnemonic,
-        isUniversalLinkMode || isSharingInvitation
-          ? { universalLinkMode: isUniversalLinkMode, isSharingInvitation }
-          : undefined,
-      );
+      (async () => {
+        await dispatch(userThunks.setUserThunk(user));
+        redirectWithCredentials(
+          user,
+          mnemonic,
+          isUniversalLinkMode || isSharingInvitation
+            ? { universalLinkMode: isUniversalLinkMode, isSharingInvitation }
+            : undefined,
+        );
+      })();
     }
   }, []);
 
@@ -119,6 +123,16 @@ export default function LogIn(): JSX.Element {
     defaultValue: '',
   });
 
+  const email = useWatch({
+    control,
+    name: 'email',
+    defaultValue: '',
+  });
+
+  useEffect(() => {
+    setShowTwoFactor(false);
+  }, [email]);
+
   const sendUnblockAccountEmail = async (email: string) => {
     try {
       await authService.requestUnblockAccount(email);
@@ -139,7 +153,7 @@ export default function LogIn(): JSX.Element {
     setLoginError([castedError.message]);
     setShowErrors(true);
 
-    if ((err as AppError)?.status === 403) {
+    if (castedError.status === 403 && castedError.code === 'ACCOUNT_BLOCKED') {
       await sendUnblockAccountEmail(email);
       navigationService.history.push({
         pathname: AppView.BlockedAccount,
@@ -185,9 +199,9 @@ export default function LogIn(): JSX.Element {
     const { email, password } = formData;
 
     try {
-      const isTfaEnabled = await is2FANeeded(email);
+      const securityDetails = await getSecurityDetails(email, await turnstileRef.current?.getToken());
 
-      if (!isTfaEnabled || showTwoFactor) {
+      if (!securityDetails.tfaEnabled || showTwoFactor) {
         const loginType: 'desktop' | 'web' = isUniversalLinkMode ? 'desktop' : 'web';
         const authParams = {
           email,
@@ -196,6 +210,8 @@ export default function LogIn(): JSX.Element {
           twoFactorCode,
           dispatch,
           loginType,
+          turnstileToken: await turnstileRef.current?.getToken(),
+          knownSecurityDetails: securityDetails,
         };
 
         const { user, mnemonic } = await authenticateUser(authParams);
@@ -321,6 +337,7 @@ export default function LogIn(): JSX.Element {
             </Button>
           </Link>
         </div>
+        <TurnstileWidget ref={turnstileRef} action="login" />
       </div>
     </div>
   );

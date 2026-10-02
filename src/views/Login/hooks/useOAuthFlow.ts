@@ -17,15 +17,16 @@ export const useOAuthFlow = ({ authOrigin }: UseOAuthFlowParams): UseOAuthFlowRe
   const isOAuthFlow = !!authOrigin;
 
   useEffect(() => {
-    if (isOAuthFlow) {
-      const user = encryptedStorageService.getUser();
+    if (!isOAuthFlow) return;
+
+    encryptedStorageService.getUser().then((user) => {
       const newToken = encryptedStorageService.getToken();
 
       if (user && newToken) {
         const params = new URLSearchParams(globalThis.location.search);
         navigationService.push(AppView.OAuthLink, Object.fromEntries(params.entries()));
       }
-    }
+    });
   }, [isOAuthFlow]);
 
   const handleOAuthSuccess = (user: UserSettings, newToken: string): boolean => {

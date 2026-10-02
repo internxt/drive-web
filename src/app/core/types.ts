@@ -91,6 +91,7 @@ export enum AppView {
   ButtonAuth = 'buttonAuth',
   RecoverAccount = 'recover-account',
   Drive = 'drive',
+  Favorites = 'favorites',
   Recents = 'recents',
   Trash = 'trash',
   Backups = 'backups',
@@ -103,6 +104,7 @@ export enum AppView {
   CheckoutSuccess = 'checkout-success',
   CheckoutCancel = 'checkout-cancel',
   Checkout = 'checkout',
+  UrgentCheckout = 'checkout-uc',
   CheckoutSession = 'checkout-session',
   RecoveryLink = 'recovery-link',
   ShareFileToken = 'share-token',
@@ -125,7 +127,6 @@ export enum AppView {
 
 export enum LocalStorageItem {
   UserUUID = 'xUserUUID',
-  NewToken = 'xNewToken',
   Language = 'i18nextLng',
   ShowSummerBanner = 'showSummerBanner',
   CheckoutItemData = 'checkout_item_data',
@@ -162,6 +163,7 @@ export enum LocalStorageItem {
 
 export enum LocalStorageProtectedItem {
   User = 'xUser',
+  EncryptedUser = 'xEncryptedUser',
   EncryptedToken = 'xTokenEncrypted',
   EncryptedB2BworkspaceMnemonic = 'xEncryptedB2BWorkspaceMnemonic',
   EncryptedWorkspaceCredentials = 'xEncryptedWorkspaceCredentials',

@@ -8,7 +8,7 @@ import { PersistUploadRepository } from '../repositories/DatabaseUploadRepositor
 import { TaskStatus } from '../tasks/types';
 import { ConnectionLostError } from './requests';
 import { FileToUpload } from 'app/drive/services/file.service/types';
-import RetryManager, { RetryableTask } from './RetryManager';
+import RetryManager, { RetryableTask, RetryableTaskStatus, RetryableTaskType } from './RetryManager';
 import { ErrorMessages } from 'app/core/constants';
 import { MAX_UPLOAD_ATTEMPTS, TWENTY_MEGABYTES, USE_MULTIPART_THRESHOLD_BYTES } from './networkConstants';
 import { OwnerUserAuthenticationData, UploadErrorReason } from './types';
@@ -75,7 +75,10 @@ export const uploadFileWithManager = (props: UploadFileWithManagerProps): Promis
 
 class UploadManager {
   private currentGroupBeingUploaded: FileSizeType = FileSizeType.Small;
-  private errored = false;
+  private hasErrored = false;
+  private hasSomeUploadFailed = false;
+  private firstUploadError?: Error;
+  private readonly nonRetryableTaskIds = new Set<string>();
   private uploadsProgress: Record<string, number> = {};
   private readonly abortController?: AbortController;
   private readonly items: UploadFileParamsWithTaskId[];
@@ -195,8 +198,14 @@ class UploadManager {
               !!this.abortController?.signal.aborted || !!fileData.abortController?.signal.aborted || error === 'abort';
             const isLostConnectionError =
               error instanceof ConnectionLostError || error.message === ErrorMessages.NetworkError;
+            const isNonRetryableError = UploadManager.isNonRetryableError(error);
 
-            if (uploadAttempts < MAX_UPLOAD_ATTEMPTS && !isUploadAborted && !isLostConnectionError) {
+            if (
+              uploadAttempts < MAX_UPLOAD_ATTEMPTS &&
+              !isUploadAborted &&
+              !isLostConnectionError &&
+              !isNonRetryableError
+            ) {
               upload();
             } else {
               this.handleUploadErrors({
@@ -229,6 +238,43 @@ class UploadManager {
     this.events = props.events;
   }
 
+  private static isNonRetryableError(error: unknown): boolean {
+    return (
+      (error as { status?: number })?.status === HTTP_STATUS_CODES.PAYMENT_REQUIRED ||
+      errorService.castError(error).code === HTTP_CODE_ERRORS.FILE_UPLOAD_SIZE_EXCEEDED
+    );
+  }
+
+  private applyUnexpectedUploadError({
+    fileData,
+    castedError,
+    isMaxSpaceError,
+    shouldContinueWithRemainingFiles,
+  }: {
+    fileData: UploadFileParamsWithTaskId;
+    castedError: ReturnType<typeof errorService.castError>;
+    isMaxSpaceError: boolean;
+    shouldContinueWithRemainingFiles: boolean;
+  }): void {
+    this.events?.onUploadError?.(fileData, 'upload-failed');
+    errorService.reportError(castedError);
+
+    if (castedError.code === HTTP_CODE_ERRORS.FILE_UPLOAD_SIZE_EXCEEDED) {
+      this.fileSizeExceededCallback?.();
+    }
+
+    if (isMaxSpaceError) {
+      this.maxSpaceOccupiedCallback();
+    }
+
+    if (!shouldContinueWithRemainingFiles) {
+      if (!this.hasErrored) {
+        this.uploadQueue.kill();
+      }
+      this.hasErrored = true;
+    }
+  }
+
   private handleUploadErrors({
     error,
     fileData,
@@ -253,36 +299,34 @@ class UploadManager {
     if (isLostConnectionError) {
       errorService.reportError(castedError);
       this.events?.onUploadError?.(fileData, 'connection-lost');
-      this.errored = true;
+      this.hasErrored = true;
       next(castedError);
       return;
     }
 
+    const isMaxSpaceError = (error as { status?: number })?.status === HTTP_STATUS_CODES.MAX_SPACE_USED;
+    const shouldContinueWithRemainingFiles =
+      !!this.options?.isUploadedFromFolder && !this.options?.isRetriedUpload && !isMaxSpaceError;
+
+    if (UploadManager.isNonRetryableError(error)) {
+      this.nonRetryableTaskIds.add(fileData.taskId);
+    }
+
     // Handle unexpected errors
     if (!isUploadAborted) {
-      this.events?.onUploadError?.(fileData, 'upload-failed');
-      errorService.reportError(castedError);
-
-      // Handle file size exceeded
-      if (castedError.code === HTTP_CODE_ERRORS.FILE_UPLOAD_SIZE_EXCEEDED) {
-        this.fileSizeExceededCallback?.();
-      }
-
-      // Handle max space used error
-      if ((error as { status?: number })?.status === HTTP_STATUS_CODES.MAX_SPACE_USED) {
-        this.maxSpaceOccupiedCallback();
-      }
-
-      // Ensure upload queue is killed and errored is set
-      if (!this.errored) {
-        this.uploadQueue.kill();
-      }
-      this.errored = true;
+      this.applyUnexpectedUploadError({ fileData, castedError, isMaxSpaceError, shouldContinueWithRemainingFiles });
     }
 
     // Handle upload aborted
     if (isUploadAborted) {
       this.events?.onUploadAborted?.(fileData);
+      next(null);
+      return;
+    }
+
+    if (shouldContinueWithRemainingFiles) {
+      this.hasSomeUploadFailed = true;
+      this.firstUploadError ??= castedError;
       next(null);
       return;
     }
@@ -396,8 +440,9 @@ class UploadManager {
           else
             filesToRetry.push({
               taskId: files[i]?.taskId ?? files[i]?.relatedTaskId ?? '',
-              type: 'upload',
+              type: RetryableTaskType.Upload,
               params: files[i],
+              retryable: !this.nonRetryableTaskIds.has(files[i]?.taskId ?? ''),
             });
         }
 
@@ -406,7 +451,7 @@ class UploadManager {
         if (files.length === 1 && fileTaskId) {
           const noFilesToRetry = filesToRetry.length === 0;
           if (noFilesToRetry) RetryManager.removeTask(fileTaskId);
-          else RetryManager.changeStatus(fileTaskId, 'failed');
+          else RetryManager.changeStatus(fileTaskId, RetryableTaskStatus.Failed);
         }
       };
 
@@ -419,6 +464,10 @@ class UploadManager {
       this.currentGroupBeingUploaded = FileSizeType.Big;
 
       if (bigSizedFiles.length > 0) await uploadFiles(bigSizedFiles, this.filesGroups.big.concurrency);
+
+      if (this.hasSomeUploadFailed) {
+        throw this.firstUploadError ?? new Error('Some files could not be uploaded');
+      }
 
       return { uploadedFiles: uploadedFilesData };
     } catch (error) {

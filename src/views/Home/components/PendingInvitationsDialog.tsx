@@ -1,5 +1,6 @@
 import { PendingInvitesResponse } from '@internxt/sdk/dist/workspaces';
 import { CheckCircle, X } from '@phosphor-icons/react';
+import { createPortal } from 'react-dom';
 import errorService from 'services/error.service';
 import workspacesService from 'services/workspace.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -80,7 +81,7 @@ const PendingInvitationsDialog = ({
     }
   }
 
-  return (
+  return createPortal(
     <Modal isOpen={isDialogOpen} onClose={onCloseDialog} className="p-0" maxWidth="max-w-xl">
       <div className="flex w-full flex-col">
         <div className="flex h-full max-h-12 w-full items-center justify-between rounded-t-xl border-b border-gray-10 px-5 py-8">
@@ -140,7 +141,8 @@ const PendingInvitationsDialog = ({
           )}
         </div>
       </div>
-    </Modal>
+    </Modal>,
+    document.body,
   );
 };
 
