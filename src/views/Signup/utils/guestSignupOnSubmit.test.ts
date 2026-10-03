@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { AxiosResponseError } from '@internxt/sdk/dist/shared/types/errors';
 import { guestSignupOnSubmit } from './guestSignupOnSubmit';
 import { AppView, IFormValues } from 'app/core/types';
 import errorService from 'services/error.service';
@@ -9,6 +10,9 @@ import { parseAndDecryptUserKeys } from 'app/crypto/services/keys.service';
 import { userThunks } from 'app/store/slices/user';
 import { planThunks } from 'app/store/slices/plan';
 import encryptedStorageService from 'services/encrypted-storage.service';
+
+const backendError = (status: number, data: Record<string, unknown>) =>
+  new AxiosResponseError('Request failed', '', { status, data, headers: {} } as never);
 
 vi.mock(import('services/error.service'));
 vi.mock(import('services/local-storage.service'));
@@ -24,6 +28,7 @@ describe('guestSignupOnSubmit', () => {
   const mockSetIsLoading = vi.fn();
   const mockSetSignupError = vi.fn();
   const mockSetShowError = vi.fn();
+  const mockSetPendingSetupEmail = vi.fn();
   const mockDoRegisterPreCreatedUser = vi.fn();
   const mockEvent = { preventDefault: vi.fn() } as unknown as React.BaseSyntheticEvent;
 
@@ -84,6 +89,7 @@ describe('guestSignupOnSubmit', () => {
       setIsLoading: mockSetIsLoading,
       setSignupError: mockSetSignupError,
       setShowError: mockSetShowError,
+      setPendingSetupEmail: mockSetPendingSetupEmail,
       redirectTo: AppView.Drive,
     });
 
@@ -119,6 +125,7 @@ describe('guestSignupOnSubmit', () => {
       setIsLoading: mockSetIsLoading,
       setSignupError: mockSetSignupError,
       setShowError: mockSetShowError,
+      setPendingSetupEmail: mockSetPendingSetupEmail,
       redirectTo: AppView.Drive,
     });
 
@@ -127,6 +134,31 @@ describe('guestSignupOnSubmit', () => {
     expect(errorService.reportError).toHaveBeenCalledWith(mockError);
     expect(errorService.castError).toHaveBeenCalledWith(mockError);
     expect(mockSetSignupError).toHaveBeenCalledWith('Registration failed');
+    expect(mockSetPendingSetupEmail).toHaveBeenCalledWith(null);
+    expect(mockSetShowError).toHaveBeenCalledWith(true);
+    expect(navigationService.push).not.toHaveBeenCalled();
+  });
+
+  it('when the invited email already has a paid account waiting to be set up, then the pending setup is reported for that email instead of a generic error', async () => {
+    mockDoRegisterPreCreatedUser.mockRejectedValue(
+      backendError(403, { message: 'Account setup pending', code: 'AccountSetupPending' }),
+    );
+
+    await guestSignupOnSubmit({
+      formData: mockFormData,
+      invitationId: 'invite-123',
+      doRegisterPreCreatedUser: mockDoRegisterPreCreatedUser,
+      dispatch: mockDispatch,
+      setIsLoading: mockSetIsLoading,
+      setSignupError: mockSetSignupError,
+      setShowError: mockSetShowError,
+      setPendingSetupEmail: mockSetPendingSetupEmail,
+      redirectTo: AppView.Drive,
+    });
+
+    expect(mockSetPendingSetupEmail).toHaveBeenCalledWith('test@example.com');
+    expect(mockSetSignupError).toHaveBeenCalledWith(undefined);
+    expect(errorService.reportError).not.toHaveBeenCalled();
     expect(mockSetShowError).toHaveBeenCalledWith(true);
     expect(navigationService.push).not.toHaveBeenCalled();
   });
@@ -147,6 +179,7 @@ describe('guestSignupOnSubmit', () => {
       setIsLoading: mockSetIsLoading,
       setSignupError: mockSetSignupError,
       setShowError: mockSetShowError,
+      setPendingSetupEmail: mockSetPendingSetupEmail,
       redirectTo: AppView.Drive,
     });
 
