@@ -8,6 +8,7 @@ interface DateCalendarProps {
   selected?: Dayjs;
   minDate?: Dayjs;
   maxDate?: Dayjs;
+  allowFutureDates?: boolean;
   onSelect: (date: Dayjs) => void;
 }
 
@@ -26,7 +27,7 @@ const getDayClassName = (isSelected: boolean, isCurrentMonth: boolean, isDisable
   return `${textClass} hover:bg-gray-5 dark:hover:bg-gray-10`;
 };
 
-const DateCalendar = ({ selected, minDate, maxDate, onSelect }: DateCalendarProps): JSX.Element => {
+const DateCalendar = ({ selected, minDate, maxDate, onSelect, allowFutureDates}: DateCalendarProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const [month, setMonth] = useState<Dayjs>((selected ?? dayjs()).startOf('month'));
 
@@ -45,7 +46,7 @@ const DateCalendar = ({ selected, minDate, maxDate, onSelect }: DateCalendarProp
 
   const isDayDisabled = (day: Dayjs): boolean =>
     Boolean(
-      day.isAfter(today, 'day') ||
+      (!allowFutureDates && day.isAfter(today, 'day')) ||
         (minDate && day.isBefore(minDate, 'day')) ||
         (maxDate && day.isAfter(maxDate, 'day')),
     );

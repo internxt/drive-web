@@ -5,7 +5,7 @@ import { Button, Modal } from '@internxt/ui';
 import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
-import { MouseEvent, useCallback, useEffect, useRef } from 'react';
+import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import errorService from 'services/error.service';
 import shareService, { getSharingRoles } from 'app/share/services/share.service';
@@ -51,6 +51,8 @@ import { useShareItemActions } from './hooks/useShareItemActions';
 import { useShareItemInvitations } from './hooks/useShareItemInvitations';
 import { useShareItemUserRoles } from './hooks/useShareItemUserRoles';
 import AccessRequests from './components/AccessRequests';
+import { LinkExpirationSelector } from './components/GeneralView/LinkExpirationSelector';
+import dayjs, { Dayjs } from 'dayjs';
 
 export type ShareDialogProps = {
   user: UserSettings;
@@ -73,6 +75,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const userFeatures = useAppSelector((state) => state.user.userTierFeatures);
   const isRestrictedSharingAvailable = userFeatures?.[Service.Drive].restrictedItemsSharing.enabled ?? false;
   const isPasswordSharingAvailable = userFeatures?.[Service.Drive].passwordProtectedSharing.enabled ?? false;
+  const [linkExpirationDate, setLinkExpirationDate] = useState<Dayjs>();
 
   const { state, dispatch: actionDispatch } = useShareDialogContext();
 
@@ -104,9 +107,11 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     userEmail: props?.user?.email,
   });
   const isProtectWithPasswordOptionAvailable = accessMode === 'public' && !isLoading && isUserOwner;
+  const isLinkExpirationOptionAvailable = accessMode === 'public' && isUserOwner;
   const closeSelectedUserPopover = () => actionDispatch(setSelectedUserListIndex(null));
   const {
     onCopyLink,
+    onChangeLinkExpirationDate,
     onDisablePassword,
     onPasswordCheckboxChange,
     onSavePublicSharePassword,
@@ -115,6 +120,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   } = useShareItemActions({
     itemToShare,
     isPasswordSharingAvailable,
+    linkExpirationDate: linkExpirationDate?.toISOString(),
     dispatch,
     onClose: () => dispatch(uiActions.setIsShareDialogOpen(false)),
     onShareItem: props.onShareItem,
@@ -146,6 +152,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
     if (!isOpen) {
       actionDispatch(resetDialogData());
+      setLinkExpirationDate(undefined);
       onCloseDialog?.();
     }
   }, [isOpen]);
@@ -178,6 +185,8 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
     const sharingType = sharingInfo?.type ?? 'public';
     const isAlreadyPasswordProtected = sharingInfo?.publicSharing?.isPasswordProtected ?? false;
+    const currentLinkExpirationDate = sharingInfo?.publicSharing?.expirationAt;
+    setLinkExpirationDate(currentLinkExpirationDate ? dayjs(currentLinkExpirationDate) : undefined);
 
     if (!isItemNotSharedYet) {
       try {
@@ -207,6 +216,16 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     dispatch(uiActions.setIsShareDialogOpen(false));
   };
 
+  const onLinkExpirationDateChange = async (date?: Dayjs) => {
+    const previousDate = linkExpirationDate;
+    setLinkExpirationDate(date);
+
+    const isSaved = await onChangeLinkExpirationDate(date?.toISOString());
+    if (!isSaved) {
+      setLinkExpirationDate(previousDate);
+    }
+  };
+
   const onUpgradePlan = () => {
     navigationService.openPreferencesDialog({
       section: 'account',
@@ -233,8 +252,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       userOptions.current.click();
     }
   };
-
-  const onOpenPendingAccess = () => actionDispatch(setView('requests'));
 
   const onOpenStopSharingDialog = useCallback(() => {
     actionDispatch(setShowStopSharingConfirmation(true));
@@ -306,6 +323,14 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
               isPasswordSharingAvailable={isPasswordSharingAvailable}
               onChangePassword={() => actionDispatch(setOpenPasswordInput(true))}
               onPasswordCheckboxChange={onPasswordCheckboxChange}
+            />
+          )}
+
+          {isLinkExpirationOptionAvailable && (
+            <LinkExpirationSelector
+              isLoading={isLoading}
+              value={linkExpirationDate}
+              onChange={onLinkExpirationDateChange}
             />
           )}
 

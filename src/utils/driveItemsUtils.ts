@@ -23,4 +23,24 @@ const removeDuplicates = <T extends ItemData>(list: T[]) => {
   });
 };
 
-export { removeDuplicates };
+type ItemWithLinkExpiration = {
+  linkExpirationDate?: string;
+  sharings?: { type: string; expirationAt?: string | null }[];
+};
+
+/**
+ * Gets the expiration date of the public link of an item.
+ * Shared lists return it as `linkExpirationDate`, while drive lists return it inside the public sharing.
+ *
+ * @param {ItemWithLinkExpiration} item - Item that may have a public link.
+ * @returns {string | undefined} - Expiration date of the public link, or undefined if it never expires.
+ */
+const getLinkExpirationDate = (item: ItemWithLinkExpiration): string | undefined => {
+  if (item.linkExpirationDate) {
+    return item.linkExpirationDate;
+  }
+
+  return item.sharings?.find((sharing) => sharing.type === 'public')?.expirationAt ?? undefined;
+};
+
+export { removeDuplicates, getLinkExpirationDate };

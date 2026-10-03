@@ -289,6 +289,43 @@ describe('Get public shared link', async () => {
     expect(spyDecrypt).not.toHaveBeenCalled();
   });
 
+  test('When a link expiration date is provided, then it is sent when creating the sharing', async () => {
+    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue({ bucket, mnemonic } as UserSettings);
+    const linkExpirationDate = '2026-10-31T22:59:59.999Z';
+
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    const mockCreatePublicSharingItemFn = vi.fn(async (payload) => ({
+      ...mockSharingMeta,
+      encryptedCode: payload.encryptedCode,
+    }));
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
+      createShareClient: vi.fn(() => ({ createSharing: mockCreatePublicSharingItemFn })),
+    } as any);
+
+    const { createPublicShareFromOwnerUser } = await import('./share.service');
+    await createPublicShareFromOwnerUser('uuid', 'file', { linkExpirationDate });
+
+    expect(mockCreatePublicSharingItemFn).toHaveBeenCalledWith(expect.objectContaining({ linkExpirationDate }));
+  });
+
+  test('When no link expiration date is provided, then it is not sent when creating the sharing', async () => {
+    vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue({ bucket, mnemonic } as UserSettings);
+
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    const mockCreatePublicSharingItemFn = vi.fn(async (payload) => ({
+      ...mockSharingMeta,
+      encryptedCode: payload.encryptedCode,
+    }));
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
+      createShareClient: vi.fn(() => ({ createSharing: mockCreatePublicSharingItemFn })),
+    } as any);
+
+    const { createPublicShareFromOwnerUser } = await import('./share.service');
+    await createPublicShareFromOwnerUser('uuid', 'file');
+
+    expect(mockCreatePublicSharingItemFn.mock.calls[0][0]).not.toHaveProperty('linkExpirationDate');
+  });
+
   test('When user is invited and mnemonic is available in sharing v2, decrypt the mnemonic and use it', async () => {
     const keys = await generateNewKeys();
     const publicKeyInBase64 = keys.publicKeyArmored;
@@ -497,6 +534,49 @@ describe('Get public shared link', async () => {
       expect.objectContaining({ type: ToastType.Error, requestId: 'test-request-id' }),
     );
     expect(errorService.reportError).toHaveBeenCalled();
+  });
+});
+
+describe('Sharing expiration', () => {
+  const sharingId = 'sharing-id';
+
+  test('When saving a link expiration date, then it is sent to the sharing', async () => {
+    const linkExpirationDate = '2026-10-31T22:59:59.999Z';
+    const mockSaveSharingExpirationFn = vi.fn().mockResolvedValue({ id: sharingId, expirationAt: linkExpirationDate });
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
+      createShareClient: vi.fn(() => ({ saveSharingExpiration: mockSaveSharingExpirationFn })),
+    } as any);
+
+    const sharing = await shareService.saveSharingExpiration(sharingId, linkExpirationDate);
+
+    expect(mockSaveSharingExpirationFn).toHaveBeenCalledWith(sharingId, linkExpirationDate);
+    expect(sharing).toEqual({ id: sharingId, expirationAt: linkExpirationDate });
+  });
+
+  test('When removing the link expiration date, then the sharing no longer expires', async () => {
+    const mockRemoveSharingExpirationFn = vi.fn().mockResolvedValue({ id: sharingId, expirationAt: null });
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
+      createShareClient: vi.fn(() => ({ removeSharingExpiration: mockRemoveSharingExpirationFn })),
+    } as any);
+
+    const sharing = await shareService.removeSharingExpiration(sharingId);
+
+    expect(mockRemoveSharingExpirationFn).toHaveBeenCalledWith(sharingId);
+    expect(sharing).toEqual({ id: sharingId, expirationAt: null });
+  });
+
+  test('When saving the link expiration date fails, then the error is thrown', async () => {
+    const error = new Error('The expiration date must be in the future');
+    const { SdkFactory } = await import('../../core/factory/sdk');
+    vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
+      createShareClient: vi.fn(() => ({ saveSharingExpiration: vi.fn().mockRejectedValue(error) })),
+    } as any);
+
+    await expect(shareService.saveSharingExpiration(sharingId, '2020-01-01T00:00:00.000Z')).rejects.toThrow(
+      error.message,
+    );
   });
 });
 

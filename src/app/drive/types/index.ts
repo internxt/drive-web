@@ -27,12 +27,13 @@ export interface DriveFolderData {
   userId: number;
   user_id: number;
   shares?: Array<ShareLink>;
-  sharings?: { type: string; id: string }[];
+  sharings?: { type: string; id: string; expirationAt?: string | null }[];
   uuid: string;
   type?: string;
   user?: UserResumeData;
   expiresAt?: string;
   isFavorite?: boolean;
+  linkExpirationDate?: string;
 }
 
 export interface DriveFolderMetadataPayload {
@@ -63,11 +64,12 @@ export interface DriveFileData {
   thumbnails: Array<Thumbnail>;
   currentThumbnail: Thumbnail | null;
   shares?: Array<ShareLink>;
-  sharings?: { type: string; id: string }[];
+  sharings?: { type: string; id: string; expirationAt?: string | null }[];
   uuid: string;
   user?: UserResumeData;
   expiresAt?: string;
   isFavorite?: boolean;
+  linkExpirationDate?: string;
 }
 
 interface Thumbnail {
@@ -114,6 +116,7 @@ export interface DriveItemPatch {
   size?: number;
   sizeComputed?: boolean;
   isFavorite?: boolean;
+  linkExpirationDate?: string;
 }
 
 export interface ReachedPlanLimitDialogInfo {
@@ -200,6 +203,7 @@ export type ItemDetailsProps = {
   uploaded: string;
   modified: string;
   shared: string;
+  expiration?: string;
   type?: string;
   size?: string;
   numberOfFiles?: string;

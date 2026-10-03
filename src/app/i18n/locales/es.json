@@ -865,6 +865,7 @@
         "uploaded": "Subido",
         "uploadedBy": "Subido por",
         "shared": "Compartido",
+        "expiration": "Caducidad del enlace",
         "size": "Tamaño",
         "numberOfFiles": "Número de archivos",
         "modified": "Modificado",
@@ -919,7 +920,8 @@
       "errors": {
         "updatingRole": "El rol no pudo ser actualizado, por favor inténtalo nuevamente más tarde.",
         "copy-to-clipboard": "Error al compartir el elemento, inténtalo de nuevo más tarde.",
-        "update-sharing-access": "El modo de acceso no se pudo actualizar, por favor inténtelo de nuevo más tarde"
+        "update-sharing-access": "El modo de acceso no se pudo actualizar, por favor inténtelo de nuevo más tarde",
+        "update-link-expiration": "La fecha de caducidad no se pudo actualizar, por favor inténtelo de nuevo más tarde"
       },
       "general": {
         "generalAccess": "Acceso general",
@@ -1176,6 +1178,7 @@
       "name": "Nombre",
       "created": "Creado",
       "size": "Tamaño",
+      "expiration": "Caducidad del enlace",
       "owner": "Propietario"
     },
     "empty-state": {
@@ -1367,6 +1370,8 @@
     "title": "Configuración del enlace",
     "access": "Acceso",
     "protect": "Proteger con contraseña",
+    "expiringDate": "Fecha de caducidad",
+    "removeExpiringDate": "Quitar fecha de caducidad",
     "addSecurePassword": "Añade una contraseña al enlace para más seguridad",
     "password": "Contraseña",
     "views": "Visitas",
@@ -1429,6 +1434,7 @@
       "uploadFiles": "Subir archivos",
       "uploadFolder": "Subir carpeta"
     },
+    "expirationDate": "Caduca:",
     "change": "Cambiar",
     "download": "Descargar",
     "downloading": "Descargando",
@@ -1477,6 +1483,7 @@
         "name": "Nombre",
         "modified": "Modificado",
         "size": "Tamaño",
+        "expiration": "Caducidad del enlace",
         "autoDelete": "Eliminación automática",
         "originalLocation": "Ubicación original"
       }

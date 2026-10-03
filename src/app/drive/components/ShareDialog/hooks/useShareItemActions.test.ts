@@ -159,11 +159,40 @@ describe('Share Item Actions', () => {
 
       await result.current.onCopyLink();
 
-      expect(getPublicShareLinkSpy).toHaveBeenCalledWith('item-uuid-123', 'file', undefined);
+      expect(getPublicShareLinkSpy).toHaveBeenCalledWith('item-uuid-123', 'file', undefined, undefined);
       expect(mockActionDispatch).toHaveBeenCalledWith(
         expect.objectContaining({ type: 'SET_SHARING_META', payload: mockSharingMeta }),
       );
       expect(mockOnShareItem).toHaveBeenCalled();
+    });
+
+    test('When access mode is public and a link expiration date is selected, then gets public share link with it', async () => {
+      mockUseShareDialogContext.mockReturnValue({
+        state: {
+          accessMode: 'public',
+          sharingMeta: null,
+          isPasswordProtected: false,
+        },
+        dispatch: mockActionDispatch,
+      });
+      const getPublicShareLinkSpy = vi.spyOn(shareService, 'getPublicShareLink').mockResolvedValue(mockSharingMeta);
+      const linkExpirationDate = '2026-10-31T22:59:59.999Z';
+
+      const itemToShare = createItemToShare(false);
+      const { result } = renderHook(() =>
+        useShareItemActions({
+          itemToShare,
+          isPasswordSharingAvailable: true,
+          linkExpirationDate,
+          dispatch: mockDispatch,
+          onClose: mockOnClose,
+          onShareItem: mockOnShareItem,
+        }),
+      );
+
+      await result.current.onCopyLink();
+
+      expect(getPublicShareLinkSpy).toHaveBeenCalledWith('item-uuid-123', 'file', undefined, linkExpirationDate);
     });
   });
 
@@ -299,6 +328,36 @@ describe('Share Item Actions', () => {
       );
     });
 
+    test('When the link expiration date changes, then creates new public share with the latest date', async () => {
+      const plainCode = 'test plain code';
+      const createPublicShareFromOwnerUserSpy = vi
+        .spyOn(shareService, 'createPublicShareFromOwnerUser')
+        .mockResolvedValue({ publicSharingItemData: mockSharingMeta, plainCode });
+      const linkExpirationDate = '2026-10-31T22:59:59.999Z';
+
+      const itemToShare = createItemToShare(false);
+      const { result, rerender } = renderHook(
+        ({ linkExpirationDate }: { linkExpirationDate?: string }) =>
+          useShareItemActions({
+            itemToShare,
+            isPasswordSharingAvailable: true,
+            linkExpirationDate,
+            dispatch: mockDispatch,
+            onClose: mockOnClose,
+            onShareItem: mockOnShareItem,
+          }),
+        { initialProps: {} },
+      );
+
+      rerender({ linkExpirationDate });
+      await result.current.onSavePublicSharePassword('my-password');
+
+      expect(createPublicShareFromOwnerUserSpy).toHaveBeenCalledWith('item-uuid-123', 'file', {
+        plainPassword: 'my-password',
+        linkExpirationDate,
+      });
+    });
+
     test('When error occurs, then casts error and closes password input', async () => {
       const error = new Error('Save password failed');
       vi.spyOn(shareService, 'createPublicShareFromOwnerUser').mockRejectedValue(error);
@@ -382,6 +441,94 @@ describe('Share Item Actions', () => {
       expect(mockActionDispatch).toHaveBeenCalledWith(
         expect.objectContaining({ type: 'SET_OPEN_PASSWORD_DISABLE_DIALOG', payload: false }),
       );
+    });
+  });
+
+  describe('Change Link Expiration Date', () => {
+    const linkExpirationDate = '2026-10-31T22:59:59.999Z';
+    const publicSharingMeta = { ...mockSharingMeta, type: 'public' } as SharingMeta;
+
+    const renderWithSharingMeta = (sharingMeta: SharingMeta | null) => {
+      mockUseShareDialogContext.mockReturnValue({
+        state: {
+          accessMode: 'public',
+          sharingMeta,
+          isPasswordProtected: false,
+        },
+        dispatch: mockActionDispatch,
+      });
+
+      return renderHook(() =>
+        useShareItemActions({
+          itemToShare: createItemToShare(false),
+          isPasswordSharingAvailable: true,
+          dispatch: mockDispatch,
+          onClose: mockOnClose,
+          onShareItem: mockOnShareItem,
+        }),
+      );
+    };
+
+    test('When the public link does not exist yet, then nothing is saved until it is created', async () => {
+      const saveSharingExpirationSpy = vi.spyOn(shareService, 'saveSharingExpiration');
+      const { result } = renderWithSharingMeta(null);
+
+      const isSaved = await result.current.onChangeLinkExpirationDate(linkExpirationDate);
+
+      expect(isSaved).toBe(true);
+      expect(saveSharingExpirationSpy).not.toHaveBeenCalled();
+    });
+
+    test('When the public link exists and a date is selected, then it saves the new date', async () => {
+      const saveSharingExpirationSpy = vi
+        .spyOn(shareService, 'saveSharingExpiration')
+        .mockResolvedValue({ ...publicSharingMeta, expirationAt: linkExpirationDate });
+      const { result } = renderWithSharingMeta(publicSharingMeta);
+
+      const isSaved = await result.current.onChangeLinkExpirationDate(linkExpirationDate);
+
+      expect(isSaved).toBe(true);
+      expect(saveSharingExpirationSpy).toHaveBeenCalledWith('sharing-id-123', linkExpirationDate);
+      expect(mockOnShareItem).toHaveBeenCalled();
+    });
+
+    test('When the public link exists and the date is removed, then the link no longer expires', async () => {
+      const removeSharingExpirationSpy = vi
+        .spyOn(shareService, 'removeSharingExpiration')
+        .mockResolvedValue({ ...publicSharingMeta, expirationAt: null });
+      const { result } = renderWithSharingMeta(publicSharingMeta);
+
+      const isSaved = await result.current.onChangeLinkExpirationDate(undefined);
+
+      expect(isSaved).toBe(true);
+      expect(removeSharingExpirationSpy).toHaveBeenCalledWith('sharing-id-123');
+      expect(mockOnShareItem).toHaveBeenCalled();
+    });
+
+    test('When the sharing is private, then nothing is saved', async () => {
+      const saveSharingExpirationSpy = vi.spyOn(shareService, 'saveSharingExpiration');
+      const { result } = renderWithSharingMeta({ ...mockSharingMeta, type: 'private' } as SharingMeta);
+
+      await result.current.onChangeLinkExpirationDate(linkExpirationDate);
+
+      expect(saveSharingExpirationSpy).not.toHaveBeenCalled();
+    });
+
+    test('When saving the date fails, then shows an error and reports it was not saved', async () => {
+      vi.spyOn(shareService, 'saveSharingExpiration').mockRejectedValue(new Error('Bad request'));
+      const reportErrorSpy = vi.spyOn(errorService, 'reportError').mockImplementation(() => undefined);
+      const showNotificationSpy = vi.spyOn(notificationsService, 'show');
+      const { result } = renderWithSharingMeta(publicSharingMeta);
+
+      const isSaved = await result.current.onChangeLinkExpirationDate(linkExpirationDate);
+
+      expect(isSaved).toBe(false);
+      expect(reportErrorSpy).toHaveBeenCalled();
+      expect(showNotificationSpy).toHaveBeenCalledWith({
+        text: 'modals.shareModal.errors.update-link-expiration',
+        type: ToastType.Error,
+      });
+      expect(mockOnShareItem).not.toHaveBeenCalled();
     });
   });
 

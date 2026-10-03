@@ -21,6 +21,7 @@ import './components/ShareView.scss';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import { PublicSharedItemInfo, SharingMeta } from '@internxt/sdk/dist/drive/share/types';
 import errorService from 'services/error.service';
+import dateService from 'services/date.service';
 import { binaryStreamToBlob } from 'services/stream.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { HTTP_STATUS_CODES } from 'app/core/constants';
@@ -60,6 +61,7 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
   const [itemPassword, setItemPassword] = useState('');
   const [sendBannerVisible, setSendBannerVisible] = useState(false);
   const [blob, setBlob] = useState<Blob | null>(null);
+  const expirationDate: string | undefined = info?.expirationAt ?? undefined;
 
   let body;
 
@@ -290,6 +292,11 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
                 {getFormatFileName()}
               </abbr>
               <span className="text-gray-60">{getFormatFileSize()}</span>
+              {expirationDate && (
+                <span className="text-gray-60">
+                  {translate('actions.expirationDate')} {dateService.format(expirationDate, 'D MMM, YYYY')}
+                </span>
+              )}
             </div>
           </div>
         </div>
