@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
-import { uploadFileWithManager, UploadManagerEvents } from './UploadManager';
+import { UploadFileParamsWithTaskId, uploadFileWithManager, UploadManagerEvents } from './UploadManager';
 import errorService from 'services/error.service';
 import { AppError } from '@internxt/sdk';
 import uploadFile from 'app/drive/services/file.service/uploadFile';
-import DatabaseUploadRepository from 'app/repositories/DatabaseUploadRepository';
+import DatabaseUploadRepository, { PersistUploadRepository } from 'app/repositories/DatabaseUploadRepository';
 import { DriveFileData } from 'app/drive/types';
 import RetryManager, { RetryableTaskType } from './RetryManager';
 import { TaskStatus } from 'app/tasks/types';
@@ -814,5 +814,158 @@ describe('uploadFileWithManager', () => {
     ).rejects.toThrow(err);
 
     expect(openMaxSpaceOccupiedDialogMock).toHaveBeenCalledOnce();
+  });
+});
+
+describe('UploadManager settles every queued file', () => {
+  const HANG_TIMEOUT_MS = 2000;
+  const uploadStateError = new Error('IDB failure');
+
+  /** A hang must fail the test with a clear reason instead of timing out the whole suite. */
+  const failIfHangs = <T>(promise: Promise<T>): Promise<T> =>
+    Promise.race([
+      promise,
+      new Promise<never>((_, reject) => setTimeout(() => reject(new Error('upload never settled')), HANG_TIMEOUT_MS)),
+    ]);
+
+  const buildFile = (name: string): UploadFileParamsWithTaskId => ({
+    taskId: `${name}-task`,
+    filecontent: {
+      content: name as unknown as File,
+      type: 'text/plain',
+      name,
+      size: 1024,
+      parentFolderId: 'folder-1',
+    },
+    userEmail: '',
+    parentFolderId: '',
+  });
+
+  const buildRepository = (failingUploadStateCalls: Record<string, number[]> = {}): PersistUploadRepository => {
+    const callsByTaskId: Record<string, number> = {};
+    return {
+      setUploadState: vi.fn(async () => undefined),
+      removeUploadState: vi.fn(async () => undefined),
+      getUploadState: vi.fn(async (id: string) => {
+        callsByTaskId[id] = (callsByTaskId[id] ?? 0) + 1;
+        if (failingUploadStateCalls[id]?.includes(callsByTaskId[id])) throw uploadStateError;
+        return undefined;
+      }),
+    };
+  };
+
+  const runUpload = ({
+    files,
+    uploadRepository = buildRepository(),
+    events,
+    isUploadedFromFolder = false,
+  }: {
+    files: UploadFileParamsWithTaskId[];
+    uploadRepository?: PersistUploadRepository;
+    events?: UploadManagerEvents;
+    isUploadedFromFolder?: boolean;
+  }) =>
+    failIfHangs(
+      uploadFileWithManager({
+        files,
+        maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
+        uploadRepository,
+        events,
+        options: { isUploadedFromFolder },
+      }),
+    );
+
+  const uploadedNames = () => (uploadFile as Mock).mock.calls.map(([file]) => file.name);
+
+  beforeEach(() => {
+    RetryManager.clearTasks();
+    vi.clearAllMocks();
+    vi.spyOn(errorService, 'castError').mockImplementation((e) => (e ?? new AppError('Unknown error')) as AppError);
+    vi.spyOn(errorService, 'reportError').mockReturnValue();
+    (uploadFile as Mock).mockImplementation(async (file: { name: string }) => ({ ...mockFile1, name: file.name }));
+  });
+
+  test('when reading the upload state keeps failing, then the upload settles and the file is reported as failed', async () => {
+    const file = buildFile('file.txt');
+    const events: UploadManagerEvents = { onUploadError: vi.fn() };
+    const uploadRepository = buildRepository({ [file.taskId]: [1, 2] });
+
+    await expect(runUpload({ files: [file], uploadRepository, events })).rejects.toThrow(uploadStateError);
+
+    expect(uploadFile).not.toHaveBeenCalled();
+    expect(events.onUploadError).toHaveBeenCalledWith(
+      expect.objectContaining({ taskId: file.taskId }),
+      'upload-failed',
+    );
+  });
+
+  test('when reading the upload state fails on the retry after a 502, then the folder upload settles with the file failed and the others uploaded', async () => {
+    const failingFile = buildFile('failing.txt');
+    const otherFiles = [buildFile('a.txt'), buildFile('b.txt')];
+    (uploadFile as Mock).mockImplementationOnce(() => Promise.reject({ status: 502 }));
+    const uploadRepository = buildRepository({ [failingFile.taskId]: [2] });
+    const events: UploadManagerEvents = { onUploadSuccess: vi.fn(), onUploadError: vi.fn() };
+
+    await expect(
+      runUpload({ files: [failingFile, ...otherFiles], uploadRepository, events, isUploadedFromFolder: true }),
+    ).rejects.toThrow(uploadStateError);
+
+    expect(events.onUploadSuccess).toHaveBeenCalledTimes(otherFiles.length);
+    expect(events.onUploadError).toHaveBeenCalledWith(
+      expect.objectContaining({ taskId: failingFile.taskId }),
+      'upload-failed',
+    );
+    expect(RetryManager.getTasks()).toEqual([expect.objectContaining({ taskId: failingFile.taskId, retryable: true })]);
+  });
+
+  test('when the upload rejects without an error value, then the upload settles and the file is reported as failed', async () => {
+    (uploadFile as Mock).mockRejectedValue(undefined);
+    const events: UploadManagerEvents = { onUploadError: vi.fn() };
+
+    await expect(runUpload({ files: [buildFile('file.txt')], events })).rejects.toThrow('Unknown error');
+
+    expect(events.onUploadError).toHaveBeenCalledWith(expect.anything(), 'upload-failed');
+  });
+
+  test('when a success listener throws, then every file is uploaded once and the queue keeps processing', async () => {
+    const files = ['a.txt', 'b.txt', 'c.txt'].map(buildFile);
+    const onFileUploadCallback = vi.fn();
+    const events: UploadManagerEvents = {
+      onUploadSuccess: vi.fn((file) => {
+        if (file.taskId === files[0].taskId) throw new Error('listener failure');
+      }),
+    };
+
+    const { uploadedFiles } = await failIfHangs(
+      uploadFileWithManager({
+        files,
+        maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
+        uploadRepository: buildRepository(),
+        events,
+        onFileUploadCallback,
+      }),
+    );
+
+    expect(uploadedNames()).toEqual(['a.txt', 'b.txt', 'c.txt']);
+    expect(uploadedFiles.map(({ name }) => name)).toEqual(['a.txt', 'b.txt', 'c.txt']);
+    expect(onFileUploadCallback).toHaveBeenCalledTimes(files.length);
+  });
+
+  test('when a listener throws while the next queued file starts, then finished files are not uploaded again and the folder upload settles', async () => {
+    const files = Array.from({ length: 7 }, (_, i) => buildFile(`f${i}.txt`));
+    const startingFile = files[6];
+    const listenerError = new Error('listener failure');
+    const events: UploadManagerEvents = {
+      onUploadStart: vi.fn((file) => {
+        if (file.taskId === startingFile.taskId) throw listenerError;
+      }),
+      onUploadSuccess: vi.fn(),
+    };
+
+    await expect(runUpload({ files, events, isUploadedFromFolder: true })).rejects.toThrow(listenerError);
+
+    expect(uploadedNames()).toEqual(files.slice(0, 6).map((file) => file.filecontent.name));
+    expect(events.onUploadSuccess).toHaveBeenCalledTimes(6);
+    expect(RetryManager.getTasks()).toEqual([expect.objectContaining({ taskId: startingFile.taskId })]);
   });
 });
