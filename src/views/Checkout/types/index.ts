@@ -7,6 +7,8 @@ import { Translate } from 'app/i18n/types';
 export enum Currency {
   'eur' = '€',
   'usd' = '$',
+  'inr' = '₹',
+  'brl' = 'R$',
 }
 
 export interface ProductMetadata {
@@ -78,6 +80,10 @@ export type AuthMethodTypes = 'signUp' | 'signIn' | 'userIsSignedIn';
 export type ErrorType = 'auth' | 'stripe' | 'coupon';
 
 export type PartialErrorState = Partial<Record<ErrorType, string>>;
+
+export type CurrencyCode = keyof typeof Currency;
+
+export type PaymentMethod = 'card' | 'paypal' | 'klarna' | 'upi' | 'pix';
 
 export interface CreatePaymentIntentPayload {
   customerId: string;

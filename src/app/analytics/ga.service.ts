@@ -139,9 +139,9 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
   }
 }
 
-function trackPurchase(): void {
+async function trackPurchase(): Promise<void> {
   try {
-    const userSettings = encryptedStorageService.getUser();
+    const userSettings = await encryptedStorageService.getUser();
     if (!userSettings) {
       console.warn('[GA Service] No user settings found, aborting purchase tracking');
       return;

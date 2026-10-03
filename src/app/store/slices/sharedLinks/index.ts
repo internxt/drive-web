@@ -11,7 +11,7 @@ import { UserRoles } from 'app/share/types';
 import referralService from 'services/referral.service';
 import { t } from 'i18next';
 import userService from 'services/user.service';
-import { hybridEncryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
+import { encryptMnemonic } from 'app/share/services/share.crypto';
 
 export const HYBRID_ALGORITHM = 'hybrid';
 export const STANDARD_ALGORITHM = 'ed25519';
@@ -58,15 +58,11 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
       const publicKeyResponse = await userService.getPublicKeyWithPrecreation(payload.sharedWith);
 
       const publicKey = publicKeyResponse.publicKey;
-      const publicKyberKey = publicKeyResponse?.publicKyberKey ?? '';
+      const publicKyberKey = publicKeyResponse?.publicKyberKey ?? undefined;
 
-      const encryptedMnemonicInBase64 = await hybridEncryptMessageWithPublicKey({
-        message: mnemonic,
-        publicKeyInBase64: publicKey,
-        publicKyberKeyBase64: publicKyberKey,
-      });
+      const encryptedMnemonicInBase64 = await encryptMnemonic(mnemonic, publicKey, publicKyberKey);
 
-      const encryptionAlgorithm = publicKyberKey !== '' && publicKyberKey ? HYBRID_ALGORITHM : STANDARD_ALGORITHM;
+      const encryptionAlgorithm = publicKyberKey ? HYBRID_ALGORITHM : STANDARD_ALGORITHM;
 
       await shareService.inviteUserToSharedFolder({
         itemId: payload.itemId,

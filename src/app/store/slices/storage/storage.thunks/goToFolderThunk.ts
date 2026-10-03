@@ -1,6 +1,7 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { FolderAncestor, FolderAncestorWorkspace } from '@internxt/sdk/dist/drive/storage/types';
+import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { storageActions } from '..';
 import { RootState } from '../../..';
 import newStorageService from 'app/drive/services/new-storage.service';
@@ -8,9 +9,9 @@ import { FolderPath } from 'app/drive/types';
 import { uiActions } from '../../ui';
 import { StorageState } from '../storage.model';
 import storageSelectors from '../storage.selectors';
-import { useSelector } from 'react-redux';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import encryptedStorageService from 'services/encrypted-storage.service';
+import errorService from 'services/error.service';
 
 const parsePathNames = (breadcrumbsList: FolderAncestor[] | FolderAncestorWorkspace[]) => {
   // ADDED UNTIL WE UPDATE TYPESCRIPT VERSION
@@ -22,8 +23,7 @@ const parsePathNames = (breadcrumbsList: FolderAncestor[] | FolderAncestorWorksp
   return fullPathParsedNamesList;
 };
 
-export const getAncestorsAndSetNamePath = async (uuid: string, dispatch) => {
-  const workspaceSelected = useSelector(workspacesSelectors.getSelectedWorkspace);
+export const getAncestorsAndSetNamePath = async (uuid: string, dispatch, workspaceSelected: WorkspaceData | null) => {
   const isWorkspaceSelected = !!workspaceSelected;
   const token = await encryptedStorageService.getSharedItemAccessToken(true);
   const breadcrumbsList: FolderAncestor[] | FolderAncestorWorkspace[] = isWorkspaceSelected
@@ -61,7 +61,9 @@ export const goToFolderThunk = createAsyncThunk<void, FolderPath, { state: RootS
     dispatch(storageActions.setCurrentPath(path));
 
     if (path.uuid && !isInNamePath) {
-      getAncestorsAndSetNamePath(path.uuid, dispatch);
+      getAncestorsAndSetNamePath(path.uuid, dispatch, workspacesSelectors.getSelectedWorkspace(getState())).catch(
+        (error) => errorService.reportError(error),
+      );
     }
   },
 );

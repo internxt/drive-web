@@ -293,6 +293,68 @@
       "missingPaymentDetails": "Dati di pagamento mancanti per confermare il pagamento"
     }
   },
+  "urgentCheckout": {
+    "header": {
+      "tagline": "Il tuo cloud privato",
+      "europeanBased": "Con sede in Europa",
+      "gdprCompliant": "Conforme al GDPR",
+      "trustedByMillions": "Scelto da milioni di utenti"
+    },
+    "hero": {
+      "offerPill": "{{percent}}% DI SCONTO — Offerta esclusiva a tempo limitato",
+      "offerPillNoDiscount": "Offerta esclusiva a tempo limitato",
+      "title": "Mantieni i tuoi file, foto e video",
+      "titleHighlight": "100% privati.",
+      "subtitle": "Ottieni {{storage}} di spazio cloud privato a soli {{price}} per il primo mese.",
+      "imageAlt": "Internxt Drive su un laptop e uno smartphone",
+      "points": {
+        "privacy": {
+          "title": "Solo tu puoi accedere ai tuoi file",
+          "description": "La crittografia zero-knowledge fa sì che nemmeno Internxt possa accedere ai tuoi contenuti."
+        },
+        "storage": {
+          "title": "Il tuo cloud privato, protetto",
+          "description": "Conserva le tue foto, i video, i documenti e i file personali con la privacy integrata."
+        },
+        "offer": {
+          "title": "{{percent}}% DI SCONTO — per un tempo limitato",
+          "titleNoDiscount": "Offerta esclusiva — per un tempo limitato",
+          "description": "Ottieni {{storage}} a soli {{price}}. Questa offerta esclusiva non durerà."
+        }
+      },
+      "badges": {
+        "basedInEu": "Con sede nell'UE",
+        "openSource": "Open source",
+        "audited": "Verificato da Securitum",
+        "privacyPriority": "La tua privacy. La nostra priorità."
+      }
+    },
+    "countdown": {
+      "title": "La tua offerta esclusiva del {{percent}}% di sconto scade tra:",
+      "titleNoDiscount": "La tua offerta esclusiva scade tra:",
+      "footer": "Ottieni {{storage}} a {{price}} prima che l'offerta finisca."
+    },
+    "summary": {
+      "discountApplied": "{{percent}}% di sconto applicato",
+      "estimatedTax": "Tasse stimate"
+    },
+    "form": {
+      "emailLabel": "Il tuo indirizzo email",
+      "emailPlaceholder": "tu@email.com",
+      "createPasswordLabel": "Crea una password",
+      "passwordLabel": "La tua password",
+      "passwordPlaceholder": "Password",
+      "togglePasswordVisibility": "Mostra o nascondi la password",
+      "incompleteDetails": "Inserisci la tua email e la tua password per continuare.",
+      "encryptedTitle": "I tuoi file sono crittografati e privati.",
+      "encryptedDescription": "Internxt non può accedere ai tuoi contenuti."
+    },
+    "cta": {
+      "button": "Ottieni {{storage}} a {{price}}",
+      "renewalNoteMonthly": "Primo mese {{price}}, poi si rinnova a {{renewalPrice}}/mese. Disdici quando vuoi.",
+      "renewalNoteYearly": "Primo anno {{price}}, poi si rinnova a {{renewalPrice}}/anno. Disdici quando vuoi."
+    }
+  },
   "general": {
     "of": "di",
     "at": "alle",
@@ -401,6 +463,7 @@
   },
   "sideNav": {
     "drive": "Drive",
+    "favorites": "Preferiti",
     "backups": "Backup",
     "shared": "Condiviso",
     "recents": "Recenti",
@@ -412,6 +475,13 @@
     }
   },
   "views": {
+    "favorites": {
+      "head": "Preferiti",
+      "empty": {
+        "title": "Ancora nessun preferito",
+        "description": "Aggiungi file o cartelle ai tuoi preferiti per accedervi più velocemente"
+      }
+    },
     "recents": {
       "head": "Recenti",
       "empty": {
@@ -1034,6 +1104,10 @@
         "title": "Sblocca Meet",
         "description": "Aggiorna ora per ospitare e partecipare a videochiamate completamente crittografate — private, sicure e illimitate."
       },
+      "mail": {
+        "title": "Sblocca Mail",
+        "description": "Sblocca il tuo servizio email privato con crittografia end-to-end."
+      },
       "vpn": {
         "title": "Sblocca VPN",
         "description": "Aggiorna il piano per proteggere il tuo traffico con navigazione privata e crittografata."
@@ -1059,6 +1133,8 @@
     "fileCannotBeEmpty": "Il nome del file non può essere vuoto",
     "creatingFolder": "Errore durante la creazione della cartella",
     "fetchingFolderContent": "Errore nel recupero del contenuto della cartella",
+    "togglingFavorite": "Si è verificato un errore durante l'aggiornamento dei preferiti",
+    "togglingSomeFavorites": "Non è stato possibile aggiornare alcuni preferiti",
     "uploadingFolder": "Errore nel caricamento della cartella",
     "uploadingFile": "Errore nel caricamento del file: {{reason}}",
     "uploadingItems": "Non è stato possibile caricare alcuni elementi",
@@ -1088,6 +1164,7 @@
     "ownerStorageIsFullDescription": "Non puoi caricare file in questa cartella condivisa.",
     "storageIsFullDescription": "Non puoi caricare, sincronizzare o eseguire il backup dei file",
     "noFilePreview": "Non è disponibile un'anteprima del file",
+    "filePreviewTooLarge": "File troppo grande per l'anteprima (oltre {{limit}})",
     "errorMovingToTrash": "Si è verificato un errore durante lo spostamento degli elementi nel cestino.",
     "errorDeletingFromTrash": "Si è verificato un errore durante l'eliminazione degli elementi dal cestino.",
     "connectionLostError": "Connessione Internet persa",
@@ -1181,7 +1258,8 @@
       "allProcessesHaveFinished": "Tutti i processi sono stati completati",
       "processing": "Elaborazione {{pending}} di {{finished}}",
       "failedToUpload": "Caricamento fallito",
-      "failedToDownload": "Download fallito"
+      "failedToDownload": "Download fallito",
+      "notAllowed": "Non consentito"
     },
     "waiting": "In attesa",
     "paused": "In pausa",
@@ -1431,6 +1509,8 @@
       "openPreview": "Anteprima aperta",
       "shareLink": "Condividi",
       "shareTeam": "Condividi con il team",
+      "addToFavorites": "Aggiungi ai preferiti",
+      "removeFromFavorites": "Rimuovi dai preferiti",
       "rename": "Rinomina",
       "download": "Scarica",
       "details": "Dettagli",

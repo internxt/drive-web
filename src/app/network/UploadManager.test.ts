@@ -5,7 +5,7 @@ import { AppError } from '@internxt/sdk';
 import uploadFile from 'app/drive/services/file.service/uploadFile';
 import DatabaseUploadRepository from 'app/repositories/DatabaseUploadRepository';
 import { DriveFileData } from 'app/drive/types';
-import RetryManager from './RetryManager';
+import RetryManager, { RetryableTaskType } from './RetryManager';
 import { TaskStatus } from 'app/tasks/types';
 import { ErrorMessages } from 'app/core/constants';
 
@@ -618,6 +618,162 @@ describe('uploadFileWithManager', () => {
       }),
       expect.any(Object),
     );
+  });
+
+  test('When a file of a folder upload fails, then the remaining files still upload and the failure is reported at the end', async () => {
+    const err = new AppError(ErrorMessages.ServerUnavailable);
+    (uploadFile as Mock).mockImplementation((file: { name: string }) =>
+      file.name === 'failing.txt' ? Promise.reject(err) : Promise.resolve(mockFile2),
+    );
+
+    const events: UploadManagerEvents = { onUploadSuccess: vi.fn(), onUploadError: vi.fn() };
+    vi.spyOn(errorService, 'castError').mockImplementation((e) => e as AppError);
+    vi.spyOn(errorService, 'reportError').mockReturnValue();
+
+    await expect(
+      uploadFileWithManager({
+        files: [
+          {
+            taskId: 'failing-task',
+            relatedTaskId: 'folder-task',
+            filecontent: {
+              content: 'file-content1' as unknown as File,
+              type: 'text/plain',
+              name: 'failing.txt',
+              size: 1024,
+              parentFolderId: 'folder-1',
+            },
+            userEmail: '',
+            parentFolderId: '',
+          },
+          {
+            taskId: 'succeeding-task',
+            relatedTaskId: 'folder-task',
+            filecontent: {
+              content: 'file-content2' as unknown as File,
+              type: 'text/plain',
+              name: 'file2.txt',
+              size: 1024,
+              parentFolderId: 'folder-1',
+            },
+            userEmail: '',
+            parentFolderId: '',
+          },
+        ],
+        maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
+        uploadRepository: DatabaseUploadRepository.getInstance(),
+        events,
+        options: {
+          ownerUserAuthenticationData: undefined,
+          sharedItemData: {
+            isDeepFolder: false,
+            currentFolderId: 'parentFolderId',
+          },
+          isUploadedFromFolder: true,
+        },
+      }),
+    ).rejects.toThrow(err);
+
+    expect(events.onUploadError).toHaveBeenCalledWith(
+      expect.objectContaining({ taskId: 'failing-task' }),
+      'upload-failed',
+    );
+    expect(events.onUploadSuccess).toHaveBeenCalledWith(
+      expect.objectContaining({ taskId: 'succeeding-task' }),
+      expect.objectContaining({ uuid: mockFile2.uuid }),
+    );
+
+    const retryTasks = RetryManager.getTasks();
+    expect(retryTasks).toHaveLength(1);
+    expect(retryTasks[0]).toMatchObject({ taskId: 'failing-task', type: 'upload', retryable: true });
+  });
+
+  test('When a retried upload fails again, then its retry entry is kept as-is instead of being duplicated', async () => {
+    const err = new AppError(ErrorMessages.ServerUnavailable);
+    (uploadFile as Mock).mockRejectedValue(err);
+
+    vi.spyOn(errorService, 'castError').mockImplementation((e) => e as AppError);
+    vi.spyOn(errorService, 'reportError').mockReturnValue();
+
+    const fileParams = {
+      taskId: 'retried-task',
+      filecontent: {
+        content: 'file-content' as unknown as File,
+        type: 'text/plain',
+        name: 'file.txt',
+        size: 1024,
+        parentFolderId: 'folder-1',
+      },
+      userEmail: '',
+      parentFolderId: '',
+    };
+    RetryManager.addTasks([
+      { taskId: 'retried-task', type: RetryableTaskType.Upload, params: fileParams, retryable: true },
+    ]);
+
+    await expect(
+      uploadFileWithManager({
+        files: [fileParams],
+        maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
+        uploadRepository: DatabaseUploadRepository.getInstance(),
+        options: {
+          ownerUserAuthenticationData: undefined,
+          sharedItemData: {
+            isDeepFolder: false,
+            currentFolderId: 'parentFolderId',
+          },
+          isUploadedFromFolder: true,
+          isRetriedUpload: true,
+        },
+      }),
+    ).rejects.toThrow(err);
+
+    const retryTasks = RetryManager.getTasks();
+    expect(retryTasks).toHaveLength(1);
+    expect(retryTasks[0]).toMatchObject({ taskId: 'retried-task', retryable: true });
+  });
+
+  test('When a file of a folder upload fails with a non-retryable error, then it is not retried and cannot be retried later', async () => {
+    const paymentRequiredError = new AppError('Payment required', 402);
+    (uploadFile as Mock).mockRejectedValue(paymentRequiredError);
+
+    vi.spyOn(errorService, 'castError').mockImplementation((e) => e as AppError);
+    vi.spyOn(errorService, 'reportError').mockReturnValue();
+
+    await expect(
+      uploadFileWithManager({
+        files: [
+          {
+            taskId: 'not-allowed-task',
+            relatedTaskId: 'folder-task',
+            filecontent: {
+              content: 'file-content' as unknown as File,
+              type: 'text/plain',
+              name: 'file.txt',
+              size: 1024,
+              parentFolderId: 'folder-1',
+            },
+            userEmail: '',
+            parentFolderId: '',
+          },
+        ],
+        maxSpaceOccupiedCallback: openMaxSpaceOccupiedDialogMock,
+        uploadRepository: DatabaseUploadRepository.getInstance(),
+        options: {
+          ownerUserAuthenticationData: undefined,
+          sharedItemData: {
+            isDeepFolder: false,
+            currentFolderId: 'parentFolderId',
+          },
+          isUploadedFromFolder: true,
+        },
+      }),
+    ).rejects.toThrow(paymentRequiredError);
+
+    expect(uploadFile).toHaveBeenCalledOnce();
+    const retryTasks = RetryManager.getTasks();
+    expect(retryTasks).toHaveLength(1);
+    expect(retryTasks[0]).toMatchObject({ taskId: 'not-allowed-task', retryable: false });
   });
 
   test('When the user has no storage space left, then they are warned about it', async () => {

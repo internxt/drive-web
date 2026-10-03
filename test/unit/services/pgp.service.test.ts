@@ -12,11 +12,17 @@ import {
   hybridDecryptMessageWithPrivateKey,
   comparePrivateKeyCiphertextIDs,
   compareKeyPairIDs,
+  encryptBucketKeyHybrid,
+  decryptBucketKeyHybrid,
 } from '../../../src/app/crypto/services/pgp.service';
 
 export async function getOpenpgp(): Promise<typeof import('openpgp')> {
   return import('openpgp');
 }
+
+const toHex = (buffer: Uint8Array): string => {
+  return Buffer.from(buffer).toString('hex');
+};
 
 describe('Encryption and Decryption', () => {
   it('should generate new keys', async () => {
@@ -44,43 +50,45 @@ describe('Encryption and Decryption', () => {
     expect(encryptedMessage).toBeDefined();
   });
 
-  it('XOR should throw an error when strings are of different length', async () => {
+  it('XOR should throw an error when strings are of different length', () => {
     const messageHex = '74686973206973207468652074657374206d657373616765';
     const secretHex =
       '74686973206973207468652074657374206d65737361676574686973206973207468652074657374206d657373616765';
 
     expect(() => {
       XORhex(messageHex, secretHex);
-    }).toThrowError('Can XOR only strings with identical length');
+    }).toThrow('Can XOR only identical lengths');
   });
 
-  it('XOR should work for the given fixed example', async () => {
+  it('XOR should work for the given fixed example', () => {
     const firstHex = '74686973206973207468652074657374206d657373616765';
     const secondHex = '7468697320697320746865207365636f6e64206d65737361';
     const resultHex = '0000000000000000000000000700101b4e09451e16121404';
 
-    const xoredMessage = await XORhex(firstHex, secondHex);
+    const xoredMessage = XORhex(firstHex, secondHex);
 
-    expect(xoredMessage).toEqual(resultHex);
+    expect(toHex(xoredMessage)).toEqual(resultHex);
   });
 
-  it('XOR of two identical strings should result in zero string', async () => {
+  it('XOR of two identical strings should result in zero string', () => {
     const strHex = '74686973206973207468652074657374206d657373616765';
     const resultHex = '000000000000000000000000000000000000000000000000';
 
-    const xoredMessage = await XORhex(strHex, strHex);
+    const xoredMessage = XORhex(strHex, strHex);
 
-    expect(xoredMessage).toEqual(resultHex);
+    expect(toHex(xoredMessage)).toEqual(resultHex);
   });
 
-  it('XOR of str1, str2 and str1 should result in str2', async () => {
+  it('XOR of str1, str2 and str1 should result in str2', () => {
     const str1 = '74686973206973207468652074657374206d657373616765';
     const str2 = '7468697320697320746865207365636f6e64206d65737361';
 
-    const str3 = await XORhex(str1, str2);
-    const should_be_str2 = await XORhex(str3, str1);
+    const xored = XORhex(str1, str2);
 
-    expect(should_be_str2).toEqual(str2);
+    const str3 = toHex(xored);
+    const should_be_str2 = XORhex(str3, str1);
+
+    expect(toHex(should_be_str2)).toEqual(str2);
   });
 
   it('should generate keys, encrypt and decrypt a message using hybrid encryption', async () => {
@@ -124,7 +132,7 @@ describe('Encryption and Decryption', () => {
         encryptedMessageInBase64,
         privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
       }),
-    ).rejects.toThrowError('Attempted to decrypt hybrid ciphertex without Kyber key');
+    ).rejects.toThrow('Attempted to decrypt hybrid ciphertex without Kyber key');
   });
 
   it('hybrid decryption should decrypt old ciphertexts', async () => {
@@ -306,5 +314,26 @@ describe('Encryption and Decryption', () => {
     });
 
     expect(decryptedMnemonic).toEqual(testMnemonic);
+  });
+});
+
+describe('Hybrid encryption and decryption of a bucket key', () => {
+  it('should encrypt and decrypt a bucket key successfully', async () => {
+    const bucketKey = crypto.getRandomValues(new Uint8Array(32)); // 256-bit key
+    const keys = await generateNewKeys();
+
+    const encryptedMessage = await encryptBucketKeyHybrid({
+      bucketKey,
+      publicKeyInBase64: keys.publicKeyArmored,
+      publicKyberKeyBase64: keys.publicKyberKeyBase64,
+    });
+
+    const decryptedMessage = await decryptBucketKeyHybrid({
+      encryptedMessageInBase64: encryptedMessage,
+      privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKyberKeyInBase64: keys.privateKyberKeyBase64,
+    });
+
+    expect(decryptedMessage).toEqual(bucketKey);
   });
 });

@@ -1,4 +1,10 @@
 import { expect, Locator, Page } from '@playwright/test';
+import { staticData } from '../helper/staticData';
+
+const UPLOADED_FILE_LISTED_TIMEOUT = 30000;
+
+export type UploadFile = { name: string; mimeType: string; buffer: Buffer };
+type FileListElement = 'parent' | 'action' | 'image';
 
 export class DrivePage {
   private page: Page;
@@ -24,6 +30,7 @@ export class DrivePage {
   private uploadFilesHeaderButton: Locator;
   private uploadDownloadWidget: Locator;
   private uploadWidgetBorder: Locator;
+  private fileInput: Locator;
   private movingToTrashAndMovedSign: Locator;
 
   constructor(page: Page) {
@@ -67,6 +74,7 @@ export class DrivePage {
       '[class$="rounded-xl border border-gray-10 bg-surface dark:bg-gray-1 "]',
     );
     this.uploadWidgetBorder = this.page.locator('[class$="border-b border-gray-10 bg-gray-5 px-3 py-2.5"]');
+    this.fileInput = this.page.locator('[data-test="input-file"]');
   }
   async checkFolder(folderName: string) {
     const folderLocator = this.allFolderNamesInDrive.filter({ hasText: folderName });
@@ -170,5 +178,30 @@ export class DrivePage {
     await expect(item).toBeVisible();
     const checkBox = item.locator('[class$="text-white border-gray-30 hover:border-gray-40"]');
     await checkBox.click();
+  }
+  async uploadFiles(files: UploadFile[]) {
+    await this.fileInput.setInputFiles(files);
+  }
+  async expectUploadWidgetStatus(status: string, timeout: number) {
+    await expect.poll(async () => await this.uploadWidgetBorder.textContent(), { timeout }).toContain(status);
+  }
+
+  async openFile(fileName: string) {
+    const listItem = this.fileListElement(fileName, 'parent');
+
+    await expect(listItem).toBeVisible({ timeout: UPLOADED_FILE_LISTED_TIMEOUT });
+    await listItem.hover();
+    await this.fileListElement(fileName, 'action').click();
+  }
+
+  async expectFileThumbnail(fileName: string) {
+    const thumbnail = this.fileListElement(fileName, 'image');
+
+    await expect(thumbnail).toBeVisible();
+    await expect(thumbnail).toHaveAttribute('src', staticData.blobUrlPattern);
+  }
+
+  private fileListElement(fileName: string, element: FileListElement) {
+    return this.page.locator(`[data-test="file-list-file-${fileName}-${element}"]`);
   }
 }

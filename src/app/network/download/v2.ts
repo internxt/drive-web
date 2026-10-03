@@ -1,4 +1,5 @@
 import { Network } from '@internxt/sdk/dist/network';
+import packageJson from '../../../../package.json';
 import { getSha256 } from '../../crypto/services/utils';
 import { NetworkFacade } from '../NetworkFacade';
 import envService from 'services/env.service';
@@ -52,7 +53,7 @@ const createNetworkFacade = (auth?: { username: string; password: string }): Net
       envService.getVariable('storjBridge'),
       {
         clientName: 'drive-web',
-        clientVersion: '1.0',
+        clientVersion: packageJson.version,
       },
       {
         bridgeUser: auth?.username ?? '',

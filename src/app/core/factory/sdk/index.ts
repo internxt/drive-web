@@ -54,16 +54,25 @@ export class SdkFactory {
     return this.sdk.newApiInstance;
   }
 
-  public createAuthClient(options?: { captchaToken?: string; unauthorizedCallback?: () => void }): Auth {
+  public createAuthClient(options?: {
+    captchaToken?: string;
+    turnstileToken?: string;
+    unauthorizedCallback?: () => void;
+  }): Auth {
     const apiUrl = this.getApiUrl();
-    const appDetails = this.getAppDetailsWithHeaders(options?.captchaToken);
+    const appDetails = this.getAppDetailsWithHeaders({
+      captchaToken: options?.captchaToken,
+      turnstileToken: options?.turnstileToken,
+    });
     const apiSecurity = this.getNewApiSecurity(options?.unauthorizedCallback);
     return Auth.client(apiUrl, appDetails, apiSecurity);
   }
 
-  public createDesktopAuthClient(): Auth {
+  public createDesktopAuthClient(options?: { turnstileToken?: string }): Auth {
     const apiUrl = this.getApiUrl();
-    const appDetails = SdkFactory.getDesktopAppDetails();
+    const appDetails = SdkFactory.getDesktopAppDetails(
+      options?.turnstileToken ? { 'x-internxt-turnstile': options.turnstileToken } : undefined,
+    );
     const apiSecurity = this.getNewApiSecurity();
     return Auth.client(apiUrl, appDetails, apiSecurity);
   }
@@ -84,7 +93,7 @@ export class SdkFactory {
 
   public createShareClient(captchaToken?: string): Share {
     const apiUrl = this.getApiUrl();
-    const appDetails = this.getAppDetailsWithHeaders(captchaToken);
+    const appDetails = this.getAppDetailsWithHeaders({ captchaToken });
     const apiSecurity = this.getNewApiSecurity();
     return Share.client(apiUrl, appDetails, apiSecurity);
   }
@@ -98,7 +107,7 @@ export class SdkFactory {
 
   public createUsersClient(captchaToken?: string): Users {
     const apiUrl = this.getApiUrl();
-    const appDetails = this.getAppDetailsWithHeaders(captchaToken);
+    const appDetails = this.getAppDetailsWithHeaders({ captchaToken });
     const apiSecurity = this.getNewApiSecurity();
     return Users.client(apiUrl, appDetails, apiSecurity);
   }
@@ -172,15 +181,17 @@ export class SdkFactory {
     };
   }
 
-  private getAppDetailsWithHeaders(captchaToken?: string): AppDetails {
-    const customHeaders = captchaToken ? this.buildCustomHeaders({ captchaToken }) : undefined;
+  private getAppDetailsWithHeaders(options?: { captchaToken?: string; turnstileToken?: string }): AppDetails {
+    const headers = this.buildCustomHeaders(options);
+    const customHeaders = Object.keys(headers).length > 0 ? headers : undefined;
     return SdkFactory.getAppDetails(customHeaders);
   }
 
-  private static getDesktopAppDetails(): AppDetails {
+  private static getDesktopAppDetails(customHeaders?: Record<string, string>): AppDetails {
     return {
       clientName: 'drive-desktop',
       clientVersion: packageJson.version,
+      customHeaders,
     };
   }
 
@@ -200,11 +211,15 @@ export class SdkFactory {
     return token;
   }
 
-  private buildCustomHeaders(options?: { captchaToken?: string }): Record<string, string> {
+  private buildCustomHeaders(options?: { captchaToken?: string; turnstileToken?: string }): Record<string, string> {
     const headers: Record<string, string> = {};
 
     if (options?.captchaToken) {
       headers['x-internxt-captcha'] = options.captchaToken;
+    }
+
+    if (options?.turnstileToken) {
+      headers['x-internxt-turnstile'] = options.turnstileToken;
     }
 
     return headers;

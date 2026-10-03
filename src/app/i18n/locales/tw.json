@@ -293,6 +293,68 @@
       "missingPaymentDetails": "缺少確認付款所需的付款資訊"
     }
   },
+  "urgentCheckout": {
+    "header": {
+      "tagline": "您的私人雲端",
+      "europeanBased": "歐洲營運",
+      "gdprCompliant": "符合 GDPR",
+      "trustedByMillions": "數百萬使用者信賴"
+    },
+    "hero": {
+      "offerPill": "立減 {{percent}}% — 限時專屬優惠",
+      "offerPillNoDiscount": "限時專屬優惠",
+      "title": "讓您的檔案、照片和影片",
+      "titleHighlight": "100% 私密。",
+      "subtitle": "首月僅需 {{price}}，即可獲得 {{storage}} 私人雲端儲存空間。",
+      "imageAlt": "筆記型電腦和手機上的 Internxt Drive",
+      "points": {
+        "privacy": {
+          "title": "只有您能存取自己的檔案",
+          "description": "零知識加密意味著連 Internxt 也無法存取您的內容。"
+        },
+        "storage": {
+          "title": "您的私人雲端，安全無虞",
+          "description": "儲存您的照片、影片、文件和個人檔案，隱私保護內建其中。"
+        },
+        "offer": {
+          "title": "立減 {{percent}}% — 限時優惠",
+          "titleNoDiscount": "專屬優惠 — 限時開放",
+          "description": "僅需 {{price}} 即可獲得 {{storage}}。此專屬優惠不會持續太久。"
+        }
+      },
+      "badges": {
+        "basedInEu": "總部位於歐盟",
+        "openSource": "開放原始碼",
+        "audited": "經 Securitum 稽核",
+        "privacyPriority": "您的隱私，我們的首要任務。"
+      }
+    },
+    "countdown": {
+      "title": "您的 {{percent}}% 專屬優惠將於以下時間後結束：",
+      "titleNoDiscount": "您的專屬優惠將於以下時間後結束：",
+      "footer": "在優惠結束前，以 {{price}} 獲得 {{storage}}。"
+    },
+    "summary": {
+      "discountApplied": "已套用 {{percent}}% 優惠",
+      "estimatedTax": "預估稅金"
+    },
+    "form": {
+      "emailLabel": "您的電子郵件地址",
+      "emailPlaceholder": "name@email.com",
+      "createPasswordLabel": "建立密碼",
+      "passwordLabel": "您的密碼",
+      "passwordPlaceholder": "密碼",
+      "togglePasswordVisibility": "顯示或隱藏密碼",
+      "incompleteDetails": "請輸入您的電子郵件地址和密碼以繼續。",
+      "encryptedTitle": "您的檔案已加密且完全私密。",
+      "encryptedDescription": "Internxt 無法存取您的內容。"
+    },
+    "cta": {
+      "button": "以 {{price}} 獲得 {{storage}}",
+      "renewalNoteMonthly": "首月 {{price}}，之後以 {{renewalPrice}}/月續訂。可隨時取消。",
+      "renewalNoteYearly": "首年 {{price}}，之後以 {{renewalPrice}}/年續訂。可隨時取消。"
+    }
+  },
   "general": {
     "of": "的",
     "at": "在",
@@ -401,6 +463,7 @@
   },
   "sideNav": {
     "drive": "雲端硬碟",
+    "favorites": "收藏",
     "backups": "備份",
     "shared": "共享",
     "recents": "最近",
@@ -412,6 +475,13 @@
     }
   },
   "views": {
+    "favorites": {
+      "head": "收藏",
+      "empty": {
+        "title": "尚無收藏",
+        "description": "將檔案或資料夾加入收藏,以便更快存取"
+      }
+    },
     "recents": {
       "head": "Recents",
       "empty": {
@@ -1034,6 +1104,10 @@
         "title": "解鎖 Meet",
         "description": "升級後可發起並加入完全加密的視訊通話——私密、安全、無限制。"
       },
+      "mail": {
+        "title": "解鎖 Mail",
+        "description": "解鎖具有端對端加密的私密電子郵件服務。"
+      },
       "vpn": {
         "title": "解鎖 VPN",
         "description": "升級以使用私密加密的網路流量保護。"
@@ -1059,6 +1133,8 @@
     "fileCannotBeEmpty": "檔案名稱不能為空",
     "creatingFolder": "創建文件夾時出錯",
     "fetchingFolderContent": "獲取文件夾內容時出錯",
+    "togglingFavorite": "更新我的最愛時發生錯誤",
+    "togglingSomeFavorites": "部分我的最愛無法更新",
     "uploadingFolder": "上傳文件夾時出錯",
     "uploadingFile": "上傳文件時出錯：{{reason}}",
     "uploadingItems": "部分元素無法上傳",
@@ -1088,6 +1164,7 @@
     "ownerStorageIsFullDescription": "您無法在此共享資料夾中上傳檔案。",
     "storageIsFullDescription": "您無法上傳、同步或備份文件。",
     "noFilePreview": "無法預覽文件",
+    "filePreviewTooLarge": "檔案過大，無法預覽（超過 {{limit}}）",
     "errorMovingToTrash": "將項目移動到垃圾桶時出錯。",
     "errorDeletingFromTrash": "從垃圾桶中刪除項目時出錯。",
     "connectionLostError": "網絡連接已丟失",
@@ -1181,7 +1258,8 @@
       "allProcessesHaveFinished": "所有進程已完成",
       "processing": "處理中 {{pending}} 個，共 {{finished}} 個",
       "failedToUpload": "上傳失敗",
-      "failedToDownload": "下載失敗"
+      "failedToDownload": "下載失敗",
+      "notAllowed": "不允許"
     },
     "waiting": "等待中",
     "paused": "已暫停",
@@ -1437,6 +1515,8 @@
       "shareLink": "分享",
       "shareTeam": "与团队分享",
       "manageLinkAccess": "管理訪問權限",
+      "addToFavorites": "加入我的最愛",
+      "removeFromFavorites": "從我的最愛移除",
       "rename": "重新命名",
       "share": "分享",
       "download": "下載",

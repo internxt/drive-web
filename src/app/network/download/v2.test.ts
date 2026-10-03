@@ -5,6 +5,7 @@ import envService from 'services/env.service';
 import { Network } from '@internxt/sdk/dist/network';
 import { NetworkFacade } from '../NetworkFacade';
 import downloadFile from './v2';
+import packageJson from '../../../../package.json';
 
 vi.mock('../../crypto/services/utils');
 
@@ -55,7 +56,7 @@ describe('Download V2', () => {
         mockBridgeUrl,
         {
           clientName: 'drive-web',
-          clientVersion: '1.0',
+          clientVersion: packageJson.version,
         },
         {
           bridgeUser: mockCredentials.user,
@@ -99,7 +100,7 @@ describe('Download V2', () => {
 
       expect(networkClientSpy).toHaveBeenCalledWith(
         mockBridgeUrl,
-        { clientName: 'drive-web', clientVersion: '1.0' },
+        { clientName: 'drive-web', clientVersion: packageJson.version },
         { bridgeUser: '', userId: '' },
       );
       expect(downloadFileSpy).toHaveBeenCalledWith({
@@ -148,7 +149,7 @@ describe('Download V2', () => {
         mockBridgeUrl,
         {
           clientName: 'drive-web',
-          clientVersion: '1.0',
+          clientVersion: packageJson.version,
         },
         {
           bridgeUser: mockCredentials.user,
@@ -191,7 +192,7 @@ describe('Download V2', () => {
 
       expect(networkClientSpy).toHaveBeenCalledWith(
         mockBridgeUrl,
-        { clientName: 'drive-web', clientVersion: '1.0' },
+        { clientName: 'drive-web', clientVersion: packageJson.version },
         { bridgeUser: '', userId: '' },
       );
       expect(downloadSpy).toHaveBeenCalledWith('test-bucket', 'test-file', '', {
@@ -220,7 +221,7 @@ describe('Download V2', () => {
 
       expect(networkClientSpy).toHaveBeenCalledWith(
         mockBridgeUrl,
-        { clientName: 'drive-web', clientVersion: '1.0' },
+        { clientName: 'drive-web', clientVersion: packageJson.version },
         { bridgeUser: mockCredentials.user, userId: mockHashedPassword },
       );
       expect(downloadSpy).toHaveBeenCalledWith('test-bucket', 'test-file', 'test mnemonic', {
@@ -250,7 +251,7 @@ describe('Download V2', () => {
 
       expect(networkClientSpy).toHaveBeenCalledWith(
         mockBridgeUrl,
-        { clientName: 'drive-web', clientVersion: '1.0' },
+        { clientName: 'drive-web', clientVersion: packageJson.version },
         { bridgeUser: mockCredentials.user, userId: mockHashedPassword },
       );
       expect(downloadWithBucketKeySpy).toHaveBeenCalledWith('test-bucket', 'test-file', bucketKey, {

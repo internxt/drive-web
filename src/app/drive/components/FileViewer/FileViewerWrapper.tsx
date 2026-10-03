@@ -28,11 +28,12 @@ import {
 import { FileToUpload } from 'app/drive/services/file.service/types';
 import { MenuItemType } from '@internxt/ui';
 import { DownloadManager } from 'app/network/DownloadManager';
-import { getIsTypeAllowedAndFileExtensionGroupValues } from './utils/fileViewerUtils';
-import { FileExtensionGroup } from 'app/drive/types/file-types';
+import { getIsTypeAllowedAndFileExtensionGroupValues, isPreviewableBySize } from './utils/fileViewerUtils';
+import { FileExtensionGroup, convertibleImageExtensions } from 'app/drive/types/file-types';
 import encryptedStorageService from 'services/encrypted-storage.service';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
-const SPECIAL_MIME_TYPES = ['heic'];
+const SPECIAL_MIME_TYPES = convertibleImageExtensions;
 
 interface FileViewerWrapperProps {
   file: PreviewFileItem;
@@ -72,7 +73,11 @@ const FileViewerWrapper = ({
 
   const [blob, setBlob] = useState<Blob | null>(null);
 
-  const user = encryptedStorageService.getUser();
+  const [user, setUser] = useState<UserSettings | null>(null);
+
+  useEffect(() => {
+    encryptedStorageService.getUser().then(setUser);
+  }, []);
 
   const driveItemActions = useDriveItemActions(currentFile);
   const fileContentManager = getFileContentManager(currentFile, downloadFile);
@@ -93,6 +98,7 @@ const FileViewerWrapper = ({
 
     const extensionGroup = getIsTypeAllowedAndFileExtensionGroupValues(currentFile);
     const isVideo = extensionGroup?.fileExtensionGroup === FileExtensionGroup['Video'];
+    const isDownloadable = isPreviewableBySize(currentFile);
 
     if (currentFile && Number(currentFile.size) === 0) {
       setBlob(new Blob([]));
@@ -100,7 +106,8 @@ const FileViewerWrapper = ({
       return;
     }
 
-    if (currentFile && !updateProgress && !isDownloadStarted && !isVideo) {
+    if (currentFile && !updateProgress && !isDownloadStarted && !isVideo && isDownloadable) {
+      const isConvertibleImage = convertibleImageExtensions.includes(currentFile.type.toLowerCase());
       setIsDownloadStarted(true);
       fileContentManager
         .download()
@@ -108,7 +115,7 @@ const FileViewerWrapper = ({
           setBlob(downloadedFile.blob);
           setUpdateProgress(0);
           setIsDownloadStarted(false);
-          if (downloadedFile.shouldHandleFileThumbnail) {
+          if (downloadedFile.shouldHandleFileThumbnail && !isConvertibleImage) {
             handleFileThumbnail(currentFile, downloadedFile.blob).catch(errorService.reportError);
           }
         })

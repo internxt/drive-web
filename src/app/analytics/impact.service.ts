@@ -137,7 +137,7 @@ export async function trackSignUp(uuid: string): Promise<void> {
 
 export async function trackPaymentConversion(): Promise<void> {
   try {
-    const userSettings = encryptedStorageService.getUser();
+    const userSettings = await encryptedStorageService.getUser();
     if (!userSettings) {
       console.warn('[Impact Service] No user settings found');
       return;
@@ -168,7 +168,23 @@ export async function trackPaymentConversion(): Promise<void> {
     const anonymousID = getCookie('impactAnonymousId') || uuidV4();
     const source = getCookie('impactSource');
 
-    const IMPACT_COUPON_WHITELIST = ['CNINTERNXT', 'CNINTERNXTL', 'CLOUDOFF', 'SPECIAL', 'ANTIV', 'SAVE', 'OFFER'];
+    const IMPACT_COUPON_WHITELIST = [
+      'CNINTERNXT',
+      'CNINTERNXTL',
+      'CLOUDOFF',
+      'SPECIAL',
+      'ANTIV',
+      'SAVE',
+      'OFFER',
+      'GOTZHAOFFER',
+      'TFA',
+      'REOFFER',
+      'WEWE',
+      'AMIOFFER',
+      'VIPOFFER',
+      'VAOFFER',
+      'VEOFFER',
+    ];
     const isImpactCoupon = couponCode && IMPACT_COUPON_WHITELIST.includes(couponCode.toUpperCase());
 
     if (isFirstPurchase && ((source && source !== 'direct') || isImpactCoupon)) {

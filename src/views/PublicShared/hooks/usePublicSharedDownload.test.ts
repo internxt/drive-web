@@ -113,6 +113,19 @@ describe('usePublicSharedDownload', () => {
       );
     });
 
+    test('When an empty file is opened, then it is not previewable and the network is not requested', () => {
+      const item = createFileItem({ size: '0', fileId: null } as unknown as Partial<AdvancedSharedItem>);
+
+      const { result } = renderDownloadHook();
+      act(() => {
+        result.current.openPreview(item);
+      });
+
+      expect(result.current.previewItem).toBe(item);
+      expect(result.current.previewBlob).toBeNull();
+      expect(mockedDownloadFile).not.toHaveBeenCalled();
+    });
+
     test('When the preview is closed before the download finishes, then the stale blob is discarded', async () => {
       const deferred = createDeferred<ReadableStream>();
       mockedDownloadFile.mockReturnValue(deferred.promise);

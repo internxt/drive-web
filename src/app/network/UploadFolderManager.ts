@@ -42,7 +42,10 @@ export interface FolderUploadControls {
 export interface UploadFolderManagerEvents {
   onFolderUploadStarted?: (taskId: string, root: IRoot, controls: FolderUploadControls) => (() => void) | void;
   onFolderUploadProgress?: (taskId: string, progress: number, stopUpload: () => Promise<void>) => void;
-  onFolderUploadSuccess?: (taskId: string, info: { folderName: string; rootFolderUUID?: string }) => void;
+  onFolderUploadSuccess?: (
+    taskId: string,
+    info: { folderName: string; rootFolderUUID?: string; hasFailedFiles: boolean },
+  ) => void;
   onFolderUploadError?: (taskId: string, reason?: UploadErrorReason) => void;
   stopRelatedUploads?: (taskId: string) => Promise<void>[];
 }
@@ -59,7 +62,9 @@ export interface TaskFolder {
 
 interface TaskInfo {
   rootFolderItem?: DriveFolderData;
-  cancelled: boolean;
+  isCancelled: boolean;
+  hasErrored?: boolean;
+  hasFailedFiles?: boolean;
   progress: {
     itemsUploaded: number;
     totalItems: number;
@@ -263,9 +268,10 @@ export class UploadFoldersManager {
     )
       .unwrap()
       .catch(() => {
-        this.stopUploadTask(taskId, abortController);
-        this.killQueueAndNotifyError(taskId);
-        return;
+        // A file failed to upload. Do NOT roll back: keep everything already uploaded and let
+        // the queue keep uploading the remaining files/folders. The partial failure is
+        // announced once the whole folder finishes, in run().
+        this.tasksInfo[taskId].hasFailedFiles = true;
       });
   };
 
@@ -326,6 +332,7 @@ export class UploadFoldersManager {
   };
 
   private readonly killQueueAndNotifyError = (taskId: string) => {
+    this.tasksInfo[taskId].hasErrored = true;
     this.uploadFoldersQueue.kill();
     this.events?.onFolderUploadError?.(taskId, 'upload-failed');
   };
@@ -347,7 +354,7 @@ export class UploadFoldersManager {
       const { root, currentFolderId, options, taskId } = taskFolder;
 
       this.tasksInfo[taskId] = {
-        cancelled: false,
+        isCancelled: false,
         progress: {
           itemsUploaded: 0,
           totalItems: countItemsUnderRoot(root),
@@ -356,7 +363,7 @@ export class UploadFoldersManager {
 
       const cleanupStartedEvent = this.events?.onFolderUploadStarted?.(taskId, root, {
         cancelUpload: () => {
-          this.tasksInfo[taskId].cancelled = true;
+          this.tasksInfo[taskId].isCancelled = true;
           this.uploadFoldersQueue.kill();
         },
         pauseUpload: () => this.uploadFoldersQueue.pause(),
@@ -373,9 +380,15 @@ export class UploadFoldersManager {
 
         if (connectionLost) throw new ConnectionLostError();
 
+        const taskInfo = this.tasksInfo[taskId];
+        // A fatal error (e.g. the folder could not be created) or a cancellation already
+        // announced a final state while the queue was draining: don't announce success on top.
+        if (taskInfo.isCancelled || taskInfo.hasErrored) continue;
+
         this.events?.onFolderUploadSuccess?.(taskId, {
           folderName: root.name,
-          rootFolderUUID: this.tasksInfo[taskId].rootFolderItem?.uuid,
+          rootFolderUUID: taskInfo.rootFolderItem?.uuid,
+          hasFailedFiles: !!taskInfo.hasFailedFiles,
         });
 
         options?.onSuccess?.();
@@ -386,7 +399,7 @@ export class UploadFoldersManager {
           this.events?.onFolderUploadError?.(taskId, 'connection-lost');
           errorService.reportError(castedError);
           break;
-        } else if (!this.tasksInfo[taskId].cancelled) {
+        } else if (!this.tasksInfo[taskId].isCancelled) {
           this.events?.onFolderUploadError?.(taskId, 'upload-failed');
           // Log the error or report it but don't re-throw it to allow the next folder to be processed
           errorService.reportError(castedError);

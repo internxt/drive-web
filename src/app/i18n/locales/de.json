@@ -272,6 +272,68 @@
       "missingPaymentDetails": "Fehlende Zahlungsdaten zur Bestätigung der Zahlung"
     }
   },
+  "urgentCheckout": {
+    "header": {
+      "tagline": "Ihre private Cloud",
+      "europeanBased": "Europäischer Anbieter",
+      "gdprCompliant": "DSGVO-konform",
+      "trustedByMillions": "Millionen vertrauen uns"
+    },
+    "hero": {
+      "offerPill": "{{percent}}% RABATT — Exklusives Angebot für kurze Zeit",
+      "offerPillNoDiscount": "Exklusives Angebot für kurze Zeit",
+      "title": "Halten Sie Ihre Dateien, Fotos und Videos",
+      "titleHighlight": "100% privat.",
+      "subtitle": "Sichern Sie sich {{storage}} privaten Cloud-Speicher für nur {{price}} im ersten Monat.",
+      "imageAlt": "Internxt Drive auf einem Laptop und einem Smartphone",
+      "points": {
+        "privacy": {
+          "title": "Nur Sie haben Zugriff auf Ihre Dateien",
+          "description": "Dank Zero-Knowledge-Verschlüsselung kann nicht einmal Internxt auf Ihre Inhalte zugreifen."
+        },
+        "storage": {
+          "title": "Ihre private Cloud, geschützt",
+          "description": "Speichern Sie Ihre Fotos, Videos, Dokumente und persönlichen Dateien mit integriertem Datenschutz."
+        },
+        "offer": {
+          "title": "{{percent}}% RABATT — für kurze Zeit",
+          "titleNoDiscount": "Exklusives Angebot — für kurze Zeit",
+          "description": "Sichern Sie sich {{storage}} für nur {{price}}. Dieses exklusive Angebot ist bald vorbei."
+        }
+      },
+      "badges": {
+        "basedInEu": "Sitz in der EU",
+        "openSource": "Open Source",
+        "audited": "Von Securitum geprüft",
+        "privacyPriority": "Ihre Privatsphäre. Unsere Priorität."
+      }
+    },
+    "countdown": {
+      "title": "Ihr exklusives Angebot mit {{percent}}% Rabatt endet in:",
+      "titleNoDiscount": "Ihr exklusives Angebot endet in:",
+      "footer": "Sichern Sie sich {{storage}} für {{price}}, bevor dieses Angebot endet."
+    },
+    "summary": {
+      "discountApplied": "{{percent}}% Rabatt angewendet",
+      "estimatedTax": "Voraussichtliche Steuern"
+    },
+    "form": {
+      "emailLabel": "Ihre E-Mail-Adresse",
+      "emailPlaceholder": "name@email.com",
+      "createPasswordLabel": "Passwort erstellen",
+      "passwordLabel": "Ihr Passwort",
+      "passwordPlaceholder": "Passwort",
+      "togglePasswordVisibility": "Passwort anzeigen oder ausblenden",
+      "incompleteDetails": "Bitte geben Sie Ihre E-Mail-Adresse und Ihr Passwort ein, um fortzufahren.",
+      "encryptedTitle": "Ihre Dateien sind verschlüsselt und privat.",
+      "encryptedDescription": "Internxt kann nicht auf Ihre Inhalte zugreifen."
+    },
+    "cta": {
+      "button": "{{storage}} für {{price}} sichern",
+      "renewalNoteMonthly": "Erster Monat {{price}}, danach {{renewalPrice}}/Monat. Jederzeit kündbar.",
+      "renewalNoteYearly": "Erstes Jahr {{price}}, danach {{renewalPrice}}/Jahr. Jederzeit kündbar."
+    }
+  },
   "general": {
     "of": "von",
     "at": "um",
@@ -380,6 +442,7 @@
   },
   "sideNav": {
     "drive": "Drive",
+    "favorites": "Favoriten",
     "backups": "Backups",
     "shared": "Geteilt",
     "recents": "Neueste",
@@ -391,6 +454,13 @@
     }
   },
   "views": {
+    "favorites": {
+      "head": "Favoriten",
+      "empty": {
+        "title": "Noch keine Favoriten",
+        "description": "Füge Dateien oder Ordner zu deinen Favoriten hinzu, um schneller auf sie zuzugreifen"
+      }
+    },
     "recents": {
       "head": "Neueste",
       "empty": {
@@ -1013,6 +1083,10 @@
         "title": "Meet freischalten",
         "description": "Upgrade jetzt, um vollständig verschlüsselte Videoanrufe zu hosten und beizutreten — privat, sicher und unbegrenzt."
       },
+      "mail": {
+        "title": "Mail freischalten",
+        "description": "Schalte deinen privaten E-Mail-Dienst mit Ende-zu-Ende-Verschlüsselung frei."
+      },
       "vpn": {
         "title": "VPN freischalten",
         "description": "Upgrade, um deinen Datenverkehr mit privatem, verschlüsseltem Browsing zu schützen."
@@ -1038,6 +1112,8 @@
     "fileCannotBeEmpty": "Der Dateiname darf nicht leer sein",
     "creatingFolder": "Fehler beim Erstellen des Ordners",
     "fetchingFolderContent": "Fehler beim Abrufen des Ordnerinhalts",
+    "togglingFavorite": "Beim Aktualisieren der Favoriten ist ein Fehler aufgetreten",
+    "togglingSomeFavorites": "Einige Favoriten konnten nicht aktualisiert werden",
     "uploadingFolder": "Fehler beim Hochladen des Ordners",
     "uploadingFile": "Fehler beim Hochladen der Datei: {{reason}}",
     "uploadingItems": "Einige Elemente konnten nicht hochgeladen werden",
@@ -1067,6 +1143,7 @@
     "ownerStorageIsFullDescription": "Du kannst in diesem geteilten Ordner keine Dateien hochladen.",
     "storageIsFullDescription": "Sie können keine Dateien hochladen, synchronisieren oder sichern.",
     "noFilePreview": "Keine Dateivorschau vorhanden",
+    "filePreviewTooLarge": "Datei zu groß für die Vorschau (über {{limit}})",
     "errorMovingToTrash": "Beim Verschieben der Elemente in den Papierkorb ist ein Fehler aufgetreten.",
     "errorDeletingFromTrash": "Beim Löschen der Elemente aus dem Papierkorb ist ein Fehler aufgetreten.",
     "updateAvatarError": "Fehler beim Aktualisieren des Avatars",
@@ -1154,7 +1231,8 @@
       "allProcessesHaveFinished": "Alle Prozesse sind abgeschlossen",
       "processing": "Wird bearbeitet {{pending}} von {{finished}}",
       "failedToUpload": "Fehler beim Hochladen",
-      "failedToDownload": "Fehler beim Herunterladen"
+      "failedToDownload": "Fehler beim Herunterladen",
+      "notAllowed": "Nicht erlaubt"
     },
     "waiting": "Warten",
     "paused": "Pausiert",
@@ -1408,6 +1486,8 @@
       "details": "Einzelheiten",
       "shareLink": "Teilen",
       "shareTeam": "Mit Team teilen",
+      "addToFavorites": "Zu Favoriten hinzufügen",
+      "removeFromFavorites": "Aus Favoriten entfernen",
       "rename": "Umbenennen",
       "download": "Herunterladen",
       "manageLinkAccess": "Zugang verwalten",
