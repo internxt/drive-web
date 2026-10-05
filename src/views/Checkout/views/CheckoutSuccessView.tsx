@@ -23,7 +23,7 @@ export function removePaymentsStorage() {
   localStorageService.removeItem(LocalStorageItem.CouponCode);
 }
 
-const CheckYourEmail = ({ email }: { email: string }) => {
+const AccountSetupEmailSentCard = ({ email }: { email: string }) => {
   const { translate } = useTranslationContext();
 
   return (
@@ -50,6 +50,7 @@ const CheckoutSuccessView = (): JSX.Element => {
     hasSession ? null : localStorageService.get(LocalStorageItem.CheckoutAccountSetupEmail),
   );
 
+  // `startNewAccountSession` already clears the storage, so no need to clear the CheckoutAccountSetupEmail variable here
   const onCheckoutSuccess = useCallback(async () => {
     if (hasTrackedRef.current) {
       return;
@@ -71,10 +72,6 @@ const CheckoutSuccessView = (): JSX.Element => {
       return;
     }
 
-    if (hasSession) {
-      localStorageService.removeItem(LocalStorageItem.CheckoutAccountSetupEmail);
-    }
-
     userStoragePolling();
 
     navigationService.push(AppView.Drive);
@@ -83,7 +80,7 @@ const CheckoutSuccessView = (): JSX.Element => {
   useEffectAsync(onCheckoutSuccess, []);
 
   if (accountSetupEmail) {
-    return <CheckYourEmail email={accountSetupEmail} />;
+    return <AccountSetupEmailSentCard email={accountSetupEmail} />;
   }
 
   return <div></div>;
