@@ -1144,6 +1144,7 @@
     "ownerStorageIsFullDescription": "Du kannst in diesem geteilten Ordner keine Dateien hochladen.",
     "storageIsFullDescription": "Sie können keine Dateien hochladen, synchronisieren oder sichern.",
     "noFilePreview": "Keine Dateivorschau vorhanden",
+    "filePreviewTooLarge": "Datei zu groß für die Vorschau (über {{limit}})",
     "errorMovingToTrash": "Beim Verschieben der Elemente in den Papierkorb ist ein Fehler aufgetreten.",
     "errorDeletingFromTrash": "Beim Löschen der Elemente aus dem Papierkorb ist ein Fehler aufgetreten.",
     "updateAvatarError": "Fehler beim Aktualisieren des Avatars",

@@ -1165,6 +1165,7 @@
     "ownerStorageIsFullDescription": "您无法在此共享文件夹中上传文件。",
     "storageIsFullDescription": "无法上传同步或备份文件",
     "noFilePreview": "没有可用的文件预览",
+    "filePreviewTooLarge": "文件过大，无法预览（超过 {{limit}}）",
     "errorMovingToTrash": "将项目移至垃圾箱时出错。",
     "errorDeletingFromTrash": "从垃圾箱中删除项目时出错。",
     "connectionLostError": "互联网连接丢失",

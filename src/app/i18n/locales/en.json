@@ -1165,6 +1165,7 @@
     },
     "storageIsFullDescription": "You can’t upload, sync or backup files.",
     "noFilePreview": "No file preview available",
+    "filePreviewTooLarge": "File too large to preview (over {{limit}})",
     "errorMovingToTrash": "An error occurred while moving the items to trash.",
     "errorDeletingFromTrash": "An error occurred while deleting the items from trash.",
     "connectionLostError": "Internet connection lost",
