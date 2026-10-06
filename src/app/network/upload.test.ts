@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { uploadFile } from './upload';
 import { ConnectionLostError } from './requests';
+import { Network } from '@internxt/sdk/dist/network';
+import packageJson from '../../../package.json';
 
 const uploadMock = vi.hoisted(() => vi.fn());
 
@@ -33,6 +35,16 @@ describe('uploadFile', () => {
 
     expect(uploadMock).toBeCalledTimes(1);
     expect(result).toBe('upload-success');
+  });
+
+  it('should create the network client with the app version from package.json', async () => {
+    uploadMock.mockResolvedValue('upload-success');
+    const networkClientSpy = vi.spyOn(Network, 'client');
+
+    await uploadFile('bucket123', uploadParams);
+
+    const [, appDetails] = networkClientSpy.mock.calls[0];
+    expect(appDetails).toStrictEqual({ clientName: 'drive-web', clientVersion: packageJson.version });
   });
 
   it('should retry upload on failure and succeed on second attempt', async () => {

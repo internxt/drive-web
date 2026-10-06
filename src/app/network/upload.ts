@@ -1,4 +1,5 @@
 import { Network } from '@internxt/sdk/dist/network';
+import packageJson from '../../../package.json';
 import { getSha256 } from '../crypto/services/utils';
 import { NetworkFacade } from './NetworkFacade';
 import { ConnectionLostError } from './requests';
@@ -40,7 +41,7 @@ export async function uploadFile(bucketId: string, params: IUploadParams): Promi
       envService.getVariable('storjBridge'),
       {
         clientName: 'drive-web',
-        clientVersion: '1.0',
+        clientVersion: packageJson.version,
       },
       {
         bridgeUser: auth.username,

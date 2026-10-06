@@ -34,7 +34,8 @@
     "zh": "简体中文 (Chinesisch)",
     "ru": "Русский (Russisch)",
     "de": "Deutsch (Deutsch)",
-    "zh-tw": "臺灣 (Taiwanisch)"
+    "zh-tw": "臺灣 (Taiwanisch)",
+    "pt-br": "Português (Brasilianisches Portugiesisch)"
   },
   "theme": {
     "title": "Erscheinung",
@@ -276,7 +277,8 @@
       "businessPlan": "Der Unternehmensplan ist nicht verfügbar",
       "postalCodeRequired": "Bitte geben Sie Ihre Postleitzahl ein, um fortzufahren",
       "countryRequired": "Wir konnten Ihr Land nicht ermitteln. Bitte versuchen Sie es später erneut.",
-      "missingPaymentDetails": "Fehlende Zahlungsdaten zur Bestätigung der Zahlung"
+      "missingPaymentDetails": "Fehlende Zahlungsdaten zur Bestätigung der Zahlung",
+      "paymentFailed": "Zahlung fehlgeschlagen"
     },
     "accountSetup": {
       "passwordAfterPayment": "Du brauchst noch kein Passwort. Nach der Zahlung senden wir dir eine E-Mail, um die Einrichtung deines Kontos abzuschließen.",
@@ -1164,6 +1166,7 @@
     "ownerStorageIsFullDescription": "Du kannst in diesem geteilten Ordner keine Dateien hochladen.",
     "storageIsFullDescription": "Sie können keine Dateien hochladen, synchronisieren oder sichern.",
     "noFilePreview": "Keine Dateivorschau vorhanden",
+    "filePreviewTooLarge": "Datei zu groß für die Vorschau (über {{limit}})",
     "errorMovingToTrash": "Beim Verschieben der Elemente in den Papierkorb ist ein Fehler aufgetreten.",
     "errorDeletingFromTrash": "Beim Löschen der Elemente aus dem Papierkorb ist ein Fehler aufgetreten.",
     "updateAvatarError": "Fehler beim Aktualisieren des Avatars",

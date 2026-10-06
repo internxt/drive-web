@@ -55,7 +55,8 @@
     "zh": "简体中文 (Chinese)",
     "ru": "Русский (Russian)",
     "de": "Deutsch (German)",
-    "zh-tw": "臺灣 (Taiwan)"
+    "zh-tw": "臺灣 (Taiwan)",
+    "pt-br": "Português (Brazilian Portuguese)"
   },
   "theme": {
     "title": "Appearance",
@@ -297,7 +298,8 @@
       "businessPlan": "Business plan is not available",
       "postalCodeRequired": "Please enter your postal code to continue",
       "countryRequired": "We couldn't determine your billing country. Please try again later.",
-      "missingPaymentDetails": "Missing payment details to confirm the payment"
+      "missingPaymentDetails": "Missing payment details to confirm the payment",
+      "paymentFailed": "Payment failed"
     },
     "accountSetup": {
       "passwordAfterPayment": "You don't need a password yet. After paying, we'll send you an email to finish setting up your account.",
@@ -1185,6 +1187,7 @@
     },
     "storageIsFullDescription": "You can’t upload, sync or backup files.",
     "noFilePreview": "No file preview available",
+    "filePreviewTooLarge": "File too large to preview (over {{limit}})",
     "errorMovingToTrash": "An error occurred while moving the items to trash.",
     "errorDeletingFromTrash": "An error occurred while deleting the items from trash.",
     "connectionLostError": "Internet connection lost",

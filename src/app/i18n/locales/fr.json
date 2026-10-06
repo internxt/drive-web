@@ -34,7 +34,8 @@
     "zh": "简体中文 (Chinois)",
     "ru": "Русский (Russe)",
     "de": "Deutsch (Allemand)",
-    "zh-tw": "臺灣 (Taïwanais)"
+    "zh-tw": "臺灣 (Taïwanais)",
+    "pt-br": "Português (Portugais brésilien)"
   },
   "theme": {
     "title": "Apparence",
@@ -276,7 +277,8 @@
       "businessPlan": "Le plan d’entreprise n’est pas disponible",
       "postalCodeRequired": "Veuillez saisir votre code postal pour continuer",
       "countryRequired": "Nous n'avons pas pu déterminer votre pays. Veuillez réessayer plus tard.",
-      "missingPaymentDetails": "Informations de paiement manquantes pour confirmer le paiement"
+      "missingPaymentDetails": "Informations de paiement manquantes pour confirmer le paiement",
+      "paymentFailed": "Paiement échoué"
     },
     "accountSetup": {
       "passwordAfterPayment": "Vous n'avez pas encore besoin de mot de passe. Après le paiement, nous vous enverrons un e-mail pour finaliser la configuration de votre compte.",
@@ -1164,6 +1166,7 @@
     "ownerStorageIsFullDescription": "Vous ne pouvez pas téléverser de fichiers dans ce dossier partagé.",
     "storageIsFullDescription": "Vous ne pouvez pas télécharger, synchroniser ou sauvegarder des fichiers.",
     "noFilePreview": "Pas d'aperçu de fichier disponible",
+    "filePreviewTooLarge": "Fichier trop volumineux pour l'aperçu (plus de {{limit}})",
     "errorMovingToTrash": "Error lors du déplacement des éléments.",
     "connectionLostError": "Lost Internet connection",
     "errorLoadingTrashItems": "Erreur de chargement des éléments de la corbeille",
