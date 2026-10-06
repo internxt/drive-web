@@ -38,6 +38,7 @@ import { generateMnemonic, validateMnemonic } from 'bip39';
 import { isAccountSetupPending } from 'services/account-setup.service';
 import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
+import { ATTRIBUTION_LOCAL_STORAGE_ITEMS, CHECKOUT_LOCAL_STORAGE_ITEMS } from 'services/storage-keys';
 import navigationService from 'services/navigation.service';
 import RealtimeService from 'services/sockets/socket.service';
 import { generateCaptchaToken } from 'utils';
@@ -572,7 +573,7 @@ export const signUp = async (params: SignUpParams) => {
   const { doSignUp, email, password, token, redeemCodeObject, dispatch } = params;
   const { xUser, xNewToken, mnemonic } = await doSignUp(email, password, token);
 
-  localStorageService.clear();
+  localStorageService.clearExcept([...CHECKOUT_LOCAL_STORAGE_ITEMS, ...ATTRIBUTION_LOCAL_STORAGE_ITEMS]);
 
   await encryptedStorageService.setToken(xNewToken);
 

@@ -55,7 +55,8 @@
     "zh": "简体中文 （中国)",
     "ru": "Русский (俄文)",
     "de": "Deutsch (德文)",
-    "zh-tw": "臺灣 (Taiwan)"
+    "zh-tw": "臺灣 (Taiwan)",
+    "pt-br": "Português (巴西葡萄牙文)"
   },
   "theme": {
     "title": "外觀",
@@ -297,7 +298,8 @@
       "businessPlan": "企業計劃不可用",
       "postalCodeRequired": "請輸入您的郵遞區號以繼續",
       "countryRequired": "我們無法確定您的國家/地區,請稍後再試",
-      "missingPaymentDetails": "缺少確認付款所需的付款資訊"
+      "missingPaymentDetails": "缺少確認付款所需的付款資訊",
+      "paymentFailed": "付款失敗"
     }
   },
   "urgentCheckout": {
@@ -1171,6 +1173,7 @@
     "ownerStorageIsFullDescription": "您無法在此共享資料夾中上傳檔案。",
     "storageIsFullDescription": "您無法上傳、同步或備份文件。",
     "noFilePreview": "無法預覽文件",
+    "filePreviewTooLarge": "檔案過大，無法預覽（超過 {{limit}}）",
     "errorMovingToTrash": "將項目移動到垃圾桶時出錯。",
     "errorDeletingFromTrash": "從垃圾桶中刪除項目時出錯。",
     "connectionLostError": "網絡連接已丟失",

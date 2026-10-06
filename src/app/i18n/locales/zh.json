@@ -55,7 +55,8 @@
     "zh": "简体中文 (简体中文)",
     "ru": "Русский (俄语)",
     "de": "Deutsch (德国)",
-    "zh-tw": "臺灣 (臺灣人)"
+    "zh-tw": "臺灣 (臺灣人)",
+    "pt-br": "Português (巴西葡萄牙语)"
   },
   "theme": {
     "title": "外观",
@@ -297,7 +298,8 @@
       "businessPlan": "企业计划不可用",
       "postalCodeRequired": "请输入您的邮政编码以继续",
       "countryRequired": "我们无法确定您的国家/地区,请稍后再试",
-      "missingPaymentDetails": "缺少确认付款所需的支付信息"
+      "missingPaymentDetails": "缺少确认付款所需的支付信息",
+      "paymentFailed": "付款失败"
     }
   },
   "urgentCheckout": {
@@ -1171,6 +1173,7 @@
     "ownerStorageIsFullDescription": "您无法在此共享文件夹中上传文件。",
     "storageIsFullDescription": "无法上传同步或备份文件",
     "noFilePreview": "没有可用的文件预览",
+    "filePreviewTooLarge": "文件过大，无法预览（超过 {{limit}}）",
     "errorMovingToTrash": "将项目移至垃圾箱时出错。",
     "errorDeletingFromTrash": "从垃圾箱中删除项目时出错。",
     "connectionLostError": "互联网连接丢失",
