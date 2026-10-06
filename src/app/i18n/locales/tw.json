@@ -293,6 +293,15 @@
       "countryRequired": "我們無法確定您的國家/地區,請稍後再試",
       "missingPaymentDetails": "缺少確認付款所需的付款資訊",
       "paymentFailed": "付款失敗"
+    },
+    "accountSetup": {
+      "passwordAfterPayment": "現在還不需要密碼。付款後，我們會寄一封電子郵件給你，以完成帳戶設定。",
+      "emailHasAccount": "此電子郵件已有 Internxt 帳戶。請登入以繼續購買。",
+      "pendingSetup": "{{email}} 已有一個待設定的付費方案。請查看你的電子郵件以完成帳戶設定。",
+      "cryptoRequiresSignIn": "請登入後使用加密貨幣付款。",
+      "resendEmail": "重新寄送郵件",
+      "emailResent": "我們已重新寄送郵件",
+      "resendEmailError": "無法寄送郵件，請稍後再試。"
     }
   },
   "urgentCheckout": {

@@ -293,6 +293,15 @@
       "countryRequired": "Não foi possível determinar seu país de cobrança. Tente novamente mais tarde.",
       "missingPaymentDetails": "Faltam dados de pagamento para confirmar a transação",
       "paymentFailed": "Falha no pagamento"
+    },
+    "accountSetup": {
+      "passwordAfterPayment": "Você ainda não precisa de senha. Depois do pagamento, enviaremos um e-mail para você concluir a configuração da sua conta.",
+      "emailHasAccount": "Este e-mail já tem uma conta Internxt. Faça login para continuar com a compra.",
+      "pendingSetup": "{{email}} já tem um plano pago aguardando configuração. Verifique seu e-mail para concluir a configuração da sua conta.",
+      "cryptoRequiresSignIn": "Faça login para pagar com criptomoedas.",
+      "resendEmail": "Reenviar e-mail",
+      "emailResent": "Enviamos o e-mail novamente",
+      "resendEmailError": "Não foi possível enviar o e-mail. Tente novamente mais tarde."
     }
   },
   "urgentCheckout": {
