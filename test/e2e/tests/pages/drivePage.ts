@@ -1,4 +1,10 @@
 import { expect, Locator, Page } from '@playwright/test';
+import { staticData } from '../helper/staticData';
+
+const UPLOADED_FILE_LISTED_TIMEOUT = 30000;
+
+export type UploadFile = { name: string; mimeType: string; buffer: Buffer };
+type FileListElement = 'parent' | 'action' | 'image';
 
 export class DrivePage {
   private page: Page;
@@ -173,10 +179,29 @@ export class DrivePage {
     const checkBox = item.locator('[class$="text-white border-gray-30 hover:border-gray-40"]');
     await checkBox.click();
   }
-  async uploadFiles(files: { name: string; mimeType: string; buffer: Buffer }[]) {
+  async uploadFiles(files: UploadFile[]) {
     await this.fileInput.setInputFiles(files);
   }
   async expectUploadWidgetStatus(status: string, timeout: number) {
     await expect.poll(async () => await this.uploadWidgetBorder.textContent(), { timeout }).toContain(status);
+  }
+
+  async openFile(fileName: string) {
+    const listItem = this.fileListElement(fileName, 'parent');
+
+    await expect(listItem).toBeVisible({ timeout: UPLOADED_FILE_LISTED_TIMEOUT });
+    await listItem.hover();
+    await this.fileListElement(fileName, 'action').click();
+  }
+
+  async expectFileThumbnail(fileName: string) {
+    const thumbnail = this.fileListElement(fileName, 'image');
+
+    await expect(thumbnail).toBeVisible();
+    await expect(thumbnail).toHaveAttribute('src', staticData.blobUrlPattern);
+  }
+
+  private fileListElement(fileName: string, element: FileListElement) {
+    return this.page.locator(`[data-test="file-list-file-${fileName}-${element}"]`);
   }
 }

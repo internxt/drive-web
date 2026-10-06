@@ -1,26 +1,60 @@
 import useEffectAsync from 'hooks/useEffectAsync';
 import navigationService from 'services/navigation.service';
-import { AppView, LocalStorageItem } from 'app/core/types';
+import { AppView } from 'app/core/types';
 import { useAppDispatch } from 'app/store/hooks';
 import { useCallback, useRef } from 'react';
 import localStorageService from 'services/local-storage.service';
 import { trackPaymentConversion } from 'app/analytics/impact.service';
 import gaService from 'app/analytics/ga.service';
+import { PURCHASE_LOCAL_STORAGE_ITEMS } from 'services/storage-keys';
 import metaService from 'app/analytics/meta.service';
 import { userStoragePolling } from 'utils/userStoragePolling.utils';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { paymentService } from '../services';
+import envService from 'services/env.service';
 
 export function removePaymentsStorage() {
-  localStorageService.removeItem(LocalStorageItem.SubscriptionID);
-  localStorageService.removeItem(LocalStorageItem.PaymentIntentID);
-  localStorageService.removeItem(LocalStorageItem.AmountPaid);
-  localStorageService.removeItem(LocalStorageItem.ProductName);
-  localStorageService.removeItem(LocalStorageItem.PriceId);
-  localStorageService.removeItem(LocalStorageItem.Currency);
-  localStorageService.removeItem(LocalStorageItem.CouponCode);
+  PURCHASE_LOCAL_STORAGE_ITEMS.forEach((item) => localStorageService.removeItem(item));
 }
+
+const hasStripeReportedPaymentFailed = async (): Promise<boolean> => {
+  const params = new URLSearchParams(globalThis.location.search);
+  const setupIntentSecret = params.get('setup_intent_client_secret');
+  const paymentIntentSecret = params.get('payment_intent_client_secret');
+
+  if (!paymentIntentSecret && !setupIntentSecret) {
+    return false;
+  }
+
+  let intentStatus: string | undefined;
+  const stripe = await paymentService.getStripe();
+
+  if (paymentIntentSecret) {
+    const { paymentIntent } = await stripe.retrievePaymentIntent(paymentIntentSecret);
+    intentStatus = paymentIntent?.status;
+  } else if (setupIntentSecret) {
+    const { setupIntent } = await stripe.retrieveSetupIntent(setupIntentSecret);
+    intentStatus = setupIntent?.status;
+  }
+
+  return intentStatus !== 'succeeded';
+};
+
+const sendPurchaseEvents = async (): Promise<void> => {
+  if (!envService.isProduction()) {
+    console.info('[Analytics] Purchase events are not sent outside production');
+    return;
+  }
+
+  metaService.trackPurchase();
+  await gaService.trackPurchase();
+  await trackPaymentConversion();
+};
 
 const CheckoutSuccessView = (): JSX.Element => {
   const dispatch = useAppDispatch();
+  const { translate } = useTranslationContext();
   const hasTrackedRef = useRef(false);
 
   const onCheckoutSuccess = useCallback(async () => {
@@ -31,9 +65,11 @@ const CheckoutSuccessView = (): JSX.Element => {
     hasTrackedRef.current = true;
 
     try {
-      metaService.trackPurchase();
-      await gaService.trackPurchase();
-      await trackPaymentConversion();
+      if (await hasStripeReportedPaymentFailed()) {
+        notificationsService.show({ text: translate('checkout.error.paymentFailed'), type: ToastType.Error });
+      } else {
+        await sendPurchaseEvents();
+      }
 
       removePaymentsStorage();
     } catch (err) {
@@ -43,7 +79,7 @@ const CheckoutSuccessView = (): JSX.Element => {
     userStoragePolling();
 
     navigationService.push(AppView.Drive);
-  }, [dispatch]);
+  }, [dispatch, translate]);
 
   useEffectAsync(onCheckoutSuccess, []);
 
