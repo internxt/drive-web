@@ -57,7 +57,7 @@
   "auth": {
     "accountSetupPending": {
       "title": "Termina de configurar tu cuenta",
-      "message": "Tu cuenta ya está pagada. Abre el correo que te enviamos para crear tu contraseña y terminar de configurarla.",
+      "message": "Ya has comprado un plan con este email. Usa el enlace que te enviamos para crear tu contraseña.",
       "resend": "Reenviar el correo",
       "emailSent": "Correo enviado. Revisa tu bandeja de entrada.",
       "resendFailed": "No hemos podido enviar el correo. Inténtalo de nuevo."

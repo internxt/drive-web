@@ -78,7 +78,7 @@
   "auth": {
     "accountSetupPending": {
       "title": "完成账户设置",
-      "message": "您的账户已付款。请打开我们发送给您的邮件，设置密码并完成账户设置。",
+      "message": "您已使用此邮箱购买了套餐。请使用我们发送给您的链接设置密码。",
       "resend": "重新发送邮件",
       "emailSent": "邮件已发送，请查收收件箱。",
       "resendFailed": "无法发送邮件，请重试。"

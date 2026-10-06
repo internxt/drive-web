@@ -57,7 +57,7 @@
   "auth": {
     "accountSetupPending": {
       "title": "Terminez la configuration de votre compte",
-      "message": "Votre compte est déjà payé. Ouvrez l'e-mail que nous vous avons envoyé pour définir votre mot de passe et terminer sa configuration.",
+      "message": "Vous avez déjà acheté un forfait avec cet e-mail. Utilisez le lien que nous vous avons envoyé pour créer votre mot de passe.",
       "resend": "Renvoyer l'e-mail",
       "emailSent": "E-mail envoyé. Consultez votre boîte de réception.",
       "resendFailed": "Nous n'avons pas pu envoyer l'e-mail. Veuillez réessayer."
