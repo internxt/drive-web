@@ -1576,6 +1576,30 @@
       }
     }
   },
+  "accountSetup": {
+    "form": {
+      "title": "Configura il tuo account",
+      "description": "Crea una password per completare la configurazione del tuo account Internxt.",
+      "confirmPassword": "Conferma password",
+      "passwordsDoNotMatch": "Le password non corrispondono",
+      "submit": "Crea account",
+      "genericError": "Si è verificato un errore durante la configurazione dell'account. Riprova."
+    },
+    "invalidLink": {
+      "title": "Questo link non è più valido",
+      "description": "Il link è scaduto o è già stato utilizzato. Inserisci la tua email e te ne invieremo uno nuovo.",
+      "emailLabel": "Email",
+      "resendButton": "Inviami un nuovo link",
+      "resendError": "Non è stato possibile inviare l'email. Riprova.",
+      "emailSentTitle": "Controlla la tua email",
+      "emailSentDescription": "Se {{email}} ha un account in attesa di configurazione, riceverai a breve un nuovo link."
+    },
+    "accountAlreadyExists": {
+      "title": "Il tuo account è già configurato",
+      "description": "Questo account esiste già. Accedi con la tua email e password.",
+      "loginButton": "Vai all'accesso"
+    }
+  },
   "blockedAccount": {
     "title": "Verifica di essere tu",
     "text1": "Sono stati tentati troppi login non riusciti",

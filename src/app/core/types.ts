@@ -90,6 +90,7 @@ export enum AppView {
   Auth = 'auth',
   ButtonAuth = 'buttonAuth',
   RecoverAccount = 'recover-account',
+  CompleteAccount = 'complete-account',
   Drive = 'drive',
   Favorites = 'favorites',
   Recents = 'recents',
