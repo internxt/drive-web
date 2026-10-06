@@ -24,8 +24,7 @@ export const usePasswordlessCheckout = ({
   const { translate } = useTranslationContext();
   const [pendingAccountSetupEmail, setPendingAccountSetupEmail] = useState<string>();
 
-  const isPasswordlessSignUp =
-    checkoutService.isPasswordlessCheckoutEnabled() && !isUrgentCheckout && authMethod === 'signUp';
+  const isPasswordlessSignUp = !isUrgentCheckout && authMethod === 'signUp';
 
   const createCustomerWithoutAccount = async (
     payload: CreateCustomerWithoutAccountPayload,

@@ -3,7 +3,7 @@ import navigationService from 'services/navigation.service';
 import { AppView, LocalStorageItem } from 'app/core/types';
 import { useAppDispatch } from 'app/store/hooks';
 import { useCallback, useRef, useState } from 'react';
-import { CheckCircle } from '@phosphor-icons/react';
+import { CheckCircleIcon } from '@phosphor-icons/react';
 import localStorageService from 'services/local-storage.service';
 import encryptedStorageService from 'services/encrypted-storage.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -27,7 +27,7 @@ const AccountSetupEmailSentCard = ({ email }: { email: string }) => {
   return (
     <div className="flex h-full w-full items-center justify-center bg-gray-1 px-5">
       <div className="flex w-full max-w-md flex-col items-center gap-6 rounded-2xl border border-gray-10 bg-surface p-8 text-center">
-        <CheckCircle size={80} weight="thin" className="text-primary" />
+        <CheckCircleIcon size={80} weight="thin" className="text-primary" />
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-medium text-gray-100">{translate('checkout.accountSetup.checkEmail.title')}</h1>
           <p className="text-gray-80">{translate('checkout.accountSetup.checkEmail.description')}</p>

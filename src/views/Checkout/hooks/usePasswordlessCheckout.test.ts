@@ -4,7 +4,6 @@ import { act, renderHook } from '@testing-library/react';
 import { SdkFactory } from 'app/core/factory/sdk';
 import { LocalStorageItem } from 'app/core/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import envService from 'services/env.service';
 import localStorageService from 'services/local-storage.service';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { AuthMethodTypes } from '../types';
@@ -26,12 +25,6 @@ const customerPayload: CreateCustomerWithoutAccountPayload = {
 const responseError = (status: number, data: Record<string, unknown> = {}) =>
   new AxiosResponseError('Request failed', 'POST /checkout/customer', { status, data, headers: {} } as never);
 
-const mockPasswordlessFlag = (value: string) => {
-  vi.spyOn(envService, 'getVariable').mockImplementation((key) =>
-    key === 'passwordlessCheckoutEnabled' ? value : 'no mock implementation',
-  );
-};
-
 const renderPasswordlessCheckout = ({
   authMethod = 'signUp' as AuthMethodTypes,
   isUrgentCheckout = false,
@@ -42,25 +35,16 @@ describe('Paying without creating a password first', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
-    mockPasswordlessFlag('true');
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
       createCheckoutClientWithoutSession: () => ({ createCustomerWithoutAccount }),
     } as unknown as SdkFactory);
     createCustomerWithoutAccount.mockResolvedValue({ customerId: 'cus_123', token: 'payments_token' });
   });
 
-  test('When the feature is enabled and a new buyer is creating an account, then the checkout asks only for the email', () => {
+  test('When a new buyer is creating an account, then the checkout asks only for the email', () => {
     const { result } = renderPasswordlessCheckout();
 
     expect(result.current.isPasswordlessSignUp).toBe(true);
-  });
-
-  test('When the feature is disabled, then new buyers keep creating their account with a password', () => {
-    mockPasswordlessFlag('false');
-
-    const { result } = renderPasswordlessCheckout();
-
-    expect(result.current.isPasswordlessSignUp).toBe(false);
   });
 
   test('When the buyer chooses to log in, then the checkout keeps asking for the password', () => {

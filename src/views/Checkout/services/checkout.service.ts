@@ -122,8 +122,6 @@ const createCustomerWithoutAccount = async (payload: CreateCustomerWithoutAccoun
   return checkoutClient.createCustomerWithoutAccount(payload);
 };
 
-const isPasswordlessCheckoutEnabled = (): boolean => envService.getVariable('passwordlessCheckoutEnabled') === 'true';
-
 const getPriceById = async ({
   priceId,
   promoCodeName,
@@ -304,7 +302,6 @@ const checkoutService = {
   fetchPromotionCodeByName,
   createCustomer,
   createCustomerWithoutAccount,
-  isPasswordlessCheckoutEnabled,
   createPaymentIntent,
   getPriceById,
   createSubscription,
