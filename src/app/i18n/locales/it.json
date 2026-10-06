@@ -78,7 +78,7 @@
   "auth": {
     "accountSetupPending": {
       "title": "Completa la configurazione del tuo account",
-      "message": "Il tuo account è già pagato. Apri l'email che ti abbiamo inviato per impostare la password e completare la configurazione.",
+      "message": "Hai già acquistato un piano con questa email. Usa il link che ti abbiamo inviato per creare la tua password.",
       "resend": "Invia di nuovo l'email",
       "emailSent": "Email inviata. Controlla la tua casella di posta.",
       "resendFailed": "Non è stato possibile inviare l'email. Riprova."

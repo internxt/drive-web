@@ -1,5 +1,5 @@
 import { Button } from '@internxt/ui';
-import { WarningCircle } from '@phosphor-icons/react';
+import { WarningCircleIcon } from '@phosphor-icons/react';
 import { IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import PasswordInput from 'components/PasswordInput';
@@ -20,7 +20,7 @@ interface AccountSetupFormProps {
 const FieldError = ({ message }: Readonly<{ message: string }>): JSX.Element => (
   <div className="flex flex-row items-start pt-1">
     <div className="flex h-5 flex-row items-center">
-      <WarningCircle weight="fill" className="mr-1 h-4 text-red" />
+      <WarningCircleIcon weight="fill" className="mr-1 h-4 text-red" />
     </div>
     <span className="font-base text-sm text-red">{message}</span>
   </div>
