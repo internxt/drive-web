@@ -291,7 +291,79 @@
       "businessPlan": "O plano empresarial não está disponível",
       "postalCodeRequired": "Informe seu CEP para continuar",
       "countryRequired": "Não foi possível determinar seu país de cobrança. Tente novamente mais tarde.",
-      "missingPaymentDetails": "Faltam dados de pagamento para confirmar a transação"
+      "missingPaymentDetails": "Faltam dados de pagamento para confirmar a transação",
+      "paymentFailed": "Falha no pagamento"
+    },
+    "accountSetup": {
+      "passwordAfterPayment": "Você ainda não precisa de senha. Depois do pagamento, enviaremos um e-mail para você concluir a configuração da sua conta.",
+      "emailHasAccount": "Este e-mail já tem uma conta Internxt. Faça login para continuar com a compra.",
+      "pendingSetup": "{{email}} já tem um plano pago aguardando configuração. Verifique seu e-mail para concluir a configuração da sua conta.",
+      "cryptoRequiresSignIn": "Faça login para pagar com criptomoedas.",
+      "resendEmail": "Reenviar e-mail",
+      "emailResent": "Enviamos o e-mail novamente",
+      "resendEmailError": "Não foi possível enviar o e-mail. Tente novamente mais tarde."
+    }
+  },
+  "urgentCheckout": {
+    "header": {
+      "tagline": "Sua nuvem privada",
+      "europeanBased": "Com sede na Europa",
+      "gdprCompliant": "Em conformidade com o RGPD",
+      "trustedByMillions": "Milhões confiam em nós"
+    },
+    "hero": {
+      "offerPill": "{{percent}}% OFF — Oferta exclusiva por tempo limitado",
+      "offerPillNoDiscount": "Oferta exclusiva por tempo limitado",
+      "title": "Mantenha seus arquivos, fotos e vídeos",
+      "titleHighlight": "100% privados.",
+      "subtitle": "Tenha {{storage}} de armazenamento em nuvem privada por apenas {{price}} no primeiro mês.",
+      "imageAlt": "Internxt Drive em um notebook e em um celular",
+      "points": {
+        "privacy": {
+          "title": "Só você pode acessar seus arquivos",
+          "description": "A criptografia de conhecimento zero faz com que nem mesmo a Internxt possa acessar seu conteúdo."
+        },
+        "storage": {
+          "title": "Sua nuvem privada, protegida",
+          "description": "Guarde suas fotos, vídeos, documentos e arquivos pessoais com privacidade integrada."
+        },
+        "offer": {
+          "title": "{{percent}}% OFF — por tempo limitado",
+          "titleNoDiscount": "Oferta exclusiva — por tempo limitado",
+          "description": "Tenha {{storage}} por apenas {{price}}. Esta oferta exclusiva não vai durar."
+        }
+      },
+      "badges": {
+        "basedInEu": "Com sede na UE",
+        "openSource": "Código aberto",
+        "audited": "Auditado pela Securitum",
+        "privacyPriority": "Sua privacidade. Nossa prioridade."
+      }
+    },
+    "countdown": {
+      "title": "Sua oferta exclusiva de {{percent}}% OFF expira em:",
+      "titleNoDiscount": "Sua oferta exclusiva expira em:",
+      "footer": "Tenha {{storage}} por {{price}} antes que esta oferta acabe."
+    },
+    "summary": {
+      "discountApplied": "{{percent}}% OFF aplicado",
+      "estimatedTax": "Impostos estimados"
+    },
+    "form": {
+      "emailLabel": "Seu endereço de e-mail",
+      "emailPlaceholder": "voce@email.com",
+      "createPasswordLabel": "Crie uma senha",
+      "passwordLabel": "Sua senha",
+      "passwordPlaceholder": "Senha",
+      "togglePasswordVisibility": "Mostrar ou ocultar a senha",
+      "incompleteDetails": "Informe seu e-mail e sua senha para continuar.",
+      "encryptedTitle": "Seus arquivos são criptografados e privados.",
+      "encryptedDescription": "A Internxt não pode acessar seu conteúdo."
+    },
+    "cta": {
+      "button": "Tenha {{storage}} por {{price}}",
+      "renewalNoteMonthly": "Primeiro mês por {{price}}, depois renova por {{renewalPrice}}/mês. Cancele quando quiser.",
+      "renewalNoteYearly": "Primeiro ano por {{price}}, depois renova por {{renewalPrice}}/ano. Cancele quando quiser."
     }
   },
   "general": {
@@ -1102,6 +1174,7 @@
     },
     "storageIsFullDescription": "Você não pode enviar, sincronizar nem fazer backup de arquivos.",
     "noFilePreview": "Não há pré-visualização disponível para este arquivo",
+    "filePreviewTooLarge": "Arquivo grande demais para visualizar (mais de {{limit}})",
     "errorMovingToTrash": "Ocorreu um erro ao mover os itens para a lixeira.",
     "errorDeletingFromTrash": "Ocorreu um erro ao excluir os itens da lixeira.",
     "connectionLostError": "Conexão com a internet perdida",
