@@ -5,7 +5,7 @@ import { AccountSetupLayout } from './components/AccountSetupLayout';
 import { InvalidLinkMessage } from './components/InvalidLinkMessage';
 import { AccountSetupStatus, useAccountSetup } from './hooks/useAccountSetup';
 
-export default function AccountSetupView(): JSX.Element {
+const AccountSetupView = (): JSX.Element => {
   const { token } = useParams<{ token: string }>();
   const { status, isSubmitting, hasSubmitFailed, setUpAccount } = useAccountSetup(token);
 
@@ -16,4 +16,6 @@ export default function AccountSetupView(): JSX.Element {
   };
 
   return <AccountSetupLayout>{contentByStatus[status]}</AccountSetupLayout>;
-}
+};
+
+export default AccountSetupView;
