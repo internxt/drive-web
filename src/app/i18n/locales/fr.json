@@ -287,7 +287,12 @@
       "cryptoRequiresSignIn": "Connectez-vous pour payer en cryptomonnaie.",
       "resendEmail": "Renvoyer l'e-mail",
       "emailResent": "Nous vous avons renvoyé l'e-mail",
-      "resendEmailError": "Nous n'avons pas pu envoyer l'e-mail. Veuillez réessayer plus tard."
+      "resendEmailError": "Nous n'avons pas pu envoyer l'e-mail. Veuillez réessayer plus tard.",
+      "checkEmail": {
+        "title": "Consultez vos e-mails",
+        "description": "Votre paiement a été effectué. Nous avons envoyé un lien pour finaliser la configuration de votre compte à :",
+        "spamHint": "Vous ne le trouvez pas ? Vérifiez votre dossier de spam."
+      }
     }
   },
   "urgentCheckout": {

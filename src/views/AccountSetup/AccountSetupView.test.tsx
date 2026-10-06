@@ -27,7 +27,7 @@ vi.mock('services/encrypted-storage.service', () => ({
   default: { setToken: vi.fn(), getToken: vi.fn(), getUser: vi.fn(), clear: vi.fn() },
 }));
 vi.mock('services/local-storage.service', () => ({
-  default: { get: vi.fn(), set: vi.fn(), clear: vi.fn() },
+  default: { get: vi.fn(), set: vi.fn(), clear: vi.fn(), clearExcept: vi.fn() },
 }));
 vi.mock('app/store/slices/user', () => ({
   initializeUserThunk: vi.fn(),

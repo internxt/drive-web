@@ -1,5 +1,6 @@
 import { CompleteAccountSetupPayload } from '@internxt/sdk/dist/auth/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { LocalStorageItem } from 'app/core/types';
 import { decryptText, decryptTextWithKey, passToHash } from 'app/crypto/services/utils';
 import { planThunks } from 'app/store/slices/plan';
 import { userThunks } from 'app/store/slices/user';
@@ -7,6 +8,7 @@ import { validateMnemonic } from 'bip39';
 import { Buffer } from 'node:buffer';
 import encryptedStorageService from 'services/encrypted-storage.service';
 import envService from 'services/env.service';
+import localStorageService from 'services/local-storage.service';
 import { getCompleteAccountSetupResponse } from 'testUtils/fixtures/accountSetup.fixtures';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { completeAccountSetup } from './completeAccountSetup';
@@ -23,7 +25,7 @@ vi.mock('services/encrypted-storage.service', () => ({
   default: { setToken: vi.fn(), getToken: vi.fn(), getUser: vi.fn(), clear: vi.fn() },
 }));
 vi.mock('services/local-storage.service', () => ({
-  default: { get: vi.fn(), set: vi.fn(), clear: vi.fn(), clearExcept: vi.fn() },
+  default: { get: vi.fn(), set: vi.fn(), clear: vi.fn(), clearExcept: vi.fn(), removeItem: vi.fn() },
 }));
 vi.mock('app/store/slices/user', () => ({
   initializeUserThunk: vi.fn(),
@@ -101,5 +103,13 @@ describe('Completing the setup of a paid account', () => {
     );
     expect(encryptedStorageService.setToken).not.toHaveBeenCalled();
     expect(userThunks.setUserThunk).not.toHaveBeenCalled();
+    expect(localStorageService.clearExcept).not.toHaveBeenCalled();
+  });
+
+  test('When the account is set up, then the checkout "check your email" screen is no longer shown on a later visit', async () => {
+    await completeAccountSetup({ setupToken: SETUP_TOKEN, password: PASSWORD, dispatch: vi.fn() });
+
+    const [keysToPreserve] = vi.mocked(localStorageService.clearExcept).mock.calls[0];
+    expect(keysToPreserve).not.toContain(LocalStorageItem.CheckoutAccountSetupEmail);
   });
 });

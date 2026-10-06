@@ -287,7 +287,12 @@
       "cryptoRequiresSignIn": "Melde dich an, um mit Kryptowährung zu bezahlen.",
       "resendEmail": "E-Mail erneut senden",
       "emailResent": "Wir haben dir die E-Mail erneut gesendet",
-      "resendEmailError": "Wir konnten die E-Mail nicht senden. Bitte versuche es später erneut."
+      "resendEmailError": "Wir konnten die E-Mail nicht senden. Bitte versuche es später erneut.",
+      "checkEmail": {
+        "title": "Prüfe deine E-Mails",
+        "description": "Deine Zahlung war erfolgreich. Wir haben einen Link zum Abschließen der Kontoeinrichtung gesendet an:",
+        "spamHint": "Nicht gefunden? Sieh in deinem Spam-Ordner nach."
+      }
     }
   },
   "urgentCheckout": {

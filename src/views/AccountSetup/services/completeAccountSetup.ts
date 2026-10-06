@@ -20,7 +20,7 @@ export const completeAccountSetup = async ({ setupToken, password, dispatch }: C
   const { user, token, newToken } = await authClient.completeAccountSetup({ token: setupToken, ...credentials });
   const mnemonic = decryptTextWithKey(user.mnemonic, password);
 
-  return startNewAccountSession({
+  const session = await startNewAccountSession({
     registeredUser: {
       xUser: { ...user, mnemonic } as unknown as UserSettings,
       xToken: token,
@@ -31,4 +31,6 @@ export const completeAccountSetup = async ({ setupToken, password, dispatch }: C
     redeemCodeObject: false,
     dispatch,
   });
+
+  return session;
 };

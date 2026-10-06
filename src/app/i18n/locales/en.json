@@ -308,7 +308,12 @@
       "cryptoRequiresSignIn": "Log in to pay with crypto.",
       "resendEmail": "Resend email",
       "emailResent": "We've sent you the email again",
-      "resendEmailError": "We couldn't send the email. Please try again later."
+      "resendEmailError": "We couldn't send the email. Please try again later.",
+      "checkEmail": {
+        "title": "Check your email",
+        "description": "Your payment was successful. We've sent a link to finish setting up your account to:",
+        "spamHint": "Can't find it? Check your spam folder."
+      }
     }
   },
   "urgentCheckout": {

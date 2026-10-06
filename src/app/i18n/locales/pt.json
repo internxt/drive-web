@@ -308,7 +308,12 @@
       "cryptoRequiresSignIn": "Faça login para pagar com criptomoedas.",
       "resendEmail": "Reenviar e-mail",
       "emailResent": "Enviamos o e-mail novamente",
-      "resendEmailError": "Não foi possível enviar o e-mail. Tente novamente mais tarde."
+      "resendEmailError": "Não foi possível enviar o e-mail. Tente novamente mais tarde.",
+      "checkEmail": {
+        "title": "Verifique seu e-mail",
+        "description": "Seu pagamento foi concluído. Enviamos um link para concluir a configuração da sua conta para:",
+        "spamHint": "Não encontrou? Verifique sua pasta de spam."
+      }
     }
   },
   "urgentCheckout": {
@@ -1580,6 +1585,30 @@
         "title": "Vamos começar...",
         "description": "Clique no botão Enviar para enviar seu primeiro arquivo."
       }
+    }
+  },
+  "accountSetup": {
+    "form": {
+      "title": "Configure sua conta",
+      "description": "Crie uma senha para concluir a configuração da sua conta Internxt.",
+      "confirmPassword": "Confirmar senha",
+      "passwordsDoNotMatch": "As senhas não coincidem",
+      "submit": "Criar conta",
+      "genericError": "Algo deu errado ao configurar sua conta. Tente novamente."
+    },
+    "invalidLink": {
+      "title": "Este link não é mais válido",
+      "description": "O link expirou ou já foi usado. Informe seu e-mail e enviaremos um novo.",
+      "emailLabel": "E-mail",
+      "resendButton": "Enviar um novo link",
+      "resendError": "Não foi possível enviar o e-mail. Tente novamente.",
+      "emailSentTitle": "Verifique seu e-mail",
+      "emailSentDescription": "Se {{email}} tiver uma conta aguardando configuração, você receberá um novo link em breve."
+    },
+    "accountAlreadyExists": {
+      "title": "Sua conta já está configurada",
+      "description": "Esta conta já existe. Faça login com seu e-mail e senha para acessá-la.",
+      "loginButton": "Ir para o login"
     }
   },
   "blockedAccount": {
