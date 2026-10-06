@@ -26,7 +26,7 @@ export const audioTypes: Partial<AudioTypes> = {
   weba: 'audio/webm',
 };
 
-const HALF_A_GIGABYTE_IN_BYTES = 512 * 1024 * 1024;
+export const HALF_A_GIGABYTE_IN_BYTES = 512 * 1024 * 1024;
 export function isFileSizePreviewable(size: number): boolean {
   return size > 0 && size < HALF_A_GIGABYTE_IN_BYTES;
 }
