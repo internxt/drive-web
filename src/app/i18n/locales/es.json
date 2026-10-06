@@ -279,6 +279,15 @@
       "countryRequired": "No hemos podido determinar tu país de facturación. Inténtalo de nuevo más tarde.",
       "missingPaymentDetails": "Faltan los datos de pago para confirmar el pago",
       "paymentFailed": "Pago fallido"
+    },
+    "accountSetup": {
+      "passwordAfterPayment": "Todavía no necesitas una contraseña. Después del pago te enviaremos un correo para terminar de configurar tu cuenta.",
+      "emailHasAccount": "Este correo ya tiene una cuenta de Internxt. Inicia sesión para continuar con tu compra.",
+      "pendingSetup": "{{email}} ya tiene un plan pagado pendiente de configurar. Revisa tu correo para terminar de configurar tu cuenta.",
+      "cryptoRequiresSignIn": "Inicia sesión para pagar con criptomonedas.",
+      "resendEmail": "Reenviar correo",
+      "emailResent": "Te hemos vuelto a enviar el correo",
+      "resendEmailError": "No hemos podido enviar el correo. Inténtalo de nuevo más tarde."
     }
   },
   "urgentCheckout": {
@@ -1552,6 +1561,30 @@
         "title": "Empecemos...",
         "description": "Haga clic en el botón Subir archivos para cargar su primer archivo."
       }
+    }
+  },
+  "accountSetup": {
+    "form": {
+      "title": "Configura tu cuenta",
+      "description": "Crea una contraseña para terminar de configurar tu cuenta de Internxt.",
+      "confirmPassword": "Confirmar contraseña",
+      "passwordsDoNotMatch": "Las contraseñas no coinciden",
+      "submit": "Crear cuenta",
+      "genericError": "Algo ha ido mal al configurar tu cuenta. Inténtalo de nuevo."
+    },
+    "invalidLink": {
+      "title": "Este enlace ya no es válido",
+      "description": "El enlace ha caducado o ya se ha utilizado. Introduce tu email y te enviaremos uno nuevo.",
+      "emailLabel": "Email",
+      "resendButton": "Envíame un nuevo enlace",
+      "resendError": "No hemos podido enviar el email. Inténtalo de nuevo.",
+      "emailSentTitle": "Revisa tu email",
+      "emailSentDescription": "Si {{email}} tiene una cuenta pendiente de configurar, recibirás un nuevo enlace en breve."
+    },
+    "accountAlreadyExists": {
+      "title": "Tu cuenta ya está configurada",
+      "description": "Esta cuenta ya existe. Inicia sesión con tu email y contraseña para acceder.",
+      "loginButton": "Ir a iniciar sesión"
     }
   },
   "blockedAccount": {

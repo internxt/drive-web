@@ -300,6 +300,15 @@
       "countryRequired": "We couldn't determine your billing country. Please try again later.",
       "missingPaymentDetails": "Missing payment details to confirm the payment",
       "paymentFailed": "Payment failed"
+    },
+    "accountSetup": {
+      "passwordAfterPayment": "You don't need a password yet. After paying, we'll send you an email to finish setting up your account.",
+      "emailHasAccount": "This email already has an Internxt account. Log in to continue with your purchase.",
+      "pendingSetup": "{{email}} already has a paid plan waiting to be set up. Check your email to finish setting up your account.",
+      "cryptoRequiresSignIn": "Log in to pay with crypto.",
+      "resendEmail": "Resend email",
+      "emailResent": "We've sent you the email again",
+      "resendEmailError": "We couldn't send the email. Please try again later."
     }
   },
   "urgentCheckout": {
@@ -1572,6 +1581,30 @@
         "title": "Let's get started...",
         "description": "Click Upload button to upload your first file."
       }
+    }
+  },
+  "accountSetup": {
+    "form": {
+      "title": "Set up your account",
+      "description": "Create a password to finish setting up your Internxt account.",
+      "confirmPassword": "Confirm password",
+      "passwordsDoNotMatch": "Passwords don't match",
+      "submit": "Create account",
+      "genericError": "Something went wrong while setting up your account. Please try again."
+    },
+    "invalidLink": {
+      "title": "This link is no longer valid",
+      "description": "The link has expired or has already been used. Enter your email and we will send you a new one.",
+      "emailLabel": "Email",
+      "resendButton": "Send me a new link",
+      "resendError": "We couldn't send the email. Please try again.",
+      "emailSentTitle": "Check your email",
+      "emailSentDescription": "If {{email}} has an account waiting to be set up, you will receive a new link shortly."
+    },
+    "accountAlreadyExists": {
+      "title": "Your account is already set up",
+      "description": "This account already exists. Log in with your email and password to access it.",
+      "loginButton": "Go to log in"
     }
   },
   "blockedAccount": {
