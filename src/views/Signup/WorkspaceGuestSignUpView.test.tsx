@@ -1,4 +1,4 @@
-import { beforeEach, beforeAll, describe, expect, it, vi, Mock } from 'vitest';
+import { beforeEach, beforeAll, describe, expect, it, test, vi, Mock } from 'vitest';
 import { screen, fireEvent, render } from '@testing-library/react';
 import WorkspaceGuestSingUpView from './WorkspaceGuestSignUpView';
 import { userThunks } from '../../app/store/slices/user';
@@ -6,6 +6,7 @@ import * as keysService from '../../app/crypto/services/keys.service';
 import { encryptTextWithKey } from '../../app/crypto/services/utils';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useSignUp } from './hooks/useSignup';
+import { useGuestSignupState } from './hooks/useGuestSignupState';
 import { Buffer } from 'node:buffer';
 import { generateMnemonic } from 'bip39';
 import envService from 'services/env.service';
@@ -72,6 +73,8 @@ describe('onSubmit', () => {
         setInvitationId: vi.fn(),
         showPasswordIndicator: false,
         setShowPasswordIndicator: vi.fn(),
+        pendingSetupEmail: null,
+        setPendingSetupEmail: vi.fn(),
         user: null,
         mnemonic: null,
       }),
@@ -322,5 +325,33 @@ describe('onSubmit', () => {
       emailVerified: false,
     };
     expect(spy).toBeCalledWith(mockClearUser);
+  });
+
+  test('when the invited email already has a paid account waiting to be set up, then the user is asked to finish the setup and can resend the email', () => {
+    (useGuestSignupState as Mock).mockReturnValueOnce({
+      isValidPassword: true,
+      setIsValidPassword: vi.fn(),
+      signupError: undefined,
+      setSignupError: vi.fn(),
+      showError: false,
+      setShowError: vi.fn(),
+      isLoading: false,
+      setIsLoading: vi.fn(),
+      passwordState: { tag: 'success', label: '' },
+      setPasswordState: vi.fn(),
+      invitationId: 'test-invitation',
+      setInvitationId: vi.fn(),
+      showPasswordIndicator: false,
+      setShowPasswordIndicator: vi.fn(),
+      pendingSetupEmail: mockEmal,
+      setPendingSetupEmail: vi.fn(),
+      user: null,
+      mnemonic: null,
+    });
+
+    render(<WorkspaceGuestSingUpView />);
+
+    expect(screen.getByText('auth.accountSetupPending.title')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'auth.accountSetupPending.resend' })).toBeInTheDocument();
   });
 });

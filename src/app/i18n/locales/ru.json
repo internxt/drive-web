@@ -55,6 +55,13 @@
     "environment": "World Environment Day"
   },
   "auth": {
+    "accountSetupPending": {
+      "title": "Завершите настройку аккаунта",
+      "message": "Вы уже купили тариф с этим адресом. Перейдите по ссылке из нашего письма, чтобы задать пароль.",
+      "resend": "Отправить письмо ещё раз",
+      "emailSent": "Письмо отправлено. Проверьте почту.",
+      "resendFailed": "Не удалось отправить письмо. Попробуйте ещё раз."
+    },
     "emailFloatingLabel": "Электронная почта",
     "email": "Email",
     "passwordFloatingLabel": "Пароль",

@@ -76,6 +76,13 @@
     "environment": "世界環境日"
   },
   "auth": {
+    "accountSetupPending": {
+      "title": "完成帳戶設定",
+      "message": "您已使用此電子郵件購買方案。請使用我們寄給您的連結設定密碼。",
+      "resend": "重新寄送電子郵件",
+      "emailSent": "電子郵件已寄出，請查看收件匣。",
+      "resendFailed": "無法寄送電子郵件，請再試一次。"
+    },
     "emailFloatingLabel": "電子郵件",
     "email": "電子郵件",
     "passwordFloatingLabel": "密碼",

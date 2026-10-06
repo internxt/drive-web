@@ -18,6 +18,8 @@ import envService from 'services/env.service';
 import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
 import { BackupData } from 'utils/backupKeyUtils';
+import { AxiosResponseError } from '@internxt/sdk/dist/shared/types/errors';
+import { isAccountSetupPending } from 'services/account-setup.service';
 import { beforeAll, beforeEach, describe, expect, it, test, vi } from 'vitest';
 import * as authService from './auth.service';
 import { PasswordMismatchError } from './errors/auth.errors';
@@ -943,6 +945,35 @@ describe('Security and validation', () => {
       await authService.is2FANeeded('test@example.com', DUMMY_TOKEN);
 
       expect(createAuthClient).toHaveBeenCalledWith({ turnstileToken: DUMMY_TOKEN });
+    });
+  });
+
+  describe('Pending account setup on login', () => {
+    const mockSecurityDetailsFailure = (error: unknown) => {
+      vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+        createAuthClient: vi.fn().mockReturnValue({ securityDetails: vi.fn().mockRejectedValue(error) }),
+      } as unknown as ReturnType<typeof SdkFactory.getNewApiInstance>);
+    };
+
+    test('When the email belongs to a paid account whose setup is not finished, then the error still says the setup is pending', async () => {
+      const pendingSetupError = new AxiosResponseError('Forbidden', '', {
+        status: 403,
+        data: { message: 'Account setup pending', code: 'AccountSetupPending' },
+        headers: {},
+      } as never);
+      mockSecurityDetailsFailure(pendingSetupError);
+
+      const loginAttempt = authService.getSecurityDetails('pending@example.com');
+
+      await expect(loginAttempt).rejects.toSatisfy(isAccountSetupPending);
+    });
+
+    test('When the login fails for any other reason, then the usual error is thrown', async () => {
+      mockSecurityDetailsFailure(new Error('Wrong login credentials'));
+
+      const loginAttempt = authService.getSecurityDetails('user@example.com');
+
+      await expect(loginAttempt).rejects.toThrow('Wrong login credentials');
     });
   });
 

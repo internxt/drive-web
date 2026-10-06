@@ -35,6 +35,7 @@ import { planThunks } from 'app/store/slices/plan';
 import { initializeUserThunk, userThunks } from 'app/store/slices/user';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { generateMnemonic, validateMnemonic } from 'bip39';
+import { isAccountSetupPending } from 'services/account-setup.service';
 import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
 import { ATTRIBUTION_LOCAL_STORAGE_ITEMS, CHECKOUT_LOCAL_STORAGE_ITEMS } from 'services/storage-keys';
@@ -156,6 +157,7 @@ export function cancelAccount(): Promise<void> {
 export const getSecurityDetails = async (email: string, turnstileToken?: string): Promise<SecurityDetails> => {
   const authClient = SdkFactory.getNewApiInstance().createAuthClient({ turnstileToken });
   return authClient.securityDetails(email).catch((error) => {
+    if (isAccountSetupPending(error)) throw error;
     throw errorService.castError(error);
   });
 };

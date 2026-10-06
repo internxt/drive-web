@@ -1,11 +1,12 @@
-import { beforeEach, describe, expect, it, vi, Mock } from 'vitest';
-import { fireEvent, render } from '@testing-library/react';
+import { beforeEach, describe, expect, it, test, vi, Mock } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
 import ShareGuestSignUpView from './ShareGuestSignUpView';
 import { userThunks } from 'app/store/slices/user';
 import * as keysService from 'app/crypto/services/keys.service';
 import { encryptTextWithKey } from 'app/crypto/services/utils';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useSignUp } from './hooks/useSignup';
+import { useGuestSignupState } from './hooks/useGuestSignupState';
 import { Buffer } from 'node:buffer';
 import { generateMnemonic } from 'bip39';
 import envService from 'services/env.service';
@@ -93,6 +94,8 @@ vi.mock('./hooks/useGuestSignupState', () => ({
     setInvitationId: vi.fn(),
     showPasswordIndicator: true,
     setShowPasswordIndicator: vi.fn(),
+    pendingSetupEmail: null,
+    setPendingSetupEmail: vi.fn(),
     user: null,
     mnemonic: null,
   })),
@@ -181,6 +184,7 @@ vi.mock('react-redux', () => ({
 
 vi.mock('../../utils', () => ({
   onChangePasswordHandler: vi.fn(),
+  generateCaptchaToken: vi.fn(),
 }));
 
 vi.mock('services/workspace.service', () => ({
@@ -328,5 +332,45 @@ describe('onSubmit', () => {
       emailVerified: false,
     };
     expect(spy).toHaveBeenCalledWith(mockClearUser);
+  });
+});
+
+describe('Pending account setup', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
+      if (key === 'newApi') return mockApi;
+      if (key === 'secret') return mockSecret;
+      if (key === 'hostname') return mockHostname;
+      else return 'no mock implementation';
+    });
+  });
+
+  test('when the invited email already has a paid account waiting to be set up, then the user is asked to finish the setup and can resend the email', () => {
+    (useGuestSignupState as Mock).mockReturnValueOnce({
+      isValidPassword: true,
+      setIsValidPassword: vi.fn(),
+      signupError: undefined,
+      setSignupError: vi.fn(),
+      showError: false,
+      setShowError: vi.fn(),
+      isLoading: false,
+      setIsLoading: vi.fn(),
+      passwordState: { tag: 'success', label: 'Password is strong' },
+      setPasswordState: vi.fn(),
+      invitationId: 'test-invitation',
+      setInvitationId: vi.fn(),
+      showPasswordIndicator: true,
+      setShowPasswordIndicator: vi.fn(),
+      pendingSetupEmail: mockEmal,
+      setPendingSetupEmail: vi.fn(),
+      user: null,
+      mnemonic: null,
+    });
+
+    render(<ShareGuestSignUpView />);
+
+    expect(screen.getByText('auth.accountSetupPending.title')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'auth.accountSetupPending.resend' })).toBeInTheDocument();
   });
 });

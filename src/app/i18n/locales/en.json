@@ -76,6 +76,13 @@
     "environment": "World Environment Day"
   },
   "auth": {
+    "accountSetupPending": {
+      "title": "Finish setting up your account",
+      "message": "You already bought a plan with this email. Use the link we sent you to create your password.",
+      "resend": "Resend the email",
+      "emailSent": "Email sent. Check your inbox.",
+      "resendFailed": "We couldn't send the email. Please try again."
+    },
     "emailFloatingLabel": "Email address",
     "email": "Email address",
     "passwordFloatingLabel": "Password",

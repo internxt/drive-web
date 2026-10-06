@@ -76,6 +76,13 @@
     "environment": "世界环境日"
   },
   "auth": {
+    "accountSetupPending": {
+      "title": "完成账户设置",
+      "message": "您已使用此邮箱购买了套餐。请使用我们发送给您的链接设置密码。",
+      "resend": "重新发送邮件",
+      "emailSent": "邮件已发送，请查收收件箱。",
+      "resendFailed": "无法发送邮件，请重试。"
+    },
     "emailFloatingLabel": "电子邮件",
     "email": "电子邮件",
     "passwordFloatingLabel": "密码",
