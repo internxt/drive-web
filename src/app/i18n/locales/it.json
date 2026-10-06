@@ -55,7 +55,8 @@
     "zh": "简体中文 (Cinese)",
     "ru": "Русский (Russo)",
     "de": "Deutsch (Tedesco)",
-    "zh-tw": "臺灣 (Taiwanese)"
+    "zh-tw": "臺灣 (Taiwanese)",
+    "pt-br": "Português (Portoghese brasiliano)"
   },
   "theme": {
     "title": "Aspetto",
@@ -290,7 +291,8 @@
       "businessPlan": "Il piano aziendale non è disponibile",
       "postalCodeRequired": "Inserisci il tuo codice postale per continuare",
       "countryRequired": "Non siamo riusciti a determinare il tuo paese. Riprova più tardi.",
-      "missingPaymentDetails": "Dati di pagamento mancanti per confermare il pagamento"
+      "missingPaymentDetails": "Dati di pagamento mancanti per confermare il pagamento",
+      "paymentFailed": "Pagamento non riuscito"
     },
     "accountSetup": {
       "passwordAfterPayment": "Non ti serve ancora una password. Dopo il pagamento ti invieremo un'email per completare la configurazione del tuo account.",
@@ -1173,6 +1175,7 @@
     "ownerStorageIsFullDescription": "Non puoi caricare file in questa cartella condivisa.",
     "storageIsFullDescription": "Non puoi caricare, sincronizzare o eseguire il backup dei file",
     "noFilePreview": "Non è disponibile un'anteprima del file",
+    "filePreviewTooLarge": "File troppo grande per l'anteprima (oltre {{limit}})",
     "errorMovingToTrash": "Si è verificato un errore durante lo spostamento degli elementi nel cestino.",
     "errorDeletingFromTrash": "Si è verificato un errore durante l'eliminazione degli elementi dal cestino.",
     "connectionLostError": "Connessione Internet persa",
