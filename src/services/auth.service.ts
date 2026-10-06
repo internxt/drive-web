@@ -74,6 +74,13 @@ type SignUpParams = {
   dispatch: AppDispatch;
 };
 
+type NewAccountSessionParams = {
+  registeredUser: Awaited<ReturnType<RegisterFunction>>;
+  password: string;
+  redeemCodeObject: boolean;
+  dispatch: AppDispatch;
+};
+
 type LogInParams = {
   email: string;
   password: string;
@@ -567,9 +574,13 @@ export const unblockAccount = (token: string): Promise<void> => {
   return authClient.unblockAccount(token);
 };
 
-export const signUp = async (params: SignUpParams) => {
-  const { doSignUp, email, password, token, redeemCodeObject, dispatch } = params;
-  const { xUser, xNewToken, mnemonic } = await doSignUp(email, password, token);
+export const startNewAccountSession = async ({
+  registeredUser,
+  password,
+  redeemCodeObject,
+  dispatch,
+}: NewAccountSessionParams) => {
+  const { xUser, xNewToken, mnemonic } = registeredUser;
 
   localStorageService.clearExcept([...CHECKOUT_LOCAL_STORAGE_ITEMS, ...ATTRIBUTION_LOCAL_STORAGE_ITEMS]);
 
@@ -599,6 +610,13 @@ export const signUp = async (params: SignUpParams) => {
   trackLead(xUser.email, xUser.userId);
 
   return { user: xUser, mnemonic, newToken: xNewToken };
+};
+
+export const signUp = async (params: SignUpParams) => {
+  const { doSignUp, email, password, token, redeemCodeObject, dispatch } = params;
+  const registeredUser = await doSignUp(email, password, token);
+
+  return startNewAccountSession({ registeredUser, password, redeemCodeObject, dispatch });
 };
 
 export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
