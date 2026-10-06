@@ -11,7 +11,7 @@ export const InvalidLinkMessage = (): JSX.Element => {
 
   const submitEmail = (event: FormEvent) => {
     event.preventDefault();
-    resendEmail(email);
+    void resendEmail(email);
   };
 
   if (isEmailSent) {

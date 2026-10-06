@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@internxt/ui';
-import { CheckCircle, WarningCircle } from '@phosphor-icons/react';
+import { CheckCircleIcon, WarningCircleIcon } from '@phosphor-icons/react';
 
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { resendAccountSetupEmail } from 'services/account-setup.service';
@@ -31,7 +31,7 @@ export const AccountSetupPendingNotice = ({ email }: AccountSetupPendingNoticePr
     <div className="flex flex-col space-y-3 pt-1">
       <div className="flex flex-row items-start">
         <div className="flex h-5 flex-row items-center">
-          <WarningCircle weight="fill" className="mr-1 h-4 text-primary" />
+          <WarningCircleIcon weight="fill" className="mr-1 h-4 text-primary" />
         </div>
         <div className="flex flex-col text-sm">
           <span className="font-medium text-gray-100">{translate('auth.accountSetupPending.title')}</span>
@@ -40,10 +40,10 @@ export const AccountSetupPendingNotice = ({ email }: AccountSetupPendingNoticePr
       </div>
 
       {resendStatus === 'sent' ? (
-        <div role="status" className="flex flex-row items-center text-sm text-green">
-          <CheckCircle weight="fill" className="mr-1 h-4" />
+        <output className="flex flex-row items-center text-sm text-green">
+          <CheckCircleIcon weight="fill" className="mr-1 h-4" />
           <span>{translate('auth.accountSetupPending.emailSent')}</span>
-        </div>
+        </output>
       ) : (
         <Button type="button" variant="secondary" loading={resendStatus === 'sending'} onClick={resendEmail}>
           {translate('auth.accountSetupPending.resend')}
