@@ -1866,6 +1866,24 @@
               "Antivirus"
             ]
           },
+          "2TB": {
+            "title": "Premium",
+            "features": [
+              "2TB di spazio di archiviazione cloud crittografato",
+              "Provalo senza rischi per 30 giorni",
+              "Crittografia Post-Quantistica",
+              "Crittografia Zero-Knowledge",
+              "Autenticazione a Due Fattori",
+              "Versionamento dei File",
+              "Backup del computer",
+              "Condivisione file protetta da password",
+              "Invita, condividi e collabora",
+              "VPN Crittografata",
+              "Antivirus",
+              "Cleaner (Pulitore)",
+              "Meet"
+            ]
+          },
           "3TB": {
             "title": "Premium",
             "features": [

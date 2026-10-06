@@ -1846,6 +1846,24 @@
               "Antivirus"
             ]
           },
+          "2TB": {
+            "title": "Premium",
+            "features": [
+              "2To de stockage cloud chiffré",
+              "Essayez sans risque pendant 30 jours",
+              "Chiffrement Post-Quantique",
+              "Chiffrement Zéro-Connaissance",
+              "Authentification à Deux Facteurs",
+              "Historique des versions de fichiers",
+              "Sauvegarde de votre ordinateur",
+              "Partage de fichiers protégé par mot de passe",
+              "Inviter, partager et collaborer",
+              "VPN Chiffré",
+              "Antivirus",
+              "Nettoyeur",
+              "Meet"
+            ]
+          },
           "3TB": {
             "title": "Premium",
             "features": [

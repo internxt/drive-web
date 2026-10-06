@@ -1866,6 +1866,24 @@
               "Antivirus"
             ]
           },
+          "2TB": {
+            "title": "Premium",
+            "features": [
+              "2TB of encrypted cloud storage",
+              "Try risk-free for 30 days",
+              "Post-Quantum Encryption",
+              "Zero-Knowledge Encryption",
+              "Two-Factor Authentication",
+              "File Versioning",
+              "Backup your computer",
+              "Password-protected file sharing",
+              "Invite, share & collaborate",
+              "Encrypted VPN",
+              "Antivirus",
+              "Cleaner",
+              "Meet"
+            ]
+          },
           "3TB": {
             "title": "Premium",
             "features": [

@@ -1846,6 +1846,24 @@
               "Antivirus"
             ]
           },
+          "2TB": {
+            "title": "Premium",
+            "features": [
+              "2TB de almacenamiento en la nube cifrado",
+              "Pruébalo sin riesgo durante 30 días",
+              "Criptografía postcuántica",
+              "Cifrado de conocimiento cero",
+              "Autenticación de dos factores",
+              "Versionado de archivos",
+              "Copia de seguridad",
+              "Comparte archivos con contraseña",
+              "Invitar, compartir y colaborar",
+              "VPN Cifrada",
+              "Antivirus",
+              "Cleaner",
+              "Meet"
+            ]
+          },
           "3TB": {
             "title": "Premium",
             "features": [

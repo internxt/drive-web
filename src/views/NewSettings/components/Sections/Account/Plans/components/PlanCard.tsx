@@ -30,6 +30,7 @@ export const getPlan = (capacity) => {
 
   const capacityToFeaturePath = {
     '1TB': PLAN_TYPES.ESSENTIAL,
+    '2TB': PLAN_TYPES.PREMIUM,
     '3TB': PLAN_TYPES.PREMIUM,
     '5TB': PLAN_TYPES.ULTIMATE,
   };

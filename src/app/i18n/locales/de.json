@@ -1842,6 +1842,24 @@
               "Antivirus"
             ]
           },
+          "2TB": {
+            "title": "Premium",
+            "features": [
+              "2TB verschlüsselter Cloud-Speicher",
+              "30 Tage risikofrei testen",
+              "Post-Quanten-Verschlüsselung",
+              "Zero-Knowledge-Verschlüsselung",
+              "Zwei-Faktor-Authentifizierung",
+              "Dateiversionierung",
+              "Computer-Backup",
+              "Passwortgeschütztes Teilen von Dateien",
+              "Einladen, teilen & zusammenarbeiten",
+              "Verschlüsseltes VPN",
+              "Antivirus",
+              "Cleaner (Bereinigungstool)",
+              "Meet"
+            ]
+          },
           "3TB": {
             "title": "Premium",
             "features": [

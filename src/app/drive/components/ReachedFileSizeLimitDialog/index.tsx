@@ -93,6 +93,7 @@ const ReachedFileSizeLimitDialog = (): JSX.Element | null => {
 
   const capacityToPlanLabel: Record<string, string> = {
     '1TB': translate('error.fileSizeLimitExceeded.planList.essential'),
+    '2TB': translate('error.fileSizeLimitExceeded.planList.premium'),
     '3TB': translate('error.fileSizeLimitExceeded.planList.premium'),
     '5TB': translate('error.fileSizeLimitExceeded.planList.ultimate'),
   };
