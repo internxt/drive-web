@@ -148,5 +148,37 @@ describe('Testing the local storage service', () => {
       expect(localStorage.getItem(seenAtKey)).toBeNull();
       expect(localStorage.getItem(acknowledgedKey)).toBeNull();
     });
+
+    it('When some keys are meant to be preserved, then only the rest of the storage is removed', () => {
+      localStorage.setItem(LocalStorageItem.CheckoutItemData, '{"item_name":"2TB Year Plan"}');
+
+      localStorageService.clearExcept([localStorageKey, LocalStorageItem.CheckoutItemData]);
+
+      expect(localStorage.getItem(localStorageKey)).toStrictEqual(localStorageValue);
+      expect(localStorage.getItem(LocalStorageItem.CheckoutItemData)).toStrictEqual('{"item_name":"2TB Year Plan"}');
+      expect(localStorage.getItem(LocalStorageItem.UserUUID)).toBeNull();
+      expect(localStorage.getItem(LocalStorageItem.Theme)).toBeNull();
+    });
+
+    it('When some keys are meant to be preserved, then they are never removed nor rewritten', () => {
+      const clearSpy = vi.spyOn(Storage.prototype, 'clear');
+      const removeItemSpy = vi.spyOn(Storage.prototype, 'removeItem');
+      const setItemSpy = vi.spyOn(Storage.prototype, 'setItem');
+
+      localStorageService.clearExcept([localStorageKey]);
+
+      expect(clearSpy).not.toHaveBeenCalled();
+      expect(setItemSpy).not.toHaveBeenCalled();
+      expect(removeItemSpy).not.toHaveBeenCalledWith(localStorageKey);
+      expect(removeItemSpy).toHaveBeenCalledWith(LocalStorageItem.UserUUID);
+      expect(removeItemSpy).toHaveBeenCalledWith(LocalStorageItem.Theme);
+    });
+
+    it('When a key meant to be preserved does not exist, then the storage ends up empty', () => {
+      localStorageService.clearExcept([LocalStorageItem.AmountPaid]);
+
+      expect(localStorage.getItem(LocalStorageItem.AmountPaid)).toBeNull();
+      expect(localStorage).toHaveLength(0);
+    });
   });
 });
