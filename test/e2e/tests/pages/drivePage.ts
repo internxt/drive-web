@@ -32,6 +32,13 @@ export class DrivePage {
   private uploadWidgetBorder: Locator;
   private fileInput: Locator;
   private movingToTrashAndMovedSign: Locator;
+  private folderInput: Locator;
+  private driveSidenavButton: Locator;
+  private trashSidenavButton: Locator;
+  private selectAllItemsCheckbox: Locator;
+  private restoreHeaderButton: Locator;
+  private trashDisposalAnnouncementTitle: Locator;
+  private trashDisposalAnnouncementCloseButton: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -75,6 +82,20 @@ export class DrivePage {
     );
     this.uploadWidgetBorder = this.page.locator('[class$="border-b border-gray-10 bg-gray-5 px-3 py-2.5"]');
     this.fileInput = this.page.locator('[data-test="input-file"]');
+    this.folderInput = this.page.locator('[data-test="input-folder"]');
+    //SIDENAV
+    this.driveSidenavButton = this.page.locator('[data-cy="sideNavDriveIcon"]');
+    //TRASH
+    this.trashSidenavButton = this.page.locator('[data-cy="sideNavTrashIcon"]');
+    this.selectAllItemsCheckbox = this.page.locator('[data-cy="driveListHeaderCheckbox"]');
+    this.restoreHeaderButton = this.page.locator('[data-tooltip-content="Restore"]').getByRole('button');
+    this.trashDisposalAnnouncementTitle = this.page.getByRole('heading', {
+      name: staticData.trashDisposalAnnouncementTitle,
+    });
+    this.trashDisposalAnnouncementCloseButton = this.page
+      .getByRole('dialog')
+      .filter({ has: this.trashDisposalAnnouncementTitle })
+      .getByRole('button', { name: 'Close' });
   }
   async checkFolder(folderName: string) {
     const folderLocator = this.allFolderNamesInDrive.filter({ hasText: folderName });
@@ -199,6 +220,91 @@ export class DrivePage {
 
     await expect(thumbnail).toBeVisible();
     await expect(thumbnail).toHaveAttribute('src', staticData.blobUrlPattern);
+  }
+
+  async uploadFolder(directoryPath: string) {
+    await this.folderInput.setInputFiles(directoryPath);
+  }
+  itemRow(itemName: string) {
+    return this.page.locator('[data-test$="-parent"]', {
+      has: this.page.getByRole('button', { name: itemName, exact: true }),
+    });
+  }
+
+  async dragItemToFolder(itemName: string, folderName: string) {
+    const source = this.itemRow(itemName);
+    const dropZone = this.itemRow(folderName).locator('[data-test$="-drop-zone"]');
+    const dataTransfer = await this.page.evaluateHandle(() => new DataTransfer());
+
+    await source.dispatchEvent('dragstart', { dataTransfer });
+    await dropZone.dispatchEvent('dragenter', { dataTransfer });
+    await dropZone.dispatchEvent('dragover', { dataTransfer });
+    await dropZone.dispatchEvent('drop', { dataTransfer });
+    await source.dispatchEvent('dragend', { dataTransfer });
+  }
+
+  itemRows() {
+    return this.page.locator('[data-test$="-parent"]');
+  }
+
+  async expectListedItems(itemNames: string[]) {
+    for (const itemName of new Set(itemNames)) {
+      const expectedRows = itemNames.filter((name) => name === itemName).length;
+      await expect(this.itemRow(itemName)).toHaveCount(expectedRows, { timeout: 10000 });
+    }
+    await expect(this.itemRows()).toHaveCount(itemNames.length);
+  }
+
+  async openDrive() {
+    await this.driveSidenavButton.click();
+    await this.page.waitForURL((url) => url.pathname === '/');
+  }
+
+  async openFolder(folderName: string) {
+    const folderRow = this.itemRow(folderName);
+    const folderNameButton = folderRow.getByRole('button', { name: folderName, exact: true });
+
+    await folderRow.hover();
+    await folderNameButton.click();
+    await this.page.waitForURL('**/folder/**');
+  }
+
+  async openFolderFromDrive(folderName: string) {
+    await this.openDrive();
+    await this.openFolder(folderName);
+  }
+
+  async openTrash() {
+    await this.trashSidenavButton.click();
+    await this.page.waitForURL('**/trash');
+    await this.closeTrashDisposalAnnouncement();
+  }
+
+  async reopenTrash() {
+    await this.trashSidenavButton.click();
+    await this.page.waitForURL('**/trash');
+  }
+
+  async closeTrashDisposalAnnouncement() {
+    await expect(this.trashDisposalAnnouncementTitle).toBeVisible({ timeout: 10000 });
+    await this.trashDisposalAnnouncementCloseButton.click();
+    await expect(this.trashDisposalAnnouncementTitle).toBeHidden();
+  }
+
+  async selectAllItems() {
+    await this.selectAllItemsCheckbox.click();
+  }
+
+  async restoreSelectedItems() {
+    await expect(this.restoreHeaderButton).toBeVisible();
+    await this.restoreHeaderButton.click();
+  }
+
+  async restoreAllFromTrash(trashedItemNames: string[]) {
+    await this.openTrash();
+    await this.expectListedItems(trashedItemNames);
+    await this.selectAllItems();
+    await this.restoreSelectedItems();
   }
 
   fileRow(fileName: string) {
