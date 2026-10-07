@@ -62,6 +62,7 @@ vi.mock('views/Drive/components/VersionHistory/utils', () => ({
 }));
 
 const DESTINATION = 'destination-uuid';
+const VERSIONING_MAX_FILE_SIZE = 10;
 
 const asMoveAction = (payload: unknown) => ({ type: 'move', payload });
 const asPopAction = (payload: unknown) => ({ type: 'pop', payload });
@@ -83,6 +84,7 @@ const getContext = (overrides: Partial<NameCollisionContext> = {}): NameCollisio
   selectedWorkspace: null,
   maxUploadFileSize: 5000,
   isVersioningEnabled: false,
+  versioningMaxFileSize: VERSIONING_MAX_FILE_SIZE,
   ...overrides,
 });
 
@@ -143,8 +145,24 @@ const failMovesOf = (failingItems: DriveItemData[]) =>
 
 const succeedAllMoves = () => failMovesOf([]);
 
+const getPdfCollision = (name: string, size: number) => ({
+  file: new File(['x'.repeat(size)], `${name}.pdf`),
+  existing: getDriveItemData({ uuid: `existing-${name}`, plainName: name, type: 'pdf' }),
+});
+
 const resolve = (params: Omit<ResolveCollisionParams, 'destinationUuid'>, context = getContext()) =>
   resolveCollision({ ...params, destinationUuid: DESTINATION }, context);
+
+const replaceWithVersioning = (collisions: ReturnType<typeof getPdfCollision>[]) =>
+  resolve(
+    {
+      operationType: 'upload',
+      operation: 'replace',
+      items: collisions.map(({ file }) => file),
+      existingItems: collisions.map(({ existing }) => existing),
+    },
+    getContext({ isVersioningEnabled: true }),
+  );
 
 /**
  * Mocks are reset by hand because the browser test project does not do it between tests.
@@ -510,5 +528,51 @@ describe('resolveCollision', () => {
       [asInvalidateCacheAction('b')],
       [asRefreshAction(DESTINATION)],
     ]);
+  });
+
+  test.each([
+    ['under', VERSIONING_MAX_FILE_SIZE - 1],
+    ['exactly at', VERSIONING_MAX_FILE_SIZE],
+  ])(
+    'when replacing a versionable file %s the versioning size limit, then it becomes a new version and nothing is trashed',
+    async (_, size) => {
+      const { file, existing } = getPdfCollision('report', size);
+
+      await replaceWithVersioning([{ file, existing }]);
+
+      expect(mocks.replaceFile).toHaveBeenCalledWith(existing.uuid, { fileId: 'new-file-id', size });
+      expect(mocks.moveItemsToTrash).not.toHaveBeenCalled();
+      expect(mocks.uploadItemsThunk).not.toHaveBeenCalled();
+    },
+  );
+
+  test('when replacing a versionable file over the versioning size limit, then the existing file is trashed and the new one is uploaded', async () => {
+    const { file, existing } = getPdfCollision('report', VERSIONING_MAX_FILE_SIZE + 1);
+
+    await replaceWithVersioning([{ file, existing }]);
+
+    expect(mocks.replaceFile).not.toHaveBeenCalled();
+    expect(mocks.networkUploadFile).not.toHaveBeenCalled();
+    expect(mocks.moveItemsToTrash).toHaveBeenCalledWith([existing]);
+    expect(mocks.uploadItemsThunk).toHaveBeenCalledWith({
+      files: [file],
+      parentFolderId: DESTINATION,
+      options: { disableDuplicatedNamesCheck: true },
+    });
+  });
+
+  test('when replacing versionable files of mixed sizes at once, then only the ones within the limit become new versions', async () => {
+    const small = getPdfCollision('small', VERSIONING_MAX_FILE_SIZE);
+    const big = getPdfCollision('big', VERSIONING_MAX_FILE_SIZE + 1);
+
+    await replaceWithVersioning([small, big]);
+
+    expect(mocks.replaceFile).toHaveBeenCalledTimes(1);
+    expect(mocks.replaceFile).toHaveBeenCalledWith(small.existing.uuid, {
+      fileId: 'new-file-id',
+      size: small.file.size,
+    });
+    expect(mocks.moveItemsToTrash).toHaveBeenCalledWith([big.existing]);
+    expect(mocks.uploadItemsThunk).toHaveBeenCalledWith(expect.objectContaining({ files: [big.file] }));
   });
 });

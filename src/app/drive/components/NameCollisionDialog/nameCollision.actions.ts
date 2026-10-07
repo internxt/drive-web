@@ -39,6 +39,7 @@ export interface NameCollisionContext {
   selectedWorkspace: WorkspaceData | null;
   maxUploadFileSize: number;
   isVersioningEnabled: boolean;
+  versioningMaxFileSize: number;
 }
 
 export interface ResolveCollisionParams {
@@ -291,8 +292,14 @@ const uploadItems = async (
   await uploadFiles(files, destinationUuid, context, shouldSkipDuplicatesCheck);
 };
 
-const isVersionedFilePair = (pair: CollisionPair<IRoot | File>, { isVersioningEnabled }: NameCollisionContext) =>
-  !isFolderUpload(pair.item) && isVersioningEnabled && isVersioningExtensionAllowed(pair.existing);
+const isVersionedFilePair = (
+  pair: CollisionPair<IRoot | File>,
+  { isVersioningEnabled, versioningMaxFileSize }: NameCollisionContext,
+) =>
+  !isFolderUpload(pair.item) &&
+  isVersioningEnabled &&
+  isVersioningExtensionAllowed(pair.existing) &&
+  pair.item.size <= versioningMaxFileSize;
 
 /**
  * Versioned files are replaced one at a time because that upload bypasses the upload queue.
@@ -321,7 +328,8 @@ const trashAndUploadItems = async (
 
 /**
  * Replaces the colliding drive items with the uploaded ones. Files whose extension supports
- * versioning become a new version of the existing file; everything else is trashed and re-uploaded.
+ * versioning and whose size is within the versioning limit become a new version of the existing
+ * file; everything else is trashed and re-uploaded.
  */
 const replaceAndUploadItems = async (
   pairs: CollisionPair<IRoot | File>[],
