@@ -354,7 +354,7 @@ describe('resolveCollision', () => {
     expectMovesThenPop([asRenamed(file, 'report (1)')], [file]);
   });
 
-  test('when uploading with keep, then folders upload with tracking, files upload with the duplicates check, and the folder is refreshed', async () => {
+  test('when uploading with keep, then folders upload with tracking, files upload under a unique name without the duplicates check, and the folder is refreshed', async () => {
     const context = getContext({ maxUploadFileSize: 123, selectedWorkspace: { id: 'ws' } as never });
     const file = new File(['content'], 'report.pdf');
     const root = getRoot();
@@ -368,10 +368,42 @@ describe('resolveCollision', () => {
       maxUploadFileSize: 123,
     });
     expect(mocks.dispatch.mock.calls).toEqual([
-      [asUploadAction({ files: [file], parentFolderId: DESTINATION, options: { disableDuplicatedNamesCheck: false } })],
+      [
+        asUploadAction({
+          files: [expect.objectContaining({ name: 'report (1).pdf' })],
+          parentFolderId: DESTINATION,
+          options: { disableDuplicatedNamesCheck: true },
+        }),
+      ],
       [asRefreshAction(DESTINATION)],
     ]);
     expect(mocks.popItemsToDelete).not.toHaveBeenCalled();
+  });
+
+  test('when three colliding files of the same series are uploaded with keep, then they upload together under the next free names', async () => {
+    const fileNames = ['file.txt', 'file (1).txt', 'file (2).txt'];
+    mocks.getUniqueFilename
+      .mockResolvedValueOnce('file (3)')
+      .mockResolvedValueOnce('file (4)')
+      .mockResolvedValueOnce('file (5)');
+
+    await resolve({
+      operationType: 'upload',
+      operation: 'keep',
+      items: fileNames.map((name) => new File(['content'], name)),
+      existingItems: [],
+    });
+
+    expect(mocks.dispatch.mock.calls).toEqual([
+      [
+        asUploadAction({
+          files: ['file (3).txt', 'file (4).txt', 'file (5).txt'].map((name) => expect.objectContaining({ name })),
+          parentFolderId: DESTINATION,
+          options: { disableDuplicatedNamesCheck: true },
+        }),
+      ],
+      [asRefreshAction(DESTINATION)],
+    ]);
   });
 
   test('when uploading with replace and versioning is off, then only matched existing items are trashed and re-uploaded without the duplicates check', async () => {

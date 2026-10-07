@@ -1,4 +1,6 @@
+import { items as itemUtils } from '@internxt/lib';
 import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
+import { renameFile } from 'app/crypto/services/utils';
 import { uploadFoldersWithTracking } from 'app/drive/services/folder.service/uploadFoldersWithTracking';
 import { Network, getEnvironmentConfig } from 'app/drive/services/network.service';
 import { DriveItemData } from 'app/drive/types';
@@ -60,6 +62,11 @@ interface ItemMove {
   payload: MoveItemPayload;
 }
 
+interface UniquelyNamedItem {
+  item: DriveItemData;
+  uniqueName: string;
+}
+
 const getDestinationDuplicates = async (item: DriveItemData, destinationUuid: string): Promise<DriveItemData[]> => {
   if (item.isFolder) {
     const { duplicatedFoldersResponse } = await checkFolderDuplicated([item], destinationUuid);
@@ -110,24 +117,34 @@ const getRenamedMovePayload = (item: DriveItemData, newName: string): MoveItemPa
   return item.isFolder ? renamedItem : { ...renamedItem, plainName: newName };
 };
 
-const getSeriesMoves = async (seriesItems: DriveItemData[], destinationUuid: string): Promise<ItemMove[]> => {
+const getSeriesUniqueNames = async (
+  seriesItems: DriveItemData[],
+  destinationUuid: string,
+): Promise<UniquelyNamedItem[]> => {
   const renamedItems: DriveItemData[] = [];
-  const moves: ItemMove[] = [];
+  const namedItems: UniquelyNamedItem[] = [];
 
   for (const item of seriesItems) {
     const uniqueName = await getUniqueNameInBatch(item, destinationUuid, renamedItems);
     renamedItems.push({ ...item, name: uniqueName, plainName: uniqueName });
-    moves.push({ item, payload: getRenamedMovePayload(item, uniqueName) });
+    namedItems.push({ item, uniqueName });
   }
 
-  return moves;
+  return namedItems;
+};
+
+const getUniqueNames = async (items: DriveItemData[], destinationUuid: string): Promise<UniquelyNamedItem[]> => {
+  const series = groupByNameSeries(items, getLookupName);
+  const namesBySeries = await Promise.all(
+    series.map((seriesItems) => getSeriesUniqueNames(seriesItems, destinationUuid)),
+  );
+
+  return namesBySeries.flat();
 };
 
 const getUniqueNameMoves = async (items: DriveItemData[], destinationUuid: string): Promise<ItemMove[]> => {
-  const series = groupByNameSeries(items, getLookupName);
-  const movesBySeries = await Promise.all(series.map((seriesItems) => getSeriesMoves(seriesItems, destinationUuid)));
-
-  return movesBySeries.flat();
+  const namedItems = await getUniqueNames(items, destinationUuid);
+  return namedItems.map(({ item, uniqueName }) => ({ item, payload: getRenamedMovePayload(item, uniqueName) }));
 };
 
 const moveItem = async (
@@ -279,14 +296,18 @@ const uploadFolders = async (
   });
 };
 
+const splitFoldersAndFiles = (items: (IRoot | File)[]) => ({
+  folders: items.filter(isFolderUpload),
+  files: items.filter((item): item is File => !isFolderUpload(item)),
+});
+
 const uploadItems = async (
   items: (IRoot | File)[],
   destinationUuid: string,
   context: NameCollisionContext,
   shouldSkipDuplicatesCheck = false,
 ) => {
-  const folders = items.filter(isFolderUpload);
-  const files = items.filter((item): item is File => !isFolderUpload(item));
+  const { folders, files } = splitFoldersAndFiles(items);
 
   await uploadFolders(folders, destinationUuid, context);
   await uploadFiles(files, destinationUuid, context, shouldSkipDuplicatesCheck);
@@ -397,8 +418,22 @@ const skipAndUploadItems = async (
   context.dispatch(fetchSortedFolderContentThunk(destinationUuid));
 };
 
+const getFileLookupItem = (file: File): DriveItemData => {
+  const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
+  return { name: filename, plainName: filename, type: extension, isFolder: false } as DriveItemData;
+};
+
+const getUniquelyNamedFiles = async (files: File[], destinationUuid: string): Promise<File[]> => {
+  const lookupItems = files.map(getFileLookupItem);
+  const namedItems = await getUniqueNames(lookupItems, destinationUuid);
+
+  return namedItems.map(({ item, uniqueName }) =>
+    renameFile(files[lookupItems.indexOf(item)], itemUtils.getItemDisplayName({ name: uniqueName, type: item.type })),
+  );
+};
+
 /**
- * Uploads the items next to the existing ones, letting the upload flow pick a unique name.
+ * Uploads the items next to the existing ones under a name that does not collide with anything.
  */
 const keepAndUploadItems = async (
   items: (IRoot | File)[],
@@ -407,7 +442,9 @@ const keepAndUploadItems = async (
 ): Promise<void> => {
   if (items.length === 0) return;
 
-  await uploadItems(items, destinationUuid, context);
+  const { folders, files } = splitFoldersAndFiles(items);
+  await uploadFolders(folders, destinationUuid, context);
+  await uploadFiles(await getUniquelyNamedFiles(files, destinationUuid), destinationUuid, context, true);
   context.dispatch(fetchSortedFolderContentThunk(destinationUuid));
 };
 
