@@ -18,14 +18,21 @@ const NameCollisionContainer: FC = () => {
   const operationType = collisionDialogInfo?.operation;
   const newItems = useMemo(() => collisionGroups.flatMap((g) => g.duplicatedItems), [collisionGroups]);
   const existingItems = useMemo(() => collisionGroups.flatMap((g) => g.existingItems), [collisionGroups]);
-  const remainingItemsCount = existingItems.length;
+  const remainingItemsCount = newItems.length;
 
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const limits = useAppSelector(fileVersionsSelectors.getLimits);
   const maxUploadFileSize = useAppSelector(fileVersionsSelectors.getMaxFileSizeLimit);
   const isVersioningEnabled = limits?.versioning?.enabled ?? false;
+  const versioningMaxFileSize = limits?.versioning?.maxFileSize ?? 0;
 
-  const context: NameCollisionContext = { dispatch, selectedWorkspace, maxUploadFileSize, isVersioningEnabled };
+  const context: NameCollisionContext = {
+    dispatch,
+    selectedWorkspace,
+    maxUploadFileSize,
+    isVersioningEnabled,
+    versioningMaxFileSize,
+  };
 
   const closeDialog = () => {
     dispatch(uiActions.setIsNameCollisionDialogOpen({ open: false, info: undefined }));
@@ -60,7 +67,9 @@ const NameCollisionContainer: FC = () => {
 
     const group = collisionGroups[groupIndex];
     const itemToUpload = group.duplicatedItems[0];
-    const itemToReplace = findExistingItemFor(itemToUpload, group.existingItems);
+    const collidingExistingItem = findExistingItemFor(itemToUpload, group.existingItems);
+    const isReplacing = operation === 'replace';
+    const replacedExistingItem = isReplacing ? collidingExistingItem : undefined;
 
     await resolveCollision(
       {
@@ -73,7 +82,7 @@ const NameCollisionContainer: FC = () => {
       context,
     );
 
-    const remainingGroups = getRemainingGroups(collisionGroups, groupIndex, itemToReplace);
+    const remainingGroups = getRemainingGroups(collisionGroups, groupIndex, replacedExistingItem);
     const hasRemainingGroups = remainingGroups.length > 0;
     if (hasRemainingGroups) {
       dispatch(

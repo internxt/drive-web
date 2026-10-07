@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { getDriveItemData } from 'testUtils/fixtures/drive.fixtures';
+import { DriveItemData } from 'app/drive/types';
 import { IRoot } from 'app/store/slices/storage/types';
 import { NameCollisionContext, ResolveCollisionParams, resolveCollision } from './nameCollision.actions';
 
@@ -61,6 +62,7 @@ vi.mock('views/Drive/components/VersionHistory/utils', () => ({
 }));
 
 const DESTINATION = 'destination-uuid';
+const VERSIONING_MAX_FILE_SIZE = 10;
 
 const asMoveAction = (payload: unknown) => ({ type: 'move', payload });
 const asPopAction = (payload: unknown) => ({ type: 'pop', payload });
@@ -82,17 +84,92 @@ const getContext = (overrides: Partial<NameCollisionContext> = {}): NameCollisio
   selectedWorkspace: null,
   maxUploadFileSize: 5000,
   isVersioningEnabled: false,
+  versioningMaxFileSize: VERSIONING_MAX_FILE_SIZE,
   ...overrides,
+});
+
+const asRenamed = (item: DriveItemData, name: string) => {
+  const renamedItem = { ...item, name, plain_name: name, newItemName: name };
+  return item.isFolder ? renamedItem : { ...renamedItem, plainName: name };
+};
+
+const expectMovesThenPop = (movedPayloads: unknown[], poppedItems: DriveItemData[]) =>
+  expect(mocks.dispatch.mock.calls).toEqual([
+    ...movedPayloads.map((payload) => [asMoveAction({ items: [payload], destinationFolderId: DESTINATION })]),
+    [asPopAction(poppedItems)],
+  ]);
+
+const getNextFreeName = (name: string, takenItems: unknown[]) => `${name} (${takenItems.length})`;
+const getNextFreeFolderName = async (name: string, takenItems: unknown[]) => getNextFreeName(name, takenItems);
+const getNextFreeFilename = async (name: string, _type: string, takenItems: unknown[]) =>
+  getNextFreeName(name, takenItems);
+
+const findSameUniqueFilenameTwice = () =>
+  mocks.getUniqueFilename
+    .mockResolvedValueOnce('report (2)')
+    .mockResolvedValueOnce('report (2)')
+    .mockResolvedValueOnce('report (3)');
+
+/**
+ * Keeps the lookup of `heldName` pending until the lookup of another name starts, and returns the
+ * order in which the lookups start and end.
+ */
+const holdFilenameLookupUntilOthersStart = (heldName: string): string[] => {
+  const lookupOrder: string[] = [];
+  let releaseHeldLookup = () => {};
+  const untilOtherLookupStarts = new Promise<void>((release) => {
+    releaseHeldLookup = release;
+  });
+
+  mocks.getUniqueFilename.mockImplementation(async (name: string) => {
+    lookupOrder.push(`start ${name}`);
+    if (name === heldName) {
+      await untilOtherLookupStarts;
+    } else {
+      releaseHeldLookup();
+    }
+    lookupOrder.push(`end ${name}`);
+    return `${name} (1)`;
+  });
+
+  return lookupOrder;
+};
+
+const failMovesOf = (failingItems: DriveItemData[]) =>
+  mocks.dispatch.mockImplementation((action?: { payload?: { items?: DriveItemData[] } }) => ({
+    unwrap: async () => {
+      const hasFailingItem = action?.payload?.items?.some((item) => failingItems.includes(item));
+      if (hasFailingItem) throw new Error('move failed');
+    },
+  }));
+
+const succeedAllMoves = () => failMovesOf([]);
+
+const getPdfCollision = (name: string, size: number) => ({
+  file: new File(['x'.repeat(size)], `${name}.pdf`),
+  existing: getDriveItemData({ uuid: `existing-${name}`, plainName: name, type: 'pdf' }),
 });
 
 const resolve = (params: Omit<ResolveCollisionParams, 'destinationUuid'>, context = getContext()) =>
   resolveCollision({ ...params, destinationUuid: DESTINATION }, context);
+
+const replaceWithVersioning = (collisions: ReturnType<typeof getPdfCollision>[]) =>
+  resolve(
+    {
+      operationType: 'upload',
+      operation: 'replace',
+      items: collisions.map(({ file }) => file),
+      existingItems: collisions.map(({ existing }) => existing),
+    },
+    getContext({ isVersioningEnabled: true }),
+  );
 
 /**
  * Mocks are reset by hand because the browser test project does not do it between tests.
  */
 beforeEach(() => {
   vi.resetAllMocks();
+  succeedAllMoves();
   mocks.checkDuplicatedFiles.mockResolvedValue({ duplicatedFilesResponse: ['file-dup'] });
   mocks.getUniqueFilename.mockResolvedValue('report (1)');
   mocks.checkFolderDuplicated.mockResolvedValue({ duplicatedFoldersResponse: ['folder-dup'] });
@@ -130,23 +207,121 @@ describe('resolveCollision', () => {
   test('when moving with keep, then items get a unique name and leave the pending deletion list', async () => {
     const file = getDriveItemData({ plainName: 'report', name: 'report', type: 'pdf', isFolder: false });
     const folder = getDriveItemData({ plainName: 'Photos', name: 'Photos', isFolder: true });
-    const renamedMove = {
-      items: [
-        { ...file, name: 'report (1)', plainName: 'report (1)', plain_name: 'report (1)', newItemName: 'report (1)' },
-        { ...folder, name: 'Photos (1)', plain_name: 'Photos (1)', newItemName: 'Photos (1)' },
-      ],
-      destinationFolderId: DESTINATION,
-    };
 
     await resolve({ operationType: 'move', operation: 'keep', items: [file, folder], existingItems: [] });
 
     expect(mocks.getUniqueFilename).toHaveBeenCalledWith('report', 'pdf', ['file-dup'], DESTINATION);
     expect(mocks.getUniqueFolderName).toHaveBeenCalledWith('Photos', ['folder-dup'], DESTINATION);
     expect(mocks.moveItemsToTrash).not.toHaveBeenCalled();
-    expect(mocks.dispatch.mock.calls).toEqual([[asMoveAction(renamedMove)], [asPopAction([file, folder])]]);
+    expectMovesThenPop([asRenamed(file, 'report (1)'), asRenamed(folder, 'Photos (1)')], [file, folder]);
   });
 
-  test('when moving with replace, then matched existing items are trashed before moving and every moved item leaves the pending deletion list', async () => {
+  test('when two moved files share name and extension and the user keeps both, then they are moved under different unique names', async () => {
+    const first = getDriveItemData({ uuid: 'first', plainName: 'report', name: 'report', type: 'pdf' });
+    const second = getDriveItemData({ uuid: 'second', plainName: 'report', name: 'report', type: 'pdf' });
+    mocks.getUniqueFilename.mockImplementation(getNextFreeFilename);
+
+    await resolve({ operationType: 'move', operation: 'keep', items: [first, second], existingItems: [] });
+
+    expectMovesThenPop([asRenamed(first, 'report (1)'), asRenamed(second, 'report (2)')], [first, second]);
+  });
+
+  test('when two moved folders share a name and the user keeps both, then they are moved under different unique names', async () => {
+    const first = getDriveItemData({ uuid: 'first', plainName: 'Photos', name: 'Photos', isFolder: true });
+    const second = getDriveItemData({ uuid: 'second', plainName: 'Photos', name: 'Photos', isFolder: true });
+    const file = getDriveItemData({ uuid: 'file', plainName: 'Photos', name: 'Photos', type: 'pdf' });
+    mocks.getUniqueFilename.mockImplementation(getNextFreeFilename);
+    mocks.getUniqueFolderName.mockImplementation(getNextFreeFolderName);
+
+    await resolve({ operationType: 'move', operation: 'keep', items: [first, file, second], existingItems: [] });
+
+    expectMovesThenPop(
+      [asRenamed(first, 'Photos (1)'), asRenamed(second, 'Photos (2)'), asRenamed(file, 'Photos (1)')],
+      [first, second, file],
+    );
+  });
+
+  test('when the unique name found for a kept file was already given to another kept file, then a new name is looked for among the names already given', async () => {
+    const first = getDriveItemData({ uuid: 'first', plainName: 'report', name: 'report', type: 'pdf' });
+    const second = getDriveItemData({ uuid: 'second', plainName: 'report', name: 'report', type: 'pdf' });
+    const firstRenamed = expect.objectContaining({ uuid: 'first', plainName: 'report (2)' });
+    findSameUniqueFilenameTwice();
+
+    await resolve({ operationType: 'move', operation: 'keep', items: [first, second], existingItems: [] });
+
+    expect(mocks.getUniqueFilename).toHaveBeenLastCalledWith(
+      'report (2)',
+      'pdf',
+      ['file-dup', firstRenamed],
+      DESTINATION,
+    );
+    expectMovesThenPop([asRenamed(first, 'report (2)'), asRenamed(second, 'report (3)')], [first, second]);
+  });
+
+  test('when two kept files whose names only differ in the number at the end are given the same unique name, then the second one gets a new name', async () => {
+    const first = getDriveItemData({ uuid: 'first', plainName: 'report', name: 'report', type: 'pdf' });
+    const second = getDriveItemData({ uuid: 'second', plainName: 'report (1)', name: 'report (1)', type: 'pdf' });
+    findSameUniqueFilenameTwice();
+
+    await resolve({ operationType: 'move', operation: 'keep', items: [first, second], existingItems: [] });
+
+    expectMovesThenPop([asRenamed(first, 'report (2)'), asRenamed(second, 'report (3)')], [first, second]);
+  });
+
+  test('when kept items have different names, then their unique names are looked up in parallel', async () => {
+    const report = getDriveItemData({ uuid: 'report', plainName: 'report', name: 'report', type: 'pdf' });
+    const other = getDriveItemData({ uuid: 'other', plainName: 'other', name: 'other', type: 'pdf' });
+    const lookupOrder = holdFilenameLookupUntilOthersStart('report');
+
+    await resolve({ operationType: 'move', operation: 'keep', items: [report, other], existingItems: [] });
+
+    expect(lookupOrder).toEqual(['start report', 'start other', 'end other', 'end report']);
+  });
+
+  test('when one move fails, then only the successfully moved items are removed from the items to delete', async () => {
+    const moved = getDriveItemData({ uuid: 'moved', plainName: 'report', type: 'pdf' });
+    const failed = getDriveItemData({ uuid: 'failed', plainName: 'other', type: 'pdf' });
+    const existingItems = [
+      getDriveItemData({ uuid: 'existing-report', plainName: 'report', type: 'pdf' }),
+      getDriveItemData({ uuid: 'existing-other', plainName: 'other', type: 'pdf' }),
+    ];
+    failMovesOf([failed]);
+
+    await resolve({ operationType: 'move', operation: 'replace', items: [moved, failed], existingItems });
+
+    expectMovesThenPop([moved, failed], [moved]);
+  });
+
+  test('when two moved files collide with the same existing file and the user replaces, then the existing file is trashed once, the first item is moved with its own name and the second is moved with a unique name', async () => {
+    const first = getDriveItemData({ uuid: 'first', plainName: 'report', name: 'report', type: 'pdf' });
+    const second = getDriveItemData({ uuid: 'second', plainName: 'report', name: 'report', type: 'pdf' });
+    const other = getDriveItemData({ uuid: 'other', plainName: 'other', name: 'other', type: 'pdf' });
+    const existing = getDriveItemData({ uuid: 'existing', plainName: 'report', type: 'pdf' });
+    const existingOther = getDriveItemData({ uuid: 'existing-other', plainName: 'other', type: 'pdf' });
+    const callOrder: string[] = [];
+    mocks.moveItemsThunk.mockImplementation((payload: { items: DriveItemData[] }) => {
+      callOrder.push(`move ${payload.items[0].uuid}`);
+      return asMoveAction(payload);
+    });
+    mocks.getUniqueFilename.mockImplementation(async () => {
+      callOrder.push('rename');
+      return 'report (1)';
+    });
+
+    await resolve({
+      operationType: 'move',
+      operation: 'replace',
+      items: [first, second, other],
+      existingItems: [existing, existingOther],
+    });
+
+    expect(mocks.moveItemsToTrash).toHaveBeenCalledTimes(1);
+    expect(mocks.moveItemsToTrash).toHaveBeenCalledWith([existing, existingOther]);
+    expect(callOrder).toEqual(['move first', 'move other', 'rename', 'move second']);
+    expectMovesThenPop([first, other, asRenamed(second, 'report (1)')], [first, other, second]);
+  });
+
+  test('when moving with replace, then matched existing items are trashed first and unmatched items are moved under a unique name', async () => {
     const matched = getDriveItemData({ uuid: 'matched', plainName: 'report', type: 'pdf' });
     const unmatched = getDriveItemData({ uuid: 'unmatched', plainName: 'other', type: 'pdf' });
     const existing = getDriveItemData({ uuid: 'existing', plainName: 'report', type: 'pdf' });
@@ -156,6 +331,7 @@ describe('resolveCollision', () => {
       callOrder.push('move');
       return asMoveAction(payload);
     });
+    mocks.getUniqueFilename.mockResolvedValue('other (1)');
 
     await resolve({
       operationType: 'move',
@@ -165,14 +341,20 @@ describe('resolveCollision', () => {
     });
 
     expect(mocks.moveItemsToTrash).toHaveBeenCalledWith([existing]);
-    expect(callOrder).toEqual(['trash', 'move']);
-    expect(mocks.dispatch.mock.calls).toEqual([
-      [asMoveAction({ items: [matched], destinationFolderId: DESTINATION })],
-      [asPopAction([matched, unmatched])],
-    ]);
+    expect(callOrder).toEqual(['trash', 'move', 'move']);
+    expectMovesThenPop([matched, asRenamed(unmatched, 'other (1)')], [matched, unmatched]);
   });
 
-  test('when uploading with keep, then folders upload with tracking, files upload with the duplicates check, and the folder is refreshed', async () => {
+  test('when a moved file has no existing file left to replace and the user replaces, then nothing is trashed and the file is moved under a unique name', async () => {
+    const file = getDriveItemData({ uuid: 'file', plainName: 'report', name: 'report', type: 'pdf' });
+
+    await resolve({ operationType: 'move', operation: 'replace', items: [file], existingItems: [] });
+
+    expect(mocks.moveItemsToTrash).not.toHaveBeenCalled();
+    expectMovesThenPop([asRenamed(file, 'report (1)')], [file]);
+  });
+
+  test('when uploading with keep, then folders upload with tracking, files upload under a unique name without the duplicates check, and the folder is refreshed', async () => {
     const context = getContext({ maxUploadFileSize: 123, selectedWorkspace: { id: 'ws' } as never });
     const file = new File(['content'], 'report.pdf');
     const root = getRoot();
@@ -186,10 +368,42 @@ describe('resolveCollision', () => {
       maxUploadFileSize: 123,
     });
     expect(mocks.dispatch.mock.calls).toEqual([
-      [asUploadAction({ files: [file], parentFolderId: DESTINATION, options: { disableDuplicatedNamesCheck: false } })],
+      [
+        asUploadAction({
+          files: [expect.objectContaining({ name: 'report (1).pdf' })],
+          parentFolderId: DESTINATION,
+          options: { disableDuplicatedNamesCheck: true },
+        }),
+      ],
       [asRefreshAction(DESTINATION)],
     ]);
     expect(mocks.popItemsToDelete).not.toHaveBeenCalled();
+  });
+
+  test('when three colliding files of the same series are uploaded with keep, then they upload together under the next free names', async () => {
+    const fileNames = ['file.txt', 'file (1).txt', 'file (2).txt'];
+    mocks.getUniqueFilename
+      .mockResolvedValueOnce('file (3)')
+      .mockResolvedValueOnce('file (4)')
+      .mockResolvedValueOnce('file (5)');
+
+    await resolve({
+      operationType: 'upload',
+      operation: 'keep',
+      items: fileNames.map((name) => new File(['content'], name)),
+      existingItems: [],
+    });
+
+    expect(mocks.dispatch.mock.calls).toEqual([
+      [
+        asUploadAction({
+          files: ['file (3).txt', 'file (4).txt', 'file (5).txt'].map((name) => expect.objectContaining({ name })),
+          parentFolderId: DESTINATION,
+          options: { disableDuplicatedNamesCheck: true },
+        }),
+      ],
+      [asRefreshAction(DESTINATION)],
+    ]);
   });
 
   test('when uploading with replace and versioning is off, then only matched existing items are trashed and re-uploaded without the duplicates check', async () => {
@@ -297,8 +511,20 @@ describe('resolveCollision', () => {
       expect.objectContaining({ payload: [{ root: { ...newSubfolder }, currentFolderId: 'photos-uuid' }] }),
     );
     expect(mocks.dispatch.mock.calls).toEqual([
-      [asUploadAction({ files: [newFile], parentFolderId: 'photos-uuid', options: { disableDuplicatedNamesCheck: true } })],
-      [asUploadAction({ files: [nestedFile], parentFolderId: 'sub-uuid', options: { disableDuplicatedNamesCheck: true } })],
+      [
+        asUploadAction({
+          files: [newFile],
+          parentFolderId: 'photos-uuid',
+          options: { disableDuplicatedNamesCheck: true },
+        }),
+      ],
+      [
+        asUploadAction({
+          files: [nestedFile],
+          parentFolderId: 'sub-uuid',
+          options: { disableDuplicatedNamesCheck: true },
+        }),
+      ],
       [asRefreshAction(DESTINATION)],
     ]);
   });
@@ -334,5 +560,51 @@ describe('resolveCollision', () => {
       [asInvalidateCacheAction('b')],
       [asRefreshAction(DESTINATION)],
     ]);
+  });
+
+  test.each([
+    ['under', VERSIONING_MAX_FILE_SIZE - 1],
+    ['exactly at', VERSIONING_MAX_FILE_SIZE],
+  ])(
+    'when replacing a versionable file %s the versioning size limit, then it becomes a new version and nothing is trashed',
+    async (_, size) => {
+      const { file, existing } = getPdfCollision('report', size);
+
+      await replaceWithVersioning([{ file, existing }]);
+
+      expect(mocks.replaceFile).toHaveBeenCalledWith(existing.uuid, { fileId: 'new-file-id', size });
+      expect(mocks.moveItemsToTrash).not.toHaveBeenCalled();
+      expect(mocks.uploadItemsThunk).not.toHaveBeenCalled();
+    },
+  );
+
+  test('when replacing a versionable file over the versioning size limit, then the existing file is trashed and the new one is uploaded', async () => {
+    const { file, existing } = getPdfCollision('report', VERSIONING_MAX_FILE_SIZE + 1);
+
+    await replaceWithVersioning([{ file, existing }]);
+
+    expect(mocks.replaceFile).not.toHaveBeenCalled();
+    expect(mocks.networkUploadFile).not.toHaveBeenCalled();
+    expect(mocks.moveItemsToTrash).toHaveBeenCalledWith([existing]);
+    expect(mocks.uploadItemsThunk).toHaveBeenCalledWith({
+      files: [file],
+      parentFolderId: DESTINATION,
+      options: { disableDuplicatedNamesCheck: true },
+    });
+  });
+
+  test('when replacing versionable files of mixed sizes at once, then only the ones within the limit become new versions', async () => {
+    const small = getPdfCollision('small', VERSIONING_MAX_FILE_SIZE);
+    const big = getPdfCollision('big', VERSIONING_MAX_FILE_SIZE + 1);
+
+    await replaceWithVersioning([small, big]);
+
+    expect(mocks.replaceFile).toHaveBeenCalledTimes(1);
+    expect(mocks.replaceFile).toHaveBeenCalledWith(small.existing.uuid, {
+      fileId: 'new-file-id',
+      size: small.file.size,
+    });
+    expect(mocks.moveItemsToTrash).toHaveBeenCalledWith([big.existing]);
+    expect(mocks.uploadItemsThunk).toHaveBeenCalledWith(expect.objectContaining({ files: [big.file] }));
   });
 });
