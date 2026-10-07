@@ -7,6 +7,7 @@ import { IRoot } from 'app/store/slices/storage/types';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { fileVersionsSelectors } from 'app/store/slices/fileVersions';
 import { NameCollisionContext, resolveCollision } from './nameCollision.actions';
+import { findExistingItemFor, findPendingGroupIndex, getRemainingGroups } from './nameCollision.utils';
 
 const NameCollisionContainer: FC = () => {
   const dispatch = useAppDispatch();
@@ -17,32 +18,82 @@ const NameCollisionContainer: FC = () => {
   const operationType = collisionDialogInfo?.operation;
   const newItems = useMemo(() => collisionGroups.flatMap((g) => g.duplicatedItems), [collisionGroups]);
   const existingItems = useMemo(() => collisionGroups.flatMap((g) => g.existingItems), [collisionGroups]);
+  const remainingItemsCount = newItems.length;
 
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const limits = useAppSelector(fileVersionsSelectors.getLimits);
   const maxUploadFileSize = useAppSelector(fileVersionsSelectors.getMaxFileSizeLimit);
   const isVersioningEnabled = limits?.versioning?.enabled ?? false;
+  const versioningMaxFileSize = limits?.versioning?.maxFileSize ?? 0;
 
-  const context: NameCollisionContext = { dispatch, selectedWorkspace, maxUploadFileSize, isVersioningEnabled };
+  const context: NameCollisionContext = {
+    dispatch,
+    selectedWorkspace,
+    maxUploadFileSize,
+    isVersioningEnabled,
+    versioningMaxFileSize,
+  };
 
   const closeDialog = () => {
     dispatch(uiActions.setIsNameCollisionDialogOpen({ open: false, info: undefined }));
   };
 
-  const triggerSelectedOptionsOnSubmit = async ({ operationType, operation }: OnSubmitPressed) => {
-    for (const group of collisionGroups) {
-      await resolveCollision(
-        {
-          operationType,
-          operation,
-          items: group.duplicatedItems,
-          existingItems: group.existingItems,
-          destinationUuid: group.destinationUuid,
-        },
-        context,
+  const triggerSelectedOptionsOnSubmit = async ({ operationType, operation, applyToAll }: OnSubmitPressed) => {
+    if (applyToAll) {
+      closeDialog();
+      await Promise.all(
+        collisionGroups.map((group) =>
+          resolveCollision(
+            {
+              operationType,
+              operation,
+              items: group.duplicatedItems,
+              existingItems: group.existingItems,
+              destinationUuid: group.destinationUuid,
+            },
+            context,
+          ),
+        ),
       );
+      return;
     }
-    closeDialog();
+
+    const groupIndex = findPendingGroupIndex(collisionGroups);
+    const hasPendingGroup = groupIndex !== -1;
+    if (!hasPendingGroup) {
+      closeDialog();
+      return;
+    }
+
+    const group = collisionGroups[groupIndex];
+    const itemToUpload = group.duplicatedItems[0];
+    const collidingExistingItem = findExistingItemFor(itemToUpload, group.existingItems);
+    const isReplacing = operation === 'replace';
+    const replacedExistingItem = isReplacing ? collidingExistingItem : undefined;
+
+    await resolveCollision(
+      {
+        operationType,
+        operation,
+        items: [itemToUpload],
+        existingItems: group.existingItems,
+        destinationUuid: group.destinationUuid,
+      },
+      context,
+    );
+
+    const remainingGroups = getRemainingGroups(collisionGroups, groupIndex, replacedExistingItem);
+    const hasRemainingGroups = remainingGroups.length > 0;
+    if (hasRemainingGroups) {
+      dispatch(
+        uiActions.setIsNameCollisionDialogOpen({
+          open: true,
+          info: { groups: remainingGroups, operation: operationType },
+        }),
+      );
+    } else {
+      closeDialog();
+    }
   };
 
   if (!collisionDialogInfo) return null;
@@ -56,6 +107,7 @@ const NameCollisionContainer: FC = () => {
       onSubmitButtonPressed={triggerSelectedOptionsOnSubmit}
       onCloseDialog={closeDialog}
       operationType={operationType as 'move' | 'upload'}
+      remainingItemsCount={remainingItemsCount}
     />
   );
 };
