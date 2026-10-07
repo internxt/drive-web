@@ -369,7 +369,7 @@ const replaceAndUploadItems = async (
     context,
   );
 
-  context.dispatch(fetchSortedFolderContentThunk(destinationUuid));
+  await context.dispatch(fetchSortedFolderContentThunk(destinationUuid));
 };
 
 const uploadNewFilesOnly = async (files: File[], destinationUuid: string, context: NameCollisionContext) => {
@@ -415,7 +415,7 @@ const skipAndUploadItems = async (
   if (folderPairs.length === 0) return;
 
   await Promise.all(folderPairs.map((pair) => mergeSkipFolderUpload(pair.item as IRoot, pair.existing.uuid, context)));
-  context.dispatch(fetchSortedFolderContentThunk(destinationUuid));
+  await context.dispatch(fetchSortedFolderContentThunk(destinationUuid));
 };
 
 const getFileLookupItem = (file: File): DriveItemData => {
@@ -445,7 +445,7 @@ const keepAndUploadItems = async (
   const { folders, files } = splitFoldersAndFiles(items);
   await uploadFolders(folders, destinationUuid, context);
   await uploadFiles(await getUniquelyNamedFiles(files, destinationUuid), destinationUuid, context, true);
-  context.dispatch(fetchSortedFolderContentThunk(destinationUuid));
+  await context.dispatch(fetchSortedFolderContentThunk(destinationUuid));
 };
 
 /**
