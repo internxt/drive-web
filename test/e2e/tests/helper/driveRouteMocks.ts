@@ -33,11 +33,13 @@ const ITEM_STATUS = 'EXISTS';
 const TRASHED_ITEM_STATUS = 'TRASHED';
 const TRASH_PAGE_DEFAULT_LIMIT = 50;
 
+const MEGABYTE = 1024 ** 2;
 const GIGABYTE = 1024 ** 3;
 const MAX_UPLOAD_FILE_SIZE = 20 * GIGABYTE;
 const MAX_SPACE_BYTES = 10 * GIGABYTE;
 const USED_SPACE_BYTES = 3072;
 const MAX_FILE_VERSIONS = 5;
+const VERSIONING_MAX_FILE_SIZE = 20 * MEGABYTE;
 
 const NO_DUPLICATES = { existentFiles: [], existentFolders: [] };
 const buildBootstrapResponses = (isVersioningEnabled: boolean): Record<string, unknown> => ({
@@ -45,7 +47,11 @@ const buildBootstrapResponses = (isVersioningEnabled: boolean): Record<string, u
   'sharings/invites**': { invites: [] },
   'sharings/roles': [],
   'files/limits': {
-    versioning: { enabled: isVersioningEnabled, maxVersions: MAX_FILE_VERSIONS },
+    versioning: {
+      enabled: isVersioningEnabled,
+      maxVersions: MAX_FILE_VERSIONS,
+      maxFileSize: VERSIONING_MAX_FILE_SIZE,
+    },
     maxUploadFileSize: MAX_UPLOAD_FILE_SIZE,
   },
   'users/limit': { maxSpaceBytes: MAX_SPACE_BYTES },
