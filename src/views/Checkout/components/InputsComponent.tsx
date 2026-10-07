@@ -28,6 +28,7 @@ export const InputsComponent = ({ register, errors, authError, authMethod }: Inp
           required={true}
           minLength={{ value: 1, message: translate('checkout.authComponent.emailMustNotBeEmpty') }}
           error={errors.password}
+          inputDataCy="checkout-email-input"
         />
       </div>
 
@@ -41,11 +42,12 @@ export const InputsComponent = ({ register, errors, authError, authMethod }: Inp
             register={register}
             required={true}
             error={errors.password}
+            inputDataCy="checkout-password-input"
           />
         </label>
       </div>
       {authError && (
-        <div id="authError" className="text-red-dark">
+        <div id="authError" data-cy="checkout-auth-error" className="text-red-dark">
           {authError}
         </div>
       )}

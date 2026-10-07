@@ -58,12 +58,14 @@ export const CheckoutUserAuth = ({
         className="flex flex-col space-y-4 rounded-2xl border border-gray-10 bg-surface p-5"
       >
         {isUserSignedIn ? (
-          <div className="flex w-full items-center justify-center">
+          <div data-cy="checkout-signed-in-user" className="flex w-full items-center justify-center">
             <div className="flex flex-col items-center gap-2.5">
               <Avatar diameter={42} fullName={userData.name} src={userData.avatar ?? null} />
               <p className="text-lg font-semibold">{userData.name}</p>
-              <p>{userData?.email}</p>
-              <Button onClick={onLogOut}>{translate('actions.logOut')}</Button>
+              <p data-cy="checkout-signed-in-email">{userData?.email}</p>
+              <Button buttonDataCy="checkout-logout-button" onClick={onLogOut}>
+                {translate('actions.logOut')}
+              </Button>
             </div>
           </div>
         ) : (
@@ -75,6 +77,7 @@ export const CheckoutUserAuth = ({
           <p className="text-gray-100">{AUTH_LABEL[authMethod]}</p>
           <button
             type="button"
+            data-cy="checkout-auth-toggle"
             onClick={(e) => {
               e.preventDefault();
               const newAuthMethod = authMethod === 'signIn' ? 'signUp' : 'signIn';
