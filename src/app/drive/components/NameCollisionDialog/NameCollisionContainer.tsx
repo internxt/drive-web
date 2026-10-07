@@ -24,8 +24,15 @@ const NameCollisionContainer: FC = () => {
   const limits = useAppSelector(fileVersionsSelectors.getLimits);
   const maxUploadFileSize = useAppSelector(fileVersionsSelectors.getMaxFileSizeLimit);
   const isVersioningEnabled = limits?.versioning?.enabled ?? false;
+  const versioningMaxFileSize = limits?.versioning?.maxFileSize ?? 0;
 
-  const context: NameCollisionContext = { dispatch, selectedWorkspace, maxUploadFileSize, isVersioningEnabled };
+  const context: NameCollisionContext = {
+    dispatch,
+    selectedWorkspace,
+    maxUploadFileSize,
+    isVersioningEnabled,
+    versioningMaxFileSize,
+  };
 
   const closeDialog = () => {
     dispatch(uiActions.setIsNameCollisionDialogOpen({ open: false, info: undefined }));
