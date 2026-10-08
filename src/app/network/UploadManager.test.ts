@@ -821,7 +821,6 @@ describe('UploadManager settles every queued file', () => {
   const HANG_TIMEOUT_MS = 2000;
   const uploadStateError = new Error('IDB failure');
 
-  /** A hang must fail the test with a clear reason instead of timing out the whole suite. */
   const failIfHangs = <T>(promise: Promise<T>): Promise<T> =>
     Promise.race([
       promise,
