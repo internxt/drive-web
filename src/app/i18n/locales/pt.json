@@ -369,6 +369,7 @@
       "passwordPlaceholder": "Senha",
       "togglePasswordVisibility": "Mostrar ou ocultar a senha",
       "incompleteDetails": "Informe seu e-mail e sua senha para continuar.",
+      "incompleteEmail": "Informe seu e-mail para continuar.",
       "encryptedTitle": "Seus arquivos são criptografados e privados.",
       "encryptedDescription": "A Internxt não pode acessar seu conteúdo."
     },

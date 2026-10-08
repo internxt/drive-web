@@ -34,6 +34,9 @@ interface RenderOptions {
   onCurrencyTypeChanges?: (currency: PaymentType) => void;
   authMethod?: AuthMethodTypes;
   authError?: string;
+  isPasswordlessSignUp?: boolean;
+  pendingAccountSetupEmail?: string;
+  couponCodeData?: CouponCodeData;
 }
 
 const selectedPlan = {
@@ -48,7 +51,7 @@ const selectedPlan = {
   taxes: { amountWithTax: 218, decimalAmountWithTax: 2.18 },
 } as unknown as PriceWithTax;
 
-const couponCodeData = { percentOff: 94, codeId: 'code_id', codeName: 'OFFER94' } as CouponCodeData;
+const percentOffCoupon = { percentOff: 94, codeId: 'code_id', codeName: 'OFFER94' } as CouponCodeData;
 
 const checkoutViewManager = {
   onLogOut: vi.fn(),
@@ -67,7 +70,16 @@ const CREATIVE_IMAGE_ALT = 'Internxt Drive on a laptop and a phone';
 
 const renderUrgentCheckout = (
   variant = UrgentCheckoutVariant.Mainstream,
-  { cryptoCurrencies, onCurrencyTypeChanges = vi.fn(), authMethod = 'signUp', authError }: RenderOptions = {},
+  {
+    cryptoCurrencies,
+    onCurrencyTypeChanges = vi.fn(),
+    authMethod = 'signUp',
+    authError,
+    // The checkout only asks for a password to log in: a new account is set up from the email
+    isPasswordlessSignUp = authMethod === 'signUp',
+    pendingAccountSetupEmail,
+    couponCodeData = percentOffCoupon,
+  }: RenderOptions = {},
 ) =>
   render(
     <UrgentCheckoutView
@@ -81,6 +93,8 @@ const renderUrgentCheckout = (
         couponCodeData,
         currentSelectedPlan: selectedPlan,
         selectedCurrency: 'usd',
+        isPasswordlessSignUp,
+        pendingAccountSetupEmail,
       }}
       checkoutViewManager={checkoutViewManager}
       availableCryptoCurrencies={cryptoCurrencies}
@@ -119,6 +133,21 @@ describe('urgent checkout view', () => {
     expect(screen.getByText('$1.79')).toBeTruthy();
     expect(screen.getByText('$0.39')).toBeTruthy();
     expect(screen.getByText('$2.18')).toBeTruthy();
+  });
+
+  it('When a campaign coupon is applied, then its price is charged but its discount is never advertised', () => {
+    renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, {
+      couponCodeData: { percentOff: 94, codeId: 'code_id', codeName: 'SPECIAL' } as CouponCodeData,
+    });
+
+    expect(screen.queryByText('94% OFF applied')).toBeNull();
+    expect(screen.queryByText(translate('checkout.productCard.saving', { percent: 94 }))).toBeNull();
+    expect(screen.queryByText('94% OFF — Limited-time exclusive offer')).toBeNull();
+    expect(screen.queryByText('$29.99')).toBeNull();
+    expect(screen.getByText('Limited-time exclusive offer')).toBeTruthy();
+    expect(screen.getByText('Your exclusive offer expires in:')).toBeTruthy();
+    expect(screen.getByText('Exclusive offer — for a limited time')).toBeTruthy();
+    expect(screen.getByText('Get 5TB for $1.79')).toBeTruthy();
   });
 
   it('When the page loads, then the payment element, the call to action and the guarantee are shown', () => {
@@ -178,21 +207,46 @@ describe('urgent checkout view', () => {
       });
     };
 
-    it.each<[AuthMethodTypes, string, string, string]>([
-      ['signUp', 'Create a password', 'Already have an account?', 'Login'],
-      ['signIn', 'Your password', 'Don’t have an account?', 'Create account'],
+    it.each<[AuthMethodTypes, string, string]>([
+      ['signUp', 'Already have an account?', 'Login'],
+      ['signIn', 'Don’t have an account?', 'Create account'],
     ])(
       'When the visitor is on %s, then its copy and the link to the other method are shown',
-      (authMethod, passwordLabel, question, link) => {
+      (authMethod, question, link) => {
         renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { authMethod });
 
         expect(screen.getByPlaceholderText('you@email.com')).toBeTruthy();
-        expect(screen.getByText(passwordLabel)).toBeTruthy();
         expect(screen.getByText(question)).toBeTruthy();
         expect(screen.getByText(link)).toBeTruthy();
         expect(screen.getByText('Your files are encrypted and private.')).toBeTruthy();
       },
     );
+
+    it('When a new buyer is signing up, then no password is asked and the email setup is announced', () => {
+      renderUrgentCheckout();
+
+      expect(screen.queryByPlaceholderText('Password')).toBeNull();
+      expect(screen.queryByLabelText('Show or hide password')).toBeNull();
+      expect(screen.getByText(translate('checkout.accountSetup.passwordAfterPayment'))).toBeTruthy();
+    });
+
+    it('When the buyer logs in instead, then the password is asked again', () => {
+      renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { authMethod: 'signIn' });
+
+      expect(screen.getByText('Your password')).toBeTruthy();
+      expect(screen.getByPlaceholderText('Password')).toBeTruthy();
+    });
+
+    it('When the email already paid and its account setup is pending, then finishing it from the email is offered', () => {
+      renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { pendingAccountSetupEmail: 'buyer@internxt.com' });
+
+      expect(
+        screen.getByText(
+          'buyer@internxt.com already has a paid plan waiting to be set up. Check your email to finish setting up your account.',
+        ),
+      ).toBeTruthy();
+      expect(screen.getByText('Resend email')).toBeTruthy();
+    });
 
     it.each<[AuthMethodTypes, string, AuthMethodTypes]>([
       ['signUp', 'Login', 'signIn'],
@@ -206,20 +260,20 @@ describe('urgent checkout view', () => {
     });
 
     it('When the auth method is switched, then the credentials already typed are cleared', () => {
-      renderUrgentCheckout();
+      renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { authMethod: 'signIn' });
       const email = screen.getByPlaceholderText('you@email.com') as HTMLInputElement;
       const password = screen.getByPlaceholderText('Password') as HTMLInputElement;
 
       fireEvent.change(email, { target: { value: 'test@internxt.com' } });
       fireEvent.change(password, { target: { value: 'a-password' } });
-      fireEvent.click(screen.getByText('Login'));
+      fireEvent.click(screen.getByText('Create account'));
 
       expect(email.value).toBe('');
       expect(password.value).toBe('');
     });
 
     it('When the password visibility is toggled, then the password stops being masked', () => {
-      renderUrgentCheckout();
+      renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { authMethod: 'signIn' });
       const password = screen.getByPlaceholderText('Password') as HTMLInputElement;
 
       expect(password.type).toBe('password');

@@ -27,9 +27,8 @@ const responseError = (status: number, data: Record<string, unknown> = {}) =>
 
 const renderPasswordlessCheckout = ({
   authMethod = 'signUp' as AuthMethodTypes,
-  isUrgentCheckout = false,
   onEmailAlreadyHasAccount = vi.fn(),
-} = {}) => renderHook(() => usePasswordlessCheckout({ authMethod, isUrgentCheckout, onEmailAlreadyHasAccount }));
+} = {}) => renderHook(() => usePasswordlessCheckout({ authMethod, onEmailAlreadyHasAccount }));
 
 describe('Paying without creating a password first', () => {
   beforeEach(() => {
@@ -49,12 +48,6 @@ describe('Paying without creating a password first', () => {
 
   test('When the buyer chooses to log in, then the checkout keeps asking for the password', () => {
     const { result } = renderPasswordlessCheckout({ authMethod: 'signIn' });
-
-    expect(result.current.isPasswordlessSignUp).toBe(false);
-  });
-
-  test('When the buyer is in the urgent checkout, then the new account keeps being created with a password', () => {
-    const { result } = renderPasswordlessCheckout({ isUrgentCheckout: true });
 
     expect(result.current.isPasswordlessSignUp).toBe(false);
   });

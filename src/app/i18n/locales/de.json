@@ -348,6 +348,7 @@
       "passwordPlaceholder": "Passwort",
       "togglePasswordVisibility": "Passwort anzeigen oder ausblenden",
       "incompleteDetails": "Bitte geben Sie Ihre E-Mail-Adresse und Ihr Passwort ein, um fortzufahren.",
+      "incompleteEmail": "Bitte geben Sie Ihre E-Mail-Adresse ein, um fortzufahren.",
       "encryptedTitle": "Ihre Dateien sind verschlüsselt und privat.",
       "encryptedDescription": "Internxt kann nicht auf Ihre Inhalte zugreifen."
     },

@@ -369,6 +369,7 @@
       "passwordPlaceholder": "Password",
       "togglePasswordVisibility": "Mostra o nascondi la password",
       "incompleteDetails": "Inserisci la tua email e la tua password per continuare.",
+      "incompleteEmail": "Inserisci la tua email per continuare.",
       "encryptedTitle": "I tuoi file sono crittografati e privati.",
       "encryptedDescription": "Internxt non può accedere ai tuoi contenuti."
     },

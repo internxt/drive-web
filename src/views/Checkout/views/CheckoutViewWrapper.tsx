@@ -124,7 +124,6 @@ const CheckoutViewWrapper = () => {
     handlePasswordlessPurchaseError,
   } = usePasswordlessCheckout({
     authMethod,
-    isUrgentCheckout: isUrgentCheckoutRoute,
     onEmailAlreadyHasAccount,
   });
 
@@ -545,12 +544,14 @@ const CheckoutViewWrapper = () => {
                 authError: authError ?? undefined,
                 currentSelectedPlan: selectedPlan,
                 selectedCurrency,
+                isPasswordlessSignUp,
+                pendingAccountSetupEmail,
               }}
               variant={urgentVariant}
               userAuthComponentRef={userAuthComponentRef}
               userInfo={userInfo}
               checkoutViewManager={checkoutViewManager}
-              availableCryptoCurrencies={availableCryptoCurrencies}
+              availableCryptoCurrencies={isPasswordlessSignUp ? undefined : availableCryptoCurrencies}
               onCurrencyTypeChanges={onCurrencyTypeChanges}
             />
           ) : (

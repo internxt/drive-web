@@ -3,6 +3,28 @@ export const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
 export const IS_CRYPTO_PAYMENT_ENABLED = false;
 
+/**
+ * Promotional codes whose discount must stay out of sight: their price is charged as usual, but no
+ * saving tag, no crossed out price and no coupon field are shown for them.
+ */
+export const HIDDEN_COUPON_CODES = [
+  'SPECIAL',
+  'ANTIV',
+  'SAVE',
+  'OFFER',
+  'CIPIAIDISCOUNT',
+  'THEFELLASADSOFFER',
+  'GOTZHAOFFER',
+  'TFA',
+  'REOFFER',
+  'WEWE',
+  'AMIOFFER',
+  'VIPOFFER',
+  'VAOFFER',
+  'VEOFFER',
+  'AFFIOFFER',
+];
+
 export const POSTAL_CODE_REQUIRED_COUNTRIES = ['US', 'CA', 'IN'];
 
 /**

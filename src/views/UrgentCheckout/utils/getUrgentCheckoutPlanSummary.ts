@@ -3,7 +3,7 @@ import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { bytesToString } from 'app/drive/services/size.service';
 import { Translate } from 'app/i18n/types';
 import { Currency } from 'views/Checkout/types';
-import { formatPrice, getProductAmount } from 'views/Checkout/utils';
+import { formatPrice, getProductAmount, isHiddenCouponCode } from 'views/Checkout/utils';
 
 export interface UrgentCheckoutPlanSummary {
   storage: string;
@@ -52,7 +52,9 @@ export const getUrgentCheckoutPlanSummary = (
   const discountedAmount = Number(getProductAmount(normalAmount, 1, couponCodeData));
   const totalAmount = Number(formatPrice(taxes.decimalAmountWithTax));
   const taxAmount = Math.max(0, totalAmount - discountedAmount);
-  const savingsAmount = Math.max(0, normalAmount - discountedAmount);
+  // Campaign codes charge their discounted price, but nothing about the discount is advertised
+  const isDiscountHidden = isHiddenCouponCode(couponCodeData?.codeName);
+  const savingsAmount = isDiscountHidden ? 0 : Math.max(0, normalAmount - discountedAmount);
 
   const planTitleKey = `preferences.account.plans.planFeaturesList.${storage}.title`;
   const translatedPlanTitle = translate(planTitleKey);
@@ -73,7 +75,7 @@ export const getUrgentCheckoutPlanSummary = (
     taxAmount: formatPrice(taxAmount),
     totalAmount: formatPrice(totalAmount),
     savingsAmount: formatPrice(savingsAmount),
-    discountPercent: getDiscountPercent(normalAmount, discountedAmount, couponCodeData),
+    discountPercent: isDiscountHidden ? undefined : getDiscountPercent(normalAmount, discountedAmount, couponCodeData),
     interval: price.interval,
     isRecurring: price.interval !== 'lifetime',
   };

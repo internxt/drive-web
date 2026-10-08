@@ -5,6 +5,7 @@ import { FieldErrors, UseFormRegister } from 'react-hook-form';
 import { IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { MAX_PASSWORD_LENGTH } from 'components/ValidPassword';
+import { ResendAccountSetupEmailButton } from 'views/Checkout/components/ResendAccountSetupEmailButton';
 import { AuthMethodTypes } from 'views/Checkout/types';
 import { UserInfoProps } from 'views/Checkout/types/checkout.types';
 import { URGENT_CHECKOUT_INPUT_CLASSNAME } from '../constants';
@@ -15,6 +16,8 @@ interface UrgentCheckoutAccountFieldsProps {
   register: UseFormRegister<IFormValues>;
   userData: UserInfoProps;
   authError?: string;
+  isPasswordlessSignUp?: boolean;
+  pendingAccountSetupEmail?: string;
   onAuthMethodToggled: (authMethod: AuthMethodTypes) => void;
   onLogOut: () => void;
 }
@@ -27,6 +30,8 @@ export const UrgentCheckoutAccountFields = ({
   register,
   userData,
   authError,
+  isPasswordlessSignUp = false,
+  pendingAccountSetupEmail,
   onAuthMethodToggled,
   onLogOut,
 }: UrgentCheckoutAccountFieldsProps): JSX.Element => {
@@ -35,6 +40,7 @@ export const UrgentCheckoutAccountFields = ({
 
   const isUserSignedIn = authMethod === 'userIsSignedIn';
   const isSignUp = authMethod === 'signUp';
+  const isPasswordFieldVisible = !isPasswordlessSignUp;
 
   const preventSubmitOnEnter = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
@@ -79,36 +85,52 @@ export const UrgentCheckoutAccountFields = ({
         />
       </div>
 
-      <div className="flex flex-col gap-1.5">
-        <FieldLabel>
-          {isSignUp
-            ? translate('urgentCheckout.form.createPasswordLabel')
-            : translate('urgentCheckout.form.passwordLabel')}
-        </FieldLabel>
-        <div className="relative">
-          <input
-            type={isPasswordVisible ? 'text' : 'password'}
-            autoComplete={isSignUp ? 'new-password' : 'current-password'}
-            placeholder={translate('urgentCheckout.form.passwordPlaceholder')}
-            className={`${URGENT_CHECKOUT_INPUT_CLASSNAME} pr-12`}
-            {...register('password', { required: true, maxLength: MAX_PASSWORD_LENGTH })}
-          />
-          <button
-            type="button"
-            aria-label={translate('urgentCheckout.form.togglePasswordVisibility')}
-            onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-            className="absolute right-4 top-1/2 flex -translate-y-1/2 items-center justify-center text-[#A7B4C8]"
-          >
-            {isPasswordVisible ? <EyeIcon size={20} /> : <EyeSlashIcon size={20} />}
-          </button>
+      {isPasswordFieldVisible ? (
+        <div className="flex flex-col gap-1.5">
+          <FieldLabel>
+            {isSignUp
+              ? translate('urgentCheckout.form.createPasswordLabel')
+              : translate('urgentCheckout.form.passwordLabel')}
+          </FieldLabel>
+          <div className="relative">
+            <input
+              type={isPasswordVisible ? 'text' : 'password'}
+              autoComplete={isSignUp ? 'new-password' : 'current-password'}
+              placeholder={translate('urgentCheckout.form.passwordPlaceholder')}
+              className={`${URGENT_CHECKOUT_INPUT_CLASSNAME} pr-12`}
+              {...register('password', { required: true, maxLength: MAX_PASSWORD_LENGTH })}
+            />
+            <button
+              type="button"
+              aria-label={translate('urgentCheckout.form.togglePasswordVisibility')}
+              onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+              className="absolute right-4 top-1/2 flex -translate-y-1/2 items-center justify-center text-[#A7B4C8]"
+            >
+              {isPasswordVisible ? <EyeIcon size={20} /> : <EyeSlashIcon size={20} />}
+            </button>
+          </div>
         </div>
-      </div>
+      ) : (
+        <p className="text-sm text-[#A7B4C8]">{translate('checkout.accountSetup.passwordAfterPayment')}</p>
+      )}
 
       {(authError || errors.email || errors.password) && (
         <p id="authError" className="text-sm text-red">
-          {authError ?? translate('urgentCheckout.form.incompleteDetails')}
+          {authError ??
+            translate(
+              isPasswordFieldVisible ? 'urgentCheckout.form.incompleteDetails' : 'urgentCheckout.form.incompleteEmail',
+            )}
         </p>
       )}
+
+      {isPasswordlessSignUp && pendingAccountSetupEmail ? (
+        <div className="flex flex-col items-start gap-3 rounded-xl border border-[#1E4A8F] bg-[#0E1E38] p-4">
+          <p className="text-sm text-white">
+            {translate('checkout.accountSetup.pendingSetup', { email: pendingAccountSetupEmail })}
+          </p>
+          <ResendAccountSetupEmailButton email={pendingAccountSetupEmail} />
+        </div>
+      ) : undefined}
 
       <div className="flex flex-row items-start gap-3 rounded-xl border border-[#1E5B36] bg-[#0E2B1B] p-4">
         <LockKeyIcon size={24} weight="fill" className="shrink-0 text-[#3BD16F]" />

@@ -38,6 +38,8 @@ interface UrgentCheckoutViewProps {
     couponCodeData?: CouponCodeData;
     currentSelectedPlan: PriceWithTax | null;
     selectedCurrency: string;
+    isPasswordlessSignUp?: boolean;
+    pendingAccountSetupEmail?: string;
   };
   checkoutViewManager: CheckoutViewManager;
   availableCryptoCurrencies?: CryptoCurrency[];
@@ -57,8 +59,16 @@ const UrgentCheckoutView = ({
   const elements = useElements();
   const { translate } = useTranslationContext();
   const [isCryptoDropdownOpen, setIsCryptoDropdownOpen] = useState<boolean>(false);
-  const { isPaying, authError, authMethod, couponCodeData, currentSelectedPlan, selectedCurrency } =
-    checkoutViewVariables;
+  const {
+    isPaying,
+    authError,
+    authMethod,
+    couponCodeData,
+    currentSelectedPlan,
+    selectedCurrency,
+    isPasswordlessSignUp,
+    pendingAccountSetupEmail,
+  } = checkoutViewVariables;
 
   const {
     register,
@@ -131,6 +141,8 @@ const UrgentCheckoutView = ({
                 errors={errors}
                 register={register}
                 userData={userInfo}
+                isPasswordlessSignUp={isPasswordlessSignUp}
+                pendingAccountSetupEmail={pendingAccountSetupEmail}
                 onAuthMethodToggled={onAuthMethodToggled}
                 onLogOut={checkoutViewManager.onLogOut}
               />

@@ -55,6 +55,17 @@ describe('Building the urgent checkout summary', () => {
     expect(summary.isRecurring).toBe(true);
   });
 
+  it('When the coupon belongs to a campaign that hides its discount, then only the charged price is exposed', () => {
+    const hiddenCoupon: CouponCodeData = { ...percentOffCoupon, codeName: 'SPECIAL' };
+
+    const summary = getUrgentCheckoutPlanSummary(getPlan(29.99, 2.18), translateMock, hiddenCoupon);
+
+    expect(summary.discountedAmount).toBe('1.79');
+    expect(summary.totalAmount).toBe('2.18');
+    expect(summary.discountPercent).toBeUndefined();
+    expect(summary.savingsAmount).toBe('0');
+  });
+
   it('When no coupon is applied, then there is no discount and no savings', () => {
     const summary = getUrgentCheckoutPlanSummary(getPlan(29.99, 36.29), translateMock);
 

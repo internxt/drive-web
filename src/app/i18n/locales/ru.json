@@ -348,6 +348,7 @@
       "passwordPlaceholder": "Пароль",
       "togglePasswordVisibility": "Показать или скрыть пароль",
       "incompleteDetails": "Введите адрес электронной почты и пароль, чтобы продолжить.",
+      "incompleteEmail": "Введите адрес электронной почты, чтобы продолжить.",
       "encryptedTitle": "Ваши файлы зашифрованы и защищены.",
       "encryptedDescription": "Internxt не может получить доступ к вашему содержимому."
     },

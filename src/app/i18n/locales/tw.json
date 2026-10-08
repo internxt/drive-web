@@ -369,6 +369,7 @@
       "passwordPlaceholder": "密碼",
       "togglePasswordVisibility": "顯示或隱藏密碼",
       "incompleteDetails": "請輸入您的電子郵件地址和密碼以繼續。",
+      "incompleteEmail": "請輸入您的電子郵件地址以繼續。",
       "encryptedTitle": "您的檔案已加密且完全私密。",
       "encryptedDescription": "Internxt 無法存取您的內容。"
     },

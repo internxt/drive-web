@@ -348,6 +348,7 @@
       "passwordPlaceholder": "Contraseña",
       "togglePasswordVisibility": "Mostrar u ocultar la contraseña",
       "incompleteDetails": "Introduce tu correo electrónico y tu contraseña para continuar.",
+      "incompleteEmail": "Introduce tu correo electrónico para continuar.",
       "encryptedTitle": "Tus archivos están cifrados y son privados.",
       "encryptedDescription": "Internxt no puede acceder a tu contenido."
     },

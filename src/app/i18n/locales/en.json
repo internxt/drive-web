@@ -369,6 +369,7 @@
       "passwordPlaceholder": "Password",
       "togglePasswordVisibility": "Show or hide password",
       "incompleteDetails": "Please enter your email and password to continue.",
+      "incompleteEmail": "Please enter your email to continue.",
       "encryptedTitle": "Your files are encrypted and private.",
       "encryptedDescription": "Internxt cannot access your content."
     },
