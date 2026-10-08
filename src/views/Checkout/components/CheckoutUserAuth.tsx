@@ -5,6 +5,7 @@ import { IFormValues } from 'app/core/types';
 import { Button, Avatar } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { InputsComponent } from './InputsComponent';
+import { ResendAccountSetupEmailButton } from './ResendAccountSetupEmailButton';
 
 interface CheckoutUserAuthProps {
   userData: {
@@ -14,6 +15,8 @@ interface CheckoutUserAuthProps {
   };
   authMethod: AuthMethodTypes;
   authError?: string;
+  isPasswordlessSignUp?: boolean;
+  pendingAccountSetupEmail?: string;
   errors: FieldErrors<IFormValues>;
   onAuthMethodToggled: (authMethod: AuthMethodTypes) => void;
   register: UseFormRegister<IFormValues>;
@@ -25,6 +28,8 @@ export const CheckoutUserAuth = ({
   errors,
   authMethod,
   authError,
+  isPasswordlessSignUp = false,
+  pendingAccountSetupEmail,
   onAuthMethodToggled,
   userData,
   onLogOut,
@@ -67,8 +72,22 @@ export const CheckoutUserAuth = ({
             </div>
           </div>
         ) : (
-          <InputsComponent authError={authError} errors={errors} authMethod={authMethod} register={register} />
+          <InputsComponent
+            authError={authError}
+            errors={errors}
+            authMethod={authMethod}
+            register={register}
+            isPasswordFieldVisible={!isPasswordlessSignUp}
+          />
         )}
+        {isPasswordlessSignUp && pendingAccountSetupEmail ? (
+          <div className="flex flex-col items-start gap-3 rounded-lg bg-primary/10 p-4">
+            <p className="text-sm text-gray-100">
+              {translate('checkout.accountSetup.pendingSetup', { email: pendingAccountSetupEmail })}
+            </p>
+            <ResendAccountSetupEmailButton email={pendingAccountSetupEmail} />
+          </div>
+        ) : undefined}
       </div>
       {isNotUserSignedIn ? (
         <div className="flex flex-row space-x-2">

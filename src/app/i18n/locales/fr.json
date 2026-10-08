@@ -55,6 +55,13 @@
     "environment": "Journée Mondiale de l'Environnement"
   },
   "auth": {
+    "accountSetupPending": {
+      "title": "Terminez la configuration de votre compte",
+      "message": "Vous avez déjà acheté un forfait avec cet e-mail. Utilisez le lien que nous vous avons envoyé pour créer votre mot de passe.",
+      "resend": "Renvoyer l'e-mail",
+      "emailSent": "E-mail envoyé. Consultez votre boîte de réception.",
+      "resendFailed": "Nous n'avons pas pu envoyer l'e-mail. Veuillez réessayer."
+    },
     "emailFloatingLabel": "Adresse e-mail",
     "email": "Email",
     "passwordFloatingLabel": "Mot de passe",
@@ -272,6 +279,20 @@
       "countryRequired": "Nous n'avons pas pu déterminer votre pays. Veuillez réessayer plus tard.",
       "missingPaymentDetails": "Informations de paiement manquantes pour confirmer le paiement",
       "paymentFailed": "Paiement échoué"
+    },
+    "accountSetup": {
+      "passwordAfterPayment": "Vous n'avez pas encore besoin de mot de passe. Après le paiement, nous vous enverrons un e-mail pour finaliser la configuration de votre compte.",
+      "emailHasAccount": "Cet e-mail a déjà un compte Internxt. Connectez-vous pour poursuivre votre achat.",
+      "pendingSetup": "{{email}} a déjà un forfait payé en attente de configuration. Consultez vos e-mails pour finaliser la configuration de votre compte.",
+      "cryptoRequiresSignIn": "Connectez-vous pour payer en cryptomonnaie.",
+      "resendEmail": "Renvoyer l'e-mail",
+      "emailResent": "Nous vous avons renvoyé l'e-mail",
+      "resendEmailError": "Nous n'avons pas pu envoyer l'e-mail. Veuillez réessayer plus tard.",
+      "checkEmail": {
+        "title": "Consultez vos e-mails",
+        "description": "Votre paiement a été effectué. Nous avons envoyé un lien pour finaliser la configuration de votre compte à :",
+        "spamHint": "Vous ne le trouvez pas ? Vérifiez votre dossier de spam."
+      }
     }
   },
   "urgentCheckout": {
@@ -1545,6 +1566,30 @@
         "title": "Commençons tout de suite !",
         "description": "Cliquez sur le bouton Charger des fichiers pour charger votre premier fichier."
       }
+    }
+  },
+  "accountSetup": {
+    "form": {
+      "title": "Configurez votre compte",
+      "description": "Créez un mot de passe pour terminer la configuration de votre compte Internxt.",
+      "confirmPassword": "Confirmer le mot de passe",
+      "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
+      "submit": "Créer un compte",
+      "genericError": "Une erreur s'est produite lors de la configuration de votre compte. Veuillez réessayer."
+    },
+    "invalidLink": {
+      "title": "Ce lien n'est plus valide",
+      "description": "Le lien a expiré ou a déjà été utilisé. Saisissez votre e-mail et nous vous en enverrons un nouveau.",
+      "emailLabel": "E-mail",
+      "resendButton": "M'envoyer un nouveau lien",
+      "resendError": "Nous n'avons pas pu envoyer l'e-mail. Veuillez réessayer.",
+      "emailSentTitle": "Vérifiez vos e-mails",
+      "emailSentDescription": "Si {{email}} a un compte en attente de configuration, vous recevrez bientôt un nouveau lien."
+    },
+    "accountAlreadyExists": {
+      "title": "Votre compte est déjà configuré",
+      "description": "Ce compte existe déjà. Connectez-vous avec votre e-mail et votre mot de passe pour y accéder.",
+      "loginButton": "Aller à la connexion"
     }
   },
   "blockedAccount": {

@@ -27,6 +27,8 @@ import { useOAuthFlow } from 'views/Login/hooks/useOAuthFlow';
 import useLoginRedirections from '../hooks/useLoginRedirections';
 import TurnstileWidget, { TurnstileWidgetHandle } from 'components/TurnstileWidget';
 import encryptedStorageService from 'services/encrypted-storage.service';
+import { isAccountSetupPending } from 'services/account-setup.service';
+import { AccountSetupPendingNotice } from './AccountSetupPendingNotice';
 
 const showNotification = ({ text, isError }: { text: string; isError: boolean }) => {
   notificationsService.show({
@@ -44,6 +46,7 @@ export default function LogIn(): JSX.Element {
   const [showTwoFactor, setShowTwoFactor] = useState(false);
   const [loginError, setLoginError] = useState<string[]>([]);
   const [showErrors, setShowErrors] = useState(false);
+  const [pendingSetupEmail, setPendingSetupEmail] = useState<string | null>(null);
 
   const user = useSelector((state: RootState) => state.user.user);
   const mnemonic = user?.mnemonic;
@@ -131,6 +134,7 @@ export default function LogIn(): JSX.Element {
 
   useEffect(() => {
     setShowTwoFactor(false);
+    setPendingSetupEmail(null);
   }, [email]);
 
   const sendUnblockAccountEmail = async (email: string) => {
@@ -142,6 +146,14 @@ export default function LogIn(): JSX.Element {
   };
 
   const handleAuthenticationError = async (err: unknown, email: string): Promise<void> => {
+    if (isAccountSetupPending(err)) {
+      setLoginError([]);
+      setShowErrors(false);
+      setPendingSetupEmail(email);
+      return;
+    }
+
+    setPendingSetupEmail(null);
     const castedError = errorService.castError(err);
 
     if (castedError.message.includes('not activated') && auth.isValidEmail(email)) {
@@ -282,6 +294,8 @@ export default function LogIn(): JSX.Element {
               pattern={twoFactorRegexPattern}
             />
           )}
+
+          {pendingSetupEmail && <AccountSetupPendingNotice key={pendingSetupEmail} email={pendingSetupEmail} />}
 
           {loginError && showErrors && (
             <div className="flex flex-row items-start pt-1">
