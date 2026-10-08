@@ -263,7 +263,9 @@ export default function BackupsView(): JSX.Element {
           <p className="text-lg">{translate('backups.your-devices')}</p>
         )}
       </div>
-      <WarningMessageWrapper />
+      <div className="px-5">
+        <WarningMessageWrapper />
+      </div>
       {body}
     </div>
   );
