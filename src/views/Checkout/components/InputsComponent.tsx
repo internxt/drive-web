@@ -11,9 +11,16 @@ interface InputsComponentProps {
   authError?: string;
   authMethod: AuthMethodTypes;
   register: UseFormRegister<IFormValues>;
+  isPasswordFieldVisible?: boolean;
 }
 
-export const InputsComponent = ({ register, errors, authError, authMethod }: InputsComponentProps) => {
+export const InputsComponent = ({
+  register,
+  errors,
+  authError,
+  authMethod,
+  isPasswordFieldVisible = true,
+}: InputsComponentProps) => {
   const { translate } = useTranslationContext();
 
   return (
@@ -31,19 +38,23 @@ export const InputsComponent = ({ register, errors, authError, authMethod }: Inp
         />
       </div>
 
-      <div className="flex w-full flex-col gap-1">
-        <p className="text-sm text-gray-80">{translate(`checkout.authComponent.${authMethod}.password`)}</p>
-        <label className="space-y-0.5">
-          <PasswordInput
-            placeholder={'Password'}
-            label="password"
-            maxLength={MAX_PASSWORD_LENGTH}
-            register={register}
-            required={true}
-            error={errors.password}
-          />
-        </label>
-      </div>
+      {isPasswordFieldVisible ? (
+        <div className="flex w-full flex-col gap-1">
+          <p className="text-sm text-gray-80">{translate(`checkout.authComponent.${authMethod}.password`)}</p>
+          <label className="space-y-0.5">
+            <PasswordInput
+              placeholder={'Password'}
+              label="password"
+              maxLength={MAX_PASSWORD_LENGTH}
+              register={register}
+              required={true}
+              error={errors.password}
+            />
+          </label>
+        </div>
+      ) : (
+        <p className="text-sm text-gray-60">{translate('checkout.accountSetup.passwordAfterPayment')}</p>
+      )}
       {authError && (
         <div id="authError" className="text-red-dark">
           {authError}

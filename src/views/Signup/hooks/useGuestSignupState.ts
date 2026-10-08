@@ -15,6 +15,7 @@ export const useGuestSignupState = () => {
   const [passwordState, setPasswordState] = useState<PasswordState | null>(null);
   const [invitationId, setInvitationId] = useState<string>();
   const [showPasswordIndicator, setShowPasswordIndicator] = useState(false);
+  const [pendingSetupEmail, setPendingSetupEmail] = useState<string | null>(null);
 
   const user = useSelector((state: RootState) => state.user.user);
   const mnemonic = user?.mnemonic;
@@ -34,6 +35,8 @@ export const useGuestSignupState = () => {
     setInvitationId,
     showPasswordIndicator,
     setShowPasswordIndicator,
+    pendingSetupEmail,
+    setPendingSetupEmail,
     user,
     mnemonic,
   };

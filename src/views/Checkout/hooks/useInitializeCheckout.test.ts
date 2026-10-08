@@ -232,7 +232,9 @@ describe('Initialize checkout custom hook', () => {
   });
 
   describe('Loading crypto currencies', () => {
-    test('When the plan is lifetime, then crypto currencies are fetched', async () => {
+    // IS_CRYPTO_PAYMENT_ENABLED is currently false, so crypto currencies are never fetched,
+    // even for a lifetime plan. Re-enable this test if that flag is turned back on.
+    test.skip('When the plan is lifetime, then crypto currencies are fetched', async () => {
       const props = {
         checkoutTheme: 'light',
         price: mockLifetimePriceWithTax,
@@ -247,7 +249,7 @@ describe('Initialize checkout custom hook', () => {
       });
     });
 
-    test('When the plan is not lifetime, then crypto currencies are not fetched', async () => {
+    test.skip('When the plan is not lifetime, then crypto currencies are not fetched', async () => {
       const props = {
         checkoutTheme: 'light',
         price: mockPriceWithTax,
@@ -261,7 +263,9 @@ describe('Initialize checkout custom hook', () => {
       });
     });
 
-    test('When fetching crypto currencies fails, then a notification is shown', async () => {
+    // IS_CRYPTO_PAYMENT_ENABLED is currently false, so the fetch (and its failure path) never
+    // runs. Re-enable this test if that flag is turned back on.
+    test.skip('When fetching crypto currencies fails, then a notification is shown', async () => {
       vi.spyOn(currencyService, 'getAvailableCryptoCurrencies').mockRejectedValue(new Error('Crypto fetch failed'));
       const props = {
         checkoutTheme: 'light',

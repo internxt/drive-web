@@ -55,6 +55,13 @@
     "valentines": "Valentinstag"
   },
   "auth": {
+    "accountSetupPending": {
+      "title": "Schließen Sie die Einrichtung Ihres Kontos ab",
+      "message": "Sie haben mit dieser E-Mail bereits einen Tarif gekauft. Verwenden Sie den Link, den wir Ihnen gesendet haben, um Ihr Passwort festzulegen.",
+      "resend": "E-Mail erneut senden",
+      "emailSent": "E-Mail gesendet. Sehen Sie in Ihrem Posteingang nach.",
+      "resendFailed": "Wir konnten die E-Mail nicht senden. Bitte versuchen Sie es erneut."
+    },
     "emailFloatingLabel": "E-Mail-Adresse",
     "email": "E-Mail",
     "passwordFloatingLabel": "Passwort",
@@ -272,6 +279,20 @@
       "countryRequired": "Wir konnten Ihr Land nicht ermitteln. Bitte versuchen Sie es später erneut.",
       "missingPaymentDetails": "Fehlende Zahlungsdaten zur Bestätigung der Zahlung",
       "paymentFailed": "Zahlung fehlgeschlagen"
+    },
+    "accountSetup": {
+      "passwordAfterPayment": "Du brauchst noch kein Passwort. Nach der Zahlung senden wir dir eine E-Mail, um die Einrichtung deines Kontos abzuschließen.",
+      "emailHasAccount": "Für diese E-Mail gibt es bereits ein Internxt-Konto. Melde dich an, um mit deinem Kauf fortzufahren.",
+      "pendingSetup": "Für {{email}} gibt es bereits einen bezahlten Tarif, der noch eingerichtet werden muss. Prüfe deine E-Mails, um die Einrichtung deines Kontos abzuschließen.",
+      "cryptoRequiresSignIn": "Melde dich an, um mit Kryptowährung zu bezahlen.",
+      "resendEmail": "E-Mail erneut senden",
+      "emailResent": "Wir haben dir die E-Mail erneut gesendet",
+      "resendEmailError": "Wir konnten die E-Mail nicht senden. Bitte versuche es später erneut.",
+      "checkEmail": {
+        "title": "Prüfe deine E-Mails",
+        "description": "Deine Zahlung war erfolgreich. Wir haben einen Link zum Abschließen der Kontoeinrichtung gesendet an:",
+        "spamHint": "Nicht gefunden? Sieh in deinem Spam-Ordner nach."
+      }
     }
   },
   "urgentCheckout": {
@@ -1543,6 +1564,30 @@
       }
     }
   },
+  "accountSetup": {
+    "form": {
+      "title": "Richte dein Konto ein",
+      "description": "Erstelle ein Passwort, um die Einrichtung deines Internxt-Kontos abzuschließen.",
+      "confirmPassword": "Passwort bestätigen",
+      "passwordsDoNotMatch": "Die Passwörter stimmen nicht überein",
+      "submit": "Konto erstellen",
+      "genericError": "Bei der Einrichtung deines Kontos ist ein Fehler aufgetreten. Bitte versuche es erneut."
+    },
+    "invalidLink": {
+      "title": "Dieser Link ist nicht mehr gültig",
+      "description": "Der Link ist abgelaufen oder wurde bereits verwendet. Gib deine E-Mail-Adresse ein und wir senden dir einen neuen.",
+      "emailLabel": "E-Mail",
+      "resendButton": "Neuen Link senden",
+      "resendError": "Die E-Mail konnte nicht gesendet werden. Bitte versuche es erneut.",
+      "emailSentTitle": "Prüfe deine E-Mails",
+      "emailSentDescription": "Wenn für {{email}} ein Konto auf die Einrichtung wartet, erhältst du in Kürze einen neuen Link."
+    },
+    "accountAlreadyExists": {
+      "title": "Dein Konto ist bereits eingerichtet",
+      "description": "Dieses Konto existiert bereits. Melde dich mit deiner E-Mail-Adresse und deinem Passwort an.",
+      "loginButton": "Zur Anmeldung"
+    }
+  },
   "blockedAccount": {
     "title": "Überprüfen Sie, dass Sie es sind",
     "text1": "Es wurden zu viele fehlgeschlagene Anmeldeversuche unternommen.",
@@ -1842,10 +1887,10 @@
               "Antivirus"
             ]
           },
-          "3TB": {
+          "2TB": {
             "title": "Premium",
             "features": [
-              "3TB verschlüsselter Cloud-Speicher",
+              "2TB verschlüsselter Cloud-Speicher",
               "30 Tage risikofrei testen",
               "Post-Quanten-Verschlüsselung",
               "Zero-Knowledge-Verschlüsselung",

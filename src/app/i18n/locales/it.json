@@ -76,6 +76,13 @@
     "environment": "Giornata Mondiale dell'Ambiente"
   },
   "auth": {
+    "accountSetupPending": {
+      "title": "Completa la configurazione del tuo account",
+      "message": "Hai già acquistato un piano con questa email. Usa il link che ti abbiamo inviato per creare la tua password.",
+      "resend": "Invia di nuovo l'email",
+      "emailSent": "Email inviata. Controlla la tua casella di posta.",
+      "resendFailed": "Non è stato possibile inviare l'email. Riprova."
+    },
     "emailFloatingLabel": "Indirizzo email",
     "email": "Email",
     "passwordFloatingLabel": "Password",
@@ -293,6 +300,20 @@
       "countryRequired": "Non siamo riusciti a determinare il tuo paese. Riprova più tardi.",
       "missingPaymentDetails": "Dati di pagamento mancanti per confermare il pagamento",
       "paymentFailed": "Pagamento non riuscito"
+    },
+    "accountSetup": {
+      "passwordAfterPayment": "Non ti serve ancora una password. Dopo il pagamento ti invieremo un'email per completare la configurazione del tuo account.",
+      "emailHasAccount": "Questa email ha già un account Internxt. Accedi per continuare con l'acquisto.",
+      "pendingSetup": "{{email}} ha già un piano pagato in attesa di configurazione. Controlla la tua email per completare la configurazione del tuo account.",
+      "cryptoRequiresSignIn": "Accedi per pagare con criptovalute.",
+      "resendEmail": "Invia di nuovo l'email",
+      "emailResent": "Ti abbiamo inviato di nuovo l'email",
+      "resendEmailError": "Non siamo riusciti a inviare l'email. Riprova più tardi.",
+      "checkEmail": {
+        "title": "Controlla la tua email",
+        "description": "Il pagamento è andato a buon fine. Abbiamo inviato un link per completare la configurazione del tuo account a:",
+        "spamHint": "Non la trovi? Controlla la cartella dello spam."
+      }
     }
   },
   "urgentCheckout": {
@@ -1567,6 +1588,30 @@
       }
     }
   },
+  "accountSetup": {
+    "form": {
+      "title": "Configura il tuo account",
+      "description": "Crea una password per completare la configurazione del tuo account Internxt.",
+      "confirmPassword": "Conferma password",
+      "passwordsDoNotMatch": "Le password non corrispondono",
+      "submit": "Crea account",
+      "genericError": "Si è verificato un errore durante la configurazione dell'account. Riprova."
+    },
+    "invalidLink": {
+      "title": "Questo link non è più valido",
+      "description": "Il link è scaduto o è già stato utilizzato. Inserisci la tua email e te ne invieremo uno nuovo.",
+      "emailLabel": "Email",
+      "resendButton": "Inviami un nuovo link",
+      "resendError": "Non è stato possibile inviare l'email. Riprova.",
+      "emailSentTitle": "Controlla la tua email",
+      "emailSentDescription": "Se {{email}} ha un account in attesa di configurazione, riceverai a breve un nuovo link."
+    },
+    "accountAlreadyExists": {
+      "title": "Il tuo account è già configurato",
+      "description": "Questo account esiste già. Accedi con la tua email e password.",
+      "loginButton": "Vai all'accesso"
+    }
+  },
   "blockedAccount": {
     "title": "Verifica di essere tu",
     "text1": "Sono stati tentati troppi login non riusciti",
@@ -1866,10 +1911,10 @@
               "Antivirus"
             ]
           },
-          "3TB": {
+          "2TB": {
             "title": "Premium",
             "features": [
-              "3TB di spazio di archiviazione cloud crittografato",
+              "2TB di spazio di archiviazione cloud crittografato",
               "Provalo senza rischi per 30 giorni",
               "Crittografia Post-Quantistica",
               "Crittografia Zero-Knowledge",
