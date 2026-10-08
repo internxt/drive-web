@@ -394,12 +394,14 @@ const mergeSkipFolderUpload = async (root: IRoot, existingFolderUuid: string, co
 
   await uploadFolders(newFolders as IRoot[], existingFolderUuid, context);
 
-  for (const collidingFolder of collidingFolders as IRoot[]) {
-    const existingFolder = existingFolders.find((folder) => folder.plainName === collidingFolder.name);
-    if (existingFolder) {
-      await mergeSkipFolderUpload(collidingFolder, existingFolder.uuid, context);
-    }
-  }
+  await Promise.all(
+    (collidingFolders as IRoot[]).map(async (collidingFolder) => {
+      const existingFolder = existingFolders.find((folder) => folder.plainName === collidingFolder.name);
+      if (existingFolder) {
+        await mergeSkipFolderUpload(collidingFolder, existingFolder.uuid, context);
+      }
+    }),
+  );
 };
 
 /**
