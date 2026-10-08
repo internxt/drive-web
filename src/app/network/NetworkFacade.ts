@@ -413,7 +413,7 @@ export class NetworkFacade {
         }
       },
       async (algorithm, key, iv, fileSize) => {
-        fileStream = decryptStream(encryptedContentStreams, key as Buffer, iv as Buffer, chunkStart);
+        fileStream = decryptStream(encryptedContentStreams, (options?.key || key) as Buffer, iv as Buffer, chunkStart);
       },
       (options?.token && { token: options.token }) || undefined,
     );

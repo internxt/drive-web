@@ -60,6 +60,8 @@ function ShareGuestSingUpView(): JSX.Element {
     setInvitationId,
     showPasswordIndicator,
     setShowPasswordIndicator,
+    pendingSetupEmail,
+    setPendingSetupEmail,
     user,
     mnemonic,
   } = useGuestSignupState();
@@ -127,6 +129,7 @@ function ShareGuestSingUpView(): JSX.Element {
       setIsLoading,
       setSignupError,
       setShowError,
+      setPendingSetupEmail,
       redirectTo: AppView.Shared,
     });
   };
@@ -153,6 +156,7 @@ function ShareGuestSingUpView(): JSX.Element {
       isLoading={isLoading}
       isValidPassword={isValidPassword}
       isValid={isValid}
+      pendingSetupEmail={pendingSetupEmail}
     />
   );
 }
