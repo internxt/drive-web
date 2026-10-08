@@ -1,7 +1,7 @@
 export const GCLID_COOKIE_LIFESPAN_DAYS = 90;
 export const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
-export const IS_CRYPTO_PAYMENT_ENABLED = true;
+export const IS_CRYPTO_PAYMENT_ENABLED = false;
 
 export const POSTAL_CODE_REQUIRED_COUNTRIES = ['US', 'CA', 'IN'];
 
