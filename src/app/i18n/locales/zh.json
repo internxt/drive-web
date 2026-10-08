@@ -76,6 +76,13 @@
     "environment": "世界环境日"
   },
   "auth": {
+    "accountSetupPending": {
+      "title": "完成账户设置",
+      "message": "您已使用此邮箱购买了套餐。请使用我们发送给您的链接设置密码。",
+      "resend": "重新发送邮件",
+      "emailSent": "邮件已发送，请查收收件箱。",
+      "resendFailed": "无法发送邮件，请重试。"
+    },
     "emailFloatingLabel": "电子邮件",
     "email": "电子邮件",
     "passwordFloatingLabel": "密码",
@@ -293,6 +300,20 @@
       "countryRequired": "我们无法确定您的国家/地区,请稍后再试",
       "missingPaymentDetails": "缺少确认付款所需的支付信息",
       "paymentFailed": "付款失败"
+    },
+    "accountSetup": {
+      "passwordAfterPayment": "现在还不需要密码。付款后，我们会向你发送一封电子邮件，以完成账户设置。",
+      "emailHasAccount": "该电子邮件已有 Internxt 账户。请登录以继续购买。",
+      "pendingSetup": "{{email}} 已有一个待设置的付费套餐。请查看你的电子邮件以完成账户设置。",
+      "cryptoRequiresSignIn": "请登录后使用加密货币付款。",
+      "resendEmail": "重新发送邮件",
+      "emailResent": "我们已重新发送邮件",
+      "resendEmailError": "无法发送邮件，请稍后重试。",
+      "checkEmail": {
+        "title": "请查看你的电子邮件",
+        "description": "付款成功。我们已将完成账户设置的链接发送至：",
+        "spamHint": "找不到邮件？请检查垃圾邮件文件夹。"
+      }
     }
   },
   "urgentCheckout": {
@@ -1565,6 +1586,30 @@
         "title": "让我们开始吧...",
         "description": "单击上传按钮上传您的第一个文件。"
       }
+    }
+  },
+  "accountSetup": {
+    "form": {
+      "title": "设置您的账户",
+      "description": "创建密码以完成 Internxt 账户的设置。",
+      "confirmPassword": "确认密码",
+      "passwordsDoNotMatch": "密码不匹配",
+      "submit": "创建账户",
+      "genericError": "设置账户时出错，请重试。"
+    },
+    "invalidLink": {
+      "title": "此链接已失效",
+      "description": "该链接已过期或已被使用。输入您的邮箱，我们将向您发送新链接。",
+      "emailLabel": "邮箱",
+      "resendButton": "给我发送新链接",
+      "resendError": "无法发送邮件，请重试。",
+      "emailSentTitle": "请查收邮件",
+      "emailSentDescription": "如果 {{email}} 有待设置的账户，您将很快收到新链接。"
+    },
+    "accountAlreadyExists": {
+      "title": "您的账户已设置完成",
+      "description": "该账户已存在。请使用您的邮箱和密码登录。",
+      "loginButton": "前往登录"
     }
   },
   "blockedAccount": {
