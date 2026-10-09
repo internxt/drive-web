@@ -882,6 +882,7 @@
         "uploaded": "Téléchargé",
         "uploadedBy": "Téléchargé par",
         "shared": "Partagé",
+        "expiration": "Expiration du lien",
         "size": "Taille",
         "numberOfFiles": "Nombre de fichiers",
         "modified": "Modifié",
@@ -942,7 +943,8 @@
       "errors": {
         "updatingRole": "Le rôle n'a pas pu être mis à jour, veuillez réessayer plus tard.",
         "copy-to-clipboard": "Erreur lors du partage de l'élément, réessayez plus tard.",
-        "update-sharing-access": "Le mode d'accès n'a pas pu être mis à jour, veuillez réessayer plus tard"
+        "update-sharing-access": "Le mode d'accès n'a pas pu être mis à jour, veuillez réessayer plus tard",
+        "update-link-expiration": "La date d'expiration n'a pas pu être mise à jour, veuillez réessayer plus tard"
       },
       "general": {
         "generalAccess": "Accès général",
@@ -1199,6 +1201,7 @@
       "name": "Nom",
       "created": "Créé",
       "size": "Taille",
+      "expiration": "Expiration du lien",
       "owner": "Propriétaire"
     },
     "empty-state": {
@@ -1395,6 +1398,8 @@
     "title": "Paramètres du lien",
     "access": "Accès",
     "protect": "Protection par mot de passe",
+    "expiringDate": "Date d'expiration",
+    "removeExpiringDate": "Supprimer la date d'expiration",
     "addSecurePassword": "Ajouter un mot de passe au lien pour plus de sécurité",
     "password": "Mot de passe",
     "views": "Vues",
@@ -1452,6 +1457,7 @@
       "uploadFiles": "Télécharger des fichiers",
       "uploadFolder": "Télécharger le dossier"
     },
+    "expirationDate": "Expire :",
     "change": "Changer",
     "download": "Télécharger",
     "downloading": "Téléchargement",
@@ -1500,6 +1506,7 @@
         "name": "Nom",
         "modified": "Modifié",
         "size": "Taille",
+        "expiration": "Expiration du lien",
         "autoDelete": "Suppression automatique",
         "originalLocation": "Emplacement d'origine"
       }

@@ -20,6 +20,7 @@ import { useSelector } from 'react-redux';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import dateService from 'services/date.service';
 import { getLocation } from 'utils/locationUtils';
+import { getLinkExpirationDate } from 'utils/driveItemsUtils';
 import { Translate } from 'app/i18n/types';
 import encryptedStorageService from 'services/encrypted-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
@@ -78,6 +79,7 @@ const calculateItemSize = (
  * The data is:
  * - Name
  * - Shared
+ * - Link expiration (only if the shared link has one)
  * - Size (for files and folders)
  * - Type (only for files)
  * - Number of files (only for folders)
@@ -218,9 +220,12 @@ const ItemDetailsDialog = ({
       );
     }
 
+    const linkExpirationDate = getLinkExpirationDate(item);
+
     return {
       name: item.name,
       shared: isShared,
+      expiration: linkExpirationDate ? dateService.format(linkExpirationDate, 'D MMM, YYYY') : undefined,
       type: item.isFolder ? undefined : item.type,
       numberOfFiles: item.isFolder ? formatFileCount(folderStats) : undefined,
       size,

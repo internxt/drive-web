@@ -12,6 +12,6 @@ export interface IRoot {
 
 export interface ItemToShare {
   share?: ShareLink;
-  sharings?: { type: string; id: string }[];
+  sharings?: { type: string; id: string; expirationAt?: string | null }[];
   item: DriveItemData | (AdvancedSharedItem & { user: { email: string } });
 }

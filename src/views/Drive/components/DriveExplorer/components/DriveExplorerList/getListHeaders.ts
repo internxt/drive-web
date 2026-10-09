@@ -54,5 +54,12 @@ export const getListHeaders = (
     name: 'size',
   });
 
+  headers.push({
+    label: translate('drive.list.columns.expiration'),
+    orderable: false,
+    width: 'w-date',
+    name: 'linkExpirationDate',
+  });
+
   return headers;
 };

@@ -909,6 +909,7 @@
         "uploaded": "已上传",
         "uploadedBy": "上传者",
         "shared": "共享",
+        "expiration": "链接过期时间",
         "size": "大小",
         "numberOfFiles": "文件数量",
         "modified": "已修改",
@@ -963,7 +964,8 @@
       "errors": {
         "updatingRole": "无法更新角色，请稍后重试.",
         "copy-to-clipboard": "分享项目时出错，请稍后再试.",
-        "update-sharing-access": "访问模式无法更新，请稍后再试"
+        "update-sharing-access": "访问模式无法更新，请稍后再试",
+        "update-link-expiration": "无法更新到期日期，请稍后再试"
       },
       "general": {
         "generalAccess": "访问设置",
@@ -1220,6 +1222,7 @@
       "name": "名称",
       "created": "已创建的",
       "size": "大小",
+      "expiration": "链接过期时间",
       "owner": "所有者"
     },
     "empty-state": {
@@ -1416,6 +1419,8 @@
     "title": "链接设置",
     "access": "访问",
     "protect": "密码保护",
+    "expiringDate": "过期日期",
+    "removeExpiringDate": "移除过期日期",
     "addSecurePassword": "在链接中添加一个密码以提高安全性",
     "password": "密码",
     "views": "浏览量",
@@ -1472,6 +1477,7 @@
       "uploadFiles": "上传文件",
       "uploadFolder": "上传文件夹"
     },
+    "expirationDate": "过期时间：",
     "change": "更改",
     "download": "下载",
     "downloading": "正在下载",
@@ -1520,6 +1526,7 @@
         "name": "名称",
         "modified": "修改日期",
         "size": "大小",
+        "expiration": "链接过期时间",
         "autoDelete": "自动删除",
         "originalLocation": "原始位置"
       }

@@ -281,6 +281,7 @@ export const createPublicShareFromOwnerUser = async (
   options?: {
     plainPassword?: string;
     encryptedMnemonic?: string;
+    linkExpirationDate?: string;
   },
 ): Promise<{ publicSharingItemData: SharingMeta; plainCode: string }> => {
   const user = await encryptedStorageService.getUser();
@@ -290,7 +291,7 @@ export const createPublicShareFromOwnerUser = async (
     throw error;
   }
   const { mnemonic, bucket } = user;
-  const { plainPassword, encryptedMnemonic } = options ?? {};
+  const { plainPassword, encryptedMnemonic, linkExpirationDate } = options ?? {};
 
   let plainCode = stringUtils.generateRandomStringUrlSafe(8);
   const bucketKey = await generateFileBucketKey(mnemonic, bucket);
@@ -308,6 +309,7 @@ export const createPublicShareFromOwnerUser = async (
     encryptedCode,
     persistPreviousSharing: true,
     ...(encryptedPassword && { encryptedPassword }),
+    ...(linkExpirationDate && { linkExpirationDate }),
   });
 
   const { encryptedCode: encryptedCodeFromResponse, encryptionAlgorithm: encryptionAlgorithmFromResponse } =
@@ -367,10 +369,12 @@ export const getPublicShareLink = async (
   uuid: string,
   itemType: 'folder' | 'file',
   encryptedMnemonic?: string,
+  linkExpirationDate?: string,
 ): Promise<SharingMeta | void> => {
   try {
     const { publicSharingItemData, plainCode } = await createPublicShareFromOwnerUser(uuid, itemType, {
       encryptedMnemonic,
+      linkExpirationDate,
     });
     const { id: sharingId } = publicSharingItemData;
 
@@ -912,6 +916,20 @@ export function removeSharingPassword(sharingId: string): Promise<void> {
   });
 }
 
+export function saveSharingExpiration(sharingId: string, linkExpirationDate: string): Promise<SharingMeta> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.saveSharingExpiration(sharingId, linkExpirationDate).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function removeSharingExpiration(sharingId: string): Promise<SharingMeta> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.removeSharingExpiration(sharingId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 export async function getSharedFolderSize(id: string): Promise<SharedFolderSize> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getSharedFolderSize(id).catch((error) => {
@@ -950,6 +968,8 @@ const shareService = {
   getPublicShareLink,
   saveSharingPassword,
   removeSharingPassword,
+  saveSharingExpiration,
+  removeSharingExpiration,
   validateSharingInvitation,
   getPublicSharedItemInfo,
   getSharedFolderSize,
