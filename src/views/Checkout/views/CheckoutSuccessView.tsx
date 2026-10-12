@@ -7,19 +7,9 @@ import { CheckCircleIcon } from '@phosphor-icons/react';
 import localStorageService from 'services/local-storage.service';
 import encryptedStorageService from 'services/encrypted-storage.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { trackPaymentConversion } from 'app/analytics/impact.service';
-import gaService from 'app/analytics/ga.service';
-import { PURCHASE_LOCAL_STORAGE_ITEMS } from 'services/storage-keys';
-import metaService from 'app/analytics/meta.service';
+import { trackCheckoutCompleted } from 'app/analytics/analytics.service';
 import { userStoragePolling } from 'utils/userStoragePolling.utils';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { paymentService } from '../services';
-import envService from 'services/env.service';
 import { ResendAccountSetupEmailButton } from '../components/ResendAccountSetupEmailButton';
-
-export function removePaymentsStorage() {
-  PURCHASE_LOCAL_STORAGE_ITEMS.forEach((item) => localStorageService.removeItem(item));
-}
 
 const AccountSetupEmailSentCard = ({ email }: { email: string }) => {
   const { translate } = useTranslationContext();
@@ -40,40 +30,6 @@ const AccountSetupEmailSentCard = ({ email }: { email: string }) => {
   );
 };
 
-const hasStripeReportedPaymentFailed = async (): Promise<boolean> => {
-  const params = new URLSearchParams(globalThis.location.search);
-  const setupIntentSecret = params.get('setup_intent_client_secret');
-  const paymentIntentSecret = params.get('payment_intent_client_secret');
-
-  if (!paymentIntentSecret && !setupIntentSecret) {
-    return false;
-  }
-
-  let intentStatus: string | undefined;
-  const stripe = await paymentService.getStripe();
-
-  if (paymentIntentSecret) {
-    const { paymentIntent } = await stripe.retrievePaymentIntent(paymentIntentSecret);
-    intentStatus = paymentIntent?.status;
-  } else if (setupIntentSecret) {
-    const { setupIntent } = await stripe.retrieveSetupIntent(setupIntentSecret);
-    intentStatus = setupIntent?.status;
-  }
-
-  return intentStatus !== 'succeeded';
-};
-
-const sendPurchaseEvents = async (): Promise<void> => {
-  if (!envService.isProduction()) {
-    console.info('[Analytics] Purchase events are not sent outside production');
-    return;
-  }
-
-  metaService.trackPurchase();
-  await gaService.trackPurchase();
-  await trackPaymentConversion();
-};
-
 const CheckoutSuccessView = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
@@ -91,17 +47,7 @@ const CheckoutSuccessView = (): JSX.Element => {
 
     hasTrackedRef.current = true;
 
-    try {
-      if (await hasStripeReportedPaymentFailed()) {
-        notificationsService.show({ text: translate('checkout.error.paymentFailed'), type: ToastType.Error });
-      } else {
-        await sendPurchaseEvents();
-      }
-
-      removePaymentsStorage();
-    } catch (err) {
-      console.error('Analytics error:', err);
-    }
+    await trackCheckoutCompleted(translate);
 
     if (accountSetupEmail) {
       return;

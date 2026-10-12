@@ -3,7 +3,12 @@
  */
 import { aes } from '@internxt/lib';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { ATTRIBUTION_LOCAL_STORAGE_ITEMS, CHECKOUT_LOCAL_STORAGE_ITEMS } from 'services/storage-keys';
+import {
+  ATTRIBUTION_LOCAL_STORAGE_ITEMS,
+  CHECKOUT_LOCAL_STORAGE_ITEMS,
+  PAYMENT_LOCAL_STORAGE_ITEMS,
+} from 'services/storage-keys';
+import { trackDeferredPurchase } from 'app/analytics/analytics.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 import * as keysService from 'app/crypto/services/keys.service';
 import * as pgpService from 'app/crypto/services/pgp.service';
@@ -42,6 +47,14 @@ beforeAll(() => {
   }));
   vi.mock('app/analytics/impact.service', () => ({
     trackSignUp: vi.fn(),
+    trackPaymentConversion: vi.fn(),
+  }));
+  vi.mock('app/analytics/meta.service', () => ({
+    trackLead: vi.fn(),
+    default: { trackPurchase: vi.fn() },
+  }));
+  vi.mock('app/analytics/analytics.service', () => ({
+    trackDeferredPurchase: vi.fn(),
   }));
   vi.mock('app/database/services/database.service', () => ({
     default: {
@@ -440,6 +453,56 @@ describe('signUp', () => {
       ...CHECKOUT_LOCAL_STORAGE_ITEMS,
       ...ATTRIBUTION_LOCAL_STORAGE_ITEMS,
     ]);
+  });
+
+  describe('Purchase made without an account', () => {
+    const mockPassword = 'password123';
+    const mockMnemonicNotEnc =
+      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
+
+    const signUpAfterPasswordlessPurchase = async (checkoutEmail: string) => {
+      const mockUser = await getMockUser(mockPassword, mockMnemonicNotEnc);
+      vi.mocked(localStorageService.get).mockImplementation((key) => {
+        if (key === 'is_passwordless_purchase') return 'true';
+        if (key === 'checkout_account_setup_email') return checkoutEmail;
+        return null;
+      });
+      vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify({ newToken: 'test-new-token' })));
+
+      await authService.signUp({
+        doSignUp: vi.fn().mockResolvedValue({
+          xUser: { ...mockUser, email: 'Mock@Email.com', mnemonic: mockMnemonicNotEnc },
+          xNewToken: 'test-new-token',
+          mnemonic: mockMnemonicNotEnc,
+        }),
+        email: 'mock@email.com',
+        password: mockPassword,
+        token: 'test-new-token',
+        redeemCodeObject: false,
+        dispatch: vi.fn(),
+      });
+    };
+
+    it('When the account set up is the one the purchase was made for, then the purchase is tracked with its payment data', async () => {
+      await signUpAfterPasswordlessPurchase('mock@email.com');
+
+      expect(localStorageService.clearExcept).toHaveBeenCalledWith([
+        ...CHECKOUT_LOCAL_STORAGE_ITEMS,
+        ...ATTRIBUTION_LOCAL_STORAGE_ITEMS,
+        ...PAYMENT_LOCAL_STORAGE_ITEMS,
+      ]);
+      expect(trackDeferredPurchase).toHaveBeenCalledTimes(1);
+    });
+
+    it('When another account is created in the same browser, then the purchase is not tracked for it', async () => {
+      await signUpAfterPasswordlessPurchase('someone-else@email.com');
+
+      expect(localStorageService.clearExcept).toHaveBeenCalledWith([
+        ...CHECKOUT_LOCAL_STORAGE_ITEMS,
+        ...ATTRIBUTION_LOCAL_STORAGE_ITEMS,
+      ]);
+      expect(trackDeferredPurchase).not.toHaveBeenCalled();
+    });
   });
 });
 

@@ -1,4 +1,5 @@
 import { LocalStorageItem } from 'app/core/types';
+import localStorageService from 'services/local-storage.service';
 
 export const BACKUP_KEY = {
   SEEN_AT: 'backup_key_seen_at',
@@ -30,6 +31,9 @@ export const PAYMENT_LOCAL_STORAGE_ITEMS: LocalStorageItem[] = [
   LocalStorageItem.Currency,
   LocalStorageItem.AmountPaid,
   LocalStorageItem.CouponCode,
+  LocalStorageItem.IsFirstPurchase,
+  LocalStorageItem.IsPasswordlessPurchase,
+  LocalStorageItem.ImpactSource,
 ];
 
 export const PURCHASE_LOCAL_STORAGE_ITEMS: LocalStorageItem[] = [
@@ -41,3 +45,7 @@ export const ATTRIBUTION_LOCAL_STORAGE_ITEMS: LocalStorageItem[] = [
   LocalStorageItem.GCLID,
   LocalStorageItem.UccStorageKey,
 ];
+
+export function clearPaymentStorage(): void {
+  PURCHASE_LOCAL_STORAGE_ITEMS.forEach((item) => localStorageService.removeItem(item));
+}

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import CheckoutSuccessView from './CheckoutSuccessView';
 import { AppView, LocalStorageItem } from 'app/core/types';
-import { PURCHASE_LOCAL_STORAGE_ITEMS } from 'services/storage-keys';
+import { PURCHASE_LOCAL_STORAGE_ITEMS, PAYMENT_LOCAL_STORAGE_ITEMS } from 'services/storage-keys';
 
 const mocks = vi.hoisted(() => ({
   localStorageRemoveItem: vi.fn(),
@@ -24,7 +24,12 @@ vi.mock('services/navigation.service', () => ({ default: { push: mocks.navigatio
 vi.mock('services/local-storage.service', () => ({
   default: { removeItem: mocks.localStorageRemoveItem, get: mocks.localStorageGet },
 }));
-vi.mock('services/encrypted-storage.service', () => ({ default: { getToken: mocks.getSessionToken } }));
+vi.mock('services/encrypted-storage.service', () => ({
+  default: {
+    getToken: mocks.getSessionToken,
+    getUser: () => (mocks.getSessionToken() ? { uuid: 'user_123', email: 'buyer@internxt.com' } : undefined),
+  },
+}));
 vi.mock('../components/ResendAccountSetupEmailButton', () => ({
   ResendAccountSetupEmailButton: () => <button>checkout.accountSetup.resendEmail</button>,
 }));
@@ -86,6 +91,12 @@ const expectPurchaseNotTracked = () => {
   expect(mocks.trackPaymentConversion).not.toHaveBeenCalled();
 };
 
+const expectPurchasePartiallyTrackedPendingAccountSetup = () => {
+  expect(mocks.metaTrackPurchase).toHaveBeenCalledOnce();
+  expect(mocks.gaTrackPurchase).not.toHaveBeenCalled();
+  expect(mocks.trackPaymentConversion).not.toHaveBeenCalled();
+};
+
 const expectPaymentFailedNotified = () => {
   expect(mocks.notificationsShow).toHaveBeenCalledWith({ text: 'checkout.error.paymentFailed', type: 'error' });
 };
@@ -97,6 +108,10 @@ const expectNoFailureNotified = () => {
 const expectCheckoutFinished = () => {
   PURCHASE_LOCAL_STORAGE_ITEMS.forEach((item) => expect(mocks.localStorageRemoveItem).toHaveBeenCalledWith(item));
   expect(mocks.userStoragePolling).toHaveBeenCalledOnce();
+};
+
+const expectPaymentDataKeptPendingAccountSetup = () => {
+  PAYMENT_LOCAL_STORAGE_ITEMS.forEach((item) => expect(mocks.localStorageRemoveItem).not.toHaveBeenCalledWith(item));
 };
 
 describe('Checkout success view', () => {
@@ -122,8 +137,8 @@ describe('Checkout success view', () => {
       expect(screen.getByText('new.buyer@internxt.com')).toBeInTheDocument();
       expect(screen.getByText('checkout.accountSetup.checkEmail.spamHint')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'checkout.accountSetup.resendEmail' })).toBeInTheDocument();
-      await waitFor(() => expectPurchaseTracked());
-      PURCHASE_LOCAL_STORAGE_ITEMS.forEach((item) => expect(mocks.localStorageRemoveItem).toHaveBeenCalledWith(item));
+      await waitFor(() => expectPurchasePartiallyTrackedPendingAccountSetup());
+      expectPaymentDataKeptPendingAccountSetup();
       expect(mocks.userStoragePolling).not.toHaveBeenCalled();
       expect(mocks.navigationPush).not.toHaveBeenCalled();
     });

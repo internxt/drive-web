@@ -12,10 +12,11 @@ import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { trackSignUp } from 'app/analytics/impact.service';
 import { trackLead } from 'app/analytics/meta.service';
+import { trackDeferredPurchase } from 'app/analytics/analytics.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
 import { HTTP_STATUS_CODES } from 'app/core/constants';
 import { SdkFactory } from 'app/core/factory/sdk';
-import { AppView } from 'app/core/types';
+import { AppView, LocalStorageItem } from 'app/core/types';
 import {
   assertPrivateKeyIsValid,
   assertValidateKeys,
@@ -38,7 +39,11 @@ import { generateMnemonic, validateMnemonic } from 'bip39';
 import { isAccountSetupPending } from 'services/account-setup.service';
 import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
-import { ATTRIBUTION_LOCAL_STORAGE_ITEMS, CHECKOUT_LOCAL_STORAGE_ITEMS } from 'services/storage-keys';
+import {
+  ATTRIBUTION_LOCAL_STORAGE_ITEMS,
+  CHECKOUT_LOCAL_STORAGE_ITEMS,
+  PAYMENT_LOCAL_STORAGE_ITEMS,
+} from 'services/storage-keys';
 import navigationService from 'services/navigation.service';
 import RealtimeService from 'services/sockets/socket.service';
 import { generateCaptchaToken } from 'utils';
@@ -584,7 +589,15 @@ export const startNewAccountSession = async ({
 }: NewAccountSessionParams) => {
   const { xUser, xNewToken, mnemonic } = registeredUser;
 
-  localStorageService.clearExcept([...CHECKOUT_LOCAL_STORAGE_ITEMS, ...ATTRIBUTION_LOCAL_STORAGE_ITEMS]);
+  const isPasswordlessPurchase =
+    localStorageService.get(LocalStorageItem.IsPasswordlessPurchase) === 'true' &&
+    localStorageService.get(LocalStorageItem.CheckoutAccountSetupEmail) === xUser.email.toLowerCase();
+
+  localStorageService.clearExcept([
+    ...CHECKOUT_LOCAL_STORAGE_ITEMS,
+    ...ATTRIBUTION_LOCAL_STORAGE_ITEMS,
+    ...(isPasswordlessPurchase ? PAYMENT_LOCAL_STORAGE_ITEMS : []),
+  ]);
 
   await encryptedStorageService.setToken(xNewToken);
 
@@ -610,6 +623,10 @@ export const startNewAccountSession = async ({
   if (!redeemCodeObject) dispatch(planThunks.initializeThunk());
   await trackSignUp(xUser.uuid);
   trackLead(xUser.email, xUser.userId);
+
+  if (isPasswordlessPurchase) {
+    await trackDeferredPurchase();
+  }
 
   return { user: xUser, mnemonic, newToken: xNewToken };
 };
