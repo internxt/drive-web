@@ -34,27 +34,21 @@ export const checkIsFirstPurchase = async (): Promise<boolean> => {
 };
 
 export const useUserPayment = () => {
-  const getSubscriptionPaymentIntent = async ({
-    customerId,
-    priceId,
-    token,
-    currency,
-    captchaToken,
-    promoCodeId,
-  }: CreateSubscriptionPayload) => {
+  const getSubscriptionPaymentIntent = async (
+    { customerId, priceId, token, currency, captchaToken, promoCodeId }: CreateSubscriptionPayload,
+    isPasswordlessSignUp?: boolean,
+  ) => {
     const {
       type: paymentType,
       clientSecret: client_secret,
       subscriptionId,
       paymentIntentId,
-    } = await checkoutService.createSubscription({
-      customerId,
-      priceId,
-      token,
-      currency,
-      captchaToken,
-      promoCodeId,
-    });
+    } = isPasswordlessSignUp
+      ? await checkoutService.createSubscription(
+          { customerId, priceId, token, currency, captchaToken, promoCodeId },
+          { withoutSession: true },
+        )
+      : await checkoutService.createSubscription({ customerId, priceId, token, currency, captchaToken, promoCodeId });
 
     return {
       type: paymentType,
@@ -64,24 +58,24 @@ export const useUserPayment = () => {
     };
   };
 
-  const getLifetimePaymentIntent = async ({
-    customerId,
-    priceId,
-    currency,
-    token,
-    userAddress,
-    captchaToken,
-    promoCodeId,
-  }: CreatePaymentIntentPayload) => {
-    const paymentIntentResponse = await checkoutService.createPaymentIntent({
-      customerId,
-      priceId,
-      currency,
-      userAddress,
-      token,
-      captchaToken,
-      promoCodeId: promoCodeId,
-    });
+  const getLifetimePaymentIntent = async (
+    { customerId, priceId, currency, token, userAddress, captchaToken, promoCodeId }: CreatePaymentIntentPayload,
+    isPasswordlessSignUp?: boolean,
+  ) => {
+    const paymentIntentResponse = isPasswordlessSignUp
+      ? await checkoutService.createPaymentIntent(
+          { customerId, priceId, currency, userAddress, token, captchaToken, promoCodeId },
+          { withoutSession: true },
+        )
+      : await checkoutService.createPaymentIntent({
+          customerId,
+          priceId,
+          currency,
+          userAddress,
+          token,
+          captchaToken,
+          promoCodeId,
+        });
 
     if (paymentIntentResponse.type === PaymentType['CRYPTO']) {
       return {
@@ -139,15 +133,19 @@ export const useUserPayment = () => {
     confirmPayment,
     confirmSetupIntent,
     isFirstPurchase,
+    isPasswordlessSignUp,
   }: ProcessPurchasePayload) => {
-    const subscription = await getSubscriptionPaymentIntent({
-      customerId,
-      priceId,
-      token,
-      captchaToken,
-      promoCodeId: couponCodeData?.codeId,
-      currency,
-    });
+    const subscription = await getSubscriptionPaymentIntent(
+      {
+        customerId,
+        priceId,
+        token,
+        captchaToken,
+        promoCodeId: couponCodeData?.codeId,
+        currency,
+      },
+      isPasswordlessSignUp,
+    );
 
     savePaymentDataInLocalStorage({
       subscriptionId: subscription.subscriptionId,
@@ -190,6 +188,7 @@ export const useUserPayment = () => {
     confirmPayment,
     openCryptoPaymentDialog,
     isFirstPurchase,
+    isPasswordlessSignUp,
   }: ProcessPurchasePayload) => {
     const {
       id: paymentIntentId,
@@ -198,15 +197,18 @@ export const useUserPayment = () => {
       type,
       clientSecret,
       payload,
-    } = await getLifetimePaymentIntent({
-      customerId,
-      priceId,
-      token,
-      captchaToken,
-      promoCodeId: couponCodeData?.codeId,
-      userAddress,
-      currency,
-    });
+    } = await getLifetimePaymentIntent(
+      {
+        customerId,
+        priceId,
+        token,
+        captchaToken,
+        promoCodeId: couponCodeData?.codeId,
+        userAddress,
+        currency,
+      },
+      isPasswordlessSignUp,
+    );
 
     savePaymentDataInLocalStorage({
       subscriptionId: undefined,
@@ -262,9 +264,11 @@ export const useUserPayment = () => {
     confirmPayment,
     openCryptoPaymentDialog,
     confirmSetupIntent,
+    isFirstPurchase: isKnownFirstPurchase,
+    isPasswordlessSignUp,
   }: UseUserPaymentPayload) => {
     const planInterval = selectedPlan.price.interval;
-    const isFirstPurchase = await checkIsFirstPurchase();
+    const isFirstPurchase = isKnownFirstPurchase ?? (await checkIsFirstPurchase());
 
     if (gclidStored) {
       await sendConversionToAPI({
@@ -295,6 +299,7 @@ export const useUserPayment = () => {
           confirmPayment,
           confirmSetupIntent,
           isFirstPurchase,
+          isPasswordlessSignUp,
         });
         break;
 
@@ -314,6 +319,7 @@ export const useUserPayment = () => {
           openCryptoPaymentDialog,
           confirmSetupIntent,
           isFirstPurchase,
+          isPasswordlessSignUp,
         });
         break;
 

@@ -147,8 +147,10 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
             options: { relatedTaskId: taskId, showErrors: false },
           }),
         ).unwrap();
-        //Added wait in order to allow enough time for the server to create the folder
-        await wait(500);
+        if (workspaceSelected) {
+          // Workspace endpoints still validate the parent folder against the read replica
+          await wait(500);
+        }
 
         rootFolderItem ??= createdFolder;
 

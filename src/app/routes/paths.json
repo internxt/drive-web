@@ -75,6 +75,13 @@
       "exact": true
     },
     {
+      "id": "complete-account",
+      "layout": "empty",
+      "path": "/complete-account/:token",
+      "exact": true,
+      "auth": false
+    },
+    {
       "id": "drive",
       "layout": "header-and-sidenav",
       "path": "/",
@@ -147,7 +154,7 @@
       "layout": "empty",
       "path": "/checkout/success",
       "exact": false,
-      "auth": true
+      "auth": false
     },
     {
       "id": "checkout-cancel",

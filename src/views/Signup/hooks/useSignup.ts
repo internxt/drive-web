@@ -1,12 +1,11 @@
 import { RegisterDetails } from '@internxt/sdk';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import * as bip39 from 'bip39';
 
 import { readReferalCookie, RegisterFunction } from 'services/auth.service';
 import { SdkFactory } from '../../../app/core/factory/sdk';
-import { getKeys } from '../../../app/crypto/services/keys.service';
-import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from '../../../app/crypto/services/utils';
+import { decryptTextWithKey } from '../../../app/crypto/services/utils';
 import { generateCaptchaToken } from 'utils';
+import { generateNewAccountCredentials } from '../utils/generateNewAccountCredentials';
 
 type RegisterPreCreatedUser = (
   email: string,
@@ -25,28 +24,9 @@ export function useSignUp(referrer?: string): {
   doRegisterPreCreatedUser: RegisterPreCreatedUser;
 } {
   const doRegister = async (email: string, password: string, captcha: string) => {
-    const hashObj = passToHash({ password });
-    const encPass = encryptText(hashObj.hash);
-    const encSalt = encryptText(hashObj.salt);
-    const mnemonic = bip39.generateMnemonic(256);
-    const encMnemonic = encryptTextWithKey(mnemonic, password);
-
     const authClient = SdkFactory.getNewApiInstance().createAuthClient();
 
-    const keys = await getKeys(password);
-
-    const registerDetails: RegisterDetails = {
-      name: 'My',
-      lastname: 'Internxt',
-      email: email.toLowerCase(),
-      password: encPass,
-      salt: encSalt,
-      mnemonic: encMnemonic,
-      keys: keys,
-      captcha: captcha,
-      referral: readReferalCookie(),
-      referrer: referrer,
-    };
+    const registerDetails = await generateRegisterDetails(email, password, captcha);
 
     const data = await authClient.register(registerDetails);
     const { token, newToken } = data;
@@ -91,21 +71,10 @@ export function useSignUp(referrer?: string): {
     password: string,
     captcha: string,
   ): Promise<RegisterDetails> => {
-    const hashObj = passToHash({ password });
-    const encPass = encryptText(hashObj.hash);
-    const encSalt = encryptText(hashObj.salt);
-    const mnemonic = bip39.generateMnemonic(256);
-    const encMnemonic = encryptTextWithKey(mnemonic, password);
-
-    const keys = await getKeys(password);
+    const credentials = await generateNewAccountCredentials(password);
     const registerDetails: RegisterDetails = {
-      name: 'My',
-      lastname: 'Internxt',
+      ...credentials,
       email: email.toLowerCase(),
-      password: encPass,
-      salt: encSalt,
-      mnemonic: encMnemonic,
-      keys: keys,
       captcha: captcha,
       referral: readReferalCookie(),
       referrer: referrer,

@@ -1,11 +1,13 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { render, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import CheckoutSuccessView from './CheckoutSuccessView';
-import { AppView } from 'app/core/types';
+import { AppView, LocalStorageItem } from 'app/core/types';
 import { PURCHASE_LOCAL_STORAGE_ITEMS } from 'services/storage-keys';
 
 const mocks = vi.hoisted(() => ({
   localStorageRemoveItem: vi.fn(),
+  localStorageGet: vi.fn(),
+  getSessionToken: vi.fn(),
   navigationPush: vi.fn(),
   retrievePaymentIntent: vi.fn(),
   retrieveSetupIntent: vi.fn(),
@@ -19,7 +21,13 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('app/store/hooks', () => ({ useAppDispatch: () => vi.fn() }));
 vi.mock('services/navigation.service', () => ({ default: { push: mocks.navigationPush } }));
-vi.mock('services/local-storage.service', () => ({ default: { removeItem: mocks.localStorageRemoveItem } }));
+vi.mock('services/local-storage.service', () => ({
+  default: { removeItem: mocks.localStorageRemoveItem, get: mocks.localStorageGet },
+}));
+vi.mock('services/encrypted-storage.service', () => ({ default: { getToken: mocks.getSessionToken } }));
+vi.mock('../components/ResendAccountSetupEmailButton', () => ({
+  ResendAccountSetupEmailButton: () => <button>checkout.accountSetup.resendEmail</button>,
+}));
 vi.mock('app/analytics/meta.service', () => ({ default: { trackPurchase: mocks.metaTrackPurchase } }));
 vi.mock('app/analytics/ga.service', () => ({ default: { trackPurchase: mocks.gaTrackPurchase } }));
 vi.mock('app/analytics/impact.service', () => ({ trackPaymentConversion: mocks.trackPaymentConversion }));
@@ -94,7 +102,42 @@ const expectCheckoutFinished = () => {
 describe('Checkout success view', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.getSessionToken.mockReturnValue('session_token');
+    mocks.localStorageGet.mockReturnValue(null);
     landOn(SUCCESS_PATH);
+  });
+
+  describe('When a buyer without an account finishes paying', () => {
+    beforeEach(() => {
+      mocks.getSessionToken.mockReturnValue(undefined);
+      mocks.localStorageGet.mockImplementation((key: string) =>
+        key === LocalStorageItem.CheckoutAccountSetupEmail ? 'new.buyer@internxt.com' : null,
+      );
+    });
+
+    test('then they are asked to check the email the setup link was sent to, and they stay on the page', async () => {
+      render(<CheckoutSuccessView />);
+
+      expect(await screen.findByText('checkout.accountSetup.checkEmail.title')).toBeInTheDocument();
+      expect(screen.getByText('new.buyer@internxt.com')).toBeInTheDocument();
+      expect(screen.getByText('checkout.accountSetup.checkEmail.spamHint')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'checkout.accountSetup.resendEmail' })).toBeInTheDocument();
+      await waitFor(() => expectPurchaseTracked());
+      PURCHASE_LOCAL_STORAGE_ITEMS.forEach((item) => expect(mocks.localStorageRemoveItem).toHaveBeenCalledWith(item));
+      expect(mocks.userStoragePolling).not.toHaveBeenCalled();
+      expect(mocks.navigationPush).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('When a logged-in user finishes paying after a previous purchase without an account', () => {
+    test('then they are taken to Drive instead of being asked to check their email', async () => {
+      mocks.localStorageGet.mockReturnValue('old.buyer@internxt.com');
+
+      await renderAndWaitForRedirect();
+
+      expect(screen.queryByText('checkout.accountSetup.checkEmail.title')).not.toBeInTheDocument();
+      expectCheckoutFinished();
+    });
   });
 
   describe('When the customer paid without Stripe redirecting back (crypto, lifetime with a 100% off coupon)', () => {

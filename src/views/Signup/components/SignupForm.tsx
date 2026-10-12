@@ -24,6 +24,8 @@ import { useOAuthFlow } from 'views/Login/hooks/useOAuthFlow';
 import PreparingWorkspaceAnimation from '../../../components/PreparingWorkspaceAnimation';
 import { useSignUp } from '../hooks/useSignup';
 import encryptedStorageService from 'services/encrypted-storage.service';
+import { isAccountSetupPending } from 'services/account-setup.service';
+import { AccountSetupPendingNotice } from 'views/Login/components/AccountSetupPendingNotice';
 
 export interface SignUpProps {
   location: {
@@ -81,6 +83,7 @@ function SignUpForm(): JSX.Element {
   const password = useWatch({ control, name: 'password', defaultValue: '' });
   const [signupError, setSignupError] = useState<Error | string>();
   const [showError, setShowError] = useState(false);
+  const [pendingSetupEmail, setPendingSetupEmail] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [passwordState, setPasswordState] = useState<PasswordState | null>(null);
   const [showPasswordIndicator, setShowPasswordIndicator] = useState(false);
@@ -132,8 +135,16 @@ function SignUpForm(): JSX.Element {
     return false;
   };
 
-  const handleSubmitError = (err: unknown) => {
+  const handleSubmitError = (err: unknown, email: string) => {
     setIsLoading(false);
+
+    if (isAccountSetupPending(err)) {
+      setSignupError(undefined);
+      setPendingSetupEmail(email);
+      return;
+    }
+
+    setPendingSetupEmail(null);
     errorService.reportError(err);
     const castedError = errorService.castError(err);
 
@@ -154,10 +165,9 @@ function SignUpForm(): JSX.Element {
     const redeemCodeObject = autoSubmit.credentials?.redeemCodeObject;
     event?.preventDefault();
     setIsLoading(true);
+    const { email, password, token } = formData;
 
     try {
-      const { email, password, token } = formData;
-
       const authParams = {
         email,
         password,
@@ -173,7 +183,7 @@ function SignUpForm(): JSX.Element {
 
       await redirectTheUserAfterRegistration(xNewToken, redeemCodeObject);
     } catch (err: unknown) {
-      handleSubmitError(err);
+      handleSubmitError(err, email);
     } finally {
       setShowError(true);
     }
@@ -270,6 +280,8 @@ function SignUpForm(): JSX.Element {
             showPasswordIndicator={showPasswordIndicator}
             bottomInfoError={bottomInfoError}
           />
+
+          {pendingSetupEmail && <AccountSetupPendingNotice key={pendingSetupEmail} email={pendingSetupEmail} />}
 
           <Button
             disabled={isLoading || !isValidPassword}

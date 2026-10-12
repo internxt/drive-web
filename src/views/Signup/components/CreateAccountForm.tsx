@@ -9,6 +9,7 @@ import { FieldErrors, UseFormHandleSubmit, UseFormRegister } from 'react-hook-fo
 import { IFormValues } from '../../../app/core/types';
 import { PasswordState } from '../hooks/useGuestSignupState';
 import { Translate } from 'app/i18n/types';
+import { AccountSetupPendingNotice } from 'views/Login/components/AccountSetupPendingNotice';
 
 interface CreateAccountFormProps {
   handleSubmit: UseFormHandleSubmit<IFormValues>;
@@ -24,6 +25,7 @@ interface CreateAccountFormProps {
   isLoading: boolean;
   isValidPassword: boolean;
   isValid: boolean;
+  pendingSetupEmail: string | null;
 }
 
 const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
@@ -40,6 +42,7 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
   isLoading,
   isValidPassword,
   isValid,
+  pendingSetupEmail,
 }) => {
   return (
     <div className={'flex h-full w-full flex-col overflow-auto bg-surface dark:bg-gray-1'}>
@@ -78,6 +81,8 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
                   showPasswordIndicator={showPasswordIndicator}
                   bottomInfoError={bottomInfoError}
                 />
+
+                {pendingSetupEmail && <AccountSetupPendingNotice key={pendingSetupEmail} email={pendingSetupEmail} />}
 
                 <Button
                   disabled={isLoading || !isValidPassword}

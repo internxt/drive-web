@@ -38,6 +38,8 @@ function WorkspaceGuestSingUpView(): JSX.Element {
     setInvitationId,
     showPasswordIndicator,
     setShowPasswordIndicator,
+    pendingSetupEmail,
+    setPendingSetupEmail,
     user,
     mnemonic,
   } = useGuestSignupState();
@@ -100,6 +102,7 @@ function WorkspaceGuestSingUpView(): JSX.Element {
       setIsLoading,
       setSignupError,
       setShowError,
+      setPendingSetupEmail,
       redirectTo: AppView.Drive,
     });
   };
@@ -127,6 +130,7 @@ function WorkspaceGuestSingUpView(): JSX.Element {
       isLoading={isLoading}
       isValidPassword={isValidPassword}
       isValid={isValid}
+      pendingSetupEmail={pendingSetupEmail}
     />
   );
 }
