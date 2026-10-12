@@ -5,6 +5,7 @@ import { binaryStreamToBlob } from 'services/stream.service';
 import { FlatFolderZip } from 'services/zip.service';
 import { LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
 import { downloadFile } from 'app/network/download';
+import { downloadFileBySize, shouldUseMultipartDownload } from 'app/network/download/downloadFileBySize';
 import { t } from 'i18next';
 import { SdkFactory } from 'app/core/factory/sdk';
 import errorService from 'services/error.service';
@@ -251,6 +252,38 @@ export async function getFileStream({
   return sourceBlob.stream();
 }
 
+type SharedFileWithFileId = SharedFiles & { fileId: string };
+
+const downloadSharedFileForZip = async (
+  file: SharedFiles,
+  credentials: NetworkCredentials,
+  key: FileKey,
+): Promise<ReadableStream<Uint8Array>> => {
+  const fileSize = Number(file.size);
+  const downloadedFileStream = await downloadFileBySize({
+    bucketId: file.bucket as string,
+    fileId: (file as SharedFileWithFileId).fileId,
+    creds: credentials,
+    key,
+    fileSize,
+  });
+
+  const isTooLargeToCache = shouldUseMultipartDownload(fileSize);
+  if (isTooLargeToCache) {
+    return downloadedFileStream;
+  }
+
+  const sourceBlob = await binaryStreamToBlob(downloadedFileStream);
+  await updateDatabaseFileSourceData({
+    folderId: file.folderId,
+    sourceBlob,
+    fileId: file.id,
+    updatedAt: file.updatedAt,
+  });
+
+  return sourceBlob.stream();
+};
+
 interface FolderRef {
   name: string;
   folderId: number;
@@ -413,23 +446,7 @@ export async function downloadFolderAsZip({
             return new Blob([]).stream();
           }
 
-          const downloadedFileStream = await downloadFile({
-            bucketId: file.bucket as string,
-            // TODO: TO WORK UNTIL SDK TYPE CORRECT THE field fileiId -> fileId
-            fileId: (file as any).fileId,
-            creds: options.credentials,
-            key: options.key,
-          });
-
-          const sourceBlob = await binaryStreamToBlob(downloadedFileStream);
-          await updateDatabaseFileSourceData({
-            folderId: file.folderId,
-            sourceBlob,
-            fileId: file.id,
-            updatedAt: file.updatedAt,
-          });
-
-          return sourceBlob.stream();
+          return await downloadSharedFileForZip(file, options.credentials, options.key);
         } catch (error: unknown) {
           if (isLostConnectionError(error)) {
             throw error;

@@ -8,7 +8,8 @@ import { generateNewKeys } from '../../crypto/services/pgp.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { downloadFolderAsZip } from 'app/drive/services/folder.service';
 import downloadService from 'app/drive/services/download.service';
-import { downloadFile } from 'app/network/download';
+import { downloadFile, multipartDownloadFile } from 'app/network/download';
+import { MIN_DOWNLOAD_MULTIPART_SIZE } from 'app/network/networkConstants';
 import { FlatFolderZip } from 'services/zip.service';
 import { AdvancedSharedItem } from '../types';
 import shareService, {
@@ -715,6 +716,62 @@ describe('Download public shared items', () => {
     );
     expect(zipInstance.addFile).toHaveBeenCalledWith('photo.png', expect.anything());
     expect(zipInstance.close).toHaveBeenCalledTimes(1);
+  });
+
+  describe('Choosing how each file is fetched', () => {
+    const BUCKET_KEY = { bucketKey: Buffer.from('bucket-key') };
+    const LARGE_FILE_ID = 'large-file-id';
+
+    const createLargeFile = (overrides: Partial<AdvancedSharedItem> = {}) =>
+      ({
+        ...createPublicFile('video', LARGE_FILE_ID),
+        size: String(MIN_DOWNLOAD_MULTIPART_SIZE),
+        ...overrides,
+      }) as AdvancedSharedItem;
+
+    const downloadItems = (items: AdvancedSharedItem[]) =>
+      downloadPublicSharedItems({ items, credentials: CREDENTIALS, key: BUCKET_KEY, code: CODE });
+
+    beforeEach(() => {
+      vi.mocked(downloadFile).mockResolvedValue(createStream(new Uint8Array([1])));
+      vi.mocked(multipartDownloadFile).mockResolvedValue(createStream(new Uint8Array([1])));
+    });
+
+    test('when a large file inside a public shared folder is downloaded alone, then it is fetched in chunks with its size and the share credentials and key', async () => {
+      await downloadItems([createLargeFile()]);
+
+      expect(multipartDownloadFile).toHaveBeenCalledWith({
+        bucketId: 'bucket-id',
+        fileId: LARGE_FILE_ID,
+        creds: CREDENTIALS,
+        key: BUCKET_KEY,
+        fileSize: MIN_DOWNLOAD_MULTIPART_SIZE,
+      });
+      expect(downloadFile).not.toHaveBeenCalled();
+    });
+
+    test('when a large file and a folder are downloaded together, then the large file is fetched in chunks and added to the combined zip', async () => {
+      const largeFileStream = createStream(new Uint8Array([7]));
+      vi.mocked(multipartDownloadFile).mockResolvedValueOnce(largeFileStream);
+
+      await downloadItems([createPublicFolder('Documents'), createLargeFile()]);
+
+      const zipInstance = vi.mocked(FlatFolderZip).mock.results[0].value;
+      expect(multipartDownloadFile).toHaveBeenCalledWith(
+        expect.objectContaining({ fileId: LARGE_FILE_ID, fileSize: MIN_DOWNLOAD_MULTIPART_SIZE }),
+      );
+      expect(zipInstance.addFile).toHaveBeenCalledWith('video.png', largeFileStream);
+    });
+
+    test('when a shared file has no storage location, then the download fails with a clear message and nothing is requested', async () => {
+      const fileWithoutBucket = createLargeFile({ bucket: undefined });
+
+      await expect(downloadItems([fileWithoutBucket])).rejects.toThrow(
+        "Missing network data to download shared file 'video.png'",
+      );
+      expect(downloadFile).not.toHaveBeenCalled();
+      expect(multipartDownloadFile).not.toHaveBeenCalled();
+    });
   });
 
   test('When a folder is downloaded, then the folders/files iterator factories build public iterators without throwing', async () => {
