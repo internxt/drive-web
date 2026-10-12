@@ -134,6 +134,31 @@ async function multipartDownloadOwnFile(
   });
 }
 
+async function multipartDownloadOwnFileWithBucketKey(
+  params: DownloadOwnFileWithBucketKeyParams & { fileSize: number },
+): Promise<FileStream> {
+  const {
+    bucketId,
+    fileId,
+    key: { bucketKey },
+    fileSize,
+    options,
+  } = params;
+  const auth = await getAuthFromCredentials(params.creds);
+
+  return new MultipartDownload(createNetworkFacade(auth)).downloadFile({
+    bucketId,
+    fileId,
+    mnemonic: '',
+    fileSize,
+    options: {
+      bucketKey,
+      downloadingCallback: options?.notifyProgress,
+      abortController: options?.abortController,
+    },
+  });
+}
+
 /**
  * Downloads a shared file in chunks. The mnemonic is intentionally empty: shared downloads
  * authenticate through the share token, and options.key overrides the mnemonic-derived
@@ -163,15 +188,20 @@ async function multipartDownloadSharedFile(
  * a share token and encryption key, or to the own-file flow when they carry credentials.
  */
 export async function multipartDownload(
-  params: (DownloadOwnFileWithMnemonicParams | DownloadSharedFileParams) & { fileSize: number },
+  params: (DownloadOwnFileWithMnemonicParams | DownloadOwnFileWithBucketKeyParams | DownloadSharedFileParams) & {
+    fileSize: number;
+  },
 ): Promise<FileStream> {
   const isSharedDownload = Boolean(params.token && params.encryptionKey);
   const isOwnFileDownload = Boolean(params.creds && params.key.mnemonic);
+  const isOwnFileWithBucketKeyDownload = Boolean(params.creds && params.key.bucketKey);
 
   if (isSharedDownload) {
     return multipartDownloadSharedFile(params as DownloadSharedFileParams & { fileSize: number });
   } else if (isOwnFileDownload) {
     return multipartDownloadOwnFile(params as DownloadOwnFileWithMnemonicParams & { fileSize: number });
+  } else if (isOwnFileWithBucketKeyDownload) {
+    return multipartDownloadOwnFileWithBucketKey(params as DownloadOwnFileWithBucketKeyParams & { fileSize: number });
   } else {
     throw new Error('DOWNLOAD ERRNO. 0');
   }
