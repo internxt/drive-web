@@ -89,9 +89,9 @@ describe('Rename items - Thunk', () => {
 
     test('When items collide in the destination, then they appear in duplicated items and existing items', async () => {
       const movingFile = getDriveItemData({ isFolder: false, uuid: 'file-moving' });
-      const existingFile = getDriveItemData({ isFolder: false, uuid: 'file-existing' });
+      const existingFile = getDriveItemData({ uuid: 'file-existing' });
       const movingFolder = getDriveItemData({ isFolder: true, uuid: 'folder-moving' });
-      const existingFolder = getDriveItemData({ isFolder: true, uuid: 'folder-existing' });
+      const existingFolder = getDriveItemData({ uuid: 'folder-existing' });
       mockCheckDuplicatedFiles.mockResolvedValue({
         filesWithDuplicates: [movingFile],
         duplicatedFilesResponse: [existingFile],
@@ -107,8 +107,10 @@ describe('Rename items - Thunk', () => {
 
       expect(result[0].duplicatedItems).toContain(movingFile);
       expect(result[0].duplicatedItems).toContain(movingFolder);
-      expect(result[0].existingItems).toContain(existingFile);
-      expect(result[0].existingItems).toContain(existingFolder);
+      expect(result[0].existingItems).toEqual([
+        { ...existingFile, isFolder: false },
+        { ...existingFolder, isFolder: true },
+      ]);
       expect(result[0].unrepeatedItems).toHaveLength(0);
     });
 
@@ -176,7 +178,7 @@ describe('Rename items - Thunk', () => {
       const result = await handleRepeatedUploadingFiles([file], 'dest-uuid');
 
       expect(result.repeatedItems).toContain(file);
-      expect(result.existingItems).toContain(file);
+      expect(result.existingItems).toEqual([{ ...file, isFolder: false }]);
       expect(result.unrepeatedItems).toHaveLength(0);
     });
 
@@ -214,16 +216,17 @@ describe('Rename items - Thunk', () => {
   describe('Handling repeated folders', () => {
     test('When a folder has a duplicate in the destination, it is returned as a repeated item', async () => {
       const folder = getDriveItemData({ isFolder: true });
+      const existingFolder = getDriveItemData({ uuid: 'existing-folder' });
       mockCheckFolderDuplicated.mockResolvedValue({
         foldersWithDuplicates: [folder],
-        duplicatedFoldersResponse: [folder],
+        duplicatedFoldersResponse: [existingFolder],
         foldersWithoutDuplicates: [],
       });
 
       const result = await handleRepeatedUploadingFolders([folder], 'dest-uuid');
 
       expect(result.repeatedItems).toContain(folder);
-      expect(result.existingItems).toContain(folder);
+      expect(result.existingItems).toEqual([{ ...existingFolder, isFolder: true }]);
       expect(result.unrepeatedItems).toHaveLength(0);
     });
 
