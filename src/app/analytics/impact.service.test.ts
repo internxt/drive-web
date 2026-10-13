@@ -20,6 +20,7 @@ vi.mock('services/local-storage.service', () => ({
     get: vi.fn(),
     clear: vi.fn(),
     set: vi.fn(),
+    removeItem: vi.fn(),
   },
 }));
 
@@ -128,6 +129,7 @@ describe('Testing Impact Service', () => {
         users: 1,
         couponCodeData: promoCode,
         isFirstPurchase: true,
+        isDeferredPurchase: false,
       });
 
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('amountPaid', expectedAmount);
@@ -143,6 +145,7 @@ describe('Testing Impact Service', () => {
         users: 1,
         couponCodeData: promoCode,
         isFirstPurchase: true,
+        isDeferredPurchase: false,
       });
 
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('subscriptionId', subId);
@@ -162,6 +165,7 @@ describe('Testing Impact Service', () => {
         users: 1,
         couponCodeData: promoCode,
         isFirstPurchase: true,
+        isDeferredPurchase: false,
       });
 
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('paymentIntentId', paymentIntentId);
@@ -177,6 +181,7 @@ describe('Testing Impact Service', () => {
         users: 1,
         couponCodeData: promoCode,
         isFirstPurchase: true,
+        isDeferredPurchase: false,
       });
 
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('productName', planName);
@@ -194,6 +199,7 @@ describe('Testing Impact Service', () => {
         users: 1,
         couponCodeData: promoCode,
         isFirstPurchase: true,
+        isDeferredPurchase: false,
       });
 
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('couponCode', promoCode.codeName);
@@ -209,9 +215,48 @@ describe('Testing Impact Service', () => {
         users: 1,
         couponCodeData: promoCode,
         isFirstPurchase: true,
+        isDeferredPurchase: false,
       });
 
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('isFirstPurchase', 'true');
+    });
+
+    it('When the user comes from Impact, then it keeps the source so a later conversion is still attributed', async () => {
+      const { getCookie } = await import('./utils');
+      vi.mocked(getCookie).mockImplementationOnce((key) => (key === 'impactSource' ? 'Impact' : ''));
+      const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
+
+      savePaymentDataInLocalStorage({
+        subscriptionId: subId,
+        paymentIntentId,
+        selectedPlan: product as PriceWithTax,
+        users: 1,
+        couponCodeData: promoCode,
+        isFirstPurchase: true,
+        isDeferredPurchase: true,
+      });
+
+      expect(setToLocalStorageSpy).toHaveBeenCalledWith('impact_source', 'Impact');
+    });
+
+    it('When the user does not come from Impact, then it drops any source kept from an earlier purchase', async () => {
+      const { getCookie } = await import('./utils');
+      vi.mocked(getCookie).mockImplementationOnce(() => '');
+      const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
+      const removeFromLocalStorageSpy = vi.spyOn(localStorageService, 'removeItem');
+
+      savePaymentDataInLocalStorage({
+        subscriptionId: subId,
+        paymentIntentId,
+        selectedPlan: product as PriceWithTax,
+        users: 1,
+        couponCodeData: promoCode,
+        isFirstPurchase: true,
+        isDeferredPurchase: true,
+      });
+
+      expect(setToLocalStorageSpy).not.toHaveBeenCalledWith('impact_source', expect.anything());
+      expect(removeFromLocalStorageSpy).toHaveBeenCalledWith('impact_source');
     });
   });
 
@@ -408,6 +453,29 @@ describe('Testing Impact Service', () => {
         expect(callArgs.anonymousId).toBe(mockedUserUuid); // Fallback to uuidV4
       });
 
+      it('When the source cookie has expired but the purchase was made from Impact, then it still sends to Impact', async () => {
+        const getCookieMock = await import('./utils');
+        vi.mocked(getCookieMock.getCookie).mockImplementation((key) => {
+          if (key === 'impactAnonymousId') return 'anon_id';
+          return '';
+        });
+        vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
+          if (key === 'impact_source') return 'Impact';
+          if (key === 'couponCode') return null;
+          if (key === 'amountPaid') return expectedAmount;
+          if (key === 'isFirstPurchase') return 'true';
+          return null;
+        });
+        const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
+
+        await trackPaymentConversion();
+
+        expect(axiosSpy).toHaveBeenCalledTimes(1);
+        expect(axiosSpy.mock.calls[0][1]).toEqual(
+          expect.objectContaining({ anonymousId: 'anon_id', userId: mockedUserUuid, event: 'Payment Conversion' }),
+        );
+      });
+
       it('When isFirstPurchase is false, then it does not send to Impact', async () => {
         vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
           if (key === 'isFirstPurchase') return 'false';
@@ -555,6 +623,7 @@ describe('savePaymentDataInLocalStorage - edge cases', () => {
       users: 1,
       couponCodeData: promoCode,
       isFirstPurchase: true,
+      isDeferredPurchase: false,
     });
 
     expect(setToLocalStorageSpy).not.toHaveBeenCalledWith('productName', expect.anything());
@@ -574,6 +643,7 @@ describe('savePaymentDataInLocalStorage - edge cases', () => {
       users: 1,
       couponCodeData: couponWithoutName,
       isFirstPurchase: true,
+      isDeferredPurchase: false,
     });
 
     expect(setToLocalStorageSpy).not.toHaveBeenCalledWith('couponCode', expect.anything());
@@ -589,6 +659,7 @@ describe('savePaymentDataInLocalStorage - edge cases', () => {
       users: 1,
       couponCodeData: undefined,
       isFirstPurchase: true,
+      isDeferredPurchase: false,
     });
 
     expect(setToLocalStorageSpy).not.toHaveBeenCalledWith('couponCode', expect.anything());
@@ -605,6 +676,7 @@ describe('savePaymentDataInLocalStorage - edge cases', () => {
       users: 1,
       couponCodeData: promoCode,
       isFirstPurchase: true,
+      isDeferredPurchase: false,
     });
 
     expect(setToLocalStorageSpy).not.toHaveBeenCalledWith('subscriptionId', expect.anything());
@@ -620,6 +692,7 @@ describe('savePaymentDataInLocalStorage - edge cases', () => {
       users: 1,
       couponCodeData: promoCode,
       isFirstPurchase: true,
+      isDeferredPurchase: false,
     });
 
     expect(setToLocalStorageSpy).not.toHaveBeenCalledWith('paymentIntentId', expect.anything());
@@ -635,6 +708,7 @@ describe('savePaymentDataInLocalStorage - edge cases', () => {
       users: 1,
       couponCodeData: promoCode,
       isFirstPurchase: false,
+      isDeferredPurchase: false,
     });
 
     expect(setToLocalStorageSpy).toHaveBeenCalledWith('isFirstPurchase', 'false');

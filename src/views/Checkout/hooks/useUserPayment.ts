@@ -154,6 +154,7 @@ export const useUserPayment = () => {
       users: 1,
       couponCodeData,
       isFirstPurchase: isFirstPurchase ?? false,
+      isDeferredPurchase: !!isPasswordlessSignUp,
     });
 
     switch (subscription.type) {
@@ -217,6 +218,7 @@ export const useUserPayment = () => {
       users: 1,
       couponCodeData,
       isFirstPurchase: isFirstPurchase ?? false,
+      isDeferredPurchase: !!isPasswordlessSignUp,
     });
 
     // !DO NOT REMOVE THIS

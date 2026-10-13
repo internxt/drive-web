@@ -36,6 +36,7 @@ export interface SavePaymentDataParams {
   users: number;
   couponCodeData: CouponCodeData | undefined;
   isFirstPurchase: boolean;
+  isDeferredPurchase: boolean;
 }
 
 export function savePaymentDataInLocalStorage({
@@ -45,6 +46,7 @@ export function savePaymentDataInLocalStorage({
   users,
   couponCodeData,
   isFirstPurchase,
+  isDeferredPurchase,
 }: SavePaymentDataParams) {
   if (subscriptionId && selectedPlan?.price.interval !== 'lifetime') {
     localStorageService.set(LocalStorageItem.SubscriptionID, subscriptionId);
@@ -69,6 +71,14 @@ export function savePaymentDataInLocalStorage({
   }
 
   localStorageService.set(LocalStorageItem.IsFirstPurchase, String(isFirstPurchase));
+  localStorageService.set(LocalStorageItem.IsDeferredPurchase, String(isDeferredPurchase));
+
+  const impactSource = getCookie('impactSource');
+  if (impactSource) {
+    localStorageService.set(LocalStorageItem.ImpactSource, impactSource);
+  } else {
+    localStorageService.removeItem(LocalStorageItem.ImpactSource);
+  }
 }
 
 export async function handleImpactDTCCheckout({
@@ -166,7 +176,7 @@ export async function trackPaymentConversion(): Promise<void> {
 
     const IMPACT_API = envService.getVariable('impactApiUrl');
     const anonymousID = getCookie('impactAnonymousId') || uuidV4();
-    const source = getCookie('impactSource');
+    const source = getCookie('impactSource') || localStorageService.get(LocalStorageItem.ImpactSource);
 
     const IMPACT_COUPON_WHITELIST = [
       'CNINTERNXT',

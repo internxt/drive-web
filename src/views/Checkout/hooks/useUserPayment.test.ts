@@ -192,7 +192,7 @@ describe('Custom hook to handle payments', () => {
         captchaToken: subscriptionPaymentPayload.captchaToken,
       });
 
-      expect(localStorageServiceSpy).toHaveBeenCalledTimes(6);
+      expect(localStorageServiceSpy).toHaveBeenCalledTimes(7);
 
       expect(setupIntent).toHaveBeenCalledWith({
         clientSecret: 'client_secret',
@@ -229,7 +229,7 @@ describe('Custom hook to handle payments', () => {
         captchaToken: subscriptionPaymentPayload.captchaToken,
       });
 
-      expect(localStorageServiceSpy).toHaveBeenCalledTimes(6);
+      expect(localStorageServiceSpy).toHaveBeenCalledTimes(7);
 
       expect(confirmPayment).toHaveBeenCalledWith({
         clientSecret: 'client_secret',
@@ -293,7 +293,7 @@ describe('Custom hook to handle payments', () => {
         captchaToken: subscriptionPaymentPayload.captchaToken,
       });
 
-      expect(localStorageServiceSpy).toHaveBeenCalledTimes(6);
+      expect(localStorageServiceSpy).toHaveBeenCalledTimes(7);
 
       expect(notificationsServiceSpy).toHaveBeenCalled();
       expect(confirmPayment).not.toHaveBeenCalled();
@@ -340,7 +340,7 @@ describe('Custom hook to handle payments', () => {
         promoCodeId: undefined,
       });
 
-      expect(localStorageServiceSpy).toHaveBeenCalledTimes(6);
+      expect(localStorageServiceSpy).toHaveBeenCalledTimes(7);
 
       expect(confirmPayment).toHaveBeenCalledWith({
         clientSecret: 'client_secret',
@@ -390,7 +390,7 @@ describe('Custom hook to handle payments', () => {
         promoCodeId: undefined,
       });
 
-      expect(localStorageServiceSpy).toHaveBeenCalledTimes(6);
+      expect(localStorageServiceSpy).toHaveBeenCalledTimes(7);
       expect(navigationServiceSpy).toHaveBeenCalledWith(AppView.CheckoutSuccess);
 
       expect(confirmPayment).not.toHaveBeenCalled();
