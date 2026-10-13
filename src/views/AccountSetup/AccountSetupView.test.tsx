@@ -39,7 +39,6 @@ vi.mock('app/store/slices/workspaces/workspacesStore', () => ({
 }));
 vi.mock('app/analytics/impact.service', () => ({ trackSignUp: vi.fn() }));
 vi.mock('app/analytics/meta.service', () => ({ trackLead: vi.fn() }));
-vi.mock('app/analytics/analytics.service', () => ({ trackDeferredPurchase: vi.fn() }));
 
 const SETUP_TOKEN = 'setup-token-from-email';
 const STRONG_PASSWORD = 'Correct-Horse-Battery-9!';

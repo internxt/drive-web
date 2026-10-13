@@ -1,12 +1,15 @@
 import { paymentService } from 'views/Checkout/services';
 import envService from 'services/env.service';
 import encryptedStorageService from 'services/encrypted-storage.service';
+import localStorageService from 'services/local-storage.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { clearPaymentStorage } from 'services/storage-keys';
 import { Translate } from 'app/i18n/types';
+import { LocalStorageItem } from 'app/core/types';
 import metaService from './meta.service';
 import gaService from './ga.service';
 import { trackPaymentConversion } from './impact.service';
+import { PurchaseBuyer } from './types';
 
 const hasStripeReportedPaymentFailed = async (): Promise<boolean> => {
   const params = new URLSearchParams(globalThis.location.search);
@@ -31,47 +34,49 @@ const hasStripeReportedPaymentFailed = async (): Promise<boolean> => {
   return intentStatus !== 'succeeded';
 };
 
-const sendUserDependentPurchaseTrackers = async (isProduction: boolean): Promise<void> => {
-  if (isProduction) {
-    await gaService.trackPurchase();
-    await trackPaymentConversion();
-  } else {
-    console.info('[Analytics] GA and Impact purchase events are not sent outside production');
+const getPurchaseBuyer = async (): Promise<PurchaseBuyer | null> => {
+  const user = await encryptedStorageService.getUser();
+  if (user) {
+    return { id: user.uuid, email: user.email };
   }
 
-  clearPaymentStorage();
+  const customerId = localStorageService.get(LocalStorageItem.CheckoutCustomerId);
+  const email = localStorageService.get(LocalStorageItem.CheckoutAccountSetupEmail);
+  if (customerId && email) {
+    return { id: customerId, email };
+  }
+
+  return null;
+};
+
+const sendPurchaseEvents = async (): Promise<void> => {
+  if (!envService.isProduction()) {
+    console.info('[Analytics] Purchase events are not sent outside production');
+    return;
+  }
+
+  metaService.trackPurchase();
+
+  const buyer = await getPurchaseBuyer();
+  if (!buyer) {
+    console.warn('[Analytics] No buyer found, GA and Impact purchase events are not sent');
+    return;
+  }
+
+  gaService.trackPurchase(buyer);
+  await trackPaymentConversion(buyer);
 };
 
 export const trackCheckoutCompleted = async (translate: Translate): Promise<void> => {
   try {
     if (await hasStripeReportedPaymentFailed()) {
       notificationsService.show({ text: translate('checkout.error.paymentFailed'), type: ToastType.Error });
-      clearPaymentStorage();
-      return;
-    }
-
-    const isProduction = envService.isProduction();
-    if (!isProduction) {
-      console.info('[Analytics] Purchase events are not sent outside production');
-    }
-
-    if (isProduction) {
-      metaService.trackPurchase();
-    }
-
-    const hasUser = Boolean(await encryptedStorageService.getUser());
-    if (hasUser) {
-      await sendUserDependentPurchaseTrackers(isProduction);
+    } else {
+      await sendPurchaseEvents();
     }
   } catch (err) {
     console.error('Analytics error:', err);
-  }
-};
-
-export const trackDeferredPurchase = async (): Promise<void> => {
-  try {
-    await sendUserDependentPurchaseTrackers(envService.isProduction());
-  } catch (err) {
-    console.error('Analytics error:', err);
+  } finally {
+    clearPaymentStorage();
   }
 };
