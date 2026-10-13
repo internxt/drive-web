@@ -129,7 +129,7 @@ describe('Testing Impact Service', () => {
         users: 1,
         couponCodeData: promoCode,
         isFirstPurchase: true,
-        isPasswordlessPurchase: false,
+        isDeferredPurchase: false,
       });
 
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('amountPaid', expectedAmount);
@@ -145,7 +145,7 @@ describe('Testing Impact Service', () => {
         users: 1,
         couponCodeData: promoCode,
         isFirstPurchase: true,
-        isPasswordlessPurchase: false,
+        isDeferredPurchase: false,
       });
 
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('subscriptionId', subId);
@@ -165,7 +165,7 @@ describe('Testing Impact Service', () => {
         users: 1,
         couponCodeData: promoCode,
         isFirstPurchase: true,
-        isPasswordlessPurchase: false,
+        isDeferredPurchase: false,
       });
 
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('paymentIntentId', paymentIntentId);
@@ -181,7 +181,7 @@ describe('Testing Impact Service', () => {
         users: 1,
         couponCodeData: promoCode,
         isFirstPurchase: true,
-        isPasswordlessPurchase: false,
+        isDeferredPurchase: false,
       });
 
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('productName', planName);
@@ -199,7 +199,7 @@ describe('Testing Impact Service', () => {
         users: 1,
         couponCodeData: promoCode,
         isFirstPurchase: true,
-        isPasswordlessPurchase: false,
+        isDeferredPurchase: false,
       });
 
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('couponCode', promoCode.codeName);
@@ -215,7 +215,7 @@ describe('Testing Impact Service', () => {
         users: 1,
         couponCodeData: promoCode,
         isFirstPurchase: true,
-        isPasswordlessPurchase: false,
+        isDeferredPurchase: false,
       });
 
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('isFirstPurchase', 'true');
@@ -233,7 +233,7 @@ describe('Testing Impact Service', () => {
         users: 1,
         couponCodeData: promoCode,
         isFirstPurchase: true,
-        isPasswordlessPurchase: true,
+        isDeferredPurchase: true,
       });
 
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('impact_source', 'Impact');
@@ -252,7 +252,7 @@ describe('Testing Impact Service', () => {
         users: 1,
         couponCodeData: promoCode,
         isFirstPurchase: true,
-        isPasswordlessPurchase: true,
+        isDeferredPurchase: true,
       });
 
       expect(setToLocalStorageSpy).not.toHaveBeenCalledWith('impact_source', expect.anything());
@@ -623,7 +623,7 @@ describe('savePaymentDataInLocalStorage - edge cases', () => {
       users: 1,
       couponCodeData: promoCode,
       isFirstPurchase: true,
-      isPasswordlessPurchase: false,
+      isDeferredPurchase: false,
     });
 
     expect(setToLocalStorageSpy).not.toHaveBeenCalledWith('productName', expect.anything());
@@ -643,7 +643,7 @@ describe('savePaymentDataInLocalStorage - edge cases', () => {
       users: 1,
       couponCodeData: couponWithoutName,
       isFirstPurchase: true,
-      isPasswordlessPurchase: false,
+      isDeferredPurchase: false,
     });
 
     expect(setToLocalStorageSpy).not.toHaveBeenCalledWith('couponCode', expect.anything());
@@ -659,7 +659,7 @@ describe('savePaymentDataInLocalStorage - edge cases', () => {
       users: 1,
       couponCodeData: undefined,
       isFirstPurchase: true,
-      isPasswordlessPurchase: false,
+      isDeferredPurchase: false,
     });
 
     expect(setToLocalStorageSpy).not.toHaveBeenCalledWith('couponCode', expect.anything());
@@ -676,7 +676,7 @@ describe('savePaymentDataInLocalStorage - edge cases', () => {
       users: 1,
       couponCodeData: promoCode,
       isFirstPurchase: true,
-      isPasswordlessPurchase: false,
+      isDeferredPurchase: false,
     });
 
     expect(setToLocalStorageSpy).not.toHaveBeenCalledWith('subscriptionId', expect.anything());
@@ -692,7 +692,7 @@ describe('savePaymentDataInLocalStorage - edge cases', () => {
       users: 1,
       couponCodeData: promoCode,
       isFirstPurchase: true,
-      isPasswordlessPurchase: false,
+      isDeferredPurchase: false,
     });
 
     expect(setToLocalStorageSpy).not.toHaveBeenCalledWith('paymentIntentId', expect.anything());
@@ -708,7 +708,7 @@ describe('savePaymentDataInLocalStorage - edge cases', () => {
       users: 1,
       couponCodeData: promoCode,
       isFirstPurchase: false,
-      isPasswordlessPurchase: false,
+      isDeferredPurchase: false,
     });
 
     expect(setToLocalStorageSpy).toHaveBeenCalledWith('isFirstPurchase', 'false');

@@ -36,7 +36,7 @@ export interface SavePaymentDataParams {
   users: number;
   couponCodeData: CouponCodeData | undefined;
   isFirstPurchase: boolean;
-  isPasswordlessPurchase: boolean;
+  isDeferredPurchase: boolean;
 }
 
 export function savePaymentDataInLocalStorage({
@@ -46,7 +46,7 @@ export function savePaymentDataInLocalStorage({
   users,
   couponCodeData,
   isFirstPurchase,
-  isPasswordlessPurchase,
+  isDeferredPurchase,
 }: SavePaymentDataParams) {
   if (subscriptionId && selectedPlan?.price.interval !== 'lifetime') {
     localStorageService.set(LocalStorageItem.SubscriptionID, subscriptionId);
@@ -71,7 +71,7 @@ export function savePaymentDataInLocalStorage({
   }
 
   localStorageService.set(LocalStorageItem.IsFirstPurchase, String(isFirstPurchase));
-  localStorageService.set(LocalStorageItem.IsPasswordlessPurchase, String(isPasswordlessPurchase));
+  localStorageService.set(LocalStorageItem.IsDeferredPurchase, String(isDeferredPurchase));
 
   const impactSource = getCookie('impactSource');
   if (impactSource) {

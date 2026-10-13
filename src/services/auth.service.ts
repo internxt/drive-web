@@ -589,14 +589,14 @@ export const startNewAccountSession = async ({
 }: NewAccountSessionParams) => {
   const { xUser, xNewToken, mnemonic } = registeredUser;
 
-  const isPasswordlessPurchase =
-    localStorageService.get(LocalStorageItem.IsPasswordlessPurchase) === 'true' &&
+  const isDeferredPurchase =
+    localStorageService.get(LocalStorageItem.IsDeferredPurchase) === 'true' &&
     localStorageService.get(LocalStorageItem.CheckoutAccountSetupEmail) === xUser.email.toLowerCase();
 
   localStorageService.clearExcept([
     ...CHECKOUT_LOCAL_STORAGE_ITEMS,
     ...ATTRIBUTION_LOCAL_STORAGE_ITEMS,
-    ...(isPasswordlessPurchase ? PAYMENT_LOCAL_STORAGE_ITEMS : []),
+    ...(isDeferredPurchase ? PAYMENT_LOCAL_STORAGE_ITEMS : []),
   ]);
 
   await encryptedStorageService.setToken(xNewToken);
@@ -624,7 +624,7 @@ export const startNewAccountSession = async ({
   await trackSignUp(xUser.uuid);
   trackLead(xUser.email, xUser.userId);
 
-  if (isPasswordlessPurchase) {
+  if (isDeferredPurchase) {
     await trackDeferredPurchase();
   }
 

@@ -1,5 +1,4 @@
 import { paymentService } from 'views/Checkout/services';
-import envService from 'services/env.service';
 import encryptedStorageService from 'services/encrypted-storage.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { clearPaymentStorage } from 'services/storage-keys';
@@ -31,13 +30,9 @@ const hasStripeReportedPaymentFailed = async (): Promise<boolean> => {
   return intentStatus !== 'succeeded';
 };
 
-const sendUserDependentPurchaseTrackers = async (isProduction: boolean): Promise<void> => {
-  if (isProduction) {
-    await gaService.trackPurchase();
-    await trackPaymentConversion();
-  } else {
-    console.info('[Analytics] GA and Impact purchase events are not sent outside production');
-  }
+const sendUserDependentPurchaseTrackers = async (): Promise<void> => {
+  await gaService.trackPurchase();
+  await trackPaymentConversion();
 
   clearPaymentStorage();
 };
@@ -50,18 +45,11 @@ export const trackCheckoutCompleted = async (translate: Translate): Promise<void
       return;
     }
 
-    const isProduction = envService.isProduction();
-    if (!isProduction) {
-      console.info('[Analytics] Purchase events are not sent outside production');
-    }
-
-    if (isProduction) {
-      metaService.trackPurchase();
-    }
+    metaService.trackPurchase();
 
     const hasUser = Boolean(await encryptedStorageService.getUser());
     if (hasUser) {
-      await sendUserDependentPurchaseTrackers(isProduction);
+      await sendUserDependentPurchaseTrackers();
     }
   } catch (err) {
     console.error('Analytics error:', err);
@@ -70,7 +58,7 @@ export const trackCheckoutCompleted = async (translate: Translate): Promise<void
 
 export const trackDeferredPurchase = async (): Promise<void> => {
   try {
-    await sendUserDependentPurchaseTrackers(envService.isProduction());
+    await sendUserDependentPurchaseTrackers();
   } catch (err) {
     console.error('Analytics error:', err);
   }
