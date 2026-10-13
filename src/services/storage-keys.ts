@@ -32,7 +32,7 @@ export const PAYMENT_LOCAL_STORAGE_ITEMS: LocalStorageItem[] = [
   LocalStorageItem.AmountPaid,
   LocalStorageItem.CouponCode,
   LocalStorageItem.IsFirstPurchase,
-  LocalStorageItem.IsDeferredPurchase,
+  LocalStorageItem.CheckoutCustomerId,
   LocalStorageItem.ImpactSource,
 ];
 

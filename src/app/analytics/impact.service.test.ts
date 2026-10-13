@@ -1,5 +1,4 @@
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { bytesToString } from 'app/drive/services/size.service';
 import axios from 'axios';
 import envService from 'services/env.service';
@@ -13,7 +12,6 @@ import {
   trackPaymentConversion,
   trackSignUp,
 } from './impact.service';
-import encryptedStorageService from 'services/encrypted-storage.service';
 
 vi.mock('services/local-storage.service', () => ({
   default: {
@@ -21,12 +19,6 @@ vi.mock('services/local-storage.service', () => ({
     clear: vi.fn(),
     set: vi.fn(),
     removeItem: vi.fn(),
-  },
-}));
-
-vi.mock('services/encrypted-storage.service', () => ({
-  default: {
-    getUser: vi.fn(),
   },
 }));
 
@@ -59,6 +51,8 @@ const subId = 'sub_123';
 const paymentIntentId = 'py_123';
 const mockedUserUuid = '00000000-0000-0000-0000-0000000000';
 const mockImpactApiUrl = 'mock-impact-api-url';
+const customerId = 'cus_123';
+const buyer = { id: mockedUserUuid, email: 'usuario@ejemplo.com' };
 
 const promoCode = {
   amountOff: undefined,
@@ -99,11 +93,6 @@ beforeEach(() => {
     return 'no mock implementation';
   });
 
-  vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue({
-    uuid: mockedUserUuid,
-    email: 'usuario@ejemplo.com',
-  } as UserSettings);
-
   vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
     if (key === 'paymentIntentId') return paymentIntentId;
     if (key === 'subscriptionId') return subId;
@@ -129,7 +118,7 @@ describe('Testing Impact Service', () => {
         users: 1,
         couponCodeData: promoCode,
         isFirstPurchase: true,
-        isDeferredPurchase: false,
+        customerId,
       });
 
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('amountPaid', expectedAmount);
@@ -145,7 +134,7 @@ describe('Testing Impact Service', () => {
         users: 1,
         couponCodeData: promoCode,
         isFirstPurchase: true,
-        isDeferredPurchase: false,
+        customerId,
       });
 
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('subscriptionId', subId);
@@ -165,7 +154,7 @@ describe('Testing Impact Service', () => {
         users: 1,
         couponCodeData: promoCode,
         isFirstPurchase: true,
-        isDeferredPurchase: false,
+        customerId,
       });
 
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('paymentIntentId', paymentIntentId);
@@ -181,7 +170,7 @@ describe('Testing Impact Service', () => {
         users: 1,
         couponCodeData: promoCode,
         isFirstPurchase: true,
-        isDeferredPurchase: false,
+        customerId,
       });
 
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('productName', planName);
@@ -199,7 +188,7 @@ describe('Testing Impact Service', () => {
         users: 1,
         couponCodeData: promoCode,
         isFirstPurchase: true,
-        isDeferredPurchase: false,
+        customerId,
       });
 
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('couponCode', promoCode.codeName);
@@ -215,10 +204,26 @@ describe('Testing Impact Service', () => {
         users: 1,
         couponCodeData: promoCode,
         isFirstPurchase: true,
-        isDeferredPurchase: false,
+        customerId,
       });
 
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('isFirstPurchase', 'true');
+    });
+
+    it('When saving payment data, then it saves the customer so the purchase can be tracked before the account exists', () => {
+      const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
+
+      savePaymentDataInLocalStorage({
+        subscriptionId: subId,
+        paymentIntentId,
+        selectedPlan: product as PriceWithTax,
+        users: 1,
+        couponCodeData: promoCode,
+        isFirstPurchase: true,
+        customerId,
+      });
+
+      expect(setToLocalStorageSpy).toHaveBeenCalledWith('checkout_customer_id', customerId);
     });
 
     it('When the user comes from Impact, then it keeps the source so a later conversion is still attributed', async () => {
@@ -233,7 +238,7 @@ describe('Testing Impact Service', () => {
         users: 1,
         couponCodeData: promoCode,
         isFirstPurchase: true,
-        isDeferredPurchase: true,
+        customerId,
       });
 
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('impact_source', 'Impact');
@@ -252,7 +257,7 @@ describe('Testing Impact Service', () => {
         users: 1,
         couponCodeData: promoCode,
         isFirstPurchase: true,
-        isDeferredPurchase: true,
+        customerId,
       });
 
       expect(setToLocalStorageSpy).not.toHaveBeenCalledWith('impact_source', expect.anything());
@@ -334,7 +339,7 @@ describe('Testing Impact Service', () => {
       it('When trackPaymentConversion is called, then it sends the conversion to the Impact API with the correct data', async () => {
         const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
 
-        await trackPaymentConversion();
+        await trackPaymentConversion(buyer);
 
         expect(axiosSpy).toHaveBeenCalledTimes(1);
         expect(axiosSpy).toHaveBeenCalledWith(
@@ -365,7 +370,7 @@ describe('Testing Impact Service', () => {
         });
         const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
 
-        await trackPaymentConversion();
+        await trackPaymentConversion(buyer);
 
         const callArgs = axiosSpy.mock.calls[0][1] as { messageId: string; properties: Record<string, unknown> };
         expect(callArgs.properties.impact_value).toBe(0.01);
@@ -374,7 +379,7 @@ describe('Testing Impact Service', () => {
       it('When a coupon code is available, then it includes it in the Impact API properties', async () => {
         const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
 
-        await trackPaymentConversion();
+        await trackPaymentConversion(buyer);
 
         const callArgs = axiosSpy.mock.calls[0][1] as { messageId: string; properties: Record<string, unknown> };
         expect(callArgs.properties).toHaveProperty('order_promo_code', promoCode.codeName);
@@ -385,7 +390,7 @@ describe('Testing Impact Service', () => {
         const axiosSpy = vi.spyOn(axios, 'post').mockRejectedValue(unknownError);
         const errorServiceSpy = vi.spyOn(errorService, 'reportError');
 
-        await trackPaymentConversion();
+        await trackPaymentConversion(buyer);
 
         expect(axiosSpy).toHaveBeenCalledTimes(1);
         expect(errorServiceSpy).toHaveBeenCalledWith(unknownError);
@@ -405,7 +410,7 @@ describe('Testing Impact Service', () => {
         });
         const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
 
-        await trackPaymentConversion();
+        await trackPaymentConversion(buyer);
 
         expect(axiosSpy).not.toHaveBeenCalled();
       });
@@ -424,7 +429,7 @@ describe('Testing Impact Service', () => {
         });
         const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
 
-        await trackPaymentConversion();
+        await trackPaymentConversion(buyer);
 
         expect(axiosSpy).not.toHaveBeenCalled();
       });
@@ -445,7 +450,7 @@ describe('Testing Impact Service', () => {
         });
         const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
 
-        await trackPaymentConversion();
+        await trackPaymentConversion(buyer);
 
         expect(axiosSpy).toHaveBeenCalledTimes(1);
         const callArgs = axiosSpy.mock.calls[0][1] as { properties: Record<string, unknown>; anonymousId: string };
@@ -468,7 +473,7 @@ describe('Testing Impact Service', () => {
         });
         const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
 
-        await trackPaymentConversion();
+        await trackPaymentConversion(buyer);
 
         expect(axiosSpy).toHaveBeenCalledTimes(1);
         expect(axiosSpy.mock.calls[0][1]).toEqual(
@@ -485,35 +490,37 @@ describe('Testing Impact Service', () => {
         });
         const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
 
-        await trackPaymentConversion();
+        await trackPaymentConversion(buyer);
 
         expect(axiosSpy).not.toHaveBeenCalled();
+      });
+
+      it('When the buyer has no account yet, then the conversion is sent with the Stripe customer', async () => {
+        const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
+
+        await trackPaymentConversion({ id: customerId, email: 'new.buyer@internxt.com' });
+
+        expect(axiosSpy).toHaveBeenCalledTimes(1);
+        expect(axiosSpy.mock.calls[0][1]).toEqual(
+          expect.objectContaining({ anonymousId: 'anon_id', userId: customerId, event: 'Payment Conversion' }),
+        );
       });
     });
 
     describe('Error handling', () => {
-      it('When user settings are missing, then it resolves without throwing', async () => {
-        const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-        vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue(null);
-
-        await expect(trackPaymentConversion()).resolves.not.toThrow();
-
-        consoleWarnSpy.mockRestore();
-      });
-
       it('When gtag is not available, then it continues execution without throwing', async () => {
         globalThis.window.gtag = undefined as any;
 
-        await expect(trackPaymentConversion()).resolves.not.toThrow();
+        await expect(trackPaymentConversion(buyer)).resolves.not.toThrow();
       });
 
       it('When an unexpected error occurs, then it resolves without throwing', async () => {
         const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-        vi.spyOn(encryptedStorageService, 'getUser').mockImplementation(() => {
+        vi.spyOn(localStorageService, 'get').mockImplementation(() => {
           throw new Error('Storage Error');
         });
 
-        await expect(trackPaymentConversion()).resolves.not.toThrow();
+        await expect(trackPaymentConversion(buyer)).resolves.not.toThrow();
 
         consoleErrorSpy.mockRestore();
       });
@@ -623,7 +630,7 @@ describe('savePaymentDataInLocalStorage - edge cases', () => {
       users: 1,
       couponCodeData: promoCode,
       isFirstPurchase: true,
-      isDeferredPurchase: false,
+      customerId,
     });
 
     expect(setToLocalStorageSpy).not.toHaveBeenCalledWith('productName', expect.anything());
@@ -643,7 +650,7 @@ describe('savePaymentDataInLocalStorage - edge cases', () => {
       users: 1,
       couponCodeData: couponWithoutName,
       isFirstPurchase: true,
-      isDeferredPurchase: false,
+      customerId,
     });
 
     expect(setToLocalStorageSpy).not.toHaveBeenCalledWith('couponCode', expect.anything());
@@ -659,7 +666,7 @@ describe('savePaymentDataInLocalStorage - edge cases', () => {
       users: 1,
       couponCodeData: undefined,
       isFirstPurchase: true,
-      isDeferredPurchase: false,
+      customerId,
     });
 
     expect(setToLocalStorageSpy).not.toHaveBeenCalledWith('couponCode', expect.anything());
@@ -676,7 +683,7 @@ describe('savePaymentDataInLocalStorage - edge cases', () => {
       users: 1,
       couponCodeData: promoCode,
       isFirstPurchase: true,
-      isDeferredPurchase: false,
+      customerId,
     });
 
     expect(setToLocalStorageSpy).not.toHaveBeenCalledWith('subscriptionId', expect.anything());
@@ -692,7 +699,7 @@ describe('savePaymentDataInLocalStorage - edge cases', () => {
       users: 1,
       couponCodeData: promoCode,
       isFirstPurchase: true,
-      isDeferredPurchase: false,
+      customerId,
     });
 
     expect(setToLocalStorageSpy).not.toHaveBeenCalledWith('paymentIntentId', expect.anything());
@@ -708,7 +715,7 @@ describe('savePaymentDataInLocalStorage - edge cases', () => {
       users: 1,
       couponCodeData: promoCode,
       isFirstPurchase: false,
-      isDeferredPurchase: false,
+      customerId,
     });
 
     expect(setToLocalStorageSpy).toHaveBeenCalledWith('isFirstPurchase', 'false');
@@ -781,7 +788,7 @@ describe('trackPaymentConversion - additional coverage', () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
 
-    await expect(trackPaymentConversion()).resolves.not.toThrow();
+    await expect(trackPaymentConversion(buyer)).resolves.not.toThrow();
 
     expect(consoleErrorSpy).toHaveBeenCalledWith('[Impact Service] AddShoppers conversion failed:', expect.any(Error));
     expect(axiosSpy).toHaveBeenCalledTimes(1);
@@ -799,7 +806,7 @@ describe('trackPaymentConversion - additional coverage', () => {
     });
     const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
 
-    await trackPaymentConversion();
+    await trackPaymentConversion(buyer);
 
     const callArgs = axiosSpy.mock.calls[0][1] as { properties: Record<string, unknown> };
     expect(callArgs.properties).not.toHaveProperty('order_promo_code');
@@ -816,7 +823,7 @@ describe('trackPaymentConversion - additional coverage', () => {
     });
     const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
 
-    await trackPaymentConversion();
+    await trackPaymentConversion(buyer);
 
     expect(axiosSpy).toHaveBeenCalledTimes(1);
   });
@@ -837,7 +844,7 @@ describe('trackPaymentConversion - additional coverage', () => {
     });
     const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
 
-    await trackPaymentConversion();
+    await trackPaymentConversion(buyer);
 
     expect(axiosSpy).toHaveBeenCalledTimes(1);
   });
@@ -858,7 +865,7 @@ describe('trackPaymentConversion - additional coverage', () => {
     });
     const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
 
-    await trackPaymentConversion();
+    await trackPaymentConversion(buyer);
 
     expect(axiosSpy).toHaveBeenCalledTimes(1);
   });
@@ -867,7 +874,7 @@ describe('trackPaymentConversion - additional coverage', () => {
     const { sendAddShoppersConversion } = await import('./addShoppers.services');
     vi.spyOn(axios, 'post').mockResolvedValue({});
 
-    await trackPaymentConversion();
+    await trackPaymentConversion(buyer);
 
     expect(sendAddShoppersConversion).toHaveBeenCalledWith(
       expect.objectContaining({
