@@ -139,7 +139,7 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
   }
 }
 
-async function trackPurchase({ id: buyerId, email }: PurchaseBuyer): Promise<void> {
+function trackPurchase({ id: buyerId, email }: PurchaseBuyer): void {
   try {
     const checkoutItemDataStr = localStorageService.get(LocalStorageItem.CheckoutItemData);
     if (!checkoutItemDataStr) {

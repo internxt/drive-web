@@ -63,7 +63,7 @@ const sendPurchaseEvents = async (): Promise<void> => {
     return;
   }
 
-  await gaService.trackPurchase(buyer);
+  gaService.trackPurchase(buyer);
   await trackPaymentConversion(buyer);
 };
 

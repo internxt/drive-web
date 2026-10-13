@@ -17,7 +17,7 @@ const mocks = vi.hoisted(() => ({
   retrievePaymentIntent: vi.fn(),
   retrieveSetupIntent: vi.fn(),
   metaTrackPurchase: vi.fn(),
-  gaTrackPurchase: vi.fn().mockResolvedValue(undefined),
+  gaTrackPurchase: vi.fn(),
   trackPaymentConversion: vi.fn().mockResolvedValue(undefined),
   userStoragePolling: vi.fn(),
   notificationsShow: vi.fn(),
