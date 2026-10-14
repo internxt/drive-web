@@ -6,14 +6,13 @@ import {
   fileExtensionPreviewableGroups,
 } from 'app/drive/types/file-types';
 import { getMaxPreviewableFileSizeInBytes } from 'services/media.service';
+import { MAX_CONVERTIBLE_IMAGE_PREVIEW_BYTES } from './fileViewerConstants';
 
 export const extensionsList = fileExtensionService.computeExtensionsLists(fileExtensionPreviewableGroups);
 
 const PORTRAIT_PAGE_HORIZONTAL_MARGIN = 32;
 
 export const PORTRAIT_VIEWER_PADDING_CLASS = 'portrait:px-4';
-
-export const MAX_CONVERTIBLE_IMAGE_PREVIEW_BYTES = 200 * 1024 * 1024;
 
 export function getPortraitFitWidth(): number | undefined {
   return window.innerWidth < window.innerHeight ? window.innerWidth - PORTRAIT_PAGE_HORIZONTAL_MARGIN : undefined;

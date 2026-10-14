@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { getMaxPreviewableFileSizeInBytes } from 'services/media.service';
-import { MAX_CONVERTIBLE_IMAGE_PREVIEW_BYTES, getPreviewSizeLimitBytes, isPreviewableBySize } from './fileViewerUtils';
+import { MAX_CONVERTIBLE_IMAGE_PREVIEW_BYTES } from './fileViewerConstants';
+import { getPreviewSizeLimitBytes, isPreviewableBySize } from './fileViewerUtils';
 
 const isPreviewable = (type: string, size: number) => isPreviewableBySize({ type, size });
 
