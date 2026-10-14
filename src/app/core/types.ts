@@ -159,6 +159,8 @@ export enum LocalStorageItem {
   AnniversaryTheme = 'anniversary_theme_enabled',
   SubscriptionEndingModalClosed = 'subscription_ending_modal_closed',
   CheckoutAccountSetupEmail = 'checkout_account_setup_email',
+  CheckoutCustomerId = 'checkout_customer_id',
+  ImpactSource = 'impact_source',
 }
 
 export enum LocalStorageProtectedItem {
