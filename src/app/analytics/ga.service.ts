@@ -5,7 +5,7 @@ import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
 import envService from 'services/env.service';
 import localStorageService from 'services/local-storage.service';
 import { LocalStorageItem } from 'app/core/types';
-import encryptedStorageService from 'services/encrypted-storage.service';
+import { PurchaseBuyer } from './types';
 
 interface BaseTrackParams {
   planId: string;
@@ -139,16 +139,8 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
   }
 }
 
-async function trackPurchase(): Promise<void> {
+function trackPurchase({ id: buyerId, email }: PurchaseBuyer): void {
   try {
-    const userSettings = await encryptedStorageService.getUser();
-    if (!userSettings) {
-      console.warn('[GA Service] No user settings found, aborting purchase tracking');
-      return;
-    }
-
-    const { uuid, email } = userSettings;
-
     const checkoutItemDataStr = localStorageService.get(LocalStorageItem.CheckoutItemData);
     if (!checkoutItemDataStr) {
       console.warn('[GA Service] No checkout data found, purchase may have already been tracked');
@@ -174,7 +166,7 @@ async function trackPurchase(): Promise<void> {
       console.error('[GA Service] Error parsing checkout_item_data:', parseError);
     }
 
-    const transactionId = paymentIntentId || subscriptionId || `${uuid}-${Date.now()}`;
+    const transactionId = paymentIntentId || subscriptionId || `${buyerId}-${Date.now()}`;
     const currencyCode = currency ?? 'EUR';
 
     const itemName = checkoutItemData?.item_name || 'Unknown Plan';

@@ -26,7 +26,20 @@ import DriveExplorer from 'views/Drive/components/DriveExplorer/DriveExplorer';
 import encryptedStorageService from 'services/encrypted-storage.service';
 import { Loader } from '@internxt/ui';
 
-type FileMetaWithThumbnails = FileMeta & Partial<Pick<DriveFileData, 'thumbnails'>>;
+type DriveThumbnail = DriveFileData['thumbnails'][number];
+type FileMetaThumbnail = NonNullable<FileMeta['thumbnails']>[number];
+
+const toDriveThumbnail = (thumbnail: FileMetaThumbnail): DriveThumbnail => ({
+  id: thumbnail.id,
+  file_id: thumbnail.fileId,
+  type: thumbnail.type,
+  max_width: thumbnail.maxWidth,
+  max_height: thumbnail.maxHeight,
+  size: thumbnail.size,
+  bucket_id: thumbnail.bucketId,
+  bucket_file: thumbnail.bucketFile,
+  encrypt_version: thumbnail.encryptVersion,
+});
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -157,7 +170,7 @@ const DriveView = (props: DriveViewProps) => {
 
   const showFile = async (fileUUID: string, workspacesToken?: string) => {
     try {
-      const fileMeta: FileMetaWithThumbnails = await fileService.getFile(fileUUID, workspacesToken);
+      const fileMeta = await fileService.getFile(fileUUID, workspacesToken);
       const listedFile = folderLevels[fileMeta.folderUuid]?.find((item) => item.uuid === fileMeta.uuid);
       dispatch(uiActions.setIsFileViewerOpen(true));
       /*
@@ -186,7 +199,7 @@ const DriveView = (props: DriveViewProps) => {
           status: fileMeta.status,
           uuid: fileMeta.uuid,
           updatedAt: fileMeta.updatedAt,
-          thumbnails: listedFile?.thumbnails ?? fileMeta.thumbnails ?? [],
+          thumbnails: listedFile?.thumbnails ?? fileMeta.thumbnails?.map(toDriveThumbnail) ?? [],
           currentThumbnail: listedFile?.currentThumbnail ?? null,
         }),
       );

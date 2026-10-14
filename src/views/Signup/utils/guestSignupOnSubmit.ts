@@ -8,6 +8,7 @@ import { userThunks } from 'app/store/slices/user';
 import { planThunks } from 'app/store/slices/plan';
 import { AppDispatch } from 'app/store';
 import encryptedStorageService from 'services/encrypted-storage.service';
+import { isAccountSetupPending } from 'services/account-setup.service';
 
 interface GuestSignupOnSubmitParams {
   formData: IFormValues;
@@ -21,8 +22,9 @@ interface GuestSignupOnSubmitParams {
   ) => Promise<{ xUser: UserSettings; xToken: string; xNewToken: string; mnemonic: string }>;
   dispatch: AppDispatch;
   setIsLoading: (loading: boolean) => void;
-  setSignupError: (error: string) => void;
+  setSignupError: (error: string | undefined) => void;
   setShowError: (show: boolean) => void;
+  setPendingSetupEmail: (email: string | null) => void;
   redirectTo: AppView;
 }
 
@@ -35,13 +37,14 @@ export const guestSignupOnSubmit = async ({
   setIsLoading,
   setSignupError,
   setShowError,
+  setPendingSetupEmail,
   redirectTo,
 }: GuestSignupOnSubmitParams) => {
   event?.preventDefault();
   setIsLoading(true);
+  const { email, password, token } = formData;
 
   try {
-    const { email, password, token } = formData;
     const { xUser, xNewToken } = await doRegisterPreCreatedUser(email, password, invitationId, token || '');
 
     localStorageService.clear();
@@ -71,6 +74,14 @@ export const guestSignupOnSubmit = async ({
     return navigationService.push(redirectTo);
   } catch (err: unknown) {
     setIsLoading(false);
+
+    if (isAccountSetupPending(err)) {
+      setSignupError(undefined);
+      setPendingSetupEmail(email);
+      return;
+    }
+
+    setPendingSetupEmail(null);
     errorService.reportError(err);
     const castedError = errorService.castError(err);
     setSignupError(castedError.message);

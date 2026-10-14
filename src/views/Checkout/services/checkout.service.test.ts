@@ -7,6 +7,7 @@ import {
   GetPriceByIdPayload,
 } from '@internxt/sdk/dist/payments/types';
 import userService from 'services/user.service';
+import { SdkFactory } from 'app/core/factory/sdk';
 
 vi.mock('app/drive/services/size.service', () => ({
   bytesToString: (bytes: number) => `${bytes} B`,
@@ -79,6 +80,19 @@ vi.mock('app/core/factory/sdk', () => ({
           invoiceStatus: 'paid',
         }),
         verifyCryptoPayment: vi.fn().mockResolvedValue(true),
+      }),
+      createCheckoutClientWithoutSession: vi.fn().mockReturnValue({
+        createSubscription: vi.fn().mockResolvedValue({
+          type: 'payment',
+          clientSecret: 'no_session_client_secret',
+          subscriptionId: 'sub_no_session',
+          paymentIntentId: 'py_no_session',
+        }),
+        createPaymentIntent: vi.fn().mockResolvedValue({
+          clientSecret: 'no_session_client_secret',
+          id: 'py_no_session_id',
+          invoiceStatus: 'paid',
+        }),
       }),
     }),
   },
@@ -244,6 +258,36 @@ describe('Checkout Service tests', () => {
         paymentIntentId: 'py_123',
       });
     });
+
+    it('When a buyer without an account creates a subscription, then it is created through the client without a Drive session', async () => {
+      const createSubPayload: CreateSubscriptionPayload = {
+        customerId: 'cus_123',
+        priceId: 'price_123',
+        token: 'payments_token',
+        captchaToken: 'captcha_token',
+      };
+
+      const createSubResponse = await checkoutService.createSubscription(createSubPayload, { withoutSession: true });
+
+      const sessionClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
+      const sessionlessClient = SdkFactory.getNewApiInstance().createCheckoutClientWithoutSession();
+
+      expect(sessionlessClient.createSubscription).toHaveBeenCalledWith({
+        customerId: createSubPayload.customerId,
+        priceId: createSubPayload.priceId,
+        token: createSubPayload.token,
+        currency: undefined,
+        captchaToken: createSubPayload.captchaToken,
+        promoCodeId: undefined,
+      });
+      expect(sessionClient.createSubscription).not.toHaveBeenCalled();
+      expect(createSubResponse).toStrictEqual({
+        type: 'payment',
+        clientSecret: 'no_session_client_secret',
+        subscriptionId: 'sub_no_session',
+        paymentIntentId: 'py_no_session',
+      });
+    });
   });
 
   describe('Create a payment intent', () => {
@@ -282,6 +326,40 @@ describe('Checkout Service tests', () => {
       expect(createInvoiceResponse).toStrictEqual({
         clientSecret: 'client_secret',
         id: 'py_id',
+        invoiceStatus: 'paid',
+      });
+    });
+
+    it('When a buyer without an account creates a payment intent, then it is created through the client without a Drive session', async () => {
+      const createInvoicePayload: CreatePaymentIntentPayload = {
+        customerId: 'cus_123',
+        priceId: 'price_123',
+        token: 'payments_token',
+        currency: 'eur',
+        captchaToken: 'captcha_token',
+        userAddress: '1.1.1.1',
+      };
+
+      const createInvoiceResponse = await checkoutService.createPaymentIntent(createInvoicePayload, {
+        withoutSession: true,
+      });
+
+      const sessionClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
+      const sessionlessClient = SdkFactory.getNewApiInstance().createCheckoutClientWithoutSession();
+
+      expect(sessionlessClient.createPaymentIntent).toHaveBeenCalledWith({
+        customerId: createInvoicePayload.customerId,
+        priceId: createInvoicePayload.priceId,
+        token: createInvoicePayload.token,
+        currency: createInvoicePayload.currency,
+        captchaToken: createInvoicePayload.captchaToken,
+        userAddress: createInvoicePayload.userAddress,
+        promoCodeId: undefined,
+      });
+      expect(sessionClient.createPaymentIntent).not.toHaveBeenCalled();
+      expect(createInvoiceResponse).toStrictEqual({
+        clientSecret: 'no_session_client_secret',
+        id: 'py_no_session_id',
         invoiceStatus: 'paid',
       });
     });

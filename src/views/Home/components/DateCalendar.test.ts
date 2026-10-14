@@ -7,6 +7,16 @@ describe('getCalendarLocale', () => {
     expect(getCalendarLocale('zh-tw')).toBe('zh-tw');
   });
 
+  test('When the language is pt-BR, then the regional dayjs locale is kept because Brazilian Portuguese has its own locale instead of a base one', () => {
+    expect(getCalendarLocale('pt-BR')).toBe('pt-br');
+    expect(getCalendarLocale('pt-br')).toBe('pt-br');
+  });
+
+  test('When the language is European Portuguese, then the base dayjs locale is used', () => {
+    expect(getCalendarLocale('pt')).toBe('pt');
+    expect(getCalendarLocale('pt-PT')).toBe('pt');
+  });
+
   test('When the language has a region suffix, then it falls back to the base dayjs locale', () => {
     expect(getCalendarLocale('es-ES')).toBe('es');
     expect(getCalendarLocale('en-US')).toBe('en');

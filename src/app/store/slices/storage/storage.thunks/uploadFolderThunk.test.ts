@@ -7,6 +7,8 @@ import tasksService from '../../../../tasks/services/tasks.service';
 import { TaskStatus } from '../../../../tasks/types';
 import { DriveFolderData } from 'app/drive/types';
 import { MAX_ALLOWED_UPLOAD_SIZE } from 'app/drive/services/network.service';
+import { wait } from 'utils/timeUtils';
+import workspacesSelectors from '../../workspaces/workspaces.selectors';
 
 vi.mock('../folderUtils/checkFolderDuplicated', () => ({
   checkFolderDuplicated: vi.fn(),
@@ -207,5 +209,47 @@ describe('Upload Folder Thunk', () => {
     })(dispatch, buildGetState(), {});
 
     expect(uploadItemsParallelThunk).toHaveBeenCalled();
+  });
+  test('When uploading a folder outside a workspace, then it does not wait after creating each folder', async () => {
+    const dispatch = vi.fn().mockImplementation((action) => {
+      if (typeof action === 'function') return action(dispatch, buildGetState(100), {});
+      return { unwrap: () => Promise.resolve(mockFolder) };
+    });
+
+    await uploadFolderThunk({
+      root: {
+        folderId: 'parent-uuid',
+        childrenFiles: [],
+        childrenFolders: [],
+        name: 'TestFolder',
+        fullPathEdited: 'path',
+      },
+      currentFolderId: 'parent-uuid',
+      options: { taskId },
+    })(dispatch, buildGetState(100), {});
+
+    expect(wait).not.toHaveBeenCalled();
+  });
+
+  test('When uploading a folder inside a workspace, then it waits after creating each folder', async () => {
+    (workspacesSelectors.getSelectedWorkspace as Mock).mockReturnValueOnce({ workspaceUser: { memberId: 'member-1' } });
+    const dispatch = vi.fn().mockImplementation((action) => {
+      if (typeof action === 'function') return action(dispatch, buildGetState(100), {});
+      return { unwrap: () => Promise.resolve(mockFolder) };
+    });
+
+    await uploadFolderThunk({
+      root: {
+        folderId: 'parent-uuid',
+        childrenFiles: [],
+        childrenFolders: [],
+        name: 'TestFolder',
+        fullPathEdited: 'path',
+      },
+      currentFolderId: 'parent-uuid',
+      options: { taskId },
+    })(dispatch, buildGetState(100), {});
+
+    expect(wait).toHaveBeenCalledWith(500);
   });
 });

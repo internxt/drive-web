@@ -3,6 +3,7 @@ import { authenticateUser, is2FANeeded, RegisterFunction } from 'services/auth.s
 import { AuthMethodTypes } from '../types';
 import databaseService from 'app/database/services/database.service';
 import { errorService, localStorageService, RealtimeService } from 'services';
+import { ATTRIBUTION_LOCAL_STORAGE_ITEMS, CHECKOUT_LOCAL_STORAGE_ITEMS } from 'services/storage-keys';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { STATUS_CODE_ERROR } from '../constants';
 
@@ -116,9 +117,14 @@ export const useAuthCheckout = ({ changeAuthMethod }: Pick<AuthCheckoutProps, 'c
     }
   };
 
+  const onEmailAlreadyHasAccount = () => {
+    setAuthError(translate('checkout.accountSetup.emailHasAccount'));
+    changeAuthMethod('signIn');
+  };
+
   const onLogOut = async () => {
     await databaseService.clear();
-    localStorageService.clear();
+    localStorageService.clearExcept([...CHECKOUT_LOCAL_STORAGE_ITEMS, ...ATTRIBUTION_LOCAL_STORAGE_ITEMS]);
     RealtimeService.getInstance().stop();
     changeAuthMethod('signUp');
   };
@@ -126,6 +132,7 @@ export const useAuthCheckout = ({ changeAuthMethod }: Pick<AuthCheckoutProps, 'c
   return {
     authError,
     onAuthenticateUser,
+    onEmailAlreadyHasAccount,
     onLogOut,
   };
 };

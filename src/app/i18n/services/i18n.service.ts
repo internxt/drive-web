@@ -11,8 +11,8 @@ import ru from 'dayjs/locale/ru';
 import de from 'dayjs/locale/de';
 import en from 'dayjs/locale/en';
 import tw from 'dayjs/locale/zh-tw';
+import ptBr from 'dayjs/locale/pt-br';
 
-import localStorageService from 'services/local-storage.service';
 import envService from 'services/env.service';
 
 import enJson from '../locales/en.json';
@@ -23,7 +23,7 @@ import zhJson from '../locales/zh.json';
 import ruJson from '../locales/ru.json';
 import deJson from '../locales/de.json';
 import twJson from '../locales/tw.json';
-import { LocalStorageItem } from 'app/core/types';
+import ptJson from '../locales/pt.json';
 
 const dayJsLocale = {
   es,
@@ -33,27 +33,32 @@ const dayJsLocale = {
   zh,
   ru,
   de,
-  tw,
+  'zh-tw': tw,
+  'pt-br': ptBr,
 };
 
-const deviceLang = localStorageService.get(LocalStorageItem.Language) ?? navigator.language.split('-')[0];
+const resources = {
+  en: { translation: enJson },
+  es: { translation: esJson },
+  fr: { translation: frJson },
+  it: { translation: itJson },
+  zh: { translation: zhJson },
+  ru: { translation: ruJson },
+  de: { translation: deJson },
+  'zh-TW': { translation: twJson },
+  'pt-BR': { translation: ptJson },
+};
 
-dayjs.locale(dayJsLocale[deviceLang] || 'en');
+i18next.on('languageChanged', (lng: string) => {
+  dayjs.locale(dayJsLocale[lng.toLowerCase()] ?? 'en');
+});
 
 export default i18next
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    resources: {
-      en: { translation: enJson },
-      es: { translation: esJson },
-      fr: { translation: frJson },
-      it: { translation: itJson },
-      zh: { translation: zhJson },
-      ru: { translation: ruJson },
-      de: { translation: deJson },
-      'zh-TW': { translation: twJson },
-    },
+    resources,
+    supportedLngs: Object.keys(resources),
     debug: !envService.isProduction(),
     fallbackLng: 'en',
     detection: {

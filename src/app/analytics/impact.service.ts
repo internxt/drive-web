@@ -11,7 +11,7 @@ import { bytesToString } from 'app/drive/services/size.service';
 import { getProductAmount } from 'views/Checkout/utils';
 import { sendAddShoppersConversion } from './addShoppers.services';
 import { LocalStorageItem } from 'app/core/types';
-import encryptedStorageService from 'services/encrypted-storage.service';
+import { PurchaseBuyer } from './types';
 
 /**
  * Stores relevant payment data in local storage to be retrieved later,
@@ -36,6 +36,7 @@ export interface SavePaymentDataParams {
   users: number;
   couponCodeData: CouponCodeData | undefined;
   isFirstPurchase: boolean;
+  customerId: string;
 }
 
 export function savePaymentDataInLocalStorage({
@@ -45,6 +46,7 @@ export function savePaymentDataInLocalStorage({
   users,
   couponCodeData,
   isFirstPurchase,
+  customerId,
 }: SavePaymentDataParams) {
   if (subscriptionId && selectedPlan?.price.interval !== 'lifetime') {
     localStorageService.set(LocalStorageItem.SubscriptionID, subscriptionId);
@@ -69,6 +71,14 @@ export function savePaymentDataInLocalStorage({
   }
 
   localStorageService.set(LocalStorageItem.IsFirstPurchase, String(isFirstPurchase));
+  localStorageService.set(LocalStorageItem.CheckoutCustomerId, customerId);
+
+  const impactSource = getCookie('impactSource');
+  if (impactSource) {
+    localStorageService.set(LocalStorageItem.ImpactSource, impactSource);
+  } else {
+    localStorageService.removeItem(LocalStorageItem.ImpactSource);
+  }
 }
 
 export async function handleImpactDTCCheckout({
@@ -135,15 +145,8 @@ export async function trackSignUp(uuid: string): Promise<void> {
   }
 }
 
-export async function trackPaymentConversion(): Promise<void> {
+export async function trackPaymentConversion({ id: buyerId, email: buyerEmail }: PurchaseBuyer): Promise<void> {
   try {
-    const userSettings = await encryptedStorageService.getUser();
-    if (!userSettings) {
-      console.warn('[Impact Service] No user settings found');
-      return;
-    }
-
-    const { uuid, email: userEmail } = userSettings;
     const subscription = localStorageService.get(LocalStorageItem.SubscriptionID);
     const paymentIntent = localStorageService.get(LocalStorageItem.PaymentIntentID);
     const currency = localStorageService.get(LocalStorageItem.Currency);
@@ -154,11 +157,11 @@ export async function trackPaymentConversion(): Promise<void> {
 
     try {
       sendAddShoppersConversion({
-        orderId: uuid,
+        orderId: buyerId,
         value: amount,
         currency: currency ?? 'EUR',
         couponCodeName: couponCode ?? undefined,
-        email: userEmail,
+        email: buyerEmail,
       });
     } catch (error) {
       console.error('[Impact Service] AddShoppers conversion failed:', error);
@@ -166,7 +169,7 @@ export async function trackPaymentConversion(): Promise<void> {
 
     const IMPACT_API = envService.getVariable('impactApiUrl');
     const anonymousID = getCookie('impactAnonymousId') || uuidV4();
-    const source = getCookie('impactSource');
+    const source = getCookie('impactSource') || localStorageService.get(LocalStorageItem.ImpactSource);
 
     const IMPACT_COUPON_WHITELIST = [
       'CNINTERNXT',
@@ -198,7 +201,7 @@ export async function trackPaymentConversion(): Promise<void> {
             payment_intent: paymentIntent,
             ...(couponCode && { order_promo_code: couponCode }),
           },
-          userId: uuid,
+          userId: buyerId,
           type: 'track',
           event: 'Payment Conversion',
         });

@@ -1,4 +1,5 @@
 import { LocalStorageItem } from 'app/core/types';
+import localStorageService from 'services/local-storage.service';
 
 export const BACKUP_KEY = {
   SEEN_AT: 'backup_key_seen_at',
@@ -16,3 +17,35 @@ export const THEMES = {
   STPATRICKS_THEME_AVAILABLE_LOCAL_STORAGE_KEY: LocalStorageItem.StpatricksTheme,
   ANNIVERSARY_THEME_AVAILABLE_LOCAL_STORAGE_KEY: LocalStorageItem.AnniversaryTheme,
 };
+
+export const CHECKOUT_LOCAL_STORAGE_ITEMS: LocalStorageItem[] = [
+  LocalStorageItem.CheckoutItemData,
+  LocalStorageItem.ItemOriginalPrice,
+];
+
+export const PAYMENT_LOCAL_STORAGE_ITEMS: LocalStorageItem[] = [
+  LocalStorageItem.SubscriptionID,
+  LocalStorageItem.PaymentIntentID,
+  LocalStorageItem.PriceId,
+  LocalStorageItem.ProductName,
+  LocalStorageItem.Currency,
+  LocalStorageItem.AmountPaid,
+  LocalStorageItem.CouponCode,
+  LocalStorageItem.IsFirstPurchase,
+  LocalStorageItem.CheckoutCustomerId,
+  LocalStorageItem.ImpactSource,
+];
+
+export const PURCHASE_LOCAL_STORAGE_ITEMS: LocalStorageItem[] = [
+  ...CHECKOUT_LOCAL_STORAGE_ITEMS,
+  ...PAYMENT_LOCAL_STORAGE_ITEMS,
+];
+
+export const ATTRIBUTION_LOCAL_STORAGE_ITEMS: LocalStorageItem[] = [
+  LocalStorageItem.GCLID,
+  LocalStorageItem.UccStorageKey,
+];
+
+export function clearPaymentStorage(): void {
+  PURCHASE_LOCAL_STORAGE_ITEMS.forEach((item) => localStorageService.removeItem(item));
+}

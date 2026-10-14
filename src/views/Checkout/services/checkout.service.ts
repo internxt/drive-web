@@ -1,8 +1,11 @@
 import { CouponCodeData, CreatedSubscriptionData } from '@internxt/sdk/dist/drive/payments/types/types';
+import { Checkout } from '@internxt/sdk/dist/payments';
 import axios from 'axios';
 import { SdkFactory } from 'app/core/factory/sdk';
 import {
   CreateCustomerPayload,
+  CreateCustomerWithoutAccountPayload,
+  CreatedCustomer,
   CreatePaymentIntentPayload,
   CreateSubscriptionPayload,
   GetPriceByIdPayload,
@@ -114,6 +117,11 @@ const createCustomer = async ({
   } as CreateCustomerPayload);
 };
 
+const createCustomerWithoutAccount = async (payload: CreateCustomerWithoutAccountPayload): Promise<CreatedCustomer> => {
+  const checkoutClient = SdkFactory.getNewApiInstance().createCheckoutClientWithoutSession();
+  return checkoutClient.createCustomerWithoutAccount(payload);
+};
+
 const getPriceById = async ({
   priceId,
   promoCodeName,
@@ -133,15 +141,20 @@ const getPriceById = async ({
   });
 };
 
-const createSubscription = async ({
-  customerId,
-  priceId,
-  token,
-  currency,
-  captchaToken,
-  promoCodeId,
-}: CreateSubscriptionPayload): Promise<CreatedSubscriptionData> => {
-  const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
+export interface CheckoutClientOptions {
+  withoutSession?: boolean;
+}
+
+const getCheckoutClient = async (options?: CheckoutClientOptions): Promise<Checkout> =>
+  options?.withoutSession
+    ? SdkFactory.getNewApiInstance().createCheckoutClientWithoutSession()
+    : SdkFactory.getNewApiInstance().createCheckoutClient();
+
+const createSubscription = async (
+  { customerId, priceId, token, currency, captchaToken, promoCodeId }: CreateSubscriptionPayload,
+  options?: CheckoutClientOptions,
+): Promise<CreatedSubscriptionData> => {
+  const checkoutClient = await getCheckoutClient(options);
   return checkoutClient.createSubscription({
     customerId,
     priceId,
@@ -152,16 +165,11 @@ const createSubscription = async ({
   });
 };
 
-export const createPaymentIntent = async ({
-  customerId,
-  priceId,
-  token,
-  currency,
-  captchaToken,
-  userAddress,
-  promoCodeId,
-}: CreatePaymentIntentPayload): Promise<PaymentIntent> => {
-  const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
+export const createPaymentIntent = async (
+  { customerId, priceId, token, currency, captchaToken, userAddress, promoCodeId }: CreatePaymentIntentPayload,
+  options?: CheckoutClientOptions,
+): Promise<PaymentIntent> => {
+  const checkoutClient = await getCheckoutClient(options);
   return checkoutClient.createPaymentIntent({
     customerId,
     priceId,
@@ -293,6 +301,7 @@ const trackIncompleteCheckout = async (selectedPlan: PriceWithTax | undefined, p
 const checkoutService = {
   fetchPromotionCodeByName,
   createCustomer,
+  createCustomerWithoutAccount,
   createPaymentIntent,
   getPriceById,
   createSubscription,
