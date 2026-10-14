@@ -32,6 +32,7 @@ export class FlatFolderZip {
     this.finished = this.passThrough.pipeTo(streamSaver.createWriteStream(folderName + '.zip'), {
       signal: opts.abortController?.signal,
     });
+    this.finished.catch(() => undefined);
   }
 
   addFile(name: string, source: ReadableStream<Uint8Array>): void {
@@ -123,20 +124,25 @@ export function createFolderWithFilesWritable(progress?: FlatFolderZipOpts['prog
 
       zip.add(writer);
 
-      source.pipeTo(
-        new WritableStream({
-          write(chunk) {
-            processedSize += chunk.length;
+      source
+        .pipeTo(
+          new WritableStream({
+            write(chunk) {
+              processedSize += chunk.length;
 
-            progress?.(processedSize);
+              progress?.(processedSize);
 
-            writer.push(chunk, false);
-          },
-          close() {
-            writer.push(new Uint8Array(0), true);
-          },
-        }),
-      );
+              writer.push(chunk, false);
+            },
+            close() {
+              writer.push(new Uint8Array(0), true);
+            },
+          }),
+        )
+        .catch((error) => {
+          passthroughController?.error(error);
+          passthroughController = null;
+        });
     },
     addFolder: (name: string): void => {
       const writer = new AsyncZipDeflate(name + '/', {
