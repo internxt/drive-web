@@ -54,7 +54,7 @@ const variableList = {
   dontRedirect: 'REACT_APP_DONT_REDIRECT',
   celloProductId: 'REACT_APP_CELLO_PRODUCT_ID',
   celloAssetsUrl: 'REACT_APP_CELLO_ASSETS_URL',
-  maxPreviewableFileSize: 'REACT_APP_MAX_PREVIEWABLE_FILE_SIZE_IN_MB',
+  maxPreviewableFileSize: 'REACT_APP_MAX_PREVIEWABLE_FILE_SIZE_IN_BYTES',
 };
 
 function getVariable(variable: keyof typeof variableList): string {

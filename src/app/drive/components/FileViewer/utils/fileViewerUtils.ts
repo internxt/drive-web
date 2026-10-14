@@ -5,7 +5,7 @@ import {
   convertibleImageExtensions,
   fileExtensionPreviewableGroups,
 } from 'app/drive/types/file-types';
-import { HALF_A_GIGABYTE_IN_BYTES } from 'services/media.service';
+import { getMaxPreviewableFileSizeInBytes } from 'services/media.service';
 
 export const extensionsList = fileExtensionService.computeExtensionsLists(fileExtensionPreviewableGroups);
 
@@ -36,7 +36,7 @@ const isConvertibleImage = (type: DriveFileData['type']): boolean =>
   convertibleImageExtensions.includes(String(type).toLowerCase());
 
 export const getPreviewSizeLimitBytes = ({ type }: Pick<DriveFileData, 'type'>): number =>
-  isConvertibleImage(type) ? MAX_CONVERTIBLE_IMAGE_PREVIEW_BYTES : HALF_A_GIGABYTE_IN_BYTES;
+  isConvertibleImage(type) ? MAX_CONVERTIBLE_IMAGE_PREVIEW_BYTES : getMaxPreviewableFileSizeInBytes();
 
 export const isPreviewableBySize = (file: Pick<DriveFileData, 'type' | 'size'>): boolean =>
   file.size < getPreviewSizeLimitBytes(file);

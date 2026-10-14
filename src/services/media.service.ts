@@ -27,16 +27,16 @@ export const audioTypes: Partial<AudioTypes> = {
   weba: 'audio/webm',
 };
 
-const DEFAULT_MAX_PREVIEWABLE_FILE_SIZE_IN_MB = 512 * 1024 * 1024;
+const DEFAULT_MAX_PREVIEWABLE_FILE_SIZE_IN_BYTES = 512 * 1024 * 1024;
 
-function getMaxPreviewableFileSizeInBytes(): number {
-  const sizeInMb = Number(envService.getVariable('maxPreviewableFileSize'));
-  const isValidSize = Number.isFinite(sizeInMb) && sizeInMb > 0;
-  return isValidSize ? sizeInMb : DEFAULT_MAX_PREVIEWABLE_FILE_SIZE_IN_MB;
+export function getMaxPreviewableFileSizeInBytes(): number {
+  const sizeInBytes = Number(envService.getVariable('maxPreviewableFileSize'));
+  const isValidSize = Number.isFinite(sizeInBytes) && sizeInBytes > 0;
+  return isValidSize ? sizeInBytes : DEFAULT_MAX_PREVIEWABLE_FILE_SIZE_IN_BYTES;
 }
 
 export function isFileSizePreviewable(size: number): boolean {
-  return size > 0 && size <  getMaxPreviewableFileSizeInBytes();
+  return size > 0 && size < getMaxPreviewableFileSizeInBytes();
 }
 
 export function getVideoMimeType(fileType: string): string {
