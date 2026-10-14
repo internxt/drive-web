@@ -192,7 +192,7 @@ describe('Custom hook to handle payments', () => {
         captchaToken: subscriptionPaymentPayload.captchaToken,
       });
 
-      expect(localStorageServiceSpy).toHaveBeenCalledTimes(6);
+      expect(localStorageServiceSpy).toHaveBeenCalledTimes(7);
 
       expect(setupIntent).toHaveBeenCalledWith({
         clientSecret: 'client_secret',
@@ -229,7 +229,7 @@ describe('Custom hook to handle payments', () => {
         captchaToken: subscriptionPaymentPayload.captchaToken,
       });
 
-      expect(localStorageServiceSpy).toHaveBeenCalledTimes(6);
+      expect(localStorageServiceSpy).toHaveBeenCalledTimes(7);
 
       expect(confirmPayment).toHaveBeenCalledWith({
         clientSecret: 'client_secret',
@@ -293,7 +293,7 @@ describe('Custom hook to handle payments', () => {
         captchaToken: subscriptionPaymentPayload.captchaToken,
       });
 
-      expect(localStorageServiceSpy).toHaveBeenCalledTimes(6);
+      expect(localStorageServiceSpy).toHaveBeenCalledTimes(7);
 
       expect(notificationsServiceSpy).toHaveBeenCalled();
       expect(confirmPayment).not.toHaveBeenCalled();
@@ -340,7 +340,7 @@ describe('Custom hook to handle payments', () => {
         promoCodeId: undefined,
       });
 
-      expect(localStorageServiceSpy).toHaveBeenCalledTimes(6);
+      expect(localStorageServiceSpy).toHaveBeenCalledTimes(7);
 
       expect(confirmPayment).toHaveBeenCalledWith({
         clientSecret: 'client_secret',
@@ -390,7 +390,7 @@ describe('Custom hook to handle payments', () => {
         promoCodeId: undefined,
       });
 
-      expect(localStorageServiceSpy).toHaveBeenCalledTimes(6);
+      expect(localStorageServiceSpy).toHaveBeenCalledTimes(7);
       expect(navigationServiceSpy).toHaveBeenCalledWith(AppView.CheckoutSuccess);
 
       expect(confirmPayment).not.toHaveBeenCalled();
@@ -509,6 +509,185 @@ describe('Custom hook to handle payments', () => {
 
       expect(createSubscriptionSpy).not.toHaveBeenCalled();
       expect(createPaymentIntentSpy).toHaveBeenCalled();
+    });
+
+    test('When the buyer has no account yet, then the purchase is recorded as their first one without looking up their invoices', async () => {
+      const payment = useUserPayment();
+      vi.spyOn(checkoutService, 'createSubscription').mockResolvedValue({
+        clientSecret: 'client_secret',
+        type: 'payment',
+        paymentIntentId: 'pi_123',
+        subscriptionId: 'sub_123',
+      });
+      vi.spyOn(paymentService, 'getInvoices').mockRejectedValue(new Error('Unauthorized'));
+      const localStorageSetSpy = vi.spyOn(localStorageService, 'set').mockImplementation(() => {});
+
+      await payment.handleUserPayment({
+        customerId: 'customer_id',
+        priceId: 'price_id',
+        token: 'payments_token',
+        translate: vi.fn(),
+        currency: 'eur',
+        confirmationTokenId: 'ctoken_123',
+        selectedPlan: { price: { interval: 'year', type: UserType.Individual } } as any,
+        captchaToken: 'captcha_token',
+        userAddress: '1.1.1.1',
+        confirmPayment: vi.fn().mockResolvedValue({ error: undefined }),
+        confirmSetupIntent: vi.fn().mockResolvedValue({ error: undefined }),
+        gclidStored: null,
+        isFirstPurchase: true,
+      });
+
+      expect(paymentService.getInvoices).not.toHaveBeenCalled();
+      expect(localStorageSetSpy).toHaveBeenCalledWith('isFirstPurchase', 'true');
+    });
+
+    test('When a buyer without an account purchases a subscription, then it is created through the client without a Drive session', async () => {
+      const payment = useUserPayment();
+      const createSubscriptionSpy = vi.spyOn(checkoutService, 'createSubscription').mockResolvedValue({
+        clientSecret: 'client_secret',
+        type: 'payment',
+        paymentIntentId: 'pi_123',
+        subscriptionId: 'sub_123',
+      });
+      vi.spyOn(localStorageService, 'set').mockImplementation(() => {});
+
+      await payment.handleUserPayment({
+        customerId: 'customer_id',
+        priceId: 'price_id',
+        token: 'payments_token',
+        translate: vi.fn(),
+        currency: 'eur',
+        confirmationTokenId: 'ctoken_123',
+        selectedPlan: { price: { interval: 'year', type: UserType.Individual } } as any,
+        captchaToken: 'captcha_token',
+        userAddress: '1.1.1.1',
+        confirmPayment: vi.fn().mockResolvedValue({ error: undefined }),
+        confirmSetupIntent: vi.fn().mockResolvedValue({ error: undefined }),
+        gclidStored: null,
+        isFirstPurchase: true,
+        isPasswordlessSignUp: true,
+      });
+
+      expect(createSubscriptionSpy).toHaveBeenCalledWith(
+        {
+          customerId: 'customer_id',
+          priceId: 'price_id',
+          token: 'payments_token',
+          currency: 'eur',
+          captchaToken: 'captcha_token',
+          promoCodeId: undefined,
+        },
+        { withoutSession: true },
+      );
+    });
+
+    test('When a buyer without an account purchases a lifetime plan, then the payment intent is created through the client without a Drive session', async () => {
+      const payment = useUserPayment();
+      const createPaymentIntentSpy = vi.spyOn(checkoutService, 'createPaymentIntent').mockResolvedValue({
+        clientSecret: 'client_secret',
+        invoiceStatus: 'open',
+        type: 'fiat',
+        id: 'pi_123',
+      });
+      vi.spyOn(localStorageService, 'set').mockImplementation(() => {});
+
+      await payment.handleUserPayment({
+        customerId: 'customer_id',
+        priceId: 'price_id',
+        token: 'payments_token',
+        translate: vi.fn(),
+        currency: 'eur',
+        confirmationTokenId: 'ctoken_123',
+        selectedPlan: { price: { interval: 'lifetime', type: UserType.Individual } } as any,
+        captchaToken: 'captcha_token',
+        userAddress: '1.1.1.1',
+        confirmPayment: vi.fn().mockResolvedValue({ error: undefined }),
+        confirmSetupIntent: vi.fn().mockResolvedValue({ error: undefined }),
+        gclidStored: null,
+        isFirstPurchase: true,
+        isPasswordlessSignUp: true,
+      });
+
+      expect(createPaymentIntentSpy).toHaveBeenCalledWith(
+        {
+          customerId: 'customer_id',
+          priceId: 'price_id',
+          token: 'payments_token',
+          currency: 'eur',
+          userAddress: '1.1.1.1',
+          captchaToken: 'captcha_token',
+          promoCodeId: undefined,
+        },
+        { withoutSession: true },
+      );
+    });
+
+    test('When a logged-in buyer purchases a subscription, then it is created through the regular client', async () => {
+      const payment = useUserPayment();
+      const createSubscriptionSpy = vi.spyOn(checkoutService, 'createSubscription').mockResolvedValue({
+        clientSecret: 'client_secret',
+        type: 'payment',
+        paymentIntentId: 'pi_123',
+        subscriptionId: 'sub_123',
+      });
+      vi.spyOn(localStorageService, 'set').mockImplementation(() => {});
+      vi.spyOn(paymentService, 'getInvoices').mockResolvedValue([]);
+
+      await payment.handleUserPayment({
+        customerId: 'customer_id',
+        priceId: 'price_id',
+        token: 'user_token',
+        translate: vi.fn(),
+        currency: 'eur',
+        confirmationTokenId: 'ctoken_123',
+        selectedPlan: { price: { interval: 'year', type: UserType.Individual } } as any,
+        captchaToken: 'captcha_token',
+        userAddress: '1.1.1.1',
+        confirmPayment: vi.fn().mockResolvedValue({ error: undefined }),
+        confirmSetupIntent: vi.fn().mockResolvedValue({ error: undefined }),
+        gclidStored: null,
+      });
+
+      expect(createSubscriptionSpy).toHaveBeenCalledWith({
+        customerId: 'customer_id',
+        priceId: 'price_id',
+        token: 'user_token',
+        currency: 'eur',
+        captchaToken: 'captcha_token',
+        promoCodeId: undefined,
+      });
+    });
+
+    test('When the buyer cancels or fails the payment confirmation, then the error is raised and they are not sent to the success page', async () => {
+      const payment = useUserPayment();
+      vi.spyOn(checkoutService, 'createSubscription').mockResolvedValue({
+        clientSecret: 'client_secret',
+        type: 'payment',
+        paymentIntentId: 'pi_123',
+        subscriptionId: 'sub_123',
+      });
+      vi.spyOn(localStorageService, 'set').mockImplementation(() => {});
+      const navigationServiceSpy = vi.spyOn(navigationService, 'push').mockImplementation(() => {});
+
+      const paymentAttempt = payment.handleUserPayment({
+        customerId: 'customer_id',
+        priceId: 'price_id',
+        token: 'payments_token',
+        translate: vi.fn(),
+        currency: 'eur',
+        confirmationTokenId: 'ctoken_123',
+        selectedPlan: { price: { interval: 'year', type: UserType.Individual } } as any,
+        captchaToken: 'captcha_token',
+        userAddress: '1.1.1.1',
+        confirmPayment: vi.fn().mockResolvedValue({ error: { message: 'Your card was declined' } }),
+        confirmSetupIntent: vi.fn(),
+        gclidStored: null,
+        isFirstPurchase: true,
+      });
+
+      await expect(paymentAttempt).rejects.toThrow('Your card was declined');
+      expect(navigationServiceSpy).not.toHaveBeenCalledWith(AppView.CheckoutSuccess);
     });
 
     test('When the plan is neither a subscription nor a lifetime, then the user is redirected to the Drive page directly', async () => {

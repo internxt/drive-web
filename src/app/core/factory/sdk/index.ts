@@ -131,6 +131,11 @@ export class SdkFactory {
     return Checkout.client(envService.getVariable('payments'), appDetails, apiSecurity);
   }
 
+  public createCheckoutClientWithoutSession(): Checkout {
+    const appDetails = SdkFactory.getAppDetails();
+    return Checkout.client(envService.getVariable('payments'), appDetails, { token: '' });
+  }
+
   public createBackupsClient(): Backups {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();

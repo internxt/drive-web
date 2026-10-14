@@ -110,6 +110,7 @@ export interface ProcessPurchasePayload {
   currentSelectedPlan: PriceWithTax;
   couponCodeData?: CouponCodeData;
   isFirstPurchase?: boolean;
+  isPasswordlessSignUp?: boolean;
 }
 
 export interface UseUserPaymentPayload {
@@ -127,6 +128,8 @@ export interface UseUserPaymentPayload {
   captchaToken: string;
   translate: Translate;
   couponCodeData?: CouponCodeData;
+  isFirstPurchase?: boolean;
+  isPasswordlessSignUp?: boolean;
 }
 
 export enum PlanInterval {

@@ -303,8 +303,9 @@ export class UploadFoldersManager {
 
     this.updateTaskProgress(taskId, abortController);
 
-    if (level.childrenFiles.length > 0 || level.childrenFolders.length > 0) {
-      // Added wait in order to allow enough time for the server to create the folder
+    const hasChildren = level.childrenFiles.length > 0 || level.childrenFolders.length > 0;
+    if (this.selectedWorkspace && hasChildren) {
+      // Workspace endpoints still validate the parent folder against the read replica
       await wait(600);
     }
 
