@@ -84,16 +84,13 @@ const fetchPromotionCodeByName = async (priceId: string, promotionCodeName: stri
 
 export type CreateCheckoutCustomerPayload = Pick<
   CreateCustomerPayload,
-  'country' | 'captchaToken' | 'companyVatId' | 'metadata' | 'lineAddress2'
+  'country' | 'captchaToken' | 'companyVatId' | 'metadata'
 > &
-  Partial<Pick<CreateCustomerPayload, 'customerName' | 'lineAddress1' | 'city' | 'postalCode'>>;
+  Partial<Pick<CreateCustomerPayload, 'customerName' | 'postalCode'>>;
 
 const createCustomer = async ({
   customerName,
-  city,
   country,
-  lineAddress1,
-  lineAddress2,
   postalCode,
   captchaToken,
   companyVatId,
@@ -104,16 +101,13 @@ const createCustomer = async ({
 }> => {
   const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
   return checkoutClient.createCustomer({
-    city,
-    lineAddress1,
-    lineAddress2,
     customerName,
     country,
     postalCode,
     captchaToken,
     companyVatId,
     metadata,
-  } as CreateCustomerPayload);
+  });
 };
 
 const createCustomerWithoutAccount = async (payload: CreateCustomerWithoutAccountPayload): Promise<CreatedCustomer> => {

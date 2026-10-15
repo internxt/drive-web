@@ -157,8 +157,6 @@ describe('Checkout Service tests', () => {
         postalCode: '12345',
         companyVatId: 'VAT123',
         captchaToken: 'token',
-        city: 'Valencia',
-        lineAddress1: 'Marina de empresas',
       };
 
       const result = await checkoutService.createCustomer(getCustomerPayload);
