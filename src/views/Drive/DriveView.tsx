@@ -4,7 +4,7 @@ import { connect, useSelector } from 'react-redux';
 import { AppView } from 'app/core/types';
 import fileService from 'app/drive/services/file.service';
 import newStorageService from 'app/drive/services/new-storage.service';
-import { DriveFileData, DriveItemData, FolderPath } from 'app/drive/types';
+import { DriveItemData, FolderPath } from 'app/drive/types';
 import useDriveNavigation from 'app/routes/hooks/Drive/useDrive';
 import { AppDispatch, RootState } from 'app/store';
 import { useAppSelector } from 'app/store/hooks';
