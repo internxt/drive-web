@@ -1941,8 +1941,8 @@
 
 "@internxt/sdk@1.22.2":
   version "1.22.2"
-  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.22.2/9462561d447b43a5202f944c1ad4fd2ba62c5b07#9462561d447b43a5202f944c1ad4fd2ba62c5b07"
-  integrity sha512-kYCC4yTC5VUWGvmE0wmkq4Scp7tUDCUOSHkmU2HzAq87KjAc5CTV8lsmL5Nxao/YQVHSuIGsGbLW2CUM33CBPw==
+  resolved "https://registry.yarnpkg.com/@internxt/sdk/-/sdk-1.22.2.tgz#2b79f57fa5e935c6c1b4805956b7844d117159c6"
+  integrity sha512-VrRmy2UySBiQkzXlXviVB1WvlUFBa9S8Yi0eAUXJMpO8bYW066p+z3WfVDP80R2wwKF0TyOxAs2YZVj0vCNn3Q==
   dependencies:
     axios "^1.16.0"
 
