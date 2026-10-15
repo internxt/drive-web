@@ -229,6 +229,69 @@ describe('NetworkFacade', () => {
       expect(decryptStream).toHaveBeenCalledWith([mockStream], overrideKey, iv, chunkStart);
     });
 
+    describe('Choosing the key the chunk is decrypted with', () => {
+      const derivedKey = Buffer.alloc(32, 0x03);
+      const iv = Buffer.alloc(16);
+      const encryptedChunk = new ReadableStream();
+
+      const simulateSdkDownload = async (...args: unknown[]) => {
+        const [onDownloadables, onDecrypt] = args.slice(6) as [
+          (downloadables: { url: string }[]) => Promise<void>,
+          (algorithm: string, key: Buffer, iv: Buffer, fileSize: number) => Promise<void>,
+        ];
+        await onDownloadables([{ url: downloadExample }]);
+        await onDecrypt('aes256ctr', derivedKey, iv, 2048);
+      };
+
+      const expectSdkDownloadCalledWith = (sdkDownload: unknown, fileKeySource: string | Buffer) =>
+        expect(sdkDownload).toHaveBeenCalledWith(
+          fileId,
+          bucketId,
+          fileKeySource,
+          mockNetwork,
+          expect.anything(),
+          Buffer.from,
+          expect.any(Function),
+          expect.any(Function),
+          undefined,
+        );
+
+      beforeEach(() => {
+        vi.mocked(global.fetch).mockResolvedValue({ status: 206, body: encryptedChunk } as Response);
+        vi.mocked(downloadFile).mockImplementation(simulateSdkDownload);
+        vi.mocked(downloadFileWithBucketKey).mockImplementation(simulateSdkDownload);
+      });
+
+      test('when a chunk of a file shared with a bucket key is downloaded, then its file key comes from the bucket key and the request asks only for that byte range', async () => {
+        const bucketKey = Buffer.alloc(32, 0x04);
+
+        await networkFacade.downloadChunk({
+          bucketId,
+          fileId,
+          mnemonic: '',
+          chunkStart,
+          chunkEnd,
+          options: { bucketKey },
+        });
+
+        expectSdkDownloadCalledWith(downloadFileWithBucketKey, bucketKey);
+        expect(downloadFile).not.toHaveBeenCalled();
+        expect(global.fetch).toHaveBeenCalledWith(
+          downloadExample,
+          expect.objectContaining({ headers: expect.objectContaining({ Range: `bytes=${chunkStart}-${chunkEnd}` }) }),
+        );
+        expect(decryptStream).toHaveBeenCalledWith([encryptedChunk], derivedKey, iv, chunkStart);
+      });
+
+      test('when a chunk of a file shared with a mnemonic is downloaded, then its file key comes from the mnemonic', async () => {
+        await networkFacade.downloadChunk({ bucketId, fileId, mnemonic, chunkStart, chunkEnd });
+
+        expectSdkDownloadCalledWith(downloadFile, mnemonic);
+        expect(downloadFileWithBucketKey).not.toHaveBeenCalled();
+        expect(decryptStream).toHaveBeenCalledWith([encryptedChunk], derivedKey, iv, chunkStart);
+      });
+    });
+
     it('When the status is not 200 or 206 (successfully downloaded), then an error indicating so is thrown', async () => {
       const mockResponse = {
         status: 404,

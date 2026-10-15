@@ -117,6 +117,38 @@ describe('Download V2', () => {
       });
       expect(result).toStrictEqual(mockStream);
     });
+
+    test('when a large file is shared with a bucket key, then it is downloaded in chunks authenticated with the share credentials and decrypted with that bucket key', async () => {
+      const abortController = new AbortController();
+      const progressCallback = vi.fn();
+      const bucketKey = Buffer.from('bucket-key');
+
+      const networkClientSpy = vi.spyOn(Network, 'client').mockReturnValue(mockNetworkClient as any);
+      const downloadFileSpy = vi.spyOn(MultipartDownload.prototype, 'downloadFile').mockResolvedValue(mockStream);
+
+      const result = await multipartDownload({
+        bucketId: 'test-bucket',
+        fileId: 'test-file',
+        creds: mockCredentials,
+        key: { bucketKey },
+        fileSize: 4096,
+        options: { notifyProgress: progressCallback, abortController },
+      });
+
+      expect(networkClientSpy).toHaveBeenCalledWith(
+        mockBridgeUrl,
+        { clientName: 'drive-web', clientVersion: packageJson.version },
+        { bridgeUser: mockCredentials.user, userId: mockHashedPassword },
+      );
+      expect(downloadFileSpy).toHaveBeenCalledWith({
+        bucketId: 'test-bucket',
+        fileId: 'test-file',
+        mnemonic: '',
+        fileSize: 4096,
+        options: { bucketKey, downloadingCallback: progressCallback, abortController },
+      });
+      expect(result).toStrictEqual(mockStream);
+    });
   });
 
   describe('Download single chunk', () => {
