@@ -27,7 +27,8 @@ const isAllowedOrigin = (origin: string): boolean => {
       url.protocol === 'https:' &&
       (url.hostname === 'meet-web.pages.dev' ||
         url.hostname.endsWith('.meet-web.pages.dev') ||
-        url.hostname.endsWith('-meet-web.storageinternxt.workers.dev'))
+        url.hostname.endsWith('-meet-web.storageinternxt.workers.dev') ||
+        url.hostname.endsWith('.mail-web-ea0.pages.dev'))
     ) {
       return true;
     }
