@@ -1,4 +1,3 @@
-import { FileMeta } from '@internxt/sdk/dist/drive/storage/types';
 import { useEffect, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 
@@ -25,21 +24,7 @@ import workspacesService from 'services/workspace.service';
 import DriveExplorer from 'views/Drive/components/DriveExplorer/DriveExplorer';
 import encryptedStorageService from 'services/encrypted-storage.service';
 import { Loader } from '@internxt/ui';
-
-type DriveThumbnail = DriveFileData['thumbnails'][number];
-type FileMetaThumbnail = NonNullable<FileMeta['thumbnails']>[number];
-
-const toDriveThumbnail = (thumbnail: FileMetaThumbnail): DriveThumbnail => ({
-  id: thumbnail.id,
-  file_id: thumbnail.fileId,
-  type: thumbnail.type,
-  max_width: thumbnail.maxWidth,
-  max_height: thumbnail.maxHeight,
-  size: thumbnail.size,
-  bucket_id: thumbnail.bucketId,
-  bucket_file: thumbnail.bucketFile,
-  encrypt_version: thumbnail.encryptVersion,
-});
+import { toDriveThumbnail } from 'utils/driveThumbnail.utils';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
