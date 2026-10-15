@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, test, vi } from 'vitest';
 import { FlatFolderZip, createFolderWithFilesWritable } from './zip.service';
 import browserService from './browser.service';
 import * as streamService from './stream.service';
@@ -9,6 +9,16 @@ vi.mock('js-file-download');
 vi.mock('../libs/streamSaver');
 vi.mock('./browser.service', () => ({ default: { isBrave: vi.fn() } }));
 vi.mock('./stream.service', () => ({ binaryStreamToBlob: vi.fn() }));
+
+const chunkDownloadError = new Error('Chunk download failed');
+
+const createFailingFileStream = () =>
+  new ReadableStream<Uint8Array>({
+    start(controller) {
+      controller.enqueue(new Uint8Array([1, 2, 3]));
+      controller.error(chunkDownloadError);
+    },
+  });
 
 describe('FlatFolderZip', () => {
   let consoleInfoSpy: ReturnType<typeof vi.spyOn>;
@@ -87,6 +97,15 @@ describe('FlatFolderZip', () => {
       expect(fileDownload).toHaveBeenCalledWith(mockBlob, 'complete-test.zip', 'application/zip');
     });
   });
+
+  describe('Failing files', () => {
+    test('when a file fails while the zip is being saved, then closing the zip fails with that error', async () => {
+      const zip = new FlatFolderZip('test-folder', {});
+      zip.addFile('large-file.bin', createFailingFileStream());
+
+      await expect(zip.close()).rejects.toThrow(chunkDownloadError);
+    });
+  });
 });
 
 describe('createFolderWithFilesWritable', () => {
@@ -142,6 +161,24 @@ describe('createFolderWithFilesWritable', () => {
       const zipStream = createFolderWithFilesWritable();
 
       expect(() => zipStream[method]()).not.toThrow();
+    });
+  });
+
+  describe('Failing files', () => {
+    test('when a file fails while it is being added to a zip, then the zip download fails instead of hanging', async () => {
+      const zipStream = createFolderWithFilesWritable();
+      zipStream.addFile('large-file.bin', createFailingFileStream());
+      zipStream.end();
+
+      const readWholeZip = async () => {
+        const reader = zipStream.stream.getReader();
+        let isDone = false;
+        while (!isDone) {
+          ({ done: isDone } = await reader.read());
+        }
+      };
+
+      await expect(readWholeZip()).rejects.toThrow(chunkDownloadError);
     });
   });
 

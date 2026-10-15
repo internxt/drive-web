@@ -13,6 +13,7 @@ export interface LegacyShardMeta {
 export interface DownloadOptions {
   key?: Buffer;
   token?: string;
+  bucketKey?: Buffer;
   abortController?: AbortController;
   downloadingCallback?: DownloadProgressCallback;
 }
