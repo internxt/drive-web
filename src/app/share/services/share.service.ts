@@ -28,7 +28,7 @@ import errorService from 'services/error.service';
 import workspacesService from 'services/workspace.service';
 import { downloadFolderAsZip } from 'app/drive/services/folder.service';
 import { DownloadManager } from '../../network/DownloadManager';
-import { downloadFile } from 'app/network/download';
+import { downloadFileBySize } from 'app/network/download/downloadFileBySize';
 import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
 import downloadService from 'app/drive/services/download.service';
 import { binaryStreamToBlob } from 'services/stream.service';
@@ -739,11 +739,12 @@ export async function downloadPublicSharedItems({
       throw new Error(`Missing network data to download shared file '${getPublicItemDownloadName(file)}'`);
     }
 
-    return downloadFile({
+    return downloadFileBySize({
       bucketId: file.bucket,
       fileId: file.fileId,
       creds: credentials,
       key,
+      fileSize: Number(file.size),
     });
   };
 
