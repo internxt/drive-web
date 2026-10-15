@@ -151,7 +151,7 @@ const getCheckoutClient = async (options?: CheckoutClientOptions): Promise<Check
     : SdkFactory.getNewApiInstance().createCheckoutClient();
 
 const createSubscription = async (
-  { customerId, priceId, token, currency, captchaToken, promoCodeId }: CreateSubscriptionPayload,
+  { customerId, priceId, token, currency, captchaToken, promoCodeId, gclid }: CreateSubscriptionPayload,
   options?: CheckoutClientOptions,
 ): Promise<CreatedSubscriptionData> => {
   const checkoutClient = await getCheckoutClient(options);
@@ -162,11 +162,12 @@ const createSubscription = async (
     currency,
     captchaToken,
     promoCodeId,
+    gclid,
   });
 };
 
 export const createPaymentIntent = async (
-  { customerId, priceId, token, currency, captchaToken, userAddress, promoCodeId }: CreatePaymentIntentPayload,
+  { customerId, priceId, token, currency, captchaToken, userAddress, promoCodeId, gclid }: CreatePaymentIntentPayload,
   options?: CheckoutClientOptions,
 ): Promise<PaymentIntent> => {
   const checkoutClient = await getCheckoutClient(options);
@@ -178,6 +179,7 @@ export const createPaymentIntent = async (
     captchaToken,
     userAddress,
     promoCodeId,
+    gclid,
   });
 };
 
