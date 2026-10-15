@@ -1,7 +1,7 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useInitializeCheckout } from './useInitializeCheckout';
-import { checkoutService, currencyService, paymentService } from '../services';
+import { checkoutService, paymentService } from '../services';
 import { navigationService } from 'services';
 import { AppView } from 'app/core/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
@@ -24,11 +24,6 @@ describe('Initialize checkout custom hook', () => {
     currency: 'eur',
     payment_method_types: ['card', 'paypal'],
   };
-
-  const mockCryptoCurrencies = [
-    { id: 'BTC', name: 'Bitcoin' },
-    { id: 'ETH', name: 'Ethereum' },
-  ];
 
   const mockPriceWithTax: PriceWithTax = {
     price: {
@@ -69,7 +64,6 @@ describe('Initialize checkout custom hook', () => {
       ...mockStripeElementsOptions,
       mode: plan.price.interval === 'lifetime' ? 'payment' : 'subscription',
     }));
-    vi.spyOn(currencyService, 'getAvailableCryptoCurrencies').mockResolvedValue(mockCryptoCurrencies as any);
     vi.spyOn(navigationService, 'push').mockImplementation(() => {});
     vi.spyOn(notificationsService, 'show').mockImplementation(() => '');
   });
@@ -231,59 +225,6 @@ describe('Initialize checkout custom hook', () => {
     );
   });
 
-  describe('Loading crypto currencies', () => {
-    // IS_CRYPTO_PAYMENT_ENABLED is currently false, so crypto currencies are never fetched,
-    // even for a lifetime plan. Re-enable this test if that flag is turned back on.
-    test.skip('When the plan is lifetime, then crypto currencies are fetched', async () => {
-      const props = {
-        checkoutTheme: 'light',
-        price: mockLifetimePriceWithTax,
-        translate: mockTranslate,
-      };
-
-      const { result } = renderHook(() => useInitializeCheckout(props));
-
-      await waitFor(() => {
-        expect(currencyService.getAvailableCryptoCurrencies).toHaveBeenCalled();
-        expect(result.current.availableCryptoCurrencies).toEqual(mockCryptoCurrencies);
-      });
-    });
-
-    test.skip('When the plan is not lifetime, then crypto currencies are not fetched', async () => {
-      const props = {
-        checkoutTheme: 'light',
-        price: mockPriceWithTax,
-        translate: mockTranslate,
-      };
-
-      renderHook(() => useInitializeCheckout(props));
-
-      await waitFor(() => {
-        expect(currencyService.getAvailableCryptoCurrencies).not.toHaveBeenCalled();
-      });
-    });
-
-    // IS_CRYPTO_PAYMENT_ENABLED is currently false, so the fetch (and its failure path) never
-    // runs. Re-enable this test if that flag is turned back on.
-    test.skip('When fetching crypto currencies fails, then a notification is shown', async () => {
-      vi.spyOn(currencyService, 'getAvailableCryptoCurrencies').mockRejectedValue(new Error('Crypto fetch failed'));
-      const props = {
-        checkoutTheme: 'light',
-        price: mockLifetimePriceWithTax,
-        translate: mockTranslate,
-      };
-
-      renderHook(() => useInitializeCheckout(props));
-
-      await waitFor(() => {
-        expect(notificationsService.show).toHaveBeenCalledWith({
-          text: 'checkout.error.fetchingCryptoCurrencies',
-          type: ToastType.Error,
-        });
-      });
-    });
-  });
-
   describe('Business plan restriction', () => {
     const mockBusinessPriceWithTax: PriceWithTax = {
       ...mockPriceWithTax,
@@ -386,7 +327,6 @@ describe('Initialize checkout custom hook', () => {
 
       expect(result.current).toHaveProperty('stripeSdk');
       expect(result.current).toHaveProperty('stripeElementsOptions');
-      expect(result.current).toHaveProperty('availableCryptoCurrencies');
       expect(result.current).toHaveProperty('isCheckoutReady');
     });
   });

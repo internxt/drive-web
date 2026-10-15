@@ -1,7 +1,6 @@
 import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { Stripe } from '@stripe/stripe-js';
-import { ActionDialog, DialogActionConfig } from 'app/contexts/dialog-manager/ActionDialogManager.context';
 import { Translate } from 'app/i18n/types';
 
 export enum Currency {
@@ -105,7 +104,6 @@ export interface ProcessPurchasePayload {
   userAddress: string;
   confirmPayment: Stripe['confirmPayment'];
   confirmSetupIntent: Stripe['confirmSetup'];
-  openCryptoPaymentDialog?: (key: ActionDialog, config?: DialogActionConfig) => void;
   translate: Translate;
   currentSelectedPlan: PriceWithTax;
   couponCodeData?: CouponCodeData;
@@ -123,7 +121,6 @@ export interface UseUserPaymentPayload {
   userAddress: string;
   confirmPayment: Stripe['confirmPayment'];
   confirmSetupIntent: Stripe['confirmSetup'];
-  openCryptoPaymentDialog?: (key: ActionDialog, config?: DialogActionConfig) => void;
   gclidStored: string | null;
   captchaToken: string;
   translate: Translate;
@@ -144,7 +141,6 @@ export enum InvoiceStatus {
 
 export enum PaymentType {
   FIAT = 'fiat',
-  CRYPTO = 'crypto',
 }
 
 export type { UserInfoProps, CheckoutViewManager } from './checkout.types';

@@ -79,7 +79,6 @@ vi.mock('app/core/factory/sdk', () => ({
           id: 'py_id',
           invoiceStatus: 'paid',
         }),
-        verifyCryptoPayment: vi.fn().mockResolvedValue(true),
       }),
       createCheckoutClientWithoutSession: vi.fn().mockReturnValue({
         createSubscription: vi.fn().mockResolvedValue({
@@ -378,14 +377,6 @@ describe('Checkout Service tests', () => {
         amountOff: undefined,
         percentOff: 10,
       });
-    });
-  });
-
-  describe('Verify the crypto payment', () => {
-    test('When the token is passed to verify the crypto payment, then the correct data is returned', async () => {
-      const token = 'token';
-      const response = await checkoutService.verifyCryptoPayment(token);
-      expect(response).toBeTruthy();
     });
   });
 

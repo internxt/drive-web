@@ -1,18 +1,17 @@
 import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
-import { CryptoCurrency, PriceWithTax } from '@internxt/sdk/dist/payments/types';
+import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import enTranslations from 'app/i18n/locales/en.json';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import UrgentCheckoutView from './UrgentCheckoutView';
 import { CheckoutViewManager } from 'views/Checkout/types/checkout.types';
 import { UrgentCheckoutVariant } from '../constants';
-import { AuthMethodTypes, PaymentType } from 'views/Checkout/types';
+import { AuthMethodTypes } from 'views/Checkout/types';
 
 vi.mock('@stripe/react-stripe-js', () => ({
   useStripe: () => ({}),
   useElements: () => ({ getElement: () => null }),
   PaymentElement: () => <div data-testid="payment-element" />,
-  AddressElement: () => <div data-testid="address-element" />,
 }));
 
 const translate = (key: string, props?: Record<string, unknown>) => {
@@ -30,8 +29,6 @@ vi.mock('app/i18n/provider/TranslationProvider', () => ({
 }));
 
 interface RenderOptions {
-  cryptoCurrencies?: CryptoCurrency[];
-  onCurrencyTypeChanges?: (currency: PaymentType) => void;
   authMethod?: AuthMethodTypes;
   authError?: string;
 }
@@ -54,20 +51,13 @@ const checkoutViewManager = {
   onLogOut: vi.fn(),
   onCheckoutButtonClicked: vi.fn(),
   handleAuthMethodChange: vi.fn(),
-  onCurrencyChange: vi.fn(),
-  onUserAddressChanges: vi.fn(),
-  onUserNameChanges: vi.fn(),
 } as unknown as CheckoutViewManager;
-
-const availableCryptoCurrencies = [
-  { currencyId: 'BTC', name: 'Bitcoin', imageUrl: 'https://internxt.com/btc.svg', networkName: 'bitcoin' },
-] as unknown as CryptoCurrency[];
 
 const CREATIVE_IMAGE_ALT = 'Internxt Drive on a laptop and a phone';
 
 const renderUrgentCheckout = (
   variant = UrgentCheckoutVariant.Mainstream,
-  { cryptoCurrencies, onCurrencyTypeChanges = vi.fn(), authMethod = 'signUp', authError }: RenderOptions = {},
+  { authMethod = 'signUp', authError }: RenderOptions = {},
 ) =>
   render(
     <UrgentCheckoutView
@@ -80,11 +70,8 @@ const renderUrgentCheckout = (
         authError,
         couponCodeData,
         currentSelectedPlan: selectedPlan,
-        selectedCurrency: 'usd',
       }}
       checkoutViewManager={checkoutViewManager}
-      availableCryptoCurrencies={cryptoCurrencies}
-      onCurrencyTypeChanges={onCurrencyTypeChanges}
     />,
   );
 
@@ -137,38 +124,6 @@ describe('urgent checkout view', () => {
     const { container } = renderUrgentCheckout(variant);
 
     expect(container.querySelector(`img[alt="${CREATIVE_IMAGE_ALT}"]`)?.getAttribute('src')).toContain(expectedImage);
-  });
-
-  describe('Crypto payments', () => {
-    const getCryptoSection = () => screen.getByText('Crypto').closest<HTMLElement>('[style*="--color-surface"]');
-
-    it('When no crypto currencies are available, then the crypto payment option is not shown', () => {
-      renderUrgentCheckout();
-
-      expect(screen.queryByText('Crypto')).toBeNull();
-    });
-
-    it('When crypto currencies are available, then the section is shown and repainted dark', () => {
-      renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { cryptoCurrencies: availableCryptoCurrencies });
-      const cryptoSection = getCryptoSection();
-
-      expect(cryptoSection).toBeTruthy();
-      expect(cryptoSection?.className).toContain('text-white');
-      expect(cryptoSection?.style.getPropertyValue('--color-surface')).toBe('10 17 32');
-    });
-
-    it('When the crypto dropdown is opened, then the currencies are listed and the payment type changes', () => {
-      const onCurrencyTypeChanges = vi.fn();
-      renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, {
-        cryptoCurrencies: availableCryptoCurrencies,
-        onCurrencyTypeChanges,
-      });
-
-      fireEvent.click(screen.getByText('Crypto'));
-
-      expect(getCryptoSection()?.contains(screen.getByText('Bitcoin'))).toBe(true);
-      expect(onCurrencyTypeChanges).toHaveBeenCalledWith(PaymentType.CRYPTO);
-    });
   });
 
   describe('Signing up and logging in', () => {

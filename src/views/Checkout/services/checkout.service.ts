@@ -10,7 +10,6 @@ import {
   CreateSubscriptionPayload,
   GetPriceByIdPayload,
   PaymentIntent,
-  PaymentIntentCrypto,
   PriceWithTax,
 } from '@internxt/sdk/dist/payments/types';
 import { StripeElementsOptionsMode } from '@stripe/stripe-js';
@@ -209,11 +208,6 @@ const checkoutSetupIntent = async (customerId: string) => {
   }
 };
 
-const verifyCryptoPayment = async (token: PaymentIntentCrypto['token']): Promise<boolean> => {
-  const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
-  return checkoutClient.verifyCryptoPayment(token);
-};
-
 const loadStripeElements = async (
   theme: {
     backgroundColor: string;
@@ -307,7 +301,6 @@ const checkoutService = {
   createSubscription,
   loadStripeElements,
   checkoutSetupIntent,
-  verifyCryptoPayment,
   trackIncompleteCheckout,
 };
 
