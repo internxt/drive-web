@@ -19,6 +19,8 @@ const initialState: StorageState = {
   levelsFilesLength: {},
   hasMoreDriveFolders: {},
   hasMoreDriveFiles: {},
+  driveFoldersCursor: {},
+  driveFilesCursor: {},
   recents: [],
   isLoadingRecents: false,
   favorites: [],
@@ -118,12 +120,23 @@ export const storageSlice = createSlice({
       state.levelsFoldersLength[action.payload.folderId] = 0;
       state.levelsFilesLength[action.payload.folderId] = 0;
       state.levels[action.payload.folderId] = [];
+      delete state.driveFoldersCursor[action.payload.folderId];
+      delete state.driveFilesCursor[action.payload.folderId];
     },
     setHasMoreDriveFolders: (state: StorageState, action: PayloadAction<{ folderId: string; status: boolean }>) => {
       state.hasMoreDriveFolders[action.payload.folderId] = action.payload.status;
     },
     setHasMoreDriveFiles: (state: StorageState, action: PayloadAction<{ folderId: string; status: boolean }>) => {
       state.hasMoreDriveFiles[action.payload.folderId] = action.payload.status;
+    },
+    setDriveFoldersCursor: (
+      state: StorageState,
+      action: PayloadAction<{ folderId: string; cursor: string | null }>,
+    ) => {
+      state.driveFoldersCursor[action.payload.folderId] = action.payload.cursor;
+    },
+    setDriveFilesCursor: (state: StorageState, action: PayloadAction<{ folderId: string; cursor: string | null }>) => {
+      state.driveFilesCursor[action.payload.folderId] = action.payload.cursor;
     },
     resetDrivePagination: (state: StorageState) => {
       state.hasMoreDriveFolders[state.currentPath.uuid] = true;
@@ -417,6 +430,11 @@ export const storageSlice = createSlice({
     },
 
     setDriveItemsOrder: (state: StorageState, action: PayloadAction<string>) => {
+      const hasOrderChanged = state.driveItemsOrder !== action.payload;
+      if (hasOrderChanged) {
+        state.driveFoldersCursor = {};
+        state.driveFilesCursor = {};
+      }
       state.driveItemsOrder = action.payload;
     },
   },
