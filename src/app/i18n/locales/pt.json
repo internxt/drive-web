@@ -874,6 +874,17 @@
       "title": "Renomear",
       "label": "Nome"
     },
+    "alreadyExistsModal": {
+      "title": "O item já existe",
+      "selectOption": "Selecione uma opção",
+      "description": "{{itemName}} já existe neste local. O que você deseja fazer?",
+      "replaceItem": "Substituir o item",
+      "keepBoth": "Manter ambos",
+      "skipItem": "Ignorar este item",
+      "applyToAll": "Aplicar esta ação a todos os duplicados",
+      "upload": "Enviar",
+      "move": "Mover"
+    },
     "renameModal": {
       "title": "O item já existe",
       "titleMultipleItems": "Vários itens já existem",

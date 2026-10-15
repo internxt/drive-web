@@ -4,6 +4,11 @@ import CheckoutSuccessView from './CheckoutSuccessView';
 import { AppView, LocalStorageItem } from 'app/core/types';
 import { PURCHASE_LOCAL_STORAGE_ITEMS } from 'services/storage-keys';
 
+const { LOGGED_IN_BUYER, BUYER_WITHOUT_ACCOUNT } = vi.hoisted(() => ({
+  LOGGED_IN_BUYER: { id: 'user_123', email: 'buyer@internxt.com' },
+  BUYER_WITHOUT_ACCOUNT: { id: 'cus_123', email: 'new.buyer@internxt.com' },
+}));
+
 const mocks = vi.hoisted(() => ({
   localStorageRemoveItem: vi.fn(),
   localStorageGet: vi.fn(),
@@ -12,7 +17,7 @@ const mocks = vi.hoisted(() => ({
   retrievePaymentIntent: vi.fn(),
   retrieveSetupIntent: vi.fn(),
   metaTrackPurchase: vi.fn(),
-  gaTrackPurchase: vi.fn().mockResolvedValue(undefined),
+  gaTrackPurchase: vi.fn(),
   trackPaymentConversion: vi.fn().mockResolvedValue(undefined),
   userStoragePolling: vi.fn(),
   notificationsShow: vi.fn(),
@@ -24,7 +29,12 @@ vi.mock('services/navigation.service', () => ({ default: { push: mocks.navigatio
 vi.mock('services/local-storage.service', () => ({
   default: { removeItem: mocks.localStorageRemoveItem, get: mocks.localStorageGet },
 }));
-vi.mock('services/encrypted-storage.service', () => ({ default: { getToken: mocks.getSessionToken } }));
+vi.mock('services/encrypted-storage.service', () => ({
+  default: {
+    getToken: mocks.getSessionToken,
+    getUser: () => (mocks.getSessionToken() ? { uuid: LOGGED_IN_BUYER.id, email: LOGGED_IN_BUYER.email } : undefined),
+  },
+}));
 vi.mock('../components/ResendAccountSetupEmailButton', () => ({
   ResendAccountSetupEmailButton: () => <button>checkout.accountSetup.resendEmail</button>,
 }));
@@ -74,10 +84,10 @@ const renderAndWaitForRedirect = async () => {
   await waitFor(() => expect(mocks.navigationPush).toHaveBeenCalledWith(AppView.Drive));
 };
 
-const expectPurchaseTracked = () => {
+const expectPurchaseTracked = (buyer = LOGGED_IN_BUYER) => {
   expect(mocks.metaTrackPurchase).toHaveBeenCalledOnce();
-  expect(mocks.gaTrackPurchase).toHaveBeenCalledOnce();
-  expect(mocks.trackPaymentConversion).toHaveBeenCalledOnce();
+  expect(mocks.gaTrackPurchase).toHaveBeenCalledExactlyOnceWith(buyer);
+  expect(mocks.trackPaymentConversion).toHaveBeenCalledExactlyOnceWith(buyer);
 };
 
 const expectPurchaseNotTracked = () => {
@@ -94,8 +104,12 @@ const expectNoFailureNotified = () => {
   expect(mocks.notificationsShow).not.toHaveBeenCalled();
 };
 
-const expectCheckoutFinished = () => {
+const expectPaymentDataCleared = () => {
   PURCHASE_LOCAL_STORAGE_ITEMS.forEach((item) => expect(mocks.localStorageRemoveItem).toHaveBeenCalledWith(item));
+};
+
+const expectCheckoutFinished = () => {
+  expectPaymentDataCleared();
   expect(mocks.userStoragePolling).toHaveBeenCalledOnce();
 };
 
@@ -110,32 +124,54 @@ describe('Checkout success view', () => {
   describe('When a buyer without an account finishes paying', () => {
     beforeEach(() => {
       mocks.getSessionToken.mockReturnValue(undefined);
-      mocks.localStorageGet.mockImplementation((key: string) =>
-        key === LocalStorageItem.CheckoutAccountSetupEmail ? 'new.buyer@internxt.com' : null,
-      );
+      mocks.localStorageGet.mockImplementation((key: string) => {
+        if (key === LocalStorageItem.CheckoutAccountSetupEmail) return BUYER_WITHOUT_ACCOUNT.email;
+        if (key === LocalStorageItem.CheckoutCustomerId) return BUYER_WITHOUT_ACCOUNT.id;
+        return null;
+      });
     });
 
     test('then they are asked to check the email the setup link was sent to, and they stay on the page', async () => {
       render(<CheckoutSuccessView />);
 
       expect(await screen.findByText('checkout.accountSetup.checkEmail.title')).toBeInTheDocument();
-      expect(screen.getByText('new.buyer@internxt.com')).toBeInTheDocument();
+      expect(screen.getByText(BUYER_WITHOUT_ACCOUNT.email)).toBeInTheDocument();
       expect(screen.getByText('checkout.accountSetup.checkEmail.spamHint')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'checkout.accountSetup.resendEmail' })).toBeInTheDocument();
-      await waitFor(() => expectPurchaseTracked());
-      PURCHASE_LOCAL_STORAGE_ITEMS.forEach((item) => expect(mocks.localStorageRemoveItem).toHaveBeenCalledWith(item));
+      await waitFor(() => expectPaymentDataCleared());
       expect(mocks.userStoragePolling).not.toHaveBeenCalled();
       expect(mocks.navigationPush).not.toHaveBeenCalled();
+    });
+
+    test('then the purchase is tracked right away with their Stripe customer, without waiting for the account setup', async () => {
+      render(<CheckoutSuccessView />);
+
+      await waitFor(() => expectPurchaseTracked(BUYER_WITHOUT_ACCOUNT));
+      expectPaymentDataCleared();
+    });
+
+    test('and their Stripe customer is unknown, then only the purchase events that need no buyer are sent', async () => {
+      mocks.localStorageGet.mockImplementation((key: string) =>
+        key === LocalStorageItem.CheckoutAccountSetupEmail ? BUYER_WITHOUT_ACCOUNT.email : null,
+      );
+
+      render(<CheckoutSuccessView />);
+
+      await waitFor(() => expectPaymentDataCleared());
+      expect(mocks.metaTrackPurchase).toHaveBeenCalledOnce();
+      expect(mocks.gaTrackPurchase).not.toHaveBeenCalled();
+      expect(mocks.trackPaymentConversion).not.toHaveBeenCalled();
     });
   });
 
   describe('When a logged-in user finishes paying after a previous purchase without an account', () => {
-    test('then they are taken to Drive instead of being asked to check their email', async () => {
+    test('then they are taken to Drive and the purchase is tracked for their account', async () => {
       mocks.localStorageGet.mockReturnValue('old.buyer@internxt.com');
 
       await renderAndWaitForRedirect();
 
       expect(screen.queryByText('checkout.accountSetup.checkEmail.title')).not.toBeInTheDocument();
+      expectPurchaseTracked(LOGGED_IN_BUYER);
       expectCheckoutFinished();
     });
   });

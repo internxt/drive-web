@@ -2,7 +2,8 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { DriveFileData } from '../types';
 import { EncryptionVersion, FileStatus } from '@internxt/sdk/dist/drive/storage/types';
 import { LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
-import { downloadFile } from 'app/network/download';
+import { downloadFile, multipartDownloadFile } from 'app/network/download';
+import { MIN_DOWNLOAD_MULTIPART_SIZE } from 'app/network/networkConstants';
 import { binaryStreamToBlob } from 'services/stream.service';
 import { updateDatabaseFileSourceData } from './database.service';
 import { downloadFolderAsZip, moveFolderByUuid } from './folder.service';
@@ -23,6 +24,7 @@ vi.mock('app/core/factory/sdk', () => ({
 
 vi.mock('app/network/download', () => ({
   downloadFile: vi.fn(),
+  multipartDownloadFile: vi.fn(),
   getDecryptedStream: vi.fn(),
 }));
 
@@ -223,6 +225,7 @@ describe('Folder Service', () => {
   describe('Download shared folder as zip', () => {
     const CREDENTIALS = { user: 'test-user', pass: 'test-pass' };
     const KEY = { mnemonic: 'test-mnemonic' };
+    const SHARED_FILE_DOWNLOAD_PARAMS = { bucketId: 'bucket', fileId: 'network-file-id', creds: CREDENTIALS, key: KEY };
 
     const createSharedFile = (overrides: Partial<SharedFiles> & { fileId?: string | null } = {}) =>
       ({
@@ -308,6 +311,39 @@ describe('Folder Service', () => {
       });
       expect(fileStreams[0]).toBeInstanceOf(ReadableStream);
       expect(result.failedItems).toStrictEqual([]);
+    });
+
+    test('when a shared folder with a large file is zipped, then that file is fetched in chunks and streamed into the zip without being kept in memory or cached', async () => {
+      const largeFile = createSharedFile({ size: String(MIN_DOWNLOAD_MULTIPART_SIZE) });
+      const downloadedStream = new ReadableStream<Uint8Array>();
+      vi.mocked(multipartDownloadFile).mockResolvedValue(downloadedStream);
+
+      const { result, fileStreams } = await downloadSharedFolder([largeFile]);
+
+      expect(multipartDownloadFile).toHaveBeenCalledWith({
+        ...SHARED_FILE_DOWNLOAD_PARAMS,
+        fileSize: MIN_DOWNLOAD_MULTIPART_SIZE,
+      });
+      expect(downloadFile).not.toHaveBeenCalled();
+      expect(binaryStreamToBlob).not.toHaveBeenCalled();
+      expect(updateDatabaseFileSourceData).not.toHaveBeenCalled();
+      expect(fileStreams[0]).toBe(downloadedStream);
+      expect(result.failedItems).toStrictEqual([]);
+    });
+
+    test('when a shared folder with a file just below the multipart size is zipped, then that file is fetched in a single request and cached as before', async () => {
+      const sharedFile = createSharedFile({ size: String(MIN_DOWNLOAD_MULTIPART_SIZE - 1) });
+      const downloadedBlob = new Blob(['downloaded content']);
+      vi.mocked(downloadFile).mockResolvedValue(new ReadableStream());
+      vi.mocked(binaryStreamToBlob).mockResolvedValue(downloadedBlob);
+
+      await downloadSharedFolder([sharedFile]);
+
+      expect(downloadFile).toHaveBeenCalledWith(SHARED_FILE_DOWNLOAD_PARAMS);
+      expect(multipartDownloadFile).not.toHaveBeenCalled();
+      expect(updateDatabaseFileSourceData).toHaveBeenCalledWith(
+        expect.objectContaining({ sourceBlob: downloadedBlob }),
+      );
     });
 
     test('When a shared file is cached and not older, then the cached stream is returned without downloading', async () => {
