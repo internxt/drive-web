@@ -159,7 +159,7 @@ const createSubscription = async (
 };
 
 export const createPaymentIntent = async (
-  { customerId, priceId, token, currency, captchaToken, userAddress, promoCodeId }: CreatePaymentIntentPayload,
+  { customerId, priceId, token, currency, captchaToken, promoCodeId }: CreatePaymentIntentPayload,
   options?: CheckoutClientOptions,
 ): Promise<PaymentIntent> => {
   const checkoutClient = await getCheckoutClient(options);
@@ -169,7 +169,6 @@ export const createPaymentIntent = async (
     token,
     currency,
     captchaToken,
-    userAddress,
     promoCodeId,
   });
 };

@@ -445,7 +445,6 @@ const CheckoutViewWrapper = () => {
         token,
         gclidStored,
         captchaToken,
-        userAddress: userLocationData?.ip as string,
         isFirstPurchase: isPasswordlessSignUp ? true : undefined,
         isPasswordlessSignUp,
       });

@@ -90,7 +90,6 @@ export interface CreatePaymentIntentPayload {
   token: string;
   currency: string;
   captchaToken: string;
-  userAddress: string;
   promoCodeId?: string;
 }
 
@@ -101,7 +100,6 @@ export interface ProcessPurchasePayload {
   currency: string;
   confirmationTokenId?: string;
   captchaToken: string;
-  userAddress: string;
   confirmPayment: Stripe['confirmPayment'];
   confirmSetupIntent: Stripe['confirmSetup'];
   translate: Translate;
@@ -118,7 +116,6 @@ export interface UseUserPaymentPayload {
   currency: string;
   selectedPlan: PriceWithTax;
   confirmationTokenId?: string;
-  userAddress: string;
   confirmPayment: Stripe['confirmPayment'];
   confirmSetupIntent: Stripe['confirmSetup'];
   gclidStored: string | null;

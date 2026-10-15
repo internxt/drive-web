@@ -58,19 +58,18 @@ export const useUserPayment = () => {
   };
 
   const getLifetimePaymentIntent = async (
-    { customerId, priceId, currency, token, userAddress, captchaToken, promoCodeId }: CreatePaymentIntentPayload,
+    { customerId, priceId, currency, token, captchaToken, promoCodeId }: CreatePaymentIntentPayload,
     isPasswordlessSignUp?: boolean,
   ) => {
     const paymentIntentResponse = isPasswordlessSignUp
       ? await checkoutService.createPaymentIntent(
-          { customerId, priceId, currency, userAddress, token, captchaToken, promoCodeId },
+          { customerId, priceId, currency, token, captchaToken, promoCodeId },
           { withoutSession: true },
         )
       : await checkoutService.createPaymentIntent({
           customerId,
           priceId,
           currency,
-          userAddress,
           token,
           captchaToken,
           promoCodeId,
@@ -176,7 +175,6 @@ export const useUserPayment = () => {
     couponCodeData,
     confirmationTokenId,
     captchaToken,
-    userAddress,
     translate,
     confirmPayment,
     isFirstPurchase,
@@ -193,7 +191,6 @@ export const useUserPayment = () => {
         token,
         captchaToken,
         promoCodeId: couponCodeData?.codeId,
-        userAddress,
         currency,
       },
       isPasswordlessSignUp,
@@ -232,7 +229,6 @@ export const useUserPayment = () => {
     confirmationTokenId,
     gclidStored,
     captchaToken,
-    userAddress,
     translate,
     confirmPayment,
     confirmSetupIntent,
@@ -266,7 +262,6 @@ export const useUserPayment = () => {
           token,
           couponCodeData,
           captchaToken,
-          userAddress,
           translate,
           confirmPayment,
           confirmSetupIntent,
@@ -285,7 +280,6 @@ export const useUserPayment = () => {
           token,
           couponCodeData,
           captchaToken,
-          userAddress,
           translate,
           confirmPayment,
           confirmSetupIntent,

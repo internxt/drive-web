@@ -295,7 +295,6 @@ describe('Checkout Service tests', () => {
         token: 'user_mocked_token',
         currency: 'eur',
         captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
       };
 
       const createInvoiceResponse = await checkoutService.createPaymentIntent(createInvoicePayload);
@@ -315,7 +314,6 @@ describe('Checkout Service tests', () => {
         currency: 'eur',
         promoCodeId: 'promo_code_name',
         captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
       };
 
       const createInvoiceResponse = await checkoutService.createPaymentIntent(createInvoicePayload);
@@ -334,7 +332,6 @@ describe('Checkout Service tests', () => {
         token: 'payments_token',
         currency: 'eur',
         captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
       };
 
       const createInvoiceResponse = await checkoutService.createPaymentIntent(createInvoicePayload, {
@@ -350,7 +347,6 @@ describe('Checkout Service tests', () => {
         token: createInvoicePayload.token,
         currency: createInvoicePayload.currency,
         captchaToken: createInvoicePayload.captchaToken,
-        userAddress: createInvoicePayload.userAddress,
         promoCodeId: undefined,
       });
       expect(sessionClient.createPaymentIntent).not.toHaveBeenCalled();
