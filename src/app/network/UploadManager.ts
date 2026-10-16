@@ -118,12 +118,18 @@ class UploadManager {
 
   private readonly uploadQueue: QueueObject<UploadFileParamsWithTaskId> = queue<UploadFileParamsWithTaskId>(
     (fileData, next: UploadQueueCallback) => {
-      if (this.abortController?.signal.aborted ?? fileData.abortController?.signal.aborted) return;
+      const isUploadCancelled = this.abortController?.signal.aborted ?? fileData.abortController?.signal.aborted;
+      if (isUploadCancelled) {
+        next(null);
+        return;
+      }
 
       const nextOnce = UploadManager.callOnce(next);
       this.processFile(fileData, nextOnce).catch((error) => {
         errorService.reportError(error);
-        nextOnce(errorService.castError(error));
+        const castedError = errorService.castError(error);
+        if (this.shouldContinueWithRemainingFiles(error)) this.continueWithRemainingFiles(castedError, nextOnce);
+        else nextOnce(castedError);
       });
     },
     this.filesGroups.small.concurrency,
@@ -272,8 +278,9 @@ class UploadManager {
   ): { isUploadAborted: boolean; isLostConnectionError: boolean } {
     const isUploadAborted =
       !!this.abortController?.signal.aborted || !!fileData.abortController?.signal.aborted || error === 'abort';
-    const isLostConnectionError =
-      error instanceof ConnectionLostError || (error as Error | undefined)?.message === ErrorMessages.NetworkError;
+    const isNetworkErrorWhileOffline =
+      (error as Error | undefined)?.message === ErrorMessages.NetworkError && !navigator.onLine;
+    const isLostConnectionError = error instanceof ConnectionLostError || isNetworkErrorWhileOffline;
     return { isUploadAborted, isLostConnectionError };
   }
 
@@ -314,6 +321,45 @@ class UploadManager {
     }
   }
 
+  private handleLostConnectionError({
+    fileData,
+    castedError,
+    shouldContinueWithRemainingFiles,
+    next,
+  }: {
+    fileData: UploadFileParamsWithTaskId;
+    castedError: ReturnType<typeof errorService.castError>;
+    shouldContinueWithRemainingFiles: boolean;
+    next: UploadQueueCallback;
+  }): void {
+    errorService.reportError(castedError);
+    this.events?.onUploadError?.(fileData, 'connection-lost');
+
+    if (shouldContinueWithRemainingFiles) {
+      this.continueWithRemainingFiles(castedError, next);
+      return;
+    }
+
+    this.hasErrored = true;
+    next(castedError);
+  }
+
+  private shouldContinueWithRemainingFiles(error: unknown): boolean {
+    return (
+      !!this.options?.isUploadedFromFolder && !this.options?.isRetriedUpload && !UploadManager.isMaxSpaceError(error)
+    );
+  }
+
+  private static isMaxSpaceError(error: unknown): boolean {
+    return (error as { status?: number })?.status === HTTP_STATUS_CODES.MAX_SPACE_USED;
+  }
+
+  private continueWithRemainingFiles(castedError: Error, next: UploadQueueCallback): void {
+    this.hasSomeUploadFailed = true;
+    this.firstUploadError ??= castedError;
+    next(null);
+  }
+
   private handleUploadErrors({
     error,
     fileData,
@@ -331,18 +377,13 @@ class UploadManager {
       return;
     }
 
-    // Handle lost connection error
+    const isMaxSpaceError = UploadManager.isMaxSpaceError(error);
+    const shouldContinueWithRemainingFiles = this.shouldContinueWithRemainingFiles(error);
+
     if (isLostConnectionError) {
-      errorService.reportError(castedError);
-      this.events?.onUploadError?.(fileData, 'connection-lost');
-      this.hasErrored = true;
-      next(castedError);
+      this.handleLostConnectionError({ fileData, castedError, shouldContinueWithRemainingFiles, next });
       return;
     }
-
-    const isMaxSpaceError = (error as { status?: number })?.status === HTTP_STATUS_CODES.MAX_SPACE_USED;
-    const shouldContinueWithRemainingFiles =
-      !!this.options?.isUploadedFromFolder && !this.options?.isRetriedUpload && !isMaxSpaceError;
 
     if (UploadManager.isNonRetryableError(error)) {
       this.nonRetryableTaskIds.add(fileData.taskId);
@@ -361,9 +402,7 @@ class UploadManager {
     }
 
     if (shouldContinueWithRemainingFiles) {
-      this.hasSomeUploadFailed = true;
-      this.firstUploadError ??= castedError;
-      next(null);
+      this.continueWithRemainingFiles(castedError, next);
       return;
     }
 
