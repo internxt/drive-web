@@ -14,6 +14,9 @@ import { uploadItemsParallelThunk } from 'app/store/slices/storage/storage.thunk
 import { deleteItemsThunk } from '../store/slices/storage/storage.thunks/deleteItemsThunk';
 import { uploadFileWithManager } from './UploadManager';
 import { PersistUploadRepository } from 'app/repositories/DatabaseUploadRepository';
+import uploadFile from 'app/drive/services/file.service/uploadFile';
+import RetryManager from './RetryManager';
+import { ConnectionLostError } from './requests';
 
 vi.mock('app/drive/services/file.service/uploadFile', () => ({
   default: vi.fn(async (file: { name: string }) => ({ uuid: `${file.name}-uuid`, name: file.name })),
@@ -78,6 +81,27 @@ describe('uploadFoldersWithManager', () => {
       updatedAt: new Date().toISOString(),
       ...overrides,
     }) as DriveFolderData;
+
+  const dispatchToUploadManager = (uploadRepository: PersistUploadRepository) => {
+    (uploadItemsParallelThunk as unknown as Mock).mockImplementation((thunkArgs) => thunkArgs);
+    return vi.fn(({ files, parentFolderId, options, onFileUploadCallback }) => ({
+      unwrap: () =>
+        uploadFileWithManager({
+          files: files.map((content: File, index: number) => ({
+            taskId: `file-task-${index}`,
+            relatedTaskId: options.relatedTaskId,
+            filecontent: { content, name: content.name, size: content.size, type: 'txt', parentFolderId },
+            userEmail: '',
+            parentFolderId,
+          })),
+          maxSpaceOccupiedCallback: vi.fn(),
+          uploadRepository,
+          abortController: options.abortController,
+          options,
+          onFileUploadCallback,
+        }),
+    }));
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -204,24 +228,6 @@ describe('uploadFoldersWithManager', () => {
       foldersWithDuplicates: [],
       foldersWithoutDuplicates: [mockFolder],
     });
-    (uploadItemsParallelThunk as unknown as Mock).mockImplementation((thunkArgs) => thunkArgs);
-    const dispatchToUploadManager = vi.fn(({ files, parentFolderId, options, onFileUploadCallback }) => ({
-      unwrap: () =>
-        uploadFileWithManager({
-          files: files.map((content: File, index: number) => ({
-            taskId: `file-task-${index}`,
-            relatedTaskId: options.relatedTaskId,
-            filecontent: { content, name: content.name, size: content.size, type: 'txt', parentFolderId },
-            userEmail: '',
-            parentFolderId,
-          })),
-          maxSpaceOccupiedCallback: vi.fn(),
-          uploadRepository: failingUploadRepository,
-          abortController: options.abortController,
-          options,
-          onFileUploadCallback,
-        }),
-    }));
     const events: UploadFolderManagerEvents = {
       onFolderUploadSuccess: vi.fn(),
       onFolderUploadError: vi.fn(),
@@ -242,7 +248,7 @@ describe('uploadFoldersWithManager', () => {
         },
       ],
       selectedWorkspace: null,
-      dispatch: dispatchToUploadManager,
+      dispatch: dispatchToUploadManager(failingUploadRepository),
       maxUploadFileSize: 100,
       events,
     });
@@ -339,6 +345,81 @@ describe('uploadFoldersWithManager', () => {
       expect.objectContaining({ name: 'renamed-folder1' }),
       expect.any(Object),
     );
+  });
+
+  describe('when the connection is lost', () => {
+    const taskId = 'task-id';
+    const createdRootFolder = buildFolderData({ uuid: 'root-uuid', name: 'MyFolder', plain_name: 'MyFolder' });
+    const uploadRepository: PersistUploadRepository = {
+      setUploadState: vi.fn(async () => undefined),
+      getUploadState: vi.fn(async () => undefined),
+      removeUploadState: vi.fn(async () => undefined),
+    };
+    let events: UploadFolderManagerEvents;
+
+    const loseConnection = () => {
+      globalThis.dispatchEvent(new Event('offline'));
+      throw new ConnectionLostError();
+    };
+
+    const runFolderUpload = () =>
+      uploadFoldersWithManager({
+        payload: [
+          {
+            currentFolderId: 'currentFolderId',
+            root: {
+              folderId: 'currentFolderId',
+              childrenFiles: [new File(['a'], 'a.txt'), new File(['b'], 'b.txt')],
+              childrenFolders: [],
+              name: 'MyFolder',
+              fullPathEdited: 'path1',
+            },
+            options: { taskId },
+          },
+        ],
+        selectedWorkspace: null,
+        dispatch: dispatchToUploadManager(uploadRepository),
+        maxUploadFileSize: 100,
+        events,
+      });
+
+    beforeEach(() => {
+      RetryManager.clearTasks();
+      events = { onFolderUploadSuccess: vi.fn(), onFolderUploadError: vi.fn() };
+      (checkFolderDuplicated as Mock).mockResolvedValueOnce({
+        duplicatedFoldersResponse: [],
+        foldersWithDuplicates: [],
+        foldersWithoutDuplicates: [],
+      });
+    });
+
+    test('when it is lost after the folder was created, then the folder finishes with failed files that stay listed for retry into that folder', async () => {
+      (createFolder as Mock).mockResolvedValueOnce(createdRootFolder);
+      (uploadFile as Mock).mockImplementationOnce(loseConnection);
+
+      await runFolderUpload();
+
+      expect(events.onFolderUploadSuccess).toHaveBeenCalledWith(taskId, {
+        folderName: 'MyFolder',
+        rootFolderUUID: createdRootFolder.uuid,
+        hasFailedFiles: true,
+      });
+      expect(events.onFolderUploadError).not.toHaveBeenCalled();
+      expect(RetryManager.getTasks()).toEqual([
+        expect.objectContaining({
+          params: expect.objectContaining({ relatedTaskId: taskId, parentFolderId: createdRootFolder.uuid }),
+        }),
+      ]);
+    });
+
+    test('when it is lost before the folder was created, then the folder upload fails as a connection loss', async () => {
+      (createFolder as Mock).mockImplementation(loseConnection);
+
+      await runFolderUpload();
+
+      expect(events.onFolderUploadError).toHaveBeenLastCalledWith(taskId, 'connection-lost');
+      expect(events.onFolderUploadSuccess).not.toHaveBeenCalled();
+    });
   });
 
   test('When a folder has subfolders, then every level is uploaded', async () => {
