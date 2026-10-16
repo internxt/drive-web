@@ -243,7 +243,6 @@
       "privacyGuarantee": "Garantia de privacidade: não compartilhamos suas informações e entraremos em contato apenas quando necessário para prestar nosso serviço."
     },
     "addressBillingTitle": "Endereço de cobrança",
-    "crypto": "Cripto",
     "addressBilling": {
       "optional": {
         "cta": "Opcional",
@@ -272,29 +271,8 @@
       "taxes": "Impostos",
       "annualBillingTemplate": "Plano anual, cobrado a {{currency}}{{priceNow}} no primeiro mês e renovado por {{currency}}{{price}}/mês"
     },
-    "confirmCryptoPayment": {
-      "title": "Confirme o pagamento",
-      "timeExpiration": "A fatura expirará em 10 minutos",
-      "expiredLabel": "EXPIRADA",
-      "totalInCrypto": "Valor do pagamento ({{cryptoCurrency}})",
-      "totalInFiat": "Valor",
-      "copyAddress": "Endereço de pagamento",
-      "doNotCloseWindowWarning": "Não feche a janela até que o pagamento seja concluído",
-      "cancel": "Cancelar",
-      "confirm": "Confirmar o pagamento",
-      "sessionExpired": "Sessão expirada",
-      "notifications": {
-        "priceCopied": "Preço copiado para a área de transferência",
-        "addressCopied": "Endereço copiado para a área de transferência",
-        "paymentSucceeded": "Pagamento concluído com sucesso",
-        "paymentNotCompleted": "O pagamento não foi concluído",
-        "unexpectedError": "Algo deu errado ao verificar o pagamento"
-      }
-    },
     "error": {
       "invalidPlan": "Tipo de plano não suportado. Selecione um plano válido.",
-      "fetchingCryptoCurrencies": "Não foi possível carregar as opções de criptomoedas disponíveis",
-      "addressRequired": "Complete seu endereço de cobrança para continuar",
       "businessPlan": "O plano empresarial não está disponível",
       "postalCodeRequired": "Informe seu CEP para continuar",
       "countryRequired": "Não foi possível determinar seu país de cobrança. Tente novamente mais tarde.",
@@ -305,7 +283,6 @@
       "passwordAfterPayment": "Você ainda não precisa de senha. Depois do pagamento, enviaremos um e-mail para você concluir a configuração da sua conta.",
       "emailHasAccount": "Este e-mail já tem uma conta Internxt. Faça login para continuar com a compra.",
       "pendingSetup": "{{email}} já tem um plano pago aguardando configuração. Verifique seu e-mail para concluir a configuração da sua conta.",
-      "cryptoRequiresSignIn": "Faça login para pagar com criptomoedas.",
       "resendEmail": "Reenviar e-mail",
       "emailResent": "Enviamos o e-mail novamente",
       "resendEmailError": "Não foi possível enviar o e-mail. Tente novamente mais tarde.",

@@ -79,7 +79,6 @@ vi.mock('app/core/factory/sdk', () => ({
           id: 'py_id',
           invoiceStatus: 'paid',
         }),
-        verifyCryptoPayment: vi.fn().mockResolvedValue(true),
       }),
       createCheckoutClientWithoutSession: vi.fn().mockReturnValue({
         createSubscription: vi.fn().mockResolvedValue({
@@ -158,8 +157,6 @@ describe('Checkout Service tests', () => {
         postalCode: '12345',
         companyVatId: 'VAT123',
         captchaToken: 'token',
-        city: 'Valencia',
-        lineAddress1: 'Marina de empresas',
       };
 
       const result = await checkoutService.createCustomer(getCustomerPayload);
@@ -315,7 +312,6 @@ describe('Checkout Service tests', () => {
         token: 'user_mocked_token',
         currency: 'eur',
         captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
       };
 
       const createInvoiceResponse = await checkoutService.createPaymentIntent(createInvoicePayload);
@@ -335,7 +331,6 @@ describe('Checkout Service tests', () => {
         currency: 'eur',
         promoCodeId: 'promo_code_name',
         captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
       };
 
       const createInvoiceResponse = await checkoutService.createPaymentIntent(createInvoicePayload);
@@ -354,7 +349,6 @@ describe('Checkout Service tests', () => {
         token: 'payments_token',
         currency: 'eur',
         captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
       };
 
       const createInvoiceResponse = await checkoutService.createPaymentIntent(createInvoicePayload, {
@@ -370,7 +364,6 @@ describe('Checkout Service tests', () => {
         token: createInvoicePayload.token,
         currency: createInvoicePayload.currency,
         captchaToken: createInvoicePayload.captchaToken,
-        userAddress: createInvoicePayload.userAddress,
         promoCodeId: undefined,
       });
       expect(sessionClient.createPaymentIntent).not.toHaveBeenCalled();
@@ -388,7 +381,6 @@ describe('Checkout Service tests', () => {
         token: 'user_mocked_token',
         currency: 'eur',
         captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
         promoCodeId: 'promo_code_id',
         gclid: 'gclid_123',
       };
@@ -413,14 +405,6 @@ describe('Checkout Service tests', () => {
         amountOff: undefined,
         percentOff: 10,
       });
-    });
-  });
-
-  describe('Verify the crypto payment', () => {
-    test('When the token is passed to verify the crypto payment, then the correct data is returned', async () => {
-      const token = 'token';
-      const response = await checkoutService.verifyCryptoPayment(token);
-      expect(response).toBeTruthy();
     });
   });
 

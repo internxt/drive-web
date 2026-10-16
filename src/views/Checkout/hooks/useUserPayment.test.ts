@@ -6,7 +6,7 @@ import envService from 'services/env.service';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import navigationService from 'services/navigation.service';
 import { AppView } from 'app/core/types';
-import { PaymentType, ProcessPurchasePayload, UseUserPaymentPayload } from '../types';
+import { ProcessPurchasePayload, UseUserPaymentPayload } from '../types';
 import { CreateSubscriptionPayload } from '@internxt/sdk/dist/payments/types';
 import notificationsService from 'app/notifications/services/notifications.service';
 import { paymentService } from '../services';
@@ -113,7 +113,6 @@ describe('Custom hook to handle payments', () => {
         token: 'token',
         promoCodeId: 'promo_code_id',
         captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
       };
 
       const response = await getLifetimePaymentIntent(lifetimePaymentIntentPayload);
@@ -127,47 +126,23 @@ describe('Custom hook to handle payments', () => {
       expect(createPaymentIntentSpy).toHaveBeenCalledWith(lifetimePaymentIntentPayload);
     });
 
-    test('When the user attempts to purchase a lifetime plan using crypto currencies, then the necessary data to purchase the plan are returned', async () => {
-      const { getLifetimePaymentIntent } = useUserPayment();
-
-      const lifetimePaymentIntentPayload = {
-        customerId: 'customer_id',
-        priceId: 'price_id',
-        currency: 'BTC',
-        token: 'encoded-customer-id',
-        promoCodeId: 'promo_code_id',
-        captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
-      };
-      const paymentIntentResponse = {
-        type: PaymentType['CRYPTO'] as const,
+    test('When the payment intent returned is not a fiat one, then an error indicating so is thrown', async () => {
+      vi.spyOn(checkoutService, 'createPaymentIntent').mockResolvedValue({
+        type: 'crypto',
         id: 'payment_intent_id',
         token: 'encoded-invoice-id',
-        payload: {
-          payAmount: 1,
-          payCurrency: 'BTC',
-          paymentAddress: '0xB112c1820D41A6A0665932D7341f2344802F7bD8',
-          paymentRequestUri: 'ethereum:0xB112c1820D41A6A0665932D7341f2344802F7bD8@1?value=271867590000000000',
-          qrUrl: 'https://qrUrl.example.com',
-          url: 'https://invoice.url.com',
-        },
-      };
+      } as any);
+      const { getLifetimePaymentIntent } = useUserPayment();
 
-      const createPaymentIntentSpy = vi
-        .spyOn(checkoutService, 'createPaymentIntent')
-        .mockResolvedValue(paymentIntentResponse);
-
-      const response = await getLifetimePaymentIntent(lifetimePaymentIntentPayload);
-
-      expect(response).toStrictEqual({
-        id: 'payment_intent_id',
-        type: 'crypto',
-        encodedInvoiceIdToken: 'encoded-invoice-id',
-        payload: {
-          ...paymentIntentResponse.payload,
-        },
-      });
-      expect(createPaymentIntentSpy).toHaveBeenCalledWith(lifetimePaymentIntentPayload);
+      await expect(
+        getLifetimePaymentIntent({
+          customerId: 'customer_id',
+          priceId: 'price_id',
+          currency: 'currency',
+          token: 'token',
+          captchaToken: 'captcha_token',
+        }),
+      ).rejects.toThrow('Unsupported payment type: crypto');
     });
 
     test('When the buyer comes from a Google Ads click, then the click ID is sent along with the payment intent', async () => {
@@ -186,7 +161,7 @@ describe('Custom hook to handle payments', () => {
         token: 'token',
         promoCodeId: 'promo_code_id',
         captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
+
         gclid: 'gclid_123',
       };
 
@@ -210,7 +185,6 @@ describe('Custom hook to handle payments', () => {
         },
       } as any,
       captchaToken: 'captcha_token',
-      userAddress: '1.1.1.1',
       confirmPayment: vi.fn().mockResolvedValue({ error: undefined }),
       confirmSetupIntent: vi.fn().mockResolvedValue({ error: undefined }),
       translate: vi.fn(),
@@ -509,7 +483,6 @@ describe('Custom hook to handle payments', () => {
           },
         } as any,
         captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
         confirmPayment,
         confirmSetupIntent: setupIntent,
         gclidStored: null,
@@ -550,7 +523,6 @@ describe('Custom hook to handle payments', () => {
           },
         } as any,
         captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
         confirmPayment,
         confirmSetupIntent: setupIntent,
         gclidStored: null,
@@ -582,7 +554,6 @@ describe('Custom hook to handle payments', () => {
         confirmationTokenId: 'ctoken_123',
         selectedPlan: { price: { interval: 'year', type: UserType.Individual } } as any,
         captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
         confirmPayment: vi.fn().mockResolvedValue({ error: undefined }),
         confirmSetupIntent: vi.fn().mockResolvedValue({ error: undefined }),
         gclidStored: null,
@@ -612,7 +583,6 @@ describe('Custom hook to handle payments', () => {
         confirmationTokenId: 'ctoken_123',
         selectedPlan: { price: { interval: 'year', type: UserType.Individual } } as any,
         captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
         confirmPayment: vi.fn().mockResolvedValue({ error: undefined }),
         confirmSetupIntent: vi.fn().mockResolvedValue({ error: undefined }),
         gclidStored: null,
@@ -652,7 +622,6 @@ describe('Custom hook to handle payments', () => {
         confirmationTokenId: 'ctoken_123',
         selectedPlan: { price: { interval: 'lifetime', type: UserType.Individual } } as any,
         captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
         confirmPayment: vi.fn().mockResolvedValue({ error: undefined }),
         confirmSetupIntent: vi.fn().mockResolvedValue({ error: undefined }),
         gclidStored: null,
@@ -666,7 +635,6 @@ describe('Custom hook to handle payments', () => {
           priceId: 'price_id',
           token: 'payments_token',
           currency: 'eur',
-          userAddress: '1.1.1.1',
           captchaToken: 'captcha_token',
           promoCodeId: undefined,
         },
@@ -694,7 +662,6 @@ describe('Custom hook to handle payments', () => {
         confirmationTokenId: 'ctoken_123',
         selectedPlan: { price: { interval: 'year', type: UserType.Individual } } as any,
         captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
         confirmPayment: vi.fn().mockResolvedValue({ error: undefined }),
         confirmSetupIntent: vi.fn().mockResolvedValue({ error: undefined }),
         gclidStored: null,
@@ -730,7 +697,6 @@ describe('Custom hook to handle payments', () => {
         confirmationTokenId: 'ctoken_123',
         selectedPlan: { price: { interval: 'year', type: UserType.Individual } } as any,
         captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
         confirmPayment: vi.fn().mockResolvedValue({ error: { message: 'Your card was declined' } }),
         confirmSetupIntent: vi.fn(),
         gclidStored: null,
@@ -760,7 +726,7 @@ describe('Custom hook to handle payments', () => {
         confirmationTokenId: 'ctoken_123',
         selectedPlan: { price: { interval: 'year', type: UserType.Individual } } as any,
         captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
+
         confirmPayment: vi.fn().mockResolvedValue({ error: undefined }),
         confirmSetupIntent: vi.fn().mockResolvedValue({ error: undefined }),
         gclidStored: 'gclid_123',
@@ -801,7 +767,7 @@ describe('Custom hook to handle payments', () => {
         confirmationTokenId: 'ctoken_123',
         selectedPlan: { price: { interval: 'lifetime', type: UserType.Individual } } as any,
         captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
+
         confirmPayment: vi.fn().mockResolvedValue({ error: undefined }),
         confirmSetupIntent: vi.fn().mockResolvedValue({ error: undefined }),
         gclidStored: 'gclid_123',
@@ -815,7 +781,7 @@ describe('Custom hook to handle payments', () => {
           priceId: 'price_id',
           token: 'payments_token',
           currency: 'eur',
-          userAddress: '1.1.1.1',
+
           captchaToken: 'captcha_token',
           promoCodeId: undefined,
           gclid: 'gclid_123',
@@ -843,7 +809,7 @@ describe('Custom hook to handle payments', () => {
         confirmationTokenId: 'ctoken_123',
         selectedPlan: { price: { interval: 'year', type: UserType.Individual } } as any,
         captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
+
         confirmPayment: vi.fn().mockResolvedValue({ error: undefined }),
         confirmSetupIntent: vi.fn().mockResolvedValue({ error: undefined }),
         gclidStored: null,
@@ -878,7 +844,6 @@ describe('Custom hook to handle payments', () => {
           },
         } as any,
         captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
         confirmPayment,
         confirmSetupIntent: setupIntent,
         gclidStored: null,

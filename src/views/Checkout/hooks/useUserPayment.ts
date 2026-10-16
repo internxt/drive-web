@@ -16,7 +16,6 @@ import {
   ProcessPurchasePayload,
   UseUserPaymentPayload,
 } from '../types';
-import { ActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.context';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { CreateSubscriptionPayload } from '@internxt/sdk/dist/payments/types';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
@@ -67,34 +66,26 @@ export const useUserPayment = () => {
   };
 
   const getLifetimePaymentIntent = async (
-    { customerId, priceId, currency, token, userAddress, captchaToken, promoCodeId, gclid }: CreatePaymentIntentPayload,
+    { customerId, priceId, currency, token, captchaToken, promoCodeId, gclid }: CreatePaymentIntentPayload,
     isPasswordlessSignUp?: boolean,
   ) => {
     const paymentIntentResponse = isPasswordlessSignUp
       ? await checkoutService.createPaymentIntent(
-          { customerId, priceId, currency, userAddress, token, captchaToken, promoCodeId, gclid },
+          { customerId, priceId, currency, token, captchaToken, promoCodeId, gclid },
           { withoutSession: true },
         )
       : await checkoutService.createPaymentIntent({
           customerId,
           priceId,
           currency,
-          userAddress,
           token,
           captchaToken,
           promoCodeId,
           gclid,
         });
 
-    if (paymentIntentResponse.type === PaymentType['CRYPTO']) {
-      return {
-        id: paymentIntentResponse.id,
-        type: paymentIntentResponse.type,
-        encodedInvoiceIdToken: paymentIntentResponse.token,
-        payload: {
-          ...paymentIntentResponse.payload,
-        },
-      };
+    if (paymentIntentResponse.type !== PaymentType.FIAT) {
+      throw new Error(`Unsupported payment type: ${paymentIntentResponse.type}`);
     }
 
     return {
@@ -195,10 +186,8 @@ export const useUserPayment = () => {
     couponCodeData,
     confirmationTokenId,
     captchaToken,
-    userAddress,
     translate,
     confirmPayment,
-    openCryptoPaymentDialog,
     isFirstPurchase,
     isPasswordlessSignUp,
     gclid,
@@ -206,10 +195,7 @@ export const useUserPayment = () => {
     const {
       id: paymentIntentId,
       invoiceStatus,
-      encodedInvoiceIdToken,
-      type,
       clientSecret,
-      payload,
     } = await getLifetimePaymentIntent(
       {
         customerId,
@@ -217,7 +203,6 @@ export const useUserPayment = () => {
         token,
         captchaToken,
         promoCodeId: couponCodeData?.codeId,
-        userAddress,
         currency,
         gclid,
       },
@@ -242,25 +227,8 @@ export const useUserPayment = () => {
       return;
     }
 
-    if (type === PaymentType.FIAT && clientSecret) {
+    if (clientSecret) {
       await confirmStripeIntent(confirmationTokenId, clientSecret, confirmPayment, translate);
-    } else if (type === PaymentType.CRYPTO) {
-      openCryptoPaymentDialog?.(ActionDialog.CryptoPayment, {
-        closeAllDialogsFirst: true,
-        data: {
-          qrUrl: payload?.qrUrl,
-          paymentRequestUri: payload?.paymentRequestUri,
-          encodedInvoiceIdToken,
-          address: payload?.paymentAddress,
-          payAmount: payload?.payAmount,
-          payCurrency: payload?.payCurrency,
-          url: payload?.url,
-          fiat: {
-            amount: currentSelectedPlan.taxes.decimalAmountWithTax,
-            currency: currentSelectedPlan.price.currency,
-          },
-        },
-      });
     }
   };
 
@@ -274,10 +242,8 @@ export const useUserPayment = () => {
     confirmationTokenId,
     gclidStored,
     captchaToken,
-    userAddress,
     translate,
     confirmPayment,
-    openCryptoPaymentDialog,
     confirmSetupIntent,
     isFirstPurchase: isKnownFirstPurchase,
     isPasswordlessSignUp,
@@ -309,7 +275,6 @@ export const useUserPayment = () => {
           token,
           couponCodeData,
           captchaToken,
-          userAddress,
           translate,
           confirmPayment,
           confirmSetupIntent,
@@ -329,10 +294,8 @@ export const useUserPayment = () => {
           token,
           couponCodeData,
           captchaToken,
-          userAddress,
           translate,
           confirmPayment,
-          openCryptoPaymentDialog,
           confirmSetupIntent,
           isFirstPurchase,
           isPasswordlessSignUp,

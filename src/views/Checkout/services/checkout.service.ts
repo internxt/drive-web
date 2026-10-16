@@ -10,7 +10,6 @@ import {
   CreateSubscriptionPayload,
   GetPriceByIdPayload,
   PaymentIntent,
-  PaymentIntentCrypto,
   PriceWithTax,
 } from '@internxt/sdk/dist/payments/types';
 import { StripeElementsOptionsMode } from '@stripe/stripe-js';
@@ -85,16 +84,13 @@ const fetchPromotionCodeByName = async (priceId: string, promotionCodeName: stri
 
 export type CreateCheckoutCustomerPayload = Pick<
   CreateCustomerPayload,
-  'country' | 'captchaToken' | 'companyVatId' | 'metadata' | 'lineAddress2'
+  'country' | 'captchaToken' | 'companyVatId' | 'metadata'
 > &
-  Partial<Pick<CreateCustomerPayload, 'customerName' | 'lineAddress1' | 'city' | 'postalCode'>>;
+  Partial<Pick<CreateCustomerPayload, 'customerName' | 'postalCode'>>;
 
 const createCustomer = async ({
   customerName,
-  city,
   country,
-  lineAddress1,
-  lineAddress2,
   postalCode,
   captchaToken,
   companyVatId,
@@ -105,16 +101,13 @@ const createCustomer = async ({
 }> => {
   const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
   return checkoutClient.createCustomer({
-    city,
-    lineAddress1,
-    lineAddress2,
     customerName,
     country,
     postalCode,
     captchaToken,
     companyVatId,
     metadata,
-  } as CreateCustomerPayload);
+  });
 };
 
 const createCustomerWithoutAccount = async (payload: CreateCustomerWithoutAccountPayload): Promise<CreatedCustomer> => {
@@ -167,7 +160,7 @@ const createSubscription = async (
 };
 
 export const createPaymentIntent = async (
-  { customerId, priceId, token, currency, captchaToken, userAddress, promoCodeId, gclid }: CreatePaymentIntentPayload,
+  { customerId, priceId, token, currency, captchaToken, promoCodeId, gclid }: CreatePaymentIntentPayload,
   options?: CheckoutClientOptions,
 ): Promise<PaymentIntent> => {
   const checkoutClient = await getCheckoutClient(options);
@@ -177,7 +170,6 @@ export const createPaymentIntent = async (
     token,
     currency,
     captchaToken,
-    userAddress,
     promoCodeId,
     gclid,
   });
@@ -209,11 +201,6 @@ const checkoutSetupIntent = async (customerId: string) => {
     errorService.reportError(error);
     throw new Error('Error creating subscription with trial');
   }
-};
-
-const verifyCryptoPayment = async (token: PaymentIntentCrypto['token']): Promise<boolean> => {
-  const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
-  return checkoutClient.verifyCryptoPayment(token);
 };
 
 const loadStripeElements = async (
@@ -309,7 +296,6 @@ const checkoutService = {
   createSubscription,
   loadStripeElements,
   checkoutSetupIntent,
-  verifyCryptoPayment,
   trackIncompleteCheckout,
 };
 

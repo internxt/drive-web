@@ -1,4 +1,3 @@
-import { CSSProperties } from 'react';
 import AdultCreativeImage from 'assets/images/urgent-checkout/adult.webp';
 import MainstreamCreativeImage from 'assets/images/urgent-checkout/family.webp';
 
@@ -33,14 +32,6 @@ export const URGENT_CHECKOUT_THEME_STYLES = {
 };
 
 export const URGENT_CHECKOUT_CARD_CLASSNAME = 'rounded-2xl border border-[#202D45] bg-[#0D1422]';
-
-export const URGENT_CHECKOUT_CRYPTO_SECTION_STYLE = {
-  '--color-surface': '10 17 32',
-  '--color-gray-10': '47 63 92',
-  '--color-gray-100': '255 255 255',
-} as CSSProperties;
-
-export const URGENT_CHECKOUT_CRYPTO_SECTION_CLASSNAME = 'w-full text-white';
 
 export const URGENT_CHECKOUT_INPUT_CLASSNAME =
   'w-full rounded-lg border border-[#2F3F5C] bg-[#0A1120] px-4 py-3 text-base text-white outline-none ' +
