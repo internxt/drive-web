@@ -12,6 +12,12 @@ import {
 import { FilesExceedsSizeLimitError } from 'app/drive/services/file.service/upload.errors';
 import { uploadItemsParallelThunk } from 'app/store/slices/storage/storage.thunks/uploadItemsThunk';
 import { deleteItemsThunk } from '../store/slices/storage/storage.thunks/deleteItemsThunk';
+import { uploadFileWithManager } from './UploadManager';
+import { PersistUploadRepository } from 'app/repositories/DatabaseUploadRepository';
+
+vi.mock('app/drive/services/file.service/uploadFile', () => ({
+  default: vi.fn(async (file: { name: string }) => ({ uuid: `${file.name}-uuid`, name: file.name })),
+}));
 
 vi.mock('app/drive/services/new-storage.service', () => ({
   default: {
@@ -181,6 +187,76 @@ describe('uploadFoldersWithManager', () => {
     });
     expect(events.onFolderUploadError).not.toHaveBeenCalled();
     expect(deleteItemsThunk).not.toHaveBeenCalled();
+  });
+
+  test('When reading the upload state of its files fails, then the folder upload finishes with failed files instead of hanging', async () => {
+    const mockFolder = buildFolderData({ name: 'MyFolder', plain_name: 'MyFolder' });
+    const taskId = 'task-id';
+    const failingUploadRepository: PersistUploadRepository = {
+      setUploadState: vi.fn(async () => undefined),
+      getUploadState: vi.fn(() => Promise.reject(new Error('IDB failure'))),
+      removeUploadState: vi.fn(async () => undefined),
+    };
+
+    (createFolder as Mock).mockResolvedValueOnce(mockFolder);
+    (checkFolderDuplicated as Mock).mockResolvedValueOnce({
+      duplicatedFoldersResponse: [],
+      foldersWithDuplicates: [],
+      foldersWithoutDuplicates: [mockFolder],
+    });
+    (uploadItemsParallelThunk as unknown as Mock).mockImplementation((thunkArgs) => thunkArgs);
+    const dispatchToUploadManager = vi.fn(({ files, parentFolderId, options, onFileUploadCallback }) => ({
+      unwrap: () =>
+        uploadFileWithManager({
+          files: files.map((content: File, index: number) => ({
+            taskId: `file-task-${index}`,
+            relatedTaskId: options.relatedTaskId,
+            filecontent: { content, name: content.name, size: content.size, type: 'txt', parentFolderId },
+            userEmail: '',
+            parentFolderId,
+          })),
+          maxSpaceOccupiedCallback: vi.fn(),
+          uploadRepository: failingUploadRepository,
+          abortController: options.abortController,
+          options,
+          onFileUploadCallback,
+        }),
+    }));
+    const events: UploadFolderManagerEvents = {
+      onFolderUploadSuccess: vi.fn(),
+      onFolderUploadError: vi.fn(),
+    };
+
+    const folderUpload = uploadFoldersWithManager({
+      payload: [
+        {
+          currentFolderId: 'currentFolderId',
+          root: {
+            folderId: mockFolder.uuid,
+            childrenFiles: [new File(['a'], 'a.txt'), new File(['b'], 'b.txt')],
+            childrenFolders: [],
+            name: mockFolder.name,
+            fullPathEdited: 'path1',
+          },
+          options: { taskId },
+        },
+      ],
+      selectedWorkspace: null,
+      dispatch: dispatchToUploadManager,
+      maxUploadFileSize: 100,
+      events,
+    });
+    const hangTimeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('folder upload never settled')), 2000),
+    );
+
+    await expect(Promise.race([folderUpload, hangTimeout])).resolves.toBeUndefined();
+    expect(events.onFolderUploadSuccess).toHaveBeenCalledWith(taskId, {
+      folderName: 'MyFolder',
+      rootFolderUUID: mockFolder.uuid,
+      hasFailedFiles: true,
+    });
+    expect(events.onFolderUploadError).not.toHaveBeenCalled();
   });
 
   test('When the folder itself cannot be created, then the failure is notified and no success is announced afterwards', async () => {
