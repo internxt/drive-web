@@ -5,6 +5,7 @@ import referralService from 'services/referral.service';
 import * as networkInformation from 'app/network/networkInformation';
 import { uploadFoldersWithManager, UploadFolderManagerEvents } from 'app/network/UploadFolderManager';
 import { IRoot } from 'app/store/slices/storage/types';
+import RetryManager, { RetryableTaskType } from 'app/network/RetryManager';
 import { uploadFoldersWithTasks } from './uploadFoldersWithTasks';
 
 vi.mock('app/network/UploadFolderManager', () => ({
@@ -50,9 +51,21 @@ const runUpload = async (
   return { managerProps, events: managerProps.events as UploadFolderManagerEvents };
 };
 
+const addFailedFilesOf = (folderTaskId: string) =>
+  RetryManager.addTasks(
+    ['a.txt', 'b.txt'].map((name) => ({
+      taskId: `${folderTaskId}-${name}`,
+      type: RetryableTaskType.Upload,
+      params: { relatedTaskId: folderTaskId },
+    })),
+  );
+
+const retryTaskIds = () => RetryManager.getTasks().map(({ taskId }) => taskId);
+
 describe('uploadFoldersWithTasks', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    RetryManager.clearTasks();
   });
 
   test('When a folder upload is retried, then its existing task resumes instead of creating a new one', async () => {
@@ -184,5 +197,41 @@ describe('uploadFoldersWithTasks', () => {
 
     expect(tasksService.getTasks).toHaveBeenCalledWith({ relatedTaskId: 'task-1' });
     expect(promises).toEqual([resolvedStop]);
+  });
+
+  describe('when the folder has failed files listed for retry', () => {
+    beforeEach(() => {
+      (tasksService.create as Mock).mockReturnValue('task-1');
+      addFailedFilesOf('task-1');
+      addFailedFilesOf('other-task');
+    });
+
+    test.each([
+      { outcome: 'the connection is lost', reason: 'connection-lost' as const },
+      { outcome: 'a fatal error', reason: 'upload-failed' as const },
+    ])(
+      'when the folder upload ends because $outcome, then only its files are removed from the retry list',
+      async ({ reason }) => {
+        const { events } = await runUpload([{ root, currentFolderId: 'parent' }]);
+
+        events.onFolderUploadError?.('task-1', reason);
+
+        expect(retryTaskIds()).toEqual(['other-task-a.txt', 'other-task-b.txt']);
+      },
+    );
+
+    test('when the folder upload is retried, then its previous failed files are removed from the retry list', async () => {
+      await runUpload([{ root, currentFolderId: 'parent', options: { taskId: 'task-1' } }]);
+
+      expect(retryTaskIds()).toEqual(['other-task-a.txt', 'other-task-b.txt']);
+    });
+
+    test('when the folder upload succeeds with failed files, then its files stay in the retry list', async () => {
+      const { events } = await runUpload([{ root, currentFolderId: 'parent' }]);
+
+      events.onFolderUploadSuccess?.('task-1', { folderName: 'Folder', rootFolderUUID: 'uuid', hasFailedFiles: true });
+
+      expect(retryTaskIds()).toEqual(['task-1-a.txt', 'task-1-b.txt', 'other-task-a.txt', 'other-task-b.txt']);
+    });
   });
 });
