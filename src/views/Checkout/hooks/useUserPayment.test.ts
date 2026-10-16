@@ -161,7 +161,7 @@ describe('Custom hook to handle payments', () => {
         token: 'token',
         promoCodeId: 'promo_code_id',
         captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
+
         gclid: 'gclid_123',
       };
 
@@ -726,7 +726,7 @@ describe('Custom hook to handle payments', () => {
         confirmationTokenId: 'ctoken_123',
         selectedPlan: { price: { interval: 'year', type: UserType.Individual } } as any,
         captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
+
         confirmPayment: vi.fn().mockResolvedValue({ error: undefined }),
         confirmSetupIntent: vi.fn().mockResolvedValue({ error: undefined }),
         gclidStored: 'gclid_123',
@@ -767,7 +767,7 @@ describe('Custom hook to handle payments', () => {
         confirmationTokenId: 'ctoken_123',
         selectedPlan: { price: { interval: 'lifetime', type: UserType.Individual } } as any,
         captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
+
         confirmPayment: vi.fn().mockResolvedValue({ error: undefined }),
         confirmSetupIntent: vi.fn().mockResolvedValue({ error: undefined }),
         gclidStored: 'gclid_123',
@@ -781,7 +781,7 @@ describe('Custom hook to handle payments', () => {
           priceId: 'price_id',
           token: 'payments_token',
           currency: 'eur',
-          userAddress: '1.1.1.1',
+
           captchaToken: 'captcha_token',
           promoCodeId: undefined,
           gclid: 'gclid_123',
@@ -809,7 +809,7 @@ describe('Custom hook to handle payments', () => {
         confirmationTokenId: 'ctoken_123',
         selectedPlan: { price: { interval: 'year', type: UserType.Individual } } as any,
         captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
+
         confirmPayment: vi.fn().mockResolvedValue({ error: undefined }),
         confirmSetupIntent: vi.fn().mockResolvedValue({ error: undefined }),
         gclidStored: null,

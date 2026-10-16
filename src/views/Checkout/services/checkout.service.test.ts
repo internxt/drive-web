@@ -381,7 +381,6 @@ describe('Checkout Service tests', () => {
         token: 'user_mocked_token',
         currency: 'eur',
         captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
         promoCodeId: 'promo_code_id',
         gclid: 'gclid_123',
       };
