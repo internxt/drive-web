@@ -280,4 +280,23 @@ describe('storage slice', () => {
       expect(nextState.favorites).toEqual([toKeep]);
     });
   });
+
+  describe('Drive pagination', () => {
+    test('When the drive pagination is reset after the current folder failed to load, then the failure is cleared and other folders keep theirs', () => {
+      const state = {
+        ...buildInitialState(),
+        currentPath: { uuid: 'current-folder', name: 'Current' },
+        hasFetchFailedByFolderId: { 'current-folder': true, 'other-folder': true },
+      };
+
+      const nextState = storageReducer(state, storageActions.resetDrivePagination());
+
+      expect(nextState).toEqual({
+        ...state,
+        hasMoreDriveFolders: { 'current-folder': true },
+        hasMoreDriveFiles: { 'current-folder': true },
+        hasFetchFailedByFolderId: { 'current-folder': false, 'other-folder': true },
+      });
+    });
+  });
 });

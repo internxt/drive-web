@@ -17,6 +17,7 @@ export interface StorageState {
   levelsFilesLength: Record<number, number>;
   hasMoreDriveFolders: Record<number, boolean>;
   hasMoreDriveFiles: Record<number, boolean>;
+  hasFetchFailedByFolderId: Record<string, boolean>;
   recents: DriveItemData[];
   isLoadingRecents: boolean;
   favorites: DriveItemData[];

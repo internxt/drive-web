@@ -2,6 +2,7 @@ export { default as useDriveItemActions } from './useDriveItemActions';
 export { useDriveItemDrag, useDriveItemDrop } from './useDriveItemDragAndDrop';
 export { default as useDriveItemStoreProps } from './useDriveStoreProps';
 export { usePaginationState } from './usePaginationState';
+export { useFolderFetchRecovery } from './useFolderFetchRecovery';
 export { useTutorialState } from './useTutorialState';
 export { useVersionHistoryMenuConfig } from './useVersionHistoryMenuConfig';
 export { useVersionItemActions } from './useVersionItemActions';

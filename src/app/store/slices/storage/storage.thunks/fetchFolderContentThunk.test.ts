@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, vi, Mock, test } from 'vitest';
-import { fetchPaginatedFolderContentThunk } from './fetchFolderContentThunk';
+import { createReducer } from '@reduxjs/toolkit';
+import { fetchFolderContentThunkExtraReducers, fetchPaginatedFolderContentThunk } from './fetchFolderContentThunk';
 import { RootState } from '../../..';
 import { SdkFactory } from '../../../../core/factory/sdk';
 import errorService from 'services/error.service';
@@ -7,6 +8,7 @@ import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { StorageState } from '../storage.model';
 import { storageActions } from '..';
 import { getDriveItemData } from 'testUtils/fixtures/drive.fixtures';
+import notificationsService from '../../../../notifications/services/notifications.service';
 
 vi.mock('../../../../core/factory/sdk', () => ({
   SdkFactory: {
@@ -359,5 +361,44 @@ describe('Thunk of fetch folder content', () => {
         items: [enrichedFolder],
       }),
     );
+  });
+
+  describe('Folder content request status', () => {
+    const otherFolderId = 'folder-other';
+    const initialState = {
+      levels: {},
+      loadingFolders: { [otherFolderId]: true },
+      hasFetchFailedByFolderId: { [otherFolderId]: true },
+    } as unknown as StorageState;
+    const reducer = createReducer(initialState, fetchFolderContentThunkExtraReducers);
+    const failFolderRequest = (state: StorageState) =>
+      reducer(state, fetchPaginatedFolderContentThunk.rejected(new Error('offline'), 'request-id', mockFolderId));
+
+    beforeEach(() => {
+      vi.spyOn(notificationsService, 'show').mockReturnValue('toast-id');
+    });
+
+    test('When a folder content request fails, then the folder is marked as failed and stops loading', () => {
+      const nextState = failFolderRequest(initialState);
+
+      expect(nextState).toEqual({
+        ...initialState,
+        loadingFolders: { [otherFolderId]: true, [mockFolderId]: false },
+        hasFetchFailedByFolderId: { [otherFolderId]: true, [mockFolderId]: true },
+      });
+    });
+
+    test('When a failed folder is requested again, then its failure is cleared while it loads', () => {
+      const nextState = reducer(
+        failFolderRequest(initialState),
+        fetchPaginatedFolderContentThunk.pending('request-id', mockFolderId),
+      );
+
+      expect(nextState).toEqual({
+        ...initialState,
+        loadingFolders: { [otherFolderId]: true, [mockFolderId]: true },
+        hasFetchFailedByFolderId: { [otherFolderId]: true, [mockFolderId]: false },
+      });
+    });
   });
 });
