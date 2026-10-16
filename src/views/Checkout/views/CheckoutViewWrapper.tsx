@@ -29,6 +29,7 @@ import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 import { generateCaptchaToken } from 'utils/generateCaptchaToken';
 import gaService from 'app/analytics/ga.service';
 import { handleImpactDTCCheckout } from 'app/analytics/impact.service';
+import { capturePostbackPartner } from 'app/analytics/partnerPostback.service';
 import referralService from 'services/referral.service';
 import metaService from 'app/analytics/meta.service';
 import { useCheckoutQueryParams } from '../hooks/useCheckoutQueryParams';
@@ -69,7 +70,8 @@ const CheckoutViewWrapper = () => {
   const { setAuthMethod, setIsUserPaying, setIsUpdateSubscriptionDialogOpen, setIsUpdatingSubscription } =
     useCheckout(dispatchReducer);
 
-  const { planId, promotionCode, currency, paramMobileToken, gclid, irclickid, utmMedium } = useCheckoutQueryParams();
+  const { planId, promotionCode, currency, paramMobileToken, gclid, irclickid, utmMedium, utmSource } =
+    useCheckoutQueryParams();
   const { location: userLocationData } = useUserLocation();
 
   const {
@@ -175,6 +177,7 @@ const CheckoutViewWrapper = () => {
     if (irclickid) {
       handleImpactDTCCheckout({ irclickid, utmMedium });
     }
+    capturePostbackPartner(utmSource);
     referralService.captureUcc();
   }, []);
 
