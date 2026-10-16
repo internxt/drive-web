@@ -1,13 +1,19 @@
-import { describe, it, expect, vi, beforeEach, afterEach, Mock } from 'vitest';
-import { useDispatch } from 'react-redux';
+import { describe, it, test, expect, vi, beforeEach, afterEach, Mock } from 'vitest';
+import { useDispatch, useSelector } from 'react-redux';
 import { useReduxActions } from './useReduxActions';
 import { uploadFolderThunk } from '../storage.thunks/uploadFolderThunk';
 import { uploadItemsThunk, uploadSharedItemsThunk } from '../storage.thunks/uploadItemsThunk';
 import { UploadFolderData } from '../../../../tasks/types';
 import { renderHook } from '@testing-library/react';
+import { uploadFoldersWithTracking } from 'app/drive/services/folder.service/uploadFoldersWithTracking';
 
 vi.mock('react-redux', () => ({
   useDispatch: vi.fn(),
+  useSelector: vi.fn(),
+}));
+
+vi.mock('app/drive/services/folder.service/uploadFoldersWithTracking', () => ({
+  uploadFoldersWithTracking: vi.fn(),
 }));
 
 vi.mock('../storage.thunks/uploadFolderThunk', () => ({
@@ -26,9 +32,13 @@ vi.mock('app/drive/services/folder.service', () => ({
 
 describe('useReduxActions', () => {
   const dispatch = vi.fn();
+  const selectedWorkspace = { workspaceUser: { memberId: 'member1' } };
+  const maxUploadFileSize = 1024;
+  const state = { workspaces: { selectedWorkspace }, fileVersions: { limits: { maxUploadFileSize } } };
 
   beforeEach(() => {
     (useDispatch as Mock).mockReturnValue(dispatch);
+    (useSelector as Mock).mockImplementation((selector: (s: typeof state) => unknown) => selector(state));
   });
 
   afterEach(() => {
@@ -36,7 +46,7 @@ describe('useReduxActions', () => {
     vi.resetModules();
   });
 
-  it('should dispatch uploadFolderThunk with correct arguments', () => {
+  test('when a failed folder upload is retried, then it resumes the same task through the folder upload pipeline', () => {
     const { result } = renderHook(() => useReduxActions());
     const data: UploadFolderData & { taskId: string } = {
       folder: {
@@ -52,13 +62,13 @@ describe('useReduxActions', () => {
 
     result.current.uploadFolder(data);
 
-    expect(dispatch).toHaveBeenCalledWith(
-      uploadFolderThunk({
-        root: data.folder,
-        currentFolderId: data.parentFolderId,
-        options: { taskId: data.taskId },
-      }),
-    );
+    expect(uploadFoldersWithTracking).toHaveBeenCalledWith({
+      payload: [{ root: data.folder, currentFolderId: data.parentFolderId, options: { taskId: data.taskId } }],
+      selectedWorkspace,
+      dispatch,
+      maxUploadFileSize,
+    });
+    expect(uploadFolderThunk).not.toHaveBeenCalled();
   });
 
   it('should dispatch uploadItemsThunk with correct arguments for uploadItem', () => {
