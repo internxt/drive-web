@@ -1,12 +1,15 @@
 import { DriveItemData, SortField } from 'app/drive/types';
 import { HeaderProps } from '@internxt/ui/dist/components/data-display/list/ListHeader';
 import { Translate } from 'app/i18n/types';
+import { OrderDirection, OrderSettings } from 'app/core/types';
 
 export const getListHeaders = (
   translate: Translate,
   isRecents: boolean,
   isTrash: boolean,
+  canSortByModified = true,
 ): HeaderProps<DriveItemData, SortField>[] => {
+  const isModifiedOrderable = !isRecents && canSortByModified;
   const headers: HeaderProps<DriveItemData, SortField>[] = [
     {
       label: translate('drive.list.columns.name'),
@@ -42,8 +45,9 @@ export const getListHeaders = (
       label: translate('drive.list.columns.modified'),
       width: 'w-date',
       name: 'updatedAt',
-      orderable: !isRecents,
+      orderable: isModifiedOrderable,
       defaultDirection: 'ASC',
+      buttonDataCy: 'driveListHeaderModifiedButton',
     });
   }
 
@@ -55,4 +59,16 @@ export const getListHeaders = (
   });
 
   return headers;
+};
+
+export const getDriveListOrder = (
+  order: OrderSettings,
+  driveItemsOrder: string,
+  isPersonalDrive: boolean,
+): OrderSettings => {
+  if (!isPersonalDrive) return order;
+
+  const isDescending = driveItemsOrder === OrderDirection.Desc;
+  const direction = isDescending ? OrderDirection.Desc : OrderDirection.Asc;
+  return { by: 'name', direction };
 };
