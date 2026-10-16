@@ -12,6 +12,8 @@ import notificationsService from 'app/notifications/services/notifications.servi
 import { paymentService } from '../services';
 import errorService from 'services/error.service';
 
+vi.mock('app/analytics/googleSheet.service', () => ({ sendConversionToAPI: vi.fn() }));
+
 const mockHostname = 'https://hostname.com';
 
 describe('Custom hook to handle payments', () => {
@@ -68,6 +70,30 @@ describe('Custom hook to handle payments', () => {
         paymentIntentId: 'payment_intent_id',
       });
     });
+
+    test('When the buyer comes from a Google Ads click, then the click ID is sent along with the subscription', async () => {
+      const createSubscriptionSpy = vi.spyOn(checkoutService, 'createSubscription').mockResolvedValue({
+        clientSecret: 'client_secret',
+        type: 'payment',
+        paymentIntentId: 'payment_intent_id',
+        subscriptionId: 'subscription_id',
+      });
+      const { getSubscriptionPaymentIntent } = useUserPayment();
+
+      const subscriptionPaymentIntentPayload: CreateSubscriptionPayload = {
+        customerId: 'customer_id',
+        priceId: 'price_id',
+        token: 'token',
+        currency: 'eur',
+        captchaToken: 'captcha_token',
+        promoCodeId: 'promo_code_id',
+        gclid: 'gclid_123',
+      };
+
+      await getSubscriptionPaymentIntent(subscriptionPaymentIntentPayload);
+
+      expect(createSubscriptionSpy).toHaveBeenCalledWith(subscriptionPaymentIntentPayload);
+    });
   });
 
   describe('Get lifetime data to do the payment', () => {
@@ -117,6 +143,31 @@ describe('Custom hook to handle payments', () => {
           captchaToken: 'captcha_token',
         }),
       ).rejects.toThrow('Unsupported payment type: crypto');
+    });
+
+    test('When the buyer comes from a Google Ads click, then the click ID is sent along with the payment intent', async () => {
+      const createPaymentIntentSpy = vi.spyOn(checkoutService, 'createPaymentIntent').mockResolvedValue({
+        clientSecret: 'client_secret',
+        invoiceStatus: 'open',
+        type: 'fiat',
+        id: 'payment_intent_id',
+      });
+      const { getLifetimePaymentIntent } = useUserPayment();
+
+      const lifetimePaymentIntentPayload = {
+        customerId: 'customer_id',
+        priceId: 'price_id',
+        currency: 'eur',
+        token: 'token',
+        promoCodeId: 'promo_code_id',
+        captchaToken: 'captcha_token',
+        userAddress: '1.1.1.1',
+        gclid: 'gclid_123',
+      };
+
+      await getLifetimePaymentIntent(lifetimePaymentIntentPayload);
+
+      expect(createPaymentIntentSpy).toHaveBeenCalledWith(lifetimePaymentIntentPayload);
     });
   });
 
@@ -654,6 +705,118 @@ describe('Custom hook to handle payments', () => {
 
       await expect(paymentAttempt).rejects.toThrow('Your card was declined');
       expect(navigationServiceSpy).not.toHaveBeenCalledWith(AppView.CheckoutSuccess);
+    });
+
+    test('When a buyer without an account comes from a Google Ads click and purchases a subscription, then the stored click ID is sent with it', async () => {
+      const payment = useUserPayment();
+      const createSubscriptionSpy = vi.spyOn(checkoutService, 'createSubscription').mockResolvedValue({
+        clientSecret: 'client_secret',
+        type: 'payment',
+        paymentIntentId: 'pi_123',
+        subscriptionId: 'sub_123',
+      });
+      vi.spyOn(localStorageService, 'set').mockImplementation(() => {});
+
+      await payment.handleUserPayment({
+        customerId: 'customer_id',
+        priceId: 'price_id',
+        token: 'payments_token',
+        translate: vi.fn(),
+        currency: 'eur',
+        confirmationTokenId: 'ctoken_123',
+        selectedPlan: { price: { interval: 'year', type: UserType.Individual } } as any,
+        captchaToken: 'captcha_token',
+        userAddress: '1.1.1.1',
+        confirmPayment: vi.fn().mockResolvedValue({ error: undefined }),
+        confirmSetupIntent: vi.fn().mockResolvedValue({ error: undefined }),
+        gclidStored: 'gclid_123',
+        isFirstPurchase: true,
+        isPasswordlessSignUp: true,
+      });
+
+      expect(createSubscriptionSpy).toHaveBeenCalledWith(
+        {
+          customerId: 'customer_id',
+          priceId: 'price_id',
+          token: 'payments_token',
+          currency: 'eur',
+          captchaToken: 'captcha_token',
+          promoCodeId: undefined,
+          gclid: 'gclid_123',
+        },
+        { withoutSession: true },
+      );
+    });
+
+    test('When a buyer without an account comes from a Google Ads click and purchases a lifetime plan, then the stored click ID is sent with it', async () => {
+      const payment = useUserPayment();
+      const createPaymentIntentSpy = vi.spyOn(checkoutService, 'createPaymentIntent').mockResolvedValue({
+        clientSecret: 'client_secret',
+        invoiceStatus: 'open',
+        type: 'fiat',
+        id: 'pi_123',
+      });
+      vi.spyOn(localStorageService, 'set').mockImplementation(() => {});
+
+      await payment.handleUserPayment({
+        customerId: 'customer_id',
+        priceId: 'price_id',
+        token: 'payments_token',
+        translate: vi.fn(),
+        currency: 'eur',
+        confirmationTokenId: 'ctoken_123',
+        selectedPlan: { price: { interval: 'lifetime', type: UserType.Individual } } as any,
+        captchaToken: 'captcha_token',
+        userAddress: '1.1.1.1',
+        confirmPayment: vi.fn().mockResolvedValue({ error: undefined }),
+        confirmSetupIntent: vi.fn().mockResolvedValue({ error: undefined }),
+        gclidStored: 'gclid_123',
+        isFirstPurchase: true,
+        isPasswordlessSignUp: true,
+      });
+
+      expect(createPaymentIntentSpy).toHaveBeenCalledWith(
+        {
+          customerId: 'customer_id',
+          priceId: 'price_id',
+          token: 'payments_token',
+          currency: 'eur',
+          userAddress: '1.1.1.1',
+          captchaToken: 'captcha_token',
+          promoCodeId: undefined,
+          gclid: 'gclid_123',
+        },
+        { withoutSession: true },
+      );
+    });
+
+    test('When the buyer has no stored Google Ads click ID, then no click ID is sent with the purchase', async () => {
+      const payment = useUserPayment();
+      const createSubscriptionSpy = vi.spyOn(checkoutService, 'createSubscription').mockResolvedValue({
+        clientSecret: 'client_secret',
+        type: 'payment',
+        paymentIntentId: 'pi_123',
+        subscriptionId: 'sub_123',
+      });
+      vi.spyOn(localStorageService, 'set').mockImplementation(() => {});
+
+      await payment.handleUserPayment({
+        customerId: 'customer_id',
+        priceId: 'price_id',
+        token: 'user_token',
+        translate: vi.fn(),
+        currency: 'eur',
+        confirmationTokenId: 'ctoken_123',
+        selectedPlan: { price: { interval: 'year', type: UserType.Individual } } as any,
+        captchaToken: 'captcha_token',
+        userAddress: '1.1.1.1',
+        confirmPayment: vi.fn().mockResolvedValue({ error: undefined }),
+        confirmSetupIntent: vi.fn().mockResolvedValue({ error: undefined }),
+        gclidStored: null,
+        isFirstPurchase: true,
+      });
+
+      expect(createSubscriptionSpy.mock.calls[0][0].gclid).toBeUndefined();
     });
 
     test('When the plan is neither a subscription nor a lifetime, then the user is redirected to the Drive page directly', async () => {
