@@ -288,6 +288,23 @@ describe('Checkout Service tests', () => {
         paymentIntentId: 'py_no_session',
       });
     });
+
+    it('When the buyer comes from a Google Ads click, then the click ID is sent to create the subscription', async () => {
+      const createSubPayload: CreateSubscriptionPayload = {
+        customerId: 'cus_123',
+        priceId: 'price_123',
+        token: 'user_mocked_token',
+        currency: 'eur',
+        captchaToken: 'captcha_token',
+        promoCodeId: 'promo_code_id',
+        gclid: 'gclid_123',
+      };
+
+      await checkoutService.createSubscription(createSubPayload);
+
+      const sessionClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
+      expect(sessionClient.createSubscription).toHaveBeenCalledWith(createSubPayload);
+    });
   });
 
   describe('Create a payment intent', () => {
@@ -362,6 +379,24 @@ describe('Checkout Service tests', () => {
         id: 'py_no_session_id',
         invoiceStatus: 'paid',
       });
+    });
+
+    it('When the buyer comes from a Google Ads click, then the click ID is sent to create the payment intent', async () => {
+      const createInvoicePayload: CreatePaymentIntentPayload = {
+        customerId: 'cus_123',
+        priceId: 'price_123',
+        token: 'user_mocked_token',
+        currency: 'eur',
+        captchaToken: 'captcha_token',
+        userAddress: '1.1.1.1',
+        promoCodeId: 'promo_code_id',
+        gclid: 'gclid_123',
+      };
+
+      await checkoutService.createPaymentIntent(createInvoicePayload);
+
+      const sessionClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
+      expect(sessionClient.createPaymentIntent).toHaveBeenCalledWith(createInvoicePayload);
     });
   });
 

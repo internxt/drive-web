@@ -93,6 +93,7 @@ export interface CreatePaymentIntentPayload {
   captchaToken: string;
   userAddress: string;
   promoCodeId?: string;
+  gclid?: string;
 }
 
 export interface ProcessPurchasePayload {
@@ -111,6 +112,7 @@ export interface ProcessPurchasePayload {
   couponCodeData?: CouponCodeData;
   isFirstPurchase?: boolean;
   isPasswordlessSignUp?: boolean;
+  gclid?: string;
 }
 
 export interface UseUserPaymentPayload {
