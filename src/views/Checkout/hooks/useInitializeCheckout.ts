@@ -42,7 +42,7 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
     }
 
     if (stripeSdk && price) {
-      loadStripeElements();
+      void loadStripeElements();
     }
   }, [stripeSdk, price?.price?.id]);
 
