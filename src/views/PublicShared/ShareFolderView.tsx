@@ -4,6 +4,7 @@ import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import { PublicSharedItemInfo, SharingMeta } from '@internxt/sdk/dist/drive/share/types';
 import errorService from 'services/error.service';
+import dateService from 'services/date.service';
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -63,6 +64,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   const [folderSize, setFolderSize] = useState<string | null>(null);
   const [isGetFolderSizeError, setIsGetFolderSizeError] = useState<boolean>(false);
   const [isPreviewingContent, setIsPreviewingContent] = useState(false);
+  const expirationDate: string | undefined = info?.expirationAt ?? undefined;
 
   let body, downloadButton;
 
@@ -301,6 +303,11 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
                 ) : (
                   <span className="text-gray-60"> {folderSize || '0MB'}</span>
                 ))}
+              {expirationDate && (
+                <span className="text-gray-60">
+                  {translate('actions.expirationDate')} {dateService.format(expirationDate, 'D MMM, YYYY')}
+                </span>
+              )}
             </div>
           </div>
         </div>

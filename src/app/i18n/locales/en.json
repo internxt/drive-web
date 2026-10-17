@@ -886,6 +886,7 @@
         "uploaded": "Uploaded",
         "uploadedBy": "Uploaded by",
         "shared": "Shared",
+        "expiration": "Link expiration",
         "size": "Size",
         "numberOfFiles": "Number of files",
         "modified": "Modified",
@@ -940,7 +941,8 @@
       "errors": {
         "updatingRole": "The role could not be updated, please try again later.",
         "copy-to-clipboard": "Error sharing item, try again later.",
-        "update-sharing-access": "The acces mode could not be updated, please try again later"
+        "update-sharing-access": "The acces mode could not be updated, please try again later",
+        "update-link-expiration": "The expiration date could not be updated, please try again later"
       },
       "general": {
         "generalAccess": "General access",
@@ -1197,6 +1199,7 @@
       "name": "Name",
       "created": "Created",
       "size": "Size",
+      "expiration": "Link expiration",
       "owner": "Owner"
     },
     "empty-state": {
@@ -1393,6 +1396,8 @@
     "title": "Link settings",
     "access": "Access",
     "protect": "Protect with password",
+    "expiringDate": "Expiration date",
+    "removeExpiringDate": "Remove expiration date",
     "addSecurePassword": "Secure this link by setting up a password",
     "password": "Password",
     "views": "Views",
@@ -1449,6 +1454,7 @@
       "uploadFiles": "Upload files",
       "uploadFolder": "Upload folder"
     },
+    "expirationDate": "Expires:",
     "change": "Change",
     "download": "Download",
     "downloading": "Downloading",
@@ -1497,6 +1503,7 @@
         "name": "Name",
         "modified": "Modified",
         "size": "Size",
+        "expiration": "Link expiration",
         "autoDelete": "Auto-delete",
         "originalLocation": "Original location"
       }

@@ -865,6 +865,7 @@
         "uploaded": "Hochgeladen",
         "uploadedBy": "Hochgeladen von",
         "shared": "Freigegeben",
+        "expiration": "Link-Ablaufdatum",
         "size": "Größe",
         "numberOfFiles": "Anzahl der Dateien",
         "modified": "Geändert",
@@ -1020,7 +1021,8 @@
       "errors": {
         "updatingRole": "Die Rolle konnte nicht aktualisiert werden, bitte später erneut versuchen.",
         "copy-to-clipboard": "Fehler beim Teilen des Elements, bitte später erneut versuchen.",
-        "update-sharing-access": "Der Zugriffsmodus konnte nicht aktualisiert werden, bitte später erneut versuchen"
+        "update-sharing-access": "Der Zugriffsmodus konnte nicht aktualisiert werden, bitte später erneut versuchen",
+        "update-link-expiration": "Das Ablaufdatum konnte nicht aktualisiert werden, bitte versuchen Sie es später erneut"
       }
     },
     "sharedInvitationsModal": {
@@ -1169,6 +1171,7 @@
     "list": {
       "created": "Erstellt",
       "size": "Größe",
+      "expiration": "Link-Ablaufdatum",
       "name": "Name",
       "owner": "Eigentümer"
     },
@@ -1369,6 +1372,8 @@
     "title": "Link Einstellungen",
     "access": "Zugriff",
     "protect": "Passwortgeschützt",
+    "expiringDate": "Ablaufdatum",
+    "removeExpiringDate": "Ablaufdatum entfernen",
     "addSecurePassword": "Sichere diesen Link, indem du ein Passwort einrichtest",
     "password": "Passwort",
     "views": "Ansichten",
@@ -1425,6 +1430,7 @@
       "uploadFiles": "Dateien hochladen",
       "uploadFolder": "Ordner hochladen"
     },
+    "expirationDate": "Läuft ab:",
     "change": "Ändern",
     "download": "Download",
     "downloading": "Runterladen",
@@ -1473,6 +1479,7 @@
         "name": "Name",
         "modified": "Modifiziert",
         "size": "Größe",
+        "expiration": "Link-Ablaufdatum",
         "autoDelete": "Automatisches Löschen",
         "originalLocation": "Ursprünglicher Speicherort"
       }

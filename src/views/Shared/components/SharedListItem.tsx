@@ -120,6 +120,15 @@ export const SharedListItem = ({
       <div className="block  shrink-0 w-40 items-center whitespace-nowrap">
         {dateService.format(item.createdAt, 'D MMM YYYY')}
       </div>
+
+      {/* EXPIRATION */}
+      <div className="block  shrink-0 w-40 items-center whitespace-nowrap">
+        {item.linkExpirationDate ? (
+          dateService.format(item.linkExpirationDate, 'D MMM YYYY')
+        ) : (
+          <span className="opacity-25">—</span>
+        )}
+      </div>
     </div>
   );
 };
