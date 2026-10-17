@@ -1,6 +1,6 @@
 import { expect, Page, test } from '@playwright/test';
 import { readFileSync } from 'fs';
-import { MAX_CONVERTIBLE_IMAGE_PREVIEW_BYTES } from 'app/drive/components/FileViewer/utils/fileViewerUtils';
+import { MAX_CONVERTIBLE_IMAGE_PREVIEW_BYTES } from 'app/drive/components/FileViewer/utils/fileViewerConstants';
 import { buildTiff, concatBytes } from 'testUtils/imageBuilders';
 import { MockedDriveOptions } from '../helper/driveRouteMocks';
 import { openMockedDrive } from '../helper/mockedDrive';
