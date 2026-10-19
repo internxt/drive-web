@@ -105,11 +105,13 @@ vi.mock('utils/userLocation', () => ({
 }));
 
 const THEME = {
+  stripeTheme: 'night' as const,
   backgroundColor: '#000',
   textColor: '#fff',
   borderColor: '#ccc',
   borderInputColor: '#aaa',
   labelTextColor: '#eee',
+  placeholderTextColor: '#999',
 };
 
 const buildPlan = ({
@@ -411,11 +413,13 @@ describe('Checkout Service tests', () => {
   describe('Loading Stripe Elements', () => {
     it('When called for a lifetime plan, then it returns a configured stripe element options object', async () => {
       const theme = {
+        stripeTheme: 'night' as const,
         backgroundColor: '#000',
         textColor: '#fff',
         borderColor: '#ccc',
         borderInputColor: '#aaa',
         labelTextColor: '#eee',
+        placeholderTextColor: '#999',
       };
 
       const plan = {
@@ -441,11 +445,13 @@ describe('Checkout Service tests', () => {
 
     it('When called for a subscription plan, then it returns a configured stripe element options object', async () => {
       const theme = {
+        stripeTheme: 'night' as const,
         backgroundColor: '#000',
         textColor: '#fff',
         borderColor: '#ccc',
         borderInputColor: '#aaa',
         labelTextColor: '#eee',
+        placeholderTextColor: '#999',
       };
 
       const plan = {

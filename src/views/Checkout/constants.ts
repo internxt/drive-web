@@ -12,20 +12,24 @@ export const STRIPE_MINIMUM_CHARGE_AMOUNT = 50;
 
 export const THEME_STYLES = {
   dark: {
-    backgroundColor: 'rgb(17 17 17)',
-    textColor: 'rgb(255 255 255)',
-    borderColor: 'rgb(58, 58, 59)',
-    borderInputColor: 'rgb(142, 142, 148)',
-    labelTextColor: 'rgb(229 229 235)',
+    stripeTheme: 'night',
+    backgroundColor: '#111111',
+    textColor: '#FFFFFF',
+    borderColor: '#3A3A3B',
+    borderInputColor: '#8E8E94',
+    labelTextColor: '#E5E5EB',
+    placeholderTextColor: '#8E8E94',
   },
   light: {
-    backgroundColor: 'rgb(255 255 255)',
-    textColor: 'rgb(17 17 17)',
-    borderColor: 'rgb(229, 229, 235)',
-    borderInputColor: 'rgb(174, 174, 179)',
-    labelTextColor: 'rgb(58 58 59)',
+    stripeTheme: 'flat',
+    backgroundColor: '#FFFFFF',
+    textColor: '#111111',
+    borderColor: '#E5E5EB',
+    borderInputColor: '#AEAEB3',
+    labelTextColor: '#3A3A3B',
+    placeholderTextColor: '#AEAEB3',
   },
-};
+} as const;
 
 export const STATUS_CODE_ERROR = {
   USER_EXISTS: 409,
