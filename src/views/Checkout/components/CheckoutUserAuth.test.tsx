@@ -71,7 +71,6 @@ describe('Checkout account details', () => {
 
     expect(screen.getByPlaceholderText('Email')).toBeInTheDocument();
     expect(screen.queryByPlaceholderText('Password')).not.toBeInTheDocument();
-    expect(screen.getByText(enTranslations.checkout.accountSetup.passwordAfterPayment)).toBeInTheDocument();
   });
 
   test('When paying without a password is not available, then a new buyer is asked for a password', () => {

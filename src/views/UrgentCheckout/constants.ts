@@ -24,12 +24,14 @@ export const OFFER_COUNTDOWN_DURATION_MS = 60 * 60 * 1000;
 export const OFFER_COUNTDOWN_STORAGE_KEY = 'urgentCheckoutOfferDeadline';
 
 export const URGENT_CHECKOUT_THEME_STYLES = {
-  backgroundColor: 'rgb(13 20 34)',
-  textColor: 'rgb(255 255 255)',
-  borderColor: 'rgb(32 45 69)',
-  borderInputColor: 'rgb(47 63 92)',
-  labelTextColor: 'rgb(167 180 200)',
-};
+  stripeTheme: 'night',
+  backgroundColor: '#0D1422',
+  textColor: '#FFFFFF',
+  borderColor: '#202D45',
+  borderInputColor: '#2F3F5C',
+  labelTextColor: '#A7B4C8',
+  placeholderTextColor: '#5F6E86',
+} as const;
 
 export const URGENT_CHECKOUT_CARD_CLASSNAME = 'rounded-2xl border border-[#202D45] bg-[#0D1422]';
 

@@ -205,15 +205,25 @@ const checkoutSetupIntent = async (customerId: string) => {
 
 const loadStripeElements = async (
   theme: {
+    stripeTheme: 'flat' | 'night';
     backgroundColor: string;
     textColor: string;
     borderColor: string;
     borderInputColor: string;
     labelTextColor: string;
+    placeholderTextColor: string;
   },
   plan: PriceWithTax,
 ): Promise<StripeElementsOptionsMode> => {
-  const { backgroundColor, textColor, borderColor, borderInputColor, labelTextColor } = theme;
+  const {
+    stripeTheme,
+    backgroundColor,
+    textColor,
+    borderColor,
+    borderInputColor,
+    labelTextColor,
+    placeholderTextColor,
+  } = theme;
 
   return {
     appearance: {
@@ -221,14 +231,24 @@ const loadStripeElements = async (
       variables: {
         spacingAccordionItem: '8px',
         colorPrimary: textColor,
+        colorBackground: backgroundColor,
+        colorText: textColor,
+        colorTextSecondary: labelTextColor,
+        colorTextPlaceholder: placeholderTextColor,
       },
-      theme: 'flat',
+      theme: stripeTheme,
       rules: {
         '.AccordionItem:hover': {
           color: textColor,
         },
         '.Block': {
           backgroundColor: backgroundColor,
+        },
+        '.BlockDivider': {
+          backgroundColor: borderColor,
+        },
+        '.BlockAction': {
+          color: labelTextColor,
         },
         '.TermsText': {
           color: textColor,

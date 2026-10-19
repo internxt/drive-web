@@ -134,7 +134,7 @@ describe('urgent checkout view', () => {
     };
 
     it.each<[AuthMethodTypes, string, string, string]>([
-      ['signUp', 'Create a password', 'Already have an account?', 'Login'],
+      ['signUp', 'Create a password', 'Already have an account?', 'Log in'],
       ['signIn', 'Your password', 'Don’t have an account?', 'Create account'],
     ])(
       'When the visitor is on %s, then its copy and the link to the other method are shown',
@@ -150,7 +150,7 @@ describe('urgent checkout view', () => {
     );
 
     it.each<[AuthMethodTypes, string, AuthMethodTypes]>([
-      ['signUp', 'Login', 'signIn'],
+      ['signUp', 'Log in', 'signIn'],
       ['signIn', 'Create account', 'signUp'],
     ])('When the visitor on %s clicks the link, then the auth method changes', (authMethod, link, expected) => {
       renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { authMethod });
@@ -167,7 +167,7 @@ describe('urgent checkout view', () => {
 
       fireEvent.change(email, { target: { value: 'test@internxt.com' } });
       fireEvent.change(password, { target: { value: 'a-password' } });
-      fireEvent.click(screen.getByText('Login'));
+      fireEvent.click(screen.getByText('Log in'));
 
       expect(email.value).toBe('');
       expect(password.value).toBe('');
