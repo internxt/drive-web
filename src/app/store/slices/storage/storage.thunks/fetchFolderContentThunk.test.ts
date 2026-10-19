@@ -29,7 +29,7 @@ vi.mock('..', () => ({
     addFolderFilesLength: vi.fn(),
     setDriveFoldersCursor: vi.fn(),
     setDriveFilesCursor: vi.fn(),
-    setDriveItemsSort: vi.fn(),
+    setDriveItemsSort: vi.fn((payload: string) => ({ type: 'storage/setDriveItemsSort', payload })),
   },
 }));
 
@@ -366,9 +366,10 @@ describe('Thunk of fetch folder content', () => {
 
   describe('Personal drive opened with a Modified sort left by a workspace', () => {
     let mockStorageClient: ReturnType<typeof createMockStorageClient>;
+    let arranged: ReturnType<typeof arrangePersonalDrive>;
 
     beforeEach(async () => {
-      const arranged = arrangePersonalDrive({ driveItemsSort: 'updatedAt' });
+      arranged = arrangePersonalDrive({ driveItemsSort: 'updatedAt' });
       mockStorageClient = arranged.mockStorageClient;
       mockStorageClient.getFolderFoldersByUuidWithCursor.mockReturnValue([
         Promise.resolve({ folders: [], nextCursor: null }),
@@ -377,12 +378,34 @@ describe('Thunk of fetch folder content', () => {
       await fetchPaginatedFolderContentThunk(mockFolderId)(dispatch, arranged.getState as () => RootState, {});
     });
 
-    test('When the personal drive is opened with a Modified sort left by a workspace, then the sort is switched to name', () => {
-      expect(storageActions.setDriveItemsSort).toHaveBeenCalledWith('plainName');
+    test('When the personal drive is opened with a Modified sort left by a workspace, then the request is still name-ordered by cursor', () => {
+      expect(mockStorageClient.getFolderFoldersByUuid).not.toHaveBeenCalled();
+      expect(mockStorageClient.getFolderFoldersByUuidWithCursor).toHaveBeenCalled();
     });
 
-    test('When the personal drive is opened with a Modified sort left by a workspace, then the old Modified listing is not requested', () => {
-      expect(mockStorageClient.getFolderFoldersByUuid).not.toHaveBeenCalled();
+    test('When the personal drive is opened with a Modified sort left by a workspace, then the global driveItemsSort is not mutated', () => {
+      expect(storageActions.setDriveItemsSort).not.toHaveBeenCalled();
+      expect(arranged.getState().storage.driveItemsSort).toBe('updatedAt');
+    });
+  });
+
+  describe('A workspace Modified sort does not leak into the personal drive (regression)', () => {
+    test('When the personal drive folder content is fetched after a workspace was sorted by Modified, then the global driveItemsSort stays unchanged afterwards', async () => {
+      const { mockStorageClient, getState } = arrangePersonalDrive({ driveItemsSort: 'updatedAt' });
+      mockStorageClient.getFolderFoldersByUuidWithCursor.mockReturnValue([
+        Promise.resolve({ folders: [], nextCursor: null }),
+      ]);
+
+      const trackingDispatch = vi.fn((action) => {
+        if (action?.type === 'storage/setDriveItemsSort') {
+          getState().storage.driveItemsSort = action.payload as StorageState['driveItemsSort'];
+        }
+        return action;
+      });
+
+      await fetchPaginatedFolderContentThunk(mockFolderId)(trackingDispatch, getState as () => RootState, {});
+
+      expect(getState().storage.driveItemsSort).toBe('updatedAt');
     });
   });
 
@@ -442,16 +465,19 @@ describe('Thunk of fetch folder content', () => {
       });
     });
 
-    test('When the sort order changes while a page is loading, then the cursor of that page is not stored', async () => {
+    test('When the sort order changes while a page is loading, then the stale response is discarded entirely', async () => {
       const { mockStorageClient, getState } = arrangePersonalDrive();
       mockStorageClient.getFolderFoldersByUuidWithCursor.mockImplementation(() => {
         getState.mockReturnValue(createMockState({ driveItemsOrder: 'DESC' }));
-        return [Promise.resolve({ folders: [], nextCursor: 'cursor-asc' })];
+        return [Promise.resolve({ folders: createFolders(50), nextCursor: 'cursor-asc' })];
       });
 
       await fetchPaginatedFolderContentThunk(mockFolderId)(dispatch, getState as () => RootState, {});
 
+      expect(storageActions.addItems).not.toHaveBeenCalled();
       expect(storageActions.setDriveFoldersCursor).not.toHaveBeenCalled();
+      expect(storageActions.setHasMoreDriveFolders).not.toHaveBeenCalled();
+      expect(storageActions.addFolderFoldersLength).not.toHaveBeenCalled();
     });
   });
 

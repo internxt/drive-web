@@ -32,10 +32,6 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, string, {
     const driveItemsSortForFolders = driveItemsSort === 'size' ? 'name' : driveItemsSort;
 
     const isCursorPagination = !selectedWorkspace;
-    const shouldForceNameSort = isCursorPagination && driveItemsSort !== 'plainName';
-    if (shouldForceNameSort) {
-      dispatch(storageActions.setDriveItemsSort('plainName'));
-    }
 
     try {
       if (folderId) {
@@ -82,6 +78,12 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, string, {
           return;
         }
         const itemsUnparsed = await itemsPromise;
+
+        const isSameOrder = getState().storage.driveItemsOrder === driveItemsOrder;
+        if (!isSameOrder) {
+          return;
+        }
+
         let parsedItems;
         let itemsLength = 0;
 
@@ -114,9 +116,7 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, string, {
 
         dispatch(storageActions.addItems({ folderId, items: itemsWithCachedSizes }));
 
-        const isSameOrder = getState().storage.driveItemsOrder === driveItemsOrder;
-        const shouldStoreCursor = isCursorPagination && isSameOrder;
-        if (shouldStoreCursor) {
+        if (isCursorPagination) {
           const setCursor = hasMoreDriveFolders
             ? storageActions.setDriveFoldersCursor
             : storageActions.setDriveFilesCursor;
