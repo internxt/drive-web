@@ -229,7 +229,7 @@ export const CheckoutProductCard = ({
             </>
           )}
           <Button type="submit" id="submit-create-account" className="flex" disabled={isPaymentProcessing}>
-            {isPaymentProcessing ? translate('checkout.processing') : translate('checkout.pay')}
+            {isPaymentProcessing ? translate('checkout.processing') : translate('checkout.continue')}
           </Button>
         </div>
       </div>

@@ -106,7 +106,7 @@
       "title": "Create account",
       "haveAccount": "Already have an account?",
       "haveAccountMobile": "Already have an Internxt account?",
-      "login": "Login",
+      "login": "Log in",
       "encrypting": "Encrypting",
       "info": {
         "normalText": "Internxt doesn’t store passwords.",
@@ -214,7 +214,7 @@
     }
   },
   "checkout": {
-    "pay": "Pay",
+    "continue": "Continue",
     "processing": "Processing...",
     "checkout": "Checkout",
     "postalCode": {
@@ -223,7 +223,7 @@
     },
     "authComponent": {
       "signUp": {
-        "emailAddress": "Your email address",
+        "emailAddress": "Email address",
         "password": "Create password"
       },
       "signIn": {
@@ -239,8 +239,7 @@
         "invalidData": "Please check that your email and password are correct and try again.",
         "serverError": "We could not complete this step. Please try again in a few minutes or contact support if the problem persists.",
         "unknown": "We could not verify your details. Please check your email and password and try again."
-      },
-      "privacyGuarantee": "Privacy guarantee: We do not share your information and will contact you only as needed to provide our service."
+      }
     },
     "addressBillingTitle": "Billing Address",
     "addressBilling": {
@@ -280,7 +279,6 @@
       "paymentFailed": "Payment failed"
     },
     "accountSetup": {
-      "passwordAfterPayment": "You don't need a password yet. After paying, we'll send you an email to finish setting up your account.",
       "emailHasAccount": "This email already has an Internxt account. Log in to continue with your purchase.",
       "pendingSetup": "{{email}} already has a paid plan waiting to be set up. Check your email to finish setting up your account.",
       "resendEmail": "Resend email",
