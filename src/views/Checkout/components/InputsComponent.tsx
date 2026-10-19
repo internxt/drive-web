@@ -12,6 +12,7 @@ interface InputsComponentProps {
   authMethod: AuthMethodTypes;
   register: UseFormRegister<IFormValues>;
   isPasswordFieldVisible?: boolean;
+  onAuthMethodToggled: (authMethod: AuthMethodTypes) => void;
 }
 
 export const InputsComponent = ({
@@ -20,8 +21,19 @@ export const InputsComponent = ({
   authError,
   authMethod,
   isPasswordFieldVisible = true,
+  onAuthMethodToggled,
 }: InputsComponentProps) => {
   const { translate } = useTranslationContext();
+
+  const AUTH_LABEL: Partial<Record<AuthMethodTypes, string>> = {
+    signIn: translate('auth.login.dontHaveAccount'),
+    signUp: translate('auth.signup.haveAccount'),
+  };
+
+  const CHANGE_AUTH_METHOD_TEXT: Partial<Record<AuthMethodTypes, string>> = {
+    signIn: translate('auth.login.createAccount'),
+    signUp: translate('auth.signup.login'),
+  };
 
   return (
     <>
@@ -38,7 +50,7 @@ export const InputsComponent = ({
         />
       </div>
 
-      {isPasswordFieldVisible ? (
+      {isPasswordFieldVisible && (
         <div className="flex w-full flex-col gap-1">
           <p className="text-sm text-gray-80">{translate(`checkout.authComponent.${authMethod}.password`)}</p>
           <label className="space-y-0.5">
@@ -52,15 +64,26 @@ export const InputsComponent = ({
             />
           </label>
         </div>
-      ) : (
-        <p className="text-sm text-gray-60">{translate('checkout.accountSetup.passwordAfterPayment')}</p>
       )}
+      <div className="flex flex-row space-x-2 text-sm">
+        <p className="text-gray-100">{AUTH_LABEL[authMethod]}</p>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            const newAuthMethod = authMethod === 'signIn' ? 'signUp' : 'signIn';
+            onAuthMethodToggled(newAuthMethod);
+          }}
+          className="cursor-pointer text-primary"
+        >
+          {CHANGE_AUTH_METHOD_TEXT[authMethod]}
+        </button>
+      </div>
       {authError && (
         <div id="authError" className="text-red-dark">
           {authError}
         </div>
       )}
-      <p className="text-sm font-medium text-gray-50">{translate('checkout.authComponent.privacyGuarantee')}</p>
     </>
   );
 };

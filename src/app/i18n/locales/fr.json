@@ -193,7 +193,7 @@
     }
   },
   "checkout": {
-    "pay": "Payer",
+    "continue": "Continuer",
     "processing": "Traitement en cours...",
     "checkout": "Commander",
     "postalCode": {
@@ -218,8 +218,7 @@
         "invalidData": "Veuillez vérifier que votre email et votre mot de passe sont corrects, puis réessayer.",
         "serverError": "Nous n'avons pas pu finaliser cette étape. Veuillez réessayer dans quelques minutes ou contacter le support si le problème persiste.",
         "unknown": "Nous n'avons pas pu vérifier vos informations. Veuillez vérifier votre email et votre mot de passe, puis réessayer."
-      },
-      "privacyGuarantee": "Garantie de confidentialité : Nous ne partageons pas vos informations et ne vous contacterons que si nécessaire pour fournir notre service."
+      }
     },
     "addressBillingTitle": "Facturation d'Adresse",
     "addressBilling": {
@@ -259,7 +258,6 @@
       "paymentFailed": "Paiement échoué"
     },
     "accountSetup": {
-      "passwordAfterPayment": "Vous n'avez pas encore besoin de mot de passe. Après le paiement, nous vous enverrons un e-mail pour finaliser la configuration de votre compte.",
       "emailHasAccount": "Cet e-mail a déjà un compte Internxt. Connectez-vous pour poursuivre votre achat.",
       "pendingSetup": "{{email}} a déjà un forfait payé en attente de configuration. Consultez vos e-mails pour finaliser la configuration de votre compte.",
       "resendEmail": "Renvoyer l'e-mail",

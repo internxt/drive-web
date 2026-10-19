@@ -214,7 +214,7 @@
     }
   },
   "checkout": {
-    "pay": "支付",
+    "continue": "继续",
     "processing": "处理中...",
     "checkout": "结账",
     "postalCode": {
@@ -239,8 +239,7 @@
         "invalidData": "请确认您的电子邮件和密码是否正确，然后重试。",
         "serverError": "我们无法完成此步骤。请几分钟后重试，如果问题仍然存在请联系客服。",
         "unknown": "我们无法验证您的信息。请确认您的电子邮件和密码，然后重试。"
-      },
-      "privacyGuarantee": "隐私保证：我们不会分享您的信息，并且只会在提供服务时与您联系。"
+      }
     },
     "addressBillingTitle": "账单地址",
     "addressBilling": {
@@ -280,7 +279,6 @@
       "paymentFailed": "付款失败"
     },
     "accountSetup": {
-      "passwordAfterPayment": "现在还不需要密码。付款后，我们会向你发送一封电子邮件，以完成账户设置。",
       "emailHasAccount": "该电子邮件已有 Internxt 账户。请登录以继续购买。",
       "pendingSetup": "{{email}} 已有一个待设置的付费套餐。请查看你的电子邮件以完成账户设置。",
       "resendEmail": "重新发送邮件",

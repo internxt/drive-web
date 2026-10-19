@@ -193,7 +193,7 @@
     }
   },
   "checkout": {
-    "pay": "Pagar",
+    "continue": "Continuar",
     "processing": "Procesando...",
     "checkout": "Finalizar compra",
     "postalCode": {
@@ -202,7 +202,7 @@
     },
     "authComponent": {
       "signUp": {
-        "emailAddress": "Tu dirección de correo electrónico",
+        "emailAddress": "Dirección de correo electrónico",
         "password": "Crea una contraseña"
       },
       "signIn": {
@@ -218,8 +218,7 @@
         "invalidData": "Comprueba que tu correo electrónico y tu contraseña son correctos e inténtalo de nuevo.",
         "serverError": "No hemos podido completar este paso. Inténtalo de nuevo en unos minutos o contacta con soporte si el problema continúa.",
         "unknown": "No hemos podido verificar tus datos. Comprueba tu correo electrónico y tu contraseña e inténtalo de nuevo."
-      },
-      "privacyGuarantee": "Garantía de privacidad: No compartimos su información y solo contactaremos contigo cuando sea necesario para brindar nuestro servicio."
+      }
     },
     "addressBillingTitle": "Dirección de facturación",
     "addressBilling": {
@@ -259,7 +258,6 @@
       "paymentFailed": "Pago fallido"
     },
     "accountSetup": {
-      "passwordAfterPayment": "Todavía no necesitas una contraseña. Después del pago te enviaremos un correo para terminar de configurar tu cuenta.",
       "emailHasAccount": "Este correo ya tiene una cuenta de Internxt. Inicia sesión para continuar con tu compra.",
       "pendingSetup": "{{email}} ya tiene un plan pagado pendiente de configurar. Revisa tu correo para terminar de configurar tu cuenta.",
       "resendEmail": "Reenviar correo",
