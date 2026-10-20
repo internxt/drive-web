@@ -36,6 +36,7 @@ const PURCHASE_DATA: Partial<Record<string, string>> = {
   [LocalStorageItem.IsFirstPurchase]: 'true',
   [LocalStorageItem.SubscriptionID]: 'sub_123',
   [LocalStorageItem.AmountPaid]: '9.99',
+  [LocalStorageItem.PriceId]: 'price_1U6Ev3FAOdcgaBMQHxOAmWPO',
 };
 
 const givenStoredData = (data: Partial<Record<string, string>>) => {
@@ -76,7 +77,7 @@ describe('Purchase tracking', () => {
     const url = new URL(fetchMock.mock.calls[0][0] as string);
     expect(url.host).toBe('www.p0stb4ck.com');
     expect(url.searchParams.get('transaction_id')).toBe(COLLABORATOR_CLICK_ID);
-    expect(url.searchParams.get('amount')).toBe('9.99');
+    expect(url.searchParams.get('amount')).toBe('180');
   });
 
   it('When a buyer without an account comes from the collaborator, then the postback is sent for the purchase they just made', async () => {
