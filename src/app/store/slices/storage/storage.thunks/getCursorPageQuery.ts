@@ -17,7 +17,7 @@ interface HasMorePagesParams {
 }
 
 export const hasMorePages = ({ isCursorPagination, nextCursor, itemsLength }: HasMorePagesParams): boolean => {
-  const hasNextCursor = nextCursor !== null;
+  const hasNextCursor = nextCursor != null;
   const isFullPage = itemsLength >= DEFAULT_LIMIT;
   return isCursorPagination ? hasNextCursor : isFullPage;
 };
