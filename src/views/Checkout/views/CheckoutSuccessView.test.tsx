@@ -16,9 +16,7 @@ const mocks = vi.hoisted(() => ({
   navigationPush: vi.fn(),
   retrievePaymentIntent: vi.fn(),
   retrieveSetupIntent: vi.fn(),
-  metaTrackPurchase: vi.fn(),
-  gaTrackPurchase: vi.fn(),
-  trackPaymentConversion: vi.fn().mockResolvedValue(undefined),
+  sendPurchaseEvents: vi.fn().mockResolvedValue(undefined),
   userStoragePolling: vi.fn(),
   notificationsShow: vi.fn(),
   isProduction: vi.fn(() => true),
@@ -38,9 +36,7 @@ vi.mock('services/encrypted-storage.service', () => ({
 vi.mock('../components/ResendAccountSetupEmailButton', () => ({
   ResendAccountSetupEmailButton: () => <button>checkout.accountSetup.resendEmail</button>,
 }));
-vi.mock('app/analytics/meta.service', () => ({ default: { trackPurchase: mocks.metaTrackPurchase } }));
-vi.mock('app/analytics/ga.service', () => ({ default: { trackPurchase: mocks.gaTrackPurchase } }));
-vi.mock('app/analytics/impact.service', () => ({ trackPaymentConversion: mocks.trackPaymentConversion }));
+vi.mock('@internxt/analytics', () => ({ sendPurchaseEvents: mocks.sendPurchaseEvents }));
 vi.mock('utils/userStoragePolling.utils', () => ({ userStoragePolling: mocks.userStoragePolling }));
 vi.mock('services/env.service', () => ({ default: { isProduction: mocks.isProduction, getVariable: vi.fn() } }));
 vi.mock('app/i18n/provider/TranslationProvider', () => ({
@@ -85,15 +81,11 @@ const renderAndWaitForRedirect = async () => {
 };
 
 const expectPurchaseTracked = (buyer = LOGGED_IN_BUYER) => {
-  expect(mocks.metaTrackPurchase).toHaveBeenCalledOnce();
-  expect(mocks.gaTrackPurchase).toHaveBeenCalledExactlyOnceWith(buyer);
-  expect(mocks.trackPaymentConversion).toHaveBeenCalledExactlyOnceWith(buyer);
+  expect(mocks.sendPurchaseEvents).toHaveBeenCalledExactlyOnceWith(buyer);
 };
 
 const expectPurchaseNotTracked = () => {
-  expect(mocks.metaTrackPurchase).not.toHaveBeenCalled();
-  expect(mocks.gaTrackPurchase).not.toHaveBeenCalled();
-  expect(mocks.trackPaymentConversion).not.toHaveBeenCalled();
+  expect(mocks.sendPurchaseEvents).not.toHaveBeenCalled();
 };
 
 const expectPaymentFailedNotified = () => {
@@ -158,9 +150,7 @@ describe('Checkout success view', () => {
       render(<CheckoutSuccessView />);
 
       await waitFor(() => expectPaymentDataCleared());
-      expect(mocks.metaTrackPurchase).toHaveBeenCalledOnce();
-      expect(mocks.gaTrackPurchase).not.toHaveBeenCalled();
-      expect(mocks.trackPaymentConversion).not.toHaveBeenCalled();
+      expect(mocks.sendPurchaseEvents).toHaveBeenCalledExactlyOnceWith(null);
     });
   });
 

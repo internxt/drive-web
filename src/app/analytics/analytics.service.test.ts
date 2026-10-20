@@ -7,9 +7,7 @@ const mocks = vi.hoisted(() => ({
   localStorageRemoveItem: vi.fn(),
   getCookie: vi.fn(),
   getUser: vi.fn(),
-  metaTrackPurchase: vi.fn(),
-  gaTrackPurchase: vi.fn(),
-  trackPaymentConversion: vi.fn(),
+  sendPurchaseEvents: vi.fn(),
   isProduction: vi.fn(),
   notificationsShow: vi.fn(),
 }));
@@ -22,9 +20,7 @@ vi.mock('services/encrypted-storage.service', () => ({ default: { getUser: mocks
 vi.mock('services/env.service', () => ({
   default: { isProduction: mocks.isProduction, getVariable: vi.fn() },
 }));
-vi.mock('./meta.service', () => ({ default: { trackPurchase: mocks.metaTrackPurchase } }));
-vi.mock('./ga.service', () => ({ default: { trackPurchase: mocks.gaTrackPurchase } }));
-vi.mock('./impact.service', () => ({ trackPaymentConversion: mocks.trackPaymentConversion }));
+vi.mock('@internxt/analytics', () => ({ sendPurchaseEvents: mocks.sendPurchaseEvents }));
 vi.mock('app/notifications/services/notifications.service', () => ({
   default: { show: mocks.notificationsShow },
   ToastType: { Error: 'error' },
@@ -71,9 +67,10 @@ describe('Purchase tracking', () => {
   it('When a logged-in buyer comes from a collaborator with its own postback, then the postback is sent along with the usual trackers', async () => {
     await trackCheckoutCompleted(translate);
 
-    expect(mocks.metaTrackPurchase).toHaveBeenCalledOnce();
-    expect(mocks.gaTrackPurchase).toHaveBeenCalledWith({ id: LOGGED_IN_BUYER.uuid, email: LOGGED_IN_BUYER.email });
-    expect(mocks.trackPaymentConversion).toHaveBeenCalledOnce();
+    expect(mocks.sendPurchaseEvents).toHaveBeenCalledExactlyOnceWith({
+      id: LOGGED_IN_BUYER.uuid,
+      email: LOGGED_IN_BUYER.email,
+    });
     expect(fetchMock).toHaveBeenCalledOnce();
 
     const url = new URL(fetchMock.mock.calls[0][0] as string);
@@ -92,27 +89,28 @@ describe('Purchase tracking', () => {
 
     await trackCheckoutCompleted(translate);
 
-    expect(mocks.gaTrackPurchase).toHaveBeenCalledWith({ id: 'cus_123', email: 'new.buyer@internxt.com' });
-    expect(mocks.trackPaymentConversion).toHaveBeenCalledOnce();
+    expect(mocks.sendPurchaseEvents).toHaveBeenCalledExactlyOnceWith({
+      id: 'cus_123',
+      email: 'new.buyer@internxt.com',
+    });
     expect(fetchMock).toHaveBeenCalledOnce();
   });
 
-  it('When the purchase comes from anywhere else, then Impact is tracked and no postback is sent', async () => {
+  it('When the purchase comes from anywhere else, then the usual trackers are sent and no postback is sent', async () => {
     givenPurchaseFrom(undefined);
 
     await trackCheckoutCompleted(translate);
 
-    expect(mocks.trackPaymentConversion).toHaveBeenCalledOnce();
+    expect(mocks.sendPurchaseEvents).toHaveBeenCalledOnce();
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('When there is no buyer to attribute the purchase to, then neither Impact nor the postback are sent', async () => {
+  it('When there is no buyer to attribute the purchase to, then the trackers are told so and no postback is sent', async () => {
     mocks.getUser.mockResolvedValue(undefined);
 
     await trackCheckoutCompleted(translate);
 
-    expect(mocks.metaTrackPurchase).toHaveBeenCalledOnce();
-    expect(mocks.trackPaymentConversion).not.toHaveBeenCalled();
+    expect(mocks.sendPurchaseEvents).toHaveBeenCalledExactlyOnceWith(null);
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
@@ -121,7 +119,7 @@ describe('Purchase tracking', () => {
 
     await trackCheckoutCompleted(translate);
 
-    expect(mocks.metaTrackPurchase).not.toHaveBeenCalled();
+    expect(mocks.sendPurchaseEvents).not.toHaveBeenCalled();
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
