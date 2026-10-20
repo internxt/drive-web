@@ -32,6 +32,7 @@ vi.mock('app/notifications/services/notifications.service', () => ({
 vi.mock('views/Checkout/services', () => ({ paymentService: { getStripe: vi.fn() } }));
 
 const COLLABORATOR_UTM_SOURCE = 'S42MF2';
+const COLLABORATOR_CLICK_ID = 'click_123';
 const LOGGED_IN_BUYER = { uuid: 'user_123', email: 'buyer@internxt.com' };
 const translate = (key: string) => key;
 
@@ -46,7 +47,12 @@ const givenStoredData = (data: Partial<Record<string, string>>) => {
 };
 
 const givenPurchaseFrom = (utmSource: string | undefined) => {
-  mocks.getCookie.mockReturnValue(utmSource);
+  const cookies: Partial<Record<string, string>> = {
+    postbackPartner: utmSource,
+    postbackClickId: COLLABORATOR_CLICK_ID,
+  };
+
+  mocks.getCookie.mockImplementation((name: string) => cookies[name]);
 };
 
 describe('Purchase tracking', () => {
@@ -72,7 +78,7 @@ describe('Purchase tracking', () => {
 
     const url = new URL(fetchMock.mock.calls[0][0] as string);
     expect(url.host).toBe('www.p0stb4ck.com');
-    expect(url.searchParams.get('transaction_id')).toBe('sub_123');
+    expect(url.searchParams.get('transaction_id')).toBe(COLLABORATOR_CLICK_ID);
     expect(url.searchParams.get('amount')).toBe('9.99');
   });
 

@@ -62,8 +62,17 @@ const CheckoutViewWrapper = () => {
   const { setAuthMethod, setIsUserPaying, setIsUpdateSubscriptionDialogOpen, setIsUpdatingSubscription } =
     useCheckout(dispatchReducer);
 
-  const { planId, promotionCode, currency, paramMobileToken, gclid, irclickid, utmMedium, utmSource } =
-    useCheckoutQueryParams();
+  const {
+    planId,
+    promotionCode,
+    currency,
+    paramMobileToken,
+    gclid,
+    irclickid,
+    utmMedium,
+    utmSource,
+    affiliateClickId,
+  } = useCheckoutQueryParams();
   const { location: userLocationData } = useUserLocation();
 
   const {
@@ -158,7 +167,7 @@ const CheckoutViewWrapper = () => {
     if (irclickid) {
       handleImpactDTCCheckout({ irclickid, utmMedium });
     }
-    capturePostbackPartner(utmSource);
+    capturePostbackPartner(utmSource, affiliateClickId);
     referralService.captureUcc();
   }, []);
 

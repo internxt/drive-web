@@ -18,6 +18,7 @@ const POSTBACK_PARTNERS: readonly PostbackPartner[] = [
 ];
 
 const PARTNER_COOKIE = 'postbackPartner';
+const CLICK_ID_COOKIE = 'postbackClickId';
 
 function findPartnerByUtmSource(utmSource: string | null | undefined): PostbackPartner | undefined {
   if (!utmSource) {
@@ -27,17 +28,25 @@ function findPartnerByUtmSource(utmSource: string | null | undefined): PostbackP
   return POSTBACK_PARTNERS.find((partner) => partner.utmSource.toLowerCase() === utmSource.toLowerCase());
 }
 
-export function capturePostbackPartner(utmSource: string | null): void {
+function setPostbackCookie(cookieName: string, value: string): void {
+  const expiration = new Date();
+  expiration.setDate(expiration.getDate() + 30);
+
+  document.cookie = `${cookieName}=${encodeURIComponent(value)};expires=${expiration.toUTCString()};Path=/;Secure`;
+}
+
+export function capturePostbackPartner(utmSource: string | null, affiliateClickId: string | null): void {
   const partner = findPartnerByUtmSource(utmSource);
 
   if (!partner) {
     return;
   }
 
-  const expiration = new Date();
-  expiration.setDate(expiration.getDate() + 30);
+  setPostbackCookie(PARTNER_COOKIE, partner.utmSource);
 
-  document.cookie = `${PARTNER_COOKIE}=${partner.utmSource};expires=${expiration.toUTCString()};Path=/;Secure`;
+  if (affiliateClickId) {
+    setPostbackCookie(CLICK_ID_COOKIE, affiliateClickId);
+  }
 }
 
 export async function sendPurchasePostback(): Promise<void> {
@@ -52,12 +61,10 @@ export async function sendPurchasePostback(): Promise<void> {
       return;
     }
 
-    const subscription = localStorageService.get(LocalStorageItem.SubscriptionID);
-    const paymentIntent = localStorageService.get(LocalStorageItem.PaymentIntentID);
-    const transactionId = paymentIntent || subscription;
+    const affiliateClickId = getCookie(CLICK_ID_COOKIE);
 
-    if (!transactionId) {
-      console.warn('[Partner Postback] No transaction to report, skipping postback');
+    if (!affiliateClickId) {
+      console.warn('[Partner Postback] No affiliate click id to report, skipping postback');
       return;
     }
 
@@ -66,7 +73,7 @@ export async function sendPurchasePostback(): Promise<void> {
 
     const postbackUrl = new URL(partner.postbackUrl);
     postbackUrl.searchParams.set('nid', partner.networkId);
-    postbackUrl.searchParams.set('transaction_id', transactionId);
+    postbackUrl.searchParams.set('transaction_id', decodeURIComponent(affiliateClickId));
     postbackUrl.searchParams.set('amount', String(Number.isFinite(amount) ? amount : 0));
 
     await fetch(postbackUrl.toString(), { method: 'GET', mode: 'no-cors', keepalive: true });
