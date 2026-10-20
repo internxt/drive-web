@@ -10,5 +10,6 @@ export const useCheckoutQueryParams = () => {
     irclickid: params.get('irclickid'),
     utmMedium: params.get('utm_medium'),
     utmSource: params.get('utm_source'),
+    affiliateClickId: params.get('aff_click_id'),
   };
 };
