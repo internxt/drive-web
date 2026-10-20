@@ -36,5 +36,5 @@ export const URGENT_CHECKOUT_THEME_STYLES = {
 export const URGENT_CHECKOUT_CARD_CLASSNAME = 'rounded-2xl border border-[#202D45] bg-[#0D1422]';
 
 export const URGENT_CHECKOUT_INPUT_CLASSNAME =
-  'w-full rounded-lg border border-[#2F3F5C] bg-[#0A1120] px-4 py-3 text-base text-white outline-none ' +
+  'w-full rounded-lg border border-[#2F3F5C] bg-[#0A1120] px-4 py-3 text-base !text-white outline-none ' +
   'placeholder:text-[#5F6E86] focus:border-primary focus:ring-1 focus:ring-primary';

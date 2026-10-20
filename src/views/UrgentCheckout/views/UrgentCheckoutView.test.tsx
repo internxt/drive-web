@@ -31,6 +31,8 @@ vi.mock('app/i18n/provider/TranslationProvider', () => ({
 interface RenderOptions {
   authMethod?: AuthMethodTypes;
   authError?: string;
+  plan?: PriceWithTax;
+  withoutCoupon?: boolean;
 }
 
 const selectedPlan = {
@@ -45,6 +47,18 @@ const selectedPlan = {
   taxes: { amountWithTax: 218, decimalAmountWithTax: 2.18 },
 } as unknown as PriceWithTax;
 
+const lifetimePlan = {
+  price: {
+    id: 'price_id',
+    bytes: 5497558138880,
+    currency: 'usd',
+    decimalAmount: 299.99,
+    amount: 29999,
+    interval: 'lifetime',
+  },
+  taxes: { amountWithTax: 2180, decimalAmountWithTax: 21.8 },
+} as unknown as PriceWithTax;
+
 const couponCodeData = { percentOff: 94, codeId: 'code_id', codeName: 'OFFER94' } as CouponCodeData;
 
 const checkoutViewManager = {
@@ -57,7 +71,7 @@ const CREATIVE_IMAGE_ALT = 'Internxt Drive on a laptop and a phone';
 
 const renderUrgentCheckout = (
   variant = UrgentCheckoutVariant.Mainstream,
-  { authMethod = 'signUp', authError }: RenderOptions = {},
+  { authMethod = 'signUp', authError, plan = selectedPlan, withoutCoupon }: RenderOptions = {},
 ) =>
   render(
     <UrgentCheckoutView
@@ -68,8 +82,8 @@ const renderUrgentCheckout = (
         isPaying: false,
         authMethod,
         authError,
-        couponCodeData,
-        currentSelectedPlan: selectedPlan,
+        couponCodeData: withoutCoupon ? undefined : couponCodeData,
+        currentSelectedPlan: plan,
       }}
       checkoutViewManager={checkoutViewManager}
     />,
@@ -112,9 +126,32 @@ describe('urgent checkout view', () => {
     renderUrgentCheckout();
 
     expect(screen.getByTestId('payment-element')).toBeTruthy();
-    expect(screen.getByText('Get 5TB for $1.79')).toBeTruthy();
-    expect(screen.getByText('First month $1.79, then renews at $29.99/month. Cancel anytime.')).toBeTruthy();
+    expect(screen.getByText('Subscribe to private cloud storage')).toBeTruthy();
     expect(screen.getByText('30-day money-back guarantee')).toBeTruthy();
+    expect(screen.getByText('Try it risk-free.')).toBeTruthy();
+  });
+
+  it('When the plan is a subscription with an intro price, then the billing disclosure states both prices', () => {
+    renderUrgentCheckout();
+
+    expect(screen.getByText('$1.79 for your first month, then $29.99 every month. Cancel anytime.')).toBeTruthy();
+    expect(screen.queryByText('What you buy stays yours')).toBeNull();
+  });
+
+  it('When the subscription has no intro price, then the billing disclosure only states the recurring price', () => {
+    renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { withoutCoupon: true });
+
+    expect(screen.getByText('$29.99 every month. Cancel anytime.')).toBeTruthy();
+  });
+
+  it('When the plan is lifetime, then the ownership notice is shown and there is no billing disclosure', () => {
+    renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { plan: lifetimePlan });
+
+    expect(screen.getByText('Get Lifetime storage')).toBeTruthy();
+    expect(screen.getByText('What you buy stays yours')).toBeTruthy();
+    expect(screen.getByText(/Your purchased Lifetime storage won't be reduced by future plan changes/)).toBeTruthy();
+    expect(screen.getByText('Single payment — No recurring fees.')).toBeTruthy();
+    expect(screen.queryByText(/Cancel anytime/)).toBeNull();
   });
 
   it.each([
