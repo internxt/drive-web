@@ -25,6 +25,8 @@ vi.mock('services/error.service', () => ({
 
 const PARTNER_UTM_SOURCE = 'S42MF2';
 const AFFILIATE_CLICK_ID = 'click_123';
+const PLAN_WITH_180_CPA = 'price_1U6Ev3FAOdcgaBMQHxOAmWPO';
+const PLAN_WITH_80_CPA = 'price_1TRoAJFAOdcgaBMQveT6cebN';
 
 type StoredPaymentData = Partial<Record<string, string>>;
 
@@ -130,8 +132,8 @@ describe('Partner postback service', () => {
       await sendPurchasePostback();
     };
 
-    it('When a purchase comes from the collaborator, then it is reported with the click of its link and the amount paid', async () => {
-      await sendPostbackForStoredPaymentData({ amountPaid: '9.99' });
+    it('When a purchase comes from the collaborator, then it is reported with the click of its link and the agreed amount', async () => {
+      await sendPostbackForStoredPaymentData({ priceId: PLAN_WITH_180_CPA, amountPaid: '9.99' });
 
       expect(fetchMock).toHaveBeenCalledOnce();
 
@@ -139,7 +141,19 @@ describe('Partner postback service', () => {
       expect(url.origin + url.pathname).toBe('https://www.p0stb4ck.com/');
       expect(url.searchParams.get('nid')).toBe('1134');
       expect(url.searchParams.get('transaction_id')).toBe(AFFILIATE_CLICK_ID);
-      expect(url.searchParams.get('amount')).toBe('9.99');
+      expect(url.searchParams.get('amount')).toBe('180');
+    });
+
+    it('When the other plan of the campaign is bought, then its agreed amount is reported instead of what was paid', async () => {
+      await sendPostbackForStoredPaymentData({ priceId: PLAN_WITH_80_CPA, amountPaid: '299' });
+
+      expect(getPostbackUrl(fetchMock).searchParams.get('amount')).toBe('80');
+    });
+
+    it('When a plan outside the campaign is bought, then the purchase is reported with no amount to pay', async () => {
+      await sendPostbackForStoredPaymentData({ priceId: 'price_other', amountPaid: '9.99' });
+
+      expect(getPostbackUrl(fetchMock).searchParams.get('amount')).toBe('0');
     });
 
     it('When the stored click id was encoded, then it is reported as it came in the link', async () => {
@@ -175,7 +189,7 @@ describe('Partner postback service', () => {
       expect(fetchMock).not.toHaveBeenCalled();
     });
 
-    it('When the amount paid is unknown, then it is reported as zero', async () => {
+    it('When the plan bought is unknown, then the purchase is reported with no amount to pay', async () => {
       await sendPostbackForStoredPaymentData({});
 
       expect(getPostbackUrl(fetchMock).searchParams.get('amount')).toBe('0');
