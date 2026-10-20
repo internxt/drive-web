@@ -272,8 +272,8 @@ describe('Reading the catalogue of retired prices', () => {
         targetPlanId: 'price_1U6Ev3FAOdcgaBMQHxOAmWPO',
         couponRule: 'unlessBlocked',
       },
-      price_1TRoAJFAOdcgaBMQveT6cebN: {
-        targetPlanId: 'price_1UAsSAFAOdcgaBMQNF0j8UfV',
+      price_1UAsSAFAOdcgaBMQNF0j8UfV: {
+        targetPlanId: 'price_1TRoAJFAOdcgaBMQveT6cebN',
         couponRule: 'onlyIfAllowed',
       },
     });
@@ -281,7 +281,14 @@ describe('Reading the catalogue of retired prices', () => {
 
   test('When the lists of coupon codes are read, then they hold the codes that rule the redirects today', () => {
     expect([...REDIRECT_BLOCKING_COUPON_CODES]).toEqual([]);
-    expect([...REDIRECT_ALLOWED_COUPON_CODES]).toEqual(['SPECIAL', 'WEWE', 'GOTZHAOFFER', 'TFA', 'REOFFER']);
+    expect([...REDIRECT_ALLOWED_COUPON_CODES]).toEqual([
+      'SPECIAL',
+      'WEWE',
+      'GOTZHAOFFER',
+      'TFA',
+      'REOFFER',
+      'AFFIOFFER',
+    ]);
   });
 
   test('When a price that replaced a retired one is looked up, then it is not itself retired', () => {

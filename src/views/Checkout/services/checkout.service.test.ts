@@ -79,7 +79,6 @@ vi.mock('app/core/factory/sdk', () => ({
           id: 'py_id',
           invoiceStatus: 'paid',
         }),
-        verifyCryptoPayment: vi.fn().mockResolvedValue(true),
       }),
       createCheckoutClientWithoutSession: vi.fn().mockReturnValue({
         createSubscription: vi.fn().mockResolvedValue({
@@ -106,11 +105,13 @@ vi.mock('utils/userLocation', () => ({
 }));
 
 const THEME = {
+  stripeTheme: 'night' as const,
   backgroundColor: '#000',
   textColor: '#fff',
   borderColor: '#ccc',
   borderInputColor: '#aaa',
   labelTextColor: '#eee',
+  placeholderTextColor: '#999',
 };
 
 const buildPlan = ({
@@ -158,8 +159,6 @@ describe('Checkout Service tests', () => {
         postalCode: '12345',
         companyVatId: 'VAT123',
         captchaToken: 'token',
-        city: 'Valencia',
-        lineAddress1: 'Marina de empresas',
       };
 
       const result = await checkoutService.createCustomer(getCustomerPayload);
@@ -288,6 +287,23 @@ describe('Checkout Service tests', () => {
         paymentIntentId: 'py_no_session',
       });
     });
+
+    it('When the buyer comes from a Google Ads click, then the click ID is sent to create the subscription', async () => {
+      const createSubPayload: CreateSubscriptionPayload = {
+        customerId: 'cus_123',
+        priceId: 'price_123',
+        token: 'user_mocked_token',
+        currency: 'eur',
+        captchaToken: 'captcha_token',
+        promoCodeId: 'promo_code_id',
+        gclid: 'gclid_123',
+      };
+
+      await checkoutService.createSubscription(createSubPayload);
+
+      const sessionClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
+      expect(sessionClient.createSubscription).toHaveBeenCalledWith(createSubPayload);
+    });
   });
 
   describe('Create a payment intent', () => {
@@ -298,7 +314,6 @@ describe('Checkout Service tests', () => {
         token: 'user_mocked_token',
         currency: 'eur',
         captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
       };
 
       const createInvoiceResponse = await checkoutService.createPaymentIntent(createInvoicePayload);
@@ -318,7 +333,6 @@ describe('Checkout Service tests', () => {
         currency: 'eur',
         promoCodeId: 'promo_code_name',
         captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
       };
 
       const createInvoiceResponse = await checkoutService.createPaymentIntent(createInvoicePayload);
@@ -337,7 +351,6 @@ describe('Checkout Service tests', () => {
         token: 'payments_token',
         currency: 'eur',
         captchaToken: 'captcha_token',
-        userAddress: '1.1.1.1',
       };
 
       const createInvoiceResponse = await checkoutService.createPaymentIntent(createInvoicePayload, {
@@ -353,7 +366,6 @@ describe('Checkout Service tests', () => {
         token: createInvoicePayload.token,
         currency: createInvoicePayload.currency,
         captchaToken: createInvoicePayload.captchaToken,
-        userAddress: createInvoicePayload.userAddress,
         promoCodeId: undefined,
       });
       expect(sessionClient.createPaymentIntent).not.toHaveBeenCalled();
@@ -362,6 +374,23 @@ describe('Checkout Service tests', () => {
         id: 'py_no_session_id',
         invoiceStatus: 'paid',
       });
+    });
+
+    it('When the buyer comes from a Google Ads click, then the click ID is sent to create the payment intent', async () => {
+      const createInvoicePayload: CreatePaymentIntentPayload = {
+        customerId: 'cus_123',
+        priceId: 'price_123',
+        token: 'user_mocked_token',
+        currency: 'eur',
+        captchaToken: 'captcha_token',
+        promoCodeId: 'promo_code_id',
+        gclid: 'gclid_123',
+      };
+
+      await checkoutService.createPaymentIntent(createInvoicePayload);
+
+      const sessionClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
+      expect(sessionClient.createPaymentIntent).toHaveBeenCalledWith(createInvoicePayload);
     });
   });
 
@@ -381,22 +410,16 @@ describe('Checkout Service tests', () => {
     });
   });
 
-  describe('Verify the crypto payment', () => {
-    test('When the token is passed to verify the crypto payment, then the correct data is returned', async () => {
-      const token = 'token';
-      const response = await checkoutService.verifyCryptoPayment(token);
-      expect(response).toBeTruthy();
-    });
-  });
-
   describe('Loading Stripe Elements', () => {
     it('When called for a lifetime plan, then it returns a configured stripe element options object', async () => {
       const theme = {
+        stripeTheme: 'night' as const,
         backgroundColor: '#000',
         textColor: '#fff',
         borderColor: '#ccc',
         borderInputColor: '#aaa',
         labelTextColor: '#eee',
+        placeholderTextColor: '#999',
       };
 
       const plan = {
@@ -422,11 +445,13 @@ describe('Checkout Service tests', () => {
 
     it('When called for a subscription plan, then it returns a configured stripe element options object', async () => {
       const theme = {
+        stripeTheme: 'night' as const,
         backgroundColor: '#000',
         textColor: '#fff',
         borderColor: '#ccc',
         borderInputColor: '#aaa',
         labelTextColor: '#eee',
+        placeholderTextColor: '#999',
       };
 
       const plan = {
