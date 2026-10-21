@@ -61,10 +61,6 @@ class RetryManager {
     this.notify();
   }
 
-  /**
-   * Removes every entry shown under the given task in the task logger: entries are grouped
-   * by `params.relatedTaskId`, falling back to their own `taskId`.
-   */
   removeTasksOfRelatedTask(relatedTaskId: string) {
     this.tasksToRetry = this.tasksToRetry.filter(
       (task) => (task.params?.relatedTaskId ?? task.taskId) !== relatedTaskId,

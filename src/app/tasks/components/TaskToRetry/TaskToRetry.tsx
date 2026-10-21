@@ -8,12 +8,17 @@ import { Modal } from '@internxt/ui';
 import { DownloadManager } from '../../../network/DownloadManager';
 import { useAppSelector } from '../../../store/hooks';
 import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
+import { renameFile } from '../../../crypto/services/utils';
+import { FileToUpload } from 'app/drive/services/file.service/types';
 
 interface TaskToRetryProps {
   isOpen: boolean;
   files: RetryableTask[];
   onClose: () => void;
 }
+
+const withFullName = ({ content, name, type }: FileToUpload): File =>
+  renameFile(content, type ? `${name}.${type}` : name);
 
 const TaskToRetry = ({ isOpen, files, onClose }: TaskToRetryProps): JSX.Element => {
   const { uploadRetryItem } = useReduxActions();
@@ -24,7 +29,7 @@ const TaskToRetry = ({ isOpen, files, onClose }: TaskToRetryProps): JSX.Element 
   const downloadItem = async ({ taskId, params, type }: RetryableTask) => {
     if (type === RetryableTaskType.Upload) {
       const data = {
-        uploadFile: params?.filecontent?.content,
+        uploadFile: withFullName(params.filecontent),
         parentFolderId: params?.parentFolderId,
         taskId: taskId ?? params?.taskId ?? '',
         fileType: params?.filecontent?.type ?? '',

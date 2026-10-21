@@ -1,5 +1,5 @@
 import { render, fireEvent } from '@testing-library/react';
-import { describe, it, vi, expect, beforeEach } from 'vitest';
+import { describe, it, test, vi, expect, beforeEach } from 'vitest';
 import TaskToRetry from './TaskToRetry';
 import RetryManager, { RetryableTask, RetryableTaskStatus, RetryableTaskType } from '../../../network/RetryManager';
 
@@ -39,25 +39,31 @@ describe('TaskToRetry', () => {
 
   const mockChangeStatus = vi.spyOn(RetryManager, 'changeStatus');
 
-  const files: RetryableTask[] = [
-    {
-      taskId: 'task-1',
-      type: RetryableTaskType.Upload,
-      params: {
-        filecontent: {
-          content: 'file-content' as any,
-          type: 'text/plain',
-          name: 'file.txt',
-          size: 1024,
-          parentFolderId: 'folder-1',
-        },
+  const createUploadTask = (name: string, type: string): RetryableTask => ({
+    taskId: 'task-1',
+    type: RetryableTaskType.Upload,
+    params: {
+      filecontent: {
+        content: new File(['file-content'], name),
+        type,
+        name,
+        size: 1024,
         parentFolderId: 'folder-1',
-        taskId: 'task-1',
-        userEmail: 'user@example.com',
       },
-      status: RetryableTaskStatus.Failed,
+      parentFolderId: 'folder-1',
+      taskId: 'task-1',
+      userEmail: 'user@example.com',
     },
-  ];
+    status: RetryableTaskStatus.Failed,
+  });
+
+  const retryUpload = (task: RetryableTask): File => {
+    const { getByTestId } = render(<TaskToRetry isOpen={true} files={[task]} onClose={mockOnClose} />);
+    fireEvent.click(getByTestId('task-logger-button'));
+    return mockUploadRetryItem.mock.calls[0][0].uploadFile;
+  };
+
+  const files: RetryableTask[] = [createUploadTask('file', 'txt')];
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -100,11 +106,23 @@ describe('TaskToRetry', () => {
 
     expect(mockChangeStatus).toHaveBeenCalledWith('task-1', RetryableTaskStatus.Retrying);
     expect(mockUploadRetryItem).toHaveBeenCalledWith({
-      uploadFile: 'file-content',
+      uploadFile: expect.any(File),
       parentFolderId: 'folder-1',
       taskId: 'task-1',
-      fileType: 'text/plain',
+      fileType: 'txt',
     });
+  });
+
+  test('when a file whose name has dots is retried, then it is uploaded with its full original name', () => {
+    const uploadFile = retryUpload(createUploadTask('Screenshot 2026-10-12 at 11.48.02 PM', 'png'));
+
+    expect(uploadFile.name).toBe('Screenshot 2026-10-12 at 11.48.02 PM.png');
+  });
+
+  test('when a file without extension is retried, then it is uploaded with its name unchanged', () => {
+    const uploadFile = retryUpload(createUploadTask('Makefile', ''));
+
+    expect(uploadFile.name).toBe('Makefile');
   });
 
   it('updates status to failed if uploadRetryItem throws an error', () => {
