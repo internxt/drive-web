@@ -2,6 +2,7 @@ import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import fileVersionsSelectors from 'app/store/slices/fileVersions/fileVersions.selectors';
 import { uploadFoldersWithTracking } from 'app/drive/services/folder.service/uploadFoldersWithTracking';
+import errorService from 'services/error.service';
 import { SharedItemAuthenticationData, UploadFolderData } from '../../../../tasks/types';
 import { uploadItemsThunk, uploadSharedItemsThunk } from '../storage.thunks/uploadItemsThunk';
 
@@ -16,7 +17,7 @@ export const useReduxActions = () => {
       selectedWorkspace,
       dispatch,
       maxUploadFileSize,
-    });
+    }).catch((error) => errorService.reportError(error));
   };
 
   const uploadItem = (data: { uploadFile: File; parentFolderId: string; taskId: string; fileType: string }) => {

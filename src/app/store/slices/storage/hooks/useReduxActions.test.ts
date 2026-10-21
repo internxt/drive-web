@@ -6,6 +6,7 @@ import { uploadItemsThunk, uploadSharedItemsThunk } from '../storage.thunks/uplo
 import { UploadFolderData } from '../../../../tasks/types';
 import { renderHook } from '@testing-library/react';
 import { uploadFoldersWithTracking } from 'app/drive/services/folder.service/uploadFoldersWithTracking';
+import errorService from 'services/error.service';
 
 vi.mock('react-redux', () => ({
   useDispatch: vi.fn(),
@@ -14,6 +15,10 @@ vi.mock('react-redux', () => ({
 
 vi.mock('app/drive/services/folder.service/uploadFoldersWithTracking', () => ({
   uploadFoldersWithTracking: vi.fn(),
+}));
+
+vi.mock('services/error.service', () => ({
+  default: { reportError: vi.fn() },
 }));
 
 vi.mock('../storage.thunks/uploadFolderThunk', () => ({
@@ -36,7 +41,20 @@ describe('useReduxActions', () => {
   const maxUploadFileSize = 1024;
   const state = { workspaces: { selectedWorkspace }, fileVersions: { limits: { maxUploadFileSize } } };
 
+  const folderData: UploadFolderData & { taskId: string } = {
+    folder: {
+      name: 'folder1',
+      folderId: null,
+      childrenFiles: [],
+      childrenFolders: [],
+      fullPathEdited: '',
+    },
+    parentFolderId: 'parent1',
+    taskId: 'task1',
+  };
+
   beforeEach(() => {
+    (uploadFoldersWithTracking as Mock).mockResolvedValue(undefined);
     (useDispatch as Mock).mockReturnValue(dispatch);
     (useSelector as Mock).mockImplementation((selector: (s: typeof state) => unknown) => selector(state));
   });
@@ -48,17 +66,7 @@ describe('useReduxActions', () => {
 
   test('when a failed folder upload is retried, then it resumes the same task through the folder upload pipeline', () => {
     const { result } = renderHook(() => useReduxActions());
-    const data: UploadFolderData & { taskId: string } = {
-      folder: {
-        name: 'folder1',
-        folderId: null,
-        childrenFiles: [],
-        childrenFolders: [],
-        fullPathEdited: '',
-      },
-      parentFolderId: 'parent1',
-      taskId: 'task1',
-    };
+    const data = folderData;
 
     result.current.uploadFolder(data);
 
@@ -69,6 +77,16 @@ describe('useReduxActions', () => {
       maxUploadFileSize,
     });
     expect(uploadFolderThunk).not.toHaveBeenCalled();
+  });
+
+  test('when the folder retry upload fails, then the error is reported', async () => {
+    const error = new Error('upload failed');
+    (uploadFoldersWithTracking as Mock).mockRejectedValue(error);
+    const { result } = renderHook(() => useReduxActions());
+
+    result.current.uploadFolder(folderData);
+
+    await vi.waitFor(() => expect(errorService.reportError).toHaveBeenCalledWith(error));
   });
 
   it('should dispatch uploadItemsThunk with correct arguments for uploadItem', () => {
