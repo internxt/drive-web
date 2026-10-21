@@ -11,7 +11,6 @@ export enum ActionDialog {
   EditItem = 'edit-item',
   NameCollision = 'name-collision',
   ModifyStorage = 'modify-storage',
-  CryptoPayment = 'crypto-payment',
   DownloadBackupKey = 'download-backup-key',
 }
 

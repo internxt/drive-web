@@ -1,12 +1,12 @@
 import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
-import { CryptoCurrency, PriceWithTax } from '@internxt/sdk/dist/payments/types';
+import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { useElements, useStripe } from '@stripe/react-stripe-js';
 import { IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { BaseSyntheticEvent, LegacyRef, useState } from 'react';
+import { BaseSyntheticEvent, LegacyRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { CheckoutLoader } from 'views/Checkout/components/CheckoutLoader';
-import { AuthMethodTypes, PaymentType } from 'views/Checkout/types';
+import { AuthMethodTypes } from 'views/Checkout/types';
 import { CheckoutViewManager, UserInfoProps } from 'views/Checkout/types/checkout.types';
 import { UrgentCheckoutAccountFields } from '../components/UrgentCheckoutAccountFields';
 import { UrgentCheckoutHeader } from '../components/UrgentCheckoutHeader';
@@ -37,11 +37,8 @@ interface UrgentCheckoutViewProps {
     authError?: string;
     couponCodeData?: CouponCodeData;
     currentSelectedPlan: PriceWithTax | null;
-    selectedCurrency: string;
   };
   checkoutViewManager: CheckoutViewManager;
-  availableCryptoCurrencies?: CryptoCurrency[];
-  onCurrencyTypeChanges: (currency: PaymentType) => void;
 }
 
 const UrgentCheckoutView = ({
@@ -50,15 +47,11 @@ const UrgentCheckoutView = ({
   userAuthComponentRef,
   checkoutViewVariables,
   checkoutViewManager,
-  availableCryptoCurrencies,
-  onCurrencyTypeChanges,
 }: UrgentCheckoutViewProps): JSX.Element => {
   const stripeSDK = useStripe();
   const elements = useElements();
   const { translate } = useTranslationContext();
-  const [isCryptoDropdownOpen, setIsCryptoDropdownOpen] = useState<boolean>(false);
-  const { isPaying, authError, authMethod, couponCodeData, currentSelectedPlan, selectedCurrency } =
-    checkoutViewVariables;
+  const { isPaying, authError, authMethod, couponCodeData, currentSelectedPlan } = checkoutViewVariables;
 
   const {
     register,
@@ -83,21 +76,6 @@ const UrgentCheckoutView = ({
       password: '',
     });
     checkoutViewManager.handleAuthMethodChange(newAuthMethod);
-  };
-
-  const onStripePaymentExpanded = () => {
-    onCurrencyTypeChanges(PaymentType['FIAT']);
-    checkoutViewManager.onCurrencyChange(currentSelectedPlan.price.currency);
-    setIsCryptoDropdownOpen(false);
-  };
-
-  const onCryptoDropdownToggle = () => {
-    if (!isCryptoDropdownOpen) {
-      elements?.getElement('payment')?.collapse();
-    }
-
-    onCurrencyTypeChanges(PaymentType['CRYPTO']);
-    setIsCryptoDropdownOpen(!isCryptoDropdownOpen);
   };
 
   const handleFormSubmit = (formData: IFormValues, event?: BaseSyntheticEvent) => {
@@ -134,18 +112,7 @@ const UrgentCheckoutView = ({
                 onAuthMethodToggled={onAuthMethodToggled}
                 onLogOut={checkoutViewManager.onLogOut}
               />
-              <UrgentCheckoutPaymentSection
-                planSummary={planSummary}
-                isPaymentProcessing={isPaymentProcessing}
-                selectedCurrency={selectedCurrency}
-                isCryptoDropdownOpen={isCryptoDropdownOpen}
-                onPaymentExpanded={onStripePaymentExpanded}
-                onCryptoDropdownToggle={onCryptoDropdownToggle}
-                onCryptoChanges={checkoutViewManager.onCurrencyChange}
-                onUserAddressChanges={checkoutViewManager.onUserAddressChanges}
-                onUserNameChanges={checkoutViewManager.onUserNameChanges}
-                availableCryptoCurrencies={availableCryptoCurrencies}
-              />
+              <UrgentCheckoutPaymentSection planSummary={planSummary} isPaymentProcessing={isPaymentProcessing} />
             </div>
           </div>
         </div>

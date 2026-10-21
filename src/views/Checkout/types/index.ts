@@ -1,7 +1,6 @@
 import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { Stripe } from '@stripe/stripe-js';
-import { ActionDialog, DialogActionConfig } from 'app/contexts/dialog-manager/ActionDialogManager.context';
 import { Translate } from 'app/i18n/types';
 
 export enum Currency {
@@ -91,8 +90,8 @@ export interface CreatePaymentIntentPayload {
   token: string;
   currency: string;
   captchaToken: string;
-  userAddress: string;
   promoCodeId?: string;
+  gclid?: string;
 }
 
 export interface ProcessPurchasePayload {
@@ -102,15 +101,14 @@ export interface ProcessPurchasePayload {
   currency: string;
   confirmationTokenId?: string;
   captchaToken: string;
-  userAddress: string;
   confirmPayment: Stripe['confirmPayment'];
   confirmSetupIntent: Stripe['confirmSetup'];
-  openCryptoPaymentDialog?: (key: ActionDialog, config?: DialogActionConfig) => void;
   translate: Translate;
   currentSelectedPlan: PriceWithTax;
   couponCodeData?: CouponCodeData;
   isFirstPurchase?: boolean;
   isPasswordlessSignUp?: boolean;
+  gclid?: string;
 }
 
 export interface UseUserPaymentPayload {
@@ -120,10 +118,8 @@ export interface UseUserPaymentPayload {
   currency: string;
   selectedPlan: PriceWithTax;
   confirmationTokenId?: string;
-  userAddress: string;
   confirmPayment: Stripe['confirmPayment'];
   confirmSetupIntent: Stripe['confirmSetup'];
-  openCryptoPaymentDialog?: (key: ActionDialog, config?: DialogActionConfig) => void;
   gclidStored: string | null;
   captchaToken: string;
   translate: Translate;
@@ -144,7 +140,6 @@ export enum InvoiceStatus {
 
 export enum PaymentType {
   FIAT = 'fiat',
-  CRYPTO = 'crypto',
 }
 
 export type { UserInfoProps, CheckoutViewManager } from './checkout.types';

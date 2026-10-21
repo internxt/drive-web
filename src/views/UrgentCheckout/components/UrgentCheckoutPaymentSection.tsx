@@ -6,10 +6,6 @@ import DiscoverLogo from 'assets/icons/card-brands/discover.png';
 import MastercardLogo from 'assets/icons/card-brands/mastercard.png';
 import VisaLogo from 'assets/icons/card-brands/visa.png';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { CryptoCurrency } from '@internxt/sdk/dist/payments/types';
-import { CryptoPaymentSection } from 'views/Checkout/components/CryptoPaymentSection';
-import { AddressProvider } from 'views/Checkout/types/checkout.types';
-import { URGENT_CHECKOUT_CRYPTO_SECTION_CLASSNAME, URGENT_CHECKOUT_CRYPTO_SECTION_STYLE } from '../constants';
 import { UrgentCheckoutPlanSummary } from '../utils/getUrgentCheckoutPlanSummary';
 
 export const URGENT_CHECKOUT_PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
@@ -27,14 +23,6 @@ export const URGENT_CHECKOUT_PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOption
 interface UrgentCheckoutPaymentSectionProps {
   planSummary: UrgentCheckoutPlanSummary;
   isPaymentProcessing: boolean;
-  selectedCurrency: string;
-  isCryptoDropdownOpen: boolean;
-  onPaymentExpanded: () => void;
-  onCryptoDropdownToggle: () => void;
-  onCryptoChanges: (crypto: string) => void;
-  onUserAddressChanges: (address: AddressProvider) => void;
-  onUserNameChanges: (userName: string) => void;
-  availableCryptoCurrencies?: CryptoCurrency[];
 }
 
 const CARD_BRAND_LOGOS = [
@@ -47,14 +35,6 @@ const CARD_BRAND_LOGOS = [
 export const UrgentCheckoutPaymentSection = ({
   planSummary,
   isPaymentProcessing,
-  selectedCurrency,
-  isCryptoDropdownOpen,
-  onPaymentExpanded,
-  onCryptoDropdownToggle,
-  onCryptoChanges,
-  onUserAddressChanges,
-  onUserNameChanges,
-  availableCryptoCurrencies,
 }: UrgentCheckoutPaymentSectionProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const { storage, currencySymbol, discountedAmount, normalAmount, interval, isRecurring } = planSummary;
@@ -67,27 +47,7 @@ export const UrgentCheckoutPaymentSection = ({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-3">
-        <PaymentElement
-          options={URGENT_CHECKOUT_PAYMENT_ELEMENT_OPTIONS}
-          onChange={(event) => {
-            if (!event.collapsed) {
-              onPaymentExpanded();
-            }
-          }}
-        />
-        {availableCryptoCurrencies && (
-          <div className={URGENT_CHECKOUT_CRYPTO_SECTION_CLASSNAME} style={URGENT_CHECKOUT_CRYPTO_SECTION_STYLE}>
-            <CryptoPaymentSection
-              availableCryptoCurrencies={availableCryptoCurrencies}
-              selectedCurrency={selectedCurrency}
-              isDropdownOpen={isCryptoDropdownOpen}
-              onDropdownClicked={onCryptoDropdownToggle}
-              onCryptoChanges={onCryptoChanges}
-              onUserAddressChanges={onUserAddressChanges}
-              onUserNameChanges={onUserNameChanges}
-            />
-          </div>
-        )}
+        <PaymentElement options={URGENT_CHECKOUT_PAYMENT_ELEMENT_OPTIONS} />
         <div className="flex flex-row items-center gap-2">
           {CARD_BRAND_LOGOS.map(({ src, alt }) => (
             <img key={alt} src={src} alt={alt} className="h-6 w-auto rounded-[3px]" />
