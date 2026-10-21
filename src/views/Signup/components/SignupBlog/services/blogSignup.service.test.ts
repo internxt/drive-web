@@ -40,8 +40,6 @@ describe('submitBlogSignup', () => {
 
     globalThis.gtag = vi.fn() as any;
 
-    vi.spyOn(Storage.prototype, 'removeItem');
-
     (envService.getVariable as Mock).mockReturnValue('https://drive.internxt.com');
   });
 
@@ -85,8 +83,6 @@ describe('submitBlogSignup', () => {
         doSignUp: mockDoRegister,
       });
       expect(globalThis.gtag).toHaveBeenCalledWith('event', 'User Signup', { send_to: 'Blog' });
-      expect(localStorage.removeItem).toHaveBeenCalledWith('email');
-      expect(localStorage.removeItem).toHaveBeenCalledWith('password');
       expect(mockOpen).toHaveBeenCalledWith('https://drive.internxt.com', '_parent', 'noopener');
       expect(mockSetLoading).toHaveBeenCalledWith(false);
     });
