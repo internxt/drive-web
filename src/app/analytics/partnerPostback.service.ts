@@ -20,6 +20,15 @@ const POSTBACK_PARTNERS: readonly PostbackPartner[] = [
 const PARTNER_COOKIE = 'postbackPartner';
 const CLICK_ID_COOKIE = 'postbackClickId';
 
+const CPA_AMOUNT_BY_PLAN: Readonly<Record<string, number>> = {
+  price_1U6Ev3FAOdcgaBMQHxOAmWPO: 180,
+  price_1TRoAJFAOdcgaBMQveT6cebN: 80,
+};
+
+function getCpaAmount(priceId: string | null): number {
+  return CPA_AMOUNT_BY_PLAN[priceId ?? ''] ?? 0;
+}
+
 function findPartnerByUtmSource(utmSource: string | null | undefined): PostbackPartner | undefined {
   if (!utmSource) {
     return undefined;
@@ -68,13 +77,10 @@ export async function sendPurchasePostback(): Promise<void> {
       return;
     }
 
-    const amountPaid = localStorageService.get(LocalStorageItem.AmountPaid);
-    const amount = Number.parseFloat(amountPaid ?? '0');
-
     const postbackUrl = new URL(partner.postbackUrl);
     postbackUrl.searchParams.set('nid', partner.networkId);
     postbackUrl.searchParams.set('transaction_id', decodeURIComponent(affiliateClickId));
-    postbackUrl.searchParams.set('amount', String(Number.isFinite(amount) ? amount : 0));
+    postbackUrl.searchParams.set('amount', String(getCpaAmount(localStorageService.get(LocalStorageItem.PriceId))));
 
     await fetch(postbackUrl.toString(), { method: 'GET', mode: 'no-cors', keepalive: true });
   } catch (error) {
