@@ -19,6 +19,7 @@ const initialState: StorageState = {
   levelsFilesLength: {},
   hasMoreDriveFolders: {},
   hasMoreDriveFiles: {},
+  hasFetchFailedByFolderId: {},
   recents: [],
   isLoadingRecents: false,
   favorites: [],
@@ -128,6 +129,7 @@ export const storageSlice = createSlice({
     resetDrivePagination: (state: StorageState) => {
       state.hasMoreDriveFolders[state.currentPath.uuid] = true;
       state.hasMoreDriveFiles[state.currentPath.uuid] = true;
+      state.hasFetchFailedByFolderId[state.currentPath.uuid] = false;
     },
     setRecents: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.recents = action.payload;

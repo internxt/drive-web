@@ -7,7 +7,7 @@ import {
 } from '@phosphor-icons/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
-import { usePaginationState, useTutorialState } from '../../hooks';
+import { useFolderFetchRecovery, usePaginationState, useTutorialState } from '../../hooks';
 import { createFileUploadHandler, createFolderUploadHandler, UPLOAD_ITEMS_LIMIT } from './helpers/uploadHelpers';
 
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
@@ -254,6 +254,11 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const hasMoreItemsToLoad = paginationState.hasMoreItemsToLoad;
   const isEmptyFolder = !isLoading && !hasMoreItemsToLoad;
+  const { canRequestMorePages } = useFolderFetchRecovery({
+    folderId: currentFolderId,
+    hasMoreItems: hasMoreItemsToLoad,
+    isDriveFolder: !isTrash && !isFavorites,
+  });
 
   const renderEmptyState = () => {
     if (hasFilters) {
@@ -699,7 +704,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                 items={items}
                 isLoading={isTrash ? isLoadingTrashItems : isLoading}
                 onEndOfScroll={fetchItems}
-                hasMoreItems={hasMoreItemsToLoad}
+                hasMoreItems={canRequestMorePages}
                 isTrash={isTrash}
                 onHoverListItems={(areHovered) => {
                   setIsListElementsHovered(areHovered);
