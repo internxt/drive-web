@@ -187,16 +187,23 @@ describe('uploadFoldersWithTasks', () => {
     });
   });
 
-  test('When a folder upload stops, then its ongoing file uploads are stopped too', async () => {
+  test('When a folder upload stops, then only its cancellable ongoing uploads are stopped', async () => {
     (tasksService.create as Mock).mockReturnValue('task-1');
     const resolvedStop = Promise.resolve();
-    (tasksService.getTasks as Mock).mockReturnValue([{ stop: () => resolvedStop }, { stop: undefined }, {}]);
+    const nonCancellableStop = vi.fn();
+    (tasksService.getTasks as Mock).mockReturnValue([
+      { cancellable: true, stop: () => resolvedStop },
+      { cancellable: false, stop: nonCancellableStop },
+      { cancellable: true, stop: undefined },
+      {},
+    ]);
 
     const { events } = await runUpload([{ root, currentFolderId: 'parent' }]);
     const promises = events.stopRelatedUploads?.('task-1');
 
     expect(tasksService.getTasks).toHaveBeenCalledWith({ relatedTaskId: 'task-1' });
     expect(promises).toEqual([resolvedStop]);
+    expect(nonCancellableStop).not.toHaveBeenCalled();
   });
 
   describe('when the folder has failed files listed for retry', () => {

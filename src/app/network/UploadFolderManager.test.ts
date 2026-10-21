@@ -15,8 +15,10 @@ import { deleteItemsThunk } from '../store/slices/storage/storage.thunks/deleteI
 import { uploadFileWithManager } from './UploadManager';
 import { PersistUploadRepository } from 'app/repositories/DatabaseUploadRepository';
 import uploadFile from 'app/drive/services/file.service/uploadFile';
+import newStorageService from 'app/drive/services/new-storage.service';
 import RetryManager from './RetryManager';
 import { ConnectionLostError } from './requests';
+import errorService from 'services/error.service';
 
 vi.mock('app/drive/services/file.service/uploadFile', () => ({
   default: vi.fn(async (file: { name: string }) => ({ uuid: `${file.name}-uuid`, name: file.name })),
@@ -419,6 +421,163 @@ describe('uploadFoldersWithManager', () => {
 
       expect(events.onFolderUploadError).toHaveBeenLastCalledWith(taskId, 'connection-lost');
       expect(events.onFolderUploadSuccess).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('when the upload is cancelled', () => {
+    const taskId = 'task-id';
+    const createdRootFolder = buildFolderData({ uuid: 'root-uuid', name: 'MyFolder', plain_name: 'MyFolder' });
+    const deleteRootFolderAction = Symbol('deleteItemsThunk');
+
+    const arrangeCancelledFolderUpload = (fileCount: number) => {
+      const files = Array.from({ length: fileCount }, (_, i) => new File([`content-${i}`], `file${i}.txt`));
+      const uploadRepository: PersistUploadRepository = {
+        setUploadState: vi.fn(async () => undefined),
+        getUploadState: vi.fn(async () => undefined),
+        removeUploadState: vi.fn(async () => undefined),
+      };
+      const uploadDispatch = dispatchToUploadManager(uploadRepository);
+      const dispatch = vi.fn((action) =>
+        action === deleteRootFolderAction ? { unwrap: () => Promise.resolve() } : uploadDispatch(action),
+      );
+
+      (createFolder as Mock).mockResolvedValueOnce(createdRootFolder);
+      (checkFolderDuplicated as Mock).mockResolvedValueOnce({
+        duplicatedFoldersResponse: [],
+        foldersWithDuplicates: [],
+        foldersWithoutDuplicates: [createdRootFolder],
+      });
+      (deleteItemsThunk as unknown as Mock).mockReturnValue(deleteRootFolderAction);
+
+      let cancelUpload = () => undefined;
+      const stopRelatedUploads = vi.fn(() => []);
+      const events: UploadFolderManagerEvents = {
+        onFolderUploadStarted: vi.fn((_taskId, _root, controls) => {
+          cancelUpload = controls.cancelUpload;
+        }),
+        onFolderUploadSuccess: vi.fn(),
+        onFolderUploadError: vi.fn(),
+        stopRelatedUploads,
+      };
+
+      let hasCancelled = false;
+      (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
+        if (!hasCancelled) {
+          hasCancelled = true;
+          cancelUpload();
+        }
+        return { uuid: `${file.name}-uuid`, name: file.name };
+      });
+
+      const run = () =>
+        uploadFoldersWithManager({
+          payload: [
+            {
+              currentFolderId: 'currentFolderId',
+              root: {
+                folderId: 'currentFolderId',
+                childrenFiles: files,
+                childrenFolders: [],
+                name: 'MyFolder',
+                fullPathEdited: 'path1',
+              },
+              options: { taskId },
+            },
+          ],
+          selectedWorkspace: null,
+          dispatch,
+          maxUploadFileSize: 100,
+          events,
+        });
+
+      return { events, stopRelatedUploads, run };
+    };
+
+    beforeEach(() => {
+      RetryManager.clearTasks();
+    });
+
+    test('when a folder upload with more files than the upload concurrency is cancelled right away, then the files already uploading/queued are aborted and the task ends as cancelled', async () => {
+      const { events, stopRelatedUploads, run } = arrangeCancelledFolderUpload(10);
+
+      await run();
+
+      expect(uploadFile).toHaveBeenCalledTimes(6);
+      expect(stopRelatedUploads).toHaveBeenCalledWith(taskId);
+      expect(events.onFolderUploadSuccess).not.toHaveBeenCalled();
+      expect(events.onFolderUploadError).not.toHaveBeenCalled();
+    });
+
+    test('when cancel is clicked, then the root folder and its uploaded content are deleted', async () => {
+      const { run } = arrangeCancelledFolderUpload(2);
+
+      await run();
+
+      expect(deleteItemsThunk).toHaveBeenCalledWith([createdRootFolder]);
+      expect(newStorageService.deleteFolderByUuid).toHaveBeenCalledWith(createdRootFolder.uuid);
+    });
+
+    test('when the upload is cancelled while the root folder is still being created, then the folder is deleted once it is created', async () => {
+      let cancelUpload = () => undefined;
+      const dispatch = vi.fn((action) =>
+        action === deleteRootFolderAction ? { unwrap: () => Promise.resolve() } : undefined,
+      );
+      const events: UploadFolderManagerEvents = {
+        onFolderUploadStarted: vi.fn((_taskId, _root, controls) => {
+          cancelUpload = controls.cancelUpload;
+        }),
+        onFolderUploadSuccess: vi.fn(),
+        onFolderUploadError: vi.fn(),
+        stopRelatedUploads: vi.fn(() => []),
+      };
+
+      (checkFolderDuplicated as Mock).mockResolvedValueOnce({
+        duplicatedFoldersResponse: [],
+        foldersWithDuplicates: [],
+        foldersWithoutDuplicates: [createdRootFolder],
+      });
+      (createFolder as Mock).mockImplementation(async () => {
+        cancelUpload();
+        return createdRootFolder;
+      });
+      (deleteItemsThunk as unknown as Mock).mockReturnValue(deleteRootFolderAction);
+
+      await uploadFoldersWithManager({
+        payload: [
+          {
+            currentFolderId: 'currentFolderId',
+            root: {
+              folderId: 'currentFolderId',
+              childrenFiles: [],
+              childrenFolders: [],
+              name: 'MyFolder',
+              fullPathEdited: 'path1',
+            },
+            options: { taskId },
+          },
+        ],
+        selectedWorkspace: null,
+        dispatch,
+        maxUploadFileSize: 100,
+        events,
+      });
+
+      expect(deleteItemsThunk).toHaveBeenCalledWith([createdRootFolder]);
+      expect(newStorageService.deleteFolderByUuid).toHaveBeenCalledWith(createdRootFolder.uuid);
+      expect(events.onFolderUploadSuccess).not.toHaveBeenCalled();
+      expect(events.onFolderUploadError).not.toHaveBeenCalled();
+    });
+
+    test('when stopping the uploads on cancel fails, then the error is reported', async () => {
+      const { stopRelatedUploads, run } = arrangeCancelledFolderUpload(2);
+      const stopUploadError = new Error('stopRelatedUploads failed');
+      stopRelatedUploads.mockImplementation(() => {
+        throw stopUploadError;
+      });
+
+      await run();
+
+      expect(errorService.reportError).toHaveBeenCalledWith(stopUploadError);
     });
   });
 

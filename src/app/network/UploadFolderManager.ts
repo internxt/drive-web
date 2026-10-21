@@ -301,6 +301,11 @@ export class UploadFoldersManager {
       this.tasksInfo[taskId].rootFolderItem = createdFolder;
     }
 
+    if (abortController.signal.aborted) {
+      await this.stopUploadTask(taskId, abortController);
+      return;
+    }
+
     this.updateTaskProgress(taskId, abortController);
 
     const hasChildren = level.childrenFiles.length > 0 || level.childrenFolders.length > 0;
@@ -391,6 +396,7 @@ export class UploadFoldersManager {
       const cleanupStartedEvent = this.events?.onFolderUploadStarted?.(taskId, root, {
         cancelUpload: () => {
           this.tasksInfo[taskId].isCancelled = true;
+          this.stopUploadTask(taskId, taskFolder.abortController).catch((error) => errorService.reportError(error));
           this.uploadFoldersQueue.kill();
         },
         pauseUpload: () => this.uploadFoldersQueue.pause(),

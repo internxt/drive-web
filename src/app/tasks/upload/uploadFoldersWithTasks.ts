@@ -112,6 +112,7 @@ export const uploadFoldersWithTasks = (props: UploadFoldersWithTasksProps): Prom
     stopRelatedUploads: (taskId) =>
       tasksService
         .getTasks({ relatedTaskId: taskId })
+        .filter((task) => task.cancellable)
         .map((task) => task.stop?.())
         .filter((promise): promise is Promise<void> => promise !== undefined),
   };
