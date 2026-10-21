@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, test, expect, vi, beforeEach } from 'vitest';
 import RetryManager, { RetryableTask, RetryableTaskStatus, RetryableTaskType } from './RetryManager';
 
 describe('RetryManager', () => {
@@ -54,6 +54,47 @@ describe('RetryManager', () => {
     const tasks = RetryManager.getTasks();
     expect(tasks).toHaveLength(1);
     expect(tasks[0].taskId).toBe('task2');
+  });
+
+  describe('when removing the entries of a related task', () => {
+    const buildTask = (taskId: string, relatedTaskId?: string): RetryableTask => ({
+      taskId,
+      type: RetryableTaskType.Upload,
+      params: relatedTaskId ? { relatedTaskId } : {},
+    });
+    const remainingTaskIds = () => RetryManager.getTasks().map((task) => task.taskId);
+
+    beforeEach(() => {
+      RetryManager.addTasks([
+        buildTask('folder-file-a', 'folder'),
+        buildTask('folder-file-b', 'folder'),
+        buildTask('folder'),
+        buildTask('other-folder-file', 'other-folder'),
+        buildTask('standalone-file'),
+      ]);
+    });
+
+    test('when entries belong to the task, then they are removed and the other entries are kept', () => {
+      RetryManager.removeTasksOfRelatedTask('folder');
+
+      expect(remainingTaskIds()).toEqual(['other-folder-file', 'standalone-file']);
+    });
+
+    test('when an entry has no related task and its own id matches, then it is removed', () => {
+      RetryManager.removeTasksOfRelatedTask('standalone-file');
+
+      expect(remainingTaskIds()).toEqual(['folder-file-a', 'folder-file-b', 'folder', 'other-folder-file']);
+    });
+
+    test('when entries are removed, then listeners are notified', () => {
+      const listener = vi.fn();
+      RetryManager.subscribe(listener);
+
+      RetryManager.removeTasksOfRelatedTask('folder');
+
+      expect(listener).toHaveBeenCalledTimes(1);
+      RetryManager.unsubscribe(listener);
+    });
   });
 
   it('should clear all tasks', () => {

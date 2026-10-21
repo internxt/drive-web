@@ -301,6 +301,11 @@ export class UploadFoldersManager {
       this.tasksInfo[taskId].rootFolderItem = createdFolder;
     }
 
+    if (abortController.signal.aborted) {
+      await this.stopUploadTask(taskId, abortController);
+      return;
+    }
+
     this.updateTaskProgress(taskId, abortController);
 
     const hasChildren = level.childrenFiles.length > 0 || level.childrenFolders.length > 0;
@@ -338,6 +343,32 @@ export class UploadFoldersManager {
     this.events?.onFolderUploadError?.(taskId, 'upload-failed');
   };
 
+  /**
+   * Announces how a folder upload ended once its queue has drained. A lost connection ends the
+   * folder as an error only when nothing of it was kept (its root folder was never created or was
+   * rolled back); otherwise it finishes with failed files, so they can be retried into the same folder.
+   * @throws {ConnectionLostError} when the connection was lost and nothing of the folder was kept
+   */
+  private readonly announceFolderUploadEnd = (taskFolder: TaskFolder, isConnectionLost: boolean): void => {
+    const { root, options, taskId } = taskFolder;
+    const taskInfo = this.tasksInfo[taskId];
+    const hasKeptUploadedContent = !!taskInfo.rootFolderItem && !taskInfo.hasErrored;
+
+    if (isConnectionLost && !hasKeptUploadedContent) throw new ConnectionLostError();
+
+    // A fatal error (e.g. the folder could not be created) or a cancellation already
+    // announced a final state while the queue was draining: don't announce success on top.
+    if (taskInfo.isCancelled || taskInfo.hasErrored) return;
+
+    this.events?.onFolderUploadSuccess?.(taskId, {
+      folderName: root.name,
+      rootFolderUUID: taskInfo.rootFolderItem?.uuid,
+      hasFailedFiles: !!taskInfo.hasFailedFiles || isConnectionLost,
+    });
+
+    options?.onSuccess?.();
+  };
+
   public readonly run = async (): Promise<void> => {
     const taskFolders = await prepareTaskFolders(this.payload);
 
@@ -352,7 +383,7 @@ export class UploadFoldersManager {
     context.addEventListener('offline', connectionLostListener);
 
     for (const taskFolder of taskFolders) {
-      const { root, currentFolderId, options, taskId } = taskFolder;
+      const { root, currentFolderId, taskId } = taskFolder;
 
       this.tasksInfo[taskId] = {
         isCancelled: false,
@@ -365,6 +396,7 @@ export class UploadFoldersManager {
       const cleanupStartedEvent = this.events?.onFolderUploadStarted?.(taskId, root, {
         cancelUpload: () => {
           this.tasksInfo[taskId].isCancelled = true;
+          this.stopUploadTask(taskId, taskFolder.abortController).catch((error) => errorService.reportError(error));
           this.uploadFoldersQueue.kill();
         },
         pauseUpload: () => this.uploadFoldersQueue.pause(),
@@ -379,20 +411,8 @@ export class UploadFoldersManager {
           await this.uploadFoldersQueue.drain();
         }
 
-        if (connectionLost) throw new ConnectionLostError();
-
-        const taskInfo = this.tasksInfo[taskId];
-        // A fatal error (e.g. the folder could not be created) or a cancellation already
-        // announced a final state while the queue was draining: don't announce success on top.
-        if (taskInfo.isCancelled || taskInfo.hasErrored) continue;
-
-        this.events?.onFolderUploadSuccess?.(taskId, {
-          folderName: root.name,
-          rootFolderUUID: taskInfo.rootFolderItem?.uuid,
-          hasFailedFiles: !!taskInfo.hasFailedFiles,
-        });
-
-        options?.onSuccess?.();
+        this.announceFolderUploadEnd(taskFolder, connectionLost);
+        if (connectionLost) break;
       } catch (err: unknown) {
         const castedError = errorService.castError(err);
 

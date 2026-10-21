@@ -1,19 +1,23 @@
-import { useDispatch } from 'react-redux';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import fileVersionsSelectors from 'app/store/slices/fileVersions/fileVersions.selectors';
+import { uploadFoldersWithTracking } from 'app/drive/services/folder.service/uploadFoldersWithTracking';
+import errorService from 'services/error.service';
 import { SharedItemAuthenticationData, UploadFolderData } from '../../../../tasks/types';
-import { uploadFolderThunk } from '../storage.thunks/uploadFolderThunk';
 import { uploadItemsThunk, uploadSharedItemsThunk } from '../storage.thunks/uploadItemsThunk';
 
 export const useReduxActions = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
+  const maxUploadFileSize = useAppSelector(fileVersionsSelectors.getMaxFileSizeLimit);
 
   const uploadFolder = (data: UploadFolderData & { taskId: string }) => {
-    dispatch(
-      uploadFolderThunk({
-        root: data.folder,
-        currentFolderId: data.parentFolderId,
-        options: { taskId: data.taskId },
-      }),
-    );
+    uploadFoldersWithTracking({
+      payload: [{ root: data.folder, currentFolderId: data.parentFolderId, options: { taskId: data.taskId } }],
+      selectedWorkspace,
+      dispatch,
+      maxUploadFileSize,
+    }).catch((error) => errorService.reportError(error));
   };
 
   const uploadItem = (data: { uploadFile: File; parentFolderId: string; taskId: string; fileType: string }) => {

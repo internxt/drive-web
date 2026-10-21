@@ -61,6 +61,13 @@ class RetryManager {
     this.notify();
   }
 
+  removeTasksOfRelatedTask(relatedTaskId: string) {
+    this.tasksToRetry = this.tasksToRetry.filter(
+      (task) => (task.params?.relatedTaskId ?? task.taskId) !== relatedTaskId,
+    );
+    this.notify();
+  }
+
   clearTasks() {
     this.tasksToRetry = [];
     this.notify();
