@@ -63,12 +63,6 @@
       "exact": true
     },
     {
-      "id": "buttonAuth",
-      "layout": "empty",
-      "path": "/buttonAuth",
-      "exact": true
-    },
-    {
       "id": "recover-account",
       "layout": "empty",
       "path": "/recover-account/:token",
