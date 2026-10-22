@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
-import { usePaginationState, useTutorialState } from '../../hooks';
+import { useTutorialState } from '../../hooks';
 import { useDriveExplorerContextMenu } from './hooks/useDriveExplorerContextMenu';
 import { useDriveExplorerDrop } from './hooks/useDriveExplorerDrop';
+import { useDriveExplorerItems } from './hooks/useDriveExplorerItems';
 import { useDriveExplorerUpload } from './hooks/useDriveExplorerUpload';
 
 import { RootState } from 'app/store';
@@ -17,16 +18,13 @@ import navigationService from 'services/navigation.service';
 import { ClearTrashDialog } from 'views/Trash/components';
 import { CreateFolderDialog } from 'views/Drive/components';
 import DeleteItemsDialog from 'views/Trash/components/DeleteItemsDialog';
-import { useTrashPagination } from 'views/Trash/hooks/useTrashPagination';
 import { AdvancedSharedItem } from 'app/share/types';
 import { Tutorial } from 'components/Tutorial';
 import { getSignUpSteps } from 'components/signUpSteps';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { storageActions } from 'app/store/slices/storage';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
-import { fetchPaginatedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchFolderContentThunk';
 import { useToggleFavoriteHotkey } from 'hooks';
-import { useFavoritesPagination } from 'views/Favorites/hooks';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import { getAncestorsAndSetNamePath } from 'app/store/slices/storage/storage.thunks/goToFolderThunk';
 import { uiActions } from 'app/store/slices/ui';
@@ -77,12 +75,6 @@ const DriveExplorer = ({
   const storageFilters = useAppSelector((state: RootState) => state.storage.filters);
   const viewMode = useAppSelector((state: RootState) => state.storage.viewMode);
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
-  const folderOnTrashLength = useAppSelector((state: RootState) => state.storage.folderOnTrashLength);
-  const filesOnTrashLength = useAppSelector((state: RootState) => state.storage.filesOnTrashLength);
-  const hasMoreFolders = useAppSelector(
-    (state: RootState) => state.storage.hasMoreDriveFolders[currentFolderId] ?? true,
-  );
-  const hasMoreFiles = useAppSelector((state: RootState) => state.storage.hasMoreDriveFiles[currentFolderId] ?? true);
 
   const hasItems = items.length > 0;
   const hasFilters = storageFilters.text.length > 0;
@@ -105,17 +97,14 @@ const DriveExplorer = ({
 
   const contextMenu = useDriveExplorerContextMenu();
 
-  const { hasMoreFavoriteFolders, hasMoreFavoriteFiles, fetchFavorites, resetFavoritesPagination } =
-    useFavoritesPagination();
-
-  const hasMoreFoldersToLoad = isFavorites ? hasMoreFavoriteFolders : hasMoreFolders;
-  const hasMoreFilesToLoad = isFavorites ? hasMoreFavoriteFiles : hasMoreFiles;
-
-  const paginationState = usePaginationState({
-    isTrash,
-    hasMoreFiles: hasMoreFilesToLoad,
-    hasMoreFolders: hasMoreFoldersToLoad,
-  });
+  const {
+    hasMoreItemsToLoad,
+    isEmptyFolder,
+    isLoadingTrashItems,
+    loadMoreItems,
+    resetPaginationState,
+    onTrashCleared,
+  } = useDriveExplorerItems({ isTrash, isFavorites, isRecents, isLoading, getTrashPaginated });
   const tutorialState = useTutorialState();
 
   const itemToRename = useAppSelector((state: RootState) => state.storage.itemToRename);
@@ -136,26 +125,6 @@ const DriveExplorer = ({
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
 
   const [showStopSharingConfirmation, setShowStopSharingConfirmation] = useState(false);
-  const order = useAppSelector((state: RootState) => state.storage.order);
-
-  const hasMoreItemsToLoad = paginationState.hasMoreItemsToLoad;
-  const isEmptyFolder = !isLoading && !hasMoreItemsToLoad;
-
-  // TRASH PAGINATION
-  const {
-    isLoadingTrashItems,
-    hasMoreTrashFolders,
-    setHasMoreTrashFolders,
-    setIsLoadingTrashItems,
-    getMoreTrashItems,
-  } = useTrashPagination({
-    getTrashPaginated,
-    folderOnTrashLength,
-    isTrash: isTrash,
-    filesOnTrashLength,
-    setHasMoreItems: paginationState.setHasMoreItems,
-    order,
-  });
 
   const signupSteps = getSignUpSteps(
     {
@@ -185,35 +154,6 @@ const DriveExplorer = ({
     deviceService.redirectForMobile();
   }, []);
 
-  useEffect(() => {
-    if ((!isTrash && !hasMoreFoldersToLoad) || (isTrash && !hasMoreTrashFolders)) {
-      fetchItems();
-    }
-  }, [hasMoreFoldersToLoad, hasMoreTrashFolders]);
-
-  useEffect(() => {
-    resetPaginationState();
-    fetchItems();
-  }, [currentFolderId, order]);
-
-  const resetPaginationState = () => {
-    dispatch(storageActions.resetTrash());
-    resetFavoritesPagination();
-    paginationState.resetPaginationState();
-    setHasMoreTrashFolders(true);
-    setIsLoadingTrashItems(false);
-  };
-
-  const fetchItems = () => {
-    if (isTrash) {
-      getMoreTrashItems();
-    } else if (isFavorites) {
-      fetchFavorites();
-    } else {
-      dispatch(fetchPaginatedFolderContentThunk(currentFolderId));
-    }
-  };
-
   const onDetailsButtonClicked = useCallback(
     (item: DriveItemData | AdvancedSharedItem) => {
       if (item.isFolder) {
@@ -237,12 +177,6 @@ const DriveExplorer = ({
       dispatch(uiActions.setIsClearTrashDialogOpen(true));
     }
   };
-
-  const onTrashCleared = useCallback(() => {
-    dispatch(storageActions.resetTrash());
-    paginationState.setHasMoreItems(false);
-    setHasMoreTrashFolders(false);
-  }, [dispatch, paginationState.setHasMoreItems, setHasMoreTrashFolders]);
 
   const onCloseEditItemDialog = (newItem) => {
     if (newItem && editNameItem) {
@@ -393,7 +327,7 @@ const DriveExplorer = ({
                 folderId={currentFolderId}
                 items={items}
                 isLoading={isTrash ? isLoadingTrashItems : isLoading}
-                onEndOfScroll={fetchItems}
+                onEndOfScroll={loadMoreItems}
                 hasMoreItems={hasMoreItemsToLoad}
                 isTrash={isTrash}
                 isRecents={isRecents}
