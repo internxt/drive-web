@@ -28,7 +28,7 @@ vi.mock('app/drive/services/folder.service/uploadFoldersWithTracking', () => ({
 }));
 vi.mock('app/notifications/services/notifications.service', () => ({
   default: { show: vi.fn() },
-  ToastType: { Warning: 'warning' },
+  ToastType: { Warning: 'warning', Error: 'error' },
 }));
 
 const CURRENT_FOLDER_ID = 'current-folder-uuid';
@@ -168,5 +168,28 @@ describe('Uploading items to the current folder', () => {
 
     expect(storageThunks.uploadItemsThunk).toHaveBeenCalledWith({ files, parentFolderId: CURRENT_FOLDER_ID });
     expect(notificationsService.show).not.toHaveBeenCalled();
+  });
+
+  test('When checking for name conflicts fails, then the user is told the upload failed and nothing is uploaded', async () => {
+    const destination = createDestination();
+    vi.mocked(handleRepeatedUploadingFiles).mockRejectedValue(new Error('Network error'));
+
+    await uploadItemsToFolder(destination, [], [aFile('report.pdf')]);
+
+    expect(notificationsService.show).toHaveBeenCalledWith(
+      expect.objectContaining({ text: 'Network error', type: ToastType.Error }),
+    );
+    expect(storageThunks.uploadItemsThunk).not.toHaveBeenCalled();
+  });
+
+  test('When uploading the folders fails, then the user is told the upload failed', async () => {
+    const destination = createDestination();
+    vi.mocked(uploadFoldersWithTracking).mockRejectedValueOnce(new Error('Upload failed'));
+
+    await uploadItemsToFolder(destination, [aRoot('Photos')], []);
+
+    expect(notificationsService.show).toHaveBeenCalledWith(
+      expect.objectContaining({ text: 'Upload failed', type: ToastType.Error }),
+    );
   });
 });

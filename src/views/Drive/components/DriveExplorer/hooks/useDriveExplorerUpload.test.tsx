@@ -1,12 +1,12 @@
-import { ChangeEvent } from 'react';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { fireEvent, render, renderHook, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import {
   handleRepeatedUploadingFiles,
   handleRepeatedUploadingFolders,
 } from 'app/store/slices/storage/storage.thunks/renameItemsThunk';
 import { uploadFoldersWithTracking } from 'app/drive/services/folder.service/uploadFoldersWithTracking';
+import notificationsService from 'app/notifications/services/notifications.service';
 import UploadInputs from '../components/UploadInputs';
 import { UPLOAD_ITEMS_LIMIT } from '../helpers/uploadHelpers';
 import { useDriveExplorerUpload } from './useDriveExplorerUpload';
@@ -38,7 +38,7 @@ vi.mock('app/drive/services/folder.service/uploadFoldersWithTracking', () => ({
 }));
 vi.mock('app/notifications/services/notifications.service', () => ({
   default: { show: vi.fn() },
-  ToastType: { Warning: 'warning' },
+  ToastType: { Warning: 'warning', Error: 'error' },
 }));
 
 const CURRENT_FOLDER_ID = 'current-folder-uuid';
@@ -149,15 +149,38 @@ describe('Uploading from the Drive explorer pickers', () => {
     expect(storageThunks.uploadItemsThunk).not.toHaveBeenCalled();
   });
 
-  test('When checking for name conflicts fails, then the picker is still cleared', async () => {
+  test('When checking for name conflicts fails, then the user is told the upload failed and the picker is cleared', async () => {
     vi.mocked(handleRepeatedUploadingFiles).mockRejectedValue(new Error('Network error'));
-    const { result } = renderHook(() => useDriveExplorerUpload(CURRENT_FOLDER_ID));
-    const input = { files: [new File(['content'], 'report.pdf')], value: 'C:\\fakepath\\report.pdf' };
+    const { container } = render(<UploadArea />);
+    const input = fileInput(container);
 
-    await expect(
-      result.current.onFileInputChanged({ target: input } as unknown as ChangeEvent<HTMLInputElement>),
-    ).rejects.toThrow('Network error');
+    pickFiles(input, [new File(['content'], 'report.pdf')]);
 
+    await vi.waitFor(() =>
+      expect(notificationsService.show).toHaveBeenCalledWith(
+        expect.objectContaining({ text: 'Network error', type: 'error' }),
+      ),
+    );
+    expect(input.value).toBe('');
+  });
+
+  test('When the picked folder cannot be read, then the user is told the upload failed and the picker is cleared', async () => {
+    const { container } = render(<UploadArea />);
+    const input = folderInput(container);
+    const unreadableFile = new File(['content'], 'beach.png');
+    Object.defineProperty(unreadableFile, 'webkitRelativePath', {
+      get: () => {
+        throw new Error('Folder could not be read');
+      },
+    });
+
+    pickFiles(input, [unreadableFile]);
+
+    await vi.waitFor(() =>
+      expect(notificationsService.show).toHaveBeenCalledWith(
+        expect.objectContaining({ text: 'Folder could not be read', type: 'error' }),
+      ),
+    );
     expect(input.value).toBe('');
   });
 });
