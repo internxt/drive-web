@@ -1,23 +1,16 @@
-import {
-  ArrowFatUpIcon,
-  FileArrowUpIcon,
-  FolderSimplePlusIcon,
-  TrashIcon,
-  UploadSimpleIcon,
-} from '@phosphor-icons/react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { usePaginationState, useTutorialState } from '../../hooks';
+import { useDriveExplorerContextMenu } from './hooks/useDriveExplorerContextMenu';
 import { useDriveExplorerDrop } from './hooks/useDriveExplorerDrop';
 import { useDriveExplorerUpload } from './hooks/useDriveExplorerUpload';
 
 import { RootState } from 'app/store';
 import { DriveExplorerEmptyState, DriveExplorerGrid, DriveExplorerList, DriveTopBarActions } from './components';
+import DriveExplorerContextMenu from './components/DriveExplorerContextMenu';
 import UploadInputs from './components/UploadInputs';
 
-import { useHotkeys } from 'react-hotkeys-hook';
 import { moveItemsToTrash } from 'views/Trash/services';
 
-import { ContextMenu } from '@internxt/ui';
 import BannerWrapper from 'app/banners/BannerWrapper';
 import deviceService from 'services/device.service';
 import navigationService from 'services/navigation.service';
@@ -25,7 +18,6 @@ import { ClearTrashDialog } from 'views/Trash/components';
 import { CreateFolderDialog } from 'views/Drive/components';
 import DeleteItemsDialog from 'views/Trash/components/DeleteItemsDialog';
 import { useTrashPagination } from 'views/Trash/hooks/useTrashPagination';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { AdvancedSharedItem } from 'app/share/types';
 import { Tutorial } from 'components/Tutorial';
 import { getSignUpSteps } from 'components/signUpSteps';
@@ -50,59 +42,7 @@ import WarningMessageWrapper from 'views/Home/components/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import { ShareDialogWrapper } from 'app/drive/components/ShareDialog/ShareDialogWrapper';
-import { TranslationKey } from 'app/i18n/types';
 import { AppView } from 'app/core/types';
-
-const MenuItemToGetSize = ({
-  isTrash,
-  translate,
-  menuItemsRef,
-}: {
-  isTrash: boolean;
-  translate: (key: TranslationKey) => string;
-  menuItemsRef: React.RefObject<HTMLDivElement>;
-}) => (
-  <div
-    className={
-      'mt-1 rounded-md border border-gray-10 bg-surface py-1.5 text-base shadow-subtle-hard outline-none dark:bg-gray-5'
-    }
-    style={{
-      minWidth: '180px',
-      position: 'fixed',
-      top: -9999,
-      left: -9999,
-    }}
-    ref={menuItemsRef}
-  >
-    {!isTrash && (
-      <>
-        <div className="flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10">
-          <FolderSimplePlusIcon size={20} />
-          <p>{translate('actions.upload.folder')}</p>
-        </div>
-
-        <div className="mx-3 my-px flex border-t border-gray-5" />
-
-        <div
-          className={
-            'flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10'
-          }
-        >
-          <FileArrowUpIcon size={20} />
-          <p className="ml-3">{translate('actions.upload.uploadFiles')}</p>
-        </div>
-      </>
-    )}
-    <div
-      className={
-        'flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10'
-      }
-    >
-      <UploadSimpleIcon size={20} />
-      <p className="ml-3">{translate('actions.upload.uploadFolder')}</p>
-    </div>
-  </div>
-);
 
 interface DriveExplorerProps {
   title: JSX.Element | string;
@@ -143,7 +83,6 @@ const DriveExplorer = ({
     (state: RootState) => state.storage.hasMoreDriveFolders[currentFolderId] ?? true,
   );
   const hasMoreFiles = useAppSelector((state: RootState) => state.storage.hasMoreDriveFiles[currentFolderId] ?? true);
-  const { translate } = useTranslationContext();
 
   const hasItems = items.length > 0;
   const hasFilters = storageFilters.text.length > 0;
@@ -164,17 +103,7 @@ const DriveExplorer = ({
   } = useDriveExplorerUpload(currentFolderId);
   const { isOver, dropRef } = useDriveExplorerDrop(uploadItems);
 
-  // Context menu state
-  const [isOpen, setIsOpen] = useState(false);
-  const [isListElementsHovered, setIsListElementsHovered] = useState<boolean>(false);
-  const [posX, setPosX] = useState(0);
-  const [posY, setPosY] = useState(0);
-  const [openedWithRightClick, setOpenedWithRightClick] = useState(false);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  const menuItemsRef = useRef<HTMLDivElement | null>(null);
-  const menuContextItemsRef = useRef<HTMLDivElement | null>(null);
-  const menuButtonRef = useRef<HTMLButtonElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const contextMenu = useDriveExplorerContextMenu();
 
   const { hasMoreFavoriteFolders, hasMoreFavoriteFiles, fetchFavorites, resetFavoritesPagination } =
     useFavoritesPagination();
@@ -257,35 +186,6 @@ const DriveExplorer = ({
   }, []);
 
   useEffect(() => {
-    if (
-      menuItemsRef.current &&
-      (menuItemsRef.current.offsetHeight !== dimensions.height ||
-        menuItemsRef.current?.offsetWidth !== dimensions.width)
-    ) {
-      setDimensions({
-        width: menuItemsRef?.current?.offsetWidth || 0,
-        height: menuItemsRef?.current?.offsetHeight || 0,
-      });
-    }
-  }, []);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('contextmenu', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('contextmenu', handleClickOutside);
-    };
-  }, []);
-
-  useEffect(() => {
     if ((!isTrash && !hasMoreFoldersToLoad) || (isTrash && !hasMoreTrashFolders)) {
       fetchItems();
     }
@@ -363,29 +263,6 @@ const DriveExplorer = ({
 
   const ViewModeComponent = viewModes[isTrash ? FileViewMode.List : viewMode];
 
-  const handleContextMenuClick = (event) => {
-    event.preventDefault();
-    const childWidth = menuItemsRef?.current?.offsetWidth ?? 180;
-    const childHeight = menuItemsRef?.current?.offsetHeight ?? 300;
-
-    let x = event.clientX;
-    let y = event.clientY;
-
-    if (event.clientX + childWidth > innerWidth) {
-      x = x - childWidth;
-    }
-
-    if (event.clientY + childHeight > innerHeight) {
-      y = y - childHeight;
-    }
-
-    setPosX(x);
-    setPosY(y);
-    setOpenedWithRightClick(true);
-    setIsOpen(true);
-    menuButtonRef.current?.click();
-  };
-
   const resetPaginationStateAndFetchDriveFolderContent = (currentFolderId: string) => {
     resetPaginationState();
     dispatch(fetchSortedFolderContentThunk(currentFolderId));
@@ -422,13 +299,6 @@ const DriveExplorer = ({
     }, 500);
   };
 
-  useHotkeys('shift+F', () => {
-    if (isOpen && !isFavorites) {
-      setIsOpen(false);
-      onCreateFolderButtonClicked();
-    }
-  });
-
   useToggleFavoriteHotkey({ enabled: !isTrash && !isSomeDialogOpen, selectedItems });
 
   const driveExplorer = (
@@ -436,9 +306,9 @@ const DriveExplorer = ({
       role="none"
       className="flex h-full grow flex-col"
       data-test="drag-and-drop-area"
-      onContextMenu={isListElementsHovered ? () => setIsOpen(false) : handleContextMenuClick}
-      onClick={() => setIsOpen(false)}
-      ref={containerRef}
+      onContextMenu={contextMenu.onContainerContextMenu}
+      onClick={contextMenu.closeContextMenu}
+      ref={contextMenu.containerRef}
     >
       <DeleteItemsDialog />
       <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
@@ -453,7 +323,6 @@ const DriveExplorer = ({
       />
       <ClearTrashDialog onItemsDeleted={onTrashCleared} />
       <UploadItemsFailsDialog />
-      <MenuItemToGetSize isTrash={isTrash} translate={translate} menuItemsRef={menuItemsRef} />
       <ItemDetailsDialog onDetailsButtonClicked={onDetailsButtonClicked} isTrash={isTrash} />
       {editNameItem && (
         <EditItemNameDialog
@@ -475,51 +344,18 @@ const DriveExplorer = ({
       <BannerWrapper />
 
       <div className="flex h-full w-full max-w-full grow">
-        {!isTrash && !isFavorites && isOpen && (
-          <ContextMenu
-            item={'item'}
-            menuItemsRef={menuContextItemsRef}
-            openedFromRightClick={openedWithRightClick}
-            posX={posX}
-            posY={posY}
-            isContextMenuCutOff={false}
-            genericEnterKey={() => {}}
-            handleMenuClose={() => {
-              setIsOpen(false);
-            }}
-            isOpen={isOpen}
-            menu={[
-              {
-                node: (
-                  <button
-                    type="button"
-                    onClick={onCreateFolderButtonClicked}
-                    data-cy="contextMenuCreateFolderButton"
-                    className={
-                      'flex w-full cursor-pointer items-center space-x-3 whitespace-nowrap bg-transparent p-0 text-left'
-                    }
-                  >
-                    <FolderSimplePlusIcon size={20} />
-                    <p data-cy="contextMenuCreateFolderButtonText">{translate('actions.upload.folder')}</p>
-                    <span className="ml-5 flex grow items-center justify-end text-sm text-gray-40">
-                      <ArrowFatUpIcon size={14} /> F
-                    </span>
-                  </button>
-                ),
-              },
-              {
-                icon: FileArrowUpIcon,
-                name: translate('actions.upload.uploadFiles'),
-                action: onUploadFileButtonClicked,
-              },
-              {
-                icon: UploadSimpleIcon,
-                name: translate('actions.upload.uploadFolder'),
-                action: onUploadFolderButtonClicked,
-              },
-            ]}
-          />
-        )}
+        <DriveExplorerContextMenu
+          isTrash={isTrash}
+          isFavorites={isFavorites}
+          isOpen={contextMenu.isOpen}
+          position={contextMenu.position}
+          menuRef={contextMenu.menuRef}
+          onClose={contextMenu.closeContextMenu}
+          onCreateFolderButtonClicked={onCreateFolderButtonClicked}
+          onUploadFileButtonClicked={onUploadFileButtonClicked}
+          onUploadFolderButtonClicked={onUploadFolderButtonClicked}
+          onClearTrashButtonClicked={onDeletePermanentlyButtonClicked}
+        />
         <div className="flex w-1 grow flex-col">
           <div className="z-10 flex flex-wrap min-h-14 max-w-full shrink-0 justify-between px-5 py-2 ">
             <div
@@ -549,29 +385,6 @@ const DriveExplorer = ({
             />
           </div>
 
-          {isTrash && isOpen && (
-            <ContextMenu
-              item={'item'}
-              menuItemsRef={menuContextItemsRef}
-              openedFromRightClick={openedWithRightClick}
-              posX={posX}
-              posY={posY}
-              isContextMenuCutOff={false}
-              genericEnterKey={() => {}}
-              handleMenuClose={() => {
-                setIsOpen(false);
-              }}
-              isOpen={isOpen}
-              menu={[
-                {
-                  icon: TrashIcon,
-                  name: translate('drive.clearTrash.accept'),
-                  action: onDeletePermanentlyButtonClicked,
-                },
-              ]}
-            />
-          )}
-
           <div className="flex h-full grow flex-col justify-between overflow-y-hidden">
             <WarningMessageWrapper />
 
@@ -585,9 +398,7 @@ const DriveExplorer = ({
                 isTrash={isTrash}
                 isRecents={isRecents}
                 isFavorites={isFavorites}
-                onHoverListItems={(areHovered) => {
-                  setIsListElementsHovered(areHovered);
-                }}
+                onHoverListItems={contextMenu.setAreItemsHovered}
                 onOpenStopSharingAndMoveToTrashDialog={onOpenStopSharingAndMoveToTrashDialog}
                 showStopSharingConfirmation={showStopSharingConfirmation}
                 resetPaginationState={resetPaginationState}
@@ -602,7 +413,7 @@ const DriveExplorer = ({
                   isRecents={isRecents}
                   isFavorites={isFavorites}
                   onUploadFileButtonClicked={onUploadFileButtonClicked}
-                  onContextMenu={handleContextMenuClick}
+                  onContextMenu={contextMenu.openContextMenu}
                 />
               )
             }
