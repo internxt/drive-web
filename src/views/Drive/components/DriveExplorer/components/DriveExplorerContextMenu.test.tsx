@@ -7,6 +7,9 @@ vi.mock('app/i18n/provider/TranslationProvider', () => ({
   useTranslationContext: () => ({ translate: (key: string) => key }),
 }));
 
+const SIDEBAR_WIDTH = 240;
+const NAVBAR_HEIGHT = 64;
+
 const ExplorerWithContextMenu = ({
   isTrash,
   isFavorites,
@@ -19,36 +22,40 @@ const ExplorerWithContextMenu = ({
   const contextMenu = useDriveExplorerContextMenu();
 
   return (
-    <div>
-      <div
-        data-testid="explorer"
-        style={{ width: '100vw', height: '100vh' }}
-        role="none"
-        onContextMenu={contextMenu.onContainerContextMenu}
-        onClick={contextMenu.closeContextMenu}
-        ref={contextMenu.containerRef}
-      >
-        <DriveExplorerContextMenu
-          isTrash={isTrash}
-          isFavorites={isFavorites}
-          isOpen={contextMenu.isOpen}
-          position={contextMenu.position}
-          menuRef={contextMenu.menuRef}
-          onClose={contextMenu.closeContextMenu}
-          onCreateFolderButtonClicked={actions.createFolder}
-          onUploadFileButtonClicked={actions.uploadFiles}
-          onUploadFolderButtonClicked={actions.uploadFolder}
-          onClearTrashButtonClicked={actions.clearTrash}
-        />
+    <div style={{ display: 'flex' }}>
+      <div data-testid="outside" style={{ width: SIDEBAR_WIDTH, flexShrink: 0 }}>
+        Sidebar
+      </div>
+      <div style={{ position: 'relative', flexGrow: 1, marginTop: NAVBAR_HEIGHT }}>
         <div
-          data-testid="item"
-          onMouseEnter={() => contextMenu.setAreItemsHovered(true)}
-          onMouseLeave={() => contextMenu.setAreItemsHovered(false)}
+          data-testid="explorer"
+          style={{ height: `calc(100vh - ${NAVBAR_HEIGHT}px)` }}
+          role="none"
+          onContextMenu={contextMenu.onContainerContextMenu}
+          onClick={contextMenu.closeContextMenu}
+          ref={contextMenu.containerRef}
         >
-          report.pdf
+          <DriveExplorerContextMenu
+            isTrash={isTrash}
+            isFavorites={isFavorites}
+            isOpen={contextMenu.isOpen}
+            position={contextMenu.position}
+            menuRef={contextMenu.menuRef}
+            onClose={contextMenu.closeContextMenu}
+            onCreateFolderButtonClicked={actions.createFolder}
+            onUploadFileButtonClicked={actions.uploadFiles}
+            onUploadFolderButtonClicked={actions.uploadFolder}
+            onClearTrashButtonClicked={actions.clearTrash}
+          />
+          <div
+            data-testid="item"
+            onMouseEnter={() => contextMenu.setAreItemsHovered(true)}
+            onMouseLeave={() => contextMenu.setAreItemsHovered(false)}
+          >
+            report.pdf
+          </div>
         </div>
       </div>
-      <div data-testid="outside">Sidebar</div>
     </div>
   );
 };
