@@ -348,9 +348,29 @@
       "encryptedDescription": "Internxt 無法存取您的內容。"
     },
     "cta": {
-      "button": "以 {{price}} 獲得 {{storage}}",
-      "renewalNoteMonthly": "首月 {{price}}，之後以 {{renewalPrice}}/月續訂。可隨時取消。",
-      "renewalNoteYearly": "首年 {{price}}，之後以 {{renewalPrice}}/年續訂。可隨時取消。"
+      "button": {
+        "lifetime": "取得 Lifetime 儲存空間",
+        "subscription": "訂閱私人雲端儲存空間"
+      },
+      "billingDisclosure": {
+        "withIntroPrice": {
+          "month": "首月 {{price}}，之後每月 {{renewalPrice}}。可隨時取消。",
+          "year": "首年 {{price}}，之後每年 {{renewalPrice}}。可隨時取消。"
+        },
+        "withoutIntroPrice": {
+          "month": "每月 {{renewalPrice}}。可隨時取消。",
+          "year": "每年 {{renewalPrice}}。可隨時取消。"
+        }
+      }
+    },
+    "lifetimeNotice": {
+      "title": "購買即永久屬於您",
+      "description": "您購買的 Lifetime 儲存空間不會因未來的方案調整而減少。",
+      "singlePayment": "一次性付款 — 無需定期續費。"
+    },
+    "guarantee": {
+      "title": "30天退款保證",
+      "description": "放心試用，零風險。"
     }
   },
   "general": {

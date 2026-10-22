@@ -327,9 +327,29 @@
       "encryptedDescription": "Internxt kann nicht auf Ihre Inhalte zugreifen."
     },
     "cta": {
-      "button": "{{storage}} für {{price}} sichern",
-      "renewalNoteMonthly": "Erster Monat {{price}}, danach {{renewalPrice}}/Monat. Jederzeit kündbar.",
-      "renewalNoteYearly": "Erstes Jahr {{price}}, danach {{renewalPrice}}/Jahr. Jederzeit kündbar."
+      "button": {
+        "lifetime": "Lifetime-Speicher sichern",
+        "subscription": "Privaten Cloud-Speicher abonnieren"
+      },
+      "billingDisclosure": {
+        "withIntroPrice": {
+          "month": "{{price}} im ersten Monat, danach {{renewalPrice}} jeden Monat. Jederzeit kündbar.",
+          "year": "{{price}} im ersten Jahr, danach {{renewalPrice}} jedes Jahr. Jederzeit kündbar."
+        },
+        "withoutIntroPrice": {
+          "month": "{{renewalPrice}} jeden Monat. Jederzeit kündbar.",
+          "year": "{{renewalPrice}} jedes Jahr. Jederzeit kündbar."
+        }
+      }
+    },
+    "lifetimeNotice": {
+      "title": "Was Sie kaufen, bleibt Ihnen",
+      "description": "Ihr gekaufter Lifetime-Speicher wird durch künftige Tarifänderungen nicht verringert.",
+      "singlePayment": "Einmalige Zahlung — Keine wiederkehrenden Gebühren."
+    },
+    "guarantee": {
+      "title": "30-Tage-Geld-zurück-Garantie",
+      "description": "Risikofrei ausprobieren."
     }
   },
   "general": {

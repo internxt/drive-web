@@ -327,9 +327,29 @@
       "encryptedDescription": "Internxt ne peut pas accéder à votre contenu."
     },
     "cta": {
-      "button": "Obtenez {{storage}} pour {{price}}",
-      "renewalNoteMonthly": "Premier mois {{price}}, puis renouvellement à {{renewalPrice}}/mois. Annulez à tout moment.",
-      "renewalNoteYearly": "Première année {{price}}, puis renouvellement à {{renewalPrice}}/an. Annulez à tout moment."
+      "button": {
+        "lifetime": "Obtenez le stockage Lifetime",
+        "subscription": "Abonnez-vous au stockage cloud privé"
+      },
+      "billingDisclosure": {
+        "withIntroPrice": {
+          "month": "{{price}} le premier mois, puis {{renewalPrice}} chaque mois. Annulez à tout moment.",
+          "year": "{{price}} la première année, puis {{renewalPrice}} chaque année. Annulez à tout moment."
+        },
+        "withoutIntroPrice": {
+          "month": "{{renewalPrice}} chaque mois. Annulez à tout moment.",
+          "year": "{{renewalPrice}} chaque année. Annulez à tout moment."
+        }
+      }
+    },
+    "lifetimeNotice": {
+      "title": "Ce que vous achetez reste à vous",
+      "description": "Le stockage Lifetime que vous achetez ne sera pas réduit par de futurs changements de forfait.",
+      "singlePayment": "Paiement unique — Aucun frais récurrent."
+    },
+    "guarantee": {
+      "title": "Garantie de remboursement de 30 jours",
+      "description": "Essayez sans risque."
     }
   },
   "general": {

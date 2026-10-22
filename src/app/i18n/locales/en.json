@@ -348,9 +348,29 @@
       "encryptedDescription": "Internxt cannot access your content."
     },
     "cta": {
-      "button": "Get {{storage}} for {{price}}",
-      "renewalNoteMonthly": "First month {{price}}, then renews at {{renewalPrice}}/month. Cancel anytime.",
-      "renewalNoteYearly": "First year {{price}}, then renews at {{renewalPrice}}/year. Cancel anytime."
+      "button": {
+        "lifetime": "Get Lifetime storage",
+        "subscription": "Subscribe to private cloud storage"
+      },
+      "billingDisclosure": {
+        "withIntroPrice": {
+          "month": "{{price}} for your first month, then {{renewalPrice}} every month. Cancel anytime.",
+          "year": "{{price}} for your first year, then {{renewalPrice}} every year. Cancel anytime."
+        },
+        "withoutIntroPrice": {
+          "month": "{{renewalPrice}} every month. Cancel anytime.",
+          "year": "{{renewalPrice}} every year. Cancel anytime."
+        }
+      }
+    },
+    "lifetimeNotice": {
+      "title": "What you buy stays yours",
+      "description": "Your purchased Lifetime storage won't be reduced by future plan changes.",
+      "singlePayment": "Single payment — No recurring fees."
+    },
+    "guarantee": {
+      "title": "30-day money-back guarantee",
+      "description": "Try it risk-free."
     }
   },
   "general": {
