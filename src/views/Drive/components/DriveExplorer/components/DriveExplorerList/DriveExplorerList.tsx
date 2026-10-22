@@ -5,7 +5,7 @@ import { toggleFavoriteThunk } from 'views/Favorites/store/toggleFavoriteThunk';
 import { fetchFavoritesThunk } from 'views/Favorites/store/fetchFavoritesThunk';
 import React, { memo, useCallback, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
-import { getListHeaders } from './getListHeaders';
+import { getDriveListOrder, getListHeaders } from './getListHeaders';
 
 import { ListShareLinksItem, Role } from '@internxt/sdk/dist/drive/share/types';
 import navigationService from 'services/navigation.service';
@@ -47,6 +47,7 @@ interface DriveExplorerListProps {
   items: DriveItemData[];
   selectedItems: DriveItemData[];
   order: OrderSettings;
+  driveItemsOrder: string;
   disableKeyboardShortcuts: boolean;
   dispatch: AppDispatch;
   onEndOfScroll(): void;
@@ -155,6 +156,9 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   };
 
   const currentFolderId = useAppSelector(storageSelectors.currentFolderId);
+  const isPersonalDrive = !isWorkspaceSelected && !isTrash && !isFavorites && !isRecents;
+  const canSortByModified = !isPersonalDrive;
+  const listOrder = getDriveListOrder(order, props.driveItemsOrder, isPersonalDrive);
   const skeleton = isTrash ? skinSkeletonTrash : skinSkeleton;
 
   const resetFavoritesOrder = () => {
@@ -164,8 +168,10 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
 
   const sortBy = (value: { field: SortField; direction: 'ASC' | 'DESC' }) => {
     let direction = OrderDirection.Asc;
-    if (order.by === value.field) {
-      direction = order.direction === OrderDirection.Desc ? OrderDirection.Asc : OrderDirection.Desc;
+    const isSameSortField = listOrder.by === value.field;
+    if (isSameSortField) {
+      const isCurrentlyDescending = listOrder.direction === OrderDirection.Desc;
+      direction = isCurrentlyDescending ? OrderDirection.Asc : OrderDirection.Desc;
     }
 
     dispatch(storageActions.setOrder({ by: value.field, direction }));
@@ -511,7 +517,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
         )}
         <ShareWithTeamDialog item={props.selectedItems[0]} roles={roles} />
         <List<DriveItemData, SortField>
-          header={getListHeaders(translate, isRecents, isTrash)}
+          header={getListHeaders(translate, isRecents, isTrash, canSortByModified)}
           checkboxDataCy="driveListHeaderCheckbox"
           disableKeyboardShortcuts={props.disableKeyboardShortcuts || props.showStopSharingConfirmation}
           items={props.items}
@@ -549,8 +555,8 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           }}
           onOrderByChanged={sortBy}
           orderBy={{
-            field: props.order.by as SortField,
-            direction: props.order.direction,
+            field: listOrder.by as SortField,
+            direction: listOrder.direction,
           }}
           onSelectedItemsChanged={onSelectedItemsChanged}
           disableItemCompositionStyles={true}
@@ -563,6 +569,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
 export default connect((state: RootState) => ({
   selectedItems: state.storage.selectedItems,
   order: state.storage.order,
+  driveItemsOrder: state.storage.driveItemsOrder,
   forceLoading: state.storage.forceLoading,
   roles: state.shared.roles,
   disableKeyboardShortcuts:
