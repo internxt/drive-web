@@ -348,9 +348,29 @@
       "encryptedDescription": "A Internxt não pode acessar seu conteúdo."
     },
     "cta": {
-      "button": "Tenha {{storage}} por {{price}}",
-      "renewalNoteMonthly": "Primeiro mês por {{price}}, depois renova por {{renewalPrice}}/mês. Cancele quando quiser.",
-      "renewalNoteYearly": "Primeiro ano por {{price}}, depois renova por {{renewalPrice}}/ano. Cancele quando quiser."
+      "button": {
+        "lifetime": "Tenha o armazenamento Lifetime",
+        "subscription": "Assine o armazenamento em nuvem privada"
+      },
+      "billingDisclosure": {
+        "withIntroPrice": {
+          "month": "{{price}} no primeiro mês, depois {{renewalPrice}} por mês. Cancele quando quiser.",
+          "year": "{{price}} no primeiro ano, depois {{renewalPrice}} por ano. Cancele quando quiser."
+        },
+        "withoutIntroPrice": {
+          "month": "{{renewalPrice}} por mês. Cancele quando quiser.",
+          "year": "{{renewalPrice}} por ano. Cancele quando quiser."
+        }
+      }
+    },
+    "lifetimeNotice": {
+      "title": "O que você compra continua sendo seu",
+      "description": "O armazenamento Lifetime que você comprar não será reduzido por mudanças futuras nos planos.",
+      "singlePayment": "Pagamento único — Sem taxas recorrentes."
+    },
+    "guarantee": {
+      "title": "Garantia de reembolso de 30 dias",
+      "description": "Experimente sem risco."
     }
   },
   "general": {

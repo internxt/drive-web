@@ -348,9 +348,29 @@
       "encryptedDescription": "Internxt 无法访问您的内容。"
     },
     "cta": {
-      "button": "以 {{price}} 获得 {{storage}}",
-      "renewalNoteMonthly": "首月 {{price}}，之后按 {{renewalPrice}}/月续订。可随时取消。",
-      "renewalNoteYearly": "首年 {{price}}，之后按 {{renewalPrice}}/年续订。可随时取消。"
+      "button": {
+        "lifetime": "获取 Lifetime 存储空间",
+        "subscription": "订阅私人云存储"
+      },
+      "billingDisclosure": {
+        "withIntroPrice": {
+          "month": "首月 {{price}}，之后每月 {{renewalPrice}}。可随时取消。",
+          "year": "首年 {{price}}，之后每年 {{renewalPrice}}。可随时取消。"
+        },
+        "withoutIntroPrice": {
+          "month": "每月 {{renewalPrice}}。可随时取消。",
+          "year": "每年 {{renewalPrice}}。可随时取消。"
+        }
+      }
+    },
+    "lifetimeNotice": {
+      "title": "购买即永久属于您",
+      "description": "您购买的 Lifetime 存储空间不会因未来的套餐调整而减少。",
+      "singlePayment": "一次性付款 — 无需定期续费。"
+    },
+    "guarantee": {
+      "title": "30天退款保证",
+      "description": "放心试用，零风险。"
     }
   },
   "general": {

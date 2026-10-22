@@ -37,12 +37,13 @@ export const UrgentCheckoutPaymentSection = ({
   isPaymentProcessing,
 }: UrgentCheckoutPaymentSectionProps): JSX.Element => {
   const { translate } = useTranslationContext();
-  const { storage, currencySymbol, discountedAmount, normalAmount, interval, isRecurring } = planSummary;
+  const { currencySymbol, discountedAmount, normalAmount, interval, isRecurring, discountPercent } = planSummary;
 
   const priceLabel = `${currencySymbol}${discountedAmount}`;
   const renewalPriceLabel = `${currencySymbol}${normalAmount}`;
-  const renewalNoteKey =
-    interval === 'year' ? 'urgentCheckout.cta.renewalNoteYearly' : 'urgentCheckout.cta.renewalNoteMonthly';
+  const introPriceKey = discountPercent ? 'withIntroPrice' : 'withoutIntroPrice';
+  const billingDisclosureKey = `urgentCheckout.cta.billingDisclosure.${introPriceKey}.${interval}`;
+  const buttonKey = isRecurring ? 'urgentCheckout.cta.button.subscription' : 'urgentCheckout.cta.button.lifetime';
 
   return (
     <div className="flex flex-col gap-4">
@@ -62,20 +63,21 @@ export const UrgentCheckoutPaymentSection = ({
         className="w-full rounded-xl bg-primary px-6 py-4 text-lg font-semibold text-white transition-colors
           duration-150 hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {isPaymentProcessing
-          ? translate('checkout.processing')
-          : translate('urgentCheckout.cta.button', { storage, price: priceLabel })}
+        {isPaymentProcessing ? translate('checkout.processing') : translate(buttonKey)}
       </button>
 
       {isRecurring && (
         <p className="text-center text-sm text-[#7D8CA3]">
-          {translate(renewalNoteKey, { price: priceLabel, renewalPrice: renewalPriceLabel })}
+          {translate(billingDisclosureKey, { price: priceLabel, renewalPrice: renewalPriceLabel })}
         </p>
       )}
 
-      <div className="flex flex-row items-center justify-center gap-2">
-        <ShieldCheckIcon size={20} weight="fill" className="text-[#4D9BFF]" />
-        <p className="text-sm font-medium text-white">{translate('featuresBanner.guarantee')}</p>
+      <div className="flex flex-row items-center gap-3 rounded-xl border border-[#2A5BA8] bg-[#0E1E38] p-4">
+        <ShieldCheckIcon size={32} weight="fill" className="shrink-0 text-[#4D9BFF]" />
+        <div className="flex flex-col">
+          <p className="text-lg font-semibold text-white">{translate('urgentCheckout.guarantee.title')}</p>
+          <p className="text-sm text-[#A7B4C8]">{translate('urgentCheckout.guarantee.description')}</p>
+        </div>
       </div>
     </div>
   );
