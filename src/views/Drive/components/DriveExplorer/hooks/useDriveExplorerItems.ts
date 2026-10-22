@@ -9,7 +9,7 @@ import { useFavoritesPagination } from 'views/Favorites/hooks';
 import { useTrashPagination } from 'views/Trash/hooks/useTrashPagination';
 import { usePaginationState } from 'views/Drive/hooks/usePaginationState';
 
-type GetTrashPaginated = Parameters<typeof useTrashPagination>[0]['getTrashPaginated'];
+type GetTrashPaginated = NonNullable<Parameters<typeof useTrashPagination>[0]['getTrashPaginated']>;
 
 interface UseDriveExplorerItemsProps {
   isTrash: boolean;
@@ -70,7 +70,7 @@ export const useDriveExplorerItems = ({
     } else if (isFavorites) {
       fetchFavorites();
     } else {
-      dispatch(fetchPaginatedFolderContentThunk(currentFolderId));
+      void dispatch(fetchPaginatedFolderContentThunk(currentFolderId));
     }
   };
 
