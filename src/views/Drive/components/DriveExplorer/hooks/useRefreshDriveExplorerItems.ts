@@ -13,7 +13,7 @@ export const useRefreshDriveExplorerItems = (fetchFolderContent?: () => void) =>
     if (fetchFolderContent) {
       fetchFolderContent();
     } else {
-      dispatch(fetchSortedFolderContentThunk(currentFolderId));
+      void dispatch(fetchSortedFolderContentThunk(currentFolderId));
     }
   }, [dispatch, currentFolderId, fetchFolderContent]);
 

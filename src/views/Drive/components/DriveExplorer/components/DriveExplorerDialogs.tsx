@@ -31,23 +31,10 @@ interface DriveExplorerDialogsProps {
   moveItemsToTrashOnStopSharing: (items: DriveItemData[]) => Promise<void>;
 }
 
-const DriveExplorerDialogs = ({
-  isTrash,
-  items,
-  editNameItem,
-  isStopSharingConfirmationOpen,
-  onFolderCreated,
-  onTrashCleared,
-  refreshItems,
-  refreshItemsAfterChange,
-  onEditNameClose,
-  onStopSharingConfirmationClose,
-  moveItemsToTrashOnStopSharing,
-}: DriveExplorerDialogsProps) => {
+const DriveExplorerDialogs = (props: DriveExplorerDialogsProps) => {
   const currentFolderId = useAppSelector(storageSelectors.currentFolderId);
   const selectedItems = useAppSelector((state: RootState) => state.storage.selectedItems);
-  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
-  const workspaceId = selectedWorkspace?.workspaceUser.workspaceId;
+  const workspaceId = useAppSelector(workspacesSelectors.getSelectedWorkspace)?.workspaceUser.workspaceId;
 
   const onDetailsButtonClicked = useCallback(
     (item: DriveItemData | AdvancedSharedItem) => {
@@ -63,27 +50,27 @@ const DriveExplorerDialogs = ({
   return (
     <>
       <DeleteItemsDialog />
-      <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
-      <ShareDialogWrapper isDriveItem onShareItem={refreshItemsAfterChange} />
+      <CreateFolderDialog onFolderCreated={props.onFolderCreated} currentFolderId={currentFolderId} />
+      <ShareDialogWrapper isDriveItem onShareItem={props.refreshItemsAfterChange} />
       <NameCollisionContainer />
-      <MoveItemsDialog items={[...items]} onItemsMoved={refreshItems} isTrash={isTrash} />
-      <ClearTrashDialog onItemsDeleted={onTrashCleared} />
+      <MoveItemsDialog items={[...props.items]} onItemsMoved={props.refreshItems} isTrash={props.isTrash} />
+      <ClearTrashDialog onItemsDeleted={props.onTrashCleared} />
       <UploadItemsFailsDialog />
-      <ItemDetailsDialog onDetailsButtonClicked={onDetailsButtonClicked} isTrash={isTrash} />
-      {editNameItem && (
+      <ItemDetailsDialog onDetailsButtonClicked={onDetailsButtonClicked} isTrash={props.isTrash} />
+      {props.editNameItem && (
         <EditItemNameDialog
-          item={editNameItem}
+          item={props.editNameItem}
           isOpen={true}
-          onSuccess={refreshItemsAfterChange}
-          onClose={onEditNameClose}
+          onSuccess={props.refreshItemsAfterChange}
+          onClose={props.onEditNameClose}
         />
       )}
-      {!isTrash && isStopSharingConfirmationOpen && (
+      {!props.isTrash && props.isStopSharingConfirmationOpen && (
         <StopSharingAndMoveToTrashDialogWrapper
           selectedItems={selectedItems}
-          showStopSharingConfirmation={isStopSharingConfirmationOpen}
-          onClose={onStopSharingConfirmationClose}
-          moveItemsToTrash={moveItemsToTrashOnStopSharing}
+          showStopSharingConfirmation={props.isStopSharingConfirmationOpen}
+          onClose={props.onStopSharingConfirmationClose}
+          moveItemsToTrash={props.moveItemsToTrashOnStopSharing}
         />
       )}
     </>
