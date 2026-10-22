@@ -6,7 +6,7 @@ import errorService from 'services/error.service';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { storageActions } from '..';
 import { StorageState } from '../storage.model';
-import { getDriveItemData } from 'testUtils/fixtures/drive.fixtures';
+import { getDriveItemData, getDriveThumbnail, getThumbnailDto } from 'testUtils/fixtures/drive.fixtures';
 
 vi.mock('../../../../core/factory/sdk', () => ({
   SdkFactory: {
@@ -26,6 +26,8 @@ vi.mock('..', () => ({
     setHasMoreDriveFiles: vi.fn(),
     setIsLoadingFolder: vi.fn(),
     setItems: vi.fn(),
+    setDriveFoldersCursor: vi.fn(),
+    setDriveFilesCursor: vi.fn(),
   },
 }));
 
@@ -41,20 +43,59 @@ describe('Thunk of fetch sorted folder content', () => {
   const createMockStorageClient = () => ({
     getFolderFoldersByUuid: vi.fn(),
     getFolderFilesByUuid: vi.fn(),
+    getFolderFoldersByUuidWithCursor: vi.fn(),
+    getFolderFilesByUuidWithCursor: vi.fn(),
   });
+
+  const resolveCursorPages = (
+    mockStorageClient: ReturnType<typeof createMockStorageClient>,
+    {
+      folders = [] as object[],
+      files = [] as object[],
+      foldersCursor = null as string | null,
+      filesCursor = null as string | null,
+    } = {},
+  ) => {
+    mockStorageClient.getFolderFoldersByUuidWithCursor.mockReturnValue([
+      Promise.resolve({ folders, nextCursor: foldersCursor }),
+    ]);
+    mockStorageClient.getFolderFilesByUuidWithCursor.mockReturnValue([
+      Promise.resolve({ files, nextCursor: filesCursor }),
+    ]);
+  };
 
   const createMockWorkspaceClient = () => ({
     getFolders: vi.fn(),
     getFiles: vi.fn(),
   });
 
+  const arrangeDrive = (selectedWorkspace: { workspace: { id: string } } | null) => {
+    const mockStorageClient = createMockStorageClient();
+    const mockWorkspaceClient = createMockWorkspaceClient();
+    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
+      createNewStorageClient: () => mockStorageClient,
+      createWorkspacesClient: () => mockWorkspaceClient,
+    });
+    (workspacesSelectors.getSelectedWorkspace as Mock).mockReturnValue(selectedWorkspace);
+    return { mockStorageClient, mockWorkspaceClient };
+  };
+
+  const arrangePersonalDrive = () => arrangeDrive(null);
+
+  const arrangeWorkspaceDrive = ({ folders = [] as object[] } = {}) => {
+    const { mockWorkspaceClient } = arrangeDrive({ workspace: { id: mockWorkspaceId } });
+    mockWorkspaceClient.getFolders.mockReturnValue([Promise.resolve({ result: folders })]);
+    mockWorkspaceClient.getFiles.mockReturnValue([Promise.resolve({ result: [] })]);
+    return { mockWorkspaceClient };
+  };
+
   const createMockState = (overrides?: Partial<StorageState>): { storage: StorageState; [key: string]: unknown } => ({
     storage: {
       levels: {},
       hasMoreDriveFolders: {} as any,
       hasMoreDriveFiles: {} as any,
-      driveItemsSort: 'name',
-      driveItemsOrder: 'asc',
+      driveItemsSort: 'plainName',
+      driveItemsOrder: 'ASC',
       loadingFolders: {} as any,
       ...overrides,
     } as StorageState,
@@ -69,7 +110,7 @@ describe('Thunk of fetch sorted folder content', () => {
     const mockError = new Error('Network error');
 
     const mockStorageClient = createMockStorageClient();
-    mockStorageClient.getFolderFoldersByUuid.mockRejectedValue(mockError);
+    mockStorageClient.getFolderFoldersByUuidWithCursor.mockReturnValue([Promise.reject(mockError)]);
 
     const mockWorkspaceClient = createMockWorkspaceClient();
 
@@ -91,15 +132,25 @@ describe('Thunk of fetch sorted folder content', () => {
     }
 
     expect(reportErrorSpy).toHaveBeenCalledWith(mockError);
-    expect(dispatch).toHaveBeenCalledWith(storageActions.setIsLoadingFolder({ folderId: mockFolderId, value: false }));
+  });
+
+  test('When files come with camelCase thumbnails, then the stored files have snake_case thumbnails', async () => {
+    const { mockStorageClient } = arrangePersonalDrive();
+    resolveCursorPages(mockStorageClient, { files: [{ uuid: 'file-uuid-b', thumbnails: [getThumbnailDto()] }] });
+
+    await fetchSortedFolderContentThunk(mockFolderId)(dispatch, () => createMockState() as RootState, {});
+
+    expect(storageActions.setItems).toHaveBeenCalledWith({
+      folderId: mockFolderId,
+      items: [expect.objectContaining({ uuid: 'file-uuid-b', thumbnails: [getDriveThumbnail()] })],
+    });
   });
 
   test('When fetching folder content in a personal drive, then folders and files are combined and dispatched together', async () => {
     const rawFolder = { uuid: 'folder-uuid-a', plainName: 'Documents', id: 1 };
     const rawFile = { uuid: 'file-uuid-b', plainName: 'report.pdf', id: 2 };
     const mockStorageClient = createMockStorageClient();
-    mockStorageClient.getFolderFoldersByUuid.mockResolvedValue([{ folders: [rawFolder] }]);
-    mockStorageClient.getFolderFilesByUuid.mockResolvedValue([{ files: [rawFile] }]);
+    resolveCursorPages(mockStorageClient, { folders: [rawFolder], files: [rawFile] });
     const mockWorkspaceClient = createMockWorkspaceClient();
 
     (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
@@ -112,21 +163,66 @@ describe('Thunk of fetch sorted folder content', () => {
 
     await fetchSortedFolderContentThunk(mockFolderId)(dispatch, getState as () => RootState, {});
 
-    expect(dispatch).toHaveBeenCalledWith(
-      storageActions.setItems({
+    expect(storageActions.setItems).toHaveBeenCalledWith({
+      folderId: mockFolderId,
+      items: [
+        expect.objectContaining({ uuid: 'folder-uuid-a', isFolder: true, name: 'Documents' }),
+        expect.objectContaining({ uuid: 'file-uuid-b', isFolder: false, name: 'report.pdf' }),
+      ],
+    });
+  });
+
+  describe('Refresh of a personal folder by name', () => {
+    let mockStorageClient: ReturnType<typeof createMockStorageClient>;
+
+    beforeEach(async () => {
+      ({ mockStorageClient } = arrangePersonalDrive());
+      resolveCursorPages(mockStorageClient, { foldersCursor: 'folders-next', filesCursor: 'files-next' });
+
+      await fetchSortedFolderContentThunk(mockFolderId)(dispatch, () => createMockState() as RootState, {});
+    });
+
+    test('When a personal folder is refreshed by name, then the first folders page is requested with sharings and favorites', () => {
+      expect(mockStorageClient.getFolderFoldersByUuidWithCursor).toHaveBeenCalledWith(mockFolderId, {
+        order: 'ASC',
+        limit: 50,
+        withSharings: true,
+        withFavorites: true,
+      });
+    });
+
+    test('When a personal folder is refreshed by name, then the first files page is requested with sharings, favorites and thumbnails', () => {
+      expect(mockStorageClient.getFolderFilesByUuidWithCursor).toHaveBeenCalledWith(mockFolderId, {
+        order: 'ASC',
+        limit: 50,
+        withSharings: true,
+        withFavorites: true,
+        withThumbnails: true,
+      });
+    });
+
+    test('When a personal folder is refreshed by name, then the next cursors of both pages are stored', () => {
+      expect(storageActions.setDriveFoldersCursor).toHaveBeenCalledWith({
         folderId: mockFolderId,
-        items: expect.arrayContaining([
-          expect.objectContaining({ uuid: 'folder-uuid-a', isFolder: true, name: 'Documents' }),
-          expect.objectContaining({ uuid: 'file-uuid-b', isFolder: false, name: 'report.pdf' }),
-        ]),
-      }),
-    );
+        cursor: 'folders-next',
+      });
+      expect(storageActions.setDriveFilesCursor).toHaveBeenCalledWith({ folderId: mockFolderId, cursor: 'files-next' });
+    });
+
+    test('When the refreshed pages have a next cursor, then more folders and files are marked as available', () => {
+      expect(storageActions.setHasMoreDriveFolders).toHaveBeenLastCalledWith({ folderId: mockFolderId, status: true });
+      expect(storageActions.setHasMoreDriveFiles).toHaveBeenLastCalledWith({ folderId: mockFolderId, status: true });
+    });
+
+    test('When a personal folder is refreshed by name, then the old offset listing is not requested', () => {
+      expect(mockStorageClient.getFolderFoldersByUuid).not.toHaveBeenCalled();
+      expect(mockStorageClient.getFolderFilesByUuid).not.toHaveBeenCalled();
+    });
   });
 
   test('When fetching folder content, then loading state is activated at start and deactivated in finally', async () => {
     const mockStorageClient = createMockStorageClient();
-    mockStorageClient.getFolderFoldersByUuid.mockResolvedValue([{ folders: [] }]);
-    mockStorageClient.getFolderFilesByUuid.mockResolvedValue([{ files: [] }]);
+    resolveCursorPages(mockStorageClient);
     const mockWorkspaceClient = createMockWorkspaceClient();
 
     (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
@@ -146,8 +242,7 @@ describe('Thunk of fetch sorted folder content', () => {
 
   test('When starting a fetch, then folder and file pagination flags are reset to available', async () => {
     const mockStorageClient = createMockStorageClient();
-    mockStorageClient.getFolderFoldersByUuid.mockResolvedValue([{ folders: [] }]);
-    mockStorageClient.getFolderFilesByUuid.mockResolvedValue([{ files: [] }]);
+    resolveCursorPages(mockStorageClient);
     const mockWorkspaceClient = createMockWorkspaceClient();
 
     (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
@@ -167,17 +262,8 @@ describe('Thunk of fetch sorted folder content', () => {
     expect(dispatchCalls).toContainEqual(storageActions.setHasMoreDriveFiles({ folderId: mockFolderId, status: true }));
   });
 
-  test('When sort field is "size", then folders are sorted by name in ascending order instead', async () => {
-    const mockStorageClient = createMockStorageClient();
-    mockStorageClient.getFolderFoldersByUuid.mockResolvedValue([{ folders: [] }]);
-    mockStorageClient.getFolderFilesByUuid.mockResolvedValue([{ files: [] }]);
-    const mockWorkspaceClient = createMockWorkspaceClient();
-
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createNewStorageClient: () => mockStorageClient,
-      createWorkspacesClient: () => mockWorkspaceClient,
-    });
-    (workspacesSelectors.getSelectedWorkspace as Mock).mockReturnValue(null);
+  test('When a workspace folder is sorted by size, then its folders are sorted by name in ascending order instead', async () => {
+    const { mockWorkspaceClient } = arrangeWorkspaceDrive();
 
     const getState = () =>
       createMockState({
@@ -187,7 +273,7 @@ describe('Thunk of fetch sorted folder content', () => {
 
     await fetchSortedFolderContentThunk(mockFolderId)(dispatch, getState as () => RootState, {});
 
-    expect(mockStorageClient.getFolderFoldersByUuid).toHaveBeenCalledWith(mockFolderId, 0, 50, 'name', 'ASC');
+    expect(mockWorkspaceClient.getFolders).toHaveBeenCalledWith(mockWorkspaceId, mockFolderId, 0, 50, 'name', 'ASC');
   });
 
   test('When a workspace is active, then workspace clients are used for both folders and files', async () => {
@@ -210,10 +296,19 @@ describe('Thunk of fetch sorted folder content', () => {
 
     await fetchSortedFolderContentThunk(mockFolderId)(dispatch, getState as () => RootState, {});
 
-    expect(mockWorkspaceClient.getFolders).toHaveBeenCalledWith(mockWorkspaceId, mockFolderId, 0, 50, 'name', 'asc');
-    expect(mockWorkspaceClient.getFiles).toHaveBeenCalledWith(mockWorkspaceId, mockFolderId, 0, 50, 'name', 'asc');
+    expect(mockWorkspaceClient.getFolders).toHaveBeenCalledWith(
+      mockWorkspaceId,
+      mockFolderId,
+      0,
+      50,
+      'plainName',
+      'ASC',
+    );
+    expect(mockWorkspaceClient.getFiles).toHaveBeenCalledWith(mockWorkspaceId, mockFolderId, 0, 50, 'plainName', 'ASC');
     expect(mockStorageClient.getFolderFoldersByUuid).not.toHaveBeenCalled();
     expect(mockStorageClient.getFolderFilesByUuid).not.toHaveBeenCalled();
+    expect(mockStorageClient.getFolderFoldersByUuidWithCursor).not.toHaveBeenCalled();
+    expect(mockStorageClient.getFolderFilesByUuidWithCursor).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith(
       storageActions.setItems({
         folderId: mockFolderId,
@@ -225,41 +320,44 @@ describe('Thunk of fetch sorted folder content', () => {
     );
   });
 
-  test('When fewer than 50 folders are returned, then the folder pagination is marked as complete', async () => {
+  test('When fewer than 50 folders are returned in a workspace, then the folder pagination is marked as complete', async () => {
     const fewFolders = Array.from({ length: 5 }, (_, i) => ({
       uuid: `folder-uuid-${i}`,
       plainName: `Folder ${i}`,
       id: i,
     }));
-    const mockStorageClient = createMockStorageClient();
-    mockStorageClient.getFolderFoldersByUuid.mockResolvedValue([{ folders: fewFolders }]);
-    mockStorageClient.getFolderFilesByUuid.mockResolvedValue([{ files: [] }]);
-    const mockWorkspaceClient = createMockWorkspaceClient();
+    arrangeWorkspaceDrive({ folders: fewFolders });
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createNewStorageClient: () => mockStorageClient,
-      createWorkspacesClient: () => mockWorkspaceClient,
-    });
-    (workspacesSelectors.getSelectedWorkspace as Mock).mockReturnValue(null);
-
-    const getState = () => createMockState();
+    const getState = () => createMockState({ driveItemsSort: 'updatedAt' });
 
     await fetchSortedFolderContentThunk(mockFolderId)(dispatch, getState as () => RootState, {});
 
-    expect(dispatch).toHaveBeenCalledWith(
-      storageActions.setHasMoreDriveFolders({ folderId: mockFolderId, status: false }),
-    );
+    expect(storageActions.setHasMoreDriveFolders).toHaveBeenLastCalledWith({ folderId: mockFolderId, status: false });
   });
 
-  test('When fewer than 50 files are returned, then the file pagination is marked as complete', async () => {
+  test('When the sort order changes before the refresh responds, then its cursors are not stored', async () => {
+    const { mockStorageClient } = arrangePersonalDrive();
+    let state = createMockState();
+    resolveCursorPages(mockStorageClient, { filesCursor: 'files-next' });
+    mockStorageClient.getFolderFoldersByUuidWithCursor.mockImplementation(() => {
+      state = createMockState({ driveItemsOrder: 'DESC' });
+      return [Promise.resolve({ folders: [], nextCursor: 'folders-next' })];
+    });
+
+    await fetchSortedFolderContentThunk(mockFolderId)(dispatch, () => state as RootState, {});
+
+    expect(storageActions.setDriveFoldersCursor).not.toHaveBeenCalled();
+    expect(storageActions.setDriveFilesCursor).not.toHaveBeenCalled();
+  });
+
+  test('When the files page has no next cursor, then the file pagination is marked as complete', async () => {
     const fewFiles = Array.from({ length: 3 }, (_, i) => ({
       uuid: `file-uuid-${i}`,
       plainName: `file-${i}.txt`,
       id: i,
     }));
     const mockStorageClient = createMockStorageClient();
-    mockStorageClient.getFolderFoldersByUuid.mockResolvedValue([{ folders: [] }]);
-    mockStorageClient.getFolderFilesByUuid.mockResolvedValue([{ files: fewFiles }]);
+    resolveCursorPages(mockStorageClient, { files: fewFiles });
     const mockWorkspaceClient = createMockWorkspaceClient();
 
     (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
@@ -272,15 +370,13 @@ describe('Thunk of fetch sorted folder content', () => {
 
     await fetchSortedFolderContentThunk(mockFolderId)(dispatch, getState as () => RootState, {});
 
-    expect(dispatch).toHaveBeenCalledWith(
-      storageActions.setHasMoreDriveFiles({ folderId: mockFolderId, status: false }),
-    );
+    expect(storageActions.setHasMoreDriveFiles).toHaveBeenLastCalledWith({ folderId: mockFolderId, status: false });
   });
 
   test('When the API throws, then loading is still deactivated in the finally block', async () => {
     const mockError = new Error('API failure');
     const mockStorageClient = createMockStorageClient();
-    mockStorageClient.getFolderFoldersByUuid.mockRejectedValue(mockError);
+    mockStorageClient.getFolderFoldersByUuidWithCursor.mockReturnValue([Promise.reject(mockError)]);
     const mockWorkspaceClient = createMockWorkspaceClient();
 
     (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
@@ -298,7 +394,7 @@ describe('Thunk of fetch sorted folder content', () => {
       // no-op
     }
 
-    expect(dispatch).toHaveBeenCalledWith(storageActions.setIsLoadingFolder({ folderId: mockFolderId, value: false }));
+    expect(storageActions.setIsLoadingFolder).toHaveBeenLastCalledWith({ folderId: mockFolderId, value: false });
   });
 
   test('When applying the folder cache enriches items, then the enriched list is what gets dispatched', async () => {
@@ -313,8 +409,7 @@ describe('Thunk of fetch sorted folder content', () => {
 
     const rawFolder = { uuid: 'enriched-folder', plainName: 'Important', id: 7 };
     const mockStorageClient = createMockStorageClient();
-    mockStorageClient.getFolderFoldersByUuid.mockResolvedValue([{ folders: [rawFolder] }]);
-    mockStorageClient.getFolderFilesByUuid.mockResolvedValue([{ files: [] }]);
+    resolveCursorPages(mockStorageClient, { folders: [rawFolder] });
     const mockWorkspaceClient = createMockWorkspaceClient();
 
     (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
