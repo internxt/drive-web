@@ -8,6 +8,7 @@ const BRIDGE_URL = process.env.REACT_APP_STORJ_BRIDGE;
 const SHARDS_URL = 'https://e2e-shards.internxt.test';
 
 const FOLDER_CONTENT_UUID_PATTERN = /\/folders\/content\/([^/?]+)/;
+const CURSOR_LISTING_PATTERN = /\/folders\/v2\/content\/([^/?]+)\/(folders|files)/;
 const FILE_META_UUID_PATTERN = /\/files\/([^/]+)\/meta/;
 const BRIDGE_FILE_INFO_ID_PATTERN = /\/files\/([^/]+)\/info/;
 const FOLDER_NAVIGATION_UUID_PATTERN = /\/folders\/([^/?]+)\/(meta|ancestors)/;
@@ -127,6 +128,24 @@ const buildThumbnail = (id: number, fileId: number, entry: ThumbnailEntryRequest
   encrypt_version: entry.encryptVersion,
 });
 type StoredThumbnail = ReturnType<typeof buildThumbnail>;
+
+const toCamelCaseThumbnail = ({
+  file_id,
+  max_width,
+  max_height,
+  bucket_id,
+  bucket_file,
+  encrypt_version,
+  ...thumbnail
+}: StoredThumbnail) => ({
+  ...thumbnail,
+  fileId: file_id,
+  maxWidth: max_width,
+  maxHeight: max_height,
+  bucketId: bucket_id,
+  bucketFile: bucket_file,
+  encryptVersion: encrypt_version,
+});
 
 const buildFile = (
   id: number,
@@ -411,6 +430,23 @@ const mockFolderContentRoutes = async (page: Page, drive: InMemoryDrive) => {
   );
 };
 
+const mockCursorFolderContentRoute = (page: Page, drive: InMemoryDrive) =>
+  mockRouteForMethod(page, `${BASE_API_URL}/folders/v2/content/**`, HTTP_METHOD.get, (route, request) => {
+    const url = new URL(request.url());
+    const [, folderUuid, itemType] = CURSOR_LISTING_PATTERN.exec(url.pathname) ?? [];
+    const isFilesListing = itemType === 'files';
+    const items = isFilesListing ? drive.filesIn(folderUuid) : drive.foldersIn(folderUuid);
+    const start = Number(url.searchParams.get('cursor') ?? 0);
+    const end = start + Number(url.searchParams.get('limit'));
+    const nextCursor = end < items.length ? String(end) : null;
+    const pageItems = items.slice(start, end);
+    const listedItems = isFilesListing
+      ? (pageItems as StoredFile[]).map((file) => ({ ...file, thumbnails: file.thumbnails.map(toCamelCaseThumbnail) }))
+      : pageItems;
+
+    return route.fulfill({ json: { [itemType]: listedItems, nextCursor } });
+  });
+
 const mockFolderNavigationRoutes = async (page: Page, drive: InMemoryDrive) => {
   await mockRouteForMethod(page, `${BASE_API_URL}/folders/*/meta`, HTTP_METHOD.get, (route, request) =>
     fulfillJsonIfFound(route, drive.findFolder(firstCapture(FOLDER_NAVIGATION_UUID_PATTERN, request.url()))),
@@ -539,6 +575,7 @@ export const mockDriveRoutes = async (page: Page, options: MockedDriveOptions = 
   await mockAppBootstrapCalls(page, options.isVersioningEnabled ?? false);
   await mockAuthRoutes(page);
   await mockFolderContentRoutes(page, drive);
+  await mockCursorFolderContentRoute(page, drive);
   await mockFolderNavigationRoutes(page, drive);
   await mockFileEntryRoutes(page, drive, requests);
   await mockCreateFolderRoute(page, drive, requests);
