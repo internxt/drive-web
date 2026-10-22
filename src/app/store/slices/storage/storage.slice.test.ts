@@ -2,6 +2,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { DriveItemData } from 'app/drive/types';
 import storageReducer, { storageActions } from '.';
 import databaseService, { DatabaseCollection } from '../../../database/services/database.service';
+import { StorageState } from './storage.model';
 
 vi.mock('./storage.thunks', () => ({ default: {}, storageExtraReducers: () => undefined }));
 
@@ -278,6 +279,55 @@ describe('storage slice', () => {
       const nextState = storageReducer(state, storageActions.popItems({ updateRecents: true, items: [toDelete] }));
 
       expect(nextState.favorites).toEqual([toKeep]);
+    });
+  });
+
+  describe('Folder content cursors', () => {
+    const setCursors = (state: StorageState, folderId: string, cursor: string | null) => {
+      const withFoldersCursor = storageReducer(state, storageActions.setDriveFoldersCursor({ folderId, cursor }));
+      return storageReducer(withFoldersCursor, storageActions.setDriveFilesCursor({ folderId, cursor }));
+    };
+
+    test('When the next cursors of a folder are set, then only that folder cursors change and the rest of the state is kept', () => {
+      const initialState = setCursors(buildInitialState(), 'folder-b', 'cursor-b');
+
+      const nextState = setCursors(initialState, 'folder-a', 'cursor-a');
+
+      expect(nextState).toEqual({
+        ...initialState,
+        driveFoldersCursor: { 'folder-a': 'cursor-a', 'folder-b': 'cursor-b' },
+        driveFilesCursor: { 'folder-a': 'cursor-a', 'folder-b': 'cursor-b' },
+      });
+    });
+
+    test('When the user opens a folder again, then its stored cursors are cleared and other folders keep theirs', () => {
+      const initialState = setCursors(setCursors(buildInitialState(), 'folder-a', 'cursor-a'), 'folder-b', null);
+
+      const nextState = storageReducer(initialState, storageActions.resetLevelsFoldersLength({ folderId: 'folder-a' }));
+
+      expect(nextState.driveFoldersCursor).toEqual({ 'folder-b': null });
+      expect(nextState.driveFilesCursor).toEqual({ 'folder-b': null });
+    });
+
+    test('When the sort order changes, then the stored cursors of every folder are cleared', () => {
+      const initialState = setCursors(setCursors(buildInitialState(), 'folder-a', 'cursor-a'), 'folder-b', 'cursor-b');
+
+      const nextState = storageReducer(initialState, storageActions.setDriveItemsOrder('DESC'));
+
+      expect(nextState).toEqual({
+        ...initialState,
+        driveItemsOrder: 'DESC',
+        driveFoldersCursor: {},
+        driveFilesCursor: {},
+      });
+    });
+
+    test('When the same sort order is set again, then the stored cursors are kept', () => {
+      const initialState = setCursors(buildInitialState(), 'folder-a', 'cursor-a');
+
+      const nextState = storageReducer(initialState, storageActions.setDriveItemsOrder('ASC'));
+
+      expect(nextState).toEqual(initialState);
     });
   });
 });
