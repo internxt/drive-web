@@ -187,6 +187,7 @@ export async function trackPaymentConversion({ id: buyerId, email: buyerEmail }:
       'VIPOFFER',
       'VAOFFER',
       'VEOFFER',
+      'AFFIOFFER'
     ];
     const isImpactCoupon = couponCode && IMPACT_COUPON_WHITELIST.includes(couponCode.toUpperCase());
 
