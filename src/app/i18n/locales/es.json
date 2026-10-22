@@ -1261,7 +1261,8 @@
       "processing": "Procesando {{pending}} de {{finished}}",
       "failedToUpload": "Error al subir",
       "failedToDownload": "Error al descargar",
-      "notAllowed": "No permitido"
+      "notAllowed": "No permitido",
+      "retryAll": "Reintentar todo"
     },
     "waiting": "Esperando",
     "paused": "Pausado",

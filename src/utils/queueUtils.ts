@@ -1,5 +1,14 @@
+import { QueueObject } from 'async';
+
 export class QueueUtilsService {
   public static readonly instance: QueueUtilsService = new QueueUtilsService();
+
+  public readonly adjustConcurrency = <T>(targetQueue: QueueObject<T>, maxConcurrency: number): void => {
+    const newConcurrency = this.getConcurrencyUsingPerformance(targetQueue.concurrency, maxConcurrency);
+    if (targetQueue.concurrency !== newConcurrency) {
+      targetQueue.concurrency = newConcurrency;
+    }
+  };
 
   public readonly getConcurrencyUsingPerformance = (currentConcurrency: number, maxConcurrency: number): number => {
     let newConcurrency = currentConcurrency;
