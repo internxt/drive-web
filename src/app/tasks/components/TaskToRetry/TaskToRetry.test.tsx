@@ -231,7 +231,7 @@ describe('TaskToRetry', () => {
     await vi.waitFor(() => expect(mockUploadRetryItem).toHaveBeenCalledTimes(1));
   });
 
-  test("when retry all is clicked, then every eligible file's status becomes Retrying immediately, regardless of the concurrency limit", () => {
+  test('when retry all is clicked, then every eligible file becomes Retrying immediately, regardless of the concurrency limit', () => {
     const totalFiles = RETRY_ALL_CONCURRENCY + 2;
     const retryableFiles = Array.from({ length: totalFiles }, (_, index) => createUploadTaskWithId(`upload-${index}`));
 
