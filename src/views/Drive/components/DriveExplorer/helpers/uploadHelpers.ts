@@ -1,90 +1,97 @@
-import { ChangeEvent } from 'react';
+import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
+import { t } from 'i18next';
 import { AppDispatch } from 'app/store';
 import { uiActions } from 'app/store/slices/ui';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
+import { CollisionGroup } from 'app/store/slices/storage/storage.model';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
-import { handleRepeatedUploadingFiles } from 'app/store/slices/storage/storage.thunks/renameItemsThunk';
 import {
-  transformInputFilesToJSON,
-  transformJsonFilesToItems,
-} from 'app/drive/services/folder.service/uploadFolderInput.service';
+  handleRepeatedUploadingFiles,
+  handleRepeatedUploadingFolders,
+} from 'app/store/slices/storage/storage.thunks/renameItemsThunk';
 import { IRoot } from 'app/store/slices/storage/types';
+import { uploadFoldersWithTracking } from 'app/drive/services/folder.service/uploadFoldersWithTracking';
+import { DriveItemData } from 'app/drive/types';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 export const UPLOAD_ITEMS_LIMIT = 3000;
 
-export const createFileUploadHandler = (
-  dispatch: AppDispatch,
-  currentFolderId: string,
-  onFileUploaded?: () => void,
-  resetFileInput?: () => void,
-) => {
-  return async (e: ChangeEvent<HTMLInputElement>) => {
-    const target = e.target;
-    const files = target.files;
+export interface UploadDestination {
+  dispatch: AppDispatch;
+  currentFolderId: string;
+  selectedWorkspace: WorkspaceData | null;
+  maxUploadFileSize: number;
+}
 
-    if (!files) return;
+interface RepeatedItemsCheck<T> {
+  repeatedItems: T[];
+  existingItems: DriveItemData[];
+  unrepeatedItems: T[];
+}
 
-    if (files.length <= UPLOAD_ITEMS_LIMIT) {
-      const { unrepeatedItems, repeatedItems, existingItems } = await handleRepeatedUploadingFiles(
-        Array.from(files),
-        currentFolderId,
-      );
+const noRepeatedItems = <T>(): RepeatedItemsCheck<T> => ({ repeatedItems: [], existingItems: [], unrepeatedItems: [] });
 
-      if (repeatedItems.length > 0) {
-        dispatch(
-          uiActions.setIsNameCollisionDialogOpen({
-            open: true,
-            info: {
-              groups: [
-                {
-                  destinationUuid: currentFolderId,
-                  duplicatedItems: repeatedItems as any,
-                  existingItems: existingItems as any,
-                  unrepeatedItems: unrepeatedItems as any,
-                },
-              ],
-              operation: 'upload',
-            },
-          }),
-        );
-      }
+const buildCollisionGroups = (destinationUuid: string, checks: RepeatedItemsCheck<unknown>[]): CollisionGroup[] =>
+  checks
+    .filter((check) => check.repeatedItems.length > 0)
+    .map(
+      (check) =>
+        ({
+          destinationUuid,
+          duplicatedItems: check.repeatedItems,
+          existingItems: check.existingItems,
+          unrepeatedItems: check.unrepeatedItems,
+        }) as CollisionGroup,
+    );
 
-      if (unrepeatedItems.length > 0) {
-        dispatch(
-          storageThunks.uploadItemsThunk({
-            files: unrepeatedItems as File[],
-            parentFolderId: currentFolderId,
-          }),
-        ).then(() => {
-          onFileUploaded?.();
-          dispatch(fetchSortedFolderContentThunk(currentFolderId));
-        });
-      }
-
-      resetFileInput?.();
-    } else {
-      dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
-    }
-  };
+const notifyUploadItemsLimitExceeded = (dispatch: AppDispatch) => {
+  dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
+  notificationsService.show({
+    text: t('drive.uploadItems.advice'),
+    type: ToastType.Warning,
+  });
 };
 
-export const createFolderUploadHandler = <T>(
-  currentFolderId: string,
-  props: T,
-  uploadItems: (props: T, rootList: IRoot[], rootFiles: File[]) => Promise<void>,
-  resetFolderInput?: () => void,
-) => {
-  return async (e: ChangeEvent<HTMLInputElement>) => {
-    const target = e.target;
-    const files = target.files;
+export const uploadItemsToFolder = async (
+  { dispatch, currentFolderId, selectedWorkspace, maxUploadFileSize }: UploadDestination,
+  rootList: IRoot[],
+  files: File[],
+): Promise<void> => {
+  if (files.length > UPLOAD_ITEMS_LIMIT) {
+    notifyUploadItemsLimitExceeded(dispatch);
+    return;
+  }
 
-    if (!files) return;
+  const [filesCheck, foldersCheck] = await Promise.all([
+    files.length > 0 ? handleRepeatedUploadingFiles(files, currentFolderId) : noRepeatedItems<File>(),
+    rootList.length > 0 ? handleRepeatedUploadingFolders(rootList, currentFolderId) : noRepeatedItems<IRoot>(),
+  ]);
 
-    const filesArray = Array.from(files);
-    const filesJson = transformInputFilesToJSON(filesArray);
-    const { rootList, rootFiles } = transformJsonFilesToItems(filesJson, currentFolderId);
+  const collisionGroups = buildCollisionGroups(currentFolderId, [filesCheck, foldersCheck]);
+  if (collisionGroups.length > 0) {
+    dispatch(
+      uiActions.setIsNameCollisionDialogOpen({ open: true, info: { groups: collisionGroups, operation: 'upload' } }),
+    );
+  }
 
-    await uploadItems(props, rootList, rootFiles);
-    resetFolderInput?.();
-  };
+  if (filesCheck.unrepeatedItems.length > 0) {
+    dispatch(
+      storageThunks.uploadItemsThunk({
+        files: filesCheck.unrepeatedItems as File[],
+        parentFolderId: currentFolderId,
+      }),
+    ).then(() => {
+      dispatch(fetchSortedFolderContentThunk(currentFolderId));
+    });
+  }
+
+  if (foldersCheck.unrepeatedItems.length > 0) {
+    await uploadFoldersWithTracking({
+      payload: (foldersCheck.unrepeatedItems as IRoot[]).map((root) => ({ root, currentFolderId })),
+      selectedWorkspace,
+      dispatch,
+      maxUploadFileSize,
+    });
+    await dispatch(fetchSortedFolderContentThunk(currentFolderId));
+  }
 };

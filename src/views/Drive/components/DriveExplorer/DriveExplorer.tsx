@@ -8,22 +8,23 @@ import {
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { usePaginationState, useTutorialState } from '../../hooks';
-import { createFileUploadHandler, createFolderUploadHandler, UPLOAD_ITEMS_LIMIT } from './helpers/uploadHelpers';
+import { uploadItemsToFolder } from './helpers/uploadHelpers';
+import { useDriveExplorerUpload } from './hooks/useDriveExplorerUpload';
 
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 
 import { transformDraggedItems } from 'services/drag-and-drop.service';
 import { AppDispatch, RootState } from 'app/store';
-import { CollisionGroup, StorageFilters } from 'app/store/slices/storage/storage.model';
+import { StorageFilters } from 'app/store/slices/storage/storage.model';
 import { DriveExplorerEmptyState, DriveExplorerGrid, DriveExplorerList, DriveTopBarActions } from './components';
+import UploadInputs from './components/UploadInputs';
 
 import { useHotkeys } from 'react-hotkeys-hook';
 import { moveItemsToTrash } from 'views/Trash/services';
 
 import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { ContextMenu } from '@internxt/ui';
-import { t } from 'i18next';
 import BannerWrapper from 'app/banners/BannerWrapper';
 import deviceService from 'services/device.service';
 import navigationService from 'services/navigation.service';
@@ -32,8 +33,6 @@ import { CreateFolderDialog } from 'views/Drive/components';
 import DeleteItemsDialog from 'views/Trash/components/DeleteItemsDialog';
 import { useTrashPagination } from 'views/Trash/hooks/useTrashPagination';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { uploadFoldersWithTracking } from 'app/drive/services/folder.service/uploadFoldersWithTracking';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { AdvancedSharedItem } from 'app/share/types';
 import { Tutorial } from 'components/Tutorial';
 import { getSignUpSteps } from 'components/signUpSteps';
@@ -41,17 +40,11 @@ import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { planSelectors } from 'app/store/slices/plan';
 import { storageActions } from 'app/store/slices/storage';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
-import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { fetchPaginatedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchFolderContentThunk';
 import { useToggleFavoriteHotkey } from 'hooks';
 import { useFavoritesPagination } from 'views/Favorites/hooks';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import { getAncestorsAndSetNamePath } from 'app/store/slices/storage/storage.thunks/goToFolderThunk';
-import {
-  handleRepeatedUploadingFiles,
-  handleRepeatedUploadingFolders,
-} from 'app/store/slices/storage/storage.thunks/renameItemsThunk';
-import { IRoot } from 'app/store/slices/storage/types';
 import { uiActions } from 'app/store/slices/ui';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { DriveItemData, FileViewMode, FolderPath } from 'app/drive/types';
@@ -127,10 +120,8 @@ interface DriveExplorerProps {
   items: DriveItemData[];
   onItemsDeleted?: () => void;
   onItemsMoved?: () => void;
-  onFileUploaded?: () => void;
   fetchFolderContent?: () => void;
   onFolderCreated?: () => void;
-  onDragAndDropEnd?: () => void;
   currentFolderId: string;
   selectedItems: DriveItemData[];
   storageFilters: StorageFilters;
@@ -171,7 +162,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     connectDropTarget,
     storageFilters,
     currentFolderId,
-    onFileUploaded,
     onItemsMoved,
     folderOnTrashLength,
     filesOnTrashLength,
@@ -191,13 +181,14 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const isFavorites = navigationService.isCurrentPath(AppView.Favorites);
   const isTrash = navigationService.isCurrentPath(AppView.Trash);
 
-  // Upload state
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const folderInputRef = useRef<HTMLInputElement>(null);
-  const [fileInputKey, setFileInputKey] = useState<number>(0);
-  const [folderInputKey, setFolderInputKey] = useState<number>(0);
-  const resetFileInput = () => setFileInputKey(Date.now());
-  const resetFolderInput = () => setFolderInputKey(Date.now());
+  const {
+    fileInputRef,
+    folderInputRef,
+    onUploadFileButtonClicked,
+    onUploadFolderButtonClicked,
+    onFileInputChanged,
+    onFolderInputChanged,
+  } = useDriveExplorerUpload(currentFolderId);
 
   // Context menu state
   const [isOpen, setIsOpen] = useState(false);
@@ -359,18 +350,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     },
     [dispatch],
   );
-
-  const onUploadFileButtonClicked = useCallback((): void => {
-    fileInputRef.current?.click();
-  }, [currentFolderId]);
-
-  const onUploadFolderButtonClicked = useCallback((): void => {
-    folderInputRef.current?.click();
-  }, [currentFolderId]);
-
-  const onUploadFileInputChanged = createFileUploadHandler(dispatch, currentFolderId, onFileUploaded, resetFileInput);
-
-  const onUploadFolderInputChanged = createFolderUploadHandler(currentFolderId, props, uploadItems, resetFolderInput);
 
   const onCreateFolderButtonClicked = useCallback((): void => {
     dispatch(uiActions.setIsCreateFolderDialogOpen(true));
@@ -668,27 +647,12 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           </div>
 
           {!isTrash && (
-            <>
-              <input
-                key={`file-${fileInputKey}`}
-                className="hidden"
-                ref={fileInputRef}
-                type="file"
-                onChange={onUploadFileInputChanged}
-                multiple={true}
-                data-test="input-file"
-              />
-              <input
-                key={`folder-${folderInputKey}`}
-                className="hidden"
-                ref={folderInputRef}
-                type="file"
-                webkitdirectory=""
-                onChange={onUploadFolderInputChanged}
-                multiple={true}
-                data-test="input-folder"
-              />
-            </>
+            <UploadInputs
+              fileInputRef={fileInputRef}
+              folderInputRef={folderInputRef}
+              onFileInputChanged={onFileInputChanged}
+              onFolderInputChanged={onFolderInputChanged}
+            />
           )}
         </div>
       </div>
@@ -706,93 +670,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   );
 };
 
-declare module 'react' {
-  interface HTMLAttributes<T> extends AriaAttributes, DOMAttributes<T> {
-    // extends React's HTMLAttributes
-    directory?: string;
-    webkitdirectory?: string;
-  }
-}
-
-const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: File[]) => {
-  const { dispatch, currentFolderId, maxUploadFileSize, onDragAndDropEnd } = props;
-
-  if (files.length <= UPLOAD_ITEMS_LIMIT) {
-    const emptyFilesResult = { repeatedItems: [], existingItems: [], unrepeatedItems: [] };
-    const emptyFoldersResult = { repeatedItems: [], existingItems: [], unrepeatedItems: [] };
-
-    const [filesResult, foldersResult] = await Promise.all([
-      files.length > 0 ? handleRepeatedUploadingFiles(Array.from(files), currentFolderId) : emptyFilesResult,
-      rootList.length > 0 ? handleRepeatedUploadingFolders(rootList, currentFolderId) : emptyFoldersResult,
-    ]);
-
-    const repeatedFiles =
-      filesResult.repeatedItems.length > 0
-        ? [
-            {
-              destinationUuid: currentFolderId,
-              duplicatedItems: filesResult.repeatedItems,
-              existingItems: filesResult.existingItems,
-              unrepeatedItems: filesResult.unrepeatedItems,
-            },
-          ]
-        : [];
-
-    const repeatedFolders =
-      foldersResult.repeatedItems.length > 0
-        ? [
-            {
-              destinationUuid: currentFolderId,
-              duplicatedItems: foldersResult.repeatedItems,
-              existingItems: foldersResult.existingItems,
-              unrepeatedItems: foldersResult.unrepeatedItems,
-            },
-          ]
-        : [];
-
-    const collisionGroups = [...repeatedFiles, ...repeatedFolders] as CollisionGroup[];
-
-    if (collisionGroups.length > 0) {
-      dispatch(
-        uiActions.setIsNameCollisionDialogOpen({ open: true, info: { groups: collisionGroups, operation: 'upload' } }),
-      );
-    }
-
-    if (filesResult.unrepeatedItems.length > 0) {
-      dispatch(
-        storageThunks.uploadItemsThunk({
-          files: filesResult.unrepeatedItems as File[],
-          parentFolderId: currentFolderId,
-        }),
-      ).then(() => {
-        dispatch(fetchSortedFolderContentThunk(currentFolderId));
-      });
-    }
-
-    if (foldersResult.unrepeatedItems.length > 0) {
-      const folderDataToUpload = (foldersResult.unrepeatedItems as IRoot[]).map((root) => ({
-        root,
-        currentFolderId,
-        options: { onSuccess: onDragAndDropEnd },
-      }));
-
-      await uploadFoldersWithTracking({
-        payload: folderDataToUpload,
-        selectedWorkspace: props.selectedWorkspace,
-        dispatch,
-        maxUploadFileSize,
-      });
-      dispatch(fetchSortedFolderContentThunk(currentFolderId));
-    }
-  } else {
-    dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
-    notificationsService.show({
-      text: t('drive.uploadItems.advice'),
-      type: ToastType.Warning,
-    });
-  }
-};
-
 const dropTargetSpec: DropTargetSpec<DriveExplorerProps> = {
   drop: (props, monitor) => {
     const droppedData: { files: File[]; items: DataTransferItemList } = monitor.getItem();
@@ -808,7 +685,8 @@ const dropTargetSpec: DropTargetSpec<DriveExplorerProps> = {
     const folderPath = namePathDestinationArray.join('/');
 
     transformDraggedItems(droppedData.items, folderPath).then(async ({ rootList, files }) => {
-      await uploadItems(props, rootList, files);
+      const { dispatch, currentFolderId, selectedWorkspace, maxUploadFileSize } = props;
+      await uploadItemsToFolder({ dispatch, currentFolderId, selectedWorkspace, maxUploadFileSize }, rootList, files);
     });
   },
 };
