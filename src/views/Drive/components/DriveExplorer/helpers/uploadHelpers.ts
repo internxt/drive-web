@@ -92,6 +92,6 @@ export const uploadItemsToFolder = async (
       dispatch,
       maxUploadFileSize,
     });
-    dispatch(fetchSortedFolderContentThunk(currentFolderId));
+    await dispatch(fetchSortedFolderContentThunk(currentFolderId));
   }
 };
