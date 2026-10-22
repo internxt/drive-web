@@ -1,45 +1,33 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useTutorialState } from '../../hooks';
 import { useDriveExplorerContextMenu } from './hooks/useDriveExplorerContextMenu';
 import { useDriveExplorerDrop } from './hooks/useDriveExplorerDrop';
+import { useEditItemName } from './hooks/useEditItemName';
 import { useDriveExplorerItems } from './hooks/useDriveExplorerItems';
 import { useDriveExplorerUpload } from './hooks/useDriveExplorerUpload';
+import { useRefreshDriveExplorerItems } from './hooks/useRefreshDriveExplorerItems';
+import { useStopSharingAndTrash } from './hooks/useStopSharingAndTrash';
 
 import { RootState } from 'app/store';
 import { DriveExplorerEmptyState, DriveExplorerGrid, DriveExplorerList, DriveTopBarActions } from './components';
 import DriveExplorerContextMenu from './components/DriveExplorerContextMenu';
+import DriveExplorerDialogs from './components/DriveExplorerDialogs';
 import UploadInputs from './components/UploadInputs';
-
-import { moveItemsToTrash } from 'views/Trash/services';
 
 import BannerWrapper from 'app/banners/BannerWrapper';
 import deviceService from 'services/device.service';
 import navigationService from 'services/navigation.service';
-import { ClearTrashDialog } from 'views/Trash/components';
-import { CreateFolderDialog } from 'views/Drive/components';
-import DeleteItemsDialog from 'views/Trash/components/DeleteItemsDialog';
-import { AdvancedSharedItem } from 'app/share/types';
 import { Tutorial } from 'components/Tutorial';
 import { getSignUpSteps } from 'components/signUpSteps';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { storageActions } from 'app/store/slices/storage';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import { useToggleFavoriteHotkey } from 'hooks';
-import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
-import { getAncestorsAndSetNamePath } from 'app/store/slices/storage/storage.thunks/goToFolderThunk';
 import { uiActions } from 'app/store/slices/ui';
-import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { DriveItemData, FileViewMode } from 'app/drive/types';
-import EditItemNameDialog from 'app/drive/components/EditItemNameDialog/EditItemNameDialog';
-import ItemDetailsDialog from 'app/drive/components/ItemDetailsDialog/ItemDetailsDialog';
-import MoveItemsDialog from 'app/drive/components/MoveItemsDialog/MoveItemsDialog';
-import NameCollisionContainer from 'app/drive/components/NameCollisionDialog/NameCollisionContainer';
-import StopSharingAndMoveToTrashDialogWrapper from 'views/Trash/components/StopSharingAndMoveToTrashDialogWrapper';
-import UploadItemsFailsDialog from 'app/drive/components/UploadItemsFailsDialog/UploadItemsFailsDialog';
 import WarningMessageWrapper from 'views/Home/components/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
-import { ShareDialogWrapper } from 'app/drive/components/ShareDialog/ShareDialogWrapper';
 import { AppView } from 'app/core/types';
 
 interface DriveExplorerProps {
@@ -74,7 +62,6 @@ const DriveExplorer = ({
   const selectedItems = useAppSelector((state: RootState) => state.storage.selectedItems);
   const storageFilters = useAppSelector((state: RootState) => state.storage.filters);
   const viewMode = useAppSelector((state: RootState) => state.storage.viewMode);
-  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
 
   const hasItems = items.length > 0;
   const hasFilters = storageFilters.text.length > 0;
@@ -107,7 +94,6 @@ const DriveExplorer = ({
   } = useDriveExplorerItems({ isTrash, isFavorites, isRecents, isLoading, getTrashPaginated });
   const tutorialState = useTutorialState();
 
-  const itemToRename = useAppSelector((state: RootState) => state.storage.itemToRename);
   const isSomeDialogOpen = useAppSelector(
     (state: RootState) =>
       state.ui.isShareDialogOpen ||
@@ -120,11 +106,10 @@ const DriveExplorer = ({
       state.ui.isItemDetailsDialogOpen ||
       state.ui.isPreferencesDialogOpen,
   );
-  const isFileViewerOpen = useAppSelector((state: RootState) => state.ui.isFileViewerOpen);
 
-  const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
-
-  const [showStopSharingConfirmation, setShowStopSharingConfirmation] = useState(false);
+  const { refreshItems, refreshItemsAfterChange } = useRefreshDriveExplorerItems(fetchFolderContent);
+  const { editNameItem, setEditNameItem, onEditNameClose } = useEditItemName();
+  const stopSharingAndTrash = useStopSharingAndTrash(refreshItemsAfterChange);
 
   const signupSteps = getSignUpSteps(
     {
@@ -145,29 +130,12 @@ const DriveExplorer = ({
   );
 
   useEffect(() => {
-    if (itemToRename) {
-      setEditNameItem(itemToRename);
-    }
-  }, [itemToRename]);
-
-  useEffect(() => {
     deviceService.redirectForMobile();
   }, []);
 
-  const onDetailsButtonClicked = useCallback(
-    (item: DriveItemData | AdvancedSharedItem) => {
-      if (item.isFolder) {
-        navigationService.pushFolder(item.uuid, selectedWorkspace?.workspaceUser.workspaceId);
-      } else {
-        navigationService.pushFile(item.uuid, selectedWorkspace?.workspaceUser.workspaceId);
-      }
-    },
-    [dispatch],
-  );
-
   const onCreateFolderButtonClicked = useCallback((): void => {
     dispatch(uiActions.setIsCreateFolderDialogOpen(true));
-  }, [currentFolderId]);
+  }, [dispatch]);
 
   const onDeletePermanentlyButtonClicked = (): void => {
     if (selectedItems.length > 0) {
@@ -178,60 +146,12 @@ const DriveExplorer = ({
     }
   };
 
-  const onCloseEditItemDialog = (newItem) => {
-    if (newItem && editNameItem) {
-      if (isFileViewerOpen) {
-        dispatch(uiActions.setCurrentEditingNameDirty(newItem.plainName ?? newItem.name));
-      } else if (itemToRename && editNameItem.isFolder) {
-        getAncestorsAndSetNamePath(newItem.uuid, dispatch, selectedWorkspace);
-      }
-    }
-    dispatch(storageActions.setItemToRename(null));
-    setEditNameItem(null);
-  };
-
   const viewModes = {
     [FileViewMode.List]: DriveExplorerList,
     [FileViewMode.Grid]: DriveExplorerGrid,
   };
 
   const ViewModeComponent = viewModes[isTrash ? FileViewMode.List : viewMode];
-
-  const resetPaginationStateAndFetchDriveFolderContent = (currentFolderId: string) => {
-    resetPaginationState();
-    dispatch(fetchSortedFolderContentThunk(currentFolderId));
-  };
-
-  const handleOnShareItem = useCallback(() => {
-    setTimeout(() => {
-      fetchFolderContent?.() ?? resetPaginationStateAndFetchDriveFolderContent(currentFolderId);
-    }, 500);
-  }, [currentFolderId, fetchFolderContent]);
-
-  const onSuccessEditingName = useCallback(() => {
-    setTimeout(() => dispatch(fetchSortedFolderContentThunk(currentFolderId)), 500);
-  }, [currentFolderId]);
-
-  const onOpenStopSharingAndMoveToTrashDialog = useCallback(() => {
-    setShowStopSharingConfirmation(true);
-  }, []);
-
-  const onCloseStopSharingAndMoveToTrashDialog = useCallback(() => {
-    setShowStopSharingConfirmation(false);
-  }, []);
-
-  const moveItemsToTrashOnStopSharing = async (items) => {
-    const itemsToTrash = items.map((selectedShareItem) => ({
-      ...selectedShareItem,
-      isFolder: selectedShareItem.isFolder,
-    }));
-
-    await moveItemsToTrash(itemsToTrash);
-
-    setTimeout(async () => {
-      dispatch(fetchSortedFolderContentThunk(currentFolderId));
-    }, 500);
-  };
 
   useToggleFavoriteHotkey({ enabled: !isTrash && !isSomeDialogOpen, selectedItems });
 
@@ -244,37 +164,19 @@ const DriveExplorer = ({
       onClick={contextMenu.closeContextMenu}
       ref={contextMenu.containerRef}
     >
-      <DeleteItemsDialog />
-      <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
-      <ShareDialogWrapper isDriveItem onShareItem={handleOnShareItem} />
-      <NameCollisionContainer />
-      <MoveItemsDialog
-        items={[...items]}
-        onItemsMoved={() => {
-          dispatch(fetchSortedFolderContentThunk(currentFolderId));
-        }}
+      <DriveExplorerDialogs
         isTrash={isTrash}
+        items={items}
+        editNameItem={editNameItem}
+        isStopSharingConfirmationOpen={stopSharingAndTrash.isStopSharingConfirmationOpen}
+        onFolderCreated={onFolderCreated}
+        onTrashCleared={onTrashCleared}
+        refreshItems={refreshItems}
+        refreshItemsAfterChange={refreshItemsAfterChange}
+        onEditNameClose={onEditNameClose}
+        onStopSharingConfirmationClose={stopSharingAndTrash.closeStopSharingConfirmation}
+        moveItemsToTrashOnStopSharing={stopSharingAndTrash.moveItemsToTrashOnStopSharing}
       />
-      <ClearTrashDialog onItemsDeleted={onTrashCleared} />
-      <UploadItemsFailsDialog />
-      <ItemDetailsDialog onDetailsButtonClicked={onDetailsButtonClicked} isTrash={isTrash} />
-      {editNameItem && (
-        <EditItemNameDialog
-          item={editNameItem}
-          isOpen={true}
-          onSuccess={onSuccessEditingName}
-          onClose={onCloseEditItemDialog}
-        />
-      )}
-
-      {!isTrash && showStopSharingConfirmation && (
-        <StopSharingAndMoveToTrashDialogWrapper
-          selectedItems={selectedItems}
-          showStopSharingConfirmation={showStopSharingConfirmation}
-          onClose={onCloseStopSharingAndMoveToTrashDialog}
-          moveItemsToTrash={moveItemsToTrashOnStopSharing}
-        />
-      )}
       <BannerWrapper />
 
       <div className="flex h-full w-full max-w-full grow">
@@ -333,8 +235,8 @@ const DriveExplorer = ({
                 isRecents={isRecents}
                 isFavorites={isFavorites}
                 onHoverListItems={contextMenu.setAreItemsHovered}
-                onOpenStopSharingAndMoveToTrashDialog={onOpenStopSharingAndMoveToTrashDialog}
-                showStopSharingConfirmation={showStopSharingConfirmation}
+                onOpenStopSharingAndMoveToTrashDialog={stopSharingAndTrash.openStopSharingConfirmation}
+                showStopSharingConfirmation={stopSharingAndTrash.isStopSharingConfirmationOpen}
                 resetPaginationState={resetPaginationState}
               />
             </div>
