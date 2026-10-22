@@ -13,6 +13,7 @@ import { IRoot } from 'app/store/slices/storage/types';
 import { uploadFoldersWithTracking } from 'app/drive/services/folder.service/uploadFoldersWithTracking';
 import { DriveItemData } from 'app/drive/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import errorService from 'services/error.service';
 
 export const UPLOAD_ITEMS_LIMIT = 3000;
 
@@ -52,7 +53,13 @@ const notifyUploadItemsLimitExceeded = (dispatch: AppDispatch) => {
   });
 };
 
-export const uploadItemsToFolder = async (
+export const notifyUploadFailed = (error: unknown) => {
+  const uploadError = errorService.castError(error);
+  errorService.reportError(uploadError);
+  notificationsService.show({ text: uploadError.message, type: ToastType.Error, requestId: uploadError.requestId });
+};
+
+const checkAndUploadItems = async (
   { dispatch, currentFolderId, selectedWorkspace, maxUploadFileSize }: UploadDestination,
   rootList: IRoot[],
   files: File[],
@@ -93,5 +100,17 @@ export const uploadItemsToFolder = async (
       maxUploadFileSize,
     });
     await dispatch(fetchSortedFolderContentThunk(currentFolderId));
+  }
+};
+
+export const uploadItemsToFolder = async (
+  destination: UploadDestination,
+  rootList: IRoot[],
+  files: File[],
+): Promise<void> => {
+  try {
+    await checkAndUploadItems(destination, rootList, files);
+  } catch (error) {
+    notifyUploadFailed(error);
   }
 };

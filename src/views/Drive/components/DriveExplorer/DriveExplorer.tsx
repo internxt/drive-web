@@ -6,24 +6,17 @@ import {
   UploadSimpleIcon,
 } from '@phosphor-icons/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { connect } from 'react-redux';
 import { usePaginationState, useTutorialState } from '../../hooks';
-import { uploadItemsToFolder } from './helpers/uploadHelpers';
+import { useDriveExplorerDrop } from './hooks/useDriveExplorerDrop';
 import { useDriveExplorerUpload } from './hooks/useDriveExplorerUpload';
 
-import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
-import { NativeTypes } from 'react-dnd-html5-backend';
-
-import { transformDraggedItems } from 'services/drag-and-drop.service';
-import { AppDispatch, RootState } from 'app/store';
-import { StorageFilters } from 'app/store/slices/storage/storage.model';
+import { RootState } from 'app/store';
 import { DriveExplorerEmptyState, DriveExplorerGrid, DriveExplorerList, DriveTopBarActions } from './components';
 import UploadInputs from './components/UploadInputs';
 
 import { useHotkeys } from 'react-hotkeys-hook';
 import { moveItemsToTrash } from 'views/Trash/services';
 
-import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { ContextMenu } from '@internxt/ui';
 import BannerWrapper from 'app/banners/BannerWrapper';
 import deviceService from 'services/device.service';
@@ -37,7 +30,6 @@ import { AdvancedSharedItem } from 'app/share/types';
 import { Tutorial } from 'components/Tutorial';
 import { getSignUpSteps } from 'components/signUpSteps';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { planSelectors } from 'app/store/slices/plan';
 import { storageActions } from 'app/store/slices/storage';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import { fetchPaginatedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchFolderContentThunk';
@@ -47,7 +39,7 @@ import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.
 import { getAncestorsAndSetNamePath } from 'app/store/slices/storage/storage.thunks/goToFolderThunk';
 import { uiActions } from 'app/store/slices/ui';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-import { DriveItemData, FileViewMode, FolderPath } from 'app/drive/types';
+import { DriveItemData, FileViewMode } from 'app/drive/types';
 import EditItemNameDialog from 'app/drive/components/EditItemNameDialog/EditItemNameDialog';
 import ItemDetailsDialog from 'app/drive/components/ItemDetailsDialog/ItemDetailsDialog';
 import MoveItemsDialog from 'app/drive/components/MoveItemsDialog/MoveItemsDialog';
@@ -58,7 +50,6 @@ import WarningMessageWrapper from 'views/Home/components/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import { ShareDialogWrapper } from 'app/drive/components/ShareDialog/ShareDialogWrapper';
-import { fileVersionsSelectors } from 'app/store/slices/fileVersions';
 import { TranslationKey } from 'app/i18n/types';
 import { AppView } from 'app/core/types';
 
@@ -118,24 +109,8 @@ interface DriveExplorerProps {
   titleClassName?: string;
   isLoading: boolean;
   items: DriveItemData[];
-  onItemsDeleted?: () => void;
-  onItemsMoved?: () => void;
   fetchFolderContent?: () => void;
   onFolderCreated?: () => void;
-  currentFolderId: string;
-  selectedItems: DriveItemData[];
-  storageFilters: StorageFilters;
-  viewMode: FileViewMode;
-  namePath: FolderPath[];
-  dispatch: AppDispatch;
-  selectedWorkspace: WorkspaceData | null;
-  maxUploadFileSize: number;
-  isOver: boolean;
-  connectDropTarget: ConnectDropTarget;
-  folderOnTrashLength: number;
-  filesOnTrashLength: number;
-  hasMoreFolders: boolean;
-  hasMoreFiles: boolean;
   getTrashPaginated?: (
     limit: number,
     offset: number | undefined,
@@ -147,30 +122,27 @@ interface DriveExplorerProps {
   ) => Promise<{ finished: boolean; itemsRetrieved: number }>;
 }
 
-const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
-  const {
-    selectedItems,
-    isLoading,
-    viewMode,
-    title,
-    titleClassName,
-    items,
-    onItemsDeleted,
-    onFolderCreated,
-    fetchFolderContent,
-    isOver,
-    connectDropTarget,
-    storageFilters,
-    currentFolderId,
-    onItemsMoved,
-    folderOnTrashLength,
-    filesOnTrashLength,
-    hasMoreFolders,
-    hasMoreFiles,
-    getTrashPaginated,
-    selectedWorkspace,
-  } = props;
+const DriveExplorer = ({
+  title,
+  titleClassName,
+  isLoading,
+  items,
+  fetchFolderContent,
+  onFolderCreated,
+  getTrashPaginated,
+}: DriveExplorerProps): JSX.Element => {
   const dispatch = useAppDispatch();
+  const currentFolderId = useAppSelector(storageSelectors.currentFolderId);
+  const selectedItems = useAppSelector((state: RootState) => state.storage.selectedItems);
+  const storageFilters = useAppSelector((state: RootState) => state.storage.filters);
+  const viewMode = useAppSelector((state: RootState) => state.storage.viewMode);
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
+  const folderOnTrashLength = useAppSelector((state: RootState) => state.storage.folderOnTrashLength);
+  const filesOnTrashLength = useAppSelector((state: RootState) => state.storage.filesOnTrashLength);
+  const hasMoreFolders = useAppSelector(
+    (state: RootState) => state.storage.hasMoreDriveFolders[currentFolderId] ?? true,
+  );
+  const hasMoreFiles = useAppSelector((state: RootState) => state.storage.hasMoreDriveFiles[currentFolderId] ?? true);
   const { translate } = useTranslationContext();
 
   const hasItems = items.length > 0;
@@ -188,7 +160,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     onUploadFolderButtonClicked,
     onFileInputChanged,
     onFolderInputChanged,
+    uploadItems,
   } = useDriveExplorerUpload(currentFolderId);
+  const { isOver, dropRef } = useDriveExplorerDrop(uploadItems);
 
   // Context menu state
   const [isOpen, setIsOpen] = useState(false);
@@ -368,8 +342,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     dispatch(storageActions.resetTrash());
     paginationState.setHasMoreItems(false);
     setHasMoreTrashFolders(false);
-    onItemsDeleted?.();
-  }, [onItemsDeleted]);
+  }, [dispatch, paginationState.setHasMoreItems, setHasMoreTrashFolders]);
 
   const onCloseEditItemDialog = (newItem) => {
     if (newItem && editNameItem) {
@@ -467,7 +440,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       onClick={() => setIsOpen(false)}
       ref={containerRef}
     >
-      <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />
+      <DeleteItemsDialog />
       <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
       <ShareDialogWrapper isDriveItem onShareItem={handleOnShareItem} />
       <NameCollisionContainer />
@@ -475,7 +448,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         items={[...items]}
         onItemsMoved={() => {
           dispatch(fetchSortedFolderContentThunk(currentFolderId));
-          onItemsMoved?.();
         }}
         isTrash={isTrash}
       />
@@ -665,71 +637,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   return (
     <Tutorial show={tutorialState.showTutorial} steps={signupSteps} currentStep={tutorialState.currentTutorialStep}>
-      {connectDropTarget(driveExplorer) || driveExplorer}
+      {dropRef(driveExplorer) || driveExplorer}
     </Tutorial>
   );
 };
 
-const dropTargetSpec: DropTargetSpec<DriveExplorerProps> = {
-  drop: (props, monitor) => {
-    const droppedData: { files: File[]; items: DataTransferItemList } = monitor.getItem();
-    const isAlreadyDropped = monitor.didDrop();
-    const namePathDestinationArray = props.namePath.map((level) => level.name);
-
-    if (isAlreadyDropped) {
-      return;
-    }
-
-    namePathDestinationArray[0] = '';
-
-    const folderPath = namePathDestinationArray.join('/');
-
-    transformDraggedItems(droppedData.items, folderPath).then(async ({ rootList, files }) => {
-      const { dispatch, currentFolderId, selectedWorkspace, maxUploadFileSize } = props;
-      await uploadItemsToFolder({ dispatch, currentFolderId, selectedWorkspace, maxUploadFileSize }, rootList, files);
-    });
-  },
-};
-
-const dropTargetCollect: DropTargetCollector<
-  { isOver: boolean; connectDropTarget: ConnectDropTarget },
-  DriveExplorerProps
-> = (connect, monitor) => {
-  const isOver = monitor.isOver({ shallow: true });
-
-  return {
-    isOver,
-    connectDropTarget: connect.dropTarget(),
-  };
-};
-
-export default connect((state: RootState) => {
-  const currentFolderId: string = storageSelectors.currentFolderId(state);
-  const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
-  const maxUploadFileSize = fileVersionsSelectors.getMaxFileSizeLimit(state);
-  const hasMoreFolders = state.storage.hasMoreDriveFolders[currentFolderId] ?? true;
-  const hasMoreFiles = state.storage.hasMoreDriveFiles[currentFolderId] ?? true;
-
-  return {
-    isAuthenticated: state.user.isAuthenticated,
-    maxUploadFileSize,
-    user: state.user.user,
-    currentFolderId,
-    selectedItems: state.storage.selectedItems,
-    storageFilters: state.storage.filters,
-    isCreateFolderDialogOpen: state.ui.isCreateFolderDialogOpen,
-    isMoveItemsDialogOpen: state.ui.isMoveItemsDialogOpen,
-    isDeleteItemsDialogOpen: state.ui.isDeleteItemsDialogOpen,
-    isClearTrashDialogOpen: state.ui.isClearTrashDialogOpen,
-    viewMode: state.storage.viewMode,
-    namePath: state.storage.namePath,
-    selectedWorkspace: selectedWorkspace,
-    planLimit: planSelectors.planLimitToShow(state),
-    planUsage: planSelectors.planUsageToShow(state),
-    folderOnTrashLength: state.storage.folderOnTrashLength,
-    filesOnTrashLength: state.storage.filesOnTrashLength,
-    hasMoreFolders,
-    hasMoreFiles,
-    roles: state.shared.roles,
-  };
-})(DropTarget([NativeTypes.FILE], dropTargetSpec, dropTargetCollect)(DriveExplorer));
+export default DriveExplorer;
