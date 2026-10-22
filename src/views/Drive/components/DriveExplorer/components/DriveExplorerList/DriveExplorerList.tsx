@@ -51,9 +51,10 @@ interface DriveExplorerListProps {
   dispatch: AppDispatch;
   onEndOfScroll(): void;
   hasMoreItems: boolean;
-  isTrash?: boolean;
+  isTrash: boolean;
+  isRecents: boolean;
+  isFavorites: boolean;
   onHoverListItems?: (areHover: boolean) => void;
-  title: JSX.Element | string;
   onOpenStopSharingAndMoveToTrashDialog: () => void;
   showStopSharingConfirmation: boolean;
   roles: Role[];
@@ -107,14 +108,25 @@ const resetDriveOrder = ({
 };
 
 const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
-  const { dispatch, isLoading, order, hasMoreItems, onEndOfScroll, forceLoading, roles } = props;
+  const {
+    dispatch,
+    isLoading,
+    order,
+    hasMoreItems,
+    onEndOfScroll,
+    forceLoading,
+    roles,
+    isTrash,
+    isRecents,
+    isFavorites,
+  } = props;
   const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
   const workspaceCredentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
   const { restoreItemFromTrash, restoreItemsFromTrash } = useMoveItems();
 
   const isWorkspaceSelected = !!selectedWorkspace;
-  const isSelectedMultipleItemsAndNotTrash = props.selectedItems.length > 1 && !props.isTrash;
+  const isSelectedMultipleItemsAndNotTrash = props.selectedItems.length > 1 && !isTrash;
   const isSelectedSharedItem =
     props.selectedItems.length === 1 &&
     props.selectedItems?.[0].sharings &&
@@ -143,9 +155,6 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   };
 
   const currentFolderId = useAppSelector(storageSelectors.currentFolderId);
-  const isRecents = props.title === translate('views.recents.head');
-  const isFavorites = props.title === translate('views.favorites.head');
-  const isTrash = props.title === translate('trash.trash');
   const skeleton = isTrash ? skinSkeletonTrash : skinSkeleton;
 
   const resetFavoritesOrder = () => {
@@ -450,7 +459,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
       return selectedItemsContextMenu;
     }
 
-    if (props.isTrash) {
+    if (isTrash) {
       if (props.selectedItems.length > 1) {
         return multipleSelectedTrashItemsContextMenu;
       }
@@ -508,7 +517,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           items={props.items}
           isLoading={isLoading}
           forceLoading={forceLoading}
-          itemComposition={[(item) => createDriveListItem(item, props.isTrash)]}
+          itemComposition={[(item) => createDriveListItem(item, isTrash)]}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
           skinSkeleton={skeleton}

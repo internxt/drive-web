@@ -14,18 +14,17 @@ import { useDriveExplorerUpload } from './hooks/useDriveExplorerUpload';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 
-import folderEmptyImage from 'assets/icons/light/folder-open.svg';
 import { transformDraggedItems } from 'services/drag-and-drop.service';
 import { AppDispatch, RootState } from 'app/store';
 import { StorageFilters } from 'app/store/slices/storage/storage.model';
-import { DriveExplorerGrid, DriveExplorerList, DriveTopBarActions } from './components';
+import { DriveExplorerEmptyState, DriveExplorerGrid, DriveExplorerList, DriveTopBarActions } from './components';
 import UploadInputs from './components/UploadInputs';
 
 import { useHotkeys } from 'react-hotkeys-hook';
 import { moveItemsToTrash } from 'views/Trash/services';
 
 import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
-import { ContextMenu, Empty } from '@internxt/ui';
+import { ContextMenu } from '@internxt/ui';
 import BannerWrapper from 'app/banners/BannerWrapper';
 import deviceService from 'services/device.service';
 import navigationService from 'services/navigation.service';
@@ -43,13 +42,11 @@ import { storageActions } from 'app/store/slices/storage';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import { fetchPaginatedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchFolderContentThunk';
 import { useToggleFavoriteHotkey } from 'hooks';
-import { FavoritesEmptyState } from 'views/Favorites/components';
 import { useFavoritesPagination } from 'views/Favorites/hooks';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import { getAncestorsAndSetNamePath } from 'app/store/slices/storage/storage.thunks/goToFolderThunk';
 import { uiActions } from 'app/store/slices/ui';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-import iconService from 'app/drive/services/icon.service';
 import { DriveItemData, FileViewMode, FolderPath } from 'app/drive/types';
 import EditItemNameDialog from 'app/drive/components/EditItemNameDialog/EditItemNameDialog';
 import ItemDetailsDialog from 'app/drive/components/ItemDetailsDialog/ItemDetailsDialog';
@@ -63,6 +60,7 @@ import { DriveTopBarItems } from './DriveTopBarItems';
 import { ShareDialogWrapper } from 'app/drive/components/ShareDialog/ShareDialogWrapper';
 import { fileVersionsSelectors } from 'app/store/slices/fileVersions';
 import { TranslationKey } from 'app/i18n/types';
+import { AppView } from 'app/core/types';
 
 const MenuItemToGetSize = ({
   isTrash,
@@ -112,12 +110,6 @@ const MenuItemToGetSize = ({
       <UploadSimpleIcon size={20} />
       <p className="ml-3">{translate('actions.upload.uploadFolder')}</p>
     </div>
-  </div>
-);
-
-const EmptyTrash = () => (
-  <div className="flex h-36 w-36 items-center justify-center rounded-full bg-gray-5">
-    <TrashIcon size={80} weight="thin" />
   </div>
 );
 
@@ -185,9 +177,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const hasFilters = storageFilters.text.length > 0;
   const hasAnyItemSelected = selectedItems.length > 0;
 
-  const isRecents = title === translate('views.recents.head');
-  const isFavorites = title === translate('views.favorites.head');
-  const isTrash = title === translate('trash.trash');
+  const isRecents = navigationService.isCurrentPath(AppView.Recents);
+  const isFavorites = navigationService.isCurrentPath(AppView.Favorites);
+  const isTrash = navigationService.isCurrentPath(AppView.Trash);
 
   const {
     fileInputRef,
@@ -245,59 +237,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const hasMoreItemsToLoad = paginationState.hasMoreItemsToLoad;
   const isEmptyFolder = !isLoading && !hasMoreItemsToLoad;
-
-  const renderEmptyState = () => {
-    if (hasFilters) {
-      return (
-        <Empty
-          icon={filesEmptyImage}
-          title={translate('views.recents.empty.noResults')}
-          subtitle={translate('views.recents.empty.dragNDrop')}
-          action={{
-            icon: UploadSimpleIcon,
-            style: 'elevated',
-            text: translate('views.recents.empty.uploadFiles'),
-            onClick: onUploadFileButtonClicked,
-          }}
-        />
-      );
-    }
-    if (isRecents) {
-      return (
-        <Empty
-          icon={filesEmptyImage}
-          title={translate('views.recents.empty.title')}
-          subtitle={translate('views.recents.empty.description')}
-        />
-      );
-    }
-    if (isFavorites) {
-      return <FavoritesEmptyState />;
-    }
-    if (isTrash) {
-      return (
-        <Empty
-          icon={<EmptyTrash />}
-          title={translate('trash.empty-state.title')}
-          subtitle={translate('trash.empty-state.subtitle')}
-        />
-      );
-    }
-    return (
-      <Empty
-        icon={<img className="w-36" alt="" src={folderEmptyImage} />}
-        title={translate('views.recents.empty.folderEmpty')}
-        subtitle={translate('views.recents.empty.folderEmptySubtitle')}
-        action={{
-          icon: UploadSimpleIcon,
-          style: 'elevated',
-          text: translate('views.recents.empty.uploadFiles'),
-          onClick: onUploadFileButtonClicked,
-        }}
-        contextMenuClick={handleContextMenuClick}
-      />
-    );
-  };
 
   // TRASH PAGINATION
   const {
@@ -450,14 +389,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   };
 
   const ViewModeComponent = viewModes[isTrash ? FileViewMode.List : viewMode];
-
-  const FileIcon = iconService.getItemIcon(false);
-  const filesEmptyImage = (
-    <div className="relative h-32 w-32">
-      <FileIcon className="absolute -top-2.5 left-7 rotate-10 drop-shadow-soft" />
-      <FileIcon className="absolute -left-7 top-0.5 -rotate-10 drop-shadow-soft" />
-    </div>
-  );
 
   const handleContextMenuClick = (event) => {
     event.preventDefault();
@@ -680,10 +611,11 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                 onEndOfScroll={fetchItems}
                 hasMoreItems={hasMoreItemsToLoad}
                 isTrash={isTrash}
+                isRecents={isRecents}
+                isFavorites={isFavorites}
                 onHoverListItems={(areHovered) => {
                   setIsListElementsHovered(areHovered);
                 }}
-                title={title}
                 onOpenStopSharingAndMoveToTrashDialog={onOpenStopSharingAndMoveToTrashDialog}
                 showStopSharingConfirmation={showStopSharingConfirmation}
                 resetPaginationState={resetPaginationState}
@@ -691,7 +623,16 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
             </div>
             {
               /* EMPTY FOLDER */
-              !hasItems && isEmptyFolder && !isLoadingTrashItems && renderEmptyState()
+              !hasItems && isEmptyFolder && !isLoadingTrashItems && (
+                <DriveExplorerEmptyState
+                  hasFilters={hasFilters}
+                  isTrash={isTrash}
+                  isRecents={isRecents}
+                  isFavorites={isFavorites}
+                  onUploadFileButtonClicked={onUploadFileButtonClicked}
+                  onContextMenu={handleContextMenuClick}
+                />
+              )
             }
 
             {
