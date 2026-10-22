@@ -343,13 +343,7 @@ export async function downloadFolderAsZip({
   const downloadQueue: QueueObject<FolderRef> = queue<FolderRef>((folderToDownload, next: (err?: Error) => void) => {
     if (abortController?.signal.aborted) return next(new Error('Download aborted'));
 
-    const newConcurrency = QueueUtilsService.instance.getConcurrencyUsingPerformance(
-      downloadQueue.concurrency,
-      maxConcurrency,
-    );
-    if (downloadQueue.concurrency !== newConcurrency) {
-      downloadQueue.concurrency = newConcurrency;
-    }
+    QueueUtilsService.instance.adjustConcurrency(downloadQueue, maxConcurrency);
 
     if (!isSharedFolder) {
       downloadFolder(folderToDownload)
