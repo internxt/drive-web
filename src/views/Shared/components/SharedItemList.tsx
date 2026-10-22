@@ -13,6 +13,7 @@ const skinSkeleton = [
   <div key="4" className="h-4 w-20 rounded bg-gray-5" />,
   <div key="5" className="h-4 w-24 rounded bg-gray-5" />,
   <div key="6" className="h-4 w-20 rounded bg-gray-5" />,
+  <div key="7" className="h-4 w-20 rounded bg-gray-5" />,
 ];
 
 export type OrderField = 'name' | 'updatedAt' | 'createdAt' | 'size';
@@ -114,6 +115,12 @@ export const SharedItemList = ({
           name: 'createdAt',
           orderable: true,
           defaultDirection: 'ASC',
+        },
+        {
+          label: t('shared-links.list.expiration'),
+          width: 'w-40',
+          name: 'linkExpirationDate',
+          orderable: false,
         },
       ]}
       items={shareItems}

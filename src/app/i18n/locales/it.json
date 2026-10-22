@@ -883,6 +883,7 @@
         "uploaded": "Caricato",
         "uploadedBy": "Caricato da",
         "shared": "Condiviso",
+        "expiration": "Scadenza del link",
         "numberOfFiles": "Numero di file",
         "location": "Posizione",
         "name": "Nome",
@@ -938,7 +939,8 @@
       "errors": {
         "updatingRole": "Impossibile aggiornare il ruolo, per favore riprova più tardi.",
         "copy-to-clipboard": "Errore durante la condivisione dell'elemento, riprova più tardi.",
-        "update-sharing-access": "La modalità di accesso non ha potuto essere aggiornata, riprova più tardi"
+        "update-sharing-access": "La modalità di accesso non ha potuto essere aggiornata, riprova più tardi",
+        "update-link-expiration": "Non è stato possibile aggiornare la data di scadenza, riprova più tardi"
       },
       "general": {
         "generalAccess": "Accesso generale",
@@ -1195,6 +1197,7 @@
       "name": "Nome",
       "created": "Creato",
       "size": "Dimensione",
+      "expiration": "Scadenza del link",
       "owner": "Propietario"
     },
     "empty-state": {
@@ -1391,6 +1394,8 @@
     "title": "Impostazioni link",
     "access": "Accesso",
     "protect": "Protezione con password",
+    "expiringDate": "Data di scadenza",
+    "removeExpiringDate": "Rimuovi data di scadenza",
     "addSecurePassword": "Per una maggiore sicurezza, puoi proteggere il link con una password",
     "password": "Password",
     "views": "Visualizzazioni",
@@ -1447,6 +1452,7 @@
       "uploadFiles": "Carica file",
       "uploadFolder": "Carica cartella"
     },
+    "expirationDate": "Scade:",
     "change": "Cambia",
     "download": "Scarica",
     "downloading": "Downloading",
@@ -1495,6 +1501,7 @@
         "name": "Nome",
         "modified": "Ultima modifica",
         "size": "Dimensione",
+        "expiration": "Scadenza del link",
         "autoDelete": "Eliminazione automatica",
         "originalLocation": "Posizione originale"
       }

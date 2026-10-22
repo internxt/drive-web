@@ -26,6 +26,7 @@ import { AppDispatch } from 'app/store';
 interface ShareItemActionsProps {
   itemToShare: ItemToShare | null;
   isPasswordSharingAvailable: boolean;
+  linkExpirationDate?: string;
   dispatch: AppDispatch;
   onClose: () => void;
   onShareItem?: () => void;
@@ -35,6 +36,7 @@ interface ShareItemActionsProps {
 export const useShareItemActions = ({
   itemToShare,
   isPasswordSharingAvailable,
+  linkExpirationDate,
   dispatch,
   ...props
 }: ShareItemActionsProps) => {
@@ -68,6 +70,7 @@ export const useShareItemActions = ({
         itemToShare?.item.uuid,
         itemToShare.item.isFolder ? 'folder' : 'file',
         encryptionKey,
+        linkExpirationDate,
       );
 
       if (sharingInfo) {
@@ -109,6 +112,7 @@ export const useShareItemActions = ({
           const itemId = itemToShare?.item.uuid ?? '';
           const { publicSharingItemData } = await shareService.createPublicShareFromOwnerUser(itemId, itemType, {
             plainPassword,
+            linkExpirationDate,
           });
           sharingInfo = publicSharingItemData;
           actionDispatch(setSharingMeta(sharingInfo));
@@ -122,7 +126,7 @@ export const useShareItemActions = ({
         actionDispatch(setOpenPasswordInput(false));
       }
     },
-    [sharingMeta, itemToShare],
+    [sharingMeta, itemToShare, linkExpirationDate],
   );
 
   const onDisablePassword = useCallback(async () => {
@@ -137,6 +141,33 @@ export const useShareItemActions = ({
       actionDispatch(setOpenPasswordDisableDialog(false));
     }
   }, [sharingMeta]);
+
+  const onChangeLinkExpirationDate = useCallback(
+    async (newLinkExpirationDate?: string): Promise<boolean> => {
+      if (sharingMeta?.type !== 'public') {
+        return true;
+      }
+
+      try {
+        if (newLinkExpirationDate) {
+          await shareService.saveSharingExpiration(sharingMeta.id, newLinkExpirationDate);
+        } else {
+          await shareService.removeSharingExpiration(sharingMeta.id);
+        }
+
+        props.onShareItem?.();
+        return true;
+      } catch (error) {
+        errorService.reportError(error);
+        notificationsService.show({
+          text: translate('modals.shareModal.errors.update-link-expiration'),
+          type: ToastType.Error,
+        });
+        return false;
+      }
+    },
+    [sharingMeta],
+  );
 
   const onStopSharing = async () => {
     actionDispatch(setIsLoading(true));
@@ -177,6 +208,7 @@ export const useShareItemActions = ({
     onPasswordCheckboxChange,
     onSavePublicSharePassword,
     onDisablePassword,
+    onChangeLinkExpirationDate,
     onCopyLink,
     onStopSharing,
     getPrivateShareLink,

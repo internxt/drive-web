@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { DriveItemData } from 'app/drive/types';
 import { AdvancedSharedItem } from 'app/share/types';
-import { removeDuplicates } from './driveItemsUtils';
+import { getLinkExpirationDate, removeDuplicates } from './driveItemsUtils';
 
 describe('removeDuplicates', () => {
   const sharedItems = [
@@ -37,5 +37,32 @@ describe('removeDuplicates', () => {
   it('handles an empty list', () => {
     const result = removeDuplicates([]);
     expect(result).toHaveLength(0);
+  });
+});
+
+describe('getLinkExpirationDate', () => {
+  const linkExpirationDate = '2026-10-31T22:59:59.999Z';
+
+  it('When the item comes from the shared list, then it returns its link expiration date', () => {
+    expect(getLinkExpirationDate({ linkExpirationDate })).toBe(linkExpirationDate);
+  });
+
+  it('When the item comes from the drive list, then it returns the expiration date of its public sharing', () => {
+    const sharings = [
+      { type: 'private', id: 'private-sharing-id', expirationAt: null },
+      { type: 'public', id: 'public-sharing-id', expirationAt: linkExpirationDate },
+    ];
+
+    expect(getLinkExpirationDate({ sharings })).toBe(linkExpirationDate);
+  });
+
+  it('When the public sharing never expires, then it returns undefined', () => {
+    const sharings = [{ type: 'public', id: 'public-sharing-id', expirationAt: null }];
+
+    expect(getLinkExpirationDate({ sharings })).toBeUndefined();
+  });
+
+  it('When the item is not shared, then it returns undefined', () => {
+    expect(getLinkExpirationDate({})).toBeUndefined();
   });
 });
