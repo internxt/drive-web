@@ -10,12 +10,6 @@ import { moveItemsToTrash } from 'views/Trash/services';
 import { REFRESH_AFTER_CHANGE_DELAY_MS, useRefreshDriveExplorerItems } from './useRefreshDriveExplorerItems';
 import { useStopSharingAndTrash } from './useStopSharingAndTrash';
 
-vi.mock('app/store/slices/fileVersions', () => ({
-  fileVersionsSelectors: { getMaxFileSizeLimit: vi.fn() },
-}));
-vi.mock('app/store/slices/workspaces/workspaces.selectors', () => ({
-  default: { getSelectedWorkspace: vi.fn() },
-}));
 vi.mock('app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk', () => ({
   fetchSortedFolderContentThunk: vi.fn((folderId: string) => ({ type: 'reloadFolder', payload: folderId })),
 }));

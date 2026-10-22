@@ -6,6 +6,7 @@ import { getAncestorsAndSetNamePath } from 'app/store/slices/storage/storage.thu
 import { uiActions } from 'app/store/slices/ui';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { DriveItemData } from 'app/drive/types';
+import errorService from 'services/error.service';
 
 export const useEditItemName = () => {
   const dispatch = useAppDispatch();
@@ -25,7 +26,7 @@ export const useEditItemName = () => {
       if (isFileViewerOpen) {
         dispatch(uiActions.setCurrentEditingNameDirty(renamedItem.plainName ?? renamedItem.name));
       } else if (itemToRename && editNameItem.isFolder) {
-        getAncestorsAndSetNamePath(renamedItem.uuid, dispatch, selectedWorkspace);
+        getAncestorsAndSetNamePath(renamedItem.uuid, dispatch, selectedWorkspace).catch(errorService.reportError);
       }
     }
     dispatch(storageActions.setItemToRename(null));
