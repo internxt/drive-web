@@ -31,13 +31,16 @@ export const useDriveExplorerContextMenu = () => {
     const menu = menuRef.current;
     if (!clickPoint || !menu) return;
 
-    setPosition(
-      getContextMenuPosition(
-        clickPoint,
-        { width: menu.offsetWidth, height: menu.offsetHeight },
-        { width: window.innerWidth, height: window.innerHeight },
-      ),
+    const positionOnScreen = getContextMenuPosition(
+      clickPoint,
+      { width: menu.offsetWidth, height: menu.offsetHeight },
+      { width: window.innerWidth, height: window.innerHeight },
     );
+    const menuContainer = menu.offsetParent?.getBoundingClientRect();
+    setPosition({
+      x: positionOnScreen.x - (menuContainer?.left ?? 0),
+      y: positionOnScreen.y - (menuContainer?.top ?? 0),
+    });
   }, [clickPoint]);
 
   useEffect(() => {
