@@ -1261,7 +1261,8 @@
       "processing": "Обработка {{pending}} из {{finished}}",
       "failedToUpload": "Не удалось загрузить",
       "failedToDownload": "Не удалось загрузить",
-      "notAllowed": "Не разрешено"
+      "notAllowed": "Не разрешено",
+      "retryAll": "Повторить все"
     },
     "waiting": "Ожидание",
     "paused": "Приостановлено",

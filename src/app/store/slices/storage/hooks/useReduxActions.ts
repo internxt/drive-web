@@ -52,7 +52,7 @@ export const useReduxActions = () => {
   };
 
   const uploadRetryItem = (data: { uploadFile: File; parentFolderId: string; taskId: string; fileType: string }) => {
-    dispatch(
+    return dispatch(
       uploadItemsThunk({
         files: [data.uploadFile],
         parentFolderId: data.parentFolderId,
