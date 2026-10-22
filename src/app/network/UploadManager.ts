@@ -70,6 +70,8 @@ interface UploadFileWithManagerProps {
   events?: UploadManagerEvents;
 }
 
+type UploadQueueCallback = (err: Error | null, res?: DriveFileData) => void;
+
 export const uploadFileWithManager = (props: UploadFileWithManagerProps): Promise<{ uploadedFiles: DriveFileData[] }> =>
   new UploadManager(props).run();
 
@@ -115,114 +117,14 @@ class UploadManager {
   };
 
   private readonly uploadQueue: QueueObject<UploadFileParamsWithTaskId> = queue<UploadFileParamsWithTaskId>(
-    (fileData, next: (err: Error | null, res?: DriveFileData) => void) => {
+    (fileData, next: UploadQueueCallback) => {
       if (this.abortController?.signal.aborted ?? fileData.abortController?.signal.aborted) return;
 
-      this.manageMemoryUsage();
-
-      let uploadAttempts = 0;
-      const uploadId = randomBytes(10).toString('hex');
-      const taskId = fileData.taskId;
-      this.uploadsProgress[uploadId] = 0;
-
-      const file = fileData.filecontent;
-
-      this.events?.onUploadStart?.(fileData, async () => {
-        if (this.abortController) this.abortController?.abort();
-        else fileData?.abortController?.abort();
+      const nextOnce = UploadManager.callOnce(next);
+      this.processFile(fileData, nextOnce).catch((error) => {
+        errorService.reportError(error);
+        nextOnce(errorService.castError(error));
       });
-
-      const existsRelatedTask = !!fileData.relatedTaskId;
-      if (!existsRelatedTask) this.uploadRepository?.setUploadState(taskId, TaskStatus.InProcess);
-      const retryUploadType = fileData.fileType;
-
-      const upload = async () => {
-        uploadAttempts++;
-
-        this.events?.onUploadAttempt?.(fileData);
-
-        const uploadStatus = this.uploadRepository?.getUploadState(fileData.relatedTaskId ?? taskId);
-        const isPaused = (await uploadStatus) === TaskStatus.Paused;
-        const continueUploadOptions = {
-          taskId: fileData.relatedTaskId ?? taskId,
-          isPaused,
-          isRetriedUpload: !!this.options?.isRetriedUpload,
-        };
-
-        let unsubscribeAbortListener: (() => void) | void;
-
-        uploadFile(
-          {
-            name: file.name,
-            size: file.size,
-            type: retryUploadType ?? file.type,
-            content: file.content,
-            parentFolderId: file.parentFolderId,
-          },
-          (uploadProgress) => {
-            this.uploadsProgress[uploadId] = uploadProgress;
-            this.events?.onUploadProgress?.(fileData, uploadProgress);
-          },
-          {
-            isTeam: !!this.options?.ownerUserAuthenticationData?.workspaceId,
-            abortController: this.abortController ?? fileData.abortController,
-            ownerUserAuthenticationData: this.options?.ownerUserAuthenticationData,
-            abortCallback: (abort?: () => void) => {
-              unsubscribeAbortListener = this.events?.registerUploadAbort?.(fileData, () => abort?.());
-            },
-            isUploadedFromFolder: fileData.isUploadedFromFolder,
-          },
-          continueUploadOptions,
-        )
-          .then(async (driveFileData) => {
-            const isUploadAborted = this.abortController?.signal.aborted ?? fileData.abortController?.signal.aborted;
-
-            if (isUploadAborted) {
-              throw new Error('Upload task cancelled');
-            }
-
-            const driveFileDataWithNameParsed = { ...driveFileData, name: file.name };
-            this.filesUploadedList.push({ ...driveFileDataWithNameParsed, taskId });
-
-            await this.events?.onUploadSuccess?.(fileData, driveFileDataWithNameParsed);
-
-            fileData.onFinishUploadFile?.(driveFileDataWithNameParsed, taskId);
-
-            if (this.onFileUploadCallback) {
-              this.onFileUploadCallback(driveFileDataWithNameParsed);
-            }
-            next(null, driveFileDataWithNameParsed);
-          })
-          .catch((error) => {
-            const isUploadAborted =
-              !!this.abortController?.signal.aborted || !!fileData.abortController?.signal.aborted || error === 'abort';
-            const isLostConnectionError =
-              error instanceof ConnectionLostError || error.message === ErrorMessages.NetworkError;
-            const isNonRetryableError = UploadManager.isNonRetryableError(error);
-
-            if (
-              uploadAttempts < MAX_UPLOAD_ATTEMPTS &&
-              !isUploadAborted &&
-              !isLostConnectionError &&
-              !isNonRetryableError
-            ) {
-              upload();
-            } else {
-              this.handleUploadErrors({
-                error,
-                fileData,
-                isUploadAborted,
-                isLostConnectionError,
-                next,
-              });
-            }
-          })
-          .finally(() => {
-            unsubscribeAbortListener?.();
-          });
-      };
-
-      upload();
     },
     this.filesGroups.small.concurrency,
   );
@@ -236,6 +138,143 @@ class UploadManager {
     this.uploadRepository = props.uploadRepository;
     this.onFileUploadCallback = props.onFileUploadCallback;
     this.events = props.events;
+  }
+
+  private static callOnce(next: UploadQueueCallback): UploadQueueCallback {
+    let hasBeenCalled = false;
+    return (err, res) => {
+      if (hasBeenCalled) return;
+      hasBeenCalled = true;
+      next(err, res);
+    };
+  }
+
+  private async processFile(fileData: UploadFileParamsWithTaskId, next: UploadQueueCallback): Promise<void> {
+    this.manageMemoryUsage();
+
+    const uploadId = randomBytes(10).toString('hex');
+    this.uploadsProgress[uploadId] = 0;
+
+    let driveFileData: DriveFileData;
+    try {
+      this.events?.onUploadStart?.(fileData, async () => {
+        if (this.abortController) this.abortController?.abort();
+        else fileData?.abortController?.abort();
+      });
+
+      const existsRelatedTask = !!fileData.relatedTaskId;
+      if (!existsRelatedTask) {
+        this.uploadRepository
+          ?.setUploadState(fileData.taskId, TaskStatus.InProcess)
+          .catch((error) => errorService.reportError(error));
+      }
+
+      driveFileData = await this.uploadWithRetries(fileData, uploadId);
+    } catch (error) {
+      this.handleUploadErrors({ error, fileData, next });
+      return;
+    }
+
+    const driveFileDataWithNameParsed = { ...driveFileData, name: fileData.filecontent.name };
+    await this.notifyUploadSuccess(fileData, driveFileDataWithNameParsed);
+    next(null, driveFileDataWithNameParsed);
+  }
+
+  private async uploadWithRetries(
+    fileData: UploadFileParamsWithTaskId,
+    uploadId: string,
+    uploadAttempts = 1,
+  ): Promise<DriveFileData> {
+    try {
+      return await this.uploadAttempt(fileData, uploadId);
+    } catch (error) {
+      const { isUploadAborted, isLostConnectionError } = this.classifyUploadError(error, fileData);
+      const shouldRetry =
+        uploadAttempts < MAX_UPLOAD_ATTEMPTS &&
+        !isUploadAborted &&
+        !isLostConnectionError &&
+        !UploadManager.isNonRetryableError(error);
+
+      if (!shouldRetry) throw error;
+      return this.uploadWithRetries(fileData, uploadId, uploadAttempts + 1);
+    }
+  }
+
+  private async uploadAttempt(fileData: UploadFileParamsWithTaskId, uploadId: string): Promise<DriveFileData> {
+    const file = fileData.filecontent;
+    const taskId = fileData.relatedTaskId ?? fileData.taskId;
+    const abortListener: { unsubscribe?: (() => void) | void } = {};
+
+    try {
+      this.events?.onUploadAttempt?.(fileData);
+
+      const isPaused = (await this.uploadRepository?.getUploadState(taskId)) === TaskStatus.Paused;
+      const continueUploadOptions = {
+        taskId,
+        isPaused,
+        isRetriedUpload: !!this.options?.isRetriedUpload,
+      };
+
+      const driveFileData = await uploadFile(
+        {
+          name: file.name,
+          size: file.size,
+          type: fileData.fileType ?? file.type,
+          content: file.content,
+          parentFolderId: file.parentFolderId,
+        },
+        (uploadProgress) => {
+          this.uploadsProgress[uploadId] = uploadProgress;
+          this.events?.onUploadProgress?.(fileData, uploadProgress);
+        },
+        {
+          isTeam: !!this.options?.ownerUserAuthenticationData?.workspaceId,
+          abortController: this.abortController ?? fileData.abortController,
+          ownerUserAuthenticationData: this.options?.ownerUserAuthenticationData,
+          abortCallback: (abort?: () => void) => {
+            abortListener.unsubscribe = this.events?.registerUploadAbort?.(fileData, () => abort?.());
+          },
+          isUploadedFromFolder: fileData.isUploadedFromFolder,
+        },
+        continueUploadOptions,
+      );
+
+      const isUploadAborted = this.abortController?.signal.aborted ?? fileData.abortController?.signal.aborted;
+      if (isUploadAborted) {
+        throw new Error('Upload task cancelled');
+      }
+
+      return driveFileData;
+    } finally {
+      abortListener.unsubscribe?.();
+    }
+  }
+
+  private async notifyUploadSuccess(fileData: UploadFileParamsWithTaskId, driveFileData: DriveFileData): Promise<void> {
+    this.filesUploadedList.push({ ...driveFileData, taskId: fileData.taskId });
+
+    await UploadManager.runListener(() => this.events?.onUploadSuccess?.(fileData, driveFileData));
+    await UploadManager.runListener(() => fileData.onFinishUploadFile?.(driveFileData, fileData.taskId));
+    await UploadManager.runListener(() => this.onFileUploadCallback?.(driveFileData));
+  }
+
+  private static async runListener(listener: () => unknown): Promise<void> {
+    try {
+      await listener();
+    } catch (error) {
+      errorService.reportError(error);
+    }
+  }
+
+  private classifyUploadError(
+    error: unknown,
+    fileData: UploadFileParamsWithTaskId,
+  ): { isUploadAborted: boolean; isLostConnectionError: boolean } {
+    const isUploadAborted =
+      !!this.abortController?.signal.aborted || !!fileData.abortController?.signal.aborted || error === 'abort';
+    const isLostConnectionError =
+      error instanceof ConnectionLostError || (error as Error | undefined)?.message === ErrorMessages.NetworkError;
+    return { isUploadAborted, isLostConnectionError };
   }
 
   private static isNonRetryableError(error: unknown): boolean {
@@ -278,16 +317,13 @@ class UploadManager {
   private handleUploadErrors({
     error,
     fileData,
-    isUploadAborted,
-    isLostConnectionError,
     next,
   }: {
     error: unknown;
     fileData: UploadFileParamsWithTaskId;
-    isUploadAborted: boolean;
-    isLostConnectionError: boolean;
-    next: (err: Error | null, res?: DriveFileData) => void;
+    next: UploadQueueCallback;
   }) {
+    const { isUploadAborted, isLostConnectionError } = this.classifyUploadError(error, fileData);
     const castedError = errorService.castError(error);
     // Handle retry error
     if (castedError.message === 'Retryable file') {
@@ -411,7 +447,7 @@ class UploadManager {
 
     failedUploadFiles.forEach((fileErrored) => {
       this.events?.onUploadError?.(fileErrored);
-      this.uploadRepository?.removeUploadState(fileErrored.taskId);
+      this.uploadRepository?.removeUploadState(fileErrored.taskId).catch((error) => errorService.reportError(error));
     });
   }
 
