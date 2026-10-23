@@ -1,7 +1,6 @@
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { DriveItemData } from 'app/drive/types';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { OrderDirection } from 'app/core/types';
+import { useCallback, useEffect, useState } from 'react';
 import { PreviewFileItem, UserRoles } from 'app/share/types';
 import { RootState } from 'app/store';
 import { uiActions } from 'app/store/slices/ui';
@@ -11,6 +10,7 @@ import FileViewer from './FileViewer';
 import { topDropdownBarActionsMenu, useFileViewerKeyboardShortcuts } from './utils/fileViewerWrapperUtils';
 import { useFilePreviewContent } from './hooks/useFilePreviewContent';
 import { useFileThumbnailRefresh } from './hooks/useFileThumbnailRefresh';
+import { useFileViewerNavigation } from './hooks/useFileViewerNavigation';
 import { MenuItemType } from '@internxt/ui';
 import { DownloadManager } from 'app/network/DownloadManager';
 import { convertibleImageExtensions } from 'app/drive/types/file-types';
@@ -49,7 +49,7 @@ const FileViewerWrapper = ({
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const currentUserRole = useAppSelector((state: RootState) => state.shared.currentSharingRole);
 
-  const [currentFile, setCurrentFile] = useState<PreviewFileItem>(file);
+  const { currentFile, setCurrentFile, navigation } = useFileViewerNavigation({ initialFile: file, folderItems });
 
   const [user, setUser] = useState<UserSettings | null>(null);
 
@@ -119,41 +119,6 @@ const FileViewerWrapper = ({
     onClose,
   });
 
-  const driveItemsOrder = useAppSelector((state) => state.storage.driveItemsOrder);
-  const driveItemsSort = useAppSelector((state) => state.storage.driveItemsSort);
-
-  // Get all files in the current folder, sort the files and find the current file to display the file
-  const currentItemsFolder = useAppSelector((state) => state.storage.levels[file?.folderUuid || '']);
-  const folderFiles = useMemo(() => currentItemsFolder?.filter((item) => !item.isFolder), [currentItemsFolder]);
-
-  const sortFolderFiles = useMemo(() => {
-    if (folderFiles) {
-      return folderFiles.sort((a, b) => {
-        if (driveItemsOrder === OrderDirection.Asc) {
-          return a[driveItemsSort] > b[driveItemsSort] ? 1 : -1;
-        } else if (driveItemsOrder === OrderDirection.Desc) {
-          return a[driveItemsSort] < b[driveItemsSort] ? 1 : -1;
-        }
-        return 0;
-      });
-    }
-    return [];
-  }, [folderFiles]);
-
-  const folderItemsFiltered = folderItems?.filter((item) => !item.isFolder || item.type !== 'folder');
-  const currentFolder = folderItemsFiltered ?? sortFolderFiles;
-  const fileIndex = currentFolder?.findIndex((item) => item.id === currentFile?.id);
-  const totalFolderIndex = currentFolder?.length;
-
-  //Switch to the next or previous file in the folder
-  function changeFile(direction: 'next' | 'prev') {
-    if (direction === 'next') {
-      setCurrentFile?.(currentFolder[fileIndex + 1]);
-    } else {
-      setCurrentFile?.(currentFolder[fileIndex - 1]);
-    }
-  }
-
   const handlersForSpecialItems = {
     handleUpdateProgress: updateProgress,
     handleUpdateThumbnail: refreshThumbnail,
@@ -169,9 +134,7 @@ const FileViewerWrapper = ({
       isAuthenticated={isAuthenticated}
       blob={blob}
       hasPreviewFailed={hasFailed}
-      fileIndex={fileIndex}
-      totalFolderIndex={totalFolderIndex}
-      changeFile={changeFile}
+      navigation={navigation}
       dropdownItems={topActionsMenu}
       isShareView={isSharedView}
       keyboardShortcuts={{
