@@ -248,6 +248,7 @@ export default function BackupsView(): JSX.Element {
           showPreview={isFileViewerOpen}
           folderItems={currentItems}
           contextMenu={contextMenuForFileViewer}
+          keyboardShortcuts={{ removeItemFromKeyboard: onDeleteFileItemFromFilePreview }}
         />
       )}
       <div className="flex h-14 shrink-0 items-center px-5">

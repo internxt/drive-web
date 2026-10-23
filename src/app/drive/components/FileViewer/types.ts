@@ -13,3 +13,8 @@ export interface FileViewerNavigation {
   goToPrevious: () => void;
   goToNext: () => void;
 }
+
+export interface FileViewerKeyboardShortcuts {
+  renameItemFromKeyboard?: (item: DriveItemData) => void;
+  removeItemFromKeyboard?: (item: DriveItemData) => void;
+}
