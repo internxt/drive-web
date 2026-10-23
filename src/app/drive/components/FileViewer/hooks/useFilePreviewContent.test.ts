@@ -181,6 +181,7 @@ describe('Loading the content of a file preview', () => {
   test.each([
     { case: 'empty, then an empty content is shown', file: createFile({ size: 0 }), shownSize: 0 },
     { case: 'a video, then it is streamed instead', file: createFile({ type: 'mp4' }), shownSize: undefined },
+    { case: 'a type with no preview, then nothing is shown', file: createFile({ type: 'zip' }), shownSize: undefined },
     { case: 'too large to preview, then nothing is shown', file: createFile({ size: 2 ** 30 }), shownSize: undefined },
   ])('When the file is $case without downloading it', async ({ file, shownSize }) => {
     const { result } = renderPreview(file);
