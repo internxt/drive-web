@@ -1,3 +1,4 @@
+import { useMemo, useRef } from 'react';
 import { FileStatus } from '@internxt/sdk/dist/drive/storage/types';
 import { MenuItemType } from '@internxt/ui';
 import { DriveItemData } from 'app/drive/types';
@@ -18,66 +19,68 @@ interface UseFileViewerActionsProps {
 }
 
 export const useFileViewerActions = ({ file, onClose, contextMenu, keyboardShortcuts }: UseFileViewerActionsProps) => {
-  const {
-    onDownloadItemButtonClicked,
-    onMoveItemButtonClicked,
-    onCopyLinkButtonClicked,
-    onShowDetailsButtonClicked,
-    onLinkSettingsButtonClicked,
-    onMoveToTrashButtonClicked,
-    onRenameItemButtonClicked,
-    onRestoreItemButtonClicked,
-    onDeletePermanentlyButtonClicked,
-  } = useDriveItemActions(file);
+  const driveItemActions = useDriveItemActions(file);
+  const latestActions = useRef({ ...driveItemActions, onClose });
+  latestActions.current = { ...driveItemActions, onClose };
 
   const isTrashed = file.status === FileStatus.TRASHED;
   const isShared = (file.sharings?.length ?? 0) > 0;
   const hasViewOwnActions = !!contextMenu || !!keyboardShortcuts;
 
-  const moveToTrashAndClose = () => {
-    onMoveToTrashButtonClicked();
-    onClose();
-  };
+  const actions = useMemo(
+    () => ({
+      download: () => latestActions.current.onDownloadItemButtonClicked(),
+      move: () => latestActions.current.onMoveItemButtonClicked(),
+      copyLink: () => latestActions.current.onCopyLinkButtonClicked(),
+      showDetails: () => latestActions.current.onShowDetailsButtonClicked(),
+      openLinkSettings: () => latestActions.current.onLinkSettingsButtonClicked(),
+      rename: () => latestActions.current.onRenameItemButtonClicked(),
+      restore: () => latestActions.current.onRestoreItemButtonClicked(),
+      deletePermanently: () => latestActions.current.onDeletePermanentlyButtonClicked(),
+      moveToTrashAndClose: () => {
+        latestActions.current.onMoveToTrashButtonClicked();
+        latestActions.current.onClose();
+      },
+    }),
+    [],
+  );
 
-  const getDriveMenuItems = (): Array<MenuItemType<DriveItemData>> => {
+  const menuItems = useMemo((): Array<MenuItemType<DriveItemData>> => {
+    if (contextMenu) return contextMenu;
+    if (isTrashed) {
+      return contextMenuTrashItems({
+        restoreItem: actions.restore,
+        deletePermanently: actions.deletePermanently,
+        showDetails: actions.showDetails,
+      });
+    }
+
     const commonActions = {
-      showDetails: onShowDetailsButtonClicked,
-      renameItem: onRenameItemButtonClicked,
-      moveItem: onMoveItemButtonClicked,
-      downloadItem: onDownloadItemButtonClicked,
-      moveToTrash: moveToTrashAndClose,
+      showDetails: actions.showDetails,
+      renameItem: actions.rename,
+      moveItem: actions.move,
+      downloadItem: actions.download,
+      moveToTrash: actions.moveToTrashAndClose,
     };
 
     return isShared
       ? contextMenuDriveItemShared({
           ...commonActions,
-          copyLink: onCopyLinkButtonClicked,
-          openShareAccessSettings: onLinkSettingsButtonClicked,
+          copyLink: actions.copyLink,
+          openShareAccessSettings: actions.openLinkSettings,
         })
       : contextMenuDriveNotSharedLink({
           ...commonActions,
-          shareLink: onLinkSettingsButtonClicked,
-          getLink: onCopyLinkButtonClicked,
+          shareLink: actions.openLinkSettings,
+          getLink: actions.copyLink,
         });
-  };
+  }, [actions, contextMenu, isTrashed, isShared]);
 
-  const getMenuItems = (): Array<MenuItemType<DriveItemData>> => {
-    if (contextMenu) return contextMenu;
-    if (isTrashed) {
-      return contextMenuTrashItems({
-        restoreItem: onRestoreItemButtonClicked,
-        deletePermanently: onDeletePermanentlyButtonClicked,
-        showDetails: onShowDetailsButtonClicked,
-      });
-    }
-    return getDriveMenuItems();
-  };
-
-  const getKeyboardShortcuts = (): FileViewerKeyboardShortcuts => {
+  const viewerKeyboardShortcuts = useMemo((): FileViewerKeyboardShortcuts => {
     if (hasViewOwnActions) return keyboardShortcuts ?? {};
     if (isTrashed) return {};
-    return { renameItemFromKeyboard: onRenameItemButtonClicked, removeItemFromKeyboard: moveToTrashAndClose };
-  };
+    return { renameItemFromKeyboard: actions.rename, removeItemFromKeyboard: actions.moveToTrashAndClose };
+  }, [actions, hasViewOwnActions, keyboardShortcuts, isTrashed]);
 
-  return { menuItems: getMenuItems(), keyboardShortcuts: getKeyboardShortcuts() };
+  return { menuItems, keyboardShortcuts: viewerKeyboardShortcuts };
 };

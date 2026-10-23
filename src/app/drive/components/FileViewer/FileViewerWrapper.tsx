@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { DriveItemData } from 'app/drive/types';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { PreviewFileItem } from 'app/share/types';
 import { RootState } from 'app/store';
 import { uiActions } from 'app/store/slices/ui';
@@ -50,15 +50,13 @@ const FileViewerWrapper = ({
     keyboardShortcuts,
   });
 
-  const onDownload = () => {
-    if (currentFile) {
-      DownloadManager.downloadItem({
-        payload: [currentFile as DriveItemData],
-        selectedWorkspace,
-        workspaceCredentials,
-      });
-    }
-  };
+  const onDownload = useCallback(() => {
+    DownloadManager.downloadItem({
+      payload: [currentFile as DriveItemData],
+      selectedWorkspace,
+      workspaceCredentials,
+    });
+  }, [currentFile, selectedWorkspace, workspaceCredentials]);
 
   const { refreshThumbnail } = useFileThumbnailRefresh({ isSharedView, isWorkspace });
 
