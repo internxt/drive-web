@@ -2,25 +2,15 @@ import { ComponentProps, ReactNode } from 'react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { DriveFileData } from 'app/drive/types';
 import storageReducer from 'app/store/slices/storage';
 import uiReducer, { uiActions } from 'app/store/slices/ui';
 import FileViewer from './FileViewer';
 
-const { dropdownRenders } = vi.hoisted(() => ({ dropdownRenders: { count: 0 } }));
-
 vi.mock('app/i18n/provider/TranslationProvider', () => ({
   useTranslationContext: () => ({ translate: (key: string) => key }),
 }));
-vi.mock('@internxt/ui', async (importOriginal) => {
-  const ui = await importOriginal<typeof import('@internxt/ui')>();
-  const CountingDropdown = (props: ComponentProps<typeof ui.Dropdown>) => {
-    dropdownRenders.count++;
-    return <ui.Dropdown {...props} />;
-  };
-  return { ...ui, Dropdown: CountingDropdown };
-});
 
 const createFile = (overrides: Partial<DriveFileData> = {}): DriveFileData =>
   ({
@@ -57,10 +47,6 @@ const loadingBar = () => screen.getByText('drive.loadingFile').parentElement as 
 const loadingProgressWidth = () => (loadingBar().querySelector('.bg-white') as HTMLElement).style.width;
 
 describe('File viewer', () => {
-  beforeEach(() => {
-    dropdownRenders.count = 0;
-  });
-
   test('When the content is downloading, then the loading bar shows its progress until the content is shown', async () => {
     const { rerender } = renderViewer({ progress: 0.4 });
     expect(loadingProgressWidth()).toBe('40%');
@@ -130,17 +116,5 @@ describe('File viewer', () => {
     expect(screen.queryByTitle('actions.previous')).not.toBeInTheDocument();
     expect(screen.queryByTitle('actions.next')).not.toBeInTheDocument();
     expect(screen.getByTitle('actions.report')).toBeInTheDocument();
-  });
-
-  test('When the download progress changes, then the top bar menu is not rendered again', () => {
-    const { rerender } = renderViewer({ progress: 0.1 });
-    const rendersBeforeProgress = dropdownRenders.count;
-
-    rerender({ progress: 0.5 });
-    rerender({ progress: 0.9 });
-
-    expect(rendersBeforeProgress).toBeGreaterThan(0);
-    expect(dropdownRenders.count).toBe(rendersBeforeProgress);
-    expect(loadingProgressWidth()).toBe('90%');
   });
 });

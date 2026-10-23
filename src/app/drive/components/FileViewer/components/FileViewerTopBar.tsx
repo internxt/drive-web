@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import { DialogTitle } from '@headlessui/react';
 import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
 import { MenuItemType } from '@internxt/ui';
@@ -63,4 +62,4 @@ const FileViewerTopBar = ({
   );
 };
 
-export default memo(FileViewerTopBar);
+export default FileViewerTopBar;
