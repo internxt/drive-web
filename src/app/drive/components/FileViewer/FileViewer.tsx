@@ -1,5 +1,5 @@
 import { Dialog, DialogBackdrop, Transition } from '@headlessui/react';
-import { Fragment, Suspense, memo, useCallback, useEffect, useState } from 'react';
+import { Fragment, Suspense, useCallback, useEffect, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { isFileSizePreviewable } from 'services/media.service';
 import iconService from 'app/drive/services/icon.service';
@@ -15,18 +15,8 @@ import { NoPreviewIsAvailableComponent } from './components/NoPreviewIsAvailable
 import { useNestedDialogsEscape } from './hooks/useNestedDialogsEscape';
 import { FileViewerKeyboardShortcuts, FileViewerNavigation, TopBarActionsMenu } from './types';
 import { getFileDisplayName, getPreviewSizeLimitBytes, isPreviewableBySize } from './utils/fileViewerUtils';
-import { FileViewerEntry, getFileViewer } from './viewers';
-import { FileContentViewerProps, ViewerContentSource } from './viewers/types';
-
-const PreviewShareItemDialog = memo(ShareItemDialog);
-
-const FileContent = memo(
-  ({ fileViewer, ...viewerProps }: FileContentViewerProps & { fileViewer: FileViewerEntry }): JSX.Element => (
-    <Suspense fallback={<div></div>}>
-      <fileViewer.Viewer {...viewerProps} />
-    </Suspense>
-  ),
-);
+import { getFileViewer } from './viewers';
+import { ViewerContentSource } from './viewers/types';
 
 interface FileViewerProps {
   file: DriveFileData;
@@ -115,7 +105,7 @@ const FileViewer = ({
         <div className="flex h-screen w-screen flex-col items-center justify-center">
           <DialogBackdrop className="fixed inset-0 bg-black/85 backdrop-blur-md" onClick={onClose} />
 
-          <PreviewShareItemDialog share={file.shares?.[0]} isPreviewView item={file as DriveItemData} />
+          <ShareItemDialog share={file.shares?.[0]} isPreviewView item={file as DriveItemData} />
 
           {isItemValidToPreview ? (
             <div
@@ -124,16 +114,17 @@ const FileViewer = ({
             >
               <div>
                 {fileViewer && (isStreamed || blob) ? (
-                  <FileContent
-                    key={file.id}
-                    fileViewer={fileViewer}
-                    blob={blob ?? null}
-                    file={file}
-                    disableVideoStream={disableVideoStream}
-                    onError={onViewerError}
-                    onProgress={onProgress}
-                    onConvertedContent={onConvertedContent}
-                  />
+                  <Suspense fallback={<div></div>}>
+                    <fileViewer.Viewer
+                      key={file.id}
+                      blob={blob ?? null}
+                      file={file}
+                      disableVideoStream={disableVideoStream}
+                      onError={onViewerError}
+                      onProgress={onProgress}
+                      onConvertedContent={onConvertedContent}
+                    />
+                  </Suspense>
                 ) : null}
 
                 <FilePreviewLoading file={file} progress={progress} hasContent={!!blob} />

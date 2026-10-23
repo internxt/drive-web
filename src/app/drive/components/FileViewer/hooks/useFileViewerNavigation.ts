@@ -29,17 +29,15 @@ export const useFileViewerNavigation = ({ initialFile, folderItems }: UseFileVie
   const hasPrevious = isCurrentFileListed && currentIndex > 0;
   const hasNext = isCurrentFileListed && currentIndex < files.length - 1;
 
-  const navigation = useMemo((): FileViewerNavigation => {
-    const goToPrevious = () => {
-      if (hasPrevious) setCurrentFile(files[currentIndex - 1]);
-    };
+  const goToPrevious = () => {
+    if (hasPrevious) setCurrentFile(files[currentIndex - 1]);
+  };
 
-    const goToNext = () => {
-      if (hasNext) setCurrentFile(files[currentIndex + 1]);
-    };
+  const goToNext = () => {
+    if (hasNext) setCurrentFile(files[currentIndex + 1]);
+  };
 
-    return { hasPrevious, hasNext, goToPrevious, goToNext };
-  }, [files, currentIndex, hasPrevious, hasNext]);
+  const navigation: FileViewerNavigation = { hasPrevious, hasNext, goToPrevious, goToNext };
 
   return { currentFile, setCurrentFile, navigation };
 };

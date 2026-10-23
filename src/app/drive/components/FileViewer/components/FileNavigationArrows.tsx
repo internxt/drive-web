@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import { CaretLeftIcon, CaretRightIcon } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
@@ -35,4 +34,4 @@ const FileNavigationArrows = ({
   );
 };
 
-export default memo(FileNavigationArrows);
+export default FileNavigationArrows;
