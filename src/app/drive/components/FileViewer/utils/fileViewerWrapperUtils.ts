@@ -1,11 +1,5 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { getAppConfig } from 'services/config.service';
-import dateService from 'services/date.service';
-import {
-  canFileBeCached,
-  getDatabaseFileSourceData,
-  updateDatabaseFileSourceData,
-} from 'app/drive/services/database.service';
 import { DriveItemData } from 'app/drive/types';
 import { AdvancedSharedItem, PreviewFileItem } from 'app/share/types';
 import type { DriveItemActions } from 'views/Drive/hooks';
@@ -17,11 +11,6 @@ import {
 } from 'views/Drive/components/DriveExplorer/components';
 import { MenuItemType } from '@internxt/ui';
 import { TopBarActionsMenu } from '../types';
-
-interface DownloadedBlobData {
-  blob: Blob;
-  shouldHandleFileThumbnail: boolean;
-}
 
 type PathProps = 'drive' | 'trash' | 'shared' | 'recents';
 
@@ -151,58 +140,6 @@ const topDropdownBarActionsMenu = ({
   return contextMenuActions();
 };
 
-function getFileContentManager(currentFile, downloadFile) {
-  const abortController = new AbortController();
-
-  return {
-    download: async (): Promise<DownloadedBlobData> => {
-      let fileContent: Blob;
-
-      const fileSource = await getDatabaseFileSourceData({ fileId: currentFile.id });
-
-      const shouldFileBeCached = canFileBeCached(currentFile);
-      const isCached = !!fileSource;
-      const isCacheExpired = !fileSource?.updatedAt
-        ? true
-        : dateService.isDateOneBefore({
-            dateOne: fileSource?.updatedAt,
-            dateTwo: currentFile?.updatedAt,
-          });
-
-      const shouldHandleFileThumbnail = !isCached || isCacheExpired;
-
-      if (isCached) {
-        if (isCacheExpired) {
-          fileContent = await downloadFile(currentFile, abortController);
-          await updateDatabaseFileSourceData({
-            folderId: currentFile.folderId,
-            sourceBlob: fileContent,
-            fileId: currentFile.id,
-            updatedAt: currentFile.updatedAt,
-          });
-        } else {
-          fileContent = fileSource.source as Blob;
-        }
-      } else {
-        fileContent = await downloadFile(currentFile, abortController);
-        if (shouldFileBeCached) {
-          await updateDatabaseFileSourceData({
-            folderId: currentFile.folderId,
-            sourceBlob: fileContent,
-            fileId: currentFile.id,
-            updatedAt: currentFile.updatedAt,
-          });
-        }
-      }
-
-      return { blob: fileContent, shouldHandleFileThumbnail };
-    },
-    abort: () => {
-      abortController.abort();
-    },
-  };
-}
-
 const useFileViewerKeyboardShortcuts = ({
   sharedKeyboardShortcuts,
   driveItemActions,
@@ -231,4 +168,4 @@ const useFileViewerKeyboardShortcuts = ({
   };
 };
 
-export { getFileContentManager, topDropdownBarActionsMenu, useFileViewerKeyboardShortcuts };
+export { topDropdownBarActionsMenu, useFileViewerKeyboardShortcuts };
