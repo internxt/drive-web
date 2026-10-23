@@ -37,6 +37,7 @@ interface FileViewerProps {
   isShareView?: boolean;
   disableVideoStream?: boolean;
   blob?: Blob | null;
+  hasPreviewFailed?: boolean;
   changeFile?: (direction: 'next' | 'prev') => void;
   totalFolderIndex?: number;
   fileIndex?: number;
@@ -72,6 +73,7 @@ const FileViewer = ({
   isShareView,
   disableVideoStream,
   blob,
+  hasPreviewFailed,
   changeFile,
   totalFolderIndex,
   fileIndex,
@@ -103,7 +105,7 @@ const FileViewer = ({
   const filename = file ? `${file.plainName ?? file.name}${fileType}` : '';
   const isFirstItemOrShareView = fileIndex === 0 || isShareView;
   const isLastItemOrShareView = (totalFolderIndex && fileIndex === totalFolderIndex - 1) || isShareView;
-  const isItemValidToPreview = isTypeAllowed && isPreviewAvailable;
+  const isItemValidToPreview = isTypeAllowed && isPreviewAvailable && !hasPreviewFailed;
   const isVideo = fileExtensionGroup === FileExtensionGroup['Video'];
   const isSafari = navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome');
   const isVideoStreaming = isVideo && !disableVideoStream && (!isSafari || isFileSizePreviewable(file.size));

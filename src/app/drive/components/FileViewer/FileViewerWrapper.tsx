@@ -17,23 +17,16 @@ import { RootState } from 'app/store';
 import { uiActions } from 'app/store/slices/ui';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { getDatabaseFilePreviewData, updateDatabaseFilePreviewData } from 'app/drive/services/database.service';
-import downloadService from 'app/drive/services/download.service';
 import { useDriveItemActions } from 'views/Drive/hooks';
 import FileViewer from './FileViewer';
-import {
-  getFileContentManager,
-  topDropdownBarActionsMenu,
-  useFileViewerKeyboardShortcuts,
-} from './utils/fileViewerWrapperUtils';
+import { topDropdownBarActionsMenu, useFileViewerKeyboardShortcuts } from './utils/fileViewerWrapperUtils';
+import { useFilePreviewContent } from './hooks/useFilePreviewContent';
 import { FileToUpload } from 'app/drive/services/file.service/types';
 import { MenuItemType } from '@internxt/ui';
 import { DownloadManager } from 'app/network/DownloadManager';
-import { getIsTypeAllowedAndFileExtensionGroupValues, isPreviewableBySize } from './utils/fileViewerUtils';
-import { FileExtensionGroup, convertibleImageExtensions } from 'app/drive/types/file-types';
+import { convertibleImageExtensions } from 'app/drive/types/file-types';
 import encryptedStorageService from 'services/encrypted-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-
-const SPECIAL_MIME_TYPES = convertibleImageExtensions;
 
 interface FileViewerWrapperProps {
   file: PreviewFileItem;
@@ -67,11 +60,7 @@ const FileViewerWrapper = ({
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const currentUserRole = useAppSelector((state: RootState) => state.shared.currentSharingRole);
 
-  const [isDownloadStarted, setIsDownloadStarted] = useState(false);
-  const [updateProgress, setUpdateProgress] = useState(0);
   const [currentFile, setCurrentFile] = useState<PreviewFileItem>(file);
-
-  const [blob, setBlob] = useState<Blob | null>(null);
 
   const [user, setUser] = useState<UserSettings | null>(null);
 
@@ -80,7 +69,6 @@ const FileViewerWrapper = ({
   }, []);
 
   const driveItemActions = useDriveItemActions(currentFile);
-  const fileContentManager = getFileContentManager(currentFile, downloadFile);
 
   const onDownload = () => {
     if (currentFile) {
@@ -92,44 +80,21 @@ const FileViewerWrapper = ({
     }
   };
 
+  const { blob, progress, hasFailed, updateProgress } = useFilePreviewContent({
+    file: currentFile,
+    isEnabled: showPreview,
+    isWorkspace,
+    onFreshDownload: (downloadedFile, downloadedBlob) => {
+      const isConvertibleImage = convertibleImageExtensions.includes(downloadedFile.type.toLowerCase());
+      if (!isConvertibleImage) {
+        handleFileThumbnail(downloadedFile, downloadedBlob).catch(errorService.reportError);
+      }
+    },
+  });
+
   useEffect(() => {
-    setBlob(null);
     dispatch(uiActions.setFileViewerItem(currentFile));
-
-    const extensionGroup = getIsTypeAllowedAndFileExtensionGroupValues(currentFile);
-    const isVideo = extensionGroup?.fileExtensionGroup === FileExtensionGroup['Video'];
-    const isDownloadable = isPreviewableBySize(currentFile);
-
-    if (currentFile && Number(currentFile.size) === 0) {
-      setBlob(new Blob([]));
-      setUpdateProgress(0);
-      return;
-    }
-
-    if (currentFile && !updateProgress && !isDownloadStarted && !isVideo && isDownloadable) {
-      const isConvertibleImage = convertibleImageExtensions.includes(currentFile.type.toLowerCase());
-      setIsDownloadStarted(true);
-      fileContentManager
-        .download()
-        .then((downloadedFile) => {
-          setBlob(downloadedFile.blob);
-          setUpdateProgress(0);
-          setIsDownloadStarted(false);
-          if (downloadedFile.shouldHandleFileThumbnail && !isConvertibleImage) {
-            handleFileThumbnail(currentFile, downloadedFile.blob).catch(errorService.reportError);
-          }
-        })
-        .catch((error) => {
-          if (error.name === 'AbortError') {
-            return;
-          }
-          console.error(error);
-          setBlob(null);
-          errorService.reportError(error);
-          setIsDownloadStarted(false);
-        });
-    }
-  }, [showPreview, currentFile]);
+  }, [currentFile]);
 
   useEffect(() => {
     if (dirtyName && dirtyName !== '') {
@@ -139,7 +104,6 @@ const FileViewerWrapper = ({
         name: dirtyName,
       });
     }
-    setUpdateProgress(0);
     dispatch(uiActions.setCurrentEditingNameDirty(''));
   }, [dirtyName, currentFile]);
 
@@ -192,37 +156,11 @@ const FileViewerWrapper = ({
 
   //Switch to the next or previous file in the folder
   function changeFile(direction: 'next' | 'prev') {
-    setBlob(null);
-    setIsDownloadStarted(false);
-    setUpdateProgress(0);
-    fileContentManager.abort();
     if (direction === 'next') {
       setCurrentFile?.(currentFolder[fileIndex + 1]);
     } else {
       setCurrentFile?.(currentFolder[fileIndex - 1]);
     }
-  }
-
-  function handleProgress(progress: number, fileType?: string) {
-    if (fileType && SPECIAL_MIME_TYPES.includes(fileType)) {
-      setUpdateProgress(progress * 0.95);
-    } else {
-      setUpdateProgress(progress);
-    }
-  }
-
-  function downloadFile(currentFile: PreviewFileItem, abortController: AbortController) {
-    setBlob(null);
-    return downloadService.fetchFileBlob(
-      { ...currentFile, bucketId: currentFile.bucket },
-      {
-        updateProgressCallback: (progress) => handleProgress(progress, currentFile.type.toLowerCase()),
-        isWorkspace,
-        abortController,
-      },
-      currentFile.credentials,
-      currentFile.mnemonic,
-    );
   }
 
   const handleUpdateLocalImageThumbnail = async (
@@ -307,7 +245,7 @@ const FileViewerWrapper = ({
   };
 
   const handlersForSpecialItems = {
-    handleUpdateProgress: handleProgress,
+    handleUpdateProgress: updateProgress,
     handleUpdateThumbnail: handleFileThumbnail,
   };
 
@@ -315,14 +253,12 @@ const FileViewerWrapper = ({
     <FileViewer
       show={showPreview}
       file={currentFile}
-      onClose={() => {
-        onClose();
-        fileContentManager.abort();
-      }}
+      onClose={onClose}
       onDownload={onDownload}
-      progress={updateProgress}
+      progress={progress}
       isAuthenticated={isAuthenticated}
       blob={blob}
+      hasPreviewFailed={hasFailed}
       fileIndex={fileIndex}
       totalFolderIndex={totalFolderIndex}
       changeFile={changeFile}
