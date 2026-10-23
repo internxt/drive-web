@@ -68,7 +68,6 @@
     "react-router-dom": "^5.3.4",
     "react-tooltip": "^5.8.3",
     "react-window": "^1.8.11",
-    "socket.io-client": "4.8.1",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
     "url": "^0.11.3",
