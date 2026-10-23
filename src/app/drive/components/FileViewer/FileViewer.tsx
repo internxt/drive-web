@@ -5,25 +5,21 @@ import { isFileSizePreviewable } from 'services/media.service';
 import iconService from 'app/drive/services/icon.service';
 import { bytesToString } from 'app/drive/services/size.service';
 import { DriveFileData, DriveItemData } from 'app/drive/types';
-import { FileExtensionGroup } from 'app/drive/types/file-types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import ShareItemDialog from '../../../../views/Shared/components/ShareItemDialog/ShareItemDialog';
 import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
-import { Fragment, Suspense, useEffect, useState } from 'react';
+import { Fragment, Suspense, useCallback, useEffect, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { PreviewFileItem } from 'app/share/types';
 import { setItemsToMove, storageActions } from 'app/store/slices/storage';
 import { FileViewerKeyboardShortcuts, FileViewerNavigation, TopBarActionsMenu } from './types';
 import { NoPreviewIsAvailableComponent } from './components/NoPreviewIsAvailableComponent';
 import TopBarActions from './components/TopBarActions';
-import {
-  getIsTypeAllowedAndFileExtensionGroupValues,
-  getPreviewSizeLimitBytes,
-  isPreviewableBySize,
-} from './utils/fileViewerUtils';
-import viewers from './viewers';
+import { getPreviewSizeLimitBytes, isPreviewableBySize } from './utils/fileViewerUtils';
+import { getFileViewer } from './viewers';
+import { ViewerContentSource } from './viewers/types';
 import { MenuItemType } from '@internxt/ui';
 
 const ESC_KEY_KEYBOARD_CODE = 27;
@@ -41,21 +37,8 @@ interface FileViewerProps {
   navigation?: FileViewerNavigation;
   dropdownItems?: TopBarActionsMenu;
   keyboardShortcuts?: FileViewerKeyboardShortcuts;
-  handlersForSpecialItems?: {
-    handleUpdateProgress: (progress: number) => void;
-    handleUpdateThumbnail: (driveFile: PreviewFileItem, blob: Blob) => Promise<void>;
-  };
-}
-
-export interface FormatFileViewerProps {
-  file: PreviewFileItem;
-  blob?: Blob | null;
-  disableVideoStream?: boolean;
-  setIsPreviewAvailable: (isPreviewAvailable: boolean) => void;
-  handlersForSpecialItems?: {
-    handleUpdateProgress: (progress: number) => void;
-    handleUpdateThumbnail: (driveFile: PreviewFileItem, blob: Blob) => Promise<void>;
-  };
+  onProgress?: (progress: number) => void;
+  onConvertedContent?: (file: PreviewFileItem, content: Blob) => Promise<void>;
 }
 
 const FileViewer = ({
@@ -72,7 +55,8 @@ const FileViewer = ({
   navigation,
   dropdownItems,
   keyboardShortcuts,
-  handlersForSpecialItems,
+  onProgress,
+  onConvertedContent,
 }: FileViewerProps): JSX.Element => {
   const dispatch = useAppDispatch();
 
@@ -80,14 +64,11 @@ const FileViewer = ({
 
   const [isPreviewAvailable, setIsPreviewAvailable] = useState<boolean>(true);
 
-  const extensionGroup = getIsTypeAllowedAndFileExtensionGroupValues(file);
+  const fileViewer = getFileViewer(file);
+  const isTypeAllowed = !!fileViewer;
+  const isStreamed = fileViewer?.contentSource === ViewerContentSource.Stream && !disableVideoStream;
 
-  const isTypeAllowed = !!extensionGroup?.isTypeAllowed;
-  const fileExtensionGroup = extensionGroup?.fileExtensionGroup;
-
-  const Viewer: React.FC<FormatFileViewerProps> = isTypeAllowed
-    ? viewers[fileExtensionGroup as FileExtensionGroup]
-    : undefined;
+  const onViewerError = useCallback(() => setIsPreviewAvailable(false), []);
 
   const isMoveItemsDialogOpen = useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen);
   const isCreateFolderDialogOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
@@ -99,9 +80,8 @@ const FileViewer = ({
   const canGoToPrevious = !isShareView && !!navigation?.hasPrevious;
   const canGoToNext = !isShareView && !!navigation?.hasNext;
   const isItemValidToPreview = isTypeAllowed && isPreviewAvailable && !hasPreviewFailed;
-  const isVideo = fileExtensionGroup === FileExtensionGroup['Video'];
   const isSafari = navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome');
-  const isVideoStreaming = isVideo && !disableVideoStream && (!isSafari || isFileSizePreviewable(file.size));
+  const isVideoStreaming = isStreamed && (!isSafari || isFileSizePreviewable(file.size));
 
   const shouldRenderThePreview = isTypeAllowed && (isVideoStreaming || isPreviewableBySize(file));
   const isTooLargeToPreview = isTypeAllowed && !isPreviewableBySize(file);
@@ -209,14 +189,16 @@ const FileViewer = ({
               className="z-10 flex max-h-full max-w-full flex-col items-start justify-start overflow-auto outline-none"
             >
               <div>
-                {(isVideo || blob) && file ? (
+                {fileViewer && (isStreamed || blob) ? (
                   <Suspense fallback={<div></div>}>
-                    <Viewer
-                      blob={blob}
+                    <fileViewer.Viewer
+                      key={file.id}
+                      blob={blob ?? null}
                       file={file}
                       disableVideoStream={disableVideoStream}
-                      setIsPreviewAvailable={setIsPreviewAvailable}
-                      handlersForSpecialItems={handlersForSpecialItems}
+                      onError={onViewerError}
+                      onProgress={onProgress}
+                      onConvertedContent={onConvertedContent}
                     />
                   </Suspense>
                 ) : null}

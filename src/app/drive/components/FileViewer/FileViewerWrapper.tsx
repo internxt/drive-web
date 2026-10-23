@@ -89,11 +89,6 @@ const FileViewerWrapper = ({
     dispatch(uiActions.setCurrentEditingNameDirty(''));
   }, [dirtyName, currentFile]);
 
-  const handlersForSpecialItems = {
-    handleUpdateProgress: updateProgress,
-    handleUpdateThumbnail: refreshThumbnail,
-  };
-
   return showPreview && currentFile ? (
     <FileViewer
       show={showPreview}
@@ -108,7 +103,8 @@ const FileViewerWrapper = ({
       dropdownItems={menuItems}
       isShareView={isSharedView}
       keyboardShortcuts={viewerKeyboardShortcuts}
-      handlersForSpecialItems={handlersForSpecialItems}
+      onProgress={updateProgress}
+      onConvertedContent={refreshThumbnail}
     />
   ) : (
     <div className="hidden" />

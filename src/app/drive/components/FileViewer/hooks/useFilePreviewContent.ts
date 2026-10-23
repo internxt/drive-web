@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { FileExtensionGroup } from 'app/drive/types/file-types';
 import { PreviewFileItem } from 'app/share/types';
 import errorService from 'services/error.service';
 import { FilePreviewContentSource, getFilePreviewContent } from '../services/filePreviewContent.service';
-import { getIsTypeAllowedAndFileExtensionGroupValues, isPreviewableBySize } from '../utils/fileViewerUtils';
+import { isPreviewableBySize } from '../utils/fileViewerUtils';
+import { getFileViewer } from '../viewers';
+import { ViewerContentSource } from '../viewers/types';
 
 interface UseFilePreviewContentProps {
   file: PreviewFileItem;
@@ -19,10 +20,8 @@ interface PreviewContentState {
   hasFailed: boolean;
 }
 
-const isStreamedVideo = (file: PreviewFileItem): boolean =>
-  getIsTypeAllowedAndFileExtensionGroupValues(file)?.fileExtensionGroup === FileExtensionGroup.Video;
-
-const needsDownloadToPreview = (file: PreviewFileItem): boolean => !isStreamedVideo(file) && isPreviewableBySize(file);
+const needsDownloadToPreview = (file: PreviewFileItem): boolean =>
+  getFileViewer(file)?.contentSource === ViewerContentSource.Blob && isPreviewableBySize(file);
 
 export const useFilePreviewContent = ({
   file,
