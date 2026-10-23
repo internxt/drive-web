@@ -6,6 +6,7 @@ import {
   InfinityIcon,
   LockIcon,
   ShieldCheckIcon,
+  SquaresFourIcon,
   TagIcon,
 } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -37,7 +38,7 @@ const FooterBadge = ({ icon: BadgeIcon, label }: { icon: Icon; label: string }) 
 
 export const UrgentCheckoutHero = ({ planSummary, creativeImage }: UrgentCheckoutHeroProps): JSX.Element => {
   const { translate } = useTranslationContext();
-  const { storage, currencySymbol, discountedAmount, discountPercent } = planSummary;
+  const { storage, currencySymbol, discountedAmount, discountPercent, interval } = planSummary;
 
   const priceLabel = `${currencySymbol}${discountedAmount}`;
 
@@ -48,6 +49,8 @@ export const UrgentCheckoutHero = ({ planSummary, creativeImage }: UrgentCheckou
   const offerPointTitle = discountPercent
     ? translate('urgentCheckout.hero.points.offer.title', { percent: discountPercent })
     : translate('urgentCheckout.hero.points.offer.titleNoDiscount');
+
+  const subtitleKey = `urgentCheckout.hero.subtitle.${interval}`;
 
   return (
     <section className="flex w-full flex-col gap-8">
@@ -60,9 +63,7 @@ export const UrgentCheckoutHero = ({ planSummary, creativeImage }: UrgentCheckou
           {translate('urgentCheckout.hero.title')}{' '}
           <span className="text-[#4D9BFF]">{translate('urgentCheckout.hero.titleHighlight')}</span>
         </h1>
-        <p className="text-xl leading-snug text-[#C4CEDD]">
-          {translate('urgentCheckout.hero.subtitle', { storage, price: priceLabel })}
-        </p>
+        <p className="text-xl leading-snug text-[#C4CEDD]">{translate(subtitleKey, { storage, price: priceLabel })}</p>
       </div>
 
       <ul className="flex flex-col gap-6">
@@ -75,6 +76,11 @@ export const UrgentCheckoutHero = ({ planSummary, creativeImage }: UrgentCheckou
           icon={FolderSimpleIcon}
           title={translate('urgentCheckout.hero.points.storage.title')}
           description={translate('urgentCheckout.hero.points.storage.description')}
+        />
+        <SellingPoint
+          icon={SquaresFourIcon}
+          title={translate('urgentCheckout.hero.points.suite.title')}
+          description={translate('urgentCheckout.hero.points.suite.description')}
         />
         <SellingPoint
           icon={TagIcon}

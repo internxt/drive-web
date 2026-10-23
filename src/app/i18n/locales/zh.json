@@ -303,7 +303,11 @@
       "offerPillNoDiscount": "限时专属优惠",
       "title": "让您的文件、照片和视频",
       "titleHighlight": "100% 私密。",
-      "subtitle": "首月仅需 {{price}}，即可获得 {{storage}} 私人云存储空间。",
+      "subtitle": {
+        "month": "首月仅需 {{price}}，即可获得 {{storage}} 私人云存储空间。",
+        "year": "首年仅需 {{price}}，即可获得 {{storage}} 私人云存储空间。",
+        "lifetime": "一次性付款 {{price}}，即可永久拥有 {{storage}} 私人云存储空间。"
+      },
       "imageAlt": "笔记本电脑和手机上的 Internxt Drive",
       "points": {
         "privacy": {
@@ -313,6 +317,10 @@
         "storage": {
           "title": "您的私人云，安全无忧",
           "description": "存储您的照片、视频、文档和个人文件，隐私保护内置其中。"
+        },
+        "suite": {
+          "title": "不只是云存储空间",
+          "description": "根据您的套餐提供隐私工具。"
         },
         "offer": {
           "title": "立减 {{percent}}% — 限时优惠",
@@ -349,8 +357,8 @@
     },
     "cta": {
       "button": {
-        "lifetime": "获取 Lifetime 存储空间",
-        "subscription": "订阅私人云存储"
+        "lifetime": "获取 Lifetime 套餐",
+        "subscription": "获取订阅套餐"
       },
       "billingDisclosure": {
         "withIntroPrice": {
