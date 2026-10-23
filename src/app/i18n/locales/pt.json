@@ -303,7 +303,11 @@
       "offerPillNoDiscount": "Oferta exclusiva por tempo limitado",
       "title": "Mantenha seus arquivos, fotos e vídeos",
       "titleHighlight": "100% privados.",
-      "subtitle": "Tenha {{storage}} de armazenamento em nuvem privada por apenas {{price}} no primeiro mês.",
+      "subtitle": {
+        "month": "Tenha {{storage}} de armazenamento em nuvem privada por apenas {{price}} no primeiro mês.",
+        "year": "Tenha {{storage}} de armazenamento em nuvem privada por apenas {{price}} no primeiro ano.",
+        "lifetime": "Tenha {{storage}} de armazenamento em nuvem privada para sempre com um pagamento único de {{price}}."
+      },
       "imageAlt": "Internxt Drive em um notebook e em um celular",
       "points": {
         "privacy": {
@@ -313,6 +317,10 @@
         "storage": {
           "title": "Sua nuvem privada, protegida",
           "description": "Guarde suas fotos, vídeos, documentos e arquivos pessoais com privacidade integrada."
+        },
+        "suite": {
+          "title": "Mais do que armazenamento em nuvem",
+          "description": "Ferramentas de privacidade incluídas, conforme o seu plano."
         },
         "offer": {
           "title": "{{percent}}% OFF — por tempo limitado",
@@ -349,8 +357,8 @@
     },
     "cta": {
       "button": {
-        "lifetime": "Tenha o armazenamento Lifetime",
-        "subscription": "Assine o armazenamento em nuvem privada"
+        "lifetime": "Quero o plano Lifetime",
+        "subscription": "Quero o plano de assinatura"
       },
       "billingDisclosure": {
         "withIntroPrice": {
