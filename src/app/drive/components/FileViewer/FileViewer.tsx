@@ -15,7 +15,7 @@ import { Fragment, Suspense, useEffect, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { PreviewFileItem } from 'app/share/types';
 import { setItemsToMove, storageActions } from 'app/store/slices/storage';
-import { FileViewerNavigation, TopBarActionsMenu } from './types';
+import { FileViewerKeyboardShortcuts, FileViewerNavigation, TopBarActionsMenu } from './types';
 import { NoPreviewIsAvailableComponent } from './components/NoPreviewIsAvailableComponent';
 import TopBarActions from './components/TopBarActions';
 import {
@@ -40,10 +40,7 @@ interface FileViewerProps {
   hasPreviewFailed?: boolean;
   navigation?: FileViewerNavigation;
   dropdownItems?: TopBarActionsMenu;
-  keyboardShortcuts?: {
-    renameItemFromKeyboard: ((item) => void) | undefined;
-    removeItemFromKeyboard: ((item) => void) | undefined;
-  };
+  keyboardShortcuts?: FileViewerKeyboardShortcuts;
   handlersForSpecialItems?: {
     handleUpdateProgress: (progress: number) => void;
     handleUpdateThumbnail: (driveFile: PreviewFileItem, blob: Blob) => Promise<void>;
@@ -165,17 +162,9 @@ const FileViewer = ({
 
   useHotkeys('left', () => navigation?.goToPrevious(), { enabled: canGoToPrevious }, [canGoToPrevious, navigation]);
 
-  useHotkeys('r', () => {
-    if (keyboardShortcuts?.renameItemFromKeyboard) {
-      keyboardShortcuts.renameItemFromKeyboard(file);
-    }
-  });
+  useHotkeys('r', () => keyboardShortcuts?.renameItemFromKeyboard?.(file as DriveItemData));
 
-  useHotkeys('backspace', () => {
-    if (keyboardShortcuts?.removeItemFromKeyboard) {
-      keyboardShortcuts?.removeItemFromKeyboard(file);
-    }
-  });
+  useHotkeys('backspace', () => keyboardShortcuts?.removeItemFromKeyboard?.(file as DriveItemData));
 
   const onClosePreview = () => {
     onClose();
