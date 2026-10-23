@@ -1,4 +1,3 @@
-import { useCallback } from 'react';
 import { refreshFileThumbnailFromContent } from 'app/drive/services/thumbnail.service';
 import { PreviewFileItem } from 'app/share/types';
 import { RootState } from 'app/store';
@@ -15,15 +14,12 @@ export const useFileThumbnailRefresh = ({ isSharedView, isWorkspace }: UseFileTh
   const dispatch = useAppDispatch();
   const currentUserUuid = useAppSelector((state: RootState) => state.user.user?.uuid);
 
-  const refreshThumbnail = useCallback(
-    async (file: PreviewFileItem, content: Blob): Promise<void> => {
-      const isOwnedByCurrentUser = !isSharedView || isItemOwnedByCurrentUser(currentUserUuid, file.user?.uuid);
-      if (!isOwnedByCurrentUser) return;
+  const refreshThumbnail = async (file: PreviewFileItem, content: Blob): Promise<void> => {
+    const isOwnedByCurrentUser = !isSharedView || isItemOwnedByCurrentUser(currentUserUuid, file.user?.uuid);
+    if (!isOwnedByCurrentUser) return;
 
-      await refreshFileThumbnailFromContent({ file, content, isWorkspace, dispatch }).catch(errorService.reportError);
-    },
-    [isSharedView, currentUserUuid, isWorkspace, dispatch],
-  );
+    await refreshFileThumbnailFromContent({ file, content, isWorkspace, dispatch }).catch(errorService.reportError);
+  };
 
   return { refreshThumbnail };
 };
