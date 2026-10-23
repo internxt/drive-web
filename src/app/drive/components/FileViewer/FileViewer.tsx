@@ -15,7 +15,7 @@ import { Fragment, Suspense, useEffect, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { PreviewFileItem } from 'app/share/types';
 import { setItemsToMove, storageActions } from 'app/store/slices/storage';
-import { TopBarActionsMenu } from './types';
+import { FileViewerNavigation, TopBarActionsMenu } from './types';
 import { NoPreviewIsAvailableComponent } from './components/NoPreviewIsAvailableComponent';
 import TopBarActions from './components/TopBarActions';
 import {
@@ -38,9 +38,7 @@ interface FileViewerProps {
   disableVideoStream?: boolean;
   blob?: Blob | null;
   hasPreviewFailed?: boolean;
-  changeFile?: (direction: 'next' | 'prev') => void;
-  totalFolderIndex?: number;
-  fileIndex?: number;
+  navigation?: FileViewerNavigation;
   dropdownItems?: TopBarActionsMenu;
   keyboardShortcuts?: {
     renameItemFromKeyboard: ((item) => void) | undefined;
@@ -74,9 +72,7 @@ const FileViewer = ({
   disableVideoStream,
   blob,
   hasPreviewFailed,
-  changeFile,
-  totalFolderIndex,
-  fileIndex,
+  navigation,
   dropdownItems,
   keyboardShortcuts,
   handlersForSpecialItems,
@@ -103,8 +99,8 @@ const FileViewer = ({
 
   const fileType = file.type ? `.${file.type}` : '';
   const filename = file ? `${file.plainName ?? file.name}${fileType}` : '';
-  const isFirstItemOrShareView = fileIndex === 0 || isShareView;
-  const isLastItemOrShareView = (totalFolderIndex && fileIndex === totalFolderIndex - 1) || isShareView;
+  const canGoToPrevious = !isShareView && !!navigation?.hasPrevious;
+  const canGoToNext = !isShareView && !!navigation?.hasNext;
   const isItemValidToPreview = isTypeAllowed && isPreviewAvailable && !hasPreviewFailed;
   const isVideo = fileExtensionGroup === FileExtensionGroup['Video'];
   const isSafari = navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome');
@@ -165,23 +161,9 @@ const FileViewer = ({
   }, [isMoveItemsDialogOpen, isCreateFolderDialogOpen, isEditNameDialogOpen, isShareItemSettingsDialogOpen]);
 
   //UseHotKeys for switch between files with the keyboard (left and right arrows)
-  useHotkeys(
-    'right',
-    () => changeFile?.('next'),
-    {
-      enabled: () => fileIndex !== totalFolderIndex! - 1,
-    },
-    [fileIndex, totalFolderIndex],
-  );
+  useHotkeys('right', () => navigation?.goToNext(), { enabled: canGoToNext }, [canGoToNext, navigation]);
 
-  useHotkeys(
-    'left',
-    () => changeFile?.('prev'),
-    {
-      enabled: fileIndex !== 0,
-    },
-    [fileIndex],
-  );
+  useHotkeys('left', () => navigation?.goToPrevious(), { enabled: canGoToPrevious }, [canGoToPrevious, navigation]);
 
   useHotkeys('r', () => {
     if (keyboardShortcuts?.renameItemFromKeyboard) {
@@ -222,11 +204,11 @@ const FileViewer = ({
 
           {/* Content */}
           {file && <ShareItemDialog share={file.shares?.[0]} isPreviewView item={file as DriveItemData} />}
-          {isFirstItemOrShareView ? null : (
+          {canGoToPrevious && (
             <button
               title={translate('actions.previous')}
               className="absolute left-4 top-1/2 z-30 rounded-full bg-black p-4 text-white outline-none"
-              onClick={() => changeFile?.('prev')}
+              onClick={navigation?.goToPrevious}
             >
               <CaretLeft size={24} />
             </button>
@@ -285,11 +267,11 @@ const FileViewer = ({
               }
             />
           )}
-          {isLastItemOrShareView ? null : (
+          {canGoToNext && (
             <button
               title={translate('actions.next')}
               className="absolute right-4 top-1/2 z-30 rounded-full bg-black p-4 text-white outline-none"
-              onClick={() => changeFile?.('next')}
+              onClick={navigation?.goToNext}
             >
               <CaretRight size={24} />
             </button>
