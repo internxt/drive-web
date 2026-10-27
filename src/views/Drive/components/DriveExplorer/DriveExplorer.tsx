@@ -22,7 +22,7 @@ import { getSignUpSteps } from 'components/signUpSteps';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { storageActions } from 'app/store/slices/storage';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
-import { useToggleFavoriteHotkey } from 'hooks';
+import { useCreateFolderHotkey, useToggleFavoriteHotkey } from 'hooks';
 import { uiActions } from 'app/store/slices/ui';
 import { DriveItemData, FileViewMode } from 'app/drive/types';
 import WarningMessageWrapper from 'views/Home/components/WarningMessageWrapper';
@@ -70,6 +70,7 @@ const DriveExplorer = ({
   const isRecents = navigationService.isCurrentPath(AppView.Recents);
   const isFavorites = navigationService.isCurrentPath(AppView.Favorites);
   const isTrash = navigationService.isCurrentPath(AppView.Trash);
+  const isDrive = !isRecents && !isFavorites && !isTrash;
 
   const {
     fileInputRef,
@@ -155,6 +156,16 @@ const DriveExplorer = ({
 
   useToggleFavoriteHotkey({ enabled: !isTrash && !isSomeDialogOpen, selectedItems });
 
+  const onCreateFolderHotkeyPressed = useCallback((): void => {
+    contextMenu.closeContextMenu();
+    onCreateFolderButtonClicked();
+  }, [contextMenu.closeContextMenu, onCreateFolderButtonClicked]);
+
+  useCreateFolderHotkey({
+    enabled: isDrive && !isSomeDialogOpen,
+    onCreateFolder: onCreateFolderHotkeyPressed,
+  });
+
   const driveExplorer = (
     <div
       role="none"
@@ -183,6 +194,7 @@ const DriveExplorer = ({
         <DriveExplorerContextMenu
           isTrash={isTrash}
           isFavorites={isFavorites}
+          isRecents={isRecents}
           isOpen={contextMenu.isOpen}
           position={contextMenu.position}
           menuRef={contextMenu.menuRef}

@@ -13,10 +13,12 @@ const NAVBAR_HEIGHT = 64;
 const ExplorerWithContextMenu = ({
   isTrash,
   isFavorites,
+  isRecents,
   actions,
 }: {
   isTrash: boolean;
   isFavorites: boolean;
+  isRecents: boolean;
   actions: Record<string, () => void>;
 }) => {
   const contextMenu = useDriveExplorerContextMenu();
@@ -38,6 +40,7 @@ const ExplorerWithContextMenu = ({
           <DriveExplorerContextMenu
             isTrash={isTrash}
             isFavorites={isFavorites}
+            isRecents={isRecents}
             isOpen={contextMenu.isOpen}
             position={contextMenu.position}
             menuRef={contextMenu.menuRef}
@@ -60,9 +63,11 @@ const ExplorerWithContextMenu = ({
   );
 };
 
-const renderExplorer = ({ isTrash = false, isFavorites = false } = {}) => {
+const renderExplorer = ({ isTrash = false, isFavorites = false, isRecents = false } = {}) => {
   const actions = { createFolder: vi.fn(), uploadFiles: vi.fn(), uploadFolder: vi.fn(), clearTrash: vi.fn() };
-  render(<ExplorerWithContextMenu isTrash={isTrash} isFavorites={isFavorites} actions={actions} />);
+  render(
+    <ExplorerWithContextMenu isTrash={isTrash} isFavorites={isFavorites} isRecents={isRecents} actions={actions} />,
+  );
   return actions;
 };
 
@@ -77,8 +82,6 @@ const menuBox = () => {
   if (!menuContent) throw new Error('The context menu is not open');
   return (menuContent.closest('.shadow-subtle-hard') as HTMLElement).getBoundingClientRect();
 };
-
-const pressShiftF = () => fireEvent.keyDown(document, { key: 'F', code: 'KeyF', shiftKey: true });
 
 describe('Drive explorer context menu', () => {
   afterEach(() => {
@@ -134,24 +137,6 @@ describe('Drive explorer context menu', () => {
     expect(openedMenu()).not.toBeInTheDocument();
   });
 
-  test('When the menu is open and the user presses Shift+F, then a new folder is requested and the menu closes', () => {
-    const actions = renderExplorer();
-    rightClickExplorer();
-
-    pressShiftF();
-
-    expect(actions.createFolder).toHaveBeenCalled();
-    expect(openedMenu()).not.toBeInTheDocument();
-  });
-
-  test('When the menu is closed and the user presses Shift+F, then no folder is requested', () => {
-    const actions = renderExplorer();
-
-    pressShiftF();
-
-    expect(actions.createFolder).not.toHaveBeenCalled();
-  });
-
   test('When the user right-clicks in the trash, then only the option to clear the trash is shown', () => {
     renderExplorer({ isTrash: true });
 
@@ -170,17 +155,17 @@ describe('Drive explorer context menu', () => {
     expect(actions.clearTrash).toHaveBeenCalled();
   });
 
-  test('When the trash menu is open and the user presses Shift+F, then no folder is requested', () => {
-    const actions = renderExplorer({ isTrash: true });
-    rightClickExplorer();
-
-    pressShiftF();
-
-    expect(actions.createFolder).not.toHaveBeenCalled();
-  });
-
   test('When the user right-clicks in favorites, then no menu is shown', () => {
     renderExplorer({ isFavorites: true });
+
+    rightClickExplorer();
+
+    expect(screen.queryByText('actions.upload.uploadFiles')).not.toBeInTheDocument();
+    expect(screen.queryByText('drive.clearTrash.accept')).not.toBeInTheDocument();
+  });
+
+  test('When the user right-clicks in recents, then no menu is shown', () => {
+    renderExplorer({ isRecents: true });
 
     rightClickExplorer();
 

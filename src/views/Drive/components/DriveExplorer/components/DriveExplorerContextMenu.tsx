@@ -7,13 +7,13 @@ import {
   UploadSimpleIcon,
 } from '@phosphor-icons/react';
 import { ContextMenu } from '@internxt/ui';
-import { useHotkeys } from 'react-hotkeys-hook';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Point } from '../helpers/contextMenuPosition';
 
 interface DriveExplorerContextMenuProps {
   isTrash: boolean;
   isFavorites: boolean;
+  isRecents: boolean;
   isOpen: boolean;
   position: Point;
   menuRef: MutableRefObject<HTMLDivElement | null>;
@@ -27,6 +27,7 @@ interface DriveExplorerContextMenuProps {
 const DriveExplorerContextMenu = ({
   isTrash,
   isFavorites,
+  isRecents,
   isOpen,
   position,
   menuRef,
@@ -37,16 +38,8 @@ const DriveExplorerContextMenu = ({
   onClearTrashButtonClicked,
 }: DriveExplorerContextMenuProps) => {
   const { translate } = useTranslationContext();
-  const isUploadMenuOpen = isOpen && !isTrash && !isFavorites;
 
-  useHotkeys('shift+F', () => {
-    if (isUploadMenuOpen) {
-      onClose();
-      onCreateFolderButtonClicked();
-    }
-  });
-
-  if (!isOpen || isFavorites) return null;
+  if (!isOpen || isFavorites || isRecents) return null;
 
   const uploadMenu = [
     {
