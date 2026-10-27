@@ -86,6 +86,14 @@ describe('RetryManager', () => {
       expect(remainingTaskIds()).toEqual(['folder-file-a', 'folder-file-b', 'folder', 'other-folder-file']);
     });
 
+    test('when an entry is re-added without a related task, then it keeps the replaced entry related task', () => {
+      RetryManager.addTasks([buildTask('folder-file-a')]);
+
+      RetryManager.removeTasksOfRelatedTask('folder');
+
+      expect(remainingTaskIds()).toEqual(['other-folder-file', 'standalone-file']);
+    });
+
     test('when entries are removed, then listeners are notified', () => {
       const listener = vi.fn();
       RetryManager.subscribe(listener);

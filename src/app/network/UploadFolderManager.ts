@@ -48,6 +48,7 @@ export interface UploadFolderManagerEvents {
     info: { folderName: string; rootFolderUUID?: string; hasFailedFiles: boolean },
   ) => void;
   onFolderUploadError?: (taskId: string, reason?: UploadErrorReason) => void;
+  onFolderUploadCancelled?: (taskId: string) => void;
   stopRelatedUploads?: (taskId: string) => Promise<void>[];
 }
 
@@ -350,9 +351,14 @@ export class UploadFoldersManager {
 
     if (isConnectionLost && !hasKeptUploadedContent) throw new ConnectionLostError();
 
-    // A fatal error (e.g. the folder could not be created) or a cancellation already
-    // announced a final state while the queue was draining: don't announce success on top.
-    if (taskInfo.isCancelled || taskInfo.hasErrored) return;
+    if (taskInfo.isCancelled) {
+      this.events?.onFolderUploadCancelled?.(taskId);
+      return;
+    }
+
+    // A fatal error (e.g. the folder could not be created) already announced a final state
+    // while the queue was draining: don't announce success on top.
+    if (taskInfo.hasErrored) return;
 
     this.events?.onFolderUploadSuccess?.(taskId, {
       folderName: root.name,
