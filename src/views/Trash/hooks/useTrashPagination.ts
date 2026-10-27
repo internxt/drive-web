@@ -1,6 +1,5 @@
-import errorService from 'services/error.service';
 import { OrderSettings } from 'app/core/types';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 
 const TRASH_PAGINATION_OFFSET = 50;
 
@@ -18,7 +17,6 @@ interface UseTrashPaginationProps {
   filesOnTrashLength: number;
   setHasMoreItems: (hasMoreItems: boolean) => void;
   order: OrderSettings;
-  isTrash: boolean;
 }
 
 interface UseTrashPaginationHook {
@@ -34,18 +32,10 @@ export const useTrashPagination = ({
   folderOnTrashLength,
   filesOnTrashLength,
   setHasMoreItems,
-  isTrash,
   order,
 }: UseTrashPaginationProps): UseTrashPaginationHook => {
   const [isLoadingTrashItems, setIsLoadingTrashItems] = useState(false);
   const [hasMoreTrashFolders, setHasMoreTrashFolders] = useState(true);
-
-  useEffect(() => {
-    const isTrashAndNotHasItems = isTrash;
-    if (isTrashAndNotHasItems) {
-      getMoreTrashItems().catch((error) => errorService.reportError(error));
-    }
-  }, []);
 
   const getMoreTrashFolders = useCallback(async () => {
     setIsLoadingTrashItems(true);
