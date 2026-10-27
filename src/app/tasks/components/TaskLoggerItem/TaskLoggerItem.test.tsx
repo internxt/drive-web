@@ -77,16 +77,16 @@ describe('TaskLoggerItem', () => {
     expect(lastTaskToRetryProps()).toMatchObject({ isOpen: true });
   });
 
-  test('when filesToRetry becomes empty while the retry modal is open, then TaskToRetry receives isOpen false', () => {
+  test('when filesToRetry empties while the retry modal is open, then the modal closes and stays closed when new files arrive', () => {
     const { container, rerender } = render(
       <TaskLoggerItem notification={createNotification()} filesToRetry={[createFileToRetry()]} />,
     );
-
     openRetryModal(container);
-    expect(lastTaskToRetryProps()).toMatchObject({ isOpen: true });
 
     rerender(<TaskLoggerItem notification={createNotification()} filesToRetry={[]} />);
+    expect(lastTaskToRetryProps()).toMatchObject({ isOpen: false });
 
+    rerender(<TaskLoggerItem notification={createNotification()} filesToRetry={[createFileToRetry()]} />);
     expect(lastTaskToRetryProps()).toMatchObject({ isOpen: false });
   });
 });

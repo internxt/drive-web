@@ -161,11 +161,11 @@ const TaskLoggerItem = ({ notification, task, filesToRetry }: TaskLoggerItemProp
   };
 
   const hasFilesToRetry = (filesToRetry?.length ?? 0) > 0;
-  const isRetryModalOpen = isModalOpen && hasFilesToRetry;
+  if (isModalOpen && !hasFilesToRetry) setIsModalOpen(false);
 
   return (
     <div className="relative">
-      <TaskToRetry isOpen={isRetryModalOpen} files={filesToRetry ?? []} onClose={() => setIsModalOpen(false)} />
+      <TaskToRetry isOpen={isModalOpen} files={filesToRetry ?? []} onClose={() => setIsModalOpen(false)} />
       <div
         className={'flex h-12 items-center space-x-2 px-2 hover:bg-gray-5'}
         role="none"
