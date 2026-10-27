@@ -45,7 +45,7 @@ const TaskToRetry = ({ isOpen, files, onClose }: TaskToRetryProps): JSX.Element 
       };
       RetryManager.changeStatus(getTaskId({ taskId, params }), RetryableTaskStatus.Retrying);
       try {
-        await uploadRetryItem(data);
+        await uploadRetryItem(data).unwrap();
       } catch {
         RetryManager.changeStatus(getTaskId({ taskId, params }), RetryableTaskStatus.Failed);
       }

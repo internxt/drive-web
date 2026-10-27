@@ -29,6 +29,7 @@ vi.mock('app/i18n/provider/TranslationProvider', () => ({
   }),
 }));
 
+const mockUnwrapRetryUpload = vi.hoisted(() => vi.fn());
 const mockUploadRetryItem = vi.hoisted(() => vi.fn());
 vi.mock('app/store/slices/storage/hooks/useReduxActions', () => ({
   useReduxActions: vi.fn().mockReturnValue({ uploadRetryItem: mockUploadRetryItem }),
@@ -102,6 +103,8 @@ describe('TaskToRetry', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockUnwrapRetryUpload.mockResolvedValue(undefined);
+    mockUploadRetryItem.mockReturnValue({ unwrap: mockUnwrapRetryUpload });
   });
 
   test('when isOpen is true, then the modal renders', () => {
@@ -168,19 +171,13 @@ describe('TaskToRetry', () => {
     expect(uploadFile.name).toBe('Makefile');
   });
 
-  test('when uploadRetryItem throws, then status updates to Failed', () => {
-    mockUploadRetryItem.mockImplementationOnce(() => {
-      throw new Error('Upload failed');
-    });
+  test('when the retried upload is rejected, then status goes back to Failed', async () => {
+    mockUnwrapRetryUpload.mockRejectedValueOnce(new Error('Upload failed'));
 
-    const { getByTestId } = render(<TaskToRetry isOpen={true} files={files} onClose={mockOnClose} />);
-
-    const downloadItem = getByTestId('task-logger-button');
-
-    if (downloadItem) fireEvent.click(downloadItem);
+    retryUpload(files[0]);
 
     expect(mockChangeStatus).toHaveBeenCalledWith('task-1', RetryableTaskStatus.Retrying);
-    expect(mockChangeStatus).toHaveBeenCalledWith('task-1', RetryableTaskStatus.Failed);
+    await vi.waitFor(() => expect(mockChangeStatus).toHaveBeenCalledWith('task-1', RetryableTaskStatus.Failed));
   });
 
   test('when there are failed, retryable files, then the retry all button is rendered', () => {
@@ -271,7 +268,7 @@ describe('TaskToRetry', () => {
 
   test('when retry all retries uploads, then the concurrency cap waits for each upload to finish before starting the next', async () => {
     const totalFiles = RETRY_ALL_CONCURRENCY + 1;
-    const deferredByFile = wireSequentialDeferreds(mockUploadRetryItem, totalFiles);
+    const deferredByFile = wireSequentialDeferreds(mockUnwrapRetryUpload, totalFiles);
 
     const uploadTasks = Array.from({ length: totalFiles }, (_, index) => createUploadTaskWithId(`upload-${index}`));
 
