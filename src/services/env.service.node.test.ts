@@ -34,7 +34,6 @@ describe('Check that env variables are loaded correctly', () => {
     expect(envService.getVariable('shareLinksDomain')).toBe(process.env.REACT_APP_SHARE_LINKS_DOMAIN);
     expect(envService.getVariable('proxy')).toBe(process.env.REACT_APP_PROXY);
     expect(envService.getVariable('dontUseProxy')).toBe(process.env.REACT_APP_DONT_USE_PROXY);
-    expect(envService.getVariable('notifications')).toBe(process.env.REACT_APP_NOTIFICATIONS_URL);
 
     expect(envService.getVariable('gaId')).toBe(process.env.REACT_APP_GA_ID);
     expect(envService.getVariable('fbId')).toBe(process.env.REACT_APP_META_PIXEL);
@@ -58,7 +57,6 @@ describe('Check that env variables are loaded correctly', () => {
     expect(envService.getVariable('newApi')).toMatch(urlPattern);
     expect(envService.getVariable('payments')).toMatch(urlPattern);
     expect(envService.getVariable('websiteUrl')).toMatch(urlPattern);
-    expect(envService.getVariable('notifications')).toMatch(urlPattern);
     expect(envService.getVariable('storjBridge')).toMatch(urlPattern);
     expect(envService.getVariable('impactApiUrl')).toMatch(urlPattern);
     expect(envService.getVariable('location')).toMatch(urlPattern);
