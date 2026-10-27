@@ -211,8 +211,8 @@ const DriveExplorer = ({
             >
               {title}
             </div>
-            {/* General Dropdown for Drive Explorer/Trash */}
-            {!isTrash && !isFavorites && (
+            {/* Upload and new folder actions, only for Drive */}
+            {isDrive && (
               <div className="flex items-center justify-center">
                 <DriveTopBarItems
                   stepOneTutorialRef={tutorialState.uploadFileButtonRef}
