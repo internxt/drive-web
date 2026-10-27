@@ -227,6 +227,14 @@ describe('uploadFoldersWithTasks', () => {
       },
     );
 
+    test('when the folder upload is cancelled, then only its files are removed from the retry list', async () => {
+      const { events } = await runUpload([{ root, currentFolderId: 'parent' }]);
+
+      events.onFolderUploadCancelled?.('task-1');
+
+      expect(retryTaskIds()).toEqual(['other-task-a.txt', 'other-task-b.txt']);
+    });
+
     test('when the folder upload is retried, then its previous failed files are removed from the retry list', async () => {
       await runUpload([{ root, currentFolderId: 'parent', options: { taskId: 'task-1' } }]);
 

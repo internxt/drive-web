@@ -457,6 +457,7 @@ describe('uploadFoldersWithManager', () => {
         }),
         onFolderUploadSuccess: vi.fn(),
         onFolderUploadError: vi.fn(),
+        onFolderUploadCancelled: vi.fn(),
         stopRelatedUploads,
       };
 
@@ -504,6 +505,16 @@ describe('uploadFoldersWithManager', () => {
 
       expect(uploadFile).toHaveBeenCalledTimes(6);
       expect(stopRelatedUploads).toHaveBeenCalledWith(taskId);
+      expect(events.onFolderUploadSuccess).not.toHaveBeenCalled();
+      expect(events.onFolderUploadError).not.toHaveBeenCalled();
+    });
+
+    test('when a folder upload is cancelled, then it is announced as cancelled once its queue has drained', async () => {
+      const { events, run } = arrangeCancelledFolderUpload(2);
+
+      await run();
+
+      expect(events.onFolderUploadCancelled).toHaveBeenCalledWith(taskId);
       expect(events.onFolderUploadSuccess).not.toHaveBeenCalled();
       expect(events.onFolderUploadError).not.toHaveBeenCalled();
     });

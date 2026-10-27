@@ -30,10 +30,18 @@ class RetryManager {
    * Adds tasks to the retry list, marking them as failed.
    * A task can only appear once per taskId: re-adding a failed task
    * replaces its entry instead of duplicating it in the retry list.
+   * A re-added task without a relatedTaskId keeps the one of the entry it replaces.
    */
   addTasks(tasks: RetryableTask[]) {
     const incomingTaskIds = new Set(tasks.map((task) => task.taskId).filter(Boolean));
-    const tasksWithStatus = tasks.map((task) => ({ ...task, status: RetryableTaskStatus.Failed }));
+    const tasksWithStatus = tasks.map((task) => {
+      const previousRelatedTaskId = this.getTasksById(task.taskId)[0]?.params?.relatedTaskId;
+      return {
+        ...task,
+        params: { ...task.params, relatedTaskId: task.params?.relatedTaskId ?? previousRelatedTaskId },
+        status: RetryableTaskStatus.Failed,
+      };
+    });
     this.tasksToRetry = this.tasksToRetry.filter((task) => !incomingTaskIds.has(task.taskId));
     this.tasksToRetry.push(...tasksWithStatus);
     this.notify();

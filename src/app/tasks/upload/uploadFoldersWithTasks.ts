@@ -109,6 +109,8 @@ export const uploadFoldersWithTasks = (props: UploadFoldersWithTasksProps): Prom
       tasksService.updateTask({ taskId, merge: errorMerge(reason) });
     },
 
+    onFolderUploadCancelled: (taskId) => RetryManager.removeTasksOfRelatedTask(taskId),
+
     stopRelatedUploads: (taskId) =>
       tasksService
         .getTasks({ relatedTaskId: taskId })
