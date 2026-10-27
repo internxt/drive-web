@@ -1,5 +1,4 @@
 import { X } from '@phosphor-icons/react';
-import { queue } from 'async';
 import { useReduxActions } from 'app/store/slices/storage/hooks/useReduxActions';
 import { FixedSizeList as List } from 'react-window';
 import TaskToRetryItem from '../TaskToRetryItem/TaskToRetryItem';
@@ -12,8 +11,7 @@ import { useAppSelector } from '../../../store/hooks';
 import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 import { renameFile } from '../../../crypto/services/utils';
 import { FileToUpload } from 'app/drive/services/file.service/types';
-import { QueueUtilsService } from 'utils/queueUtils';
-import errorService from 'services/error.service';
+import { enqueueRetry } from '../../services/retryQueue';
 
 interface TaskToRetryProps {
   isOpen: boolean;
@@ -27,15 +25,13 @@ const withFullName = ({ content, name, type }: FileToUpload): File =>
 const getTaskId = ({ taskId, params }: Pick<RetryableTask, 'taskId' | 'params'>): string =>
   taskId ?? params?.taskId ?? '';
 
-const RETRY_ALL_CONCURRENCY = 6;
-
 const TaskToRetry = ({ isOpen, files, onClose }: TaskToRetryProps): JSX.Element => {
   const { uploadRetryItem } = useReduxActions();
   const { translate } = useTranslationContext();
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const workspaceCredentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
 
-  const downloadItem = async ({ taskId, params, type }: RetryableTask) => {
+  const runRetry = async ({ taskId, params, type }: RetryableTask) => {
     if (type === RetryableTaskType.Upload) {
       const data = {
         uploadFile: withFullName(params.filecontent),
@@ -43,14 +39,12 @@ const TaskToRetry = ({ isOpen, files, onClose }: TaskToRetryProps): JSX.Element 
         taskId: getTaskId({ taskId, params }),
         fileType: params?.filecontent?.type ?? '',
       };
-      RetryManager.changeStatus(getTaskId({ taskId, params }), RetryableTaskStatus.Retrying);
       try {
         await uploadRetryItem(data).unwrap();
       } catch {
         RetryManager.changeStatus(getTaskId({ taskId, params }), RetryableTaskStatus.Failed);
       }
     } else {
-      RetryManager.changeStatus(taskId, RetryableTaskStatus.Retrying);
       try {
         await DownloadManager.downloadItem({
           payload: [params],
@@ -68,21 +62,12 @@ const TaskToRetry = ({ isOpen, files, onClose }: TaskToRetryProps): JSX.Element 
     ({ status, retryable }) => status === RetryableTaskStatus.Failed && retryable !== false,
   );
 
-  const retryAll = () => {
-    retryableFiles.forEach((file) => {
-      RetryManager.changeStatus(getTaskId(file), RetryableTaskStatus.Retrying);
-    });
-
-    const retryQueue = queue<RetryableTask>((file, next) => {
-      QueueUtilsService.instance.adjustConcurrency(retryQueue, RETRY_ALL_CONCURRENCY);
-
-      downloadItem(file)
-        .then(() => next())
-        .catch((error) => next(error));
-    }, RETRY_ALL_CONCURRENCY);
-
-    Promise.all(retryableFiles.map((file) => retryQueue.push(file))).catch((error) => errorService.reportError(error));
+  const retryItem = (file: RetryableTask) => {
+    RetryManager.changeStatus(getTaskId(file), RetryableTaskStatus.Retrying);
+    enqueueRetry(() => runRetry(file));
   };
+
+  const retryAll = () => retryableFiles.forEach(retryItem);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -119,7 +104,13 @@ const TaskToRetry = ({ isOpen, files, onClose }: TaskToRetryProps): JSX.Element 
 
       {files?.length > 0 ? (
         <div className="pt-3 -mr-5">
-          <List height={400} itemCount={files.length} itemSize={72} width={'100%'} itemData={{ files, downloadItem }}>
+          <List
+            height={400}
+            itemCount={files.length}
+            itemSize={72}
+            width={'100%'}
+            itemData={{ files, downloadItem: retryItem }}
+          >
             {TaskToRetryItem}
           </List>
         </div>

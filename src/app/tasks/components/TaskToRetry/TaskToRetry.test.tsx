@@ -1,8 +1,10 @@
 import { render, fireEvent } from '@testing-library/react';
-import { describe, test, vi, expect, beforeEach } from 'vitest';
+import { describe, test, vi, expect, beforeEach, afterEach } from 'vitest';
 import TaskToRetry from './TaskToRetry';
 import RetryManager, { RetryableTask, RetryableTaskStatus, RetryableTaskType } from '../../../network/RetryManager';
 import { QueueUtilsService } from 'utils/queueUtils';
+import { MAX_CONCURRENT_UPLOADS } from 'app/network/networkConstants';
+import { retryQueue } from '../../services/retryQueue';
 
 vi.mock('../../../store/hooks', () => ({
   useAppDispatch: vi.fn(),
@@ -58,9 +60,10 @@ describe('TaskToRetry', () => {
     status: RetryableTaskStatus.Failed,
   });
 
-  const retryUpload = (task: RetryableTask): File => {
+  const retryUpload = async (task: RetryableTask): Promise<File> => {
     const { getByTestId } = render(<TaskToRetry isOpen={true} files={[task]} onClose={mockOnClose} />);
     fireEvent.click(getByTestId('task-logger-button'));
+    await vi.waitFor(() => expect(mockUploadRetryItem).toHaveBeenCalled());
     return mockUploadRetryItem.mock.calls[0][0].uploadFile;
   };
 
@@ -78,8 +81,6 @@ describe('TaskToRetry', () => {
     params: { taskId },
     status: RetryableTaskStatus.Failed,
   });
-
-  const RETRY_ALL_CONCURRENCY = 6;
 
   const createDeferred = (): { promise: Promise<void>; resolve: () => void } => {
     let resolve: () => void = () => undefined;
@@ -105,6 +106,11 @@ describe('TaskToRetry', () => {
     vi.clearAllMocks();
     mockUnwrapRetryUpload.mockResolvedValue(undefined);
     mockUploadRetryItem.mockReturnValue({ unwrap: mockUnwrapRetryUpload });
+  });
+
+  afterEach(async () => {
+    await vi.waitFor(() => expect(retryQueue.idle()).toBe(true));
+    retryQueue.concurrency = MAX_CONCURRENT_UPLOADS;
   });
 
   test('when isOpen is true, then the modal renders', () => {
@@ -143,7 +149,7 @@ describe('TaskToRetry', () => {
     expect(getByTestId('title-taskRetry')).not.toHaveTextContent('(0)');
   });
 
-  test('when a failed upload is retried, then uploadRetryItem is called and status updates to Retrying', () => {
+  test('when a failed upload is retried, then uploadRetryItem is called and status updates to Retrying', async () => {
     const { getByTestId } = render(<TaskToRetry isOpen={true} files={files} onClose={mockOnClose} />);
 
     const downloadItem = getByTestId('task-logger-button');
@@ -151,6 +157,7 @@ describe('TaskToRetry', () => {
     if (downloadItem) fireEvent.click(downloadItem);
 
     expect(mockChangeStatus).toHaveBeenCalledWith('task-1', RetryableTaskStatus.Retrying);
+    await vi.waitFor(() => expect(mockUploadRetryItem).toHaveBeenCalled());
     expect(mockUploadRetryItem).toHaveBeenCalledWith({
       uploadFile: expect.any(File),
       parentFolderId: 'folder-1',
@@ -159,14 +166,14 @@ describe('TaskToRetry', () => {
     });
   });
 
-  test('when a file whose name has dots is retried, then it is uploaded with its full original name', () => {
-    const uploadFile = retryUpload(createUploadTask('Screenshot 2026-10-12 at 11.48.02 PM', 'png'));
+  test('when a file whose name has dots is retried, then it is uploaded with its full original name', async () => {
+    const uploadFile = await retryUpload(createUploadTask('Screenshot 2026-10-12 at 11.48.02 PM', 'png'));
 
     expect(uploadFile.name).toBe('Screenshot 2026-10-12 at 11.48.02 PM.png');
   });
 
-  test('when a file without extension is retried, then it is uploaded with its name unchanged', () => {
-    const uploadFile = retryUpload(createUploadTask('Makefile', ''));
+  test('when a file without extension is retried, then it is uploaded with its name unchanged', async () => {
+    const uploadFile = await retryUpload(createUploadTask('Makefile', ''));
 
     expect(uploadFile.name).toBe('Makefile');
   });
@@ -174,7 +181,7 @@ describe('TaskToRetry', () => {
   test('when the retried upload is rejected, then status goes back to Failed', async () => {
     mockUnwrapRetryUpload.mockRejectedValueOnce(new Error('Upload failed'));
 
-    retryUpload(files[0]);
+    await retryUpload(files[0]);
 
     expect(mockChangeStatus).toHaveBeenCalledWith('task-1', RetryableTaskStatus.Retrying);
     await vi.waitFor(() => expect(mockChangeStatus).toHaveBeenCalledWith('task-1', RetryableTaskStatus.Failed));
@@ -229,7 +236,7 @@ describe('TaskToRetry', () => {
   });
 
   test('when retry all is clicked, then every eligible file becomes Retrying immediately, regardless of the concurrency limit', () => {
-    const totalFiles = RETRY_ALL_CONCURRENCY + 2;
+    const totalFiles = MAX_CONCURRENT_UPLOADS + 2;
     const retryableFiles = Array.from({ length: totalFiles }, (_, index) => createUploadTaskWithId(`upload-${index}`));
 
     const { container } = render(<TaskToRetry isOpen={true} files={retryableFiles} onClose={mockOnClose} />);
@@ -241,15 +248,22 @@ describe('TaskToRetry', () => {
     });
   });
 
-  const expectThrottledRetryAll = async (effectiveConcurrency: number): Promise<void> => {
+  const clickRetryAllOnce = (downloadTasks: RetryableTask[]): void => {
+    const { container } = render(<TaskToRetry isOpen={true} files={downloadTasks} onClose={mockOnClose} />);
+    fireEvent.click(getRetryAllButton(container) as HTMLElement);
+  };
+
+  const expectThrottledRetryAll = async (
+    effectiveConcurrency: number,
+    startRetries: (downloadTasks: RetryableTask[]) => void = clickRetryAllOnce,
+  ): Promise<void> => {
     const totalFiles = effectiveConcurrency + 2;
     const deferredByFile = wireSequentialDeferreds(mockDownloadItem, totalFiles);
     const downloadTasks = Array.from({ length: totalFiles }, (_, index) =>
       createDownloadTaskWithId(`download-${index}`),
     );
 
-    const { container } = render(<TaskToRetry isOpen={true} files={downloadTasks} onClose={mockOnClose} />);
-    fireEvent.click(getRetryAllButton(container) as HTMLElement);
+    startRetries(downloadTasks);
 
     await vi.waitFor(() => expect(mockDownloadItem).toHaveBeenCalledTimes(effectiveConcurrency));
 
@@ -263,11 +277,27 @@ describe('TaskToRetry', () => {
   };
 
   test('when retry all is clicked with more files than the concurrency limit, then only 6 start retrying immediately and the rest start as earlier ones finish', async () => {
-    await expectThrottledRetryAll(RETRY_ALL_CONCURRENCY);
+    await expectThrottledRetryAll(MAX_CONCURRENT_UPLOADS);
+  });
+
+  test('when retries are started again while the concurrency limit is full, then no more than 6 run at once and the extra ones start as slots free up', async () => {
+    await expectThrottledRetryAll(MAX_CONCURRENT_UPLOADS, (downloadTasks) => {
+      const [lateRetryAllTask, lateSingleRetryTask] = downloadTasks.slice(MAX_CONCURRENT_UPLOADS);
+      const { container, getByTestId, rerender } = render(
+        <TaskToRetry isOpen={true} files={downloadTasks.slice(0, MAX_CONCURRENT_UPLOADS)} onClose={mockOnClose} />,
+      );
+      fireEvent.click(getRetryAllButton(container) as HTMLElement);
+
+      rerender(<TaskToRetry isOpen={true} files={[lateRetryAllTask]} onClose={mockOnClose} />);
+      fireEvent.click(getRetryAllButton(container) as HTMLElement);
+
+      rerender(<TaskToRetry isOpen={true} files={[lateSingleRetryTask]} onClose={mockOnClose} />);
+      fireEvent.click(getByTestId('task-logger-button'));
+    });
   });
 
   test('when retry all retries uploads, then the concurrency cap waits for each upload to finish before starting the next', async () => {
-    const totalFiles = RETRY_ALL_CONCURRENCY + 1;
+    const totalFiles = MAX_CONCURRENT_UPLOADS + 1;
     const deferredByFile = wireSequentialDeferreds(mockUnwrapRetryUpload, totalFiles);
 
     const uploadTasks = Array.from({ length: totalFiles }, (_, index) => createUploadTaskWithId(`upload-${index}`));
@@ -276,18 +306,20 @@ describe('TaskToRetry', () => {
 
     fireEvent.click(getRetryAllButton(container) as HTMLElement);
 
-    await vi.waitFor(() => expect(mockUploadRetryItem).toHaveBeenCalledTimes(RETRY_ALL_CONCURRENCY));
+    await vi.waitFor(() => expect(mockUploadRetryItem).toHaveBeenCalledTimes(MAX_CONCURRENT_UPLOADS));
     await new Promise((resolve) => setTimeout(resolve, 0));
-    expect(mockUploadRetryItem).toHaveBeenCalledTimes(RETRY_ALL_CONCURRENCY);
+    expect(mockUploadRetryItem).toHaveBeenCalledTimes(MAX_CONCURRENT_UPLOADS);
 
     deferredByFile[0].resolve();
 
     await vi.waitFor(() => expect(mockUploadRetryItem).toHaveBeenCalledTimes(totalFiles));
+    deferredByFile.forEach(({ resolve }) => resolve());
   });
 
   test('when memory usage is high, then retry all ramps concurrency down and runs fewer than 6 at a time', async () => {
-    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(1);
+    const getConcurrencySpy = vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(1);
 
     await expectThrottledRetryAll(1);
+    getConcurrencySpy.mockRestore();
   });
 });
