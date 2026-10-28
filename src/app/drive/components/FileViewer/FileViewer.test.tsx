@@ -3,8 +3,8 @@ import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, test, vi } from 'vitest';
-import { DriveFileData } from 'app/drive/types';
-import storageReducer from 'app/store/slices/storage';
+import { DriveFileData, DriveItemData } from 'app/drive/types';
+import storageReducer, { storageActions } from 'app/store/slices/storage';
 import uiReducer, { uiActions } from 'app/store/slices/ui';
 import FileViewer from './FileViewer';
 
@@ -95,6 +95,66 @@ describe('File viewer', () => {
     fireEvent.keyDown(document, { key: 'Escape' });
 
     expect(store.getState().ui.isMoveItemsDialogOpen).toBe(false);
+  });
+
+  test('When Escape is pressed with the share dialog open on top of the viewer, then it closes and the item is no longer being shared', () => {
+    const { store } = renderViewer();
+    act(() => {
+      store.dispatch(storageActions.setItemToShare({ item: createFile() as unknown as DriveItemData }));
+      store.dispatch(uiActions.setIsShareItemDialogOpenInPreviewView(true));
+    });
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+
+    expect(store.getState().ui.isShareItemDialogOpenInPreviewView).toBe(false);
+    expect(store.getState().storage.itemToShare).toBeNull();
+  });
+
+  test('When Escape is pressed with the rename dialog open on top of the viewer, then it closes and the item is no longer being renamed', () => {
+    const { store } = renderViewer();
+    act(() => {
+      store.dispatch(storageActions.setItemToRename(createFile() as unknown as DriveItemData));
+      store.dispatch(uiActions.setIsEditFolderNameDialog(true));
+    });
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+
+    expect(store.getState().ui.isEditFolderNameDialog).toBe(false);
+    expect(store.getState().storage.itemToRename).toBeNull();
+  });
+
+  test('When Escape is pressed with the new folder dialog open on top of the viewer, then it closes', () => {
+    const { store } = renderViewer();
+    act(() => {
+      store.dispatch(uiActions.setIsCreateFolderDialogOpen(true));
+    });
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+
+    expect(store.getState().ui.isCreateFolderDialogOpen).toBe(false);
+  });
+
+  test('When another key is pressed with a dialog open on top of the viewer, then that dialog stays open', () => {
+    const { store } = renderViewer();
+    act(() => {
+      store.dispatch(uiActions.setIsCreateFolderDialogOpen(true));
+    });
+
+    fireEvent.keyDown(document, { key: 'Enter' });
+
+    expect(store.getState().ui.isCreateFolderDialogOpen).toBe(true);
+  });
+
+  test('When the file has no plain name, then the viewer shows its name with the extension', () => {
+    renderViewer({ file: createFile({ name: 'report', plainName: undefined, type: 'pdf' }) });
+
+    expect(screen.getByRole('heading', { name: 'report.pdf' })).toBeInTheDocument();
+  });
+
+  test('When the file has no extension, then the viewer shows its name without a trailing dot', () => {
+    renderViewer({ file: createFile({ name: 'README', plainName: 'README', type: '' }) });
+
+    expect(screen.getByRole('heading', { name: 'README' })).toBeInTheDocument();
   });
 
   test('When there are files before and after, then both arrows move between them', () => {
