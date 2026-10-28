@@ -21,6 +21,12 @@ import {
   UploadFolderData,
 } from '../../types';
 
+const matchesFilter = (task: TaskData, { status, relatedTaskId }: TaskFilter): boolean => {
+  const hasMatchingStatus = !status || status.includes(task.status);
+  const hasMatchingRelatedTask = !relatedTaskId || task.relatedTaskId === relatedTaskId;
+  return hasMatchingStatus && hasMatchingRelatedTask;
+};
+
 class TaskManagerService {
   private readonly tasksById: Map<string, TaskData>;
   private readonly notificationsByTaskId: Map<string, TaskNotification>;
@@ -63,12 +69,8 @@ class TaskManagerService {
   }
 
   public getTasks(filter: TaskFilter = {}) {
-    return [...this.tasksById.values()].filter((task) => {
-      const meetsTheStatus = !filter.status || filter.status.includes(task.status);
-      const meetsTheRelatedTaskId = !filter.relatedTaskId || task.relatedTaskId === filter.relatedTaskId;
-
-      return meetsTheStatus && meetsTheRelatedTaskId;
-    });
+    const tasks = Array.from(this.tasksById.values());
+    return tasks.filter((task) => matchesFilter(task, filter));
   }
 
   public findTask(taskId: string) {
