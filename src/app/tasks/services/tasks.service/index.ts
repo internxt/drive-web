@@ -22,13 +22,11 @@ import {
 } from '../../types';
 
 class TaskManagerService {
-  private tasks: TaskData[];
   private readonly tasksById: Map<string, TaskData>;
   private readonly notificationsByTaskId: Map<string, TaskNotification>;
   private eventEmitter: EventEmitter;
 
   constructor() {
-    this.tasks = [];
     this.tasksById = new Map();
     this.notificationsByTaskId = new Map();
     this.eventEmitter = new EventEmitter();
@@ -37,7 +35,6 @@ class TaskManagerService {
   public create<T extends BaseTask>(data: Omit<T, 'id' | 'status' | 'progress'>) {
     const task = this.taskFactory(data);
 
-    this.tasks.push(task);
     this.tasksById.set(task.id, task);
 
     this.eventEmitter.emit(TaskEvent.TaskAdded, task);
@@ -55,20 +52,18 @@ class TaskManagerService {
   }
 
   public clearTasks() {
-    this.tasks = [];
     this.tasksById.clear();
     this.notificationsByTaskId.clear();
   }
 
   public removeTask(taskId: string) {
-    this.tasks = this.tasks.filter((task) => task.id !== taskId);
     this.tasksById.delete(taskId);
     this.notificationsByTaskId.delete(taskId);
     this.eventEmitter.emit(TaskEvent.TaskRemoved);
   }
 
   public getTasks(filter: TaskFilter = {}) {
-    return this.tasks.filter((task) => {
+    return [...this.tasksById.values()].filter((task) => {
       const meetsTheStatus = !filter.status || filter.status.includes(task.status);
       const meetsTheRelatedTaskId = !filter.relatedTaskId || task.relatedTaskId === filter.relatedTaskId;
 

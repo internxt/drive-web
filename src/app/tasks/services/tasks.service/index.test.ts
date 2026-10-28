@@ -31,6 +31,30 @@ describe('Task notifications', () => {
     expect(reportAfter.progress).toBe(0.5);
   });
 
+  test('When several tasks are created, then their notifications are listed from newest to oldest', () => {
+    createUploadTask('report');
+    createUploadTask('invoice');
+    createUploadTask('contract');
+
+    expect(tasksService.getNotifications().map((notification) => notification.title)).toEqual([
+      'contract.txt',
+      'invoice.txt',
+      'report.txt',
+    ]);
+  });
+
+  test('When several tasks are created, then their notifications are listed from newest to oldest', () => {
+    createUploadTask('report');
+    createUploadTask('invoice');
+    createUploadTask('contract');
+
+    expect(tasksService.getNotifications().map((notification) => notification.title)).toEqual([
+      'contract.txt',
+      'invoice.txt',
+      'report.txt',
+    ]);
+  });
+
   test('When a task is removed, then its notification disappears', () => {
     const reportTaskId = createUploadTask('report');
     createUploadTask('invoice');
