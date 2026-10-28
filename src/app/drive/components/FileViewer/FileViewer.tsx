@@ -1,6 +1,6 @@
 import { Dialog, DialogBackdrop, Transition } from '@headlessui/react';
 import { Fragment, Suspense, useCallback, useEffect, useState } from 'react';
-import { useHotkeys } from 'react-hotkeys-hook';
+import { HOTKEYS, useAppHotkey } from 'hooks';
 import { isFileSizePreviewable } from 'services/media.service';
 import iconService from 'app/drive/services/icon.service';
 import { bytesToString } from 'app/drive/services/size.service';
@@ -77,13 +77,20 @@ const FileViewer = ({
     return () => document.removeEventListener('contextmenu', preventBrowserContextMenu);
   }, []);
 
-  useHotkeys('right', () => navigation?.goToNext(), { enabled: canGoToNext }, [canGoToNext, navigation]);
+  useAppHotkey(HOTKEYS.nextFile, () => navigation?.goToNext(), { enabled: canGoToNext, ignoreDialogs: true });
 
-  useHotkeys('left', () => navigation?.goToPrevious(), { enabled: canGoToPrevious }, [canGoToPrevious, navigation]);
+  useAppHotkey(HOTKEYS.previousFile, () => navigation?.goToPrevious(), {
+    enabled: canGoToPrevious,
+    ignoreDialogs: true,
+  });
 
-  useHotkeys('r', () => keyboardShortcuts?.renameItemFromKeyboard?.(file as DriveItemData));
+  useAppHotkey(HOTKEYS.rename, () => keyboardShortcuts?.renameItemFromKeyboard?.(file as DriveItemData), {
+    ignoreDialogs: true,
+  });
 
-  useHotkeys('backspace', () => keyboardShortcuts?.removeItemFromKeyboard?.(file as DriveItemData));
+  useAppHotkey(HOTKEYS.moveToTrash, () => keyboardShortcuts?.removeItemFromKeyboard?.(file as DriveItemData), {
+    ignoreDialogs: true,
+  });
 
   return (
     <Transition
