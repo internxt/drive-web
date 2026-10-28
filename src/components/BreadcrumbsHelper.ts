@@ -66,12 +66,12 @@ export const handleFileDrop = async (droppedData: unknown, item: BreadcrumbItemD
 
 export const onItemDropped = (
   item: BreadcrumbItemData,
-  _namePath: FolderPath[],
+  _: FolderPath[],
   isSomeItemSelected: boolean,
   selectedItems: DriveItemData[],
   dispatch: AppDispatch,
 ) => {
-  return async (draggedItem: unknown, monitor: DropTargetMonitor) => {
+  return async (_: unknown, monitor: DropTargetMonitor) => {
     const droppedType = monitor.getItemType();
     const droppedData = monitor.getItem();
 

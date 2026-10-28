@@ -44,7 +44,7 @@ async function transformEntryToRoot(entry: FileSystemDirectoryEntry): Promise<IR
 
   return {
     name: entry.name,
-    isFolder: true,
+    isFolder: entry.isDirectory,
     childrenFiles,
     childrenFolders,
     folderId: null,

@@ -7,6 +7,12 @@ export type CollisionItem = File | IRoot | DriveItemData;
 
 export type CollisionPair<T extends CollisionItem = CollisionItem> = { item: T; existing: DriveItemData };
 
+type DriveFileItem = DriveItemData & { isFolder: false };
+
+export const isLocalFile = (item: CollisionItem): item is File => item instanceof File;
+
+const isDriveFile = (item: IRoot | DriveItemData): item is DriveFileItem => !item.isFolder;
+
 const matchesName = (existing: DriveItemData, name: string) => (existing.plainName ?? existing.name) === name;
 
 const matchesType = (existing: DriveItemData, type?: string | null) => (existing.type ?? null) === (type ?? null);
@@ -16,22 +22,22 @@ const matchesType = (existing: DriveItemData, type?: string | null) => (existing
  * and files only match files by name and extension.
  */
 export const findExistingItemFor = (item: CollisionItem, existingItems: DriveItemData[]): DriveItemData | undefined => {
-  if (item instanceof File) {
+  if (isLocalFile(item)) {
     const { filename, extension } = itemUtils.getFilenameAndExt(item.name);
     return existingItems.find(
       (existing) => !existing.isFolder && matchesName(existing, filename) && matchesType(existing, extension),
     );
   }
 
-  if (item.isFolder) {
-    const folderName = ('plainName' in item && item.plainName) || item.name;
-    return existingItems.find((existing) => existing.isFolder && matchesName(existing, folderName));
+  if (isDriveFile(item)) {
+    return existingItems.find(
+      (existing) =>
+        !existing.isFolder && matchesName(existing, item.plainName ?? item.name) && matchesType(existing, item.type),
+    );
   }
 
-  return existingItems.find(
-    (existing) =>
-      !existing.isFolder && matchesName(existing, item.plainName ?? item.name) && matchesType(existing, item.type),
-  );
+  const folderName = ('plainName' in item && item.plainName) || item.name;
+  return existingItems.find((existing) => existing.isFolder && matchesName(existing, folderName));
 };
 
 /**
