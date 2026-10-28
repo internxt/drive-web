@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useOpenItem } from '../../hooks/useOpen';
 import { useRetryDownload, useRetryUpload } from '../../hooks/useRetry';
@@ -196,4 +196,4 @@ const TaskLoggerItem = ({ notification, task, filesToRetry }: TaskLoggerItemProp
   );
 };
 
-export default TaskLoggerItem;
+export default memo(TaskLoggerItem);
