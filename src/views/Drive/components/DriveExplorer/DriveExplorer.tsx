@@ -95,22 +95,34 @@ const DriveExplorer = ({
   } = useDriveExplorerItems({ isTrash, isFavorites, isRecents, isLoading, getTrashPaginated });
   const tutorialState = useTutorialState();
 
-  const isSomeDialogOpen = useAppSelector(
+  const isSomeStoreDialogOpen = useAppSelector(
     (state: RootState) =>
       state.ui.isShareDialogOpen ||
+      state.ui.isShareItemDialogOpen ||
+      state.ui.isShareWhithTeamDialogOpen ||
+      state.ui.isInvitationsDialogOpen ||
       state.ui.isEditFolderNameDialog ||
       state.ui.isFileViewerOpen ||
       state.ui.isMoveItemsDialogOpen ||
       state.ui.isCreateFolderDialogOpen ||
+      state.ui.isDeleteItemsDialogOpen ||
+      state.ui.isClearTrashDialogOpen ||
+      state.ui.isAutomaticTrashDisposalDialogOpen ||
       state.ui.isNameCollisionDialogOpen ||
+      state.ui.isUploadItemsFailsDialogOpen ||
       state.ui.isReachedPlanLimitDialogOpen ||
+      state.ui.isReachedFileSizeLimitDialogOpen ||
+      state.ui.isUpgradePlanDialogOpen ||
       state.ui.isItemDetailsDialogOpen ||
+      state.ui.isDeleteVersionDialogOpen ||
+      state.ui.isRestoreVersionDialogOpen ||
       state.ui.isPreferencesDialogOpen,
   );
 
   const { refreshItems, refreshItemsAfterChange } = useRefreshDriveExplorerItems(fetchFolderContent);
   const { editNameItem, setEditNameItem, onEditNameClose } = useEditItemName();
   const stopSharingAndTrash = useStopSharingAndTrash(refreshItemsAfterChange);
+  const isSomeDialogOpen = isSomeStoreDialogOpen || stopSharingAndTrash.isStopSharingConfirmationOpen;
 
   const signupSteps = getSignUpSteps(
     {
@@ -295,7 +307,11 @@ const DriveExplorer = ({
   }
 
   return (
-    <Tutorial show={tutorialState.showTutorial} steps={signupSteps} currentStep={tutorialState.currentTutorialStep}>
+    <Tutorial
+      show={isDrive && tutorialState.showTutorial}
+      steps={signupSteps}
+      currentStep={tutorialState.currentTutorialStep}
+    >
       {dropRef(driveExplorer) || driveExplorer}
     </Tutorial>
   );
