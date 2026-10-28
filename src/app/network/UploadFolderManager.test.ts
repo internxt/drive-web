@@ -592,6 +592,63 @@ describe('uploadFoldersWithManager', () => {
     });
   });
 
+  describe('when the folders cannot be prepared', () => {
+    const taskIds = ['task-1', 'task-2'];
+    let events: UploadFolderManagerEvents;
+
+    const runFolderUpload = () =>
+      uploadFoldersWithManager({
+        payload: taskIds.map((taskId) => ({
+          currentFolderId: 'currentFolderId',
+          root: {
+            folderId: 'currentFolderId',
+            childrenFiles: [],
+            childrenFolders: [],
+            name: taskId,
+            fullPathEdited: taskId,
+          },
+          options: { taskId },
+        })),
+        selectedWorkspace: null,
+        dispatch: mockDispatch,
+        maxUploadFileSize: 100,
+        events,
+      });
+
+    const expectEveryFolderFailedWith = (reason: string) => {
+      expect(events.onFolderUploadError).toHaveBeenCalledTimes(taskIds.length);
+      for (const taskId of taskIds) {
+        expect(events.onFolderUploadError).toHaveBeenCalledWith(taskId, reason);
+      }
+      expect(events.onFolderUploadStarted).not.toHaveBeenCalled();
+      expect(events.onFolderUploadSuccess).not.toHaveBeenCalled();
+      expect(createFolder).not.toHaveBeenCalled();
+    };
+
+    beforeEach(() => {
+      events = { onFolderUploadStarted: vi.fn(), onFolderUploadSuccess: vi.fn(), onFolderUploadError: vi.fn() };
+    });
+
+    test('when the browser is offline, then every folder fails as a connection loss and the error is reported', async () => {
+      const networkError = new Error('Network Error');
+      vi.spyOn(navigator, 'onLine', 'get').mockReturnValueOnce(false);
+      (checkFolderDuplicated as Mock).mockRejectedValueOnce(networkError);
+
+      await expect(runFolderUpload()).resolves.toBeUndefined();
+
+      expectEveryFolderFailedWith('connection-lost');
+      expect(errorService.reportError).toHaveBeenCalledWith(networkError);
+    });
+
+    test('when it fails for another reason while online, then every folder fails as an upload failure', async () => {
+      (checkFolderDuplicated as Mock).mockRejectedValueOnce(new Error('server error'));
+
+      await runFolderUpload();
+
+      expectEveryFolderFailedWith('upload-failed');
+    });
+  });
+
   test('When a folder has subfolders, then every level is uploaded', async () => {
     const mockParentFolder = buildFolderData({ id: 1, uuid: 'uuid1' });
     const mockChildFolder = buildFolderData({

@@ -187,6 +187,18 @@ describe('uploadFoldersWithTasks', () => {
     });
   });
 
+  test('When a retried folder upload fails before starting, then its resumed task ends in error instead of staying in progress', async () => {
+    (uploadFoldersWithManager as Mock).mockImplementationOnce(async ({ events }) =>
+      events.onFolderUploadError('existing-task', 'connection-lost'),
+    );
+
+    await runUpload([{ root, currentFolderId: 'parent', options: { taskId: 'existing-task' } }]);
+
+    expect((tasksService.updateTask as Mock).mock.lastCall).toEqual([
+      { taskId: 'existing-task', merge: { status: TaskStatus.Error, subtitle: 'error.connectionLostError' } },
+    ]);
+  });
+
   test('When a folder upload stops, then only its cancellable ongoing uploads are stopped', async () => {
     (tasksService.create as Mock).mockReturnValue('task-1');
     const resolvedStop = Promise.resolve();

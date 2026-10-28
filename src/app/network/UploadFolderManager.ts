@@ -375,8 +375,23 @@ export class UploadFoldersManager {
     options?.onSuccess?.();
   };
 
+  private readonly notifyPreparationError = (error: unknown): void => {
+    const reason: UploadErrorReason = navigator.onLine ? 'upload-failed' : 'connection-lost';
+
+    for (const { options } of this.payload) {
+      this.events?.onFolderUploadError?.(options.taskId, reason);
+    }
+    errorService.reportError(errorService.castError(error));
+  };
+
   public readonly run = async (): Promise<void> => {
-    const taskFolders = await prepareTaskFolders(this.payload);
+    let taskFolders: TaskFolder[];
+    try {
+      taskFolders = await prepareTaskFolders(this.payload);
+    } catch (error) {
+      this.notifyPreparationError(error);
+      return;
+    }
 
     const context = typeof window === 'undefined' ? self : window;
 
