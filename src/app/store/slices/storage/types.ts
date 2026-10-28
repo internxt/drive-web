@@ -4,10 +4,10 @@ import { AdvancedSharedItem } from 'app/share/types';
 
 export interface IRoot {
   name: string;
+  isFolder: true;
   folderId: string | null;
   childrenFiles: File[];
   childrenFolders: IRoot[];
-  fullPathEdited: string;
 }
 
 export interface ItemToShare {

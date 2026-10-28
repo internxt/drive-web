@@ -44,7 +44,7 @@ describe('useReduxActions', () => {
         folderId: null,
         childrenFiles: [],
         childrenFolders: [],
-        fullPathEdited: '',
+        isFolder: true,
       },
       parentFolderId: 'parent1',
       taskId: 'task1',

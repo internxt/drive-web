@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   canItemDrop,
-  getFolderPath,
   getItemsToMoveWhenNotSelected,
   getItemsToMoveWhenSelected,
   onItemDropped,
@@ -88,30 +87,6 @@ const mockDispatch = vi.fn() as unknown as AppDispatch;
 beforeEach(() => {
   vi.clearAllMocks();
   vi.resetModules();
-});
-
-describe('getFolderPath', () => {
-  it('should return the correct folder path based on breadcrumb and namePath', () => {
-    const item = createMockBreadcrumbItem();
-    const namePath = [
-      { uuid: 'root', name: 'Root' },
-      { uuid: 'folder-123', name: 'Test Folder' },
-    ];
-
-    const folderPath = getFolderPath(item, namePath);
-    expect(folderPath).toBe('/Test Folder');
-  });
-
-  it('should return the root path if the item is not in the namePath', () => {
-    const item = createMockBreadcrumbItem({ uuid: 'not-found' });
-    const namePath = [
-      { uuid: 'root', name: 'Root' },
-      { uuid: 'folder-123', name: 'Test Folder' },
-    ];
-
-    const folderPath = getFolderPath(item, namePath);
-    expect(folderPath).toBe('');
-  });
 });
 
 describe('getItemsToMove', () => {

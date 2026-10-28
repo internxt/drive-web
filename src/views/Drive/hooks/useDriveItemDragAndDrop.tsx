@@ -72,12 +72,11 @@ const handleDriveItemDrop = async (
 const handleFileDrop = async (
   droppedData: { items: DataTransferItemList },
   item: DriveItemData,
-  folderPath: string,
   selectedWorkspace: ReturnType<typeof workspacesSelectors.getSelectedWorkspace>,
   dispatch: ReturnType<typeof useAppDispatch>,
   maxUploadFileSize: number,
 ) => {
-  const { rootList, files } = await transformDraggedItems(droppedData.items, folderPath);
+  const { rootList, files } = await transformDraggedItems(droppedData.items);
 
   if (files.length) {
     // only files
@@ -103,7 +102,6 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
   const dispatch = useAppDispatch();
   const isSomeItemSelected = useAppSelector(storageSelectors.isSomeItemSelected);
   const { selectedItems } = useAppSelector((state) => state.storage);
-  const namePath = useAppSelector((state) => state.storage.namePath);
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const maxUploadFileSize = useAppSelector(fileVersionsSelectors.getMaxFileSizeLimit);
 
@@ -126,16 +124,12 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
           return;
         }
 
-        const namePathDestinationArray = namePath.map((level) => level.name);
-        namePathDestinationArray[0] = '';
-        const folderPath = namePathDestinationArray.join('/') + '/' + item.name;
-
         if (droppedType === DragAndDropType.DriveItem) {
           const droppedData = monitor.getItem<DriveItemData>();
           await handleDriveItemDrop(droppedData, item, isSomeItemSelected, selectedItems, dispatch);
         } else if (droppedType === NativeTypes.FILE) {
           const droppedData = monitor.getItem<{ items: DataTransferItemList }>();
-          await handleFileDrop(droppedData, item, folderPath, selectedWorkspace, dispatch, maxUploadFileSize);
+          await handleFileDrop(droppedData, item, selectedWorkspace, dispatch, maxUploadFileSize);
         }
       },
     }),
