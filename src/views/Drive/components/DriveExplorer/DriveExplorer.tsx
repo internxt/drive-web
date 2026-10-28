@@ -22,7 +22,7 @@ import { getSignUpSteps } from 'components/signUpSteps';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { storageActions } from 'app/store/slices/storage';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
-import { useToggleFavoriteHotkey } from 'hooks';
+import { useCreateFolderHotkey, useToggleFavoriteHotkey } from 'hooks';
 import { uiActions } from 'app/store/slices/ui';
 import { DriveItemData, FileViewMode } from 'app/drive/types';
 import WarningMessageWrapper from 'views/Home/components/WarningMessageWrapper';
@@ -70,6 +70,7 @@ const DriveExplorer = ({
   const isRecents = navigationService.isCurrentPath(AppView.Recents);
   const isFavorites = navigationService.isCurrentPath(AppView.Favorites);
   const isTrash = navigationService.isCurrentPath(AppView.Trash);
+  const isDrive = !isRecents && !isFavorites && !isTrash;
 
   const {
     fileInputRef,
@@ -94,22 +95,34 @@ const DriveExplorer = ({
   } = useDriveExplorerItems({ isTrash, isFavorites, isRecents, isLoading, getTrashPaginated });
   const tutorialState = useTutorialState();
 
-  const isSomeDialogOpen = useAppSelector(
+  const isSomeStoreDialogOpen = useAppSelector(
     (state: RootState) =>
       state.ui.isShareDialogOpen ||
+      state.ui.isShareItemDialogOpen ||
+      state.ui.isShareWhithTeamDialogOpen ||
+      state.ui.isInvitationsDialogOpen ||
       state.ui.isEditFolderNameDialog ||
       state.ui.isFileViewerOpen ||
       state.ui.isMoveItemsDialogOpen ||
       state.ui.isCreateFolderDialogOpen ||
+      state.ui.isDeleteItemsDialogOpen ||
+      state.ui.isClearTrashDialogOpen ||
+      state.ui.isAutomaticTrashDisposalDialogOpen ||
       state.ui.isNameCollisionDialogOpen ||
+      state.ui.isUploadItemsFailsDialogOpen ||
       state.ui.isReachedPlanLimitDialogOpen ||
+      state.ui.isReachedFileSizeLimitDialogOpen ||
+      state.ui.isUpgradePlanDialogOpen ||
       state.ui.isItemDetailsDialogOpen ||
+      state.ui.isDeleteVersionDialogOpen ||
+      state.ui.isRestoreVersionDialogOpen ||
       state.ui.isPreferencesDialogOpen,
   );
 
   const { refreshItems, refreshItemsAfterChange } = useRefreshDriveExplorerItems(fetchFolderContent);
   const { editNameItem, setEditNameItem, onEditNameClose } = useEditItemName();
   const stopSharingAndTrash = useStopSharingAndTrash(refreshItemsAfterChange);
+  const isSomeDialogOpen = isSomeStoreDialogOpen || stopSharingAndTrash.isStopSharingConfirmationOpen;
 
   const signupSteps = getSignUpSteps(
     {
@@ -155,6 +168,16 @@ const DriveExplorer = ({
 
   useToggleFavoriteHotkey({ enabled: !isTrash && !isSomeDialogOpen, selectedItems });
 
+  const onCreateFolderHotkeyPressed = useCallback((): void => {
+    contextMenu.closeContextMenu();
+    onCreateFolderButtonClicked();
+  }, [contextMenu.closeContextMenu, onCreateFolderButtonClicked]);
+
+  useCreateFolderHotkey({
+    enabled: isDrive && !isSomeDialogOpen,
+    onCreateFolder: onCreateFolderHotkeyPressed,
+  });
+
   const driveExplorer = (
     <div
       role="none"
@@ -183,6 +206,7 @@ const DriveExplorer = ({
         <DriveExplorerContextMenu
           isTrash={isTrash}
           isFavorites={isFavorites}
+          isRecents={isRecents}
           isOpen={contextMenu.isOpen}
           position={contextMenu.position}
           menuRef={contextMenu.menuRef}
@@ -199,8 +223,8 @@ const DriveExplorer = ({
             >
               {title}
             </div>
-            {/* General Dropdown for Drive Explorer/Trash */}
-            {!isTrash && !isFavorites && (
+            {/* Upload and new folder actions, only for Drive */}
+            {isDrive && (
               <div className="flex items-center justify-center">
                 <DriveTopBarItems
                   stepOneTutorialRef={tutorialState.uploadFileButtonRef}
@@ -283,7 +307,11 @@ const DriveExplorer = ({
   }
 
   return (
-    <Tutorial show={tutorialState.showTutorial} steps={signupSteps} currentStep={tutorialState.currentTutorialStep}>
+    <Tutorial
+      show={isDrive && tutorialState.showTutorial}
+      steps={signupSteps}
+      currentStep={tutorialState.currentTutorialStep}
+    >
       {dropRef(driveExplorer) || driveExplorer}
     </Tutorial>
   );
