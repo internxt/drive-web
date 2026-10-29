@@ -8,6 +8,7 @@ import { getCollisionGroups } from 'app/store/slices/storage/storage.thunks/rena
 import { uiActions } from 'app/store/slices/ui';
 import { DropTargetMonitor } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
+import { notifyUploadFailed } from 'views/Drive/components/DriveExplorer/helpers/uploadHelpers';
 
 export const getItemsToMoveWhenSelected = (
   droppedData: DriveItemData,
@@ -78,7 +79,7 @@ export const onItemDropped = (
     if (droppedType === DragAndDropType.DriveItem) {
       await handleDriveItemDrop(droppedData as DriveItemData, isSomeItemSelected, selectedItems, item, dispatch);
     } else if (droppedType === NativeTypes.FILE) {
-      await handleFileDrop(droppedData, item, dispatch);
+      await handleFileDrop(droppedData, item, dispatch).catch(notifyUploadFailed);
     }
   };
 };

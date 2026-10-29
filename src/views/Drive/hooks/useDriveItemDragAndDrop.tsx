@@ -11,6 +11,7 @@ import { DriveItemData } from 'app/drive/types';
 import { uploadFoldersWithTracking } from 'app/drive/services/folder.service/uploadFoldersWithTracking';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { fileVersionsSelectors } from 'app/store/slices/fileVersions';
+import { notifyUploadFailed } from 'views/Drive/components/DriveExplorer/helpers/uploadHelpers';
 
 interface DragSourceCollectorProps {
   isDraggingThisItem: boolean;
@@ -129,7 +130,9 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
           await handleDriveItemDrop(droppedData, item, isSomeItemSelected, selectedItems, dispatch);
         } else if (droppedType === NativeTypes.FILE) {
           const droppedData = monitor.getItem<{ items: DataTransferItemList }>();
-          await handleFileDrop(droppedData, item, selectedWorkspace, dispatch, maxUploadFileSize);
+          await handleFileDrop(droppedData, item, selectedWorkspace, dispatch, maxUploadFileSize).catch(
+            notifyUploadFailed,
+          );
         }
       },
     }),

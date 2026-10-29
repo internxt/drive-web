@@ -13,6 +13,7 @@ import { DropTargetMonitor } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { transformDraggedItems } from 'services/drag-and-drop.service';
+import { notifyUploadFailed } from 'views/Drive/components/DriveExplorer/helpers/uploadHelpers';
 
 vi.mock('app/store/slices/storage/storage.thunks', () => ({
   default: {
@@ -35,6 +36,10 @@ vi.mock('app/store/slices/storage/storage.thunks/renameItemsThunk', () => ({
 
 vi.mock('services/drag-and-drop.service', () => ({
   transformDraggedItems: vi.fn().mockResolvedValue({ rootList: [], files: [] }),
+}));
+
+vi.mock('views/Drive/components/DriveExplorer/helpers/uploadHelpers', () => ({
+  notifyUploadFailed: vi.fn(),
 }));
 
 const createMockBreadcrumbItem = (overrides?: Partial<BreadcrumbItemData>): BreadcrumbItemData => ({
@@ -152,6 +157,23 @@ describe('onItemDropped', () => {
     await onItemDropped(item, namePath, false, [], mockDispatch)(draggedItem, monitor);
 
     expect(storageThunks.uploadItemsThunk).toHaveBeenCalled();
+  });
+
+  it('should notify the upload failure when the dropped items cannot be read', async () => {
+    const item: BreadcrumbItemData = createMockBreadcrumbItem({ uuid: '1', label: 'Folder' });
+    const draggedItem: unknown = { files: [], items: [] };
+    const monitor = {
+      getItemType: () => NativeTypes.FILE,
+      getItem: () => draggedItem,
+    } as unknown as DropTargetMonitor;
+    const readError = new Error('File could not be read');
+
+    vi.mocked(transformDraggedItems).mockRejectedValue(readError);
+
+    await onItemDropped(item, [], false, [], mockDispatch)(draggedItem, monitor);
+
+    expect(notifyUploadFailed).toHaveBeenCalledWith(readError);
+    expect(storageThunks.uploadItemsThunk).not.toHaveBeenCalled();
   });
 });
 

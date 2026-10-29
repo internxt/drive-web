@@ -36,7 +36,7 @@ export const findExistingItemFor = (item: CollisionItem, existingItems: DriveIte
     );
   }
 
-  const folderName = ('plainName' in item && item.plainName) || item.name;
+  const folderName = 'plainName' in item ? (item.plainName ?? item.name) : item.name;
   return existingItems.find((existing) => existing.isFolder && matchesName(existing, folderName));
 };
 
