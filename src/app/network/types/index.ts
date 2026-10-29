@@ -37,6 +37,7 @@ export interface DownloadChunkPayload {
 
 export enum UploadItemKind {
   File = 'file',
+  Folder = 'folder',
 }
 
 export enum UploadFailureReason {

@@ -7,12 +7,22 @@ import errorService from 'services/error.service';
 import { ConnectionLostError } from 'app/network/requests';
 import { TWENTY_MEGABYTES, USE_MULTIPART_THRESHOLD_BYTES } from 'app/network/networkConstants';
 import { QueueUtilsService } from 'utils/queueUtils';
-import { getUploadFileItem, getUploadRepository } from 'testUtils/fixtures/upload.fixtures';
-import { UploadManager } from './UploadManager';
+import workspacesService from 'services/workspace.service';
+import folderService from 'app/drive/services/folder.service';
+import {
+  getCreatedFolder,
+  getFileToUpload,
+  getFolderToUpload,
+  getUploadFileItem,
+  getUploadRepository,
+} from 'testUtils/fixtures/upload.fixtures';
+import { createFolderItem, UploadManager } from './UploadManager';
 import { UploadItem, UploadManagerEvents } from 'app/network/types/upload';
-import { UploadFailureReason } from 'app/network/types';
+import { UploadFailureReason, UploadItemKind } from 'app/network/types';
 
 vi.mock('app/drive/services/file.service/uploadFile', () => ({ default: vi.fn() }));
+vi.mock('app/drive/services/folder.service', () => ({ default: { createFolderByUuid: vi.fn() } }));
+vi.mock('services/workspace.service', () => ({ default: { createFolder: vi.fn() } }));
 
 type UploadFileOptions = { abortCallback?: (abort?: () => void) => void };
 
@@ -22,7 +32,7 @@ const noSpaceLeftError = new AppError('No space left', HTTP_STATUS_CODES.MAX_SPA
 const paymentRequiredError = new AppError('Payment required', HTTP_STATUS_CODES.PAYMENT_REQUIRED);
 const fileTooLargeError = new AppError('File too large', 400, HTTP_CODE_ERRORS.FILE_UPLOAD_SIZE_EXCEEDED);
 
-const nameOf = (item: UploadItem) => item.file.name;
+const nameOf = (item: UploadItem) => (item.kind === UploadItemKind.File ? item.file.name : item.folder.name);
 
 const failIfHangs = <T>(promise: Promise<T>): Promise<T> =>
   Promise.race([
@@ -300,5 +310,147 @@ describe('Uploading files', () => {
 
     expect(uploadFile).toHaveBeenCalledTimes(items.length);
     expect(succeeded).toHaveLength(items.length);
+  });
+});
+
+const fakeFolderCreationTaking = (delayMs = 0) =>
+  vi.mocked(folderService.createFolderByUuid).mockImplementation((_parentUuid, name) => {
+    const cancel = vi.fn();
+    const promise = new Promise((resolve) => setTimeout(() => resolve(getCreatedFolder(name)), delayMs));
+    return [promise, { cancel }] as never;
+  });
+
+const uploadedFileParents = () =>
+  Object.fromEntries((uploadFile as Mock).mock.calls.map(([file]) => [file.name, file.parentFolderId]));
+
+describe('Uploading folders', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.spyOn(errorService, 'reportError').mockReturnValue();
+    (uploadFile as Mock).mockImplementation(async (file: { name: string }) => ({ uuid: `${file.name}-uuid` }));
+    fakeFolderCreationTaking();
+  });
+
+  test('When a folder tree is uploaded, then each folder is created inside its parent and each file inside its folder', async () => {
+    const tree = getFolderToUpload('Work', {
+      childrenFiles: [getFileToUpload('report.pdf')],
+      childrenFolders: [getFolderToUpload('Invoices', { childrenFiles: [getFileToUpload('january.pdf')] })],
+    });
+
+    const { succeeded, failed } = await createManager().run([createFolderItem(tree, 'destination-uuid')]);
+
+    expect(failed).toEqual([]);
+    expect(succeeded).toHaveLength(4);
+    expect(folderService.createFolderByUuid).toHaveBeenCalledWith('destination-uuid', 'Work');
+    expect(folderService.createFolderByUuid).toHaveBeenCalledWith('Work-uuid', 'Invoices');
+    expect(uploadedFileParents()).toEqual({ report: 'Work-uuid', january: 'Invoices-uuid' });
+  });
+
+  test('When the content of a folder is uploaded, then every item knows the folder it belongs to', async () => {
+    const rootItem = createFolderItem(
+      getFolderToUpload('Work', { childrenFiles: [getFileToUpload('report.pdf')] }),
+      'dest',
+    );
+
+    const { succeeded } = await createManager().run([rootItem]);
+
+    const fileItem = succeeded.find(({ item }) => item.kind === UploadItemKind.File)?.item;
+    expect(fileItem?.parent).toBe(rootItem);
+  });
+
+  test('When a folder cannot be created, then its content is not uploaded', async () => {
+    vi.mocked(folderService.createFolderByUuid).mockImplementation(
+      () => [Promise.reject(new Error('Server error')), { cancel: vi.fn() }] as never,
+    );
+    const rootItem = createFolderItem(
+      getFolderToUpload('Work', { childrenFiles: [getFileToUpload('report.pdf')] }),
+      'dest',
+    );
+
+    const { failed } = await failIfHangs(createManager().run([rootItem]));
+
+    expect(folderService.createFolderByUuid).toHaveBeenCalledTimes(2);
+    expect(failed).toEqual([
+      { item: rootItem, failure: expect.objectContaining({ reason: UploadFailureReason.UploadFailed }) },
+    ]);
+    expect(uploadFile).not.toHaveBeenCalled();
+  });
+
+  test('When a folder is cancelled, then nothing else inside it is uploaded', async () => {
+    fakeSlowUploads();
+    const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].map((name) => getFileToUpload(`${name}.txt`));
+    const rootItem = createFolderItem(getFolderToUpload('Work', { childrenFiles: files }), 'dest');
+    const manager = createManager();
+
+    const upload = manager.run([rootItem]);
+    await vi.waitFor(() => expect(uploadFile).toHaveBeenCalledTimes(6));
+    manager.cancelItem(rootItem);
+    const { succeeded } = await failIfHangs(upload);
+
+    expect(uploadFile).toHaveBeenCalledTimes(6);
+    expect(succeeded.map(({ item }) => item)).toEqual([rootItem]);
+  });
+
+  test('When folders appear while files are waiting, then the folders are created first', async () => {
+    fakeSlowUploads();
+    const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g'].map((name) => getUploadFileItem(name));
+    const folderItem = createFolderItem(getFolderToUpload('Late'), 'dest');
+    const manager = createManager();
+
+    const upload = manager.run([...files, folderItem]);
+    await vi.waitFor(() => expect(folderService.createFolderByUuid).toHaveBeenCalled());
+
+    expect(uploadedNames()).not.toContain('g');
+    manager.cancelAll();
+    await failIfHangs(upload);
+  });
+
+  test('When a folder is uploaded to a workspace, then it is created in the workspace and its content waits for it to be available', async () => {
+    vi.mocked(workspacesService.createFolder).mockImplementation(
+      ({ plainName }) => [Promise.resolve(getCreatedFolder(plainName)), { cancel: vi.fn() }] as never,
+    );
+    let folderCreatedAt = 0;
+    vi.mocked(workspacesService.createFolder).mockImplementationOnce(({ plainName }) => {
+      folderCreatedAt = Date.now();
+      return [Promise.resolve(getCreatedFolder(plainName)), { cancel: vi.fn() }] as never;
+    });
+    let fileUploadedAt = 0;
+    (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
+      fileUploadedAt = Date.now();
+      return { uuid: `${file.name}-uuid` };
+    });
+    const ownerUserAuthenticationData = { workspaceId: 'workspace-id' } as never;
+    const rootItem = createFolderItem(
+      getFolderToUpload('Work', { childrenFiles: [getFileToUpload('report.pdf')] }),
+      'dest',
+    );
+
+    await createManager({ ownerUserAuthenticationData }).run([rootItem]);
+
+    expect(workspacesService.createFolder).toHaveBeenCalledWith({
+      workspaceId: 'workspace-id',
+      parentFolderUuid: 'dest',
+      plainName: 'Work',
+    });
+    expect(folderService.createFolderByUuid).not.toHaveBeenCalled();
+    expect(fileUploadedAt - folderCreatedAt).toBeGreaterThanOrEqual(500);
+  });
+
+  test('When a large file is uploaded together with a folder, then it waits for the files inside the folder so they are not uploaded one at a time behind it', async () => {
+    fakeFolderCreationTaking(30);
+    (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      return { uuid: `${file.name}-uuid` };
+    });
+    const largeFile = getUploadFileItem('large', USE_MULTIPART_THRESHOLD_BYTES);
+    const folderItem = createFolderItem(
+      getFolderToUpload('Photos', { childrenFiles: ['a', 'b', 'c'].map((name) => getFileToUpload(`${name}.png`)) }),
+      'dest',
+    );
+
+    const { succeeded } = await failIfHangs(createManager().run([largeFile, folderItem]));
+
+    expect(succeeded).toHaveLength(5);
+    expect(uploadedNames()).toEqual(['a', 'b', 'c', 'large']);
   });
 });

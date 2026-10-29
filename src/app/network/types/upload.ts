@@ -1,13 +1,21 @@
-import { DriveFileData } from 'app/drive/types';
+import { DriveFileData, DriveFolderData } from 'app/drive/types';
 import { FileToUpload } from 'app/drive/services/file.service/types';
+import { IRoot } from 'app/store/slices/storage/types';
 import { UploadFailure } from '../uploadFailure';
 import { UploadItemKind } from '.';
 
-export type UploadFileItem = { kind: UploadItemKind.File; file: FileToUpload };
+export type UploadFileItem = { kind: UploadItemKind.File; file: FileToUpload; parent?: UploadFolderItem };
 
-export type UploadItem = UploadFileItem;
+export type UploadFolderItem = {
+  kind: UploadItemKind.Folder;
+  folder: IRoot;
+  parentFolderUuid: string;
+  parent?: UploadFolderItem;
+};
 
-export type UploadedItem = DriveFileData;
+export type UploadItem = UploadFileItem | UploadFolderItem;
+
+export type UploadedItem = DriveFileData | DriveFolderData;
 
 /**
  * Upload progress notifications emitted by the manager. The manager knows nothing
