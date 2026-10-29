@@ -1255,7 +1255,8 @@
       "processing": "Wird bearbeitet {{pending}} von {{finished}}",
       "failedToUpload": "Fehler beim Hochladen",
       "failedToDownload": "Fehler beim Herunterladen",
-      "notAllowed": "Nicht erlaubt"
+      "notAllowed": "Nicht erlaubt",
+      "retryAll": "Alle wiederholen"
     },
     "waiting": "Warten",
     "paused": "Pausiert",

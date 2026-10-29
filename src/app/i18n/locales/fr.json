@@ -1261,7 +1261,8 @@
       "processing": "Traitement {{pending}} de {{finished}}",
       "failedToUpload": "Échec du téléchargement",
       "failedToDownload": "Échec du téléchargement",
-      "notAllowed": "Non autorisé"
+      "notAllowed": "Non autorisé",
+      "retryAll": "Tout réessayer"
     },
     "waiting": "En attente",
     "paused": "En pause",

@@ -1282,7 +1282,8 @@
       "processing": "Elaborazione {{pending}} di {{finished}}",
       "failedToUpload": "Caricamento fallito",
       "failedToDownload": "Download fallito",
-      "notAllowed": "Non consentito"
+      "notAllowed": "Non consentito",
+      "retryAll": "Riprova tutto"
     },
     "waiting": "In attesa",
     "paused": "In pausa",
