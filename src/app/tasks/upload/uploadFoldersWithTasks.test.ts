@@ -33,7 +33,7 @@ vi.mock('app/network/networkInformation', () => ({
   logNetworkInfoForUpload: vi.fn(),
 }));
 
-const root: IRoot = { name: 'Folder', childrenFiles: [], childrenFolders: [], folderId: 'parent', fullPathEdited: '' };
+const root: IRoot = { isFolder: true, name: 'Folder', childrenFiles: [], childrenFolders: [], folderId: 'parent' };
 
 const runUpload = async (
   payload: Parameters<typeof uploadFoldersWithTasks>[0]['payload'],

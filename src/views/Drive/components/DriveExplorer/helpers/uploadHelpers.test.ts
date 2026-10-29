@@ -35,7 +35,7 @@ const CURRENT_FOLDER_ID = 'current-folder-uuid';
 
 const aFile = (name: string) => new File(['content'], name);
 const aRoot = (name: string) =>
-  ({ name, folderId: CURRENT_FOLDER_ID, fullPathEdited: `/${name}`, childrenFiles: [], childrenFolders: [] }) as IRoot;
+  ({ isFolder: true, name, folderId: CURRENT_FOLDER_ID, childrenFiles: [], childrenFolders: [] }) as IRoot;
 const anExistingItem = (name: string) => ({ name, uuid: `${name}-uuid` }) as unknown as DriveItemData;
 
 const createDestination = (): UploadDestination => ({

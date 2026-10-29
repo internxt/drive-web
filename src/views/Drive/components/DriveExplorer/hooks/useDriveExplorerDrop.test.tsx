@@ -7,13 +7,6 @@ import { transformDraggedItems } from 'services/drag-and-drop.service';
 import notificationsService from 'app/notifications/services/notifications.service';
 import { useDriveExplorerDrop } from './useDriveExplorerDrop';
 
-const { storageState } = vi.hoisted(() => ({
-  storageState: { namePath: [] as { name: string; uuid: string }[] },
-}));
-
-vi.mock('app/store/hooks', () => ({
-  useAppSelector: (selector: (state: unknown) => unknown) => selector({ storage: storageState }),
-}));
 vi.mock('services/drag-and-drop.service', () => ({
   transformDraggedItems: vi.fn(),
 }));
@@ -93,7 +86,6 @@ const releasePendingDrag = () => {
 describe('Dropping files into the Drive explorer', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    storageState.namePath = [];
     vi.mocked(transformDraggedItems).mockResolvedValue({ rootList: [], files: [] });
   });
 
@@ -119,28 +111,6 @@ describe('Dropping files into the Drive explorer', () => {
     dropOn(screen.getByTestId('drop-area'), draggedFiles('report.pdf'));
 
     await vi.waitFor(() => expect(onItemsDropped).toHaveBeenCalledWith([droppedFolder], [droppedFile]));
-  });
-
-  test('When files are dropped inside a subfolder, then their paths are built from the current folder path without the root name', async () => {
-    storageState.namePath = [
-      { name: 'Drive', uuid: 'root-uuid' },
-      { name: 'Work', uuid: 'work-uuid' },
-      { name: 'Reports', uuid: 'reports-uuid' },
-    ];
-    renderDropArea();
-
-    dropOn(screen.getByTestId('drop-area'), draggedFiles('report.pdf'));
-
-    await vi.waitFor(() => expect(transformDraggedItems).toHaveBeenCalledWith(expect.anything(), '/Work/Reports'));
-  });
-
-  test('When files are dropped at the root folder, then their paths start from the root', async () => {
-    storageState.namePath = [{ name: 'Drive', uuid: 'root-uuid' }];
-    renderDropArea();
-
-    dropOn(screen.getByTestId('drop-area'), draggedFiles('report.pdf'));
-
-    await vi.waitFor(() => expect(transformDraggedItems).toHaveBeenCalledWith(expect.anything(), ''));
   });
 
   test('When files are dropped on a folder that handles the drop itself, then the explorer does not upload them again', () => {

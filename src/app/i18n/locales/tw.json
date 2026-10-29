@@ -217,10 +217,6 @@
     "continue": "繼續",
     "processing": "處理中...",
     "checkout": "結帳",
-    "postalCode": {
-      "title": "郵遞區號",
-      "placeholder": "郵遞區號"
-    },
     "authComponent": {
       "signUp": {
         "emailAddress": "您的電子郵件地址",
@@ -239,14 +235,6 @@
         "invalidData": "請確認您的電子郵件和密碼是否正確，然後再試一次。",
         "serverError": "我們無法完成此步驟。請於幾分鐘後再試，若問題持續發生請聯絡客服。",
         "unknown": "我們無法驗證您的資料。請確認您的電子郵件和密碼，然後再試一次。"
-      }
-    },
-    "addressBillingTitle": "帳單地址",
-    "addressBilling": {
-      "optional": {
-        "cta": "可選",
-        "companyName": "公司名稱",
-        "companyVatId": "公司增值稅編號"
       }
     },
     "productCard": {
@@ -273,7 +261,6 @@
     "error": {
       "invalidPlan": "不支援的方案類型。請選擇有效的方案。",
       "businessPlan": "企業計劃不可用",
-      "postalCodeRequired": "請輸入您的郵遞區號以繼續",
       "countryRequired": "我們無法確定您的國家/地區,請稍後再試",
       "missingPaymentDetails": "缺少確認付款所需的付款資訊",
       "paymentFailed": "付款失敗"
@@ -374,7 +361,6 @@
     }
   },
   "general": {
-    "of": "的",
     "at": "在",
     "terms": "條款和條件",
     "contactSupport": "聯絡支持",
@@ -440,9 +426,6 @@
     },
     "stage": {
       "development": "開發"
-    },
-    "loading": {
-      "default": "加載中..."
     },
     "renewal": {
       "annually": "每年",
@@ -1403,7 +1386,6 @@
   },
   "success": {
     "passwordChanged": "密碼已成功更改",
-    "linkCopied": "鏈接已複製！",
     "twoFactorAuthActivated": "您的雙因素身份驗證已啟用！",
     "twoFactorAuthDisabled": "您的雙因素身份驗證已停用"
   },
@@ -1494,7 +1476,6 @@
     "restoreHere": "還原至此",
     "rename": "重新命名",
     "restore": "還原",
-    "copyLink": "複製鏈接",
     "report": "檢舉濫用",
     "yes": "是",
     "no": "否",
