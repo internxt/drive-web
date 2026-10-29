@@ -17,6 +17,7 @@ import { ConnectionLostError } from './requests';
 import { FilesExceedsSizeLimitError } from 'app/drive/services/file.service/upload.errors';
 import { filterFilesByMaxSize } from 'app/store/slices/storage/fileUtils/filterFilesByMaxSize';
 import { UploadErrorReason } from './types';
+import { MAX_CONCURRENT_UPLOADS } from './networkConstants';
 
 export interface UploadFolderPayload {
   root: IRoot;
@@ -137,7 +138,6 @@ export const uploadFoldersWithManager = (props: UploadFoldersWithManagerProps): 
   new UploadFoldersManager(props).run();
 
 export class UploadFoldersManager {
-  private static readonly MAX_CONCURRENT_UPLOADS = 6;
   private static readonly MAX_UPLOAD_ATTEMPTS = 2;
 
   private readonly payload: UploadFolderPayload[];
@@ -163,13 +163,7 @@ export class UploadFoldersManager {
     (task, next: (err: Error | null, res?: DriveFolderData) => void) => {
       if (this.abortController?.signal.aborted) return;
 
-      const newConcurrency = QueueUtilsService.instance.getConcurrencyUsingPerformance(
-        this.uploadFoldersQueue.concurrency,
-        UploadFoldersManager.MAX_CONCURRENT_UPLOADS,
-      );
-      if (this.uploadFoldersQueue.concurrency !== newConcurrency) {
-        this.uploadFoldersQueue.concurrency = newConcurrency;
-      }
+      QueueUtilsService.instance.adjustConcurrency(this.uploadFoldersQueue, MAX_CONCURRENT_UPLOADS);
 
       this.uploadFolderAsync(task)
         .then((uploadedFolder: DriveFolderData | undefined) => {
@@ -179,7 +173,7 @@ export class UploadFoldersManager {
           next(e);
         });
     },
-    UploadFoldersManager.MAX_CONCURRENT_UPLOADS,
+    MAX_CONCURRENT_UPLOADS,
   );
 
   private readonly createFolderWithRetry = async (

@@ -48,6 +48,31 @@ describe('RetryManager', () => {
     expect(tasks[0].status).toBe(RetryableTaskStatus.Failed);
   });
 
+  const addTwoDownloadsSharingTaskId = (): void =>
+    RetryManager.addTasks([
+      { taskId: 'download-1', params: { id: 'a' }, type: RetryableTaskType.Download },
+      { taskId: 'download-1', params: { id: 'b' }, type: RetryableTaskType.Download },
+    ]);
+
+  const getDownloadStatuses = (): (RetryableTaskStatus | undefined)[] =>
+    RetryManager.getTasksById('download-1').map((task) => task.status);
+
+  test('when one of two downloads sharing a task id is retried, then only that one is Retrying', () => {
+    addTwoDownloadsSharingTaskId();
+
+    RetryManager.changeStatus('download-1', RetryableTaskStatus.Retrying, { id: 'a' });
+
+    expect(getDownloadStatuses()).toEqual([RetryableTaskStatus.Retrying, RetryableTaskStatus.Failed]);
+  });
+
+  test('when the status changes without params to match, then every task with that task id changes', () => {
+    addTwoDownloadsSharingTaskId();
+
+    RetryManager.changeStatus('download-1', RetryableTaskStatus.Retrying);
+
+    expect(getDownloadStatuses()).toEqual([RetryableTaskStatus.Retrying, RetryableTaskStatus.Retrying]);
+  });
+
   it('should remove a task by taskId', () => {
     RetryManager.addTasks([sampleTask, anotherTask]);
     RetryManager.removeTask('task1');
