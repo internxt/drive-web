@@ -196,10 +196,6 @@
     "continue": "Continuer",
     "processing": "Traitement en cours...",
     "checkout": "Commander",
-    "postalCode": {
-      "title": "Code postal",
-      "placeholder": "Code postal"
-    },
     "authComponent": {
       "signUp": {
         "emailAddress": "Votre adresse email",
@@ -218,14 +214,6 @@
         "invalidData": "Veuillez vérifier que votre email et votre mot de passe sont corrects, puis réessayer.",
         "serverError": "Nous n'avons pas pu finaliser cette étape. Veuillez réessayer dans quelques minutes ou contacter le support si le problème persiste.",
         "unknown": "Nous n'avons pas pu vérifier vos informations. Veuillez vérifier votre email et votre mot de passe, puis réessayer."
-      }
-    },
-    "addressBillingTitle": "Facturation d'Adresse",
-    "addressBilling": {
-      "optional": {
-        "cta": "Optionnel",
-        "companyName": "Nom de l'entreprise",
-        "companyVatId": "Numéro de TVA de l'entreprise"
       }
     },
     "productCard": {
@@ -252,7 +240,6 @@
     "error": {
       "invalidPlan": "Type de plan non pris en charge. Veuillez sélectionner un plan valide.",
       "businessPlan": "Le plan d’entreprise n’est pas disponible",
-      "postalCodeRequired": "Veuillez saisir votre code postal pour continuer",
       "countryRequired": "Nous n'avons pas pu déterminer votre pays. Veuillez réessayer plus tard.",
       "missingPaymentDetails": "Informations de paiement manquantes pour confirmer le paiement",
       "paymentFailed": "Paiement échoué"
@@ -353,7 +340,6 @@
     }
   },
   "general": {
-    "of": "de",
     "at": "à",
     "terms": "Termes et conditions",
     "contactSupport": "Contacter le support",
@@ -419,9 +405,6 @@
     },
     "stage": {
       "development": "Développement"
-    },
-    "loading": {
-      "default": "Chargement..."
     },
     "renewal": {
       "annually": "Annuel",
@@ -1382,7 +1365,6 @@
   },
   "success": {
     "passwordChanged": "Mot de passe modifié",
-    "linkCopied": "Lien copié !",
     "twoFactorAuthActivated": "Votre authentification à deux facteurs a été activée !",
     "twoFactorAuthDisabled": "Votre authentification à deux facteurs a été désactivée"
   },
@@ -1471,7 +1453,6 @@
     "restoreHere": "Restaurer ici",
     "rename": "Renommer",
     "restore": "Restaurer",
-    "copyLink": "Copier le lien",
     "report": "Signaler un abus",
     "yes": "Oui",
     "no": "Non",
