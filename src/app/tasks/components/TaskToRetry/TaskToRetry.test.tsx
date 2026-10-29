@@ -187,6 +187,19 @@ describe('TaskToRetry', () => {
     await vi.waitFor(() => expect(mockChangeStatus).toHaveBeenCalledWith('task-1', RetryableTaskStatus.Failed));
   });
 
+  test('when a failed download item is retried, then only that item changes status', async () => {
+    const downloadTask = { ...createDownloadTaskWithId('download-1'), params: { taskId: 'download-1', id: 'file-a' } };
+    mockDownloadItem.mockResolvedValueOnce(undefined);
+    const { getByTestId } = render(<TaskToRetry isOpen={true} files={[downloadTask]} onClose={mockOnClose} />);
+
+    fireEvent.click(getByTestId('task-logger-button'));
+
+    expect(mockChangeStatus).toHaveBeenCalledWith('download-1', RetryableTaskStatus.Retrying, { id: 'file-a' });
+    await vi.waitFor(() =>
+      expect(mockChangeStatus).toHaveBeenCalledWith('download-1', RetryableTaskStatus.Failed, { id: 'file-a' }),
+    );
+  });
+
   test('when there are failed, retryable files, then the retry all button is rendered', () => {
     const retryableFiles = [createUploadTaskWithId('a'), createUploadTaskWithId('b')];
 

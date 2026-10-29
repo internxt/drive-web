@@ -17,6 +17,11 @@ export type RetryableTask = {
   retryable?: boolean;
 };
 
+type ParamsFilter = { [attribute: string]: unknown };
+
+const matchesTask = (task: RetryableTask, taskId: string, where: ParamsFilter = {}): boolean =>
+  task.taskId === taskId && Object.entries(where).every(([key, value]) => task.params?.[key] === value);
+
 class RetryManager {
   private tasksToRetry: RetryableTask[] = [];
   private listeners: (() => void)[] = [];
@@ -47,8 +52,10 @@ class RetryManager {
     this.notify();
   }
 
-  changeStatus(taskId: string, status: RetryableTaskStatus) {
-    this.tasksToRetry = this.tasksToRetry.map((task) => (task.taskId === taskId ? { ...task, status } : task));
+  changeStatus(taskId: string, status: RetryableTaskStatus, where?: ParamsFilter) {
+    this.tasksToRetry = this.tasksToRetry.map((task) =>
+      matchesTask(task, taskId, where) ? { ...task, status } : task,
+    );
     this.notify();
   }
 
@@ -57,14 +64,8 @@ class RetryManager {
     this.notify();
   }
 
-  removeTaskByIdAndParams(taskId: string, where: { [attribute: string]: any }) {
-    this.tasksToRetry = this.tasksToRetry.filter((task) => {
-      const idMatches = task.taskId === taskId;
-
-      const attributesMatch = Object.entries(where).every(([key, value]) => task.params[key] === value);
-
-      return !(idMatches && attributesMatch);
-    });
+  removeTaskByIdAndParams(taskId: string, where: ParamsFilter) {
+    this.tasksToRetry = this.tasksToRetry.filter((task) => !matchesTask(task, taskId, where));
 
     this.notify();
   }

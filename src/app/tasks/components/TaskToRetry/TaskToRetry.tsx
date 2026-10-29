@@ -25,13 +25,22 @@ const withFullName = ({ content, name, type }: FileToUpload): File =>
 const getTaskId = ({ taskId, params }: Pick<RetryableTask, 'taskId' | 'params'>): string =>
   taskId ?? params?.taskId ?? '';
 
+const changeFileStatus = (file: RetryableTask, status: RetryableTaskStatus): void => {
+  if (file.type === RetryableTaskType.Download) {
+    RetryManager.changeStatus(getTaskId(file), status, { id: file.params?.id });
+    return;
+  }
+  RetryManager.changeStatus(getTaskId(file), status);
+};
+
 const TaskToRetry = ({ isOpen, files, onClose }: TaskToRetryProps): JSX.Element => {
   const { uploadRetryItem } = useReduxActions();
   const { translate } = useTranslationContext();
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const workspaceCredentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
 
-  const runRetry = async ({ taskId, params, type }: RetryableTask) => {
+  const runRetry = async (file: RetryableTask) => {
+    const { taskId, params, type } = file;
     if (type === RetryableTaskType.Upload) {
       const data = {
         uploadFile: withFullName(params.filecontent),
@@ -42,7 +51,7 @@ const TaskToRetry = ({ isOpen, files, onClose }: TaskToRetryProps): JSX.Element 
       try {
         await uploadRetryItem(data).unwrap();
       } catch {
-        RetryManager.changeStatus(getTaskId({ taskId, params }), RetryableTaskStatus.Failed);
+        changeFileStatus(file, RetryableTaskStatus.Failed);
       }
     } else {
       try {
@@ -53,7 +62,7 @@ const TaskToRetry = ({ isOpen, files, onClose }: TaskToRetryProps): JSX.Element 
           taskId,
         });
       } finally {
-        RetryManager.changeStatus(getTaskId({ taskId, params }), RetryableTaskStatus.Failed);
+        changeFileStatus(file, RetryableTaskStatus.Failed);
       }
     }
   };
@@ -63,7 +72,7 @@ const TaskToRetry = ({ isOpen, files, onClose }: TaskToRetryProps): JSX.Element 
   );
 
   const retryItem = (file: RetryableTask) => {
-    RetryManager.changeStatus(getTaskId(file), RetryableTaskStatus.Retrying);
+    changeFileStatus(file, RetryableTaskStatus.Retrying);
     enqueueRetry(() => runRetry(file));
   };
 
