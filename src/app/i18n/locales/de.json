@@ -196,10 +196,6 @@
     "continue": "Weiter",
     "processing": "Verarbeitung läuft...",
     "checkout": "Zur Kasse",
-    "postalCode": {
-      "title": "Postleitzahl",
-      "placeholder": "Postleitzahl"
-    },
     "authComponent": {
       "signUp": {
         "emailAddress": "Ihre E-Mail-Adresse",
@@ -218,14 +214,6 @@
         "invalidData": "Bitte überprüfe, ob deine E-Mail-Adresse und dein Passwort korrekt sind, und versuche es erneut.",
         "serverError": "Wir konnten diesen Schritt nicht abschließen. Bitte versuche es in einigen Minuten erneut oder wende dich an den Support, wenn das Problem weiterhin besteht.",
         "unknown": "Wir konnten deine Daten nicht überprüfen. Bitte überprüfe deine E-Mail-Adresse und dein Passwort und versuche es erneut."
-      }
-    },
-    "addressBillingTitle": "Rechnungsadresse",
-    "addressBilling": {
-      "optional": {
-        "cta": "Optional",
-        "companyName": "Firmenname",
-        "companyVatId": "USt-ID der Firma"
       }
     },
     "productCard": {
@@ -252,7 +240,6 @@
     "error": {
       "invalidPlan": "Nicht unterstützter Plantyp. Bitte wählen Sie einen gültigen Plan.",
       "businessPlan": "Der Unternehmensplan ist nicht verfügbar",
-      "postalCodeRequired": "Bitte geben Sie Ihre Postleitzahl ein, um fortzufahren",
       "countryRequired": "Wir konnten Ihr Land nicht ermitteln. Bitte versuchen Sie es später erneut.",
       "missingPaymentDetails": "Fehlende Zahlungsdaten zur Bestätigung der Zahlung",
       "paymentFailed": "Zahlung fehlgeschlagen"
@@ -353,7 +340,6 @@
     }
   },
   "general": {
-    "of": "von",
     "at": "um",
     "terms": "Geschäftsbedingungen",
     "contactSupport": "Kundensupport kontaktieren",
@@ -419,9 +405,6 @@
     },
     "stage": {
       "development": "Entwicklung"
-    },
-    "loading": {
-      "default": "Laden..."
     },
     "renewal": {
       "annually": "Jährlich",
@@ -1379,7 +1362,6 @@
   },
   "success": {
     "passwordChanged": "Passwort wurde erfolgreich geändert",
-    "linkCopied": "Link kopiert!",
     "twoFactorAuthActivated": "Deine Zwei-Faktor-Authentifizierung wurde aktiviert!",
     "twoFactorAuthDisabled": "Deine Zwei-Faktor-Authentifizierung wurde deaktiviert!"
   },
@@ -1466,7 +1448,6 @@
     "restoreHere": "Wiederherstellen",
     "rename": "Umbenennen",
     "restore": "Wiederherstellen",
-    "copyLink": "Kopiere Link",
     "report": "Missbrauch melden",
     "yes": "Ja",
     "no": "Nein",
