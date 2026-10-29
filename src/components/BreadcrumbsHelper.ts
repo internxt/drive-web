@@ -8,13 +8,7 @@ import { getCollisionGroups } from 'app/store/slices/storage/storage.thunks/rena
 import { uiActions } from 'app/store/slices/ui';
 import { DropTargetMonitor } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
-
-export const getFolderPath = (item: BreadcrumbItemData, namePath: FolderPath[]): string => {
-  const breadcrumbIndex = namePath.findIndex((level) => level.uuid === item.uuid);
-  const namePathDestinationArray = namePath.slice(0, breadcrumbIndex + 1).map((level) => level.name);
-  namePathDestinationArray[0] = '';
-  return namePathDestinationArray.join('/');
-};
+import { notifyUploadFailed } from 'views/Drive/components/DriveExplorer/helpers/uploadHelpers';
 
 export const getItemsToMoveWhenSelected = (
   droppedData: DriveItemData,
@@ -55,15 +49,9 @@ export const handleDriveItemDrop = async (
   }
 };
 
-export const handleFileDrop = async (
-  droppedData: unknown,
-  folderPath: string,
-  item: BreadcrumbItemData,
-  dispatch: AppDispatch,
-) => {
+export const handleFileDrop = async (droppedData: unknown, item: BreadcrumbItemData, dispatch: AppDispatch) => {
   const { rootList, files } = await transformDraggedItems(
     (droppedData as { files: File[]; items: DataTransferItemList }).items,
-    folderPath,
   );
 
   if (files.length) {
@@ -79,20 +67,19 @@ export const handleFileDrop = async (
 
 export const onItemDropped = (
   item: BreadcrumbItemData,
-  namePath: FolderPath[],
+  _: FolderPath[],
   isSomeItemSelected: boolean,
   selectedItems: DriveItemData[],
   dispatch: AppDispatch,
 ) => {
-  return async (draggedItem: unknown, monitor: DropTargetMonitor) => {
+  return async (_: unknown, monitor: DropTargetMonitor) => {
     const droppedType = monitor.getItemType();
     const droppedData = monitor.getItem();
-    const folderPath = getFolderPath(item, namePath);
 
     if (droppedType === DragAndDropType.DriveItem) {
       await handleDriveItemDrop(droppedData as DriveItemData, isSomeItemSelected, selectedItems, item, dispatch);
     } else if (droppedType === NativeTypes.FILE) {
-      await handleFileDrop(droppedData, folderPath, item, dispatch);
+      await handleFileDrop(droppedData, item, dispatch).catch(notifyUploadFailed);
     }
   };
 };

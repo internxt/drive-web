@@ -2,10 +2,7 @@ import { ChangeEvent, useCallback, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { fileVersionsSelectors } from 'app/store/slices/fileVersions';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-import {
-  transformInputFilesToJSON,
-  transformJsonFilesToItems,
-} from 'app/drive/services/folder.service/uploadFolderInput.service';
+import { transformInputFilesToItems } from 'app/drive/services/folder.service/uploadFolderInput.service';
 import { IRoot } from 'app/store/slices/storage/types';
 import { notifyUploadFailed, uploadItemsToFolder } from '../helpers/uploadHelpers';
 
@@ -41,9 +38,8 @@ export const useDriveExplorerUpload = (currentFolderId: string) => {
     if (!input.files) return;
 
     try {
-      const filesJson = transformInputFilesToJSON(Array.from(input.files));
-      const { rootList, rootFiles } = transformJsonFilesToItems(filesJson, currentFolderId);
-      await uploadItems(rootList, rootFiles);
+      const { rootList, files } = transformInputFilesToItems(Array.from(input.files), currentFolderId);
+      await uploadItems(rootList, files);
     } catch (error) {
       notifyUploadFailed(error);
     } finally {
