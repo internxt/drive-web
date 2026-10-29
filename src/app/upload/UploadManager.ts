@@ -1,15 +1,16 @@
 import { items as itemUtils } from '@internxt/lib';
 import { AsyncPriorityQueue, priorityQueue } from 'async';
 import errorService from 'services/error.service';
+import { QueueUtilsService } from 'utils/queueUtils';
 import uploadFile from 'app/drive/services/file.service/uploadFile';
 import { DriveFileData } from 'app/drive/types';
 import { PersistUploadRepository } from 'app/repositories/DatabaseUploadRepository';
 import { TaskStatus } from 'app/tasks/types';
 import {
-  HIGH_BROWSER_MEMORY_USAGE_RATIO,
   MAX_CONCURRENT_UPLOADS,
   MAX_UPLOAD_ATTEMPTS,
   SINGLE_TRANSFER_CONCURRENCY,
+  TWENTY_MEGABYTES,
   USE_MULTIPART_THRESHOLD_BYTES,
 } from 'app/network/networkConstants';
 import { OwnerUserAuthenticationData, UploadFailureReason, UploadItemKind } from 'app/network/types';
@@ -17,8 +18,9 @@ import { UploadedItem, UploadFileItem, UploadItem, UploadManagerEvents, UploadRe
 import { canSucceedOnImmediateRetry, toUploadFailure, UploadFailure } from 'app/network/uploadFailure';
 
 enum UploadPriority {
-  Normal = 1,
-  Last = 2,
+  SmallFile = 1,
+  MediumFile = 2,
+  LargeFile = 3,
 }
 
 interface UploadManagerProps {
@@ -39,16 +41,12 @@ export const createFileItem = (file: File, parentFolderUuid: string): UploadFile
 
 const isMultipartUpload = (item: UploadItem) => item.file.size >= USE_MULTIPART_THRESHOLD_BYTES;
 
+const isMediumSizedFile = (item: UploadItem) => item.file.size >= TWENTY_MEGABYTES;
+
 const getUploadPriority = (item: UploadItem): UploadPriority => {
-  if (isMultipartUpload(item)) return UploadPriority.Last;
-  return UploadPriority.Normal;
-};
-
-const isBrowserMemoryAlmostFull = (): boolean => {
-  const memory = window?.performance?.memory;
-  if (!memory?.jsHeapSizeLimit || !memory?.usedJSHeapSize) return false;
-
-  return memory.usedJSHeapSize / memory.jsHeapSizeLimit >= HIGH_BROWSER_MEMORY_USAGE_RATIO;
+  if (isMultipartUpload(item)) return UploadPriority.LargeFile;
+  if (isMediumSizedFile(item)) return UploadPriority.MediumFile;
+  return UploadPriority.SmallFile;
 };
 
 /**
@@ -150,8 +148,12 @@ export class UploadManager {
   }
 
   private adjustConcurrencyFor(item: UploadItem): void {
-    const shouldUploadOneAtATime = isMultipartUpload(item) || isBrowserMemoryAlmostFull();
-    this.uploadQueue.concurrency = shouldUploadOneAtATime ? SINGLE_TRANSFER_CONCURRENCY : MAX_CONCURRENT_UPLOADS;
+    if (isMultipartUpload(item)) {
+      this.uploadQueue.concurrency = SINGLE_TRANSFER_CONCURRENCY;
+      return;
+    }
+
+    QueueUtilsService.instance.adjustConcurrency(this.uploadQueue, MAX_CONCURRENT_UPLOADS);
   }
 
   private async uploadWithRetries(item: UploadItem): Promise<UploadedItem> {
