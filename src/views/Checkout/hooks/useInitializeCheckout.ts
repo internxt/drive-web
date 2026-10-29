@@ -1,12 +1,11 @@
 import { Stripe, StripeElementsOptionsMode } from '@stripe/stripe-js';
-import { checkoutService, currencyService, paymentService } from '../services';
+import { checkoutService, paymentService } from '../services';
 import { useEffect, useState } from 'react';
 import { errorService, navigationService } from 'services';
 import { AppView } from 'app/core/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { CryptoCurrency, PriceWithTax } from '@internxt/sdk/dist/payments/types';
-import { IS_CRYPTO_PAYMENT_ENABLED, STRIPE_MINIMUM_CHARGE_AMOUNT, THEME_STYLES } from '../constants';
-import { PlanInterval } from '../types';
+import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
+import { STRIPE_MINIMUM_CHARGE_AMOUNT, THEME_STYLES } from '../constants';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { Translate } from 'app/i18n/types';
@@ -28,7 +27,6 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
   const [stripeSdk, setStripeSdk] = useState<Stripe | null>(null);
   const [stripeElementsOptions, setStripeElementsOptions] = useState<StripeElementsOptionsMode>();
   const [isCheckoutReady, setIsCheckoutReady] = useState(false);
-  const [availableCryptoCurrencies, setAvailableCryptoCurrencies] = useState<CryptoCurrency[] | undefined>(undefined);
 
   useEffect(() => {
     initCheckout();
@@ -44,7 +42,7 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
     }
 
     if (stripeSdk && price) {
-      loadStripeAndCrypto();
+      void loadStripeElements();
     }
   }, [stripeSdk, price?.price?.id]);
 
@@ -69,9 +67,9 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
     }
   };
 
-  const loadStripeAndCrypto = async () => {
+  const loadStripeElements = async () => {
     try {
-      await Promise.all([loadStripeData(), loadCryptoCurrencies()]);
+      await loadStripeData();
     } catch {
       redirectToFallbackPage();
     }
@@ -85,23 +83,6 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
       setStripeSdk(stripe);
     } catch {
       throw new Error('Stripe failed to load');
-    }
-  };
-
-  const loadCryptoCurrencies = async () => {
-    if (price?.price.interval === PlanInterval.LIFETIME && IS_CRYPTO_PAYMENT_ENABLED) {
-      try {
-        const availableCryptoCurrencies = await currencyService.getAvailableCryptoCurrencies();
-        setAvailableCryptoCurrencies(availableCryptoCurrencies);
-      } catch (error) {
-        console.error('Error fetching available crypto currencies', error);
-        const castedError = errorService.castError(error);
-        notificationsService.show({
-          text: translate('checkout.error.fetchingCryptoCurrencies'),
-          type: ToastType.Error,
-          requestId: castedError.requestId,
-        });
-      }
     }
   };
 
@@ -130,7 +111,6 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
   return {
     stripeSdk,
     stripeElementsOptions,
-    availableCryptoCurrencies,
     isCheckoutReady,
   };
 };

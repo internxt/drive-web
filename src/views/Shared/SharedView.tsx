@@ -587,8 +587,7 @@ function SharedView({
           showPreview={isFileViewerOpen}
           isSharedView
           onClose={() => handleOpenItemPreview(false)}
-          onShowStopSharingDialog={onOpenStopSharingDialog}
-          sharedKeyboardShortcuts={{
+          keyboardShortcuts={{
             renameItemFromKeyboard: isCurrentUserViewer(currentUserRole) ? undefined : renameItem,
             removeItemFromKeyboard: handleIsItemOwnedByCurrentUser() ? onOpenStopSharingDialog : undefined,
           }}

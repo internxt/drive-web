@@ -5,15 +5,14 @@ import {
   convertibleImageExtensions,
   fileExtensionPreviewableGroups,
 } from 'app/drive/types/file-types';
-import { HALF_A_GIGABYTE_IN_BYTES } from 'services/media.service';
+import { getMaxPreviewableFileSizeInBytes } from 'services/media.service';
+import { MAX_CONVERTIBLE_IMAGE_PREVIEW_BYTES } from './fileViewerConstants';
 
 export const extensionsList = fileExtensionService.computeExtensionsLists(fileExtensionPreviewableGroups);
 
 const PORTRAIT_PAGE_HORIZONTAL_MARGIN = 32;
 
 export const PORTRAIT_VIEWER_PADDING_CLASS = 'portrait:px-4';
-
-export const MAX_CONVERTIBLE_IMAGE_PREVIEW_BYTES = 200 * 1024 * 1024;
 
 export function getPortraitFitWidth(): number | undefined {
   return window.innerWidth < window.innerHeight ? window.innerWidth - PORTRAIT_PAGE_HORIZONTAL_MARGIN : undefined;
@@ -36,7 +35,10 @@ const isConvertibleImage = (type: DriveFileData['type']): boolean =>
   convertibleImageExtensions.includes(String(type).toLowerCase());
 
 export const getPreviewSizeLimitBytes = ({ type }: Pick<DriveFileData, 'type'>): number =>
-  isConvertibleImage(type) ? MAX_CONVERTIBLE_IMAGE_PREVIEW_BYTES : HALF_A_GIGABYTE_IN_BYTES;
+  isConvertibleImage(type) ? MAX_CONVERTIBLE_IMAGE_PREVIEW_BYTES : getMaxPreviewableFileSizeInBytes();
 
 export const isPreviewableBySize = (file: Pick<DriveFileData, 'type' | 'size'>): boolean =>
   file.size < getPreviewSizeLimitBytes(file);
+
+export const getFileDisplayName = ({ name, plainName, type }: Pick<DriveFileData, 'name' | 'plainName' | 'type'>) =>
+  `${plainName ?? name}${type ? `.${type}` : ''}`;

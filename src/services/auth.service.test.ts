@@ -93,14 +93,6 @@ beforeAll(() => {
     },
   }));
 
-  vi.mock('services/sockets/socket.service', () => ({
-    default: {
-      getInstance: vi.fn().mockReturnValue({
-        stop: vi.fn(),
-      }),
-    },
-  }));
-
   vi.mock('app/analytics/utils', () => ({
     getCookie: vi.fn(),
     setCookie: vi.fn(),

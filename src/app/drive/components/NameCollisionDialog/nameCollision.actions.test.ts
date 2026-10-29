@@ -72,10 +72,10 @@ const asInvalidateCacheAction = (payload: unknown) => ({ type: 'invalidateCache'
 
 const getRoot = (name = 'Photos', children: Partial<Pick<IRoot, 'childrenFiles' | 'childrenFolders'>> = {}): IRoot => ({
   name,
+  isFolder: true,
   folderId: null,
   childrenFiles: [],
   childrenFolders: [],
-  fullPathEdited: `/${name}`,
   ...children,
 });
 

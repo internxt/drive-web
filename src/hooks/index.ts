@@ -4,4 +4,5 @@ export { useDebounce } from './useDebounce';
 export { default as useEffectAsync } from './useEffectAsync';
 export { default as useForceUpdate } from './useForceUpdate';
 export { useToggleFavoriteHotkey } from './useToggleFavoriteHotkey';
+export { useCreateFolderHotkey } from './useCreateFolderHotkey';
 export { default as useVpnAuth } from './useVpnAuth';

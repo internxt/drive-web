@@ -54,8 +54,6 @@ export const submitBlogSignup = async ({
     });
 
     globalThis.gtag?.('event', 'User Signup', { send_to: 'Blog' });
-    localStorage.removeItem('email');
-    localStorage.removeItem('password');
     if (redirectToApp) {
       window.open(`${envService.getVariable('hostname')}`, '_parent', 'noopener');
     }

@@ -214,13 +214,9 @@
     }
   },
   "checkout": {
-    "pay": "Pagar",
+    "continue": "Continuar",
     "processing": "Processando...",
     "checkout": "Finalizar compra",
-    "postalCode": {
-      "title": "CEP",
-      "placeholder": "CEP"
-    },
     "authComponent": {
       "signUp": {
         "emailAddress": "Seu endereço de e-mail",
@@ -239,16 +235,6 @@
         "invalidData": "Verifique se seu e-mail e senha estão corretos e tente novamente.",
         "serverError": "Não foi possível concluir esta etapa. Tente novamente em alguns minutos ou entre em contato com o suporte se o problema persistir.",
         "unknown": "Não foi possível verificar seus dados. Confira seu e-mail e senha e tente novamente."
-      },
-      "privacyGuarantee": "Garantia de privacidade: não compartilhamos suas informações e entraremos em contato apenas quando necessário para prestar nosso serviço."
-    },
-    "addressBillingTitle": "Endereço de cobrança",
-    "crypto": "Cripto",
-    "addressBilling": {
-      "optional": {
-        "cta": "Opcional",
-        "companyName": "Nome da empresa",
-        "companyVatId": "CNPJ da empresa"
       }
     },
     "productCard": {
@@ -272,40 +258,16 @@
       "taxes": "Impostos",
       "annualBillingTemplate": "Plano anual, cobrado a {{currency}}{{priceNow}} no primeiro mês e renovado por {{currency}}{{price}}/mês"
     },
-    "confirmCryptoPayment": {
-      "title": "Confirme o pagamento",
-      "timeExpiration": "A fatura expirará em 10 minutos",
-      "expiredLabel": "EXPIRADA",
-      "totalInCrypto": "Valor do pagamento ({{cryptoCurrency}})",
-      "totalInFiat": "Valor",
-      "copyAddress": "Endereço de pagamento",
-      "doNotCloseWindowWarning": "Não feche a janela até que o pagamento seja concluído",
-      "cancel": "Cancelar",
-      "confirm": "Confirmar o pagamento",
-      "sessionExpired": "Sessão expirada",
-      "notifications": {
-        "priceCopied": "Preço copiado para a área de transferência",
-        "addressCopied": "Endereço copiado para a área de transferência",
-        "paymentSucceeded": "Pagamento concluído com sucesso",
-        "paymentNotCompleted": "O pagamento não foi concluído",
-        "unexpectedError": "Algo deu errado ao verificar o pagamento"
-      }
-    },
     "error": {
       "invalidPlan": "Tipo de plano não suportado. Selecione um plano válido.",
-      "fetchingCryptoCurrencies": "Não foi possível carregar as opções de criptomoedas disponíveis",
-      "addressRequired": "Complete seu endereço de cobrança para continuar",
       "businessPlan": "O plano empresarial não está disponível",
-      "postalCodeRequired": "Informe seu CEP para continuar",
       "countryRequired": "Não foi possível determinar seu país de cobrança. Tente novamente mais tarde.",
       "missingPaymentDetails": "Faltam dados de pagamento para confirmar a transação",
       "paymentFailed": "Falha no pagamento"
     },
     "accountSetup": {
-      "passwordAfterPayment": "Você ainda não precisa de senha. Depois do pagamento, enviaremos um e-mail para você concluir a configuração da sua conta.",
       "emailHasAccount": "Este e-mail já tem uma conta Internxt. Faça login para continuar com a compra.",
       "pendingSetup": "{{email}} já tem um plano pago aguardando configuração. Verifique seu e-mail para concluir a configuração da sua conta.",
-      "cryptoRequiresSignIn": "Faça login para pagar com criptomoedas.",
       "resendEmail": "Reenviar e-mail",
       "emailResent": "Enviamos o e-mail novamente",
       "resendEmailError": "Não foi possível enviar o e-mail. Tente novamente mais tarde.",
@@ -373,13 +335,32 @@
       "encryptedDescription": "A Internxt não pode acessar seu conteúdo."
     },
     "cta": {
-      "button": "Tenha {{storage}} por {{price}}",
-      "renewalNoteMonthly": "Primeiro mês por {{price}}, depois renova por {{renewalPrice}}/mês. Cancele quando quiser.",
-      "renewalNoteYearly": "Primeiro ano por {{price}}, depois renova por {{renewalPrice}}/ano. Cancele quando quiser."
+      "button": {
+        "lifetime": "Tenha o armazenamento Lifetime",
+        "subscription": "Assine o armazenamento em nuvem privada"
+      },
+      "billingDisclosure": {
+        "withIntroPrice": {
+          "month": "{{price}} no primeiro mês, depois {{renewalPrice}} por mês. Cancele quando quiser.",
+          "year": "{{price}} no primeiro ano, depois {{renewalPrice}} por ano. Cancele quando quiser."
+        },
+        "withoutIntroPrice": {
+          "month": "{{renewalPrice}} por mês. Cancele quando quiser.",
+          "year": "{{renewalPrice}} por ano. Cancele quando quiser."
+        }
+      }
+    },
+    "lifetimeNotice": {
+      "title": "O que você compra continua sendo seu",
+      "description": "O armazenamento Lifetime que você comprar não será reduzido por mudanças futuras nos planos.",
+      "singlePayment": "Pagamento único — Sem taxas recorrentes."
+    },
+    "guarantee": {
+      "title": "Garantia de reembolso de 30 dias",
+      "description": "Experimente sem risco."
     }
   },
   "general": {
-    "of": "de",
     "at": "às",
     "terms": "Termos e condições",
     "contactSupport": "Falar com o suporte",
@@ -445,9 +426,6 @@
     },
     "stage": {
       "development": "Desenvolvimento"
-    },
-    "loading": {
-      "default": "Carregando..."
     },
     "renewal": {
       "annually": "Anual",
@@ -1419,7 +1397,6 @@
   },
   "success": {
     "passwordChanged": "Senha alterada com sucesso",
-    "linkCopied": "Link copiado!",
     "twoFactorAuthActivated": "Sua autenticação de dois fatores foi ativada!",
     "twoFactorAuthDisabled": "Sua autenticação de dois fatores foi desativada"
   },
@@ -1507,7 +1484,6 @@
     "restoreHere": "Restaurar aqui",
     "rename": "Renomear",
     "restore": "Restaurar",
-    "copyLink": "Copiar link",
     "report": "Denunciar abuso",
     "yes": "Sim",
     "no": "Não",

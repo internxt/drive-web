@@ -1,18 +1,17 @@
 import { CouponCodeData } from '@internxt/sdk/dist/drive/payments/types/types';
-import { CryptoCurrency, PriceWithTax } from '@internxt/sdk/dist/payments/types';
+import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import enTranslations from 'app/i18n/locales/en.json';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import UrgentCheckoutView from './UrgentCheckoutView';
 import { CheckoutViewManager } from 'views/Checkout/types/checkout.types';
 import { UrgentCheckoutVariant } from '../constants';
-import { AuthMethodTypes, PaymentType } from 'views/Checkout/types';
+import { AuthMethodTypes } from 'views/Checkout/types';
 
 vi.mock('@stripe/react-stripe-js', () => ({
   useStripe: () => ({}),
   useElements: () => ({ getElement: () => null }),
   PaymentElement: () => <div data-testid="payment-element" />,
-  AddressElement: () => <div data-testid="address-element" />,
 }));
 
 const translate = (key: string, props?: Record<string, unknown>) => {
@@ -30,10 +29,10 @@ vi.mock('app/i18n/provider/TranslationProvider', () => ({
 }));
 
 interface RenderOptions {
-  cryptoCurrencies?: CryptoCurrency[];
-  onCurrencyTypeChanges?: (currency: PaymentType) => void;
   authMethod?: AuthMethodTypes;
   authError?: string;
+  plan?: PriceWithTax;
+  withoutCoupon?: boolean;
 }
 
 const selectedPlan = {
@@ -48,26 +47,31 @@ const selectedPlan = {
   taxes: { amountWithTax: 218, decimalAmountWithTax: 2.18 },
 } as unknown as PriceWithTax;
 
+const lifetimePlan = {
+  price: {
+    id: 'price_id',
+    bytes: 5497558138880,
+    currency: 'usd',
+    decimalAmount: 299.99,
+    amount: 29999,
+    interval: 'lifetime',
+  },
+  taxes: { amountWithTax: 2180, decimalAmountWithTax: 21.8 },
+} as unknown as PriceWithTax;
+
 const couponCodeData = { percentOff: 94, codeId: 'code_id', codeName: 'OFFER94' } as CouponCodeData;
 
 const checkoutViewManager = {
   onLogOut: vi.fn(),
   onCheckoutButtonClicked: vi.fn(),
   handleAuthMethodChange: vi.fn(),
-  onCurrencyChange: vi.fn(),
-  onUserAddressChanges: vi.fn(),
-  onUserNameChanges: vi.fn(),
 } as unknown as CheckoutViewManager;
-
-const availableCryptoCurrencies = [
-  { currencyId: 'BTC', name: 'Bitcoin', imageUrl: 'https://internxt.com/btc.svg', networkName: 'bitcoin' },
-] as unknown as CryptoCurrency[];
 
 const CREATIVE_IMAGE_ALT = 'Internxt Drive on a laptop and a phone';
 
 const renderUrgentCheckout = (
   variant = UrgentCheckoutVariant.Mainstream,
-  { cryptoCurrencies, onCurrencyTypeChanges = vi.fn(), authMethod = 'signUp', authError }: RenderOptions = {},
+  { authMethod = 'signUp', authError, plan = selectedPlan, withoutCoupon }: RenderOptions = {},
 ) =>
   render(
     <UrgentCheckoutView
@@ -78,13 +82,10 @@ const renderUrgentCheckout = (
         isPaying: false,
         authMethod,
         authError,
-        couponCodeData,
-        currentSelectedPlan: selectedPlan,
-        selectedCurrency: 'usd',
+        couponCodeData: withoutCoupon ? undefined : couponCodeData,
+        currentSelectedPlan: plan,
       }}
       checkoutViewManager={checkoutViewManager}
-      availableCryptoCurrencies={cryptoCurrencies}
-      onCurrencyTypeChanges={onCurrencyTypeChanges}
     />,
   );
 
@@ -125,9 +126,32 @@ describe('urgent checkout view', () => {
     renderUrgentCheckout();
 
     expect(screen.getByTestId('payment-element')).toBeTruthy();
-    expect(screen.getByText('Get 5TB for $1.79')).toBeTruthy();
-    expect(screen.getByText('First month $1.79, then renews at $29.99/month. Cancel anytime.')).toBeTruthy();
+    expect(screen.getByText('Subscribe to private cloud storage')).toBeTruthy();
     expect(screen.getByText('30-day money-back guarantee')).toBeTruthy();
+    expect(screen.getByText('Try it risk-free.')).toBeTruthy();
+  });
+
+  it('When the plan is a subscription with an intro price, then the billing disclosure states both prices', () => {
+    renderUrgentCheckout();
+
+    expect(screen.getByText('$1.79 for your first month, then $29.99 every month. Cancel anytime.')).toBeTruthy();
+    expect(screen.queryByText('What you buy stays yours')).toBeNull();
+  });
+
+  it('When the subscription has no intro price, then the billing disclosure only states the recurring price', () => {
+    renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { withoutCoupon: true });
+
+    expect(screen.getByText('$29.99 every month. Cancel anytime.')).toBeTruthy();
+  });
+
+  it('When the plan is lifetime, then the ownership notice is shown and there is no billing disclosure', () => {
+    renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { plan: lifetimePlan });
+
+    expect(screen.getByText('Get Lifetime storage')).toBeTruthy();
+    expect(screen.getByText('What you buy stays yours')).toBeTruthy();
+    expect(screen.getByText(/Your purchased Lifetime storage won't be reduced by future plan changes/)).toBeTruthy();
+    expect(screen.getByText('Single payment — No recurring fees.')).toBeTruthy();
+    expect(screen.queryByText(/Cancel anytime/)).toBeNull();
   });
 
   it.each([
@@ -139,38 +163,6 @@ describe('urgent checkout view', () => {
     expect(container.querySelector(`img[alt="${CREATIVE_IMAGE_ALT}"]`)?.getAttribute('src')).toContain(expectedImage);
   });
 
-  describe('Crypto payments', () => {
-    const getCryptoSection = () => screen.getByText('Crypto').closest<HTMLElement>('[style*="--color-surface"]');
-
-    it('When no crypto currencies are available, then the crypto payment option is not shown', () => {
-      renderUrgentCheckout();
-
-      expect(screen.queryByText('Crypto')).toBeNull();
-    });
-
-    it('When crypto currencies are available, then the section is shown and repainted dark', () => {
-      renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { cryptoCurrencies: availableCryptoCurrencies });
-      const cryptoSection = getCryptoSection();
-
-      expect(cryptoSection).toBeTruthy();
-      expect(cryptoSection?.className).toContain('text-white');
-      expect(cryptoSection?.style.getPropertyValue('--color-surface')).toBe('10 17 32');
-    });
-
-    it('When the crypto dropdown is opened, then the currencies are listed and the payment type changes', () => {
-      const onCurrencyTypeChanges = vi.fn();
-      renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, {
-        cryptoCurrencies: availableCryptoCurrencies,
-        onCurrencyTypeChanges,
-      });
-
-      fireEvent.click(screen.getByText('Crypto'));
-
-      expect(getCryptoSection()?.contains(screen.getByText('Bitcoin'))).toBe(true);
-      expect(onCurrencyTypeChanges).toHaveBeenCalledWith(PaymentType.CRYPTO);
-    });
-  });
-
   describe('Signing up and logging in', () => {
     const renderSignedInUrgentCheckout = async () => {
       await act(async () => {
@@ -179,7 +171,7 @@ describe('urgent checkout view', () => {
     };
 
     it.each<[AuthMethodTypes, string, string, string]>([
-      ['signUp', 'Create a password', 'Already have an account?', 'Login'],
+      ['signUp', 'Create a password', 'Already have an account?', 'Log in'],
       ['signIn', 'Your password', 'Don’t have an account?', 'Create account'],
     ])(
       'When the visitor is on %s, then its copy and the link to the other method are shown',
@@ -195,7 +187,7 @@ describe('urgent checkout view', () => {
     );
 
     it.each<[AuthMethodTypes, string, AuthMethodTypes]>([
-      ['signUp', 'Login', 'signIn'],
+      ['signUp', 'Log in', 'signIn'],
       ['signIn', 'Create account', 'signUp'],
     ])('When the visitor on %s clicks the link, then the auth method changes', (authMethod, link, expected) => {
       renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { authMethod });
@@ -212,7 +204,7 @@ describe('urgent checkout view', () => {
 
       fireEvent.change(email, { target: { value: 'test@internxt.com' } });
       fireEvent.change(password, { target: { value: 'a-password' } });
-      fireEvent.click(screen.getByText('Login'));
+      fireEvent.click(screen.getByText('Log in'));
 
       expect(email.value).toBe('');
       expect(password.value).toBe('');

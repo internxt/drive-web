@@ -193,13 +193,9 @@
     }
   },
   "checkout": {
-    "pay": "Payer",
+    "continue": "Continuer",
     "processing": "Traitement en cours...",
     "checkout": "Commander",
-    "postalCode": {
-      "title": "Code postal",
-      "placeholder": "Code postal"
-    },
     "authComponent": {
       "signUp": {
         "emailAddress": "Votre adresse email",
@@ -218,16 +214,6 @@
         "invalidData": "Veuillez vérifier que votre email et votre mot de passe sont corrects, puis réessayer.",
         "serverError": "Nous n'avons pas pu finaliser cette étape. Veuillez réessayer dans quelques minutes ou contacter le support si le problème persiste.",
         "unknown": "Nous n'avons pas pu vérifier vos informations. Veuillez vérifier votre email et votre mot de passe, puis réessayer."
-      },
-      "privacyGuarantee": "Garantie de confidentialité : Nous ne partageons pas vos informations et ne vous contacterons que si nécessaire pour fournir notre service."
-    },
-    "addressBillingTitle": "Facturation d'Adresse",
-    "crypto": "Crypto",
-    "addressBilling": {
-      "optional": {
-        "cta": "Optionnel",
-        "companyName": "Nom de l'entreprise",
-        "companyVatId": "Numéro de TVA de l'entreprise"
       }
     },
     "productCard": {
@@ -251,40 +237,16 @@
       "taxes": "Taxes",
       "annualBillingTemplate": "Plan annuel, facturé {{currency}}{{priceNow}} pour le premier mois, puis renouvelé à {{currency}}{{price}}/mois"
     },
-    "confirmCryptoPayment": {
-      "title": "Confirmer le paiement",
-      "timeExpiration": "La facture expirera dans 10 minutes",
-      "expiredLabel": "EXPIRÉ",
-      "totalInCrypto": "Montant à payer ({{cryptoCurrency}})",
-      "totalInFiat": "Montant",
-      "copyAddress": "Adresse de paiement",
-      "doNotCloseWindowWarning": "Ne fermez pas la fenêtre tant que le paiement n'est pas terminé",
-      "cancel": "Annuler",
-      "confirm": "Confirmer le paiement",
-      "sessionExpired": "Session Expirée",
-      "notifications": {
-        "priceCopied": "Prix copié dans le presse-papiers",
-        "addressCopied": "Adresse copiée dans le presse-papiers",
-        "paymentSucceeded": "Paiement effectué avec succès",
-        "paymentNotCompleted": "Le paiement n'est pas terminé",
-        "unexpectedError": "Une erreur s'est produite lors de la vérification du paiement"
-      }
-    },
     "error": {
       "invalidPlan": "Type de plan non pris en charge. Veuillez sélectionner un plan valide.",
-      "fetchingCryptoCurrencies": "Nous n'avons pas pu charger les options de crypto-monnaies disponibles",
-      "addressRequired": "Veuillez compléter votre adresse de facturation pour continuer",
       "businessPlan": "Le plan d’entreprise n’est pas disponible",
-      "postalCodeRequired": "Veuillez saisir votre code postal pour continuer",
       "countryRequired": "Nous n'avons pas pu déterminer votre pays. Veuillez réessayer plus tard.",
       "missingPaymentDetails": "Informations de paiement manquantes pour confirmer le paiement",
       "paymentFailed": "Paiement échoué"
     },
     "accountSetup": {
-      "passwordAfterPayment": "Vous n'avez pas encore besoin de mot de passe. Après le paiement, nous vous enverrons un e-mail pour finaliser la configuration de votre compte.",
       "emailHasAccount": "Cet e-mail a déjà un compte Internxt. Connectez-vous pour poursuivre votre achat.",
       "pendingSetup": "{{email}} a déjà un forfait payé en attente de configuration. Consultez vos e-mails pour finaliser la configuration de votre compte.",
-      "cryptoRequiresSignIn": "Connectez-vous pour payer en cryptomonnaie.",
       "resendEmail": "Renvoyer l'e-mail",
       "emailResent": "Nous vous avons renvoyé l'e-mail",
       "resendEmailError": "Nous n'avons pas pu envoyer l'e-mail. Veuillez réessayer plus tard.",
@@ -352,13 +314,32 @@
       "encryptedDescription": "Internxt ne peut pas accéder à votre contenu."
     },
     "cta": {
-      "button": "Obtenez {{storage}} pour {{price}}",
-      "renewalNoteMonthly": "Premier mois {{price}}, puis renouvellement à {{renewalPrice}}/mois. Annulez à tout moment.",
-      "renewalNoteYearly": "Première année {{price}}, puis renouvellement à {{renewalPrice}}/an. Annulez à tout moment."
+      "button": {
+        "lifetime": "Obtenez le stockage Lifetime",
+        "subscription": "Abonnez-vous au stockage cloud privé"
+      },
+      "billingDisclosure": {
+        "withIntroPrice": {
+          "month": "{{price}} le premier mois, puis {{renewalPrice}} chaque mois. Annulez à tout moment.",
+          "year": "{{price}} la première année, puis {{renewalPrice}} chaque année. Annulez à tout moment."
+        },
+        "withoutIntroPrice": {
+          "month": "{{renewalPrice}} chaque mois. Annulez à tout moment.",
+          "year": "{{renewalPrice}} chaque année. Annulez à tout moment."
+        }
+      }
+    },
+    "lifetimeNotice": {
+      "title": "Ce que vous achetez reste à vous",
+      "description": "Le stockage Lifetime que vous achetez ne sera pas réduit par de futurs changements de forfait.",
+      "singlePayment": "Paiement unique — Aucun frais récurrent."
+    },
+    "guarantee": {
+      "title": "Garantie de remboursement de 30 jours",
+      "description": "Essayez sans risque."
     }
   },
   "general": {
-    "of": "de",
     "at": "à",
     "terms": "Termes et conditions",
     "contactSupport": "Contacter le support",
@@ -424,9 +405,6 @@
     },
     "stage": {
       "development": "Développement"
-    },
-    "loading": {
-      "default": "Chargement..."
     },
     "renewal": {
       "annually": "Annuel",
@@ -1388,7 +1366,6 @@
   },
   "success": {
     "passwordChanged": "Mot de passe modifié",
-    "linkCopied": "Lien copié !",
     "twoFactorAuthActivated": "Votre authentification à deux facteurs a été activée !",
     "twoFactorAuthDisabled": "Votre authentification à deux facteurs a été désactivée"
   },
@@ -1477,7 +1454,6 @@
     "restoreHere": "Restaurer ici",
     "rename": "Renommer",
     "restore": "Restaurer",
-    "copyLink": "Copier le lien",
     "report": "Signaler un abus",
     "yes": "Oui",
     "no": "Non",

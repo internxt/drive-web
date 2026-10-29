@@ -214,13 +214,9 @@
     }
   },
   "checkout": {
-    "pay": "支付",
+    "continue": "繼續",
     "processing": "處理中...",
     "checkout": "結帳",
-    "postalCode": {
-      "title": "郵遞區號",
-      "placeholder": "郵遞區號"
-    },
     "authComponent": {
       "signUp": {
         "emailAddress": "您的電子郵件地址",
@@ -239,16 +235,6 @@
         "invalidData": "請確認您的電子郵件和密碼是否正確，然後再試一次。",
         "serverError": "我們無法完成此步驟。請於幾分鐘後再試，若問題持續發生請聯絡客服。",
         "unknown": "我們無法驗證您的資料。請確認您的電子郵件和密碼，然後再試一次。"
-      },
-      "privacyGuarantee": "隱私保證：我們不會分享您的信息，並且只會在提供服務時與您聯繫。"
-    },
-    "addressBillingTitle": "帳單地址",
-    "crypto": "Crypto",
-    "addressBilling": {
-      "optional": {
-        "cta": "可選",
-        "companyName": "公司名稱",
-        "companyVatId": "公司增值稅編號"
       }
     },
     "productCard": {
@@ -272,40 +258,16 @@
       "taxes": "稅金",
       "annualBillingTemplate": "年度計劃，首月收費 {{currency}}{{priceNow}}，之後每月 {{currency}}{{price}}/月 自動續訂"
     },
-    "confirmCryptoPayment": {
-      "title": "確認付款",
-      "timeExpiration": "發票將在10分鐘後過期",
-      "expiredLabel": "已過期",
-      "totalInCrypto": "付款金額 ({{cryptoCurrency}})",
-      "totalInFiat": "金額",
-      "copyAddress": "付款地址",
-      "doNotCloseWindowWarning": "在付款完成之前請勿關閉視窗",
-      "cancel": "取消",
-      "confirm": "確認付款",
-      "sessionExpired": "工作階段已過期",
-      "notifications": {
-        "priceCopied": "價格已複製到剪貼簿",
-        "addressCopied": "地址已複製到剪貼簿",
-        "paymentSucceeded": "付款成功完成",
-        "paymentNotCompleted": "付款未完成",
-        "unexpectedError": "驗證付款時發生錯誤"
-      }
-    },
     "error": {
       "invalidPlan": "不支援的方案類型。請選擇有效的方案。",
-      "fetchingCryptoCurrencies": "無法載入可用的加密貨幣選項",
-      "addressRequired": "請填寫您的帳單地址以繼續",
       "businessPlan": "企業計劃不可用",
-      "postalCodeRequired": "請輸入您的郵遞區號以繼續",
       "countryRequired": "我們無法確定您的國家/地區,請稍後再試",
       "missingPaymentDetails": "缺少確認付款所需的付款資訊",
       "paymentFailed": "付款失敗"
     },
     "accountSetup": {
-      "passwordAfterPayment": "現在還不需要密碼。付款後，我們會寄一封電子郵件給你，以完成帳戶設定。",
       "emailHasAccount": "此電子郵件已有 Internxt 帳戶。請登入以繼續購買。",
       "pendingSetup": "{{email}} 已有一個待設定的付費方案。請查看你的電子郵件以完成帳戶設定。",
-      "cryptoRequiresSignIn": "請登入後使用加密貨幣付款。",
       "resendEmail": "重新寄送郵件",
       "emailResent": "我們已重新寄送郵件",
       "resendEmailError": "無法寄送郵件，請稍後再試。",
@@ -373,13 +335,32 @@
       "encryptedDescription": "Internxt 無法存取您的內容。"
     },
     "cta": {
-      "button": "以 {{price}} 獲得 {{storage}}",
-      "renewalNoteMonthly": "首月 {{price}}，之後以 {{renewalPrice}}/月續訂。可隨時取消。",
-      "renewalNoteYearly": "首年 {{price}}，之後以 {{renewalPrice}}/年續訂。可隨時取消。"
+      "button": {
+        "lifetime": "取得 Lifetime 儲存空間",
+        "subscription": "訂閱私人雲端儲存空間"
+      },
+      "billingDisclosure": {
+        "withIntroPrice": {
+          "month": "首月 {{price}}，之後每月 {{renewalPrice}}。可隨時取消。",
+          "year": "首年 {{price}}，之後每年 {{renewalPrice}}。可隨時取消。"
+        },
+        "withoutIntroPrice": {
+          "month": "每月 {{renewalPrice}}。可隨時取消。",
+          "year": "每年 {{renewalPrice}}。可隨時取消。"
+        }
+      }
+    },
+    "lifetimeNotice": {
+      "title": "購買即永久屬於您",
+      "description": "您購買的 Lifetime 儲存空間不會因未來的方案調整而減少。",
+      "singlePayment": "一次性付款 — 無需定期續費。"
+    },
+    "guarantee": {
+      "title": "30天退款保證",
+      "description": "放心試用，零風險。"
     }
   },
   "general": {
-    "of": "的",
     "at": "在",
     "terms": "條款和條件",
     "contactSupport": "聯絡支持",
@@ -445,9 +426,6 @@
     },
     "stage": {
       "development": "開發"
-    },
-    "loading": {
-      "default": "加載中..."
     },
     "renewal": {
       "annually": "每年",
@@ -1409,7 +1387,6 @@
   },
   "success": {
     "passwordChanged": "密碼已成功更改",
-    "linkCopied": "鏈接已複製！",
     "twoFactorAuthActivated": "您的雙因素身份驗證已啟用！",
     "twoFactorAuthDisabled": "您的雙因素身份驗證已停用"
   },
@@ -1500,7 +1477,6 @@
     "restoreHere": "還原至此",
     "rename": "重新命名",
     "restore": "還原",
-    "copyLink": "複製鏈接",
     "report": "檢舉濫用",
     "yes": "是",
     "no": "否",

@@ -193,16 +193,12 @@
     }
   },
   "checkout": {
-    "pay": "Pagar",
+    "continue": "Continuar",
     "processing": "Procesando...",
     "checkout": "Finalizar compra",
-    "postalCode": {
-      "title": "Código postal",
-      "placeholder": "Código postal"
-    },
     "authComponent": {
       "signUp": {
-        "emailAddress": "Tu dirección de correo electrónico",
+        "emailAddress": "Dirección de correo electrónico",
         "password": "Crea una contraseña"
       },
       "signIn": {
@@ -218,16 +214,6 @@
         "invalidData": "Comprueba que tu correo electrónico y tu contraseña son correctos e inténtalo de nuevo.",
         "serverError": "No hemos podido completar este paso. Inténtalo de nuevo en unos minutos o contacta con soporte si el problema continúa.",
         "unknown": "No hemos podido verificar tus datos. Comprueba tu correo electrónico y tu contraseña e inténtalo de nuevo."
-      },
-      "privacyGuarantee": "Garantía de privacidad: No compartimos su información y solo contactaremos contigo cuando sea necesario para brindar nuestro servicio."
-    },
-    "addressBillingTitle": "Dirección de facturación",
-    "crypto": "Crypto",
-    "addressBilling": {
-      "optional": {
-        "cta": "Opcional",
-        "companyName": "Nombre de la empresa",
-        "companyVatId": "VAT ID de la Empresa"
       }
     },
     "productCard": {
@@ -251,40 +237,16 @@
       "taxes": "Impuestos",
       "annualBillingTemplate": "Plan anual, facturado a {{currency}}{{priceNow}} el primer mes, luego se renueva a {{currency}}{{price}}/mes"
     },
-    "confirmCryptoPayment": {
-      "title": "Confirmar el pago",
-      "timeExpiration": "La factura expirará en 10 minutos",
-      "expiredLabel": "EXPIRADO",
-      "totalInCrypto": "Cantidad a pagar ({{cryptoCurrency}})",
-      "totalInFiat": "Importe",
-      "copyAddress": "Dirección de pago",
-      "doNotCloseWindowWarning": "No cierres la ventana hasta que el pago esté completado",
-      "cancel": "Cancelar",
-      "confirm": "Confirmar el pago",
-      "sessionExpired": "Sesión Expirada",
-      "notifications": {
-        "priceCopied": "Precio copiado al portapapeles",
-        "addressCopied": "Dirección copiada al portapapeles",
-        "paymentSucceeded": "Pago completado exitosamente",
-        "paymentNotCompleted": "El pago no se completó",
-        "unexpectedError": "Algo salió mal al verificar el pago"
-      }
-    },
     "error": {
       "invalidPlan": "Tipo de plan no soportado. Por favor, selecciona un plan válido.",
-      "fetchingCryptoCurrencies": "No pudimos cargar las opciones de criptomonedas disponibles",
-      "addressRequired": "Por favor, completa tu dirección de facturación para continuar",
       "businessPlan": "El plan de empresa no está disponible",
-      "postalCodeRequired": "Introduce tu código postal para continuar",
       "countryRequired": "No hemos podido determinar tu país de facturación. Inténtalo de nuevo más tarde.",
       "missingPaymentDetails": "Faltan los datos de pago para confirmar el pago",
       "paymentFailed": "Pago fallido"
     },
     "accountSetup": {
-      "passwordAfterPayment": "Todavía no necesitas una contraseña. Después del pago te enviaremos un correo para terminar de configurar tu cuenta.",
       "emailHasAccount": "Este correo ya tiene una cuenta de Internxt. Inicia sesión para continuar con tu compra.",
       "pendingSetup": "{{email}} ya tiene un plan pagado pendiente de configurar. Revisa tu correo para terminar de configurar tu cuenta.",
-      "cryptoRequiresSignIn": "Inicia sesión para pagar con criptomonedas.",
       "resendEmail": "Reenviar correo",
       "emailResent": "Te hemos vuelto a enviar el correo",
       "resendEmailError": "No hemos podido enviar el correo. Inténtalo de nuevo más tarde.",
@@ -352,13 +314,32 @@
       "encryptedDescription": "Internxt no puede acceder a tu contenido."
     },
     "cta": {
-      "button": "Consigue {{storage}} por {{price}}",
-      "renewalNoteMonthly": "Primer mes {{price}}, después se renueva a {{renewalPrice}}/mes. Cancela cuando quieras.",
-      "renewalNoteYearly": "Primer año {{price}}, después se renueva a {{renewalPrice}}/año. Cancela cuando quieras."
+      "button": {
+        "lifetime": "Consigue almacenamiento Lifetime",
+        "subscription": "Suscríbete al almacenamiento en la nube privada"
+      },
+      "billingDisclosure": {
+        "withIntroPrice": {
+          "month": "{{price}} el primer mes, después {{renewalPrice}} cada mes. Cancela cuando quieras.",
+          "year": "{{price}} el primer año, después {{renewalPrice}} cada año. Cancela cuando quieras."
+        },
+        "withoutIntroPrice": {
+          "month": "{{renewalPrice}} cada mes. Cancela cuando quieras.",
+          "year": "{{renewalPrice}} cada año. Cancela cuando quieras."
+        }
+      }
+    },
+    "lifetimeNotice": {
+      "title": "Lo que compras sigue siendo tuyo",
+      "description": "El almacenamiento Lifetime que compres no se reducirá por futuros cambios de plan.",
+      "singlePayment": "Pago único — Sin cuotas recurrentes."
+    },
+    "guarantee": {
+      "title": "Garantía de devolución de dinero de 30 días",
+      "description": "Pruébalo sin riesgo."
     }
   },
   "general": {
-    "of": "de",
     "at": "a las",
     "terms": "Términos y condiciones",
     "contactSupport": "Contactar con soporte",
@@ -424,9 +405,6 @@
     },
     "stage": {
       "development": "Development"
-    },
-    "loading": {
-      "default": "Cargando..."
     },
     "renewal": {
       "annually": "Anual",
@@ -1442,7 +1420,6 @@
   },
   "success": {
     "passwordChanged": "Contraseña actualizada correctamente",
-    "linkCopied": "Enlace copiado!",
     "twoFactorAuthActivated": "Su autenticación de dos factores ha sido activada!",
     "twoFactorAuthDisabled": "Su autenticación de dos factores ha sido desactivada."
   },
@@ -1477,7 +1454,6 @@
     "restoreHere": "Restaurar aquí",
     "rename": "Renombrar",
     "restore": "Restaurar",
-    "copyLink": "Copiar enlace",
     "report": "Reportar abuso",
     "yes": "Sí",
     "no": "No",

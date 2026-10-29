@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { FormatFileViewerProps } from '../../FileViewer';
+import { FileContentViewerProps } from '../types';
 import { VideoStreamingSession } from 'app/drive/services/video-streaming.service/VideoStreamingSession';
 import encryptedStorageService from 'services/encrypted-storage.service';
 
@@ -11,9 +11,9 @@ const FileVideoViewer = ({
   file,
   blob,
   disableVideoStream,
-  setIsPreviewAvailable,
-  handlersForSpecialItems,
-}: FormatFileViewerProps): JSX.Element => {
+  onError,
+  onProgress,
+}: FileContentViewerProps): JSX.Element => {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -47,9 +47,9 @@ const FileVideoViewer = ({
 
   useEffect(() => {
     if (!disableVideoStream && !canPlay && simulatedProgress > 0) {
-      handlersForSpecialItems?.handleUpdateProgress(simulatedProgress);
+      onProgress?.(simulatedProgress);
     }
-  }, [simulatedProgress, canPlay, disableVideoStream, handlersForSpecialItems]);
+  }, [simulatedProgress, canPlay, disableVideoStream, onProgress]);
 
   useEffect(() => {
     if (!disableVideoStream || !videoRef.current || !blob) return;
@@ -119,14 +119,13 @@ const FileVideoViewer = ({
   }, [file.fileId, file.bucket, file.size, file.type, disableVideoStream]);
 
   const handleOnReady = () => {
-    handlersForSpecialItems?.handleUpdateProgress(1);
+    onProgress?.(1);
     setCanPlay(true);
-    setIsPreviewAvailable(true);
   };
 
   const handleOnError = (errorMessage?: string) => {
     console.error(`[FileVideoViewer] Video error: ${errorMessage}`);
-    setIsPreviewAvailable(false);
+    onError();
   };
 
   const handleVideoErrorEvent = (event: Event) => {

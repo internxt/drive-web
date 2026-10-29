@@ -1,4 +1,5 @@
 import { DriveFolderData } from 'app/drive/types';
+import { IRoot } from 'app/store/slices/storage/types';
 import { createFolder } from 'app/store/slices/storage/folderUtils/createFolder';
 import { checkFolderDuplicated } from 'app/store/slices/storage/folderUtils/checkFolderDuplicated';
 import { getUniqueFolderName } from 'app/store/slices/storage/folderUtils/getUniqueFolderName';
@@ -136,7 +137,7 @@ describe('uploadFoldersWithManager', () => {
             childrenFiles: [],
             childrenFolders: [],
             name: mockFolder.name,
-            fullPathEdited: 'path1',
+            isFolder: true,
           },
           options: { taskId },
         },
@@ -195,7 +196,7 @@ describe('uploadFoldersWithManager', () => {
             childrenFiles: [smallFile],
             childrenFolders: [],
             name: mockFolder.name,
-            fullPathEdited: 'path1',
+            isFolder: true,
           },
           options: { taskId },
         },
@@ -244,7 +245,7 @@ describe('uploadFoldersWithManager', () => {
             childrenFiles: [new File(['a'], 'a.txt'), new File(['b'], 'b.txt')],
             childrenFolders: [],
             name: mockFolder.name,
-            fullPathEdited: 'path1',
+            isFolder: true,
           },
           options: { taskId },
         },
@@ -291,7 +292,7 @@ describe('uploadFoldersWithManager', () => {
             childrenFiles: [],
             childrenFolders: [],
             name: 'MyFolder',
-            fullPathEdited: 'path1',
+            isFolder: true,
           },
           options: { taskId },
         },
@@ -330,7 +331,7 @@ describe('uploadFoldersWithManager', () => {
             childrenFiles: [],
             childrenFolders: [],
             name: mockFolder.name,
-            fullPathEdited: 'path1',
+            isFolder: true,
           },
           options: { taskId },
         },
@@ -374,7 +375,7 @@ describe('uploadFoldersWithManager', () => {
               childrenFiles: [new File(['a'], 'a.txt'), new File(['b'], 'b.txt')],
               childrenFolders: [],
               name: 'MyFolder',
-              fullPathEdited: 'path1',
+              isFolder: true,
             },
             options: { taskId },
           },
@@ -480,7 +481,7 @@ describe('uploadFoldersWithManager', () => {
                 childrenFiles: files,
                 childrenFolders: [],
                 name: 'MyFolder',
-                fullPathEdited: 'path1',
+                isFolder: true,
               },
               options: { taskId },
             },
@@ -562,7 +563,7 @@ describe('uploadFoldersWithManager', () => {
               childrenFiles: [],
               childrenFolders: [],
               name: 'MyFolder',
-              fullPathEdited: 'path1',
+              isFolder: true,
             },
             options: { taskId },
           },
@@ -605,7 +606,7 @@ describe('uploadFoldersWithManager', () => {
             childrenFiles: [],
             childrenFolders: [],
             name: taskId,
-            fullPathEdited: taskId,
+            isFolder: true,
           },
           options: { taskId },
         })),
@@ -687,11 +688,11 @@ describe('uploadFoldersWithManager', () => {
                 childrenFiles: [],
                 childrenFolders: [],
                 name: mockChildFolder.name,
-                fullPathEdited: 'path2',
+                isFolder: true,
               },
             ],
             name: mockParentFolder.name,
-            fullPathEdited: 'path1',
+            isFolder: true,
           },
           options: {
             taskId,
@@ -724,7 +725,7 @@ describe('uploadFoldersWithManager', () => {
     test('When all files exceed the size limit and there are no subfolders, then an error indicating so is thrown', async () => {
       const bigFile = new File([new ArrayBuffer(200)], 'big.mp4');
       const manager = buildManager(100);
-      const level = { childrenFiles: [bigFile], childrenFolders: [], folderId: 'f', name: 'F', fullPathEdited: '' };
+      const level: IRoot = { childrenFiles: [bigFile], childrenFolders: [], folderId: 'f', name: 'F', isFolder: true };
 
       await expect(
         manager['handleFileUploads'](level, mockCreatedFolder, taskId, new AbortController()),
@@ -741,12 +742,12 @@ describe('uploadFoldersWithManager', () => {
         maxUploadFileSize: 100,
       });
       manager['tasksInfo'][taskId] = { isCancelled: false, progress: { itemsUploaded: 0, totalItems: 1 } };
-      const level = {
+      const level: IRoot = {
         childrenFiles: [bigFile],
-        childrenFolders: [{ folderId: 'c', childrenFiles: [], childrenFolders: [], name: 'Child', fullPathEdited: '' }],
+        childrenFolders: [{ folderId: 'c', childrenFiles: [], childrenFolders: [], name: 'Child', isFolder: true }],
         folderId: 'f',
         name: 'F',
-        fullPathEdited: '',
+        isFolder: true,
       };
 
       await manager['handleFileUploads'](level, mockCreatedFolder, taskId, new AbortController());
@@ -789,11 +790,11 @@ describe('uploadFoldersWithManager', () => {
             childrenFiles: [],
             childrenFolders: [],
             name: mockChildFolder.name,
-            fullPathEdited: 'path2',
+            isFolder: true,
           },
         ],
         name: mockParentFolder.name,
-        fullPathEdited: 'path1',
+        isFolder: true,
       },
       taskId,
       abortController,

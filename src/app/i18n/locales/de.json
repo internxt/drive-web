@@ -193,13 +193,9 @@
     }
   },
   "checkout": {
-    "pay": "Bezahlen",
+    "continue": "Weiter",
     "processing": "Verarbeitung läuft...",
     "checkout": "Zur Kasse",
-    "postalCode": {
-      "title": "Postleitzahl",
-      "placeholder": "Postleitzahl"
-    },
     "authComponent": {
       "signUp": {
         "emailAddress": "Ihre E-Mail-Adresse",
@@ -218,16 +214,6 @@
         "invalidData": "Bitte überprüfe, ob deine E-Mail-Adresse und dein Passwort korrekt sind, und versuche es erneut.",
         "serverError": "Wir konnten diesen Schritt nicht abschließen. Bitte versuche es in einigen Minuten erneut oder wende dich an den Support, wenn das Problem weiterhin besteht.",
         "unknown": "Wir konnten deine Daten nicht überprüfen. Bitte überprüfe deine E-Mail-Adresse und dein Passwort und versuche es erneut."
-      },
-      "privacyGuarantee": "Datenschutzgarantie: Wir teilen Ihre Informationen nicht und werden Sie nur kontaktieren, wenn es notwendig ist, um unseren Service zu bieten."
-    },
-    "addressBillingTitle": "Rechnungsadresse",
-    "crypto": "Crypto",
-    "addressBilling": {
-      "optional": {
-        "cta": "Optional",
-        "companyName": "Firmenname",
-        "companyVatId": "USt-ID der Firma"
       }
     },
     "productCard": {
@@ -251,40 +237,16 @@
       "taxes": "Steuern",
       "annualBillingTemplate": "Jahresplan, abgerechnet mit {{currency}}{{priceNow}} für den ersten Monat, dann Verlängerung zu {{currency}}{{price}}/Monat"
     },
-    "confirmCryptoPayment": {
-      "title": "Zahlung bestätigen",
-      "timeExpiration": "Die Rechnung läuft in 10 Minuten ab",
-      "expiredLabel": "ABGELAUFEN",
-      "totalInCrypto": "Zahlbetrag ({{cryptoCurrency}})",
-      "totalInFiat": "Betrag",
-      "copyAddress": "Zahlungsadresse",
-      "doNotCloseWindowWarning": "Schließen Sie das Fenster nicht, bis die Zahlung abgeschlossen ist",
-      "cancel": "Abbrechen",
-      "confirm": "Zahlung bestätigen",
-      "sessionExpired": "Sitzung Abgelaufen",
-      "notifications": {
-        "priceCopied": "Preis in die Zwischenablage kopiert",
-        "addressCopied": "Adresse in die Zwischenablage kopiert",
-        "paymentSucceeded": "Zahlung erfolgreich abgeschlossen",
-        "paymentNotCompleted": "Zahlung ist nicht abgeschlossen",
-        "unexpectedError": "Bei der Überprüfung der Zahlung ist ein Fehler aufgetreten"
-      }
-    },
     "error": {
       "invalidPlan": "Nicht unterstützter Plantyp. Bitte wählen Sie einen gültigen Plan.",
-      "fetchingCryptoCurrencies": "Die verfügbaren Kryptowährungsoptionen konnten nicht geladen werden",
-      "addressRequired": "Bitte vervollständigen Sie Ihre Rechnungsadresse, um fortzufahren",
       "businessPlan": "Der Unternehmensplan ist nicht verfügbar",
-      "postalCodeRequired": "Bitte geben Sie Ihre Postleitzahl ein, um fortzufahren",
       "countryRequired": "Wir konnten Ihr Land nicht ermitteln. Bitte versuchen Sie es später erneut.",
       "missingPaymentDetails": "Fehlende Zahlungsdaten zur Bestätigung der Zahlung",
       "paymentFailed": "Zahlung fehlgeschlagen"
     },
     "accountSetup": {
-      "passwordAfterPayment": "Du brauchst noch kein Passwort. Nach der Zahlung senden wir dir eine E-Mail, um die Einrichtung deines Kontos abzuschließen.",
       "emailHasAccount": "Für diese E-Mail gibt es bereits ein Internxt-Konto. Melde dich an, um mit deinem Kauf fortzufahren.",
       "pendingSetup": "Für {{email}} gibt es bereits einen bezahlten Tarif, der noch eingerichtet werden muss. Prüfe deine E-Mails, um die Einrichtung deines Kontos abzuschließen.",
-      "cryptoRequiresSignIn": "Melde dich an, um mit Kryptowährung zu bezahlen.",
       "resendEmail": "E-Mail erneut senden",
       "emailResent": "Wir haben dir die E-Mail erneut gesendet",
       "resendEmailError": "Wir konnten die E-Mail nicht senden. Bitte versuche es später erneut.",
@@ -352,13 +314,32 @@
       "encryptedDescription": "Internxt kann nicht auf Ihre Inhalte zugreifen."
     },
     "cta": {
-      "button": "{{storage}} für {{price}} sichern",
-      "renewalNoteMonthly": "Erster Monat {{price}}, danach {{renewalPrice}}/Monat. Jederzeit kündbar.",
-      "renewalNoteYearly": "Erstes Jahr {{price}}, danach {{renewalPrice}}/Jahr. Jederzeit kündbar."
+      "button": {
+        "lifetime": "Lifetime-Speicher sichern",
+        "subscription": "Privaten Cloud-Speicher abonnieren"
+      },
+      "billingDisclosure": {
+        "withIntroPrice": {
+          "month": "{{price}} im ersten Monat, danach {{renewalPrice}} jeden Monat. Jederzeit kündbar.",
+          "year": "{{price}} im ersten Jahr, danach {{renewalPrice}} jedes Jahr. Jederzeit kündbar."
+        },
+        "withoutIntroPrice": {
+          "month": "{{renewalPrice}} jeden Monat. Jederzeit kündbar.",
+          "year": "{{renewalPrice}} jedes Jahr. Jederzeit kündbar."
+        }
+      }
+    },
+    "lifetimeNotice": {
+      "title": "Was Sie kaufen, bleibt Ihnen",
+      "description": "Ihr gekaufter Lifetime-Speicher wird durch künftige Tarifänderungen nicht verringert.",
+      "singlePayment": "Einmalige Zahlung — Keine wiederkehrenden Gebühren."
+    },
+    "guarantee": {
+      "title": "30-Tage-Geld-zurück-Garantie",
+      "description": "Risikofrei ausprobieren."
     }
   },
   "general": {
-    "of": "von",
     "at": "um",
     "terms": "Geschäftsbedingungen",
     "contactSupport": "Kundensupport kontaktieren",
@@ -424,9 +405,6 @@
     },
     "stage": {
       "development": "Entwicklung"
-    },
-    "loading": {
-      "default": "Laden..."
     },
     "renewal": {
       "annually": "Jährlich",
@@ -1385,7 +1363,6 @@
   },
   "success": {
     "passwordChanged": "Passwort wurde erfolgreich geändert",
-    "linkCopied": "Link kopiert!",
     "twoFactorAuthActivated": "Deine Zwei-Faktor-Authentifizierung wurde aktiviert!",
     "twoFactorAuthDisabled": "Deine Zwei-Faktor-Authentifizierung wurde deaktiviert!"
   },
@@ -1472,7 +1449,6 @@
     "restoreHere": "Wiederherstellen",
     "rename": "Umbenennen",
     "restore": "Wiederherstellen",
-    "copyLink": "Kopiere Link",
     "report": "Missbrauch melden",
     "yes": "Ja",
     "no": "Nein",
