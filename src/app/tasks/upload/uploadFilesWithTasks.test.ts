@@ -1,14 +1,36 @@
 import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import { UploadFailure } from 'app/network/uploadFailure';
+import { UploadFailureReason, UploadItemKind } from 'app/network/types';
 import tasksService from 'app/tasks/services/tasks.service';
-import { TaskEvent, TaskStatus } from 'app/tasks/types';
+import { TaskStatus } from 'app/tasks/types';
 import referralService from 'services/referral.service';
 import * as networkInformation from 'app/network/networkInformation';
-import { uploadFileWithManager, UploadManagerEvents } from 'app/network/UploadManager';
+import { UploadManager } from 'app/upload/UploadManager';
+import { UploadItem, UploadManagerEvents, UploadResult } from 'app/network/types/upload';
+import RetryManager from 'app/network/RetryManager';
 import { PersistUploadRepository } from 'app/repositories/DatabaseUploadRepository';
 import { uploadFilesWithTasks } from './uploadFilesWithTasks';
 
-vi.mock('app/network/UploadManager', () => ({
-  uploadFileWithManager: vi.fn(() => Promise.resolve({ uploadedFiles: [] })),
+const { managerState } = vi.hoisted(() => ({
+  managerState: {
+    result: { succeeded: [], failed: [] } as UploadResult,
+    instance: undefined as
+      | undefined
+      | { props: { events: UploadManagerEvents }; run: Mock; cancelAll: Mock; cancelItem: Mock; items: UploadItem[] },
+  },
+}));
+
+vi.mock('app/upload/UploadManager', () => ({
+  UploadManager: vi.fn(function (this: NonNullable<typeof managerState.instance>, props) {
+    this.props = props;
+    this.cancelAll = vi.fn();
+    this.cancelItem = vi.fn();
+    this.run = vi.fn(async (items: UploadItem[]) => {
+      this.items = items;
+      return managerState.result;
+    });
+    managerState.instance = this;
+  }),
 }));
 
 vi.mock('app/tasks/services/tasks.service', () => ({
@@ -16,8 +38,6 @@ vi.mock('app/tasks/services/tasks.service', () => ({
     create: vi.fn(),
     updateTask: vi.fn(),
     findTask: vi.fn(),
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
   },
 }));
 
@@ -48,8 +68,8 @@ const buildFile = (overrides: Record<string, unknown> = {}) => ({
 
 const uploadRepository = {
   getUploadState: vi.fn(),
-  setUploadState: vi.fn(),
-  removeUploadState: vi.fn(),
+  setUploadState: vi.fn(() => Promise.resolve()),
+  removeUploadState: vi.fn(() => Promise.resolve()),
 } as unknown as PersistUploadRepository;
 
 const runUpload = async (files: ReturnType<typeof buildFile>[], props: Record<string, unknown> = {}) => {
@@ -59,19 +79,33 @@ const runUpload = async (files: ReturnType<typeof buildFile>[], props: Record<st
     uploadRepository,
     ...props,
   });
-  const managerProps = (uploadFileWithManager as Mock).mock.calls[0][0];
-  return { managerProps, events: managerProps.events as UploadManagerEvents };
+  const manager = managerState.instance as NonNullable<typeof managerState.instance>;
+  return { manager, events: manager.props.events, items: manager.items };
 };
 
-describe('uploadFilesWithTasks', () => {
+const failWith = (failure: Partial<UploadFailure>) => {
+  vi.mocked(UploadManager).mockImplementationOnce(function (this: NonNullable<typeof managerState.instance>, props) {
+    this.props = props;
+    this.run = vi.fn(async (items: UploadItem[]) => ({
+      succeeded: [],
+      failed: [{ item: items[0], failure: { error: new Error('failed'), isRetryable: true, ...failure } }],
+    }));
+    managerState.instance = this;
+  } as never);
+};
+
+describe('Uploading files with tasks', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    RetryManager.clearTasks();
+    managerState.result = { succeeded: [], failed: [] };
+    (tasksService.findTask as Mock).mockReturnValue(undefined);
   });
 
   test('When a new file upload begins, then a task is created to track it', async () => {
     (tasksService.create as Mock).mockReturnValue('new-task-id');
 
-    const { managerProps } = await runUpload([buildFile()]);
+    const { items } = await runUpload([buildFile()]);
 
     expect(tasksService.create).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -81,18 +115,17 @@ describe('uploadFilesWithTasks', () => {
         cancellable: true,
       }),
     );
-    expect(managerProps.files).toEqual([expect.objectContaining({ taskId: 'new-task-id' })]);
+    expect(items).toEqual([{ kind: UploadItemKind.File, file: buildFile().filecontent }]);
   });
 
   test('When an upload is retried, then its existing task resumes instead of creating a new one', async () => {
-    const { managerProps } = await runUpload([buildFile({ taskId: 'existing-task' })]);
+    await runUpload([buildFile({ taskId: 'existing-task' })]);
 
     expect(tasksService.create).not.toHaveBeenCalled();
     expect(tasksService.updateTask).toHaveBeenCalledWith({
       taskId: 'existing-task',
-      merge: { status: TaskStatus.Encrypting },
+      merge: { status: TaskStatus.Encrypting, stop: expect.any(Function) },
     });
-    expect(managerProps.options.isRetriedUpload).toBe(true);
   });
 
   test('When files from a folder upload begin, then the folder task shows as in progress', async () => {
@@ -119,54 +152,47 @@ describe('uploadFilesWithTasks', () => {
     });
   });
 
-  test('When a file upload starts, then its task shows it is being prepared and becomes stoppable', async () => {
-    (tasksService.create as Mock).mockReturnValue('t1');
-    const { events, managerProps } = await runUpload([buildFile()]);
-    const stop = vi.fn();
+  test('When a file upload starts, then only files uploaded outside a folder show as in progress', async () => {
+    (tasksService.create as Mock).mockReturnValueOnce('loose-task').mockReturnValueOnce('folder-file-task');
+    const { events, items } = await runUpload([buildFile(), buildFile({ relatedTaskId: 'related' })]);
 
-    events.onUploadStart?.(managerProps.files[0], stop);
+    events.onItemStarted?.(items[0]);
+    events.onItemStarted?.(items[1]);
 
     expect(tasksService.updateTask).toHaveBeenCalledWith({
-      taskId: 't1',
-      merge: { status: TaskStatus.Encrypting, stop },
+      taskId: 'loose-task',
+      merge: { status: TaskStatus.InProcess },
     });
-  });
-
-  test('When an upload attempt begins, then only files uploaded outside a folder show as in progress', async () => {
-    (tasksService.create as Mock).mockReturnValue('t1');
-    const { events, managerProps } = await runUpload([buildFile()]);
-
-    events.onUploadAttempt?.(managerProps.files[0]);
-    expect(tasksService.updateTask).toHaveBeenCalledWith({ taskId: 't1', merge: { status: TaskStatus.InProcess } });
-
-    (tasksService.updateTask as Mock).mockClear();
-    events.onUploadAttempt?.({ ...managerProps.files[0], relatedTaskId: 'related' });
-    expect(tasksService.updateTask).not.toHaveBeenCalled();
+    expect(tasksService.updateTask).toHaveBeenCalledWith({
+      taskId: 'folder-file-task',
+      merge: { status: TaskStatus.Encrypting },
+    });
   });
 
   test('When an upload advances, then the task progress updates unless the task is paused or cancelled', async () => {
     (tasksService.create as Mock).mockReturnValue('t1');
-    const { events, managerProps } = await runUpload([buildFile()]);
+    const { events, items } = await runUpload([buildFile()]);
 
     (tasksService.findTask as Mock).mockReturnValue({ status: TaskStatus.InProcess });
-    events.onUploadProgress?.(managerProps.files[0], 0.5);
+    events.onItemProgress?.(items[0], 0.5);
     expect(tasksService.updateTask).toHaveBeenCalledWith({ taskId: 't1', merge: { progress: 0.5 } });
 
     (tasksService.updateTask as Mock).mockClear();
     (tasksService.findTask as Mock).mockReturnValue({ status: TaskStatus.Paused });
-    events.onUploadProgress?.(managerProps.files[0], 0.6);
-    expect(tasksService.updateTask).not.toHaveBeenCalled();
-
+    events.onItemProgress?.(items[0], 0.6);
     (tasksService.findTask as Mock).mockReturnValue({ status: TaskStatus.Cancelled });
-    events.onUploadProgress?.(managerProps.files[0], 0.7);
+    events.onItemProgress?.(items[0], 0.7);
     expect(tasksService.updateTask).not.toHaveBeenCalled();
   });
 
-  test('When a file finishes uploading, then its task succeeds and the upload is tracked', async () => {
+  test('When a file finishes uploading, then its task succeeds, the upload is tracked and the caller is told', async () => {
     (tasksService.create as Mock).mockReturnValue('t1');
-    const { events, managerProps } = await runUpload([buildFile()]);
+    const onFinishUploadFile = vi.fn();
+    const onFileUploadCallback = vi.fn();
+    const { events, items } = await runUpload([buildFile({ onFinishUploadFile })], { onFileUploadCallback });
+    const driveFile = { uuid: 'file-uuid' } as never;
 
-    await events.onUploadSuccess?.(managerProps.files[0], { uuid: 'file-uuid' } as never);
+    await events.onItemSucceeded?.(items[0], driveFile);
 
     expect(tasksService.updateTask).toHaveBeenCalledWith({
       taskId: 't1',
@@ -174,16 +200,27 @@ describe('uploadFilesWithTasks', () => {
     });
     expect(referralService.trackFileUpload).toHaveBeenCalledOnce();
     expect(networkInformation.logNetworkInfoForUpload).toHaveBeenCalledWith({ fileName: 'file.txt', fileSize: 1024 });
+    expect(onFinishUploadFile).toHaveBeenCalledWith(driveFile, 't1');
+    expect(onFileUploadCallback).toHaveBeenCalledWith(driveFile);
+  });
+
+  test('When a retried file finishes uploading, then it leaves the retry list', async () => {
+    RetryManager.addTasks([{ taskId: 'existing-task', type: 'upload' as never, params: {} }]);
+    const { events, items } = await runUpload([buildFile({ taskId: 'existing-task' })]);
+
+    await events.onItemSucceeded?.(items[0], { uuid: 'file-uuid' } as never);
+
+    expect(RetryManager.getTasks()).toEqual([]);
   });
 
   test('When a file inside a folder finishes uploading, then the folder progress advances', async () => {
     (tasksService.create as Mock).mockReturnValue('t1');
     const relatedTaskProgress = { filesUploaded: 0, totalFilesToUpload: 4 };
-    const { events, managerProps } = await runUpload([buildFile({ relatedTaskId: 'related-task' })], {
+    const { events, items } = await runUpload([buildFile({ relatedTaskId: 'related-task' })], {
       relatedTaskProgress,
     });
 
-    await events.onUploadSuccess?.(managerProps.files[0], { uuid: 'file-uuid' } as never);
+    await events.onItemSucceeded?.(items[0], { uuid: 'file-uuid' } as never);
 
     expect(relatedTaskProgress.filesUploaded).toBe(1);
     expect(tasksService.updateTask).toHaveBeenCalledWith({
@@ -194,54 +231,74 @@ describe('uploadFilesWithTasks', () => {
 
   test('When an upload fails, then the task shows an error message matching the cause', async () => {
     (tasksService.create as Mock).mockReturnValue('t1');
-    const { events, managerProps } = await runUpload([buildFile()]);
+    const { events, items } = await runUpload([buildFile()]);
+    const failure = { error: new Error('failed'), isRetryable: true };
 
-    events.onUploadError?.(managerProps.files[0], 'connection-lost');
+    events.onItemFailed?.(items[0], { ...failure, reason: UploadFailureReason.ConnectionLost });
     expect(tasksService.updateTask).toHaveBeenCalledWith({
       taskId: 't1',
       merge: { status: TaskStatus.Error, subtitle: 'error.connectionLostError' },
     });
 
-    events.onUploadError?.(managerProps.files[0], 'upload-failed');
+    events.onItemFailed?.(items[0], { ...failure, reason: UploadFailureReason.UploadFailed });
     expect(tasksService.updateTask).toHaveBeenCalledWith({
       taskId: 't1',
       merge: { status: TaskStatus.Error, subtitle: 'tasks.subtitles.upload-failed' },
     });
-
-    events.onUploadError?.(managerProps.files[0]);
-    expect(tasksService.updateTask).toHaveBeenCalledWith({ taskId: 't1', merge: { status: TaskStatus.Error } });
   });
 
-  test('When an upload is aborted, then its task shows as cancelled', async () => {
+  test('When an upload is cancelled, then its task shows as cancelled', async () => {
     (tasksService.create as Mock).mockReturnValue('t1');
-    const { events, managerProps } = await runUpload([buildFile()]);
+    const { events, items } = await runUpload([buildFile()]);
 
-    events.onUploadAborted?.(managerProps.files[0]);
+    events.onItemCancelled?.(items[0]);
 
     expect(tasksService.updateTask).toHaveBeenCalledWith({ taskId: 't1', merge: { status: TaskStatus.Cancelled } });
   });
 
-  test('When a task is cancelled by the user, then only that upload is stopped', async () => {
+  test('When a task is stopped by the user, then only that upload is cancelled', async () => {
+    const { manager, items } = await runUpload([buildFile(), buildFile()]);
+    const [{ stop }] = (tasksService.create as Mock).mock.calls[0] as [{ stop: () => Promise<void> }];
+
+    await stop();
+
+    expect(manager.cancelItem).toHaveBeenCalledExactlyOnceWith(items[0]);
+  });
+
+  test('When the folder upload that owns the files is cancelled, then the whole upload is cancelled', async () => {
+    const abortController = new AbortController();
+    const { manager } = await runUpload([buildFile()], { abortController });
+
+    abortController.abort();
+
+    expect(manager.cancelAll).toHaveBeenCalledOnce();
+  });
+
+  test('When a file fails, then it is listed for retry and the upload rejects with its error', async () => {
     (tasksService.create as Mock).mockReturnValue('t1');
-    let registeredListener: ((task: { id: string }) => void) | undefined;
-    (tasksService.addListener as Mock).mockImplementation(({ listener }) => {
-      registeredListener = listener;
-    });
+    const error = new Error('Server error');
+    failWith({ error, reason: UploadFailureReason.UploadFailed, isRetryable: false });
 
-    const { events, managerProps } = await runUpload([buildFile()]);
-    const abort = vi.fn();
-    const unsubscribe = events.registerUploadAbort?.(managerProps.files[0], abort);
+    await expect(runUpload([buildFile()])).rejects.toThrow(error);
 
-    registeredListener?.({ id: 'other-task' });
-    expect(abort).not.toHaveBeenCalled();
+    expect(RetryManager.getTasks()).toEqual([
+      expect.objectContaining({ taskId: 't1', retryable: false, params: expect.objectContaining({ taskId: 't1' }) }),
+    ]);
+  });
 
-    registeredListener?.({ id: 't1' });
-    expect(abort).toHaveBeenCalledOnce();
+  test.each([
+    { problem: 'the storage is full', reason: UploadFailureReason.NoSpaceLeft, callback: 'maxSpaceOccupiedCallback' },
+    {
+      problem: 'the file is too large',
+      reason: UploadFailureReason.FileTooLarge,
+      callback: 'fileSizeExceededCallback',
+    },
+  ] as const)('When $problem, then the user is warned about it', async ({ reason, callback }) => {
+    const warn = vi.fn();
+    failWith({ reason });
 
-    unsubscribe?.();
-    expect(tasksService.removeListener).toHaveBeenCalledWith({
-      event: TaskEvent.TaskCancelled,
-      listener: registeredListener,
-    });
+    await expect(runUpload([buildFile()], { [callback]: warn })).rejects.toThrow();
+
+    expect(warn).toHaveBeenCalledOnce();
   });
 });
