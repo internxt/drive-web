@@ -1,11 +1,12 @@
-import { afterEach, beforeEach, describe, expect, Mock, MockInstance, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, Mock, test, vi } from 'vitest';
 import { AppError } from '@internxt/sdk';
 import uploadFile from 'app/drive/services/file.service/uploadFile';
 import { DriveFileData } from 'app/drive/types';
 import { ErrorMessages, HTTP_CODE_ERRORS, HTTP_STATUS_CODES } from 'app/core/constants';
 import errorService from 'services/error.service';
 import { ConnectionLostError } from 'app/network/requests';
-import { USE_MULTIPART_THRESHOLD_BYTES } from 'app/network/networkConstants';
+import { TWENTY_MEGABYTES, USE_MULTIPART_THRESHOLD_BYTES } from 'app/network/networkConstants';
+import { QueueUtilsService } from 'utils/queueUtils';
 import { getUploadFileItem, getUploadRepository } from 'testUtils/fixtures/upload.fixtures';
 import { UploadManager } from './UploadManager';
 import { UploadItem, UploadManagerEvents } from 'app/network/types/upload';
@@ -52,10 +53,7 @@ const fakeUploadFailureOf = (failingName: string, error: unknown) =>
     return { uuid: `${file.name}-uuid` } as DriveFileData;
   });
 
-let onlineSpy: MockInstance | undefined;
-const goOffline = () => {
-  onlineSpy = vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false);
-};
+const goOffline = () => vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false);
 
 describe('Uploading files', () => {
   beforeEach(() => {
@@ -64,7 +62,7 @@ describe('Uploading files', () => {
     (uploadFile as Mock).mockImplementation(async (file: { name: string }) => ({ uuid: `${file.name}-uuid` }));
   });
 
-  afterEach(() => onlineSpy?.mockRestore());
+  afterEach(() => vi.restoreAllMocks());
 
   test('When files are uploaded, then each one succeeds with its uploaded data and its plain name', async () => {
     const items = [getUploadFileItem('report'), getUploadFileItem('invoice')];
@@ -212,7 +210,7 @@ describe('Uploading files', () => {
     expect(events.onItemCancelled).toHaveBeenCalledExactlyOnceWith(cancelledItem);
   });
 
-  test('When small and large files are uploaded together, then the large ones go last and one at a time', async () => {
+  test('When small, medium and large files are uploaded together, then the small ones go first and the large ones last and one at a time', async () => {
     let activeLargeUploads = 0;
     let maxActiveLargeUploads = 0;
     (uploadFile as Mock).mockImplementation(async (file: { name: string; size: number }) => {
@@ -224,15 +222,35 @@ describe('Uploading files', () => {
     });
     const items = [
       getUploadFileItem('large-1', USE_MULTIPART_THRESHOLD_BYTES),
+      getUploadFileItem('medium-1', TWENTY_MEGABYTES),
       getUploadFileItem('small-1'),
       getUploadFileItem('large-2', USE_MULTIPART_THRESHOLD_BYTES),
+      getUploadFileItem('medium-2', TWENTY_MEGABYTES),
       getUploadFileItem('small-2'),
     ];
 
     await createManager().run(items);
 
-    expect(uploadedNames()).toEqual(['small-1', 'small-2', 'large-1', 'large-2']);
+    expect(uploadedNames()).toEqual(['small-1', 'small-2', 'medium-1', 'medium-2', 'large-1', 'large-2']);
     expect(maxActiveLargeUploads).toBe(1);
+  });
+
+  test('When the browser is running out of memory, then fewer files are uploaded at the same time', async () => {
+    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(1);
+    let activeUploads = 0;
+    let maxActiveUploads = 0;
+    (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
+      maxActiveUploads = Math.max(maxActiveUploads, ++activeUploads);
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      activeUploads--;
+      return { uuid: `${file.name}-uuid` };
+    });
+    const items = ['a', 'b', 'c', 'd'].map((name) => getUploadFileItem(name));
+
+    const { succeeded } = await createManager().run(items);
+
+    expect(succeeded).toHaveLength(items.length);
+    expect(maxActiveUploads).toBe(1);
   });
 
   test('When uploading to a workspace, then the workspace credentials are used', async () => {
