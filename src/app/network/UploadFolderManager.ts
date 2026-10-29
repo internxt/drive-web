@@ -16,7 +16,7 @@ import { wait } from 'utils/timeUtils';
 import { ConnectionLostError } from './requests';
 import { FilesExceedsSizeLimitError } from 'app/drive/services/file.service/upload.errors';
 import { filterFilesByMaxSize } from 'app/store/slices/storage/fileUtils/filterFilesByMaxSize';
-import { UploadErrorReason } from './types';
+import { UploadFailureReason } from './types';
 import { MAX_CONCURRENT_UPLOADS } from './networkConstants';
 
 export interface UploadFolderPayload {
@@ -47,7 +47,7 @@ export interface UploadFolderManagerEvents {
     taskId: string,
     info: { folderName: string; rootFolderUUID?: string; hasFailedFiles: boolean },
   ) => void;
-  onFolderUploadError?: (taskId: string, reason?: UploadErrorReason) => void;
+  onFolderUploadError?: (taskId: string, reason?: UploadFailureReason) => void;
   onFolderUploadCancelled?: (taskId: string) => void;
   stopRelatedUploads?: (taskId: string) => Promise<void>[];
 }
@@ -335,7 +335,7 @@ export class UploadFoldersManager {
   private readonly killQueueAndNotifyError = (taskId: string) => {
     this.tasksInfo[taskId].hasErrored = true;
     this.uploadFoldersQueue.kill();
-    this.events?.onFolderUploadError?.(taskId, 'upload-failed');
+    this.events?.onFolderUploadError?.(taskId, UploadFailureReason.UploadFailed);
   };
 
   /**
@@ -370,7 +370,7 @@ export class UploadFoldersManager {
   };
 
   private readonly notifyPreparationError = (error: unknown): void => {
-    const reason: UploadErrorReason = navigator.onLine ? 'upload-failed' : 'connection-lost';
+    const reason = navigator.onLine ? UploadFailureReason.UploadFailed : UploadFailureReason.ConnectionLost;
 
     for (const { options } of this.payload) {
       this.events?.onFolderUploadError?.(options.taskId, reason);
@@ -432,11 +432,11 @@ export class UploadFoldersManager {
         const castedError = errorService.castError(err);
 
         if (connectionLost) {
-          this.events?.onFolderUploadError?.(taskId, 'connection-lost');
+          this.events?.onFolderUploadError?.(taskId, UploadFailureReason.ConnectionLost);
           errorService.reportError(castedError);
           break;
         } else if (!this.tasksInfo[taskId].isCancelled) {
-          this.events?.onFolderUploadError?.(taskId, 'upload-failed');
+          this.events?.onFolderUploadError?.(taskId, UploadFailureReason.UploadFailed);
           // Log the error or report it but don't re-throw it to allow the next folder to be processed
           errorService.reportError(castedError);
           continue;
