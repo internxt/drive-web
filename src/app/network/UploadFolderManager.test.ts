@@ -52,6 +52,8 @@ vi.mock('app/store/slices/storage/folderUtils/getUniqueFolderName', () => ({
   getUniqueFolderName: vi.fn(),
 }));
 
+vi.mock('app/drive/services/folder.service', () => ({ default: { createFolderByUuid: vi.fn() } }));
+vi.mock('services/workspace.service', () => ({ default: { createFolder: vi.fn() } }));
 vi.mock('services/referral.service', () => ({ default: { trackFileUpload: vi.fn() } }));
 vi.mock('app/network/networkInformation', () => ({ logNetworkInfoForUpload: vi.fn() }));
 vi.mock('services/error.service', () => ({

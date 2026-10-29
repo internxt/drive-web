@@ -1,9 +1,11 @@
-import { DriveFileData } from 'app/drive/types';
+import { DriveFileData, DriveFolderData } from 'app/drive/types';
 import { FileToUpload } from 'app/drive/services/file.service/types';
+import { IRoot } from 'app/store/slices/storage/types';
 import { UploadFailure } from './uploadFailure';
 
 export enum UploadItemKind {
   File = 'file',
+  Folder = 'folder',
 }
 
 export enum UploadFailureReason {
@@ -14,11 +16,18 @@ export enum UploadFailureReason {
   UploadFailed = 'upload-failed',
 }
 
-export type UploadFileItem = { kind: UploadItemKind.File; file: FileToUpload };
+export type UploadFileItem = { kind: UploadItemKind.File; file: FileToUpload; parent?: UploadFolderItem };
 
-export type UploadItem = UploadFileItem;
+export type UploadFolderItem = {
+  kind: UploadItemKind.Folder;
+  folder: IRoot;
+  parentFolderUuid: string;
+  parent?: UploadFolderItem;
+};
 
-export type UploadedItem = DriveFileData;
+export type UploadItem = UploadFileItem | UploadFolderItem;
+
+export type UploadedItem = DriveFileData | DriveFolderData;
 
 export interface UploadManagerEvents {
   onItemStarted?: (item: UploadItem) => void;
