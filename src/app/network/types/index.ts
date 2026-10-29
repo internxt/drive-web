@@ -35,8 +35,6 @@ export interface DownloadChunkPayload {
   options?: DownloadOptions;
 }
 
-export type UploadErrorReason = 'connection-lost' | 'upload-failed';
-
 export interface OwnerUserAuthenticationData {
   token: string;
   bridgeUser: string;
