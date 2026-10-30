@@ -1,6 +1,7 @@
 import { FunctionComponent, SVGProps } from 'react';
 import { DriveFileData, DriveFolderData, DriveItemData } from 'app/drive/types';
 import { IRoot } from '../store/slices/storage/types';
+import { FileToUpload } from 'app/drive/services/file.service/types';
 
 export enum TaskStatus {
   Pending = 'pending',
@@ -157,6 +158,14 @@ export type DownloadFilesData = { name: string; type: string; items?: DriveItemD
 export type DownloadFolderData = { id: number; name: string; type: string; isFolder: boolean };
 export type UploadFileData = { uploadFile: File; parentFolderId: string };
 export type UploadFolderData = { folder: IRoot; parentFolderId: string };
+
+export interface SkippedFileRetryParams {
+  taskId: string;
+  relatedTaskId: string;
+  parentFolderId: string;
+  missingFolderPath: string[];
+  filecontent: FileToUpload;
+}
 export type SharedItemAuthenticationData = {
   currentFolderId: string;
   ownerUserAuthenticationData: {

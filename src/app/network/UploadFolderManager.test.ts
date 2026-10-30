@@ -106,6 +106,12 @@ describe('uploadFoldersWithManager', () => {
     }));
   };
 
+  const settlesInTime = (upload: Promise<void>) =>
+    Promise.race([
+      upload,
+      new Promise((_, reject) => setTimeout(() => reject(new Error('folder upload never settled')), 2000)),
+    ]);
+
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
@@ -255,11 +261,8 @@ describe('uploadFoldersWithManager', () => {
       maxUploadFileSize: 100,
       events,
     });
-    const hangTimeout = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('folder upload never settled')), 2000),
-    );
 
-    await expect(Promise.race([folderUpload, hangTimeout])).resolves.toBeUndefined();
+    await expect(settlesInTime(folderUpload)).resolves.toBeUndefined();
     expect(events.onFolderUploadSuccess).toHaveBeenCalledWith(taskId, {
       folderName: 'MyFolder',
       rootFolderUUID: mockFolder.uuid,
@@ -705,6 +708,121 @@ describe('uploadFoldersWithManager', () => {
     });
 
     expect(createFolderSpy).toHaveBeenCalledTimes(2);
+  });
+
+  describe('when the folder has subfolders', () => {
+    const taskId = 'task-id';
+    const rootFolder = buildFolderData({ uuid: 'root-uuid', name: 'MyFolder', plain_name: 'MyFolder' });
+    let events: UploadFolderManagerEvents;
+    let cancelUpload: () => void;
+
+    const buildFolder = (name: string, childrenFiles: File[] = [], childrenFolders: IRoot[] = []): IRoot => ({
+      folderId: null,
+      childrenFiles,
+      childrenFolders,
+      name,
+      isFolder: true,
+    });
+
+    const runNestedFolderUpload = (childrenFolders: IRoot[], childrenFiles: File[] = []) =>
+      uploadFoldersWithManager({
+        payload: [
+          {
+            currentFolderId: 'currentFolderId',
+            root: {
+              ...buildFolder('MyFolder', childrenFiles, childrenFolders),
+              folderId: 'currentFolderId',
+            },
+            options: { taskId },
+          },
+        ],
+        selectedWorkspace: null,
+        dispatch: dispatchToUploadManager({
+          setUploadState: vi.fn(async () => undefined),
+          getUploadState: vi.fn(async () => undefined),
+          removeUploadState: vi.fn(async () => undefined),
+        }),
+        maxUploadFileSize: 100,
+        events,
+      });
+
+    const runWithBrokenSubfolder = () =>
+      runNestedFolderUpload(
+        [
+          buildFolder('Broken', [new File(['lost'], 'lost.txt')]),
+          buildFolder('Sibling', [new File(['kept'], 'kept.txt')]),
+        ],
+        [new File(['root'], 'root.txt')],
+      );
+
+    const uploadedFileNames = () => (uploadFile as Mock).mock.calls.map(([file]) => file.name);
+
+    beforeEach(() => {
+      cancelUpload = () => undefined;
+      events = {
+        onFolderUploadStarted: vi.fn((_taskId, _root, controls) => {
+          cancelUpload = controls.cancelUpload;
+        }),
+        onFolderUploadSuccess: vi.fn(),
+        onFolderUploadError: vi.fn(),
+        onFolderUploadCancelled: vi.fn(),
+        onSubfolderSkipped: vi.fn(),
+        stopRelatedUploads: vi.fn(() => []),
+      };
+      (checkFolderDuplicated as Mock).mockResolvedValueOnce({
+        duplicatedFoldersResponse: [],
+        foldersWithDuplicates: [],
+        foldersWithoutDuplicates: [],
+      });
+      (createFolder as Mock).mockImplementation(async ({ folderName }) => {
+        if (folderName === 'Broken') throw new Error('connection dropped');
+        return folderName === rootFolder.name ? rootFolder : buildFolderData({ uuid: `${folderName}-uuid` });
+      });
+      (uploadFile as Mock).mockImplementation(async (file: { name: string }) => ({ uuid: `${file.name}-uuid` }));
+    });
+
+    test('when a subfolder cannot be created, then the folder upload settles and finishes as successful with failed files', async () => {
+      const upload = runWithBrokenSubfolder();
+
+      await expect(settlesInTime(upload)).resolves.toBeUndefined();
+      expect(events.onFolderUploadSuccess).toHaveBeenCalledWith(taskId, {
+        folderName: rootFolder.name,
+        rootFolderUUID: rootFolder.uuid,
+        hasFailedFiles: true,
+      });
+    });
+
+    test('when a subfolder cannot be created, then the rest of the folder is uploaded and the root folder is kept', async () => {
+      await runWithBrokenSubfolder();
+
+      expect(uploadedFileNames()).toEqual(['root.txt', 'kept.txt']);
+      expect(deleteItemsThunk).not.toHaveBeenCalled();
+    });
+
+    test('when a subfolder cannot be created, then it is announced as skipped together with the folder it belongs in', async () => {
+      await runWithBrokenSubfolder();
+
+      expect(events.onSubfolderSkipped).toHaveBeenCalledOnce();
+      expect(events.onSubfolderSkipped).toHaveBeenCalledWith(
+        taskId,
+        expect.objectContaining({ name: 'Broken', folderId: rootFolder.uuid }),
+      );
+    });
+
+    test('when it is cancelled while its subfolders upload, then the folder upload still settles and ends as cancelled', async () => {
+      (uploadFile as Mock).mockImplementation(async () => {
+        cancelUpload();
+        throw new Error('aborted');
+      });
+
+      const upload = runNestedFolderUpload([
+        buildFolder('First', [new File(['a'], 'a.txt')]),
+        buildFolder('Second', [new File(['b'], 'b.txt')]),
+      ]);
+
+      await expect(settlesInTime(upload)).resolves.toBeUndefined();
+      expect(events.onFolderUploadCancelled).toHaveBeenCalledWith(taskId);
+    });
   });
 
   describe('Handle File Uploads', () => {
