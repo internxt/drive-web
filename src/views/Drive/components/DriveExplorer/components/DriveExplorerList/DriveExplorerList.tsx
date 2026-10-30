@@ -17,7 +17,7 @@ import shareService from 'app/share/services/share.service';
 import { AppDispatch, RootState } from 'app/store';
 import { sharedThunks } from 'app/store/slices/sharedLinks';
 import { storageActions } from 'app/store/slices/storage';
-import { uiActions } from 'app/store/slices/ui';
+import { uiActions, uiSelectors } from 'app/store/slices/ui';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { DriveItemData, DriveItemDetails, SortField } from 'app/drive/types';
 import EditItemNameDialog from 'app/drive/components/EditItemNameDialog/EditItemNameDialog';
@@ -572,14 +572,5 @@ export default connect((state: RootState) => ({
   driveItemsOrder: state.storage.driveItemsOrder,
   forceLoading: state.storage.forceLoading,
   roles: state.shared.roles,
-  disableKeyboardShortcuts:
-    state.ui.isShareDialogOpen ||
-    state.ui.isEditFolderNameDialog ||
-    state.ui.isFileViewerOpen ||
-    state.ui.isMoveItemsDialogOpen ||
-    state.ui.isCreateFolderDialogOpen ||
-    state.ui.isNameCollisionDialogOpen ||
-    state.ui.isReachedPlanLimitDialogOpen ||
-    state.ui.isItemDetailsDialogOpen ||
-    state.ui.isPreferencesDialogOpen,
+  disableKeyboardShortcuts: uiSelectors.isSomeDialogOpen(state),
 }))(DriveExplorerList);

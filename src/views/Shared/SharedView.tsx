@@ -10,7 +10,7 @@ import shareService from '../../app/share/services/share.service';
 import { decryptMnemonic } from '../../app/share/services/share.crypto';
 import { useAppDispatch, useAppSelector } from '../../app/store/hooks';
 import { storageActions } from '../../app/store/slices/storage';
-import { uiActions } from '../../app/store/slices/ui';
+import { uiActions, uiSelectors } from '../../app/store/slices/ui';
 
 import { Dialog as DeleteDialog } from '@internxt/ui';
 import BreadcrumbsSharedView from './components/BreadcrumbsSharedView';
@@ -641,13 +641,5 @@ export default connect((state: RootState) => ({
   sharedNamePath: state.storage.sharedNamePath,
   currentShareId: state.shared.currentShareId,
   currentUserRole: state.shared.currentSharingRole,
-  disableKeyboardShortcuts:
-    state.ui.isShareDialogOpen ||
-    state.ui.isEditFolderNameDialog ||
-    state.ui.isFileViewerOpen ||
-    state.ui.isMoveItemsDialogOpen ||
-    state.ui.isCreateFolderDialogOpen ||
-    state.ui.isNameCollisionDialogOpen ||
-    state.ui.isReachedPlanLimitDialogOpen ||
-    state.ui.isItemDetailsDialogOpen,
+  disableKeyboardShortcuts: uiSelectors.isSomeDialogOpen(state),
 }))(SharedView);
