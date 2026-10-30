@@ -13,6 +13,17 @@ import {
 import { FilesExceedsSizeLimitError } from 'app/drive/services/file.service/upload.errors';
 import { uploadItemsParallelThunk } from 'app/store/slices/storage/storage.thunks/uploadItemsThunk';
 import { deleteItemsThunk } from '../store/slices/storage/storage.thunks/deleteItemsThunk';
+import { uploadFileWithManager } from './UploadManager';
+import { PersistUploadRepository } from 'app/repositories/DatabaseUploadRepository';
+import uploadFile from 'app/drive/services/file.service/uploadFile';
+import newStorageService from 'app/drive/services/new-storage.service';
+import RetryManager from './RetryManager';
+import { ConnectionLostError } from './requests';
+import errorService from 'services/error.service';
+
+vi.mock('app/drive/services/file.service/uploadFile', () => ({
+  default: vi.fn(async (file: { name: string }) => ({ uuid: `${file.name}-uuid`, name: file.name })),
+}));
 
 vi.mock('app/drive/services/new-storage.service', () => ({
   default: {
@@ -73,6 +84,27 @@ describe('uploadFoldersWithManager', () => {
       updatedAt: new Date().toISOString(),
       ...overrides,
     }) as DriveFolderData;
+
+  const dispatchToUploadManager = (uploadRepository: PersistUploadRepository) => {
+    (uploadItemsParallelThunk as unknown as Mock).mockImplementation((thunkArgs) => thunkArgs);
+    return vi.fn(({ files, parentFolderId, options, onFileUploadCallback }) => ({
+      unwrap: () =>
+        uploadFileWithManager({
+          files: files.map((content: File, index: number) => ({
+            taskId: `file-task-${index}`,
+            relatedTaskId: options.relatedTaskId,
+            filecontent: { content, name: content.name, size: content.size, type: 'txt', parentFolderId },
+            userEmail: '',
+            parentFolderId,
+          })),
+          maxSpaceOccupiedCallback: vi.fn(),
+          uploadRepository,
+          abortController: options.abortController,
+          options,
+          onFileUploadCallback,
+        }),
+    }));
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -184,6 +216,58 @@ describe('uploadFoldersWithManager', () => {
     expect(deleteItemsThunk).not.toHaveBeenCalled();
   });
 
+  test('When reading the upload state of its files fails, then the folder upload finishes with failed files instead of hanging', async () => {
+    const mockFolder = buildFolderData({ name: 'MyFolder', plain_name: 'MyFolder' });
+    const taskId = 'task-id';
+    const failingUploadRepository: PersistUploadRepository = {
+      setUploadState: vi.fn(async () => undefined),
+      getUploadState: vi.fn(() => Promise.reject(new Error('IDB failure'))),
+      removeUploadState: vi.fn(async () => undefined),
+    };
+
+    (createFolder as Mock).mockResolvedValueOnce(mockFolder);
+    (checkFolderDuplicated as Mock).mockResolvedValueOnce({
+      duplicatedFoldersResponse: [],
+      foldersWithDuplicates: [],
+      foldersWithoutDuplicates: [mockFolder],
+    });
+    const events: UploadFolderManagerEvents = {
+      onFolderUploadSuccess: vi.fn(),
+      onFolderUploadError: vi.fn(),
+    };
+
+    const folderUpload = uploadFoldersWithManager({
+      payload: [
+        {
+          currentFolderId: 'currentFolderId',
+          root: {
+            folderId: mockFolder.uuid,
+            childrenFiles: [new File(['a'], 'a.txt'), new File(['b'], 'b.txt')],
+            childrenFolders: [],
+            name: mockFolder.name,
+            isFolder: true,
+          },
+          options: { taskId },
+        },
+      ],
+      selectedWorkspace: null,
+      dispatch: dispatchToUploadManager(failingUploadRepository),
+      maxUploadFileSize: 100,
+      events,
+    });
+    const hangTimeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('folder upload never settled')), 2000),
+    );
+
+    await expect(Promise.race([folderUpload, hangTimeout])).resolves.toBeUndefined();
+    expect(events.onFolderUploadSuccess).toHaveBeenCalledWith(taskId, {
+      folderName: 'MyFolder',
+      rootFolderUUID: mockFolder.uuid,
+      hasFailedFiles: true,
+    });
+    expect(events.onFolderUploadError).not.toHaveBeenCalled();
+  });
+
   test('When the folder itself cannot be created, then the failure is notified and no success is announced afterwards', async () => {
     const taskId = 'task-id';
 
@@ -264,6 +348,306 @@ describe('uploadFoldersWithManager', () => {
       expect.objectContaining({ name: 'renamed-folder1' }),
       expect.any(Object),
     );
+  });
+
+  describe('when the connection is lost', () => {
+    const taskId = 'task-id';
+    const createdRootFolder = buildFolderData({ uuid: 'root-uuid', name: 'MyFolder', plain_name: 'MyFolder' });
+    const uploadRepository: PersistUploadRepository = {
+      setUploadState: vi.fn(async () => undefined),
+      getUploadState: vi.fn(async () => undefined),
+      removeUploadState: vi.fn(async () => undefined),
+    };
+    let events: UploadFolderManagerEvents;
+
+    const loseConnection = () => {
+      globalThis.dispatchEvent(new Event('offline'));
+      throw new ConnectionLostError();
+    };
+
+    const runFolderUpload = () =>
+      uploadFoldersWithManager({
+        payload: [
+          {
+            currentFolderId: 'currentFolderId',
+            root: {
+              folderId: 'currentFolderId',
+              childrenFiles: [new File(['a'], 'a.txt'), new File(['b'], 'b.txt')],
+              childrenFolders: [],
+              name: 'MyFolder',
+              isFolder: true,
+            },
+            options: { taskId },
+          },
+        ],
+        selectedWorkspace: null,
+        dispatch: dispatchToUploadManager(uploadRepository),
+        maxUploadFileSize: 100,
+        events,
+      });
+
+    beforeEach(() => {
+      RetryManager.clearTasks();
+      events = { onFolderUploadSuccess: vi.fn(), onFolderUploadError: vi.fn() };
+      (checkFolderDuplicated as Mock).mockResolvedValueOnce({
+        duplicatedFoldersResponse: [],
+        foldersWithDuplicates: [],
+        foldersWithoutDuplicates: [],
+      });
+    });
+
+    test('when it is lost after the folder was created, then the folder finishes with failed files that stay listed for retry into that folder', async () => {
+      (createFolder as Mock).mockResolvedValueOnce(createdRootFolder);
+      (uploadFile as Mock).mockImplementationOnce(loseConnection);
+
+      await runFolderUpload();
+
+      expect(events.onFolderUploadSuccess).toHaveBeenCalledWith(taskId, {
+        folderName: 'MyFolder',
+        rootFolderUUID: createdRootFolder.uuid,
+        hasFailedFiles: true,
+      });
+      expect(events.onFolderUploadError).not.toHaveBeenCalled();
+      expect(RetryManager.getTasks()).toEqual([
+        expect.objectContaining({
+          params: expect.objectContaining({ relatedTaskId: taskId, parentFolderId: createdRootFolder.uuid }),
+        }),
+      ]);
+    });
+
+    test('when it is lost before the folder was created, then the folder upload fails as a connection loss', async () => {
+      (createFolder as Mock).mockImplementation(loseConnection);
+
+      await runFolderUpload();
+
+      expect(events.onFolderUploadError).toHaveBeenLastCalledWith(taskId, 'connection-lost');
+      expect(events.onFolderUploadSuccess).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('when the upload is cancelled', () => {
+    const taskId = 'task-id';
+    const createdRootFolder = buildFolderData({ uuid: 'root-uuid', name: 'MyFolder', plain_name: 'MyFolder' });
+    const deleteRootFolderAction = Symbol('deleteItemsThunk');
+
+    const arrangeCancelledFolderUpload = (fileCount: number) => {
+      const files = Array.from({ length: fileCount }, (_, i) => new File([`content-${i}`], `file${i}.txt`));
+      const uploadRepository: PersistUploadRepository = {
+        setUploadState: vi.fn(async () => undefined),
+        getUploadState: vi.fn(async () => undefined),
+        removeUploadState: vi.fn(async () => undefined),
+      };
+      const uploadDispatch = dispatchToUploadManager(uploadRepository);
+      const dispatch = vi.fn((action) =>
+        action === deleteRootFolderAction ? { unwrap: () => Promise.resolve() } : uploadDispatch(action),
+      );
+
+      (createFolder as Mock).mockResolvedValueOnce(createdRootFolder);
+      (checkFolderDuplicated as Mock).mockResolvedValueOnce({
+        duplicatedFoldersResponse: [],
+        foldersWithDuplicates: [],
+        foldersWithoutDuplicates: [createdRootFolder],
+      });
+      (deleteItemsThunk as unknown as Mock).mockReturnValue(deleteRootFolderAction);
+
+      let cancelUpload = () => undefined;
+      const stopRelatedUploads = vi.fn(() => []);
+      const events: UploadFolderManagerEvents = {
+        onFolderUploadStarted: vi.fn((_taskId, _root, controls) => {
+          cancelUpload = controls.cancelUpload;
+        }),
+        onFolderUploadSuccess: vi.fn(),
+        onFolderUploadError: vi.fn(),
+        onFolderUploadCancelled: vi.fn(),
+        stopRelatedUploads,
+      };
+
+      let hasCancelled = false;
+      (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
+        if (!hasCancelled) {
+          hasCancelled = true;
+          cancelUpload();
+        }
+        return { uuid: `${file.name}-uuid`, name: file.name };
+      });
+
+      const run = () =>
+        uploadFoldersWithManager({
+          payload: [
+            {
+              currentFolderId: 'currentFolderId',
+              root: {
+                folderId: 'currentFolderId',
+                childrenFiles: files,
+                childrenFolders: [],
+                name: 'MyFolder',
+                isFolder: true,
+              },
+              options: { taskId },
+            },
+          ],
+          selectedWorkspace: null,
+          dispatch,
+          maxUploadFileSize: 100,
+          events,
+        });
+
+      return { events, stopRelatedUploads, run };
+    };
+
+    beforeEach(() => {
+      RetryManager.clearTasks();
+    });
+
+    test('when a folder upload with more files than the upload concurrency is cancelled right away, then the files already uploading/queued are aborted and the task ends as cancelled', async () => {
+      const { events, stopRelatedUploads, run } = arrangeCancelledFolderUpload(10);
+
+      await run();
+
+      expect(uploadFile).toHaveBeenCalledTimes(6);
+      expect(stopRelatedUploads).toHaveBeenCalledWith(taskId);
+      expect(events.onFolderUploadSuccess).not.toHaveBeenCalled();
+      expect(events.onFolderUploadError).not.toHaveBeenCalled();
+    });
+
+    test('when a folder upload is cancelled, then it is announced as cancelled once its queue has drained', async () => {
+      const { events, run } = arrangeCancelledFolderUpload(2);
+
+      await run();
+
+      expect(events.onFolderUploadCancelled).toHaveBeenCalledWith(taskId);
+      expect(events.onFolderUploadSuccess).not.toHaveBeenCalled();
+      expect(events.onFolderUploadError).not.toHaveBeenCalled();
+    });
+
+    test('when cancel is clicked, then the root folder and its uploaded content are deleted', async () => {
+      const { run } = arrangeCancelledFolderUpload(2);
+
+      await run();
+
+      expect(deleteItemsThunk).toHaveBeenCalledWith([createdRootFolder]);
+      expect(newStorageService.deleteFolderByUuid).toHaveBeenCalledWith(createdRootFolder.uuid);
+    });
+
+    test('when the upload is cancelled while the root folder is still being created, then the folder is deleted once it is created', async () => {
+      let cancelUpload = () => undefined;
+      const dispatch = vi.fn((action) =>
+        action === deleteRootFolderAction ? { unwrap: () => Promise.resolve() } : undefined,
+      );
+      const events: UploadFolderManagerEvents = {
+        onFolderUploadStarted: vi.fn((_taskId, _root, controls) => {
+          cancelUpload = controls.cancelUpload;
+        }),
+        onFolderUploadSuccess: vi.fn(),
+        onFolderUploadError: vi.fn(),
+        stopRelatedUploads: vi.fn(() => []),
+      };
+
+      (checkFolderDuplicated as Mock).mockResolvedValueOnce({
+        duplicatedFoldersResponse: [],
+        foldersWithDuplicates: [],
+        foldersWithoutDuplicates: [createdRootFolder],
+      });
+      (createFolder as Mock).mockImplementation(async () => {
+        cancelUpload();
+        return createdRootFolder;
+      });
+      (deleteItemsThunk as unknown as Mock).mockReturnValue(deleteRootFolderAction);
+
+      await uploadFoldersWithManager({
+        payload: [
+          {
+            currentFolderId: 'currentFolderId',
+            root: {
+              folderId: 'currentFolderId',
+              childrenFiles: [],
+              childrenFolders: [],
+              name: 'MyFolder',
+              isFolder: true,
+            },
+            options: { taskId },
+          },
+        ],
+        selectedWorkspace: null,
+        dispatch,
+        maxUploadFileSize: 100,
+        events,
+      });
+
+      expect(deleteItemsThunk).toHaveBeenCalledWith([createdRootFolder]);
+      expect(newStorageService.deleteFolderByUuid).toHaveBeenCalledWith(createdRootFolder.uuid);
+      expect(events.onFolderUploadSuccess).not.toHaveBeenCalled();
+      expect(events.onFolderUploadError).not.toHaveBeenCalled();
+    });
+
+    test('when stopping the uploads on cancel fails, then the error is reported', async () => {
+      const { stopRelatedUploads, run } = arrangeCancelledFolderUpload(2);
+      const stopUploadError = new Error('stopRelatedUploads failed');
+      stopRelatedUploads.mockImplementation(() => {
+        throw stopUploadError;
+      });
+
+      await run();
+
+      expect(errorService.reportError).toHaveBeenCalledWith(stopUploadError);
+    });
+  });
+
+  describe('when the folders cannot be prepared', () => {
+    const taskIds = ['task-1', 'task-2'];
+    let events: UploadFolderManagerEvents;
+
+    const runFolderUpload = () =>
+      uploadFoldersWithManager({
+        payload: taskIds.map((taskId) => ({
+          currentFolderId: 'currentFolderId',
+          root: {
+            folderId: 'currentFolderId',
+            childrenFiles: [],
+            childrenFolders: [],
+            name: taskId,
+            isFolder: true,
+          },
+          options: { taskId },
+        })),
+        selectedWorkspace: null,
+        dispatch: mockDispatch,
+        maxUploadFileSize: 100,
+        events,
+      });
+
+    const expectEveryFolderFailedWith = (reason: string) => {
+      expect(events.onFolderUploadError).toHaveBeenCalledTimes(taskIds.length);
+      for (const taskId of taskIds) {
+        expect(events.onFolderUploadError).toHaveBeenCalledWith(taskId, reason);
+      }
+      expect(events.onFolderUploadStarted).not.toHaveBeenCalled();
+      expect(events.onFolderUploadSuccess).not.toHaveBeenCalled();
+      expect(createFolder).not.toHaveBeenCalled();
+    };
+
+    beforeEach(() => {
+      events = { onFolderUploadStarted: vi.fn(), onFolderUploadSuccess: vi.fn(), onFolderUploadError: vi.fn() };
+    });
+
+    test('when the browser is offline, then every folder fails as a connection loss and the error is reported', async () => {
+      const networkError = new Error('Network Error');
+      vi.spyOn(navigator, 'onLine', 'get').mockReturnValueOnce(false);
+      (checkFolderDuplicated as Mock).mockRejectedValueOnce(networkError);
+
+      await expect(runFolderUpload()).resolves.toBeUndefined();
+
+      expectEveryFolderFailedWith('connection-lost');
+      expect(errorService.reportError).toHaveBeenCalledWith(networkError);
+    });
+
+    test('when it fails for another reason while online, then every folder fails as an upload failure', async () => {
+      (checkFolderDuplicated as Mock).mockRejectedValueOnce(new Error('server error'));
+
+      await runFolderUpload();
+
+      expectEveryFolderFailedWith('upload-failed');
+    });
   });
 
   test('When a folder has subfolders, then every level is uploaded', async () => {

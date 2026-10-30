@@ -1260,7 +1260,8 @@
       "processing": "Processing {{pending}} of {{finished}}",
       "failedToUpload": "Failed to upload",
       "failedToDownload": "Failed to download",
-      "notAllowed": "Not allowed"
+      "notAllowed": "Not allowed",
+      "retryAll": "Retry all"
     },
     "waiting": "Waiting",
     "paused": "Paused",
