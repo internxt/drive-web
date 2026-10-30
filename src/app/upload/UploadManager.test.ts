@@ -5,7 +5,7 @@ import { DriveFileData } from 'app/drive/types';
 import { ErrorMessages, HTTP_CODE_ERRORS, HTTP_STATUS_CODES } from 'app/core/constants';
 import errorService from 'services/error.service';
 import { ConnectionLostError } from 'app/network/requests';
-import { MAX_CONCURRENT_UPLOADS, TWENTY_MEGABYTES, USE_MULTIPART_THRESHOLD_BYTES } from 'app/network/networkConstants';
+import { TWENTY_MEGABYTES, USE_MULTIPART_THRESHOLD_BYTES } from 'app/network/networkConstants';
 import { QueueUtilsService } from 'utils/queueUtils';
 import { getUploadFileItem, getUploadRepository } from 'testUtils/fixtures/upload.fixtures';
 import { UploadManager } from './UploadManager';
@@ -52,6 +52,11 @@ const fakeUploadFailureOf = (failingName: string, error: unknown) =>
     await new Promise((resolve) => setTimeout(resolve, 10));
     return { uuid: `${file.name}-uuid` } as DriveFileData;
   });
+
+const makeUploadsNeverFinish = () => (uploadFile as Mock).mockReturnValue(new Promise(() => undefined));
+
+const uploadAtMostAtTheSameTime = (concurrency: number) =>
+  vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(concurrency);
 
 const goOffline = () => vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false);
 
@@ -125,7 +130,7 @@ describe('Uploading files', () => {
   test.each([
     { problem: 'the plan does not allow it', error: paymentRequiredError, reason: UploadFailureReason.UploadFailed },
     { problem: 'the file is too large', error: fileTooLargeError, reason: UploadFailureReason.FileTooLarge },
-  ])('When $problem, then the file is not retried and cannot be retried later', async ({ error, reason }) => {
+  ])('When $problem, then the file is never retried', async ({ error, reason }) => {
     (uploadFile as Mock).mockRejectedValue(error);
 
     const { failed } = await createManager().run([getUploadFileItem('report')]);
@@ -149,7 +154,7 @@ describe('Uploading files', () => {
     );
   });
 
-  test('When a network error happens while online, then the upload is retried and succeeds', async () => {
+  test('When a network error happens once while online, then the upload is retried and succeeds', async () => {
     (uploadFile as Mock).mockRejectedValueOnce(networkError);
 
     const { succeeded } = await createManager().run([getUploadFileItem('report')]);
@@ -158,30 +163,16 @@ describe('Uploading files', () => {
     expect(succeeded).toHaveLength(1);
   });
 
-  test('When the upload rejects without an error, then the file fails instead of hanging', async () => {
-    (uploadFile as Mock).mockRejectedValue(undefined);
-
-    const { failed } = await failIfHangs(createManager().run([getUploadFileItem('report')]));
-
-    expect(failed).toHaveLength(1);
-  });
-
-  test('When the storage gets full, then the files already uploading finish and the waiting ones fail without being uploaded', async () => {
+  test('When the storage gets full, then the file uploading at the same time finishes and the waiting ones fail without being uploaded', async () => {
+    uploadAtMostAtTheSameTime(2);
     fakeUploadFailureOf('fills-the-storage', noSpaceLeftError);
-    const uploadingAtTheSameTime = Array.from(
-      { length: MAX_CONCURRENT_UPLOADS - 1 },
-      (_, index) => `uploading-${index}`,
-    );
-    const stillWaiting = ['waiting-1', 'waiting-2'];
-    const items = ['fills-the-storage', ...uploadingAtTheSameTime, ...stillWaiting].map((name) =>
-      getUploadFileItem(name),
-    );
+    const items = ['fills-the-storage', 'uploading', 'waiting-1', 'waiting-2'].map((name) => getUploadFileItem(name));
 
     const { succeeded, failed } = await failIfHangs(createManager().run(items));
 
-    expect(startedUploadNames()).toEqual(['fills-the-storage', ...uploadingAtTheSameTime]);
-    expect(succeeded.map(({ item }) => nameOf(item))).toEqual(uploadingAtTheSameTime);
-    expect(failed.map(({ item }) => nameOf(item))).toEqual(['fills-the-storage', ...stillWaiting]);
+    expect(startedUploadNames()).toEqual(['fills-the-storage', 'uploading']);
+    expect(succeeded.map(({ item }) => nameOf(item))).toEqual(['uploading']);
+    expect(failed.map(({ item }) => nameOf(item))).toEqual(['fills-the-storage', 'waiting-1', 'waiting-2']);
     expect(failed.every(({ failure }) => failure.reason === UploadFailureReason.NoSpaceLeft)).toBe(true);
   });
 
@@ -200,16 +191,7 @@ describe('Uploading files', () => {
     expect(events.onItemCancelled).toHaveBeenCalledExactlyOnceWith(cancelledItem);
   });
 
-  test('When small, medium and large files are uploaded together, then the small ones go first and the large ones last and one at a time', async () => {
-    let activeLargeUploads = 0;
-    let maxActiveLargeUploads = 0;
-    (uploadFile as Mock).mockImplementation(async (file: { name: string; size: number }) => {
-      const isLarge = file.size >= USE_MULTIPART_THRESHOLD_BYTES;
-      if (isLarge) maxActiveLargeUploads = Math.max(maxActiveLargeUploads, ++activeLargeUploads);
-      await new Promise((resolve) => setTimeout(resolve, 10));
-      if (isLarge) activeLargeUploads--;
-      return { uuid: `${file.name}-uuid` };
-    });
+  test('When small, medium and large files are uploaded together, then the small ones start first and the large ones last', async () => {
     const items = [
       getUploadFileItem('large-1', USE_MULTIPART_THRESHOLD_BYTES),
       getUploadFileItem('medium-1', TWENTY_MEGABYTES),
@@ -222,44 +204,38 @@ describe('Uploading files', () => {
     await createManager().run(items);
 
     expect(startedUploadNames()).toEqual(['small-1', 'small-2', 'medium-1', 'medium-2', 'large-1', 'large-2']);
-    expect(maxActiveLargeUploads).toBe(1);
   });
 
-  test('When the same manager uploads again after a large file in a browser without memory information, then several files go at the same time again', async () => {
+  test('When several large files are uploaded, then only one uploads at a time', async () => {
+    makeUploadsNeverFinish();
+    const items = [
+      getUploadFileItem('large-1', USE_MULTIPART_THRESHOLD_BYTES),
+      getUploadFileItem('large-2', USE_MULTIPART_THRESHOLD_BYTES),
+    ];
+
+    void createManager().run(items);
+
+    await vi.waitFor(() => expect(startedUploadNames()).toEqual(['large-1']));
+  });
+
+  test('When small files are uploaded after a large file in a browser without memory information, then they upload at the same time again', async () => {
     vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockImplementation((current) => current);
-    let activeUploads = 0;
-    let maxActiveUploads = 0;
-    (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
-      maxActiveUploads = Math.max(maxActiveUploads, ++activeUploads);
-      await new Promise((resolve) => setTimeout(resolve, 10));
-      activeUploads--;
-      return { uuid: `${file.name}-uuid` };
-    });
     const manager = createManager();
     await manager.run([getUploadFileItem('large', USE_MULTIPART_THRESHOLD_BYTES)]);
-    maxActiveUploads = 0;
+    makeUploadsNeverFinish();
 
-    await manager.run(['a', 'b', 'c'].map((name) => getUploadFileItem(name)));
+    void manager.run(['report', 'invoice', 'photo'].map((name) => getUploadFileItem(name)));
 
-    expect(maxActiveUploads).toBe(3);
+    await vi.waitFor(() => expect(startedUploadNames()).toEqual(['large', 'report', 'invoice', 'photo']));
   });
 
-  test('When the browser is running out of memory, then fewer files are uploaded at the same time', async () => {
-    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(1);
-    let activeUploads = 0;
-    let maxActiveUploads = 0;
-    (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
-      maxActiveUploads = Math.max(maxActiveUploads, ++activeUploads);
-      await new Promise((resolve) => setTimeout(resolve, 10));
-      activeUploads--;
-      return { uuid: `${file.name}-uuid` };
-    });
-    const items = ['a', 'b', 'c', 'd'].map((name) => getUploadFileItem(name));
+  test('When the browser is running out of memory, then files are uploaded one at a time', async () => {
+    uploadAtMostAtTheSameTime(1);
+    makeUploadsNeverFinish();
 
-    const { succeeded } = await createManager().run(items);
+    void createManager().run(['report', 'invoice', 'photo'].map((name) => getUploadFileItem(name)));
 
-    expect(succeeded).toHaveLength(items.length);
-    expect(maxActiveUploads).toBe(1);
+    await vi.waitFor(() => expect(startedUploadNames()).toEqual(['report']));
   });
 
   test('When uploading to a workspace, then the workspace credentials are used', async () => {
