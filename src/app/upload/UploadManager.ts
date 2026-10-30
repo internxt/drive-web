@@ -156,15 +156,15 @@ export class UploadManager {
     QueueUtilsService.instance.adjustConcurrency(this.uploadQueue, MAX_CONCURRENT_UPLOADS);
   }
 
-  private async uploadWithRetries(item: UploadItem): Promise<UploadedItem> {
-    for (let attempt = 1; ; attempt++) {
-      try {
-        return await this.uploadFile(item);
-      } catch (error) {
-        const hasAttemptsLeft = attempt < MAX_UPLOAD_ATTEMPTS;
-        const shouldRetry = hasAttemptsLeft && !this.isItemCancelled(item) && canSucceedOnImmediateRetry(error);
-        if (!shouldRetry) throw error;
-      }
+  private async uploadWithRetries(item: UploadItem, attempt = 1): Promise<UploadedItem> {
+    try {
+      return await this.uploadFile(item);
+    } catch (error) {
+      const hasAttemptsLeft = attempt < MAX_UPLOAD_ATTEMPTS;
+      const shouldRetry = hasAttemptsLeft && !this.isItemCancelled(item) && canSucceedOnImmediateRetry(error);
+      if (!shouldRetry) throw error;
+
+      return this.uploadWithRetries(item, attempt + 1);
     }
   }
 
