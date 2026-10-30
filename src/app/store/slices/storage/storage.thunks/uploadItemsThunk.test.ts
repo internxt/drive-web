@@ -116,6 +116,18 @@ describe('uploadItemsThunk', () => {
     expect(uploadFilesWithTasks).toHaveBeenCalled();
   });
 
+  test('when the upload skips the existence check, then the files are prepared without checking the folder', async () => {
+    (prepareFilesToUpload as Mock).mockResolvedValue({ filesToUpload: [mockFile] });
+
+    await uploadItemsThunk({
+      files: [mockFile],
+      parentFolderId: 'parent1',
+      options: { disableExistenceCheck: true },
+    })(dispatch, getState as () => RootState, {});
+
+    expect(prepareFilesToUpload).toHaveBeenCalledWith(expect.objectContaining({ disableExistenceCheck: true }));
+  });
+
   it('should handle upload errors', async () => {
     (prepareFilesToUpload as Mock).mockResolvedValue({
       filesToUpload: [mockFile],

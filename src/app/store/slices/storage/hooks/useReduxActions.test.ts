@@ -7,6 +7,7 @@ import { UploadFolderData } from '../../../../tasks/types';
 import { renderHook } from '@testing-library/react';
 import { uploadFoldersWithTracking } from 'app/drive/services/folder.service/uploadFoldersWithTracking';
 import errorService from 'services/error.service';
+import { findOrCreateFolderPath } from 'app/store/slices/storage/folderUtils/findOrCreateFolderPath';
 
 vi.mock('react-redux', () => ({
   useDispatch: vi.fn(),
@@ -30,6 +31,8 @@ vi.mock('../storage.thunks/uploadItemsThunk', () => ({
   uploadSharedItemsThunk: vi.fn(),
 }));
 
+vi.mock('app/store/slices/storage/folderUtils/findOrCreateFolderPath', () => ({ findOrCreateFolderPath: vi.fn() }));
+
 vi.mock('app/drive/services/folder.service', () => ({
   createFilesIterator: vi.fn(),
   createFoldersIterator: vi.fn(),
@@ -39,7 +42,12 @@ describe('useReduxActions', () => {
   const dispatch = vi.fn();
   const selectedWorkspace = { workspaceUser: { memberId: 'member1' } };
   const maxUploadFileSize = 1024;
-  const state = { workspaces: { selectedWorkspace }, fileVersions: { limits: { maxUploadFileSize } } };
+  const currentFolderId = 'current-folder';
+  const state = {
+    workspaces: { selectedWorkspace },
+    fileVersions: { limits: { maxUploadFileSize } },
+    storage: { namePath: [{ uuid: currentFolderId }] },
+  };
 
   const folderData: UploadFolderData & { taskId: string } = {
     folder: {
@@ -87,6 +95,37 @@ describe('useReduxActions', () => {
     result.current.uploadFolder(folderData);
 
     await vi.waitFor(() => expect(errorService.reportError).toHaveBeenCalledWith(error));
+  });
+
+  test('when a retried file has no missing folders, then it goes into its stored folder without creating any', async () => {
+    const { result } = renderHook(() => useReduxActions());
+
+    const parentFolder = result.current.findOrCreateRetryParentFolder({ parentFolderId: 'parent1' });
+
+    await expect(parentFolder).resolves.toEqual({ folderId: 'parent1', isNewFolder: false });
+    expect(findOrCreateFolderPath).not.toHaveBeenCalled();
+  });
+
+  test('when a retried file has missing folders, then they are recreated under its nearest folder in the selected workspace', async () => {
+    const recreatedFolder = { folderId: 'recreated-uuid', isNewFolder: true };
+    (findOrCreateFolderPath as Mock).mockResolvedValue(recreatedFolder);
+    const { result } = renderHook(() => useReduxActions());
+
+    const parentFolder = result.current.findOrCreateRetryParentFolder({
+      parentFolderId: 'parent1',
+      missingFolderPath: ['Broken', 'Deep'],
+      relatedTaskId: 'folder-task',
+    });
+
+    await expect(parentFolder).resolves.toBe(recreatedFolder);
+    expect(findOrCreateFolderPath).toHaveBeenCalledWith({
+      parentFolderId: 'parent1',
+      folderPath: ['Broken', 'Deep'],
+      relatedTaskId: 'folder-task',
+      currentFolderId,
+      selectedWorkspace,
+      dispatch,
+    });
   });
 
   it('should dispatch uploadItemsThunk with correct arguments for uploadItem', () => {
@@ -164,6 +203,22 @@ describe('useReduxActions', () => {
         fileType: data.fileType,
         isRetry: true,
       }),
+    );
+  });
+
+  test('when a retried file goes into a folder the retry just created, then it is uploaded without checking that folder for duplicates', () => {
+    const { result } = renderHook(() => useReduxActions());
+
+    result.current.uploadRetryItem({
+      uploadFile: new File(['content'], 'file.txt'),
+      parentFolderId: 'recreated-uuid',
+      taskId: 'task1',
+      fileType: 'text/plain',
+      disableExistenceCheck: true,
+    });
+
+    expect(uploadItemsThunk).toHaveBeenCalledWith(
+      expect.objectContaining({ parentFolderId: 'recreated-uuid', options: { disableExistenceCheck: true } }),
     );
   });
 });
