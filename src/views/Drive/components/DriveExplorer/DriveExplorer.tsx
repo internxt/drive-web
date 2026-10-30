@@ -147,7 +147,7 @@ const DriveExplorer = ({
   useAppHotkey(
     HOTKEYS.toggleFavorite,
     () => {
-      if (hasAnyItemSelected) dispatch(toggleFavoriteThunk(selectedItems));
+      if (hasAnyItemSelected) void dispatch(toggleFavoriteThunk(selectedItems));
     },
     { enabled: !isTrash && !isStopSharingConfirmationOpen },
   );
