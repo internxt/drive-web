@@ -29,7 +29,7 @@ export const getCreatedFolder = (name: string) => ({
 });
 
 export const getUploadRepository = (pausedKeys: string[] = []): PersistUploadRepository => ({
-  setUploadState: vi.fn(async () => undefined),
-  removeUploadState: vi.fn(async () => undefined),
-  getUploadState: vi.fn(async (key: string) => (pausedKeys.includes(key) ? TaskStatus.Paused : undefined)),
+  setUploadState: vi.fn(() => Promise.resolve()),
+  removeUploadState: vi.fn(() => Promise.resolve()),
+  getUploadState: vi.fn((key: string) => Promise.resolve(pausedKeys.includes(key) ? TaskStatus.Paused : undefined)),
 });

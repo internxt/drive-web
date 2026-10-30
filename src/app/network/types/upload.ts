@@ -17,10 +17,6 @@ export type UploadItem = UploadFileItem | UploadFolderItem;
 
 export type UploadedItem = DriveFileData | DriveFolderData;
 
-/**
- * Upload progress notifications emitted by the manager. The manager knows nothing
- * about how uploads are presented to the user; observers subscribe to these events.
- */
 export interface UploadManagerEvents {
   onItemStarted?: (item: UploadItem) => void;
   onItemProgress?: (item: UploadItem, progress: number) => void;

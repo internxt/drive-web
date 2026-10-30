@@ -167,7 +167,7 @@ export class UploadManager {
   private queue(items: UploadItem[]): void {
     for (const item of items) {
       if (isFolderItem(item)) this.foldersStillQueueingContent++;
-      this.uploadQueue.push(item, getUploadPriority(item));
+      void this.uploadQueue.push(item, getUploadPriority(item));
     }
   }
 
