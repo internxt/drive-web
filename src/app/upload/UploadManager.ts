@@ -143,6 +143,8 @@ export class UploadManager {
     if (this.uploadQueue.idle()) {
       this.result = { succeeded: [], failed: [] };
       this.storageFullFailure = undefined;
+      this.isEverythingCancelled = false;
+      this.uploadQueue.concurrency = MAX_CONCURRENT_UPLOADS;
     }
 
     const hasNothingToUpload = items.length === 0;

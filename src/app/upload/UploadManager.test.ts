@@ -245,6 +245,35 @@ describe('Uploading files', () => {
     expect(maxActiveLargeUploads).toBe(1);
   });
 
+  test('When the same manager uploads again after a large file in a browser without memory information, then several files go at the same time again', async () => {
+    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockImplementation((current) => current);
+    let activeUploads = 0;
+    let maxActiveUploads = 0;
+    (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
+      maxActiveUploads = Math.max(maxActiveUploads, ++activeUploads);
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      activeUploads--;
+      return { uuid: `${file.name}-uuid` };
+    });
+    const manager = createManager();
+    await manager.run([getUploadFileItem('large', USE_MULTIPART_THRESHOLD_BYTES)]);
+    maxActiveUploads = 0;
+
+    await manager.run(['a', 'b', 'c'].map((name) => getUploadFileItem(name)));
+
+    expect(maxActiveUploads).toBe(3);
+  });
+
+  test('When the same manager uploads again after everything was cancelled, then the new files are uploaded', async () => {
+    const manager = createManager();
+    manager.cancelAll();
+    await manager.run([getUploadFileItem('cancelled')]);
+
+    const { succeeded } = await manager.run([getUploadFileItem('report')]);
+
+    expect(succeeded.map(({ item }) => item.file.name)).toEqual(['report']);
+  });
+
   test('When the browser is running out of memory, then fewer files are uploaded at the same time', async () => {
     vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(1);
     let activeUploads = 0;
