@@ -196,10 +196,6 @@
     "continue": "Continuer",
     "processing": "Traitement en cours...",
     "checkout": "Commander",
-    "postalCode": {
-      "title": "Code postal",
-      "placeholder": "Code postal"
-    },
     "authComponent": {
       "signUp": {
         "emailAddress": "Votre adresse email",
@@ -218,14 +214,6 @@
         "invalidData": "Veuillez vérifier que votre email et votre mot de passe sont corrects, puis réessayer.",
         "serverError": "Nous n'avons pas pu finaliser cette étape. Veuillez réessayer dans quelques minutes ou contacter le support si le problème persiste.",
         "unknown": "Nous n'avons pas pu vérifier vos informations. Veuillez vérifier votre email et votre mot de passe, puis réessayer."
-      }
-    },
-    "addressBillingTitle": "Facturation d'Adresse",
-    "addressBilling": {
-      "optional": {
-        "cta": "Optionnel",
-        "companyName": "Nom de l'entreprise",
-        "companyVatId": "Numéro de TVA de l'entreprise"
       }
     },
     "productCard": {
@@ -252,7 +240,6 @@
     "error": {
       "invalidPlan": "Type de plan non pris en charge. Veuillez sélectionner un plan valide.",
       "businessPlan": "Le plan d’entreprise n’est pas disponible",
-      "postalCodeRequired": "Veuillez saisir votre code postal pour continuer",
       "countryRequired": "Nous n'avons pas pu déterminer votre pays. Veuillez réessayer plus tard.",
       "missingPaymentDetails": "Informations de paiement manquantes pour confirmer le paiement",
       "paymentFailed": "Paiement échoué"
@@ -327,13 +314,32 @@
       "encryptedDescription": "Internxt ne peut pas accéder à votre contenu."
     },
     "cta": {
-      "button": "Obtenez {{storage}} pour {{price}}",
-      "renewalNoteMonthly": "Premier mois {{price}}, puis renouvellement à {{renewalPrice}}/mois. Annulez à tout moment.",
-      "renewalNoteYearly": "Première année {{price}}, puis renouvellement à {{renewalPrice}}/an. Annulez à tout moment."
+      "button": {
+        "lifetime": "Obtenez le stockage Lifetime",
+        "subscription": "Abonnez-vous au stockage cloud privé"
+      },
+      "billingDisclosure": {
+        "withIntroPrice": {
+          "month": "{{price}} le premier mois, puis {{renewalPrice}} chaque mois. Annulez à tout moment.",
+          "year": "{{price}} la première année, puis {{renewalPrice}} chaque année. Annulez à tout moment."
+        },
+        "withoutIntroPrice": {
+          "month": "{{renewalPrice}} chaque mois. Annulez à tout moment.",
+          "year": "{{renewalPrice}} chaque année. Annulez à tout moment."
+        }
+      }
+    },
+    "lifetimeNotice": {
+      "title": "Ce que vous achetez reste à vous",
+      "description": "Le stockage Lifetime que vous achetez ne sera pas réduit par de futurs changements de forfait.",
+      "singlePayment": "Paiement unique — Aucun frais récurrent."
+    },
+    "guarantee": {
+      "title": "Garantie de remboursement de 30 jours",
+      "description": "Essayez sans risque."
     }
   },
   "general": {
-    "of": "de",
     "at": "à",
     "terms": "Termes et conditions",
     "contactSupport": "Contacter le support",
@@ -399,9 +405,6 @@
     },
     "stage": {
       "development": "Développement"
-    },
-    "loading": {
-      "default": "Chargement..."
     },
     "renewal": {
       "annually": "Annuel",
@@ -1236,7 +1239,8 @@
       "processing": "Traitement {{pending}} de {{finished}}",
       "failedToUpload": "Échec du téléchargement",
       "failedToDownload": "Échec du téléchargement",
-      "notAllowed": "Non autorisé"
+      "notAllowed": "Non autorisé",
+      "retryAll": "Tout réessayer"
     },
     "waiting": "En attente",
     "paused": "En pause",
@@ -1362,7 +1366,6 @@
   },
   "success": {
     "passwordChanged": "Mot de passe modifié",
-    "linkCopied": "Lien copié !",
     "twoFactorAuthActivated": "Votre authentification à deux facteurs a été activée !",
     "twoFactorAuthDisabled": "Votre authentification à deux facteurs a été désactivée"
   },
@@ -1451,7 +1454,6 @@
     "restoreHere": "Restaurer ici",
     "rename": "Renommer",
     "restore": "Restaurer",
-    "copyLink": "Copier le lien",
     "report": "Signaler un abus",
     "yes": "Oui",
     "no": "Non",

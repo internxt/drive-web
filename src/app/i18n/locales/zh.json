@@ -217,10 +217,6 @@
     "continue": "继续",
     "processing": "处理中...",
     "checkout": "结账",
-    "postalCode": {
-      "title": "邮政编码",
-      "placeholder": "邮政编码"
-    },
     "authComponent": {
       "signUp": {
         "emailAddress": "您的电子邮件地址",
@@ -239,14 +235,6 @@
         "invalidData": "请确认您的电子邮件和密码是否正确，然后重试。",
         "serverError": "我们无法完成此步骤。请几分钟后重试，如果问题仍然存在请联系客服。",
         "unknown": "我们无法验证您的信息。请确认您的电子邮件和密码，然后重试。"
-      }
-    },
-    "addressBillingTitle": "账单地址",
-    "addressBilling": {
-      "optional": {
-        "cta": "可选",
-        "companyName": "公司名称",
-        "companyVatId": "公司增值税编号"
       }
     },
     "productCard": {
@@ -273,7 +261,6 @@
     "error": {
       "invalidPlan": "不支持的套餐类型。请选择有效的套餐。",
       "businessPlan": "企业计划不可用",
-      "postalCodeRequired": "请输入您的邮政编码以继续",
       "countryRequired": "我们无法确定您的国家/地区,请稍后再试",
       "missingPaymentDetails": "缺少确认付款所需的支付信息",
       "paymentFailed": "付款失败"
@@ -348,13 +335,32 @@
       "encryptedDescription": "Internxt 无法访问您的内容。"
     },
     "cta": {
-      "button": "以 {{price}} 获得 {{storage}}",
-      "renewalNoteMonthly": "首月 {{price}}，之后按 {{renewalPrice}}/月续订。可随时取消。",
-      "renewalNoteYearly": "首年 {{price}}，之后按 {{renewalPrice}}/年续订。可随时取消。"
+      "button": {
+        "lifetime": "获取 Lifetime 存储空间",
+        "subscription": "订阅私人云存储"
+      },
+      "billingDisclosure": {
+        "withIntroPrice": {
+          "month": "首月 {{price}}，之后每月 {{renewalPrice}}。可随时取消。",
+          "year": "首年 {{price}}，之后每年 {{renewalPrice}}。可随时取消。"
+        },
+        "withoutIntroPrice": {
+          "month": "每月 {{renewalPrice}}。可随时取消。",
+          "year": "每年 {{renewalPrice}}。可随时取消。"
+        }
+      }
+    },
+    "lifetimeNotice": {
+      "title": "购买即永久属于您",
+      "description": "您购买的 Lifetime 存储空间不会因未来的套餐调整而减少。",
+      "singlePayment": "一次性付款 — 无需定期续费。"
+    },
+    "guarantee": {
+      "title": "30天退款保证",
+      "description": "放心试用，零风险。"
     }
   },
   "general": {
-    "of": "/",
     "at": "在",
     "terms": "条款和条件",
     "contactSupport": "联系支持",
@@ -420,9 +426,6 @@
     },
     "stage": {
       "development": "发展"
-    },
-    "loading": {
-      "default": "加载中..."
     },
     "renewal": {
       "annually": "年度",
@@ -1257,7 +1260,8 @@
       "processing": "正在处理 {{pending}}/{{finished}}",
       "failedToUpload": "上傳失敗",
       "failedToDownload": "下載失敗",
-      "notAllowed": "不允許"
+      "notAllowed": "不允許",
+      "retryAll": "全部重试"
     },
     "waiting": "等待中",
     "paused": "暂停",
@@ -1383,7 +1387,6 @@
   },
   "success": {
     "passwordChanged": "密码已修改",
-    "linkCopied": "链接已复制！",
     "twoFactorAuthActivated": "您的双因素身份验证已激活！",
     "twoFactorAuthDisabled": "您的双因素身份验证已被禁用"
   },
@@ -1471,7 +1474,6 @@
     "restoreHere": "在这里恢复",
     "rename": "重命名",
     "restore": "恢复",
-    "copyLink": "复制链接",
     "report": "举报滥用",
     "yes": "是",
     "no": "否",

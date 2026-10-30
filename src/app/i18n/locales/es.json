@@ -196,10 +196,6 @@
     "continue": "Continuar",
     "processing": "Procesando...",
     "checkout": "Finalizar compra",
-    "postalCode": {
-      "title": "Código postal",
-      "placeholder": "Código postal"
-    },
     "authComponent": {
       "signUp": {
         "emailAddress": "Dirección de correo electrónico",
@@ -218,14 +214,6 @@
         "invalidData": "Comprueba que tu correo electrónico y tu contraseña son correctos e inténtalo de nuevo.",
         "serverError": "No hemos podido completar este paso. Inténtalo de nuevo en unos minutos o contacta con soporte si el problema continúa.",
         "unknown": "No hemos podido verificar tus datos. Comprueba tu correo electrónico y tu contraseña e inténtalo de nuevo."
-      }
-    },
-    "addressBillingTitle": "Dirección de facturación",
-    "addressBilling": {
-      "optional": {
-        "cta": "Opcional",
-        "companyName": "Nombre de la empresa",
-        "companyVatId": "VAT ID de la Empresa"
       }
     },
     "productCard": {
@@ -252,7 +240,6 @@
     "error": {
       "invalidPlan": "Tipo de plan no soportado. Por favor, selecciona un plan válido.",
       "businessPlan": "El plan de empresa no está disponible",
-      "postalCodeRequired": "Introduce tu código postal para continuar",
       "countryRequired": "No hemos podido determinar tu país de facturación. Inténtalo de nuevo más tarde.",
       "missingPaymentDetails": "Faltan los datos de pago para confirmar el pago",
       "paymentFailed": "Pago fallido"
@@ -327,13 +314,32 @@
       "encryptedDescription": "Internxt no puede acceder a tu contenido."
     },
     "cta": {
-      "button": "Consigue {{storage}} por {{price}}",
-      "renewalNoteMonthly": "Primer mes {{price}}, después se renueva a {{renewalPrice}}/mes. Cancela cuando quieras.",
-      "renewalNoteYearly": "Primer año {{price}}, después se renueva a {{renewalPrice}}/año. Cancela cuando quieras."
+      "button": {
+        "lifetime": "Consigue almacenamiento Lifetime",
+        "subscription": "Suscríbete al almacenamiento en la nube privada"
+      },
+      "billingDisclosure": {
+        "withIntroPrice": {
+          "month": "{{price}} el primer mes, después {{renewalPrice}} cada mes. Cancela cuando quieras.",
+          "year": "{{price}} el primer año, después {{renewalPrice}} cada año. Cancela cuando quieras."
+        },
+        "withoutIntroPrice": {
+          "month": "{{renewalPrice}} cada mes. Cancela cuando quieras.",
+          "year": "{{renewalPrice}} cada año. Cancela cuando quieras."
+        }
+      }
+    },
+    "lifetimeNotice": {
+      "title": "Lo que compras sigue siendo tuyo",
+      "description": "El almacenamiento Lifetime que compres no se reducirá por futuros cambios de plan.",
+      "singlePayment": "Pago único — Sin cuotas recurrentes."
+    },
+    "guarantee": {
+      "title": "Garantía de devolución de dinero de 30 días",
+      "description": "Pruébalo sin riesgo."
     }
   },
   "general": {
-    "of": "de",
     "at": "a las",
     "terms": "Términos y condiciones",
     "contactSupport": "Contactar con soporte",
@@ -399,9 +405,6 @@
     },
     "stage": {
       "development": "Development"
-    },
-    "loading": {
-      "default": "Cargando..."
     },
     "renewal": {
       "annually": "Anual",
@@ -1236,7 +1239,8 @@
       "processing": "Procesando {{pending}} de {{finished}}",
       "failedToUpload": "Error al subir",
       "failedToDownload": "Error al descargar",
-      "notAllowed": "No permitido"
+      "notAllowed": "No permitido",
+      "retryAll": "Reintentar todo"
     },
     "waiting": "Esperando",
     "paused": "Pausado",
@@ -1416,7 +1420,6 @@
   },
   "success": {
     "passwordChanged": "Contraseña actualizada correctamente",
-    "linkCopied": "Enlace copiado!",
     "twoFactorAuthActivated": "Su autenticación de dos factores ha sido activada!",
     "twoFactorAuthDisabled": "Su autenticación de dos factores ha sido desactivada."
   },
@@ -1451,7 +1454,6 @@
     "restoreHere": "Restaurar aquí",
     "rename": "Renombrar",
     "restore": "Restaurar",
-    "copyLink": "Copiar enlace",
     "report": "Reportar abuso",
     "yes": "Sí",
     "no": "No",

@@ -167,9 +167,14 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       };
     }
 
+    const markRetryAsFailed = () => {
+      if (taskId && isRetry) RetryManager.changeStatus(taskId, RetryableTaskStatus.Failed);
+    };
+
     const allowedFilesToUpload = validateFileSize(dispatch, files, maxUploadFileSize);
 
     if (allowedFilesToUpload.length === 0) {
+      markRetryAsFailed();
       return;
     }
 
@@ -178,7 +183,10 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       files: allowedFilesToUpload,
       dispatch,
     });
-    if (!continueWithUpload) return;
+    if (!continueWithUpload) {
+      markRetryAsFailed();
+      return;
+    }
 
     const { filesToUpload } = await prepareFilesToUpload({
       files: allowedFilesToUpload,
@@ -227,7 +235,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
         },
       });
     } catch (error) {
-      if (taskId && isRetry) RetryManager.changeStatus(taskId, RetryableTaskStatus.Failed);
+      markRetryAsFailed();
       errors.push(errorService.castError(error));
     }
 

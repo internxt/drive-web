@@ -1,8 +1,12 @@
 import { describe, expect, test, vi } from 'vitest';
-import { getListHeaders } from './getListHeaders';
+import { getDriveListOrder, getListHeaders } from './getListHeaders';
+import { OrderDirection } from 'app/core/types';
 
 describe('List column headers', () => {
   const mockTranslate = vi.fn((key: string) => key);
+
+  const getModifiedHeader = (canSortByModified: boolean) =>
+    getListHeaders(mockTranslate, false, false, canSortByModified).find((header) => header.name === 'updatedAt');
 
   test('when viewing the regular drive, then it returns name, modified date, and size columns', () => {
     const headers = getListHeaders(mockTranslate, false, false);
@@ -32,5 +36,25 @@ describe('List column headers', () => {
     headers.forEach((header) => {
       expect(header.orderable).toBe(false);
     });
+  });
+
+  test('when viewing the personal drive, then the Modified column cannot be sorted', () => {
+    expect(getModifiedHeader(false)?.orderable).toBe(false);
+  });
+
+  test('when viewing a workspace drive or favorites, then the Modified column can still be sorted', () => {
+    expect(getModifiedHeader(true)?.orderable).toBe(true);
+  });
+});
+
+describe('Drive list sort indicator', () => {
+  const modifiedOrder = { by: 'updatedAt', direction: OrderDirection.Asc };
+
+  test('when the personal drive is shown after sorting another view by Modified, then the header shows the name order in use', () => {
+    expect(getDriveListOrder(modifiedOrder, 'DESC', true)).toEqual({ by: 'name', direction: OrderDirection.Desc });
+  });
+
+  test('when another view is shown, then its own sort order is kept', () => {
+    expect(getDriveListOrder(modifiedOrder, 'DESC', false)).toEqual(modifiedOrder);
   });
 });

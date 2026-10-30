@@ -2,7 +2,7 @@ import { ComponentClass, FunctionComponent } from 'react';
 
 import { AppView } from '../types';
 
-import { AuthView, ButtonAuth, SignupBlog } from '../../../views/Signup/components';
+import { AuthView, SignupBlog } from '../../../views/Signup/components';
 import BackupsView from 'views/Backups/BackupsView';
 import {
   BlockedAccountView,
@@ -45,7 +45,6 @@ const views: Array<{
   { id: AppView.ShareGuestAcceptInvite, component: ShareGuestSignUpView },
   { id: AppView.WorkspaceGuestInvite, component: WorkspaceGuestSignUpView },
   { id: AppView.Auth, component: AuthView },
-  { id: AppView.ButtonAuth, component: ButtonAuth },
   { id: AppView.RecoverAccount, component: RecoverAccountView },
   { id: AppView.CompleteAccount, component: AccountSetupView },
   { id: AppView.Favorites, component: FavoritesView },

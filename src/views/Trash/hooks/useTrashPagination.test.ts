@@ -2,17 +2,9 @@
  * @jest-environment jsdom
  */
 import { act, renderHook, waitFor } from '@testing-library/react';
-import errorService from 'services/error.service';
 import { OrderDirection } from 'app/core/types';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, test, vi } from 'vitest';
 import { useTrashPagination } from './useTrashPagination';
-
-vi.mock('services/error.service', () => ({
-  default: {
-    castError: vi.fn().mockImplementation((e) => ({ message: e.message ?? 'Default error message' })),
-    reportError: vi.fn(),
-  },
-}));
 
 describe('useTrashPagination', () => {
   const mockGetTrashPaginated = vi.fn();
@@ -31,32 +23,28 @@ describe('useTrashPagination', () => {
     vi.resetModules();
   });
 
-  it('should call getMoreTrashItems when isTrash is true on mount', async () => {
-    mockGetTrashPaginated.mockResolvedValueOnce({ finished: false, itemsRetrieved: 10 });
-
+  test('When the trash is opened, then nothing is loaded until the explorer asks for a page', () => {
     renderHook(() => useTrashPagination(defaultProps));
 
-    await waitFor(() => {
-      expect(mockGetTrashPaginated).toHaveBeenCalled();
-    });
+    expect(mockGetTrashPaginated).not.toHaveBeenCalled();
   });
 
-  it('should set isLoadingTrashItems to true while loading items', async () => {
-    mockGetTrashPaginated.mockResolvedValueOnce({ finished: false, itemsRetrieved: 10 });
-
+  test('When a page is being loaded, then the trash shows it is loading until the page arrives', async () => {
+    let answerPage: (page: { finished: boolean; itemsRetrieved: number }) => void = () => {};
+    mockGetTrashPaginated.mockReturnValueOnce(new Promise((resolve) => (answerPage = resolve)));
     const { result } = renderHook(() => useTrashPagination(defaultProps));
 
-    await waitFor(() => {
-      expect(result.current.isLoadingTrashItems).toBe(true);
+    let pageLoaded: Promise<void> = Promise.resolve();
+    act(() => {
+      pageLoaded = result.current.getMoreTrashItems();
     });
 
+    expect(result.current.isLoadingTrashItems).toBe(true);
     await act(async () => {
-      await result.current.getMoreTrashItems();
+      answerPage({ finished: false, itemsRetrieved: 10 });
+      await pageLoaded;
     });
-
-    await waitFor(() => {
-      expect(result.current.isLoadingTrashItems).toBe(false);
-    });
+    expect(result.current.isLoadingTrashItems).toBe(false);
   });
 
   it('should set hasMoreTrashFolders to false when there are no more folders', async () => {
@@ -73,14 +61,11 @@ describe('useTrashPagination', () => {
     });
   });
 
-  it('should handle errors when fetching fails', async () => {
+  test('When loading a page fails, then the error reaches whoever asked for the page', async () => {
     mockGetTrashPaginated.mockRejectedValueOnce(new Error('Fetching failed'));
+    const { result } = renderHook(() => useTrashPagination(defaultProps));
 
-    renderHook(() => useTrashPagination(defaultProps));
-
-    await waitFor(() => {
-      expect(errorService.reportError).toHaveBeenCalledWith(expect.any(Error));
-    });
+    await expect(result.current.getMoreTrashItems()).rejects.toThrow('Fetching failed');
   });
 
   it('should call getMoreTrashFiles when hasMoreTrashFolders is false', async () => {

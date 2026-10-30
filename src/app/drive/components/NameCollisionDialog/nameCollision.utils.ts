@@ -7,35 +7,37 @@ export type CollisionItem = File | IRoot | DriveItemData;
 
 export type CollisionPair<T extends CollisionItem = CollisionItem> = { item: T; existing: DriveItemData };
 
-export const isFolderUpload = (item: CollisionItem): item is IRoot => !!(item as IRoot).fullPathEdited;
+type DriveFileItem = DriveItemData & { isFolder: false };
+
+export const isLocalFile = (item: CollisionItem): item is File => item instanceof File;
+
+const isDriveFile = (item: IRoot | DriveItemData): item is DriveFileItem => !item.isFolder;
 
 const matchesName = (existing: DriveItemData, name: string) => (existing.plainName ?? existing.name) === name;
 
 const matchesType = (existing: DriveItemData, type?: string | null) => (existing.type ?? null) === (type ?? null);
 
 /**
- * Finds the drive item that collides with the given item. Folders only match folders and files
- * only match files; uploaded folders match by name, uploaded files by name and extension, and
- * moved items by name and (for files) extension.
+ * Finds the drive item that collides with the given item. Folders only match folders by name,
+ * and files only match files by name and extension.
  */
 export const findExistingItemFor = (item: CollisionItem, existingItems: DriveItemData[]): DriveItemData | undefined => {
-  if (isFolderUpload(item)) {
-    return existingItems.find((existing) => existing.isFolder && matchesName(existing, item.name));
-  }
-
-  if (item instanceof File) {
+  if (isLocalFile(item)) {
     const { filename, extension } = itemUtils.getFilenameAndExt(item.name);
     return existingItems.find(
       (existing) => !existing.isFolder && matchesName(existing, filename) && matchesType(existing, extension),
     );
   }
 
-  return existingItems.find(
-    (existing) =>
-      !!existing.isFolder === !!item.isFolder &&
-      matchesName(existing, item.plainName ?? item.name) &&
-      (item.isFolder || matchesType(existing, item.type)),
-  );
+  if (isDriveFile(item)) {
+    return existingItems.find(
+      (existing) =>
+        !existing.isFolder && matchesName(existing, item.plainName ?? item.name) && matchesType(existing, item.type),
+    );
+  }
+
+  const folderName = 'plainName' in item ? (item.plainName ?? item.name) : item.name;
+  return existingItems.find((existing) => existing.isFolder && matchesName(existing, folderName));
 };
 
 /**

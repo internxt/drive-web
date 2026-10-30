@@ -217,10 +217,6 @@
     "continue": "Continua",
     "processing": "Elaborazione in corso...",
     "checkout": "Pagamento",
-    "postalCode": {
-      "title": "Codice postale",
-      "placeholder": "Codice postale"
-    },
     "authComponent": {
       "signUp": {
         "emailAddress": "Il tuo indirizzo email",
@@ -239,14 +235,6 @@
         "invalidData": "Verifica che la tua email e la tua password siano corrette e riprova.",
         "serverError": "Non siamo riusciti a completare questo passaggio. Riprova tra qualche minuto o contatta il supporto se il problema persiste.",
         "unknown": "Non siamo riusciti a verificare i tuoi dati. Controlla la tua email e la tua password e riprova."
-      }
-    },
-    "addressBillingTitle": "Indirizzo di Fatturazione",
-    "addressBilling": {
-      "optional": {
-        "cta": "Opzionale",
-        "companyName": "Nome dell'azienda",
-        "companyVatId": "Partita IVA dell'azienda"
       }
     },
     "productCard": {
@@ -273,7 +261,6 @@
     "error": {
       "invalidPlan": "Tipo di piano non supportato. Seleziona un piano valido.",
       "businessPlan": "Il piano aziendale non è disponibile",
-      "postalCodeRequired": "Inserisci il tuo codice postale per continuare",
       "countryRequired": "Non siamo riusciti a determinare il tuo paese. Riprova più tardi.",
       "missingPaymentDetails": "Dati di pagamento mancanti per confermare il pagamento",
       "paymentFailed": "Pagamento non riuscito"
@@ -348,13 +335,32 @@
       "encryptedDescription": "Internxt non può accedere ai tuoi contenuti."
     },
     "cta": {
-      "button": "Ottieni {{storage}} a {{price}}",
-      "renewalNoteMonthly": "Primo mese {{price}}, poi si rinnova a {{renewalPrice}}/mese. Disdici quando vuoi.",
-      "renewalNoteYearly": "Primo anno {{price}}, poi si rinnova a {{renewalPrice}}/anno. Disdici quando vuoi."
+      "button": {
+        "lifetime": "Ottieni lo spazio Lifetime",
+        "subscription": "Abbonati allo spazio cloud privato"
+      },
+      "billingDisclosure": {
+        "withIntroPrice": {
+          "month": "{{price}} per il primo mese, poi {{renewalPrice}} ogni mese. Disdici quando vuoi.",
+          "year": "{{price}} per il primo anno, poi {{renewalPrice}} ogni anno. Disdici quando vuoi."
+        },
+        "withoutIntroPrice": {
+          "month": "{{renewalPrice}} ogni mese. Disdici quando vuoi.",
+          "year": "{{renewalPrice}} ogni anno. Disdici quando vuoi."
+        }
+      }
+    },
+    "lifetimeNotice": {
+      "title": "Ciò che acquisti resta tuo",
+      "description": "Lo spazio Lifetime che acquisti non verrà ridotto da future modifiche dei piani.",
+      "singlePayment": "Pagamento unico — Nessun costo ricorrente."
+    },
+    "guarantee": {
+      "title": "Garanzia di rimborso di 30 giorni",
+      "description": "Provalo senza rischi."
     }
   },
   "general": {
-    "of": "di",
     "at": "alle",
     "terms": "Termini e condizioni",
     "contactSupport": "Contatta il supporto",
@@ -420,9 +426,6 @@
     },
     "stage": {
       "development": "Development"
-    },
-    "loading": {
-      "default": "Caricamento..."
     },
     "renewal": {
       "annually": "Annuale",
@@ -1257,7 +1260,8 @@
       "processing": "Elaborazione {{pending}} di {{finished}}",
       "failedToUpload": "Caricamento fallito",
       "failedToDownload": "Download fallito",
-      "notAllowed": "Non consentito"
+      "notAllowed": "Non consentito",
+      "retryAll": "Riprova tutto"
     },
     "waiting": "In attesa",
     "paused": "In pausa",
@@ -1383,7 +1387,6 @@
   },
   "success": {
     "passwordChanged": "Password modificata",
-    "linkCopied": "Link copiato!",
     "twoFactorAuthActivated": "L'autenticazione a due fattori è stata attivata!",
     "twoFactorAuthDisabled": "L'autenticazione a due fattori è stata disattivata"
   },
@@ -1471,7 +1474,6 @@
     "restoreHere": "Ripristina qui",
     "rename": "Rinominare",
     "restore": "Ripristinare",
-    "copyLink": "Copia link",
     "report": "Segnala abuso",
     "yes": "Sì",
     "no": "No",
