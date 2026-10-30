@@ -261,7 +261,7 @@ describe('Uploading files', () => {
 
     const { succeeded } = await manager.run([getUploadFileItem('report')]);
 
-    expect(succeeded.map(({ item }) => item.file.name)).toEqual(['report']);
+    expect(succeeded.map(({ item }) => nameOf(item))).toEqual(['report']);
   });
 
   test('When the browser is running out of memory, then fewer files are uploaded at the same time', async () => {
