@@ -22,7 +22,8 @@ import { getSignUpSteps } from 'components/signUpSteps';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { storageActions } from 'app/store/slices/storage';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
-import { useCreateFolderHotkey, useToggleFavoriteHotkey } from 'hooks';
+import { HOTKEYS, useAppHotkey } from 'hooks';
+import { toggleFavoriteThunk } from 'views/Favorites/store/toggleFavoriteThunk';
 import { uiActions } from 'app/store/slices/ui';
 import { DriveItemData, FileViewMode } from 'app/drive/types';
 import WarningMessageWrapper from 'views/Home/components/WarningMessageWrapper';
@@ -95,34 +96,9 @@ const DriveExplorer = ({
   } = useDriveExplorerItems({ isTrash, isFavorites, isRecents, isLoading, getTrashPaginated });
   const tutorialState = useTutorialState();
 
-  const isSomeStoreDialogOpen = useAppSelector(
-    (state: RootState) =>
-      state.ui.isShareDialogOpen ||
-      state.ui.isShareItemDialogOpen ||
-      state.ui.isShareWhithTeamDialogOpen ||
-      state.ui.isInvitationsDialogOpen ||
-      state.ui.isEditFolderNameDialog ||
-      state.ui.isFileViewerOpen ||
-      state.ui.isMoveItemsDialogOpen ||
-      state.ui.isCreateFolderDialogOpen ||
-      state.ui.isDeleteItemsDialogOpen ||
-      state.ui.isClearTrashDialogOpen ||
-      state.ui.isAutomaticTrashDisposalDialogOpen ||
-      state.ui.isNameCollisionDialogOpen ||
-      state.ui.isUploadItemsFailsDialogOpen ||
-      state.ui.isReachedPlanLimitDialogOpen ||
-      state.ui.isReachedFileSizeLimitDialogOpen ||
-      state.ui.isUpgradePlanDialogOpen ||
-      state.ui.isItemDetailsDialogOpen ||
-      state.ui.isDeleteVersionDialogOpen ||
-      state.ui.isRestoreVersionDialogOpen ||
-      state.ui.isPreferencesDialogOpen,
-  );
-
   const { refreshItems, refreshItemsAfterChange } = useRefreshDriveExplorerItems(fetchFolderContent);
   const { editNameItem, setEditNameItem, onEditNameClose } = useEditItemName();
   const stopSharingAndTrash = useStopSharingAndTrash(refreshItemsAfterChange);
-  const isSomeDialogOpen = isSomeStoreDialogOpen || stopSharingAndTrash.isStopSharingConfirmationOpen;
 
   const signupSteps = getSignUpSteps(
     {
@@ -166,17 +142,24 @@ const DriveExplorer = ({
 
   const ViewModeComponent = viewModes[isTrash ? FileViewMode.List : viewMode];
 
-  useToggleFavoriteHotkey({ enabled: !isTrash && !isSomeDialogOpen, selectedItems });
+  const isStopSharingConfirmationOpen = stopSharingAndTrash.isStopSharingConfirmationOpen;
 
-  const onCreateFolderHotkeyPressed = useCallback((): void => {
-    contextMenu.closeContextMenu();
-    onCreateFolderButtonClicked();
-  }, [contextMenu.closeContextMenu, onCreateFolderButtonClicked]);
+  useAppHotkey(
+    HOTKEYS.toggleFavorite,
+    () => {
+      if (hasAnyItemSelected) void dispatch(toggleFavoriteThunk(selectedItems));
+    },
+    { enabled: !isTrash && !isStopSharingConfirmationOpen },
+  );
 
-  useCreateFolderHotkey({
-    enabled: isDrive && !isSomeDialogOpen,
-    onCreateFolder: onCreateFolderHotkeyPressed,
-  });
+  useAppHotkey(
+    HOTKEYS.createFolder,
+    () => {
+      contextMenu.closeContextMenu();
+      onCreateFolderButtonClicked();
+    },
+    { enabled: isDrive && !isStopSharingConfirmationOpen },
+  );
 
   const driveExplorer = (
     <div

@@ -2,7 +2,7 @@ import { Button, Modal, RangeSlider } from '@internxt/ui';
 import { X } from '@phosphor-icons/react';
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 import { useState } from 'react';
-import { useHotkeys } from 'react-hotkeys-hook';
+import { HOTKEYS, useAppHotkey } from 'hooks';
 import { ActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.context';
 import { bytesToString } from 'app/drive/services/size.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -62,25 +62,18 @@ export const ModifyStorageModal = (): JSX.Element => {
     closeDialog(MODIFY_STORAGE_DIALOG_KEY);
   };
 
-  useHotkeys(
-    'Enter',
-    () => {
-      onUpdateUserStorage(newStorage);
-    },
-    [newStorage],
-    { enableOnFormTags: ['input'] },
-  );
+  useAppHotkey(HOTKEYS.confirm, () => onUpdateUserStorage(newStorage), {
+    ignoreDialogs: true,
+    enableOnFormTags: ['input'],
+  });
 
-  useHotkeys(
-    'Esc',
+  useAppHotkey(
+    HOTKEYS.close,
     (event) => {
-      if (isOpen) {
-        event.preventDefault();
-        event.stopPropagation();
-        onClose();
-      }
+      event.stopPropagation();
+      onClose();
     },
-    { enableOnFormTags: ['input'], preventDefault: true },
+    { enabled: isOpen, ignoreDialogs: true, enableOnFormTags: ['input'] },
   );
 
   return (

@@ -10,6 +10,7 @@ import {
 import { PreviewFileItem } from '../../../share/types';
 import { FileVersion } from '@internxt/sdk/dist/drive/storage/types';
 import { CollisionGroup } from '../storage/storage.model';
+import { RootState } from '../..';
 
 interface UISliceState {
   isSidenavCollapsed: boolean;
@@ -269,5 +270,29 @@ export const {
 } = uiSlice.actions;
 
 export const uiActions = uiSlice.actions;
+
+export const uiSelectors = {
+  isSomeDialogOpen: (state: RootState): boolean =>
+    state.ui.isFileViewerOpen ||
+    state.ui.isShareDialogOpen ||
+    state.ui.isShareItemDialogOpen ||
+    state.ui.isShareWhithTeamDialogOpen ||
+    state.ui.isInvitationsDialogOpen ||
+    state.ui.isEditFolderNameDialog ||
+    state.ui.isMoveItemsDialogOpen ||
+    state.ui.isCreateFolderDialogOpen ||
+    state.ui.isDeleteItemsDialogOpen ||
+    state.ui.isClearTrashDialogOpen ||
+    state.ui.isAutomaticTrashDisposalDialogOpen ||
+    state.ui.isNameCollisionDialogOpen ||
+    state.ui.isUploadItemsFailsDialogOpen ||
+    state.ui.isReachedPlanLimitDialogOpen ||
+    state.ui.isReachedFileSizeLimitDialogOpen ||
+    state.ui.isUpgradePlanDialogOpen ||
+    state.ui.isItemDetailsDialogOpen ||
+    state.ui.isDeleteVersionDialogOpen ||
+    state.ui.isRestoreVersionDialogOpen ||
+    state.ui.isPreferencesDialogOpen,
+};
 
 export default uiSlice.reducer;
