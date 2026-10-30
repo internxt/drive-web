@@ -73,7 +73,6 @@ export class UploadManager {
   private readonly getPauseKey: (item: UploadItem) => string;
   private readonly events?: UploadManagerEvents;
 
-  private isEverythingCancelled = false;
   private storageFullFailure?: UploadFailure;
   private readonly cancelledItems = new WeakSet<UploadItem>();
   private readonly abortActiveUploadOf = new Map<UploadItem, () => void>();
@@ -96,7 +95,6 @@ export class UploadManager {
     if (this.uploadQueue.idle()) {
       this.result = { succeeded: [], failed: [] };
       this.storageFullFailure = undefined;
-      this.isEverythingCancelled = false;
       this.uploadQueue.concurrency = MAX_CONCURRENT_UPLOADS;
     }
 
@@ -107,11 +105,6 @@ export class UploadManager {
     await this.uploadQueue.drain();
 
     return this.result;
-  }
-
-  cancelAll(): void {
-    this.isEverythingCancelled = true;
-    this.abortActiveUploadOf.forEach((abort) => abort());
   }
 
   cancelItem(item: UploadItem): void {
@@ -194,7 +187,7 @@ export class UploadManager {
   }
 
   private isItemCancelled(item: UploadItem): boolean {
-    return this.isEverythingCancelled || this.cancelledItems.has(item);
+    return this.cancelledItems.has(item);
   }
 
   private async handleUploadError(item: UploadItem, error: unknown): Promise<void> {
