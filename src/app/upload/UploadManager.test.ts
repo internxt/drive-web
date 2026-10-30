@@ -5,7 +5,7 @@ import { DriveFileData } from 'app/drive/types';
 import { ErrorMessages, HTTP_CODE_ERRORS, HTTP_STATUS_CODES } from 'app/core/constants';
 import errorService from 'services/error.service';
 import { ConnectionLostError } from 'app/network/requests';
-import { TWENTY_MEGABYTES, USE_MULTIPART_THRESHOLD_BYTES } from 'app/network/networkConstants';
+import { MAX_CONCURRENT_UPLOADS, TWENTY_MEGABYTES, USE_MULTIPART_THRESHOLD_BYTES } from 'app/network/networkConstants';
 import { QueueUtilsService } from 'utils/queueUtils';
 import workspacesService from 'services/workspace.service';
 import folderService from 'app/drive/services/folder.service';
@@ -43,7 +43,7 @@ const failIfHangs = <T>(promise: Promise<T>): Promise<T> =>
 const createManager = (props: Partial<ConstructorParameters<typeof UploadManager>[0]> = {}) =>
   new UploadManager({ uploadRepository: getUploadRepository(), getPauseKey: nameOf, ...props });
 
-const uploadedNames = () => (uploadFile as Mock).mock.calls.map(([file]) => file.name);
+const startedUploadNames = () => (uploadFile as Mock).mock.calls.map(([file]) => file.name);
 
 const fakeSlowUploads = () =>
   (uploadFile as Mock).mockImplementation((file: { name: string }, _progress, options: UploadFileOptions) => {
@@ -121,7 +121,7 @@ describe('Uploading files', () => {
       createManager({ events }).run([brokenItem, getUploadFileItem('a'), getUploadFileItem('b')]),
     );
 
-    expect(uploadedNames().filter((name) => name === 'broken')).toHaveLength(2);
+    expect(startedUploadNames().filter((name) => name === 'broken')).toHaveLength(2);
     expect(succeeded).toHaveLength(2);
     expect(failed).toEqual([
       {
@@ -176,14 +176,22 @@ describe('Uploading files', () => {
     expect(failed).toHaveLength(1);
   });
 
-  test('When the storage is full, then the queued files fail without being uploaded', async () => {
-    fakeUploadFailureOf('first', noSpaceLeftError);
-    const items = ['first', 'a', 'b', 'c', 'd', 'e', 'f', 'g'].map((name) => getUploadFileItem(name));
+  test('When the storage gets full, then the files already uploading finish and the waiting ones fail without being uploaded', async () => {
+    fakeUploadFailureOf('fills-the-storage', noSpaceLeftError);
+    const uploadingAtTheSameTime = Array.from(
+      { length: MAX_CONCURRENT_UPLOADS - 1 },
+      (_, index) => `uploading-${index}`,
+    );
+    const stillWaiting = ['waiting-1', 'waiting-2'];
+    const items = ['fills-the-storage', ...uploadingAtTheSameTime, ...stillWaiting].map((name) =>
+      getUploadFileItem(name),
+    );
 
-    const { failed } = await failIfHangs(createManager().run(items));
+    const { succeeded, failed } = await failIfHangs(createManager().run(items));
 
-    expect(uploadedNames()).toEqual(['first', 'a', 'b', 'c', 'd', 'e']);
-    expect(failed.map(({ item }) => nameOf(item))).toEqual(['first', 'f', 'g']);
+    expect(startedUploadNames()).toEqual(['fills-the-storage', ...uploadingAtTheSameTime]);
+    expect(succeeded.map(({ item }) => nameOf(item))).toEqual(uploadingAtTheSameTime);
+    expect(failed.map(({ item }) => nameOf(item))).toEqual(['fills-the-storage', ...stillWaiting]);
     expect(failed.every(({ failure }) => failure.reason === UploadFailureReason.NoSpaceLeft)).toBe(true);
   });
 
@@ -223,7 +231,7 @@ describe('Uploading files', () => {
 
     await createManager().run(items);
 
-    expect(uploadedNames()).toEqual(['small-1', 'small-2', 'medium-1', 'medium-2', 'large-1', 'large-2']);
+    expect(startedUploadNames()).toEqual(['small-1', 'small-2', 'medium-1', 'medium-2', 'large-1', 'large-2']);
     expect(maxActiveLargeUploads).toBe(1);
   });
 
@@ -402,7 +410,7 @@ describe('Uploading folders', () => {
     const upload = manager.run(items);
     await vi.waitFor(() => expect(folderService.createFolderByUuid).toHaveBeenCalled());
 
-    expect(uploadedNames()).not.toContain('g');
+    expect(startedUploadNames()).not.toContain('g');
     items.forEach((item) => manager.cancelItem(item));
     await failIfHangs(upload);
   });
@@ -453,6 +461,6 @@ describe('Uploading folders', () => {
     const { succeeded } = await failIfHangs(createManager().run([largeFile, folderItem]));
 
     expect(succeeded).toHaveLength(5);
-    expect(uploadedNames()).toEqual(['a', 'b', 'c', 'large']);
+    expect(startedUploadNames()).toEqual(['a', 'b', 'c', 'large']);
   });
 });
