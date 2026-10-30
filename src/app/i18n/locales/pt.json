@@ -217,10 +217,6 @@
     "continue": "Continuar",
     "processing": "Processando...",
     "checkout": "Finalizar compra",
-    "postalCode": {
-      "title": "CEP",
-      "placeholder": "CEP"
-    },
     "authComponent": {
       "signUp": {
         "emailAddress": "Seu endereço de e-mail",
@@ -239,14 +235,6 @@
         "invalidData": "Verifique se seu e-mail e senha estão corretos e tente novamente.",
         "serverError": "Não foi possível concluir esta etapa. Tente novamente em alguns minutos ou entre em contato com o suporte se o problema persistir.",
         "unknown": "Não foi possível verificar seus dados. Confira seu e-mail e senha e tente novamente."
-      }
-    },
-    "addressBillingTitle": "Endereço de cobrança",
-    "addressBilling": {
-      "optional": {
-        "cta": "Opcional",
-        "companyName": "Nome da empresa",
-        "companyVatId": "CNPJ da empresa"
       }
     },
     "productCard": {
@@ -273,7 +261,6 @@
     "error": {
       "invalidPlan": "Tipo de plano não suportado. Selecione um plano válido.",
       "businessPlan": "O plano empresarial não está disponível",
-      "postalCodeRequired": "Informe seu CEP para continuar",
       "countryRequired": "Não foi possível determinar seu país de cobrança. Tente novamente mais tarde.",
       "missingPaymentDetails": "Faltam dados de pagamento para confirmar a transação",
       "paymentFailed": "Falha no pagamento"
@@ -374,7 +361,6 @@
     }
   },
   "general": {
-    "of": "de",
     "at": "às",
     "terms": "Termos e condições",
     "contactSupport": "Falar com o suporte",
@@ -440,9 +426,6 @@
     },
     "stage": {
       "development": "Desenvolvimento"
-    },
-    "loading": {
-      "default": "Carregando..."
     },
     "renewal": {
       "annually": "Anual",
@@ -1287,7 +1270,8 @@
       "processing": "Processando {{pending}} de {{finished}}",
       "failedToUpload": "Falha ao enviar",
       "failedToDownload": "Falha ao baixar",
-      "notAllowed": "Não permitido"
+      "notAllowed": "Não permitido",
+      "retryAll": "Repetir tudo"
     },
     "waiting": "Aguardando",
     "paused": "Pausado",
@@ -1413,7 +1397,6 @@
   },
   "success": {
     "passwordChanged": "Senha alterada com sucesso",
-    "linkCopied": "Link copiado!",
     "twoFactorAuthActivated": "Sua autenticação de dois fatores foi ativada!",
     "twoFactorAuthDisabled": "Sua autenticação de dois fatores foi desativada"
   },
@@ -1501,7 +1484,6 @@
     "restoreHere": "Restaurar aqui",
     "rename": "Renomear",
     "restore": "Restaurar",
-    "copyLink": "Copiar link",
     "report": "Denunciar abuso",
     "yes": "Sim",
     "no": "Não",

@@ -217,10 +217,6 @@
     "continue": "Continue",
     "processing": "Processing...",
     "checkout": "Checkout",
-    "postalCode": {
-      "title": "Postal code",
-      "placeholder": "Postal code"
-    },
     "authComponent": {
       "signUp": {
         "emailAddress": "Email address",
@@ -239,14 +235,6 @@
         "invalidData": "Please check that your email and password are correct and try again.",
         "serverError": "We could not complete this step. Please try again in a few minutes or contact support if the problem persists.",
         "unknown": "We could not verify your details. Please check your email and password and try again."
-      }
-    },
-    "addressBillingTitle": "Billing Address",
-    "addressBilling": {
-      "optional": {
-        "cta": "Optional",
-        "companyName": "Company name",
-        "companyVatId": "Company Vat ID"
       }
     },
     "productCard": {
@@ -273,7 +261,6 @@
     "error": {
       "invalidPlan": "Unsupported plan type. Please select a valid plan.",
       "businessPlan": "Business plan is not available",
-      "postalCodeRequired": "Please enter your postal code to continue",
       "countryRequired": "We couldn't determine your billing country. Please try again later.",
       "missingPaymentDetails": "Missing payment details to confirm the payment",
       "paymentFailed": "Payment failed"
@@ -374,7 +361,6 @@
     }
   },
   "general": {
-    "of": "of",
     "at": "at",
     "terms": "Terms and conditions",
     "contactSupport": "Contact Support",
@@ -440,9 +426,6 @@
     },
     "stage": {
       "development": "Development"
-    },
-    "loading": {
-      "default": "Loading..."
     },
     "renewal": {
       "annually": "Annual",
@@ -1277,7 +1260,8 @@
       "processing": "Processing {{pending}} of {{finished}}",
       "failedToUpload": "Failed to upload",
       "failedToDownload": "Failed to download",
-      "notAllowed": "Not allowed"
+      "notAllowed": "Not allowed",
+      "retryAll": "Retry all"
     },
     "waiting": "Waiting",
     "paused": "Paused",
@@ -1403,7 +1387,6 @@
   },
   "success": {
     "passwordChanged": "Password changed successfully",
-    "linkCopied": "Link copied!",
     "twoFactorAuthActivated": "Your Two-Factor Authentication has been activated!",
     "twoFactorAuthDisabled": "Your Two-Factor Authentication has been disabled"
   },
@@ -1491,7 +1474,6 @@
     "restoreHere": "Restore here",
     "rename": "Rename",
     "restore": "Restore",
-    "copyLink": "Copy link",
     "report": "Report abuse",
     "yes": "Yes",
     "no": "No",
