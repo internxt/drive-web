@@ -504,12 +504,12 @@ describe('uploadFoldersWithManager', () => {
       RetryManager.clearTasks();
     });
 
-    test('when a folder upload with more files than the upload concurrency is cancelled right away, then the files already uploading/queued are aborted and the task ends as cancelled', async () => {
+    test('when a folder upload is cancelled while its first file is uploading, then no other file starts and the task ends as cancelled', async () => {
       const { events, stopRelatedUploads, run } = arrangeCancelledFolderUpload(10);
 
       await run();
 
-      expect(uploadFile).toHaveBeenCalledTimes(6);
+      expect(uploadFile).toHaveBeenCalledOnce();
       expect(stopRelatedUploads).toHaveBeenCalledWith(taskId);
       expect(events.onFolderUploadSuccess).not.toHaveBeenCalled();
       expect(events.onFolderUploadError).not.toHaveBeenCalled();
