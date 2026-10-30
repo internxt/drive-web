@@ -10,6 +10,7 @@ import {
   UploadFolderPayload,
 } from 'app/network/UploadFolderManager';
 import { errorMerge } from './uploadTaskErrors';
+import { buildSkippedFolderRetryTasks } from './skippedFolderRetryTasks';
 
 type UploadFoldersWithManagerProps = Parameters<typeof uploadFoldersWithManager>[0];
 
@@ -110,6 +111,15 @@ export const uploadFoldersWithTasks = (props: UploadFoldersWithTasksProps): Prom
     },
 
     onFolderUploadCancelled: (taskId) => RetryManager.removeTasksOfRelatedTask(taskId),
+
+    onSubfolderSkipped: (taskId, skippedFolder) =>
+      RetryManager.addTasks(
+        buildSkippedFolderRetryTasks({
+          skippedFolder,
+          folderTaskId: taskId,
+          maxUploadFileSize: managerProps.maxUploadFileSize,
+        }),
+      ),
 
     stopRelatedUploads: (taskId) =>
       tasksService

@@ -34,7 +34,7 @@ const changeFileStatus = (file: RetryableTask, status: RetryableTaskStatus): voi
 };
 
 const TaskToRetry = ({ isOpen, files, onClose }: TaskToRetryProps): JSX.Element => {
-  const { uploadRetryItem } = useReduxActions();
+  const { uploadRetryItem, findOrCreateRetryParentFolder } = useReduxActions();
   const { translate } = useTranslationContext();
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const workspaceCredentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
@@ -42,14 +42,15 @@ const TaskToRetry = ({ isOpen, files, onClose }: TaskToRetryProps): JSX.Element 
   const runRetry = async (file: RetryableTask) => {
     const { taskId, params, type } = file;
     if (type === RetryableTaskType.Upload) {
-      const data = {
-        uploadFile: withFullName(params.filecontent),
-        parentFolderId: params?.parentFolderId,
-        taskId: getTaskId({ taskId, params }),
-        fileType: params?.filecontent?.type ?? '',
-      };
       try {
-        await uploadRetryItem(data).unwrap();
+        const { folderId, isNewFolder } = await findOrCreateRetryParentFolder(params);
+        await uploadRetryItem({
+          uploadFile: withFullName(params.filecontent),
+          parentFolderId: folderId,
+          taskId: getTaskId({ taskId, params }),
+          fileType: params?.filecontent?.type ?? '',
+          disableExistenceCheck: isNewFolder,
+        }).unwrap();
       } catch {
         changeFileStatus(file, RetryableTaskStatus.Failed);
       }

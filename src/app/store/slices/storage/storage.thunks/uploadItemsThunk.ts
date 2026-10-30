@@ -192,6 +192,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       files: allowedFilesToUpload,
       parentFolderId,
       disableDuplicatedNamesCheck: options.disableDuplicatedNamesCheck,
+      disableExistenceCheck: options.disableExistenceCheck,
       fileType,
     });
 

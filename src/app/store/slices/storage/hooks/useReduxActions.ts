@@ -5,11 +5,20 @@ import { uploadFoldersWithTracking } from 'app/drive/services/folder.service/upl
 import errorService from 'services/error.service';
 import { SharedItemAuthenticationData, UploadFolderData } from '../../../../tasks/types';
 import { uploadItemsThunk, uploadSharedItemsThunk } from '../storage.thunks/uploadItemsThunk';
+import storageSelectors from '../storage.selectors';
+import { findOrCreateFolderPath, ResolvedFolder } from '../folderUtils/findOrCreateFolderPath';
+
+interface RetryParentFolderParams {
+  parentFolderId: string;
+  missingFolderPath?: string[];
+  relatedTaskId?: string;
+}
 
 export const useReduxActions = () => {
   const dispatch = useAppDispatch();
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const maxUploadFileSize = useAppSelector(fileVersionsSelectors.getMaxFileSizeLimit);
+  const currentFolderId = useAppSelector((state) => storageSelectors.currentFolderId(state));
 
   const uploadFolder = (data: UploadFolderData & { taskId: string }) => {
     uploadFoldersWithTracking({
@@ -51,17 +60,42 @@ export const useReduxActions = () => {
     );
   };
 
-  const uploadRetryItem = (data: { uploadFile: File; parentFolderId: string; taskId: string; fileType: string }) => {
+  const uploadRetryItem = (data: {
+    uploadFile: File;
+    parentFolderId: string;
+    taskId: string;
+    fileType: string;
+    disableExistenceCheck?: boolean;
+  }) => {
     return dispatch(
       uploadItemsThunk({
         files: [data.uploadFile],
         parentFolderId: data.parentFolderId,
         taskId: data.taskId,
         fileType: data.fileType,
+        options: { disableExistenceCheck: data.disableExistenceCheck },
         isRetry: true,
       }),
     );
   };
 
-  return { uploadFolder, uploadItem, uploadSharedItem, uploadRetryItem };
+  const findOrCreateRetryParentFolder = ({
+    parentFolderId,
+    missingFolderPath = [],
+    relatedTaskId,
+  }: RetryParentFolderParams): Promise<ResolvedFolder> => {
+    const hasFolderToRecreate = missingFolderPath.length > 0;
+    if (!hasFolderToRecreate) return Promise.resolve({ folderId: parentFolderId, isNewFolder: false });
+
+    return findOrCreateFolderPath({
+      parentFolderId,
+      folderPath: missingFolderPath,
+      relatedTaskId,
+      currentFolderId,
+      selectedWorkspace,
+      dispatch,
+    });
+  };
+
+  return { uploadFolder, uploadItem, uploadSharedItem, uploadRetryItem, findOrCreateRetryParentFolder };
 };

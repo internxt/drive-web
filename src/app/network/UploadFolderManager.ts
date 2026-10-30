@@ -17,7 +17,7 @@ import { ConnectionLostError } from './requests';
 import { FilesExceedsSizeLimitError } from 'app/drive/services/file.service/upload.errors';
 import { filterFilesByMaxSize } from 'app/store/slices/storage/fileUtils/filterFilesByMaxSize';
 import { UploadErrorReason } from './types';
-import { MAX_CONCURRENT_UPLOADS } from './networkConstants';
+import { MAX_CONCURRENT_UPLOADS, WORKSPACE_FOLDER_REPLICA_DELAY_MS } from './networkConstants';
 
 export interface UploadFolderPayload {
   root: IRoot;
@@ -49,6 +49,7 @@ export interface UploadFolderManagerEvents {
   ) => void;
   onFolderUploadError?: (taskId: string, reason?: UploadErrorReason) => void;
   onFolderUploadCancelled?: (taskId: string) => void;
+  onSubfolderSkipped?: (taskId: string, skippedFolder: IRoot) => void;
   stopRelatedUploads?: (taskId: string) => Promise<void>[];
 }
 
@@ -176,11 +177,15 @@ export class UploadFoldersManager {
     MAX_CONCURRENT_UPLOADS,
   );
 
+  /**
+   * Creates the folder of a level, retrying it up to MAX_UPLOAD_ATTEMPTS times. When a subfolder cannot be
+   * created it resolves to undefined, so its subtree is skipped and announced through `onSubfolderSkipped`.
+   * @throws the last creation error when the level is the root folder
+   */
   private readonly createFolderWithRetry = async (
     level: IRoot,
     currentFolderId: string,
     taskId: string,
-    abortController: AbortController,
   ): Promise<DriveFolderData | undefined> => {
     let createdFolder: DriveFolderData | undefined;
     let uploadAttempts = 0;
@@ -198,10 +203,12 @@ export class UploadFoldersManager {
           this.selectedWorkspace,
           { dispatch: this.dispatch },
         );
-      } catch {
+      } catch (error) {
         if (uploadAttempts >= UploadFoldersManager.MAX_UPLOAD_ATTEMPTS) {
-          this.stopUploadTask(taskId, abortController);
-          this.killQueueAndNotifyError(taskId);
+          const isRootFolder = !this.tasksInfo[taskId].rootFolderItem;
+          if (isRootFolder) throw error;
+          this.tasksInfo[taskId].hasFailedFiles = true;
+          this.events?.onSubfolderSkipped?.(taskId, level);
           return;
         }
       }
@@ -289,7 +296,7 @@ export class UploadFoldersManager {
 
     if (abortController.signal.aborted) return;
 
-    const createdFolder = await this.createFolderWithRetry(level, currentFolderId, taskId, abortController);
+    const createdFolder = await this.createFolderWithRetry(level, currentFolderId, taskId);
     if (!createdFolder) return;
 
     if (!this.tasksInfo[taskId].rootFolderItem) {
@@ -306,7 +313,7 @@ export class UploadFoldersManager {
     const hasChildren = level.childrenFiles.length > 0 || level.childrenFolders.length > 0;
     if (this.selectedWorkspace && hasChildren) {
       // Workspace endpoints still validate the parent folder against the read replica
-      await wait(600);
+      await wait(WORKSPACE_FOLDER_REPLICA_DELAY_MS);
     }
 
     await this.handleFileUploads(level, createdFolder, taskId, abortController);
@@ -356,7 +363,7 @@ export class UploadFoldersManager {
       return;
     }
 
-    // A fatal error (e.g. the folder could not be created) already announced a final state
+    // A fatal error (e.g. every file of a folder exceeds the size limit) already announced a final state
     // while the queue was draining: don't announce success on top.
     if (taskInfo.hasErrored) return;
 
@@ -412,7 +419,6 @@ export class UploadFoldersManager {
         cancelUpload: () => {
           this.tasksInfo[taskId].isCancelled = true;
           this.stopUploadTask(taskId, taskFolder.abortController).catch((error) => errorService.reportError(error));
-          this.uploadFoldersQueue.kill();
         },
         pauseUpload: () => this.uploadFoldersQueue.pause(),
         resumeUpload: () => this.uploadFoldersQueue.resume(),
