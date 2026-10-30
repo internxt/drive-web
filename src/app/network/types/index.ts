@@ -46,8 +46,6 @@ export enum UploadFailureReason {
   UploadFailed = 'upload-failed',
 }
 
-export type UploadErrorReason = 'connection-lost' | 'upload-failed';
-
 export interface OwnerUserAuthenticationData {
   token: string;
   bridgeUser: string;
