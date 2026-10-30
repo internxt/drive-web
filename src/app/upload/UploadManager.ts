@@ -30,6 +30,12 @@ interface UploadManagerProps {
   events?: UploadManagerEvents;
 }
 
+class UploadCancelledError extends Error {
+  constructor() {
+    super('The upload was cancelled before it started');
+  }
+}
+
 export const createFileItem = (file: File, parentFolderUuid: string): UploadFileItem => {
   const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
 
@@ -167,6 +173,7 @@ export class UploadManager {
     const pauseKey = this.getPauseKey(fileItem);
     const uploadState = await this.uploadRepository?.getUploadState(pauseKey);
     const isPaused = uploadState === TaskStatus.Paused;
+    this.throwIfCancelled(fileItem);
 
     try {
       const driveFile = await uploadFile(
@@ -184,6 +191,10 @@ export class UploadManager {
     } finally {
       this.abortActiveUploadOf.delete(fileItem);
     }
+  }
+
+  private throwIfCancelled(item: UploadItem): void {
+    if (this.isItemCancelled(item)) throw new UploadCancelledError();
   }
 
   private isItemCancelled(item: UploadItem): boolean {
