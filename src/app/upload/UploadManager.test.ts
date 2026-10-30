@@ -393,6 +393,19 @@ describe('Uploading folders', () => {
     expect(succeeded.map(({ item }) => item)).toEqual([rootItem]);
   });
 
+  test('When a folder is cancelled while its upload is being announced, then it is never created and is reported as cancelled', async () => {
+    const rootItem = createFolderItem(getFolderToUpload('Work'), 'dest');
+    const events: UploadManagerEvents = { onItemCancelled: vi.fn(), onItemFailed: vi.fn() };
+    const manager = createManager({ events });
+    events.onItemStarted = () => manager.cancelItem(rootItem);
+
+    await manager.run([rootItem]);
+
+    expect(folderService.createFolderByUuid).not.toHaveBeenCalled();
+    expect(events.onItemCancelled).toHaveBeenCalledExactlyOnceWith(rootItem);
+    expect(events.onItemFailed).not.toHaveBeenCalled();
+  });
+
   test('When folders appear while files are waiting, then the folders are created first', async () => {
     fakeSlowUploads();
     const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g'].map((name) => getUploadFileItem(name));

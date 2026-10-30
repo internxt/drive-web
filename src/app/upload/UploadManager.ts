@@ -259,6 +259,8 @@ export class UploadManager {
   }
 
   private async createFolder(folderItem: UploadFolderItem): Promise<DriveFolderData> {
+    this.throwIfCancelled(folderItem);
+
     const workspaceId = this.ownerUserAuthenticationData?.workspaceId;
     const { parentFolderUuid, folder } = folderItem;
     const [createdFolderPromise, requestCanceler] = workspaceId
