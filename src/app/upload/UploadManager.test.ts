@@ -186,6 +186,23 @@ describe('Uploading files', () => {
     expect(failed.every(({ failure }) => failure.reason === UploadFailureReason.NoSpaceLeft)).toBe(true);
   });
 
+  test('When a file is cancelled while its paused state is being read, then it is never uploaded and is reported as cancelled', async () => {
+    const report = getUploadFileItem('report');
+    const events: UploadManagerEvents = { onItemCancelled: vi.fn(), onItemFailed: vi.fn() };
+    const uploadRepository = getUploadRepository();
+    const manager = createManager({ events, uploadRepository });
+    vi.mocked(uploadRepository.getUploadState).mockImplementationOnce(async () => {
+      manager.cancelItem(report);
+      return undefined;
+    });
+
+    await manager.run([report]);
+
+    expect(uploadFile).not.toHaveBeenCalled();
+    expect(events.onItemCancelled).toHaveBeenCalledExactlyOnceWith(report);
+    expect(events.onItemFailed).not.toHaveBeenCalled();
+  });
+
   test('When a single file is cancelled, then only that file stops', async () => {
     fakeSlowUploads();
     const [cancelledItem, otherItem] = [getUploadFileItem('cancelled'), getUploadFileItem('other')];
