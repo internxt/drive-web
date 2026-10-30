@@ -231,7 +231,6 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
             isDeepFolder: false,
             currentFolderId: parentFolderId,
           },
-          isUploadedFromFolder: isRetry,
         },
       });
     } catch (error) {

@@ -13,13 +13,14 @@ import {
 import { FilesExceedsSizeLimitError } from 'app/drive/services/file.service/upload.errors';
 import { uploadItemsParallelThunk } from 'app/store/slices/storage/storage.thunks/uploadItemsThunk';
 import { deleteItemsThunk } from '../store/slices/storage/storage.thunks/deleteItemsThunk';
-import { uploadFileWithManager } from './UploadManager';
+import { uploadFilesWithTasks } from 'app/tasks/upload/uploadFilesWithTasks';
 import { PersistUploadRepository } from 'app/repositories/DatabaseUploadRepository';
 import uploadFile from 'app/drive/services/file.service/uploadFile';
 import newStorageService from 'app/drive/services/new-storage.service';
 import RetryManager from './RetryManager';
 import { ConnectionLostError } from './requests';
 import errorService from 'services/error.service';
+import { UploadFailureReason } from 'app/network/types';
 
 vi.mock('app/drive/services/file.service/uploadFile', () => ({
   default: vi.fn(async (file: { name: string }) => ({ uuid: `${file.name}-uuid`, name: file.name })),
@@ -51,6 +52,8 @@ vi.mock('app/store/slices/storage/folderUtils/getUniqueFolderName', () => ({
   getUniqueFolderName: vi.fn(),
 }));
 
+vi.mock('services/referral.service', () => ({ default: { trackFileUpload: vi.fn() } }));
+vi.mock('app/network/networkInformation', () => ({ logNetworkInfoForUpload: vi.fn() }));
 vi.mock('services/error.service', () => ({
   default: {
     castError: vi.fn().mockImplementation((e) => e),
@@ -89,7 +92,7 @@ describe('uploadFoldersWithManager', () => {
     (uploadItemsParallelThunk as unknown as Mock).mockImplementation((thunkArgs) => thunkArgs);
     return vi.fn(({ files, parentFolderId, options, onFileUploadCallback }) => ({
       unwrap: () =>
-        uploadFileWithManager({
+        uploadFilesWithTasks({
           files: files.map((content: File, index: number) => ({
             taskId: `file-task-${index}`,
             relatedTaskId: options.relatedTaskId,
@@ -304,7 +307,7 @@ describe('uploadFoldersWithManager', () => {
     });
 
     expect(events.onFolderUploadError).toHaveBeenCalledOnce();
-    expect(events.onFolderUploadError).toHaveBeenCalledWith(taskId, 'upload-failed');
+    expect(events.onFolderUploadError).toHaveBeenCalledWith(taskId, UploadFailureReason.UploadFailed);
     expect(events.onFolderUploadSuccess).not.toHaveBeenCalled();
   });
 
@@ -420,7 +423,7 @@ describe('uploadFoldersWithManager', () => {
 
       await runFolderUpload();
 
-      expect(events.onFolderUploadError).toHaveBeenLastCalledWith(taskId, 'connection-lost');
+      expect(events.onFolderUploadError).toHaveBeenLastCalledWith(taskId, UploadFailureReason.ConnectionLost);
       expect(events.onFolderUploadSuccess).not.toHaveBeenCalled();
     });
   });
@@ -499,12 +502,12 @@ describe('uploadFoldersWithManager', () => {
       RetryManager.clearTasks();
     });
 
-    test('when a folder upload with more files than the upload concurrency is cancelled right away, then the files already uploading/queued are aborted and the task ends as cancelled', async () => {
+    test('when a folder upload is cancelled while its first file is uploading, then no other file starts and the task ends as cancelled', async () => {
       const { events, stopRelatedUploads, run } = arrangeCancelledFolderUpload(10);
 
       await run();
 
-      expect(uploadFile).toHaveBeenCalledTimes(6);
+      expect(uploadFile).toHaveBeenCalledOnce();
       expect(stopRelatedUploads).toHaveBeenCalledWith(taskId);
       expect(events.onFolderUploadSuccess).not.toHaveBeenCalled();
       expect(events.onFolderUploadError).not.toHaveBeenCalled();
@@ -637,7 +640,7 @@ describe('uploadFoldersWithManager', () => {
 
       await expect(runFolderUpload()).resolves.toBeUndefined();
 
-      expectEveryFolderFailedWith('connection-lost');
+      expectEveryFolderFailedWith(UploadFailureReason.ConnectionLost);
       expect(errorService.reportError).toHaveBeenCalledWith(networkError);
     });
 
@@ -646,7 +649,7 @@ describe('uploadFoldersWithManager', () => {
 
       await runFolderUpload();
 
-      expectEveryFolderFailedWith('upload-failed');
+      expectEveryFolderFailedWith(UploadFailureReason.UploadFailed);
     });
   });
 

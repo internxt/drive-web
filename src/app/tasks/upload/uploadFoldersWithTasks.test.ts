@@ -7,6 +7,7 @@ import { uploadFoldersWithManager, UploadFolderManagerEvents } from 'app/network
 import { IRoot } from 'app/store/slices/storage/types';
 import RetryManager, { RetryableTaskType } from 'app/network/RetryManager';
 import { uploadFoldersWithTasks } from './uploadFoldersWithTasks';
+import { UploadFailureReason } from 'app/network/types';
 
 vi.mock('app/network/UploadFolderManager', () => ({
   uploadFoldersWithManager: vi.fn(() => Promise.resolve()),
@@ -179,7 +180,7 @@ describe('uploadFoldersWithTasks', () => {
     (tasksService.create as Mock).mockReturnValue('task-1');
     const { events } = await runUpload([{ root, currentFolderId: 'parent' }]);
 
-    events.onFolderUploadError?.('task-1', 'connection-lost');
+    events.onFolderUploadError?.('task-1', UploadFailureReason.ConnectionLost);
 
     expect(tasksService.updateTask).toHaveBeenCalledWith({
       taskId: 'task-1',
@@ -189,7 +190,7 @@ describe('uploadFoldersWithTasks', () => {
 
   test('When a retried folder upload fails before starting, then its resumed task ends in error instead of staying in progress', async () => {
     (uploadFoldersWithManager as Mock).mockImplementationOnce(async ({ events }) =>
-      events.onFolderUploadError('existing-task', 'connection-lost'),
+      events.onFolderUploadError('existing-task', UploadFailureReason.ConnectionLost),
     );
 
     await runUpload([{ root, currentFolderId: 'parent', options: { taskId: 'existing-task' } }]);
@@ -226,8 +227,8 @@ describe('uploadFoldersWithTasks', () => {
     });
 
     test.each([
-      { outcome: 'the connection is lost', reason: 'connection-lost' as const },
-      { outcome: 'a fatal error', reason: 'upload-failed' as const },
+      { outcome: 'the connection is lost', reason: UploadFailureReason.ConnectionLost },
+      { outcome: 'a fatal error', reason: UploadFailureReason.UploadFailed },
     ])(
       'when the folder upload ends because $outcome, then only its files are removed from the retry list',
       async ({ reason }) => {
