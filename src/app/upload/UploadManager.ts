@@ -240,15 +240,15 @@ export class UploadManager {
     if (isWorkspaceUpload) await wait(WORKSPACE_FOLDER_AVAILABILITY_DELAY_MS);
   }
 
-  private async uploadWithRetries(item: UploadItem): Promise<UploadedItem> {
-    for (let attempt = 1; ; attempt++) {
-      try {
-        return await this.uploadItem(item);
-      } catch (error) {
-        const hasAttemptsLeft = attempt < MAX_UPLOAD_ATTEMPTS;
-        const shouldRetry = hasAttemptsLeft && !this.isItemCancelled(item) && canSucceedOnImmediateRetry(error);
-        if (!shouldRetry) throw error;
-      }
+  private async uploadWithRetries(item: UploadItem, attempt = 1): Promise<UploadedItem> {
+    try {
+      return await this.uploadItem(item);
+    } catch (error) {
+      const hasAttemptsLeft = attempt < MAX_UPLOAD_ATTEMPTS;
+      const shouldRetry = hasAttemptsLeft && !this.isItemCancelled(item) && canSucceedOnImmediateRetry(error);
+      if (!shouldRetry) throw error;
+
+      return this.uploadWithRetries(item, attempt + 1);
     }
   }
 
