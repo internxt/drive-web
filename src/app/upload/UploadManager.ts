@@ -115,7 +115,6 @@ export class UploadManager {
   private readonly getPauseKey: (item: UploadItem) => string;
   private readonly events?: UploadManagerEvents;
 
-  private isEverythingCancelled = false;
   private storageFullFailure?: UploadFailure;
   private foldersStillQueueingContent = 0;
   private readonly largeFilesWaitingForFolders: UploadItem[] = [];
@@ -143,7 +142,6 @@ export class UploadManager {
     if (this.uploadQueue.idle()) {
       this.result = { succeeded: [], failed: [] };
       this.storageFullFailure = undefined;
-      this.isEverythingCancelled = false;
       this.uploadQueue.concurrency = MAX_CONCURRENT_UPLOADS;
     }
 
@@ -154,11 +152,6 @@ export class UploadManager {
     await this.uploadQueue.drain();
 
     return this.result;
-  }
-
-  cancelAll(): void {
-    this.isEverythingCancelled = true;
-    this.abortActiveUploadOf.forEach((abort) => abort());
   }
 
   cancelItem(item: UploadItem): void {
@@ -300,8 +293,6 @@ export class UploadManager {
   }
 
   private isItemCancelled(item: UploadItem): boolean {
-    if (this.isEverythingCancelled) return true;
-
     return getItemAndItsFolders(item).some((itemOrFolder) => this.cancelledItems.has(itemOrFolder));
   }
 

@@ -146,8 +146,9 @@ export const uploadFilesWithTasks = async (props: UploadFilesWithTasksProps): Pr
     return item;
   });
 
-  if (abortController?.signal.aborted) manager.cancelAll();
-  abortController?.signal.addEventListener('abort', () => manager.cancelAll(), { once: true });
+  const cancelEveryFile = () => items.forEach((item) => manager.cancelItem(item));
+  if (abortController?.signal.aborted) cancelEveryFile();
+  abortController?.signal.addEventListener('abort', cancelEveryFile, { once: true });
 
   const relatedTaskId = files[0]?.relatedTaskId;
   if (relatedTaskId) {
