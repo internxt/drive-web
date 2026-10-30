@@ -9,7 +9,7 @@ import { UploadItem, UploadManagerEvents } from 'app/network/types/upload';
 import RetryManager, { RetryableTaskType } from 'app/network/RetryManager';
 import { OwnerUserAuthenticationData, UploadFailureReason, UploadItemKind } from 'app/network/types';
 import { PersistUploadRepository } from 'app/repositories/DatabaseUploadRepository';
-import { forgetUploadState, markUploadAsInProcess } from 'app/repositories/uploadStateUpdates';
+import errorService from 'services/error.service';
 import { errorMerge } from './uploadTaskErrors';
 
 export type UploadManagerFileParams = {
@@ -65,7 +65,11 @@ export const uploadFilesWithTasks = async (props: UploadFilesWithTasksProps): Pr
         taskId: file.taskId,
         merge: { status: file.relatedTaskId ? TaskStatus.Encrypting : TaskStatus.InProcess },
       });
-      if (!file.relatedTaskId) markUploadAsInProcess(uploadRepository, file.taskId);
+      if (!file.relatedTaskId) {
+        uploadRepository
+          .setUploadState(file.taskId, TaskStatus.InProcess)
+          .catch((error) => errorService.reportError(error));
+      }
     },
 
     onItemProgress: (item, progress) => {
@@ -113,7 +117,7 @@ export const uploadFilesWithTasks = async (props: UploadFilesWithTasksProps): Pr
     onItemFailed: (item, { reason }) => {
       const { taskId } = getFile(item);
       tasksService.updateTask({ taskId, merge: errorMerge(reason) });
-      forgetUploadState(uploadRepository, taskId);
+      uploadRepository.removeUploadState(taskId).catch((error) => errorService.reportError(error));
     },
 
     onItemCancelled: (item) => {
