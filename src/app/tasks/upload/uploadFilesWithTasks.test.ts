@@ -16,14 +16,13 @@ const { managerState } = vi.hoisted(() => ({
     result: { succeeded: [], failed: [] } as UploadResult,
     instance: undefined as
       | undefined
-      | { props: { events: UploadManagerEvents }; run: Mock; cancelAll: Mock; cancelItem: Mock; items: UploadItem[] },
+      | { props: { events: UploadManagerEvents }; run: Mock; cancelItem: Mock; items: UploadItem[] },
   },
 }));
 
 vi.mock('app/upload/UploadManager', () => ({
   UploadManager: vi.fn(function (this: NonNullable<typeof managerState.instance>, props) {
     this.props = props;
-    this.cancelAll = vi.fn();
     this.cancelItem = vi.fn();
     this.run = vi.fn(async (items: UploadItem[]) => {
       this.items = items;
@@ -265,13 +264,22 @@ describe('Uploading files with tasks', () => {
     expect(manager.cancelItem).toHaveBeenCalledExactlyOnceWith(items[0]);
   });
 
-  test('When the folder upload that owns the files is cancelled, then the whole upload is cancelled', async () => {
+  test('When the folder upload that owns the files is cancelled, then every file is cancelled', async () => {
     const abortController = new AbortController();
-    const { manager } = await runUpload([buildFile()], { abortController });
+    const { manager, items } = await runUpload([buildFile(), buildFile()], { abortController });
 
     abortController.abort();
 
-    expect(manager.cancelAll).toHaveBeenCalledOnce();
+    expect(manager.cancelItem.mock.calls).toEqual(items.map((item) => [item]));
+  });
+
+  test('When the folder upload that owns the files was cancelled before they start, then every file is cancelled', async () => {
+    const abortController = new AbortController();
+    abortController.abort();
+
+    const { manager, items } = await runUpload([buildFile(), buildFile()], { abortController });
+
+    expect(manager.cancelItem.mock.calls).toEqual(items.map((item) => [item]));
   });
 
   test('When a file fails, then it is listed for retry and the upload rejects with its error', async () => {

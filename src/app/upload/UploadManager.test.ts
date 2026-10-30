@@ -177,24 +177,6 @@ describe('Uploading files', () => {
     expect(failed.every(({ failure }) => failure.reason === UploadFailureReason.NoSpaceLeft)).toBe(true);
   });
 
-  test('When the upload is cancelled, then the queued files are never uploaded and are reported as cancelled', async () => {
-    fakeSlowUploads();
-    const items = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].map((name) => getUploadFileItem(name));
-    const events: UploadManagerEvents = { onItemCancelled: vi.fn(), onItemFailed: vi.fn() };
-    const manager = createManager({ events });
-
-    const upload = manager.run(items);
-    await vi.waitFor(() => expect(uploadFile).toHaveBeenCalledTimes(6));
-    manager.cancelAll();
-    const { succeeded, failed } = await failIfHangs(upload);
-
-    expect(uploadFile).toHaveBeenCalledTimes(6);
-    expect(succeeded).toEqual([]);
-    expect(failed).toEqual([]);
-    expect(events.onItemCancelled).toHaveBeenCalledTimes(items.length);
-    expect(events.onItemFailed).not.toHaveBeenCalled();
-  });
-
   test('When a single file is cancelled, then only that file stops', async () => {
     fakeSlowUploads();
     const [cancelledItem, otherItem] = [getUploadFileItem('cancelled'), getUploadFileItem('other')];
@@ -252,16 +234,6 @@ describe('Uploading files', () => {
     await manager.run(['a', 'b', 'c'].map((name) => getUploadFileItem(name)));
 
     expect(maxActiveUploads).toBe(3);
-  });
-
-  test('When the same manager uploads again after everything was cancelled, then the new files are uploaded', async () => {
-    const manager = createManager();
-    manager.cancelAll();
-    await manager.run([getUploadFileItem('cancelled')]);
-
-    const { succeeded } = await manager.run([getUploadFileItem('report')]);
-
-    expect(succeeded.map(({ item }) => nameOf(item))).toEqual(['report']);
   });
 
   test('When the browser is running out of memory, then fewer files are uploaded at the same time', async () => {
