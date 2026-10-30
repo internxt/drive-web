@@ -139,7 +139,7 @@ export const uploadFilesWithTasks = async (props: UploadFilesWithTasksProps): Pr
     if (file.taskId) {
       tasksService.updateTask({
         taskId: file.taskId,
-        merge: { status: TaskStatus.Encrypting, stop: async () => manager.cancelItem(item) },
+        merge: { status: TaskStatus.Encrypting, stop: () => Promise.resolve(manager.cancelItem(item)) },
       });
     }
 
@@ -208,6 +208,6 @@ const createUploadTask = (
     showNotification: options?.showNotifications ?? true,
     cancellable: true,
     sharedItemAuthenticationData,
-    stop: async () => manager.cancelItem(item),
+    stop: () => Promise.resolve(manager.cancelItem(item)),
   });
 };
