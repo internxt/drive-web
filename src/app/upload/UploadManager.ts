@@ -119,7 +119,7 @@ export class UploadManager {
 
   private queue(items: UploadItem[]): void {
     for (const item of items) {
-      this.uploadQueue.push(item, getUploadPriority(item));
+      void this.uploadQueue.push(item, getUploadPriority(item));
     }
   }
 
