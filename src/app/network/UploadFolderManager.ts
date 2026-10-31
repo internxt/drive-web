@@ -17,7 +17,7 @@ import { ConnectionLostError } from './requests';
 import { FilesExceedsSizeLimitError } from 'app/drive/services/file.service/upload.errors';
 import { filterFilesByMaxSize } from 'app/store/slices/storage/fileUtils/filterFilesByMaxSize';
 import { UploadErrorReason } from './types';
-import { MAX_CONCURRENT_UPLOADS } from './networkConstants';
+import { MAX_CONCURRENT_UPLOADS, WORKSPACE_FOLDER_REPLICA_DELAY_MS } from './networkConstants';
 
 export interface UploadFolderPayload {
   root: IRoot;
@@ -306,7 +306,7 @@ export class UploadFoldersManager {
     const hasChildren = level.childrenFiles.length > 0 || level.childrenFolders.length > 0;
     if (this.selectedWorkspace && hasChildren) {
       // Workspace endpoints still validate the parent folder against the read replica
-      await wait(600);
+      await wait(WORKSPACE_FOLDER_REPLICA_DELAY_MS);
     }
 
     await this.handleFileUploads(level, createdFolder, taskId, abortController);
