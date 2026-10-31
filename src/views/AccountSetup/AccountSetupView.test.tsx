@@ -37,8 +37,7 @@ vi.mock('app/store/slices/plan', () => ({ planThunks: { initializeThunk: vi.fn()
 vi.mock('app/store/slices/workspaces/workspacesStore', () => ({
   workspaceThunks: { fetchWorkspaces: vi.fn(), checkAndSetLocalWorkspace: vi.fn() },
 }));
-vi.mock('app/analytics/impact.service', () => ({ trackSignUp: vi.fn() }));
-vi.mock('app/analytics/meta.service', () => ({ trackLead: vi.fn() }));
+vi.mock('@internxt/analytics', () => ({ trackSignUp: vi.fn(), trackLead: vi.fn() }));
 
 const SETUP_TOKEN = 'setup-token-from-email';
 const STRONG_PASSWORD = 'Correct-Horse-Battery-9!';

@@ -40,8 +40,9 @@ beforeAll(() => {
       push: vi.fn(),
     },
   }));
-  vi.mock('app/analytics/impact.service', () => ({
+  vi.mock('@internxt/analytics', () => ({
     trackSignUp: vi.fn(),
+    trackLead: vi.fn(),
   }));
   vi.mock('app/database/services/database.service', () => ({
     default: {
