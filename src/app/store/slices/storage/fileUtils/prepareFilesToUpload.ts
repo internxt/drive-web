@@ -5,7 +5,7 @@ import { processDuplicateFiles } from './processDuplicateFiles';
 
 const BATCH_SIZE = 200;
 
-const isHiddenFile = (fileName: string): boolean => {
+export const isHiddenFile = (fileName: string): boolean => {
   return fileName.startsWith('.');
 };
 

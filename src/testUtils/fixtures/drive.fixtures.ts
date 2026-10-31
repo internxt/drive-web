@@ -1,4 +1,5 @@
 import { DriveItemData, ExceededFile, ReachedFileSizeLimitDialogInfo } from 'app/drive/types';
+import { IRoot } from 'app/store/slices/storage/types';
 
 export const getExceededFile = (overrides: Partial<ExceededFile> = {}): ExceededFile => ({
   name: 'large-document.pdf',
@@ -74,4 +75,12 @@ export const getDriveThumbnail = (): DriveItemData['thumbnails'][number] => ({
   bucket_id: 'thumbnail-bucket',
   bucket_file: 'thumbnail-file',
   encrypt_version: '03-aes',
+});
+
+export const buildUploadFolder = (name: string, childrenFiles: File[] = [], childrenFolders: IRoot[] = []): IRoot => ({
+  folderId: null,
+  childrenFiles,
+  childrenFolders,
+  name,
+  isFolder: true,
 });
