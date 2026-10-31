@@ -22,7 +22,7 @@ vi.mock('app/tasks/services/tasks.service', () => ({
   },
 }));
 
-vi.mock('i18next', () => ({ t: (key: string) => key }));
+vi.mock('i18next', async (importOriginal) => ({ ...(await importOriginal<object>()), t: (key: string) => key }));
 
 vi.mock('services/referral.service', () => ({
   default: {
@@ -216,6 +216,25 @@ describe('uploadFoldersWithTasks', () => {
     expect(tasksService.getTasks).toHaveBeenCalledWith({ relatedTaskId: 'task-1' });
     expect(promises).toEqual([resolvedStop]);
     expect(nonCancellableStop).not.toHaveBeenCalled();
+  });
+
+  test('when the folder upload skips a subfolder, then its files are listed for retry under that folder', async () => {
+    (tasksService.create as Mock).mockReturnValue('task-1');
+    const { events } = await runUpload([{ root, currentFolderId: 'parent' }]);
+    const skippedFolder: IRoot = {
+      ...root,
+      name: 'Broken',
+      folderId: 'root-uuid',
+      childrenFiles: [new File(['a'], 'a.txt')],
+    };
+
+    events.onSubfolderSkipped?.('task-1', skippedFolder);
+
+    expect(RetryManager.getTasks()).toEqual([
+      expect.objectContaining({
+        params: expect.objectContaining({ relatedTaskId: 'task-1', parentFolderId: 'root-uuid' }),
+      }),
+    ]);
   });
 
   describe('when the folder has failed files listed for retry', () => {

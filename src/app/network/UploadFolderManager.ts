@@ -49,6 +49,7 @@ export interface UploadFolderManagerEvents {
   ) => void;
   onFolderUploadError?: (taskId: string, reason?: UploadErrorReason) => void;
   onFolderUploadCancelled?: (taskId: string) => void;
+  onSubfolderSkipped?: (taskId: string, skippedFolder: IRoot) => void;
   stopRelatedUploads?: (taskId: string) => Promise<void>[];
 }
 
@@ -180,7 +181,6 @@ export class UploadFoldersManager {
     level: IRoot,
     currentFolderId: string,
     taskId: string,
-    abortController: AbortController,
   ): Promise<DriveFolderData | undefined> => {
     let createdFolder: DriveFolderData | undefined;
     let uploadAttempts = 0;
@@ -198,16 +198,24 @@ export class UploadFoldersManager {
           this.selectedWorkspace,
           { dispatch: this.dispatch },
         );
-      } catch {
-        if (uploadAttempts >= UploadFoldersManager.MAX_UPLOAD_ATTEMPTS) {
-          this.stopUploadTask(taskId, abortController);
-          this.killQueueAndNotifyError(taskId);
-          return;
-        }
+      } catch (error) {
+        const hasAttemptsLeft = uploadAttempts < UploadFoldersManager.MAX_UPLOAD_ATTEMPTS;
+        if (hasAttemptsLeft) continue;
+
+        const isRootFolder = !this.tasksInfo[taskId].rootFolderItem;
+        if (isRootFolder) throw error;
+
+        this.skipSubfolder(taskId, level);
+        return;
       }
     }
 
     return createdFolder;
+  };
+
+  private readonly skipSubfolder = (taskId: string, level: IRoot): void => {
+    this.tasksInfo[taskId].hasFailedFiles = true;
+    this.events?.onSubfolderSkipped?.(taskId, level);
   };
 
   private readonly updateTaskProgress = (taskId: string, abortController: AbortController): void => {
@@ -289,7 +297,7 @@ export class UploadFoldersManager {
 
     if (abortController.signal.aborted) return;
 
-    const createdFolder = await this.createFolderWithRetry(level, currentFolderId, taskId, abortController);
+    const createdFolder = await this.createFolderWithRetry(level, currentFolderId, taskId);
     if (!createdFolder) return;
 
     if (!this.tasksInfo[taskId].rootFolderItem) {
@@ -356,7 +364,7 @@ export class UploadFoldersManager {
       return;
     }
 
-    // A fatal error (e.g. the folder could not be created) already announced a final state
+    // A fatal error (e.g. every file of a folder exceeds the size limit) already announced a final state
     // while the queue was draining: don't announce success on top.
     if (taskInfo.hasErrored) return;
 
@@ -412,7 +420,6 @@ export class UploadFoldersManager {
         cancelUpload: () => {
           this.tasksInfo[taskId].isCancelled = true;
           this.stopUploadTask(taskId, taskFolder.abortController).catch((error) => errorService.reportError(error));
-          this.uploadFoldersQueue.kill();
         },
         pauseUpload: () => this.uploadFoldersQueue.pause(),
         resumeUpload: () => this.uploadFoldersQueue.resume(),
