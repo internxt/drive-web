@@ -33,8 +33,12 @@ vi.mock('app/i18n/provider/TranslationProvider', () => ({
 
 const mockUnwrapRetryUpload = vi.hoisted(() => vi.fn());
 const mockUploadRetryItem = vi.hoisted(() => vi.fn());
+const mockFindOrCreateRetryParentFolder = vi.hoisted(() => vi.fn());
 vi.mock('app/store/slices/storage/hooks/useReduxActions', () => ({
-  useReduxActions: vi.fn().mockReturnValue({ uploadRetryItem: mockUploadRetryItem }),
+  useReduxActions: vi.fn().mockReturnValue({
+    uploadRetryItem: mockUploadRetryItem,
+    findOrCreateRetryParentFolder: mockFindOrCreateRetryParentFolder,
+  }),
 }));
 
 describe('TaskToRetry', () => {
@@ -60,9 +64,13 @@ describe('TaskToRetry', () => {
     status: RetryableTaskStatus.Failed,
   });
 
-  const retryUpload = async (task: RetryableTask): Promise<File> => {
+  const clickRetry = (task: RetryableTask): void => {
     const { getByTestId } = render(<TaskToRetry isOpen={true} files={[task]} onClose={mockOnClose} />);
     fireEvent.click(getByTestId('task-logger-button'));
+  };
+
+  const retryUpload = async (task: RetryableTask): Promise<File> => {
+    clickRetry(task);
     await vi.waitFor(() => expect(mockUploadRetryItem).toHaveBeenCalled());
     return mockUploadRetryItem.mock.calls[0][0].uploadFile;
   };
@@ -106,6 +114,10 @@ describe('TaskToRetry', () => {
     vi.clearAllMocks();
     mockUnwrapRetryUpload.mockResolvedValue(undefined);
     mockUploadRetryItem.mockReturnValue({ unwrap: mockUnwrapRetryUpload });
+    mockFindOrCreateRetryParentFolder.mockImplementation(async ({ parentFolderId }) => ({
+      folderId: parentFolderId,
+      isNewFolder: false,
+    }));
   });
 
   afterEach(async () => {
@@ -163,6 +175,7 @@ describe('TaskToRetry', () => {
       parentFolderId: 'folder-1',
       taskId: 'task-1',
       fileType: 'txt',
+      disableExistenceCheck: false,
     });
   });
 
@@ -198,6 +211,33 @@ describe('TaskToRetry', () => {
     await vi.waitFor(() =>
       expect(mockChangeStatus).toHaveBeenCalledWith('download-1', RetryableTaskStatus.Failed, { id: 'file-a' }),
     );
+  });
+
+  describe('when the folder of a failed file was never created', () => {
+    const skippedFileTask: RetryableTask = {
+      ...files[0],
+      params: { ...files[0].params, missingFolderPath: ['Broken'] },
+    };
+
+    test('when the retry created the folder of the file, then the file is uploaded into it without the existence check', async () => {
+      mockFindOrCreateRetryParentFolder.mockResolvedValueOnce({ folderId: 'resolved-uuid', isNewFolder: true });
+
+      await retryUpload(skippedFileTask);
+
+      expect(mockFindOrCreateRetryParentFolder).toHaveBeenCalledWith(skippedFileTask.params);
+      expect(mockUploadRetryItem).toHaveBeenCalledWith(
+        expect.objectContaining({ parentFolderId: 'resolved-uuid', disableExistenceCheck: true }),
+      );
+    });
+
+    test('when its folder cannot be recreated, then the file goes back to failed and is not uploaded', async () => {
+      mockFindOrCreateRetryParentFolder.mockRejectedValueOnce(new Error('folder not created'));
+
+      clickRetry(skippedFileTask);
+
+      await vi.waitFor(() => expect(mockChangeStatus).toHaveBeenCalledWith('task-1', RetryableTaskStatus.Failed));
+      expect(mockUploadRetryItem).not.toHaveBeenCalled();
+    });
   });
 
   test('when there are failed, retryable files, then the retry all button is rendered', () => {
