@@ -22,7 +22,7 @@ import {
   UploadManagerEvents,
   UploadResult,
 } from './types';
-import { canSucceedOnImmediateRetry, toUploadFailure, UploadFailure } from './uploadFailure';
+import { shouldAutoRetry, toUploadFailure, UploadFailure } from './uploadFailure';
 
 const SINGLE_TRANSFER_CONCURRENCY = 1;
 
@@ -171,7 +171,7 @@ export class UploadManager {
       return await this.uploadFile(item);
     } catch (error) {
       const hasAttemptsLeft = attempt < MAX_UPLOAD_ATTEMPTS;
-      const shouldRetry = hasAttemptsLeft && !this.isItemCancelled(item) && canSucceedOnImmediateRetry(error);
+      const shouldRetry = hasAttemptsLeft && !this.isItemCancelled(item) && shouldAutoRetry(toUploadFailure(error));
       if (!shouldRetry) throw error;
 
       return this.uploadWithRetries(item, attempt + 1);

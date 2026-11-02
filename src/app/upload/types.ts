@@ -10,6 +10,7 @@ export enum UploadFailureReason {
   ConnectionLost = 'connection-lost',
   NoSpaceLeft = 'no-space',
   FileTooLarge = 'file-too-large',
+  PlanLimit = 'plan-limit',
   UploadFailed = 'upload-failed',
 }
 
