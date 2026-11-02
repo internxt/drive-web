@@ -16,7 +16,7 @@ import { wait } from 'utils/timeUtils';
 import { ConnectionLostError } from './requests';
 import { FilesExceedsSizeLimitError } from 'app/drive/services/file.service/upload.errors';
 import { filterFilesByMaxSize } from 'app/store/slices/storage/fileUtils/filterFilesByMaxSize';
-import { UploadFailureReason } from './types';
+import { UploadFailureReason } from 'app/upload/types';
 import { MAX_CONCURRENT_UPLOADS } from './networkConstants';
 
 export interface UploadFolderPayload {

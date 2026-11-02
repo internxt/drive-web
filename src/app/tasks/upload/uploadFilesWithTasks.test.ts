@@ -1,12 +1,11 @@
 import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
-import { UploadFailure } from 'app/network/uploadFailure';
-import { UploadFailureReason, UploadItemKind } from 'app/network/types';
+import { UploadFailure } from 'app/upload/uploadFailure';
+import { UploadFailureReason, UploadItem, UploadItemKind, UploadManagerEvents, UploadResult } from 'app/upload/types';
 import tasksService from 'app/tasks/services/tasks.service';
 import { TaskStatus } from 'app/tasks/types';
 import referralService from 'services/referral.service';
 import * as networkInformation from 'app/network/networkInformation';
 import { UploadManager } from 'app/upload/UploadManager';
-import { UploadItem, UploadManagerEvents, UploadResult } from 'app/network/types/upload';
 import RetryManager from 'app/network/RetryManager';
 import { PersistUploadRepository } from 'app/repositories/DatabaseUploadRepository';
 import { uploadFilesWithTasks } from './uploadFilesWithTasks';
