@@ -7,6 +7,7 @@ const errorSubtitle = (reason?: UploadFailureReason): string | undefined => {
     case UploadFailureReason.ConnectionLost:
       return t('error.connectionLostError') as string;
     case UploadFailureReason.UploadFailed:
+    case UploadFailureReason.PlanLimit:
       return t('tasks.subtitles.upload-failed') as string;
     default:
       return undefined;
