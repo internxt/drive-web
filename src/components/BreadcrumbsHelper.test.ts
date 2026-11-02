@@ -13,7 +13,8 @@ import { DropTargetMonitor } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { transformDraggedItems } from 'services/drag-and-drop.service';
-import { notifyUploadFailed } from 'views/Drive/components/DriveExplorer/helpers/uploadHelpers';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import errorService from 'services/error.service';
 
 vi.mock('app/store/slices/storage/storage.thunks', () => ({
   default: {
@@ -36,10 +37,6 @@ vi.mock('app/store/slices/storage/storage.thunks/renameItemsThunk', () => ({
 
 vi.mock('services/drag-and-drop.service', () => ({
   transformDraggedItems: vi.fn().mockResolvedValue({ rootList: [], files: [] }),
-}));
-
-vi.mock('views/Drive/components/DriveExplorer/helpers/uploadHelpers', () => ({
-  notifyUploadFailed: vi.fn(),
 }));
 
 const createMockBreadcrumbItem = (overrides?: Partial<BreadcrumbItemData>): BreadcrumbItemData => ({
@@ -91,6 +88,8 @@ const mockDispatch = vi.fn() as unknown as AppDispatch;
 
 beforeEach(() => {
   vi.clearAllMocks();
+  vi.spyOn(notificationsService, 'show').mockReturnValue(undefined as never);
+  vi.spyOn(errorService, 'reportError').mockReturnValue();
   vi.resetModules();
 });
 
@@ -172,7 +171,9 @@ describe('onItemDropped', () => {
 
     await onItemDropped(item, [], false, [], mockDispatch)(draggedItem, monitor);
 
-    expect(notifyUploadFailed).toHaveBeenCalledWith(readError);
+    expect(notificationsService.show).toHaveBeenCalledWith(
+      expect.objectContaining({ text: 'File could not be read', type: ToastType.Error }),
+    );
     expect(storageThunks.uploadItemsThunk).not.toHaveBeenCalled();
   });
 });

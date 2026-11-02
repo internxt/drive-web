@@ -1,22 +1,18 @@
 import { ChangeEvent, useCallback, useRef } from 'react';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { fileVersionsSelectors } from 'app/store/slices/fileVersions';
-import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { transformInputFilesToItems } from 'app/drive/services/folder.service/uploadFolderInput.service';
 import { IRoot } from 'app/store/slices/storage/types';
-import { notifyUploadFailed, uploadItemsToFolder } from '../helpers/uploadHelpers';
+import { notifyUploadFailed } from 'app/upload/notifyUploadFailed';
+import { useUploadItems } from 'app/upload/useUploadItems';
 
 export const useDriveExplorerUpload = (currentFolderId: string) => {
-  const dispatch = useAppDispatch();
-  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
-  const maxUploadFileSize = useAppSelector(fileVersionsSelectors.getMaxFileSizeLimit);
+  const { uploadItems } = useUploadItems();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const folderInputRef = useRef<HTMLInputElement>(null);
 
-  const uploadItems = useCallback(
+  const uploadToCurrentFolder = useCallback(
     (rootList: IRoot[], files: File[]) =>
-      uploadItemsToFolder({ dispatch, currentFolderId, selectedWorkspace, maxUploadFileSize }, rootList, files),
-    [dispatch, currentFolderId, selectedWorkspace, maxUploadFileSize],
+      uploadItems({ destinationFolderUuid: currentFolderId, roots: rootList, files }).catch(notifyUploadFailed),
+    [uploadItems, currentFolderId],
   );
 
   const onUploadFileButtonClicked = useCallback(() => fileInputRef.current?.click(), []);
@@ -27,7 +23,7 @@ export const useDriveExplorerUpload = (currentFolderId: string) => {
     if (!input.files) return;
 
     try {
-      await uploadItems([], Array.from(input.files));
+      await uploadToCurrentFolder([], Array.from(input.files));
     } finally {
       input.value = '';
     }
@@ -39,7 +35,7 @@ export const useDriveExplorerUpload = (currentFolderId: string) => {
 
     try {
       const { rootList, files } = transformInputFilesToItems(Array.from(input.files), currentFolderId);
-      await uploadItems(rootList, files);
+      await uploadToCurrentFolder(rootList, files);
     } catch (error) {
       notifyUploadFailed(error);
     } finally {
@@ -54,6 +50,6 @@ export const useDriveExplorerUpload = (currentFolderId: string) => {
     onUploadFolderButtonClicked,
     onFileInputChanged,
     onFolderInputChanged,
-    uploadItems,
+    uploadToCurrentFolder,
   };
 };
