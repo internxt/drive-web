@@ -1,6 +1,6 @@
 import { t } from 'i18next';
 import { TaskStatus } from 'app/tasks/types';
-import { UploadFailureReason } from 'app/network/types';
+import { UploadFailureReason } from 'app/upload/types';
 
 const errorSubtitle = (reason?: UploadFailureReason): string | undefined => {
   switch (reason) {

@@ -14,21 +14,24 @@ import { TaskStatus } from 'app/tasks/types';
 import {
   MAX_CONCURRENT_UPLOADS,
   MAX_UPLOAD_ATTEMPTS,
-  SINGLE_TRANSFER_CONCURRENCY,
   TWENTY_MEGABYTES,
   USE_MULTIPART_THRESHOLD_BYTES,
-  WORKSPACE_FOLDER_AVAILABILITY_DELAY_MS,
 } from 'app/network/networkConstants';
-import { OwnerUserAuthenticationData, UploadFailureReason, UploadItemKind } from 'app/network/types';
+import { OwnerUserAuthenticationData } from 'app/network/types';
 import {
   UploadedItem,
+  UploadFailureReason,
   UploadFileItem,
   UploadFolderItem,
   UploadItem,
+  UploadItemKind,
   UploadManagerEvents,
   UploadResult,
-} from 'app/network/types/upload';
-import { canSucceedOnImmediateRetry, toUploadFailure, UploadFailure } from 'app/network/uploadFailure';
+} from './types';
+import { canSucceedOnImmediateRetry, toUploadFailure, UploadFailure } from './uploadFailure';
+
+const SINGLE_TRANSFER_CONCURRENCY = 1;
+export const WORKSPACE_FOLDER_AVAILABILITY_DELAY_MS = 600;
 
 enum UploadPriority {
   Folder = 0,

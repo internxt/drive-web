@@ -20,7 +20,7 @@ import newStorageService from 'app/drive/services/new-storage.service';
 import RetryManager from './RetryManager';
 import { ConnectionLostError } from './requests';
 import errorService from 'services/error.service';
-import { UploadFailureReason } from 'app/network/types';
+import { UploadFailureReason } from 'app/upload/types';
 
 vi.mock('app/drive/services/file.service/uploadFile', () => ({
   default: vi.fn(async (file: { name: string }) => ({ uuid: `${file.name}-uuid`, name: file.name })),

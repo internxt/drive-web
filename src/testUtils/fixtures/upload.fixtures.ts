@@ -1,6 +1,5 @@
 import { vi } from 'vitest';
-import { UploadItemKind } from 'app/network/types';
-import { UploadFileItem } from 'app/network/types/upload';
+import { UploadFileItem, UploadItemKind } from 'app/upload/types';
 import { PersistUploadRepository } from 'app/repositories/DatabaseUploadRepository';
 import { IRoot } from 'app/store/slices/storage/types';
 import { TaskStatus } from 'app/tasks/types';

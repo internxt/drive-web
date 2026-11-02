@@ -7,7 +7,7 @@ import { uploadFoldersWithManager, UploadFolderManagerEvents } from 'app/network
 import { IRoot } from 'app/store/slices/storage/types';
 import RetryManager, { RetryableTaskType } from 'app/network/RetryManager';
 import { uploadFoldersWithTasks } from './uploadFoldersWithTasks';
-import { UploadFailureReason } from 'app/network/types';
+import { UploadFailureReason } from 'app/upload/types';
 
 vi.mock('app/network/UploadFolderManager', () => ({
   uploadFoldersWithManager: vi.fn(() => Promise.resolve()),

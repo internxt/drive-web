@@ -1,8 +1,19 @@
 import { DriveFileData, DriveFolderData } from 'app/drive/types';
 import { FileToUpload } from 'app/drive/services/file.service/types';
 import { IRoot } from 'app/store/slices/storage/types';
-import { UploadFailure } from '../uploadFailure';
-import { UploadItemKind } from '.';
+import { UploadFailure } from './uploadFailure';
+
+export enum UploadItemKind {
+  File = 'file',
+  Folder = 'folder',
+}
+
+export enum UploadFailureReason {
+  ConnectionLost = 'connection-lost',
+  NoSpaceLeft = 'no-space',
+  FileTooLarge = 'file-too-large',
+  UploadFailed = 'upload-failed',
+}
 
 export type UploadFileItem = { kind: UploadItemKind.File; file: FileToUpload; parent?: UploadFolderItem };
 

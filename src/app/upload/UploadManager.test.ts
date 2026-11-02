@@ -5,11 +5,7 @@ import { DriveFileData } from 'app/drive/types';
 import { ErrorMessages, HTTP_CODE_ERRORS, HTTP_STATUS_CODES } from 'app/core/constants';
 import errorService from 'services/error.service';
 import { ConnectionLostError } from 'app/network/requests';
-import {
-  TWENTY_MEGABYTES,
-  USE_MULTIPART_THRESHOLD_BYTES,
-  WORKSPACE_FOLDER_AVAILABILITY_DELAY_MS,
-} from 'app/network/networkConstants';
+import { TWENTY_MEGABYTES, USE_MULTIPART_THRESHOLD_BYTES } from 'app/network/networkConstants';
 import { QueueUtilsService } from 'utils/queueUtils';
 import workspacesService from 'services/workspace.service';
 import folderService from 'app/drive/services/folder.service';
@@ -20,9 +16,8 @@ import {
   getUploadFileItem,
   getUploadRepository,
 } from 'testUtils/fixtures/upload.fixtures';
-import { createFolderItem, UploadManager } from './UploadManager';
-import { UploadItem, UploadManagerEvents } from 'app/network/types/upload';
-import { UploadFailureReason, UploadItemKind } from 'app/network/types';
+import { createFolderItem, UploadManager, WORKSPACE_FOLDER_AVAILABILITY_DELAY_MS } from './UploadManager';
+import { UploadFailureReason, UploadItem, UploadItemKind, UploadManagerEvents } from './types';
 
 vi.mock('app/drive/services/file.service/uploadFile', () => ({ default: vi.fn() }));
 vi.mock('app/drive/services/folder.service', () => ({ default: { createFolderByUuid: vi.fn() } }));
