@@ -1,7 +1,17 @@
 import { DriveFileData } from 'app/drive/types';
 import { FileToUpload } from 'app/drive/services/file.service/types';
-import { UploadFailure } from '../uploadFailure';
-import { UploadItemKind } from '.';
+import { UploadFailure } from './uploadFailure';
+
+export enum UploadItemKind {
+  File = 'file',
+}
+
+export enum UploadFailureReason {
+  ConnectionLost = 'connection-lost',
+  NoSpaceLeft = 'no-space',
+  FileTooLarge = 'file-too-large',
+  UploadFailed = 'upload-failed',
+}
 
 export type UploadFileItem = { kind: UploadItemKind.File; file: FileToUpload };
 
