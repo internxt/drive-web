@@ -21,18 +21,21 @@ const isStorageFull = (error: unknown) => getStatusCode(error) === HTTP_STATUS_C
 const isFileTooLarge = (error: unknown) =>
   errorService.castError(error).code === HTTP_CODE_ERRORS.FILE_UPLOAD_SIZE_EXCEEDED;
 
-const isPlanNotAllowingIt = (error: unknown) => getStatusCode(error) === HTTP_STATUS_CODES.PAYMENT_REQUIRED;
+const isPlanLimitReached = (error: unknown) => getStatusCode(error) === HTTP_STATUS_CODES.PAYMENT_REQUIRED;
+
+const REASONS_THAT_RETRYING_CANNOT_FIX = new Set([UploadFailureReason.FileTooLarge, UploadFailureReason.PlanLimit]);
 
 const getFailureReason = (error: unknown): UploadFailureReason => {
   if (isConnectionLost(error)) return UploadFailureReason.ConnectionLost;
   if (isStorageFull(error)) return UploadFailureReason.NoSpaceLeft;
   if (isFileTooLarge(error)) return UploadFailureReason.FileTooLarge;
+  if (isPlanLimitReached(error)) return UploadFailureReason.PlanLimit;
   return UploadFailureReason.UploadFailed;
 };
 
 export const toUploadFailure = (error: unknown): UploadFailure => {
   const reason = getFailureReason(error);
-  const canSucceedLater = reason !== UploadFailureReason.FileTooLarge && !isPlanNotAllowingIt(error);
+  const canSucceedLater = !REASONS_THAT_RETRYING_CANNOT_FIX.has(reason);
   const genericUploadError = new Error('Upload failed');
 
   return {
@@ -42,5 +45,4 @@ export const toUploadFailure = (error: unknown): UploadFailure => {
   };
 };
 
-export const canSucceedOnImmediateRetry = (error: unknown): boolean =>
-  getFailureReason(error) === UploadFailureReason.UploadFailed && !isPlanNotAllowingIt(error);
+export const shouldAutoRetry = ({ reason }: UploadFailure): boolean => reason === UploadFailureReason.UploadFailed;
