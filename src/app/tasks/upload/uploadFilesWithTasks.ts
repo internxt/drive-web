@@ -25,6 +25,8 @@ export type UploadManagerFileParams = {
 
 type UploadFileParamsWithTaskId = UploadManagerFileParams & { taskId: string };
 
+type FolderProgress = { filesUploaded: number; totalFilesToUpload: number };
+
 interface UploadFilesWithTasksProps {
   files: UploadManagerFileParams[];
   maxSpaceOccupiedCallback: () => void;
@@ -40,7 +42,7 @@ interface UploadFilesWithTasksProps {
       currentFolderId?: string;
     };
   };
-  relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number };
+  relatedTaskProgress?: FolderProgress;
 }
 
 /**
@@ -56,6 +58,33 @@ export const uploadFilesWithTasks = async (props: UploadFilesWithTasksProps): Pr
   const getPauseKey = (item: UploadItem) => {
     const file = getFile(item);
     return file.relatedTaskId ?? file.taskId;
+  };
+
+  const failureDialogByReason: Partial<Record<UploadFailureReason, () => void>> = {
+    [UploadFailureReason.NoSpaceLeft]: props.maxSpaceOccupiedCallback,
+    [UploadFailureReason.FileTooLarge]: props.fileSizeExceededCallback,
+  };
+  const reasonsWithDialogShown = new Set<UploadFailureReason>();
+
+  const showFailureDialogOnce = (reason: UploadFailureReason) => {
+    const showDialog = failureDialogByReason[reason];
+    const hasNoDialog = !showDialog;
+    const wasAlreadyShown = reasonsWithDialogShown.has(reason);
+    if (hasNoDialog || wasAlreadyShown) return;
+
+    reasonsWithDialogShown.add(reason);
+    showDialog();
+  };
+
+  const updateFolderProgress = async (folderTaskId: string, folderProgress: FolderProgress) => {
+    const folderUploadState = await uploadRepository.getUploadState(folderTaskId);
+    const isPaused = folderUploadState === TaskStatus.Paused;
+    if (isPaused) return;
+
+    tasksService.updateTask({
+      taskId: folderTaskId,
+      merge: { progress: folderProgress.filesUploaded / folderProgress.totalFilesToUpload },
+    });
   };
 
   const events: UploadManagerEvents = {
@@ -87,19 +116,6 @@ export const uploadFilesWithTasks = async (props: UploadFilesWithTasksProps): Pr
       const driveFileData = uploadedItem as DriveFileData;
       const file = getFile(item);
 
-      if (relatedTaskProgress && file.relatedTaskId) {
-        relatedTaskProgress.filesUploaded += 1;
-
-        const folderUploadState = await uploadRepository.getUploadState(file.relatedTaskId);
-        const isPaused = folderUploadState === TaskStatus.Paused;
-        if (!isPaused) {
-          tasksService.updateTask({
-            taskId: file.relatedTaskId,
-            merge: { progress: relatedTaskProgress.filesUploaded / relatedTaskProgress.totalFilesToUpload },
-          });
-        }
-      }
-
       if (tasksService.findTask(file.taskId)?.status !== TaskStatus.Cancelled) {
         tasksService.updateTask({
           taskId: file.taskId,
@@ -112,12 +128,20 @@ export const uploadFilesWithTasks = async (props: UploadFilesWithTasksProps): Pr
       logNetworkInfoForUpload({ fileName: file.filecontent.name, fileSize: file.filecontent.size });
       file.onFinishUploadFile?.(driveFileData, file.taskId);
       props.onFileUploadCallback?.(driveFileData);
+
+      if (relatedTaskProgress && file.relatedTaskId) {
+        relatedTaskProgress.filesUploaded += 1;
+        await updateFolderProgress(file.relatedTaskId, relatedTaskProgress).catch((error) =>
+          errorService.reportError(error),
+        );
+      }
     },
 
     onItemFailed: (item, { reason }) => {
       const { taskId } = getFile(item);
       tasksService.updateTask({ taskId, merge: errorMerge(reason) });
       uploadRepository.removeUploadState(taskId).catch((error) => errorService.reportError(error));
+      showFailureDialogOnce(reason);
     },
 
     onItemCancelled: (item) => {
@@ -179,11 +203,6 @@ export const uploadFilesWithTasks = async (props: UploadFilesWithTasksProps): Pr
         };
       }),
     );
-
-    const failureReasons = new Set(failed.map(({ failure }) => failure.reason));
-
-    if (failureReasons.has(UploadFailureReason.NoSpaceLeft)) props.maxSpaceOccupiedCallback();
-    if (failureReasons.has(UploadFailureReason.FileTooLarge)) props.fileSizeExceededCallback?.();
 
     throw failed[0].failure.error;
   }
