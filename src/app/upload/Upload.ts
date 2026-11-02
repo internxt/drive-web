@@ -16,10 +16,12 @@ import { createFileItem, createFolderItem, UploadManager } from './UploadManager
 import { PersistUploadRepository } from 'app/repositories/DatabaseUploadRepository';
 import { IRoot } from 'app/store/slices/storage/types';
 import tasksService from 'app/tasks/services/tasks.service';
-import { TaskStatus, TaskType, UploadFileTask, UploadFolderTask } from 'app/tasks/types';
+import { FailedUploadItem, TaskStatus, TaskType, UploadFileTask, UploadFolderTask } from 'app/tasks/types';
 import { errorMerge } from 'app/tasks/upload/uploadTaskErrors';
 import errorService from 'services/error.service';
 import referralService from 'services/referral.service';
+import { uniqueId } from 'utils/lodash';
+import { toFailedUploadItem } from './failedUploadItem';
 
 interface UploadProps {
   destinationFolderUuid: string;
@@ -37,7 +39,7 @@ interface RootFolderUpload {
   totalItems: number;
   uploadedItems: number;
   isCancelled: boolean;
-  hasFailedItems: boolean;
+  isUploadTracked: boolean;
   createdFolder?: DriveFolderData;
 }
 
@@ -69,6 +71,7 @@ export class Upload {
   private readonly items: UploadItem[];
   private readonly taskIdByItem = new Map<UploadItem, string>();
   private readonly rootFolders = new Map<UploadItem, RootFolderUpload>();
+  private readonly failedItems = new Map<UploadItem, FailedUploadItem>();
 
   constructor(props: UploadProps) {
     this.props = props;
@@ -83,6 +86,11 @@ export class Upload {
     for (const item of this.items) {
       if (item.kind === UploadItemKind.Folder) this.trackRootFolder(item);
       else this.trackFile(item);
+
+      tasksService.updateTask({
+        taskId: this.getTaskIdOf(item),
+        merge: { retry: (failedItem) => this.retry(item, failedItem) },
+      });
     }
   }
 
@@ -124,7 +132,7 @@ export class Upload {
       totalItems: countItemsIn(item.folder),
       uploadedItems: 0,
       isCancelled: false,
-      hasFailedItems: false,
+      isUploadTracked: false,
     });
   }
 
@@ -179,6 +187,7 @@ export class Upload {
     const isFile = item.kind === UploadItemKind.File;
     const isFolder = item.kind === UploadItemKind.Folder;
 
+    this.clearFailure(item);
     this.props.onItemUploaded?.(uploadedItem, getParentFolderUuid(item), isFolder);
 
     if (isFile) {
@@ -219,8 +228,7 @@ export class Upload {
   }
 
   private onItemFailed(item: UploadItem, failure: UploadFailure): void {
-    const rootFolder = this.rootFolders.get(getTopLevelItem(item));
-    if (rootFolder) rootFolder.hasFailedItems = true;
+    this.recordFailure(item, failure);
 
     const taskId = this.getTaskIdOf(item);
     if (!taskId) return;
@@ -267,10 +275,55 @@ export class Upload {
       merge: { status: TaskStatus.Success, itemUUID: { rootFolderUUID: createdFolder.uuid } },
     });
 
-    const hasEverythingUploaded = !rootFolder.hasFailedItems;
-    if (hasEverythingUploaded) {
+    const hasEverythingUploaded = this.getFailuresOf(item).length === 0;
+    const shouldTrackUpload = hasEverythingUploaded && !rootFolder.isUploadTracked;
+    if (shouldTrackUpload) {
+      rootFolder.isUploadTracked = true;
       referralService.trackFolderUpload();
       logNetworkInfoForUpload({ folderName: item.folder.name });
     }
+  }
+
+  private async retry(topLevelItem: UploadItem, pickedFailedItem?: FailedUploadItem): Promise<void> {
+    const failures = this.getFailuresOf(topLevelItem);
+    const failuresToRetry = pickedFailedItem
+      ? failures.filter(([, failedItem]) => failedItem.id === pickedFailedItem.id)
+      : failures;
+
+    const hasNothingToRetry = failuresToRetry.length === 0;
+    if (hasNothingToRetry) return;
+
+    for (const [item, failedItem] of failuresToRetry) this.failedItems.set(item, { ...failedItem, isRetrying: true });
+    this.syncFailedItemsToTask(topLevelItem);
+
+    const taskId = this.getTaskIdOf(topLevelItem);
+    const rootFolder = this.rootFolders.get(topLevelItem);
+    const progress = rootFolder ? tasksService.findTask(taskId)?.progress : 0;
+    tasksService.updateTask({ taskId, merge: { status: TaskStatus.InProcess, subtitle: undefined, progress } });
+
+    const itemsToRetry = failuresToRetry.map(([item]) => item);
+    await this.manager.run(itemsToRetry);
+
+    if (rootFolder) this.finishRootFolder(topLevelItem as UploadFolderItem, rootFolder);
+  }
+
+  private getFailuresOf(topLevelItem: UploadItem): [UploadItem, FailedUploadItem][] {
+    return [...this.failedItems].filter(([item]) => getTopLevelItem(item) === topLevelItem);
+  }
+
+  private recordFailure(item: UploadItem, failure: UploadFailure): void {
+    const failureId = this.failedItems.get(item)?.id ?? uniqueId();
+    this.failedItems.set(item, toFailedUploadItem(failureId, item, failure));
+    this.syncFailedItemsToTask(getTopLevelItem(item));
+  }
+
+  private clearFailure(item: UploadItem): void {
+    const hadFailed = this.failedItems.delete(item);
+    if (hadFailed) this.syncFailedItemsToTask(getTopLevelItem(item));
+  }
+
+  private syncFailedItemsToTask(topLevelItem: UploadItem): void {
+    const failedItems = this.getFailuresOf(topLevelItem).map(([, failedItem]) => failedItem);
+    tasksService.updateTask({ taskId: this.getTaskIdOf(topLevelItem), merge: { failedItems } });
   }
 }

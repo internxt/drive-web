@@ -272,6 +272,16 @@ describe('Uploading files', () => {
     expect(events.onItemCancelled).not.toHaveBeenCalled();
   });
 
+  test('When a file that is already uploading is uploaded again, then it is uploaded only once', async () => {
+    fakeSlowUploads();
+    const report = getUploadFileItem('report');
+    const manager = createManager();
+
+    await failIfHangs(Promise.all([manager.run([report]), manager.run([report])]));
+
+    expect(startedUploadNames()).toEqual(['report']);
+  });
+
   test('When a single file is cancelled, then only that file stops', async () => {
     fakeSlowUploads();
     const [cancelledItem, otherItem] = [getUploadFileItem('cancelled'), getUploadFileItem('other')];
