@@ -9,13 +9,22 @@ import { TaskStatus } from 'app/tasks/types';
 import {
   MAX_CONCURRENT_UPLOADS,
   MAX_UPLOAD_ATTEMPTS,
-  SINGLE_TRANSFER_CONCURRENCY,
   TWENTY_MEGABYTES,
   USE_MULTIPART_THRESHOLD_BYTES,
 } from 'app/network/networkConstants';
-import { OwnerUserAuthenticationData, UploadFailureReason, UploadItemKind } from 'app/network/types';
-import { UploadedItem, UploadFileItem, UploadItem, UploadManagerEvents, UploadResult } from 'app/network/types/upload';
-import { canSucceedOnImmediateRetry, toUploadFailure, UploadFailure } from 'app/network/uploadFailure';
+import { OwnerUserAuthenticationData } from 'app/network/types';
+import {
+  UploadedItem,
+  UploadFailureReason,
+  UploadFileItem,
+  UploadItem,
+  UploadItemKind,
+  UploadManagerEvents,
+  UploadResult,
+} from './types';
+import { canSucceedOnImmediateRetry, toUploadFailure, UploadFailure } from './uploadFailure';
+
+const SINGLE_TRANSFER_CONCURRENCY = 1;
 
 enum UploadPriority {
   SmallFile = 1,
