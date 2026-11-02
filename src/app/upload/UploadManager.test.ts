@@ -137,7 +137,7 @@ describe('Uploading files', () => {
   });
 
   test.each([
-    { problem: 'the plan does not allow it', error: paymentRequiredError, reason: UploadFailureReason.UploadFailed },
+    { problem: 'the plan does not allow it', error: paymentRequiredError, reason: UploadFailureReason.PlanLimit },
     { problem: 'the file is too large', error: fileTooLargeError, reason: UploadFailureReason.FileTooLarge },
   ])('When $problem, then the file is never retried', async ({ error, reason }) => {
     (uploadFile as Mock).mockRejectedValue(error);
@@ -200,6 +200,54 @@ describe('Uploading files', () => {
     expect(uploadFile).not.toHaveBeenCalled();
     expect(events.onItemCancelled).toHaveBeenCalledExactlyOnceWith(report);
     expect(events.onItemFailed).not.toHaveBeenCalled();
+  });
+
+  test('When a file still waiting in the queue is cancelled, then it is never uploaded and the uploading one finishes', async () => {
+    uploadAtMostAtTheSameTime(1);
+    fakeSlowUploads();
+    const [uploading, queued] = [getUploadFileItem('uploading'), getUploadFileItem('queued')];
+    const events: UploadManagerEvents = { onItemCancelled: vi.fn() };
+    const manager = createManager({ events });
+
+    const upload = manager.run([uploading, queued]);
+    await vi.waitFor(() => expect(startedUploadNames()).toEqual(['uploading']));
+    manager.cancelItem(queued);
+    const { succeeded } = await failIfHangs(upload);
+
+    expect(startedUploadNames()).toEqual(['uploading']);
+    expect(succeeded.map(({ item }) => item)).toEqual([uploading]);
+    expect(events.onItemCancelled).toHaveBeenCalledExactlyOnceWith(queued);
+  });
+
+  test('When a file is cancelled and its upload then fails, then it is not retried and is reported as cancelled', async () => {
+    const report = getUploadFileItem('report');
+    const events: UploadManagerEvents = { onItemCancelled: vi.fn(), onItemFailed: vi.fn() };
+    const manager = createManager({ events });
+    (uploadFile as Mock).mockImplementationOnce(() => {
+      manager.cancelItem(report);
+      return Promise.reject(new Error('Server error'));
+    });
+
+    await manager.run([report]);
+
+    expect(uploadFile).toHaveBeenCalledOnce();
+    expect(events.onItemCancelled).toHaveBeenCalledExactlyOnceWith(report);
+    expect(events.onItemFailed).not.toHaveBeenCalled();
+  });
+
+  test('When a file finishes uploading right after being cancelled, then it is reported as uploaded', async () => {
+    const report = getUploadFileItem('report');
+    const events: UploadManagerEvents = { onItemCancelled: vi.fn() };
+    const manager = createManager({ events });
+    (uploadFile as Mock).mockImplementationOnce(() => {
+      manager.cancelItem(report);
+      return Promise.resolve({ uuid: 'report-uuid' });
+    });
+
+    const { succeeded } = await manager.run([report]);
+
+    expect(succeeded.map(({ item }) => item)).toEqual([report]);
+    expect(events.onItemCancelled).not.toHaveBeenCalled();
   });
 
   test('When a single file is cancelled, then only that file stops', async () => {
