@@ -4,6 +4,7 @@ import { UploadFailureReason, UploadItem, UploadItemKind, UploadManagerEvents, U
 import tasksService from 'app/tasks/services/tasks.service';
 import { TaskStatus } from 'app/tasks/types';
 import referralService from 'services/referral.service';
+import errorService from 'services/error.service';
 import * as networkInformation from 'app/network/networkInformation';
 import { UploadManager } from 'app/upload/UploadManager';
 import RetryManager from 'app/network/RetryManager';
@@ -227,6 +228,26 @@ describe('Uploading files with tasks', () => {
     });
   });
 
+  test('When the folder upload state cannot be read after a file inside it finishes, then the file is still shown and leaves the retry list', async () => {
+    vi.spyOn(errorService, 'reportError').mockReturnValue();
+    (uploadRepository.getUploadState as Mock)
+      .mockResolvedValueOnce(undefined)
+      .mockRejectedValueOnce(new Error('IndexedDB error'));
+    RetryManager.addTasks([{ taskId: 'existing-task', type: 'upload' as never, params: {} }]);
+    const onFinishUploadFile = vi.fn();
+    const relatedTaskProgress = { filesUploaded: 0, totalFilesToUpload: 4 };
+    const { events, items } = await runUpload(
+      [buildFile({ taskId: 'existing-task', relatedTaskId: 'related-task', onFinishUploadFile })],
+      { relatedTaskProgress },
+    );
+
+    await events.onItemSucceeded?.(items[0], { uuid: 'file-uuid' } as never);
+
+    expect(onFinishUploadFile).toHaveBeenCalledOnce();
+    expect(RetryManager.getTasks()).toEqual([]);
+    expect(relatedTaskProgress.filesUploaded).toBe(1);
+  });
+
   test('When an upload fails, then the task shows an error message matching the cause', async () => {
     (tasksService.create as Mock).mockReturnValue('t1');
     const { events, items } = await runUpload([buildFile()]);
@@ -300,12 +321,17 @@ describe('Uploading files with tasks', () => {
       reason: UploadFailureReason.FileTooLarge,
       callback: 'fileSizeExceededCallback',
     },
-  ] as const)('When $problem, then the user is warned about it', async ({ reason, callback }) => {
-    const warn = vi.fn();
-    failWith({ reason });
+  ] as const)(
+    'When $problem, then the user is warned as soon as a file fails and only once',
+    async ({ reason, callback }) => {
+      const warn = vi.fn();
+      const { events, items } = await runUpload([buildFile(), buildFile()], { [callback]: warn });
+      const failure = { error: new Error('failed'), reason, isRetryable: false };
 
-    await expect(runUpload([buildFile()], { [callback]: warn })).rejects.toThrow();
+      events.onItemFailed?.(items[0], failure);
+      events.onItemFailed?.(items[1], failure);
 
-    expect(warn).toHaveBeenCalledOnce();
-  });
+      expect(warn).toHaveBeenCalledOnce();
+    },
+  );
 });
