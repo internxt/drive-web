@@ -3,7 +3,7 @@ import {
   canItemDrop,
   getItemsToMoveWhenNotSelected,
   getItemsToMoveWhenSelected,
-  onItemDropped,
+  createOnItemDropped,
 } from './BreadcrumbsHelper';
 import { BreadcrumbItemData } from '@internxt/ui';
 import { DriveItemData } from 'app/drive/types';
@@ -19,10 +19,11 @@ import errorService from 'services/error.service';
 vi.mock('app/store/slices/storage/storage.thunks', () => ({
   default: {
     moveItemsThunk: vi.fn(),
-    uploadItemsThunk: vi.fn(),
-    uploadFolderThunk: vi.fn(),
   },
 }));
+
+const uploadItems = vi.fn(async () => undefined);
+const onItemDropped = createOnItemDropped(uploadItems);
 
 vi.mock('app/store/slices/storage/storage.thunks/renameItemsThunk', () => ({
   getCollisionGroups: vi.fn(async (groups: { destinationUuid: string; items: unknown[] }[]) =>
@@ -151,11 +152,12 @@ describe('onItemDropped', () => {
       getItem: () => draggedItem,
     } as unknown as DropTargetMonitor;
 
-    vi.mocked(transformDraggedItems).mockResolvedValue({ rootList: [], files: ['file1'] } as any);
+    const droppedFile = new File(['content'], 'file1');
+    vi.mocked(transformDraggedItems).mockResolvedValue({ rootList: [], files: [droppedFile] });
 
     await onItemDropped(item, namePath, false, [], mockDispatch)(draggedItem, monitor);
 
-    expect(storageThunks.uploadItemsThunk).toHaveBeenCalled();
+    expect(uploadItems).toHaveBeenCalledWith({ destinationFolderUuid: item.uuid, roots: [], files: [droppedFile] });
   });
 
   it('should notify the upload failure when the dropped items cannot be read', async () => {
@@ -174,7 +176,7 @@ describe('onItemDropped', () => {
     expect(notificationsService.show).toHaveBeenCalledWith(
       expect.objectContaining({ text: 'File could not be read', type: ToastType.Error }),
     );
-    expect(storageThunks.uploadItemsThunk).not.toHaveBeenCalled();
+    expect(uploadItems).not.toHaveBeenCalled();
   });
 });
 

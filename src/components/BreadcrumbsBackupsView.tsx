@@ -4,12 +4,13 @@ import { backupsActions } from 'views/Backups/store/backupsSlice';
 import { t } from 'i18next';
 import BreadcrumbsMenuBackups from './BreadcrumbsMenuBackups';
 import { storageSelectors } from 'app/store/slices/storage';
-import { canItemDrop, onItemDropped } from './BreadcrumbsHelper';
+import { canItemDrop, createOnItemDropped } from './BreadcrumbsHelper';
 import iconService from 'app/drive/services/icon.service';
 import { DragAndDropType } from 'app/core/types';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { BreadcrumbItemData, Breadcrumbs } from '@internxt/ui';
 import { useDrop } from 'react-dnd';
+import { useUploadItems } from 'app/upload/useUploadItems';
 
 interface BreadcrumbsBackupsViewProps {
   backupsAsFoldersPath: DriveFolderData[];
@@ -20,6 +21,7 @@ interface BreadcrumbsBackupsViewProps {
 const BreadcrumbsBackupsView = ({ backupsAsFoldersPath, goToFolder, goToRootFolder }: BreadcrumbsBackupsViewProps) => {
   const currentDevice = useAppSelector((state) => state.backups.currentDevice);
   const dispatch = useAppDispatch();
+  const { uploadItems } = useUploadItems();
   const namePath = useAppSelector((state) => state.storage.namePath);
   const isSomeItemSelected = useAppSelector(storageSelectors.isSomeItemSelected);
   const selectedItems = useAppSelector((state) => state.storage.selectedItems);
@@ -72,7 +74,7 @@ const BreadcrumbsBackupsView = ({ backupsAsFoldersPath, goToFolder, goToRootFold
       namePath={namePath}
       isSomeItemSelected={isSomeItemSelected}
       selectedItems={selectedItems}
-      onItemDropped={onItemDropped}
+      onItemDropped={createOnItemDropped(uploadItems)}
       canItemDrop={canItemDrop}
       dispatch={dispatch}
       acceptedTypes={[NativeTypes.FILE, DragAndDropType.DriveItem]}
