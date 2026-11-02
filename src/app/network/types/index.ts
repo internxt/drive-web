@@ -35,17 +35,6 @@ export interface DownloadChunkPayload {
   options?: DownloadOptions;
 }
 
-export enum UploadItemKind {
-  File = 'file',
-}
-
-export enum UploadFailureReason {
-  ConnectionLost = 'connection-lost',
-  NoSpaceLeft = 'no-space',
-  FileTooLarge = 'file-too-large',
-  UploadFailed = 'upload-failed',
-}
-
 export type UploadErrorReason = 'connection-lost' | 'upload-failed';
 
 export interface OwnerUserAuthenticationData {
