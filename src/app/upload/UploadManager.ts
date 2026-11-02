@@ -129,6 +129,7 @@ export class UploadManager {
   private readonly largeFilesWaitingForFolders: UploadItem[] = [];
   private readonly cancelledItems = new WeakSet<UploadItem>();
   private readonly abortActiveUploadOf = new Map<UploadItem, () => void>();
+  private readonly itemsInProgress = new Set<UploadItem>();
   private result: UploadResult = { succeeded: [], failed: [] };
 
   private readonly uploadQueue: AsyncPriorityQueue<UploadItem> = priorityQueue<UploadItem>((item, done) => {
@@ -136,6 +137,9 @@ export class UploadManager {
       .catch((error) => errorService.reportError(error))
       .finally(() => {
         if (isFolderItem(item)) this.finishFolder();
+
+        const isWaitingForFolders = this.largeFilesWaitingForFolders.includes(item);
+        if (!isWaitingForFolders) this.itemsInProgress.delete(item);
         done();
       });
   }, MAX_CONCURRENT_UPLOADS);
@@ -154,10 +158,12 @@ export class UploadManager {
       this.uploadQueue.concurrency = MAX_CONCURRENT_UPLOADS;
     }
 
-    const hasNothingToUpload = items.length === 0;
-    if (hasNothingToUpload) return this.result;
+    const itemsToUpload = items.filter((item) => !this.itemsInProgress.has(item));
+    const hasNothingToWaitFor = itemsToUpload.length === 0 && this.uploadQueue.idle();
+    if (hasNothingToWaitFor) return this.result;
 
-    this.queue(items);
+    itemsToUpload.forEach((item) => this.itemsInProgress.add(item));
+    this.queue(itemsToUpload);
     await this.uploadQueue.drain();
 
     return this.result;
