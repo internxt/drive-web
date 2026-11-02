@@ -1,6 +1,6 @@
 import { ErrorMessages, HTTP_CODE_ERRORS, HTTP_STATUS_CODES } from 'app/core/constants';
 import errorService from 'services/error.service';
-import { ConnectionLostError } from './requests';
+import { ConnectionLostError } from 'app/network/requests';
 import { UploadFailureReason } from './types';
 
 export interface UploadFailure {

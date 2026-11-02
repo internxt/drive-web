@@ -9,8 +9,7 @@ import { TWENTY_MEGABYTES, USE_MULTIPART_THRESHOLD_BYTES } from 'app/network/net
 import { QueueUtilsService } from 'utils/queueUtils';
 import { getUploadFileItem, getUploadRepository } from 'testUtils/fixtures/upload.fixtures';
 import { UploadManager } from './UploadManager';
-import { UploadItem, UploadManagerEvents } from 'app/network/types/upload';
-import { UploadFailureReason } from 'app/network/types';
+import { UploadFailureReason, UploadItem, UploadManagerEvents } from './types';
 
 vi.mock('app/drive/services/file.service/uploadFile', () => ({ default: vi.fn() }));
 
