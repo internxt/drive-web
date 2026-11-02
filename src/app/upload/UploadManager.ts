@@ -326,7 +326,11 @@ export class UploadManager {
 
     const failure = toUploadFailure(error);
     const isStorageFull = failure.reason === UploadFailureReason.NoSpaceLeft;
-    if (isStorageFull) this.storageFullFailure = failure;
+    const isFirstTimeStorageIsFull = isStorageFull && !this.storageFullFailure;
+    if (isFirstTimeStorageIsFull) {
+      this.storageFullFailure = failure;
+      await notifyIgnoringListenerErrors(() => this.events?.onStorageFull?.());
+    }
 
     errorService.reportError(failure.error);
     await this.fail(item, failure);

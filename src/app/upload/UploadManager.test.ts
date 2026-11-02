@@ -185,6 +185,28 @@ describe('Uploading files', () => {
     expect(failed.every(({ failure }) => failure.reason === UploadFailureReason.NoSpaceLeft)).toBe(true);
   });
 
+  test('When several files fail because the storage is full, then it is announced only once', async () => {
+    uploadAtMostAtTheSameTime(2);
+    (uploadFile as Mock).mockRejectedValue(noSpaceLeftError);
+    const events: UploadManagerEvents = { onStorageFull: vi.fn() };
+    const items = ['report', 'invoice', 'photo'].map((name) => getUploadFileItem(name));
+
+    await createManager({ events }).run(items);
+
+    expect(events.onStorageFull).toHaveBeenCalledOnce();
+  });
+
+  test('When the storage is still full on a new upload, then it is announced again', async () => {
+    (uploadFile as Mock).mockRejectedValue(noSpaceLeftError);
+    const events: UploadManagerEvents = { onStorageFull: vi.fn() };
+    const manager = createManager({ events });
+
+    await manager.run([getUploadFileItem('report')]);
+    await manager.run([getUploadFileItem('invoice')]);
+
+    expect(events.onStorageFull).toHaveBeenCalledTimes(2);
+  });
+
   test('When a file is cancelled while its paused state is being read, then it is never uploaded and is reported as cancelled', async () => {
     const report = getUploadFileItem('report');
     const events: UploadManagerEvents = { onItemCancelled: vi.fn(), onItemFailed: vi.fn() };
