@@ -1,5 +1,4 @@
 export enum RetryableTaskType {
-  Upload = 'upload',
   Download = 'download',
 }
 
@@ -26,29 +25,15 @@ class RetryManager {
   private tasksToRetry: RetryableTask[] = [];
   private listeners: (() => void)[] = [];
 
-  addTask(task: RetryableTask) {
-    this.tasksToRetry.push({ ...task, status: RetryableTaskStatus.Failed });
-    this.notify();
-  }
-
   /**
    * Adds tasks to the retry list, marking them as failed.
    * A task can only appear once per taskId: re-adding a failed task
    * replaces its entry instead of duplicating it in the retry list.
-   * A re-added task without a relatedTaskId keeps the one of the entry it replaces.
    */
   addTasks(tasks: RetryableTask[]) {
-    const incomingTaskIds = new Set(tasks.map((task) => task.taskId).filter(Boolean));
-    const tasksWithStatus = tasks.map((task) => {
-      const previousRelatedTaskId = this.getTasksById(task.taskId)[0]?.params?.relatedTaskId;
-      return {
-        ...task,
-        params: { ...task.params, relatedTaskId: task.params?.relatedTaskId ?? previousRelatedTaskId },
-        status: RetryableTaskStatus.Failed,
-      };
-    });
+    const incomingTaskIds = new Set(tasks.map((task) => task.taskId));
     this.tasksToRetry = this.tasksToRetry.filter((task) => !incomingTaskIds.has(task.taskId));
-    this.tasksToRetry.push(...tasksWithStatus);
+    this.tasksToRetry.push(...tasks.map((task) => ({ ...task, status: RetryableTaskStatus.Failed })));
     this.notify();
   }
 
@@ -59,21 +44,9 @@ class RetryManager {
     this.notify();
   }
 
-  removeTask(taskId: string) {
-    this.tasksToRetry = this.tasksToRetry.filter((task) => task.taskId !== taskId);
-    this.notify();
-  }
-
   removeTaskByIdAndParams(taskId: string, where: ParamsFilter) {
     this.tasksToRetry = this.tasksToRetry.filter((task) => !matchesTask(task, taskId, where));
 
-    this.notify();
-  }
-
-  removeTasksOfRelatedTask(relatedTaskId: string) {
-    this.tasksToRetry = this.tasksToRetry.filter(
-      (task) => (task.params?.relatedTaskId ?? task.taskId) !== relatedTaskId,
-    );
     this.notify();
   }
 
@@ -82,16 +55,12 @@ class RetryManager {
     this.notify();
   }
 
-  getTasks(type?: RetryableTaskType) {
-    return type ? this.tasksToRetry.filter((task) => task.type === type) : this.tasksToRetry;
+  getTasks() {
+    return this.tasksToRetry;
   }
 
   getTasksById(id: string) {
     return this.tasksToRetry.filter((task) => task.taskId === id);
-  }
-
-  isRetryingTask(taskId: string): boolean {
-    return this.tasksToRetry.some((task) => task.taskId === taskId);
   }
 
   subscribe(listener: () => void) {

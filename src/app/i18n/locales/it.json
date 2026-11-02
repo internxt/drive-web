@@ -1136,9 +1136,6 @@
     "fetchingFolderContent": "Errore nel recupero del contenuto della cartella",
     "togglingFavorite": "Si è verificato un errore durante l'aggiornamento dei preferiti",
     "togglingSomeFavorites": "Non è stato possibile aggiornare alcuni preferiti",
-    "uploadingFolder": "Errore nel caricamento della cartella",
-    "uploadingFile": "Errore nel caricamento del file: {{reason}}",
-    "uploadingItems": "Non è stato possibile caricare alcuni elementi",
     "downloadingFile": "Errore nel download del file: {{message}}",
     "downloadingFolder": "Errore nel download della cartella: {{message}}",
     "movingItemInsideItself": "Non è possibile spostare una cartella al suo interno",
@@ -1379,7 +1376,6 @@
       "upload-failed": "Caricamento fallito"
     },
     "generalErrorMessages": {
-      "retryUploadFailed": "Qualcosa è andato storto nel riprovare a caricare. Prova a caricare di nuovo",
       "retryDownloadFailed": "Qualcosa è andato storto nel tentativo di ripetere il download. Riprova il download.",
       "openUploadedFileFailed": "Qualcosa è andato storto nel tentativo di aprire il file",
       "openUploadedFolderFailed": "Qualcosa è andato storto nel tentativo di navigare nella cartella"

@@ -2,18 +2,11 @@ import { describe, it, test, expect, vi, beforeEach } from 'vitest';
 import RetryManager, { RetryableTask, RetryableTaskStatus, RetryableTaskType } from './RetryManager';
 
 describe('RetryManager', () => {
-  const sampleTask: RetryableTask = { taskId: 'task1', type: RetryableTaskType.Upload, params: {} };
+  const sampleTask: RetryableTask = { taskId: 'task1', type: RetryableTaskType.Download, params: {} };
   const anotherTask: RetryableTask = { taskId: 'task2', type: RetryableTaskType.Download, params: {} };
 
   beforeEach(() => {
     RetryManager.clearTasks();
-  });
-
-  it('should add a task with failed status', () => {
-    RetryManager.addTask(sampleTask);
-    const tasks = RetryManager.getTasks();
-    expect(tasks).toHaveLength(1);
-    expect(tasks[0]).toEqual({ ...sampleTask, status: RetryableTaskStatus.Failed });
   });
 
   it('should add multiple tasks with failed status', () => {
@@ -35,14 +28,14 @@ describe('RetryManager', () => {
   });
 
   it('should change the status of a task', () => {
-    RetryManager.addTask(sampleTask);
+    RetryManager.addTasks([sampleTask]);
     RetryManager.changeStatus('task1', RetryableTaskStatus.Retrying);
     const tasks = RetryManager.getTasks();
     expect(tasks[0].status).toBe(RetryableTaskStatus.Retrying);
   });
 
   it('should not change status if taskId does not exist', () => {
-    RetryManager.addTask(sampleTask);
+    RetryManager.addTasks([sampleTask]);
     RetryManager.changeStatus('invalidTask', RetryableTaskStatus.Retrying);
     const tasks = RetryManager.getTasks();
     expect(tasks[0].status).toBe(RetryableTaskStatus.Failed);
@@ -73,63 +66,6 @@ describe('RetryManager', () => {
     expect(getDownloadStatuses()).toEqual([RetryableTaskStatus.Retrying, RetryableTaskStatus.Retrying]);
   });
 
-  it('should remove a task by taskId', () => {
-    RetryManager.addTasks([sampleTask, anotherTask]);
-    RetryManager.removeTask('task1');
-    const tasks = RetryManager.getTasks();
-    expect(tasks).toHaveLength(1);
-    expect(tasks[0].taskId).toBe('task2');
-  });
-
-  describe('when removing the entries of a related task', () => {
-    const buildTask = (taskId: string, relatedTaskId?: string): RetryableTask => ({
-      taskId,
-      type: RetryableTaskType.Upload,
-      params: relatedTaskId ? { relatedTaskId } : {},
-    });
-    const remainingTaskIds = () => RetryManager.getTasks().map((task) => task.taskId);
-
-    beforeEach(() => {
-      RetryManager.addTasks([
-        buildTask('folder-file-a', 'folder'),
-        buildTask('folder-file-b', 'folder'),
-        buildTask('folder'),
-        buildTask('other-folder-file', 'other-folder'),
-        buildTask('standalone-file'),
-      ]);
-    });
-
-    test('when entries belong to the task, then they are removed and the other entries are kept', () => {
-      RetryManager.removeTasksOfRelatedTask('folder');
-
-      expect(remainingTaskIds()).toEqual(['other-folder-file', 'standalone-file']);
-    });
-
-    test('when an entry has no related task and its own id matches, then it is removed', () => {
-      RetryManager.removeTasksOfRelatedTask('standalone-file');
-
-      expect(remainingTaskIds()).toEqual(['folder-file-a', 'folder-file-b', 'folder', 'other-folder-file']);
-    });
-
-    test('when an entry is re-added without a related task, then it keeps the replaced entry related task', () => {
-      RetryManager.addTasks([buildTask('folder-file-a')]);
-
-      RetryManager.removeTasksOfRelatedTask('folder');
-
-      expect(remainingTaskIds()).toEqual(['other-folder-file', 'standalone-file']);
-    });
-
-    test('when entries are removed, then listeners are notified', () => {
-      const listener = vi.fn();
-      RetryManager.subscribe(listener);
-
-      RetryManager.removeTasksOfRelatedTask('folder');
-
-      expect(listener).toHaveBeenCalledTimes(1);
-      RetryManager.unsubscribe(listener);
-    });
-  });
-
   it('should clear all tasks', () => {
     RetryManager.addTasks([sampleTask, anotherTask]);
     RetryManager.clearTasks();
@@ -137,26 +73,16 @@ describe('RetryManager', () => {
     expect(tasks).toHaveLength(0);
   });
 
-  it('should return true if a task is being retried', () => {
-    RetryManager.addTask(sampleTask);
-    expect(RetryManager.isRetryingTask('task1')).toBe(true);
-  });
-
-  it('should return false if a task is not being retried', () => {
-    RetryManager.addTask(sampleTask);
-    expect(RetryManager.isRetryingTask('nonExistentTask')).toBe(false);
-  });
-
   it('should notify listeners on state change', () => {
     const listener = vi.fn();
     RetryManager.subscribe(listener);
-    RetryManager.addTask(sampleTask);
+    RetryManager.addTasks([sampleTask]);
     expect(listener).toHaveBeenCalledTimes(1);
 
     RetryManager.changeStatus('task1', RetryableTaskStatus.Retrying);
     expect(listener).toHaveBeenCalledTimes(2);
 
-    RetryManager.removeTask('task1');
+    RetryManager.clearTasks();
     expect(listener).toHaveBeenCalledTimes(3);
   });
 
@@ -164,7 +90,7 @@ describe('RetryManager', () => {
     const listener = vi.fn();
     RetryManager.subscribe(listener);
     RetryManager.unsubscribe(listener);
-    RetryManager.addTask(sampleTask);
+    RetryManager.addTasks([sampleTask]);
     expect(listener).not.toHaveBeenCalled();
   });
 
@@ -174,58 +100,13 @@ describe('RetryManager', () => {
     RetryManager.subscribe(listener1);
     RetryManager.subscribe(listener2);
 
-    RetryManager.addTask(sampleTask);
+    RetryManager.addTasks([sampleTask]);
     expect(listener1).toHaveBeenCalledTimes(1);
     expect(listener2).toHaveBeenCalledTimes(1);
 
     RetryManager.unsubscribe(listener1);
-    RetryManager.addTask(anotherTask);
+    RetryManager.addTasks([anotherTask]);
     expect(listener1).toHaveBeenCalledTimes(1);
     expect(listener2).toHaveBeenCalledTimes(2);
-  });
-
-  it('should return all tasks if no type is specified', () => {
-    RetryManager.addTasks([
-      { taskId: 'task1', type: RetryableTaskType.Upload, params: {} },
-      { taskId: 'task2', type: RetryableTaskType.Download, params: {} },
-    ]);
-
-    const tasks = RetryManager.getTasks();
-    expect(tasks).toHaveLength(2);
-    expect(tasks).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ taskId: 'task1', type: RetryableTaskType.Upload }),
-        expect.objectContaining({ taskId: 'task2', type: RetryableTaskType.Download }),
-      ]),
-    );
-  });
-
-  it('should return only upload tasks when type is upload', () => {
-    RetryManager.addTasks([
-      { taskId: 'task1', type: RetryableTaskType.Upload, params: {} },
-      { taskId: 'task2', type: RetryableTaskType.Download, params: {} },
-    ]);
-
-    const tasks = RetryManager.getTasks(RetryableTaskType.Upload);
-    expect(tasks).toHaveLength(1);
-    expect(tasks[0]).toEqual(expect.objectContaining({ taskId: 'task1', type: RetryableTaskType.Upload }));
-  });
-
-  it('should return only download tasks when type is download', () => {
-    RetryManager.addTasks([
-      { taskId: 'task1', type: RetryableTaskType.Upload, params: {} },
-      { taskId: 'task2', type: RetryableTaskType.Download, params: {} },
-    ]);
-
-    const tasks = RetryManager.getTasks(RetryableTaskType.Download);
-    expect(tasks).toHaveLength(1);
-    expect(tasks[0]).toEqual(expect.objectContaining({ taskId: 'task2', type: RetryableTaskType.Download }));
-  });
-
-  it('should return an empty array if no tasks match the specified type', () => {
-    RetryManager.addTask({ taskId: 'task1', type: RetryableTaskType.Upload, params: {} });
-
-    const tasks = RetryManager.getTasks(RetryableTaskType.Download);
-    expect(tasks).toHaveLength(0);
   });
 });

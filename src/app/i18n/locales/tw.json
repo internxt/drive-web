@@ -1136,9 +1136,6 @@
     "fetchingFolderContent": "獲取文件夾內容時出錯",
     "togglingFavorite": "更新我的最愛時發生錯誤",
     "togglingSomeFavorites": "部分我的最愛無法更新",
-    "uploadingFolder": "上傳文件夾時出錯",
-    "uploadingFile": "上傳文件時出錯：{{reason}}",
-    "uploadingItems": "部分元素無法上傳",
     "downloadingFile": "下載文件時出錯：{{message}}",
     "downloadingFolder": "下載文件夾時出錯：{{message}}",
     "movingItemInsideItself": "您不能將文件夾移動到其內部",
@@ -1379,7 +1376,6 @@
       "upload-failed": "上傳失敗"
     },
     "generalErrorMessages": {
-      "retryUploadFailed": "重試上傳時出現問題。請重新上傳",
       "retryDownloadFailed": "重試下載時出現問題。請重新下載",
       "openUploadedFileFailed": "打開檔案時出現問題",
       "openUploadedFolderFailed": "打開資料夾時出現問題"

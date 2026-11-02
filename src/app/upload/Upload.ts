@@ -137,8 +137,6 @@ export class Upload {
   }
 
   private trackFile(item: UploadFileItem): void {
-    const { ownerUserAuthenticationData, destinationFolderUuid } = this.props;
-
     const taskId = tasksService.create<UploadFileTask>({
       action: TaskType.UploadFile,
       item: { uploadFile: item.file.content, parentFolderId: item.file.parentFolderId },
@@ -147,11 +145,6 @@ export class Upload {
       isFileNameValidated: true,
       showNotification: true,
       cancellable: true,
-      sharedItemAuthenticationData: ownerUserAuthenticationData && {
-        ownerUserAuthenticationData,
-        isDeepFolder: false,
-        currentFolderId: destinationFolderUuid,
-      },
       stop: () => Promise.resolve(this.manager.cancelItem(item)),
     });
 

@@ -1115,9 +1115,6 @@
     "fetchingFolderContent": "Ошибка при получении содержимого папки",
     "togglingFavorite": "Произошла ошибка при обновлении избранного",
     "togglingSomeFavorites": "Не удалось обновить некоторые элементы избранного",
-    "uploadingFolder": "Ошибка при загрузке папки",
-    "uploadingFile": "Ошибка при загрузке файла: {{reason}}",
-    "uploadingItems": "Некоторые элементы не удалось загрузить",
     "downloadingFile": "Ошибка при загрузке файла: {{message}}",
     "downloadingFolder": "Ошибка при загрузке папки: {{message}}",
     "movingItemInsideItself": "Вы не можете переместить папку внутрь самой себя",
@@ -1358,7 +1355,6 @@
       "upload-failed": "Не удалось загрузить"
     },
     "generalErrorMessages": {
-      "retryUploadFailed": "Что-то пошло не так при повторной попытке загрузки. Попробуйте загрузить снова",
       "retryDownloadFailed": "Что-то пошло не так при повторной попытке загрузки. Повторите попытку загрузки.",
       "openUploadedFileFailed": "Что-то пошло не так при попытке открыть файл",
       "openUploadedFolderFailed": "Что-то пошло не так при попытке перейти к папке"

@@ -23,17 +23,13 @@ import { moveItemsThunk, moveItemsThunkExtraReducers } from './moveItemsThunk';
 import { renameItemsThunk, renameItemsThunkExtraReducers } from './renameItemsThunk';
 import { resetNamePathThunk, resetNamePathThunkExtraReducers } from './resetNamePathThunk';
 import { updateItemMetadataThunk, updateItemMetadataThunkExtraReducers } from './updateItemMetadataThunk';
-import { uploadFolderThunk, uploadFolderThunkExtraReducers } from './uploadFolderThunk';
-import { uploadItemsThunk, uploadItemsThunkExtraReducers, uploadSharedItemsThunk } from './uploadItemsThunk';
 
 const storageThunks = {
   initializeThunk,
   resetNamePathThunk,
-  uploadItemsThunk,
   fetchPaginatedFolderContentThunk,
   deleteItemsThunk,
   goToFolderThunk,
-  uploadFolderThunk,
   updateItemMetadataThunk,
   fetchRecentsThunk,
   fetchFavoritesThunk,
@@ -42,17 +38,14 @@ const storageThunks = {
   moveItemsThunk,
   fetchDeletedThunk,
   renameItemsThunk,
-  uploadSharedItemsThunk,
 };
 
 export const storageExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
   initializeThunkExtraReducers(builder);
   resetNamePathThunkExtraReducers(builder);
-  uploadItemsThunkExtraReducers(builder);
   fetchFolderContentThunkExtraReducers(builder);
   deleteItemsThunkExtraReducers(builder);
   goToFolderThunkExtraReducers(builder);
-  uploadFolderThunkExtraReducers(builder);
   updateItemMetadataThunkExtraReducers(builder);
   fetchRecentsThunkExtraReducers(builder);
   fetchFavoritesThunkExtraReducers(builder);

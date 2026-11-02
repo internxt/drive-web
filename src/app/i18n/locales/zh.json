@@ -1136,9 +1136,6 @@
     "fetchingFolderContent": "获取文件夹内容时出错",
     "togglingFavorite": "更新收藏时出错",
     "togglingSomeFavorites": "部分收藏无法更新",
-    "uploadingFolder": "上传文件夹时出错",
-    "uploadingFile": "上传文件时出错: {{reason}}",
-    "uploadingItems": "部分元素无法上传",
     "downloadingFile": "下载文件时出错: {{message}}",
     "downloadingFolder": "下载文件夹时出错: {{message}}",
     "movingItemInsideItself": "您无法移动文件夹本身",
@@ -1379,7 +1376,6 @@
       "upload-failed": "上传失败"
     },
     "generalErrorMessages": {
-      "retryUploadFailed": "重试上传时出了问题。请再次上传",
       "retryDownloadFailed": "重试下载时出现问题。请重试下载",
       "openUploadedFileFailed": "尝试打开文件时出现问题",
       "openUploadedFolderFailed": "尝试访问文件夹时出现问题"

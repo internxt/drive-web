@@ -1115,9 +1115,6 @@
     "fetchingFolderContent": "Erreur dans l'extraction du contenu d'un dossier",
     "togglingFavorite": "Une erreur s'est produite lors de la mise à jour des favoris",
     "togglingSomeFavorites": "Certains favoris n'ont pas pu être mis à jour",
-    "uploadingFolder": "Erreur lors du téléchargement d'un dossier",
-    "uploadingFile": "Erreur lors du téléchargement du fichier : {{reason}}",
-    "uploadingItems": "Certains éléments n'ont pas pu être téléchargés",
     "downloadingFile": "Erreur de téléchargement du fichier : {{message}}",
     "downloadingFolder": "Erreur de téléchargement du dossier : {{message}}",
     "movingItemInsideItself": "Vous ne pouvez pas déplacer un dossier à l'intérieur de lui-même",
@@ -1358,7 +1355,6 @@
       "upload-failed": "Échec du téléchargement"
     },
     "generalErrorMessages": {
-      "retryUploadFailed": "Quelque chose s'est mal passé en réessayant de télécharger. Essayez de télécharger à nouveau",
       "retryDownloadFailed": "Quelque chose s'est mal passé lors de la nouvelle tentative de téléchargement. Veuillez réessayer le téléchargement.",
       "openUploadedFileFailed": "Quelque chose s'est mal passé lors de la tentative d'ouverture du fichier",
       "openUploadedFolderFailed": "Quelque chose s'est mal passé lors de la tentative d'accès au dossier"

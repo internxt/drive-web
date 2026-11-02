@@ -1115,9 +1115,6 @@
     "fetchingFolderContent": "Fehler beim Abrufen des Ordnerinhalts",
     "togglingFavorite": "Beim Aktualisieren der Favoriten ist ein Fehler aufgetreten",
     "togglingSomeFavorites": "Einige Favoriten konnten nicht aktualisiert werden",
-    "uploadingFolder": "Fehler beim Hochladen des Ordners",
-    "uploadingFile": "Fehler beim Hochladen der Datei: {{reason}}",
-    "uploadingItems": "Einige Elemente konnten nicht hochgeladen werden",
     "downloadingFile": "Fehler beim Herunterladen der Datei: {{message}}",
     "downloadingFolder": "Fehler beim Herunterladen des Ordners: {{message}}",
     "movingItemInsideItself": "Du kannst einen Ordner nicht in sich selbst verschieben",
@@ -1355,7 +1352,6 @@
       "upload-failed": "Upload fehlgeschlagen"
     },
     "generalErrorMessages": {
-      "retryUploadFailed": "Beim erneuten Hochladen ist etwas schiefgegangen. Versuche es erneut",
       "retryDownloadFailed": "Etwas ist schief gelaufen beim erneuten Versuch des Downloads. Versuche den Download erneut.",
       "openUploadedFileFailed": "Etwas ist schief gelaufen beim Versuch, die Datei zu öffnen",
       "openUploadedFolderFailed": "Etwas ist schief gelaufen beim Versuch, zum Ordner zu navigieren"

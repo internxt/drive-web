@@ -11,8 +11,6 @@ vi.mock('app/drive/services/new-storage.service', () => ({
   },
 }));
 
-vi.mock('../storage.thunks/uploadFolderThunk');
-
 describe('getUniqueFolderName', () => {
   const parentFolderId = 'parent123';
 

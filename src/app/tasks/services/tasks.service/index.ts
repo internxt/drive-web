@@ -109,7 +109,6 @@ class TaskManagerService {
       action: task.action,
       status: task.status,
       item: this.parseNotifcationItem(task),
-      sharedItemAuthenticationData: task.sharedItemAuthenticationData,
       fileType: task?.fileType,
       title: this.getTaskNotificationTitle(task),
       subtitle: this.getTaskNotificationSubtitle(task),

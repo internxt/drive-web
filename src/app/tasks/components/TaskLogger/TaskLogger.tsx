@@ -27,12 +27,9 @@ const TaskLogger = (): JSX.Element => {
   const filesToRetryGroupedByTask = useMemo(
     () =>
       filesToRetry.reduce<Record<string, RetryableTask[]>>((acc, file) => {
-        const relatedTaskId = file.params?.relatedTaskId ?? file.taskId;
-        if (relatedTaskId) {
-          if (!acc[relatedTaskId]) {
-            acc[relatedTaskId] = [];
-          }
-          acc[relatedTaskId].push(file);
+        if (file.taskId) {
+          acc[file.taskId] ??= [];
+          acc[file.taskId].push(file);
         }
         return acc;
       }, {}),

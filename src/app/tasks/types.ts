@@ -106,7 +106,6 @@ export interface UploadFileTask extends BaseTask {
   fileType: string;
   isFileNameValidated: boolean;
   item: { uploadFile: File; parentFolderId: string };
-  sharedItemAuthenticationData?: SharedItemAuthenticationData;
 }
 
 export interface UploadFolderTask extends BaseTask {
@@ -162,7 +161,6 @@ export type TaskData = (
 } & { item?: UploadFileData } & { fileType?: string } & {
   item?: IRoot;
   parentFolderId?: number;
-  sharedItemAuthenticationData?: SharedItemAuthenticationData;
   itemUUID?: { rootFolderUUID?: string; fileUUID?: string };
 };
 
@@ -170,17 +168,6 @@ export type DownloadFilesData = { name: string; type: string; items?: DriveItemD
 export type DownloadFolderData = { id: number; name: string; type: string; isFolder: boolean };
 export type UploadFileData = { uploadFile: File; parentFolderId: string };
 export type UploadFolderData = { folder: IRoot; parentFolderId: string };
-export type SharedItemAuthenticationData = {
-  currentFolderId: string;
-  ownerUserAuthenticationData: {
-    token: string;
-    bridgeUser: string;
-    bridgePass: string;
-    encryptionKey: string;
-    bucketId: string;
-  };
-  isDeepFolder: boolean;
-};
 
 export interface TaskNotification {
   taskId: string;
@@ -188,7 +175,6 @@ export interface TaskNotification {
   status: TaskStatus;
   title: string;
   item?: DownloadFilesData | DownloadFolderData | UploadFileData | UploadFolderData;
-  sharedItemAuthenticationData?: SharedItemAuthenticationData;
   itemUUID?: { rootFolderUUID?: string; fileUUID?: string };
   fileType?: string;
   subtitle: string;

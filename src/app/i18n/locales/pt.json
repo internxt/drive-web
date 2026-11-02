@@ -1146,9 +1146,6 @@
     "fetchingFolderContent": "Erro ao carregar o conteúdo da pasta",
     "togglingFavorite": "Ocorreu um erro ao atualizar os favoritos",
     "togglingSomeFavorites": "Não foi possível atualizar alguns favoritos",
-    "uploadingFolder": "Erro ao enviar a pasta",
-    "uploadingFile": "Erro ao enviar o arquivo: {{reason}}",
-    "uploadingItems": "Não foi possível enviar alguns dos elementos",
     "downloadingFile": "Erro ao baixar o arquivo: {{message}}",
     "downloadingFolder": "Erro ao baixar a pasta: {{message}}",
     "movingItemInsideItself": "Você não pode mover uma pasta para dentro dela mesma",
@@ -1389,7 +1386,6 @@
       "upload-failed": "Falha no envio"
     },
     "generalErrorMessages": {
-      "retryUploadFailed": "Algo deu errado ao tentar enviar novamente. Tente fazer o envio de novo",
       "retryDownloadFailed": "Algo deu errado ao tentar baixar novamente. Tente fazer o download de novo.",
       "openUploadedFileFailed": "Algo deu errado ao tentar abrir o arquivo",
       "openUploadedFolderFailed": "Algo deu errado ao tentar navegar até a pasta"

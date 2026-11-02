@@ -15,15 +15,6 @@ vi.mock('../../hooks/useOpen', () => ({
 
 vi.mock('../../hooks/useRetry', () => ({
   useRetryDownload: vi.fn().mockReturnValue({ retryDownload: vi.fn() }),
-  useRetryUpload: vi.fn().mockReturnValue({ retryUpload: vi.fn() }),
-}));
-
-vi.mock('../../../store/slices/storage/hooks/useReduxActions', () => ({
-  useReduxActions: vi.fn().mockReturnValue({
-    uploadFolder: vi.fn(),
-    uploadItem: vi.fn(),
-    uploadSharedItem: vi.fn(),
-  }),
 }));
 
 vi.mock('app/store/slices/workspaces/workspaces.selectors', () => ({
@@ -55,18 +46,8 @@ describe('TaskLoggerItem', () => {
 
   const createFileToRetry = (): RetryableTask => ({
     taskId: 'task-1',
-    type: RetryableTaskType.Upload,
-    params: {
-      filecontent: {
-        content: new File(['content'], 'file'),
-        type: 'txt',
-        name: 'file',
-        size: 1024,
-        parentFolderId: 'folder',
-      },
-      parentFolderId: 'folder',
-      userEmail: 'user@example.com',
-    },
+    type: RetryableTaskType.Download,
+    params: { id: 'file-id', name: 'file', plainName: 'file', type: 'txt', size: 1024, isFolder: false },
     status: RetryableTaskStatus.Failed,
   });
 

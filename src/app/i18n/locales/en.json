@@ -1136,9 +1136,6 @@
     "fetchingFolderContent": "Error fetching folder content",
     "togglingFavorite": "There was an error updating favorites",
     "togglingSomeFavorites": "Some favorites could not be updated",
-    "uploadingFolder": "Error uploading folder",
-    "uploadingFile": "Error uploading file: {{reason}}",
-    "uploadingItems": "Some of the elements could not be uploaded",
     "downloadingFile": "Error downloading file: {{message}}",
     "downloadingFolder": "Error downloading folder: {{message}}",
     "movingItemInsideItself": "You can't move a folder inside itself",
@@ -1379,7 +1376,6 @@
       "upload-failed": "Upload failed"
     },
     "generalErrorMessages": {
-      "retryUploadFailed": "Something went wrong when retrying the upload. Try uploading again",
       "retryDownloadFailed": "Something went wrong while retrying the download. Please try downloading again.",
       "openUploadedFileFailed": "Something went wrong while trying to open the file",
       "openUploadedFolderFailed": "Something went wrong while trying to navigate to the folder"

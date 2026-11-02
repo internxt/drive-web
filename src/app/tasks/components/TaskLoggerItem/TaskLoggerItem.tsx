@@ -1,19 +1,18 @@
 import { memo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useOpenItem } from '../../hooks/useOpen';
-import { useRetryDownload, useRetryUpload } from '../../hooks/useRetry';
+import { useRetryDownload } from '../../hooks/useRetry';
 
 import { t } from 'i18next';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
-import { useReduxActions } from '../../../store/slices/storage/hooks/useReduxActions';
 import tasksService from '../../services/tasks.service';
-import { TaskData, TaskNotification, TaskStatus, TaskType, UploadFileData, UploadFolderData } from '../../types';
+import { TaskData, TaskNotification, TaskStatus, UploadFileData, UploadFolderData } from '../../types';
 import { TaskLoggerActions } from '../TaskLoggerActions/TaskLoggerActions';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import TaskToRetry from '../TaskToRetry/TaskToRetry';
 import { useRetryManagerFailedItems } from '../TaskToRetry/useRetryManagerFailedItems';
 import { FailedItemToRetry } from '../TaskToRetryItem/TaskToRetryItem';
-import { RetryableTask, RetryableTaskType } from 'app/network/RetryManager';
+import { RetryableTask } from 'app/network/RetryManager';
 
 const THREE_HUNDRED_MB_IN_BYTES = 3 * 100 * 1024 * 1024;
 interface TaskLoggerItemProps {
@@ -98,7 +97,6 @@ const TaskLoggerItem = ({ notification, task, filesToRetry }: TaskLoggerItemProp
     },
     selectedWorkspace,
   });
-  const { uploadFolder, uploadItem, uploadSharedItem } = useReduxActions();
   const { retryDownload } = useRetryDownload({
     notification,
     task,
@@ -108,16 +106,6 @@ const TaskLoggerItem = ({ notification, task, filesToRetry }: TaskLoggerItemProp
     resetProgress: resetTaskProgress,
     selectedWorkspace,
     workspaceCredentials,
-  });
-  const { retryUpload } = useRetryUpload({
-    notification,
-    uploadFolder,
-    uploadItem,
-    uploadSharedItem,
-    showErrorNotification() {
-      notificationsService.show({ text: t('tasks.generalErrorMessages.retryUploadFailed'), type: ToastType.Error });
-    },
-    resetProgress: resetTaskProgress,
   });
 
   const progressInPercentage = notification.progress ? (notification.progress * 100).toFixed(0) : 0;
@@ -133,28 +121,14 @@ const TaskLoggerItem = ({ notification, task, filesToRetry }: TaskLoggerItemProp
     setIsHovered(false);
   };
 
-  const isDownloadAction =
-    [TaskStatus.Error, TaskStatus.Cancelled].includes(notification.status) &&
-    (notification.action === TaskType.DownloadFile || notification.action === TaskType.DownloadFolder);
-  const someFileIsDownloaded = filesToRetry?.some(
-    (file) => file.taskId === notification.taskId && file.type === RetryableTaskType.Download,
-  );
-
-  const isDownloadError = isDownloadAction || someFileIsDownloaded;
-
-  const getRetryActionFunction = (isDownload: boolean) => {
-    return isDownload ? retryDownload : retryUpload;
-  };
-
   const retryTask = task?.retry;
-  const retryFunction = retryTask ? () => retryTask() : getRetryActionFunction(isDownloadError);
+  const retryFunction = retryTask ? () => retryTask() : retryDownload;
 
   const retryManagerFailedItems = useRetryManagerFailedItems(filesToRetry ?? []);
   const failedUploadItems = getFailedUploadItems(task);
   const hasFailedUploadItems = failedUploadItems.length > 0;
   const failedItems = hasFailedUploadItems ? failedUploadItems : retryManagerFailedItems;
   const hasFailedItems = failedItems.length > 0;
-  const isUploadRetry = hasFailedUploadItems || filesToRetry?.[0]?.type === RetryableTaskType.Upload;
   const retryAllFailedUploadItems = hasFailedUploadItems ? () => task?.retry?.() : undefined;
 
   const handleRetryClick = () => {
@@ -181,7 +155,7 @@ const TaskLoggerItem = ({ notification, task, filesToRetry }: TaskLoggerItemProp
       <TaskToRetry
         isOpen={isModalOpen}
         failedItems={failedItems}
-        isUpload={isUploadRetry}
+        isUpload={hasFailedUploadItems}
         onClose={() => setIsModalOpen(false)}
         onRetryAll={retryAllFailedUploadItems}
       />
