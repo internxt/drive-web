@@ -65,7 +65,7 @@ export class SdkFactory {
       turnstileToken: options?.turnstileToken,
     });
     const apiSecurity = this.getNewApiSecurity(options?.unauthorizedCallback);
-    return Auth.client(apiUrl, appDetails, apiSecurity);
+    return Auth.client(apiUrl, appDetails, apiSecurity, { withCredentials: true });
   }
 
   public createDesktopAuthClient(options?: { turnstileToken?: string }): Auth {

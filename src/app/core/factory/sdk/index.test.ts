@@ -330,6 +330,7 @@ describe('SdkFactory', () => {
             clientVersion: packageJson.version,
           },
           expect.any(Object),
+          { withCredentials: true },
         );
       });
 
@@ -352,6 +353,7 @@ describe('SdkFactory', () => {
             },
           },
           expect.any(Object),
+          { withCredentials: true },
         );
       });
 
@@ -373,6 +375,7 @@ describe('SdkFactory', () => {
             },
           },
           expect.any(Object),
+          { withCredentials: true },
         );
       });
 
@@ -396,6 +399,7 @@ describe('SdkFactory', () => {
             },
           },
           expect.any(Object),
+          { withCredentials: true },
         );
       });
 
