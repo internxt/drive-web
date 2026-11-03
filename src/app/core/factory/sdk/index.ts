@@ -74,7 +74,7 @@ export class SdkFactory {
       options?.turnstileToken ? { 'x-internxt-turnstile': options.turnstileToken } : undefined,
     );
     const apiSecurity = this.getNewApiSecurity();
-    return Auth.client(apiUrl, appDetails, apiSecurity);
+    return Auth.client(apiUrl, appDetails, apiSecurity, { withCredentials: true });
   }
 
   public createNewStorageClient(): Storage {

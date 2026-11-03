@@ -421,6 +421,7 @@ describe('SdkFactory', () => {
             },
           },
           expect.any(Object),
+          { withCredentials: true },
         );
       });
 
@@ -438,6 +439,7 @@ describe('SdkFactory', () => {
             customHeaders: undefined,
           },
           expect.any(Object),
+          { withCredentials: true },
         );
       });
     });
