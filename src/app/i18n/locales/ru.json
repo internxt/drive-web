@@ -443,6 +443,7 @@
   },
   "sideNav": {
     "drive": "Drive",
+    "photos": "Фото",
     "favorites": "Избранное",
     "backups": "Резервные копии",
     "shared": "Общий",
@@ -455,6 +456,9 @@
     }
   },
   "views": {
+    "photos": {
+      "head": "Фото"
+    },
     "favorites": {
       "head": "Избранное",
       "empty": {
