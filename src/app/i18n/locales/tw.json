@@ -478,7 +478,11 @@
   },
   "views": {
     "photos": {
-      "head": "照片"
+      "head": "照片",
+      "empty": {
+        "title": "尚無照片",
+        "description": "在 Internxt 行動應用程式中開啟照片備份,照片就會顯示在這裡"
+      }
     },
     "favorites": {
       "head": "收藏",

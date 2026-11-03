@@ -457,7 +457,11 @@
   },
   "views": {
     "photos": {
-      "head": "Fotos"
+      "head": "Fotos",
+      "empty": {
+        "title": "Noch keine Fotos",
+        "description": "Aktiviere die Fotosicherung in der mobilen Internxt-App, dann erscheinen deine Fotos hier"
+      }
     },
     "favorites": {
       "head": "Favoriten",

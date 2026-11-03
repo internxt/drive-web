@@ -457,7 +457,11 @@
   },
   "views": {
     "photos": {
-      "head": "Photos"
+      "head": "Photos",
+      "empty": {
+        "title": "Aucune photo pour l'instant",
+        "description": "Activez la sauvegarde des photos dans l'application mobile Internxt et elles apparaîtront ici"
+      }
     },
     "favorites": {
       "head": "Favoris",

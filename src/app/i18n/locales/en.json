@@ -478,7 +478,11 @@
   },
   "views": {
     "photos": {
-      "head": "Photos"
+      "head": "Photos",
+      "empty": {
+        "title": "No photos yet",
+        "description": "Turn on photo backup in the Internxt mobile app and your photos will appear here"
+      }
     },
     "favorites": {
       "head": "Favorites",
