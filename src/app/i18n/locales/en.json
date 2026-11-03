@@ -489,7 +489,8 @@
         "retry": "Try again"
       },
       "filters": {
-        "allDevices": "All devices"
+        "allDevices": "All devices",
+        "allDates": "All dates"
       }
     },
     "favorites": {

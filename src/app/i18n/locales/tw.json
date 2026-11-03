@@ -489,7 +489,8 @@
         "retry": "重試"
       },
       "filters": {
-        "allDevices": "所有裝置"
+        "allDevices": "所有裝置",
+        "allDates": "所有日期"
       }
     },
     "favorites": {

@@ -468,7 +468,8 @@
         "retry": "Повторить"
       },
       "filters": {
-        "allDevices": "Все устройства"
+        "allDevices": "Все устройства",
+        "allDates": "Все даты"
       }
     },
     "favorites": {
