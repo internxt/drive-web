@@ -466,6 +466,9 @@
         "title": "Deine Fotos konnten nicht geladen werden",
         "description": "Überprüfe deine Verbindung und versuche es erneut",
         "retry": "Erneut versuchen"
+      },
+      "filters": {
+        "allDevices": "Alle Geräte"
       }
     },
     "favorites": {

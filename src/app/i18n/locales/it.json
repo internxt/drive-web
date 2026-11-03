@@ -487,6 +487,9 @@
         "title": "Impossibile caricare le tue foto",
         "description": "Controlla la connessione e riprova",
         "retry": "Riprova"
+      },
+      "filters": {
+        "allDevices": "Tutti i dispositivi"
       }
     },
     "favorites": {

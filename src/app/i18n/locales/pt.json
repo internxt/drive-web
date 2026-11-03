@@ -487,6 +487,9 @@
         "title": "Não foi possível carregar suas fotos",
         "description": "Verifique sua conexão e tente novamente",
         "retry": "Tentar novamente"
+      },
+      "filters": {
+        "allDevices": "Todos os dispositivos"
       }
     },
     "favorites": {
