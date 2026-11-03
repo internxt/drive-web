@@ -11,6 +11,7 @@ import { HttpClient } from '@internxt/sdk/dist/shared/http/client';
 import { USER_NOTIFICATION_MAX_RETRIES } from './retryStrategies';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import dateService from 'services/date.service';
+import envService from 'services/env.service';
 import { EncryptedStorageService } from 'services/encrypted-storage.service';
 import { WorkspaceCredentialsDetails } from '@internxt/sdk/dist/workspaces';
 
@@ -65,6 +66,7 @@ vi.mock('services/date.service', () => ({
 
 vi.mock('services/env.service', () => ({
   default: {
+    isProduction: vi.fn(() => true),
     getVariable: vi.fn((key: string) => {
       if (key === 'newApi') return MOCKED_NEW_API;
       if (key === 'payments') return MOCKED_PAYMENTS;
@@ -441,6 +443,22 @@ describe('SdkFactory', () => {
           expect.any(Object),
           { withCredentials: true },
         );
+      });
+      test('When not in production, then the auth clients are created without credentials', () => {
+        vi.mocked(envService.isProduction).mockReturnValue(false);
+
+        const instance = SdkFactory.getNewApiInstance();
+        instance.createAuthClient();
+        instance.createDesktopAuthClient();
+
+        expect(Auth.client).toHaveBeenNthCalledWith(1, MOCKED_NEW_API, expect.any(Object), expect.any(Object), {
+          withCredentials: false,
+        });
+        expect(Auth.client).toHaveBeenNthCalledWith(2, MOCKED_NEW_API, expect.any(Object), expect.any(Object), {
+          withCredentials: false,
+        });
+
+        vi.mocked(envService.isProduction).mockReturnValue(true);
       });
     });
 
