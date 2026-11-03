@@ -60,7 +60,7 @@ export async function checkDuplicatedFolders(
   folderNamesList: string[],
 ): Promise<CheckDuplicatedFoldersResponse> {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-  // SDK >=1.24 types this from the API schema (camelCase); callers still consume it as DriveFolderData
+  // TODO: remove cast once callers use the SDK's FetchExistentFoldersResponse type
   const response = await storageClient.checkDuplicatedFolders({ folderUuid, folderNamesList });
   return response as unknown as CheckDuplicatedFoldersResponse;
 }
