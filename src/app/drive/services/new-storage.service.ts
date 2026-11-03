@@ -1,10 +1,10 @@
 import {
   CheckDuplicatedFilesResponse,
   CheckDuplicatedFoldersResponse,
+  FetchFolderMetaResponse,
   FileStructure,
   FetchFolderContentResponse,
   FolderAncestor,
-  FolderMeta,
   FolderAncestorWorkspace,
   FolderStatsResponse,
 } from '@internxt/sdk/dist/drive/storage/types';
@@ -33,7 +33,11 @@ export async function getFolderAncestorsInWorkspace(
   return storageClient.getFolderAncestorsInWorkspace(workspaceId, itemType, uuid, resourcesToken);
 }
 
-export async function getFolderMeta(uuid: string, workspaceId?: string, resourcesToken?: string): Promise<FolderMeta> {
+export async function getFolderMeta(
+  uuid: string,
+  workspaceId?: string,
+  resourcesToken?: string,
+): Promise<FetchFolderMetaResponse> {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
   return storageClient.getFolderMeta(uuid, workspaceId, resourcesToken);
 }
@@ -56,7 +60,9 @@ export async function checkDuplicatedFolders(
   folderNamesList: string[],
 ): Promise<CheckDuplicatedFoldersResponse> {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-  return storageClient.checkDuplicatedFolders({ folderUuid, folderNamesList });
+  // TODO: remove cast once callers use the SDK's FetchExistentFoldersResponse type
+  const response = await storageClient.checkDuplicatedFolders({ folderUuid, folderNamesList });
+  return response as unknown as CheckDuplicatedFoldersResponse;
 }
 
 export function getFolderContentByUuid({
