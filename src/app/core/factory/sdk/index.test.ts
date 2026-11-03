@@ -66,11 +66,11 @@ vi.mock('services/date.service', () => ({
 
 vi.mock('services/env.service', () => ({
   default: {
-    isProduction: vi.fn(() => true),
     getVariable: vi.fn((key: string) => {
       if (key === 'newApi') return MOCKED_NEW_API;
       if (key === 'payments') return MOCKED_PAYMENTS;
       if (key === 'location') return MOCKED_LOCATION;
+      if (key === 'sendCookiesOnAuthRequests') return 'true';
       return '';
     }),
   },
@@ -444,8 +444,12 @@ describe('SdkFactory', () => {
           { withCredentials: true },
         );
       });
-      test('When not in production, then the auth clients are created without credentials', () => {
-        vi.mocked(envService.isProduction).mockReturnValue(false);
+      test('When sending cookies on auth requests is disabled, then the auth clients are created without credentials', () => {
+        const getVariable = vi.mocked(envService.getVariable);
+        const defaultImpl = getVariable.getMockImplementation();
+        getVariable.mockImplementation((key) =>
+          key === 'sendCookiesOnAuthRequests' ? 'false' : (defaultImpl?.(key) ?? ''),
+        );
 
         const instance = SdkFactory.getNewApiInstance();
         instance.createAuthClient();
@@ -458,7 +462,7 @@ describe('SdkFactory', () => {
           withCredentials: false,
         });
 
-        vi.mocked(envService.isProduction).mockReturnValue(true);
+        getVariable.mockImplementation(defaultImpl!);
       });
     });
 

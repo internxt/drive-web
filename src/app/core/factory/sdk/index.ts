@@ -179,7 +179,7 @@ export class SdkFactory {
   }
 
   private static getAuthHttpOptions(): { withCredentials: boolean } {
-    return { withCredentials: envService.isProduction() };
+    return { withCredentials: envService.getVariable('sendCookiesOnAuthRequests') === 'true' };
   }
 
   private static getAppDetails(customHeaders?: Record<string, string>): AppDetails {
