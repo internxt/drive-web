@@ -482,6 +482,11 @@
       "empty": {
         "title": "暂无照片",
         "description": "在 Internxt 移动应用中开启照片备份,照片就会显示在这里"
+      },
+      "error": {
+        "title": "无法加载照片",
+        "description": "请检查网络连接后重试",
+        "retry": "重试"
       }
     },
     "favorites": {

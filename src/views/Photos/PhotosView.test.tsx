@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import errorService from 'services/error.service';
 import PhotosView from './PhotosView';
@@ -73,6 +73,18 @@ describe('Photos view', () => {
 
     await waitFor(() => expect(screen.queryByTestId('photos-grid-skeleton')).not.toBeInTheDocument());
     expect(screen.queryByText('views.photos.empty.title')).not.toBeInTheDocument();
+    expect(screen.queryByText('views.photos.error.title')).not.toBeInTheDocument();
+  });
+
+  test('When the devices cannot be loaded, then the user can try again', async () => {
+    photosClient.listDevices.mockRejectedValueOnce(new Error('Network error')).mockResolvedValueOnce([]);
+
+    render(<PhotosView />);
+
+    fireEvent.click(await screen.findByRole('button', { name: /views.photos.error.retry/ }));
+
+    expect(await screen.findByText('views.photos.empty.title')).toBeInTheDocument();
+    expect(photosClient.listDevices).toHaveBeenCalledTimes(2);
   });
 
   test('When the devices cannot be loaded, then the error is reported and no empty state is shown', async () => {

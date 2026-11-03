@@ -27,5 +27,5 @@ export const usePhotoDevices = () => {
     void loadDevices();
   }, [loadDevices]);
 
-  return { state };
+  return { state, retry: loadDevices };
 };

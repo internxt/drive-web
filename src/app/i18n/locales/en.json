@@ -482,6 +482,11 @@
       "empty": {
         "title": "No photos yet",
         "description": "Turn on photo backup in the Internxt mobile app and your photos will appear here"
+      },
+      "error": {
+        "title": "We couldn't load your photos",
+        "description": "Check your connection and try again",
+        "retry": "Try again"
       }
     },
     "favorites": {

@@ -482,6 +482,11 @@
       "empty": {
         "title": "Ancora nessuna foto",
         "description": "Attiva il backup delle foto nell'app mobile di Internxt e appariranno qui"
+      },
+      "error": {
+        "title": "Impossibile caricare le tue foto",
+        "description": "Controlla la connessione e riprova",
+        "retry": "Riprova"
       }
     },
     "favorites": {

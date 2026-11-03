@@ -461,6 +461,11 @@
       "empty": {
         "title": "Aucune photo pour l'instant",
         "description": "Activez la sauvegarde des photos dans l'application mobile Internxt et elles apparaîtront ici"
+      },
+      "error": {
+        "title": "Impossible de charger vos photos",
+        "description": "Vérifiez votre connexion et réessayez",
+        "retry": "Réessayer"
       }
     },
     "favorites": {
