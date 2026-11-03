@@ -18,6 +18,8 @@ import { CheckIcon, DownloadSimpleIcon, EyeIcon } from '@phosphor-icons/react';
 import downloadService from 'app/drive/services/download.service';
 import { MIN_DOWNLOAD_MULTIPART_SIZE } from 'app/network/networkConstants';
 import { IDownloadParams } from 'app/network/download';
+import { downloadToFs, getDownloadSupport } from 'app/drive/services/download.service/downloadFile';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import './components/ShareView.scss';
 
 import { ShareTypes } from '@internxt/sdk/dist/drive';
@@ -43,13 +45,16 @@ interface ShareViewState {
   token: string;
 }
 
+const MAX_PROGRESS_BEFORE_SAVED = 99;
+const DOWNLOADED_PROGRESS = 100;
+
 export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Element {
   const { translate } = useTranslationContext();
 
   const code = props.match.params.code;
   const sharingId = stringUtils.decodeV4Uuid(props.match.params.token);
 
-  const [progress, setProgress] = useState(TaskProgress.Min);
+  const [progress, setProgress] = useState<number>(TaskProgress.Min);
   const [blobProgress, setBlobProgress] = useState(TaskProgress.Min);
   const [isDownloading, setIsDownloading] = useState(false);
   const [info, setInfo] = useState<SharingMeta | Record<string, any>>({});
@@ -103,7 +108,7 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
   };
 
   const renderDownloadButton = () => {
-    if (Number(progress) === 100) {
+    if (Number(progress) === DOWNLOADED_PROGRESS) {
       return (
         <>
           {/* Download completed */}
@@ -198,54 +203,60 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
     download();
   }
 
-  const download = async (): Promise<void> => {
-    if (!isDownloading) {
-      const fileInfo = info;
-      const MIN_PROGRESS = 0;
+  const getFileStream = (): Promise<ReadableStream<Uint8Array>> => {
+    const fileSize = info.item.size;
+    const downloadParams: IDownloadParams = {
+      bucketId: info.item.bucket,
+      fileId: info.item.fileId,
+      encryptionKey: Buffer.from(info.encryptionKey, 'hex'),
+      token: info.itemToken,
+      options: {
+        notifyProgress: (totalProgress, downloadedBytes) => {
+          const readProgress = Math.trunc((downloadedBytes / totalProgress) * 100);
+          setProgress(Math.min(readProgress, MAX_PROGRESS_BEFORE_SAVED));
+        },
+      },
+    };
 
-      if (fileInfo) {
-        let fileBlob: Blob;
+    const shouldUseMultipart = fileSize >= MIN_DOWNLOAD_MULTIPART_SIZE;
+    return shouldUseMultipart
+      ? network.multipartDownloadFile({ ...downloadParams, fileSize })
+      : network.downloadFile(downloadParams);
+  };
 
-        if (isEmptySharedFile) {
-          setProgress(100 as TaskProgress);
-          fileBlob = new Blob([]);
-        } else {
-          const fileSize = fileInfo.item.size;
-          setProgress(MIN_PROGRESS);
-          setIsDownloading(true);
-
-          const downloadParams: IDownloadParams = {
-            bucketId: fileInfo.item.bucket,
-            fileId: fileInfo.item.fileId,
-            encryptionKey: Buffer.from(fileInfo.encryptionKey, 'hex'),
-            token: fileInfo.itemToken,
-            options: {
-              notifyProgress: (totalProgress, downloadedBytes) => {
-                const progress = Math.trunc((downloadedBytes / totalProgress) * 100);
-                setProgress(progress);
-                if (progress == 100) {
-                  setIsDownloading(false);
-                }
-              },
-            },
-          };
-
-          const shouldUseMultipart = fileSize >= MIN_DOWNLOAD_MULTIPART_SIZE;
-          const readable = shouldUseMultipart
-            ? await network.multipartDownloadFile({ ...downloadParams, fileSize })
-            : await network.downloadFile(downloadParams);
-          fileBlob = await binaryStreamToBlob(readable);
-        }
-
-        await downloadService.downloadFileFromBlob(fileBlob, getFormatFileName());
-        setTimeout(() => {
-          setSendBannerVisible(true);
-        }, 3000);
-      }
+  const saveFile = async (): Promise<void> => {
+    if (isEmptySharedFile) {
+      await downloadService.downloadFileFromBlob(new Blob([]), getFormatFileName());
+    } else {
+      const fileStream = getFileStream();
+      await downloadToFs(getFormatFileName(), fileStream, await getDownloadSupport());
     }
   };
 
-  useBeforeUnload(() => isDownloading && progress < 100);
+  const download = async (): Promise<void> => {
+    if (isDownloading) return;
+
+    setProgress(TaskProgress.Min);
+    setIsDownloading(true);
+    try {
+      await saveFile();
+      setProgress(DOWNLOADED_PROGRESS);
+      setTimeout(() => {
+        setSendBannerVisible(true);
+      }, 3000);
+    } catch (err) {
+      setProgress(TaskProgress.Min);
+      errorService.reportError(err);
+      notificationsService.show({
+        text: translate('error.downloadingFile', { message: errorService.castError(err).message }),
+        type: ToastType.Error,
+      });
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  useBeforeUnload(() => isDownloading);
 
   if (isError) {
     const ItemIconComponent = iconService.getItemIcon(false, 'default');

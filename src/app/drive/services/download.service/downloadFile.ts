@@ -28,15 +28,7 @@ async function pipe(readable: ReadableStream, writable: BlobWritable): Promise<v
   await writer.close();
 }
 
-export default async function downloadFile(
-  itemData: DriveFileData,
-  isWorkspace: boolean,
-  updateProgressCallback: (progress: number) => void,
-  abortController?: AbortController,
-  sharingOptions?: { credentials: NetworkCredentials; key: FileKey },
-): Promise<void> {
-  const fileName = itemData.plainName ?? itemData.name;
-  const completeFilename = itemData.type ? `${fileName}.${itemData.type}` : `${fileName}`;
+export async function getDownloadSupport(): Promise<DownloadSupport> {
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
   const isCypress = window['Cypress'] !== undefined;
 
@@ -56,6 +48,20 @@ export default async function downloadFile(
   } else {
     support = DownloadSupport.PartialStreamApi;
   }
+
+  return support;
+}
+
+export default async function downloadFile(
+  itemData: DriveFileData,
+  isWorkspace: boolean,
+  updateProgressCallback: (progress: number) => void,
+  abortController?: AbortController,
+  sharingOptions?: { credentials: NetworkCredentials; key: FileKey },
+): Promise<void> {
+  const fileName = itemData.plainName ?? itemData.name;
+  const completeFilename = itemData.type ? `${fileName}.${itemData.type}` : `${fileName}`;
+  const support = await getDownloadSupport();
 
   const fileStreamPromise = !sharingOptions
     ? fetchFileStream(
@@ -97,13 +103,13 @@ function downloadFileUsingStreamApi(
     : pipe(source, destination as BlobWritable);
 }
 
-enum DownloadSupport {
+export enum DownloadSupport {
   StreamApi = 'StreamApi',
   PartialStreamApi = 'PartialStreamApi',
   Blob = 'Blob',
 }
 
-async function downloadToFs(
+export async function downloadToFs(
   filename: string,
   source: Promise<ReadableStream>,
   supports: DownloadSupport,
