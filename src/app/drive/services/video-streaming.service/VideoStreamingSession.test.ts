@@ -144,6 +144,22 @@ describe('Video Streaming Session', () => {
       expect(mockContainer.querySelector('iframe')).toBeNull();
     });
 
+    test('When a new session starts before the previous one is destroyed, then it keeps its own player', async () => {
+      const previousContainer = document.body.appendChild(document.createElement('div'));
+      const nextContainer = document.body.appendChild(document.createElement('div'));
+      const previousSession = new VideoStreamingSession(createConfig());
+      const nextSession = new VideoStreamingSession(createConfig());
+      await previousSession.init(previousContainer, vi.fn(), vi.fn());
+      await nextSession.init(nextContainer, vi.fn(), vi.fn());
+
+      previousSession.destroy();
+
+      expect(nextContainer.querySelector('iframe')).not.toBeNull();
+      nextSession.destroy();
+      previousContainer.remove();
+      nextContainer.remove();
+    });
+
     test('When destroy is called, then removes message listener', async () => {
       const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
       const session = new VideoStreamingSession(createConfig());

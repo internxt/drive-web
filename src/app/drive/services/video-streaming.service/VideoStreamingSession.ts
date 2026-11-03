@@ -35,12 +35,8 @@ export class VideoStreamingSession {
 
   private generateIframe(container: HTMLElement): Promise<void> {
     return new Promise((resolve, reject) => {
-      if (document.getElementById('video-iframe')) {
-        this.iframe = document.getElementById('video-iframe') as HTMLIFrameElement;
-        resolve();
-        return;
-      }
-
+      // Each session owns its iframe: reusing another session's one breaks when that session is destroyed,
+      // e.g. when the viewer is mounted twice in a row
       this.iframe = document.createElement('iframe');
       this.iframe.id = 'video-iframe';
       this.iframe.src = PLAYER_URL;
