@@ -86,11 +86,6 @@ export class Upload {
     for (const item of this.items) {
       if (item.kind === UploadItemKind.Folder) this.trackRootFolder(item);
       else this.trackFile(item);
-
-      tasksService.updateTask({
-        taskId: this.getTaskIdOf(item),
-        merge: { retry: (failedItem) => this.retry(item, failedItem) },
-      });
     }
   }
 
@@ -124,6 +119,7 @@ export class Upload {
       showNotification: true,
       cancellable: true,
       stop: () => Promise.resolve(this.cancelRootFolder(item)),
+      retry: (failedItem) => this.retry(item, failedItem),
     });
 
     this.taskIdByItem.set(item, taskId);
@@ -153,6 +149,7 @@ export class Upload {
         currentFolderId: destinationFolderUuid,
       },
       stop: () => Promise.resolve(this.manager.cancelItem(item)),
+      retry: (failedItem) => this.retry(item, failedItem),
     });
 
     this.taskIdByItem.set(item, taskId);
@@ -296,7 +293,7 @@ export class Upload {
     for (const [item, failedItem] of failuresToRetry) this.failedItems.set(item, { ...failedItem, isRetrying: true });
     this.syncFailedItemsToTask(topLevelItem);
 
-    const taskId = this.getTaskIdOf(topLevelItem);
+    const taskId = this.getTaskIdOf(topLevelItem) as string;
     const rootFolder = this.rootFolders.get(topLevelItem);
     const progress = rootFolder ? tasksService.findTask(taskId)?.progress : 0;
     tasksService.updateTask({ taskId, merge: { status: TaskStatus.InProcess, subtitle: undefined, progress } });
@@ -324,6 +321,6 @@ export class Upload {
 
   private syncFailedItemsToTask(topLevelItem: UploadItem): void {
     const failedItems = this.getFailuresOf(topLevelItem).map(([, failedItem]) => failedItem);
-    tasksService.updateTask({ taskId: this.getTaskIdOf(topLevelItem), merge: { failedItems } });
+    tasksService.updateTask({ taskId: this.getTaskIdOf(topLevelItem) as string, merge: { failedItems } });
   }
 }
