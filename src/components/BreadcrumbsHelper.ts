@@ -9,6 +9,7 @@ import { uiActions } from 'app/store/slices/ui';
 import { DropTargetMonitor } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { notifyUploadFailed } from 'app/upload/notifyUploadFailed';
+import { UploadItemsHandler } from 'app/upload/uploadItems';
 
 export const getItemsToMoveWhenSelected = (
   droppedData: DriveItemData,
@@ -49,40 +50,35 @@ export const handleDriveItemDrop = async (
   }
 };
 
-export const handleFileDrop = async (droppedData: unknown, item: BreadcrumbItemData, dispatch: AppDispatch) => {
-  const { rootList, files } = await transformDraggedItems(
-    (droppedData as { files: File[]; items: DataTransferItemList }).items,
-  );
-
-  if (files.length) {
-    await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: item.uuid }));
-  }
-
-  if (rootList.length) {
-    for (const root of rootList) {
-      await dispatch(storageThunks.uploadFolderThunk({ root, currentFolderId: item.uuid }));
-    }
-  }
+export const handleFileDrop = async (
+  droppedItems: DataTransferItemList,
+  destinationFolderUuid: string,
+  uploadItems: UploadItemsHandler,
+) => {
+  const { rootList, files } = await transformDraggedItems(droppedItems);
+  await uploadItems({ destinationFolderUuid, roots: rootList, files });
 };
 
-export const onItemDropped = (
-  item: BreadcrumbItemData,
-  _: FolderPath[],
-  isSomeItemSelected: boolean,
-  selectedItems: DriveItemData[],
-  dispatch: AppDispatch,
-) => {
-  return async (_: unknown, monitor: DropTargetMonitor) => {
+export const createOnItemDropped =
+  (uploadItems: UploadItemsHandler) =>
+  (
+    item: BreadcrumbItemData,
+    _: FolderPath[],
+    isSomeItemSelected: boolean,
+    selectedItems: DriveItemData[],
+    dispatch: AppDispatch,
+  ) =>
+  async (_: unknown, monitor: DropTargetMonitor) => {
     const droppedType = monitor.getItemType();
     const droppedData = monitor.getItem();
 
     if (droppedType === DragAndDropType.DriveItem) {
       await handleDriveItemDrop(droppedData as DriveItemData, isSomeItemSelected, selectedItems, item, dispatch);
     } else if (droppedType === NativeTypes.FILE) {
-      await handleFileDrop(droppedData, item, dispatch).catch(notifyUploadFailed);
+      const { items: droppedItems } = droppedData as { items: DataTransferItemList };
+      await handleFileDrop(droppedItems, item.uuid, uploadItems).catch(notifyUploadFailed);
     }
   };
-};
 
 export const canItemDrop = (item) => {
   return (draggedItem: DriveItemData, monitor: DropTargetMonitor): boolean => {
