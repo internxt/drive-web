@@ -30,8 +30,12 @@ const uploadRepository = getUploadRepository();
 
 const fakeFolderCreationTaking = (delayMs = 0) =>
   vi.mocked(folderService.createFolderByUuid).mockImplementation((_parentUuid, name) => {
-    const createdFolder = getCreatedFolder(name);
-    return [new Promise((resolve) => setTimeout(() => resolve(createdFolder), delayMs)), { cancel: vi.fn() }] as never;
+    let abortCreation: () => void = () => undefined;
+    const creation = new Promise((resolve, reject) => {
+      setTimeout(() => resolve(getCreatedFolder(name)), delayMs);
+      abortCreation = () => reject(new Error('aborted'));
+    });
+    return [creation, { cancel: () => abortCreation() }] as never;
   });
 
 const fakeUploadsTaking = (delayMs: number) =>

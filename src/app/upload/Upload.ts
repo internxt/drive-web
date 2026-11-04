@@ -76,7 +76,7 @@ export class Upload {
     this.manager = new UploadManager({
       ownerUserAuthenticationData: props.ownerUserAuthenticationData,
       uploadRepository: props.uploadRepository,
-      getPauseKey: (item) => this.getTaskIdOf(getTopLevelItem(item)),
+      getPauseKey: (item) => this.getTaskIdOf(getTopLevelItem(item)) as string,
       events: this.createManagerEvents(),
     });
 
@@ -103,8 +103,8 @@ export class Upload {
     };
   }
 
-  private getTaskIdOf(item: UploadItem): string {
-    return this.taskIdByItem.get(item) as string;
+  private getTaskIdOf(item: UploadItem): string | undefined {
+    return this.taskIdByItem.get(item);
   }
 
   private trackRootFolder(item: UploadFolderItem): void {
@@ -151,7 +151,7 @@ export class Upload {
   }
 
   private onItemStarted(item: UploadItem): void {
-    const taskId = this.taskIdByItem.get(item);
+    const taskId = this.getTaskIdOf(item);
     if (!taskId) return;
 
     tasksService.updateTask({ taskId, merge: { status: TaskStatus.InProcess } });
@@ -171,7 +171,7 @@ export class Upload {
   }
 
   private onItemProgress(item: UploadItem, progress: number): void {
-    const taskId = this.taskIdByItem.get(item);
+    const taskId = this.getTaskIdOf(item);
     if (taskId && !isTaskStopped(taskId)) tasksService.updateTask({ taskId, merge: { progress } });
   }
 
@@ -186,7 +186,7 @@ export class Upload {
       logNetworkInfoForUpload({ fileName: item.file.name, fileSize: item.file.size });
     }
 
-    const taskId = this.taskIdByItem.get(item);
+    const taskId = this.getTaskIdOf(item);
     const isFileWithItsOwnTask = !!taskId && isFile;
     if (isFileWithItsOwnTask) {
       this.finishFileTask(taskId, { fileUUID: uploadedItem.uuid });
@@ -222,7 +222,7 @@ export class Upload {
     const rootFolder = this.rootFolders.get(getTopLevelItem(item));
     if (rootFolder) rootFolder.hasFailedItems = true;
 
-    const taskId = this.taskIdByItem.get(item);
+    const taskId = this.getTaskIdOf(item);
     if (!taskId) return;
 
     tasksService.updateTask({ taskId, merge: errorMerge(failure.reason) });
@@ -230,7 +230,7 @@ export class Upload {
   }
 
   private onItemCancelled(item: UploadItem): void {
-    const taskId = this.taskIdByItem.get(item);
+    const taskId = this.getTaskIdOf(item);
     const isFileWithItsOwnTask = !!taskId && item.kind === UploadItemKind.File;
     if (!isFileWithItsOwnTask) return;
 
@@ -259,12 +259,12 @@ export class Upload {
   private finishRootFolder(item: UploadFolderItem, rootFolder: RootFolderUpload): void {
     this.forgetUploadState(rootFolder.taskId);
 
-    const isRootFolderCreated = !!rootFolder.createdFolder;
-    if (rootFolder.isCancelled || !isRootFolderCreated) return;
+    const { createdFolder } = rootFolder;
+    if (rootFolder.isCancelled || !createdFolder) return;
 
     tasksService.updateTask({
       taskId: rootFolder.taskId,
-      merge: { status: TaskStatus.Success, itemUUID: { rootFolderUUID: rootFolder.createdFolder?.uuid } },
+      merge: { status: TaskStatus.Success, itemUUID: { rootFolderUUID: createdFolder.uuid } },
     });
 
     const hasEverythingUploaded = !rootFolder.hasFailedItems;
