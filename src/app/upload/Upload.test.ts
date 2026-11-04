@@ -297,6 +297,31 @@ describe('Retrying what failed', () => {
     ]);
   });
 
+  test('When the user retries everything, then the files that retrying cannot fix are not uploaded again', async () => {
+    (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
+      if (file.name === 'over-plan-limit') throw new AppError('Plan limit reached', HTTP_STATUS_CODES.PAYMENT_REQUIRED);
+      if (file.name === 'broken') throw new Error('Server error');
+      return { uuid: `${file.name}-uuid` };
+    });
+    await createUpload(
+      [
+        getFolderToUpload('Photos', {
+          childrenFiles: [getFileToUpload('over-plan-limit.png'), getFileToUpload('broken.png')],
+        }),
+      ],
+      [],
+    ).run();
+    uploadSucceeds();
+    vi.mocked(uploadFile).mockClear();
+
+    await tasksOf(TaskType.UploadFolder)[0].retry?.();
+
+    expect(uploadedNames()).toEqual(['broken']);
+    expect(tasksOf(TaskType.UploadFolder)[0].failedItems).toEqual([
+      expect.objectContaining({ name: 'over-plan-limit', isRetrying: false }),
+    ]);
+  });
+
   test('When the user retries everything while a file is already being retried, then that file is uploaded only once', async () => {
     failUploadsOf(['retrying', 'waiting']);
     await createUpload(
