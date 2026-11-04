@@ -39,6 +39,10 @@ const createUploadContext = (dispatch: AppDispatch, state: RootState): UploadCon
   },
 });
 
+type UploadContextOverrides = Partial<
+  Pick<UploadContext, 'ownerUserAuthenticationData' | 'onPlanLimitReached' | 'onUploadFinished'>
+>;
+
 export const useUploadItems = () => {
   const dispatch = useAppDispatch();
   const store = useStore<RootState>();
@@ -48,7 +52,8 @@ export const useUploadItems = () => {
 
     return {
       uploadItems: (payload: UploadItemsPayload) => uploadItems(payload, getUploadContext()),
-      startUpload: (payload: UploadItemsPayload) => startUpload(payload, getUploadContext()),
+      startUpload: (payload: UploadItemsPayload, contextOverrides: UploadContextOverrides = {}) =>
+        startUpload(payload, { ...getUploadContext(), ...contextOverrides }),
     };
   }, [dispatch, store]);
 };
