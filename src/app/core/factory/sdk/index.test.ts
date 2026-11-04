@@ -3,7 +3,7 @@ import { SdkFactory } from './index';
 import { LocalStorageService } from 'services/local-storage.service';
 import { userThunks } from '../../../store/slices/user';
 import { LocalStorageItem } from '../../types';
-import { Share, Users } from '@internxt/sdk/dist/drive';
+import { Photos, Share, Users } from '@internxt/sdk/dist/drive';
 import packageJson from '../../../../../package.json';
 import { Auth } from '@internxt/sdk/dist/auth';
 import { Location } from '@internxt/sdk';
@@ -29,6 +29,9 @@ vi.mock('@internxt/sdk/dist/drive', () => ({
     client: vi.fn(),
   },
   Storage: {
+    client: vi.fn(),
+  },
+  Photos: {
     client: vi.fn(),
   },
 }));
@@ -463,6 +466,24 @@ describe('SdkFactory', () => {
         });
 
         getVariable.mockImplementation(defaultImpl!);
+      });
+    });
+
+    describe('Creating the photos client', () => {
+      test('When the Photos client is created, then it uses the new API URL and the default app details', () => {
+        vi.spyOn(mockEncryptedStorage, 'getToken').mockReturnValue('test-token');
+
+        const instance = SdkFactory.getNewApiInstance();
+        instance.createPhotosClient();
+
+        expect(Photos.client).toHaveBeenCalledWith(
+          MOCKED_NEW_API,
+          {
+            clientName: packageJson.name,
+            clientVersion: packageJson.version,
+          },
+          expect.objectContaining({ token: 'test-token' }),
+        );
       });
     });
 

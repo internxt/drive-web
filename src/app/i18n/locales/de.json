@@ -457,7 +457,16 @@
   },
   "views": {
     "photos": {
-      "head": "Fotos"
+      "head": "Fotos",
+      "empty": {
+        "title": "Noch keine Fotos",
+        "description": "Aktiviere die Fotosicherung in der mobilen Internxt-App, dann erscheinen deine Fotos hier"
+      },
+      "error": {
+        "title": "Deine Fotos konnten nicht geladen werden",
+        "description": "Überprüfe deine Verbindung und versuche es erneut",
+        "retry": "Erneut versuchen"
+      }
     },
     "favorites": {
       "head": "Favoriten",
