@@ -272,18 +272,12 @@ export class UploadManager {
 
     const workspaceId = this.ownerUserAuthenticationData?.workspaceId;
     const { parentFolderUuid, folder } = folderItem;
-    const [createdFolderPromise, requestCanceler] = workspaceId
+    const [createdFolderPromise] = workspaceId
       ? workspacesService.createFolder({ workspaceId, parentFolderUuid, plainName: folder.name })
       : folderService.createFolderByUuid(parentFolderUuid, folder.name);
 
-    this.abortActiveUploadOf.set(folderItem, () => requestCanceler.cancel());
-
-    try {
-      const createdFolder = await createdFolderPromise;
-      return toDriveFolderData(createdFolder, folder.name);
-    } finally {
-      this.abortActiveUploadOf.delete(folderItem);
-    }
+    const createdFolder = await createdFolderPromise;
+    return toDriveFolderData(createdFolder, folder.name);
   }
 
   private async uploadFile(fileItem: UploadFileItem): Promise<DriveFileData> {

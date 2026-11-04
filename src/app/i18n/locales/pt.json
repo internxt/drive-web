@@ -464,6 +464,7 @@
   },
   "sideNav": {
     "drive": "Drive",
+    "photos": "Fotos",
     "favorites": "Favoritos",
     "backups": "Backups",
     "shared": "Compartilhados",
@@ -476,6 +477,9 @@
     }
   },
   "views": {
+    "photos": {
+      "head": "Fotos"
+    },
     "favorites": {
       "head": "Favoritos",
       "empty": {
