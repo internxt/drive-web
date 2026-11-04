@@ -11,7 +11,7 @@ import { DriveItemData } from 'app/drive/types';
 import { uploadFoldersWithTracking } from 'app/drive/services/folder.service/uploadFoldersWithTracking';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { fileVersionsSelectors } from 'app/store/slices/fileVersions';
-import { notifyUploadFailed } from 'views/Drive/components/DriveExplorer/helpers/uploadHelpers';
+import { notifyUploadFailed } from 'app/upload/notifyUploadFailed';
 
 interface DragSourceCollectorProps {
   isDraggingThisItem: boolean;

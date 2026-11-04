@@ -8,7 +8,7 @@ import { getCollisionGroups } from 'app/store/slices/storage/storage.thunks/rena
 import { uiActions } from 'app/store/slices/ui';
 import { DropTargetMonitor } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
-import { notifyUploadFailed } from 'views/Drive/components/DriveExplorer/helpers/uploadHelpers';
+import { notifyUploadFailed } from 'app/upload/notifyUploadFailed';
 
 export const getItemsToMoveWhenSelected = (
   droppedData: DriveItemData,

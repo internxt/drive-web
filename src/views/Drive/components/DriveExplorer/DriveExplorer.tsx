@@ -80,9 +80,9 @@ const DriveExplorer = ({
     onUploadFolderButtonClicked,
     onFileInputChanged,
     onFolderInputChanged,
-    uploadItems,
+    uploadToCurrentFolder,
   } = useDriveExplorerUpload(currentFolderId);
-  const { isOver, dropRef } = useDriveExplorerDrop(uploadItems);
+  const { isOver, dropRef } = useDriveExplorerDrop(uploadToCurrentFolder);
 
   const contextMenu = useDriveExplorerContextMenu();
 

@@ -1,45 +1,13 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
-import storageThunks from 'app/store/slices/storage/storage.thunks';
-import {
-  handleRepeatedUploadingFiles,
-  handleRepeatedUploadingFolders,
-} from 'app/store/slices/storage/storage.thunks/renameItemsThunk';
-import { uploadFoldersWithTracking } from 'app/drive/services/folder.service/uploadFoldersWithTracking';
-import notificationsService from 'app/notifications/services/notifications.service';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import errorService from 'services/error.service';
 import UploadInputs from '../components/UploadInputs';
-import { UPLOAD_ITEMS_LIMIT } from '../helpers/uploadHelpers';
 import { useDriveExplorerUpload } from './useDriveExplorerUpload';
 
-const { dispatch } = vi.hoisted(() => ({ dispatch: vi.fn(() => Promise.resolve()) }));
+const { uploadItems } = vi.hoisted(() => ({ uploadItems: vi.fn((): Promise<void> => Promise.resolve()) }));
 
-vi.mock('app/store/hooks', () => ({
-  useAppDispatch: () => dispatch,
-  useAppSelector: vi.fn(),
-}));
-vi.mock('app/store/slices/fileVersions', () => ({
-  fileVersionsSelectors: { getMaxFileSizeLimit: vi.fn() },
-}));
-vi.mock('app/store/slices/workspaces/workspaces.selectors', () => ({
-  default: { getSelectedWorkspace: vi.fn() },
-}));
-vi.mock('app/store/slices/storage/storage.thunks', () => ({
-  default: { uploadItemsThunk: vi.fn((payload) => ({ type: 'uploadItems', payload })) },
-}));
-vi.mock('app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk', () => ({
-  fetchSortedFolderContentThunk: vi.fn(),
-}));
-vi.mock('app/store/slices/storage/storage.thunks/renameItemsThunk', () => ({
-  handleRepeatedUploadingFiles: vi.fn(),
-  handleRepeatedUploadingFolders: vi.fn(),
-}));
-vi.mock('app/drive/services/folder.service/uploadFoldersWithTracking', () => ({
-  uploadFoldersWithTracking: vi.fn(() => Promise.resolve()),
-}));
-vi.mock('app/notifications/services/notifications.service', () => ({
-  default: { show: vi.fn() },
-  ToastType: { Warning: 'warning', Error: 'error' },
-}));
+vi.mock('app/upload/useUploadItems', () => ({ useUploadItems: () => ({ uploadItems }) }));
 
 const CURRENT_FOLDER_ID = 'current-folder-uuid';
 
@@ -74,16 +42,8 @@ const folderInput = (container: HTMLElement) =>
 describe('Uploading from the Drive explorer pickers', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(handleRepeatedUploadingFiles).mockImplementation(async (files) => ({
-      repeatedItems: [],
-      existingItems: [],
-      unrepeatedItems: files,
-    }));
-    vi.mocked(handleRepeatedUploadingFolders).mockImplementation(async (folders) => ({
-      repeatedItems: [],
-      existingItems: [],
-      unrepeatedItems: folders,
-    }));
+    vi.spyOn(notificationsService, 'show').mockReturnValue(undefined as never);
+    vi.spyOn(errorService, 'reportError').mockReturnValue();
   });
 
   test('When the user clicks to upload files or a folder, then the matching picker opens', () => {
@@ -105,7 +65,7 @@ describe('Uploading from the Drive explorer pickers', () => {
     pickFiles(fileInput(container), files);
 
     await vi.waitFor(() =>
-      expect(storageThunks.uploadItemsThunk).toHaveBeenCalledWith({ files, parentFolderId: CURRENT_FOLDER_ID }),
+      expect(uploadItems).toHaveBeenCalledWith({ destinationFolderUuid: CURRENT_FOLDER_ID, roots: [], files }),
     );
   });
 
@@ -116,16 +76,11 @@ describe('Uploading from the Drive explorer pickers', () => {
     pickFiles(folderInput(container), [photo]);
 
     await vi.waitFor(() =>
-      expect(uploadFoldersWithTracking).toHaveBeenCalledWith(
-        expect.objectContaining({
-          payload: [
-            {
-              root: expect.objectContaining({ name: 'Photos', folderId: CURRENT_FOLDER_ID, childrenFiles: [photo] }),
-              currentFolderId: CURRENT_FOLDER_ID,
-            },
-          ],
-        }),
-      ),
+      expect(uploadItems).toHaveBeenCalledWith({
+        destinationFolderUuid: CURRENT_FOLDER_ID,
+        roots: [expect.objectContaining({ name: 'Photos', childrenFiles: [photo], childrenFolders: [] })],
+        files: [],
+      }),
     );
   });
 
@@ -138,19 +93,9 @@ describe('Uploading from the Drive explorer pickers', () => {
     await vi.waitFor(() => expect(input.value).toBe(''));
   });
 
-  test('When the picked files exceed the upload limit, then the picker is still cleared so the user can pick again', async () => {
-    const { container } = render(<UploadArea />);
-    const input = fileInput(container);
-    const tooManyFiles = Array.from({ length: UPLOAD_ITEMS_LIMIT + 1 }, (_, index) => new File([''], `${index}.txt`));
-
-    pickFiles(input, tooManyFiles);
-
-    await vi.waitFor(() => expect(input.value).toBe(''));
-    expect(storageThunks.uploadItemsThunk).not.toHaveBeenCalled();
-  });
-
-  test('When checking for name conflicts fails, then the user is told the upload failed and the picker is cleared', async () => {
-    vi.mocked(handleRepeatedUploadingFiles).mockRejectedValue(new Error('Network error'));
+  test('When the upload fails, then the user is told the upload failed and the picker is cleared', async () => {
+    const uploadError = new Error('Network error');
+    uploadItems.mockRejectedValueOnce(uploadError);
     const { container } = render(<UploadArea />);
     const input = fileInput(container);
 
@@ -158,7 +103,7 @@ describe('Uploading from the Drive explorer pickers', () => {
 
     await vi.waitFor(() =>
       expect(notificationsService.show).toHaveBeenCalledWith(
-        expect.objectContaining({ text: 'Network error', type: 'error' }),
+        expect.objectContaining({ text: 'Network error', type: ToastType.Error }),
       ),
     );
     expect(input.value).toBe('');
@@ -178,7 +123,7 @@ describe('Uploading from the Drive explorer pickers', () => {
 
     await vi.waitFor(() =>
       expect(notificationsService.show).toHaveBeenCalledWith(
-        expect.objectContaining({ text: 'Folder could not be read', type: 'error' }),
+        expect.objectContaining({ text: 'Folder could not be read', type: ToastType.Error }),
       ),
     );
     expect(input.value).toBe('');

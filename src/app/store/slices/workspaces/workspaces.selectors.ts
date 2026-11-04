@@ -1,4 +1,5 @@
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
+import { OwnerUserAuthenticationData } from 'app/network/types';
 import { RootState } from '../..';
 
 const workspacesSelectors = {
@@ -19,6 +20,21 @@ const workspacesSelectors = {
   },
   getFirstWorkspace(state: RootState): WorkspaceData | null {
     return state.workspaces.workspaces[0];
+  },
+  getOwnerUserAuthenticationData(state: RootState): OwnerUserAuthenticationData | undefined {
+    const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
+    const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
+    const workspaceId = selectedWorkspace?.workspace?.id;
+    if (!workspaceId) return undefined;
+
+    return {
+      bridgeUser: workspaceCredentials?.credentials.networkUser,
+      bridgePass: workspaceCredentials?.credentials.networkPass,
+      encryptionKey: selectedWorkspace?.workspaceUser?.key,
+      bucketId: workspaceCredentials?.bucket,
+      workspaceId,
+      workspacesToken: workspaceCredentials?.tokenHeader,
+    } as OwnerUserAuthenticationData;
   },
 };
 

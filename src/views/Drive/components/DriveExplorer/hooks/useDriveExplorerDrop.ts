@@ -2,7 +2,7 @@ import { useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { IRoot } from 'app/store/slices/storage/types';
 import { transformDraggedItems } from 'services/drag-and-drop.service';
-import { notifyUploadFailed } from '../helpers/uploadHelpers';
+import { notifyUploadFailed } from 'app/upload/notifyUploadFailed';
 
 interface DroppedNativeFiles {
   files: File[];

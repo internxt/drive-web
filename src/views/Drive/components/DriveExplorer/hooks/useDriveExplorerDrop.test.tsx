@@ -4,26 +4,12 @@ import { DndProvider, useDrop } from 'react-dnd';
 import { HTML5Backend, NativeTypes } from 'react-dnd-html5-backend';
 import { IRoot } from 'app/store/slices/storage/types';
 import { transformDraggedItems } from 'services/drag-and-drop.service';
-import notificationsService from 'app/notifications/services/notifications.service';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import errorService from 'services/error.service';
 import { useDriveExplorerDrop } from './useDriveExplorerDrop';
 
 vi.mock('services/drag-and-drop.service', () => ({
   transformDraggedItems: vi.fn(),
-}));
-vi.mock('app/store/slices/storage/storage.thunks', () => ({ default: { uploadItemsThunk: vi.fn() } }));
-vi.mock('app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk', () => ({
-  fetchSortedFolderContentThunk: vi.fn(),
-}));
-vi.mock('app/store/slices/storage/storage.thunks/renameItemsThunk', () => ({
-  handleRepeatedUploadingFiles: vi.fn(),
-  handleRepeatedUploadingFolders: vi.fn(),
-}));
-vi.mock('app/drive/services/folder.service/uploadFoldersWithTracking', () => ({
-  uploadFoldersWithTracking: vi.fn(),
-}));
-vi.mock('app/notifications/services/notifications.service', () => ({
-  default: { show: vi.fn() },
-  ToastType: { Warning: 'warning', Error: 'error' },
 }));
 
 const DropArea = ({ onItemsDropped }: { onItemsDropped: (rootList: IRoot[], files: File[]) => Promise<void> }) => {
@@ -86,6 +72,8 @@ const releasePendingDrag = () => {
 describe('Dropping files into the Drive explorer', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(notificationsService, 'show').mockReturnValue(undefined as never);
+    vi.spyOn(errorService, 'reportError').mockReturnValue();
     vi.mocked(transformDraggedItems).mockResolvedValue({ rootList: [], files: [] });
   });
 
@@ -123,14 +111,15 @@ describe('Dropping files into the Drive explorer', () => {
   });
 
   test('When the dropped items cannot be read, then the user is told the upload failed', async () => {
-    vi.mocked(transformDraggedItems).mockRejectedValue(new Error('Folder could not be read'));
+    const readError = new Error('Folder could not be read');
+    vi.mocked(transformDraggedItems).mockRejectedValue(readError);
     const { onItemsDropped } = renderDropArea();
 
     dropOn(screen.getByTestId('drop-area'), draggedFiles('report.pdf'));
 
     await vi.waitFor(() =>
       expect(notificationsService.show).toHaveBeenCalledWith(
-        expect.objectContaining({ text: 'Folder could not be read', type: 'error' }),
+        expect.objectContaining({ text: 'Folder could not be read', type: ToastType.Error }),
       ),
     );
     expect(onItemsDropped).not.toHaveBeenCalled();
