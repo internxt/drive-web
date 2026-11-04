@@ -82,26 +82,21 @@ describe('Stream Saver Service', () => {
     vi.clearAllMocks();
   });
 
-  const createStreamSaverWithTransferableSupport = (isSupported: boolean): StreamSaver => {
-    if (!isSupported) {
-      vi.mocked(mockMessageChannel.port1.postMessage).mockImplementationOnce(() => {
-        throw new DOMException('Transferable streams not supported', 'DataCloneError');
-      });
-    }
+  const createStreamSaverWithoutTransferableStreams = (): StreamSaver => {
+    vi.mocked(mockMessageChannel.port1.postMessage).mockImplementationOnce(() => {
+      throw new DOMException('Transferable streams not supported', 'DataCloneError');
+    });
     return new StreamSaver();
   };
 
-  test('When transferable streams are supported, then the written chunks go through a transform stream', async () => {
-    (streamSaver as any).supportsTransferable = true;
-
+  test('when transferable streams are supported, then the written chunks go through a transform stream', async () => {
     await streamSaver.createWriteStream('test.txt').getWriter().write(mockedChunk);
 
     expect(global.TransformStream).toHaveBeenCalled();
     expect(mockWriter.write).toHaveBeenCalledWith(mockedChunk);
   });
 
-  test('When the download is cancelled from the browser, then writing fails as cancelled from the browser', async () => {
-    streamSaver = createStreamSaverWithTransferableSupport(true);
+  test('when the download is cancelled from the browser, then writing fails as cancelled from the browser', async () => {
     mockWriter.write.mockRejectedValue(undefined);
 
     const writing = streamSaver.createWriteStream('test.txt').getWriter().write(mockedChunk);
@@ -109,8 +104,22 @@ describe('Stream Saver Service', () => {
     await expect(writing).rejects.toHaveProperty('message', ErrorMessages.DownloadCancelledFromBrowser);
   });
 
-  test('When the download is cancelled from the browser without transferable streams, then the stream fails as cancelled from the browser', async () => {
-    streamSaver = createStreamSaverWithTransferableSupport(false);
+  test('when the download stream is closed, then the browser download is closed', async () => {
+    await streamSaver.createWriteStream('test.txt').close();
+
+    expect(mockWriter.close).toHaveBeenCalled();
+  });
+
+  test('when the download stream is aborted, then the browser download is aborted with the same reason', async () => {
+    const reason = new Error('Download failed');
+
+    await streamSaver.createWriteStream('test.txt').abort(reason);
+
+    expect(mockWriter.abort).toHaveBeenCalledWith(reason);
+  });
+
+  test('when the download is cancelled from the browser without transferable streams, then the stream fails as cancelled from the browser', async () => {
+    streamSaver = createStreamSaverWithoutTransferableStreams();
     const writer = streamSaver.createWriteStream('test.txt').getWriter();
 
     mockMessageChannel.port1.onmessage?.({ data: { abort: true } } as MessageEvent);
