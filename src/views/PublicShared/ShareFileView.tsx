@@ -226,19 +226,11 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
       : network.downloadFile(downloadParams);
   };
 
-  /**
-   * Same as `getDownloadSupport`, but never opens the native "Save as" dialog: browsers that support it save
-   * straight to the Downloads folder through streamSaver, like the in-app download.
-   */
   const getSaveToDownloadsSupport = async (): Promise<DownloadSupport> => {
     const support = await getDownloadSupport();
     return support === DownloadSupport.StreamApi ? DownloadSupport.PartialStreamApi : support;
   };
 
-  /**
-   * Starts the network download only once the download support is known, so a failing support check never
-   * leaves an orphan download running.
-   */
   const saveFile = async (abortController: AbortController): Promise<void> => {
     if (isEmptySharedFile) {
       await downloadService.downloadFileFromBlob(new Blob([]), getFormatFileName());
