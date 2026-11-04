@@ -24,7 +24,7 @@ export const usePhotoDevices = () => {
   }, []);
 
   useEffect(() => {
-    loadDevices();
+    void loadDevices();
   }, [loadDevices]);
 
   return { state };

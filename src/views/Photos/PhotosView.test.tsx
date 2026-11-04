@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
+import errorService from 'services/error.service';
 import PhotosView from './PhotosView';
 
 const { photosClient } = vi.hoisted(() => ({
@@ -71,6 +72,17 @@ describe('Photos view', () => {
     render(<PhotosView />);
 
     await waitFor(() => expect(screen.queryByTestId('photos-grid-skeleton')).not.toBeInTheDocument());
+    expect(screen.queryByText('views.photos.empty.title')).not.toBeInTheDocument();
+  });
+
+  test('When the devices cannot be loaded, then the error is reported and no empty state is shown', async () => {
+    const networkError = new Error('Network error');
+    photosClient.listDevices.mockRejectedValue(networkError);
+
+    render(<PhotosView />);
+
+    await waitFor(() => expect(errorService.reportError).toHaveBeenCalledWith(networkError));
+    expect(screen.queryByTestId('photos-grid-skeleton')).not.toBeInTheDocument();
     expect(screen.queryByText('views.photos.empty.title')).not.toBeInTheDocument();
   });
 });
