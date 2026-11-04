@@ -10,6 +10,7 @@ import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit';
 import { RootState } from '../../../../store';
 import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
+import { toDriveFolderData } from 'app/drive/services/folder.service/toDriveFolderData';
 
 interface CreateFolderOptions {
   relatedTaskId: string;
@@ -57,22 +58,7 @@ export const createFolder = async (
 
     const createdFolder = await createdFolderPromise;
 
-    const createdFolderNormalized: DriveFolderData = {
-      ...createdFolder,
-      name: folderName,
-      parent_id: createdFolder.parentId,
-      user_id: createdFolder.userId,
-      icon: null,
-      iconId: null,
-      icon_id: null,
-      isFolder: true,
-      color: null,
-      encrypt_version: null,
-      plain_name: createdFolder.plainName,
-      deleted: false,
-      createdAt: new Date(createdFolder.createdAt || '').toISOString(),
-      updatedAt: new Date(createdFolder.updatedAt || '').toISOString(),
-    };
+    const createdFolderNormalized = toDriveFolderData(createdFolder, folderName);
 
     tasksService.updateTask({
       taskId: taskId,

@@ -464,6 +464,7 @@
   },
   "sideNav": {
     "drive": "云盘",
+    "photos": "照片",
     "favorites": "收藏",
     "backups": "备份",
     "shared": "共享的",
@@ -476,6 +477,9 @@
     }
   },
   "views": {
+    "photos": {
+      "head": "照片"
+    },
     "favorites": {
       "head": "收藏",
       "empty": {
