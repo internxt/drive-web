@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { QueueObject } from 'async';
 import { QueueUtilsService } from './queueUtils';
 
 describe('QueueUtilsService', () => {
@@ -68,6 +69,28 @@ describe('QueueUtilsService', () => {
       });
 
       expect(service.getConcurrencyUsingPerformance(5, 10)).toBe(5);
+    });
+  });
+
+  describe('Adjusting a queue concurrency in place', () => {
+    const buildQueue = (concurrency: number) => ({ concurrency }) as QueueObject<unknown>;
+
+    it('should update the queue concurrency when performance conditions call for a change', () => {
+      mockMemory(60, 100);
+      const targetQueue = buildQueue(5);
+
+      service.adjustConcurrency(targetQueue, 10);
+
+      expect(targetQueue.concurrency).toBe(6);
+    });
+
+    it('should leave the queue concurrency untouched when performance conditions do not call for a change', () => {
+      mockMemory(75, 100);
+      const targetQueue = buildQueue(5);
+
+      service.adjustConcurrency(targetQueue, 10);
+
+      expect(targetQueue.concurrency).toBe(5);
     });
   });
 });

@@ -1,16 +1,14 @@
 import { renderAsync } from 'docx-preview';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { getPortraitFitWidth } from '../../utils/fileViewerUtils';
+import { FileContentViewerProps } from '../types';
 
-interface FileDocumentViewerProps {
-  blob: Blob;
-  setIsPreviewAvailable: (isPreviewAvailable: boolean) => void;
-}
+const FileDocumentViewer = ({ blob, onError }: FileContentViewerProps): JSX.Element => {
+  const docxContainerRef = useRef<HTMLDivElement>(null);
 
-const FileDocumentViewer = ({ blob, setIsPreviewAvailable }: FileDocumentViewerProps): JSX.Element => {
-  function renderDocx(docxContent: HTMLElement) {
+  function renderDocx(docxContent: HTMLElement, docxBlob: Blob) {
     //Render the docx file in the docxContent element
-    renderAsync(blob, docxContent)
+    renderAsync(docxBlob, docxContent)
       .then(() => {
         const docxWrapper = docxContent.querySelector('.docx-wrapper') as HTMLElement;
 
@@ -30,21 +28,21 @@ const FileDocumentViewer = ({ blob, setIsPreviewAvailable }: FileDocumentViewerP
         }
       })
       .catch((err) => {
-        setIsPreviewAvailable(false);
+        onError();
         console.error(err);
       });
   }
 
   useEffect(() => {
-    const docxContent = document.getElementById('docxContainer');
-    if (docxContent) {
-      renderDocx(docxContent);
+    const docxContent = docxContainerRef.current;
+    if (docxContent && blob) {
+      renderDocx(docxContent, blob);
     }
   }, [blob]);
 
   return (
     <div>
-      <div id="docxContainer" />
+      <div ref={docxContainerRef} />
     </div>
   );
 };

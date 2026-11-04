@@ -3,6 +3,7 @@ import { TaskData, TaskEvent, TaskStatus, TaskType, UploadFolderTask } from 'app
 import referralService from 'services/referral.service';
 import { IRoot } from 'app/store/slices/storage/types';
 import { logNetworkInfoForUpload } from 'app/network/networkInformation';
+import RetryManager from 'app/network/RetryManager';
 import {
   uploadFoldersWithManager,
   UploadFolderManagerEvents,
@@ -31,6 +32,7 @@ const createOrResumeTask = (folder: UploadFolderTasksPayload): string => {
   const options = { withNotification: true, ...folder.options };
 
   if (options.taskId) {
+    RetryManager.removeTasksOfRelatedTask(options.taskId);
     tasksService.updateTask({
       taskId: options.taskId,
       merge: { folderName: folder.root.name, status: TaskStatus.InProcess, progress: 0 },
@@ -102,11 +104,17 @@ export const uploadFoldersWithTasks = (props: UploadFoldersWithTasksProps): Prom
       onFolderUploadSucceeded?.(taskId);
     },
 
-    onFolderUploadError: (taskId, reason) => tasksService.updateTask({ taskId, merge: errorMerge(reason) }),
+    onFolderUploadError: (taskId, reason) => {
+      RetryManager.removeTasksOfRelatedTask(taskId);
+      tasksService.updateTask({ taskId, merge: errorMerge(reason) });
+    },
+
+    onFolderUploadCancelled: (taskId) => RetryManager.removeTasksOfRelatedTask(taskId),
 
     stopRelatedUploads: (taskId) =>
       tasksService
         .getTasks({ relatedTaskId: taskId })
+        .filter((task) => task.cancellable)
         .map((task) => task.stop?.())
         .filter((promise): promise is Promise<void> => promise !== undefined),
   };

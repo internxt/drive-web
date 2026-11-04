@@ -1,4 +1,3 @@
-export { default as BaseButton } from './BaseButton';
 export { default as BreadcrumbsBackupsView } from './BreadcrumbsBackupsView';
 export { default as BreadcrumbsDriveView } from './BreadcrumbsDriveView';
 export { default as BreadcrumbsMenuBackups } from './BreadcrumbsMenuBackups';

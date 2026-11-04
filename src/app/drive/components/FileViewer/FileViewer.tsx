@@ -1,32 +1,23 @@
-import { Dialog, DialogBackdrop, DialogTitle, Transition } from '@headlessui/react';
-import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
-import { CaretLeft, CaretRight } from '@phosphor-icons/react';
+import { Dialog, DialogBackdrop, Transition } from '@headlessui/react';
+import { Fragment, Suspense, useCallback, useEffect, useState } from 'react';
+import { HOTKEYS, useAppHotkey } from 'hooks';
 import { isFileSizePreviewable } from 'services/media.service';
 import iconService from 'app/drive/services/icon.service';
 import { bytesToString } from 'app/drive/services/size.service';
 import { DriveFileData, DriveItemData } from 'app/drive/types';
-import { FileExtensionGroup } from 'app/drive/types/file-types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import ShareItemDialog from '../../../../views/Shared/components/ShareItemDialog/ShareItemDialog';
-import { RootState } from 'app/store';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { uiActions } from 'app/store/slices/ui';
-import { Fragment, Suspense, useEffect, useState } from 'react';
-import { useHotkeys } from 'react-hotkeys-hook';
 import { PreviewFileItem } from 'app/share/types';
-import { setItemsToMove, storageActions } from 'app/store/slices/storage';
-import { TopBarActionsMenu } from './types';
+import ShareItemDialog from '../../../../views/Shared/components/ShareItemDialog/ShareItemDialog';
+import FileNavigationArrows from './components/FileNavigationArrows';
+import FilePreviewLoading from './components/FilePreviewLoading';
+import FileViewerTopBar from './components/FileViewerTopBar';
 import { NoPreviewIsAvailableComponent } from './components/NoPreviewIsAvailableComponent';
-import TopBarActions from './components/TopBarActions';
-import {
-  getIsTypeAllowedAndFileExtensionGroupValues,
-  getPreviewSizeLimitBytes,
-  isPreviewableBySize,
-} from './utils/fileViewerUtils';
-import viewers from './viewers';
-import { MenuItemType } from '@internxt/ui';
+import { useNestedDialogsEscape } from './hooks/useNestedDialogsEscape';
+import { FileViewerKeyboardShortcuts, FileViewerNavigation, TopBarActionsMenu } from './types';
+import { getFileDisplayName, getPreviewSizeLimitBytes, isPreviewableBySize } from './utils/fileViewerUtils';
+import { getFileViewer } from './viewers';
+import { ViewerContentSource } from './viewers/types';
 
-const ESC_KEY_KEYBOARD_CODE = 27;
 interface FileViewerProps {
   file: DriveFileData;
   onClose: () => void;
@@ -37,29 +28,12 @@ interface FileViewerProps {
   isShareView?: boolean;
   disableVideoStream?: boolean;
   blob?: Blob | null;
-  changeFile?: (direction: 'next' | 'prev') => void;
-  totalFolderIndex?: number;
-  fileIndex?: number;
+  hasPreviewFailed?: boolean;
+  navigation?: FileViewerNavigation;
   dropdownItems?: TopBarActionsMenu;
-  keyboardShortcuts?: {
-    renameItemFromKeyboard: ((item) => void) | undefined;
-    removeItemFromKeyboard: ((item) => void) | undefined;
-  };
-  handlersForSpecialItems?: {
-    handleUpdateProgress: (progress: number) => void;
-    handleUpdateThumbnail: (driveFile: PreviewFileItem, blob: Blob) => Promise<void>;
-  };
-}
-
-export interface FormatFileViewerProps {
-  file: PreviewFileItem;
-  blob?: Blob | null;
-  disableVideoStream?: boolean;
-  setIsPreviewAvailable: (isPreviewAvailable: boolean) => void;
-  handlersForSpecialItems?: {
-    handleUpdateProgress: (progress: number) => void;
-    handleUpdateThumbnail: (driveFile: PreviewFileItem, blob: Blob) => Promise<void>;
-  };
+  keyboardShortcuts?: FileViewerKeyboardShortcuts;
+  onProgress?: (progress: number) => void;
+  onConvertedContent?: (file: PreviewFileItem, content: Blob) => Promise<void>;
 }
 
 const FileViewer = ({
@@ -72,130 +46,51 @@ const FileViewer = ({
   isShareView,
   disableVideoStream,
   blob,
-  changeFile,
-  totalFolderIndex,
-  fileIndex,
+  hasPreviewFailed,
+  navigation,
   dropdownItems,
   keyboardShortcuts,
-  handlersForSpecialItems,
+  onProgress,
+  onConvertedContent,
 }: FileViewerProps): JSX.Element => {
-  const dispatch = useAppDispatch();
-
   const { translate } = useTranslationContext();
+  const [failedFileId, setFailedFileId] = useState<DriveFileData['id'] | null>(null);
 
-  const [isPreviewAvailable, setIsPreviewAvailable] = useState<boolean>(true);
-
-  const extensionGroup = getIsTypeAllowedAndFileExtensionGroupValues(file);
-
-  const isTypeAllowed = !!extensionGroup?.isTypeAllowed;
-  const fileExtensionGroup = extensionGroup?.fileExtensionGroup;
-
-  const Viewer: React.FC<FormatFileViewerProps> = isTypeAllowed
-    ? viewers[fileExtensionGroup as FileExtensionGroup]
-    : undefined;
-
-  const isMoveItemsDialogOpen = useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen);
-  const isCreateFolderDialogOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
-  const isEditNameDialogOpen = useAppSelector((state: RootState) => state.ui.isEditFolderNameDialog);
-  const isShareItemSettingsDialogOpen = useAppSelector((state) => state.ui.isShareItemDialogOpenInPreviewView);
-
-  const fileType = file.type ? `.${file.type}` : '';
-  const filename = file ? `${file.plainName ?? file.name}${fileType}` : '';
-  const isFirstItemOrShareView = fileIndex === 0 || isShareView;
-  const isLastItemOrShareView = (totalFolderIndex && fileIndex === totalFolderIndex - 1) || isShareView;
-  const isItemValidToPreview = isTypeAllowed && isPreviewAvailable;
-  const isVideo = fileExtensionGroup === FileExtensionGroup['Video'];
+  const fileViewer = getFileViewer(file);
+  const isTypeAllowed = !!fileViewer;
+  const isStreamed = fileViewer?.contentSource === ViewerContentSource.Stream && !disableVideoStream;
   const isSafari = navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome');
-  const isVideoStreaming = isVideo && !disableVideoStream && (!isSafari || isFileSizePreviewable(file.size));
-
+  const isVideoStreaming = isStreamed && (!isSafari || isFileSizePreviewable(file.size));
   const shouldRenderThePreview = isTypeAllowed && (isVideoStreaming || isPreviewableBySize(file));
   const isTooLargeToPreview = isTypeAllowed && !isPreviewableBySize(file);
+  const isItemValidToPreview = show && shouldRenderThePreview && failedFileId !== file.id && !hasPreviewFailed;
+  const canGoToPrevious = !isShareView && !!navigation?.hasPrevious;
+  const canGoToNext = !isShareView && !!navigation?.hasNext;
 
-  const ItemIconComponent = iconService.getItemIcon(false, file.type);
+  const onViewerError = useCallback(() => setFailedFileId(file.id), [file.id]);
+
+  useNestedDialogsEscape();
 
   useEffect(() => {
-    const handleContextmenu = (e) => {
-      e.preventDefault();
-    };
-    document.addEventListener('contextmenu', handleContextmenu);
-    return function cleanup() {
-      document.removeEventListener('contextmenu', handleContextmenu);
-    };
+    const preventBrowserContextMenu = (event: MouseEvent) => event.preventDefault();
+    document.addEventListener('contextmenu', preventBrowserContextMenu);
+    return () => document.removeEventListener('contextmenu', preventBrowserContextMenu);
   }, []);
 
-  useEffect(() => {
-    setIsPreviewAvailable(show && shouldRenderThePreview);
-  }, [show, file]);
+  useAppHotkey(HOTKEYS.nextFile, () => navigation?.goToNext(), { enabled: canGoToNext, ignoreDialogs: true });
 
-  // To prevent close FileViewer if any of those modal are open
-  useEffect(() => {
-    function handleKeyDown(event) {
-      if (event.keyCode === ESC_KEY_KEYBOARD_CODE) {
-        if (isMoveItemsDialogOpen || isCreateFolderDialogOpen || isEditNameDialogOpen || isShareItemSettingsDialogOpen)
-          event.preventDefault();
-
-        if (isShareItemSettingsDialogOpen) {
-          dispatch(uiActions.setIsShareItemDialogOpenInPreviewView(false));
-          dispatch(storageActions.setItemToShare(null));
-          return;
-        }
-
-        if (isEditNameDialogOpen) {
-          dispatch(storageActions.setItemToRename(null));
-          dispatch(uiActions.setIsEditFolderNameDialog(false));
-          return;
-        }
-
-        if (isCreateFolderDialogOpen) {
-          dispatch(uiActions.setIsCreateFolderDialogOpen(false));
-          return;
-        }
-        if (isMoveItemsDialogOpen) {
-          dispatch(uiActions.setIsMoveItemsDialogOpen(false));
-          dispatch(setItemsToMove([]));
-        }
-      }
-    }
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isMoveItemsDialogOpen, isCreateFolderDialogOpen, isEditNameDialogOpen, isShareItemSettingsDialogOpen]);
-
-  //UseHotKeys for switch between files with the keyboard (left and right arrows)
-  useHotkeys(
-    'right',
-    () => changeFile?.('next'),
-    {
-      enabled: () => fileIndex !== totalFolderIndex! - 1,
-    },
-    [fileIndex, totalFolderIndex],
-  );
-
-  useHotkeys(
-    'left',
-    () => changeFile?.('prev'),
-    {
-      enabled: fileIndex !== 0,
-    },
-    [fileIndex],
-  );
-
-  useHotkeys('r', () => {
-    if (keyboardShortcuts?.renameItemFromKeyboard) {
-      keyboardShortcuts.renameItemFromKeyboard(file);
-    }
+  useAppHotkey(HOTKEYS.previousFile, () => navigation?.goToPrevious(), {
+    enabled: canGoToPrevious,
+    ignoreDialogs: true,
   });
 
-  useHotkeys('backspace', () => {
-    if (keyboardShortcuts?.removeItemFromKeyboard) {
-      keyboardShortcuts?.removeItemFromKeyboard(file);
-    }
+  useAppHotkey(HOTKEYS.rename, () => keyboardShortcuts?.renameItemFromKeyboard?.(file as DriveItemData), {
+    ignoreDialogs: true,
   });
 
-  const onClosePreview = () => {
-    onClose();
-  };
+  useAppHotkey(HOTKEYS.moveToTrash, () => keyboardShortcuts?.removeItemFromKeyboard?.(file as DriveItemData), {
+    ignoreDialogs: true,
+  });
 
   return (
     <Transition
@@ -212,23 +107,12 @@ const FileViewer = ({
       <Dialog
         as="div"
         className="hide-scroll fixed inset-0 z-50 flex flex-col items-center justify-start text-white"
-        onClose={onClosePreview}
+        onClose={onClose}
       >
         <div className="flex h-screen w-screen flex-col items-center justify-center">
-          {/* Close overlay */}
-          <DialogBackdrop className="fixed inset-0 bg-black/85 backdrop-blur-md" onClick={onClosePreview} />
+          <DialogBackdrop className="fixed inset-0 bg-black/85 backdrop-blur-md" onClick={onClose} />
 
-          {/* Content */}
-          {file && <ShareItemDialog share={file.shares?.[0]} isPreviewView item={file as DriveItemData} />}
-          {isFirstItemOrShareView ? null : (
-            <button
-              title={translate('actions.previous')}
-              className="absolute left-4 top-1/2 z-30 rounded-full bg-black p-4 text-white outline-none"
-              onClick={() => changeFile?.('prev')}
-            >
-              <CaretLeft size={24} />
-            </button>
-          )}
+          <ShareItemDialog share={file.shares?.[0]} isPreviewView item={file as DriveItemData} />
 
           {isItemValidToPreview ? (
             <div
@@ -236,44 +120,27 @@ const FileViewer = ({
               className="z-10 flex max-h-full max-w-full flex-col items-start justify-start overflow-auto outline-none"
             >
               <div>
-                {(isVideo || blob) && file ? (
+                {fileViewer && (isStreamed || blob) ? (
                   <Suspense fallback={<div></div>}>
-                    <Viewer
-                      blob={blob}
+                    <fileViewer.Viewer
+                      key={file.id}
+                      blob={blob ?? null}
                       file={file}
                       disableVideoStream={disableVideoStream}
-                      setIsPreviewAvailable={setIsPreviewAvailable}
-                      handlersForSpecialItems={handlersForSpecialItems}
+                      onError={onViewerError}
+                      onProgress={onProgress}
+                      onConvertedContent={onConvertedContent}
                     />
                   </Suspense>
                 ) : null}
 
-                <div
-                  className={`${
-                    progress === 1 || (progress === 0 && blob) ? 'hidden' : 'flex'
-                  } pointer-events-none z-10 select-none flex-col items-center justify-center rounded-xl
-                      font-medium outline-none`}
-                >
-                  <div className="flex h-20 w-20 items-center">
-                    <ItemIconComponent width={80} height={80} />
-                  </div>
-                  <span className="w-96 truncate pt-4 text-center text-lg" title={filename}>
-                    {filename}
-                  </span>
-                  <span className="text-white/50">{translate('drive.loadingFile')}</span>
-                  <div className="mt-8 h-1.5 w-56 rounded-full bg-white/25">
-                    <div
-                      className="h-1.5 rounded-full bg-white"
-                      style={{ width: `${progress !== undefined && Number(progress) ? progress * 100 : 0}%` }}
-                    />
-                  </div>
-                </div>
+                <FilePreviewLoading file={file} progress={progress} hasContent={!!blob} />
               </div>
             </div>
           ) : (
             <NoPreviewIsAvailableComponent
-              ItemIconComponent={ItemIconComponent}
-              fileName={filename}
+              ItemIconComponent={iconService.getItemIcon(false, file.type)}
+              fileName={getFileDisplayName(file)}
               onDownload={onDownload}
               translate={translate}
               reason={
@@ -283,52 +150,22 @@ const FileViewer = ({
               }
             />
           )}
-          {isLastItemOrShareView ? null : (
-            <button
-              title={translate('actions.next')}
-              className="absolute right-4 top-1/2 z-30 rounded-full bg-black p-4 text-white outline-none"
-              onClick={() => changeFile?.('next')}
-            >
-              <CaretRight size={24} />
-            </button>
-          )}
 
-          {/* Background */}
-          <div className="pointer-events-none fixed -inset-x-20 -top-6 z-10 h-16 bg-black blur-2xl" />
+          <FileNavigationArrows
+            canGoToPrevious={canGoToPrevious}
+            canGoToNext={canGoToNext}
+            onPrevious={navigation?.goToPrevious}
+            onNext={navigation?.goToNext}
+          />
 
-          {/* Top bar controls */}
-          <div
-            className="fixed inset-x-0 top-0 z-20 flex h-0 w-screen max-w-full select-none flex-row
-                          items-start justify-between px-4 text-lg"
-          >
-            {/* Close and title */}
-            <div className="mr-6 mt-3 flex h-10 flex-row items-center justify-start space-x-4 truncate md:mr-32">
-              <button
-                onClick={onClosePreview}
-                className="group relative flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-full bg-white/0 transition duration-50 ease-in-out hover:bg-white/10 focus:bg-white/5"
-              >
-                <UilMultiply height={24} width={24} />
-              </button>
-
-              <DialogTitle className="flex w-11/12 flex-row items-center text-lg">
-                <div className="mr-3 flex h-8 w-8 items-center">
-                  <ItemIconComponent width={32} height={32} />
-                </div>
-                <p className="w-full truncate" title={filename}>
-                  {filename}
-                </p>
-              </DialogTitle>
-            </div>
-
-            {/* Top bar buttons */}
-            <TopBarActions
-              onDownload={onDownload}
-              file={file as DriveItemData}
-              isAuthenticated={isAuthenticated}
-              isShareView={isShareView}
-              dropdownItems={dropdownItems as Array<MenuItemType<DriveItemData>>}
-            />
-          </div>
+          <FileViewerTopBar
+            file={file}
+            isAuthenticated={isAuthenticated}
+            isShareView={isShareView}
+            dropdownItems={dropdownItems}
+            onClose={onClose}
+            onDownload={onDownload}
+          />
         </div>
       </Dialog>
     </Transition>

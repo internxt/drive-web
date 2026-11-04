@@ -21,19 +21,27 @@ import {
   UploadFolderData,
 } from '../../types';
 
+const matchesFilter = (task: TaskData, { status, relatedTaskId }: TaskFilter): boolean => {
+  const hasMatchingStatus = !status || status.includes(task.status);
+  const hasMatchingRelatedTask = !relatedTaskId || task.relatedTaskId === relatedTaskId;
+  return hasMatchingStatus && hasMatchingRelatedTask;
+};
+
 class TaskManagerService {
-  private tasks: TaskData[];
+  private readonly tasksById: Map<string, TaskData>;
+  private readonly notificationsByTaskId: Map<string, TaskNotification>;
   private eventEmitter: EventEmitter;
 
   constructor() {
-    this.tasks = [];
+    this.tasksById = new Map();
+    this.notificationsByTaskId = new Map();
     this.eventEmitter = new EventEmitter();
   }
 
   public create<T extends BaseTask>(data: Omit<T, 'id' | 'status' | 'progress'>) {
     const task = this.taskFactory(data);
 
-    this.tasks.push(task);
+    this.tasksById.set(task.id, task);
 
     this.eventEmitter.emit(TaskEvent.TaskAdded, task);
 
@@ -41,50 +49,58 @@ class TaskManagerService {
   }
 
   public updateTask(patch: UpdateTaskPayload) {
-    const taskToUpdate = this.tasks.find((task) => task.id === patch.taskId);
+    const taskToUpdate = this.tasksById.get(patch.taskId);
     if (taskToUpdate) {
       Object.assign(taskToUpdate, patch.merge);
+      this.notificationsByTaskId.delete(patch.taskId);
       this.eventEmitter.emit(TaskEvent.TaskUpdated, taskToUpdate);
     }
   }
 
   public clearTasks() {
-    this.tasks = [];
+    this.tasksById.clear();
+    this.notificationsByTaskId.clear();
   }
 
   public removeTask(taskId: string) {
-    this.tasks = this.tasks.filter((task) => task.id !== taskId);
+    this.tasksById.delete(taskId);
+    this.notificationsByTaskId.delete(taskId);
     this.eventEmitter.emit(TaskEvent.TaskRemoved);
   }
 
   public getTasks(filter: TaskFilter = {}) {
-    return this.tasks.filter((task) => {
-      const meetsTheStatus = !filter.status || filter.status.includes(task.status);
-      const meetsTheRelatedTaskId = !filter.relatedTaskId || task.relatedTaskId === filter.relatedTaskId;
-
-      return meetsTheStatus && meetsTheRelatedTaskId;
-    });
+    const tasks = Array.from(this.tasksById.values());
+    return tasks.filter((task) => matchesFilter(task, filter));
   }
 
   public findTask(taskId: string) {
-    return this.tasks.find((task) => task.id === taskId);
+    return this.tasksById.get(taskId);
   }
 
   public isTaskFinished(taskId: string) {
     return [TaskStatus.Error, TaskStatus.Success, TaskStatus.Cancelled].includes(
-      this.tasks.find((task) => task.id === taskId)?.status || TaskStatus.Pending,
+      this.findTask(taskId)?.status || TaskStatus.Pending,
     );
   }
 
   public isTaskProgressCompleted(taskId: string) {
-    return this.tasks.find((task) => task.id === taskId)?.progress === TaskProgress.Max;
+    return this.findTask(taskId)?.progress === TaskProgress.Max;
   }
 
   public getNotifications(filter: TaskFilter = {}) {
     return this.getTasks(filter)
       .filter((task) => task.showNotification)
-      .map((task) => this.findNotification(task))
+      .map((task) => this.getCachedNotification(task))
       .reverse();
+  }
+
+  private getCachedNotification(task: TaskData): TaskNotification {
+    const cachedNotification = this.notificationsByTaskId.get(task.id);
+    if (cachedNotification) return cachedNotification;
+
+    const notification = this.findNotification(task);
+    this.notificationsByTaskId.set(task.id, notification);
+    return notification;
   }
 
   public findNotification(task: TaskData): TaskNotification {

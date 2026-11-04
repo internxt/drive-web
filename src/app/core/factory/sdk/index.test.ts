@@ -11,6 +11,7 @@ import { HttpClient } from '@internxt/sdk/dist/shared/http/client';
 import { USER_NOTIFICATION_MAX_RETRIES } from './retryStrategies';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import dateService from 'services/date.service';
+import envService from 'services/env.service';
 import { EncryptedStorageService } from 'services/encrypted-storage.service';
 import { WorkspaceCredentialsDetails } from '@internxt/sdk/dist/workspaces';
 
@@ -69,6 +70,7 @@ vi.mock('services/env.service', () => ({
       if (key === 'newApi') return MOCKED_NEW_API;
       if (key === 'payments') return MOCKED_PAYMENTS;
       if (key === 'location') return MOCKED_LOCATION;
+      if (key === 'sendCookiesOnAuthRequests') return 'true';
       return '';
     }),
   },
@@ -330,6 +332,7 @@ describe('SdkFactory', () => {
             clientVersion: packageJson.version,
           },
           expect.any(Object),
+          { withCredentials: true },
         );
       });
 
@@ -352,6 +355,7 @@ describe('SdkFactory', () => {
             },
           },
           expect.any(Object),
+          { withCredentials: true },
         );
       });
 
@@ -373,6 +377,7 @@ describe('SdkFactory', () => {
             },
           },
           expect.any(Object),
+          { withCredentials: true },
         );
       });
 
@@ -396,6 +401,7 @@ describe('SdkFactory', () => {
             },
           },
           expect.any(Object),
+          { withCredentials: true },
         );
       });
 
@@ -417,6 +423,7 @@ describe('SdkFactory', () => {
             },
           },
           expect.any(Object),
+          { withCredentials: true },
         );
       });
 
@@ -434,7 +441,28 @@ describe('SdkFactory', () => {
             customHeaders: undefined,
           },
           expect.any(Object),
+          { withCredentials: true },
         );
+      });
+      test('When sending cookies on auth requests is disabled, then the auth clients are created without credentials', () => {
+        const getVariable = vi.mocked(envService.getVariable);
+        const defaultImpl = getVariable.getMockImplementation();
+        getVariable.mockImplementation((key) =>
+          key === 'sendCookiesOnAuthRequests' ? 'false' : (defaultImpl?.(key) ?? ''),
+        );
+
+        const instance = SdkFactory.getNewApiInstance();
+        instance.createAuthClient();
+        instance.createDesktopAuthClient();
+
+        expect(Auth.client).toHaveBeenNthCalledWith(1, MOCKED_NEW_API, expect.any(Object), expect.any(Object), {
+          withCredentials: false,
+        });
+        expect(Auth.client).toHaveBeenNthCalledWith(2, MOCKED_NEW_API, expect.any(Object), expect.any(Object), {
+          withCredentials: false,
+        });
+
+        getVariable.mockImplementation(defaultImpl!);
       });
     });
 

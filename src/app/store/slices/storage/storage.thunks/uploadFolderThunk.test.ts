@@ -144,11 +144,11 @@ describe('Upload Folder Thunk', () => {
 
     await uploadFolderThunk({
       root: {
+        isFolder: true,
         folderId: 'parent-uuid',
         childrenFiles: [bigFile],
         childrenFolders: [],
         name: 'TestFolder',
-        fullPathEdited: 'path',
       },
       currentFolderId: 'parent-uuid',
       options: { taskId },
@@ -174,11 +174,11 @@ describe('Upload Folder Thunk', () => {
 
     await uploadFolderThunk({
       root: {
+        isFolder: true,
         folderId: 'parent-uuid',
         childrenFiles: [smallFile, bigFile],
         childrenFolders: [],
         name: 'TestFolder',
-        fullPathEdited: 'path',
       },
       currentFolderId: 'parent-uuid',
       options: { taskId },
@@ -198,11 +198,11 @@ describe('Upload Folder Thunk', () => {
 
     await uploadFolderThunk({
       root: {
+        isFolder: true,
         folderId: 'parent-uuid',
         childrenFiles: [bigFile],
         childrenFolders: [],
         name: 'TestFolder',
-        fullPathEdited: 'path',
       },
       currentFolderId: 'parent-uuid',
       options: { taskId },
@@ -218,11 +218,11 @@ describe('Upload Folder Thunk', () => {
 
     await uploadFolderThunk({
       root: {
+        isFolder: true,
         folderId: 'parent-uuid',
         childrenFiles: [],
         childrenFolders: [],
         name: 'TestFolder',
-        fullPathEdited: 'path',
       },
       currentFolderId: 'parent-uuid',
       options: { taskId },
@@ -240,11 +240,11 @@ describe('Upload Folder Thunk', () => {
 
     await uploadFolderThunk({
       root: {
+        isFolder: true,
         folderId: 'parent-uuid',
         childrenFiles: [],
         childrenFolders: [],
         name: 'TestFolder',
-        fullPathEdited: 'path',
       },
       currentFolderId: 'parent-uuid',
       options: { taskId },

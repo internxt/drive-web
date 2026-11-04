@@ -88,7 +88,7 @@ describe('Drag and Drop Service', () => {
       const mockEntry = createMockFileSystemEntry('test.txt', true);
       mockDataTransferItemList = createItemList(createMockDataTransferItem(mockFile, mockEntry));
 
-      const result = await transformDraggedItems(mockDataTransferItemList, '/path');
+      const result = await transformDraggedItems(mockDataTransferItemList);
 
       expect(result.files).toHaveLength(1);
       expect(result.files[0]).toBe(mockFile);
@@ -99,11 +99,10 @@ describe('Drag and Drop Service', () => {
       const mockEntry = createMockFileSystemEntry('folder', false);
       mockDataTransferItemList = createItemList(createMockDataTransferItem(null, mockEntry));
 
-      const result = await transformDraggedItems(mockDataTransferItemList, '/path');
+      const result = await transformDraggedItems(mockDataTransferItemList);
 
       expect(result.rootList).toHaveLength(1);
       expect(result.rootList[0].name).toBe('folder');
-      expect(result.rootList[0].fullPathEdited).toBe('/path/folder');
       expect(result.rootList[0].folderId).toBeNull();
       expect(result.files).toHaveLength(0);
     });
@@ -117,7 +116,7 @@ describe('Drag and Drop Service', () => {
         createMockDataTransferItem(null, mockDirEntry),
       );
 
-      const result = await transformDraggedItems(mockDataTransferItemList, '/path');
+      const result = await transformDraggedItems(mockDataTransferItemList);
 
       expect(result.files).toHaveLength(1);
       expect(result.rootList).toHaveLength(1);
@@ -128,7 +127,7 @@ describe('Drag and Drop Service', () => {
       const mockItem = createMockDataTransferItem(mockFile, null);
       mockDataTransferItemList = createItemList(mockItem);
 
-      const result = await transformDraggedItems(mockDataTransferItemList, '/path');
+      const result = await transformDraggedItems(mockDataTransferItemList);
 
       expect(result.files).toHaveLength(1);
       expect(result.files[0]).toBe(mockFile);
@@ -139,7 +138,7 @@ describe('Drag and Drop Service', () => {
     it('returns empty results when no items are dragged', async () => {
       mockDataTransferItemList = createItemList();
 
-      const result = await transformDraggedItems(mockDataTransferItemList, '/path');
+      const result = await transformDraggedItems(mockDataTransferItemList);
 
       expect(result.files).toHaveLength(0);
       expect(result.rootList).toHaveLength(0);
@@ -151,7 +150,7 @@ describe('Drag and Drop Service', () => {
       const mockDirEntry = createMockDirectory('parent', [childFileEntry, childDirEntry]);
       mockDataTransferItemList = createItemList(createMockDataTransferItem(null, mockDirEntry));
 
-      const result = await transformDraggedItems(mockDataTransferItemList, '/path');
+      const result = await transformDraggedItems(mockDataTransferItemList);
 
       expect(result.rootList).toHaveLength(1);
       expect(result.rootList[0].name).toBe('parent');
@@ -186,22 +185,10 @@ describe('Drag and Drop Service', () => {
 
       mockDataTransferItemList = createItemList(createMockDataTransferItem(null, mockDirEntry));
 
-      const result = await transformDraggedItems(mockDataTransferItemList, '/path');
+      const result = await transformDraggedItems(mockDataTransferItemList);
 
       expect(result.rootList).toHaveLength(1);
       expect(result.rootList[0].childrenFiles).toHaveLength(3);
-    });
-
-    it('maintains correct full paths for deeply nested folders', async () => {
-      const grandchildEntry = createMockFileSystemEntry('file.txt', true);
-      const childDirEntry = createMockDirectory('child', [grandchildEntry]);
-      const parentDirEntry = createMockDirectory('parent', [childDirEntry]);
-      mockDataTransferItemList = createItemList(createMockDataTransferItem(null, parentDirEntry));
-
-      const result = await transformDraggedItems(mockDataTransferItemList, '/topLevel');
-
-      expect(result.rootList[0].fullPathEdited).toBe('/topLevel/parent');
-      expect(result.rootList[0].childrenFolders[0].fullPathEdited).toBe('/topLevel/parent/child');
     });
 
     it('separates multiple files and folders when dragged at the same time', async () => {
@@ -212,7 +199,7 @@ describe('Drag and Drop Service', () => {
         createMockDataTransferItem(null, createMockFileSystemEntry('folder2', false)),
       );
 
-      const result = await transformDraggedItems(mockDataTransferItemList, '/path');
+      const result = await transformDraggedItems(mockDataTransferItemList);
 
       expect(result.files).toHaveLength(2);
       expect(result.rootList).toHaveLength(2);
@@ -229,7 +216,7 @@ describe('Drag and Drop Service', () => {
       const mockDirEntry = createMockDirectory('folder', fileEntries);
       mockDataTransferItemList = createItemList(createMockDataTransferItem(null, mockDirEntry));
 
-      const result = await transformDraggedItems(mockDataTransferItemList, '/path');
+      const result = await transformDraggedItems(mockDataTransferItemList);
 
       expect(result.rootList).toHaveLength(1);
       expect(result.rootList[0].childrenFiles).toHaveLength(3);
@@ -244,18 +231,30 @@ describe('Drag and Drop Service', () => {
       const mockDirEntry = createMockDirectory('folder', dirEntries);
       mockDataTransferItemList = createItemList(createMockDataTransferItem(null, mockDirEntry));
 
-      const result = await transformDraggedItems(mockDataTransferItemList, '/path');
+      const result = await transformDraggedItems(mockDataTransferItemList);
 
       expect(result.rootList).toHaveLength(1);
       expect(result.rootList[0].childrenFiles).toHaveLength(0);
       expect(result.rootList[0].childrenFolders).toHaveLength(2);
     });
 
+    it('fails the drop when a dropped file cannot be read', async () => {
+      const readError = new DOMException('File could not be read', 'NotReadableError');
+      const unreadableEntry = createMockFileSystemEntry('locked.txt', true);
+      (unreadableEntry as unknown as FileSystemFileEntry).file = vi.fn((_, errorCallback) =>
+        errorCallback?.(readError),
+      );
+      const mockDirEntry = createMockDirectory('folder', [unreadableEntry]);
+      mockDataTransferItemList = createItemList(createMockDataTransferItem(null, mockDirEntry));
+
+      await expect(transformDraggedItems(mockDataTransferItemList)).rejects.toBe(readError);
+    });
+
     it('processes empty folders without errors', async () => {
       const mockDirEntry = createMockFileSystemEntry('emptyFolder', false);
       mockDataTransferItemList = createItemList(createMockDataTransferItem(null, mockDirEntry));
 
-      const result = await transformDraggedItems(mockDataTransferItemList, '/path');
+      const result = await transformDraggedItems(mockDataTransferItemList);
 
       expect(result.rootList).toHaveLength(1);
       expect(result.rootList[0].name).toBe('emptyFolder');

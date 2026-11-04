@@ -65,7 +65,7 @@ export class SdkFactory {
       turnstileToken: options?.turnstileToken,
     });
     const apiSecurity = this.getNewApiSecurity(options?.unauthorizedCallback);
-    return Auth.client(apiUrl, appDetails, apiSecurity);
+    return Auth.client(apiUrl, appDetails, apiSecurity, SdkFactory.getAuthHttpOptions());
   }
 
   public createDesktopAuthClient(options?: { turnstileToken?: string }): Auth {
@@ -74,7 +74,7 @@ export class SdkFactory {
       options?.turnstileToken ? { 'x-internxt-turnstile': options.turnstileToken } : undefined,
     );
     const apiSecurity = this.getNewApiSecurity();
-    return Auth.client(apiUrl, appDetails, apiSecurity);
+    return Auth.client(apiUrl, appDetails, apiSecurity, SdkFactory.getAuthHttpOptions());
   }
 
   public createNewStorageClient(): Storage {
@@ -176,6 +176,10 @@ export class SdkFactory {
 
   public getApiUrl(): ApiUrl {
     return this.apiUrl;
+  }
+
+  private static getAuthHttpOptions(): { withCredentials: boolean } {
+    return { withCredentials: envService.getVariable('sendCookiesOnAuthRequests') === 'true' };
   }
 
   private static getAppDetails(customHeaders?: Record<string, string>): AppDetails {

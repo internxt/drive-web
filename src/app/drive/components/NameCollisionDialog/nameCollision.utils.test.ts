@@ -11,17 +11,16 @@ import {
   getRemainingGroups,
   getUnpairedItems,
   groupByNameSeries,
-  isFolderUpload,
   isNameTakenBy,
   splitReplacingPairs,
 } from './nameCollision.utils';
 
 const getRoot = (name = 'Photos'): IRoot => ({
   name,
+  isFolder: true,
   folderId: null,
   childrenFiles: [],
   childrenFolders: [],
-  fullPathEdited: `/${name}`,
 });
 
 const getGroup = (overrides: Partial<CollisionGroup> = {}): CollisionGroup => ({
@@ -41,14 +40,6 @@ const existingNamedByName = getDriveItemData({
   type: null as never,
 });
 const existingItems = [existingFile, existingFolder, existingNamedByName];
-
-describe('isFolderUpload', () => {
-  test('when the item has an edited full path, then it is an uploaded folder', () => {
-    expect(isFolderUpload(getRoot())).toBe(true);
-    expect(isFolderUpload(new File([''], 'notes.txt'))).toBe(false);
-    expect(isFolderUpload(getDriveItemData({ isFolder: true }))).toBe(false);
-  });
-});
 
 describe('findExistingItemFor', () => {
   test.each<[string, CollisionItem, ReturnType<typeof getDriveItemData> | undefined]>([

@@ -186,6 +186,8 @@ const DriveView = (props: DriveViewProps) => {
           updatedAt: fileMeta.updatedAt,
           thumbnails: listedFile?.thumbnails ?? fileMeta.thumbnails?.map(toDriveThumbnail) ?? [],
           currentThumbnail: listedFile?.currentThumbnail ?? null,
+          sharings: listedFile?.sharings,
+          shares: listedFile?.shares,
         }),
       );
       fileMeta.plainName && setTitle(`${fileMeta.plainName}.${fileMeta.type} - Internxt Drive`);

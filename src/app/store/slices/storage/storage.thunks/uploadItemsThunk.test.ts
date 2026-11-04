@@ -151,6 +151,34 @@ describe('uploadItemsThunk', () => {
     expect(RetryChangeStatusSpy).toHaveBeenCalledWith('task1', 'failed');
   });
 
+  test.each([
+    {
+      reason: 'is too big',
+      state: { ...getState(), fileVersions: { limits: { maxUploadFileSize: 1 } } },
+    },
+    {
+      reason: 'does not fit in the remaining storage',
+      state: getState(),
+      arrange: () => {
+        (planSelectors.planLimitToShow as Mock).mockReturnValueOnce(1);
+        (planSelectors.planUsageToShow as Mock).mockReturnValueOnce(0);
+      },
+    },
+  ])('when a retried file $reason, then it is marked as failed', async ({ state, arrange }) => {
+    arrange?.();
+    const retryChangeStatusSpy = vi.spyOn(RetryManager, 'changeStatus');
+
+    await uploadItemsThunk({
+      files: [mockFile],
+      parentFolderId: 'parent1',
+      taskId: 'task1',
+      isRetry: true,
+    })(dispatch, (() => state) as () => RootState, {});
+
+    expect(uploadFilesWithTasks).not.toHaveBeenCalled();
+    expect(retryChangeStatusSpy).toHaveBeenCalledWith('task1', 'failed');
+  });
+
   test('when there is an error while uploading items, then a notification is shown', async () => {
     const randomError = new AppError('Test Error', undefined, undefined, {
       'x-request-id': 'test-request-id',

@@ -1,7 +1,7 @@
 import { Loader } from '@internxt/ui';
 
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { FormatFileViewerProps } from '../../FileViewer';
+import { FileContentViewerProps } from '../types';
 import { PORTRAIT_VIEWER_PADDING_CLASS } from '../../utils/fileViewerUtils';
 import { useDisplayableImage } from './useDisplayableImage';
 
@@ -10,9 +10,10 @@ import './FileImageViewer.scss';
 const FileImageViewer = ({
   file,
   blob,
-  handlersForSpecialItems,
-  setIsPreviewAvailable,
-}: FormatFileViewerProps): JSX.Element => {
+  onError,
+  onProgress,
+  onConvertedContent,
+}: FileContentViewerProps): JSX.Element => {
   const { translate } = useTranslationContext();
 
   const extension = file.type ? String(file.type).toLowerCase() : '';
@@ -20,11 +21,12 @@ const FileImageViewer = ({
     file,
     blob,
     extension,
-    handlersForSpecialItems,
-    setIsPreviewAvailable,
+    onError,
+    onProgress,
+    onConvertedContent,
   });
 
-  const shouldShowConversionLoader = isConverting && !handlersForSpecialItems;
+  const shouldShowConversionLoader = isConverting && !onProgress;
 
   return (
     <div
@@ -43,7 +45,7 @@ const FileImageViewer = ({
             alt={file.name}
             className="relative max-h-screen object-contain portrait:max-w-full"
             draggable={false}
-            onError={() => setIsPreviewAvailable(false)}
+            onError={onError}
           />
         )}
       </div>

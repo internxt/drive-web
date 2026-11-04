@@ -1,63 +1,46 @@
 import { IRoot } from 'app/store/slices/storage/types';
 
-export const transformInputFilesToJSON = (files: File[]): JSON => {
-  const result = {} as JSON;
-  for (const file of files) {
-    file.webkitRelativePath.split('/').reduce((previousValue, currentValue, currentIndex, arrayPaths) => {
-      if (currentIndex === arrayPaths.length - 1) {
-        previousValue[currentValue] = file;
-      }
-      return (previousValue[currentValue] = previousValue[currentValue] || {});
-    }, result);
-  }
-  return result;
-};
-
-export const transformJsonFilesToItems = (
-  jsonObject: JSON,
+export const transformInputFilesToItems = (
+  inputFiles: File[],
   currentFolderId: string,
-): { rootList: Array<IRoot>; rootFiles: Array<File> } => {
-  const rootList = [] as IRoot[];
-  const rootFiles = [] as File[];
+): { rootList: IRoot[]; files: File[] } => {
+  const rootList: IRoot[] = [];
+  const files: File[] = [];
+  const foldersByPath = new Map<string, IRoot>();
 
-  for (const [key, value] of Object.entries(jsonObject)) {
-    if (value instanceof File) {
-      rootFiles.push(value);
+  const getOrCreateFolder = (pathSegments: string[]): IRoot => {
+    const path = pathSegments.join('/');
+    const existingFolder = foldersByPath.get(path);
+    if (existingFolder) return existingFolder;
+
+    const isRootFolder = pathSegments.length === 1;
+    const folder: IRoot = {
+      name: pathSegments.at(-1) as string,
+      isFolder: true,
+      folderId: isRootFolder ? currentFolderId : null,
+      childrenFiles: [],
+      childrenFolders: [],
+    };
+
+    if (isRootFolder) {
+      rootList.push(folder);
     } else {
-      rootList.push({
-        name: key,
-        folderId: currentFolderId,
-        fullPathEdited: '/' + key,
-        childrenFiles: getChildrenFiles(value),
-        childrenFolders: getChildrenFolders(value),
-      });
+      getOrCreateFolder(pathSegments.slice(0, -1)).childrenFolders.push(folder);
     }
-  }
-  return { rootList, rootFiles };
-};
+    foldersByPath.set(path, folder);
 
-const getChildrenFiles = (jsonObject: JSON): File[] => {
-  const childrenFiles = [] as File[];
-  for (const [key, value] of Object.entries(jsonObject)) {
-    if (value instanceof File) {
-      childrenFiles.push(value);
-    }
-  }
-  return childrenFiles;
-};
+    return folder;
+  };
 
-const getChildrenFolders = (jsonObject: JSON): IRoot[] => {
-  const childrenFolders = [] as IRoot[];
-  for (const [key, value] of Object.entries(jsonObject)) {
-    if (!(value instanceof File)) {
-      childrenFolders.push({
-        name: key,
-        folderId: null,
-        fullPathEdited: '/' + key,
-        childrenFiles: getChildrenFiles(value),
-        childrenFolders: getChildrenFolders(value),
-      });
+  for (const file of inputFiles) {
+    const folderPathSegments = file.webkitRelativePath.split('/').slice(0, -1);
+
+    if (folderPathSegments.length === 0) {
+      files.push(file);
+    } else {
+      getOrCreateFolder(folderPathSegments).childrenFiles.push(file);
     }
   }
-  return childrenFolders;
+
+  return { rootList, files };
 };

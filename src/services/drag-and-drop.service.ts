@@ -1,19 +1,7 @@
 import { IRoot } from 'app/store/slices/storage/types';
 
-interface FileSystemFileEntry extends FileSystemEntry {
-  file: (successCallback: (file: File) => void) => void;
-}
-
-/**
- *
- * @param items Items that were dragged
- * @params topLevelPath Path where it was dropped at
- * @returns rootList: List of directories that were dropped at top level
- * @returns files: List of files that were dropped at top level
- */
 export async function transformDraggedItems(
   items: DataTransferItemList,
-  topLevelPath: string,
 ): Promise<{ rootList: Array<IRoot>; files: Array<File> }> {
   const topLevelFiles: Array<File> = [];
   const topLevelDirectories: Array<FileSystemDirectoryEntry> = [];
@@ -33,18 +21,13 @@ export async function transformDraggedItems(
     }
   }
 
-  const rootList = await Promise.all(
-    topLevelDirectories.map((directory) => transformEntryToRoot(directory, topLevelPath)),
-  );
+  const rootList = await Promise.all(topLevelDirectories.map((directory) => transformEntryToRoot(directory)));
 
   return { rootList, files: topLevelFiles };
 }
 
-// Transforms FileSystemDirectoryEntry to IRoot type
-async function transformEntryToRoot(entry: FileSystemDirectoryEntry, currentPath: string): Promise<IRoot> {
+async function transformEntryToRoot(entry: FileSystemDirectoryEntry): Promise<IRoot> {
   const entries = await getEntriesFromDirectory(entry);
-
-  const fullPathEdited = `${currentPath}/${entry.name}`;
 
   const childrenFilesPromises = Promise.all(
     entries
@@ -54,17 +37,17 @@ async function transformEntryToRoot(entry: FileSystemDirectoryEntry, currentPath
   const childrenFoldersPromises = Promise.all(
     entries
       .filter((entry) => entry.isDirectory)
-      .map((entry) => transformEntryToRoot(entry as FileSystemDirectoryEntry, fullPathEdited)),
+      .map((entry) => transformEntryToRoot(entry as FileSystemDirectoryEntry)),
   );
 
   const [childrenFiles, childrenFolders] = await Promise.all([childrenFilesPromises, childrenFoldersPromises]);
 
   return {
     name: entry.name,
+    isFolder: entry.isDirectory,
     childrenFiles,
     childrenFolders,
     folderId: null,
-    fullPathEdited,
   };
 }
 
@@ -87,7 +70,7 @@ function getEntriesFromDirectory(entry: FileSystemDirectoryEntry): Promise<FileS
 }
 
 function getFileFromEntry(entry: FileSystemFileEntry): Promise<File> {
-  return new Promise((resolve) => {
-    entry.file(resolve);
+  return new Promise((resolve, reject) => {
+    entry.file(resolve, reject);
   });
 }

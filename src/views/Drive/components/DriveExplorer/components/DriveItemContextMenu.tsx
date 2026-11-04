@@ -434,9 +434,9 @@ const contextMenuSelectedBackupItems = ({
   onDownloadSelectedItems,
   onDeleteSelectedItems,
 }: {
-  onDownloadSelectedItems: () => void;
-  onDeleteSelectedItems: () => Promise<void>;
-}): Array<MenuItemType<unknown>> => [
+  onDownloadSelectedItems: (item: DriveItemData) => void;
+  onDeleteSelectedItems: (item: DriveItemData) => Promise<void>;
+}): Array<MenuItemType<DriveItemData>> => [
   getDownloadMenuItem(onDownloadSelectedItems),
   { separator: true },
   {

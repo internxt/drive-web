@@ -1,7 +1,6 @@
 import { AppError } from '@internxt/sdk';
 import { act, renderHook } from '@testing-library/react';
 import databaseService from 'app/database/services/database.service';
-import { RealtimeService } from 'services';
 import { LocalStorageItem } from 'app/core/types';
 import { authenticateUser, is2FANeeded } from 'services/auth.service';
 import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
@@ -223,7 +222,6 @@ describe('Authentication Checkout Custom hook', () => {
     const changeAuthMethod = vi.fn();
     const checkoutItemData = '{"item_name":"2TB Year Plan"}';
 
-    const stopRealTimeServiceSpy = vi.spyOn(RealtimeService.prototype, 'stop').mockResolvedValue();
     const clearDatabaseSpy = vi.spyOn(databaseService, 'clear').mockResolvedValue();
     localStorage.setItem(LocalStorageItem.UserUUID, 'user_123');
     localStorage.setItem(LocalStorageItem.AmountPaid, '100');
@@ -245,7 +243,6 @@ describe('Authentication Checkout Custom hook', () => {
     expect(localStorage.getItem(LocalStorageItem.AmountPaid)).toBeNull();
     expect(localStorage.getItem(LocalStorageItem.CheckoutItemData)).toBe(checkoutItemData);
     expect(localStorage.getItem(LocalStorageItem.GCLID)).toBe('gclid_123');
-    expect(stopRealTimeServiceSpy).toHaveBeenCalled();
     expect(changeAuthMethod).toHaveBeenCalledWith('signUp');
 
     localStorage.clear();

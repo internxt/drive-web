@@ -39,3 +39,6 @@ export const getPreviewSizeLimitBytes = ({ type }: Pick<DriveFileData, 'type'>):
 
 export const isPreviewableBySize = (file: Pick<DriveFileData, 'type' | 'size'>): boolean =>
   file.size < getPreviewSizeLimitBytes(file);
+
+export const getFileDisplayName = ({ name, plainName, type }: Pick<DriveFileData, 'name' | 'plainName' | 'type'>) =>
+  `${plainName ?? name}${type ? `.${type}` : ''}`;

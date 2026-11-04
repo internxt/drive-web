@@ -1,1 +1,0 @@
-export { useTrashPagination } from './useTrashPagination';
