@@ -2,11 +2,8 @@ import { act, fireEvent, render, waitFor } from '@testing-library/react';
 import { match } from 'react-router';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
-import {
-  type DownloadSupport,
-  downloadToFs,
-  getDownloadSupport,
-} from 'app/drive/services/download.service/downloadFile';
+import { ErrorMessages } from 'app/core/constants';
+import { DownloadSupport, downloadToFs, getDownloadSupport } from 'app/drive/services/download.service/downloadFile';
 import network from 'app/network';
 import { IDownloadParams } from 'app/network/download';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
@@ -18,6 +15,7 @@ vi.mock('react-device-detect', () => ({ isFirefox: true }));
 
 vi.mock('app/drive/services/download.service/downloadFile', () => ({
   default: vi.fn(),
+  DownloadSupport: { StreamApi: 'StreamApi', PartialStreamApi: 'PartialStreamApi', Blob: 'Blob' },
   downloadToFs: vi.fn(),
   getDownloadSupport: vi.fn(),
 }));
@@ -36,7 +34,6 @@ vi.mock('app/i18n/provider/TranslationProvider', () => ({
 }));
 
 const FILE_SIZE = 1000;
-const DOWNLOAD_SUPPORT = 'StreamApi' as DownloadSupport;
 const SHARING_ID = 'f32a91da-c799-4e13-aa17-8c4d9e0323c9';
 
 const sharingMeta = {
@@ -49,6 +46,8 @@ const routeMatch = {
   params: { token: 'f32a91dac7994e13aa178c4d9e0323c9', code: 'code' },
 } as unknown as match<{ token: string; code: string }>;
 
+const getDownloadAbortController = () => vi.mocked(downloadToFs).mock.calls[0][4];
+
 const renderLoadedView = async () => {
   const view = render(<ShareFileView match={routeMatch} token={SHARING_ID} />);
   await waitFor(() => expect(view.getByText('actions.download')).toBeInTheDocument());
@@ -58,7 +57,7 @@ const renderLoadedView = async () => {
 describe('Public shared file download', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(getDownloadSupport).mockResolvedValue(DOWNLOAD_SUPPORT);
+    vi.mocked(getDownloadSupport).mockResolvedValue(DownloadSupport.PartialStreamApi);
     vi.spyOn(shareService, 'getPublicSharingMeta').mockResolvedValue(sharingMeta);
     vi.spyOn(notificationsService, 'show').mockImplementation(() => 'toast-id');
     vi.spyOn(errorService, 'reportError').mockImplementation(() => undefined);
@@ -101,14 +100,83 @@ describe('Public shared file download', () => {
     expect(queryByText('actions.downloaded')).not.toBeInTheDocument();
   });
 
-  test('when the user is on Firefox, then the file is still streamed to disk instead of being forced into memory', async () => {
+  test.each([
+    [
+      'the browser supports the save dialog',
+      'saved straight to Downloads',
+      DownloadSupport.StreamApi,
+      DownloadSupport.PartialStreamApi,
+    ],
+    ['the user is on Firefox', 'streamed to disk', DownloadSupport.PartialStreamApi, DownloadSupport.PartialStreamApi],
+    ['the user is on Brave', 'kept in memory as a blob', DownloadSupport.Blob, DownloadSupport.Blob],
+  ])('when %s, then the file is %s', async (_scenario, _outcome, detected, expected) => {
+    vi.mocked(getDownloadSupport).mockResolvedValue(detected);
     vi.mocked(downloadToFs).mockResolvedValue(undefined);
     const { getByText } = await renderLoadedView();
 
     fireEvent.click(getByText('actions.download'));
 
     await waitFor(() =>
-      expect(downloadToFs).toHaveBeenCalledWith(expect.any(String), expect.any(Promise), DOWNLOAD_SUPPORT),
+      expect(downloadToFs).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.any(Promise),
+        expected,
+        undefined,
+        expect.any(AbortController),
+        FILE_SIZE,
+      ),
     );
+  });
+
+  test('when the file is downloaded, then its size is passed so the browser can show the download progress', async () => {
+    vi.mocked(downloadToFs).mockResolvedValue(undefined);
+    const { getByText } = await renderLoadedView();
+
+    fireEvent.click(getByText('actions.download'));
+
+    await waitFor(() => expect(vi.mocked(downloadToFs).mock.calls[0][5]).toBe(FILE_SIZE));
+  });
+
+  test('when saving the file fails, then the network download is aborted and the error is reported', async () => {
+    vi.mocked(downloadToFs).mockRejectedValue(new Error('disk full'));
+    const { getByText } = await renderLoadedView();
+
+    fireEvent.click(getByText('actions.download'));
+
+    await waitFor(() => expect(errorService.reportError).toHaveBeenCalled());
+    expect(getDownloadAbortController()?.signal.aborted).toBe(true);
+    expect(vi.mocked(network.downloadFile).mock.calls[0][0].options?.abortController).toBe(
+      getDownloadAbortController(),
+    );
+  });
+
+  test('when the download is cancelled from the browser, then the download stops silently and can be started again', async () => {
+    vi.mocked(downloadToFs).mockRejectedValue(new Error(ErrorMessages.DownloadCancelledFromBrowser));
+    const { getByText, queryByText } = await renderLoadedView();
+
+    fireEvent.click(getByText('actions.download'));
+    await waitFor(() => expect(getDownloadAbortController()?.signal.aborted).toBe(true));
+    act(() => vi.mocked(network.downloadFile).mock.calls[0][0].options?.notifyProgress(FILE_SIZE, FILE_SIZE / 2));
+
+    expect(getByText('actions.download')).toBeInTheDocument();
+    expect(queryByText('50%')).not.toBeInTheDocument();
+    expect(queryByText('actions.downloaded')).not.toBeInTheDocument();
+    expect(notificationsService.show).not.toHaveBeenCalled();
+    expect(errorService.reportError).not.toHaveBeenCalled();
+  });
+
+  test('when the download support is still being checked, then the network download has not started yet', async () => {
+    let resolveSupport!: (support: DownloadSupport) => void;
+    vi.mocked(getDownloadSupport).mockReturnValue(new Promise((resolve) => (resolveSupport = resolve)));
+    vi.mocked(downloadToFs).mockResolvedValue(undefined);
+    const { getByText } = await renderLoadedView();
+
+    fireEvent.click(getByText('actions.download'));
+    await waitFor(() => expect(getDownloadSupport).toHaveBeenCalled());
+    const hasDownloadStartedBeforeSupport = vi.mocked(network.downloadFile).mock.calls.length > 0;
+    await act(async () => resolveSupport(DownloadSupport.PartialStreamApi));
+
+    expect(hasDownloadStartedBeforeSupport).toBe(false);
+    expect(network.downloadFile).toHaveBeenCalledTimes(1);
   });
 });

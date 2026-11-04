@@ -18,7 +18,7 @@ import { CheckIcon, DownloadSimpleIcon, EyeIcon } from '@phosphor-icons/react';
 import downloadService from 'app/drive/services/download.service';
 import { MIN_DOWNLOAD_MULTIPART_SIZE } from 'app/network/networkConstants';
 import { IDownloadParams } from 'app/network/download';
-import { downloadToFs, getDownloadSupport } from 'app/drive/services/download.service/downloadFile';
+import { DownloadSupport, downloadToFs, getDownloadSupport } from 'app/drive/services/download.service/downloadFile';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import './components/ShareView.scss';
 
@@ -27,7 +27,7 @@ import { PublicSharedItemInfo, SharingMeta } from '@internxt/sdk/dist/drive/shar
 import errorService from 'services/error.service';
 import { binaryStreamToBlob } from 'services/stream.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { HTTP_STATUS_CODES } from 'app/core/constants';
+import { ErrorMessages, HTTP_STATUS_CODES } from 'app/core/constants';
 
 import { Button, Loader } from '@internxt/ui';
 import { stringUtils } from '@internxt/lib';
@@ -203,7 +203,7 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
     download();
   }
 
-  const getFileStream = (): Promise<ReadableStream<Uint8Array>> => {
+  const getFileStream = (abortController: AbortController): Promise<ReadableStream<Uint8Array>> => {
     const fileSize = info.item.size;
     const downloadParams: IDownloadParams = {
       bucketId: info.item.bucket,
@@ -211,7 +211,9 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
       encryptionKey: Buffer.from(info.encryptionKey, 'hex'),
       token: info.itemToken,
       options: {
+        abortController,
         notifyProgress: (totalProgress, downloadedBytes) => {
+          if (abortController.signal.aborted) return;
           const readProgress = Math.trunc((downloadedBytes / totalProgress) * 100);
           setProgress(Math.min(readProgress, MAX_PROGRESS_BEFORE_SAVED));
         },
@@ -224,33 +226,59 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
       : network.downloadFile(downloadParams);
   };
 
-  const saveFile = async (): Promise<void> => {
+  /**
+   * Same as `getDownloadSupport`, but never opens the native "Save as" dialog: browsers that support it save
+   * straight to the Downloads folder through streamSaver, like the in-app download.
+   */
+  const getSaveToDownloadsSupport = async (): Promise<DownloadSupport> => {
+    const support = await getDownloadSupport();
+    return support === DownloadSupport.StreamApi ? DownloadSupport.PartialStreamApi : support;
+  };
+
+  /**
+   * Starts the network download only once the download support is known, so a failing support check never
+   * leaves an orphan download running.
+   */
+  const saveFile = async (abortController: AbortController): Promise<void> => {
     if (isEmptySharedFile) {
       await downloadService.downloadFileFromBlob(new Blob([]), getFormatFileName());
     } else {
-      const fileStream = getFileStream();
-      await downloadToFs(getFormatFileName(), fileStream, await getDownloadSupport());
+      const support = await getSaveToDownloadsSupport();
+      await downloadToFs(
+        getFormatFileName(),
+        getFileStream(abortController),
+        support,
+        undefined,
+        abortController,
+        info.item.size,
+      );
     }
   };
 
   const download = async (): Promise<void> => {
     if (isDownloading) return;
 
+    const abortController = new AbortController();
     setProgress(TaskProgress.Min);
     setIsDownloading(true);
     try {
-      await saveFile();
+      await saveFile(abortController);
       setProgress(DOWNLOADED_PROGRESS);
       setTimeout(() => {
         setSendBannerVisible(true);
       }, 3000);
     } catch (err) {
+      abortController.abort();
       setProgress(TaskProgress.Min);
-      errorService.reportError(err);
-      notificationsService.show({
-        text: translate('error.downloadingFile', { message: errorService.castError(err).message }),
-        type: ToastType.Error,
-      });
+      const { message } = errorService.castError(err);
+      const isCancelledFromBrowser = message === ErrorMessages.DownloadCancelledFromBrowser;
+      if (!isCancelledFromBrowser) {
+        errorService.reportError(err);
+        notificationsService.show({
+          text: translate('error.downloadingFile', { message }),
+          type: ToastType.Error,
+        });
+      }
     } finally {
       setIsDownloading(false);
     }

@@ -1,4 +1,5 @@
 import { describe, test, expect, beforeEach, vi, afterEach } from 'vitest';
+import { ErrorMessages } from 'app/core/constants';
 import { StreamSaver, STREAM_SAVER_MITM } from '.';
 
 const mockedChunk = new Uint8Array([1, 2, 3]);
@@ -81,13 +82,40 @@ describe('Stream Saver Service', () => {
     vi.clearAllMocks();
   });
 
-  test('When transferable streams are supported, then it should create a transform stream and return its writable', () => {
+  const createStreamSaverWithTransferableSupport = (isSupported: boolean): StreamSaver => {
+    if (!isSupported) {
+      vi.mocked(mockMessageChannel.port1.postMessage).mockImplementationOnce(() => {
+        throw new DOMException('Transferable streams not supported', 'DataCloneError');
+      });
+    }
+    return new StreamSaver();
+  };
+
+  test('When transferable streams are supported, then the written chunks go through a transform stream', async () => {
     (streamSaver as any).supportsTransferable = true;
 
-    const stream = streamSaver.createWriteStream('test.txt');
+    await streamSaver.createWriteStream('test.txt').getWriter().write(mockedChunk);
 
     expect(global.TransformStream).toHaveBeenCalled();
-    expect(stream).toBe(mockTransformStream.writable);
+    expect(mockWriter.write).toHaveBeenCalledWith(mockedChunk);
+  });
+
+  test('When the download is cancelled from the browser, then writing fails as cancelled from the browser', async () => {
+    streamSaver = createStreamSaverWithTransferableSupport(true);
+    mockWriter.write.mockRejectedValue(undefined);
+
+    const writing = streamSaver.createWriteStream('test.txt').getWriter().write(mockedChunk);
+
+    await expect(writing).rejects.toHaveProperty('message', ErrorMessages.DownloadCancelledFromBrowser);
+  });
+
+  test('When the download is cancelled from the browser without transferable streams, then the stream fails as cancelled from the browser', async () => {
+    streamSaver = createStreamSaverWithTransferableSupport(false);
+    const writer = streamSaver.createWriteStream('test.txt').getWriter();
+
+    mockMessageChannel.port1.onmessage?.({ data: { abort: true } } as MessageEvent);
+
+    await expect(writer.closed).rejects.toHaveProperty('message', ErrorMessages.DownloadCancelledFromBrowser);
   });
 
   test('When transferable streams are supported, then it should transfer readable stream via post message', async () => {

@@ -115,6 +115,7 @@ export async function downloadToFs(
   supports: DownloadSupport,
   isFirefoxBrowser?: boolean,
   abortController?: AbortController,
+  size?: number,
 ): Promise<void> {
   if (isFirefoxBrowser) {
     return downloadFileAsBlob(filename, await source);
@@ -132,7 +133,11 @@ export async function downloadToFs(
 
       return downloadFileUsingStreamApi(await source, destination, abortController);
     case DownloadSupport.PartialStreamApi:
-      return downloadFileUsingStreamApi(await source, streamSaver.createWriteStream(filename), abortController);
+      return downloadFileUsingStreamApi(
+        await source,
+        streamSaver.createWriteStream(filename, { size }),
+        abortController,
+      );
 
     default:
       return downloadFileAsBlob(filename, await source);

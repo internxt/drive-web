@@ -1,4 +1,5 @@
 /* eslint-disable quotes */
+import { ErrorMessages } from 'app/core/constants';
 import { MitmTransporter, ServiceWorkerMessage, ServiceWorkerResponse, StreamSaverOptions } from './types';
 
 export const STREAM_SAVER_MITM = '/streamsaver/mitm.html?version=2.0.0';
@@ -66,12 +67,31 @@ export class StreamSaver {
     }
   }
 
+  private failWritesAsCancelledFromBrowser(writable: WritableStream<Uint8Array>): WritableStream<Uint8Array> {
+    const writer = writable.getWriter();
+
+    return new WritableStream<Uint8Array>({
+      write: (chunk) =>
+        writer.write(chunk).catch(() => {
+          throw new Error(ErrorMessages.DownloadCancelledFromBrowser);
+        }),
+      close: () => writer.close(),
+      abort: (reason) => writer.abort(reason),
+    });
+  }
+
   private manualWritableStream(
     channel: MessageChannel,
     bytesWritten: number,
     downloadUrl: string | null,
+    browserCancelSignal: AbortSignal,
   ): WritableStream<Uint8Array> {
     return new WritableStream<Uint8Array>({
+      start(controller) {
+        browserCancelSignal.addEventListener('abort', () => controller.error(browserCancelSignal.reason), {
+          once: true,
+        });
+      },
       write(chunk) {
         if (!(chunk instanceof Uint8Array)) {
           throw new TypeError('Can only write Uint8Arrays');
@@ -114,6 +134,7 @@ export class StreamSaver {
     this.loadTransporter();
 
     const messageChannel = new MessageChannel();
+    const browserCancel = new AbortController();
     let bytesWritten = 0;
     let downloadUrl: string | null = null;
 
@@ -173,6 +194,7 @@ export class StreamSaver {
         this.makeIframe(evt.data.download);
       } else if (evt.data.abort) {
         console.log('[StreamSaver] Abort received');
+        browserCancel.abort(new Error(ErrorMessages.DownloadCancelledFromBrowser));
         messageChannel.port1.postMessage('abort');
         messageChannel.port1.onmessage = null;
         messageChannel.port1.close();
@@ -187,11 +209,11 @@ export class StreamSaver {
     }
 
     if (transformStream?.writable) {
-      return transformStream.writable;
+      return this.failWritesAsCancelledFromBrowser(transformStream.writable);
     }
 
     // Use manual writable stream for browsers that don't support Transferable streams. E.g. Safari
-    return this.manualWritableStream(messageChannel, bytesWritten, downloadUrl);
+    return this.manualWritableStream(messageChannel, bytesWritten, downloadUrl, browserCancel.signal);
   }
 }
 
