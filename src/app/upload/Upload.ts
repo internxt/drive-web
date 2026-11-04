@@ -282,10 +282,10 @@ export class Upload {
   }
 
   private async retry(topLevelItem: UploadItem, pickedFailedItem?: FailedUploadItem): Promise<void> {
-    const failures = this.getFailuresOf(topLevelItem);
+    const retryableFailures = this.getFailuresOf(topLevelItem).filter(([, failedItem]) => failedItem.isRetryable);
     const failuresToRetry = pickedFailedItem
-      ? failures.filter(([, failedItem]) => failedItem.id === pickedFailedItem.id)
-      : failures;
+      ? retryableFailures.filter(([, failedItem]) => failedItem.id === pickedFailedItem.id)
+      : retryableFailures;
 
     const hasNothingToRetry = failuresToRetry.length === 0;
     if (hasNothingToRetry) return;
