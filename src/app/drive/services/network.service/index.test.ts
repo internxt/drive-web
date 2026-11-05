@@ -15,7 +15,8 @@ vi.mock('app/core/factory/sdk/retryStrategies', () => ({
   notifyUserWithCooldown: vi.fn(),
 }));
 
-import { MAX_CONCURRENT_UPLOAD_WORKERS, Network } from '.';
+import { MAX_CONCURRENT_UPLOADS } from 'app/network/networkConstants';
+import { Network } from '.';
 
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -44,18 +45,16 @@ describe('Network uploads', () => {
   });
 
   test('When more files are uploaded than the worker limit, then only that many workers run at once', async () => {
-    const uploads = Array.from({ length: MAX_CONCURRENT_UPLOAD_WORKERS + 3 }, (_, index) =>
-      startUpload(`file-${index}`),
-    );
+    const uploads = Array.from({ length: MAX_CONCURRENT_UPLOADS + 3 }, (_, index) => startUpload(`file-${index}`));
     await flushPromises();
 
-    expect(createdWorkers).toHaveLength(MAX_CONCURRENT_UPLOAD_WORKERS);
+    expect(createdWorkers).toHaveLength(MAX_CONCURRENT_UPLOADS);
 
     createdWorkers[0].emitMessage({ result: 'success', fileId: 'file-id-0' });
     await flushPromises();
 
-    expect(createdWorkers.filter(isWorkerAlive)).toHaveLength(MAX_CONCURRENT_UPLOAD_WORKERS);
-    expect(uploadedFileOf(createdWorkers[MAX_CONCURRENT_UPLOAD_WORKERS])).toBe(`file-${MAX_CONCURRENT_UPLOAD_WORKERS}`);
+    expect(createdWorkers.filter(isWorkerAlive)).toHaveLength(MAX_CONCURRENT_UPLOADS);
+    expect(uploadedFileOf(createdWorkers[MAX_CONCURRENT_UPLOADS])).toBe(`file-${MAX_CONCURRENT_UPLOADS}`);
     await expect(uploads[0].upload).resolves.toBe('file-id-0');
 
     createdWorkers.filter(isWorkerAlive).forEach((worker) => worker.emitMessage({ result: 'success', fileId: 'id' }));
@@ -63,39 +62,35 @@ describe('Network uploads', () => {
     createdWorkers.filter(isWorkerAlive).forEach((worker) => worker.emitMessage({ result: 'success', fileId: 'id' }));
     await flushPromises();
 
-    expect(createdWorkers).toHaveLength(MAX_CONCURRENT_UPLOAD_WORKERS + 3);
+    expect(createdWorkers).toHaveLength(MAX_CONCURRENT_UPLOADS + 3);
     uploads.forEach(({ outcome }) => expect(outcome).toHaveBeenCalledTimes(1));
   });
 
   test('When a file fails, then the next waiting file starts', async () => {
-    const uploads = Array.from({ length: MAX_CONCURRENT_UPLOAD_WORKERS + 1 }, (_, index) =>
-      startUpload(`file-${index}`),
-    );
+    const uploads = Array.from({ length: MAX_CONCURRENT_UPLOADS + 1 }, (_, index) => startUpload(`file-${index}`));
     await flushPromises();
 
     createdWorkers[0].emitMessage({ result: 'error', error: { message: 'Upload failed' } });
     await flushPromises();
 
     expect(uploads[0].outcome).toHaveBeenCalledWith({ error: { message: 'Upload failed' } });
-    expect(uploadedFileOf(createdWorkers[MAX_CONCURRENT_UPLOAD_WORKERS])).toBe(`file-${MAX_CONCURRENT_UPLOAD_WORKERS}`);
+    expect(uploadedFileOf(createdWorkers[MAX_CONCURRENT_UPLOADS])).toBe(`file-${MAX_CONCURRENT_UPLOADS}`);
 
     createdWorkers.filter(isWorkerAlive).forEach((worker) => worker.emitMessage({ result: 'success', fileId: 'id' }));
     await flushPromises();
   });
 
   test('When a waiting file is cancelled, then it never starts a worker and fails as aborted', async () => {
-    const uploads = Array.from({ length: MAX_CONCURRENT_UPLOAD_WORKERS + 1 }, (_, index) =>
-      startUpload(`file-${index}`),
-    );
+    const uploads = Array.from({ length: MAX_CONCURRENT_UPLOADS + 1 }, (_, index) => startUpload(`file-${index}`));
     await flushPromises();
-    const waitingUpload = uploads[MAX_CONCURRENT_UPLOAD_WORKERS];
+    const waitingUpload = uploads[MAX_CONCURRENT_UPLOADS];
 
     waitingUpload.abortable?.abort();
     createdWorkers[0].emitMessage({ result: 'success', fileId: 'file-id-0' });
     await flushPromises();
 
-    await expect(waitingUpload.upload).rejects.toBe('abort');
-    expect(createdWorkers).toHaveLength(MAX_CONCURRENT_UPLOAD_WORKERS);
+    await expect(waitingUpload.upload).rejects.toThrow('abort');
+    expect(createdWorkers).toHaveLength(MAX_CONCURRENT_UPLOADS);
 
     createdWorkers.filter(isWorkerAlive).forEach((worker) => worker.emitMessage({ result: 'success', fileId: 'id' }));
     await flushPromises();

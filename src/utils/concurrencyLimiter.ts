@@ -1,6 +1,5 @@
 export interface ConcurrencyLimiter {
-  /** Runs the task as soon as fewer than `limit` tasks are running, in the order they were requested. */
-  run<T>(task: () => Promise<T>): Promise<T>;
+  execute<T>(task: () => Promise<T>): Promise<T>;
 }
 
 export const createConcurrencyLimiter = (limit: number): ConcurrencyLimiter => {
@@ -27,7 +26,7 @@ export const createConcurrencyLimiter = (limit: number): ConcurrencyLimiter => {
   };
 
   return {
-    async run(task) {
+    async execute(task) {
       await waitForFreeSlot();
       try {
         return await task();

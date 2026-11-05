@@ -20,7 +20,7 @@ describe('Concurrency limiter', () => {
     const started: number[] = [];
 
     const runs = tasks.map((task, index) =>
-      limiter.run(() => {
+      limiter.execute(() => {
         started.push(index);
         return task.promise;
       }),
@@ -42,7 +42,7 @@ describe('Concurrency limiter', () => {
   test('When a task fails, then its error reaches the caller', async () => {
     const limiter = createConcurrencyLimiter(1);
 
-    await expect(limiter.run(() => Promise.reject(new Error('failed')))).rejects.toThrow('failed');
-    await expect(limiter.run(() => Promise.resolve('next'))).resolves.toBe('next');
+    await expect(limiter.execute(() => Promise.reject(new Error('failed')))).rejects.toThrow('failed');
+    await expect(limiter.execute(() => Promise.resolve('next'))).resolves.toBe('next');
   });
 });

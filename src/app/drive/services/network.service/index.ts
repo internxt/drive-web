@@ -4,21 +4,15 @@ import { createWorkerMessageHandlerPromise } from '../worker.service/uploadWorke
 import { notifyUserWithCooldown } from 'app/core/factory/sdk/retryStrategies';
 import { IUploadParams } from './types';
 import { NetworkCredentials } from 'app/network/types/helper-types';
-import { MAX_CONCURRENT_UPLOADS } from 'app/network/networkConstants';
 import { createConcurrencyLimiter } from 'utils/concurrencyLimiter';
 import { WORKER_MESSAGE_STATES } from '../worker.service/types/upload';
+import { MAX_CONCURRENT_UPLOADS } from 'app/network/networkConstants';
 
 export { getEnvironmentConfig } from './getEnvironmentConfig';
 
 export const MAX_ALLOWED_UPLOAD_SIZE = 100 * 1024 * 1024 * 1024;
 
-/**
- * Every upload worker loads several WebAssembly hashers, and the browser only fits a limited number of
- * WebAssembly memories per tab. Folder uploads run many file uploads in parallel, so the workers are capped
- * app-wide: past the cap the hashers fail with "Out of memory" and the uploads get stuck.
- */
-export const MAX_CONCURRENT_UPLOAD_WORKERS = MAX_CONCURRENT_UPLOADS;
-const uploadWorkerSlots = createConcurrencyLimiter(MAX_CONCURRENT_UPLOAD_WORKERS);
+const uploadWorkerSlots = createConcurrencyLimiter(MAX_CONCURRENT_UPLOADS);
 
 export class Network {
   private mnemonic: string;
@@ -86,8 +80,8 @@ export class Network {
     let isAborted = false;
     let abortWorkerUpload: (() => void) | undefined;
 
-    const upload = uploadWorkerSlots.run(() => {
-      if (isAborted) return Promise.reject(WORKER_MESSAGE_STATES.ABORT);
+    const upload = uploadWorkerSlots.execute(() => {
+      if (isAborted) return Promise.reject(new Error(WORKER_MESSAGE_STATES.ABORT));
 
       const worker: Worker = createUploadWebWorker();
       worker.postMessage({ bucketId, params: payload, type: 'upload' });
