@@ -15,10 +15,6 @@ import { fileExtensionPreviewableGroups } from 'app/drive/types/file-types';
 import UilArrowRight from '@iconscout/react-unicons/icons/uil-arrow-right';
 import { CheckIcon, DownloadSimpleIcon, EyeIcon } from '@phosphor-icons/react';
 
-import downloadService from 'app/drive/services/download.service';
-import { MIN_DOWNLOAD_MULTIPART_SIZE } from 'app/network/networkConstants';
-import { IDownloadParams } from 'app/network/download';
-import { DownloadSupport, downloadToFs, getDownloadSupport } from 'app/drive/services/download.service/downloadFile';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import './components/ShareView.scss';
 
@@ -203,49 +199,23 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
     download();
   }
 
-  const getFileStream = (abortController: AbortController): Promise<ReadableStream<Uint8Array>> => {
-    const fileSize = info.item.size;
-    const downloadParams: IDownloadParams = {
-      bucketId: info.item.bucket,
-      fileId: info.item.fileId,
-      encryptionKey: Buffer.from(info.encryptionKey, 'hex'),
-      token: info.itemToken,
-      options: {
-        abortController,
-        notifyProgress: (totalProgress, downloadedBytes) => {
-          if (abortController.signal.aborted) return;
-          const readProgress = Math.trunc((downloadedBytes / totalProgress) * 100);
-          setProgress(Math.min(readProgress, MAX_PROGRESS_BEFORE_SAVED));
-        },
+  const saveFile = (abortController: AbortController): Promise<void> =>
+    shareService.downloadPublicSharedFile({
+      file: {
+        bucketId: info.item.bucket,
+        fileId: info.item.fileId,
+        size: Number(info.item.size),
+        encryptionKey: info.encryptionKey,
+        token: info.itemToken,
       },
-    };
-
-    const shouldUseMultipart = fileSize >= MIN_DOWNLOAD_MULTIPART_SIZE;
-    return shouldUseMultipart
-      ? network.multipartDownloadFile({ ...downloadParams, fileSize })
-      : network.downloadFile(downloadParams);
-  };
-
-  const getSaveToDownloadsSupport = async (): Promise<DownloadSupport> => {
-    const support = await getDownloadSupport();
-    return support === DownloadSupport.StreamApi ? DownloadSupport.PartialStreamApi : support;
-  };
-
-  const saveFile = async (abortController: AbortController): Promise<void> => {
-    if (isEmptySharedFile) {
-      await downloadService.downloadFileFromBlob(new Blob([]), getFormatFileName());
-    } else {
-      const support = await getSaveToDownloadsSupport();
-      await downloadToFs(
-        getFormatFileName(),
-        getFileStream(abortController),
-        support,
-        undefined,
-        abortController,
-        info.item.size,
-      );
-    }
-  };
+      filename: getFormatFileName(),
+      abortController,
+      onProgress: (downloadedRatio) => {
+        if (abortController.signal.aborted) return;
+        const readProgress = Math.trunc(downloadedRatio * 100);
+        setProgress(Math.min(readProgress, MAX_PROGRESS_BEFORE_SAVED));
+      },
+    });
 
   const download = async (): Promise<void> => {
     if (isDownloading) return;

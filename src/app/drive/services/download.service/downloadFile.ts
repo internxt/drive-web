@@ -1,12 +1,6 @@
 import { ErrorMessages } from 'app/core/constants';
-import { ConnectionLostError } from 'app/network/requests';
-import { isFirefox } from 'react-device-detect';
 import streamSaver from '../../../../libs/streamSaver';
-import { DriveFileData } from '../../types';
 import { BlobWritable, downloadFileAsBlob } from './downloadFileAsBlob';
-import fetchFileStream from './fetchFileStream';
-import fetchFileStreamUsingCredentials from './fetchFileStreamUsingCredentials';
-import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
 
 async function pipe(readable: ReadableStream, writable: BlobWritable): Promise<void> {
   const reader = readable.getReader();
@@ -52,47 +46,6 @@ export async function getDownloadSupport(): Promise<DownloadSupport> {
   return support;
 }
 
-export default async function downloadFile(
-  itemData: DriveFileData,
-  isWorkspace: boolean,
-  updateProgressCallback: (progress: number) => void,
-  abortController?: AbortController,
-  sharingOptions?: { credentials: NetworkCredentials; key: FileKey },
-): Promise<void> {
-  const fileName = itemData.plainName ?? itemData.name;
-  const completeFilename = itemData.type ? `${fileName}.${itemData.type}` : `${fileName}`;
-  const support = await getDownloadSupport();
-
-  const fileStreamPromise = !sharingOptions
-    ? fetchFileStream(
-        { ...itemData, bucketId: itemData.bucket },
-        { isWorkspace, updateProgressCallback, abortController },
-      )
-    : fetchFileStreamUsingCredentials(
-        { ...itemData, bucketId: itemData.bucket },
-        {
-          updateProgressCallback,
-          abortController,
-          creds: sharingOptions.credentials,
-          key: sharingOptions.key,
-        },
-      );
-
-  let connectionLost = false;
-  try {
-    const connectionLostListener = () => {
-      connectionLost = true;
-      window.removeEventListener('offline', connectionLostListener);
-    };
-    window.addEventListener('offline', connectionLostListener);
-
-    await downloadToFs(completeFilename, fileStreamPromise, support, isFirefox, abortController);
-  } catch (err) {
-    if (connectionLost) throw new ConnectionLostError();
-    else throw err;
-  }
-}
-
 function downloadFileUsingStreamApi(
   source: ReadableStream,
   destination: WritableStream,
@@ -109,19 +62,22 @@ export enum DownloadSupport {
   Blob = 'Blob',
 }
 
-export async function downloadToFs(
-  filename: string,
-  source: Promise<ReadableStream>,
-  supports: DownloadSupport,
-  isFirefoxBrowser?: boolean,
-  abortController?: AbortController,
-  size?: number,
-): Promise<void> {
-  if (isFirefoxBrowser) {
-    return downloadFileAsBlob(filename, await source);
-  }
+export interface DownloadToFsOptions {
+  filename: string;
+  source: Promise<ReadableStream>;
+  support: DownloadSupport;
+  abortController?: AbortController;
+  size?: number;
+}
 
-  switch (supports) {
+export async function downloadToFs({
+  filename,
+  source,
+  support,
+  abortController,
+  size,
+}: DownloadToFsOptions): Promise<void> {
+  switch (support) {
     case DownloadSupport.StreamApi:
       // eslint-disable-next-line no-case-declarations
       const fsHandle = await window.showSaveFilePicker({ suggestedName: filename }).catch((_) => {

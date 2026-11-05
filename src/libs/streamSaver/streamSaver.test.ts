@@ -104,6 +104,15 @@ describe('Stream Saver Service', () => {
     await expect(writing).rejects.toHaveProperty('message', ErrorMessages.DownloadCancelledFromBrowser);
   });
 
+  test('when a write fails with a real error, then the original error is kept', async () => {
+    const writeError = new TypeError('Stream torn down');
+    mockWriter.write.mockRejectedValue(writeError);
+
+    const writing = streamSaver.createWriteStream('test.txt').getWriter().write(mockedChunk);
+
+    await expect(writing).rejects.toBe(writeError);
+  });
+
   test('when the download stream is closed, then the browser download is closed', async () => {
     await streamSaver.createWriteStream('test.txt').close();
 

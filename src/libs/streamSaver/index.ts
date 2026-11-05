@@ -67,13 +67,14 @@ export class StreamSaver {
     }
   }
 
-  private failWritesAsCancelledFromBrowser(writable: WritableStream<Uint8Array>): WritableStream<Uint8Array> {
+  private mapBrowserCancelOnWrite(writable: WritableStream<Uint8Array>): WritableStream<Uint8Array> {
     const writer = writable.getWriter();
 
     return new WritableStream<Uint8Array>({
       write: (chunk) =>
-        writer.write(chunk).catch(() => {
-          throw new Error(ErrorMessages.DownloadCancelledFromBrowser);
+        writer.write(chunk).catch((error: unknown) => {
+          const isCancelledFromBrowser = error === undefined;
+          throw isCancelledFromBrowser ? new Error(ErrorMessages.DownloadCancelledFromBrowser) : error;
         }),
       close: () => writer.close(),
       abort: (reason) => writer.abort(reason),
@@ -134,7 +135,7 @@ export class StreamSaver {
     this.loadTransporter();
 
     const messageChannel = new MessageChannel();
-    const browserCancel = new AbortController();
+    const browserCancelController = new AbortController();
     let bytesWritten = 0;
     let downloadUrl: string | null = null;
 
@@ -194,7 +195,7 @@ export class StreamSaver {
         this.makeIframe(evt.data.download);
       } else if (evt.data.abort) {
         console.log('[StreamSaver] Abort received');
-        browserCancel.abort(new Error(ErrorMessages.DownloadCancelledFromBrowser));
+        browserCancelController.abort(new Error(ErrorMessages.DownloadCancelledFromBrowser));
         messageChannel.port1.postMessage('abort');
         messageChannel.port1.onmessage = null;
         messageChannel.port1.close();
@@ -209,11 +210,11 @@ export class StreamSaver {
     }
 
     if (transformStream?.writable) {
-      return this.failWritesAsCancelledFromBrowser(transformStream.writable);
+      return this.mapBrowserCancelOnWrite(transformStream.writable);
     }
 
     // Use manual writable stream for browsers that don't support Transferable streams. E.g. Safari
-    return this.manualWritableStream(messageChannel, bytesWritten, downloadUrl, browserCancel.signal);
+    return this.manualWritableStream(messageChannel, bytesWritten, downloadUrl, browserCancelController.signal);
   }
 }
 
