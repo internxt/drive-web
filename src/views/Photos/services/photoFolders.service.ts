@@ -30,21 +30,18 @@ export class PhotoFoldersService {
     }));
   }
 
-  private async getSubfolders(folderUuid: string, namePattern: RegExp): Promise<Folder[]> {
+  private async getSubfolders(folderUuid: string, namePattern: RegExp, cursor?: string): Promise<Folder[]> {
     const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-    const subfolders: Folder[] = [];
-    let cursor: string | undefined;
+    const [pageRequest] = storageClient.getFolderFoldersByUuidWithCursor(folderUuid, {
+      limit: SUBFOLDERS_PAGE_SIZE,
+      cursor,
+    });
+    const page = await pageRequest;
+    const matchingFolders = page.folders.filter((subfolder) => namePattern.test(subfolder.plainName));
 
-    do {
-      const [pageRequest] = storageClient.getFolderFoldersByUuidWithCursor(folderUuid, {
-        limit: SUBFOLDERS_PAGE_SIZE,
-        cursor,
-      });
-      const page = await pageRequest;
-      subfolders.push(...page.folders);
-      cursor = page.nextCursor ?? undefined;
-    } while (cursor);
+    if (!page.nextCursor) return matchingFolders;
 
-    return subfolders.filter((subfolder) => namePattern.test(subfolder.plainName));
+    const nextFolders = await this.getSubfolders(folderUuid, namePattern, page.nextCursor);
+    return [...matchingFolders, ...nextFolders];
   }
 }

@@ -4,8 +4,8 @@ import { MonthKey, PhotoMonth } from '../types';
 export type PhotoFilters = ReturnType<typeof usePhotoFilters>;
 
 export const usePhotoFilters = (months: PhotoMonth[]) => {
-  const [selectedDeviceUuid, selectDevice] = useState<string | null>(null);
-  const [selectedMonth, selectMonth] = useState<MonthKey | null>(null);
+  const [selectedDeviceUuid, setSelectedDeviceUuid] = useState<string | null>(null);
+  const [selectedMonth, setSelectedMonth] = useState<MonthKey | null>(null);
 
   const availableMonths = useMemo(() => {
     const monthsOfSelectedDevices = selectedDeviceUuid
@@ -22,9 +22,9 @@ export const usePhotoFilters = (months: PhotoMonth[]) => {
 
   return {
     selectedDeviceUuid,
-    selectDevice,
+    selectDevice: setSelectedDeviceUuid,
     availableMonths,
     selectedMonth: isSelectedMonthAvailable ? selectedMonth : null,
-    selectMonth,
+    selectMonth: setSelectedMonth,
   };
 };
