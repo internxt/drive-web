@@ -4,10 +4,21 @@ import { createWorkerMessageHandlerPromise } from '../worker.service/uploadWorke
 import { notifyUserWithCooldown } from 'app/core/factory/sdk/retryStrategies';
 import { IUploadParams } from './types';
 import { NetworkCredentials } from 'app/network/types/helper-types';
+import { MAX_CONCURRENT_UPLOADS } from 'app/network/networkConstants';
+import { createConcurrencyLimiter } from 'utils/concurrencyLimiter';
+import { WORKER_MESSAGE_STATES } from '../worker.service/types/upload';
 
 export { getEnvironmentConfig } from './getEnvironmentConfig';
 
 export const MAX_ALLOWED_UPLOAD_SIZE = 100 * 1024 * 1024 * 1024;
+
+/**
+ * Every upload worker loads several WebAssembly hashers, and the browser only fits a limited number of
+ * WebAssembly memories per tab. Folder uploads run many file uploads in parallel, so the workers are capped
+ * app-wide: past the cap the hashers fail with "Out of memory" and the uploads get stuck.
+ */
+export const MAX_CONCURRENT_UPLOAD_WORKERS = MAX_CONCURRENT_UPLOADS;
+const uploadWorkerSlots = createConcurrencyLimiter(MAX_CONCURRENT_UPLOAD_WORKERS);
 
 export class Network {
   private mnemonic: string;
@@ -56,7 +67,6 @@ export class Network {
       throw new Error('File size can not be 0');
     }
 
-    const worker: Worker = createUploadWebWorker();
     const payload: Omit<IUploadParams, 'progressCallback'> & {
       creds: Network['creds'];
       mnemonic: string;
@@ -73,8 +83,34 @@ export class Network {
       isUploadedFromFolder: params.isUploadedFromFolder,
     };
 
-    worker.postMessage({ bucketId, params: payload, type: 'upload' });
+    let isAborted = false;
+    let abortWorkerUpload: (() => void) | undefined;
 
-    return createWorkerMessageHandlerPromise(worker, params, continueUploadOptions, notifyUserWithCooldown);
+    const upload = uploadWorkerSlots.run(() => {
+      if (isAborted) return Promise.reject(WORKER_MESSAGE_STATES.ABORT);
+
+      const worker: Worker = createUploadWebWorker();
+      worker.postMessage({ bucketId, params: payload, type: 'upload' });
+
+      const [workerUpload, workerAbortable] = createWorkerMessageHandlerPromise(
+        worker,
+        params,
+        continueUploadOptions,
+        notifyUserWithCooldown,
+      );
+      abortWorkerUpload = workerAbortable?.abort;
+
+      return workerUpload;
+    });
+
+    return [
+      upload,
+      {
+        abort: () => {
+          isAborted = true;
+          abortWorkerUpload?.();
+        },
+      },
+    ];
   }
 }
