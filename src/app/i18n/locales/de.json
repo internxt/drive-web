@@ -470,6 +470,10 @@
       "filters": {
         "allDevices": "Alle Geräte",
         "allDates": "Alle Daten"
+      },
+      "timeline": {
+        "today": "Heute",
+        "yesterday": "Gestern"
       }
     },
     "favorites": {
