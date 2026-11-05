@@ -5,19 +5,6 @@ import { IUploadParams } from '../network.service/types';
 import { WORKER_MESSAGE_STATES } from './types/upload';
 
 /**
- * A working upload worker keeps talking: it asks for the upload status, reports progress and polls every
- * second while paused. A worker silent for this long is stuck and will never answer.
- */
-export const UPLOAD_WORKER_INACTIVITY_TIMEOUT_MS = 2 * 60 * 1000;
-
-export class UploadWorkerUnresponsiveError extends Error {
-  constructor() {
-    super('The upload worker stopped responding');
-    this.name = 'UploadWorkerUnresponsiveError';
-  }
-}
-
-/**
  * Checks the upload progress for the specified task.
  *
  * @param {string} taskId - The identifier of the task for which the progress is checked.
@@ -140,9 +127,7 @@ const handleMessage = (msgData, params, resolve, reject, worker, continueUploadO
  * @param {Function} onRateLimited - Callback invoked when the worker signals a rate limit.
  *
  * @returns {[Promise<string>, Abortable | undefined]} A tuple containing a Promise that resolves to a file ID
- * and an Abortable object for aborting the upload (if applicable). The promise rejects with
- * {@link UploadWorkerUnresponsiveError} and the worker is terminated when it goes silent for
- * {@link UPLOAD_WORKER_INACTIVITY_TIMEOUT_MS}, so a stuck worker never leaves the upload pending forever.
+ * and an Abortable object for aborting the upload (if applicable).
  */
 const createWorkerMessageHandlerPromise = (
   worker: Worker,
@@ -154,34 +139,10 @@ const createWorkerMessageHandlerPromise = (
 ): [Promise<string>, Abortable | undefined] => {
   return [
     new Promise((resolve, reject) => {
-      let inactivityTimer: ReturnType<typeof setTimeout> | undefined;
-      let isSettled = false;
-
-      const settleWith =
-        <T>(settle: (value: T) => void) =>
-        (value: T) => {
-          isSettled = true;
-          clearTimeout(inactivityTimer);
-          settle(value);
-        };
-      const resolveUpload = settleWith(resolve);
-      const rejectUpload = settleWith(reject);
-
-      const restartInactivityTimer = () => {
-        clearTimeout(inactivityTimer);
-        if (isSettled) return;
-        inactivityTimer = setTimeout(() => {
-          worker.terminate();
-          rejectUpload(new UploadWorkerUnresponsiveError());
-        }, UPLOAD_WORKER_INACTIVITY_TIMEOUT_MS);
-      };
-
-      restartInactivityTimer();
-      worker.addEventListener('error', rejectUpload);
+      worker.addEventListener('error', reject);
       worker.addEventListener('message', (msg) => {
         console.log('[MAIN_THREAD]: Message received from worker', msg);
-        restartInactivityTimer();
-        handleMessage(msg.data, params, resolveUpload, rejectUpload, worker, continueUploadOptions, onRateLimited);
+        handleMessage(msg.data, params, resolve, reject, worker, continueUploadOptions, onRateLimited);
       });
     }),
     {
