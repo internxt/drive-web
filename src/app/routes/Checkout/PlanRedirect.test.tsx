@@ -4,7 +4,6 @@ import { Route, Router, Switch, useLocation } from 'react-router-dom';
 import { describe, expect, test } from 'vitest';
 import PlanRedirect, {
   CouponRule,
-  RedirectPlan,
   REDIRECT_PLANS,
   REDIRECT_ALLOWED_COUPON_CODES,
   REDIRECT_BLOCKING_COUPON_CODES,
@@ -40,24 +39,6 @@ const blockedLandingsOn = (plans: typeof RETIRED_PLANS) =>
 const [ALLOWED_COUPON] = REDIRECT_ALLOWED_COUPON_CODES;
 const UNLISTED_COUPON = 'A_COUPON_NOBODY_LISTED';
 const ACTIVE_PLAN_ID = 'price_1SomeOtherActivePriceId';
-const NO_COUPON = '';
-
-const KNOWN_COUPON_CODES = [
-  NO_COUPON,
-  ...REDIRECT_ALLOWED_COUPON_CODES,
-  ...REDIRECT_BLOCKING_COUPON_CODES,
-  ...Object.values(REDIRECT_PLANS).flatMap(({ couponCode }) => couponCode ?? []),
-];
-
-const acceptsCoupon = ({ couponRule, couponCode }: RedirectPlan, arrivingCoupon: string) => {
-  if (couponRule === 'onlyCouponCode') {
-    return couponCode === arrivingCoupon;
-  }
-
-  return couponRule === 'unlessBlocked'
-    ? !REDIRECT_BLOCKING_COUPON_CODES.has(arrivingCoupon)
-    : REDIRECT_ALLOWED_COUPON_CODES.has(arrivingCoupon);
-};
 
 const campaignSearchFor = (retiredPlanId: string, couponCode = ALLOWED_COUPON) =>
   `?planId=${retiredPlanId}&couponCode=${couponCode}&planType=individual&currency=eur&mode=payment` +
@@ -396,7 +377,7 @@ describe('Reading the catalogue of retired prices', () => {
         targetPlanId: 'price_1TRoAJFAOdcgaBMQveT6cebN',
         couponRule: 'onlyIfAllowed',
       },
-      price_1TRoAJFAOdcgaBMQveT6cebN: {
+      price_1UKYnMFAOdcgaBMQ09GLzJhJ: {
         targetPlanId: 'price_1UAsSAFAOdcgaBMQNF0j8UfV',
         couponRule: 'onlyCouponCode',
         couponCode: 'TFA',
@@ -426,21 +407,18 @@ describe('Reading the catalogue of retired prices', () => {
       });
   });
 
-  test.each(KNOWN_COUPON_CODES)(
-    'When the price that replaced a retired one is itself retired, then following the chain with %s still ends on a price that is on sale',
-    (arrivingCoupon) => {
-      Object.keys(REDIRECT_PLANS).forEach((retiredPlanId) => {
-        const visitedPlanIds = new Set([retiredPlanId]);
-        let planId = REDIRECT_PLANS[retiredPlanId].targetPlanId;
+  test('When the price that replaced a retired one is itself retired, then following the chain still ends on a price that is on sale', () => {
+    Object.keys(REDIRECT_PLANS).forEach((retiredPlanId) => {
+      const visitedPlanIds = new Set([retiredPlanId]);
+      let planId = REDIRECT_PLANS[retiredPlanId].targetPlanId;
 
-        while (Object.hasOwn(REDIRECT_PLANS, planId) && acceptsCoupon(REDIRECT_PLANS[planId], arrivingCoupon)) {
-          expect(visitedPlanIds.has(planId)).toBe(false);
-          visitedPlanIds.add(planId);
-          planId = REDIRECT_PLANS[planId].targetPlanId;
-        }
-      });
-    },
-  );
+      while (Object.hasOwn(REDIRECT_PLANS, planId)) {
+        expect(visitedPlanIds.has(planId)).toBe(false);
+        visitedPlanIds.add(planId);
+        planId = REDIRECT_PLANS[planId].targetPlanId;
+      }
+    });
+  });
 
   test('When several retired prices were replaced by the same one, then they are all allowed to point at it', () => {
     const targetPlanIds = Object.values(REDIRECT_PLANS).map(({ targetPlanId }) => targetPlanId);

@@ -24,7 +24,7 @@ export const REDIRECT_PLANS: Readonly<Record<string, RedirectPlan>> = {
     targetPlanId: 'price_1TRoAJFAOdcgaBMQveT6cebN',
     couponRule: 'onlyIfAllowed',
   },
-  price_1TRoAJFAOdcgaBMQveT6cebN: {
+  price_1UKYnMFAOdcgaBMQ09GLzJhJ: {
     targetPlanId: 'price_1UAsSAFAOdcgaBMQNF0j8UfV',
     couponRule: 'onlyCouponCode',
     couponCode: 'TFA',
