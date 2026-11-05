@@ -1,8 +1,15 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import { getDatabaseFilePreviewData } from 'app/drive/services/database.service';
+import fetchFileBlob from 'app/drive/services/download.service/fetchFileBlob';
 import errorService from 'services/error.service';
 import { PhotoDevice as SdkPhotoDevice } from '@internxt/sdk/dist/drive/photos';
-import { getPhotoFolder, getPhotoFolderFile, getSdkPhotoDevice } from 'testUtils/fixtures/photos.fixtures';
+import {
+  getPhotoFolder,
+  getPhotoFolderFile,
+  getPhotoThumbnail,
+  getSdkPhotoDevice,
+} from 'testUtils/fixtures/photos.fixtures';
 import PhotosView from './PhotosView';
 
 const { photosClient, storageClient } = vi.hoisted(() => ({
@@ -26,6 +33,14 @@ vi.mock('react-helmet-async', () => ({
 }));
 vi.mock('services/error.service', () => ({
   default: { reportError: vi.fn() },
+}));
+vi.mock('app/drive/services/download.service/fetchFileBlob', () => ({
+  default: vi.fn(),
+}));
+vi.mock('app/drive/services/database.service', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('app/drive/services/database.service')>()),
+  getDatabaseFilePreviewData: vi.fn(),
+  updateDatabaseFilePreviewData: vi.fn(),
 }));
 
 type Folder = ReturnType<typeof getPhotoFolder>;
@@ -78,6 +93,7 @@ describe('Photos view', () => {
     vi.clearAllMocks();
     givenSubfolders({});
     givenPhotosInFolders({});
+    (getDatabaseFilePreviewData as Mock).mockResolvedValue(undefined);
   });
 
   test('When the devices are loading, then the photos grid placeholder is shown under the title', () => {
@@ -371,6 +387,70 @@ describe('Photos view', () => {
       fireEvent.click(await screen.findByRole('button', { name: /views.photos.error.retry/ }));
 
       expect(await screen.findByRole('img', { name: 'IMG_A.jpg' })).toBeInTheDocument();
+    });
+  });
+
+  describe('Photo thumbnails', () => {
+    const iphoneDayOfNovember2026 = {
+      ...iphonePhotosOfNovember2026,
+      'iphone-2026-11': [getPhotoFolder({ uuid: 'iphone-2026-11-03', plainName: '03' })],
+    };
+
+    const givenPhotoWithThumbnail = () => {
+      givenDevices([iphone]);
+      givenSubfolders(iphoneDayOfNovember2026);
+      givenPhotosInFolders({
+        'iphone-2026-11-03': [
+          getPhotoFolderFile({
+            uuid: 'IMG_A',
+            plainName: 'IMG_A',
+            folderUuid: 'iphone-2026-11-03',
+            thumbnails: [getPhotoThumbnail({ bucketId: 'photos-bucket', bucketFile: 'thumbnail-a' })],
+          }),
+        ],
+      });
+    };
+
+    const thumbnailOf = async (photoName: string) => {
+      const tile = await screen.findByRole('img', { name: photoName });
+      return () => tile.querySelector('img');
+    };
+
+    test('When a photo with a thumbnail is on screen, then its thumbnail is downloaded and shown', async () => {
+      givenPhotoWithThumbnail();
+      (fetchFileBlob as Mock).mockResolvedValue(new Blob(['thumbnail'], { type: 'image/jpeg' }));
+
+      render(<PhotosView />);
+      const thumbnail = await thumbnailOf('IMG_A.jpg');
+
+      await waitFor(() => expect(thumbnail()?.getAttribute('src')).toMatch(/^blob:/));
+      expect(fetchFileBlob).toHaveBeenCalledWith(
+        { fileId: 'thumbnail-a', bucketId: 'photos-bucket' },
+        expect.objectContaining({ isWorkspace: false }),
+      );
+    });
+
+    test('When a thumbnail was already downloaded, then it is shown without downloading it again', async () => {
+      givenPhotoWithThumbnail();
+      (getDatabaseFilePreviewData as Mock).mockResolvedValue({ preview: new Blob(['cached'], { type: 'image/jpeg' }) });
+
+      render(<PhotosView />);
+      const thumbnail = await thumbnailOf('IMG_A.jpg');
+
+      await waitFor(() => expect(thumbnail()?.getAttribute('src')).toMatch(/^blob:/));
+      expect(fetchFileBlob).not.toHaveBeenCalled();
+    });
+
+    test('When a thumbnail cannot be downloaded, then the file type icon is shown instead', async () => {
+      givenPhotoWithThumbnail();
+      (fetchFileBlob as Mock).mockRejectedValue(new Error('Network error'));
+
+      render(<PhotosView />);
+      const thumbnail = await thumbnailOf('IMG_A.jpg');
+
+      await waitFor(() => expect(errorService.reportError).toHaveBeenCalled());
+      expect(thumbnail()).not.toBeInTheDocument();
+      expect(screen.getByRole('img', { name: 'IMG_A.jpg' }).querySelector('svg')).toBeInTheDocument();
     });
   });
 });

@@ -307,11 +307,14 @@ export const generateThumbnailFromFile = async (
   return null;
 };
 
-export const downloadThumbnail = async (thumbnailToDownload: Thumbnail, isWorkspace: boolean): Promise<Blob> => {
+export const downloadThumbnail = async (
+  thumbnailToDownload: Pick<Thumbnail, 'bucket_id' | 'bucket_file'>,
+  isWorkspace: boolean,
+  abortController = new AbortController(),
+): Promise<Blob> => {
   const updateProgressCallback = () => {
     return;
   };
-  const abortController = new AbortController();
 
   let useWorkspaceCredentials = isWorkspace;
 

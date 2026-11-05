@@ -386,6 +386,17 @@ describe('Thumbnail Service', () => {
       );
     });
 
+    test('When the download is given an abort controller, then it can be cancelled with it', async () => {
+      const abortController = new AbortController();
+
+      await downloadThumbnail(mockThumbnail, false, abortController);
+
+      expect(fetchFileBlob).toHaveBeenCalledWith(
+        expect.objectContaining({ fileId: mockThumbnail.bucket_file }),
+        expect.objectContaining({ abortController }),
+      );
+    });
+
     test('When downloading thumbnail in personal context, then it uses personal credentials', async () => {
       vi.mocked(encryptedStorageService.getUser).mockResolvedValue({ bucket: personalBucket } as UserSettings);
 
