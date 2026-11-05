@@ -464,6 +464,7 @@
   },
   "sideNav": {
     "drive": "雲端硬碟",
+    "photos": "照片",
     "favorites": "收藏",
     "backups": "備份",
     "shared": "共享",
@@ -476,6 +477,18 @@
     }
   },
   "views": {
+    "photos": {
+      "head": "照片",
+      "empty": {
+        "title": "尚無照片",
+        "description": "在 Internxt 行動應用程式中開啟照片備份,照片就會顯示在這裡"
+      },
+      "error": {
+        "title": "無法載入照片",
+        "description": "請檢查網路連線後再試一次",
+        "retry": "重試"
+      }
+    },
     "favorites": {
       "head": "收藏",
       "empty": {
