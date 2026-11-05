@@ -31,7 +31,6 @@ import { DownloadManager } from '../../network/DownloadManager';
 import { downloadFileBySize } from 'app/network/download/downloadFileBySize';
 import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
 import downloadService from 'app/drive/services/download.service';
-import { binaryStreamToBlob } from 'services/stream.service';
 import { DownloadSupport, downloadToFs, getDownloadSupport } from 'app/drive/services/download.service/downloadFile';
 import { FlatFolderZip } from 'services/zip.service';
 import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
@@ -725,6 +724,9 @@ const saveToDownloads = async ({
   return downloadToFs({ filename, source: getSource(), support, abortController, size });
 };
 
+const hasNetworkContent = (item: AdvancedSharedItem): item is AdvancedSharedItem & { fileId: string } =>
+  Number(item.size) !== 0 && !!item.fileId;
+
 export async function downloadPublicSharedItems({
   items,
   credentials,
@@ -760,7 +762,7 @@ export async function downloadPublicSharedItems({
   };
 
   const downloadFileStream = async (file: AdvancedSharedItem) => {
-    if (Number(file.size) === 0 || !file.fileId) {
+    if (!hasNetworkContent(file)) {
       return new Blob([]).stream();
     }
 
@@ -779,10 +781,14 @@ export async function downloadPublicSharedItems({
 
   if (items.length === 1 && !items[0].isFolder) {
     const [file] = items;
-    const fileStream = await downloadFileStream(file);
-    const fileBlob = await binaryStreamToBlob(fileStream, file.type || '');
+    await saveToDownloads({
+      filename: getPublicItemDownloadName(file),
+      size: Number(file.size),
+      isEmptyFile: !hasNetworkContent(file),
+      getSource: () => downloadFileStream(file),
+    });
     updateNumItems?.();
-    return downloadService.downloadFileFromBlob(fileBlob, getPublicItemDownloadName(file));
+    return;
   }
 
   const downloadFolderToZip = (folder: AdvancedSharedItem, destination?: FlatFolderZip) =>
