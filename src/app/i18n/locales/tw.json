@@ -290,7 +290,11 @@
       "offerPillNoDiscount": "限時專屬優惠",
       "title": "讓您的檔案、照片和影片",
       "titleHighlight": "100% 私密。",
-      "subtitle": "首月僅需 {{price}}，即可獲得 {{storage}} 私人雲端儲存空間。",
+      "subtitle": {
+        "month": "首月僅需 {{price}}，即可獲得 {{storage}} 私人雲端儲存空間。",
+        "year": "首年僅需 {{price}}，即可獲得 {{storage}} 私人雲端儲存空間。",
+        "lifetime": "一次性付款 {{price}}，即可永久擁有 {{storage}} 私人雲端儲存空間。"
+      },
       "imageAlt": "筆記型電腦和手機上的 Internxt Drive",
       "points": {
         "privacy": {
@@ -300,6 +304,10 @@
         "storage": {
           "title": "您的私人雲端，安全無虞",
           "description": "儲存您的照片、影片、文件和個人檔案，隱私保護內建其中。"
+        },
+        "suite": {
+          "title": "不只是雲端儲存空間",
+          "description": "依您的方案提供隱私工具。"
         },
         "offer": {
           "title": "立減 {{percent}}% — 限時優惠",
@@ -336,8 +344,8 @@
     },
     "cta": {
       "button": {
-        "lifetime": "取得 Lifetime 儲存空間",
-        "subscription": "訂閱私人雲端儲存空間"
+        "lifetime": "取得 Lifetime 方案",
+        "subscription": "取得訂閱方案"
       },
       "billingDisclosure": {
         "withIntroPrice": {
