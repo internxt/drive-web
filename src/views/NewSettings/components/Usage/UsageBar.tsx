@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
 import { bytesToString } from 'app/drive/services/size.service';
 import { Tooltip } from '@internxt/ui';
+import { getUsageBarPercentages } from 'views/NewSettings/utils';
 
 const UsageBar = ({
   backupsUsage,
@@ -13,52 +13,47 @@ const UsageBar = ({
   spaceLimit: string | number;
   height: string | number;
 }) => {
-  const [barWidth, setBarWidth] = useState(0);
-  const barRef = useRef<HTMLDivElement>(null);
   const spaceLimitBytes = Number(spaceLimit);
   const driveUsageBytes = Number(driveUsage);
   const backupsUsageBytes = Number(backupsUsage);
-  const percentageDriveUsed = (driveUsageBytes * 100) / spaceLimitBytes;
-  const percentageBackupUsed = (backupsUsageBytes * 100) / spaceLimitBytes;
-  const driveWidth = (barWidth * percentageDriveUsed) / 100;
-  const backupWidth = (barWidth * percentageBackupUsed) / 100;
-
-  useEffect(() => {
-    const bar = barRef.current;
-
-    if (bar) {
-      const listener = () => {
-        setBarWidth(bar.getBoundingClientRect().width);
-      };
-      bar.addEventListener('resize', listener);
-
-      listener();
-
-      return () => bar.removeEventListener('resize', listener);
-    }
-  }, []);
+  const { drivePercentage, backupPercentage, isOverLimit } = getUsageBarPercentages({
+    driveUsageBytes,
+    backupsUsageBytes,
+    spaceLimitBytes,
+  });
+  const driveColor = isOverLimit ? 'bg-red' : 'bg-primary';
+  const backupColor = isOverLimit ? 'bg-red' : 'bg-indigo';
+  const hasDriveSegment = drivePercentage > 0;
+  const hasBackupsSegment = backupPercentage > 0;
+  const driveShapeClass = hasBackupsSegment ? 'mr-0.5 rounded-l-lg' : 'rounded-lg';
+  const backupShapeClass = hasDriveSegment ? 'rounded-r-lg' : 'rounded-lg';
+  const driveMinWidthClass = drivePercentage > 0 ? 'min-w-[5px]' : '';
 
   return (
-    <div className={`flex w-full rounded-lg border border-gray-10 bg-gray-5 ${height}`} ref={barRef}>
-      <Tooltip
-        key="Drive"
-        title="Drive"
-        subtitle={bytesToString(driveUsageBytes)}
-        popsFrom="top"
-        className="mr-0.5 rounded-l-lg bg-primary"
-      >
-        <div style={{ width: `${driveWidth > 0 && driveWidth < 5 ? 5 : driveWidth}px` }}></div>
-      </Tooltip>
+    <div data-cy="usageBar" className={`flex w-full rounded-lg border border-gray-10 bg-gray-5 ${height}`}>
+      <div className={`flex ${driveMinWidthClass}`} style={{ width: `${drivePercentage}%` }}>
+        <Tooltip
+          key="Drive"
+          title="Drive"
+          subtitle={bytesToString(driveUsageBytes)}
+          popsFrom="top"
+          className={`${driveShapeClass} !w-full ${driveColor}`}
+        >
+          <div></div>
+        </Tooltip>
+      </div>
 
-      <Tooltip
-        key="Backup"
-        title="Backup"
-        subtitle={bytesToString(driveUsageBytes)}
-        popsFrom="top"
-        className="rounded-r-lg bg-indigo"
-      >
-        <div style={{ width: `${backupWidth}px` }}></div>
-      </Tooltip>
+      <div className="flex" style={{ width: `${backupPercentage}%` }}>
+        <Tooltip
+          key="Backup"
+          title="Backup"
+          subtitle={bytesToString(backupsUsageBytes)}
+          popsFrom="top"
+          className={`${backupShapeClass} !w-full ${backupColor}`}
+        >
+          <div></div>
+        </Tooltip>
+      </div>
     </div>
   );
 };
