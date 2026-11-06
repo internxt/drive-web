@@ -111,6 +111,29 @@ describe('Uploading what the user picked', () => {
     expect(onItemUploaded).toHaveBeenCalledWith(expect.objectContaining({ name: 'report' }), DESTINATION_UUID, false);
   });
 
+  test('When reporting an uploaded item fails, then the upload still finishes and each task succeeds', async () => {
+    const onItemUploaded = vi.fn(() => {
+      throw new Error('Listener error');
+    });
+    vi.mocked(referralService.trackFileUpload).mockImplementation(() => {
+      throw new Error('Corrupt banner state');
+    });
+    const upload = createUpload(
+      [getFolderToUpload('Photos', { childrenFiles: [getFileToUpload('beach.png')] })],
+      [getFileToUpload('report.pdf')],
+      { onItemUploaded },
+    );
+
+    await upload.run();
+
+    expect(tasksOf(TaskType.UploadFolder)[0]).toEqual(
+      expect.objectContaining({ status: TaskStatus.Success, progress: 1, itemUUID: { rootFolderUUID: 'Photos-uuid' } }),
+    );
+    expect(tasksOf(TaskType.UploadFile)[0]).toEqual(
+      expect.objectContaining({ status: TaskStatus.Success, itemUUID: { fileUUID: 'report-uuid' } }),
+    );
+  });
+
   test('When a file inside a folder fails, then the folder still succeeds with what could be uploaded', async () => {
     (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
       if (file.name === 'broken') throw new Error('Server error');
@@ -191,10 +214,48 @@ describe('Uploading what the user picked', () => {
     await running;
 
     expect(newStorageService.deleteFolderByUuid).toHaveBeenCalledWith('Photos-uuid');
-    await vi.waitFor(() =>
-      expect(onItemRemoved).toHaveBeenCalledWith(expect.objectContaining({ uuid: 'Photos-uuid' }), DESTINATION_UUID),
-    );
+    expect(onItemRemoved).toHaveBeenCalledWith(expect.objectContaining({ uuid: 'Photos-uuid' }), DESTINATION_UUID);
     expect(tasksOf(TaskType.UploadFolder)[0].status).toBe(TaskStatus.Cancelled);
+  });
+
+  test('When the user cancels a folder, then the upload finishes only once the folder is removed', async () => {
+    fakeUploadsTaking(500);
+    let finishRemoval: () => void = () => undefined;
+    vi.mocked(newStorageService.deleteFolderByUuid).mockReturnValue(
+      new Promise<void>((resolve) => (finishRemoval = resolve)) as never,
+    );
+    const upload = createUpload([getFolderToUpload('Photos', { childrenFiles: [getFileToUpload('beach.png')] })], []);
+    const onFinished = vi.fn();
+
+    const running = upload.run().then(onFinished);
+    await vi.waitFor(() => expect(uploadFile).toHaveBeenCalled());
+    await tasksService.cancelTask(tasksOf(TaskType.UploadFolder)[0].id);
+    await vi.waitFor(() => expect(newStorageService.deleteFolderByUuid).toHaveBeenCalled());
+    await new Promise((resolve) => setTimeout(resolve, 600));
+
+    expect(onFinished).not.toHaveBeenCalled();
+    finishRemoval();
+    await running;
+    expect(onFinished).toHaveBeenCalled();
+  });
+
+  test('When the cancelled folder cannot be removed, then its task shows the error', async () => {
+    fakeUploadsTaking(500);
+    vi.mocked(newStorageService.deleteFolderByUuid).mockRejectedValue(new Error('Server error'));
+    const onItemRemoved = vi.fn();
+    const upload = createUpload([getFolderToUpload('Photos', { childrenFiles: [getFileToUpload('beach.png')] })], [], {
+      onItemRemoved,
+    });
+
+    const running = upload.run();
+    await vi.waitFor(() => expect(uploadFile).toHaveBeenCalled());
+    await tasksService.cancelTask(tasksOf(TaskType.UploadFolder)[0].id);
+    await running;
+
+    expect(tasksOf(TaskType.UploadFolder)[0]).toEqual(
+      expect.objectContaining({ status: TaskStatus.Error, subtitle: 'tasks.subtitles.folder-removal-failed' }),
+    );
+    expect(onItemRemoved).not.toHaveBeenCalled();
   });
 
   test('When the user cancels a folder while it is being created, then it is removed once it exists', async () => {

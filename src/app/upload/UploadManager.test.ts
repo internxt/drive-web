@@ -16,7 +16,8 @@ import {
   getUploadFileItem,
   getUploadRepository,
 } from 'testUtils/fixtures/upload.fixtures';
-import { createFolderItem, UploadManager, WORKSPACE_FOLDER_AVAILABILITY_DELAY_MS } from './UploadManager';
+import { UploadManager, WORKSPACE_FOLDER_AVAILABILITY_DELAY_MS } from './UploadManager';
+import { createFolderItem } from './uploadItemTree';
 import { UploadFailureReason, UploadItem, UploadItemKind, UploadManagerEvents } from './types';
 
 vi.mock('app/drive/services/file.service/uploadFile', () => ({ default: vi.fn() }));
