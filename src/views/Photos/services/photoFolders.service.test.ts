@@ -167,6 +167,21 @@ describe('Photo backup folders', () => {
       expect(photos.map((photo) => photo.uuid)).toStrictEqual(['existing']);
     });
 
+    test('When a photo belongs to a folder that is not a day of the month, then it is left out', async () => {
+      givenSubfolders({ 'november-2026': [getPhotoFolder({ uuid: 'day-2', plainName: '2' })] });
+      photosClient.getFilesInFolders.mockResolvedValue({
+        files: [
+          getPhotoFolderFile({ uuid: 'in-day', folderUuid: 'day-2' }),
+          getPhotoFolderFile({ uuid: 'elsewhere', folderUuid: 'unknown-folder' }),
+        ],
+        nextCursor: null,
+      });
+
+      const photos = await PhotoFoldersService.instance.getMonthPhotos(november2026);
+
+      expect(photos.map((photo) => photo.uuid)).toStrictEqual(['in-day']);
+    });
+
     test('When the photos come in several pages, then every page is requested with the cursor of the previous one', async () => {
       givenSubfolders({ 'november-2026': [getPhotoFolder({ uuid: 'day-2', plainName: '2' })] });
       photosClient.getFilesInFolders
