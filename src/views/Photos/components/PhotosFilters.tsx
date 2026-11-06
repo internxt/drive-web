@@ -9,23 +9,23 @@ interface PhotosFiltersProps {
 }
 
 const PhotosFilters = ({ devices, filters }: PhotosFiltersProps): JSX.Element => {
-  const hasSeveralDevices = devices.length > 1;
+  const canFilterByDevice = devices.length >= 2;
   const hasMonths = filters.availableMonths.length > 0;
 
   return (
     <>
-      {hasSeveralDevices && (
+      {canFilterByDevice && (
         <PhotosDeviceFilter
           devices={devices}
           selectedDeviceUuid={filters.selectedDeviceUuid}
-          onSelect={filters.selectDevice}
+          onSelect={filters.onSelectDevice}
         />
       )}
       {hasMonths && (
         <PhotosMonthFilter
           months={filters.availableMonths}
           selectedMonth={filters.selectedMonth}
-          onSelect={filters.selectMonth}
+          onSelect={filters.onSelectMonth}
         />
       )}
     </>

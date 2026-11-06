@@ -491,6 +491,10 @@
       "filters": {
         "allDevices": "Todos os dispositivos",
         "allDates": "Todas as datas"
+      },
+      "timeline": {
+        "today": "Hoje",
+        "yesterday": "Ontem"
       }
     },
     "favorites": {

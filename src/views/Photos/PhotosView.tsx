@@ -18,7 +18,7 @@ const PhotosView = (): JSX.Element => {
   const content = {
     loading: <PhotosGridSkeleton />,
     error: <PhotosErrorState onRetry={retry} />,
-    loaded: <PhotosLibrary months={filters.availableMonths} />,
+    loaded: <PhotosLibrary months={filters.shownMonths} />,
   };
 
   return (
