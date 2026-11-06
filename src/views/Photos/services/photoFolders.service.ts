@@ -2,7 +2,7 @@ import { Photos, Storage } from '@internxt/sdk/dist/drive';
 import { PhotoFolderFile } from '@internxt/sdk/dist/drive/photos';
 import { FetchFolderFoldersCursorResponse } from '@internxt/sdk/dist/drive/storage/types';
 import { SdkFactory } from 'app/core/factory/sdk';
-import { DayKey, MonthKey, Photo, PhotoMonth } from '../types';
+import { DayKey, MonthKey, Photo, PhotoMonth, PhotoThumbnail } from '../types';
 
 type Folder = FetchFolderFoldersCursorResponse['folders'][number];
 
@@ -11,6 +11,13 @@ const PHOTOS_PAGE_SIZE = 200;
 const PHOTOS_SEARCH_START = new Date(0).toISOString();
 
 const toTwoDigits = (folderName: string) => folderName.padStart(2, '0');
+
+const getLatestThumbnail = (thumbnails: PhotoFolderFile['thumbnails']): PhotoThumbnail | null => {
+  if (!thumbnails?.length) return null;
+
+  const latestThumbnail = thumbnails.reduce((latest, thumbnail) => (thumbnail.id > latest.id ? thumbnail : latest));
+  return { bucket_id: latestThumbnail.bucketId, bucket_file: latestThumbnail.bucketFile };
+};
 
 export class PhotoFoldersService {
   public static readonly instance: PhotoFoldersService = new PhotoFoldersService();
@@ -42,12 +49,16 @@ export class PhotoFoldersService {
 
       return [
         {
+          id: file.id,
           uuid: file.uuid,
+          folderId: file.folderId,
           name: `${file.plainName}.${file.type}`,
           type: file.type,
           month: month.key,
           day,
           takenAt: file.creationTime,
+          updatedAt: file.updatedAt,
+          thumbnail: getLatestThumbnail(file.thumbnails),
         },
       ];
     });
