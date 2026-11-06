@@ -3,11 +3,12 @@ import { Redirect, matchPath, useLocation } from 'react-router-dom';
 
 const CHECKOUT_PATH = '/checkout';
 
-export type CouponRule = 'unlessBlocked' | 'onlyIfAllowed';
+export type CouponRule = 'unlessBlocked' | 'onlyIfAllowed' | 'onlyCouponCode';
 
 export interface RedirectPlan {
   targetPlanId: string;
   couponRule: CouponRule;
+  couponCode?: string;
 }
 
 export const REDIRECT_PLANS: Readonly<Record<string, RedirectPlan>> = {
@@ -23,6 +24,11 @@ export const REDIRECT_PLANS: Readonly<Record<string, RedirectPlan>> = {
     targetPlanId: 'price_1TRoAJFAOdcgaBMQveT6cebN',
     couponRule: 'onlyIfAllowed',
   },
+  price_1UKYnMFAOdcgaBMQ09GLzJhJ: {
+    targetPlanId: 'price_1UAsSAFAOdcgaBMQNF0j8UfV',
+    couponRule: 'onlyCouponCode',
+    couponCode: 'TFA',
+  },
 };
 
 export const REDIRECT_BLOCKING_COUPON_CODES: ReadonlySet<string> = new Set([]);
@@ -30,7 +36,6 @@ export const REDIRECT_ALLOWED_COUPON_CODES: ReadonlySet<string> = new Set([
   'SPECIAL',
   'WEWE',
   'GOTZHAOFFER',
-  'TFA',
   'REOFFER',
   'AFFIOFFER',
 ]);
@@ -39,8 +44,12 @@ function getCouponCode(search: string): string {
   return new URLSearchParams(search).get('couponCode')?.trim().toUpperCase() ?? '';
 }
 
-function canRedirect(rule: CouponRule, couponCode: string): boolean {
-  return rule === 'unlessBlocked'
+function canRedirect(plan: RedirectPlan, couponCode: string): boolean {
+  if (plan.couponRule === 'onlyCouponCode') {
+    return plan.couponCode === couponCode;
+  }
+
+  return plan.couponRule === 'unlessBlocked'
     ? !REDIRECT_BLOCKING_COUPON_CODES.has(couponCode)
     : REDIRECT_ALLOWED_COUPON_CODES.has(couponCode);
 }
@@ -56,13 +65,13 @@ function getRedirectPlanIdSearch(
     return null;
   }
 
-  const { targetPlanId, couponRule } = plans[planId];
+  const plan = plans[planId];
 
-  if (!canRedirect(couponRule, getCouponCode(search))) {
+  if (!canRedirect(plan, getCouponCode(search))) {
     return null;
   }
 
-  params.set('planId', targetPlanId);
+  params.set('planId', plan.targetPlanId);
 
   return `?${params}`;
 }

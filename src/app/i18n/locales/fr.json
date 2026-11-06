@@ -269,7 +269,11 @@
       "offerPillNoDiscount": "Offre exclusive à durée limitée",
       "title": "Gardez vos fichiers, photos et vidéos",
       "titleHighlight": "100% privés.",
-      "subtitle": "Obtenez {{storage}} de stockage cloud privé pour seulement {{price}} le premier mois.",
+      "subtitle": {
+        "month": "Obtenez {{storage}} de stockage cloud privé pour seulement {{price}} le premier mois.",
+        "year": "Obtenez {{storage}} de stockage cloud privé pour seulement {{price}} la première année.",
+        "lifetime": "Obtenez {{storage}} de stockage cloud privé à vie pour un paiement unique de {{price}}."
+      },
       "imageAlt": "Internxt Drive sur un ordinateur portable et un téléphone",
       "points": {
         "privacy": {
@@ -279,6 +283,10 @@
         "storage": {
           "title": "Votre cloud privé, protégé",
           "description": "Stockez vos photos, vidéos, documents et fichiers personnels avec la confidentialité intégrée."
+        },
+        "suite": {
+          "title": "Plus qu'un stockage cloud",
+          "description": "Outils de confidentialité inclus, selon votre forfait."
         },
         "offer": {
           "title": "{{percent}}% DE RÉDUCTION — pour une durée limitée",
@@ -315,8 +323,8 @@
     },
     "cta": {
       "button": {
-        "lifetime": "Obtenez le stockage Lifetime",
-        "subscription": "Abonnez-vous au stockage cloud privé"
+        "lifetime": "Obtenir le forfait Lifetime",
+        "subscription": "Obtenir le forfait par abonnement"
       },
       "billingDisclosure": {
         "withIntroPrice": {
