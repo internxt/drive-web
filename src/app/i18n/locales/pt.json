@@ -1407,7 +1407,8 @@
       "errors": {}
     },
     "subtitles": {
-      "upload-failed": "Falha no envio"
+      "upload-failed": "Falha no envio",
+      "folder-removal-failed": "Não foi possível remover a pasta enviada"
     },
     "generalErrorMessages": {
       "retryUploadFailed": "Algo deu errado ao tentar enviar novamente. Tente fazer o envio de novo",

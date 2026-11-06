@@ -218,10 +218,48 @@ describe('Uploading what the user picked', () => {
     await running;
 
     expect(newStorageService.deleteFolderByUuid).toHaveBeenCalledWith('Photos-uuid');
-    await vi.waitFor(() =>
-      expect(onItemRemoved).toHaveBeenCalledWith(expect.objectContaining({ uuid: 'Photos-uuid' }), DESTINATION_UUID),
-    );
+    expect(onItemRemoved).toHaveBeenCalledWith(expect.objectContaining({ uuid: 'Photos-uuid' }), DESTINATION_UUID);
     expect(tasksOf(TaskType.UploadFolder)[0].status).toBe(TaskStatus.Cancelled);
+  });
+
+  test('When the user cancels a folder, then the upload finishes only once the folder is removed', async () => {
+    fakeUploadsTaking(500);
+    let finishRemoval: () => void = () => undefined;
+    vi.mocked(newStorageService.deleteFolderByUuid).mockReturnValue(
+      new Promise<void>((resolve) => (finishRemoval = resolve)) as never,
+    );
+    const upload = createUpload([getFolderToUpload('Photos', { childrenFiles: [getFileToUpload('beach.png')] })], []);
+    const onFinished = vi.fn();
+
+    const running = upload.run().then(onFinished);
+    await vi.waitFor(() => expect(uploadFile).toHaveBeenCalled());
+    await tasksService.cancelTask(tasksOf(TaskType.UploadFolder)[0].id);
+    await vi.waitFor(() => expect(newStorageService.deleteFolderByUuid).toHaveBeenCalled());
+    await new Promise((resolve) => setTimeout(resolve, 600));
+
+    expect(onFinished).not.toHaveBeenCalled();
+    finishRemoval();
+    await running;
+    expect(onFinished).toHaveBeenCalled();
+  });
+
+  test('When the cancelled folder cannot be removed, then its task shows the error', async () => {
+    fakeUploadsTaking(500);
+    vi.mocked(newStorageService.deleteFolderByUuid).mockRejectedValue(new Error('Server error'));
+    const onItemRemoved = vi.fn();
+    const upload = createUpload([getFolderToUpload('Photos', { childrenFiles: [getFileToUpload('beach.png')] })], [], {
+      onItemRemoved,
+    });
+
+    const running = upload.run();
+    await vi.waitFor(() => expect(uploadFile).toHaveBeenCalled());
+    await tasksService.cancelTask(tasksOf(TaskType.UploadFolder)[0].id);
+    await running;
+
+    expect(tasksOf(TaskType.UploadFolder)[0]).toEqual(
+      expect.objectContaining({ status: TaskStatus.Error, subtitle: 'tasks.subtitles.folder-removal-failed' }),
+    );
+    expect(onItemRemoved).not.toHaveBeenCalled();
   });
 
   test('When the user cancels a folder while it is being created, then it is removed once it exists', async () => {

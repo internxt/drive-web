@@ -25,7 +25,7 @@ import { PersistUploadRepository } from 'app/repositories/DatabaseUploadReposito
 import { IRoot } from 'app/store/slices/storage/types';
 import tasksService from 'app/tasks/services/tasks.service';
 import { TaskStatus, TaskType, UploadFileTask, UploadFolderTask } from 'app/tasks/types';
-import { errorMerge } from 'app/tasks/upload/uploadTaskErrors';
+import { errorMerge, folderRemovalFailedMerge } from 'app/tasks/upload/uploadTaskErrors';
 import errorService from 'services/error.service';
 import referralService from 'services/referral.service';
 
@@ -65,6 +65,7 @@ export class Upload {
   private readonly items: UploadItem[];
   private readonly taskIdByItem = new Map<UploadItem, string>();
   private readonly rootFolders = new Map<UploadItem, RootFolderUpload>();
+  private readonly cancelledRootFolderDeletions: Promise<void>[] = [];
 
   constructor(props: UploadProps) {
     this.props = props;
@@ -84,6 +85,7 @@ export class Upload {
 
   async run(): Promise<UploadResult> {
     const result = await this.manager.run(this.items);
+    await Promise.all(this.cancelledRootFolderDeletions);
     this.rootFolders.forEach((rootFolder, item) => this.finishRootFolder(item as UploadFolderItem, rootFolder));
     return result;
   }
@@ -193,7 +195,9 @@ export class Upload {
     const isRootFolderItself = item === topLevelItem;
     if (isRootFolderItself) {
       rootFolder.createdFolder = uploadedItem as DriveFolderData;
-      if (rootFolder.isCancelled) void this.removeRootFolder(item as UploadFolderItem, rootFolder);
+      if (rootFolder.isCancelled) {
+        this.cancelledRootFolderDeletions.push(this.deleteCancelledRootFolder(item as UploadFolderItem, rootFolder));
+      }
     }
 
     rootFolder.uploadedItems += 1;
@@ -236,10 +240,15 @@ export class Upload {
     const rootFolder = this.rootFolders.get(item) as RootFolderUpload;
     rootFolder.isCancelled = true;
     this.manager.cancelItem(item);
-    if (rootFolder.createdFolder) void this.removeRootFolder(item, rootFolder);
+    if (rootFolder.createdFolder) {
+      this.cancelledRootFolderDeletions.push(this.deleteCancelledRootFolder(item, rootFolder));
+    }
   }
 
-  private async removeRootFolder(item: UploadFolderItem, { createdFolder }: RootFolderUpload): Promise<void> {
+  private async deleteCancelledRootFolder(
+    item: UploadFolderItem,
+    { taskId, createdFolder }: RootFolderUpload,
+  ): Promise<void> {
     if (!createdFolder) return;
 
     try {
@@ -247,6 +256,7 @@ export class Upload {
       this.props.onItemRemoved?.(createdFolder, item.parentFolderUuid);
     } catch (error) {
       errorService.reportError(error);
+      tasksService.updateTask({ taskId, merge: folderRemovalFailedMerge() });
     }
   }
 
