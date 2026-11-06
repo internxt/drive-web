@@ -12,7 +12,11 @@ import PlanRedirect, {
 const retiredPlansRuledBy = (couponRule: CouponRule) => {
   const plans = Object.entries(REDIRECT_PLANS)
     .filter(([, plan]) => plan.couponRule === couponRule)
-    .map(([retiredPlanId, plan]) => ({ retiredPlanId, currentPlanId: plan.targetPlanId }));
+    .map(([retiredPlanId, plan]) => ({
+      retiredPlanId,
+      currentPlanId: plan.targetPlanId,
+      ownCoupon: plan.couponCode ?? '',
+    }));
 
   if (plans.length === 0) {
     throw new Error(`The catalogue of retired prices has no price ruled by ${couponRule}`);
@@ -23,6 +27,7 @@ const retiredPlansRuledBy = (couponRule: CouponRule) => {
 
 const RETIRED_PLANS = retiredPlansRuledBy('unlessBlocked');
 const COUPON_ONLY_RETIRED_PLANS = retiredPlansRuledBy('onlyIfAllowed');
+const OWN_COUPON_RETIRED_PLANS = retiredPlansRuledBy('onlyCouponCode');
 
 const [{ retiredPlanId: ANY_RETIRED_PLAN_ID }] = RETIRED_PLANS;
 
@@ -35,8 +40,8 @@ const [ALLOWED_COUPON] = REDIRECT_ALLOWED_COUPON_CODES;
 const UNLISTED_COUPON = 'A_COUPON_NOBODY_LISTED';
 const ACTIVE_PLAN_ID = 'price_1SomeOtherActivePriceId';
 
-const campaignSearchFor = (retiredPlanId: string) =>
-  `?planId=${retiredPlanId}&couponCode=${ALLOWED_COUPON}&planType=individual&currency=eur&mode=payment` +
+const campaignSearchFor = (retiredPlanId: string, couponCode = ALLOWED_COUPON) =>
+  `?planId=${retiredPlanId}&couponCode=${couponCode}&planType=individual&currency=eur&mode=payment` +
   '&irclickid=VDATvXyxdxyZRKTUCo0LBx1tUkr0ecwVAzMh2U0&irgwc=1&afsrc=1&utm_source=Impact' +
   '&utm_medium=referral&utm_campaign=312695';
 
@@ -258,6 +263,102 @@ describe('Landing on the checkout with a price that only a campaign coupon can l
   );
 });
 
+describe('Landing on the checkout with a price that only its own coupon can leave behind', () => {
+  test.each(OWN_COUPON_RETIRED_PLANS)(
+    'When $ownCoupon, the only coupon that leaves $retiredPlanId behind, arrives, then the checkout opens with the price that replaced it',
+    ({ retiredPlanId, currentPlanId, ownCoupon }) => {
+      landOn(`/checkout?planId=${retiredPlanId}&couponCode=${ownCoupon}`);
+
+      expect(screen.getByTestId(CHECKOUT)).toHaveTextContent(
+        `/checkout?planId=${currentPlanId}&couponCode=${ownCoupon}`,
+      );
+    },
+  );
+
+  test.each(OWN_COUPON_RETIRED_PLANS)(
+    'When $ownCoupon is typed in lower case, then it still leaves $retiredPlanId behind',
+    ({ retiredPlanId, currentPlanId, ownCoupon }) => {
+      landOn(`/checkout?planId=${retiredPlanId}&couponCode=${ownCoupon.toLowerCase()}`);
+
+      expect(screen.getByTestId(CHECKOUT)).toHaveTextContent(`planId=${currentPlanId}`);
+    },
+  );
+
+  test.each(OWN_COUPON_RETIRED_PLANS)(
+    'When the price that replaced $retiredPlanId takes over, then the retired link is not left behind in the browser history',
+    ({ retiredPlanId, ownCoupon }) => {
+      const history = landOn(`/checkout?planId=${retiredPlanId}&couponCode=${ownCoupon}`);
+
+      expect(history.entries).toHaveLength(1);
+      expect(history.action).toBe('REPLACE');
+    },
+  );
+
+  test.each(OWN_COUPON_RETIRED_PLANS)(
+    'When $ownCoupon arrives with $retiredPlanId from a campaign link, then the coupon and the affiliate attribution survive',
+    ({ retiredPlanId, currentPlanId, ownCoupon }) => {
+      const history = landOn(`/checkout${campaignSearchFor(retiredPlanId, ownCoupon)}`);
+      const params = new URLSearchParams(history.location.search);
+
+      expect(params.get('planId')).toBe(currentPlanId);
+      expect(params.get('couponCode')).toBe(ownCoupon);
+      expect(params.get('planType')).toBe('individual');
+      expect(params.get('currency')).toBe('eur');
+      expect(params.get('mode')).toBe('payment');
+      expect(params.get('irclickid')).toBe('VDATvXyxdxyZRKTUCo0LBx1tUkr0ecwVAzMh2U0');
+      expect(params.get('irgwc')).toBe('1');
+      expect(params.get('afsrc')).toBe('1');
+      expect(params.get('utm_source')).toBe('Impact');
+      expect(params.get('utm_medium')).toBe('referral');
+      expect(params.get('utm_campaign')).toBe('312695');
+    },
+  );
+
+  test.each(OWN_COUPON_RETIRED_PLANS)(
+    'When a coupon of the shared campaign list comes along with $retiredPlanId instead, then the address bar is left untouched',
+    ({ retiredPlanId }) => {
+      const history = landOn(`/checkout?planId=${retiredPlanId}&couponCode=${ALLOWED_COUPON}`);
+
+      expect(screen.getByTestId(CHECKOUT)).toHaveTextContent(
+        `/checkout?planId=${retiredPlanId}&couponCode=${ALLOWED_COUPON}`,
+      );
+      expect(history.entries).toHaveLength(1);
+      expect(history.action).toBe('POP');
+    },
+  );
+
+  test.each(OWN_COUPON_RETIRED_PLANS)(
+    'When a coupon nobody listed comes along with $retiredPlanId, then the address bar is left untouched',
+    ({ retiredPlanId }) => {
+      landOn(`/checkout?planId=${retiredPlanId}&couponCode=${UNLISTED_COUPON}`);
+
+      expect(screen.getByTestId(CHECKOUT)).toHaveTextContent(
+        `/checkout?planId=${retiredPlanId}&couponCode=${UNLISTED_COUPON}`,
+      );
+    },
+  );
+
+  test.each(OWN_COUPON_RETIRED_PLANS)(
+    'When no coupon comes along at all with $retiredPlanId, then the address bar is left untouched',
+    ({ retiredPlanId }) => {
+      const history = landOn(`/checkout?planId=${retiredPlanId}`);
+
+      expect(screen.getByTestId(CHECKOUT)).toHaveTextContent(`/checkout?planId=${retiredPlanId}`);
+      expect(history.entries).toHaveLength(1);
+      expect(history.action).toBe('POP');
+    },
+  );
+
+  test.each(OWN_COUPON_RETIRED_PLANS)(
+    'When an empty coupon comes along with $retiredPlanId, then the address bar is left untouched',
+    ({ retiredPlanId }) => {
+      landOn(`/checkout?planId=${retiredPlanId}&couponCode=`);
+
+      expect(screen.getByTestId(CHECKOUT)).toHaveTextContent(`planId=${retiredPlanId}`);
+    },
+  );
+});
+
 describe('Reading the catalogue of retired prices', () => {
   // The ids and the codes below are spelled out on purpose: these are the only tests that notice a
   // price or a coupon code being added to or dropped from the catalogue, so a change to either one
@@ -276,26 +377,46 @@ describe('Reading the catalogue of retired prices', () => {
         targetPlanId: 'price_1TRoAJFAOdcgaBMQveT6cebN',
         couponRule: 'onlyIfAllowed',
       },
+      price_1UKYnMFAOdcgaBMQ09GLzJhJ: {
+        targetPlanId: 'price_1UAsSAFAOdcgaBMQNF0j8UfV',
+        couponRule: 'onlyCouponCode',
+        couponCode: 'TFA',
+      },
     });
   });
 
   test('When the lists of coupon codes are read, then they hold the codes that rule the redirects today', () => {
     expect([...REDIRECT_BLOCKING_COUPON_CODES]).toEqual([]);
-    expect([...REDIRECT_ALLOWED_COUPON_CODES]).toEqual([
-      'SPECIAL',
-      'WEWE',
-      'GOTZHAOFFER',
-      'TFA',
-      'REOFFER',
-      'AFFIOFFER',
-    ]);
+    expect([...REDIRECT_ALLOWED_COUPON_CODES]).toEqual(['SPECIAL', 'WEWE', 'GOTZHAOFFER', 'REOFFER', 'AFFIOFFER']);
   });
 
-  test('When a price that replaced a retired one is looked up, then it is not itself retired', () => {
-    const retiredPlanIds = new Set(Object.keys(REDIRECT_PLANS));
+  test('When a retired price is ruled by its own coupon, then it names that coupon in upper case', () => {
+    Object.values(REDIRECT_PLANS)
+      .filter(({ couponRule }) => couponRule === 'onlyCouponCode')
+      .forEach(({ couponCode }) => {
+        expect(couponCode).toBeTruthy();
+        expect(couponCode).toBe(couponCode?.toUpperCase());
+      });
+  });
 
-    Object.values(REDIRECT_PLANS).forEach(({ targetPlanId }) => {
-      expect(retiredPlanIds.has(targetPlanId)).toBe(false);
+  test('When a retired price is ruled by one of the shared coupon lists, then it names no coupon of its own', () => {
+    Object.values(REDIRECT_PLANS)
+      .filter(({ couponRule }) => couponRule !== 'onlyCouponCode')
+      .forEach(({ couponCode }) => {
+        expect(couponCode).toBeUndefined();
+      });
+  });
+
+  test('When the price that replaced a retired one is itself retired, then following the chain still ends on a price that is on sale', () => {
+    Object.keys(REDIRECT_PLANS).forEach((retiredPlanId) => {
+      const visitedPlanIds = new Set([retiredPlanId]);
+      let planId = REDIRECT_PLANS[retiredPlanId].targetPlanId;
+
+      while (Object.hasOwn(REDIRECT_PLANS, planId)) {
+        expect(visitedPlanIds.has(planId)).toBe(false);
+        visitedPlanIds.add(planId);
+        planId = REDIRECT_PLANS[planId].targetPlanId;
+      }
     });
   });
 

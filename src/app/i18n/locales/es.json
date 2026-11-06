@@ -451,6 +451,7 @@
   },
   "sideNav": {
     "drive": "Drive",
+    "photos": "Fotos",
     "favorites": "Favoritos",
     "backups": "Backups",
     "shared": "Compartido",
@@ -463,6 +464,18 @@
     }
   },
   "views": {
+    "photos": {
+      "head": "Fotos",
+      "empty": {
+        "title": "Aún no tienes fotos",
+        "description": "Activa la copia de fotos en la app móvil de Internxt y aparecerán aquí"
+      },
+      "error": {
+        "title": "No hemos podido cargar tus fotos",
+        "description": "Comprueba tu conexión e inténtalo de nuevo",
+        "retry": "Reintentar"
+      }
+    },
     "favorites": {
       "head": "Favoritos",
       "empty": {
