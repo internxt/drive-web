@@ -61,13 +61,22 @@ const uploadedNames = () => vi.mocked(uploadFile).mock.calls.map(([file]) => fil
 
 const tasksOf = (action: TaskType) => tasksService.getTasks().filter((task) => task.action === action);
 
+const failUploadsOf = (failingNames: string[], error: unknown = new Error('Server error')) =>
+  (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
+    if (failingNames.includes(file.name)) throw error;
+    return { uuid: `${file.name}-uuid` };
+  });
+
+const uploadSucceeds = () =>
+  (uploadFile as Mock).mockImplementation(async (file: { name: string }) => ({ uuid: `${file.name}-uuid` }));
+
 describe('Uploading what the user picked', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     tasksService.clearTasks();
     vi.spyOn(errorService, 'reportError').mockReturnValue();
     vi.mocked(newStorageService.deleteFolderByUuid).mockResolvedValue(undefined as never);
-    (uploadFile as Mock).mockImplementation(async (file: { name: string }) => ({ uuid: `${file.name}-uuid` }));
+    uploadSucceeds();
     fakeFolderCreationTaking();
   });
 
@@ -111,6 +120,12 @@ describe('Uploading what the user picked', () => {
     expect(onItemUploaded).toHaveBeenCalledWith(expect.objectContaining({ name: 'report' }), DESTINATION_UUID, false);
   });
 
+  test('When a folder is uploaded with everything in it, then it is counted as a folder upload', async () => {
+    await createUpload([getFolderToUpload('Photos', { childrenFiles: [getFileToUpload('beach.png')] })], []).run();
+
+    expect(referralService.trackFolderUpload).toHaveBeenCalledOnce();
+  });
+
   test('When reporting an uploaded item fails, then the upload still finishes and each task succeeds', async () => {
     const onItemUploaded = vi.fn(() => {
       throw new Error('Listener error');
@@ -135,10 +150,7 @@ describe('Uploading what the user picked', () => {
   });
 
   test('When a file inside a folder fails, then the folder still succeeds with what could be uploaded', async () => {
-    (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
-      if (file.name === 'broken') throw new Error('Server error');
-      return { uuid: `${file.name}-uuid` };
-    });
+    failUploadsOf(['broken']);
     const upload = createUpload(
       [getFolderToUpload('Photos', { childrenFiles: [getFileToUpload('broken.png'), getFileToUpload('beach.png')] })],
       [],
@@ -272,20 +284,12 @@ describe('Uploading what the user picked', () => {
   });
 });
 
-const failUploadsOf = (failingNames: string[], error: unknown = new Error('Server error')) =>
-  (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
-    if (failingNames.includes(file.name)) throw error;
-    return { uuid: `${file.name}-uuid` };
-  });
-
-const uploadSucceeds = () =>
-  (uploadFile as Mock).mockImplementation(async (file: { name: string }) => ({ uuid: `${file.name}-uuid` }));
-
 describe('Retrying what failed', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     tasksService.clearTasks();
     vi.spyOn(errorService, 'reportError').mockReturnValue();
+    vi.mocked(newStorageService.deleteFolderByUuid).mockResolvedValue(undefined as never);
     fakeFolderCreationTaking();
   });
 
@@ -335,6 +339,31 @@ describe('Retrying what failed', () => {
     expect(folderTask).toEqual(expect.objectContaining({ status: TaskStatus.Success, progress: 1, failedItems: [] }));
   });
 
+  test('When the user cancels a folder while it is being retried, then the retry finishes only once the folder is removed', async () => {
+    failUploadsOf(['broken']);
+    const upload = createUpload([getFolderToUpload('Photos', { childrenFiles: [getFileToUpload('broken.png')] })], []);
+    await upload.run();
+    vi.mocked(uploadFile).mockClear();
+    fakeUploadsTaking(500);
+    let finishRemoval: () => void = () => undefined;
+    vi.mocked(newStorageService.deleteFolderByUuid).mockReturnValue(
+      new Promise<void>((resolve) => (finishRemoval = resolve)) as never,
+    );
+    const onRetryFinished = vi.fn();
+    const [folderTask] = tasksOf(TaskType.UploadFolder);
+
+    const retrying = folderTask.retry?.().then(onRetryFinished);
+    await vi.waitFor(() => expect(uploadFile).toHaveBeenCalled());
+    await tasksService.cancelTask(folderTask.id);
+    await vi.waitFor(() => expect(newStorageService.deleteFolderByUuid).toHaveBeenCalledWith('Photos-uuid'));
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    expect(onRetryFinished).not.toHaveBeenCalled();
+    finishRemoval();
+    await retrying;
+    expect(onRetryFinished).toHaveBeenCalled();
+  });
+
   test('When the user retries one failed file, then only that file is uploaded again', async () => {
     failUploadsOf(['retried', 'still-failing']);
     await createUpload(
@@ -350,7 +379,7 @@ describe('Retrying what failed', () => {
     const [folderTask] = tasksOf(TaskType.UploadFolder);
     const retriedFailure = folderTask.failedItems?.find(({ name }) => name === 'retried');
 
-    await folderTask.retry?.(retriedFailure);
+    await retriedFailure?.retry();
 
     expect(uploadedNames()).toEqual(['retried']);
     expect(tasksService.findTask(folderTask.id)?.failedItems).toEqual([
@@ -398,26 +427,22 @@ describe('Retrying what failed', () => {
     const [folderTask] = tasksOf(TaskType.UploadFolder);
     const retryingFailure = folderTask.failedItems?.find(({ name }) => name === 'retrying');
 
-    const retryingOne = folderTask.retry?.(retryingFailure);
+    const retryingOne = retryingFailure?.retry();
     const retryingEverything = tasksService.findTask(folderTask.id)?.retry?.();
     await Promise.all([retryingOne, retryingEverything]);
 
     expect(uploadedNames()).toEqual(['retrying', 'waiting']);
   });
 
-  test('When the failed files of a folder are retried one by one at the same time, then the folder upload is counted once', async () => {
-    failUploadsOf(['report', 'invoice']);
-    await createUpload(
-      [getFolderToUpload('Docs', { childrenFiles: [getFileToUpload('report.pdf'), getFileToUpload('invoice.pdf')] })],
-      [],
-    ).run();
-    fakeUploadsTaking(100);
-    const [folderTask] = tasksOf(TaskType.UploadFolder);
-    const [reportFailure, invoiceFailure] = folderTask.failedItems ?? [];
+  test('When a folder is only fully uploaded after a retry, then it is not counted as a folder upload', async () => {
+    failUploadsOf(['report']);
+    await createUpload([getFolderToUpload('Docs', { childrenFiles: [getFileToUpload('report.pdf')] })], []).run();
+    uploadSucceeds();
 
-    await Promise.all([folderTask.retry?.(reportFailure), folderTask.retry?.(invoiceFailure)]);
+    await tasksOf(TaskType.UploadFolder)[0].retry?.();
 
-    expect(referralService.trackFolderUpload).toHaveBeenCalledOnce();
+    expect(tasksOf(TaskType.UploadFolder)[0].failedItems).toEqual([]);
+    expect(referralService.trackFolderUpload).not.toHaveBeenCalled();
   });
 
   test('When a folder that could not be created is retried, then it is created with all its content', async () => {
@@ -480,5 +505,67 @@ describe('Retrying what failed', () => {
     await tasksOf(TaskType.UploadFile)[0].retry?.();
 
     expect(onStorageFull).toHaveBeenCalledTimes(2);
+  });
+
+  test('When a cancelled folder is retried, then nothing is uploaded again', async () => {
+    failUploadsOf(['broken']);
+    await createUpload([getFolderToUpload('Photos', { childrenFiles: [getFileToUpload('broken.png')] })], []).run();
+    const [folderTask] = tasksOf(TaskType.UploadFolder);
+    await tasksService.cancelTask(folderTask.id);
+    vi.mocked(uploadFile).mockClear();
+
+    await folderTask.retry?.();
+
+    expect(uploadFile).not.toHaveBeenCalled();
+    expect(tasksService.findTask(folderTask.id)).toEqual(
+      expect.objectContaining({
+        status: TaskStatus.Cancelled,
+        failedItems: [expect.objectContaining({ name: 'broken', isRetrying: false })],
+      }),
+    );
+  });
+
+  test('When the user frees space and retries while another file is still uploading, then the retried file uploads', async () => {
+    let isStorageFull = true;
+    (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
+      if (file.name === 'video') await new Promise((resolve) => setTimeout(resolve, 500));
+      else if (isStorageFull) throw new AppError('No space left', HTTP_STATUS_CODES.MAX_SPACE_USED);
+      return { uuid: `${file.name}-uuid` };
+    });
+    const upload = createUpload([], [getFileToUpload('report.pdf'), getFileToUpload('video.mp4')]);
+    const running = upload.run();
+    const [reportTask, videoTask] = tasksOf(TaskType.UploadFile);
+    await vi.waitFor(() => expect(tasksService.findTask(reportTask.id)?.status).toBe(TaskStatus.Error));
+    isStorageFull = false;
+
+    await reportTask.retry?.();
+
+    expect(tasksService.findTask(reportTask.id)?.status).toBe(TaskStatus.Success);
+    expect(tasksService.findTask(videoTask.id)?.status).toBe(TaskStatus.InProcess);
+    await running;
+  });
+
+  test('When the failed files of two folders are retried, then each folder finishes when its own files do', async () => {
+    failUploadsOf(['broken', 'movie']);
+    await createUpload(
+      [
+        getFolderToUpload('Photos', { childrenFiles: [getFileToUpload('broken.png')] }),
+        getFolderToUpload('Videos', { childrenFiles: [getFileToUpload('movie.mp4')] }),
+      ],
+      [],
+    ).run();
+    (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
+      if (file.name === 'movie') await new Promise((resolve) => setTimeout(resolve, 500));
+      return { uuid: `${file.name}-uuid` };
+    });
+    const [photosTask, videosTask] = tasksOf(TaskType.UploadFolder);
+
+    const retryingVideos = videosTask.retry?.();
+    await photosTask.retry?.();
+
+    expect(tasksService.findTask(photosTask.id)?.status).toBe(TaskStatus.Success);
+    expect(tasksService.findTask(videosTask.id)?.status).toBe(TaskStatus.InProcess);
+    await retryingVideos;
+    expect(tasksService.findTask(videosTask.id)?.status).toBe(TaskStatus.Success);
   });
 });

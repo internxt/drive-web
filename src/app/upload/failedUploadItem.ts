@@ -2,21 +2,24 @@ import { UploadItem, UploadItemKind } from 'app/upload/types';
 import { UploadFailure } from 'app/upload/uploadFailure';
 import { FailedUploadItem } from 'app/tasks/types';
 
-export const toFailedUploadItem = (id: string, item: UploadItem, { isRetryable }: UploadFailure): FailedUploadItem => {
+export const toFailedUploadItem = (
+  item: UploadItem,
+  { isRetryable }: UploadFailure,
+  retry: () => Promise<void>,
+): FailedUploadItem => {
   if (item.kind === UploadItemKind.Folder) {
     return {
-      id,
       name: item.folder.name,
       size: 0,
       modifiedAt: Date.now(),
       isFolder: true,
       isRetryable,
       isRetrying: false,
+      retry,
     };
   }
 
   return {
-    id,
     name: item.file.name,
     type: item.file.type,
     size: item.file.size,
@@ -24,5 +27,6 @@ export const toFailedUploadItem = (id: string, item: UploadItem, { isRetryable }
     isFolder: false,
     isRetryable,
     isRetrying: false,
+    retry,
   };
 };
