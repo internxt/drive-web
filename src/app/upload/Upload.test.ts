@@ -6,6 +6,7 @@ import { IRoot } from 'app/store/slices/storage/types';
 import tasksService from 'app/tasks/services/tasks.service';
 import { TaskStatus, TaskType } from 'app/tasks/types';
 import errorService from 'services/error.service';
+import referralService from 'services/referral.service';
 import { AppError } from '@internxt/sdk';
 import { HTTP_STATUS_CODES } from 'app/core/constants';
 import {
@@ -112,6 +113,29 @@ describe('Uploading what the user picked', () => {
     );
     expect(onItemUploaded).toHaveBeenCalledWith(expect.objectContaining({ name: 'beach' }), 'Photos-uuid', false);
     expect(onItemUploaded).toHaveBeenCalledWith(expect.objectContaining({ name: 'report' }), DESTINATION_UUID, false);
+  });
+
+  test('When reporting an uploaded item fails, then the upload still finishes and each task succeeds', async () => {
+    const onItemUploaded = vi.fn(() => {
+      throw new Error('Listener error');
+    });
+    vi.mocked(referralService.trackFileUpload).mockImplementation(() => {
+      throw new Error('Corrupt banner state');
+    });
+    const upload = createUpload(
+      [getFolderToUpload('Photos', { childrenFiles: [getFileToUpload('beach.png')] })],
+      [getFileToUpload('report.pdf')],
+      { onItemUploaded },
+    );
+
+    await upload.run();
+
+    expect(tasksOf(TaskType.UploadFolder)[0]).toEqual(
+      expect.objectContaining({ status: TaskStatus.Success, progress: 1, itemUUID: { rootFolderUUID: 'Photos-uuid' } }),
+    );
+    expect(tasksOf(TaskType.UploadFile)[0]).toEqual(
+      expect.objectContaining({ status: TaskStatus.Success, itemUUID: { fileUUID: 'report-uuid' } }),
+    );
   });
 
   test('When a file inside a folder fails, then the folder still succeeds with what could be uploaded', async () => {

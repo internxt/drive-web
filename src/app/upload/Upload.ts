@@ -13,7 +13,14 @@ import {
 } from 'app/upload/types';
 import { UploadFailure } from 'app/upload/uploadFailure';
 import { UploadManager } from './UploadManager';
-import { countItemsIn, createFileItem, createFolderItem, getParentFolderUuid, getTopLevelItem } from './uploadItemTree';
+import {
+  countItemsIn,
+  createFileItem,
+  createFolderItem,
+  getParentFolderUuid,
+  getTopLevelItem,
+  isFolderItem,
+} from './uploadItemTree';
 import { PersistUploadRepository } from 'app/repositories/DatabaseUploadRepository';
 import { IRoot } from 'app/store/slices/storage/types';
 import tasksService from 'app/tasks/services/tasks.service';
@@ -165,23 +172,21 @@ export class Upload {
   }
 
   private onItemSucceeded(item: UploadItem, uploadedItem: UploadedItem): void {
-    const isFile = item.kind === UploadItemKind.File;
-    const isFolder = item.kind === UploadItemKind.Folder;
+    const taskId = this.getTaskIdOf(item);
+    const isFileWithItsOwnTask = !!taskId && !isFolderItem(item);
+    if (isFileWithItsOwnTask) this.finishFileTask(taskId, { fileUUID: uploadedItem.uuid });
+    else this.countUploadedInRootFolder(item, uploadedItem);
 
-    this.props.onItemUploaded?.(uploadedItem, getParentFolderUuid(item), isFolder);
+    const isFile = item.kind === UploadItemKind.File;
+    this.props.onItemUploaded?.(uploadedItem, getParentFolderUuid(item), !isFile);
 
     if (isFile) {
       referralService.trackFileUpload();
       logNetworkInfoForUpload({ fileName: item.file.name, fileSize: item.file.size });
     }
+  }
 
-    const taskId = this.getTaskIdOf(item);
-    const isFileWithItsOwnTask = !!taskId && isFile;
-    if (isFileWithItsOwnTask) {
-      this.finishFileTask(taskId, { fileUUID: uploadedItem.uuid });
-      return;
-    }
-
+  private countUploadedInRootFolder(item: UploadItem, uploadedItem: UploadedItem): void {
     const topLevelItem = getTopLevelItem(item);
     const rootFolder = this.rootFolders.get(topLevelItem) as RootFolderUpload;
 
