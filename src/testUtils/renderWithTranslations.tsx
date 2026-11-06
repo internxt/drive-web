@@ -12,7 +12,7 @@ import esJson from 'app/i18n/locales/es.json';
  */
 export const renderWithTranslations = (ui: ReactElement) => {
   const i18n = i18next.createInstance();
-  i18n.init({
+  void i18n.init({
     lng: 'en',
     resources: { en: { translation: enJson }, es: { translation: esJson } },
     initImmediate: false,
