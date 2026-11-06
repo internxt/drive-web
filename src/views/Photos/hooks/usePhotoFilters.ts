@@ -20,11 +20,13 @@ export const usePhotoFilters = (months: PhotoMonth[]) => {
   }, [monthsOfSelectedDevices]);
 
   const isSelectedMonthAvailable = selectedMonth !== null && availableMonths.includes(selectedMonth);
-  const shownMonthKey = isSelectedMonthAvailable ? selectedMonth : availableMonths[0];
 
   const shownMonths = useMemo(
-    () => monthsOfSelectedDevices.filter((month) => month.key === shownMonthKey),
-    [monthsOfSelectedDevices, shownMonthKey],
+    () =>
+      isSelectedMonthAvailable
+        ? monthsOfSelectedDevices.filter((month) => month.key === selectedMonth)
+        : monthsOfSelectedDevices,
+    [monthsOfSelectedDevices, isSelectedMonthAvailable, selectedMonth],
   );
 
   return {
