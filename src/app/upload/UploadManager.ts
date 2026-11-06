@@ -1,4 +1,3 @@
-import { items as itemUtils } from '@internxt/lib';
 import { AsyncPriorityQueue, priorityQueue } from 'async';
 import errorService from 'services/error.service';
 import workspacesService from 'services/workspace.service';
@@ -9,7 +8,6 @@ import folderService from 'app/drive/services/folder.service';
 import { toDriveFolderData } from 'app/drive/services/folder.service/toDriveFolderData';
 import { DriveFileData, DriveFolderData } from 'app/drive/types';
 import { PersistUploadRepository } from 'app/repositories/DatabaseUploadRepository';
-import { IRoot } from 'app/store/slices/storage/types';
 import { TaskStatus } from 'app/tasks/types';
 import {
   MAX_CONCURRENT_UPLOADS,
@@ -29,6 +27,7 @@ import {
   UploadResult,
 } from './types';
 import { shouldAutoRetry, toUploadFailure, UploadFailure } from './uploadFailure';
+import { createFileItem, createFolderItem, getItemAndItsFolders, isFolderItem, isPartOf } from './uploadItemTree';
 
 const SINGLE_TRANSFER_CONCURRENCY = 1;
 export const WORKSPACE_FOLDER_AVAILABILITY_DELAY_MS = 600;
@@ -52,39 +51,6 @@ class UploadCancelledError extends Error {
     super('The upload was cancelled before it started');
   }
 }
-
-export const createFileItem = (file: File, parentFolderUuid: string, parent?: UploadFolderItem): UploadFileItem => {
-  const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
-
-  return {
-    kind: UploadItemKind.File,
-    file: { name: filename, type: extension, size: file.size, content: file, parentFolderId: parentFolderUuid },
-    parent,
-  };
-};
-
-export const createFolderItem = (
-  folder: IRoot,
-  parentFolderUuid: string,
-  parent?: UploadFolderItem,
-): UploadFolderItem => ({
-  kind: UploadItemKind.Folder,
-  folder,
-  parentFolderUuid,
-  parent,
-});
-
-const getItemAndItsFolders = (item: UploadItem): UploadItem[] => {
-  const itemAndItsFolders: UploadItem[] = [];
-  for (let current: UploadItem | undefined = item; current; current = current.parent) {
-    itemAndItsFolders.push(current);
-  }
-  return itemAndItsFolders;
-};
-
-const isPartOf = (item: UploadItem, otherItem: UploadItem): boolean => getItemAndItsFolders(item).includes(otherItem);
-
-const isFolderItem = (item: UploadItem): item is UploadFolderItem => item.kind === UploadItemKind.Folder;
 
 const isMultipartUpload = (item: UploadItem) =>
   item.kind === UploadItemKind.File && item.file.size >= USE_MULTIPART_THRESHOLD_BYTES;

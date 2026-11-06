@@ -12,7 +12,8 @@ import {
   UploadResult,
 } from 'app/upload/types';
 import { UploadFailure } from 'app/upload/uploadFailure';
-import { createFileItem, createFolderItem, UploadManager } from './UploadManager';
+import { UploadManager } from './UploadManager';
+import { countItemsIn, createFileItem, createFolderItem, getParentFolderUuid, getTopLevelItem } from './uploadItemTree';
 import { PersistUploadRepository } from 'app/repositories/DatabaseUploadRepository';
 import { IRoot } from 'app/store/slices/storage/types';
 import tasksService from 'app/tasks/services/tasks.service';
@@ -40,18 +41,6 @@ interface RootFolderUpload {
   hasFailedItems: boolean;
   createdFolder?: DriveFolderData;
 }
-
-const countItemsIn = (folder: IRoot): number =>
-  folder.childrenFolders.reduce((count, child) => count + countItemsIn(child), 1 + folder.childrenFiles.length);
-
-const getTopLevelItem = (item: UploadItem): UploadItem => {
-  let topLevelItem = item;
-  while (topLevelItem.parent) topLevelItem = topLevelItem.parent;
-  return topLevelItem;
-};
-
-const getParentFolderUuid = (item: UploadItem): string =>
-  item.kind === UploadItemKind.File ? item.file.parentFolderId : item.parentFolderUuid;
 
 const createItemsToUpload = ({ roots, files, destinationFolderUuid }: UploadProps): UploadItem[] => [
   ...roots.map((root) => createFolderItem(root, destinationFolderUuid)),
