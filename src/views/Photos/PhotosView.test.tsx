@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
-import { getDatabaseFilePreviewData } from 'app/drive/services/database.service';
+import { getDatabaseFilePreviewData, updateDatabaseFilePreviewData } from 'app/drive/services/database.service';
 import fetchFileBlob from 'app/drive/services/download.service/fetchFileBlob';
 import errorService from 'services/error.service';
 import { PhotoDevice as SdkPhotoDevice } from '@internxt/sdk/dist/drive/photos';
@@ -94,6 +94,7 @@ describe('Photos view', () => {
     givenSubfolders({});
     givenPhotosInFolders({});
     (getDatabaseFilePreviewData as Mock).mockResolvedValue(undefined);
+    (updateDatabaseFilePreviewData as Mock).mockResolvedValue(undefined);
   });
 
   test('When the devices are loading, then the photos grid placeholder is shown under the title', () => {
@@ -396,6 +397,8 @@ describe('Photos view', () => {
       'iphone-2026-11': [getPhotoFolder({ uuid: 'iphone-2026-11-03', plainName: '03' })],
     };
 
+    const photoUpdatedAt = '2026-11-03T10:00:00.000Z';
+
     const givenPhotoWithThumbnail = () => {
       givenDevices([iphone]);
       givenSubfolders(iphoneDayOfNovember2026);
@@ -405,6 +408,7 @@ describe('Photos view', () => {
             uuid: 'IMG_A',
             plainName: 'IMG_A',
             folderUuid: 'iphone-2026-11-03',
+            updatedAt: photoUpdatedAt,
             thumbnails: [getPhotoThumbnail({ bucketId: 'photos-bucket', bucketFile: 'thumbnail-a' })],
           }),
         ],
@@ -432,13 +436,47 @@ describe('Photos view', () => {
 
     test('When a thumbnail was already downloaded, then it is shown without downloading it again', async () => {
       givenPhotoWithThumbnail();
-      (getDatabaseFilePreviewData as Mock).mockResolvedValue({ preview: new Blob(['cached'], { type: 'image/jpeg' }) });
+      (getDatabaseFilePreviewData as Mock).mockResolvedValue({
+        preview: new Blob(['cached'], { type: 'image/jpeg' }),
+        updatedAt: photoUpdatedAt,
+      });
 
       render(<PhotosView />);
       const thumbnail = await thumbnailOf('IMG_A.jpg');
 
       await waitFor(() => expect(thumbnail()?.getAttribute('src')).toMatch(/^blob:/));
       expect(fetchFileBlob).not.toHaveBeenCalled();
+    });
+
+    test('When the photo changed after its thumbnail was saved, then the new thumbnail is downloaded', async () => {
+      givenPhotoWithThumbnail();
+      (getDatabaseFilePreviewData as Mock).mockResolvedValue({
+        preview: new Blob(['outdated'], { type: 'image/jpeg' }),
+        updatedAt: '2026-11-01T10:00:00.000Z',
+      });
+      (fetchFileBlob as Mock).mockResolvedValue(new Blob(['thumbnail'], { type: 'image/jpeg' }));
+
+      render(<PhotosView />);
+      const thumbnail = await thumbnailOf('IMG_A.jpg');
+
+      await waitFor(() => expect(thumbnail()?.getAttribute('src')).toMatch(/^blob:/));
+      expect(fetchFileBlob).toHaveBeenCalled();
+      expect(updateDatabaseFilePreviewData).toHaveBeenCalledWith(
+        expect.objectContaining({ updatedAt: photoUpdatedAt }),
+      );
+    });
+
+    test('When the thumbnail cannot be saved, then the error is reported and the thumbnail is still shown', async () => {
+      givenPhotoWithThumbnail();
+      const saveError = new Error('Quota exceeded');
+      (fetchFileBlob as Mock).mockResolvedValue(new Blob(['thumbnail'], { type: 'image/jpeg' }));
+      (updateDatabaseFilePreviewData as Mock).mockRejectedValue(saveError);
+
+      render(<PhotosView />);
+      const thumbnail = await thumbnailOf('IMG_A.jpg');
+
+      await waitFor(() => expect(thumbnail()?.getAttribute('src')).toMatch(/^blob:/));
+      await waitFor(() => expect(errorService.reportError).toHaveBeenCalledWith(saveError));
     });
 
     test('When a thumbnail cannot be downloaded, then the file type icon is shown instead', async () => {
