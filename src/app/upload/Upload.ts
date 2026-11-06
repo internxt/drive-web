@@ -306,13 +306,12 @@ export class Upload {
 
   private async retry(topLevelItem: UploadItem, pickedItem?: UploadItem): Promise<void> {
     const taskId = this.getTaskIdOf(topLevelItem) as string;
-    const isTaskCancelled = tasksService.findTask(taskId)?.status === TaskStatus.Cancelled;
-    if (isTaskCancelled) return;
+    const status = tasksService.findTask(taskId)?.status;
+    const isTaskFinished = status === TaskStatus.Success || status === TaskStatus.Error;
+    if (!isTaskFinished) return;
 
     const failures = this.getFailuresOf(topLevelItem);
-    const retryableFailures = [...failures].filter(
-      ([, failedItem]) => failedItem.isRetryable && !failedItem.isRetrying,
-    );
+    const retryableFailures = [...failures].filter(([, failedItem]) => failedItem.isRetryable);
     const failuresToRetry = pickedItem ? retryableFailures.filter(([item]) => item === pickedItem) : retryableFailures;
 
     const hasNothingToRetry = failuresToRetry.length === 0;

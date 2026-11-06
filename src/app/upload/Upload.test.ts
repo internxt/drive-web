@@ -412,7 +412,7 @@ describe('Retrying what failed', () => {
     ]);
   });
 
-  test('When the user retries everything while a file is already being retried, then that file is uploaded only once', async () => {
+  test('When the user retries while a retry of the same task is still running, then nothing else is uploaded', async () => {
     failUploadsOf(['retrying', 'waiting']);
     await createUpload(
       [
@@ -431,7 +431,13 @@ describe('Retrying what failed', () => {
     const retryingEverything = tasksService.findTask(folderTask.id)?.retry?.();
     await Promise.all([retryingOne, retryingEverything]);
 
-    expect(uploadedNames()).toEqual(['retrying', 'waiting']);
+    expect(uploadedNames()).toEqual(['retrying']);
+    expect(tasksService.findTask(folderTask.id)).toEqual(
+      expect.objectContaining({
+        status: TaskStatus.Success,
+        failedItems: [expect.objectContaining({ name: 'waiting' })],
+      }),
+    );
   });
 
   test('When a folder is only fully uploaded after a retry, then it is not counted as a folder upload', async () => {
