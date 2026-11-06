@@ -80,17 +80,35 @@ describe('Network uploads', () => {
     await flushPromises();
   });
 
-  test('When a waiting file is cancelled, then it never starts a worker and fails as aborted', async () => {
+  test('When a waiting file is cancelled, then it fails as aborted right away and never starts a worker', async () => {
     const uploads = Array.from({ length: MAX_CONCURRENT_UPLOADS + 1 }, (_, index) => startUpload(`file-${index}`));
     await flushPromises();
     const waitingUpload = uploads[MAX_CONCURRENT_UPLOADS];
 
     waitingUpload.abortable?.abort();
-    createdWorkers[0].emitMessage({ result: 'success', fileId: 'file-id-0' });
-    await flushPromises();
 
     await expect(waitingUpload.upload).rejects.toThrow('abort');
+
+    createdWorkers[0].emitMessage({ result: 'success', fileId: 'file-id-0' });
+    await flushPromises();
     expect(createdWorkers).toHaveLength(MAX_CONCURRENT_UPLOADS);
+
+    createdWorkers.filter(isWorkerAlive).forEach((worker) => worker.emitMessage({ result: 'success', fileId: 'id' }));
+    await flushPromises();
+  });
+
+  test('When a worker crashes, then it is terminated and the next waiting file starts', async () => {
+    const uploads = Array.from({ length: MAX_CONCURRENT_UPLOADS + 1 }, (_, index) => startUpload(`file-${index}`));
+    await flushPromises();
+    const crashedWorker = createdWorkers[0];
+
+    crashedWorker.emitError(new Error('Worker crashed'));
+    await flushPromises();
+
+    expect(uploads[0].outcome).toHaveBeenCalledWith({ error: new Error('Worker crashed') });
+    expect(crashedWorker.terminated).toBe(true);
+    expect(createdWorkers.filter(isWorkerAlive)).toHaveLength(MAX_CONCURRENT_UPLOADS);
+    expect(uploadedFileOf(createdWorkers[MAX_CONCURRENT_UPLOADS])).toBe(`file-${MAX_CONCURRENT_UPLOADS}`);
 
     createdWorkers.filter(isWorkerAlive).forEach((worker) => worker.emitMessage({ result: 'success', fileId: 'id' }));
     await flushPromises();

@@ -77,12 +77,10 @@ export class Network {
       isUploadedFromFolder: params.isUploadedFromFolder,
     };
 
-    let isAborted = false;
+    const waitingForSlot = new AbortController();
     let abortWorkerUpload: (() => void) | undefined;
 
     const upload = uploadWorkerSlots.execute(() => {
-      if (isAborted) return Promise.reject(new Error(WORKER_MESSAGE_STATES.ABORT));
-
       const worker: Worker = createUploadWebWorker();
       worker.postMessage({ bucketId, params: payload, type: 'upload' });
 
@@ -94,14 +92,15 @@ export class Network {
       );
       abortWorkerUpload = workerAbortable?.abort;
 
-      return workerUpload;
-    });
+      // A worker that crashes rejects without terminating itself; it must not keep its memory once its slot is freed.
+      return workerUpload.finally(() => worker.terminate());
+    }, waitingForSlot.signal);
 
     return [
       upload,
       {
         abort: () => {
-          isAborted = true;
+          waitingForSlot.abort(new Error(WORKER_MESSAGE_STATES.ABORT));
           abortWorkerUpload?.();
         },
       },
