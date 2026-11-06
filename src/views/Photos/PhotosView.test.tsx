@@ -87,6 +87,52 @@ describe('Photos view', () => {
     expect(photosClient.listDevices).toHaveBeenCalledTimes(2);
   });
 
+  describe('Filtering by device', () => {
+    const openDeviceFilter = async () => {
+      fireEvent.click(await screen.findByRole('button', { name: /views.photos.filters.allDevices/ }));
+    };
+
+    test('When the user has a single device, then there is no device filter', async () => {
+      photosClient.listDevices.mockResolvedValue([device('iPhone', 'EXISTS')]);
+
+      render(<PhotosView />);
+
+      await waitFor(() => expect(screen.queryByTestId('photos-grid-skeleton')).not.toBeInTheDocument());
+      expect(screen.queryByRole('button', { name: /views.photos.filters.allDevices/ })).not.toBeInTheDocument();
+    });
+
+    test('When the user has several devices, then they can choose one of them', async () => {
+      photosClient.listDevices.mockResolvedValue([device('iPhone', 'EXISTS'), device('Pixel', 'EXISTS')]);
+
+      render(<PhotosView />);
+      await openDeviceFilter();
+
+      expect((await screen.findAllByRole('menuitem')).map((option) => option.textContent)).toStrictEqual([
+        'views.photos.filters.allDevices',
+        'iPhone',
+        'Pixel',
+      ]);
+      expect(screen.getByRole('menuitem', { name: /views.photos.filters.allDevices/ })).toHaveAttribute(
+        'aria-current',
+        'true',
+      );
+    });
+
+    test('When the user chooses a device, then the filter shows it until they go back to all devices', async () => {
+      photosClient.listDevices.mockResolvedValue([device('iPhone', 'EXISTS'), device('Pixel', 'EXISTS')]);
+
+      render(<PhotosView />);
+      await openDeviceFilter();
+      fireEvent.click(await screen.findByRole('menuitem', { name: /Pixel/ }));
+
+      fireEvent.click(await screen.findByRole('button', { name: /Pixel/ }));
+      expect(await screen.findByRole('menuitem', { name: /Pixel/ })).toHaveAttribute('aria-current', 'true');
+
+      fireEvent.click(await screen.findByRole('menuitem', { name: /views.photos.filters.allDevices/ }));
+      expect(await screen.findByRole('button', { name: /views.photos.filters.allDevices/ })).toBeInTheDocument();
+    });
+  });
+
   test('When the devices cannot be loaded, then the error is reported and no empty state is shown', async () => {
     const networkError = new Error('Network error');
     photosClient.listDevices.mockRejectedValue(networkError);

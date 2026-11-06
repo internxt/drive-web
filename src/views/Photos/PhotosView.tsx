@@ -1,31 +1,39 @@
-import { Helmet } from 'react-helmet-async';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useState } from 'react';
+import PhotosDeviceFilter from './components/PhotosDeviceFilter';
 import PhotosEmptyState from './components/PhotosEmptyState';
 import PhotosErrorState from './components/PhotosErrorState';
 import PhotosGridSkeleton from './components/PhotosGridSkeleton';
-import { PhotoDevicesState, usePhotoDevices } from './hooks/usePhotoDevices';
-
-const PhotosContent = ({ state, onRetry }: { state: PhotoDevicesState; onRetry: () => void }) => {
-  if (state.status === 'loading') return <PhotosGridSkeleton />;
-  if (state.status === 'error') return <PhotosErrorState onRetry={onRetry} />;
-  if (state.status === 'loaded' && state.devices.length === 0) return <PhotosEmptyState />;
-  return null;
-};
+import PhotosLayout from './components/PhotosLayout';
+import { usePhotoDevices } from './hooks/usePhotoDevices';
 
 const PhotosView = (): JSX.Element => {
-  const { translate } = useTranslationContext();
   const { state, retry } = usePhotoDevices();
+  const [selectedDeviceUuid, setSelectedDeviceUuid] = useState<string | null>(null);
+
+  const devices = state.status === 'loaded' ? state.devices : [];
+  const hasSeveralDevices = devices.length > 1;
+
+  const content = {
+    loading: <PhotosGridSkeleton />,
+    error: <PhotosErrorState onRetry={retry} />,
+    // TODO: show the photos of the chosen devices when there are devices, once the gallery is added
+    loaded: devices.length === 0 && <PhotosEmptyState />,
+  };
 
   return (
-    <div className="flex w-full shrink-0 grow flex-col">
-      <Helmet>
-        <title>{translate('sideNav.photos')} - Internxt Drive</title>
-      </Helmet>
-      <header className="flex h-14 shrink-0 items-center px-5">
-        <h1 className="text-lg">{translate('views.photos.head')}</h1>
-      </header>
-      <PhotosContent state={state} onRetry={retry} />
-    </div>
+    <PhotosLayout
+      filters={
+        hasSeveralDevices && (
+          <PhotosDeviceFilter
+            devices={devices}
+            selectedDeviceUuid={selectedDeviceUuid}
+            onSelect={setSelectedDeviceUuid}
+          />
+        )
+      }
+    >
+      {content[state.status]}
+    </PhotosLayout>
   );
 };
 

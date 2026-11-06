@@ -474,6 +474,9 @@
         "title": "No hemos podido cargar tus fotos",
         "description": "Comprueba tu conexión e inténtalo de nuevo",
         "retry": "Reintentar"
+      },
+      "filters": {
+        "allDevices": "Todos los dispositivos"
       }
     },
     "favorites": {

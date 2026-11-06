@@ -474,6 +474,9 @@
         "title": "Impossible de charger vos photos",
         "description": "Vérifiez votre connexion et réessayez",
         "retry": "Réessayer"
+      },
+      "filters": {
+        "allDevices": "Tous les appareils"
       }
     },
     "favorites": {
