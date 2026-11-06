@@ -478,7 +478,16 @@
   },
   "views": {
     "photos": {
-      "head": "Fotos"
+      "head": "Fotos",
+      "empty": {
+        "title": "Ainda não há fotos",
+        "description": "Ative o backup de fotos no app da Internxt para celular e elas aparecerão aqui"
+      },
+      "error": {
+        "title": "Não foi possível carregar suas fotos",
+        "description": "Verifique sua conexão e tente novamente",
+        "retry": "Tentar novamente"
+      }
     },
     "favorites": {
       "head": "Favoritos",
