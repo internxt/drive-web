@@ -204,7 +204,13 @@
       "success": "Accesso effettuato con successo",
       "error": "Impossibile accedere, riprova",
       "closeWindow": "Puoi chiudere questa finestra",
-      "invalidRedirectUri": "URL di reindirizzamento non valido"
+      "invalidRedirectUri": "URL di reindirizzamento non valido",
+      "errors": {
+        "CLIENT_VERSION_UNSUPPORTED": {
+          "title": "Questa versione dell'app non è più supportata",
+          "description": "Aggiorna l'app all'ultima versione, quindi accedi di nuovo."
+        }
+      }
     },
     "oauthLink": {
       "continueAs": "Continua come",

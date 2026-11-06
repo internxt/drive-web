@@ -204,7 +204,13 @@
       "success": "You have successfully logged in",
       "error": "Login failed, please try again",
       "closeWindow": "You can close this window",
-      "invalidRedirectUri": "Invalid redirect URL"
+      "invalidRedirectUri": "Invalid redirect URL",
+      "errors": {
+        "CLIENT_VERSION_UNSUPPORTED": {
+          "title": "This version of the app is no longer supported",
+          "description": "Update the app to the latest version, then log in again."
+        }
+      }
     },
     "oauthLink": {
       "continueAs": "Continue as",
