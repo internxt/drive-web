@@ -5,9 +5,9 @@ import { beforeAll, describe, expect, test, vi } from 'vitest';
 import { PreviewFileItem } from 'app/share/types';
 import FileImageViewer from './FileImageViewer';
 
-const { heic2anyMock } = vi.hoisted(() => ({ heic2anyMock: vi.fn() }));
+const { heicToMock } = vi.hoisted(() => ({ heicToMock: vi.fn() }));
 
-vi.mock('heic2any', () => ({ __esModule: true, default: heic2anyMock }));
+vi.mock('heic-to', () => ({ heicTo: heicToMock }));
 vi.mock('app/i18n/provider/TranslationProvider', () => ({
   useTranslationContext: () => ({ translate: (key: string) => key }),
 }));
@@ -122,19 +122,31 @@ describe('FileImageViewer', () => {
     expect(image.naturalHeight).toBe(IMAGE_WIDTH);
   });
 
-  test('when a HEIC file is opened, then it is converted with heic2any as before', async () => {
+  test('when a HEIC file is opened, then it is converted to JPEG and shown', async () => {
     const handlers = createHandlers();
-    heic2anyMock.mockResolvedValue(new Blob([jpegBytes], { type: 'image/png' }));
+    heicToMock.mockResolvedValue(new Blob([jpegBytes], { type: 'image/jpeg' }));
 
     render(<FileImageViewer file={file('heic')} blob={new Blob(['heic'])} {...handlers} onError={vi.fn()} />);
 
     await waitForLoadedImage();
+    expect(heicToMock).toHaveBeenCalledWith(expect.objectContaining({ type: 'image/jpeg' }));
     await waitFor(() =>
       expect(handlers.onConvertedContent).toHaveBeenCalledWith(
-        expect.objectContaining({ type: 'png' }),
+        expect.objectContaining({ type: 'jpg' }),
         expect.any(Blob),
       ),
     );
+  });
+
+  test('when a HEIC file cannot be converted, then the unsupported fallback is triggered', async () => {
+    const handlers = createHandlers();
+    const onError = vi.fn();
+    heicToMock.mockRejectedValue(new Error('format not supported'));
+
+    render(<FileImageViewer file={file('heic')} blob={new Blob(['heic'])} {...handlers} onError={onError} />);
+
+    await waitFor(() => expect(onError).toHaveBeenCalled());
+    expect(handlers.onConvertedContent).not.toHaveBeenCalled();
   });
 
   test('when a RAW file has no usable preview, then the unsupported fallback is triggered', async () => {
