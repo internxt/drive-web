@@ -22,6 +22,8 @@ import { ThemeProvider } from 'app/theme/ThemeProvider';
 import { LiveChatLoaderProvider } from 'react-live-chat-loader';
 import { DialogManagerProvider } from 'app/contexts/dialog-manager/ActionDialogManager.context';
 import envService from 'services/env.service';
+import errorService from 'services/error.service';
+import { configureAnalytics } from '@internxt/analytics';
 import { enforceCanonicalDriveDomain } from 'utils/canonicalDomain.utils';
 import { initializeServiceWorkers } from 'utils/initializeServiceWorkers.utils';
 import encryptedStorageService from 'services/encrypted-storage.service';
@@ -68,6 +70,16 @@ async function bootstrap() {
   plugins.forEach((plugin) => plugin.install(store));
 
   SdkFactory.initialize(store.dispatch, localStorageService, encryptedStorageService);
+
+  configureAnalytics({
+    isProduction: envService.isProduction(),
+    impactApiUrl: envService.getVariable('impactApiUrl'),
+    websiteUrl: envService.getVariable('websiteUrl'),
+    recaptchaV3Key: envService.getVariable('recaptchaV3'),
+    gaId: envService.getVariable('gaId'),
+    gaConversionTag: envService.getVariable('gaConversionTag'),
+    onError: (error) => errorService.reportError(errorService.castError(error)),
+  });
 
   // Initializes store
   await store.dispatch(userThunks.initializeThunk());

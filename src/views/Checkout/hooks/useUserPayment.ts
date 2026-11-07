@@ -1,10 +1,9 @@
 import { Stripe } from '@stripe/stripe-js';
 
 import { Translate } from 'app/i18n/types';
-import { savePaymentDataInLocalStorage } from 'app/analytics/impact.service';
+import { savePaymentDataInLocalStorage, sendConversionToAPI } from '@internxt/analytics';
 import checkoutService from '../services/checkout.service';
 import envService from 'services/env.service';
-import { sendConversionToAPI } from 'app/analytics/googleSheet.service';
 import navigationService from 'services/navigation.service';
 import errorService from 'services/error.service';
 import { AppView } from 'app/core/types';
