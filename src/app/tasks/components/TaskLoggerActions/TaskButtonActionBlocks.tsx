@@ -10,7 +10,7 @@ import InfoIcon from '../../../../assets/icons/tasklogger/info.svg?react';
 import RestartIcon from '../../../../assets/icons/tasklogger/circle-arrow.svg?react';
 import WarningIcon from '../../../../assets/icons/tasklogger/warning.svg?react';
 import { TaskLoggerButton } from '../TaskLoggerButton/TaskLoggerButton';
-import { t } from 'i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { bytesToString } from 'app/drive/services/size.service';
 
 interface UploadingBlockProps {
@@ -68,18 +68,22 @@ const PauseBlock = ({
 };
 
 const PausedBlock = ({ isHovered, cancelAction, resumeAction }): JSX.Element => {
+  const { translate } = useTranslationContext();
+
   return isHovered ? (
     <div className="flex flex-row justify-between space-x-1.5">
       <TaskLoggerButton onClick={cancelAction} Icon={Cross} />
       <TaskLoggerButton onClick={resumeAction} Icon={Play} />
     </div>
   ) : (
-    <span className="text-sm font-medium text-gray-60">{t('tasks.paused')}</span>
+    <span className="text-sm font-medium text-gray-60">{translate('tasks.paused')}</span>
   );
 };
 
 const PendingBlock = (): JSX.Element => {
-  return <span className="text-sm font-medium text-gray-50">{t('tasks.waiting')}</span>;
+  const { translate } = useTranslationContext();
+
+  return <span className="text-sm font-medium text-gray-50">{translate('tasks.waiting')}</span>;
 };
 
 const SuccessBlock = ({ isHovered, magnifyingAction, infoAction, taskType, haveWarnings }): JSX.Element => {
