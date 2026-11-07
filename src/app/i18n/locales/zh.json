@@ -503,7 +503,8 @@
         "retry": "重试"
       },
       "filters": {
-        "allDevices": "所有设备"
+        "allDevices": "所有设备",
+        "allDates": "所有日期"
       }
     },
     "favorites": {

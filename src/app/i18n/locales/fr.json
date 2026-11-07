@@ -482,7 +482,8 @@
         "retry": "Réessayer"
       },
       "filters": {
-        "allDevices": "Tous les appareils"
+        "allDevices": "Tous les appareils",
+        "allDates": "Toutes les dates"
       }
     },
     "favorites": {
