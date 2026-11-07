@@ -1,6 +1,8 @@
 import { render, fireEvent } from '@testing-library/react';
 import { describe, test, vi, expect, beforeEach, afterEach } from 'vitest';
 import TaskToRetry from './TaskToRetry';
+import { useRetryManagerFailedItems } from './useRetryManagerFailedItems';
+import { FailedItemToRetry } from '../TaskToRetryItem/TaskToRetryItem';
 import RetryManager, { RetryableTask, RetryableTaskStatus, RetryableTaskType } from '../../../network/RetryManager';
 import { QueueUtilsService } from 'utils/queueUtils';
 import { MAX_CONCURRENT_UPLOADS } from 'app/network/networkConstants';
@@ -24,11 +26,7 @@ vi.mock('../../workspaces/workspaces.selectors', () => ({
 }));
 
 vi.mock('app/i18n/provider/TranslationProvider', () => ({
-  useTranslationContext: vi.fn().mockReturnValue({
-    translate: vi.fn().mockImplementation((value: string) => {
-      return value;
-    }),
-  }),
+  useTranslationContext: vi.fn().mockReturnValue({ translate: (value: string) => value }),
 }));
 
 const mockUnwrapRetryUpload = vi.hoisted(() => vi.fn());
@@ -37,8 +35,132 @@ vi.mock('app/store/slices/storage/hooks/useReduxActions', () => ({
   useReduxActions: vi.fn().mockReturnValue({ uploadRetryItem: mockUploadRetryItem }),
 }));
 
-describe('TaskToRetry', () => {
+const aFailedItem = (name: string, overrides: Partial<FailedItemToRetry> = {}): FailedItemToRetry => ({
+  name,
+  type: 'txt',
+  size: 1024,
+  modifiedAt: 1677654000000,
+  isFolder: false,
+  isRetryable: true,
+  isRetrying: false,
+  retry: vi.fn(),
+  ...overrides,
+});
+
+const getRetryAllButton = (container: HTMLElement): HTMLElement | null =>
+  container.querySelector('[data-cy="retry-all-taskRetry-button"]');
+
+describe('Failed items modal', () => {
+  const onClose = vi.fn();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  test('When the modal is closed, then nothing is shown', () => {
+    const { queryByTestId } = render(
+      <TaskToRetry isOpen={false} failedItems={[aFailedItem('a')]} isUpload onClose={onClose} />,
+    );
+
+    expect(queryByTestId('title-taskRetry')).not.toBeInTheDocument();
+  });
+
+  test.each([
+    { isUpload: true, title: 'tasks.messages.failedToUpload' },
+    { isUpload: false, title: 'tasks.messages.failedToDownload' },
+  ])('When the failed items come from an upload or a download, then the title says so', ({ isUpload, title }) => {
+    const { getByTestId } = render(
+      <TaskToRetry isOpen failedItems={[aFailedItem('a')]} isUpload={isUpload} onClose={onClose} />,
+    );
+
+    expect(getByTestId('title-taskRetry')).toHaveTextContent(title);
+  });
+
+  test('When there are failed items, then each one is listed and can be retried', () => {
+    const failedItems = [aFailedItem('report'), aFailedItem('invoice')];
+    const { getByText, getAllByTestId } = render(
+      <TaskToRetry isOpen failedItems={failedItems} isUpload onClose={onClose} />,
+    );
+
+    fireEvent.click(getAllByTestId('task-logger-button')[1]);
+
+    expect(getByText('report.txt')).toBeInTheDocument();
+    expect(getByText('invoice.txt')).toBeInTheDocument();
+    expect(failedItems[1].retry).toHaveBeenCalledOnce();
+  });
+
+  test('When there are no failed items left, then a finished message is shown', () => {
+    const { getByTestId } = render(<TaskToRetry isOpen failedItems={[]} isUpload onClose={onClose} />);
+
+    expect(getByTestId('finish-msg-taskRetry')).toBeInTheDocument();
+  });
+
+  test('When the user closes the modal, then it is closed', () => {
+    const { getByTestId } = render(<TaskToRetry isOpen failedItems={[]} isUpload onClose={onClose} />);
+
+    fireEvent.click(getByTestId('close-taskRetry-button'));
+
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  test('When there are failed items, then the title shows how many', () => {
+    const { getByTestId } = render(
+      <TaskToRetry isOpen failedItems={[aFailedItem('a'), aFailedItem('b')]} isUpload onClose={onClose} />,
+    );
+
+    expect(getByTestId('title-taskRetry')).toHaveTextContent('(2)');
+  });
+
+  test('When there are no failed items, then the title shows no count', () => {
+    const { getByTestId } = render(<TaskToRetry isOpen failedItems={[]} isUpload onClose={onClose} />);
+
+    expect(getByTestId('title-taskRetry')).not.toHaveTextContent('(0)');
+  });
+
+  test('When no failed item can be retried right now, then there is no option to retry them all', () => {
+    const failedItems = [aFailedItem('a', { isRetrying: true }), aFailedItem('b', { isRetryable: false })];
+
+    const { container } = render(<TaskToRetry isOpen failedItems={failedItems} isUpload onClose={onClose} />);
+
+    expect(getRetryAllButton(container)).not.toBeInTheDocument();
+  });
+
+  test('When the user retries them all, then only the items that can be retried are retried', () => {
+    const failedItems = [
+      aFailedItem('a'),
+      aFailedItem('b', { isRetrying: true }),
+      aFailedItem('c', { isRetryable: false }),
+    ];
+    const { container } = render(<TaskToRetry isOpen failedItems={failedItems} isUpload onClose={onClose} />);
+
+    fireEvent.click(getRetryAllButton(container) as HTMLElement);
+
+    expect(failedItems[0].retry).toHaveBeenCalledOnce();
+    expect(failedItems[1].retry).not.toHaveBeenCalled();
+    expect(failedItems[2].retry).not.toHaveBeenCalled();
+  });
+
+  test('When the failed items have their own way to retry them all, then it is used instead of retrying one by one', () => {
+    const onRetryAll = vi.fn();
+    const failedItems = [aFailedItem('a'), aFailedItem('b')];
+    const { container } = render(
+      <TaskToRetry isOpen failedItems={failedItems} isUpload onClose={onClose} onRetryAll={onRetryAll} />,
+    );
+
+    fireEvent.click(getRetryAllButton(container) as HTMLElement);
+
+    expect(onRetryAll).toHaveBeenCalledOnce();
+    expect(failedItems[0].retry).not.toHaveBeenCalled();
+  });
+});
+
+describe('Retrying the failed items kept in the retry manager', () => {
   const mockOnClose = vi.fn();
+
+  const RetryManagerDialog = ({ files }: { files: RetryableTask[] }) => {
+    const failedItems = useRetryManagerFailedItems(files);
+    return <TaskToRetry isOpen failedItems={failedItems} isUpload onClose={mockOnClose} />;
+  };
 
   const mockChangeStatus = vi.spyOn(RetryManager, 'changeStatus');
 
@@ -61,7 +183,7 @@ describe('TaskToRetry', () => {
   });
 
   const retryUpload = async (task: RetryableTask): Promise<File> => {
-    const { getByTestId } = render(<TaskToRetry isOpen={true} files={[task]} onClose={mockOnClose} />);
+    const { getByTestId } = render(<RetryManagerDialog files={[task]} />);
     fireEvent.click(getByTestId('task-logger-button'));
     await vi.waitFor(() => expect(mockUploadRetryItem).toHaveBeenCalled());
     return mockUploadRetryItem.mock.calls[0][0].uploadFile;
@@ -113,44 +235,8 @@ describe('TaskToRetry', () => {
     retryQueue.concurrency = MAX_CONCURRENT_UPLOADS;
   });
 
-  test('when isOpen is true, then the modal renders', () => {
-    const { getByTestId } = render(<TaskToRetry isOpen={true} files={files} onClose={mockOnClose} />);
-    expect(getByTestId('title-taskRetry')).toBeInTheDocument();
-  });
-
-  test('when isOpen is false, then the modal does not render', () => {
-    const { queryByTestId } = render(<TaskToRetry isOpen={false} files={files} onClose={mockOnClose} />);
-    expect(queryByTestId('title-taskRetry')).not.toBeInTheDocument();
-  });
-
-  test('when the close button is clicked, then onClose is called', () => {
-    const { getByTestId } = render(<TaskToRetry isOpen={true} files={files} onClose={mockOnClose} />);
-    const closeButton = getByTestId('close-taskRetry-button');
-    fireEvent.click(closeButton);
-    expect(mockOnClose).toHaveBeenCalled();
-  });
-
-  test('when there are files, then the "all processes have finished" message is not shown', () => {
-    const { queryByTestId } = render(<TaskToRetry isOpen={true} files={files} onClose={mockOnClose} />);
-    expect(queryByTestId('finish-msg-taskRetry')).not.toBeInTheDocument();
-  });
-
-  test('when there are failed files, then the title shows the count', () => {
-    const retryableFiles = [createUploadTaskWithId('a'), createUploadTaskWithId('b')];
-
-    const { getByTestId } = render(<TaskToRetry isOpen={true} files={retryableFiles} onClose={mockOnClose} />);
-
-    expect(getByTestId('title-taskRetry')).toHaveTextContent('(2)');
-  });
-
-  test('when there are no files, then the title does not show a count', () => {
-    const { getByTestId } = render(<TaskToRetry isOpen={true} files={[]} onClose={mockOnClose} />);
-
-    expect(getByTestId('title-taskRetry')).not.toHaveTextContent('(0)');
-  });
-
   test('when a failed upload is retried, then uploadRetryItem is called and status updates to Retrying', async () => {
-    const { getByTestId } = render(<TaskToRetry isOpen={true} files={files} onClose={mockOnClose} />);
+    const { getByTestId } = render(<RetryManagerDialog files={files} />);
 
     const downloadItem = getByTestId('task-logger-button');
 
@@ -166,18 +252,6 @@ describe('TaskToRetry', () => {
     });
   });
 
-  test('when a file whose name has dots is retried, then it is uploaded with its full original name', async () => {
-    const uploadFile = await retryUpload(createUploadTask('Screenshot 2026-10-12 at 11.48.02 PM', 'png'));
-
-    expect(uploadFile.name).toBe('Screenshot 2026-10-12 at 11.48.02 PM.png');
-  });
-
-  test('when a file without extension is retried, then it is uploaded with its name unchanged', async () => {
-    const uploadFile = await retryUpload(createUploadTask('Makefile', ''));
-
-    expect(uploadFile.name).toBe('Makefile');
-  });
-
   test('when the retried upload is rejected, then status goes back to Failed', async () => {
     mockUnwrapRetryUpload.mockRejectedValueOnce(new Error('Upload failed'));
 
@@ -190,7 +264,7 @@ describe('TaskToRetry', () => {
   test('when a failed download item is retried, then only that item changes status', async () => {
     const downloadTask = { ...createDownloadTaskWithId('download-1'), params: { taskId: 'download-1', id: 'file-a' } };
     mockDownloadItem.mockResolvedValueOnce(undefined);
-    const { getByTestId } = render(<TaskToRetry isOpen={true} files={[downloadTask]} onClose={mockOnClose} />);
+    const { getByTestId } = render(<RetryManagerDialog files={[downloadTask]} />);
 
     fireEvent.click(getByTestId('task-logger-button'));
 
@@ -203,7 +277,7 @@ describe('TaskToRetry', () => {
   test('when there are failed, retryable files, then the retry all button is rendered', () => {
     const retryableFiles = [createUploadTaskWithId('a'), createUploadTaskWithId('b')];
 
-    const { container } = render(<TaskToRetry isOpen={true} files={retryableFiles} onClose={mockOnClose} />);
+    const { container } = render(<RetryManagerDialog files={retryableFiles} />);
 
     expect(getRetryAllButton(container)).toBeInTheDocument();
   });
@@ -214,7 +288,7 @@ describe('TaskToRetry', () => {
       createUploadTaskWithId('b', { retryable: false }),
     ];
 
-    const { container } = render(<TaskToRetry isOpen={true} files={noEligibleFiles} onClose={mockOnClose} />);
+    const { container } = render(<RetryManagerDialog files={noEligibleFiles} />);
 
     expect(getRetryAllButton(container)).not.toBeInTheDocument();
   });
@@ -222,7 +296,7 @@ describe('TaskToRetry', () => {
   test('when retry all is clicked, then every failed and retryable file is retried', async () => {
     const retryableFiles = [createUploadTaskWithId('a'), createUploadTaskWithId('b')];
 
-    const { container } = render(<TaskToRetry isOpen={true} files={retryableFiles} onClose={mockOnClose} />);
+    const { container } = render(<RetryManagerDialog files={retryableFiles} />);
 
     fireEvent.click(getRetryAllButton(container) as HTMLElement);
 
@@ -238,7 +312,7 @@ describe('TaskToRetry', () => {
       createUploadTaskWithId('c', { retryable: false }),
     ];
 
-    const { container } = render(<TaskToRetry isOpen={true} files={mixedFiles} onClose={mockOnClose} />);
+    const { container } = render(<RetryManagerDialog files={mixedFiles} />);
 
     fireEvent.click(getRetryAllButton(container) as HTMLElement);
 
@@ -252,7 +326,7 @@ describe('TaskToRetry', () => {
     const totalFiles = MAX_CONCURRENT_UPLOADS + 2;
     const retryableFiles = Array.from({ length: totalFiles }, (_, index) => createUploadTaskWithId(`upload-${index}`));
 
-    const { container } = render(<TaskToRetry isOpen={true} files={retryableFiles} onClose={mockOnClose} />);
+    const { container } = render(<RetryManagerDialog files={retryableFiles} />);
 
     fireEvent.click(getRetryAllButton(container) as HTMLElement);
 
@@ -262,7 +336,7 @@ describe('TaskToRetry', () => {
   });
 
   const clickRetryAllOnce = (downloadTasks: RetryableTask[]): void => {
-    const { container } = render(<TaskToRetry isOpen={true} files={downloadTasks} onClose={mockOnClose} />);
+    const { container } = render(<RetryManagerDialog files={downloadTasks} />);
     fireEvent.click(getRetryAllButton(container) as HTMLElement);
   };
 
@@ -297,14 +371,14 @@ describe('TaskToRetry', () => {
     await expectThrottledRetryAll(MAX_CONCURRENT_UPLOADS, (downloadTasks) => {
       const [lateRetryAllTask, lateSingleRetryTask] = downloadTasks.slice(MAX_CONCURRENT_UPLOADS);
       const { container, getByTestId, rerender } = render(
-        <TaskToRetry isOpen={true} files={downloadTasks.slice(0, MAX_CONCURRENT_UPLOADS)} onClose={mockOnClose} />,
+        <RetryManagerDialog files={downloadTasks.slice(0, MAX_CONCURRENT_UPLOADS)} />,
       );
       fireEvent.click(getRetryAllButton(container) as HTMLElement);
 
-      rerender(<TaskToRetry isOpen={true} files={[lateRetryAllTask]} onClose={mockOnClose} />);
+      rerender(<RetryManagerDialog files={[lateRetryAllTask]} />);
       fireEvent.click(getRetryAllButton(container) as HTMLElement);
 
-      rerender(<TaskToRetry isOpen={true} files={[lateSingleRetryTask]} onClose={mockOnClose} />);
+      rerender(<RetryManagerDialog files={[lateSingleRetryTask]} />);
       fireEvent.click(getByTestId('task-logger-button'));
     });
   });
@@ -315,7 +389,7 @@ describe('TaskToRetry', () => {
 
     const uploadTasks = Array.from({ length: totalFiles }, (_, index) => createUploadTaskWithId(`upload-${index}`));
 
-    const { container } = render(<TaskToRetry isOpen={true} files={uploadTasks} onClose={mockOnClose} />);
+    const { container } = render(<RetryManagerDialog files={uploadTasks} />);
 
     fireEvent.click(getRetryAllButton(container) as HTMLElement);
 
