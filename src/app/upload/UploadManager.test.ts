@@ -16,7 +16,8 @@ import {
   getUploadFileItem,
   getUploadRepository,
 } from 'testUtils/fixtures/upload.fixtures';
-import { createFolderItem, UploadManager, WORKSPACE_FOLDER_AVAILABILITY_DELAY_MS } from './UploadManager';
+import { UploadManager, WORKSPACE_FOLDER_AVAILABILITY_DELAY_MS } from './UploadManager';
+import { createFolderItem } from './uploadItemTree';
 import { UploadFailureReason, UploadItem, UploadItemKind, UploadManagerEvents } from './types';
 
 vi.mock('app/drive/services/file.service/uploadFile', () => ({ default: vi.fn() }));
@@ -183,6 +184,28 @@ describe('Uploading files', () => {
     expect(succeeded.map(({ item }) => nameOf(item))).toEqual(['uploading']);
     expect(failed.map(({ item }) => nameOf(item))).toEqual(['fills-the-storage', 'waiting-1', 'waiting-2']);
     expect(failed.every(({ failure }) => failure.reason === UploadFailureReason.NoSpaceLeft)).toBe(true);
+  });
+
+  test('When several files fail because the storage is full, then it is announced only once', async () => {
+    uploadAtMostAtTheSameTime(2);
+    (uploadFile as Mock).mockRejectedValue(noSpaceLeftError);
+    const events: UploadManagerEvents = { onStorageFull: vi.fn() };
+    const items = ['report', 'invoice', 'photo'].map((name) => getUploadFileItem(name));
+
+    await createManager({ events }).run(items);
+
+    expect(events.onStorageFull).toHaveBeenCalledOnce();
+  });
+
+  test('When the storage is still full on a new upload, then it is announced again', async () => {
+    (uploadFile as Mock).mockRejectedValue(noSpaceLeftError);
+    const events: UploadManagerEvents = { onStorageFull: vi.fn() };
+    const manager = createManager({ events });
+
+    await manager.run([getUploadFileItem('report')]);
+    await manager.run([getUploadFileItem('invoice')]);
+
+    expect(events.onStorageFull).toHaveBeenCalledTimes(2);
   });
 
   test('When a file is cancelled while its paused state is being read, then it is never uploaded and is reported as cancelled', async () => {

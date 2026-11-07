@@ -1385,7 +1385,8 @@
       "errors": {}
     },
     "subtitles": {
-      "upload-failed": "Не удалось загрузить"
+      "upload-failed": "Не удалось загрузить",
+      "folder-removal-failed": "Не удалось удалить загруженную папку"
     },
     "generalErrorMessages": {
       "retryUploadFailed": "Что-то пошло не так при повторной попытке загрузки. Попробуйте загрузить снова",

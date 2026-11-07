@@ -1382,7 +1382,8 @@
       "errors": {}
     },
     "subtitles": {
-      "upload-failed": "Upload fehlgeschlagen"
+      "upload-failed": "Upload fehlgeschlagen",
+      "folder-removal-failed": "Der hochgeladene Ordner konnte nicht entfernt werden"
     },
     "generalErrorMessages": {
       "retryUploadFailed": "Beim erneuten Hochladen ist etwas schiefgegangen. Versuche es erneut",

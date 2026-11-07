@@ -232,6 +232,14 @@ describe('referralService', () => {
 
       expectBannerStateSaved(expectedFragment);
     });
+
+    it('when the saved banner state is corrupt, then tracking starts again from the default state', () => {
+      localStorageService.set(LocalStorageItem.BannerStateKey, '{not json');
+
+      referralService.trackFileUpload();
+
+      expectBannerStateSaved('"fileUploadCount":1');
+    });
   });
 
   describe('trackAppOpenDay', () => {
