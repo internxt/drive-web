@@ -38,6 +38,8 @@ interface UrgentCheckoutViewProps {
     authError?: string;
     couponCodeData?: CouponCodeData;
     currentSelectedPlan: PriceWithTax | null;
+    isPasswordlessSignUp?: boolean;
+    pendingAccountSetupEmail?: string;
   };
   checkoutViewManager: CheckoutViewManager;
 }
@@ -52,7 +54,15 @@ const UrgentCheckoutView = ({
   const stripeSDK = useStripe();
   const elements = useElements();
   const { translate } = useTranslationContext();
-  const { isPaying, authError, authMethod, couponCodeData, currentSelectedPlan } = checkoutViewVariables;
+  const {
+    isPaying,
+    authError,
+    authMethod,
+    couponCodeData,
+    currentSelectedPlan,
+    isPasswordlessSignUp,
+    pendingAccountSetupEmail,
+  } = checkoutViewVariables;
 
   const {
     register,
@@ -111,6 +121,8 @@ const UrgentCheckoutView = ({
                 errors={errors}
                 register={register}
                 userData={userInfo}
+                isPasswordlessSignUp={isPasswordlessSignUp}
+                pendingAccountSetupEmail={pendingAccountSetupEmail}
                 onAuthMethodToggled={onAuthMethodToggled}
                 onLogOut={checkoutViewManager.onLogOut}
               />

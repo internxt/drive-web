@@ -127,7 +127,6 @@ const CheckoutViewWrapper = () => {
     handlePasswordlessPurchaseError,
   } = usePasswordlessCheckout({
     authMethod,
-    isUrgentCheckout: isUrgentCheckoutRoute,
     onEmailAlreadyHasAccount,
   });
 
@@ -504,6 +503,8 @@ const CheckoutViewWrapper = () => {
                 couponCodeData: promoCodeData,
                 authError: authError ?? undefined,
                 currentSelectedPlan: selectedPlan,
+                isPasswordlessSignUp,
+                pendingAccountSetupEmail,
               }}
               variant={urgentVariant}
               userAuthComponentRef={userAuthComponentRef}

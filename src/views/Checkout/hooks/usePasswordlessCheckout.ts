@@ -12,19 +12,14 @@ import { AuthMethodTypes } from '../types';
 
 interface UsePasswordlessCheckoutProps {
   authMethod: AuthMethodTypes;
-  isUrgentCheckout: boolean;
   onEmailAlreadyHasAccount: () => void;
 }
 
-export const usePasswordlessCheckout = ({
-  authMethod,
-  isUrgentCheckout,
-  onEmailAlreadyHasAccount,
-}: UsePasswordlessCheckoutProps) => {
+export const usePasswordlessCheckout = ({ authMethod, onEmailAlreadyHasAccount }: UsePasswordlessCheckoutProps) => {
   const { translate } = useTranslationContext();
   const [pendingAccountSetupEmail, setPendingAccountSetupEmail] = useState<string>();
 
-  const isPasswordlessSignUp = !isUrgentCheckout && authMethod === 'signUp';
+  const isPasswordlessSignUp = authMethod === 'signUp';
 
   const createCustomerWithoutAccount = async (
     payload: CreateCustomerWithoutAccountPayload,

@@ -42,6 +42,7 @@ const campaignSearchFor = (retiredPlanId: string) =>
   '&utm_medium=referral&utm_campaign=312695';
 
 const CHECKOUT = 'checkout';
+const URGENT_CHECKOUT = 'checkout-uc';
 const CHECKOUT_SUCCESS = 'checkout-success';
 const ANY_OTHER_VIEW = 'any-other-view';
 
@@ -60,6 +61,9 @@ const landOn = (url: string) => {
         <Switch>
           <Route path="/checkout/success">
             <OpenedUrl view={CHECKOUT_SUCCESS} />
+          </Route>
+          <Route path="/checkout-uc">
+            <OpenedUrl view={URGENT_CHECKOUT} />
           </Route>
           <Route path="/checkout">
             <OpenedUrl view={CHECKOUT} />
@@ -83,6 +87,17 @@ describe('Landing on the checkout with a price that is no longer on sale', () =>
 
       expect(screen.getByTestId(CHECKOUT)).toHaveTextContent(
         `/checkout?planId=${currentPlanId}&couponCode=${ALLOWED_COUPON}`,
+      );
+    },
+  );
+
+  test.each(RETIRED_PLANS)(
+    'When the retired price $retiredPlanId arrives on the urgent checkout, then the urgent checkout opens with the price that replaced it',
+    ({ retiredPlanId, currentPlanId }) => {
+      landOn(`/checkout-uc?planId=${retiredPlanId}&couponCode=${ALLOWED_COUPON}`);
+
+      expect(screen.getByTestId(URGENT_CHECKOUT)).toHaveTextContent(
+        `/checkout-uc?planId=${currentPlanId}&couponCode=${ALLOWED_COUPON}`,
       );
     },
   );

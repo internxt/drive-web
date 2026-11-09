@@ -38,11 +38,11 @@ export const UrgentCheckoutPaymentSection = ({
   isPaymentProcessing,
 }: UrgentCheckoutPaymentSectionProps): JSX.Element => {
   const { translate } = useTranslationContext();
-  const { currencySymbol, discountedAmount, normalAmount, interval, isRecurring, discountPercent } = planSummary;
+  const { currencySymbol, discountedAmount, normalAmount, interval, isRecurring, hasIntroPrice } = planSummary;
 
   const priceLabel = `${currencySymbol}${discountedAmount}`;
   const renewalPriceLabel = `${currencySymbol}${normalAmount}`;
-  const introPriceKey = discountPercent ? 'withIntroPrice' : 'withoutIntroPrice';
+  const introPriceKey = hasIntroPrice ? 'withIntroPrice' : 'withoutIntroPrice';
   const billingDisclosureKey = `urgentCheckout.cta.billingDisclosure.${introPriceKey}.${interval}`;
   const buttonKey = isRecurring ? 'urgentCheckout.cta.button.subscription' : 'urgentCheckout.cta.button.lifetime';
 
