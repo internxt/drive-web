@@ -19,19 +19,23 @@ export const usePhotoFilters = (months: PhotoMonth[]) => {
     return monthsNewestFirst;
   }, [monthsOfSelectedDevices]);
 
-  const isSelectedMonthAvailable = selectedMonth !== null && availableMonths.includes(selectedMonth);
-  const shownMonthKey = isSelectedMonthAvailable ? selectedMonth : availableMonths[0];
+  const shownMonthKey = selectedMonth ?? availableMonths[0];
 
   const shownMonths = useMemo(
     () => monthsOfSelectedDevices.filter((month) => month.key === shownMonthKey),
     [monthsOfSelectedDevices, shownMonthKey],
   );
 
+  const selectDevice = (deviceUuid: string | null) => {
+    setSelectedDeviceUuid(deviceUuid);
+    setSelectedMonth(null);
+  };
+
   return {
     selectedDeviceUuid,
-    onSelectDevice: setSelectedDeviceUuid,
+    onSelectDevice: selectDevice,
     availableMonths,
-    selectedMonth: isSelectedMonthAvailable ? selectedMonth : null,
+    selectedMonth,
     onSelectMonth: setSelectedMonth,
     shownMonths,
   };

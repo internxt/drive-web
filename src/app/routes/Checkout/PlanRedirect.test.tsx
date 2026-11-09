@@ -12,7 +12,10 @@ import PlanRedirect, {
 const retiredPlansRuledBy = (couponRule: CouponRule) => {
   const plans = Object.entries(REDIRECT_PLANS)
     .filter(([, plan]) => plan.couponRule === couponRule)
-    .map(([retiredPlanId, plan]) => ({ retiredPlanId, currentPlanId: plan.targetPlanId }));
+    .map(([retiredPlanId, plan]) => ({
+      retiredPlanId,
+      currentPlanId: plan.targetPlanId,
+    }));
 
   if (plans.length === 0) {
     throw new Error(`The catalogue of retired prices has no price ruled by ${couponRule}`);
@@ -22,7 +25,6 @@ const retiredPlansRuledBy = (couponRule: CouponRule) => {
 };
 
 const RETIRED_PLANS = retiredPlansRuledBy('unlessBlocked');
-const COUPON_ONLY_RETIRED_PLANS = retiredPlansRuledBy('onlyIfAllowed');
 
 const [{ retiredPlanId: ANY_RETIRED_PLAN_ID }] = RETIRED_PLANS;
 
@@ -32,7 +34,6 @@ const blockedLandingsOn = (plans: typeof RETIRED_PLANS) =>
   );
 
 const [ALLOWED_COUPON] = REDIRECT_ALLOWED_COUPON_CODES;
-const UNLISTED_COUPON = 'A_COUPON_NOBODY_LISTED';
 const ACTIVE_PLAN_ID = 'price_1SomeOtherActivePriceId';
 
 const campaignSearchFor = (retiredPlanId: string) =>
@@ -192,72 +193,6 @@ describe('Landing on the checkout with a price that is no longer on sale', () =>
   });
 });
 
-describe('Landing on the checkout with a price that only a campaign coupon can leave behind', () => {
-  test.each(COUPON_ONLY_RETIRED_PLANS)(
-    'When a campaign coupon comes along with $retiredPlanId, then the checkout opens with the price that replaced it',
-    ({ retiredPlanId, currentPlanId }) => {
-      landOn(`/checkout?planId=${retiredPlanId}&couponCode=${ALLOWED_COUPON}`);
-
-      expect(screen.getByTestId(CHECKOUT)).toHaveTextContent(
-        `/checkout?planId=${currentPlanId}&couponCode=${ALLOWED_COUPON}`,
-      );
-    },
-  );
-
-  test.each(COUPON_ONLY_RETIRED_PLANS)(
-    'When the campaign coupon for $retiredPlanId is typed in lower case, then the checkout still opens with the price that replaced it',
-    ({ retiredPlanId, currentPlanId }) => {
-      landOn(`/checkout?planId=${retiredPlanId}&couponCode=${ALLOWED_COUPON.toLowerCase()}`);
-
-      expect(screen.getByTestId(CHECKOUT)).toHaveTextContent(`planId=${currentPlanId}`);
-    },
-  );
-
-  test.each(COUPON_ONLY_RETIRED_PLANS)(
-    'When a coupon outside the campaign comes along with $retiredPlanId, then the address bar is left untouched',
-    ({ retiredPlanId }) => {
-      const history = landOn(`/checkout?planId=${retiredPlanId}&couponCode=${UNLISTED_COUPON}`);
-
-      expect(screen.getByTestId(CHECKOUT)).toHaveTextContent(
-        `/checkout?planId=${retiredPlanId}&couponCode=${UNLISTED_COUPON}`,
-      );
-      expect(history.entries).toHaveLength(1);
-      expect(history.action).toBe('POP');
-    },
-  );
-
-  test.each(blockedLandingsOn(COUPON_ONLY_RETIRED_PLANS))(
-    'When $blockingCoupon, the coupon that opts out of the other retired price, comes along with $retiredPlanId, then the address bar is left untouched',
-    ({ retiredPlanId, blockingCoupon }) => {
-      landOn(`/checkout?planId=${retiredPlanId}&couponCode=${blockingCoupon}`);
-
-      expect(screen.getByTestId(CHECKOUT)).toHaveTextContent(
-        `/checkout?planId=${retiredPlanId}&couponCode=${blockingCoupon}`,
-      );
-    },
-  );
-
-  test.each(COUPON_ONLY_RETIRED_PLANS)(
-    'When no coupon comes along at all with $retiredPlanId, then the address bar is left untouched',
-    ({ retiredPlanId }) => {
-      const history = landOn(`/checkout?planId=${retiredPlanId}`);
-
-      expect(screen.getByTestId(CHECKOUT)).toHaveTextContent(`/checkout?planId=${retiredPlanId}`);
-      expect(history.entries).toHaveLength(1);
-      expect(history.action).toBe('POP');
-    },
-  );
-
-  test.each(COUPON_ONLY_RETIRED_PLANS)(
-    'When an empty coupon comes along with $retiredPlanId, then the address bar is left untouched',
-    ({ retiredPlanId }) => {
-      landOn(`/checkout?planId=${retiredPlanId}&couponCode=`);
-
-      expect(screen.getByTestId(CHECKOUT)).toHaveTextContent(`planId=${retiredPlanId}`);
-    },
-  );
-});
-
 describe('Reading the catalogue of retired prices', () => {
   // The ids and the codes below are spelled out on purpose: these are the only tests that notice a
   // price or a coupon code being added to or dropped from the catalogue, so a change to either one
@@ -273,8 +208,16 @@ describe('Reading the catalogue of retired prices', () => {
         couponRule: 'unlessBlocked',
       },
       price_1UAsSAFAOdcgaBMQNF0j8UfV: {
-        targetPlanId: 'price_1TRoAJFAOdcgaBMQveT6cebN',
-        couponRule: 'onlyIfAllowed',
+        targetPlanId: 'price_1UZCCZFAOdcgaBMQO9bKb6I9',
+        couponRule: 'unlessBlocked',
+      },
+      price_1TRoAJFAOdcgaBMQveT6cebN: {
+        targetPlanId: 'price_1UZCCZFAOdcgaBMQO9bKb6I9',
+        couponRule: 'unlessBlocked',
+      },
+      price_1UKYnMFAOdcgaBMQ09GLzJhJ: {
+        targetPlanId: 'price_1UZCCZFAOdcgaBMQO9bKb6I9',
+        couponRule: 'unlessBlocked',
       },
     });
   });
@@ -291,11 +234,33 @@ describe('Reading the catalogue of retired prices', () => {
     ]);
   });
 
-  test('When a price that replaced a retired one is looked up, then it is not itself retired', () => {
-    const retiredPlanIds = new Set(Object.keys(REDIRECT_PLANS));
+  test('When a retired price is ruled by its own coupon, then it names that coupon in upper case', () => {
+    Object.values(REDIRECT_PLANS)
+      .filter(({ couponRule }) => couponRule === 'onlyCouponCode')
+      .forEach(({ couponCode }) => {
+        expect(couponCode).toBeTruthy();
+        expect(couponCode).toBe(couponCode?.toUpperCase());
+      });
+  });
 
-    Object.values(REDIRECT_PLANS).forEach(({ targetPlanId }) => {
-      expect(retiredPlanIds.has(targetPlanId)).toBe(false);
+  test('When a retired price is ruled by one of the shared coupon lists, then it names no coupon of its own', () => {
+    Object.values(REDIRECT_PLANS)
+      .filter(({ couponRule }) => couponRule !== 'onlyCouponCode')
+      .forEach(({ couponCode }) => {
+        expect(couponCode).toBeUndefined();
+      });
+  });
+
+  test('When the price that replaced a retired one is itself retired, then following the chain still ends on a price that is on sale', () => {
+    Object.keys(REDIRECT_PLANS).forEach((retiredPlanId) => {
+      const visitedPlanIds = new Set([retiredPlanId]);
+      let planId = REDIRECT_PLANS[retiredPlanId].targetPlanId;
+
+      while (Object.hasOwn(REDIRECT_PLANS, planId)) {
+        expect(visitedPlanIds.has(planId)).toBe(false);
+        visitedPlanIds.add(planId);
+        planId = REDIRECT_PLANS[planId].targetPlanId;
+      }
     });
   });
 

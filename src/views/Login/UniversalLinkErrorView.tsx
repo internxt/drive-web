@@ -3,8 +3,16 @@ import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import WarningIcon from 'assets/icons/universal-link/warning.svg?react';
 import { isMobile } from 'react-device-detect';
 
+const KNOWN_REASONS = ['CLIENT_VERSION_UNSUPPORTED'] as const;
+type KnownReason = (typeof KNOWN_REASONS)[number];
+
+const isKnownReason = (value: string | null): value is KnownReason =>
+  value !== null && (KNOWN_REASONS as readonly string[]).includes(value);
+
 export default function UniversalLinkErrorView(): JSX.Element {
   const { translate } = useTranslationContext();
+  const reasonParam = new URLSearchParams(globalThis.location.search).get('reason');
+  const reason = isKnownReason(reasonParam) ? reasonParam : null;
 
   return (
     <main className="flex h-full w-full flex-col bg-gray-5 dark:bg-surface">
@@ -17,7 +25,18 @@ export default function UniversalLinkErrorView(): JSX.Element {
             <InternxtLogo className="h-auto w-52 text-gray-100" />
           </div>
           <WarningIcon className="mx-auto mt-6 mb-6 h-24 w-24" />
-          <h2 className="text-center text-xl font-medium text-gray-100">{translate('auth.universalLink.error')}</h2>
+          {reason ? (
+            <>
+              <h2 className="text-center text-xl font-medium text-gray-100">
+                {translate(`auth.universalLink.errors.${reason}.title`)}
+              </h2>
+              <p className="mt-2 text-center text-base text-gray-60">
+                {translate(`auth.universalLink.errors.${reason}.description`)}
+              </p>
+            </>
+          ) : (
+            <h2 className="text-center text-xl font-medium text-gray-100">{translate('auth.universalLink.error')}</h2>
+          )}
           <div className="separator my-6"></div>
           <div className="flex flex-row justify-center">
             <h4 className="text-base font-medium text-center">{translate('auth.universalLink.closeWindow')}</h4>
