@@ -46,6 +46,7 @@ interface RootFolderUpload {
   totalItems: number;
   uploadedItems: number;
   isCancelled: boolean;
+  activeRuns: number;
   createdFolder?: DriveFolderData;
 }
 
@@ -85,19 +86,31 @@ export class Upload {
     return result;
   }
 
+  /**
+   * A root folder can be in more than one run at a time (the upload and a retry of what failed in it), so it
+   * only finishes when its last run does.
+   */
   private async uploadAndFinish(items: UploadItem[], topLevelItems: UploadItem[]): Promise<UploadResult> {
+    const rootFoldersInRun = topLevelItems.filter((item) => this.rootFolders.has(item)) as UploadFolderItem[];
+    rootFoldersInRun.forEach((item) => this.getRootFolder(item).activeRuns++);
+
     const manager = this.createManager();
     this.activeManagers.add(manager);
     const result = await manager.run(items);
     this.activeManagers.delete(manager);
     await Promise.all(this.cancelledRootFolderDeletions);
 
-    for (const topLevelItem of topLevelItems) {
-      const rootFolder = this.rootFolders.get(topLevelItem);
-      if (rootFolder) this.finishRootFolder(topLevelItem as UploadFolderItem, rootFolder);
+    for (const item of rootFoldersInRun) {
+      const rootFolder = this.getRootFolder(item);
+      rootFolder.activeRuns--;
+      if (rootFolder.activeRuns === 0) this.finishRootFolder(item, rootFolder);
     }
 
     return result;
+  }
+
+  private getRootFolder(item: UploadItem): RootFolderUpload {
+    return this.rootFolders.get(item) as RootFolderUpload;
   }
 
   private createManager(): UploadManager {
@@ -146,6 +159,7 @@ export class Upload {
       totalItems: countItemsIn(item.folder),
       uploadedItems: 0,
       isCancelled: false,
+      activeRuns: 0,
     });
   }
 
@@ -208,7 +222,7 @@ export class Upload {
 
   private countUploadedInRootFolder(item: UploadItem, uploadedItem: UploadedItem): void {
     const topLevelItem = getTopLevelItem(item);
-    const rootFolder = this.rootFolders.get(topLevelItem) as RootFolderUpload;
+    const rootFolder = this.getRootFolder(topLevelItem);
 
     const isRootFolderItself = item === topLevelItem;
     if (isRootFolderItself) {
@@ -256,7 +270,7 @@ export class Upload {
   }
 
   private cancelRootFolder(item: UploadFolderItem): void {
-    const rootFolder = this.rootFolders.get(item) as RootFolderUpload;
+    const rootFolder = this.getRootFolder(item);
     rootFolder.isCancelled = true;
     this.cancelItem(item);
     if (rootFolder.createdFolder) {
@@ -291,8 +305,13 @@ export class Upload {
     });
   }
 
-  private trackFolderUpload(item: UploadFolderItem, { isCancelled, createdFolder }: RootFolderUpload): void {
-    const hasEverythingUploaded = !isCancelled && !!createdFolder && this.getFailuresOf(item).size === 0;
+  private trackFolderUpload(
+    item: UploadFolderItem,
+    { isCancelled, activeRuns, createdFolder }: RootFolderUpload,
+  ): void {
+    const isStillUploading = activeRuns > 0;
+    const hasEverythingUploaded =
+      !isCancelled && !isStillUploading && !!createdFolder && this.getFailuresOf(item).size === 0;
     if (!hasEverythingUploaded) return;
 
     referralService.trackFolderUpload();

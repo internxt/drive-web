@@ -9,6 +9,7 @@ import errorService from 'services/error.service';
 import referralService from 'services/referral.service';
 import { AppError } from '@internxt/sdk';
 import { HTTP_STATUS_CODES } from 'app/core/constants';
+import { MAX_UPLOAD_ATTEMPTS } from 'app/network/networkConstants';
 import {
   getCreatedFolder,
   getFileToUpload,
@@ -573,6 +574,40 @@ describe('Retrying what failed', () => {
     expect(tasksService.findTask(videosTask.id)?.status).toBe(TaskStatus.InProcess);
     await retryingVideos;
     expect(tasksService.findTask(videosTask.id)?.status).toBe(TaskStatus.Success);
+  });
+
+  test('When a folder is retried while the rest of the upload is still running, then it only finishes once its retry does', async () => {
+    let failedPhotosCreations = 0;
+    vi.mocked(folderService.createFolderByUuid).mockImplementation((_parentUuid, name) => {
+      const shouldFail = name === 'Photos' && failedPhotosCreations < MAX_UPLOAD_ATTEMPTS;
+      if (shouldFail) failedPhotosCreations++;
+      const creation = shouldFail ? Promise.reject(new Error('Server error')) : Promise.resolve(getCreatedFolder(name));
+      return [creation, { cancel: vi.fn() }] as never;
+    });
+    (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
+      const uploadTimeMs = file.name === 'movie' ? 300 : 600;
+      await new Promise((resolve) => setTimeout(resolve, uploadTimeMs));
+      return { uuid: `${file.name}-uuid` };
+    });
+    const upload = createUpload(
+      [
+        getFolderToUpload('Photos', { childrenFiles: [getFileToUpload('beach.png')] }),
+        getFolderToUpload('Videos', { childrenFiles: [getFileToUpload('movie.mp4')] }),
+      ],
+      [],
+    );
+    const running = upload.run();
+    const [photosTask, videosTask] = tasksOf(TaskType.UploadFolder);
+    await vi.waitFor(() => expect(tasksService.findTask(photosTask.id)?.status).toBe(TaskStatus.Error));
+
+    const retryingPhotos = photosTask.retry?.();
+    await running;
+
+    expect(tasksService.findTask(videosTask.id)?.status).toBe(TaskStatus.Success);
+    expect(tasksService.findTask(photosTask.id)?.status).toBe(TaskStatus.InProcess);
+    expect(referralService.trackFolderUpload).toHaveBeenCalledOnce();
+    await retryingPhotos;
+    expect(tasksService.findTask(photosTask.id)?.status).toBe(TaskStatus.Success);
   });
 
   test('When the user cancels a folder while its failed files are retried, then they are no longer shown as retrying', async () => {
