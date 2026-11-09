@@ -484,6 +484,10 @@
       "filters": {
         "allDevices": "Tous les appareils",
         "allDates": "Toutes les dates"
+      },
+      "timeline": {
+        "today": "Aujourd'hui",
+        "yesterday": "Hier"
       }
     },
     "favorites": {

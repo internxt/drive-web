@@ -2,11 +2,11 @@ import { fireEvent, render, screen, waitFor, within } from '@testing-library/rea
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import errorService from 'services/error.service';
 import { PhotoDevice as SdkPhotoDevice } from '@internxt/sdk/dist/drive/photos';
-import { getPhotoFolder, getSdkPhotoDevice } from 'testUtils/fixtures/photos.fixtures';
+import { getPhotoFolder, getPhotoFolderFile, getSdkPhotoDevice } from 'testUtils/fixtures/photos.fixtures';
 import PhotosView from './PhotosView';
 
 const { photosClient, storageClient } = vi.hoisted(() => ({
-  photosClient: { listDevices: vi.fn() },
+  photosClient: { listDevices: vi.fn(), getFilesInFolders: vi.fn() },
   storageClient: { getFolderFoldersByUuidWithCursor: vi.fn() },
 }));
 
@@ -39,6 +39,24 @@ const givenSubfolders = (subfoldersByFolder: Record<string, Folder[]>) => {
   ]);
 };
 
+const givenPhotosInFolders = (photosByFolder: Record<string, ReturnType<typeof getPhotoFolderFile>[]>) => {
+  photosClient.getFilesInFolders.mockImplementation(async ({ folderUuids }: { folderUuids: string[] }) => ({
+    files: folderUuids.flatMap((folderUuid) => photosByFolder[folderUuid] ?? []),
+    nextCursor: null,
+  }));
+};
+
+const photo = (plainName: string, folderUuid: string, creationTime: string) =>
+  getPhotoFolderFile({ uuid: plainName, plainName, type: 'jpg', folderUuid, creationTime });
+
+const shownDays = () =>
+  screen.getAllByRole('region').map((day) => [
+    day.getAttribute('aria-label'),
+    within(day)
+      .getAllByRole('img')
+      .map((tile) => tile.getAttribute('aria-label')),
+  ]);
+
 const iphone = getSdkPhotoDevice({ uuid: 'iphone', plainName: 'iPhone' });
 const pixel = getSdkPhotoDevice({ uuid: 'pixel', plainName: 'Pixel' });
 
@@ -59,6 +77,7 @@ describe('Photos view', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     givenSubfolders({});
+    givenPhotosInFolders({});
   });
 
   test('When the devices are loading, then the photos grid placeholder is shown under the title', () => {
@@ -284,5 +303,92 @@ describe('Photos view', () => {
     await waitFor(() => expect(errorService.reportError).toHaveBeenCalledWith(networkError));
     expect(screen.queryByTestId('photos-grid-skeleton')).not.toBeInTheDocument();
     expect(screen.queryByText('views.photos.empty.title')).not.toBeInTheDocument();
+  });
+
+  describe('Browsing the photos', () => {
+    const iphonePhotosOf2025 = {
+      iphone: [getPhotoFolder({ uuid: 'iphone-2025', plainName: '2025' })],
+      'iphone-2025': [
+        getPhotoFolder({ uuid: 'iphone-2025-11', plainName: '11' }),
+        getPhotoFolder({ uuid: 'iphone-2025-10', plainName: '10' }),
+      ],
+      'iphone-2025-11': [
+        getPhotoFolder({ uuid: 'iphone-2025-11-01', plainName: '1' }),
+        getPhotoFolder({ uuid: 'iphone-2025-11-03', plainName: '03' }),
+      ],
+      'iphone-2025-10': [getPhotoFolder({ uuid: 'iphone-2025-10-15', plainName: '15' })],
+    };
+
+    test('When the user opens Photos, then the newest month is shown day by day, newest first', async () => {
+      givenDevices([iphone]);
+      givenSubfolders(iphonePhotosOf2025);
+      givenPhotosInFolders({
+        'iphone-2025-11-01': [photo('IMG_C', 'iphone-2025-11-01', '2025-11-01T10:00:00Z')],
+        'iphone-2025-11-03': [
+          photo('IMG_A', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          photo('IMG_B', 'iphone-2025-11-03', '2025-11-03T20:00:00Z'),
+        ],
+        'iphone-2025-10-15': [photo('IMG_D', 'iphone-2025-10-15', '2025-10-15T10:00:00Z')],
+      });
+
+      render(<PhotosView />);
+      await screen.findAllByRole('region');
+
+      expect(shownDays()).toStrictEqual([
+        ['Mon, 3 Nov 2025', ['IMG_B.jpg', 'IMG_A.jpg']],
+        ['Sat, 1 Nov 2025', ['IMG_C.jpg']],
+      ]);
+    });
+
+    test('When the user picks an older month, then its photos are shown', async () => {
+      givenDevices([iphone]);
+      givenSubfolders(iphonePhotosOf2025);
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [photo('IMG_NOVEMBER', 'iphone-2025-11-03', '2025-11-03T09:00:00Z')],
+        'iphone-2025-10-15': [photo('IMG_OCTOBER', 'iphone-2025-10-15', '2025-10-15T10:00:00Z')],
+      });
+
+      render(<PhotosView />);
+      fireEvent.click(await screen.findByRole('button', { name: /views.photos.filters.allDates/ }));
+      fireEvent.click(await screen.findByRole('menuitem', { name: /October 2025/ }));
+
+      expect(await screen.findByRole('region', { name: 'Wed, 15 Oct 2025' })).toBeInTheDocument();
+      expect(shownDays()).toStrictEqual([['Wed, 15 Oct 2025', ['IMG_OCTOBER.jpg']]]);
+    });
+
+    test('When the photos of a day come from several devices, then they are shown together', async () => {
+      givenDevices([iphone, pixel]);
+      givenSubfolders({
+        iphone: [getPhotoFolder({ uuid: 'iphone-2025', plainName: '2025' })],
+        'iphone-2025': [getPhotoFolder({ uuid: 'iphone-2025-11', plainName: '11' })],
+        'iphone-2025-11': [getPhotoFolder({ uuid: 'iphone-2025-11-03', plainName: '3' })],
+        pixel: [getPhotoFolder({ uuid: 'pixel-2025', plainName: '2025' })],
+        'pixel-2025': [getPhotoFolder({ uuid: 'pixel-2025-11', plainName: '11' })],
+        'pixel-2025-11': [getPhotoFolder({ uuid: 'pixel-2025-11-03', plainName: '3' })],
+      });
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [photo('IMG_IPHONE', 'iphone-2025-11-03', '2025-11-03T09:00:00Z')],
+        'pixel-2025-11-03': [photo('IMG_PIXEL', 'pixel-2025-11-03', '2025-11-03T12:00:00Z')],
+      });
+
+      render(<PhotosView />);
+      await screen.findAllByRole('region');
+
+      expect(shownDays()).toStrictEqual([['Mon, 3 Nov 2025', ['IMG_PIXEL.jpg', 'IMG_IPHONE.jpg']]]);
+    });
+
+    test('When the photos cannot be loaded, then the user can try again', async () => {
+      givenDevices([iphone]);
+      givenSubfolders(iphonePhotosOf2025);
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [photo('IMG_A', 'iphone-2025-11-03', '2025-11-03T09:00:00Z')],
+      });
+      photosClient.getFilesInFolders.mockRejectedValueOnce(new Error('Network error'));
+
+      render(<PhotosView />);
+      fireEvent.click(await screen.findByRole('button', { name: /views.photos.error.retry/ }));
+
+      expect(await screen.findByRole('img', { name: 'IMG_A.jpg' })).toBeInTheDocument();
+    });
   });
 });

@@ -1,4 +1,4 @@
-import { PhotoDevice as SdkPhotoDevice } from '@internxt/sdk/dist/drive/photos';
+import { PhotoDevice as SdkPhotoDevice, PhotoFolderFile } from '@internxt/sdk/dist/drive/photos';
 import { FetchFolderFoldersCursorResponse } from '@internxt/sdk/dist/drive/storage/types';
 
 type Folder = FetchFolderFoldersCursorResponse['folders'][number];
@@ -33,3 +33,26 @@ export const getPhotoFolder = (overrides: Partial<Folder> = {}): Folder =>
     deleted: false,
     ...overrides,
   }) as Folder;
+
+export const getPhotoFolderFile = (overrides: Partial<PhotoFolderFile> = {}): PhotoFolderFile =>
+  ({
+    id: 1,
+    uuid: 'file-uuid',
+    fileId: 'network-file-id',
+    name: 'encrypted-name',
+    plainName: 'IMG_0001',
+    type: 'jpg',
+    size: '2048000',
+    bucket: 'photos-bucket',
+    folderId: 10,
+    folderUuid: 'day-folder-uuid',
+    encryptVersion: '03-aes',
+    userId: 1,
+    creationTime: '2026-11-03T09:30:00.000Z',
+    modificationTime: '2026-11-03T09:30:00.000Z',
+    createdAt: '2026-11-03T10:00:00.000Z',
+    updatedAt: '2026-11-03T10:00:00.000Z',
+    status: 'EXISTS',
+    thumbnails: [],
+    ...overrides,
+  }) as unknown as PhotoFolderFile;

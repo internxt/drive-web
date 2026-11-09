@@ -505,6 +505,10 @@
       "filters": {
         "allDevices": "所有设备",
         "allDates": "所有日期"
+      },
+      "timeline": {
+        "today": "今天",
+        "yesterday": "昨天"
       }
     },
     "favorites": {

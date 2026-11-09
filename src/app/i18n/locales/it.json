@@ -505,6 +505,10 @@
       "filters": {
         "allDevices": "Tutti i dispositivi",
         "allDates": "Tutte le date"
+      },
+      "timeline": {
+        "today": "Oggi",
+        "yesterday": "Ieri"
       }
     },
     "favorites": {

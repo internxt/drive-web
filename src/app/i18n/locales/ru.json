@@ -484,6 +484,10 @@
       "filters": {
         "allDevices": "Все устройства",
         "allDates": "Все даты"
+      },
+      "timeline": {
+        "today": "Сегодня",
+        "yesterday": "Вчера"
       }
     },
     "favorites": {

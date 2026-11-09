@@ -19,7 +19,7 @@ const PhotosLayout = ({ filters, children }: PhotosLayoutProps): JSX.Element => 
         <h1 className="text-lg">{translate('views.photos.head')}</h1>
         {filters && <div className="flex min-w-0 items-center gap-2">{filters}</div>}
       </header>
-      {children}
+      <div className="flex min-h-0 grow flex-col overflow-y-auto">{children}</div>
     </div>
   );
 };
