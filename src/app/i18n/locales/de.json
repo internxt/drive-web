@@ -183,7 +183,13 @@
       "success": "Du hast dich erfolgreich angemeldet",
       "error": "Anmeldung fehlgeschlagen, bitte versuche es erneut",
       "closeWindow": "Du kannst dieses Fenster schließen",
-      "invalidRedirectUri": "Ungültige Weiterleitungs-URL"
+      "invalidRedirectUri": "Ungültige Weiterleitungs-URL",
+      "errors": {
+        "CLIENT_VERSION_UNSUPPORTED": {
+          "title": "Diese Version der App wird nicht mehr unterstützt",
+          "description": "Aktualisiere die App auf die neueste Version und melde dich dann erneut an."
+        }
+      }
     },
     "oauthLink": {
       "continueAs": "Fortfahren als",
@@ -474,6 +480,14 @@
         "title": "Deine Fotos konnten nicht geladen werden",
         "description": "Überprüfe deine Verbindung und versuche es erneut",
         "retry": "Erneut versuchen"
+      },
+      "filters": {
+        "allDevices": "Alle Geräte",
+        "allDates": "Alle Daten"
+      },
+      "timeline": {
+        "today": "Heute",
+        "yesterday": "Gestern"
       }
     },
     "favorites": {

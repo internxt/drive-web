@@ -204,7 +204,13 @@
       "success": "您已成功登录",
       "error": "无法登录，请重试",
       "closeWindow": "您可以关闭此窗口",
-      "invalidRedirectUri": "无效的重定向网址"
+      "invalidRedirectUri": "无效的重定向网址",
+      "errors": {
+        "CLIENT_VERSION_UNSUPPORTED": {
+          "title": "此版本的应用已不再受支持",
+          "description": "请将应用更新到最新版本，然后重新登录。"
+        }
+      }
     },
     "oauthLink": {
       "continueAs": "继续使用",
@@ -495,6 +501,14 @@
         "title": "无法加载照片",
         "description": "请检查网络连接后重试",
         "retry": "重试"
+      },
+      "filters": {
+        "allDevices": "所有设备",
+        "allDates": "所有日期"
+      },
+      "timeline": {
+        "today": "今天",
+        "yesterday": "昨天"
       }
     },
     "favorites": {
