@@ -245,6 +245,8 @@ export class Upload {
   }
 
   private onItemCancelled(item: UploadItem): void {
+    this.clearFailure(item);
+
     const taskId = this.getTaskIdOf(item);
     const isFileWithItsOwnTask = !!taskId && item.kind === UploadItemKind.File;
     if (!isFileWithItsOwnTask) return;

@@ -574,4 +574,38 @@ describe('Retrying what failed', () => {
     await retryingVideos;
     expect(tasksService.findTask(videosTask.id)?.status).toBe(TaskStatus.Success);
   });
+
+  test('When the user cancels a folder while its failed files are retried, then they are no longer shown as retrying', async () => {
+    failUploadsOf(['broken']);
+    await createUpload([getFolderToUpload('Photos', { childrenFiles: [getFileToUpload('broken.png')] })], []).run();
+    fakeUploadsTaking(500);
+    const [folderTask] = tasksOf(TaskType.UploadFolder);
+
+    const retrying = folderTask.retry?.();
+    await vi.waitFor(() =>
+      expect(tasksService.findTask(folderTask.id)?.failedItems).toEqual([
+        expect.objectContaining({ name: 'broken', isRetrying: true }),
+      ]),
+    );
+    await tasksService.cancelTask(folderTask.id);
+    await retrying;
+
+    expect(tasksService.findTask(folderTask.id)?.failedItems).toEqual([]);
+  });
+
+  test('When the user cancels a failed file while it is retried, then it is no longer shown as retrying', async () => {
+    failUploadsOf(['report']);
+    await createUpload([], [getFileToUpload('report.pdf')]).run();
+    fakeUploadsTaking(500);
+    const [fileTask] = tasksOf(TaskType.UploadFile);
+
+    const retrying = fileTask.retry?.();
+    await vi.waitFor(() => expect(uploadFile).toHaveBeenCalledTimes(2));
+    await tasksService.cancelTask(fileTask.id);
+    await retrying;
+
+    expect(tasksService.findTask(fileTask.id)).toEqual(
+      expect.objectContaining({ status: TaskStatus.Cancelled, failedItems: [] }),
+    );
+  });
 });
