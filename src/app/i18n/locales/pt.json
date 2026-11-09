@@ -204,7 +204,13 @@
       "success": "Você entrou com sucesso",
       "error": "Falha ao entrar, tente novamente",
       "closeWindow": "Você já pode fechar esta janela",
-      "invalidRedirectUri": "URL de redirecionamento inválida"
+      "invalidRedirectUri": "URL de redirecionamento inválida",
+      "errors": {
+        "CLIENT_VERSION_UNSUPPORTED": {
+          "title": "Esta versão do aplicativo não é mais compatível",
+          "description": "Atualize o aplicativo para a versão mais recente e entre novamente."
+        }
+      }
     },
     "oauthLink": {
       "continueAs": "Continuar como",
@@ -495,6 +501,9 @@
         "title": "Não foi possível carregar suas fotos",
         "description": "Verifique sua conexão e tente novamente",
         "retry": "Tentar novamente"
+      },
+      "filters": {
+        "allDevices": "Todos os dispositivos"
       }
     },
     "favorites": {

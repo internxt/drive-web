@@ -183,7 +183,13 @@
       "success": "Vous vous êtes connecté avec succès",
       "error": "Échec de la connexion, veuillez réessayer",
       "closeWindow": "Vous pouvez fermer cette fenêtre",
-      "invalidRedirectUri": "URL de redirection invalide"
+      "invalidRedirectUri": "URL de redirection invalide",
+      "errors": {
+        "CLIENT_VERSION_UNSUPPORTED": {
+          "title": "Cette version de l'application n'est plus prise en charge",
+          "description": "Mettez à jour l'application vers la dernière version, puis reconnectez-vous."
+        }
+      }
     },
     "oauthLink": {
       "continueAs": "Continuer en tant que",
@@ -474,6 +480,9 @@
         "title": "Impossible de charger vos photos",
         "description": "Vérifiez votre connexion et réessayez",
         "retry": "Réessayer"
+      },
+      "filters": {
+        "allDevices": "Tous les appareils"
       }
     },
     "favorites": {
