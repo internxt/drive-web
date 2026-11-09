@@ -18,13 +18,16 @@ export const usePhotoFilters = (months: PhotoMonth[]) => {
     return monthsNewestFirst;
   }, [months, selectedDeviceUuid]);
 
-  const isSelectedMonthAvailable = selectedMonth !== null && availableMonths.includes(selectedMonth);
+  const selectDevice = (deviceUuid: string | null) => {
+    setSelectedDeviceUuid(deviceUuid);
+    setSelectedMonth(null);
+  };
 
   return {
     selectedDeviceUuid,
-    selectDevice: setSelectedDeviceUuid,
+    selectDevice,
     availableMonths,
-    selectedMonth: isSelectedMonthAvailable ? selectedMonth : null,
+    selectedMonth,
     selectMonth: setSelectedMonth,
   };
 };

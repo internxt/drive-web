@@ -220,7 +220,7 @@ describe('Photos view', () => {
       expect(await offeredMonths()).toStrictEqual(['views.photos.filters.allDates', 'October 2026']);
     });
 
-    test('When the chosen month has no photos on the newly chosen device, then all dates are shown again', async () => {
+    test('When the user chooses another device, then the date filter goes back to all dates', async () => {
       givenDevices([iphone, pixel]);
       givenSubfolders({ ...iphonePhotosOfNovember2026, ...pixelPhotosOfOctober2026 });
 
@@ -231,6 +231,24 @@ describe('Photos view', () => {
       fireEvent.click(await screen.findByRole('menuitem', { name: /Pixel/ }));
 
       expect(await screen.findByRole('button', { name: /views.photos.filters.allDates/ })).toBeInTheDocument();
+    });
+
+    test('When the user goes back to the previous device, then the month chosen before is not restored', async () => {
+      givenDevices([iphone, pixel]);
+      givenSubfolders({ ...iphonePhotosOfNovember2026, ...pixelPhotosOfOctober2026 });
+
+      render(<PhotosView />);
+      fireEvent.click(await screen.findByRole('button', { name: /views.photos.filters.allDevices/ }));
+      fireEvent.click(await screen.findByRole('menuitem', { name: /iPhone/ }));
+      await openMonthFilter();
+      fireEvent.click(await screen.findByRole('menuitem', { name: /November 2026/ }));
+      fireEvent.click(await screen.findByRole('button', { name: /iPhone/ }));
+      fireEvent.click(await screen.findByRole('menuitem', { name: /Pixel/ }));
+      fireEvent.click(await screen.findByRole('button', { name: /Pixel/ }));
+      fireEvent.click(await screen.findByRole('menuitem', { name: /iPhone/ }));
+
+      expect(await screen.findByRole('button', { name: /views.photos.filters.allDates/ })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /November 2026/ })).not.toBeInTheDocument();
     });
 
     test('When the devices have no photos yet, then the empty state is shown without filters', async () => {
