@@ -1,8 +1,12 @@
 import dayjs, { Dayjs } from 'dayjs';
+import isTodayPlugin from 'dayjs/plugin/isToday';
+import isYesterdayPlugin from 'dayjs/plugin/isYesterday';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { Translate } from 'app/i18n/types';
 
 dayjs.extend(relativeTime);
+dayjs.extend(isTodayPlugin);
+dayjs.extend(isYesterdayPlugin);
 
 export function format(date: Date | string, format: string): string {
   return dayjs(date).format(format);
@@ -40,6 +44,10 @@ const getHoursUntilExpiration = (expiresAt: Date | string): number => {
 const hasElapsed = (since: Dayjs, amount: number, unit: dayjs.ManipulateType): boolean =>
   dayjs().diff(since, unit) >= amount;
 
+const isToday = (date: Date | string): boolean => dayjs(date).isToday();
+
+const isYesterday = (date: Date | string): boolean => dayjs(date).isYesterday();
+
 const dateService = {
   format,
   isDateOneBefore,
@@ -50,6 +58,8 @@ const dateService = {
   getDaysSince,
   getHoursUntilExpiration,
   hasElapsed,
+  isToday,
+  isYesterday,
 };
 
 export default dateService;

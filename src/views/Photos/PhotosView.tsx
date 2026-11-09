@@ -1,31 +1,28 @@
-import { Helmet } from 'react-helmet-async';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import PhotosEmptyState from './components/PhotosEmptyState';
 import PhotosErrorState from './components/PhotosErrorState';
+import PhotosFilters from './components/PhotosFilters';
 import PhotosGridSkeleton from './components/PhotosGridSkeleton';
-import { PhotoDevicesState, usePhotoDevices } from './hooks/usePhotoDevices';
+import PhotosLayout from './components/PhotosLayout';
+import PhotosLibrary from './components/PhotosLibrary';
+import { usePhotoFilters } from './hooks/usePhotoFilters';
+import { usePhotoLibrary } from './hooks/usePhotoLibrary';
+import { PhotoDevice, PhotoMonth } from './types';
 
-const PhotosContent = ({ state, onRetry }: { state: PhotoDevicesState; onRetry: () => void }) => {
-  if (state.status === 'loading') return <PhotosGridSkeleton />;
-  if (state.status === 'error') return <PhotosErrorState onRetry={onRetry} />;
-  if (state.status === 'loaded' && state.devices.length === 0) return <PhotosEmptyState />;
-  return null;
-};
+const NO_DEVICES: PhotoDevice[] = [];
+const NO_MONTHS: PhotoMonth[] = [];
 
 const PhotosView = (): JSX.Element => {
-  const { translate } = useTranslationContext();
-  const { state, retry } = usePhotoDevices();
+  const { state, retry } = usePhotoLibrary();
+  const devices = state.status === 'loaded' ? state.devices : NO_DEVICES;
+  const filters = usePhotoFilters(state.status === 'loaded' ? state.months : NO_MONTHS);
+
+  const content = {
+    loading: <PhotosGridSkeleton />,
+    error: <PhotosErrorState onRetry={retry} />,
+    loaded: <PhotosLibrary months={filters.shownMonths} />,
+  };
 
   return (
-    <div className="flex w-full shrink-0 grow flex-col">
-      <Helmet>
-        <title>{translate('sideNav.photos')} - Internxt Drive</title>
-      </Helmet>
-      <header className="flex h-14 shrink-0 items-center px-5">
-        <h1 className="text-lg">{translate('views.photos.head')}</h1>
-      </header>
-      <PhotosContent state={state} onRetry={retry} />
-    </div>
+    <PhotosLayout filters={<PhotosFilters devices={devices} filters={filters} />}>{content[state.status]}</PhotosLayout>
   );
 };
 
