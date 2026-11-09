@@ -21,13 +21,16 @@ export const REDIRECT_PLANS: Readonly<Record<string, RedirectPlan>> = {
     couponRule: 'unlessBlocked',
   },
   price_1UAsSAFAOdcgaBMQNF0j8UfV: {
-    targetPlanId: 'price_1TRoAJFAOdcgaBMQveT6cebN',
-    couponRule: 'onlyIfAllowed',
+    targetPlanId: 'price_1UZCCZFAOdcgaBMQO9bKb6I9',
+    couponRule: 'unlessBlocked',
+  },
+  price_1TRoAJFAOdcgaBMQveT6cebN: {
+    targetPlanId: 'price_1UZCCZFAOdcgaBMQO9bKb6I9',
+    couponRule: 'unlessBlocked',
   },
   price_1UKYnMFAOdcgaBMQ09GLzJhJ: {
-    targetPlanId: 'price_1UAsSAFAOdcgaBMQNF0j8UfV',
-    couponRule: 'onlyCouponCode',
-    couponCode: 'TFA',
+    targetPlanId: 'price_1UZCCZFAOdcgaBMQO9bKb6I9',
+    couponRule: 'unlessBlocked',
   },
 };
 
@@ -36,6 +39,7 @@ export const REDIRECT_ALLOWED_COUPON_CODES: ReadonlySet<string> = new Set([
   'SPECIAL',
   'WEWE',
   'GOTZHAOFFER',
+  'TFA',
   'REOFFER',
   'AFFIOFFER',
 ]);
