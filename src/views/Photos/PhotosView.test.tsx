@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import errorService from 'services/error.service';
 import { PhotoDevice as SdkPhotoDevice } from '@internxt/sdk/dist/drive/photos';
 import { getPhotoFolder, getPhotoFolderFile, getSdkPhotoDevice } from 'testUtils/fixtures/photos.fixtures';
@@ -49,13 +49,37 @@ const givenPhotosInFolders = (photosByFolder: Record<string, ReturnType<typeof g
 const photo = (plainName: string, folderUuid: string, creationTime: string) =>
   getPhotoFolderFile({ uuid: plainName, plainName, type: 'jpg', folderUuid, creationTime });
 
-const shownDays = () =>
-  screen.getAllByRole('region').map((day) => [
-    day.getAttribute('aria-label'),
-    within(day)
+const photosOfDay = (folderUuid: string, count: number) =>
+  Array.from({ length: count }, (_, index) =>
+    photo(`IMG_${String(index + 1).padStart(4, '0')}`, folderUuid, '2025-11-03T09:00:00Z'),
+  );
+
+const givenGallerySize = (width: number, height: number) =>
+  vi.stubGlobal(
+    'ResizeObserver',
+    class {
+      constructor(private readonly onResize: ResizeObserverCallback) {}
+      observe() {
+        this.onResize([{ contentRect: { width, height } } as ResizeObserverEntry], this as unknown as ResizeObserver);
+      }
+      disconnect() {}
+      unobserve() {}
+    },
+  );
+
+const shownRows = () =>
+  screen.getAllByRole('group').map((row) => [
+    row.getAttribute('aria-label'),
+    within(row)
       .getAllByRole('img')
       .map((tile) => tile.getAttribute('aria-label')),
   ]);
+
+const scrollGalleryToTheEnd = () => {
+  const gallery = screen.getAllByRole('group')[0].parentElement?.parentElement as HTMLElement;
+  gallery.scrollTop = gallery.scrollHeight;
+  fireEvent.scroll(gallery);
+};
 
 const iphone = getSdkPhotoDevice({ uuid: 'iphone', plainName: 'iPhone' });
 const pixel = getSdkPhotoDevice({ uuid: 'pixel', plainName: 'Pixel' });
@@ -76,8 +100,13 @@ const waitForPhotosToLoad = () =>
 describe('Photos view', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    givenGallerySize(1000, 600);
     givenSubfolders({});
     givenPhotosInFolders({});
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   test('When the devices are loading, then the photos grid placeholder is shown under the title', () => {
@@ -332,9 +361,9 @@ describe('Photos view', () => {
       });
 
       render(<PhotosView />);
-      await screen.findAllByRole('region');
+      await screen.findAllByRole('group');
 
-      expect(shownDays()).toStrictEqual([
+      expect(shownRows()).toStrictEqual([
         ['Mon, 3 Nov 2025', ['IMG_B.jpg', 'IMG_A.jpg']],
         ['Sat, 1 Nov 2025', ['IMG_C.jpg']],
       ]);
@@ -352,8 +381,8 @@ describe('Photos view', () => {
       fireEvent.click(await screen.findByRole('button', { name: /views.photos.filters.allDates/ }));
       fireEvent.click(await screen.findByRole('menuitem', { name: /October 2025/ }));
 
-      expect(await screen.findByRole('region', { name: 'Wed, 15 Oct 2025' })).toBeInTheDocument();
-      expect(shownDays()).toStrictEqual([['Wed, 15 Oct 2025', ['IMG_OCTOBER.jpg']]]);
+      expect(await screen.findByRole('heading', { name: 'Wed, 15 Oct 2025' })).toBeInTheDocument();
+      expect(shownRows()).toStrictEqual([['Wed, 15 Oct 2025', ['IMG_OCTOBER.jpg']]]);
     });
 
     test('When the photos of a day come from several devices, then they are shown together', async () => {
@@ -372,9 +401,9 @@ describe('Photos view', () => {
       });
 
       render(<PhotosView />);
-      await screen.findAllByRole('region');
+      await screen.findAllByRole('group');
 
-      expect(shownDays()).toStrictEqual([['Mon, 3 Nov 2025', ['IMG_PIXEL.jpg', 'IMG_IPHONE.jpg']]]);
+      expect(shownRows()).toStrictEqual([['Mon, 3 Nov 2025', ['IMG_PIXEL.jpg', 'IMG_IPHONE.jpg']]]);
     });
 
     test('When the photos cannot be loaded, then the user can try again', async () => {
@@ -389,6 +418,52 @@ describe('Photos view', () => {
       fireEvent.click(await screen.findByRole('button', { name: /views.photos.error.retry/ }));
 
       expect(await screen.findByRole('img', { name: 'IMG_A.jpg' })).toBeInTheDocument();
+    });
+
+    describe('A day with hundreds of photos', () => {
+      beforeEach(() => {
+        givenDevices([iphone]);
+        givenSubfolders(iphonePhotosOf2025);
+        givenPhotosInFolders({ 'iphone-2025-11-03': photosOfDay('iphone-2025-11-03', 300) });
+      });
+
+      test('When the user opens Photos, then only the first photos are shown', async () => {
+        render(<PhotosView />);
+
+        expect(await screen.findByRole('img', { name: 'IMG_0001.jpg' })).toBeInTheDocument();
+        expect(screen.queryByRole('img', { name: 'IMG_0300.jpg' })).not.toBeInTheDocument();
+      });
+
+      test('When the user scrolls to the end, then the last photos are shown instead of the first ones', async () => {
+        render(<PhotosView />);
+        await screen.findByRole('img', { name: 'IMG_0001.jpg' });
+
+        scrollGalleryToTheEnd();
+
+        expect(await screen.findByRole('img', { name: 'IMG_0300.jpg' })).toBeInTheDocument();
+        expect(screen.queryByRole('img', { name: 'IMG_0001.jpg' })).not.toBeInTheDocument();
+      });
+
+      test('When the window is wide, then five photos fit in each row', async () => {
+        givenGallerySize(1000, 600);
+
+        render(<PhotosView />);
+        await screen.findByRole('img', { name: 'IMG_0001.jpg' });
+
+        expect(shownRows()[0]).toStrictEqual([
+          'Mon, 3 Nov 2025',
+          ['IMG_0001.jpg', 'IMG_0002.jpg', 'IMG_0003.jpg', 'IMG_0004.jpg', 'IMG_0005.jpg'],
+        ]);
+      });
+
+      test('When the window is narrow, then two photos fit in each row', async () => {
+        givenGallerySize(400, 600);
+
+        render(<PhotosView />);
+        await screen.findByRole('img', { name: 'IMG_0001.jpg' });
+
+        expect(shownRows()[0]).toStrictEqual(['Mon, 3 Nov 2025', ['IMG_0001.jpg', 'IMG_0002.jpg']]);
+      });
     });
   });
 });
