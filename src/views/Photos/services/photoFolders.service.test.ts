@@ -1,5 +1,5 @@
 import { SdkFactory } from 'app/core/factory/sdk';
-import { getPhotoFolder, getPhotoFolderFile } from 'testUtils/fixtures/photos.fixtures';
+import { getPhotoFolder, getPhotoFolderFile, getPhotoThumbnail } from 'testUtils/fixtures/photos.fixtures';
 import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
 import { PhotoFoldersService } from './photoFolders.service';
 
@@ -119,18 +119,26 @@ describe('Photo backup folders', () => {
 
       expect(photos).toStrictEqual([
         {
+          id: 1,
           uuid: 'photo-a',
+          folderId: 10,
           name: 'IMG_A.heic',
           type: 'heic',
           day: '2026-11-02',
           takenAt: '2026-11-02T09:00:00Z',
+          updatedAt: '2026-11-03T10:00:00.000Z',
+          thumbnail: null,
         },
         {
+          id: 1,
           uuid: 'photo-b',
+          folderId: 10,
           name: 'IMG_B.jpg',
           type: 'jpg',
           day: '2026-11-15',
           takenAt: '2026-11-15T09:00:00Z',
+          updatedAt: '2026-11-03T10:00:00.000Z',
+          thumbnail: null,
         },
       ]);
       expect(photosClient.getFilesInFolders).toHaveBeenCalledWith({
@@ -138,6 +146,26 @@ describe('Photo backup folders', () => {
         updatedAt: new Date(0).toISOString(),
         limit: 200,
       });
+    });
+
+    test('When a photo has several thumbnails, then the latest one is used', async () => {
+      givenSubfolders({ 'november-2026': [getPhotoFolder({ uuid: 'day-2', plainName: '02' })] });
+      photosClient.getFilesInFolders.mockResolvedValue({
+        files: [
+          getPhotoFolderFile({
+            folderUuid: 'day-2',
+            thumbnails: [
+              getPhotoThumbnail({ id: 7, bucketId: 'photos-bucket', bucketFile: 'edited-thumbnail' }),
+              getPhotoThumbnail({ id: 3, bucketId: 'photos-bucket', bucketFile: 'original-thumbnail' }),
+            ],
+          }),
+        ],
+        nextCursor: null,
+      });
+
+      const [photo] = await PhotoFoldersService.instance.getMonthPhotos(november2026);
+
+      expect(photo.thumbnail).toStrictEqual({ bucket_id: 'photos-bucket', bucket_file: 'edited-thumbnail' });
     });
 
     test('When a month has folders that are not a day, then their photos are not requested', async () => {

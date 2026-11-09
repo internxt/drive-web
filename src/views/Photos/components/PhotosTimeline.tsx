@@ -5,7 +5,7 @@ import { ListChildComponentProps, VariableSizeList } from 'react-window';
 import dateService from 'services/date.service';
 import { useElementSize } from '../hooks/useElementSize';
 import { DayKey, Photo } from '../types';
-import PhotoTile from './PhotoTile';
+import PhotoGridItem from './PhotoGridItem';
 
 const MIN_TILE_SIZE = 160;
 const TILE_GAP = 4;
@@ -96,7 +96,7 @@ const TimelineRowView = memo(({ index, style, data }: ListChildComponentProps<Ti
       className="grid items-start gap-1 px-5"
     >
       {row.photos.map((photo) => (
-        <PhotoTile key={photo.uuid} photo={photo} />
+        <PhotoGridItem key={photo.uuid} photo={photo} />
       ))}
     </div>
   );
