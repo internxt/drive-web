@@ -68,6 +68,7 @@ export interface DriveFileData {
   user?: UserResumeData;
   expiresAt?: string;
   isFavorite?: boolean;
+  modificationTime?: string;
 }
 
 interface Thumbnail {
