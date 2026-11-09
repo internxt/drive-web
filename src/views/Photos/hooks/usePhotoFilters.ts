@@ -33,10 +33,10 @@ export const usePhotoFilters = (months: PhotoMonth[]) => {
 
   return {
     selectedDeviceUuid,
-    onSelectDevice: selectDevice,
+    selectDevice,
     availableMonths,
     selectedMonth,
-    onSelectMonth: setSelectedMonth,
+    selectMonth: setSelectedMonth,
     shownMonths,
   };
 };

@@ -48,6 +48,25 @@ describe('Photo backup folders', () => {
     ]);
   });
 
+  test('When a device has folders that are not a year or a month, then they are ignored', async () => {
+    givenSubfolders({
+      iphone: [
+        getPhotoFolder({ uuid: 'sync', plainName: '.sync' }),
+        getPhotoFolder({ uuid: 'year-2026', plainName: '2026' }),
+      ],
+      'year-2026': [
+        getPhotoFolder({ uuid: 'november-2026', plainName: '11' }),
+        getPhotoFolder({ uuid: 'not-a-month', plainName: '13' }),
+        getPhotoFolder({ uuid: 'misc', plainName: 'misc' }),
+      ],
+    });
+
+    const months = await PhotoFoldersService.instance.getDeviceMonths('iphone');
+
+    expect(months).toStrictEqual([{ key: '2026-11', deviceUuid: 'iphone', folderUuid: 'november-2026' }]);
+    expect(storageClient.getFolderFoldersByUuidWithCursor).not.toHaveBeenCalledWith('sync', expect.anything());
+  });
+
   test('When the folders come in several pages, then the months of every page are returned', async () => {
     storageClient.getFolderFoldersByUuidWithCursor.mockImplementation(
       (folderUuid: string, { cursor }: { cursor?: string }) => {
@@ -103,7 +122,6 @@ describe('Photo backup folders', () => {
           uuid: 'photo-a',
           name: 'IMG_A.heic',
           type: 'heic',
-          month: '2026-11',
           day: '2026-11-02',
           takenAt: '2026-11-02T09:00:00Z',
         },
@@ -111,7 +129,6 @@ describe('Photo backup folders', () => {
           uuid: 'photo-b',
           name: 'IMG_B.jpg',
           type: 'jpg',
-          month: '2026-11',
           day: '2026-11-15',
           takenAt: '2026-11-15T09:00:00Z',
         },
@@ -121,6 +138,21 @@ describe('Photo backup folders', () => {
         updatedAt: new Date(0).toISOString(),
         limit: 200,
       });
+    });
+
+    test('When a month has folders that are not a day, then their photos are not requested', async () => {
+      givenSubfolders({
+        'november-2026': [
+          getPhotoFolder({ uuid: 'day-2', plainName: '2' }),
+          getPhotoFolder({ uuid: 'not-a-day', plainName: '32' }),
+          getPhotoFolder({ uuid: 'misc', plainName: 'misc' }),
+        ],
+      });
+      photosClient.getFilesInFolders.mockResolvedValue({ files: [], nextCursor: null });
+
+      await PhotoFoldersService.instance.getMonthPhotos(november2026);
+
+      expect(photosClient.getFilesInFolders).toHaveBeenCalledWith(expect.objectContaining({ folderUuids: ['day-2'] }));
     });
 
     test('When some photos are trashed or deleted, then they are left out', async () => {

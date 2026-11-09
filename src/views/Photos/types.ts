@@ -17,7 +17,6 @@ export interface Photo {
   uuid: string;
   name: string;
   type: string;
-  month: MonthKey;
   day: DayKey;
   takenAt: string;
 }
