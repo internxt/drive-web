@@ -482,7 +482,12 @@
         "retry": "Erneut versuchen"
       },
       "filters": {
-        "allDevices": "Alle Geräte"
+        "allDevices": "Alle Geräte",
+        "allDates": "Alle Daten"
+      },
+      "timeline": {
+        "today": "Heute",
+        "yesterday": "Gestern"
       }
     },
     "favorites": {

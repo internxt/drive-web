@@ -503,7 +503,12 @@
         "retry": "Try again"
       },
       "filters": {
-        "allDevices": "All devices"
+        "allDevices": "All devices",
+        "allDates": "All dates"
+      },
+      "timeline": {
+        "today": "Today",
+        "yesterday": "Yesterday"
       }
     },
     "favorites": {
