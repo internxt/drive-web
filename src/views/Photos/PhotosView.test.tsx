@@ -365,7 +365,7 @@ describe('Photos view', () => {
       'iphone-2025-10': [getPhotoFolder({ uuid: 'iphone-2025-10-15', plainName: '15' })],
     };
 
-    test('When the user opens Photos, then the newest month is shown day by day, newest first', async () => {
+    test('When the newest month does not fill the screen, then the older months are shown below it, day by day and newest first', async () => {
       givenDevices([iphone]);
       givenSubfolders(iphonePhotosOf2025);
       givenPhotosInFolders({
@@ -378,12 +378,53 @@ describe('Photos view', () => {
       });
 
       render(<PhotosView />);
-      await screen.findAllByRole('group');
+      await screen.findByRole('img', { name: 'IMG_D.jpg' });
 
       expect(shownRows()).toStrictEqual([
         ['Mon, 3 Nov 2025', ['IMG_B.jpg', 'IMG_A.jpg']],
         ['Sat, 1 Nov 2025', ['IMG_C.jpg']],
+        ['Wed, 15 Oct 2025', ['IMG_D.jpg']],
       ]);
+    });
+
+    test('When the user scrolls near the end, then the next older month is shown', async () => {
+      givenDevices([iphone]);
+      givenSubfolders(iphonePhotosOf2025);
+      givenPhotosInFolders({
+        'iphone-2025-11-03': photosOfDay('iphone-2025-11-03', 300),
+        'iphone-2025-10-15': [photo('IMG_OCTOBER', 'iphone-2025-10-15', '2025-10-15T10:00:00Z')],
+      });
+
+      render(<PhotosView />);
+      await screen.findByRole('img', { name: 'IMG_0001.jpg' });
+      expect(screen.queryByRole('img', { name: 'IMG_OCTOBER.jpg' })).not.toBeInTheDocument();
+
+      scrollGalleryToTheEnd();
+
+      expect(await screen.findByRole('img', { name: 'IMG_OCTOBER.jpg' })).toBeInTheDocument();
+    });
+
+    test('When an older month cannot be loaded, then the photos already shown stay and the user can retry that month', async () => {
+      givenDevices([iphone]);
+      givenSubfolders(iphonePhotosOf2025);
+      givenPhotosInFolders({
+        'iphone-2025-10-15': [photo('IMG_OCTOBER', 'iphone-2025-10-15', '2025-10-15T10:00:00Z')],
+      });
+      photosClient.getFilesInFolders
+        .mockResolvedValueOnce({
+          files: [photo('IMG_NOVEMBER', 'iphone-2025-11-03', '2025-11-03T09:00:00Z')],
+          nextCursor: null,
+        })
+        .mockRejectedValueOnce(new Error('Network error'));
+
+      render(<PhotosView />);
+      const retryButton = await screen.findByRole('button', { name: /views.photos.error.retry/ });
+      expect(screen.getByRole('img', { name: 'IMG_NOVEMBER.jpg' })).toBeInTheDocument();
+
+      fireEvent.click(retryButton);
+
+      expect(await screen.findByRole('img', { name: 'IMG_OCTOBER.jpg' })).toBeInTheDocument();
+      expect(screen.getByRole('img', { name: 'IMG_NOVEMBER.jpg' })).toBeInTheDocument();
     });
 
     test('When the user picks an older month, then its photos are shown', async () => {
