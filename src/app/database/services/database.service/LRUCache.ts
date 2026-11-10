@@ -36,9 +36,11 @@ export class LRUCache<T> {
     if (size < this.size) {
       const existsItem = await this.cache.has(key);
 
-      if (existsItem) {
-        this.updateLRU(key);
-        return;
+      const trackedIndex = this.lruList.indexOf(key);
+      if (existsItem && trackedIndex > -1) {
+        const keySize = await this.cache.getSize(key);
+        this.currentSize = Math.max(0, this.currentSize - keySize);
+        this.lruList.splice(trackedIndex, 1);
       }
 
       await this.evictEntriesIfNeeded(size);

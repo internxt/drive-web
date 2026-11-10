@@ -271,4 +271,26 @@ describe('LRUCache', () => {
     const lastState = cache.updateLRUState.mock.calls.at(-1)?.[0];
     expect(lastState?.lruKeyList).toEqual(['entry-2', 'entry-3', 'entry-1']);
   });
+
+  it('replaces the value and size of an entry that is already cached', async () => {
+    const cache = new InMemoryCache<{ version: number }>();
+    const lru = new LRUCache(cache, 50);
+    await lru.set('entry', { version: 1 }, 20);
+
+    await lru.set('entry', { version: 2 }, 30);
+
+    await expect(lru.get('entry')).resolves.toEqual({ version: 2 });
+    expect(cache.updateLRUState.mock.calls.at(-1)?.[0]).toEqual({ lruKeyList: ['entry'], itemsListSize: 30 });
+  });
+
+  it('keeps the other entries tracked when replacing an entry missing from the LRU state', async () => {
+    const cache = new InMemoryCache<{ version: number }>();
+    cache.set('untracked', { version: 1 }, 10);
+    const lru = new LRUCache(cache, 50);
+    await lru.set('tracked', { version: 1 }, 10);
+
+    await lru.set('untracked', { version: 2 }, 10);
+
+    expect(cache.updateLRUState.mock.calls.at(-1)?.[0]?.lruKeyList).toEqual(['tracked', 'untracked']);
+  });
 });

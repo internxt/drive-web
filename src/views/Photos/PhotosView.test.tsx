@@ -1,6 +1,6 @@
 import { act, fireEvent, render, renderHook, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, Mock, test, vi } from 'vitest';
-import { getDatabaseFilePreviewData, updateDatabaseFilePreviewData } from 'app/drive/services/database.service';
+import { getDatabasePhotoThumbnail, updateDatabasePhotoThumbnail } from 'app/drive/services/database.service';
 import fetchFileBlob from 'app/drive/services/download.service/fetchFileBlob';
 import errorService from 'services/error.service';
 import { PhotoDevice as SdkPhotoDevice } from '@internxt/sdk/dist/drive/photos';
@@ -40,8 +40,8 @@ vi.mock('app/drive/services/download.service/fetchFileBlob', () => ({
 }));
 vi.mock('app/drive/services/database.service', async (importOriginal) => ({
   ...(await importOriginal<typeof import('app/drive/services/database.service')>()),
-  getDatabaseFilePreviewData: vi.fn(),
-  updateDatabaseFilePreviewData: vi.fn(),
+  getDatabasePhotoThumbnail: vi.fn(),
+  updateDatabasePhotoThumbnail: vi.fn(),
 }));
 
 type Folder = ReturnType<typeof getPhotoFolder>;
@@ -182,8 +182,8 @@ describe('Photos view', () => {
     failingFolders.clear();
     waitingFolders.clear();
     givenPhotosInFolders({});
-    (getDatabaseFilePreviewData as Mock).mockResolvedValue(undefined);
-    (updateDatabaseFilePreviewData as Mock).mockResolvedValue(undefined);
+    (getDatabasePhotoThumbnail as Mock).mockResolvedValue(undefined);
+    (updateDatabasePhotoThumbnail as Mock).mockResolvedValue(undefined);
   });
 
   afterEach(() => {
@@ -794,7 +794,7 @@ describe('Photos view', () => {
 
     test('When a thumbnail was already downloaded, then it is shown without downloading it again', async () => {
       givenPhotosWithThumbnail(['IMG_A']);
-      (getDatabaseFilePreviewData as Mock).mockResolvedValue({
+      (getDatabasePhotoThumbnail as Mock).mockResolvedValue({
         preview: new Blob(['cached'], { type: 'image/jpeg' }),
         updatedAt: photoUpdatedAt,
       });
@@ -808,7 +808,7 @@ describe('Photos view', () => {
 
     test('When the photo changed after its thumbnail was saved, then the new thumbnail is downloaded', async () => {
       givenPhotosWithThumbnail(['IMG_A']);
-      (getDatabaseFilePreviewData as Mock).mockResolvedValue({
+      (getDatabasePhotoThumbnail as Mock).mockResolvedValue({
         preview: new Blob(['outdated'], { type: 'image/jpeg' }),
         updatedAt: '2026-11-01T10:00:00.000Z',
       });
@@ -819,16 +819,14 @@ describe('Photos view', () => {
 
       await waitFor(() => expect(thumbnail()?.getAttribute('src')).toMatch(/^blob:/));
       expect(fetchFileBlob).toHaveBeenCalled();
-      expect(updateDatabaseFilePreviewData).toHaveBeenCalledWith(
-        expect.objectContaining({ updatedAt: photoUpdatedAt }),
-      );
+      expect(updateDatabasePhotoThumbnail).toHaveBeenCalledWith(expect.objectContaining({ updatedAt: photoUpdatedAt }));
     });
 
     test('When the thumbnail cannot be saved, then the error is reported and the thumbnail is still shown', async () => {
       givenPhotosWithThumbnail(['IMG_A']);
       const saveError = new Error('Quota exceeded');
       (fetchFileBlob as Mock).mockResolvedValue(new Blob(['thumbnail'], { type: 'image/jpeg' }));
-      (updateDatabaseFilePreviewData as Mock).mockRejectedValue(saveError);
+      (updateDatabasePhotoThumbnail as Mock).mockRejectedValue(saveError);
 
       render(<PhotosView />);
       const thumbnail = await thumbnailOf('IMG_A.jpg');
@@ -840,7 +838,7 @@ describe('Photos view', () => {
     test('When the saved thumbnails cannot be read, then the thumbnail is downloaded and shown', async () => {
       givenPhotosWithThumbnail(['IMG_A']);
       const readError = new Error('IndexedDB blocked');
-      (getDatabaseFilePreviewData as Mock).mockRejectedValue(readError);
+      (getDatabasePhotoThumbnail as Mock).mockRejectedValue(readError);
       (fetchFileBlob as Mock).mockResolvedValue(new Blob(['thumbnail'], { type: 'image/jpeg' }));
 
       render(<PhotosView />);
@@ -863,9 +861,17 @@ describe('Photos view', () => {
     });
 
     describe('A day with hundreds of photos', () => {
+      const downloadsUntilCancelled = () =>
+        (fetchFileBlob as Mock).mockImplementation(
+          (_file, { abortController }: { abortController: AbortController }) =>
+            new Promise((_resolve, reject) =>
+              abortController.signal.addEventListener('abort', () => reject(new Error('Aborted'))),
+            ),
+        );
+
       beforeEach(() => {
         givenPhotosWithThumbnail(photosOfDay('iphone-2026-11-03', 300).map((file) => file.plainName));
-        (fetchFileBlob as Mock).mockReturnValue(new Promise(() => undefined));
+        downloadsUntilCancelled();
       });
 
       test('When the user opens Photos, then only the thumbnails of the photos on screen are downloaded', async () => {
@@ -882,6 +888,75 @@ describe('Photos view', () => {
         scrollGalleryTo('end');
 
         await waitFor(() => expect(thumbnailDownloadOf('IMG_0001').abortController.signal.aborted).toBe(true));
+      });
+
+      describe('Downloads are paced so the backend is not flooded', () => {
+        const STILL_SCROLLING_MS = 40;
+
+        const photoNamed = (tileName: string | null) => String(tileName).replace('.jpg', '');
+
+        const tileNames = () =>
+          screen
+            .getAllByRole('img')
+            .map((element) => element.getAttribute('aria-label'))
+            .filter((name) => name !== null);
+
+        const countTiles = () => tileNames().length;
+
+        const thumbnailsOnScreenWereRead = async () => {
+          const tilesOnScreen = countTiles();
+          await waitFor(() => expect(getDatabasePhotoThumbnail).toHaveBeenCalledTimes(tilesOnScreen));
+          await act(async () => undefined);
+          return tilesOnScreen;
+        };
+
+        test('When many photos are on screen, then at most 6 thumbnails are downloaded at the same time', async () => {
+          render(<PhotosView />);
+          await screen.findByRole('img', { name: 'IMG_0001.jpg' });
+          const tilesOnScreen = await thumbnailsOnScreenWereRead();
+
+          expect(tilesOnScreen).toBeGreaterThan(6);
+          expect(fetchFileBlob).toHaveBeenCalledTimes(6);
+        });
+
+        test('When a thumbnail arrives, then the next waiting one is downloaded', async () => {
+          (fetchFileBlob as Mock).mockResolvedValue(new Blob(['thumbnail'], { type: 'image/jpeg' }));
+
+          render(<PhotosView />);
+          await screen.findByRole('img', { name: 'IMG_0001.jpg' });
+          const tilesOnScreen = countTiles();
+
+          await waitFor(() => expect(fetchFileBlob).toHaveBeenCalledTimes(tilesOnScreen));
+        });
+
+        test('When the user scrolls past photos, then their thumbnails are never downloaded', async () => {
+          render(<PhotosView />);
+          await waitFor(() => expect(thumbnailDownloadOf('IMG_0001')).toBeDefined());
+          const downloadsBeforeScrolling = (fetchFileBlob as Mock).mock.calls.length;
+
+          scrollGalleryTo('middle');
+          await new Promise((resolve) => setTimeout(resolve, STILL_SCROLLING_MS));
+          scrollGalleryTo('end');
+
+          await waitFor(() => expect(thumbnailDownloadOf(photoNamed(photosOnScreen()[0]))).toBeDefined());
+          const tilesAtTheEnd = tileNames();
+          const downloadsAfterScrolling = (fetchFileBlob as Mock).mock.calls
+            .slice(downloadsBeforeScrolling)
+            .map(([file]) => `${file.fileId.replace('thumbnail-', '')}.jpg`);
+          expect(downloadsAfterScrolling.filter((photoName) => !tilesAtTheEnd.includes(photoName))).toStrictEqual([]);
+        });
+
+        test('When the user leaves Photos while scrolling, then thumbnails still download the next time', async () => {
+          const { unmount } = render(<PhotosView />);
+          await waitFor(() => expect(thumbnailDownloadOf('IMG_0001')).toBeDefined());
+          scrollGalleryTo('middle');
+          unmount();
+          (fetchFileBlob as Mock).mockClear();
+
+          render(<PhotosView />);
+
+          await waitFor(() => expect(thumbnailDownloadOf('IMG_0001')).toBeDefined());
+        });
       });
 
       test('When a photo leaves the screen, then the memory of its thumbnail is released', async () => {

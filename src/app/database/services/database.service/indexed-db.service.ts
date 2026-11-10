@@ -24,6 +24,9 @@ const open = (name: string, version?: number): Promise<idb.IDBPDatabase<AppDatab
       if (oldVersion <= 6 && !db.objectStoreNames.contains('crypto_keys')) {
         db.createObjectStore('crypto_keys');
       }
+      if (oldVersion <= 7 && !db.objectStoreNames.contains('photos_thumbnails')) {
+        db.createObjectStore('photos_thumbnails');
+      }
     },
     blocked: () => undefined,
     blocking: () => undefined,

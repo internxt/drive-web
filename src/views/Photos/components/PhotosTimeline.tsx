@@ -6,6 +6,7 @@ import { CSSProperties, useLayoutEffect, useMemo, useRef, useState } from 'react
 import { GroupedVirtuoso, GroupedVirtuosoHandle, ListRange } from 'react-virtuoso';
 import dateService from 'services/date.service';
 import { useElementSize } from '../hooks/useElementSize';
+import { PhotoThumbnailsService } from '../services/photoThumbnails.service';
 import { DayKey, MonthKey, Photo } from '../types';
 import PhotoGridItem from './PhotoGridItem';
 
@@ -179,6 +180,11 @@ const PhotosTimeline = ({
           groupCounts={widthWithoutScrollbar > 0 ? timeline.rowsPerDay : []}
           rangeChanged={rememberPhotoInTheMiddle}
           endReached={onEndReached}
+          isScrolling={(isScrolling) =>
+            isScrolling
+              ? PhotoThumbnailsService.instance.pauseDownloads()
+              : PhotoThumbnailsService.instance.resumeDownloads()
+          }
           context={{ isLoadingMore, columns }}
           components={{ Footer: TimelineFooter }}
           groupContent={(dayIndex) => (

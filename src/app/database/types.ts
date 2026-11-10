@@ -11,9 +11,11 @@ export enum DatabaseCollection {
   UploadItemStatus = 'upload_item_status',
   WorkspacesAvatarBlobs = 'workspaces_avatar_blobs',
   CryptoKeys = 'crypto_keys',
+  PhotosThumbnails = 'photos_thumbnails',
 }
 
 export enum LRUCacheTypes {
   LevelsBlobs = 'levels_blobs',
   LevelsBlobsPreview = 'levels_blobs_preview',
+  PhotosThumbnails = 'photos_thumbnails',
 }
