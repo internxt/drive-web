@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { getTrash, getTrashPaginated, getWorkspaceTrashPaginated } from './getTrash.service';
-import { SdkFactory } from 'app/core/factory/sdk';
 import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
 import workspacesService from 'services/workspace.service';
 import { store } from 'app/store';
 import { storageActions } from 'app/store/slices/storage';
 import { Result } from 'postcss';
+import { mockSdkFactory } from 'testUtils/sdk.mock';
 
 vi.mock('app/core/factory/sdk', () => ({
   SdkFactory: {
@@ -81,11 +81,7 @@ describe('get_trash', () => {
         children: mockFolders,
       });
 
-      (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-        createTrashClient: () => ({
-          getTrash: mockGetTrash,
-        }),
-      });
+      mockSdkFactory({ createTrashClient: { getTrash: mockGetTrash } });
 
       await getTrash();
 
@@ -103,9 +99,7 @@ describe('get_trash', () => {
       const mockResult = [{ plainName: 'folder1', id: 1 }];
       const mockGetTrashedItemsSorted = vi.fn().mockResolvedValue({ result: mockResult });
 
-      (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-        createTrashClient: () => ({ getTrashedItemsSorted: mockGetTrashedItemsSorted }),
-      });
+      mockSdkFactory({ createTrashClient: { getTrashedItemsSorted: mockGetTrashedItemsSorted } });
 
       const result = await getTrashPaginated(50, 0, 'folders', true, 'plainName', 'ASC');
 
@@ -117,9 +111,7 @@ describe('get_trash', () => {
       const mockResult = new Array(50).fill(null).map((_, i) => ({ plainName: `item${i}`, id: i }));
       const mockGetTrashedItemsSorted = vi.fn().mockResolvedValue({ result: mockResult });
 
-      (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-        createTrashClient: () => ({ getTrashedItemsSorted: mockGetTrashedItemsSorted }),
-      });
+      mockSdkFactory({ createTrashClient: { getTrashedItemsSorted: mockGetTrashedItemsSorted } });
 
       const result = await getTrashPaginated(50, 0, 'files', true, 'plainName', 'ASC');
 
@@ -130,9 +122,7 @@ describe('get_trash', () => {
     it('should handle errors', async () => {
       const mockGetTrashedItemsSorted = vi.fn().mockRejectedValue(new Error('Failed'));
 
-      (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-        createTrashClient: () => ({ getTrashedItemsSorted: mockGetTrashedItemsSorted }),
-      });
+      mockSdkFactory({ createTrashClient: { getTrashedItemsSorted: mockGetTrashedItemsSorted } });
 
       const result = await getTrashPaginated(50, 0, 'files', true, 'plainName', 'ASC');
 
