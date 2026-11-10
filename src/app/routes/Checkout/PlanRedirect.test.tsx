@@ -24,16 +24,24 @@ const retiredPlansRuledBy = (couponRule: CouponRule) => {
   return plans;
 };
 
-const RETIRED_PLANS = retiredPlansRuledBy('unlessBlocked');
+const RETIRED_PLANS_UNLESS_BLOCKED = retiredPlansRuledBy('unlessBlocked');
+const RETIRED_PLANS_ONLY_IF_ALLOWED = retiredPlansRuledBy('onlyIfAllowed');
+const RETIRED_PLANS = [...RETIRED_PLANS_UNLESS_BLOCKED, ...RETIRED_PLANS_ONLY_IF_ALLOWED];
 
-const [{ retiredPlanId: ANY_RETIRED_PLAN_ID }] = RETIRED_PLANS;
+const [{ retiredPlanId: ANY_RETIRED_PLAN_ID }] = RETIRED_PLANS_UNLESS_BLOCKED;
 
 const blockedLandingsOn = (plans: typeof RETIRED_PLANS) =>
   plans.flatMap(({ retiredPlanId }) =>
     [...REDIRECT_BLOCKING_COUPON_CODES].map((blockingCoupon) => ({ retiredPlanId, blockingCoupon })),
   );
 
+const allowedLandingsOn = (plans: typeof RETIRED_PLANS) =>
+  plans.flatMap(({ retiredPlanId, currentPlanId }) =>
+    [...REDIRECT_ALLOWED_COUPON_CODES].map((allowedCoupon) => ({ retiredPlanId, currentPlanId, allowedCoupon })),
+  );
+
 const [ALLOWED_COUPON] = REDIRECT_ALLOWED_COUPON_CODES;
+const UNLISTED_COUPON = 'SOMEOTHERCOUPON';
 const ACTIVE_PLAN_ID = 'price_1SomeOtherActivePriceId';
 
 const campaignSearchFor = (retiredPlanId: string) =>
@@ -107,7 +115,16 @@ describe('Landing on the checkout with a price that is no longer on sale', () =>
     },
   );
 
-  test.each(blockedLandingsOn(RETIRED_PLANS))(
+  test.each(RETIRED_PLANS_UNLESS_BLOCKED)(
+    'When the retired price $retiredPlanId, which moves unless a coupon blocks it, arrives without any coupon, then the checkout opens with the price that replaced it',
+    ({ retiredPlanId, currentPlanId }) => {
+      landOn(`/checkout?planId=${retiredPlanId}`);
+
+      expect(screen.getByTestId(CHECKOUT)).toHaveTextContent(`/checkout?planId=${currentPlanId}`);
+    },
+  );
+
+  test.each(blockedLandingsOn(RETIRED_PLANS_UNLESS_BLOCKED))(
     'When the retired price $retiredPlanId arrives with $blockingCoupon, the coupon that opts out of the redirect, then the address bar is left untouched',
     ({ retiredPlanId, blockingCoupon }) => {
       landOn(`/checkout?planId=${retiredPlanId}&couponCode=${blockingCoupon}`);
@@ -118,7 +135,7 @@ describe('Landing on the checkout with a price that is no longer on sale', () =>
     },
   );
 
-  test.each(blockedLandingsOn(RETIRED_PLANS))(
+  test.each(blockedLandingsOn(RETIRED_PLANS_UNLESS_BLOCKED))(
     'When $blockingCoupon opts out of the redirect of $retiredPlanId, then the retired link is left as it arrived in the browser history',
     ({ retiredPlanId, blockingCoupon }) => {
       const history = landOn(`/checkout?planId=${retiredPlanId}&couponCode=${blockingCoupon}`);
@@ -128,7 +145,7 @@ describe('Landing on the checkout with a price that is no longer on sale', () =>
     },
   );
 
-  test.each(blockedLandingsOn(RETIRED_PLANS))(
+  test.each(blockedLandingsOn(RETIRED_PLANS_UNLESS_BLOCKED))(
     'When $blockingCoupon, the coupon that opts out of the redirect of $retiredPlanId, is typed in lower case, then it still opts out',
     ({ retiredPlanId, blockingCoupon }) => {
       landOn(`/checkout?planId=${retiredPlanId}&couponCode=${blockingCoupon.toLowerCase()}`);
@@ -139,10 +156,56 @@ describe('Landing on the checkout with a price that is no longer on sale', () =>
     },
   );
 
+  test.each(allowedLandingsOn(RETIRED_PLANS_ONLY_IF_ALLOWED))(
+    'When the retired price $retiredPlanId, which only moves under an allowed coupon, arrives with $allowedCoupon, then the checkout opens with the price that replaced it',
+    ({ retiredPlanId, currentPlanId, allowedCoupon }) => {
+      landOn(`/checkout?planId=${retiredPlanId}&couponCode=${allowedCoupon}`);
+
+      expect(screen.getByTestId(CHECKOUT)).toHaveTextContent(
+        `/checkout?planId=${currentPlanId}&couponCode=${allowedCoupon}`,
+      );
+    },
+  );
+
+  test.each(allowedLandingsOn(RETIRED_PLANS_ONLY_IF_ALLOWED))(
+    'When $allowedCoupon, a coupon that lets $retiredPlanId move, is typed in lower case, then it still lets it move',
+    ({ retiredPlanId, currentPlanId, allowedCoupon }) => {
+      landOn(`/checkout?planId=${retiredPlanId}&couponCode=${allowedCoupon.toLowerCase()}`);
+
+      expect(screen.getByTestId(CHECKOUT)).toHaveTextContent(
+        `/checkout?planId=${currentPlanId}&couponCode=${allowedCoupon.toLowerCase()}`,
+      );
+    },
+  );
+
+  test.each(RETIRED_PLANS_ONLY_IF_ALLOWED)(
+    'When the retired price $retiredPlanId, which only moves under an allowed coupon, arrives without any coupon, then the address bar is left untouched',
+    ({ retiredPlanId }) => {
+      const history = landOn(`/checkout?planId=${retiredPlanId}`);
+
+      expect(screen.getByTestId(CHECKOUT)).toHaveTextContent(`/checkout?planId=${retiredPlanId}`);
+      expect(history.entries).toHaveLength(1);
+      expect(history.action).toBe('POP');
+    },
+  );
+
+  test.each(RETIRED_PLANS_ONLY_IF_ALLOWED)(
+    'When the retired price $retiredPlanId, which only moves under an allowed coupon, arrives with a coupon that is on no list, then the address bar is left untouched',
+    ({ retiredPlanId }) => {
+      const history = landOn(`/checkout?planId=${retiredPlanId}&couponCode=${UNLISTED_COUPON}`);
+
+      expect(screen.getByTestId(CHECKOUT)).toHaveTextContent(
+        `/checkout?planId=${retiredPlanId}&couponCode=${UNLISTED_COUPON}`,
+      );
+      expect(history.entries).toHaveLength(1);
+      expect(history.action).toBe('POP');
+    },
+  );
+
   test.each(RETIRED_PLANS)(
     'When the price that replaced $retiredPlanId takes over, then the retired link is not left behind in the browser history',
     ({ retiredPlanId }) => {
-      const history = landOn(`/checkout?planId=${retiredPlanId}`);
+      const history = landOn(`/checkout?planId=${retiredPlanId}&couponCode=${ALLOWED_COUPON}`);
 
       expect(history.entries).toHaveLength(1);
       expect(history.action).toBe('REPLACE');
@@ -152,9 +215,11 @@ describe('Landing on the checkout with a price that is no longer on sale', () =>
   test.each(RETIRED_PLANS)(
     'When the retired price $retiredPlanId arrives on a checkout subroute, then that subroute opens with the price that replaced it',
     ({ retiredPlanId, currentPlanId }) => {
-      landOn(`/checkout/success?planId=${retiredPlanId}`);
+      landOn(`/checkout/success?planId=${retiredPlanId}&couponCode=${ALLOWED_COUPON}`);
 
-      expect(screen.getByTestId(CHECKOUT_SUCCESS)).toHaveTextContent(`/checkout/success?planId=${currentPlanId}`);
+      expect(screen.getByTestId(CHECKOUT_SUCCESS)).toHaveTextContent(
+        `/checkout/success?planId=${currentPlanId}&couponCode=${ALLOWED_COUPON}`,
+      );
     },
   );
 
@@ -209,15 +274,15 @@ describe('Reading the catalogue of retired prices', () => {
       },
       price_1UAsSAFAOdcgaBMQNF0j8UfV: {
         targetPlanId: 'price_1UZCCZFAOdcgaBMQO9bKb6I9',
-        couponRule: 'unlessBlocked',
+        couponRule: 'onlyIfAllowed',
       },
       price_1TRoAJFAOdcgaBMQveT6cebN: {
         targetPlanId: 'price_1UZCCZFAOdcgaBMQO9bKb6I9',
-        couponRule: 'unlessBlocked',
+        couponRule: 'onlyIfAllowed',
       },
       price_1UKYnMFAOdcgaBMQ09GLzJhJ: {
         targetPlanId: 'price_1UZCCZFAOdcgaBMQO9bKb6I9',
-        couponRule: 'unlessBlocked',
+        couponRule: 'onlyIfAllowed',
       },
     });
   });
@@ -231,6 +296,10 @@ describe('Reading the catalogue of retired prices', () => {
       'TFA',
       'REOFFER',
       'AFFIOFFER',
+      'AMIOFFER',
+      'VIPOFFER',
+      'IDSOFFER',
+      'MAXOFFER',
     ]);
   });
 
