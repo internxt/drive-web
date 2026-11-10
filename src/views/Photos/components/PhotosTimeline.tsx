@@ -1,7 +1,7 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Translate } from 'app/i18n/types';
-import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
-import { ListChildComponentProps, ListOnItemsRenderedProps, VariableSizeList } from 'react-window';
+import { CSSProperties, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { GroupedVirtuoso, GroupedVirtuosoHandle, ListRange } from 'react-virtuoso';
 import dateService from 'services/date.service';
 import { useElementSize } from '../hooks/useElementSize';
 import { DayKey, Photo } from '../types';
@@ -11,10 +11,7 @@ import PhotosErrorState from './PhotosErrorState';
 const MIN_TILE_SIZE = 160;
 const TILE_GAP = 4;
 const SIDE_PADDING = 20;
-const DAY_HEADER_HEIGHT = 40;
-const ERROR_ROW_HEIGHT = 280;
-const OVERSCAN_ROW_COUNT = 2;
-const NEAR_END_ROW_COUNT = 3;
+const DAY_GAP = 24;
 
 export type TimelineEnd = 'loading' | 'error' | null;
 
@@ -25,25 +22,22 @@ interface PhotosTimelineProps {
   onRetry: () => void;
 }
 
+interface TimelineFooterContext {
+  end: TimelineEnd;
+  columns: number;
+  onRetry: () => void;
+}
+
 interface PhotosOfDay {
   day: DayKey;
   photos: Photo[];
 }
 
-type TimelineRow =
-  | { kind: 'day'; label: string }
-  | { kind: 'photos'; label: string; photos: Photo[] }
-  | { kind: 'loading' }
-  | { kind: 'error' };
-
-interface TimelineLayout {
-  rows: TimelineRow[];
-  columns: number;
-  tileSize: number;
-}
-
-interface TimelineRowData extends TimelineLayout {
-  onRetry: () => void;
+interface Timeline {
+  days: DayKey[];
+  rowsPerDay: number[];
+  rows: Photo[][];
+  isLastRowOfDay: boolean[];
 }
 
 const groupByDayNewestFirst = (photos: Photo[]): PhotosOfDay[] => {
@@ -67,124 +61,108 @@ const getDayLabel = (day: DayKey, translate: Translate): string => {
   return dateService.format(day, 'ddd, D MMM YYYY');
 };
 
+const getColumns = (width: number): number =>
+  Math.max(1, Math.floor((width - 2 * SIDE_PADDING + TILE_GAP) / (MIN_TILE_SIZE + TILE_GAP)));
+
 const splitIntoRows = (photos: Photo[], columns: number): Photo[][] => {
   const rows: Photo[][] = [];
   for (let start = 0; start < photos.length; start += columns) rows.push(photos.slice(start, start + columns));
   return rows;
 };
 
-const getTimelineLayout = (
-  days: PhotosOfDay[],
-  end: TimelineEnd,
-  width: number,
-  translate: Translate,
-): TimelineLayout => {
-  const gridWidth = width - 2 * SIDE_PADDING;
-  const columns = Math.max(1, Math.floor((gridWidth + TILE_GAP) / (MIN_TILE_SIZE + TILE_GAP)));
-  const tileSize = (gridWidth - (columns - 1) * TILE_GAP) / columns;
-
-  const dayRows = days.flatMap(({ day, photos }): TimelineRow[] => {
-    const label = getDayLabel(day, translate);
-    const photoRows = splitIntoRows(photos, columns).map(
-      (rowPhotos): TimelineRow => ({
-        kind: 'photos',
-        label,
-        photos: rowPhotos,
-      }),
-    );
-    return [{ kind: 'day', label }, ...photoRows];
-  });
-  const rows: TimelineRow[] = end ? [...dayRows, { kind: end }] : dayRows;
-
-  return { rows, columns, tileSize };
+const getTimeline = (days: PhotosOfDay[], columns: number): Timeline => {
+  const rowsOfEachDay = days.map(({ photos }) => splitIntoRows(photos, columns));
+  return {
+    days: days.map(({ day }) => day),
+    rowsPerDay: rowsOfEachDay.map((rows) => rows.length),
+    rows: rowsOfEachDay.flat(),
+    isLastRowOfDay: rowsOfEachDay.flatMap((rows) => rows.map((_, index) => index === rows.length - 1)),
+  };
 };
 
-const TimelineRowView = memo(({ index, style, data }: ListChildComponentProps<TimelineRowData>): JSX.Element => {
-  const row = data.rows[index];
-  const gridStyle = { ...style, gridTemplateColumns: `repeat(${data.columns}, minmax(0, 1fr))` };
+const getRowStyle = (columns: number, paddingBottom: number): CSSProperties => ({
+  display: 'grid',
+  gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+  gap: TILE_GAP,
+  paddingInline: SIDE_PADDING,
+  paddingBottom,
+});
 
-  switch (row.kind) {
-    case 'day':
-      return (
-        <h2 style={style} className="flex items-end px-5 pb-2 text-sm font-medium text-gray-80">
-          {row.label}
-        </h2>
-      );
-    case 'photos':
-      return (
-        <div role="group" aria-label={row.label} style={gridStyle} className="grid items-start gap-1 px-5">
-          {row.photos.map((photo) => (
-            <PhotoGridItem key={photo.uuid} photo={photo} />
-          ))}
-        </div>
-      );
+const TimelineFooter = ({ context }: { context: TimelineFooterContext }): JSX.Element | null => {
+  switch (context.end) {
     case 'loading':
       return (
-        <div aria-hidden style={gridStyle} className="grid items-start gap-1 px-5">
-          {Array.from({ length: data.columns }, (_, column) => (
+        <div aria-hidden style={getRowStyle(context.columns, TILE_GAP)}>
+          {Array.from({ length: context.columns }, (_, column) => (
             <div key={column} className="aspect-square animate-pulse rounded bg-gray-10 dark:bg-gray-20" />
           ))}
         </div>
       );
     case 'error':
-      return (
-        <div style={style} className="flex flex-col">
-          <PhotosErrorState onRetry={data.onRetry} />
-        </div>
-      );
+      return <PhotosErrorState onRetry={context.onRetry} />;
+    default:
+      return null;
   }
-});
+};
 
 const PhotosTimeline = ({ photos, end, onEndReached, onRetry }: PhotosTimelineProps): JSX.Element => {
   const { translate } = useTranslationContext();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const listRef = useRef<VariableSizeList<TimelineRowData>>(null);
-  const lastVisibleRowRef = useRef(0);
-  const { width, height } = useElementSize(containerRef);
+  const [container, setContainer] = useState<HTMLDivElement | null>(null);
+  const [scroller, setScroller] = useState<HTMLElement | null>(null);
+  const virtuosoRef = useRef<GroupedVirtuosoHandle>(null);
+  const photoInTheMiddleUuid = useRef<string>();
+  const shownColumns = useRef<number>();
+  const { height } = useElementSize(container);
+  const { width: widthWithoutScrollbar } = useElementSize(scroller);
+  const columns = getColumns(widthWithoutScrollbar);
   const days = useMemo(() => groupByDayNewestFirst(photos), [photos]);
-  const layout = useMemo(() => getTimelineLayout(days, end, width, translate), [days, end, width, translate]);
-  const rowData = useMemo(() => ({ ...layout, onRetry }), [layout, onRetry]);
+  const timeline = useMemo(() => getTimeline(days, columns), [days, columns]);
 
-  useEffect(() => {
-    listRef.current?.resetAfterIndex(0);
-  }, [layout]);
+  useLayoutEffect(() => {
+    if (columns === shownColumns.current) return;
+    shownColumns.current = columns;
+    if (!photoInTheMiddleUuid.current) return;
 
-  const loadMoreIfNearEnd = useCallback(() => {
-    const isNearEnd = lastVisibleRowRef.current >= layout.rows.length - 1 - NEAR_END_ROW_COUNT;
-    if (isNearEnd) onEndReached();
-  }, [layout.rows.length, onEndReached]);
+    const rowIndex = timeline.rows.findIndex((row) => row.some((photo) => photo.uuid === photoInTheMiddleUuid.current));
+    if (rowIndex !== -1) virtuosoRef.current?.scrollToIndex({ index: rowIndex, align: 'center' });
+  }, [timeline]);
 
-  useEffect(loadMoreIfNearEnd, [loadMoreIfNearEnd]);
-
-  const onItemsRendered = ({ visibleStopIndex }: ListOnItemsRenderedProps) => {
-    lastVisibleRowRef.current = visibleStopIndex;
-    loadMoreIfNearEnd();
-  };
-
-  const photoRowHeight = layout.tileSize + TILE_GAP;
-  const getRowHeight = (index: number): number => {
-    const { kind } = layout.rows[index];
-    if (kind === 'day') return DAY_HEADER_HEIGHT;
-    if (kind === 'error') return ERROR_ROW_HEIGHT;
-    return photoRowHeight;
+  const rememberPhotoInTheMiddle = ({ startIndex, endIndex }: ListRange) => {
+    if (columns !== shownColumns.current) return;
+    if (startIndex === 0) {
+      photoInTheMiddleUuid.current = undefined;
+      return;
+    }
+    const middleRow = timeline.rows[Math.ceil((startIndex + endIndex) / 2)];
+    if (!middleRow || middleRow.some((photo) => photo.uuid === photoInTheMiddleUuid.current)) return;
+    photoInTheMiddleUuid.current = middleRow[Math.floor(middleRow.length / 2)].uuid;
   };
 
   return (
-    <div ref={containerRef} className="min-h-0 grow">
-      {width > 0 && (
-        <VariableSizeList
-          ref={listRef}
-          width={width}
-          height={height}
-          itemCount={layout.rows.length}
-          itemSize={getRowHeight}
-          estimatedItemSize={photoRowHeight}
-          itemData={rowData}
-          overscanCount={OVERSCAN_ROW_COUNT}
-          onItemsRendered={onItemsRendered}
-        >
-          {TimelineRowView}
-        </VariableSizeList>
+    <div ref={setContainer} className="min-h-0 grow">
+      {height > 0 && (
+        <GroupedVirtuoso
+          ref={virtuosoRef}
+          scrollerRef={(element) => setScroller(element instanceof HTMLElement ? element : null)}
+          style={{ height }}
+          groupCounts={widthWithoutScrollbar > 0 ? timeline.rowsPerDay : []}
+          rangeChanged={rememberPhotoInTheMiddle}
+          endReached={onEndReached}
+          context={{ end, columns, onRetry }}
+          components={{ Footer: TimelineFooter }}
+          groupContent={(dayIndex) => (
+            <h2 className="bg-surface pb-2 text-sm font-medium text-gray-80" style={{ paddingInline: SIDE_PADDING }}>
+              {getDayLabel(timeline.days[dayIndex], translate)}
+            </h2>
+          )}
+          itemContent={(rowIndex) => (
+            <div style={getRowStyle(columns, timeline.isLastRowOfDay[rowIndex] ? DAY_GAP : TILE_GAP)}>
+              {timeline.rows[rowIndex].map((photo) => (
+                <PhotoGridItem key={photo.uuid} photo={photo} />
+              ))}
+            </div>
+          )}
+        />
       )}
     </div>
   );

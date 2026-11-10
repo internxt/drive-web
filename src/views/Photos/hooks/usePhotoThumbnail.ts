@@ -14,12 +14,14 @@ export const usePhotoThumbnail = (photo: Photo): PhotoThumbnailState => {
     if (!photo.thumbnail) return;
 
     const abortController = new AbortController();
+    let thumbnailUrl: string | undefined;
 
     const loadThumbnail = async (photoThumbnail: PhotoThumbnail) => {
       try {
         const blob = await PhotoThumbnailsService.instance.getThumbnail(photo, photoThumbnail, abortController);
         if (abortController.signal.aborted) return;
-        setThumbnail({ status: 'loaded', url: URL.createObjectURL(blob) });
+        thumbnailUrl = URL.createObjectURL(blob);
+        setThumbnail({ status: 'loaded', url: thumbnailUrl });
       } catch (error) {
         if (abortController.signal.aborted) return;
         errorService.reportError(error);
@@ -29,14 +31,11 @@ export const usePhotoThumbnail = (photo: Photo): PhotoThumbnailState => {
 
     void loadThumbnail(photo.thumbnail);
 
-    return () => abortController.abort();
+    return () => {
+      abortController.abort();
+      if (thumbnailUrl) URL.revokeObjectURL(thumbnailUrl);
+    };
   }, [photo]);
-
-  useEffect(() => {
-    if (thumbnail.status !== 'loaded') return;
-
-    return () => URL.revokeObjectURL(thumbnail.url);
-  }, [thumbnail]);
 
   return thumbnail;
 };
