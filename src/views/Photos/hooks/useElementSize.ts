@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface ElementSize {
   width: number;
@@ -7,11 +7,10 @@ interface ElementSize {
 
 const NO_SIZE: ElementSize = { width: 0, height: 0 };
 
-export const useElementSize = (elementRef: RefObject<Element>): ElementSize => {
+export const useElementSize = (element: Element | null): ElementSize => {
   const [size, setSize] = useState(NO_SIZE);
 
   useEffect(() => {
-    const element = elementRef.current;
     if (!element) return;
 
     const observer = new ResizeObserver(([entry]) => {
@@ -20,7 +19,7 @@ export const useElementSize = (elementRef: RefObject<Element>): ElementSize => {
     observer.observe(element);
 
     return () => observer.disconnect();
-  }, [elementRef]);
+  }, [element]);
 
   return size;
 };
