@@ -1,55 +1,85 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import errorService from 'services/error.service';
 import { PhotoFoldersService } from '../services/photoFolders.service';
-import { Photo, PhotoMonth } from '../types';
+import { MonthKey, Photo, PhotoMonth } from '../types';
 import { getUniqueMonthKeysNewestFirst } from '../utils/monthKeys';
 
-export type TimelineStatus = 'loading' | 'error' | 'loaded';
-
 export const useTimelinePhotos = (months: PhotoMonth[]) => {
-  const monthKeys = useMemo(() => getUniqueMonthKeysNewestFirst(months), [months]);
   const [requestedMonthsCount, setRequestedMonthsCount] = useState(1);
-  const [retryCount, setRetryCount] = useState(0);
-  const [status, setStatus] = useState<TimelineStatus>('loading');
-  const [photosByMonth, setPhotosByMonth] = useState<Record<string, Photo[]>>({});
-  const monthToLoad = monthKeys[requestedMonthsCount - 1];
+  const [photosByFolder, setPhotosByFolder] = useState<Record<string, Photo[]>>({});
+  const [failedFolders, setFailedFolders] = useState<ReadonlySet<string>>(new Set());
+  const foldersBeingLoaded = useRef(new Set<string>());
+
+  const monthKeys = useMemo(() => getUniqueMonthKeysNewestFirst(months), [months]);
   const hasMoreMonths = requestedMonthsCount < monthKeys.length;
 
+  const requestedFolders = useMemo(() => {
+    const requestedMonths = monthKeys.slice(0, requestedMonthsCount);
+    return months.filter(({ key }) => requestedMonths.includes(key));
+  }, [months, monthKeys, requestedMonthsCount]);
+
+  const foldersToLoad = useMemo(
+    () => requestedFolders.filter(({ folderUuid }) => !photosByFolder[folderUuid] && !failedFolders.has(folderUuid)),
+    [requestedFolders, photosByFolder, failedFolders],
+  );
+  const isLoading = foldersToLoad.length > 0;
+
+  const failedMonths = useMemo(
+    () => [
+      ...new Set(requestedFolders.filter(({ folderUuid }) => failedFolders.has(folderUuid)).map(({ key }) => key)),
+    ],
+    [requestedFolders, failedFolders],
+  );
+
+  const photos = useMemo(
+    () => requestedFolders.flatMap(({ folderUuid }) => photosByFolder[folderUuid] ?? []),
+    [requestedFolders, photosByFolder],
+  );
+
   useEffect(() => {
-    let isLatestLoad = true;
+    const newFolders = foldersToLoad.filter(({ folderUuid }) => !foldersBeingLoaded.current.has(folderUuid));
+    if (newFolders.length === 0) return;
+    newFolders.forEach(({ folderUuid }) => foldersBeingLoaded.current.add(folderUuid));
 
-    const loadMonth = async () => {
-      setStatus('loading');
+    const loadFolders = async () => {
+      const results = await Promise.allSettled(
+        newFolders.map((folder) => PhotoFoldersService.instance.getMonthPhotos(folder)),
+      );
+      const loaded: Record<string, Photo[]> = {};
+      const failed: string[] = [];
+      results.forEach((result, index) => {
+        const { folderUuid } = newFolders[index];
+        foldersBeingLoaded.current.delete(folderUuid);
+        if (result.status === 'fulfilled') {
+          loaded[folderUuid] = result.value;
+        } else {
+          errorService.reportError(result.reason);
+          failed.push(folderUuid);
+        }
+      });
 
-      try {
-        const foldersOfMonth = months.filter((month) => month.key === monthToLoad);
-        const photosPerFolder = await Promise.all(
-          foldersOfMonth.map((folder) => PhotoFoldersService.instance.getMonthPhotos(folder)),
-        );
-        if (!isLatestLoad) return;
-        setPhotosByMonth((current) => ({ ...current, [monthToLoad]: photosPerFolder.flat() }));
-        setStatus('loaded');
-      } catch (error) {
-        if (!isLatestLoad) return;
-        errorService.reportError(error);
-        setStatus('error');
-      }
+      setPhotosByFolder((current) => ({ ...current, ...loaded }));
+      setFailedFolders((current) => new Set([...current, ...failed]));
+      const foundNoPhotos = failed.length === 0 && Object.values(loaded).every((folderPhotos) => !folderPhotos.length);
+      if (foundNoPhotos) setRequestedMonthsCount((count) => count + 1);
     };
 
-    void loadMonth();
-
-    return () => {
-      isLatestLoad = false;
-    };
-  }, [months, monthToLoad, retryCount]);
+    void loadFolders();
+  }, [foldersToLoad]);
 
   const loadNextMonth = useCallback(() => {
-    if (status === 'loaded' && hasMoreMonths) setRequestedMonthsCount(requestedMonthsCount + 1);
-  }, [status, hasMoreMonths, requestedMonthsCount]);
+    if (!isLoading && hasMoreMonths) setRequestedMonthsCount(requestedMonthsCount + 1);
+  }, [isLoading, hasMoreMonths, requestedMonthsCount]);
 
-  const retry = useCallback(() => setRetryCount((count) => count + 1), []);
+  const retryMonths = useCallback(
+    (monthsToRetry: MonthKey[]) => {
+      const foldersToRetry = new Set(
+        months.filter(({ key }) => monthsToRetry.includes(key)).map(({ folderUuid }) => folderUuid),
+      );
+      setFailedFolders((current) => new Set([...current].filter((folderUuid) => !foldersToRetry.has(folderUuid))));
+    },
+    [months],
+  );
 
-  const photos = useMemo(() => Object.values(photosByMonth).flat(), [photosByMonth]);
-
-  return { status, photos, hasMoreMonths, loadNextMonth, retry };
+  return { photos, isLoading, hasMoreMonths, failedMonths, loadNextMonth, retryMonths };
 };

@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, render, renderHook, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, Mock, test, vi } from 'vitest';
 import { getDatabaseFilePreviewData, updateDatabaseFilePreviewData } from 'app/drive/services/database.service';
 import fetchFileBlob from 'app/drive/services/download.service/fetchFileBlob';
@@ -10,6 +10,7 @@ import {
   getPhotoThumbnail,
   getSdkPhotoDevice,
 } from 'testUtils/fixtures/photos.fixtures';
+import { useTimelinePhotos } from './hooks/useTimelinePhotos';
 import PhotosView from './PhotosView';
 
 const { photosClient, storageClient } = vi.hoisted(() => ({
@@ -54,12 +55,29 @@ const givenSubfolders = (subfoldersByFolder: Record<string, Folder[]>) => {
   ]);
 };
 
+const failingFolders = new Set<string>();
+const waitingFolders = new Map<string, Promise<void>>();
+
 const givenPhotosInFolders = (photosByFolder: Record<string, ReturnType<typeof getPhotoFolderFile>[]>) => {
-  photosClient.getFilesInFolders.mockImplementation(async ({ folderUuids }: { folderUuids: string[] }) => ({
-    files: folderUuids.flatMap((folderUuid) => photosByFolder[folderUuid] ?? []),
-    nextCursor: null,
-  }));
+  photosClient.getFilesInFolders.mockImplementation(async ({ folderUuids }: { folderUuids: string[] }) => {
+    await Promise.all(folderUuids.map((folderUuid) => waitingFolders.get(folderUuid)));
+    if (folderUuids.some((folderUuid) => failingFolders.has(folderUuid))) throw new Error('Network error');
+    return { files: folderUuids.flatMap((folderUuid) => photosByFolder[folderUuid] ?? []), nextCursor: null };
+  });
 };
+
+const givenFolderFails = (folderUuid: string) => failingFolders.add(folderUuid);
+
+const givenFolderWorks = (folderUuid: string) => failingFolders.delete(folderUuid);
+
+const givenFolderWaits = (folderUuid: string) => {
+  let arrive = () => undefined as void;
+  waitingFolders.set(folderUuid, new Promise((resolve) => (arrive = resolve)));
+  return () => arrive();
+};
+
+const requestedFolders = () =>
+  photosClient.getFilesInFolders.mock.calls.flatMap(([{ folderUuids }]) => folderUuids as string[]);
 
 const photo = (plainName: string, folderUuid: string, creationTime: string) =>
   getPhotoFolderFile({ uuid: plainName, plainName, type: 'jpg', folderUuid, creationTime });
@@ -161,6 +179,8 @@ describe('Photos view', () => {
     givenGallerySize(1000, 600);
     vi.stubGlobal('ResizeObserver', FakeResizeObserver);
     givenSubfolders({});
+    failingFolders.clear();
+    waitingFolders.clear();
     givenPhotosInFolders({});
     (getDatabaseFilePreviewData as Mock).mockResolvedValue(undefined);
     (updateDatabaseFilePreviewData as Mock).mockResolvedValue(undefined);
@@ -208,13 +228,26 @@ describe('Photos view', () => {
     expect(await screen.findByText('views.photos.empty.title')).toBeInTheDocument();
   });
 
-  test('When the user has photos, then the empty state is not shown', async () => {
+  test('When the backed-up folders have no photos, then the empty state is shown', async () => {
     givenDevices([iphone]);
     givenSubfolders(iphonePhotosOfNovember2026);
 
     render(<PhotosView />);
 
-    await waitForPhotosToLoad();
+    expect(await screen.findByText('views.photos.empty.title')).toBeInTheDocument();
+  });
+
+  test('When the user has photos, then the empty state is not shown', async () => {
+    givenDevices([iphone]);
+    givenSubfolders({
+      ...iphonePhotosOfNovember2026,
+      'iphone-2026-11': [getPhotoFolder({ uuid: 'iphone-2026-11-03', plainName: '03' })],
+    });
+    givenPhotosInFolders({ 'iphone-2026-11-03': [photo('IMG_A', 'iphone-2026-11-03', '2026-11-03T09:00:00Z')] });
+
+    render(<PhotosView />);
+
+    await screen.findByRole('img', { name: 'IMG_A.jpg' });
     expect(screen.queryByText('views.photos.empty.title')).not.toBeInTheDocument();
     expect(screen.queryByText('views.photos.error.title')).not.toBeInTheDocument();
   });
@@ -453,27 +486,108 @@ describe('Photos view', () => {
       });
     });
 
-    test('When an older month cannot be loaded, then the photos already shown stay and the user can retry that month', async () => {
+    describe('Some photos of a month cannot be loaded', () => {
+      const iphoneAndPixelPhotosOf2025 = {
+        ...iphonePhotosOf2025,
+        pixel: [getPhotoFolder({ uuid: 'pixel-2025', plainName: '2025' })],
+        'pixel-2025': [getPhotoFolder({ uuid: 'pixel-2025-11', plainName: '11' })],
+        'pixel-2025-11': [getPhotoFolder({ uuid: 'pixel-2025-11-03', plainName: '3' })],
+      };
+
+      beforeEach(() => {
+        givenDevices([iphone, pixel]);
+        givenSubfolders(iphoneAndPixelPhotosOf2025);
+        givenFolderFails('pixel-2025-11-03');
+      });
+
+      test('When the photos of one device cannot be loaded, then the other photos are shown and the user can retry only the missing ones', async () => {
+        givenPhotosInFolders({
+          'iphone-2025-11-03': [photo('IMG_IPHONE', 'iphone-2025-11-03', '2025-11-03T09:00:00Z')],
+          'pixel-2025-11-03': [photo('IMG_PIXEL', 'pixel-2025-11-03', '2025-11-03T12:00:00Z')],
+        });
+
+        render(<PhotosView />);
+        await screen.findByText('views.photos.timeline.monthError');
+        expect(screen.getByRole('img', { name: 'IMG_IPHONE.jpg' })).toBeInTheDocument();
+        expect(screen.queryByRole('img', { name: 'IMG_PIXEL.jpg' })).not.toBeInTheDocument();
+
+        givenFolderWorks('pixel-2025-11-03');
+        const requestsBeforeRetry = requestedFolders().length;
+        fireEvent.click(screen.getByRole('button', { name: 'views.photos.error.retry' }));
+
+        expect(await screen.findByRole('img', { name: 'IMG_PIXEL.jpg' })).toBeInTheDocument();
+        expect(requestedFolders().slice(requestsBeforeRetry)).toContain('pixel-2025-11-03');
+        expect(requestedFolders().slice(requestsBeforeRetry)).not.toContain('iphone-2025-11-03');
+        expect(screen.queryByText('views.photos.timeline.monthError')).not.toBeInTheDocument();
+      });
+
+      test('When the photos of one device cannot be loaded, then the older months keep loading', async () => {
+        givenPhotosInFolders({
+          'iphone-2025-11-03': [photo('IMG_IPHONE', 'iphone-2025-11-03', '2025-11-03T09:00:00Z')],
+          'iphone-2025-10-15': [photo('IMG_OCTOBER', 'iphone-2025-10-15', '2025-10-15T10:00:00Z')],
+        });
+
+        render(<PhotosView />);
+
+        expect(await screen.findByRole('img', { name: 'IMG_OCTOBER.jpg' })).toBeInTheDocument();
+        expect(screen.getByText('views.photos.timeline.monthError')).toBeInTheDocument();
+      });
+
+      test('When retried photos arrive above the photos the user is looking at, then those stay on screen', async () => {
+        givenPhotosInFolders({
+          'iphone-2025-11-03': [photo('IMG_IPHONE', 'iphone-2025-11-03', '2025-11-03T09:00:00Z')],
+          'pixel-2025-11-03': Array.from({ length: 40 }, (_, index) =>
+            photo(`PXL_${index}`, 'pixel-2025-11-03', '2025-11-03T12:00:00Z'),
+          ),
+          'iphone-2025-10-15': photosOfDay('iphone-2025-10-15', 300),
+        });
+        render(<PhotosView />);
+        await screen.findByText('views.photos.timeline.monthError');
+        givenFolderWorks('pixel-2025-11-03');
+        const retriedPhotosArrive = givenFolderWaits('pixel-2025-11-03');
+        fireEvent.click(screen.getByRole('button', { name: 'views.photos.error.retry' }));
+
+        scrollGalleryTo('middle');
+        await waitFor(() => expect(photosOnScreen().length).toBeGreaterThan(0));
+        const photoLookedAt = photosOnScreen()[Math.floor(photosOnScreen().length / 2)];
+        const heightBeforeRetriedPhotos = gallery().scrollHeight;
+        retriedPhotosArrive();
+
+        await waitFor(() => expect(gallery().scrollHeight).toBeGreaterThan(heightBeforeRetriedPhotos));
+        await waitFor(() => expect(photosOnScreen()).toContain(photoLookedAt));
+      });
+    });
+
+    test('When the newest month has no photos, then the older months are shown', async () => {
       givenDevices([iphone]);
       givenSubfolders(iphonePhotosOf2025);
       givenPhotosInFolders({
         'iphone-2025-10-15': [photo('IMG_OCTOBER', 'iphone-2025-10-15', '2025-10-15T10:00:00Z')],
       });
-      photosClient.getFilesInFolders
-        .mockResolvedValueOnce({
-          files: [photo('IMG_NOVEMBER', 'iphone-2025-11-03', '2025-11-03T09:00:00Z')],
-          nextCursor: null,
-        })
-        .mockRejectedValueOnce(new Error('Network error'));
 
       render(<PhotosView />);
-      const retryButton = await screen.findByRole('button', { name: /views.photos.error.retry/ });
-      expect(screen.getByRole('img', { name: 'IMG_NOVEMBER.jpg' })).toBeInTheDocument();
-
-      fireEvent.click(retryButton);
 
       expect(await screen.findByRole('img', { name: 'IMG_OCTOBER.jpg' })).toBeInTheDocument();
-      expect(screen.getByRole('img', { name: 'IMG_NOVEMBER.jpg' })).toBeInTheDocument();
+    });
+
+    test('When the shown months change without reopening the gallery, then only the photos of the new months are given', async () => {
+      givenSubfolders(iphonePhotosOf2025);
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [photo('IMG_NOVEMBER', 'iphone-2025-11-03', '2025-11-03T09:00:00Z')],
+        'iphone-2025-10-15': [photo('IMG_OCTOBER', 'iphone-2025-10-15', '2025-10-15T10:00:00Z')],
+      });
+      const november = { key: '2025-11', deviceUuid: 'iphone', folderUuid: 'iphone-2025-11' } as const;
+      const october = { key: '2025-10', deviceUuid: 'iphone', folderUuid: 'iphone-2025-10' } as const;
+      const shownPhotos = (photos: { name: string }[]) => photos.map(({ name }) => name);
+      const { result, rerender } = renderHook(({ months }) => useTimelinePhotos(months), {
+        initialProps: { months: [november, october] },
+      });
+      await waitFor(() => expect(shownPhotos(result.current.photos)).toStrictEqual(['IMG_NOVEMBER.jpg']));
+
+      rerender({ months: [october] });
+
+      expect(shownPhotos(result.current.photos)).toStrictEqual([]);
+      await waitFor(() => expect(shownPhotos(result.current.photos)).toStrictEqual(['IMG_OCTOBER.jpg']));
     });
 
     test('When the user picks an older month, then its photos are shown', async () => {
