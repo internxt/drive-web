@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useTimelinePhotos } from '../hooks/useTimelinePhotos';
 import { Photo, PhotoMonth } from '../types';
-import { sortPhotosNewestFirst } from '../utils/sortPhotosNewestFirst';
+import { sortPhotosNewestFirst } from '../utils/photoTimeline';
 import PhotosEmptyState from './PhotosEmptyState';
 import PhotosErrorState from './PhotosErrorState';
 import PhotosGridSkeleton from './PhotosGridSkeleton';
