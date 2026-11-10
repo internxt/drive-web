@@ -1,3 +1,4 @@
+import errorService from 'services/error.service';
 import databaseService, { DatabaseCollection, LRUCacheTypes, PhotoThumbnailBlobData } from '.';
 import { ICacheStorage, LRUCache, LRUCacheStruture } from './LRUCache';
 
@@ -12,11 +13,11 @@ class PhotosThumbnailsCache implements ICacheStorage<PhotoThumbnailBlobData> {
   }
 
   set(key: string, value: PhotoThumbnailBlobData): void {
-    databaseService.put(DatabaseCollection.PhotosThumbnails, key, value);
+    databaseService.put(DatabaseCollection.PhotosThumbnails, key, value).catch(errorService.reportError);
   }
 
   delete(key: string): void {
-    databaseService.delete(DatabaseCollection.PhotosThumbnails, key);
+    databaseService.delete(DatabaseCollection.PhotosThumbnails, key).catch(errorService.reportError);
   }
 
   async has(key: string): Promise<boolean> {
@@ -25,7 +26,9 @@ class PhotosThumbnailsCache implements ICacheStorage<PhotoThumbnailBlobData> {
   }
 
   updateLRUState(lruState: LRUCacheStruture): void {
-    databaseService.put(DatabaseCollection.LRU_cache, LRUCacheTypes.PhotosThumbnails, lruState);
+    databaseService
+      .put(DatabaseCollection.LRU_cache, LRUCacheTypes.PhotosThumbnails, lruState)
+      .catch(errorService.reportError);
   }
 }
 
