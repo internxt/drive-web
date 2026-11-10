@@ -502,6 +502,11 @@
         "description": "Verifique sua conexão e tente novamente",
         "retry": "Tentar novamente"
       },
+      "locked": {
+        "title": "Fotos não está incluído no seu plano",
+        "description": "Faça upgrade do seu plano para ver as fotos com backup do seu celular",
+        "upgrade": "Fazer upgrade"
+      },
       "filters": {
         "allDevices": "Todos os dispositivos",
         "allDates": "Todas as datas"

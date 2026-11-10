@@ -481,6 +481,11 @@
         "description": "Vérifiez votre connexion et réessayez",
         "retry": "Réessayer"
       },
+      "locked": {
+        "title": "Photos n'est pas inclus dans votre forfait",
+        "description": "Passez à un forfait supérieur pour voir les photos sauvegardées depuis votre téléphone",
+        "upgrade": "Mettre à niveau"
+      },
       "filters": {
         "allDevices": "Tous les appareils",
         "allDates": "Toutes les dates"

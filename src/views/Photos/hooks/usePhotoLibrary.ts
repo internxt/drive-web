@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { HTTP_STATUS_CODES } from 'app/core/constants';
 import errorService from 'services/error.service';
 import { PhotoFoldersService } from '../services/photoFolders.service';
 import photosDevicesService from '../services/photosDevices.service';
@@ -7,7 +8,11 @@ import { PhotoDevice, PhotoMonth } from '../types';
 export type PhotoLibraryState =
   | { status: 'loading' }
   | { status: 'error' }
+  | { status: 'locked' }
   | { status: 'loaded'; devices: PhotoDevice[]; months: PhotoMonth[] };
+
+const isPhotosNotInPlan = (error: unknown) =>
+  (error as { status?: number } | undefined)?.status === HTTP_STATUS_CODES.PAYMENT_REQUIRED;
 
 export const usePhotoLibrary = () => {
   const [state, setState] = useState<PhotoLibraryState>({ status: 'loading' });
@@ -22,6 +27,10 @@ export const usePhotoLibrary = () => {
       );
       setState({ status: 'loaded', devices, months: monthsPerDevice.flat() });
     } catch (error) {
+      if (isPhotosNotInPlan(error)) {
+        setState({ status: 'locked' });
+        return;
+      }
       errorService.reportError(error);
       setState({ status: 'error' });
     }

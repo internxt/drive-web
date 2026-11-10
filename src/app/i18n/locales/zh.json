@@ -502,6 +502,11 @@
         "description": "请检查网络连接后重试",
         "retry": "重试"
       },
+      "locked": {
+        "title": "您的套餐不包含照片功能",
+        "description": "升级套餐即可查看从手机备份的照片",
+        "upgrade": "升级"
+      },
       "filters": {
         "allDevices": "所有设备",
         "allDates": "所有日期"
