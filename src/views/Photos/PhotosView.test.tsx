@@ -680,6 +680,19 @@ describe('Photos view', () => {
       await waitFor(() => expect(errorService.reportError).toHaveBeenCalledWith(saveError));
     });
 
+    test('When the saved thumbnails cannot be read, then the thumbnail is downloaded and shown', async () => {
+      givenPhotosWithThumbnail(['IMG_A']);
+      const readError = new Error('IndexedDB blocked');
+      (getDatabaseFilePreviewData as Mock).mockRejectedValue(readError);
+      (fetchFileBlob as Mock).mockResolvedValue(new Blob(['thumbnail'], { type: 'image/jpeg' }));
+
+      render(<PhotosView />);
+      const thumbnail = await thumbnailOf('IMG_A.jpg');
+
+      await waitFor(() => expect(thumbnail()?.getAttribute('src')).toMatch(/^blob:/));
+      expect(errorService.reportError).toHaveBeenCalledWith(readError);
+    });
+
     test('When a thumbnail cannot be downloaded, then the file type icon is shown instead', async () => {
       givenPhotosWithThumbnail(['IMG_A']);
       (fetchFileBlob as Mock).mockRejectedValue(new Error('Network error'));
@@ -712,6 +725,19 @@ describe('Photos view', () => {
         scrollGalleryTo('end');
 
         await waitFor(() => expect(thumbnailDownloadOf('IMG_0001').abortController.signal.aborted).toBe(true));
+      });
+
+      test('When a photo leaves the screen, then the memory of its thumbnail is released', async () => {
+        (fetchFileBlob as Mock).mockResolvedValue(new Blob(['thumbnail'], { type: 'image/jpeg' }));
+        const revokeObjectURL = vi.spyOn(URL, 'revokeObjectURL');
+        render(<PhotosView />);
+        const thumbnail = await thumbnailOf('IMG_0001.jpg');
+        await waitFor(() => expect(thumbnail()?.getAttribute('src')).toMatch(/^blob:/));
+        const thumbnailUrl = thumbnail()?.getAttribute('src');
+
+        scrollGalleryTo('end');
+
+        await waitFor(() => expect(revokeObjectURL).toHaveBeenCalledWith(thumbnailUrl));
       });
     });
   });

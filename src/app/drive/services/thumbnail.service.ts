@@ -307,6 +307,16 @@ export const generateThumbnailFromFile = async (
   return null;
 };
 
+export const getCachedThumbnail = async (file: { id: number; updatedAt: string }): Promise<Blob | undefined> => {
+  try {
+    const cachedPreview = await getDatabaseFilePreviewData({ fileId: file.id });
+    return cachedPreview?.updatedAt === file.updatedAt ? cachedPreview.preview : undefined;
+  } catch (error) {
+    errorService.reportError(error);
+    return undefined;
+  }
+};
+
 export const downloadThumbnail = async (
   thumbnailToDownload: Pick<Thumbnail, 'bucket_id' | 'bucket_file'>,
   isWorkspace: boolean,

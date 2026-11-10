@@ -9,12 +9,15 @@ import { FileToUpload } from './file.service/types';
 import {
   downloadPublicThumbnail,
   downloadThumbnail,
+  getCachedThumbnail,
   getImageThumbnail,
   getThumbnailFrom,
   getVideoFrame,
   MAX_CONVERTIBLE_THUMBNAIL_SOURCE_BYTES,
 } from './thumbnail.service';
 import encryptedStorageService from 'services/encrypted-storage.service';
+import errorService from 'services/error.service';
+import { getDatabaseFilePreviewData } from './database.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 const { convertImageForPreviewSpy } = vi.hoisted(() => ({ convertImageForPreviewSpy: vi.fn() }));
@@ -30,6 +33,10 @@ vi.mock('services/encrypted-storage.service', () => ({
   default: { getUser: vi.fn() },
 }));
 vi.mock('./download.service/fetchFileBlob');
+vi.mock(import('./database.service'), async (importOriginal) => ({
+  ...(await importOriginal()),
+  getDatabaseFilePreviewData: vi.fn(),
+}));
 vi.mock('app/network/download', () => ({
   downloadFile: vi.fn(),
   downloadFileWithBucketKey: vi.fn(),
@@ -460,6 +467,42 @@ describe('Thumbnail Service', () => {
       const params = vi.mocked(downloadFile).mock.lastCall?.[0];
       expect(params?.options?.abortController).toBe(abortController);
       expect(params?.options?.notifyProgress(100, 50)).toBeUndefined();
+    });
+  });
+
+  describe('Cached Thumbnail', () => {
+    const file = { id: 7, updatedAt: '2026-11-03T10:00:00.000Z' };
+    const cachedThumbnail = new Blob(['cached'], { type: 'image/jpeg' });
+
+    test('When the saved thumbnail is from the current version of the file, then it is returned', async () => {
+      vi.mocked(getDatabaseFilePreviewData).mockResolvedValue({
+        id: 7,
+        parentId: 1,
+        preview: cachedThumbnail,
+        updatedAt: file.updatedAt,
+      });
+
+      await expect(getCachedThumbnail(file)).resolves.toBe(cachedThumbnail);
+    });
+
+    test('When the file changed after its thumbnail was saved, then no thumbnail is returned', async () => {
+      vi.mocked(getDatabaseFilePreviewData).mockResolvedValue({
+        id: 7,
+        parentId: 1,
+        preview: cachedThumbnail,
+        updatedAt: '2026-11-01T10:00:00.000Z',
+      });
+
+      await expect(getCachedThumbnail(file)).resolves.toBeUndefined();
+    });
+
+    test('When the saved thumbnails cannot be read, then the error is reported and no thumbnail is returned', async () => {
+      const readError = new Error('IndexedDB blocked');
+      vi.mocked(getDatabaseFilePreviewData).mockRejectedValue(readError);
+      const reportError = vi.spyOn(errorService, 'reportError').mockImplementation(() => undefined);
+
+      await expect(getCachedThumbnail(file)).resolves.toBeUndefined();
+      expect(reportError).toHaveBeenCalledWith(readError);
     });
   });
 });
