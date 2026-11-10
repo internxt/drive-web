@@ -1,6 +1,7 @@
 import { PhotoFolderFile } from '@internxt/sdk/dist/drive/photos';
 import { FetchFolderFoldersCursorResponse } from '@internxt/sdk/dist/drive/storage/types';
 import { SdkFactory } from 'app/core/factory/sdk';
+import { thumbnailableVideoExtension } from 'app/drive/types/file-types';
 import { DayKey, MonthKey, Photo, PhotoMonth, PhotoThumbnail } from '../types';
 
 type Folder = FetchFolderFoldersCursorResponse['folders'][number];
@@ -12,7 +13,54 @@ const YEAR_FOLDER_NAME = /^\d{4}$/;
 const MONTH_FOLDER_NAME = /^(0?[1-9]|1[0-2])$/;
 const DAY_FOLDER_NAME = /^(0?[1-9]|[12]\d|3[01])$/;
 
+const LIVE_PHOTO_VIDEO_SUFFIX = '.livephoto';
+const LIVE_PHOTO_VIDEO_TYPE = 'mov';
+const BURST_MEMBER_SUFFIX = /\.burst\.\d+$/;
+
+interface PhotoFile {
+  photo: Photo;
+  plainName: string;
+}
+
 const toTwoDigits = (folderName: string) => folderName.padStart(2, '0');
+
+const isLivePhotoVideo = ({ photo, plainName }: PhotoFile) =>
+  photo.type.toLowerCase() === LIVE_PHOTO_VIDEO_TYPE && plainName.toLowerCase().endsWith(LIVE_PHOTO_VIDEO_SUFFIX);
+
+const isBurstMember = ({ plainName }: PhotoFile) => BURST_MEMBER_SUFFIX.test(plainName);
+
+const getMainPhotoName = (file: PhotoFile): string => {
+  const plainName = file.plainName.toLowerCase();
+  if (isLivePhotoVideo(file)) return plainName.slice(0, -LIVE_PHOTO_VIDEO_SUFFIX.length);
+  return plainName.replace(BURST_MEMBER_SUFFIX, '');
+};
+const groupRelatedFiles = (files: PhotoFile[]): Photo[] => {
+  const isRelatedFile = (file: PhotoFile) => isLivePhotoVideo(file) || isBurstMember(file);
+  const mainPhotos = files.filter((file) => !isRelatedFile(file));
+  const mainPhotoByName = new Map(mainPhotos.map((file) => [file.plainName.toLowerCase(), file.photo]));
+  const relatedFilesByPhoto = new Map<Photo, PhotoFile[]>();
+  const photosOnTheirOwn = mainPhotos.map(({ photo }) => photo);
+
+  for (const file of files.filter(isRelatedFile)) {
+    const mainPhoto = mainPhotoByName.get(getMainPhotoName(file));
+    const isLiveVideoOfAnotherDay = isLivePhotoVideo(file) && mainPhoto?.day !== file.photo.day;
+    if (!mainPhoto || isLiveVideoOfAnotherDay) {
+      photosOnTheirOwn.push(file.photo);
+      continue;
+    }
+    relatedFilesByPhoto.set(mainPhoto, [...(relatedFilesByPhoto.get(mainPhoto) ?? []), file]);
+  }
+
+  return photosOnTheirOwn.map((photo) => {
+    const relatedFiles = relatedFilesByPhoto.get(photo);
+    if (!relatedFiles) return photo;
+    return {
+      ...photo,
+      kind: relatedFiles.some(isLivePhotoVideo) ? 'livePhoto' : 'burst',
+      relatedFiles: relatedFiles.map((file) => file.photo),
+    };
+  });
+};
 
 const getLatestThumbnail = (thumbnails: PhotoFolderFile['thumbnails']): PhotoThumbnail | null => {
   if (!thumbnails?.length) return null;
@@ -48,24 +96,27 @@ export class PhotoFoldersService {
     );
     const files = await this.getFilesInFolders([...dayOfFolder.keys()]);
 
-    return files.flatMap((file) => {
+    const photoFiles = files.flatMap((file): PhotoFile[] => {
       const day = dayOfFolder.get(file.folderUuid);
       if (file.status !== 'EXISTS' || !day) return [];
 
-      return [
-        {
-          id: file.id,
-          uuid: file.uuid,
-          folderId: file.folderId,
-          name: `${file.plainName}.${file.type}`,
-          type: file.type,
-          day,
-          takenAt: file.creationTime,
-          updatedAt: file.updatedAt,
-          thumbnail: getLatestThumbnail(file.thumbnails),
-        },
-      ];
+      const photo: Photo = {
+        id: file.id,
+        uuid: file.uuid,
+        folderId: file.folderId,
+        name: `${file.plainName}.${file.type}`,
+        type: file.type,
+        day,
+        takenAt: file.creationTime,
+        updatedAt: file.updatedAt,
+        thumbnail: getLatestThumbnail(file.thumbnails),
+        kind: thumbnailableVideoExtension.includes(file.type.toLowerCase()) ? 'video' : 'photo',
+        relatedFiles: [],
+      };
+      return [{ photo, plainName: file.plainName }];
     });
+
+    return groupRelatedFiles(photoFiles);
   }
 
   private async getYearMonths(deviceUuid: string, yearFolder: Folder): Promise<PhotoMonth[]> {

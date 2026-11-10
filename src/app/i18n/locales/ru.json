@@ -489,6 +489,11 @@
         "today": "Сегодня",
         "yesterday": "Вчера",
         "monthError": "Не удалось загрузить некоторые фото за {{month}}"
+      },
+      "badges": {
+        "livePhoto": "Live Photo",
+        "burst": "Серия",
+        "video": "Видео"
       }
     },
     "favorites": {
