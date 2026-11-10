@@ -7,6 +7,7 @@ import PhotosSelectionHeader from './components/PhotosSelectionHeader';
 import { usePhotoFilters } from './hooks/usePhotoFilters';
 import { usePhotoLibrary } from './hooks/usePhotoLibrary';
 import { usePhotoSelection } from './hooks/usePhotoSelection';
+import { usePhotoTrash } from './hooks/usePhotoTrash';
 import { PhotoDevice, PhotoMonth } from './types';
 
 const NO_DEVICES: PhotoDevice[] = [];
@@ -17,12 +18,19 @@ const PhotosView = (): JSX.Element => {
   const devices = state.status === 'loaded' ? state.devices : NO_DEVICES;
   const filters = usePhotoFilters(state.status === 'loaded' ? state.months : NO_MONTHS);
   const { selectedPhotos, toggleSelection, clearSelection } = usePhotoSelection();
+  const { trashedPhotos, moveToTrash } = usePhotoTrash();
 
   const content = {
     loading: <PhotosGridSkeleton />,
     error: <PhotosErrorState onRetry={retry} />,
     loaded: (
-      <PhotosLibrary months={filters.shownMonths} selectedPhotos={selectedPhotos} onToggleSelection={toggleSelection} />
+      <PhotosLibrary
+        months={filters.shownMonths}
+        selectedPhotos={selectedPhotos}
+        trashedPhotos={trashedPhotos}
+        onToggleSelection={toggleSelection}
+        onMoveToTrash={moveToTrash}
+      />
     ),
   };
 
@@ -31,7 +39,11 @@ const PhotosView = (): JSX.Element => {
       filters={<PhotosFilters devices={devices} filters={filters} />}
       selectionHeader={
         selectedPhotos.size > 0 ? (
-          <PhotosSelectionHeader selectedPhotos={selectedPhotos} onClear={clearSelection} />
+          <PhotosSelectionHeader
+            selectedPhotos={selectedPhotos}
+            onClear={clearSelection}
+            onMoveToTrash={() => moveToTrash([...selectedPhotos.values()], clearSelection)}
+          />
         ) : undefined
       }
     >

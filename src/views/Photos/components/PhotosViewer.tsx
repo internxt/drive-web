@@ -1,5 +1,5 @@
 import { MenuItemType } from '@internxt/ui';
-import { DownloadSimpleIcon } from '@phosphor-icons/react';
+import { DownloadSimpleIcon, TrashIcon } from '@phosphor-icons/react';
 import FileViewerWrapper from 'app/drive/components/FileViewer/FileViewerWrapper';
 import { DriveItemData } from 'app/drive/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -11,9 +11,10 @@ interface PhotosViewerProps {
   photo: Photo;
   photos: Photo[];
   onClose: () => void;
+  onMoveToTrash: (photos: Photo[]) => void;
 }
 
-const PhotosViewer = ({ photo, photos, onClose }: PhotosViewerProps): JSX.Element => {
+const PhotosViewer = ({ photo, photos, onClose, onMoveToTrash }: PhotosViewerProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const files = useMemo(() => photos.map(({ file }) => file), [photos]);
   const photoByFileId = useMemo(() => new Map(photos.map((shownPhoto) => [shownPhoto.file.id, shownPhoto])), [photos]);
@@ -27,11 +28,23 @@ const PhotosViewer = ({ photo, photos, onClose }: PhotosViewerProps): JSX.Elemen
     });
   };
 
+  const moveToTrashAndClose = (file: DriveItemData) => {
+    const shownPhoto = photoByFileId.get(file.id);
+    onClose();
+    if (shownPhoto) onMoveToTrash([shownPhoto]);
+  };
+
   const menu: MenuItemType<DriveItemData>[] = [
     {
       name: translate('drive.dropdown.download'),
       icon: DownloadSimpleIcon,
       action: downloadPhoto,
+      disabled: () => false,
+    },
+    {
+      name: translate('drive.dropdown.moveToTrash'),
+      icon: TrashIcon,
+      action: moveToTrashAndClose,
       disabled: () => false,
     },
   ];
@@ -43,6 +56,7 @@ const PhotosViewer = ({ photo, photos, onClose }: PhotosViewerProps): JSX.Elemen
       showPreview
       onClose={onClose}
       contextMenu={menu}
+      keyboardShortcuts={{ removeItemFromKeyboard: moveToTrashAndClose }}
       onDownload={downloadPhoto}
       refreshesThumbnail={false}
     />

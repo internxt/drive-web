@@ -14,6 +14,15 @@ const MAX_CONCURRENT_REQUESTS = 3;
 
 const isFolder = (item: DriveItemData) => item?.type === 'folder' || item?.isFolder;
 
+const groupByOriginalFolder = (items: DriveItemData[]) => {
+  const itemsByFolder = new Map<string, DriveItemData[]>();
+  for (const item of items) {
+    const folderUuid = isFolder(item) ? item.parentUuid : item.folderUuid;
+    itemsByFolder.set(folderUuid, [...(itemsByFolder.get(folderUuid) ?? []), item]);
+  }
+  return itemsByFolder;
+};
+
 const refetchFavoritesIfNeeded = (items: DriveItemData[]) => {
   if (items.some(isFolder) && store.getState().storage.favorites.length > 0) {
     store.dispatch(storageActions.resetFavoritesPagination());
@@ -21,7 +30,11 @@ const refetchFavoritesIfNeeded = (items: DriveItemData[]) => {
   }
 };
 
-const moveItemsToTrash = async (itemsToTrash: DriveItemData[], onSuccess?: () => void): Promise<void> => {
+const moveItemsToTrash = async (
+  itemsToTrash: DriveItemData[],
+  onSuccess?: () => void,
+  onUndo?: () => void,
+): Promise<void> => {
   const items: Array<{ uuid: string; type: 'file' | 'folder' }> = itemsToTrash.map((item) => {
     return {
       uuid: item.uuid,
@@ -84,20 +97,14 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[], onSuccess?: () =>
         onClick: () => {
           notificationsService.dismiss(id);
           if (itemsToTrash.length > 0) {
-            const destinationId = isFolder(itemsToTrash[0]) ? itemsToTrash[0].parentUuid : itemsToTrash[0].folderUuid;
-
-            store.dispatch(
-              storageActions.pushItems({ updateRecents: true, items: itemsToTrash, folderIds: [destinationId] }),
-            );
+            for (const [destinationId, items] of groupByOriginalFolder(itemsToTrash)) {
+              store.dispatch(storageActions.pushItems({ updateRecents: true, items, folderIds: [destinationId] }));
+              store.dispatch(storageThunks.moveItemsThunk({ items, destinationFolderId: destinationId }));
+            }
 
             store.dispatch(storageActions.clearSelectedItems());
-            store.dispatch(
-              storageThunks.moveItemsThunk({
-                items: itemsToTrash,
-                destinationFolderId: destinationId,
-              }),
-            );
             refetchFavoritesIfNeeded(itemsToTrash);
+            onUndo?.();
           }
         },
       },

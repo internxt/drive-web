@@ -1,5 +1,5 @@
 import { Button } from '@internxt/ui';
-import { DownloadSimpleIcon, XIcon } from '@phosphor-icons/react';
+import { DownloadSimpleIcon, TrashIcon, XIcon } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { DownloadManager } from 'app/network/DownloadManager';
 import TooltipElement, { DELAY_SHOW_MS } from 'components/TooltipElement';
@@ -10,9 +10,10 @@ import { sortPhotosNewestFirst } from '../utils/photoTimeline';
 interface PhotosSelectionHeaderProps {
   selectedPhotos: PhotoSelection;
   onClear: () => void;
+  onMoveToTrash: () => void;
 }
 
-const PhotosSelectionHeader = ({ selectedPhotos, onClear }: PhotosSelectionHeaderProps): JSX.Element => {
+const PhotosSelectionHeader = ({ selectedPhotos, onClear, onMoveToTrash }: PhotosSelectionHeaderProps): JSX.Element => {
   const { translate } = useTranslationContext();
   useAppHotkey(HOTKEYS.close, onClear, { enableOnFormTags: ['input'] });
 
@@ -44,17 +45,31 @@ const PhotosSelectionHeader = ({ selectedPhotos, onClear }: PhotosSelectionHeade
         </button>
         <span className="text-lg">{`${selectedPhotos.size} ${translate('contextMenu.itemsSelected')}`}</span>
       </div>
-      <div
-        className="flex items-center"
-        data-tooltip-id="photos-download-tooltip"
-        data-tooltip-content={translate('drive.dropdown.download')}
-        data-tooltip-place="bottom"
-      >
-        <Button variant="ghost" className="aspect-square" onClick={downloadSelection}>
-          <DownloadSimpleIcon className="h-6 w-6" />
-          <span className="sr-only">{translate('drive.dropdown.download')}</span>
-        </Button>
-        <TooltipElement id="photos-download-tooltip" delayShow={DELAY_SHOW_MS} />
+      <div className="flex items-center">
+        <div
+          className="flex items-center"
+          data-tooltip-id="photos-download-tooltip"
+          data-tooltip-content={translate('drive.dropdown.download')}
+          data-tooltip-place="bottom"
+        >
+          <Button variant="ghost" className="aspect-square" onClick={downloadSelection}>
+            <DownloadSimpleIcon className="h-6 w-6" />
+            <span className="sr-only">{translate('drive.dropdown.download')}</span>
+          </Button>
+          <TooltipElement id="photos-download-tooltip" delayShow={DELAY_SHOW_MS} />
+        </div>
+        <div
+          className="flex items-center"
+          data-tooltip-id="photos-trash-tooltip"
+          data-tooltip-content={translate('drive.dropdown.moveToTrash')}
+          data-tooltip-place="bottom"
+        >
+          <Button variant="ghost" className="aspect-square" onClick={onMoveToTrash}>
+            <TrashIcon className="h-6 w-6" />
+            <span className="sr-only">{translate('drive.dropdown.moveToTrash')}</span>
+          </Button>
+          <TooltipElement id="photos-trash-tooltip" delayShow={DELAY_SHOW_MS} />
+        </div>
       </div>
     </div>
   );
