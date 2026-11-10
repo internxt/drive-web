@@ -10,7 +10,7 @@ import { t } from 'i18next';
 import { SdkFactory } from 'app/core/factory/sdk';
 import errorService from 'services/error.service';
 import workspacesService from 'services/workspace.service';
-import { DriveFileData, DriveFolderData, DriveFolderMetadataPayload, DriveItemData } from '../types';
+import { DriveFileData, DriveFolderData, DriveFolderMetadataPayload } from '../types';
 import { updateDatabaseFileSourceData } from './database.service';
 import { addAllFilesToZip, addAllSharedFilesToZip } from './filesZip.service';
 import { addAllFoldersToZip, addAllSharedFoldersToZip } from './foldersZip.service';
@@ -37,40 +37,6 @@ interface GetFileStreamParams {
   key: FileKey;
   abortController?: AbortController;
   downloadProgress?: (progress: number) => void;
-}
-
-interface FolderChild {
-  bucket: string;
-  color: string;
-  createdAt: string;
-  encrypt_version: string;
-  icon: string;
-  iconId: number | null;
-  icon_id: number | null;
-  id: number;
-  name: string;
-  parentId: number;
-  parent_id: number;
-  updatedAt: string;
-  userId: number;
-  user_id: number;
-}
-
-export interface FetchFolderContentResponse {
-  bucket: string;
-  children: FolderChild[];
-  color: string;
-  createdAt: string;
-  encrypt_version: string;
-  files: DriveItemData[];
-  icon: string;
-  id: number;
-  name: string;
-  parentId: number;
-  parent_id: number;
-  updatedAt: string;
-  userId: number;
-  user_id: number;
 }
 
 interface DownloadFolderAsZipOptions {
@@ -117,11 +83,6 @@ export async function updateMetaData(
   };
 
   return storageClient.updateFolderNameWithUUID(payload, resourcesToken);
-}
-
-export async function deleteFolder(folderData: DriveFolderData): Promise<void> {
-  const trashClient = SdkFactory.getNewApiInstance().createTrashClient();
-  await trashClient.deleteFolder(folderData.id);
 }
 
 class DirectoryFolderIterator implements Iterator<DriveFolderData> {
