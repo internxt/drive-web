@@ -151,9 +151,10 @@ vi.mock('components', () => ({
   MAX_PASSWORD_LENGTH: 256,
 }));
 
-vi.mock('query-string', () => ({
-  parse: vi.fn().mockImplementation((input: string) => input),
-}));
+vi.mock('query-string', () => {
+  const parse = vi.fn().mockImplementation((input: string) => input);
+  return { default: { parse }, parse };
+});
 
 vi.mock('react-hook-form', () => {
   const mockEmail = 'mock@email.com';
