@@ -515,6 +515,10 @@
         "livePhoto": "Live Photo",
         "burst": "Sequência",
         "video": "Vídeo"
+      },
+      "selection": {
+        "title": "Fotos selecionadas",
+        "clear": "Limpar seleção"
       }
     },
     "favorites": {

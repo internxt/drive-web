@@ -494,6 +494,10 @@
         "livePhoto": "Live Photo",
         "burst": "Серия",
         "video": "Видео"
+      },
+      "selection": {
+        "title": "Выбранные фото",
+        "clear": "Снять выделение"
       }
     },
     "favorites": {

@@ -515,6 +515,10 @@
         "livePhoto": "Live Photo",
         "burst": "Raffica",
         "video": "Video"
+      },
+      "selection": {
+        "title": "Foto selezionate",
+        "clear": "Cancella selezione"
       }
     },
     "favorites": {

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { PhotoSelection } from '../hooks/usePhotoSelection';
 import { useTimelinePhotos } from '../hooks/useTimelinePhotos';
 import { Photo, PhotoMonth } from '../types';
 import { sortPhotosNewestFirst } from '../utils/photoTimeline';
@@ -10,9 +11,11 @@ import PhotosViewer from './PhotosViewer';
 
 interface PhotosGalleryProps {
   months: PhotoMonth[];
+  selectedPhotos: PhotoSelection;
+  onToggleSelection: (photos: Photo[]) => void;
 }
 
-const PhotosGallery = ({ months }: PhotosGalleryProps): JSX.Element => {
+const PhotosGallery = ({ months, selectedPhotos, onToggleSelection }: PhotosGalleryProps): JSX.Element => {
   const { photos, isLoading, hasMoreMonths, failedMonths, loadNextMonth, retryMonths } = useTimelinePhotos(months);
   const photosNewestFirst = useMemo(() => sortPhotosNewestFirst(photos), [photos]);
   const [openedPhoto, setOpenedPhoto] = useState<Photo>();
@@ -31,7 +34,9 @@ const PhotosGallery = ({ months }: PhotosGalleryProps): JSX.Element => {
         isLoadingMore={isLoading || hasMoreMonths}
         onEndReached={loadNextMonth}
         onRetryMonth={(month) => retryMonths([month])}
+        selectedPhotos={selectedPhotos}
         onOpenPhoto={setOpenedPhoto}
+        onToggleSelection={onToggleSelection}
       />
       {openedPhoto && (
         <PhotosViewer photo={openedPhoto} photos={photosNewestFirst} onClose={() => setOpenedPhoto(undefined)} />

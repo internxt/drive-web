@@ -14,7 +14,6 @@ interface PhotosOfDay {
 }
 
 export interface Timeline {
-  days: DayKey[];
   rowsPerDay: number[];
   rows: TimelineRow[];
   isLastRowOfDay: boolean[];
@@ -55,7 +54,6 @@ export const getTimeline = (days: PhotosOfDay[], columns: number, failedMonths: 
     rowsOfEachDay[Math.max(0, daysUntilMonthEnd - 1)].push({ kind: 'monthError', month });
   }
   return {
-    days: days.map(({ day }) => day),
     rowsPerDay: rowsOfEachDay.map((rows) => rows.length),
     rows: rowsOfEachDay.flat(),
     isLastRowOfDay: rowsOfEachDay.flatMap((rows) => rows.map((_, index) => index === rows.length - 1)),
