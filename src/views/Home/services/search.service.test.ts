@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { defaultSearchFilters, searchItems, SearchFilters } from './search.service';
-import { SdkFactory } from 'app/core/factory/sdk';
+import { mockSdkFactory } from 'testUtils/sdk.mock';
 
 describe('searchItems', () => {
   beforeEach(() => {
@@ -9,9 +9,7 @@ describe('searchItems', () => {
 
   const mockGlobalSearch = (response: unknown = { data: [] }) => {
     const getGlobalSearchItems = vi.fn().mockReturnValue([Promise.resolve(response), vi.fn()]);
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createNewStorageClient: vi.fn().mockReturnValue({ getGlobalSearchItems }),
-    } as any);
+    mockSdkFactory({ createNewStorageClient: { getGlobalSearchItems } });
     return getGlobalSearchItems;
   };
 

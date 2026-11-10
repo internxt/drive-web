@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { SdkFactory } from 'app/core/factory/sdk';
 import limitService from './limit.service';
+import { mockSdkFactory } from 'testUtils/sdk.mock';
 
 vi.mock('app/core/factory/sdk', () => ({
   SdkFactory: {
@@ -16,9 +16,7 @@ describe('limitService', () => {
       spaceLimitV2: spaceLimitMock,
     };
 
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createNewStorageClient: () => storageClientMock,
-    } as any);
+    mockSdkFactory({ createNewStorageClient: storageClientMock });
   });
   describe('fetchLimit', () => {
     it('should fetch the space limit from the storage client', async () => {

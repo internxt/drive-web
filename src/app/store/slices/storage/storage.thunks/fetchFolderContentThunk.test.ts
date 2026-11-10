@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, vi, Mock, test } from 'vitest';
 import { fetchPaginatedFolderContentThunk } from './fetchFolderContentThunk';
 import { RootState } from '../../..';
-import { SdkFactory } from '../../../../core/factory/sdk';
 import errorService from 'services/error.service';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { StorageState } from '../storage.model';
 import { storageActions } from '..';
 import { getDriveItemData, getDriveThumbnail, getThumbnailDto } from 'testUtils/fixtures/drive.fixtures';
+import { mockSdkFactory } from 'testUtils/sdk.mock';
 
 vi.mock('../../../../core/factory/sdk', () => ({
   SdkFactory: {
@@ -75,9 +75,9 @@ describe('Thunk of fetch folder content', () => {
   const arrangeDrive = (selectedWorkspace: { workspace: { id: string } } | null, overrides?: Partial<StorageState>) => {
     const mockStorageClient = createMockStorageClient();
     const mockWorkspaceClient = createMockWorkspaceClient();
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createNewStorageClient: () => mockStorageClient,
-      createWorkspacesClient: () => mockWorkspaceClient,
+    mockSdkFactory({
+      createNewStorageClient: mockStorageClient,
+      createWorkspacesClient: mockWorkspaceClient,
     });
     (workspacesSelectors.getSelectedWorkspace as Mock).mockReturnValue(selectedWorkspace);
     const state = createMockState({ hasMoreDriveFolders: { [mockFolderId]: true } as any, ...overrides });
@@ -106,9 +106,9 @@ describe('Thunk of fetch folder content', () => {
 
     const mockWorkspaceClient = createMockWorkspaceClient();
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createNewStorageClient: () => mockStorageClient,
-      createWorkspacesClient: () => mockWorkspaceClient,
+    mockSdkFactory({
+      createNewStorageClient: mockStorageClient,
+      createWorkspacesClient: mockWorkspaceClient,
     });
 
     (workspacesSelectors.getSelectedWorkspace as Mock).mockReturnValue(null);
@@ -133,9 +133,9 @@ describe('Thunk of fetch folder content', () => {
     ]);
     const mockWorkspaceClient = createMockWorkspaceClient();
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createNewStorageClient: () => mockStorageClient,
-      createWorkspacesClient: () => mockWorkspaceClient,
+    mockSdkFactory({
+      createNewStorageClient: mockStorageClient,
+      createWorkspacesClient: mockWorkspaceClient,
     });
     (workspacesSelectors.getSelectedWorkspace as Mock).mockReturnValue(null);
 
@@ -172,9 +172,9 @@ describe('Thunk of fetch folder content', () => {
     ]);
     const mockWorkspaceClient = createMockWorkspaceClient();
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createNewStorageClient: () => mockStorageClient,
-      createWorkspacesClient: () => mockWorkspaceClient,
+    mockSdkFactory({
+      createNewStorageClient: mockStorageClient,
+      createWorkspacesClient: mockWorkspaceClient,
     });
     (workspacesSelectors.getSelectedWorkspace as Mock).mockReturnValue(null);
 
@@ -228,9 +228,9 @@ describe('Thunk of fetch folder content', () => {
     ]);
     const mockWorkspaceClient = createMockWorkspaceClient();
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createNewStorageClient: () => mockStorageClient,
-      createWorkspacesClient: () => mockWorkspaceClient,
+    mockSdkFactory({
+      createNewStorageClient: mockStorageClient,
+      createWorkspacesClient: mockWorkspaceClient,
     });
     (workspacesSelectors.getSelectedWorkspace as Mock).mockReturnValue(null);
 
@@ -254,9 +254,9 @@ describe('Thunk of fetch folder content', () => {
     const mockStorageClient = createMockStorageClient();
     const mockWorkspaceClient = createMockWorkspaceClient();
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createNewStorageClient: () => mockStorageClient,
-      createWorkspacesClient: () => mockWorkspaceClient,
+    mockSdkFactory({
+      createNewStorageClient: mockStorageClient,
+      createWorkspacesClient: mockWorkspaceClient,
     });
     (workspacesSelectors.getSelectedWorkspace as Mock).mockReturnValue(null);
 
@@ -279,9 +279,9 @@ describe('Thunk of fetch folder content', () => {
     const mockWorkspaceClient = createMockWorkspaceClient();
     mockWorkspaceClient.getFolders.mockReturnValue([Promise.resolve({ result: [rawFolder] })]);
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createNewStorageClient: () => mockStorageClient,
-      createWorkspacesClient: () => mockWorkspaceClient,
+    mockSdkFactory({
+      createNewStorageClient: mockStorageClient,
+      createWorkspacesClient: mockWorkspaceClient,
     });
     (workspacesSelectors.getSelectedWorkspace as Mock).mockReturnValue({
       workspace: { id: mockWorkspaceId },
@@ -321,9 +321,9 @@ describe('Thunk of fetch folder content', () => {
     const mockWorkspaceClient = createMockWorkspaceClient();
     mockWorkspaceClient.getFiles.mockReturnValue([Promise.resolve({ result: [rawFile] })]);
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createNewStorageClient: () => mockStorageClient,
-      createWorkspacesClient: () => mockWorkspaceClient,
+    mockSdkFactory({
+      createNewStorageClient: mockStorageClient,
+      createWorkspacesClient: mockWorkspaceClient,
     });
     (workspacesSelectors.getSelectedWorkspace as Mock).mockReturnValue({
       workspace: { id: mockWorkspaceId },
@@ -493,9 +493,9 @@ describe('Thunk of fetch folder content', () => {
     ]);
     const mockWorkspaceClient = createMockWorkspaceClient();
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createNewStorageClient: () => mockStorageClient,
-      createWorkspacesClient: () => mockWorkspaceClient,
+    mockSdkFactory({
+      createNewStorageClient: mockStorageClient,
+      createWorkspacesClient: mockWorkspaceClient,
     });
     (workspacesSelectors.getSelectedWorkspace as Mock).mockReturnValue(null);
 

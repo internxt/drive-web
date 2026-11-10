@@ -1,12 +1,14 @@
-import { Mock, vi } from 'vitest';
+import { Mock, MockInstance, vi } from 'vitest';
 import { SdkFactory } from 'app/core/factory/sdk';
 
 type ClientFactoryName = {
   [K in keyof SdkFactory]: K extends `create${string}Client${string}` ? K : never;
 }[keyof SdkFactory];
 
+type Stubbed<Client> = { [Method in keyof Client]?: Client[Method] | MockInstance };
+
 type SdkClients = {
-  [K in ClientFactoryName]?: Partial<Awaited<ReturnType<SdkFactory[K]>>>;
+  [K in ClientFactoryName]?: Stubbed<Awaited<ReturnType<SdkFactory[K]>>>;
 };
 
 export const mockSdkFactory = <T extends SdkClients>(clients: T): { [K in keyof T]: Mock } => {

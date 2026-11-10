@@ -1,7 +1,7 @@
 import { describe, expect, test, vi, beforeEach } from 'vitest';
 import { setItemFavorite } from './toggleFavorite.service';
-import { SdkFactory } from 'app/core/factory/sdk';
 import { DriveItemData } from 'app/drive/types';
+import { mockSdkFactory } from 'testUtils/sdk.mock';
 
 describe('toggleFavorite service', () => {
   const mockResponse = { favorited: true };
@@ -15,9 +15,7 @@ describe('toggleFavorite service', () => {
       markItemAsFavorite: mockMarkItemAsFavorite,
       unmarkItemAsFavorite: mockUnmarkItemAsFavorite,
     };
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createNewStorageClient: vi.fn().mockReturnValue(mockStorageClient),
-    } as unknown as SdkFactory);
+    mockSdkFactory({ createNewStorageClient: mockStorageClient });
   });
 
   test('When a file is marked as favorite, then it is set as favorite', async () => {
