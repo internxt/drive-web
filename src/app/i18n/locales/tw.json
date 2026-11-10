@@ -519,6 +519,20 @@
       "selection": {
         "title": "已選照片",
         "clear": "清除選取"
+      },
+      "devices": {
+        "manage": "管理裝置",
+        "title": "你的裝置",
+        "close": "關閉",
+        "delete": "刪除",
+        "deleted": "裝置已刪除",
+        "notFound": "此裝置已被刪除",
+        "deleteError": "無法刪除裝置，請再試一次。",
+        "deleteDialog": {
+          "title": "要刪除 {{name}} 的照片嗎？",
+          "description": "從此裝置備份的所有照片和影片將被永久刪除，且無法復原。",
+          "confirm": "永久刪除"
+        }
       }
     },
     "favorites": {

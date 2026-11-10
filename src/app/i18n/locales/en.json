@@ -519,6 +519,20 @@
       "selection": {
         "title": "Selected photos",
         "clear": "Clear selection"
+      },
+      "devices": {
+        "manage": "Manage devices",
+        "title": "Your devices",
+        "close": "Close",
+        "delete": "Delete",
+        "deleted": "Device deleted",
+        "notFound": "This device was already deleted",
+        "deleteError": "The device could not be deleted. Try again.",
+        "deleteDialog": {
+          "title": "Delete the photos of {{name}}?",
+          "description": "Every photo and video backed up from this device will be deleted permanently. This cannot be undone.",
+          "confirm": "Delete permanently"
+        }
       }
     },
     "favorites": {

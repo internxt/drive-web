@@ -498,6 +498,20 @@
       "selection": {
         "title": "Photos sélectionnées",
         "clear": "Effacer la sélection"
+      },
+      "devices": {
+        "manage": "Gérer les appareils",
+        "title": "Vos appareils",
+        "close": "Fermer",
+        "delete": "Supprimer",
+        "deleted": "Appareil supprimé",
+        "notFound": "Cet appareil a déjà été supprimé",
+        "deleteError": "L'appareil n'a pas pu être supprimé. Réessayez.",
+        "deleteDialog": {
+          "title": "Supprimer les photos de {{name}} ?",
+          "description": "Toutes les photos et vidéos sauvegardées depuis cet appareil seront supprimées définitivement. Cette action est irréversible.",
+          "confirm": "Supprimer définitivement"
+        }
       }
     },
     "favorites": {

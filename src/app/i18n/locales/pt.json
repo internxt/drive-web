@@ -519,6 +519,20 @@
       "selection": {
         "title": "Fotos selecionadas",
         "clear": "Limpar seleção"
+      },
+      "devices": {
+        "manage": "Gerenciar dispositivos",
+        "title": "Seus dispositivos",
+        "close": "Fechar",
+        "delete": "Excluir",
+        "deleted": "Dispositivo excluído",
+        "notFound": "Este dispositivo já foi excluído",
+        "deleteError": "Não foi possível excluir o dispositivo. Tente novamente.",
+        "deleteDialog": {
+          "title": "Excluir as fotos de {{name}}?",
+          "description": "Todas as fotos e vídeos salvos deste dispositivo serão excluídos permanentemente. Esta ação não pode ser desfeita.",
+          "confirm": "Excluir permanentemente"
+        }
       }
     },
     "favorites": {
