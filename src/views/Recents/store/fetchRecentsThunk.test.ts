@@ -31,7 +31,6 @@ describe('fetchRecentsThunk', () => {
   const getState = vi.fn();
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.restoreAllMocks();
   });
 

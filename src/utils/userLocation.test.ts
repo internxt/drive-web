@@ -19,7 +19,6 @@ describe('User location function', () => {
   const mockCreateLocationClient = vi.fn();
 
   beforeEach(() => {
-    vi.clearAllMocks();
     mockGetUserLocation.mockResolvedValue(mockedLocation);
     mockCreateLocationClient.mockReturnValue({ getUserLocation: mockGetUserLocation });
     vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({

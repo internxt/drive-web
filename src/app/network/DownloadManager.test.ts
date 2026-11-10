@@ -45,7 +45,6 @@ vi.mock('app/drive/services/downloadManager.service', () => ({
 
 describe('downloadManager', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 

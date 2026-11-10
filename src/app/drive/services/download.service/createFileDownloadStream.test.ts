@@ -20,7 +20,6 @@ describe('createFileDownloadStream', () => {
   const mockProgress = vi.fn();
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.mocked(fetchFileStream).mockResolvedValue(mockReadableStream);
     vi.mocked(fetchFileStreamUsingCredentials).mockResolvedValue(mockReadableStream);
   });

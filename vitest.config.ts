@@ -54,6 +54,7 @@ export default defineConfig({
           testTimeout: 30000,
           retry: 3,
           name: 'browser',
+          clearMocks: true,
           environment: 'jsdom',
           globals: true,
           setupFiles: resolve(__dirname, 'src/setupTests.ts'),

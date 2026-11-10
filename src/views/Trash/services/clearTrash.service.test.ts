@@ -1,11 +1,11 @@
-import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
+import { describe, it, expect, vi, Mock } from 'vitest';
 import clearTrash from './clearTrash.service';
-import { SdkFactory } from 'app/core/factory/sdk';
 import errorService from 'services/error.service';
 import workspacesService from 'services/workspace.service';
 import notificationsService from 'app/notifications/services/notifications.service';
 import { store } from 'app/store';
 import { storageActions } from 'app/store/slices/storage';
+import { mockSdkFactory } from 'testUtils/sdk.mock';
 
 vi.mock('app/core/factory/sdk', () => ({
   SdkFactory: {
@@ -56,19 +56,11 @@ vi.mock('i18next', () => ({
 }));
 
 describe('clearTrash', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   it('should clear trash for personal account', async () => {
     const mockClearTrash = vi.fn().mockResolvedValue(undefined);
     (notificationsService.show as Mock).mockReturnValue('toast-id-123');
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createTrashClient: () => ({
-        clearTrash: mockClearTrash,
-      }),
-    });
+    mockSdkFactory({ createTrashClient: { clearTrash: mockClearTrash } });
 
     await clearTrash();
 
@@ -105,11 +97,7 @@ describe('clearTrash', () => {
     const mockClearTrash = vi.fn().mockRejectedValue(mockError);
     (notificationsService.show as Mock).mockReturnValue('toast-id-789');
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createTrashClient: () => ({
-        clearTrash: mockClearTrash,
-      }),
-    });
+    mockSdkFactory({ createTrashClient: { clearTrash: mockClearTrash } });
 
     await clearTrash();
 

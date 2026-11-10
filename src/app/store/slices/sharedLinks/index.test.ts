@@ -61,7 +61,6 @@ vi.mock('services/error.service', () => ({
 
 describe('Encryption and Decryption', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 

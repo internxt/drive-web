@@ -13,7 +13,6 @@ describe('Error Service', () => {
   const mockEnvService = vi.mocked(envService.getVariable);
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.spyOn(console, 'error').mockImplementation(() => {});
   });
 
