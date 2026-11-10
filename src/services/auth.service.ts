@@ -10,8 +10,7 @@ import {
 import { RecoveryKeys } from '@internxt/sdk/dist/auth/types';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { trackSignUp } from 'app/analytics/impact.service';
-import { trackLead } from 'app/analytics/meta.service';
+import { trackLead, trackSignUp } from '@internxt/analytics';
 import { getCookie, setCookie } from 'app/analytics/utils';
 import { HTTP_STATUS_CODES } from 'app/core/constants';
 import { SdkFactory } from 'app/core/factory/sdk';
