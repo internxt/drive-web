@@ -323,7 +323,7 @@
       "passwordLabel": "Tu contraseña",
       "passwordPlaceholder": "Contraseña",
       "togglePasswordVisibility": "Mostrar u ocultar la contraseña",
-      "incompleteDetails": "Introduce tu correo electrónico y tu contraseña para continuar.",
+      "incompleteDetails": "Introduce tus datos para continuar.",
       "encryptedTitle": "Tus archivos están cifrados y son privados.",
       "encryptedDescription": "Internxt no puede acceder a tu contenido."
     },
