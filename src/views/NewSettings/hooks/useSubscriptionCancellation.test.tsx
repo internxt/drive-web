@@ -34,7 +34,6 @@ describe('Subscription Cancellation - Custom Hook', () => {
   let longNotificationShowSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.useFakeTimers();
 
     cancelSubscriptionSpy = vi.spyOn(paymentService, 'cancelSubscription');

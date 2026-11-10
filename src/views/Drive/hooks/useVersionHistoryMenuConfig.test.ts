@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi, Mock } from 'vitest';
+import { describe, expect, it, vi, Mock } from 'vitest';
 import { useSelector } from 'react-redux';
 import { useVersionHistoryMenuConfig } from './useVersionHistoryMenuConfig';
 import { FileLimitsResponse } from '@internxt/sdk/dist/drive/storage/types';
@@ -27,10 +27,6 @@ describe('Version history menu', () => {
     ({
       fileVersions: { limits },
     }) as any;
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
 
   it('when versioning is locked, then the menu is marked as locked', () => {
     mockUseSelector.mockImplementation((selector: (state: any) => unknown) => selector(mockState(disabledLimits)));

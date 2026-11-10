@@ -54,7 +54,6 @@ const authenticateWithError = async (error: unknown, props = mockedAuthenticateU
 
 describe('Authentication Checkout Custom hook', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     (is2FANeeded as Mock).mockResolvedValue(false);
   });
 

@@ -63,7 +63,6 @@ const renderHookWithProvider = (hook: () => ReturnType<typeof useTutorialState>)
 
 describe('useTutorialState', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     mockUseAppSelector.mockReturnValue(false);
     mockUseTaskManagerGetNotifications.mockReturnValue([]);
     mockHasUploadedFiles.mockResolvedValue({ hasUploadedFiles: false });

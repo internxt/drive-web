@@ -1,8 +1,6 @@
-import { RenewalPeriod } from '@internxt/sdk/dist/drive/payments/types/types';
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
 import { FileStatus } from '@internxt/sdk/dist/drive/storage/types';
 import { UserResumeData } from '@internxt/sdk/dist/drive/users/types';
-import { AppSumoDetails } from '@internxt/sdk/dist/shared/types/appsumo';
 import { AdvancedSharedItem } from 'app/share/types';
 import { SVGProps } from 'react';
 
@@ -142,23 +140,6 @@ export interface FileInfoMenuItem {
   title: string;
   features: { label: string; value: string }[];
 }
-
-export type StoragePlan = {
-  planId: string;
-  productId: string;
-  name: string;
-  simpleName: string;
-  paymentInterval: RenewalPeriod;
-  price: number;
-  monthlyPrice: number;
-  currency: string;
-  isTeam: boolean;
-  isLifetime: boolean;
-  renewalPeriod: RenewalPeriod;
-  storageLimit: number;
-  isAppSumo?: boolean;
-  details?: AppSumoDetails;
-};
 
 export interface FolderPath {
   name: string;

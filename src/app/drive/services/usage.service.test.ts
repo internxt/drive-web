@@ -1,7 +1,7 @@
-import { describe, expect, it, Mock, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import usageService from './usage.service';
-import { SdkFactory } from 'app/core/factory/sdk';
 import errorService from 'services/error.service';
+import { mockSdkFactory } from 'testUtils/sdk.mock';
 
 vi.mock('app/core/factory/sdk', () => ({
   SdkFactory: {
@@ -20,9 +20,7 @@ describe('usageService', () => {
     it('should fetch usage data successfully', async () => {
       const mockSpaceUsageV2 = vi.fn().mockResolvedValue({ drive: 100, backups: 50 });
       const mockStorageClient = { spaceUsageV2: mockSpaceUsageV2 };
-      (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-        createNewStorageClient: () => mockStorageClient,
-      });
+      mockSdkFactory({ createNewStorageClient: mockStorageClient });
 
       const result = await usageService.fetchUsage();
 
@@ -35,9 +33,7 @@ describe('usageService', () => {
     it('should return usage details successfully', async () => {
       const mockSpaceUsageV2 = vi.fn().mockResolvedValue({ drive: 200, backups: 100 });
       const mockStorageClient = { spaceUsageV2: mockSpaceUsageV2 };
-      (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-        createNewStorageClient: () => mockStorageClient,
-      });
+      mockSdkFactory({ createNewStorageClient: mockStorageClient });
 
       const result = await usageService.getUsageDetails();
 
@@ -48,9 +44,7 @@ describe('usageService', () => {
     it('should handle errors and return default values', async () => {
       const mockSpaceUsageV2 = vi.fn().mockRejectedValue(new Error('API error'));
       const mockStorageClient = { spaceUsageV2: mockSpaceUsageV2 };
-      (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-        createNewStorageClient: () => mockStorageClient,
-      });
+      mockSdkFactory({ createNewStorageClient: mockStorageClient });
 
       const result = await usageService.getUsageDetails();
       expect(errorService.reportError).toHaveBeenCalledWith(expect.any(Error));

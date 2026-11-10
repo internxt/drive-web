@@ -6,7 +6,7 @@ import { OrderDirection, OrderSettings } from '../../../core/types';
 import databaseService, { DatabaseCollection } from '../../../database/services/database.service';
 import { DriveItemData, DriveItemPatch, FileViewMode, FolderPath } from 'app/drive/types';
 import { storageExtraReducers } from '../storage/storage.thunks';
-import { filtersFactory, orderFactory, StorageSetFiltersPayload, StorageState } from './storage.model';
+import { filtersFactory, orderFactory, StorageState } from './storage.model';
 import selectors from './storage.selectors';
 
 const initialState: StorageState = {
@@ -70,15 +70,6 @@ export const storageSlice = createSlice({
     },
     setForceLoading: (state: StorageState, action: PayloadAction<boolean>) => {
       state.forceLoading = action.payload;
-    },
-    setIsLoadingRecents: (state: StorageState, action: PayloadAction<boolean>) => {
-      state.isLoadingRecents = action.payload;
-    },
-    setIsLoadingFavorites: (state: StorageState, action: PayloadAction<boolean>) => {
-      state.isLoadingFavorites = action.payload;
-    },
-    setIsLoadingDeleted: (state: StorageState, action: PayloadAction<boolean>) => {
-      state.isLoadingDeleted = action.payload;
     },
     setItems: (state: StorageState, action: PayloadAction<{ folderId: string; items: DriveItemData[] }>) => {
       const { folderId, items } = action.payload;
@@ -194,17 +185,11 @@ export const storageSlice = createSlice({
     setMoveDestinationFolderId: (state: StorageState, action: PayloadAction<string | null>) => {
       state.moveDestinationFolderId = action.payload;
     },
-    setFilters: (state: StorageState, action: PayloadAction<StorageSetFiltersPayload>) => {
-      Object.assign(state.filters, action.payload);
-    },
     setOrder: (state: StorageState, action: PayloadAction<Partial<OrderSettings>>) => {
       Object.assign(state.order, action.payload);
     },
     resetOrder: (state: StorageState) => {
       state.order = orderFactory('name', OrderDirection.Asc);
-    },
-    resetFilters: (state: StorageState) => {
-      state.filters = filtersFactory();
     },
     selectItems: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       const itemsToSelect = action.payload.filter((item) => {
@@ -293,9 +278,6 @@ export const storageSlice = createSlice({
       const folderIndex: number = state.sharedNamePath.map((path) => path.uuid).indexOf(action.payload.uuid);
 
       state.sharedNamePath = state.sharedNamePath.slice(0, folderIndex + 1);
-    },
-    pathChangeWorkSpace: (state: StorageState, action: PayloadAction<FolderPath>) => {
-      state.namePath = [action.payload];
     },
     setCurrentPath: (state: StorageState, action: PayloadAction<FolderPath>) => {
       state.currentPath = action.payload;
@@ -443,9 +425,6 @@ export const storageSlice = createSlice({
 
 export const {
   setIsLoadingFolder,
-  setIsLoadingRecents,
-  setIsLoadingFavorites,
-  setIsLoadingDeleted,
   setItems,
   setRecents,
   addFavorites,
@@ -453,8 +432,6 @@ export const {
   setHasMoreFavoriteFolders,
   setHasMoreFavoriteFiles,
   resetFavoritesPagination,
-  setFilters,
-  resetFilters,
   selectItems,
   deselectItems,
   setItemToShare,
@@ -466,7 +443,6 @@ export const {
   pushNamePath,
   setNamePath,
   popNamePathUpTo,
-  pathChangeWorkSpace,
   patchItem,
   pushItems,
   clearCurrentThumbnailItems,

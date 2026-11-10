@@ -103,7 +103,6 @@ describe('NetworkFacade.uploadMultipart', () => {
   let sdkAbortSignal: AbortSignal | undefined;
 
   beforeEach(() => {
-    vi.clearAllMocks();
     facade = new NetworkFacade({} as NetworkModule.Network);
     storageHost = new FakeStorageHost();
     userAbortController = new AbortController();

@@ -65,7 +65,6 @@ const retryTaskIds = () => RetryManager.getTasks().map(({ taskId }) => taskId);
 
 describe('uploadFoldersWithTasks', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     RetryManager.clearTasks();
   });
 

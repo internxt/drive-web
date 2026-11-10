@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import userService from 'services/user.service';
 import { refreshAvatar } from './avatarUtils';
 import { updateDatabaseProfileAvatar, deleteDatabaseProfileAvatar } from 'app/drive/services/database.service';
@@ -26,10 +26,6 @@ describe('refreshAvatar', () => {
   const uuid = 'mocked-user-id';
   const newAvatarUrl = 'https://avatar.new-url.com/avatar.png';
   const avatarBlob = new Blob(['mocked-avatar']);
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
 
   test('When no avatar is returned from refresh, then it should delete from database and return null', async () => {
     vi.spyOn(userService, 'refreshAvatarUser').mockResolvedValue({ avatar: null });

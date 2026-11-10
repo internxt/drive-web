@@ -105,7 +105,6 @@ vi.mock('./download.service/createFileDownloadStream');
 
 describe('downloadManagerService', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
     const defaultWritableStream = new WritableStream({
       write: vi.fn(),
@@ -864,7 +863,6 @@ describe('downloadManagerService', () => {
 
     describe('Safari downloads', () => {
       beforeEach(() => {
-        vi.clearAllMocks();
         vi.spyOn(deviceService, 'isSafari').mockReturnValue(true);
       });
 
@@ -1853,8 +1851,6 @@ describe('downloadManagerService', () => {
 
   describe('Download a file from worker', () => {
     beforeEach(() => {
-      vi.clearAllMocks();
-
       vi.spyOn(downloadWorkerHandler, 'getWorker').mockReturnValue(mockWorker);
       vi.spyOn(downloadWorkerHandler, 'handleWorkerMessages').mockResolvedValue(() => {});
 
