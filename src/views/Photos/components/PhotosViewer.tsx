@@ -9,7 +9,6 @@ import { Photo } from '../types';
 
 interface PhotosViewerProps {
   photo: Photo;
-  /** Photos the viewer arrows move through, in the order of the gallery. */
   photos: Photo[];
   onClose: () => void;
 }
@@ -45,7 +44,6 @@ const PhotosViewer = ({ photo, photos, onClose }: PhotosViewerProps): JSX.Elemen
       onClose={onClose}
       contextMenu={menu}
       onDownload={downloadPhoto}
-      // Photos keep the thumbnails made by the phone
       refreshesThumbnail={false}
     />
   );

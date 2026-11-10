@@ -23,9 +23,7 @@ interface FileViewerWrapperProps {
   contextMenu?: Array<MenuItemType<DriveItemData>>;
   isSharedView?: boolean;
   keyboardShortcuts?: FileViewerKeyboardShortcuts;
-  /** Replaces the default download of the file being shown. */
   onDownload?: (file: DriveItemData) => void;
-  /** When false, the viewer never generates nor uploads a new thumbnail for the files it shows. */
   refreshesThumbnail?: boolean;
 }
 
