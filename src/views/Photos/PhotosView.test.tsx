@@ -30,7 +30,7 @@ import { useTimelinePhotos } from './hooks/useTimelinePhotos';
 import PhotosView from './PhotosView';
 
 const { photosClient, storageClient, trashClient } = vi.hoisted(() => ({
-  photosClient: { listDevices: vi.fn(), getFilesInFolders: vi.fn() },
+  photosClient: { listDevices: vi.fn(), getFilesInFolders: vi.fn(), deleteDevice: vi.fn() },
   storageClient: {
     getFolderFoldersByUuidWithCursor: vi.fn(),
     createThumbnailEntryWithUUID: vi.fn(),
@@ -230,9 +230,6 @@ const downloadedFiles = () =>
     (payload as DriveItemData[]).map((item) => `${item.plainName}.${item.type}`),
   );
 
-const waitForPhotosToLoad = () =>
-  waitFor(() => expect(screen.queryByTestId('photos-grid-skeleton')).not.toBeInTheDocument());
-
 // Tests run without the app's CSS: the few rules the gallery layout depends on are added here.
 const galleryStyles = document.createElement('style');
 galleryStyles.textContent = 'h2 { margin: 0; } .aspect-square { aspect-ratio: 1 / 1; }';
@@ -340,14 +337,14 @@ describe('Photos view', () => {
       fireEvent.click(await screen.findByRole('button', { name: /views.photos.filters.allDevices/ }));
     };
 
-    test('When the user has a single device, then there is no device filter', async () => {
+    test('When the user has a single device, then the device filter is shown so they can manage it', async () => {
       givenDevices([iphone]);
       givenSubfolders(iphonePhotosOfNovember2026);
 
       render(<PhotosView />);
+      await openDeviceFilter();
 
-      await waitForPhotosToLoad();
-      expect(screen.queryByRole('button', { name: /views.photos.filters.allDevices/ })).not.toBeInTheDocument();
+      expect(await screen.findByRole('menuitem', { name: /views.photos.devices.manage/ })).toBeInTheDocument();
     });
 
     test('When the user has several devices, then they can choose one of them', async () => {
@@ -361,6 +358,7 @@ describe('Photos view', () => {
         'views.photos.filters.allDevices',
         'iPhone',
         'Pixel',
+        'views.photos.devices.manage',
       ]);
       expect(screen.getByRole('menuitem', { name: /views.photos.filters.allDevices/ })).toHaveAttribute(
         'aria-current',
@@ -381,6 +379,142 @@ describe('Photos view', () => {
 
       fireEvent.click(await screen.findByRole('menuitem', { name: /views.photos.filters.allDevices/ }));
       expect(await screen.findByRole('button', { name: /views.photos.filters.allDevices/ })).toBeInTheDocument();
+    });
+  });
+
+  describe('Managing devices', () => {
+    const iphoneDay = getPhotoFolder({ uuid: 'iphone-2026-11-03', plainName: '03' });
+    const pixelDay = getPhotoFolder({ uuid: 'pixel-2026-10-20', plainName: '20' });
+
+    const manageDevices = async () => {
+      fireEvent.click(await screen.findByRole('button', { name: /views.photos.filters.allDevices|iPhone|Pixel/ }));
+      fireEvent.click(await screen.findByRole('menuitem', { name: /views.photos.devices.manage/ }));
+      return screen.findByRole('list', { name: 'views.photos.devices.title' });
+    };
+    const shownDevices = () =>
+      within(screen.getByRole('list', { name: 'views.photos.devices.title' }))
+        .queryAllByRole('listitem')
+        .map((device) => device.getAttribute('aria-label'));
+    const deleteDevice = (name: string) =>
+      fireEvent.click(
+        within(screen.getByRole('listitem', { name })).getByRole('button', { name: 'views.photos.devices.delete' }),
+      );
+    const httpError = (status: number) => Object.assign(new Error(`HTTP ${status}`), { status });
+    const confirmDeletion = async () =>
+      fireEvent.click(await screen.findByRole('button', { name: 'views.photos.devices.deleteDialog.confirm' }));
+
+    beforeEach(() => {
+      givenDevices([iphone, pixel]);
+      givenSubfolders({
+        iphone: iphonePhotosOfNovember2026.iphone,
+        'iphone-2026': iphonePhotosOfNovember2026['iphone-2026'],
+        'iphone-2026-11': [iphoneDay],
+        pixel: pixelPhotosOfOctober2026.pixel,
+        'pixel-2026': pixelPhotosOfOctober2026['pixel-2026'],
+        'pixel-2026-10': [pixelDay],
+      });
+      givenPhotosInFolders({
+        'iphone-2026-11-03': [photo('IMG_IPHONE', 'iphone-2026-11-03', '2026-11-03T09:00:00Z')],
+        'pixel-2026-10-20': [photo('IMG_PIXEL', 'pixel-2026-10-20', '2026-10-20T09:00:00Z')],
+      });
+      photosClient.deleteDevice.mockResolvedValue(undefined);
+    });
+
+    test('When the user opens Manage devices, then the backed-up devices are listed', async () => {
+      renderWithStore();
+
+      await manageDevices();
+
+      expect(shownDevices()).toStrictEqual(['iPhone', 'Pixel']);
+    });
+
+    test('When the user deletes a device, then they are warned that its photo backup is deleted for good first', async () => {
+      renderWithStore();
+      await manageDevices();
+
+      deleteDevice('Pixel');
+
+      expect(await screen.findByText('views.photos.devices.deleteDialog.description')).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: 'actions.cancel' }));
+      await waitFor(() =>
+        expect(screen.queryByText('views.photos.devices.deleteDialog.description')).not.toBeInTheDocument(),
+      );
+      expect(photosClient.deleteDevice).not.toHaveBeenCalled();
+      expect(shownDevices()).toStrictEqual(['iPhone', 'Pixel']);
+    });
+
+    test('When the user confirms, then the device and its photos disappear and the filter goes back to all devices', async () => {
+      renderWithStore();
+      fireEvent.click(await screen.findByRole('button', { name: /views.photos.filters.allDevices/ }));
+      fireEvent.click(await screen.findByRole('menuitem', { name: /Pixel/ }));
+      expect(await screen.findByRole('img', { name: 'IMG_PIXEL.jpg' })).toBeInTheDocument();
+      await manageDevices();
+
+      deleteDevice('Pixel');
+      await confirmDeletion();
+
+      await waitFor(() => expect(shownDevices()).toStrictEqual(['iPhone']));
+      expect(photosClient.deleteDevice).toHaveBeenCalledExactlyOnceWith('pixel');
+      expect(await screen.findByText('views.photos.devices.deleted')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /views.photos.filters.allDevices/ })).toBeInTheDocument();
+      expect(await screen.findByRole('img', { name: 'IMG_IPHONE.jpg' })).toBeInTheDocument();
+      expect(screen.queryByRole('img', { name: 'IMG_PIXEL.jpg' })).not.toBeInTheDocument();
+    });
+
+    test('When the device is being deleted, then the confirmation cannot be dismissed until it finishes', async () => {
+      let finishDeletion = () => undefined as void;
+      photosClient.deleteDevice.mockReturnValue(new Promise<void>((resolve) => (finishDeletion = resolve)));
+      renderWithStore();
+      await manageDevices();
+      deleteDevice('Pixel');
+      await confirmDeletion();
+
+      fireEvent.keyDown(window, { key: 'Escape' });
+      fireEvent.click(screen.getByTestId('dialog-overlay'));
+      await act(() => new Promise((resolve) => setTimeout(resolve, 300)));
+
+      expect(screen.getByText('views.photos.devices.deleteDialog.description')).toBeInTheDocument();
+      finishDeletion();
+      await waitFor(() => expect(shownDevices()).toStrictEqual(['iPhone']));
+      expect(photosClient.deleteDevice).toHaveBeenCalledOnce();
+    });
+
+    test('When the device no longer exists, then it is removed from the list with a message saying so', async () => {
+      photosClient.deleteDevice.mockRejectedValue(httpError(404));
+      renderWithStore();
+      await manageDevices();
+
+      deleteDevice('Pixel');
+      await confirmDeletion();
+
+      expect(await screen.findByText('views.photos.devices.notFound')).toBeInTheDocument();
+      expect(shownDevices()).toStrictEqual(['iPhone']);
+      expect(errorService.reportError).not.toHaveBeenCalled();
+    });
+
+    test('When the device cannot be deleted, then it stays with its photos and the user is told', async () => {
+      photosClient.deleteDevice.mockRejectedValue(httpError(500));
+      renderWithStore();
+      await manageDevices();
+
+      deleteDevice('Pixel');
+      await confirmDeletion();
+
+      expect(await screen.findByText('views.photos.devices.deleteError')).toBeInTheDocument();
+      expect(shownDevices()).toStrictEqual(['iPhone', 'Pixel']);
+      expect(errorService.reportError).toHaveBeenCalled();
+    });
+
+    test('When the last device is deleted, then the user is invited to install the mobile app', async () => {
+      givenDevices([pixel]);
+      renderWithStore();
+      await manageDevices();
+
+      deleteDevice('Pixel');
+      await confirmDeletion();
+
+      expect(await screen.findByText('views.photos.empty.title')).toBeInTheDocument();
+      expect(screen.queryByRole('img', { name: 'IMG_PIXEL.jpg' })).not.toBeInTheDocument();
     });
   });
 

@@ -9,11 +9,19 @@ export interface PhotosFilterOption<T extends string> {
   icon?: ReactNode;
 }
 
+export interface PhotosFilterMenuAction {
+  label: string;
+  icon: ReactNode;
+  onClick: () => void;
+}
+
 interface PhotosFilterMenuProps<T extends string> {
   allLabel: string;
   options: PhotosFilterOption<T>[];
   selectedId: T | null;
   onSelect: (id: T | null) => void;
+  /** Shown at the end of the menu, apart from the options. */
+  action?: PhotosFilterMenuAction;
 }
 
 const PhotosFilterMenuRow = ({
@@ -24,7 +32,7 @@ const PhotosFilterMenuRow = ({
 }: {
   label: string;
   icon?: ReactNode;
-  isSelected: boolean;
+  isSelected?: boolean;
   onClick: () => void;
 }) => (
   <MenuItem>
@@ -36,7 +44,9 @@ const PhotosFilterMenuRow = ({
     >
       {icon}
       <span className="grow truncate">{label}</span>
-      <CheckIcon size={16} className={isSelected ? 'shrink-0 text-primary' : 'invisible shrink-0'} />
+      {isSelected !== undefined && (
+        <CheckIcon size={16} className={isSelected ? 'shrink-0 text-primary' : 'invisible shrink-0'} />
+      )}
     </button>
   </MenuItem>
 );
@@ -47,6 +57,7 @@ const PhotosFilterMenu = <T extends string>({
   options,
   selectedId,
   onSelect,
+  action,
 }: PhotosFilterMenuProps<T>): JSX.Element => {
   const selectedOption = options.find((option) => option.id === selectedId);
 
@@ -69,6 +80,12 @@ const PhotosFilterMenu = <T extends string>({
             onClick={() => onSelect(option.id)}
           />
         ))}
+        {action && (
+          <>
+            <div className="mx-4 my-1 border-t border-gray-10" />
+            <PhotosFilterMenuRow label={action.label} icon={action.icon} onClick={action.onClick} />
+          </>
+        )}
       </MenuItems>
     </Menu>
   );

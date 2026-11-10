@@ -6,19 +6,21 @@ import PhotosMonthFilter from './PhotosMonthFilter';
 interface PhotosFiltersProps {
   devices: PhotoDevice[];
   filters: PhotoFilters;
+  onDeviceRemoved: (deviceUuid: string) => void;
 }
 
-const PhotosFilters = ({ devices, filters }: PhotosFiltersProps): JSX.Element => {
-  const hasSeveralDevices = devices.length > 1;
+const PhotosFilters = ({ devices, filters, onDeviceRemoved }: PhotosFiltersProps): JSX.Element => {
+  const hasDevices = devices.length > 0;
   const hasMonths = filters.availableMonths.length > 0;
 
   return (
     <>
-      {hasSeveralDevices && (
+      {hasDevices && (
         <PhotosDeviceFilter
           devices={devices}
           selectedDeviceUuid={filters.selectedDeviceUuid}
           onSelect={filters.selectDevice}
+          onDeviceRemoved={onDeviceRemoved}
         />
       )}
       {hasMonths && (

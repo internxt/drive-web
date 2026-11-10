@@ -519,6 +519,20 @@
       "selection": {
         "title": "Foto selezionate",
         "clear": "Cancella selezione"
+      },
+      "devices": {
+        "manage": "Gestisci dispositivi",
+        "title": "I tuoi dispositivi",
+        "close": "Chiudi",
+        "delete": "Elimina",
+        "deleted": "Dispositivo eliminato",
+        "notFound": "Questo dispositivo era già stato eliminato",
+        "deleteError": "Impossibile eliminare il dispositivo. Riprova.",
+        "deleteDialog": {
+          "title": "Eliminare le foto di {{name}}?",
+          "description": "Tutte le foto e i video salvati da questo dispositivo verranno eliminati definitivamente. L'operazione non può essere annullata.",
+          "confirm": "Elimina definitivamente"
+        }
       }
     },
     "favorites": {
