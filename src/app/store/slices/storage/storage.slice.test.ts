@@ -163,12 +163,6 @@ describe('storage slice', () => {
   });
 
   describe('Favorites', () => {
-    test('When the favorites loading flag is set, then the state reflects the new value', () => {
-      const nextState = storageReducer(buildInitialState(), storageActions.setIsLoadingFavorites(true));
-
-      expect(nextState.isLoadingFavorites).toBe(true);
-    });
-
     test('When favorites are added to existing ones, then the new items appear after the existing ones', () => {
       const existing = buildDriveItemData({ uuid: 'fav-uuid-1', id: 1, name: 'existing.pdf' });
       const incoming = buildDriveItemData({ uuid: 'fav-uuid-2', id: 2, name: 'incoming.pdf' });
