@@ -16,11 +16,13 @@ const SIDE_PADDING = 20;
 const DAY_GAP = 24;
 
 interface PhotosTimelineProps {
+  /** Newest first, as returned by `sortPhotosNewestFirst`. */
   photos: Photo[];
   failedMonths: MonthKey[];
   isLoadingMore: boolean;
   onEndReached: () => void;
   onRetryMonth: (month: MonthKey) => void;
+  onOpenPhoto: (photo: Photo) => void;
 }
 
 interface TimelineFooterContext {
@@ -42,13 +44,10 @@ interface Timeline {
   isLastRowOfDay: boolean[];
 }
 
-const groupByDayNewestFirst = (photos: Photo[]): PhotosOfDay[] => {
-  const photosNewestFirst = [...photos].sort(
-    (photo, otherPhoto) => otherPhoto.day.localeCompare(photo.day) || otherPhoto.takenAt.localeCompare(photo.takenAt),
-  );
+const groupByDay = (photos: Photo[]): PhotosOfDay[] => {
   const days: PhotosOfDay[] = [];
 
-  for (const photo of photosNewestFirst) {
+  for (const photo of photos) {
     const lastDay = days.at(-1);
     if (lastDay?.day === photo.day) lastDay.photos.push(photo);
     else days.push({ day: photo.day, photos: [photo] });
@@ -132,6 +131,7 @@ const PhotosTimeline = ({
   isLoadingMore,
   onEndReached,
   onRetryMonth,
+  onOpenPhoto,
 }: PhotosTimelineProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
@@ -142,7 +142,7 @@ const PhotosTimeline = ({
   const { height } = useElementSize(container);
   const { width: widthWithoutScrollbar } = useElementSize(scroller);
   const columns = getColumns(widthWithoutScrollbar);
-  const days = useMemo(() => groupByDayNewestFirst(photos), [photos]);
+  const days = useMemo(() => groupByDay(photos), [photos]);
   const timeline = useMemo(() => getTimeline(days, columns, failedMonths), [days, columns, failedMonths]);
 
   useLayoutEffect(() => {
@@ -205,7 +205,7 @@ const PhotosTimeline = ({
             return (
               <div style={getRowStyle(columns, paddingBottom)}>
                 {row.photos.map((photo) => (
-                  <PhotoGridItem key={photo.uuid} photo={photo} />
+                  <PhotoGridItem key={photo.uuid} photo={photo} onOpen={onOpenPhoto} />
                 ))}
               </div>
             );

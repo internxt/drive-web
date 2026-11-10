@@ -1,6 +1,7 @@
 import { PhotoFolderFile } from '@internxt/sdk/dist/drive/photos';
 import { FetchFolderFoldersCursorResponse } from '@internxt/sdk/dist/drive/storage/types';
 import { SdkFactory } from 'app/core/factory/sdk';
+import { DriveItemData } from 'app/drive/types';
 import { thumbnailableVideoExtension } from 'app/drive/types/file-types';
 import { DayKey, MonthKey, Photo, PhotoMonth, PhotoThumbnail } from '../types';
 
@@ -112,6 +113,7 @@ export class PhotoFoldersService {
         thumbnail: getLatestThumbnail(file.thumbnails),
         kind: thumbnailableVideoExtension.includes(file.type.toLowerCase()) ? 'video' : 'photo',
         relatedFiles: [],
+        file: { ...file, size: Number(file.size), isFolder: false, name: file.plainName } as unknown as DriveItemData,
       };
       return [{ photo, plainName: file.plainName }];
     });

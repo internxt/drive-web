@@ -23,6 +23,10 @@ interface FileViewerWrapperProps {
   contextMenu?: Array<MenuItemType<DriveItemData>>;
   isSharedView?: boolean;
   keyboardShortcuts?: FileViewerKeyboardShortcuts;
+  /** Replaces the default download of the file being shown. */
+  onDownload?: (file: DriveItemData) => void;
+  /** When false, the viewer never generates nor uploads a new thumbnail for the files it shows. */
+  refreshesThumbnail?: boolean;
 }
 
 const FileViewerWrapper = ({
@@ -33,6 +37,8 @@ const FileViewerWrapper = ({
   contextMenu,
   isSharedView,
   keyboardShortcuts,
+  onDownload: downloadFile,
+  refreshesThumbnail = true,
 }: FileViewerWrapperProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
@@ -51,7 +57,9 @@ const FileViewerWrapper = ({
   });
 
   const onDownload = () => {
-    if (currentFile) {
+    if (currentFile && downloadFile) {
+      downloadFile(currentFile as DriveItemData);
+    } else if (currentFile) {
       DownloadManager.downloadItem({
         payload: [currentFile as DriveItemData],
         selectedWorkspace,
@@ -67,6 +75,7 @@ const FileViewerWrapper = ({
     isEnabled: showPreview,
     isWorkspace,
     onFreshDownload: (downloadedFile, downloadedBlob) => {
+      if (!refreshesThumbnail) return;
       const isConvertibleImage = convertibleImageExtensions.includes(downloadedFile.type.toLowerCase());
       if (!isConvertibleImage) {
         void refreshThumbnail(downloadedFile, downloadedBlob);
@@ -104,7 +113,7 @@ const FileViewerWrapper = ({
       isShareView={isSharedView}
       keyboardShortcuts={viewerKeyboardShortcuts}
       onProgress={updateProgress}
-      onConvertedContent={refreshThumbnail}
+      onConvertedContent={refreshesThumbnail ? refreshThumbnail : undefined}
     />
   ) : (
     <div className="hidden" />
