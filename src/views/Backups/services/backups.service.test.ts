@@ -18,7 +18,6 @@ describe('backupsService', () => {
   let mockBackupsClient: any;
 
   beforeEach(() => {
-    vi.clearAllMocks();
     mockBackupsClient = {
       getBackupDevices: vi.fn(),
       getAllDevicesAsFolder: vi.fn(),

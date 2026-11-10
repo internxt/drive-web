@@ -21,7 +21,6 @@ describe('Download V2', () => {
   const mockNetworkClient = {};
 
   beforeEach(async () => {
-    vi.clearAllMocks();
     const { getSha256 } = await import('../../crypto/services/utils');
     vi.mocked(getSha256).mockResolvedValue(mockHashedPassword);
 

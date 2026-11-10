@@ -102,7 +102,6 @@ describe('Thunk of fetch sorted folder content', () => {
   });
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 

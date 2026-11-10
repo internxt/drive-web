@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
+import { describe, it, expect, vi, Mock } from 'vitest';
 import deleteItems from './deleteItems.service';
 import errorService from 'services/error.service';
 import { deleteDatabaseItems } from 'app/drive/services/database.service';
@@ -60,10 +60,6 @@ vi.mock('i18next', () => ({
 }));
 
 describe('DeleteItems', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   it('should delete multiple items permanently', async () => {
     const mockItems = [
       { uuid: 'file-1', isFolder: false },

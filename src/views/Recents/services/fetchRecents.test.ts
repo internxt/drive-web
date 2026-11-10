@@ -1,13 +1,9 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { fetchRecents } from './fetchRecents';
 import { SdkFactory } from 'app/core/factory/sdk';
 import { mockSdkFactory } from 'testUtils/sdk.mock';
 
 describe('fetchRecents', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   it('should fetch recent files with the specified limit', async () => {
     const mockLimit = 10;
     const mockFiles = [

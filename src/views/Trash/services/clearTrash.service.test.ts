@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
+import { describe, it, expect, vi, Mock } from 'vitest';
 import clearTrash from './clearTrash.service';
 import errorService from 'services/error.service';
 import workspacesService from 'services/workspace.service';
@@ -56,10 +56,6 @@ vi.mock('i18next', () => ({
 }));
 
 describe('clearTrash', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   it('should clear trash for personal account', async () => {
     const mockClearTrash = vi.fn().mockResolvedValue(undefined);
     (notificationsService.show as Mock).mockReturnValue('toast-id-123');

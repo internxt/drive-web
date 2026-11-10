@@ -20,8 +20,6 @@ describe('fetchFavorites services', () => {
     ]);
 
   beforeEach(() => {
-    vi.clearAllMocks();
-
     const mockStorageClient = { getFavorites: mockGetFavorites };
     mockSdkFactory({ createNewStorageClient: mockStorageClient });
   });

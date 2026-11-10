@@ -1,12 +1,8 @@
-import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import operatingSystemService from './operating-system.service';
 
 describe('operating-system service', () => {
   const originalNavigator = globalThis.navigator;
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
 
   afterEach(() => {
     Object.defineProperty(globalThis, 'navigator', {

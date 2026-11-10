@@ -9,8 +9,6 @@ describe('toggleFavorite service', () => {
   const mockUnmarkItemAsFavorite = vi.fn().mockResolvedValue(mockResponse);
 
   beforeEach(() => {
-    vi.clearAllMocks();
-
     const mockStorageClient = {
       markItemAsFavorite: mockMarkItemAsFavorite,
       unmarkItemAsFavorite: mockUnmarkItemAsFavorite,

@@ -142,7 +142,6 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
-  vi.clearAllMocks();
   vi.resetModules();
   vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
     if (key === 'newApi') return mockApi;

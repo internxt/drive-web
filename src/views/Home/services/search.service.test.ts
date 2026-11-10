@@ -1,12 +1,8 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { defaultSearchFilters, searchItems, SearchFilters } from './search.service';
 import { mockSdkFactory } from 'testUtils/sdk.mock';
 
 describe('searchItems', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   const mockGlobalSearch = (response: unknown = { data: [] }) => {
     const getGlobalSearchItems = vi.fn().mockReturnValue([Promise.resolve(response), vi.fn()]);
     mockSdkFactory({ createNewStorageClient: { getGlobalSearchItems } });

@@ -93,7 +93,6 @@ describe('Thunk of fetch folder content', () => {
     Array.from({ length: count }, (_, i) => ({ uuid: `folder-uuid-${i}`, plainName: `Folder ${i}`, id: i }));
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 

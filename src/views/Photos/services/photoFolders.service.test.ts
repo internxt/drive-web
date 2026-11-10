@@ -19,7 +19,6 @@ describe('Photo backup folders', () => {
   };
 
   beforeEach(() => {
-    vi.clearAllMocks();
     mockSdkFactory({
       createNewStorageClient: storageClient,
       createPhotosClient: photosClient,

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
+import { describe, it, expect, vi, Mock } from 'vitest';
 import { getTrash, getTrashPaginated, getWorkspaceTrashPaginated } from './getTrash.service';
 import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
@@ -68,10 +68,6 @@ vi.mock('i18next', () => ({
 }));
 
 describe('get_trash', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   describe('getTrash', () => {
     it('should fetch trash items and dispatch them to store', async () => {
       const mockFiles = [{ id: 1, name: 'file1' }];

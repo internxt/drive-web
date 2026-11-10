@@ -39,7 +39,6 @@ describe('paymentService', () => {
   };
 
   beforeEach(() => {
-    vi.clearAllMocks();
     mockSdkFactory({ createPaymentsClient: mockPaymentsClient });
     vi.mocked(loadStripe).mockResolvedValue(mockStripe as any);
   });

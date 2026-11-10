@@ -56,7 +56,6 @@ const CheckoutUserAuthForm = ({
 
 describe('Checkout account details', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     globalThis.grecaptcha = {
       ready: (callback: () => void) => callback(),
       execute: vi.fn().mockResolvedValue('captcha_token'),

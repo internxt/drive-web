@@ -33,7 +33,6 @@ const renderPasswordlessCheckout = ({
 
 describe('Paying without creating a password first', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     localStorage.clear();
     mockSdkFactory({ createCheckoutClientWithoutSession: { createCustomerWithoutAccount } });
     createCustomerWithoutAccount.mockResolvedValue({ customerId: 'cus_123', token: 'payments_token' });

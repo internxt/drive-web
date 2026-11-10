@@ -72,7 +72,6 @@ vi.mock('i18next', () => ({
 
 describe('moveItemsToTrash', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     (store.getState as Mock).mockReturnValue({ storage: { favorites: [] } });
   });
 
