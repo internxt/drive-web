@@ -1,26 +1,19 @@
 import { useEffect, useRef } from 'react';
-import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 import { audioTypes } from 'services/media.service';
+import { FileContentViewerProps } from '../types';
 
-const FileAudioViewer = ({
-  file,
-  blob,
-  setIsPreviewAvailable,
-}: {
-  file: DriveFileData;
-  blob: Blob;
-  setIsPreviewAvailable: (isError: boolean) => void;
-}): JSX.Element => {
+const FileAudioViewer = ({ file, blob, onError }: FileContentViewerProps): JSX.Element => {
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     const audioPlayer = audioRef.current as HTMLAudioElement;
+    if (!blob) return;
 
     audioPlayer.addEventListener('loadedmetadata', () => {
       audioPlayer.play().catch((err) => {
         const error = err as Error;
         console.error('[ERROR WHILE PLAYING AUDIO/STACK]: ', error.stack ?? error.message);
-        setIsPreviewAvailable(false);
+        onError();
       });
     });
 

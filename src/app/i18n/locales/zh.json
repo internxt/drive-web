@@ -204,7 +204,13 @@
       "success": "您已成功登录",
       "error": "无法登录，请重试",
       "closeWindow": "您可以关闭此窗口",
-      "invalidRedirectUri": "无效的重定向网址"
+      "invalidRedirectUri": "无效的重定向网址",
+      "errors": {
+        "CLIENT_VERSION_UNSUPPORTED": {
+          "title": "此版本的应用已不再受支持",
+          "description": "请将应用更新到最新版本，然后重新登录。"
+        }
+      }
     },
     "oauthLink": {
       "continueAs": "继续使用",
@@ -214,13 +220,9 @@
     }
   },
   "checkout": {
-    "pay": "支付",
+    "continue": "继续",
     "processing": "处理中...",
     "checkout": "结账",
-    "postalCode": {
-      "title": "邮政编码",
-      "placeholder": "邮政编码"
-    },
     "authComponent": {
       "signUp": {
         "emailAddress": "您的电子邮件地址",
@@ -239,16 +241,6 @@
         "invalidData": "请确认您的电子邮件和密码是否正确，然后重试。",
         "serverError": "我们无法完成此步骤。请几分钟后重试，如果问题仍然存在请联系客服。",
         "unknown": "我们无法验证您的信息。请确认您的电子邮件和密码，然后重试。"
-      },
-      "privacyGuarantee": "隐私保证：我们不会分享您的信息，并且只会在提供服务时与您联系。"
-    },
-    "addressBillingTitle": "账单地址",
-    "crypto": "Crypto",
-    "addressBilling": {
-      "optional": {
-        "cta": "可选",
-        "companyName": "公司名称",
-        "companyVatId": "公司增值税编号"
       }
     },
     "productCard": {
@@ -272,40 +264,16 @@
       "taxes": "税费",
       "annualBillingTemplate": "年度计划，首月收费 {{currency}}{{priceNow}}，之后每月 {{currency}}{{price}}/月 自动续订"
     },
-    "confirmCryptoPayment": {
-      "title": "确认付款",
-      "timeExpiration": "发票将在10分钟后过期",
-      "expiredLabel": "已过期",
-      "totalInCrypto": "付款金额 ({{cryptoCurrency}})",
-      "totalInFiat": "金额",
-      "copyAddress": "付款地址",
-      "doNotCloseWindowWarning": "在付款完成之前请勿关闭窗口",
-      "cancel": "取消",
-      "confirm": "确认付款",
-      "sessionExpired": "会话已过期",
-      "notifications": {
-        "priceCopied": "价格已复制到剪贴板",
-        "addressCopied": "地址已复制到剪贴板",
-        "paymentSucceeded": "付款成功完成",
-        "paymentNotCompleted": "付款未完成",
-        "unexpectedError": "验证付款时出现错误"
-      }
-    },
     "error": {
       "invalidPlan": "不支持的套餐类型。请选择有效的套餐。",
-      "fetchingCryptoCurrencies": "无法加载可用的加密货币选项",
-      "addressRequired": "请填写您的账单地址以继续",
       "businessPlan": "企业计划不可用",
-      "postalCodeRequired": "请输入您的邮政编码以继续",
       "countryRequired": "我们无法确定您的国家/地区,请稍后再试",
       "missingPaymentDetails": "缺少确认付款所需的支付信息",
       "paymentFailed": "付款失败"
     },
     "accountSetup": {
-      "passwordAfterPayment": "现在还不需要密码。付款后，我们会向你发送一封电子邮件，以完成账户设置。",
       "emailHasAccount": "该电子邮件已有 Internxt 账户。请登录以继续购买。",
       "pendingSetup": "{{email}} 已有一个待设置的付费套餐。请查看你的电子邮件以完成账户设置。",
-      "cryptoRequiresSignIn": "请登录后使用加密货币付款。",
       "resendEmail": "重新发送邮件",
       "emailResent": "我们已重新发送邮件",
       "resendEmailError": "无法发送邮件，请稍后重试。",
@@ -328,7 +296,11 @@
       "offerPillNoDiscount": "限时专属优惠",
       "title": "让您的文件、照片和视频",
       "titleHighlight": "100% 私密。",
-      "subtitle": "首月仅需 {{price}}，即可获得 {{storage}} 私人云存储空间。",
+      "subtitle": {
+        "month": "首月仅需 {{price}}，即可获得 {{storage}} 私人云存储空间。",
+        "year": "首年仅需 {{price}}，即可获得 {{storage}} 私人云存储空间。",
+        "lifetime": "一次性付款 {{price}}，即可永久拥有 {{storage}} 私人云存储空间。"
+      },
       "imageAlt": "笔记本电脑和手机上的 Internxt Drive",
       "points": {
         "privacy": {
@@ -338,6 +310,10 @@
         "storage": {
           "title": "您的私人云，安全无忧",
           "description": "存储您的照片、视频、文档和个人文件，隐私保护内置其中。"
+        },
+        "suite": {
+          "title": "不只是云存储空间",
+          "description": "根据您的套餐提供隐私工具。"
         },
         "offer": {
           "title": "立减 {{percent}}% — 限时优惠",
@@ -373,13 +349,32 @@
       "encryptedDescription": "Internxt 无法访问您的内容。"
     },
     "cta": {
-      "button": "以 {{price}} 获得 {{storage}}",
-      "renewalNoteMonthly": "首月 {{price}}，之后按 {{renewalPrice}}/月续订。可随时取消。",
-      "renewalNoteYearly": "首年 {{price}}，之后按 {{renewalPrice}}/年续订。可随时取消。"
+      "button": {
+        "lifetime": "获取 Lifetime 套餐",
+        "subscription": "获取订阅套餐"
+      },
+      "billingDisclosure": {
+        "withIntroPrice": {
+          "month": "首月 {{price}}，之后每月 {{renewalPrice}}。可随时取消。",
+          "year": "首年 {{price}}，之后每年 {{renewalPrice}}。可随时取消。"
+        },
+        "withoutIntroPrice": {
+          "month": "每月 {{renewalPrice}}。可随时取消。",
+          "year": "每年 {{renewalPrice}}。可随时取消。"
+        }
+      }
+    },
+    "lifetimeNotice": {
+      "title": "购买即永久属于您",
+      "description": "您购买的 Lifetime 存储空间不会因未来的套餐调整而减少。",
+      "singlePayment": "一次性付款 — 无需定期续费。"
+    },
+    "guarantee": {
+      "title": "30天退款保证",
+      "description": "放心试用，零风险。"
     }
   },
   "general": {
-    "of": "/",
     "at": "在",
     "terms": "条款和条件",
     "contactSupport": "联系支持",
@@ -446,9 +441,6 @@
     "stage": {
       "development": "发展"
     },
-    "loading": {
-      "default": "加载中..."
-    },
     "renewal": {
       "annually": "年度",
       "lifetime": "Lifetime"
@@ -486,6 +478,7 @@
   },
   "sideNav": {
     "drive": "云盘",
+    "photos": "照片",
     "favorites": "收藏",
     "backups": "备份",
     "shared": "共享的",
@@ -498,6 +491,26 @@
     }
   },
   "views": {
+    "photos": {
+      "head": "照片",
+      "empty": {
+        "title": "暂无照片",
+        "description": "在 Internxt 移动应用中开启照片备份,照片就会显示在这里"
+      },
+      "error": {
+        "title": "无法加载照片",
+        "description": "请检查网络连接后重试",
+        "retry": "重试"
+      },
+      "filters": {
+        "allDevices": "所有设备",
+        "allDates": "所有日期"
+      },
+      "timeline": {
+        "today": "今天",
+        "yesterday": "昨天"
+      }
+    },
     "favorites": {
       "head": "收藏",
       "empty": {
@@ -1303,7 +1316,8 @@
       "processing": "正在处理 {{pending}}/{{finished}}",
       "failedToUpload": "上傳失敗",
       "failedToDownload": "下載失敗",
-      "notAllowed": "不允許"
+      "notAllowed": "不允許",
+      "retryAll": "全部重试"
     },
     "waiting": "等待中",
     "paused": "暂停",
@@ -1429,7 +1443,6 @@
   },
   "success": {
     "passwordChanged": "密码已修改",
-    "linkCopied": "链接已复制！",
     "twoFactorAuthActivated": "您的双因素身份验证已激活！",
     "twoFactorAuthDisabled": "您的双因素身份验证已被禁用"
   },
@@ -1517,7 +1530,6 @@
     "restoreHere": "在这里恢复",
     "rename": "重命名",
     "restore": "恢复",
-    "copyLink": "复制链接",
     "report": "举报滥用",
     "yes": "是",
     "no": "否",

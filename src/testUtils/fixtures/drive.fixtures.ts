@@ -48,3 +48,30 @@ export const getDriveItemData = (overrides: Partial<DriveItemData> = {}): DriveI
   created_at: '2024-01-01T00:00:00.000Z',
   ...overrides,
 });
+
+export const getThumbnailDto = () => ({
+  id: 7,
+  fileId: 2,
+  fileUuid: 'file-uuid-b',
+  type: 'png',
+  maxWidth: 300,
+  maxHeight: 300,
+  size: 512,
+  bucketId: 'thumbnail-bucket',
+  bucketFile: 'thumbnail-file',
+  encryptVersion: '03-aes',
+  createdAt: '2024-01-01T00:00:00.000Z',
+  updatedAt: '2024-01-01T00:00:00.000Z',
+});
+
+export const getDriveThumbnail = (): DriveItemData['thumbnails'][number] => ({
+  id: 7,
+  file_id: 2,
+  type: 'png',
+  max_width: 300,
+  max_height: 300,
+  size: 512,
+  bucket_id: 'thumbnail-bucket',
+  bucket_file: 'thumbnail-file',
+  encrypt_version: '03-aes',
+});

@@ -3,11 +3,6 @@ import { binaryStreamToUint8Array } from 'services';
 import { VideoSessionDestroyedError } from '../errors/video-streaming.errors';
 import { VideoStreamingSessionConfig } from './VideoStreamingSession';
 
-export interface VideoStreamSession {
-  fileSize: number;
-  mimeType: string;
-}
-
 export interface ChunkRequestPayload {
   start: number;
   end: number;

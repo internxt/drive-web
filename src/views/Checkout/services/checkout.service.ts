@@ -10,7 +10,6 @@ import {
   CreateSubscriptionPayload,
   GetPriceByIdPayload,
   PaymentIntent,
-  PaymentIntentCrypto,
   PriceWithTax,
 } from '@internxt/sdk/dist/payments/types';
 import { StripeElementsOptionsMode } from '@stripe/stripe-js';
@@ -85,16 +84,13 @@ const fetchPromotionCodeByName = async (priceId: string, promotionCodeName: stri
 
 export type CreateCheckoutCustomerPayload = Pick<
   CreateCustomerPayload,
-  'country' | 'captchaToken' | 'companyVatId' | 'metadata' | 'lineAddress2'
+  'country' | 'captchaToken' | 'companyVatId' | 'metadata'
 > &
-  Partial<Pick<CreateCustomerPayload, 'customerName' | 'lineAddress1' | 'city' | 'postalCode'>>;
+  Partial<Pick<CreateCustomerPayload, 'customerName' | 'postalCode'>>;
 
 const createCustomer = async ({
   customerName,
-  city,
   country,
-  lineAddress1,
-  lineAddress2,
   postalCode,
   captchaToken,
   companyVatId,
@@ -105,16 +101,13 @@ const createCustomer = async ({
 }> => {
   const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
   return checkoutClient.createCustomer({
-    city,
-    lineAddress1,
-    lineAddress2,
     customerName,
     country,
     postalCode,
     captchaToken,
     companyVatId,
     metadata,
-  } as CreateCustomerPayload);
+  });
 };
 
 const createCustomerWithoutAccount = async (payload: CreateCustomerWithoutAccountPayload): Promise<CreatedCustomer> => {
@@ -151,7 +144,7 @@ const getCheckoutClient = async (options?: CheckoutClientOptions): Promise<Check
     : SdkFactory.getNewApiInstance().createCheckoutClient();
 
 const createSubscription = async (
-  { customerId, priceId, token, currency, captchaToken, promoCodeId }: CreateSubscriptionPayload,
+  { customerId, priceId, token, currency, captchaToken, promoCodeId, gclid }: CreateSubscriptionPayload,
   options?: CheckoutClientOptions,
 ): Promise<CreatedSubscriptionData> => {
   const checkoutClient = await getCheckoutClient(options);
@@ -162,11 +155,12 @@ const createSubscription = async (
     currency,
     captchaToken,
     promoCodeId,
+    gclid,
   });
 };
 
 export const createPaymentIntent = async (
-  { customerId, priceId, token, currency, captchaToken, userAddress, promoCodeId }: CreatePaymentIntentPayload,
+  { customerId, priceId, token, currency, captchaToken, promoCodeId, gclid }: CreatePaymentIntentPayload,
   options?: CheckoutClientOptions,
 ): Promise<PaymentIntent> => {
   const checkoutClient = await getCheckoutClient(options);
@@ -176,8 +170,8 @@ export const createPaymentIntent = async (
     token,
     currency,
     captchaToken,
-    userAddress,
     promoCodeId,
+    gclid,
   });
 };
 
@@ -209,22 +203,27 @@ const checkoutSetupIntent = async (customerId: string) => {
   }
 };
 
-const verifyCryptoPayment = async (token: PaymentIntentCrypto['token']): Promise<boolean> => {
-  const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
-  return checkoutClient.verifyCryptoPayment(token);
-};
-
 const loadStripeElements = async (
   theme: {
+    stripeTheme: 'flat' | 'night';
     backgroundColor: string;
     textColor: string;
     borderColor: string;
     borderInputColor: string;
     labelTextColor: string;
+    placeholderTextColor: string;
   },
   plan: PriceWithTax,
 ): Promise<StripeElementsOptionsMode> => {
-  const { backgroundColor, textColor, borderColor, borderInputColor, labelTextColor } = theme;
+  const {
+    stripeTheme,
+    backgroundColor,
+    textColor,
+    borderColor,
+    borderInputColor,
+    labelTextColor,
+    placeholderTextColor,
+  } = theme;
 
   return {
     appearance: {
@@ -232,14 +231,24 @@ const loadStripeElements = async (
       variables: {
         spacingAccordionItem: '8px',
         colorPrimary: textColor,
+        colorBackground: backgroundColor,
+        colorText: textColor,
+        colorTextSecondary: labelTextColor,
+        colorTextPlaceholder: placeholderTextColor,
       },
-      theme: 'flat',
+      theme: stripeTheme,
       rules: {
         '.AccordionItem:hover': {
           color: textColor,
         },
         '.Block': {
           backgroundColor: backgroundColor,
+        },
+        '.BlockDivider': {
+          backgroundColor: borderColor,
+        },
+        '.BlockAction': {
+          color: labelTextColor,
         },
         '.TermsText': {
           color: textColor,
@@ -307,7 +316,6 @@ const checkoutService = {
   createSubscription,
   loadStripeElements,
   checkoutSetupIntent,
-  verifyCryptoPayment,
   trackIncompleteCheckout,
 };
 

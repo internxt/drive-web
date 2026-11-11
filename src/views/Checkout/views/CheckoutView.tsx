@@ -3,15 +3,14 @@ import { Loader } from '@internxt/ui';
 import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { StripePaymentElementOptions } from '@stripe/stripe-js';
 import { IFormValues } from 'app/core/types';
-import { LegacyRef, useState } from 'react';
+import { LegacyRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { CheckoutProductCard } from '../components/CheckoutProductCard';
 import { CheckoutUserAuth } from '../components/CheckoutUserAuth';
 import { HeaderComponent } from '../components/Header';
-import { AuthMethodTypes, PaymentType } from '../types';
+import { AuthMethodTypes } from '../types';
 import { CheckoutViewManager, UserInfoProps } from '../types/checkout.types';
-import { CryptoCurrency, PriceWithTax } from '@internxt/sdk/dist/payments/types';
-import { CryptoPaymentSection } from '../components/CryptoPaymentSection';
+import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 
 export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
   wallets: {
@@ -37,13 +36,10 @@ interface CheckoutViewProps {
     couponCodeError?: string;
     couponCodeData?: CouponCodeData;
     currentSelectedPlan: PriceWithTax | null;
-    selectedCurrency: string;
     isPasswordlessSignUp?: boolean;
     pendingAccountSetupEmail?: string;
   };
   checkoutViewManager: CheckoutViewManager;
-  availableCryptoCurrencies?: CryptoCurrency[];
-  onCurrencyTypeChanges: (currency: PaymentType) => void;
 }
 
 const AUTH_METHOD_VALUES = {
@@ -57,14 +53,11 @@ const CheckoutView = ({
   userAuthComponentRef,
   checkoutViewVariables,
   checkoutViewManager,
-  availableCryptoCurrencies,
-  onCurrencyTypeChanges,
 }: CheckoutViewProps) => {
   // Those custom hooks should be here.
   // They cannot be moved to the Parent, because it must be wrapped by <Elements> component.
   const stripeSDK = useStripe();
   const elements = useElements();
-  const [isCryptoDropdownOpen, setIsCryptoDropdownOpen] = useState<boolean>(false);
   const {
     isPaying,
     couponCodeError,
@@ -72,25 +65,9 @@ const CheckoutView = ({
     authMethod,
     couponCodeData,
     currentSelectedPlan,
-    selectedCurrency,
     isPasswordlessSignUp,
     pendingAccountSetupEmail,
   } = checkoutViewVariables;
-
-  const onCryptoDropdownToggle = () => {
-    if (!isCryptoDropdownOpen) {
-      elements?.getElement('payment')?.collapse();
-    }
-
-    onCurrencyTypeChanges(PaymentType['CRYPTO']);
-    setIsCryptoDropdownOpen(!isCryptoDropdownOpen);
-  };
-
-  const onStripePaymentExpanded = () => {
-    onCurrencyTypeChanges(PaymentType['FIAT']);
-    checkoutViewManager.onCurrencyChange(currentSelectedPlan?.price.currency ?? 'eur');
-    setIsCryptoDropdownOpen(false);
-  };
 
   const {
     register,
@@ -147,25 +124,7 @@ const CheckoutView = ({
               />
               <div className="flex flex-col pb-10">
                 <div className="flex flex-col w-full gap-2">
-                  <PaymentElement
-                    options={PAYMENT_ELEMENT_OPTIONS}
-                    onChange={(event) => {
-                      if (!event.collapsed) {
-                        onStripePaymentExpanded();
-                      }
-                    }}
-                  />
-                  {availableCryptoCurrencies && (
-                    <CryptoPaymentSection
-                      availableCryptoCurrencies={availableCryptoCurrencies}
-                      selectedCurrency={selectedCurrency}
-                      isDropdownOpen={isCryptoDropdownOpen}
-                      onDropdownClicked={onCryptoDropdownToggle}
-                      onCryptoChanges={checkoutViewManager.onCurrencyChange}
-                      onUserAddressChanges={checkoutViewManager.onUserAddressChanges}
-                      onUserNameChanges={checkoutViewManager.onUserNameChanges}
-                    />
-                  )}
+                  <PaymentElement options={PAYMENT_ELEMENT_OPTIONS} />
                 </div>
               </div>
             </div>

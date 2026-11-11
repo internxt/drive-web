@@ -1,4 +1,5 @@
 import { VideoExtensions, AudioExtensions } from 'app/drive/types/file-types';
+import envService from './env.service';
 
 type VideoTypes = Record<keyof VideoExtensions, string>;
 type AudioTypes = Record<keyof AudioExtensions, string>;
@@ -26,9 +27,16 @@ export const audioTypes: Partial<AudioTypes> = {
   weba: 'audio/webm',
 };
 
-export const HALF_A_GIGABYTE_IN_BYTES = 512 * 1024 * 1024;
+const DEFAULT_MAX_PREVIEWABLE_FILE_SIZE_IN_BYTES = 512 * 1024 * 1024;
+
+export function getMaxPreviewableFileSizeInBytes(): number {
+  const sizeInBytes = Number(envService.getVariable('maxPreviewableFileSize'));
+  const isValidSize = Number.isFinite(sizeInBytes) && sizeInBytes > 0;
+  return isValidSize ? sizeInBytes : DEFAULT_MAX_PREVIEWABLE_FILE_SIZE_IN_BYTES;
+}
+
 export function isFileSizePreviewable(size: number): boolean {
-  return size > 0 && size < HALF_A_GIGABYTE_IN_BYTES;
+  return size > 0 && size < getMaxPreviewableFileSizeInBytes();
 }
 
 export function getVideoMimeType(fileType: string): string {

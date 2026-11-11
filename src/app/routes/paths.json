@@ -63,12 +63,6 @@
       "exact": true
     },
     {
-      "id": "buttonAuth",
-      "layout": "empty",
-      "path": "/buttonAuth",
-      "exact": true
-    },
-    {
       "id": "recover-account",
       "layout": "empty",
       "path": "/recover-account/:token",
@@ -87,6 +81,14 @@
       "path": "/",
       "exact": true,
       "auth": true
+    },
+    {
+      "id": "photos",
+      "layout": "header-and-sidenav",
+      "path": "/photos",
+      "exact": true,
+      "auth": true,
+      "hideSearch": true
     },
     {
       "id": "favorites",

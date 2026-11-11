@@ -100,7 +100,7 @@ export const CheckoutProductCard = ({
       <div className="flex w-full rounded-2xl border border-gray-10 bg-surface p-5">
         <div className="flex w-full flex-col space-y-5">
           <p className="text-2xl font-bold text-gray-100">
-            {productLabel + ' - ' + translate(`checkout.productCard.renewalTitle.${priceData.interval}`)}
+            {productLabel + ' ' + translate(`checkout.productCard.renewalTitle.${priceData.interval}`)}
           </p>
           <div className="flex flex-row items-center justify-between text-gray-100">
             <p className="font-medium">{translate(`checkout.productCard.billed.${priceData.interval}`)}</p>
@@ -229,7 +229,7 @@ export const CheckoutProductCard = ({
             </>
           )}
           <Button type="submit" id="submit-create-account" className="flex" disabled={isPaymentProcessing}>
-            {isPaymentProcessing ? translate('checkout.processing') : translate('checkout.pay')}
+            {isPaymentProcessing ? translate('checkout.processing') : translate('checkout.continue')}
           </Button>
         </div>
       </div>

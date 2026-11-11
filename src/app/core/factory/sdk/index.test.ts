@@ -3,7 +3,7 @@ import { SdkFactory } from './index';
 import { LocalStorageService } from 'services/local-storage.service';
 import { userThunks } from '../../../store/slices/user';
 import { LocalStorageItem } from '../../types';
-import { Share, Users } from '@internxt/sdk/dist/drive';
+import { Photos, Share, Users } from '@internxt/sdk/dist/drive';
 import packageJson from '../../../../../package.json';
 import { Auth } from '@internxt/sdk/dist/auth';
 import { Location } from '@internxt/sdk';
@@ -11,6 +11,7 @@ import { HttpClient } from '@internxt/sdk/dist/shared/http/client';
 import { USER_NOTIFICATION_MAX_RETRIES } from './retryStrategies';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import dateService from 'services/date.service';
+import envService from 'services/env.service';
 import { EncryptedStorageService } from 'services/encrypted-storage.service';
 import { WorkspaceCredentialsDetails } from '@internxt/sdk/dist/workspaces';
 
@@ -28,6 +29,9 @@ vi.mock('@internxt/sdk/dist/drive', () => ({
     client: vi.fn(),
   },
   Storage: {
+    client: vi.fn(),
+  },
+  Photos: {
     client: vi.fn(),
   },
 }));
@@ -69,6 +73,7 @@ vi.mock('services/env.service', () => ({
       if (key === 'newApi') return MOCKED_NEW_API;
       if (key === 'payments') return MOCKED_PAYMENTS;
       if (key === 'location') return MOCKED_LOCATION;
+      if (key === 'sendCookiesOnAuthRequests') return 'true';
       return '';
     }),
   },
@@ -92,7 +97,6 @@ describe('SdkFactory', () => {
   };
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.spyOn(HttpClient, 'enableGlobalRetry').mockImplementation(vi.fn());
     mockDispatch = vi.fn();
     mockLocalStorage = {
@@ -330,6 +334,7 @@ describe('SdkFactory', () => {
             clientVersion: packageJson.version,
           },
           expect.any(Object),
+          { withCredentials: true },
         );
       });
 
@@ -352,6 +357,7 @@ describe('SdkFactory', () => {
             },
           },
           expect.any(Object),
+          { withCredentials: true },
         );
       });
 
@@ -373,6 +379,7 @@ describe('SdkFactory', () => {
             },
           },
           expect.any(Object),
+          { withCredentials: true },
         );
       });
 
@@ -396,6 +403,7 @@ describe('SdkFactory', () => {
             },
           },
           expect.any(Object),
+          { withCredentials: true },
         );
       });
 
@@ -417,6 +425,7 @@ describe('SdkFactory', () => {
             },
           },
           expect.any(Object),
+          { withCredentials: true },
         );
       });
 
@@ -434,6 +443,45 @@ describe('SdkFactory', () => {
             customHeaders: undefined,
           },
           expect.any(Object),
+          { withCredentials: true },
+        );
+      });
+      test('When sending cookies on auth requests is disabled, then the auth clients are created without credentials', () => {
+        const getVariable = vi.mocked(envService.getVariable);
+        const defaultImpl = getVariable.getMockImplementation();
+        getVariable.mockImplementation((key) =>
+          key === 'sendCookiesOnAuthRequests' ? 'false' : (defaultImpl?.(key) ?? ''),
+        );
+
+        const instance = SdkFactory.getNewApiInstance();
+        instance.createAuthClient();
+        instance.createDesktopAuthClient();
+
+        expect(Auth.client).toHaveBeenNthCalledWith(1, MOCKED_NEW_API, expect.any(Object), expect.any(Object), {
+          withCredentials: false,
+        });
+        expect(Auth.client).toHaveBeenNthCalledWith(2, MOCKED_NEW_API, expect.any(Object), expect.any(Object), {
+          withCredentials: false,
+        });
+
+        getVariable.mockImplementation(defaultImpl!);
+      });
+    });
+
+    describe('Creating the photos client', () => {
+      test('When the Photos client is created, then it uses the new API URL and the default app details', () => {
+        vi.spyOn(mockEncryptedStorage, 'getToken').mockReturnValue('test-token');
+
+        const instance = SdkFactory.getNewApiInstance();
+        instance.createPhotosClient();
+
+        expect(Photos.client).toHaveBeenCalledWith(
+          MOCKED_NEW_API,
+          {
+            clientName: packageJson.name,
+            clientVersion: packageJson.version,
+          },
+          expect.objectContaining({ token: 'test-token' }),
         );
       });
     });

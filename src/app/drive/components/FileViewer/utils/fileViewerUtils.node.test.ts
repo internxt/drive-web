@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest';
-import { HALF_A_GIGABYTE_IN_BYTES } from 'services/media.service';
-import { MAX_CONVERTIBLE_IMAGE_PREVIEW_BYTES, getPreviewSizeLimitBytes, isPreviewableBySize } from './fileViewerUtils';
+import { getMaxPreviewableFileSizeInBytes } from 'services/media.service';
+import { MAX_CONVERTIBLE_IMAGE_PREVIEW_BYTES } from './fileViewerConstants';
+import { getPreviewSizeLimitBytes, isPreviewableBySize } from './fileViewerUtils';
 
 const isPreviewable = (type: string, size: number) => isPreviewableBySize({ type, size });
 
@@ -27,6 +28,6 @@ describe('getPreviewSizeLimitBytes', () => {
   });
 
   test('when the file is not a convertible image, then the limit is the general one', () => {
-    expect(getPreviewSizeLimitBytes({ type: 'jpg' })).toBe(HALF_A_GIGABYTE_IN_BYTES);
+    expect(getPreviewSizeLimitBytes({ type: 'jpg' })).toBe(getMaxPreviewableFileSizeInBytes());
   });
 });

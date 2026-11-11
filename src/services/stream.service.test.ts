@@ -29,7 +29,6 @@ describe('Stream service', () => {
   let mockInputSlices: ReadableStream<Uint8Array>[];
 
   beforeEach(() => {
-    vi.clearAllMocks();
     mockKey = Buffer.from('0'.repeat(64), 'hex');
     mockIv = Buffer.from('0'.repeat(32), 'hex');
     mockDecipher = {

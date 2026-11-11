@@ -123,14 +123,7 @@ export const fetchBusinessLimitUsageThunk = createAsyncThunk<GetMemberUsageRespo
 export const planSlice = createSlice({
   name: 'plan',
   initialState,
-  reducers: {
-    updatePlanLimit: (state, action) => {
-      if (action.payload) {
-        state.planLimit = action.payload;
-        state.isLoadingPlanLimit = false;
-      }
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(initializeThunk.pending, (state) => {
@@ -261,7 +254,5 @@ export const planThunks = {
   fetchSubscriptionThunk,
   fetchBusinessLimitUsageThunk,
 };
-
-export const planActions = planSlice.actions;
 
 export default planSlice.reducer;

@@ -40,7 +40,6 @@ import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
 import { ATTRIBUTION_LOCAL_STORAGE_ITEMS, CHECKOUT_LOCAL_STORAGE_ITEMS } from 'services/storage-keys';
 import navigationService from 'services/navigation.service';
-import RealtimeService from 'services/sockets/socket.service';
 import { generateCaptchaToken } from 'utils';
 import { BackupData, detectBackupKeyFormat, prepareOldBackupRecoverPayloadForBackend } from 'utils/backupKeyUtils';
 import { TRUSTED_WEB_HOSTNAMES, TRUSTED_WEB_PROTOCOLS, validateUrl } from 'utils/urlValidation';
@@ -136,7 +135,6 @@ export async function logOut(loginParams?: Record<string, string>): Promise<void
   await databaseService.clear();
   localStorageService.clear();
   encryptedStorageService.clear();
-  RealtimeService.getInstance().stop();
   const isCheckoutPath =
     navigationService.isCurrentPath(AppView.Checkout) || navigationService.isCurrentPath(AppView.UrgentCheckout);
 

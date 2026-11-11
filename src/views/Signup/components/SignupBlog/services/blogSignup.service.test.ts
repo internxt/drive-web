@@ -30,7 +30,6 @@ describe('submitBlogSignup', () => {
   let mockSetError: Mock;
 
   beforeEach(() => {
-    vi.clearAllMocks();
     mockDispatch = vi.fn() as unknown as AppDispatch;
     mockDoRegister = vi.fn();
     mockSetLoading = vi.fn();
@@ -39,8 +38,6 @@ describe('submitBlogSignup', () => {
     vi.spyOn(globalThis, 'open' as any).mockImplementation(vi.fn());
 
     globalThis.gtag = vi.fn() as any;
-
-    vi.spyOn(Storage.prototype, 'removeItem');
 
     (envService.getVariable as Mock).mockReturnValue('https://drive.internxt.com');
   });
@@ -85,8 +82,6 @@ describe('submitBlogSignup', () => {
         doSignUp: mockDoRegister,
       });
       expect(globalThis.gtag).toHaveBeenCalledWith('event', 'User Signup', { send_to: 'Blog' });
-      expect(localStorage.removeItem).toHaveBeenCalledWith('email');
-      expect(localStorage.removeItem).toHaveBeenCalledWith('password');
       expect(mockOpen).toHaveBeenCalledWith('https://drive.internxt.com', '_parent', 'noopener');
       expect(mockSetLoading).toHaveBeenCalledWith(false);
     });

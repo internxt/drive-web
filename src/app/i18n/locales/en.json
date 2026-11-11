@@ -106,7 +106,7 @@
       "title": "Create account",
       "haveAccount": "Already have an account?",
       "haveAccountMobile": "Already have an Internxt account?",
-      "login": "Login",
+      "login": "Log in",
       "encrypting": "Encrypting",
       "info": {
         "normalText": "Internxt doesn’t store passwords.",
@@ -204,7 +204,13 @@
       "success": "You have successfully logged in",
       "error": "Login failed, please try again",
       "closeWindow": "You can close this window",
-      "invalidRedirectUri": "Invalid redirect URL"
+      "invalidRedirectUri": "Invalid redirect URL",
+      "errors": {
+        "CLIENT_VERSION_UNSUPPORTED": {
+          "title": "This version of the app is no longer supported",
+          "description": "Update the app to the latest version, then log in again."
+        }
+      }
     },
     "oauthLink": {
       "continueAs": "Continue as",
@@ -214,16 +220,12 @@
     }
   },
   "checkout": {
-    "pay": "Pay",
+    "continue": "Continue",
     "processing": "Processing...",
     "checkout": "Checkout",
-    "postalCode": {
-      "title": "Postal code",
-      "placeholder": "Postal code"
-    },
     "authComponent": {
       "signUp": {
-        "emailAddress": "Your email address",
+        "emailAddress": "Email address",
         "password": "Create password"
       },
       "signIn": {
@@ -239,16 +241,6 @@
         "invalidData": "Please check that your email and password are correct and try again.",
         "serverError": "We could not complete this step. Please try again in a few minutes or contact support if the problem persists.",
         "unknown": "We could not verify your details. Please check your email and password and try again."
-      },
-      "privacyGuarantee": "Privacy guarantee: We do not share your information and will contact you only as needed to provide our service."
-    },
-    "addressBillingTitle": "Billing Address",
-    "crypto": "Crypto",
-    "addressBilling": {
-      "optional": {
-        "cta": "Optional",
-        "companyName": "Company name",
-        "companyVatId": "Company Vat ID"
       }
     },
     "productCard": {
@@ -272,40 +264,16 @@
       "taxes": "Taxes",
       "annualBillingTemplate": "Annual plan, billed at {{currency}}{{priceNow}} for the first month, then renews at {{currency}}{{price}}/month"
     },
-    "confirmCryptoPayment": {
-      "title": "Confirm the payment",
-      "timeExpiration": "The invoice will expire in 10 minutes",
-      "expiredLabel": "EXPIRED",
-      "totalInCrypto": "Payment amount ({{cryptoCurrency}})",
-      "totalInFiat": "Amount",
-      "copyAddress": "Payment address",
-      "doNotCloseWindowWarning": "Don't close the window until the payment is done",
-      "cancel": "Cancel",
-      "confirm": "Confirm the payment",
-      "sessionExpired": "Session Expired",
-      "notifications": {
-        "priceCopied": "Price copied to clipboard",
-        "addressCopied": "Address copied to clipboard",
-        "paymentSucceeded": "Payment completed successfully",
-        "paymentNotCompleted": "Payment is not completed",
-        "unexpectedError": "Something went wrong while verifying the payment"
-      }
-    },
     "error": {
       "invalidPlan": "Unsupported plan type. Please select a valid plan.",
-      "fetchingCryptoCurrencies": "We couldn't load the available cryptocurrency options",
-      "addressRequired": "Please complete your billing address to continue",
       "businessPlan": "Business plan is not available",
-      "postalCodeRequired": "Please enter your postal code to continue",
       "countryRequired": "We couldn't determine your billing country. Please try again later.",
       "missingPaymentDetails": "Missing payment details to confirm the payment",
       "paymentFailed": "Payment failed"
     },
     "accountSetup": {
-      "passwordAfterPayment": "You don't need a password yet. After paying, we'll send you an email to finish setting up your account.",
       "emailHasAccount": "This email already has an Internxt account. Log in to continue with your purchase.",
       "pendingSetup": "{{email}} already has a paid plan waiting to be set up. Check your email to finish setting up your account.",
-      "cryptoRequiresSignIn": "Log in to pay with crypto.",
       "resendEmail": "Resend email",
       "emailResent": "We've sent you the email again",
       "resendEmailError": "We couldn't send the email. Please try again later.",
@@ -328,7 +296,11 @@
       "offerPillNoDiscount": "Limited-time exclusive offer",
       "title": "Keep your files, photos & videos",
       "titleHighlight": "100% private.",
-      "subtitle": "Get {{storage}} of private cloud storage for just {{price}} for your first month.",
+      "subtitle": {
+        "month": "Get {{storage}} of private cloud storage for just {{price}} for your first month.",
+        "year": "Get {{storage}} of private cloud storage for just {{price}} for your first year.",
+        "lifetime": "Get {{storage}} of private cloud storage forever for a single payment of {{price}}."
+      },
       "imageAlt": "Internxt Drive on a laptop and a phone",
       "points": {
         "privacy": {
@@ -338,6 +310,10 @@
         "storage": {
           "title": "Your private cloud, protected",
           "description": "Store your photos, videos, documents and personal files with privacy built in."
+        },
+        "suite": {
+          "title": "More than cloud storage",
+          "description": "Privacy tools included, depending on your plan."
         },
         "offer": {
           "title": "{{percent}}% OFF — for a limited time",
@@ -373,13 +349,32 @@
       "encryptedDescription": "Internxt cannot access your content."
     },
     "cta": {
-      "button": "Get {{storage}} for {{price}}",
-      "renewalNoteMonthly": "First month {{price}}, then renews at {{renewalPrice}}/month. Cancel anytime.",
-      "renewalNoteYearly": "First year {{price}}, then renews at {{renewalPrice}}/year. Cancel anytime."
+      "button": {
+        "lifetime": "Get Lifetime plan",
+        "subscription": "Get subscription plan"
+      },
+      "billingDisclosure": {
+        "withIntroPrice": {
+          "month": "{{price}} for your first month, then {{renewalPrice}} every month. Cancel anytime.",
+          "year": "{{price}} for your first year, then {{renewalPrice}} every year. Cancel anytime."
+        },
+        "withoutIntroPrice": {
+          "month": "{{renewalPrice}} every month. Cancel anytime.",
+          "year": "{{renewalPrice}} every year. Cancel anytime."
+        }
+      }
+    },
+    "lifetimeNotice": {
+      "title": "What you buy stays yours",
+      "description": "Your purchased Lifetime storage won't be reduced by future plan changes.",
+      "singlePayment": "Single payment — No recurring fees."
+    },
+    "guarantee": {
+      "title": "30-day money-back guarantee",
+      "description": "Try it risk-free."
     }
   },
   "general": {
-    "of": "of",
     "at": "at",
     "terms": "Terms and conditions",
     "contactSupport": "Contact Support",
@@ -446,9 +441,6 @@
     "stage": {
       "development": "Development"
     },
-    "loading": {
-      "default": "Loading..."
-    },
     "renewal": {
       "annually": "Annual",
       "lifetime": "Lifetime"
@@ -486,6 +478,7 @@
   },
   "sideNav": {
     "drive": "Drive",
+    "photos": "Photos",
     "favorites": "Favorites",
     "backups": "Backups",
     "shared": "Shared",
@@ -498,6 +491,26 @@
     }
   },
   "views": {
+    "photos": {
+      "head": "Photos",
+      "empty": {
+        "title": "No photos yet",
+        "description": "Turn on photo backup in the Internxt mobile app and your photos will appear here"
+      },
+      "error": {
+        "title": "We couldn't load your photos",
+        "description": "Check your connection and try again",
+        "retry": "Try again"
+      },
+      "filters": {
+        "allDevices": "All devices",
+        "allDates": "All dates"
+      },
+      "timeline": {
+        "today": "Today",
+        "yesterday": "Yesterday"
+      }
+    },
     "favorites": {
       "head": "Favorites",
       "empty": {
@@ -1303,7 +1316,8 @@
       "processing": "Processing {{pending}} of {{finished}}",
       "failedToUpload": "Failed to upload",
       "failedToDownload": "Failed to download",
-      "notAllowed": "Not allowed"
+      "notAllowed": "Not allowed",
+      "retryAll": "Retry all"
     },
     "waiting": "Waiting",
     "paused": "Paused",
@@ -1429,7 +1443,6 @@
   },
   "success": {
     "passwordChanged": "Password changed successfully",
-    "linkCopied": "Link copied!",
     "twoFactorAuthActivated": "Your Two-Factor Authentication has been activated!",
     "twoFactorAuthDisabled": "Your Two-Factor Authentication has been disabled"
   },
@@ -1517,7 +1530,6 @@
     "restoreHere": "Restore here",
     "rename": "Rename",
     "restore": "Restore",
-    "copyLink": "Copy link",
     "report": "Report abuse",
     "yes": "Yes",
     "no": "No",

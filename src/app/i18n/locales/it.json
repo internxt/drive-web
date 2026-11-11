@@ -204,7 +204,13 @@
       "success": "Accesso effettuato con successo",
       "error": "Impossibile accedere, riprova",
       "closeWindow": "Puoi chiudere questa finestra",
-      "invalidRedirectUri": "URL di reindirizzamento non valido"
+      "invalidRedirectUri": "URL di reindirizzamento non valido",
+      "errors": {
+        "CLIENT_VERSION_UNSUPPORTED": {
+          "title": "Questa versione dell'app non è più supportata",
+          "description": "Aggiorna l'app all'ultima versione, quindi accedi di nuovo."
+        }
+      }
     },
     "oauthLink": {
       "continueAs": "Continua come",
@@ -214,13 +220,9 @@
     }
   },
   "checkout": {
-    "pay": "Paga",
+    "continue": "Continua",
     "processing": "Elaborazione in corso...",
     "checkout": "Pagamento",
-    "postalCode": {
-      "title": "Codice postale",
-      "placeholder": "Codice postale"
-    },
     "authComponent": {
       "signUp": {
         "emailAddress": "Il tuo indirizzo email",
@@ -239,16 +241,6 @@
         "invalidData": "Verifica che la tua email e la tua password siano corrette e riprova.",
         "serverError": "Non siamo riusciti a completare questo passaggio. Riprova tra qualche minuto o contatta il supporto se il problema persiste.",
         "unknown": "Non siamo riusciti a verificare i tuoi dati. Controlla la tua email e la tua password e riprova."
-      },
-      "privacyGuarantee": "Garanzia di privacy: Non condividiamo le tue informazioni e ti contatteremo solo se necessario per fornire il nostro servizio."
-    },
-    "addressBillingTitle": "Indirizzo di Fatturazione",
-    "crypto": "Crypto",
-    "addressBilling": {
-      "optional": {
-        "cta": "Opzionale",
-        "companyName": "Nome dell'azienda",
-        "companyVatId": "Partita IVA dell'azienda"
       }
     },
     "productCard": {
@@ -272,40 +264,16 @@
       "taxes": "Tasse",
       "annualBillingTemplate": "Piano annuale, fatturato {{currency}}{{priceNow}} per il primo mese, poi si rinnova a {{currency}}{{price}}/mese"
     },
-    "confirmCryptoPayment": {
-      "title": "Conferma il pagamento",
-      "timeExpiration": "La fattura scadrà tra 10 minuti",
-      "expiredLabel": "SCADUTO",
-      "totalInCrypto": "Importo da pagare ({{cryptoCurrency}})",
-      "totalInFiat": "Importo",
-      "copyAddress": "Indirizzo di pagamento",
-      "doNotCloseWindowWarning": "Non chiudere la finestra finché il pagamento non è completato",
-      "cancel": "Annulla",
-      "confirm": "Conferma il pagamento",
-      "sessionExpired": "Sessione Scaduta",
-      "notifications": {
-        "priceCopied": "Prezzo copiato negli appunti",
-        "addressCopied": "Indirizzo copiato negli appunti",
-        "paymentSucceeded": "Pagamento completato con successo",
-        "paymentNotCompleted": "Il pagamento non è completato",
-        "unexpectedError": "Si è verificato un errore durante la verifica del pagamento"
-      }
-    },
     "error": {
       "invalidPlan": "Tipo di piano non supportato. Seleziona un piano valido.",
-      "fetchingCryptoCurrencies": "Non siamo riusciti a caricare le opzioni di criptovalute disponibili",
-      "addressRequired": "Completa il tuo indirizzo di fatturazione per continuare",
       "businessPlan": "Il piano aziendale non è disponibile",
-      "postalCodeRequired": "Inserisci il tuo codice postale per continuare",
       "countryRequired": "Non siamo riusciti a determinare il tuo paese. Riprova più tardi.",
       "missingPaymentDetails": "Dati di pagamento mancanti per confermare il pagamento",
       "paymentFailed": "Pagamento non riuscito"
     },
     "accountSetup": {
-      "passwordAfterPayment": "Non ti serve ancora una password. Dopo il pagamento ti invieremo un'email per completare la configurazione del tuo account.",
       "emailHasAccount": "Questa email ha già un account Internxt. Accedi per continuare con l'acquisto.",
       "pendingSetup": "{{email}} ha già un piano pagato in attesa di configurazione. Controlla la tua email per completare la configurazione del tuo account.",
-      "cryptoRequiresSignIn": "Accedi per pagare con criptovalute.",
       "resendEmail": "Invia di nuovo l'email",
       "emailResent": "Ti abbiamo inviato di nuovo l'email",
       "resendEmailError": "Non siamo riusciti a inviare l'email. Riprova più tardi.",
@@ -328,7 +296,11 @@
       "offerPillNoDiscount": "Offerta esclusiva a tempo limitato",
       "title": "Mantieni i tuoi file, foto e video",
       "titleHighlight": "100% privati.",
-      "subtitle": "Ottieni {{storage}} di spazio cloud privato a soli {{price}} per il primo mese.",
+      "subtitle": {
+        "month": "Ottieni {{storage}} di spazio cloud privato a soli {{price}} per il primo mese.",
+        "year": "Ottieni {{storage}} di spazio cloud privato a soli {{price}} per il primo anno.",
+        "lifetime": "Ottieni {{storage}} di spazio cloud privato per sempre con un pagamento unico di {{price}}."
+      },
       "imageAlt": "Internxt Drive su un laptop e uno smartphone",
       "points": {
         "privacy": {
@@ -338,6 +310,10 @@
         "storage": {
           "title": "Il tuo cloud privato, protetto",
           "description": "Conserva le tue foto, i video, i documenti e i file personali con la privacy integrata."
+        },
+        "suite": {
+          "title": "Più di uno spazio cloud",
+          "description": "Strumenti per la privacy inclusi, in base al tuo piano."
         },
         "offer": {
           "title": "{{percent}}% DI SCONTO — per un tempo limitato",
@@ -373,13 +349,32 @@
       "encryptedDescription": "Internxt non può accedere ai tuoi contenuti."
     },
     "cta": {
-      "button": "Ottieni {{storage}} a {{price}}",
-      "renewalNoteMonthly": "Primo mese {{price}}, poi si rinnova a {{renewalPrice}}/mese. Disdici quando vuoi.",
-      "renewalNoteYearly": "Primo anno {{price}}, poi si rinnova a {{renewalPrice}}/anno. Disdici quando vuoi."
+      "button": {
+        "lifetime": "Ottieni il piano Lifetime",
+        "subscription": "Ottieni il piano in abbonamento"
+      },
+      "billingDisclosure": {
+        "withIntroPrice": {
+          "month": "{{price}} per il primo mese, poi {{renewalPrice}} ogni mese. Disdici quando vuoi.",
+          "year": "{{price}} per il primo anno, poi {{renewalPrice}} ogni anno. Disdici quando vuoi."
+        },
+        "withoutIntroPrice": {
+          "month": "{{renewalPrice}} ogni mese. Disdici quando vuoi.",
+          "year": "{{renewalPrice}} ogni anno. Disdici quando vuoi."
+        }
+      }
+    },
+    "lifetimeNotice": {
+      "title": "Ciò che acquisti resta tuo",
+      "description": "Lo spazio Lifetime che acquisti non verrà ridotto da future modifiche dei piani.",
+      "singlePayment": "Pagamento unico — Nessun costo ricorrente."
+    },
+    "guarantee": {
+      "title": "Garanzia di rimborso di 30 giorni",
+      "description": "Provalo senza rischi."
     }
   },
   "general": {
-    "of": "di",
     "at": "alle",
     "terms": "Termini e condizioni",
     "contactSupport": "Contatta il supporto",
@@ -446,9 +441,6 @@
     "stage": {
       "development": "Development"
     },
-    "loading": {
-      "default": "Caricamento..."
-    },
     "renewal": {
       "annually": "Annuale",
       "lifetime": "Lifetime"
@@ -486,6 +478,7 @@
   },
   "sideNav": {
     "drive": "Drive",
+    "photos": "Foto",
     "favorites": "Preferiti",
     "backups": "Backup",
     "shared": "Condiviso",
@@ -498,6 +491,26 @@
     }
   },
   "views": {
+    "photos": {
+      "head": "Foto",
+      "empty": {
+        "title": "Ancora nessuna foto",
+        "description": "Attiva il backup delle foto nell'app mobile di Internxt e appariranno qui"
+      },
+      "error": {
+        "title": "Impossibile caricare le tue foto",
+        "description": "Controlla la connessione e riprova",
+        "retry": "Riprova"
+      },
+      "filters": {
+        "allDevices": "Tutti i dispositivi",
+        "allDates": "Tutte le date"
+      },
+      "timeline": {
+        "today": "Oggi",
+        "yesterday": "Ieri"
+      }
+    },
     "favorites": {
       "head": "Preferiti",
       "empty": {
@@ -1303,7 +1316,8 @@
       "processing": "Elaborazione {{pending}} di {{finished}}",
       "failedToUpload": "Caricamento fallito",
       "failedToDownload": "Download fallito",
-      "notAllowed": "Non consentito"
+      "notAllowed": "Non consentito",
+      "retryAll": "Riprova tutto"
     },
     "waiting": "In attesa",
     "paused": "In pausa",
@@ -1429,7 +1443,6 @@
   },
   "success": {
     "passwordChanged": "Password modificata",
-    "linkCopied": "Link copiato!",
     "twoFactorAuthActivated": "L'autenticazione a due fattori è stata attivata!",
     "twoFactorAuthDisabled": "L'autenticazione a due fattori è stata disattivata"
   },
@@ -1517,7 +1530,6 @@
     "restoreHere": "Ripristina qui",
     "rename": "Rinominare",
     "restore": "Ripristinare",
-    "copyLink": "Copia link",
     "report": "Segnala abuso",
     "yes": "Sì",
     "no": "No",

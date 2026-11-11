@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { beforeAll, describe, expect, test, vi } from 'vitest';
 import dayjs from 'dayjs';
 
 const mockInit = vi.fn().mockResolvedValue(undefined);
@@ -12,18 +12,20 @@ vi.mock('i18next-browser-languagedetector', () => ({ default: class {} }));
 vi.mock('react-i18next', () => ({ initReactI18next: {} }));
 
 describe('i18n service', () => {
-  beforeEach(async () => {
-    vi.resetModules();
+  let initConfig: Record<string, any>;
+  let onLanguageChanged: (language: string) => void;
+
+  beforeAll(async () => {
     await import('./i18n.service');
+    initConfig = mockInit.mock.calls[0][0];
+    onLanguageChanged = mockOn.mock.calls.find(([event]) => event === 'languageChanged')?.[1];
   });
 
   test('When initialised, then the language cookie has the Secure flag so it is never sent over HTTP', async () => {
-    const initConfig = mockInit.mock.calls[0][0];
     expect(initConfig.detection.cookieOptions).toEqual(expect.objectContaining({ secure: true }));
   });
 
   test('When initialised, then the language cookie has SameSite=Strict to prevent cross-site leakage', async () => {
-    const initConfig = mockInit.mock.calls[0][0];
     expect(initConfig.detection.cookieOptions).toEqual(expect.objectContaining({ sameSite: 'strict' }));
   });
 
@@ -38,7 +40,6 @@ describe('i18n service', () => {
   ])(
     'When the detected language is %s, then it is normalised to the supported language %s',
     async (detected, expected) => {
-      const initConfig = mockInit.mock.calls[0][0];
       const { default: actualI18next } = await vi.importActual<typeof import('i18next')>('i18next');
       const fakeDetector = { type: 'languageDetector' as const, detect: () => [detected] };
       const i18n = actualI18next.createInstance();
@@ -50,8 +51,6 @@ describe('i18n service', () => {
   );
 
   test('When the language changes, then dayjs uses the same language', () => {
-    const onLanguageChanged = mockOn.mock.calls.find(([event]) => event === 'languageChanged')?.[1];
-
     onLanguageChanged('pt-BR');
     expect(dayjs.locale()).toBe('pt-br');
 
@@ -60,8 +59,6 @@ describe('i18n service', () => {
   });
 
   test('When the language has no dayjs locale, then dayjs falls back to English', () => {
-    const onLanguageChanged = mockOn.mock.calls.find(([event]) => event === 'languageChanged')?.[1];
-
     onLanguageChanged('es');
     onLanguageChanged('ja');
 

@@ -9,6 +9,7 @@ import { LocalStorageItem } from 'app/core/types';
 import metaService from './meta.service';
 import gaService from './ga.service';
 import { trackPaymentConversion } from './impact.service';
+import { sendPurchasePostback } from './partnerPostback.service';
 import { PurchaseBuyer } from './types';
 
 const hasStripeReportedPaymentFailed = async (): Promise<boolean> => {
@@ -65,6 +66,7 @@ const sendPurchaseEvents = async (): Promise<void> => {
 
   gaService.trackPurchase(buyer);
   await trackPaymentConversion(buyer);
+  await sendPurchasePostback();
 };
 
 export const trackCheckoutCompleted = async (translate: Translate): Promise<void> => {

@@ -1,7 +1,7 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Elements } from '@stripe/react-stripe-js';
 import { Stripe, StripeElements } from '@stripe/stripe-js';
-import { BaseSyntheticEvent, useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { BaseSyntheticEvent, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useCheckout } from 'views/Checkout/hooks/useCheckout';
 import { useSignUp } from 'views/Signup/hooks/useSignup';
@@ -20,27 +20,20 @@ import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { planThunks } from 'app/store/slices/plan';
 import { useThemeContext } from 'app/theme/ThemeProvider';
-import { PaymentType } from 'views/Checkout/types';
 import { CheckoutViewManager, UserInfoProps } from '../types/checkout.types';
 import CheckoutView from './CheckoutView';
 import { useUserPayment } from 'views/Checkout/hooks/useUserPayment';
-import { CRYPTO_PAYMENT_DIALOG_KEY, CryptoPaymentDialog } from 'views/Checkout/components/CryptoPaymentDialog';
-import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 import { generateCaptchaToken } from 'utils/generateCaptchaToken';
 import gaService from 'app/analytics/ga.service';
 import { handleImpactDTCCheckout } from 'app/analytics/impact.service';
+import { capturePostbackPartner } from 'app/analytics/partnerPostback.service';
 import referralService from 'services/referral.service';
 import metaService from 'app/analytics/meta.service';
 import { useCheckoutQueryParams } from '../hooks/useCheckoutQueryParams';
 import { useInitializeCheckout } from '../hooks/useInitializeCheckout';
 import { useProducts } from '../hooks/useProducts';
 import { useUserLocation } from 'hooks/useUserLocation';
-import {
-  GCLID_COOKIE_LIFESPAN_DAYS,
-  IS_CRYPTO_PAYMENT_ENABLED,
-  MILLISECONDS_PER_DAY,
-  STATUS_CODE_ERROR,
-} from '../constants';
+import { GCLID_COOKIE_LIFESPAN_DAYS, MILLISECONDS_PER_DAY, STATUS_CODE_ERROR } from '../constants';
 import { useBillingDetails } from '../hooks/useBillingDetails';
 import { usePromotionalCode } from '../hooks/usePromotionalCode';
 import { useAuthCheckout } from '../hooks/useAuthCheckout';
@@ -69,7 +62,17 @@ const CheckoutViewWrapper = () => {
   const { setAuthMethod, setIsUserPaying, setIsUpdateSubscriptionDialogOpen, setIsUpdatingSubscription } =
     useCheckout(dispatchReducer);
 
-  const { planId, promotionCode, currency, paramMobileToken, gclid, irclickid, utmMedium } = useCheckoutQueryParams();
+  const {
+    planId,
+    promotionCode,
+    currency,
+    paramMobileToken,
+    gclid,
+    irclickid,
+    utmMedium,
+    utmSource,
+    affiliateClickId,
+  } = useCheckoutQueryParams();
   const { location: userLocationData } = useUserLocation();
 
   const {
@@ -95,7 +98,7 @@ const CheckoutViewWrapper = () => {
     isPromoCodeResolved: isInitialPromoCodeResolved,
   });
 
-  const { isCheckoutReady, stripeElementsOptions, availableCryptoCurrencies, stripeSdk } = useInitializeCheckout({
+  const { isCheckoutReady, stripeElementsOptions, stripeSdk } = useInitializeCheckout({
     user,
     price: selectedPlan,
     checkoutTheme: isUrgentCheckoutRoute ? 'dark' : (checkoutTheme ?? 'light'),
@@ -129,24 +132,14 @@ const CheckoutViewWrapper = () => {
   });
 
   const dispatch = useAppDispatch();
-  const {
-    address,
-    isCryptoAddressIncomplete,
-    billingCountry,
-    billingPostalCode,
-    getCustomerName,
-    onUserAddressChanges,
-    onUserNameChanges,
-    onPostalCodeChanges,
-  } = useBillingDetails({ user, userLocation: userLocationData?.location });
+  const { billingCountry, billingPostalCode, getCustomerName, onPostalCodeChanges } = useBillingDetails({
+    userLocation: userLocationData?.location,
+  });
 
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const { doRegister } = useSignUp('activate');
   const { handleUserPayment } = useUserPayment();
   const userAuthComponentRef = useRef<HTMLDivElement>(null);
-  const { isDialogOpen, openDialog: openCryptoPaymentDialog } = useActionDialog();
-  const [selectedCurrency, setSelectedCurrency] = useState<string>(currency ?? 'eur');
-  const [currencyType, setCurrencyType] = useState<PaymentType>();
 
   const userAccountName = user?.name ?? '';
   const lastName = user?.lastname ?? '';
@@ -155,7 +148,6 @@ const CheckoutViewWrapper = () => {
   const gclidStored = localStorageService.get(LocalStorageItem.GCLID);
 
   const canChangePlanDialogBeOpened = selectedPlan?.price && isUpdateSubscriptionDialogOpen;
-  const isCryptoPaymentDialogOpen = isDialogOpen(CRYPTO_PAYMENT_DIALOG_KEY);
 
   const userInfo: UserInfoProps = {
     name: fullName,
@@ -175,6 +167,7 @@ const CheckoutViewWrapper = () => {
     if (irclickid) {
       handleImpactDTCCheckout({ irclickid, utmMedium });
     }
+    capturePostbackPartner(utmSource, affiliateClickId);
     referralService.captureUcc();
   }, []);
 
@@ -332,11 +325,8 @@ const CheckoutViewWrapper = () => {
       email,
       confirmationTokenId,
       customerName: customerName || undefined,
-      lineAddress1: address?.line1,
-      lineAddress2: address?.line2 ?? undefined,
       country,
       postalCode,
-      city: address?.city,
       companyVatId,
       captchaToken: await generateCaptchaToken(),
       metadata: ucc ? { cello_ucc: ucc } : undefined,
@@ -385,11 +375,8 @@ const CheckoutViewWrapper = () => {
 
     return checkoutService.createCustomer({
       customerName: customerName || undefined,
-      lineAddress1: address?.line1,
-      lineAddress2: address?.line2 ?? undefined,
       country,
       postalCode,
-      city: address?.city,
       companyVatId,
       captchaToken: customerToken,
       metadata,
@@ -422,45 +409,27 @@ const CheckoutViewWrapper = () => {
     const { email, password, companyName, companyVatId } = formData;
 
     try {
-      const isCryptoPurchase = currencyType === PaymentType['CRYPTO'];
-
-      if (isCryptoPurchase && isPasswordlessSignUp) {
-        throw new Error(translate('checkout.accountSetup.cryptoRequiresSignIn'));
-      }
-
-      if (isCryptoPurchase && isCryptoAddressIncomplete) {
-        throw new Error(translate('checkout.error.addressRequired'));
-      }
-
       if (!billingCountry) {
         throw new Error(translate('checkout.error.countryRequired'));
       }
 
-      let paymentPostalCode: string | undefined;
-      let confirmationTokenId: string | undefined;
+      const { error: elementsError } = await elements.submit();
 
-      if (isCryptoPurchase) {
-        paymentPostalCode = address?.postal_code;
+      if (elementsError) {
+        throw new Error(elementsError.message);
       }
 
-      if (currencyType === PaymentType['FIAT']) {
-        const { error: elementsError } = await elements.submit();
+      const { confirmationToken, error: confirmationTokenError } = await stripeSDK.createConfirmationToken({
+        elements,
+      });
 
-        if (elementsError) {
-          throw new Error(elementsError.message);
-        }
-
-        const { confirmationToken, error: confirmationTokenError } = await stripeSDK.createConfirmationToken({
-          elements,
-        });
-
-        if (confirmationTokenError) {
-          throw new Error(confirmationTokenError.message);
-        }
-
-        confirmationTokenId = confirmationToken.id;
-        paymentPostalCode = confirmationToken.payment_method_preview.billing_details.address?.postal_code ?? undefined;
+      if (confirmationTokenError) {
+        throw new Error(confirmationTokenError.message);
       }
+
+      const confirmationTokenId = confirmationToken.id;
+      const paymentPostalCode =
+        confirmationToken.payment_method_preview.billing_details.address?.postal_code ?? undefined;
 
       const captchaToken = await generateCaptchaToken();
       const customerDetails: CustomerDetails = {
@@ -479,7 +448,7 @@ const CheckoutViewWrapper = () => {
         confirmPayment: stripeSDK.confirmPayment,
         confirmSetupIntent: stripeSDK.confirmSetup,
         couponCodeData: promoCodeData,
-        currency: selectedCurrency ?? selectedPlan.price.currency,
+        currency: selectedPlan.price.currency,
         priceId: selectedPlan.price.id,
         customerId,
         confirmationTokenId,
@@ -488,8 +457,6 @@ const CheckoutViewWrapper = () => {
         token,
         gclidStored,
         captchaToken,
-        openCryptoPaymentDialog,
-        userAddress: userLocationData?.ip as string,
         isFirstPurchase: isPasswordlessSignUp ? true : undefined,
         isPasswordlessSignUp,
       });
@@ -516,19 +483,12 @@ const CheckoutViewWrapper = () => {
     }
   };
 
-  const onCurrencyTypeChanges = (currency: PaymentType) => {
-    setCurrencyType(currency);
-  };
-
   const checkoutViewManager: CheckoutViewManager = {
     onCouponInputChange: onCheckoutCouponChanges,
     onLogOut,
     onCheckoutButtonClicked,
     onRemoveAppliedCouponCode: removeCouponCode,
-    onUserAddressChanges,
     handleAuthMethodChange: setAuthMethod,
-    onCurrencyChange: setSelectedCurrency,
-    onUserNameChanges,
     onPostalCodeChanges,
   };
 
@@ -544,14 +504,11 @@ const CheckoutViewWrapper = () => {
                 couponCodeData: promoCodeData,
                 authError: authError ?? undefined,
                 currentSelectedPlan: selectedPlan,
-                selectedCurrency,
               }}
               variant={urgentVariant}
               userAuthComponentRef={userAuthComponentRef}
               userInfo={userInfo}
               checkoutViewManager={checkoutViewManager}
-              availableCryptoCurrencies={availableCryptoCurrencies}
-              onCurrencyTypeChanges={onCurrencyTypeChanges}
             />
           ) : (
             <CheckoutView
@@ -562,7 +519,6 @@ const CheckoutViewWrapper = () => {
                 couponCodeError: couponError ?? undefined,
                 authError: authError ?? undefined,
                 currentSelectedPlan: selectedPlan,
-                selectedCurrency,
                 isPasswordlessSignUp,
                 pendingAccountSetupEmail,
               }}
@@ -571,8 +527,6 @@ const CheckoutViewWrapper = () => {
               userInfo={userInfo}
               isUserAuthenticated={isAuthenticated}
               checkoutViewManager={checkoutViewManager}
-              availableCryptoCurrencies={isPasswordlessSignUp ? undefined : availableCryptoCurrencies}
-              onCurrencyTypeChanges={onCurrencyTypeChanges}
             />
           )}
           {canChangePlanDialogBeOpened ? (
@@ -592,12 +546,6 @@ const CheckoutViewWrapper = () => {
               subscriptionSelected={selectedPlan.price.type}
             />
           ) : undefined}
-
-          {IS_CRYPTO_PAYMENT_ENABLED && isCryptoPaymentDialogOpen && (
-            <div role="none" className="flex flex-col" onMouseDown={(e) => e.stopPropagation()}>
-              <CryptoPaymentDialog />
-            </div>
-          )}
         </Elements>
       ) : (
         <CheckoutLoader />

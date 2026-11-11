@@ -17,6 +17,8 @@ export interface StorageState {
   levelsFilesLength: Record<number, number>;
   hasMoreDriveFolders: Record<number, boolean>;
   hasMoreDriveFiles: Record<number, boolean>;
+  driveFoldersCursor: Record<string, string | null>;
+  driveFilesCursor: Record<string, string | null>;
   recents: DriveItemData[];
   isLoadingRecents: boolean;
   favorites: DriveItemData[];
@@ -42,10 +44,6 @@ export interface StorageState {
   driveItemsOrder: string;
   sharedNamePath: SharedNamePath[];
   currentPath: FolderPath;
-}
-
-export interface StorageSetFiltersPayload {
-  text?: string;
 }
 
 export interface CollisionGroup {

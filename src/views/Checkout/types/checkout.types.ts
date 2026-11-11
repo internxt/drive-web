@@ -9,19 +9,9 @@ export interface UserInfoProps {
   email: string;
 }
 
-export interface AddressProvider {
-  line1: string;
-  line2: string | null;
-  city: string;
-  state: string;
-  postal_code: string;
-  country: string;
-}
-
 export interface CheckoutViewManager {
   onCouponInputChange: (coupon?: string) => Promise<void>;
   onLogOut: () => Promise<void>;
-  onUserAddressChanges: (address: AddressProvider) => void;
   onCheckoutButtonClicked: (
     formData: IFormValues,
     event: BaseSyntheticEvent<object, any, any> | undefined,
@@ -30,7 +20,5 @@ export interface CheckoutViewManager {
   ) => Promise<void>;
   onRemoveAppliedCouponCode: () => void;
   handleAuthMethodChange: (method: AuthMethodTypes) => void;
-  onCurrencyChange: (currency: string) => void;
-  onUserNameChanges: (userName: string) => void;
   onPostalCodeChanges: (postalCode: string) => void;
 }

@@ -1,0 +1,528 @@
+import { afterEach, beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import { AppError } from '@internxt/sdk';
+import uploadFile from 'app/drive/services/file.service/uploadFile';
+import { DriveFileData } from 'app/drive/types';
+import { ErrorMessages, HTTP_CODE_ERRORS, HTTP_STATUS_CODES } from 'app/core/constants';
+import errorService from 'services/error.service';
+import { ConnectionLostError } from 'app/network/requests';
+import { TWENTY_MEGABYTES, USE_MULTIPART_THRESHOLD_BYTES } from 'app/network/networkConstants';
+import { QueueUtilsService } from 'utils/queueUtils';
+import workspacesService from 'services/workspace.service';
+import folderService from 'app/drive/services/folder.service';
+import {
+  getCreatedFolder,
+  getFileToUpload,
+  getFolderToUpload,
+  getUploadFileItem,
+  getUploadRepository,
+} from 'testUtils/fixtures/upload.fixtures';
+import { createFolderItem, UploadManager, WORKSPACE_FOLDER_AVAILABILITY_DELAY_MS } from './UploadManager';
+import { UploadFailureReason, UploadItem, UploadItemKind, UploadManagerEvents } from './types';
+
+vi.mock('app/drive/services/file.service/uploadFile', () => ({ default: vi.fn() }));
+vi.mock('app/drive/services/folder.service', () => ({ default: { createFolderByUuid: vi.fn() } }));
+vi.mock('services/workspace.service', () => ({ default: { createFolder: vi.fn() } }));
+
+type UploadFileOptions = { abortCallback?: (abort?: () => void) => void };
+
+const HANG_TIMEOUT_MS = 2000;
+const networkError = new AppError(ErrorMessages.NetworkError);
+const noSpaceLeftError = new AppError('No space left', HTTP_STATUS_CODES.MAX_SPACE_USED);
+const paymentRequiredError = new AppError('Payment required', HTTP_STATUS_CODES.PAYMENT_REQUIRED);
+const fileTooLargeError = new AppError('File too large', 400, HTTP_CODE_ERRORS.FILE_UPLOAD_SIZE_EXCEEDED);
+
+const nameOf = (item: UploadItem) => (item.kind === UploadItemKind.File ? item.file.name : item.folder.name);
+
+const failIfHangs = <T>(promise: Promise<T>): Promise<T> =>
+  Promise.race([
+    promise,
+    new Promise<never>((_, reject) => setTimeout(() => reject(new Error('upload never settled')), HANG_TIMEOUT_MS)),
+  ]);
+
+const createManager = (props: Partial<ConstructorParameters<typeof UploadManager>[0]> = {}) =>
+  new UploadManager({ uploadRepository: getUploadRepository(), getPauseKey: nameOf, ...props });
+
+const startedUploadNames = () => (uploadFile as Mock).mock.calls.map(([file]) => file.name);
+
+const fakeSlowUploads = () =>
+  (uploadFile as Mock).mockImplementation((file: { name: string }, _progress, options: UploadFileOptions) => {
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => resolve({ uuid: `${file.name}-uuid` }), 500);
+      options.abortCallback?.(() => {
+        clearTimeout(timeout);
+        reject(new Error('aborted'));
+      });
+    });
+  });
+
+const fakeUploadFailureOf = (failingName: string, error: unknown) =>
+  (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
+    if (file.name === failingName) throw error;
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    return { uuid: `${file.name}-uuid` } as DriveFileData;
+  });
+
+const makeUploadsNeverFinish = () => (uploadFile as Mock).mockReturnValue(new Promise(() => undefined));
+
+const uploadAtMostAtTheSameTime = (concurrency: number) =>
+  vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(concurrency);
+
+const goOffline = () => vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false);
+
+describe('Uploading files', () => {
+  beforeEach(() => {
+    vi.spyOn(errorService, 'reportError').mockReturnValue();
+    (uploadFile as Mock).mockImplementation(async (file: { name: string }) => ({ uuid: `${file.name}-uuid` }));
+  });
+
+  afterEach(() => vi.restoreAllMocks());
+
+  test('When files are uploaded, then each one succeeds with its uploaded data and its plain name', async () => {
+    const items = [getUploadFileItem('report'), getUploadFileItem('invoice')];
+    const events: UploadManagerEvents = { onItemSucceeded: vi.fn() };
+
+    const { succeeded, failed } = await createManager({ events }).run(items);
+
+    expect(failed).toEqual([]);
+    expect(succeeded).toEqual([
+      { item: items[0], uploadedItem: { uuid: 'report-uuid', name: 'report' } },
+      { item: items[1], uploadedItem: { uuid: 'invoice-uuid', name: 'invoice' } },
+    ]);
+    expect(events.onItemSucceeded).toHaveBeenCalledWith(items[0], { uuid: 'report-uuid', name: 'report' });
+  });
+
+  test('When an upload advances, then its progress is notified', async () => {
+    const item = getUploadFileItem('report');
+    (uploadFile as Mock).mockImplementation(async (_file, onProgress: (progress: number) => void) => {
+      onProgress(0.5);
+      return { uuid: 'report-uuid' };
+    });
+    const events: UploadManagerEvents = { onItemStarted: vi.fn(), onItemProgress: vi.fn() };
+
+    await createManager({ events }).run([item]);
+
+    expect(events.onItemStarted).toHaveBeenCalledWith(item);
+    expect(events.onItemProgress).toHaveBeenCalledWith(item, 0.5);
+  });
+
+  test('When an upload fails unexpectedly once, then it is retried and succeeds', async () => {
+    (uploadFile as Mock).mockRejectedValueOnce(new Error('Server error'));
+
+    const { succeeded } = await createManager().run([getUploadFileItem('report')]);
+
+    expect(uploadFile).toHaveBeenCalledTimes(2);
+    expect(succeeded).toHaveLength(1);
+  });
+
+  test('When an upload keeps failing, then it fails as retryable and the other files still upload', async () => {
+    const serverError = new Error('Server error');
+    fakeUploadFailureOf('broken', serverError);
+    const events: UploadManagerEvents = { onItemFailed: vi.fn() };
+    const brokenItem = getUploadFileItem('broken');
+
+    const { succeeded, failed } = await failIfHangs(
+      createManager({ events }).run([brokenItem, getUploadFileItem('a'), getUploadFileItem('b')]),
+    );
+
+    expect(startedUploadNames().filter((name) => name === 'broken')).toHaveLength(2);
+    expect(succeeded).toHaveLength(2);
+    expect(failed).toEqual([
+      {
+        item: brokenItem,
+        failure: { error: serverError, reason: UploadFailureReason.UploadFailed, isRetryable: true },
+      },
+    ]);
+    expect(events.onItemFailed).toHaveBeenCalledWith(brokenItem, failed[0].failure);
+  });
+
+  test.each([
+    { problem: 'the plan does not allow it', error: paymentRequiredError, reason: UploadFailureReason.PlanLimit },
+    { problem: 'the file is too large', error: fileTooLargeError, reason: UploadFailureReason.FileTooLarge },
+  ])('When $problem, then the file is never retried', async ({ error, reason }) => {
+    (uploadFile as Mock).mockRejectedValue(error);
+
+    const { failed } = await createManager().run([getUploadFileItem('report')]);
+
+    expect(uploadFile).toHaveBeenCalledOnce();
+    expect(failed[0].failure).toEqual({ error, reason, isRetryable: false });
+  });
+
+  test.each([
+    { failure: 'the connection is lost', error: new ConnectionLostError(), arrange: () => undefined },
+    { failure: 'a network error happens while offline', error: networkError, arrange: goOffline },
+  ])('When $failure, then the file is not retried and fails as a retryable connection loss', async (scenario) => {
+    scenario.arrange();
+    (uploadFile as Mock).mockRejectedValue(scenario.error);
+
+    const { failed } = await createManager().run([getUploadFileItem('report')]);
+
+    expect(uploadFile).toHaveBeenCalledOnce();
+    expect(failed[0].failure).toEqual(
+      expect.objectContaining({ reason: UploadFailureReason.ConnectionLost, isRetryable: true }),
+    );
+  });
+
+  test('When a network error happens once while online, then the upload is retried and succeeds', async () => {
+    (uploadFile as Mock).mockRejectedValueOnce(networkError);
+
+    const { succeeded } = await createManager().run([getUploadFileItem('report')]);
+
+    expect(uploadFile).toHaveBeenCalledTimes(2);
+    expect(succeeded).toHaveLength(1);
+  });
+
+  test('When the storage gets full, then the file uploading at the same time finishes and the waiting ones fail without being uploaded', async () => {
+    uploadAtMostAtTheSameTime(2);
+    fakeUploadFailureOf('fills-the-storage', noSpaceLeftError);
+    const items = ['fills-the-storage', 'uploading', 'waiting-1', 'waiting-2'].map((name) => getUploadFileItem(name));
+
+    const { succeeded, failed } = await failIfHangs(createManager().run(items));
+
+    expect(startedUploadNames()).toEqual(['fills-the-storage', 'uploading']);
+    expect(succeeded.map(({ item }) => nameOf(item))).toEqual(['uploading']);
+    expect(failed.map(({ item }) => nameOf(item))).toEqual(['fills-the-storage', 'waiting-1', 'waiting-2']);
+    expect(failed.every(({ failure }) => failure.reason === UploadFailureReason.NoSpaceLeft)).toBe(true);
+  });
+
+  test('When a file is cancelled while its paused state is being read, then it is never uploaded and is reported as cancelled', async () => {
+    const report = getUploadFileItem('report');
+    const events: UploadManagerEvents = { onItemCancelled: vi.fn(), onItemFailed: vi.fn() };
+    const uploadRepository = getUploadRepository();
+    const manager = createManager({ events, uploadRepository });
+    vi.mocked(uploadRepository.getUploadState).mockImplementationOnce(async () => {
+      manager.cancelItem(report);
+      return undefined;
+    });
+
+    await manager.run([report]);
+
+    expect(uploadFile).not.toHaveBeenCalled();
+    expect(events.onItemCancelled).toHaveBeenCalledExactlyOnceWith(report);
+    expect(events.onItemFailed).not.toHaveBeenCalled();
+  });
+
+  test('When a file still waiting in the queue is cancelled, then it is never uploaded and the uploading one finishes', async () => {
+    uploadAtMostAtTheSameTime(1);
+    fakeSlowUploads();
+    const [uploading, queued] = [getUploadFileItem('uploading'), getUploadFileItem('queued')];
+    const events: UploadManagerEvents = { onItemCancelled: vi.fn() };
+    const manager = createManager({ events });
+
+    const upload = manager.run([uploading, queued]);
+    await vi.waitFor(() => expect(startedUploadNames()).toEqual(['uploading']));
+    manager.cancelItem(queued);
+    const { succeeded } = await failIfHangs(upload);
+
+    expect(startedUploadNames()).toEqual(['uploading']);
+    expect(succeeded.map(({ item }) => item)).toEqual([uploading]);
+    expect(events.onItemCancelled).toHaveBeenCalledExactlyOnceWith(queued);
+  });
+
+  test('When a file is cancelled and its upload then fails, then it is not retried and is reported as cancelled', async () => {
+    const report = getUploadFileItem('report');
+    const events: UploadManagerEvents = { onItemCancelled: vi.fn(), onItemFailed: vi.fn() };
+    const manager = createManager({ events });
+    (uploadFile as Mock).mockImplementationOnce(() => {
+      manager.cancelItem(report);
+      return Promise.reject(new Error('Server error'));
+    });
+
+    await manager.run([report]);
+
+    expect(uploadFile).toHaveBeenCalledOnce();
+    expect(events.onItemCancelled).toHaveBeenCalledExactlyOnceWith(report);
+    expect(events.onItemFailed).not.toHaveBeenCalled();
+  });
+
+  test('When a file finishes uploading right after being cancelled, then it is reported as uploaded', async () => {
+    const report = getUploadFileItem('report');
+    const events: UploadManagerEvents = { onItemCancelled: vi.fn() };
+    const manager = createManager({ events });
+    (uploadFile as Mock).mockImplementationOnce(() => {
+      manager.cancelItem(report);
+      return Promise.resolve({ uuid: 'report-uuid' });
+    });
+
+    const { succeeded } = await manager.run([report]);
+
+    expect(succeeded.map(({ item }) => item)).toEqual([report]);
+    expect(events.onItemCancelled).not.toHaveBeenCalled();
+  });
+
+  test('When a single file is cancelled, then only that file stops', async () => {
+    fakeSlowUploads();
+    const [cancelledItem, otherItem] = [getUploadFileItem('cancelled'), getUploadFileItem('other')];
+    const events: UploadManagerEvents = { onItemCancelled: vi.fn() };
+    const manager = createManager({ events });
+
+    const upload = manager.run([cancelledItem, otherItem]);
+    await vi.waitFor(() => expect(uploadFile).toHaveBeenCalledTimes(2));
+    manager.cancelItem(cancelledItem);
+    const { succeeded } = await failIfHangs(upload);
+
+    expect(succeeded.map(({ item }) => item)).toEqual([otherItem]);
+    expect(events.onItemCancelled).toHaveBeenCalledExactlyOnceWith(cancelledItem);
+  });
+
+  test('When small, medium and large files are uploaded together, then the small ones start first and the large ones last', async () => {
+    const items = [
+      getUploadFileItem('large-1', USE_MULTIPART_THRESHOLD_BYTES),
+      getUploadFileItem('medium-1', TWENTY_MEGABYTES),
+      getUploadFileItem('small-1'),
+      getUploadFileItem('large-2', USE_MULTIPART_THRESHOLD_BYTES),
+      getUploadFileItem('medium-2', TWENTY_MEGABYTES),
+      getUploadFileItem('small-2'),
+    ];
+
+    await createManager().run(items);
+
+    expect(startedUploadNames()).toEqual(['small-1', 'small-2', 'medium-1', 'medium-2', 'large-1', 'large-2']);
+  });
+
+  test('When several large files are uploaded, then only one uploads at a time', async () => {
+    makeUploadsNeverFinish();
+    const items = [
+      getUploadFileItem('large-1', USE_MULTIPART_THRESHOLD_BYTES),
+      getUploadFileItem('large-2', USE_MULTIPART_THRESHOLD_BYTES),
+    ];
+
+    void createManager().run(items);
+
+    await vi.waitFor(() => expect(startedUploadNames()).toEqual(['large-1']));
+  });
+
+  test('When small files are uploaded after a large file in a browser without memory information, then they upload at the same time again', async () => {
+    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockImplementation((current) => current);
+    const manager = createManager();
+    await manager.run([getUploadFileItem('large', USE_MULTIPART_THRESHOLD_BYTES)]);
+    makeUploadsNeverFinish();
+
+    void manager.run(['report', 'invoice', 'photo'].map((name) => getUploadFileItem(name)));
+
+    await vi.waitFor(() => expect(startedUploadNames()).toEqual(['large', 'report', 'invoice', 'photo']));
+  });
+
+  test('When the browser is running out of memory, then files are uploaded one at a time', async () => {
+    uploadAtMostAtTheSameTime(1);
+    makeUploadsNeverFinish();
+
+    void createManager().run(['report', 'invoice', 'photo'].map((name) => getUploadFileItem(name)));
+
+    await vi.waitFor(() => expect(startedUploadNames()).toEqual(['report']));
+  });
+
+  test('When uploading to a workspace, then the workspace credentials are used', async () => {
+    const ownerUserAuthenticationData = {
+      bucketId: 'workspace-bucket',
+      workspaceId: 'workspace-id',
+      bridgeUser: 'bridge-user',
+      bridgePass: 'bridge-pass',
+      encryptionKey: 'encryption-key',
+      token: 'token',
+      workspacesToken: 'workspaces-token',
+      resourcesToken: 'resources-token',
+    };
+
+    await createManager({ ownerUserAuthenticationData }).run([getUploadFileItem('report')]);
+
+    expect(uploadFile).toHaveBeenCalledWith(
+      expect.any(Object),
+      expect.any(Function),
+      expect.objectContaining({ isTeam: true, ownerUserAuthenticationData }),
+      expect.any(Object),
+    );
+  });
+
+  test('When the upload of a file was paused, then it starts paused under its pause key', async () => {
+    const uploadRepository = getUploadRepository(['paused-key']);
+
+    await createManager({ uploadRepository, getPauseKey: () => 'paused-key' }).run([getUploadFileItem('report')]);
+
+    expect(uploadFile).toHaveBeenCalledWith(
+      expect.any(Object),
+      expect.any(Function),
+      expect.any(Object),
+      expect.objectContaining({ taskId: 'paused-key', isPaused: true }),
+    );
+  });
+
+  test('When a success listener throws, then every file is uploaded once and the queue keeps going', async () => {
+    const items = [getUploadFileItem('a'), getUploadFileItem('b'), getUploadFileItem('c')];
+    const events: UploadManagerEvents = {
+      onItemSucceeded: vi.fn(() => {
+        throw new Error('listener failure');
+      }),
+    };
+
+    const { succeeded } = await failIfHangs(createManager({ events }).run(items));
+
+    expect(uploadFile).toHaveBeenCalledTimes(items.length);
+    expect(succeeded).toHaveLength(items.length);
+  });
+});
+
+const fakeFolderCreation = () =>
+  vi
+    .mocked(folderService.createFolderByUuid)
+    .mockImplementation((_parentUuid, name) => [Promise.resolve(getCreatedFolder(name)), { cancel: vi.fn() }] as never);
+
+const makeFolderCreationNeverFinish = () =>
+  vi.mocked(folderService.createFolderByUuid).mockReturnValue([new Promise(() => undefined), { cancel: vi.fn() }]);
+
+const uploadedFileParents = () =>
+  Object.fromEntries((uploadFile as Mock).mock.calls.map(([file]) => [file.name, file.parentFolderId]));
+
+describe('Uploading folders', () => {
+  beforeEach(() => {
+    vi.spyOn(errorService, 'reportError').mockReturnValue();
+    (uploadFile as Mock).mockImplementation(async (file: { name: string }) => ({ uuid: `${file.name}-uuid` }));
+    fakeFolderCreation();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  test('When a folder tree is uploaded, then each folder is created inside its parent and each file inside its folder', async () => {
+    const tree = getFolderToUpload('Work', {
+      childrenFiles: [getFileToUpload('report.pdf')],
+      childrenFolders: [getFolderToUpload('Invoices', { childrenFiles: [getFileToUpload('january.pdf')] })],
+    });
+
+    const { succeeded, failed } = await createManager().run([createFolderItem(tree, 'destination-uuid')]);
+
+    expect(failed).toEqual([]);
+    expect(succeeded).toHaveLength(4);
+    expect(folderService.createFolderByUuid).toHaveBeenCalledWith('destination-uuid', 'Work');
+    expect(folderService.createFolderByUuid).toHaveBeenCalledWith('Work-uuid', 'Invoices');
+    expect(uploadedFileParents()).toEqual({ report: 'Work-uuid', january: 'Invoices-uuid' });
+  });
+
+  test('When the content of a folder is uploaded, then every item knows the folder it belongs to', async () => {
+    const rootItem = createFolderItem(
+      getFolderToUpload('Work', { childrenFiles: [getFileToUpload('report.pdf')] }),
+      'dest',
+    );
+
+    const { succeeded } = await createManager().run([rootItem]);
+
+    const [uploadedFolder, uploadedFile] = succeeded;
+    expect(uploadedFolder.item).toBe(rootItem);
+    expect(uploadedFile.item.parent).toBe(rootItem);
+  });
+
+  test('When a folder cannot be created, then it fails and its content is not uploaded', async () => {
+    vi.mocked(folderService.createFolderByUuid).mockReturnValue([
+      Promise.reject(new Error('Server error')),
+      { cancel: vi.fn() },
+    ]);
+    const rootItem = createFolderItem(
+      getFolderToUpload('Work', { childrenFiles: [getFileToUpload('report.pdf')] }),
+      'dest',
+    );
+
+    const { failed } = await failIfHangs(createManager().run([rootItem]));
+
+    expect(failed).toEqual([
+      { item: rootItem, failure: expect.objectContaining({ reason: UploadFailureReason.UploadFailed }) },
+    ]);
+    expect(uploadFile).not.toHaveBeenCalled();
+  });
+
+  test('When a folder is cancelled while the files inside are uploading, then the waiting files are never uploaded', async () => {
+    uploadAtMostAtTheSameTime(2);
+    fakeSlowUploads();
+    const rootItem = createFolderItem(
+      getFolderToUpload('Work', {
+        childrenFiles: ['uploading-1.txt', 'uploading-2.txt', 'waiting.txt'].map((name) => getFileToUpload(name)),
+      }),
+      'dest',
+    );
+    const manager = createManager();
+
+    const upload = manager.run([rootItem]);
+    await vi.waitFor(() => expect(startedUploadNames()).toEqual(['uploading-1', 'uploading-2']));
+    manager.cancelItem(rootItem);
+    const { succeeded } = await failIfHangs(upload);
+
+    expect(startedUploadNames()).toEqual(['uploading-1', 'uploading-2']);
+    expect(succeeded.map(({ item }) => item)).toEqual([rootItem]);
+  });
+
+  test('When a folder is cancelled while its upload is being announced, then it is never created and is reported as cancelled', async () => {
+    const rootItem = createFolderItem(getFolderToUpload('Work'), 'dest');
+    const events: UploadManagerEvents = { onItemCancelled: vi.fn(), onItemFailed: vi.fn() };
+    const manager = createManager({ events });
+    events.onItemStarted = () => manager.cancelItem(rootItem);
+
+    await manager.run([rootItem]);
+
+    expect(folderService.createFolderByUuid).not.toHaveBeenCalled();
+    expect(events.onItemCancelled).toHaveBeenCalledExactlyOnceWith(rootItem);
+    expect(events.onItemFailed).not.toHaveBeenCalled();
+  });
+
+  test('When files and a folder are waiting to upload, then the folder is created first', async () => {
+    uploadAtMostAtTheSameTime(1);
+    makeFolderCreationNeverFinish();
+    const items = [getUploadFileItem('report'), createFolderItem(getFolderToUpload('Work'), 'dest')];
+
+    void createManager().run(items);
+
+    await vi.waitFor(() => expect(folderService.createFolderByUuid).toHaveBeenCalledWith('dest', 'Work'));
+    expect(uploadFile).not.toHaveBeenCalled();
+  });
+
+  test('When a folder is uploaded to a workspace, then it is created in the workspace', async () => {
+    vi.mocked(workspacesService.createFolder).mockImplementation(
+      ({ plainName }) => [Promise.resolve(getCreatedFolder(plainName)), { cancel: vi.fn() }] as never,
+    );
+    const ownerUserAuthenticationData = { workspaceId: 'workspace-id' } as never;
+
+    await createManager({ ownerUserAuthenticationData }).run([createFolderItem(getFolderToUpload('Work'), 'dest')]);
+
+    expect(workspacesService.createFolder).toHaveBeenCalledWith({
+      workspaceId: 'workspace-id',
+      parentFolderUuid: 'dest',
+      plainName: 'Work',
+    });
+    expect(folderService.createFolderByUuid).not.toHaveBeenCalled();
+  });
+
+  test('When a folder is created in a workspace, then its content waits until the folder is available', async () => {
+    vi.useFakeTimers();
+    vi.mocked(workspacesService.createFolder).mockImplementation(
+      ({ plainName }) => [Promise.resolve(getCreatedFolder(plainName)), { cancel: vi.fn() }] as never,
+    );
+    const ownerUserAuthenticationData = { workspaceId: 'workspace-id' } as never;
+    const rootItem = createFolderItem(
+      getFolderToUpload('Work', { childrenFiles: [getFileToUpload('report.pdf')] }),
+      'dest',
+    );
+
+    void createManager({ ownerUserAuthenticationData }).run([rootItem]);
+    await vi.advanceTimersByTimeAsync(WORKSPACE_FOLDER_AVAILABILITY_DELAY_MS - 1);
+
+    expect(workspacesService.createFolder).toHaveBeenCalled();
+    expect(uploadFile).not.toHaveBeenCalled();
+
+    await vi.advanceTimersByTimeAsync(1);
+
+    expect(startedUploadNames()).toEqual(['report']);
+  });
+
+  test('When a large file is uploaded together with a folder, then it waits for the files inside the folder so they are not uploaded one at a time behind it', async () => {
+    const largeFile = getUploadFileItem('large', USE_MULTIPART_THRESHOLD_BYTES);
+    const folderItem = createFolderItem(
+      getFolderToUpload('Photos', {
+        childrenFiles: [getFileToUpload('beach.png'), getFileToUpload('city.png'), getFileToUpload('dog.png')],
+      }),
+      'dest',
+    );
+
+    await failIfHangs(createManager().run([largeFile, folderItem]));
+
+    expect(startedUploadNames()).toEqual(['beach', 'city', 'dog', 'large']);
+  });
+});
