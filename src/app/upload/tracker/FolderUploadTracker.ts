@@ -39,7 +39,7 @@ export class FolderUploadTracker extends UploadTracker<UploadFolderItem> {
     }
 
     this.uploadedItems++;
-    if (!this.isStopped()) this.updateTask({ progress: this.getUploadedRatio() });
+    this.updateProgress(this.getUploadedRatio());
   }
 
   /**

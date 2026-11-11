@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import { beforeEach, describe, expect, Mock, onTestFinished, test, vi } from 'vitest';
 import uploadFile from 'app/drive/services/file.service/uploadFile';
 import folderService from 'app/drive/services/folder.service';
 import newStorageService from 'app/drive/services/new-storage.service';
@@ -764,6 +764,70 @@ describe('Retrying what failed', () => {
     expect(tasksService.findTask(fileTask.id)).toEqual(
       expect.objectContaining({ status: TaskStatus.Cancelled, failedItems: [] }),
     );
+  });
+});
+
+describe('Keeping the tasks list up to date', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    tasksService.clearTasks();
+    vi.spyOn(errorService, 'reportError').mockReturnValue();
+    fakeFolderCreationTaking();
+  });
+
+  test('When thousands of files fail in a folder, then its task is updated a few times instead of once per file', async () => {
+    const failingNames = Array.from({ length: 3000 }, (_, index) => `broken${index}`);
+    failUploadsOf(failingNames);
+    const updateTask = vi.spyOn(tasksService, 'updateTask');
+
+    await createUpload([getFolderWithFiles('Photos', failingNames)], []).run();
+
+    const [folderTask] = tasksOf(TaskType.UploadFolder);
+    const failedItemsUpdates = updateTask.mock.calls.filter(([{ merge }]) => 'failedItems' in merge);
+    expect(folderTask.failedItems).toHaveLength(failingNames.length);
+    expect(failedItemsUpdates.length).toBeLessThan(100);
+  });
+
+  test('When the user cancels a file right after its progress was reported, then that progress is not shown on the cancelled task', async () => {
+    const upload = createUpload([], [getFileToUpload('report.pdf')]);
+    const [reportTask] = tasksOf(TaskType.UploadFile);
+    (uploadFile as Mock).mockImplementation(
+      (_file, reportProgress: (progress: number) => void, options: { abortCallback: (abort: () => void) => void }) =>
+        new Promise((_, reject) => {
+          options.abortCallback(() => reject(new Error('aborted')));
+          reportProgress(0.5);
+          void tasksService.cancelTask(reportTask.id);
+        }),
+    );
+
+    await upload.run();
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
+    expect(tasksService.findTask(reportTask.id)).toEqual(
+      expect.objectContaining({ status: TaskStatus.Cancelled, progress: 0 }),
+    );
+  });
+
+  test('When the tasks list fails to show some progress, then the error is reported and the upload still finishes', async () => {
+    const showOnTasksList = tasksService.updateTask.bind(tasksService);
+    const updateTask = vi.spyOn(tasksService, 'updateTask');
+    onTestFinished(() => updateTask.mockRestore());
+    updateTask.mockImplementation((update) => {
+      if ('progress' in update.merge) throw new Error('Tasks list not updated');
+      showOnTasksList(update);
+    });
+    (uploadFile as Mock).mockImplementation(
+      async (file: { name: string }, reportProgress: (progress: number) => void) => {
+        reportProgress(0.5);
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        return { uuid: `${file.name}-uuid` };
+      },
+    );
+
+    await createUpload([], [getFileToUpload('report.pdf')]).run();
+
+    expect(errorService.reportError).toHaveBeenCalledWith(new Error('Tasks list not updated'));
+    expect(tasksOf(TaskType.UploadFile)[0].status).toBe(TaskStatus.Success);
   });
 });
 
