@@ -134,11 +134,28 @@ export class UploadManager {
     this.abortActiveUploadsPartOf(item);
   }
 
+  /**
+   * Lets the items queued from now on upload again after the storage was full, e.g. when the user frees space
+   * and retries while other items are still uploading.
+   */
+  clearStorageFull(): void {
+    this.storageFullFailure = undefined;
+  }
+
+  /**
+   * Every queued item is announced once and always ends in exactly one of succeeded, failed or cancelled, so the
+   * caller can tell when everything it queued has finished.
+   */
   private queue(items: UploadItem[]): void {
     for (const item of items) {
-      if (isFolderItem(item)) this.foldersStillQueueingContent++;
-      void this.uploadQueue.push(item, getUploadPriority(item));
+      void notifyIgnoringListenerErrors(() => this.events?.onItemQueued?.(item));
+      this.pushToQueue(item);
     }
+  }
+
+  private pushToQueue(item: UploadItem): void {
+    if (isFolderItem(item)) this.foldersStillQueueingContent++;
+    void this.uploadQueue.push(item, getUploadPriority(item));
   }
 
   private async processItem(item: UploadItem): Promise<void> {
@@ -180,7 +197,9 @@ export class UploadManager {
     this.foldersStillQueueingContent--;
 
     const haveAllFoldersQueuedTheirContent = this.foldersStillQueueingContent === 0;
-    if (haveAllFoldersQueuedTheirContent) this.queue(this.largeFilesWaitingForFolders.splice(0));
+    if (haveAllFoldersQueuedTheirContent) {
+      this.largeFilesWaitingForFolders.splice(0).forEach((largeFile) => this.pushToQueue(largeFile));
+    }
   }
 
   private adjustConcurrencyFor(item: UploadItem): void {
