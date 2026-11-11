@@ -63,7 +63,6 @@ describe('BannerManager - showFreeBanner', () => {
   const expiredDate = new Date('2025-05-01');
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 
@@ -151,7 +150,6 @@ describe('BannerManager - showSubscriptionBanner', () => {
   const futureDate = new Date('2025-06-10');
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 

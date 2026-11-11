@@ -8,7 +8,6 @@ describe('generateCaptchaToken', () => {
   const mockCaptchaToken = 'mock-captcha-token-123';
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.mocked(envService.getVariable).mockReturnValue(mockRecaptchaSiteKey);
 
     globalThis.grecaptcha = {

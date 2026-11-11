@@ -10,7 +10,6 @@ describe('useInvitationValidation', () => {
   let originalSearch: string;
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.spyOn(errorService, 'reportError').mockImplementation(() => {});
     vi.spyOn(navigationService, 'push').mockImplementation(() => {});
     originalSearch = globalThis.location.search;

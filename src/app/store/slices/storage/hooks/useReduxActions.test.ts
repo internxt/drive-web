@@ -60,7 +60,6 @@ describe('useReduxActions', () => {
   });
 
   afterEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 

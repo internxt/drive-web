@@ -84,7 +84,6 @@ describe('Loading the items of the Drive explorer', () => {
   let requestedPages: RequestedPage[];
 
   beforeEach(() => {
-    vi.clearAllMocks();
     store = createStore();
     store.dispatch(storageActions.setNamePath([FOLDER]));
     requestedPages = [];

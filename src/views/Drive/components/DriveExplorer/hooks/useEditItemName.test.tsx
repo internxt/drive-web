@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
@@ -32,10 +32,6 @@ const renderEditItemName = () => {
 };
 
 describe('Renaming items from the Drive explorer', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   test('When a rename is requested from elsewhere in the app, then the rename dialog opens for that item', () => {
     const { store, result } = renderEditItemName();
 

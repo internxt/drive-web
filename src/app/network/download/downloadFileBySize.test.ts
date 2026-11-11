@@ -19,7 +19,6 @@ describe('Downloading a file by its size', () => {
   const downloadedStream = new ReadableStream<Uint8Array>();
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.mocked(downloadFile).mockResolvedValue(downloadedStream);
     vi.mocked(multipartDownloadFile).mockResolvedValue(downloadedStream);
   });

@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach, test } from 'vitest';
 import { loadStripe } from '@stripe/stripe-js/pure';
 import paymentService from './payment.service';
-import { SdkFactory } from '../../../app/core/factory/sdk';
 import { envService } from 'services';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
+import { mockSdkFactory } from 'testUtils/sdk.mock';
 
 vi.mock('@stripe/stripe-js/pure');
 vi.mock('axios');
@@ -39,10 +39,7 @@ describe('paymentService', () => {
   };
 
   beforeEach(() => {
-    vi.clearAllMocks();
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createPaymentsClient: vi.fn().mockResolvedValue(mockPaymentsClient),
-    } as any);
+    mockSdkFactory({ createPaymentsClient: mockPaymentsClient });
     vi.mocked(loadStripe).mockResolvedValue(mockStripe as any);
   });
 

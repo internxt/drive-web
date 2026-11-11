@@ -78,7 +78,7 @@ const getTimeline = (days: PhotosOfDay[], columns: number, failedMonths: MonthKe
   );
   for (const month of failedMonths) {
     const daysUntilMonthEnd = days.filter(({ day }) => day.slice(0, 7) >= month).length;
-    rowsOfEachDay[Math.max(0, daysUntilMonthEnd - 1)].push({ kind: 'monthError', month });
+    rowsOfEachDay[Math.max(0, daysUntilMonthEnd - 1)]?.push({ kind: 'monthError', month });
   }
   return {
     days: days.map(({ day }) => day),

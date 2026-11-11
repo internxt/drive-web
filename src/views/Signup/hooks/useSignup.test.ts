@@ -94,7 +94,6 @@ vi.mock('app/crypto/services/utils', () => ({
 
 describe('useSignUp', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 
