@@ -15,7 +15,7 @@ const DAY_FOLDER_NAME = /^(0?[1-9]|[12]\d|3[01])$/;
 
 const LIVE_PHOTO_VIDEO_SUFFIX = '.livephoto';
 const LIVE_PHOTO_VIDEO_TYPE = 'mov';
-const BURST_MEMBER_SUFFIX = /\.burst\.\d+$/;
+const BURST_MEMBER_SUFFIX = /\.burst\.\d+$/i;
 
 interface PhotoFile {
   photo: Photo;
