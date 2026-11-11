@@ -1,6 +1,6 @@
 import { OwnerUserAuthenticationData } from 'app/network/types';
 import { UploadedItem, UploadItem, UploadManagerEvents } from 'app/upload/types';
-import { UploadManager } from './UploadManager';
+import { UploadManager, uploadManager, UploadRunOptions } from './UploadManager';
 import { createFileItem, createFolderItem, getParentFolderUuid, getTopLevelItem, isFolderItem } from './uploadItemTree';
 import { PersistUploadRepository } from 'app/repositories/DatabaseUploadRepository';
 import { IRoot } from 'app/store/slices/storage/types';
@@ -17,6 +17,7 @@ interface UploadProps {
   onItemUploaded?: (uploadedItem: UploadedItem, parentFolderUuid: string, isFolder: boolean) => void;
   onItemRemoved?: (removedItem: UploadedItem, parentFolderUuid: string) => void;
   onStorageFull?: () => void;
+  uploadManager?: UploadManager;
 }
 
 const createItemsToUpload = ({ roots, files, destinationFolderUuid }: UploadProps): UploadItem[] => [
@@ -28,22 +29,24 @@ export class Upload {
   private readonly props: UploadProps;
   private readonly trackers = new Map<UploadItem, UploadTracker>();
   private readonly manager: UploadManager;
+  private readonly runOptions: UploadRunOptions;
 
   constructor(props: UploadProps) {
     this.props = props;
-    this.manager = new UploadManager({
+    this.manager = props.uploadManager ?? uploadManager;
+    this.runOptions = {
       ownerUserAuthenticationData: props.ownerUserAuthenticationData,
       uploadRepository: props.uploadRepository,
       getPauseKey: (item) => this.getTrackerOf(item).taskId,
       events: this.createManagerEvents(),
-    });
+    };
 
     for (const item of createItemsToUpload(props)) this.trackers.set(item, this.createTracker(item));
   }
 
   async run(): Promise<void> {
     const items = [...this.trackers.keys()];
-    void this.manager.run(items);
+    void this.manager.run(items, this.runOptions);
     await Promise.all([...this.trackers.values()].map((tracker) => tracker.whenFinished()));
   }
 
@@ -87,8 +90,8 @@ export class Upload {
     const hasNothingToRetry = itemsToRetry.length === 0;
     if (hasNothingToRetry) return;
 
-    this.manager.clearStorageFull();
-    void this.manager.run(itemsToRetry);
+    this.manager.clearStorageFull(this.props.ownerUserAuthenticationData);
+    void this.manager.run(itemsToRetry, this.runOptions);
     await tracker.whenFinished();
   }
 }
