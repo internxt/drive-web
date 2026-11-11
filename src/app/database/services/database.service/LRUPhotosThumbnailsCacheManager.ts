@@ -34,18 +34,19 @@ class PhotosThumbnailsCache implements ICacheStorage<PhotoThumbnailBlobData> {
 
 const MB_200_IN_BYTES = 200 * 1024 * 1024;
 
-export class LRUPhotosThumbnailsCacheManager {
-  private static instance: LRUCache<PhotoThumbnailBlobData>;
+const createCache = async (): Promise<LRUCache<PhotoThumbnailBlobData>> => {
+  const lruCacheState = await databaseService.get(DatabaseCollection.LRU_cache, LRUCacheTypes.PhotosThumbnails);
+  return new LRUCache(new PhotosThumbnailsCache(), MB_200_IN_BYTES, lruCacheState);
+};
 
-  public static async getInstance(): Promise<LRUCache<PhotoThumbnailBlobData>> {
-    if (!LRUPhotosThumbnailsCacheManager.instance) {
-      const lruCacheState = await databaseService.get(DatabaseCollection.LRU_cache, LRUCacheTypes.PhotosThumbnails);
-      LRUPhotosThumbnailsCacheManager.instance = new LRUCache(
-        new PhotosThumbnailsCache(),
-        MB_200_IN_BYTES,
-        lruCacheState,
-      );
-    }
+export class LRUPhotosThumbnailsCacheManager {
+  private static instance?: Promise<LRUCache<PhotoThumbnailBlobData>>;
+
+  public static getInstance(): Promise<LRUCache<PhotoThumbnailBlobData>> {
+    LRUPhotosThumbnailsCacheManager.instance ??= createCache().catch((error) => {
+      LRUPhotosThumbnailsCacheManager.instance = undefined;
+      throw error;
+    });
     return LRUPhotosThumbnailsCacheManager.instance;
   }
 }

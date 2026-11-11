@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, test, vi } from 'vitest';
 import { ICacheStorage, LRUCache, LRUCacheStruture } from './LRUCache';
 
 type CacheEntry<T> = { value: T; size: number };
@@ -25,6 +25,21 @@ class InMemoryCache<T> implements ICacheStorage<T> {
 
   async getSize(key: string): Promise<number> {
     return this.store.get(key)?.size ?? 0;
+  }
+}
+
+class CacheLosingWritesOf<T> extends InMemoryCache<T> {
+  constructor(private lostKey?: string) {
+    super();
+  }
+
+  set(key: string, value: T, size: number): void {
+    if (key === this.lostKey) return;
+    super.set(key, value, size);
+  }
+
+  storeFromNowOn(): void {
+    this.lostKey = undefined;
   }
 }
 
@@ -292,5 +307,18 @@ describe('LRUCache', () => {
     await lru.set('untracked', { version: 2 }, 10);
 
     expect(cache.updateLRUState.mock.calls.at(-1)?.[0]?.lruKeyList).toEqual(['tracked', 'untracked']);
+  });
+
+  test('When an entry whose earlier write was lost is cached again, then it is tracked only once', async () => {
+    const cache = new CacheLosingWritesOf<{ version: number }>('lost-once');
+    const lru = new LRUCache(cache, 100);
+    await lru.set('lost-once', { version: 1 }, 20);
+    await lru.set('kept', { version: 1 }, 10);
+    cache.storeFromNowOn();
+
+    await lru.set('lost-once', { version: 2 }, 20);
+
+    expect(cache.updateLRUState.mock.calls.at(-1)?.[0]?.lruKeyList).toEqual(['kept', 'lost-once']);
+    await expect(lru.get('lost-once')).resolves.toEqual({ version: 2 });
   });
 });

@@ -34,10 +34,8 @@ export class LRUCache<T> {
 
   async set(key: string, value: T, size: number): Promise<void> {
     if (size < this.size) {
-      const existsItem = await this.cache.has(key);
-
       const trackedIndex = this.lruList.indexOf(key);
-      if (existsItem && trackedIndex > -1) {
+      if (trackedIndex > -1) {
         const keySize = await this.cache.getSize(key);
         this.currentSize = Math.max(0, this.currentSize - keySize);
         this.lruList.splice(trackedIndex, 1);
