@@ -1,5 +1,6 @@
-import { useMonthPhotos } from '../hooks/useMonthPhotos';
+import { useTimelinePhotos } from '../hooks/useTimelinePhotos';
 import { PhotoMonth } from '../types';
+import PhotosEmptyState from './PhotosEmptyState';
 import PhotosErrorState from './PhotosErrorState';
 import PhotosGridSkeleton from './PhotosGridSkeleton';
 import PhotosTimeline from './PhotosTimeline';
@@ -9,15 +10,22 @@ interface PhotosGalleryProps {
 }
 
 const PhotosGallery = ({ months }: PhotosGalleryProps): JSX.Element => {
-  const { state, photos, retry } = useMonthPhotos(months);
+  const { photos, isLoading, hasMoreMonths, failedMonths, loadNextMonth, retryMonths } = useTimelinePhotos(months);
+  if (photos.length === 0) {
+    if (isLoading) return <PhotosGridSkeleton />;
+    if (failedMonths.length > 0) return <PhotosErrorState onRetry={() => retryMonths(failedMonths)} />;
+    return <PhotosEmptyState />;
+  }
 
-  const content = {
-    loading: <PhotosGridSkeleton />,
-    error: <PhotosErrorState onRetry={retry} />,
-    loaded: <PhotosTimeline photos={photos} />,
-  };
-
-  return <>{content[state.status]}</>;
+  return (
+    <PhotosTimeline
+      photos={photos}
+      failedMonths={failedMonths}
+      isLoadingMore={isLoading || hasMoreMonths}
+      onEndReached={loadNextMonth}
+      onRetryMonth={(month) => retryMonths([month])}
+    />
+  );
 };
 
 export default PhotosGallery;

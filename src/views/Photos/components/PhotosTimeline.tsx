@@ -1,11 +1,13 @@
+import { Button } from '@internxt/ui';
+import { WarningCircleIcon } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Translate } from 'app/i18n/types';
-import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { CSSProperties, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { GroupedVirtuoso, GroupedVirtuosoHandle, ListRange } from 'react-virtuoso';
 import dateService from 'services/date.service';
 import { useElementSize } from '../hooks/useElementSize';
-import { DayKey, Photo } from '../types';
-import PhotoTile from './PhotoTile';
+import { DayKey, MonthKey, Photo } from '../types';
+import PhotoGridItem from './PhotoGridItem';
 
 const MIN_TILE_SIZE = 160;
 const TILE_GAP = 4;
@@ -14,7 +16,18 @@ const DAY_GAP = 24;
 
 interface PhotosTimelineProps {
   photos: Photo[];
+  failedMonths: MonthKey[];
+  isLoadingMore: boolean;
+  onEndReached: () => void;
+  onRetryMonth: (month: MonthKey) => void;
 }
+
+interface TimelineFooterContext {
+  isLoadingMore: boolean;
+  columns: number;
+}
+
+type TimelineRow = { kind: 'photos'; photos: Photo[] } | { kind: 'monthError'; month: MonthKey };
 
 interface PhotosOfDay {
   day: DayKey;
@@ -24,7 +37,7 @@ interface PhotosOfDay {
 interface Timeline {
   days: DayKey[];
   rowsPerDay: number[];
-  rows: Photo[][];
+  rows: TimelineRow[];
   isLastRowOfDay: boolean[];
 }
 
@@ -58,8 +71,14 @@ const splitIntoRows = (photos: Photo[], columns: number): Photo[][] => {
   return rows;
 };
 
-const getTimeline = (days: PhotosOfDay[], columns: number): Timeline => {
-  const rowsOfEachDay = days.map(({ photos }) => splitIntoRows(photos, columns));
+const getTimeline = (days: PhotosOfDay[], columns: number, failedMonths: MonthKey[]): Timeline => {
+  const rowsOfEachDay = days.map(({ photos }) =>
+    splitIntoRows(photos, columns).map((rowPhotos): TimelineRow => ({ kind: 'photos', photos: rowPhotos })),
+  );
+  for (const month of failedMonths) {
+    const daysUntilMonthEnd = days.filter(({ day }) => day.slice(0, 7) >= month).length;
+    rowsOfEachDay[Math.max(0, daysUntilMonthEnd - 1)]?.push({ kind: 'monthError', month });
+  }
   return {
     days: days.map(({ day }) => day),
     rowsPerDay: rowsOfEachDay.map((rows) => rows.length),
@@ -68,37 +87,86 @@ const getTimeline = (days: PhotosOfDay[], columns: number): Timeline => {
   };
 };
 
-const PhotosTimeline = ({ photos }: PhotosTimelineProps): JSX.Element => {
+const findRowOfPhoto = (timeline: Timeline, photoUuid: string): number =>
+  timeline.rows.findIndex((row) => row.kind === 'photos' && row.photos.some(({ uuid }) => uuid === photoUuid));
+
+const getRowStyle = (columns: number, paddingBottom: number): CSSProperties => ({
+  display: 'grid',
+  gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+  gap: TILE_GAP,
+  paddingInline: SIDE_PADDING,
+  paddingBottom,
+});
+
+const TimelineFooter = ({ context }: { context: TimelineFooterContext }): JSX.Element | null => {
+  if (!context.isLoadingMore) return null;
+  return (
+    <div aria-hidden style={getRowStyle(context.columns, TILE_GAP)}>
+      {Array.from({ length: context.columns }, (_, column) => (
+        <div key={column} className="aspect-square animate-pulse rounded bg-gray-10 dark:bg-gray-20" />
+      ))}
+    </div>
+  );
+};
+
+const MonthError = ({ month, onRetry }: { month: MonthKey; onRetry: () => void }): JSX.Element => {
+  const { translate } = useTranslationContext();
+
+  return (
+    <div className="flex items-center gap-2 rounded-lg bg-red/10 py-2 pl-4 pr-2 text-sm">
+      <WarningCircleIcon size={20} weight="fill" className="shrink-0 text-red" />
+      <span className="grow">
+        {translate('views.photos.timeline.monthError', { month: dateService.format(month, 'MMMM YYYY') })}
+      </span>
+      <Button variant="ghost" className="text-red" onClick={onRetry}>
+        {translate('views.photos.error.retry')}
+      </Button>
+    </div>
+  );
+};
+
+const PhotosTimeline = ({
+  photos,
+  failedMonths,
+  isLoadingMore,
+  onEndReached,
+  onRetryMonth,
+}: PhotosTimelineProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
   const [scroller, setScroller] = useState<HTMLElement | null>(null);
   const virtuosoRef = useRef<GroupedVirtuosoHandle>(null);
   const photoInTheMiddleUuid = useRef<string>();
-  const shownColumns = useRef<number>();
+  const shownTimeline = useRef<Timeline>();
   const { height } = useElementSize(container);
   const { width: widthWithoutScrollbar } = useElementSize(scroller);
   const columns = getColumns(widthWithoutScrollbar);
   const days = useMemo(() => groupByDayNewestFirst(photos), [photos]);
-  const timeline = useMemo(() => getTimeline(days, columns), [days, columns]);
+  const timeline = useMemo(() => getTimeline(days, columns, failedMonths), [days, columns, failedMonths]);
 
   useLayoutEffect(() => {
-    if (columns === shownColumns.current) return;
-    shownColumns.current = columns;
-    if (!photoInTheMiddleUuid.current) return;
+    const previousTimeline = shownTimeline.current;
+    shownTimeline.current = timeline;
+    const photoUuid = photoInTheMiddleUuid.current;
+    if (!previousTimeline || !photoUuid) return;
 
-    const rowIndex = timeline.rows.findIndex((row) => row.some((photo) => photo.uuid === photoInTheMiddleUuid.current));
-    if (rowIndex !== -1) virtuosoRef.current?.scrollToIndex({ index: rowIndex, align: 'center' });
+    const rowIndex = findRowOfPhoto(timeline, photoUuid);
+    if (rowIndex !== -1 && rowIndex !== findRowOfPhoto(previousTimeline, photoUuid)) {
+      virtuosoRef.current?.scrollToIndex({ index: rowIndex, align: 'center' });
+    }
   }, [timeline]);
 
   const rememberPhotoInTheMiddle = ({ startIndex, endIndex }: ListRange) => {
-    if (columns !== shownColumns.current) return;
+    if (timeline !== shownTimeline.current) return;
     if (startIndex === 0) {
       photoInTheMiddleUuid.current = undefined;
       return;
     }
     const middleRow = timeline.rows[Math.ceil((startIndex + endIndex) / 2)];
-    if (!middleRow || middleRow.some((photo) => photo.uuid === photoInTheMiddleUuid.current)) return;
-    photoInTheMiddleUuid.current = middleRow[Math.floor(middleRow.length / 2)].uuid;
+    if (middleRow?.kind !== 'photos' || middleRow.photos.some(({ uuid }) => uuid === photoInTheMiddleUuid.current)) {
+      return;
+    }
+    photoInTheMiddleUuid.current = middleRow.photos[Math.floor(middleRow.photos.length / 2)].uuid;
   };
 
   return (
@@ -110,26 +178,32 @@ const PhotosTimeline = ({ photos }: PhotosTimelineProps): JSX.Element => {
           style={{ height }}
           groupCounts={widthWithoutScrollbar > 0 ? timeline.rowsPerDay : []}
           rangeChanged={rememberPhotoInTheMiddle}
+          endReached={onEndReached}
+          context={{ isLoadingMore, columns }}
+          components={{ Footer: TimelineFooter }}
           groupContent={(dayIndex) => (
             <h2 className="bg-surface pb-2 text-sm font-medium text-gray-80" style={{ paddingInline: SIDE_PADDING }}>
               {getDayLabel(timeline.days[dayIndex], translate)}
             </h2>
           )}
-          itemContent={(rowIndex) => (
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
-                gap: TILE_GAP,
-                paddingInline: SIDE_PADDING,
-                paddingBottom: timeline.isLastRowOfDay[rowIndex] ? DAY_GAP : TILE_GAP,
-              }}
-            >
-              {timeline.rows[rowIndex].map((photo) => (
-                <PhotoTile key={photo.uuid} photo={photo} />
-              ))}
-            </div>
-          )}
+          itemContent={(rowIndex) => {
+            const row = timeline.rows[rowIndex];
+            const paddingBottom = timeline.isLastRowOfDay[rowIndex] ? DAY_GAP : TILE_GAP;
+            if (row.kind === 'monthError') {
+              return (
+                <div style={{ paddingInline: SIDE_PADDING, paddingBottom }}>
+                  <MonthError month={row.month} onRetry={() => onRetryMonth(row.month)} />
+                </div>
+              );
+            }
+            return (
+              <div style={getRowStyle(columns, paddingBottom)}>
+                {row.photos.map((photo) => (
+                  <PhotoGridItem key={photo.uuid} photo={photo} />
+                ))}
+              </div>
+            );
+          }}
         />
       )}
     </div>
