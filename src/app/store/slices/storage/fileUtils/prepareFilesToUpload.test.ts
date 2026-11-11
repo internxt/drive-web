@@ -23,7 +23,6 @@ describe('prepareFilesToUpload', () => {
   const mockFileType = 'text/plain';
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 

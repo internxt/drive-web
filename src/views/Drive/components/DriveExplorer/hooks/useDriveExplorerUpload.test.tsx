@@ -73,7 +73,6 @@ const folderInput = (container: HTMLElement) =>
 
 describe('Uploading from the Drive explorer pickers', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.mocked(handleRepeatedUploadingFiles).mockImplementation(async (files) => ({
       repeatedItems: [],
       existingItems: [],

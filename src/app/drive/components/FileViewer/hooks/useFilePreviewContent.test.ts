@@ -61,7 +61,6 @@ const waitForDownload = async (fileId: number): Promise<PendingDownload> => {
 
 describe('Loading the content of a file preview', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     cachedFiles.clear();
     downloads = [];
     vi.mocked(downloadService.fetchFileBlob).mockImplementation(

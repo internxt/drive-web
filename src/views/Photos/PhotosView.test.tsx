@@ -75,7 +75,6 @@ const waitForPhotosToLoad = () =>
 
 describe('Photos view', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     givenSubfolders({});
     givenPhotosInFolders({});
   });

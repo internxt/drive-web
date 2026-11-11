@@ -222,7 +222,6 @@ vi.mock('app/store/slices/user', () => ({
 
 describe('onSubmit', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
     vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
       if (key === 'newApi') return mockApi;
@@ -339,7 +338,6 @@ describe('onSubmit', () => {
 
 describe('Pending account setup', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
       if (key === 'newApi') return mockApi;
       if (key === 'secret') return mockSecret;

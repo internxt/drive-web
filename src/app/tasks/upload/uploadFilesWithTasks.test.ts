@@ -95,7 +95,6 @@ const failWith = (failure: Partial<UploadFailure>) => {
 
 describe('Uploading files with tasks', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     RetryManager.clearTasks();
     managerState.result = { succeeded: [], failed: [] };
     (tasksService.findTask as Mock).mockReturnValue(undefined);
