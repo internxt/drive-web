@@ -1,7 +1,9 @@
 import { render, fireEvent } from '@testing-library/react';
-import { describe, test, vi, expect } from 'vitest';
+import { beforeEach, describe, test, vi, expect } from 'vitest';
 import TaskLoggerItem from './TaskLoggerItem';
-import { TaskNotification, TaskStatus, TaskType } from '../../types';
+import { TaskData, TaskNotification, TaskStatus, TaskType, UploadFolderTask } from '../../types';
+import tasksService from '../../services/tasks.service';
+import { getFolderToUpload } from 'testUtils/fixtures/upload.fixtures';
 import { RetryableTask, RetryableTaskStatus, RetryableTaskType } from 'app/network/RetryManager';
 
 vi.mock('react-redux', () => ({
@@ -23,6 +25,15 @@ vi.mock('../../../store/slices/storage/hooks/useReduxActions', () => ({
     uploadItem: vi.fn(),
     uploadSharedItem: vi.fn(),
   }),
+}));
+
+const mockUploadRepository = vi.hoisted(() => ({
+  setUploadState: vi.fn(() => Promise.resolve()),
+  getUploadState: vi.fn(),
+  removeUploadState: vi.fn(() => Promise.resolve()),
+}));
+vi.mock('../../../repositories/DatabaseUploadRepository', () => ({
+  default: { getInstance: () => mockUploadRepository },
 }));
 
 vi.mock('app/store/slices/workspaces/workspaces.selectors', () => ({
@@ -88,5 +99,74 @@ describe('TaskLoggerItem', () => {
 
     rerender(<TaskLoggerItem notification={createNotification()} filesToRetry={[createFileToRetry()]} />);
     expect(lastTaskToRetryProps()).toMatchObject({ isOpen: false });
+  });
+});
+
+describe('Pausing an upload from the tasks list', () => {
+  const buttonNextToCancel = 1;
+
+  const createFolderUploadTask = (
+    status: TaskStatus,
+    callbacks: { pause?: () => Promise<void>; resume?: () => Promise<void> },
+  ) => {
+    const taskId = tasksService.create<UploadFolderTask>({
+      action: TaskType.UploadFolder,
+      folderName: 'Photos',
+      item: getFolderToUpload('Photos'),
+      parentFolderId: 'destination-uuid',
+      showNotification: true,
+      cancellable: true,
+      ...callbacks,
+    });
+    tasksService.updateTask({ taskId, merge: { status, progress: 0.2 } });
+    return taskId;
+  };
+
+  const renderTaskRow = (taskId: string) =>
+    render(
+      <TaskLoggerItem
+        notification={tasksService.findNotification(tasksService.findTask(taskId) as TaskData)}
+        filesToRetry={[]}
+      />,
+    );
+
+  const clickRowButton = (container: HTMLElement, position: number) => {
+    fireEvent.mouseEnter(container.querySelector('[role="none"]') as HTMLElement);
+    fireEvent.click(container.querySelectorAll('[data-testid="task-logger-button"]')[position] as HTMLElement);
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    tasksService.clearTasks();
+  });
+
+  test('When the user pauses an upload that knows how to pause itself, then that upload is paused', () => {
+    const pause = vi.fn(() => Promise.resolve());
+    const taskId = createFolderUploadTask(TaskStatus.InProcess, { pause });
+    const { container } = renderTaskRow(taskId);
+
+    clickRowButton(container, buttonNextToCancel);
+
+    expect(pause).toHaveBeenCalledOnce();
+  });
+
+  test('When the user resumes an upload that knows how to resume itself, then that upload continues', () => {
+    const resume = vi.fn(() => Promise.resolve());
+    const taskId = createFolderUploadTask(TaskStatus.Paused, { resume });
+    const { container } = renderTaskRow(taskId);
+
+    clickRowButton(container, buttonNextToCancel);
+
+    expect(resume).toHaveBeenCalledOnce();
+  });
+
+  test('When the user pauses an upload from the previous upload flow, then its saved state and its task are marked as paused', async () => {
+    const taskId = createFolderUploadTask(TaskStatus.InProcess, {});
+    const { container } = renderTaskRow(taskId);
+
+    clickRowButton(container, buttonNextToCancel);
+
+    await vi.waitFor(() => expect(tasksService.findTask(taskId)?.status).toBe(TaskStatus.Paused));
+    expect(mockUploadRepository.setUploadState).toHaveBeenCalledWith(taskId, TaskStatus.Paused);
   });
 });

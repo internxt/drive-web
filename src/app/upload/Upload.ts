@@ -55,6 +55,8 @@ export class Upload {
       uploadRepository: this.props.uploadRepository,
       stop: () => this.cancel(item),
       retry: (pickedItem) => this.retry(item, pickedItem),
+      pause: () => this.pause(item),
+      resume: () => this.resume(item),
       onItemRemoved: this.props.onItemRemoved,
     };
     return isFolderItem(item) ? new FolderUploadTracker(item, trackerProps) : new FileUploadTracker(item, trackerProps);
@@ -82,6 +84,22 @@ export class Upload {
   private cancel(topLevelItem: UploadItem): void {
     this.getTrackerOf(topLevelItem).cancel();
     this.manager.cancelItem(topLevelItem);
+  }
+
+  private pause(topLevelItem: UploadItem): void {
+    const tracker = this.getTrackerOf(topLevelItem);
+    if (!tracker.canBePaused()) return;
+
+    tracker.pause();
+    this.manager.pause(topLevelItem);
+  }
+
+  private resume(topLevelItem: UploadItem): void {
+    const tracker = this.getTrackerOf(topLevelItem);
+    if (!tracker.canBeResumed()) return;
+
+    tracker.resume();
+    this.manager.resume(topLevelItem);
   }
 
   private async retry(topLevelItem: UploadItem, pickedItem?: UploadItem): Promise<void> {

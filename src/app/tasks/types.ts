@@ -64,6 +64,8 @@ export interface BaseTask {
   stop?: () => Promise<void>;
   failedItems?: FailedUploadItem[];
   retry?: () => Promise<void>;
+  pause?: () => Promise<void>;
+  resume?: () => Promise<void>;
 }
 
 export interface CreateFolderTask extends BaseTask {

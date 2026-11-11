@@ -53,6 +53,8 @@ const createManager = (options: Partial<UploadRunOptions> = {}) => {
   return {
     run: (items: UploadItem[]) => manager.run(items, runOptions),
     cancelItem: (item: UploadItem) => manager.cancelItem(item),
+    pause: (item: UploadItem) => manager.pause(item),
+    resume: (item: UploadItem) => manager.resume(item),
     clearStorageFull: () => manager.clearStorageFull(runOptions.ownerUserAuthenticationData),
   };
 };
@@ -984,5 +986,86 @@ describe('Following each queued item until it ends', () => {
 
     expect(succeeded.map(({ item }) => item)).toContain(retriedItem);
     expect(startedUploadNames()).toContain('retried');
+  });
+});
+
+describe('Pausing an upload', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.spyOn(errorService, 'reportError').mockReturnValue();
+    fakeSlowUploads();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  test('When a file is paused before it starts, then it neither starts nor ends until it is resumed', async () => {
+    uploadAtMostAtTheSameTime(1);
+    const { events, endedNames } = recordItemEvents();
+    const manager = createManager({ events });
+    const uploading = getUploadFileItem('uploading');
+    const paused = getUploadFileItem('paused');
+    void manager.run([uploading, paused]);
+    await vi.waitFor(() => expect(startedUploadNames()).toEqual(['uploading']));
+
+    manager.pause(paused);
+    await vi.runAllTimersAsync();
+
+    expect(startedUploadNames()).toEqual(['uploading']);
+    expect(endedNames()).toEqual(['uploading']);
+  });
+
+  test('When an upload stays paused after the storage got full, then a later upload is still tried', async () => {
+    (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
+      if (file.name === 'fills-the-storage') throw noSpaceLeftError;
+      return { uuid: `${file.name}-uuid` };
+    });
+    const manager = new UploadManager();
+    const runOptions = (): UploadRunOptions => ({ uploadRepository: getUploadRepository(), getPauseKey: nameOf });
+    const neverResumed = getUploadFileItem('never-resumed');
+    manager.pause(neverResumed);
+    await failIfHangs(manager.run([getUploadFileItem('fills-the-storage'), neverResumed], runOptions()));
+
+    const { succeeded } = await failIfHangs(manager.run([getUploadFileItem('after-freeing-space')], runOptions()));
+
+    expect(succeeded.map(({ item }) => nameOf(item))).toEqual(['after-freeing-space']);
+  });
+
+  test('When one upload is paused, then another one using the same engine still ends', async () => {
+    uploadAtMostAtTheSameTime(1);
+    const manager = new UploadManager();
+    const runOptions = (): UploadRunOptions => ({ uploadRepository: getUploadRepository(), getPauseKey: nameOf });
+    const paused = getUploadFileItem('paused');
+    void manager.run([getUploadFileItem('uploading'), paused], runOptions());
+    await vi.waitFor(() => expect(startedUploadNames()).toEqual(['uploading']));
+    manager.pause(paused);
+
+    const otherUpload = manager.run([getUploadFileItem('other')], runOptions());
+    const hasOtherUploadEnded = vi.fn();
+    void otherUpload.then(hasOtherUploadEnded);
+    await vi.runAllTimersAsync();
+
+    expect(hasOtherUploadEnded).toHaveBeenCalled();
+    expect(startedUploadNames()).toEqual(['uploading', 'other']);
+  });
+
+  test('When a paused file is resumed, then it uploads and the upload ends with every file uploaded once', async () => {
+    uploadAtMostAtTheSameTime(1);
+    const manager = createManager();
+    const uploading = getUploadFileItem('uploading');
+    const paused = getUploadFileItem('paused');
+    const running = manager.run([uploading, paused]);
+    await vi.waitFor(() => expect(startedUploadNames()).toEqual(['uploading']));
+    manager.pause(paused);
+    await vi.runAllTimersAsync();
+
+    manager.resume(paused);
+    await vi.runAllTimersAsync();
+    const { succeeded } = await running;
+
+    expect(startedUploadNames()).toEqual(['uploading', 'paused']);
+    expect(succeeded.map(({ item }) => item)).toEqual([uploading, paused]);
   });
 });

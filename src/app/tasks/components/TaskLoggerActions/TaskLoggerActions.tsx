@@ -28,6 +28,9 @@ type TaskLoggerActionsProps = {
 };
 
 const pauseUpload = async (id: string) => {
+  const pause = tasksService.findTask(id)?.pause;
+  if (pause) return pause();
+
   const uploadRespository = DatabaseUploadRepository.getInstance();
   await uploadRespository.setUploadState(id, TaskStatus.Paused);
 
@@ -38,6 +41,9 @@ const pauseUpload = async (id: string) => {
 };
 
 const resumeUpload = async (id: string) => {
+  const resume = tasksService.findTask(id)?.resume;
+  if (resume) return resume();
+
   const uploadRespository = DatabaseUploadRepository.getInstance();
   await uploadRespository.setUploadState(id, TaskStatus.InProcess);
 
