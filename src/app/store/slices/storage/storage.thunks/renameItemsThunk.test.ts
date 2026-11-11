@@ -1,4 +1,4 @@
-import { describe, test, expect, vi, beforeEach } from 'vitest';
+import { describe, test, expect, vi } from 'vitest';
 import { getCollisionGroups, handleRepeatedUploadingFiles, handleRepeatedUploadingFolders } from './renameItemsThunk';
 import { getDriveItemData } from 'testUtils/fixtures/drive.fixtures';
 
@@ -20,10 +20,6 @@ vi.mock('app/store/slices/storage/storage.thunks', () => ({ default: {}, storage
 vi.mock('i18next', () => ({ default: { t: (key: string) => key }, t: (key: string) => key }));
 
 describe('Rename items - Thunk', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   describe('Resolving collision groups before a move or copy operation', () => {
     test('When a group contains only files, then only the file duplicate checker is consulted', async () => {
       const file = getDriveItemData({ isFolder: false, uuid: 'file-uuid-1' });

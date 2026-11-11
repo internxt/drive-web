@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
   isWhitelistedPath,
   buildCanonicalUrlFromParts,
@@ -21,10 +21,6 @@ const mockEnvService = envService as {
 };
 
 describe('canonicalDomain.utils', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   describe('isWhitelistedPath', () => {
     it('should return true for whitelisted paths', () => {
       expect(isWhitelistedPath('/sh/file/token123')).toBe(true);

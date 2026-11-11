@@ -97,7 +97,6 @@ describe('SdkFactory', () => {
   };
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.spyOn(HttpClient, 'enableGlobalRetry').mockImplementation(vi.fn());
     mockDispatch = vi.fn();
     mockLocalStorage = {

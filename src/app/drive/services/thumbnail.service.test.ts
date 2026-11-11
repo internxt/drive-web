@@ -87,8 +87,6 @@ describe('Thumbnail Service', () => {
     const originalCreateElement = document.createElement.bind(document);
 
     beforeEach(() => {
-      vi.clearAllMocks();
-
       mockVideoElement = createMockVideoElement();
       mockCanvas = createMockCanvas();
 
@@ -223,7 +221,6 @@ describe('Thumbnail Service', () => {
     let mockImage: { onload: (() => void) | null; onerror: (() => void) | null };
 
     beforeEach(() => {
-      vi.clearAllMocks();
       (Resizer as any).imageFileResizer = vi.fn();
       URL.createObjectURL = vi.fn(() => 'blob:mock-url');
 
@@ -291,7 +288,6 @@ describe('Thumbnail Service', () => {
     });
 
     beforeEach(async () => {
-      vi.clearAllMocks();
       const { convertImageForPreview } =
         await vi.importActual<typeof import('./image-preview.service')>('./image-preview.service');
       const realResizer = await vi.importActual<typeof import('react-image-file-resizer')>('react-image-file-resizer');
@@ -345,7 +341,6 @@ describe('Thumbnail Service', () => {
     };
 
     beforeEach(() => {
-      vi.clearAllMocks();
       vi.mocked(fetchFileBlob).mockResolvedValue(new Blob(['thumbnail-data']));
     });
 

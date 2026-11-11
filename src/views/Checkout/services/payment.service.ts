@@ -12,16 +12,6 @@ import { RedirectToCheckoutServerOptions, Source, Stripe, StripeError } from '@s
 import { loadStripe } from '@stripe/stripe-js/pure';
 import { SdkFactory } from 'app/core/factory/sdk';
 import envService from 'services/env.service';
-import { LifetimeTier, StripeSessionMode } from '../types';
-
-export interface CreatePaymentSessionPayload {
-  test?: boolean;
-  lifetime_tier?: LifetimeTier;
-  mode: StripeSessionMode;
-  priceId: string;
-  successUrl?: string;
-  canceledUrl?: string;
-}
 
 let stripe: Stripe;
 

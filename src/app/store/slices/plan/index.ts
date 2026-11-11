@@ -255,6 +255,4 @@ export const planThunks = {
   fetchBusinessLimitUsageThunk,
 };
 
-export const planActions = planSlice.actions;
-
 export default planSlice.reducer;
