@@ -1,5 +1,5 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import errorService from 'services/error.service';
 import { PhotoDevice as SdkPhotoDevice } from '@internxt/sdk/dist/drive/photos';
 import { getPhotoFolder, getPhotoFolderFile, getSdkPhotoDevice } from 'testUtils/fixtures/photos.fixtures';
@@ -49,13 +49,75 @@ const givenPhotosInFolders = (photosByFolder: Record<string, ReturnType<typeof g
 const photo = (plainName: string, folderUuid: string, creationTime: string) =>
   getPhotoFolderFile({ uuid: plainName, plainName, type: 'jpg', folderUuid, creationTime });
 
-const shownDays = () =>
-  screen.getAllByRole('region').map((day) => [
-    day.getAttribute('aria-label'),
-    within(day)
-      .getAllByRole('img')
-      .map((tile) => tile.getAttribute('aria-label')),
-  ]);
+const photosOfDay = (folderUuid: string, count: number) =>
+  Array.from({ length: count }, (_, index) =>
+    photo(`IMG_${String(index + 1).padStart(4, '0')}`, folderUuid, '2025-11-03T09:00:00Z'),
+  );
+
+let gallerySize = { width: 1000, height: 600 };
+const resizeObservers = new Set<FakeResizeObserver>();
+
+class FakeResizeObserver {
+  private readonly elements: Element[] = [];
+
+  constructor(private readonly onResize: ResizeObserverCallback) {}
+
+  observe(element: Element) {
+    this.elements.push(element);
+    resizeObservers.add(this);
+    this.notify();
+  }
+
+  notify() {
+    const entries = this.elements.map((target) => ({ target, contentRect: gallerySize }) as ResizeObserverEntry);
+    this.onResize(entries, this as unknown as ResizeObserver);
+  }
+
+  disconnect() {
+    resizeObservers.delete(this);
+  }
+
+  unobserve() {}
+}
+
+const givenGallerySize = (width: number, height: number) => {
+  gallerySize = { width, height };
+};
+
+const resizeGallery = (width: number, height: number) => {
+  givenGallerySize(width, height);
+  act(() => resizeObservers.forEach((observer) => observer.notify()));
+};
+
+const gallery = () => screen.getByTestId('virtuoso-scroller');
+
+const shownTimeline = () =>
+  [...screen.getByTestId('virtuoso-top-item-list').children, ...screen.getByTestId('virtuoso-item-list').children].map(
+    (item) => {
+      const dayTitle = within(item as HTMLElement).queryByRole('heading');
+      if (dayTitle) return dayTitle.textContent;
+      return within(item as HTMLElement)
+        .getAllByRole('img')
+        .map((tile) => tile.getAttribute('aria-label'));
+    },
+  );
+
+const scrollGalleryTo = (position: 'middle' | 'end') => {
+  gallery().scrollTop = position === 'end' ? gallery().scrollHeight : gallery().scrollHeight / 2;
+  fireEvent.scroll(gallery());
+};
+
+const photosOnScreen = () => {
+  const belowDayTitle = screen.getByTestId('virtuoso-top-item-list').getBoundingClientRect().bottom;
+  const galleryBottom = gallery().getBoundingClientRect().bottom;
+  return screen
+    .getAllByRole('img')
+    .filter((tile) => {
+      const { top, bottom } = tile.getBoundingClientRect();
+      return top >= belowDayTitle && bottom <= galleryBottom;
+    })
+    .map((tile) => tile.getAttribute('aria-label'));
+};
 
 const iphone = getSdkPhotoDevice({ uuid: 'iphone', plainName: 'iPhone' });
 const pixel = getSdkPhotoDevice({ uuid: 'pixel', plainName: 'Pixel' });
@@ -73,10 +135,22 @@ const pixelPhotosOfOctober2026 = {
 const waitForPhotosToLoad = () =>
   waitFor(() => expect(screen.queryByTestId('photos-grid-skeleton')).not.toBeInTheDocument());
 
+// Tests run without the app's CSS; like Tailwind's preflight, headings get no default margins.
+const headingMarginsReset = document.createElement('style');
+headingMarginsReset.textContent = 'h2 { margin: 0; }';
+document.head.appendChild(headingMarginsReset);
+
 describe('Photos view', () => {
   beforeEach(() => {
+    givenGallerySize(1000, 600);
+    vi.stubGlobal('ResizeObserver', FakeResizeObserver);
     givenSubfolders({});
     givenPhotosInFolders({});
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    resizeObservers.clear();
   });
 
   test('When the devices are loading, then the photos grid placeholder is shown under the title', () => {
@@ -331,11 +405,13 @@ describe('Photos view', () => {
       });
 
       render(<PhotosView />);
-      await screen.findAllByRole('region');
+      await screen.findByRole('img', { name: 'IMG_A.jpg' });
 
-      expect(shownDays()).toStrictEqual([
-        ['Mon, 3 Nov 2025', ['IMG_B.jpg', 'IMG_A.jpg']],
-        ['Sat, 1 Nov 2025', ['IMG_C.jpg']],
+      expect(shownTimeline()).toStrictEqual([
+        'Mon, 3 Nov 2025',
+        ['IMG_B.jpg', 'IMG_A.jpg'],
+        'Sat, 1 Nov 2025',
+        ['IMG_C.jpg'],
       ]);
     });
 
@@ -351,8 +427,8 @@ describe('Photos view', () => {
       fireEvent.click(await screen.findByRole('button', { name: /views.photos.filters.allDates/ }));
       fireEvent.click(await screen.findByRole('menuitem', { name: /October 2025/ }));
 
-      expect(await screen.findByRole('region', { name: 'Wed, 15 Oct 2025' })).toBeInTheDocument();
-      expect(shownDays()).toStrictEqual([['Wed, 15 Oct 2025', ['IMG_OCTOBER.jpg']]]);
+      expect(await screen.findByRole('img', { name: 'IMG_OCTOBER.jpg' })).toBeInTheDocument();
+      expect(shownTimeline()).toStrictEqual(['Wed, 15 Oct 2025', ['IMG_OCTOBER.jpg']]);
     });
 
     test('When the photos of a day come from several devices, then they are shown together', async () => {
@@ -371,9 +447,9 @@ describe('Photos view', () => {
       });
 
       render(<PhotosView />);
-      await screen.findAllByRole('region');
+      await screen.findByRole('img', { name: 'IMG_PIXEL.jpg' });
 
-      expect(shownDays()).toStrictEqual([['Mon, 3 Nov 2025', ['IMG_PIXEL.jpg', 'IMG_IPHONE.jpg']]]);
+      expect(shownTimeline()).toStrictEqual(['Mon, 3 Nov 2025', ['IMG_PIXEL.jpg', 'IMG_IPHONE.jpg']]);
     });
 
     test('When the photos cannot be loaded, then the user can try again', async () => {
@@ -388,6 +464,98 @@ describe('Photos view', () => {
       fireEvent.click(await screen.findByRole('button', { name: /views.photos.error.retry/ }));
 
       expect(await screen.findByRole('img', { name: 'IMG_A.jpg' })).toBeInTheDocument();
+    });
+
+    test('When the photos were taken today, then their day is shown as today', async () => {
+      const today = new Date();
+      const [year, month, day] = [today.getFullYear(), today.getMonth() + 1, today.getDate()].map(String);
+      givenDevices([iphone]);
+      givenSubfolders({
+        iphone: [getPhotoFolder({ uuid: 'iphone-year', plainName: year })],
+        'iphone-year': [getPhotoFolder({ uuid: 'iphone-month', plainName: month })],
+        'iphone-month': [getPhotoFolder({ uuid: 'iphone-today', plainName: day })],
+      });
+      givenPhotosInFolders({ 'iphone-today': [photo('IMG_TODAY', 'iphone-today', today.toISOString())] });
+
+      render(<PhotosView />);
+
+      await waitFor(() =>
+        expect(screen.getByRole('heading', { name: 'views.photos.timeline.today' })).toBeInTheDocument(),
+      );
+    });
+
+    describe('A day with hundreds of photos', () => {
+      beforeEach(() => {
+        givenDevices([iphone]);
+        givenSubfolders(iphonePhotosOf2025);
+        givenPhotosInFolders({ 'iphone-2025-11-03': photosOfDay('iphone-2025-11-03', 300) });
+      });
+
+      test('When the user opens Photos, then only the first photos are shown', async () => {
+        render(<PhotosView />);
+
+        expect(await screen.findByRole('img', { name: 'IMG_0001.jpg' })).toBeInTheDocument();
+        expect(screen.queryByRole('img', { name: 'IMG_0300.jpg' })).not.toBeInTheDocument();
+      });
+
+      test('When the user scrolls to the end, then the last photos are shown instead of the first ones', async () => {
+        render(<PhotosView />);
+        await screen.findByRole('img', { name: 'IMG_0001.jpg' });
+
+        scrollGalleryTo('end');
+
+        expect(await screen.findByRole('img', { name: 'IMG_0300.jpg' })).toBeInTheDocument();
+        expect(screen.queryByRole('img', { name: 'IMG_0001.jpg' })).not.toBeInTheDocument();
+      });
+
+      test('When the window is wide, then five photos fit in each row', async () => {
+        givenGallerySize(1000, 600);
+
+        render(<PhotosView />);
+        await screen.findByRole('img', { name: 'IMG_0001.jpg' });
+
+        expect(shownTimeline().slice(0, 2)).toStrictEqual([
+          'Mon, 3 Nov 2025',
+          ['IMG_0001.jpg', 'IMG_0002.jpg', 'IMG_0003.jpg', 'IMG_0004.jpg', 'IMG_0005.jpg'],
+        ]);
+      });
+
+      test('When the window is narrow, then two photos fit in each row', async () => {
+        givenGallerySize(400, 600);
+
+        render(<PhotosView />);
+        await screen.findByRole('img', { name: 'IMG_0001.jpg' });
+
+        expect(shownTimeline().slice(0, 2)).toStrictEqual(['Mon, 3 Nov 2025', ['IMG_0001.jpg', 'IMG_0002.jpg']]);
+      });
+
+      test('When the window gets narrower, then the photos are rearranged in fewer columns', async () => {
+        render(<PhotosView />);
+        await screen.findByRole('img', { name: 'IMG_0001.jpg' });
+
+        resizeGallery(400, 600);
+
+        await waitFor(() =>
+          expect(shownTimeline().slice(0, 2)).toStrictEqual(['Mon, 3 Nov 2025', ['IMG_0001.jpg', 'IMG_0002.jpg']]),
+        );
+        await waitFor(() => expect(photosOnScreen()).toContain('IMG_0001.jpg'));
+      });
+
+      test('When the window is resized, then the photos the user was looking at stay on screen', async () => {
+        render(<PhotosView />);
+        await screen.findByRole('img', { name: 'IMG_0001.jpg' });
+        scrollGalleryTo('middle');
+        await waitFor(() => expect(photosOnScreen()).not.toContain('IMG_0001.jpg'));
+        const lookedAtPhoto = photosOnScreen()[Math.floor(photosOnScreen().length / 2)];
+
+        resizeGallery(400, 600);
+        await waitFor(() => expect(shownTimeline().find(Array.isArray)).toHaveLength(2));
+        await waitFor(() => expect(photosOnScreen()).toContain(lookedAtPhoto));
+
+        resizeGallery(700, 600);
+        await waitFor(() => expect(shownTimeline().find(Array.isArray)).toHaveLength(4));
+        await waitFor(() => expect(photosOnScreen()).toContain(lookedAtPhoto));
+      });
     });
   });
 });

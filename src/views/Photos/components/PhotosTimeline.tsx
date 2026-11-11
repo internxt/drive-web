@@ -1,8 +1,16 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { useMemo } from 'react';
+import { Translate } from 'app/i18n/types';
+import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { GroupedVirtuoso, GroupedVirtuosoHandle, ListRange } from 'react-virtuoso';
 import dateService from 'services/date.service';
+import { useElementSize } from '../hooks/useElementSize';
 import { DayKey, Photo } from '../types';
 import PhotoTile from './PhotoTile';
+
+const MIN_TILE_SIZE = 160;
+const TILE_GAP = 4;
+const SIDE_PADDING = 20;
+const DAY_GAP = 24;
 
 interface PhotosTimelineProps {
   photos: Photo[];
@@ -11,6 +19,13 @@ interface PhotosTimelineProps {
 interface PhotosOfDay {
   day: DayKey;
   photos: Photo[];
+}
+
+interface Timeline {
+  days: DayKey[];
+  rowsPerDay: number[];
+  rows: Photo[][];
+  isLastRowOfDay: boolean[];
 }
 
 const groupByDayNewestFirst = (photos: Photo[]): PhotosOfDay[] => {
@@ -28,32 +43,95 @@ const groupByDayNewestFirst = (photos: Photo[]): PhotosOfDay[] => {
   return days;
 };
 
+const getDayLabel = (day: DayKey, translate: Translate): string => {
+  if (dateService.isToday(day)) return translate('views.photos.timeline.today');
+  if (dateService.isYesterday(day)) return translate('views.photos.timeline.yesterday');
+  return dateService.format(day, 'ddd, D MMM YYYY');
+};
+
+const getColumns = (width: number): number =>
+  Math.max(1, Math.floor((width - 2 * SIDE_PADDING + TILE_GAP) / (MIN_TILE_SIZE + TILE_GAP)));
+
+const splitIntoRows = (photos: Photo[], columns: number): Photo[][] => {
+  const rows: Photo[][] = [];
+  for (let start = 0; start < photos.length; start += columns) rows.push(photos.slice(start, start + columns));
+  return rows;
+};
+
+const getTimeline = (days: PhotosOfDay[], columns: number): Timeline => {
+  const rowsOfEachDay = days.map(({ photos }) => splitIntoRows(photos, columns));
+  return {
+    days: days.map(({ day }) => day),
+    rowsPerDay: rowsOfEachDay.map((rows) => rows.length),
+    rows: rowsOfEachDay.flat(),
+    isLastRowOfDay: rowsOfEachDay.flatMap((rows) => rows.map((_, index) => index === rows.length - 1)),
+  };
+};
+
 const PhotosTimeline = ({ photos }: PhotosTimelineProps): JSX.Element => {
   const { translate } = useTranslationContext();
+  const [container, setContainer] = useState<HTMLDivElement | null>(null);
+  const [scroller, setScroller] = useState<HTMLElement | null>(null);
+  const virtuosoRef = useRef<GroupedVirtuosoHandle>(null);
+  const photoInTheMiddleUuid = useRef<string>();
+  const shownColumns = useRef<number>();
+  const { height } = useElementSize(container);
+  const { width: widthWithoutScrollbar } = useElementSize(scroller);
+  const columns = getColumns(widthWithoutScrollbar);
   const days = useMemo(() => groupByDayNewestFirst(photos), [photos]);
+  const timeline = useMemo(() => getTimeline(days, columns), [days, columns]);
 
-  const getDayLabel = (day: DayKey): string => {
-    if (dateService.isToday(day)) return translate('views.photos.timeline.today');
-    if (dateService.isYesterday(day)) return translate('views.photos.timeline.yesterday');
-    return dateService.format(day, 'ddd, D MMM YYYY');
+  useLayoutEffect(() => {
+    if (columns === shownColumns.current) return;
+    shownColumns.current = columns;
+    if (!photoInTheMiddleUuid.current) return;
+
+    const rowIndex = timeline.rows.findIndex((row) => row.some((photo) => photo.uuid === photoInTheMiddleUuid.current));
+    if (rowIndex !== -1) virtuosoRef.current?.scrollToIndex({ index: rowIndex, align: 'center' });
+  }, [timeline]);
+
+  const rememberPhotoInTheMiddle = ({ startIndex, endIndex }: ListRange) => {
+    if (columns !== shownColumns.current) return;
+    if (startIndex === 0) {
+      photoInTheMiddleUuid.current = undefined;
+      return;
+    }
+    const middleRow = timeline.rows[Math.ceil((startIndex + endIndex) / 2)];
+    if (!middleRow || middleRow.some((photo) => photo.uuid === photoInTheMiddleUuid.current)) return;
+    photoInTheMiddleUuid.current = middleRow[Math.floor(middleRow.length / 2)].uuid;
   };
 
   return (
-    <div className="flex flex-col gap-6 px-5 pb-6">
-      {days.map(({ day, photos: photosOfDay }) => {
-        const dayLabel = getDayLabel(day);
-
-        return (
-          <section key={day} aria-label={dayLabel} className="flex flex-col gap-2">
-            <h2 className="text-sm font-medium text-gray-80">{dayLabel}</h2>
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-1">
-              {photosOfDay.map((photo) => (
+    <div ref={setContainer} className="min-h-0 grow">
+      {height > 0 && (
+        <GroupedVirtuoso
+          ref={virtuosoRef}
+          scrollerRef={(element) => setScroller(element instanceof HTMLElement ? element : null)}
+          style={{ height }}
+          groupCounts={widthWithoutScrollbar > 0 ? timeline.rowsPerDay : []}
+          rangeChanged={rememberPhotoInTheMiddle}
+          groupContent={(dayIndex) => (
+            <h2 className="bg-surface pb-2 text-sm font-medium text-gray-80" style={{ paddingInline: SIDE_PADDING }}>
+              {getDayLabel(timeline.days[dayIndex], translate)}
+            </h2>
+          )}
+          itemContent={(rowIndex) => (
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+                gap: TILE_GAP,
+                paddingInline: SIDE_PADDING,
+                paddingBottom: timeline.isLastRowOfDay[rowIndex] ? DAY_GAP : TILE_GAP,
+              }}
+            >
+              {timeline.rows[rowIndex].map((photo) => (
                 <PhotoTile key={photo.uuid} photo={photo} />
               ))}
             </div>
-          </section>
-        );
-      })}
+          )}
+        />
+      )}
     </div>
   );
 };
