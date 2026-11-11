@@ -9,13 +9,15 @@ import errorService from 'services/error.service';
 import referralService from 'services/referral.service';
 import { AppError } from '@internxt/sdk';
 import { HTTP_STATUS_CODES } from 'app/core/constants';
-import { MAX_UPLOAD_ATTEMPTS } from 'app/network/networkConstants';
+import { MAX_CONCURRENT_UPLOADS, MAX_UPLOAD_ATTEMPTS } from 'app/network/networkConstants';
 import {
   getCreatedFolder,
   getFileToUpload,
   getFolderToUpload,
+  getFolderWithFiles,
   getUploadRepository,
 } from 'testUtils/fixtures/upload.fixtures';
+import { QueueUtilsService } from 'utils/queueUtils';
 import { Upload } from './Upload';
 
 vi.mock('app/drive/services/file.service/uploadFile', () => ({ default: vi.fn() }));
@@ -70,6 +72,20 @@ const failUploadsOf = (failingNames: string[], error: unknown = new Error('Serve
 
 const uploadSucceeds = () =>
   (uploadFile as Mock).mockImplementation(async (file: { name: string }) => ({ uuid: `${file.name}-uuid` }));
+
+const countUploadsAtTheSameTime = (failingNames: string[]) => {
+  let uploading = 0;
+  let mostAtTheSameTime = 0;
+  (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
+    uploading++;
+    mostAtTheSameTime = Math.max(mostAtTheSameTime, uploading);
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    uploading--;
+    if (failingNames.includes(file.name)) throw new Error('Server error');
+    return { uuid: `${file.name}-uuid` };
+  });
+  return () => mostAtTheSameTime;
+};
 
 describe('Uploading what the user picked', () => {
   beforeEach(() => {
@@ -157,11 +173,14 @@ describe('Uploading what the user picked', () => {
       [],
     );
 
-    const { failed } = await upload.run();
+    await upload.run();
 
-    expect(failed).toHaveLength(1);
     expect(tasksOf(TaskType.UploadFolder)[0]).toEqual(
-      expect.objectContaining({ status: TaskStatus.Success, progress: 2 / 3 }),
+      expect.objectContaining({
+        status: TaskStatus.Success,
+        progress: 2 / 3,
+        failedItems: [expect.objectContaining({ name: 'broken' })],
+      }),
     );
   });
 
@@ -212,6 +231,20 @@ describe('Uploading what the user picked', () => {
     await running;
 
     expect(uploadRepository.removeUploadState).toHaveBeenCalledWith(reportTask.id);
+  });
+
+  test('When a file starts uploading, then its upload is saved as in process, but not the one of a folder', async () => {
+    fakeUploadsTaking(500);
+    const upload = createUpload([getFolderToUpload('Photos')], [getFileToUpload('report.pdf')]);
+
+    const running = upload.run();
+    await vi.waitFor(() => expect(uploadFile).toHaveBeenCalled());
+    const [fileTask] = tasksOf(TaskType.UploadFile);
+    const [folderTask] = tasksOf(TaskType.UploadFolder);
+    await running;
+
+    expect(uploadRepository.setUploadState).toHaveBeenCalledWith(fileTask.id, TaskStatus.InProcess);
+    expect(uploadRepository.setUploadState).not.toHaveBeenCalledWith(folderTask.id, expect.anything());
   });
 
   test('When the user cancels a folder, then its upload stops and the folder already created is removed', async () => {
@@ -413,7 +446,7 @@ describe('Retrying what failed', () => {
     ]);
   });
 
-  test('When the user retries while a retry of the same task is still running, then nothing else is uploaded', async () => {
+  test('When the user retries everything while one failed file is being retried, then the rest is queued too and nothing is uploaded twice', async () => {
     failUploadsOf(['retrying', 'waiting']);
     await createUpload(
       [
@@ -432,12 +465,9 @@ describe('Retrying what failed', () => {
     const retryingEverything = tasksService.findTask(folderTask.id)?.retry?.();
     await Promise.all([retryingOne, retryingEverything]);
 
-    expect(uploadedNames()).toEqual(['retrying']);
+    expect(uploadedNames().sort()).toEqual(['retrying', 'waiting']);
     expect(tasksService.findTask(folderTask.id)).toEqual(
-      expect.objectContaining({
-        status: TaskStatus.Success,
-        failedItems: [expect.objectContaining({ name: 'waiting' })],
-      }),
+      expect.objectContaining({ status: TaskStatus.Success, failedItems: [] }),
     );
   });
 
@@ -626,6 +656,52 @@ describe('Retrying what failed', () => {
     await retrying;
 
     expect(tasksService.findTask(folderTask.id)?.failedItems).toEqual([]);
+  });
+
+  test('When a folder is retried while another folder is still uploading, then no more than the usual uploads run at the same time', async () => {
+    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(MAX_CONCURRENT_UPLOADS);
+    const failingNames = ['a1', 'a2', 'a3', 'a4', 'a5', 'a6'];
+    const bigFolderNames = Array.from({ length: 30 }, (_, index) => `b${index}`);
+    let mostAtTheSameTime = countUploadsAtTheSameTime(failingNames);
+    const upload = createUpload(
+      [getFolderWithFiles('Small', failingNames), getFolderWithFiles('Big', bigFolderNames)],
+      [],
+    );
+    const running = upload.run();
+    const [smallTask, bigTask] = tasksOf(TaskType.UploadFolder);
+    await vi.waitFor(() => expect(tasksService.findTask(smallTask.id)?.failedItems).toHaveLength(failingNames.length), {
+      timeout: 3000,
+    });
+    mostAtTheSameTime = countUploadsAtTheSameTime([]);
+
+    const retrying = smallTask.retry?.();
+    await Promise.all([retrying, running]);
+
+    expect(tasksService.findTask(bigTask.id)?.status).toBe(TaskStatus.Success);
+    expect(tasksService.findTask(smallTask.id)?.failedItems).toEqual([]);
+    expect(mostAtTheSameTime()).toBeLessThanOrEqual(MAX_CONCURRENT_UPLOADS);
+  });
+
+  test('When a failed file is retried while the rest of its folder is still uploading, then it is uploaded and the folder ends with nothing failed', async () => {
+    let isBrokenFixed = false;
+    (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
+      if (file.name === 'video') await new Promise((resolve) => setTimeout(resolve, 500));
+      if (file.name === 'broken' && !isBrokenFixed) throw new Error('Server error');
+      return { uuid: `${file.name}-uuid` };
+    });
+    const upload = createUpload([getFolderWithFiles('Photos', ['broken.png', 'video.mp4'])], []);
+    const running = upload.run();
+    const [folderTask] = tasksOf(TaskType.UploadFolder);
+    await vi.waitFor(() => expect(tasksService.findTask(folderTask.id)?.failedItems).toHaveLength(1));
+    isBrokenFixed = true;
+
+    await tasksService.findTask(folderTask.id)?.failedItems?.[0].retry();
+    await running;
+
+    expect(uploadedNames().filter((name) => name === 'broken')).toHaveLength(MAX_UPLOAD_ATTEMPTS + 1);
+    expect(tasksService.findTask(folderTask.id)).toEqual(
+      expect.objectContaining({ status: TaskStatus.Success, progress: 1, failedItems: [] }),
+    );
   });
 
   test('When the user cancels a failed file while it is retried, then it is no longer shown as retrying', async () => {
