@@ -34,17 +34,18 @@ const getMainPhotoName = (file: PhotoFile): string => {
   if (isLivePhotoVideo(file)) return plainName.slice(0, -LIVE_PHOTO_VIDEO_SUFFIX.length);
   return plainName.replace(BURST_MEMBER_SUFFIX, '');
 };
+const getMainPhotoKey = (file: PhotoFile): string => `${file.photo.day}/${getMainPhotoName(file)}`;
+
 const groupRelatedFiles = (files: PhotoFile[]): Photo[] => {
   const isRelatedFile = (file: PhotoFile) => isLivePhotoVideo(file) || isBurstMember(file);
   const mainPhotos = files.filter((file) => !isRelatedFile(file));
-  const mainPhotoByName = new Map(mainPhotos.map((file) => [file.plainName.toLowerCase(), file.photo]));
+  const mainPhotoByKey = new Map(mainPhotos.map((file) => [getMainPhotoKey(file), file.photo]));
   const relatedFilesByPhoto = new Map<Photo, PhotoFile[]>();
   const photosOnTheirOwn = mainPhotos.map(({ photo }) => photo);
 
   for (const file of files.filter(isRelatedFile)) {
-    const mainPhoto = mainPhotoByName.get(getMainPhotoName(file));
-    const isLiveVideoOfAnotherDay = isLivePhotoVideo(file) && mainPhoto?.day !== file.photo.day;
-    if (!mainPhoto || isLiveVideoOfAnotherDay) {
+    const mainPhoto = mainPhotoByKey.get(getMainPhotoKey(file));
+    if (!mainPhoto) {
       photosOnTheirOwn.push(file.photo);
       continue;
     }
