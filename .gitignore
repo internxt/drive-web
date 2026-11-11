@@ -21,13 +21,10 @@ CLAUDE.md
 !.env.example
 
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 
 debug.log
 .eslintcache
 
-.npmrc
 
 **/cypress/downloads
 **/cypress/videos

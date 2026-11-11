@@ -47,13 +47,13 @@ jobs:
       - run: echo REACT_APP_NODE_ENV=production >> ./.env
 
       - name: Install
-        run: yarn
+        run: npm ci
 
       - name: Install Playwright Browsers
-        run: yarn playwright install --with-deps
+        run: npx playwright install --with-deps
 
       - name: Unit test run
-        run: yarn test
+        run: npm test
 
   typecheck:
     runs-on: ubuntu-24.04
@@ -70,10 +70,10 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install
-        run: yarn
+        run: npm ci
 
       - name: Typecheck
-        run: yarn typecheck
+        run: npm run typecheck
 
   build:
     runs-on: ubuntu-24.04
@@ -90,9 +90,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install
-        run: yarn
+        run: npm ci
 
       - name: Build
-        run: yarn build
+        run: npm run build
         env:
           CI: false
