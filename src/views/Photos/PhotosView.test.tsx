@@ -660,6 +660,21 @@ describe('Photos view', () => {
         expect(tile('IMG_0003.jpg')).toHaveAccessibleDescription('views.photos.badges.burst');
       });
 
+      test('When the burst part of a photo name is in capitals, then the photo is still shown inside its burst', async () => {
+        givenPhotosInFolders({
+          'iphone-2025-11-03': [
+            file('IMG_0007', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+            file('IMG_0007.BURST.1', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          ],
+        });
+
+        render(<PhotosView />);
+        await screen.findByRole('img', { name: 'IMG_0007.jpg' });
+
+        expect(shownTimeline()).toStrictEqual(['Mon, 3 Nov 2025', ['IMG_0007.jpg']]);
+        expect(tile('IMG_0007.jpg')).toHaveAccessibleDescription('views.photos.badges.burst');
+      });
+
       test('When the main photo of a burst is not in the month, then its other photos are shown on their own', async () => {
         givenPhotosInFolders({
           'iphone-2025-11-03': [file('IMG_0004.burst.1', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z')],
