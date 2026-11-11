@@ -19,6 +19,7 @@ import {
 } from 'testUtils/fixtures/upload.fixtures';
 import { QueueUtilsService } from 'utils/queueUtils';
 import { Upload } from './Upload';
+import { UploadManager } from './UploadManager';
 
 vi.mock('app/drive/services/file.service/uploadFile', () => ({ default: vi.fn() }));
 vi.mock('app/drive/services/folder.service', () => ({ default: { createFolderByUuid: vi.fn() } }));
@@ -58,7 +59,15 @@ const createUpload = (
   roots: IRoot[],
   files: File[],
   callbacks: Partial<ConstructorParameters<typeof Upload>[0]> = {},
-) => new Upload({ destinationFolderUuid: DESTINATION_UUID, roots, files, uploadRepository, ...callbacks });
+) =>
+  new Upload({
+    destinationFolderUuid: DESTINATION_UUID,
+    roots,
+    files,
+    uploadRepository,
+    uploadManager: new UploadManager(),
+    ...callbacks,
+  });
 
 const uploadedNames = () => vi.mocked(uploadFile).mock.calls.map(([file]) => file.name);
 
@@ -755,5 +764,114 @@ describe('Retrying what failed', () => {
     expect(tasksService.findTask(fileTask.id)).toEqual(
       expect.objectContaining({ status: TaskStatus.Cancelled, failedItems: [] }),
     );
+  });
+});
+
+describe('Several uploads at the same time', () => {
+  const noSpaceLeftError = new AppError('No space left', HTTP_STATUS_CODES.MAX_SPACE_USED);
+  const sharedFolderOwner = {
+    token: 'owner-token',
+    bridgeUser: 'owner@internxt.com',
+    bridgePass: 'owner-pass',
+    encryptionKey: 'owner-key',
+    bucketId: 'owner-bucket',
+  };
+  const fileNames = (prefix: string, count: number) => Array.from({ length: count }, (_, index) => `${prefix}${index}`);
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    tasksService.clearTasks();
+    vi.spyOn(errorService, 'reportError').mockReturnValue();
+    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(MAX_CONCURRENT_UPLOADS);
+    fakeFolderCreationTaking();
+  });
+
+  test('When two uploads run at the same time, then together they never go over the usual number of uploads at once', async () => {
+    const mostAtTheSameTime = countUploadsAtTheSameTime(new Set());
+    const uploadManager = new UploadManager();
+    const photos = createUpload([getFolderWithFiles('Photos', fileNames('photo', 15))], [], { uploadManager });
+    const videos = createUpload([getFolderWithFiles('Videos', fileNames('video', 15))], [], { uploadManager });
+
+    await Promise.all([photos.run(), videos.run()]);
+
+    expect(tasksOf(TaskType.UploadFolder).map(({ status }) => status)).toEqual([
+      TaskStatus.Success,
+      TaskStatus.Success,
+    ]);
+    expect(mostAtTheSameTime()).toBeLessThanOrEqual(MAX_CONCURRENT_UPLOADS);
+  });
+
+  test('When one upload is retried while another one is still running, then together they never go over the usual number of uploads at once', async () => {
+    const stillFailing = new Set(fileNames('broken', 6));
+    const mostAtTheSameTime = countUploadsAtTheSameTime(stillFailing);
+    const uploadManager = new UploadManager();
+    const photos = createUpload([getFolderWithFiles('Photos', [...stillFailing])], [], { uploadManager });
+    const videos = createUpload([getFolderWithFiles('Videos', fileNames('video', 30))], [], { uploadManager });
+    const runningPhotos = photos.run();
+    const runningVideos = videos.run();
+    const [photosTask] = tasksOf(TaskType.UploadFolder);
+    await vi.waitFor(() => expect(tasksService.findTask(photosTask.id)?.failedItems).toHaveLength(6), {
+      timeout: 3000,
+    });
+    stillFailing.clear();
+
+    await Promise.all([photosTask.retry?.(), runningPhotos, runningVideos]);
+
+    expect(tasksOf(TaskType.UploadFolder).map(({ status }) => status)).toEqual([
+      TaskStatus.Success,
+      TaskStatus.Success,
+    ]);
+    expect(tasksService.findTask(photosTask.id)?.failedItems).toEqual([]);
+    expect(mostAtTheSameTime()).toBeLessThanOrEqual(MAX_CONCURRENT_UPLOADS);
+  });
+
+  test('When two uploads run at the same time, then each one only hears about its own items', async () => {
+    uploadSucceeds();
+    const uploadManager = new UploadManager();
+    const onPhotoUploaded = vi.fn();
+    const onVideoUploaded = vi.fn();
+    const photos = createUpload([getFolderWithFiles('Photos', ['beach.png'])], [], {
+      uploadManager,
+      onItemUploaded: onPhotoUploaded,
+    });
+    const videos = createUpload([getFolderWithFiles('Videos', ['movie.mp4'])], [], {
+      uploadManager,
+      onItemUploaded: onVideoUploaded,
+    });
+
+    await Promise.all([photos.run(), videos.run()]);
+
+    const uploadedUuids = (onItemUploaded: Mock) => onItemUploaded.mock.calls.map(([uploaded]) => uploaded.uuid).sort();
+    expect(uploadedUuids(onPhotoUploaded)).toEqual(['Photos-uuid', 'beach-uuid']);
+    expect(uploadedUuids(onVideoUploaded)).toEqual(['Videos-uuid', 'movie-uuid']);
+    expect(tasksOf(TaskType.UploadFolder).map(({ progress }) => progress)).toEqual([1, 1]);
+  });
+
+  test('When the storage of a shared folder is full, then an upload to your own Drive still uploads', async () => {
+    (uploadFile as Mock).mockImplementation(
+      async (file: { name: string }, _progress, options: { ownerUserAuthenticationData?: { bucketId: string } }) => {
+        if (file.name === 'slow') await new Promise((resolve) => setTimeout(resolve, 500));
+        else if (options.ownerUserAuthenticationData?.bucketId === 'owner-bucket') throw noSpaceLeftError;
+        return { uuid: `${file.name}-uuid` };
+      },
+    );
+    const uploadManager = new UploadManager();
+    const onStorageFull = vi.fn();
+    const toSharedFolder = createUpload([], [getFileToUpload('full.pdf'), getFileToUpload('slow.pdf')], {
+      uploadManager,
+      ownerUserAuthenticationData: sharedFolderOwner,
+      onStorageFull,
+    });
+    const runningToSharedFolder = toSharedFolder.run();
+    await vi.waitFor(() => expect(onStorageFull).toHaveBeenCalled());
+
+    const toOwnDrive = createUpload([], [getFileToUpload('mine.pdf')], { uploadManager });
+    await Promise.all([toOwnDrive.run(), runningToSharedFolder]);
+
+    const [fullTask, slowTask, mineTask] = tasksOf(TaskType.UploadFile);
+    expect(fullTask.status).toBe(TaskStatus.Error);
+    expect(slowTask.status).toBe(TaskStatus.Success);
+    expect(mineTask.status).toBe(TaskStatus.Success);
+    expect(uploadedNames()).toContain('mine');
   });
 });

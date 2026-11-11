@@ -27,7 +27,14 @@ import {
   UploadResult,
 } from './types';
 import { shouldAutoRetry, toUploadFailure, UploadFailure } from './uploadFailure';
-import { createFileItem, createFolderItem, getItemAndItsFolders, isFolderItem, isPartOf } from './uploadItemTree';
+import {
+  createFileItem,
+  createFolderItem,
+  getItemAndItsFolders,
+  getTopLevelItem,
+  isFolderItem,
+  isPartOf,
+} from './uploadItemTree';
 
 const SINGLE_TRANSFER_CONCURRENCY = 1;
 export const WORKSPACE_FOLDER_AVAILABILITY_DELAY_MS = 600;
@@ -39,12 +46,26 @@ enum UploadPriority {
   LargeFile = 3,
 }
 
-interface UploadManagerProps {
+export interface UploadRunOptions {
   ownerUserAuthenticationData?: OwnerUserAuthenticationData;
   uploadRepository?: PersistUploadRepository;
   getPauseKey: (item: UploadItem) => string;
   events?: UploadManagerEvents;
 }
+
+/**
+ * What the engine keeps for each upload. An upload and its retries run with the same options, so they share it.
+ */
+interface UploadInProgress {
+  options: UploadRunOptions;
+  foldersStillQueueingContent: number;
+  largeFilesWaitingForFolders: UploadItem[];
+}
+
+const OWN_STORAGE = 'own-storage';
+
+const getStorageOf = (ownerUserAuthenticationData?: OwnerUserAuthenticationData): string =>
+  ownerUserAuthenticationData?.bucketId ?? OWN_STORAGE;
 
 class UploadCancelledError extends Error {
   constructor() {
@@ -78,21 +99,16 @@ const notifyIgnoringListenerErrors = async (notify: () => unknown): Promise<void
 
 /**
  * Uploads files and folders through a single queue. A folder is created first and its content is then
- * queued into it. Large files wait until every folder has queued its content, so the small files found
- * later never end up uploading one at a time behind them. Every item ends either succeeded, failed or
+ * queued into it. Large files wait until every folder of their upload has queued its content, so the small
+ * files found later never end up uploading one at a time behind them. Every item ends either succeeded, failed or
  * cancelled: a failed item never stops the others, except when the storage is full, which fails the pending
  * ones. An item that finishes uploading right after being cancelled is still reported as succeeded, since it
  * does exist in the destination.
  */
 export class UploadManager {
-  private readonly ownerUserAuthenticationData?: OwnerUserAuthenticationData;
-  private readonly uploadRepository?: PersistUploadRepository;
-  private readonly getPauseKey: (item: UploadItem) => string;
-  private readonly events?: UploadManagerEvents;
-
-  private storageFullFailure?: UploadFailure;
-  private foldersStillQueueingContent = 0;
-  private readonly largeFilesWaitingForFolders: UploadItem[] = [];
+  private readonly uploadByOptions = new WeakMap<UploadRunOptions, UploadInProgress>();
+  private readonly uploadByTopLevelItem = new WeakMap<UploadItem, UploadInProgress>();
+  private readonly storageFullFailureByStorage = new Map<string, UploadFailure>();
   private readonly cancelledItems = new WeakSet<UploadItem>();
   private readonly abortActiveUploadOf = new Map<UploadItem, () => void>();
   private result: UploadResult = { succeeded: [], failed: [] };
@@ -101,27 +117,23 @@ export class UploadManager {
     this.processItem(item)
       .catch((error) => errorService.reportError(error))
       .finally(() => {
-        if (isFolderItem(item)) this.finishFolder();
+        if (isFolderItem(item)) this.finishFolder(item);
         done();
       });
   }, MAX_CONCURRENT_UPLOADS);
 
-  constructor(props: UploadManagerProps) {
-    this.ownerUserAuthenticationData = props.ownerUserAuthenticationData;
-    this.uploadRepository = props.uploadRepository;
-    this.getPauseKey = props.getPauseKey;
-    this.events = props.events;
-  }
-
-  async run(items: UploadItem[]): Promise<UploadResult> {
+  async run(items: UploadItem[], options: UploadRunOptions): Promise<UploadResult> {
     if (this.uploadQueue.idle()) {
       this.result = { succeeded: [], failed: [] };
-      this.storageFullFailure = undefined;
+      this.storageFullFailureByStorage.clear();
       this.uploadQueue.concurrency = MAX_CONCURRENT_UPLOADS;
     }
 
     const hasNothingToUpload = items.length === 0;
     if (hasNothingToUpload) return this.result;
+
+    const upload = this.getUploadRunningWith(options);
+    for (const item of items) this.uploadByTopLevelItem.set(getTopLevelItem(item), upload);
 
     this.queue(items);
     await this.uploadQueue.drain();
@@ -134,41 +146,43 @@ export class UploadManager {
     this.abortActiveUploadsPartOf(item);
   }
 
-  clearStorageFull(): void {
-    this.storageFullFailure = undefined;
+  clearStorageFull(ownerUserAuthenticationData?: OwnerUserAuthenticationData): void {
+    this.storageFullFailureByStorage.delete(getStorageOf(ownerUserAuthenticationData));
   }
 
   private queue(items: UploadItem[]): void {
     for (const item of items) {
-      void notifyIgnoringListenerErrors(() => this.events?.onItemQueued?.(item));
+      void notifyIgnoringListenerErrors(() => this.getEventsOf(item)?.onItemQueued?.(item));
       this.pushToQueue(item);
     }
   }
 
   private pushToQueue(item: UploadItem): void {
-    if (isFolderItem(item)) this.foldersStillQueueingContent++;
+    if (isFolderItem(item)) this.getUploadOf(item).foldersStillQueueingContent++;
     void this.uploadQueue.push(item, getUploadPriority(item));
   }
 
   private async processItem(item: UploadItem): Promise<void> {
     if (this.isItemCancelled(item)) {
-      await notifyIgnoringListenerErrors(() => this.events?.onItemCancelled?.(item));
+      await notifyIgnoringListenerErrors(() => this.getEventsOf(item)?.onItemCancelled?.(item));
       return;
     }
 
-    if (this.storageFullFailure) {
-      await this.fail(item, this.storageFullFailure);
+    const storageFullFailure = this.storageFullFailureByStorage.get(this.getStorageOf(item));
+    if (storageFullFailure) {
+      await this.fail(item, storageFullFailure);
       return;
     }
 
-    const shouldWaitForFolders = isMultipartUpload(item) && this.foldersStillQueueingContent > 0;
+    const upload = this.getUploadOf(item);
+    const shouldWaitForFolders = isMultipartUpload(item) && upload.foldersStillQueueingContent > 0;
     if (shouldWaitForFolders) {
-      this.largeFilesWaitingForFolders.push(item);
+      upload.largeFilesWaitingForFolders.push(item);
       return;
     }
 
     this.adjustConcurrencyFor(item);
-    await notifyIgnoringListenerErrors(() => this.events?.onItemStarted?.(item));
+    await notifyIgnoringListenerErrors(() => this.getEventsOf(item)?.onItemStarted?.(item));
 
     try {
       const uploadedItem = await this.uploadWithRetries(item);
@@ -179,18 +193,19 @@ export class UploadManager {
         await this.queueFolderContent(item, uploadedItem as DriveFolderData);
       }
 
-      await notifyIgnoringListenerErrors(() => this.events?.onItemSucceeded?.(item, uploadedItem));
+      await notifyIgnoringListenerErrors(() => this.getEventsOf(item)?.onItemSucceeded?.(item, uploadedItem));
     } catch (error) {
       await this.handleUploadError(item, error);
     }
   }
 
-  private finishFolder(): void {
-    this.foldersStillQueueingContent--;
+  private finishFolder(folderItem: UploadFolderItem): void {
+    const upload = this.getUploadOf(folderItem);
+    upload.foldersStillQueueingContent--;
 
-    const haveAllFoldersQueuedTheirContent = this.foldersStillQueueingContent === 0;
+    const haveAllFoldersQueuedTheirContent = upload.foldersStillQueueingContent === 0;
     if (haveAllFoldersQueuedTheirContent) {
-      this.largeFilesWaitingForFolders.splice(0).forEach((largeFile) => this.pushToQueue(largeFile));
+      upload.largeFilesWaitingForFolders.splice(0).forEach((largeFile) => this.pushToQueue(largeFile));
     }
   }
 
@@ -208,7 +223,7 @@ export class UploadManager {
     const isFolderEmpty = childrenFolders.length === 0 && childrenFiles.length === 0;
     if (isFolderEmpty) return;
 
-    await this.waitUntilWorkspaceFolderIsAvailable();
+    await this.waitUntilWorkspaceFolderIsAvailable(folderItem);
 
     this.queue([
       ...childrenFolders.map((childFolder) => createFolderItem(childFolder, createdFolder.uuid, folderItem)),
@@ -216,8 +231,8 @@ export class UploadManager {
     ]);
   }
 
-  private async waitUntilWorkspaceFolderIsAvailable(): Promise<void> {
-    const isWorkspaceUpload = !!this.ownerUserAuthenticationData?.workspaceId;
+  private async waitUntilWorkspaceFolderIsAvailable(folderItem: UploadFolderItem): Promise<void> {
+    const isWorkspaceUpload = !!this.getOptionsOf(folderItem).ownerUserAuthenticationData?.workspaceId;
     if (isWorkspaceUpload) await wait(WORKSPACE_FOLDER_AVAILABILITY_DELAY_MS);
   }
 
@@ -241,7 +256,7 @@ export class UploadManager {
   private async createFolder(folderItem: UploadFolderItem): Promise<DriveFolderData> {
     this.throwIfCancelled(folderItem);
 
-    const workspaceId = this.ownerUserAuthenticationData?.workspaceId;
+    const workspaceId = this.getOptionsOf(folderItem).ownerUserAuthenticationData?.workspaceId;
     const { parentFolderUuid, folder } = folderItem;
     const [createdFolderPromise] = workspaceId
       ? workspacesService.createFolder({ workspaceId, parentFolderUuid, plainName: folder.name })
@@ -252,18 +267,19 @@ export class UploadManager {
   }
 
   private async uploadFile(fileItem: UploadFileItem): Promise<DriveFileData> {
-    const pauseKey = this.getPauseKey(fileItem);
-    const uploadState = await this.uploadRepository?.getUploadState(pauseKey);
+    const { ownerUserAuthenticationData, uploadRepository, getPauseKey, events } = this.getOptionsOf(fileItem);
+    const pauseKey = getPauseKey(fileItem);
+    const uploadState = await uploadRepository?.getUploadState(pauseKey);
     const isPaused = uploadState === TaskStatus.Paused;
     this.throwIfCancelled(fileItem);
 
     try {
       const driveFile = await uploadFile(
         fileItem.file,
-        (progress) => this.events?.onItemProgress?.(fileItem, progress),
+        (progress) => events?.onItemProgress?.(fileItem, progress),
         {
-          isTeam: !!this.ownerUserAuthenticationData?.workspaceId,
-          ownerUserAuthenticationData: this.ownerUserAuthenticationData,
+          isTeam: !!ownerUserAuthenticationData?.workspaceId,
+          ownerUserAuthenticationData,
           abortCallback: (abort) => this.abortActiveUploadOf.set(fileItem, () => abort?.()),
         },
         { taskId: pauseKey, isPaused, isRetriedUpload: false },
@@ -273,6 +289,31 @@ export class UploadManager {
     } finally {
       this.abortActiveUploadOf.delete(fileItem);
     }
+  }
+
+  private getUploadRunningWith(options: UploadRunOptions): UploadInProgress {
+    const runningUpload = this.uploadByOptions.get(options);
+    if (runningUpload) return runningUpload;
+
+    const upload: UploadInProgress = { options, foldersStillQueueingContent: 0, largeFilesWaitingForFolders: [] };
+    this.uploadByOptions.set(options, upload);
+    return upload;
+  }
+
+  private getUploadOf(item: UploadItem): UploadInProgress {
+    return this.uploadByTopLevelItem.get(getTopLevelItem(item)) as UploadInProgress;
+  }
+
+  private getOptionsOf(item: UploadItem): UploadRunOptions {
+    return this.getUploadOf(item).options;
+  }
+
+  private getEventsOf(item: UploadItem): UploadManagerEvents | undefined {
+    return this.getOptionsOf(item).events;
+  }
+
+  private getStorageOf(item: UploadItem): string {
+    return getStorageOf(this.getOptionsOf(item).ownerUserAuthenticationData);
   }
 
   private throwIfCancelled(item: UploadItem): void {
@@ -291,16 +332,17 @@ export class UploadManager {
 
   private async handleUploadError(item: UploadItem, error: unknown): Promise<void> {
     if (this.isItemCancelled(item)) {
-      await notifyIgnoringListenerErrors(() => this.events?.onItemCancelled?.(item));
+      await notifyIgnoringListenerErrors(() => this.getEventsOf(item)?.onItemCancelled?.(item));
       return;
     }
 
     const failure = toUploadFailure(error);
     const isStorageFull = failure.reason === UploadFailureReason.NoSpaceLeft;
-    const isFirstTimeStorageIsFull = isStorageFull && !this.storageFullFailure;
+    const storage = this.getStorageOf(item);
+    const isFirstTimeStorageIsFull = isStorageFull && !this.storageFullFailureByStorage.has(storage);
     if (isFirstTimeStorageIsFull) {
-      this.storageFullFailure = failure;
-      await notifyIgnoringListenerErrors(() => this.events?.onStorageFull?.());
+      this.storageFullFailureByStorage.set(storage, failure);
+      await notifyIgnoringListenerErrors(() => this.getEventsOf(item)?.onStorageFull?.());
     }
 
     errorService.reportError(failure.error);
@@ -309,6 +351,8 @@ export class UploadManager {
 
   private async fail(item: UploadItem, failure: UploadFailure): Promise<void> {
     this.result.failed.push({ item, failure });
-    await notifyIgnoringListenerErrors(() => this.events?.onItemFailed?.(item, failure));
+    await notifyIgnoringListenerErrors(() => this.getEventsOf(item)?.onItemFailed?.(item, failure));
   }
 }
+
+export const uploadManager = new UploadManager();
