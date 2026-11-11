@@ -441,7 +441,7 @@ describe('Retrying what failed', () => {
     );
   });
 
-  test('When a folder is only fully uploaded after a retry, then it is not counted as a folder upload', async () => {
+  test('When a folder is only fully uploaded after a retry, then it is counted as a folder upload', async () => {
     failUploadsOf(['report']);
     await createUpload([getFolderToUpload('Docs', { childrenFiles: [getFileToUpload('report.pdf')] })], []).run();
     uploadSucceeds();
@@ -449,7 +449,7 @@ describe('Retrying what failed', () => {
     await tasksOf(TaskType.UploadFolder)[0].retry?.();
 
     expect(tasksOf(TaskType.UploadFolder)[0].failedItems).toEqual([]);
-    expect(referralService.trackFolderUpload).not.toHaveBeenCalled();
+    expect(referralService.trackFolderUpload).toHaveBeenCalledOnce();
   });
 
   test('When a folder that could not be created is retried, then it is created with all its content', async () => {

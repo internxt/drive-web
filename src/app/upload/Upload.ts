@@ -80,10 +80,8 @@ export class Upload {
     }
   }
 
-  async run(): Promise<UploadResult> {
-    const result = await this.uploadAndFinish(this.items, this.items);
-    this.rootFolders.forEach((rootFolder, item) => this.trackFolderUpload(item as UploadFolderItem, rootFolder));
-    return result;
+  run(): Promise<UploadResult> {
+    return this.uploadAndFinish(this.items, this.items);
   }
 
   /**
@@ -303,17 +301,12 @@ export class Upload {
       taskId: rootFolder.taskId,
       merge: { status: TaskStatus.Success, itemUUID: { rootFolderUUID: createdFolder.uuid } },
     });
+
+    const hasEverythingUploaded = this.getFailuresOf(item).size === 0;
+    if (hasEverythingUploaded) this.trackFolderUpload(item);
   }
 
-  private trackFolderUpload(
-    item: UploadFolderItem,
-    { isCancelled, activeRuns, createdFolder }: RootFolderUpload,
-  ): void {
-    const isStillUploading = activeRuns > 0;
-    const hasEverythingUploaded =
-      !isCancelled && !isStillUploading && !!createdFolder && this.getFailuresOf(item).size === 0;
-    if (!hasEverythingUploaded) return;
-
+  private trackFolderUpload(item: UploadFolderItem): void {
     referralService.trackFolderUpload();
     logNetworkInfoForUpload({ folderName: item.folder.name });
   }
