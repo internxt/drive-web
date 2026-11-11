@@ -103,7 +103,6 @@ describe('referralService', () => {
   });
 
   afterEach(() => {
-    vi.clearAllMocks();
     localStorageService.clear();
     sessionStorage.clear();
     delete globalThis.cello;

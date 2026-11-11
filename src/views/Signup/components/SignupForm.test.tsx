@@ -2,9 +2,9 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { AxiosResponseError } from '@internxt/sdk/dist/shared/types/errors';
-import { SdkFactory } from 'app/core/factory/sdk';
 import envService from 'services/env.service';
 import SignUpForm from './SignupForm';
+import { mockSdkFactory } from 'testUtils/sdk.mock';
 
 vi.mock('app/i18n/provider/TranslationProvider', () => ({
   useTranslationContext: () => ({ translate: (key: string) => key }),
@@ -29,9 +29,7 @@ const backendError = (status: number, data: Record<string, unknown>) =>
   new AxiosResponseError('Request failed', '', { status, data, headers: {} } as never);
 
 const mockRegisterFailure = (error: unknown, resendAccountSetupEmail = vi.fn()) => {
-  vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
-    createAuthClient: () => ({ register: vi.fn().mockRejectedValue(error), resendAccountSetupEmail }),
-  } as unknown as ReturnType<typeof SdkFactory.getNewApiInstance>);
+  mockSdkFactory({ createAuthClient: { register: vi.fn().mockRejectedValue(error), resendAccountSetupEmail } });
 };
 
 const submitSignup = async (container: HTMLElement, email: string) => {

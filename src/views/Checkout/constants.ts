@@ -1,8 +1,6 @@
 export const GCLID_COOKIE_LIFESPAN_DAYS = 90;
 export const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
-export const POSTAL_CODE_REQUIRED_COUNTRIES = ['US', 'CA', 'IN'];
-
 /**
  * Smallest amount, in minor units, that Stripe accepts for the `amount` option of an Elements
  * instance (0.50 EUR / 0.50 USD). Amounts below it are rejected, so they must never be sent.

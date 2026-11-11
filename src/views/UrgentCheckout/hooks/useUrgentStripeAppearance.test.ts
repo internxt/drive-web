@@ -37,7 +37,6 @@ describe('Urgent checkout Stripe appearance', () => {
   };
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.spyOn(checkoutService, 'loadStripeElements').mockResolvedValue({
       appearance: mockAppearance,
     } as StripeElementsOptionsMode);

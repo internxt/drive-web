@@ -72,7 +72,6 @@ const goOffline = () => vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(fal
 
 describe('Uploading files', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.spyOn(errorService, 'reportError').mockReturnValue();
     (uploadFile as Mock).mockImplementation(async (file: { name: string }) => ({ uuid: `${file.name}-uuid` }));
   });
@@ -398,7 +397,6 @@ const uploadedFileParents = () =>
 
 describe('Uploading folders', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.spyOn(errorService, 'reportError').mockReturnValue();
     (uploadFile as Mock).mockImplementation(async (file: { name: string }) => ({ uuid: `${file.name}-uuid` }));
     fakeFolderCreation();

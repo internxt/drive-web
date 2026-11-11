@@ -27,7 +27,6 @@ vi.mock('services/error.service', () => ({
 
 describe('useAccessLogs', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 

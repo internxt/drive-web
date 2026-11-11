@@ -1,4 +1,4 @@
-import { describe, test, expect, vi, beforeEach } from 'vitest';
+import { describe, test, expect, vi } from 'vitest';
 import { moveItem } from './index';
 import { getDriveItemData } from 'testUtils/fixtures/drive.fixtures';
 
@@ -18,9 +18,6 @@ vi.mock('app/drive/services/folder.service', () => ({
 }));
 
 describe('Storage Service', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
   describe('Moving an item', () => {
     test('When moving a file item with a new name, then the new name is forwarded to the file move operation', async () => {
       const fileUuid = 'file-uuid-abc';
