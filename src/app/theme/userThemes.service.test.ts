@@ -13,7 +13,6 @@ vi.mock('services/local-storage.service', () => ({
 
 describe('Checking available themes', () => {
   afterEach(() => {
-    vi.clearAllMocks();
     vi.resetAllMocks();
   });
 

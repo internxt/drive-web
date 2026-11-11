@@ -4,7 +4,6 @@ import {
   AcceptInvitationToSharedFolderPayload,
   CreateSharingPayload,
   ListAllSharedFoldersResponse,
-  ListPrivateSharedFoldersResponse,
   ListSharedItemsResponse,
   PublicSharedItemInfo,
   Role,
@@ -43,40 +42,10 @@ import { generateFileBucketKey } from 'app/network/crypto';
 import encryptedStorageService from 'services/encrypted-storage.service';
 import { decryptMnemonic } from './share.crypto';
 
-interface CreateShareResponse {
-  created: boolean;
-  token: string;
-}
 const NEW_SHARING_VERSION = 'inxt-v3';
-export async function createShare(params: ShareTypes.GenerateShareLinkPayload): Promise<CreateShareResponse> {
-  return await SdkFactory.getNewApiInstance().createShareClient().createShareLink(params);
-}
-
 export function updateShareLink(params: ShareTypes.UpdateShareLinkPayload): Promise<ShareTypes.ShareLink> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.updateShareLink(params).catch((error) => {
-    throw errorService.castError(error);
-  });
-}
-
-export function getReceivedSharedFolders(
-  page: number,
-  perPage: number,
-  orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
-): Promise<ListPrivateSharedFoldersResponse> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.getReceivedSharedFolders(page, perPage, orderBy).catch((error) => {
-    throw errorService.castError(error);
-  });
-}
-
-export function getSentSharedFolders(
-  page: number,
-  perPage: number,
-  orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
-): Promise<ListPrivateSharedFoldersResponse> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.getSentSharedFolders(page, perPage, orderBy).catch((error) => {
     throw errorService.castError(error);
   });
 }
@@ -139,13 +108,6 @@ export function getPublicSharedFolderContent(
 export function deleteShareLink(shareId: string): Promise<{ deleted: boolean; shareId: string }> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.deleteShareLink(shareId).catch((error) => {
-    throw errorService.castError(error);
-  });
-}
-
-export function getSharedFolderInfo(token: string, password?: string): Promise<ShareTypes.ShareLink> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.getShareLink(token, password).catch((error) => {
     throw errorService.castError(error);
   });
 }
@@ -400,56 +362,6 @@ export const getPublicShareLink = async (
     errorService.reportError(error);
   }
 };
-
-interface SharedDirectoryFoldersPayload {
-  token: string;
-  directoryId: number;
-  parentId: number;
-  offset: number;
-  limit: number;
-  password?: string;
-}
-
-interface SharedDirectoryFilesPayload {
-  token: string;
-  directoryId: number;
-  parentId: number;
-  offset: number;
-  limit: number;
-  code: string;
-  password?: string;
-}
-
-export function getSharedDirectoryFolders(
-  payload: SharedDirectoryFoldersPayload,
-): Promise<ShareTypes.SharedDirectoryFolders> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.getShareLinkDirectory({
-    type: 'folder',
-    token: payload.token,
-    folderId: payload.directoryId,
-    parentId: payload.parentId,
-    page: payload.offset / payload.limit,
-    perPage: payload.limit,
-    password: payload.password,
-  });
-}
-
-export function getSharedDirectoryFiles(
-  payload: SharedDirectoryFilesPayload,
-): Promise<ShareTypes.SharedDirectoryFiles> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.getShareLinkDirectory({
-    type: 'file',
-    token: payload.token,
-    code: payload.code,
-    folderId: payload.directoryId,
-    parentId: payload.parentId,
-    page: payload.offset / payload.limit,
-    perPage: payload.limit,
-    password: payload.password,
-  });
-}
 
 class DirectorySharedFolderIterator implements Iterator<SharedFolders> {
   private page: number;
@@ -921,12 +833,8 @@ export async function getSharedFolderSize(id: string): Promise<SharedFolderSize>
 }
 
 const shareService = {
-  createShare,
   updateShareLink,
   deleteShareLink,
-  getSharedDirectoryFiles,
-  getSharedDirectoryFolders,
-  getSentSharedFolders,
   getAllSharedFolders,
   getAllSharedFiles,
   getSharingType,

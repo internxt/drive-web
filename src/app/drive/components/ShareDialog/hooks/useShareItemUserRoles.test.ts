@@ -75,7 +75,6 @@ const createItemToShare = (isFolder: boolean, uuid = 'item-uuid-123'): ItemToSha
 
 describe('Share Items User Roles', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     mockUseShareDialogContext.mockReturnValue({
       state: {
         accessMode: 'restricted',

@@ -53,7 +53,6 @@ describe('useBackupsPagination', () => {
   const TOTAL_LENGTH = FOLDER_CONTENT_1_LENGTH + FOLDER_CONTENT_2_LENGTH;
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 

@@ -1,4 +1,4 @@
-import { describe, expect, vi, beforeEach, test } from 'vitest';
+import { describe, expect, vi, test } from 'vitest';
 import { DriveFileData } from '../../types';
 
 vi.mock('app/network/download');
@@ -20,10 +20,6 @@ const baseFile: DriveFileData = {
 
 describe('createMultipartFileDownloadStream', () => {
   const mockProgress = vi.fn();
-
-  beforeEach(async () => {
-    vi.clearAllMocks();
-  });
 
   test('When using sharing options, then it should use sharing credentials and mnemonic', async () => {
     const mockReadableStream = new ReadableStream();

@@ -16,7 +16,6 @@ vi.mock('@internxt/lib', async () => {
 
 describe('Mapping backup folder', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
     vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
       return 'no mock implementation';

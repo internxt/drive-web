@@ -1,4 +1,4 @@
-import { describe, test, expect, vi, beforeEach } from 'vitest';
+import { describe, test, expect, vi } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useProducts } from './useProducts';
 import { checkoutService } from '../services';
@@ -26,10 +26,6 @@ describe('Products custom hook', () => {
       decimalAmountWithTax: 12.1,
     },
   };
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
 
   describe('Initial state', () => {
     test('When the hook is initialized without a plan Id, then nothing happens', () => {

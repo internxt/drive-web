@@ -1,12 +1,8 @@
 import { renderHook, act } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { usePaginationState } from './usePaginationState';
 
 describe('usePaginationState', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   it('initializes with correct default state', () => {
     const { result } = renderHook(() =>
       usePaginationState({ isTrash: false, hasMoreFiles: true, hasMoreFolders: true }),

@@ -90,10 +90,6 @@ vi.mock('./workspaces.selectors', () => ({
 }));
 
 describe('setSelectedWorkspace', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   const mockWorkspace = {
     workspace: { id: 'ws-1' },
     workspaceUser: { key: 'decrypted-key' },
@@ -184,10 +180,6 @@ describe('setSelectedWorkspace', () => {
 });
 
 describe('fetchPendingWorkspacesInvites', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   test('when the invites request succeeds, then the invites are stored in the slice', async () => {
     const mockInvites = [{ id: 'invite-1', workspace: { name: 'My Workspace' } }];
     vi.mocked(workspacesService.getPendingInvites).mockResolvedValueOnce(mockInvites as never);
@@ -215,10 +207,6 @@ describe('fetchPendingWorkspacesInvites', () => {
 });
 
 describe('fetchWorkspaces', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   test('when the workspaces are fetched, then the pending invites are refreshed too', async () => {
     const dispatchMock = vi.fn();
     const getStateMock = vi.fn(() => ({ user: { user: { uuid: 'user-uuid' } } }) as RootState);
@@ -241,7 +229,6 @@ describe('setPendingWorkspacesInvites', () => {
 
 describe('Encryption and Decryption', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 

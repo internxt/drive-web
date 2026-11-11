@@ -19,7 +19,6 @@ describe('useTrashPagination', () => {
   };
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 

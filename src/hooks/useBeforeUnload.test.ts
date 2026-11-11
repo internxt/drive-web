@@ -29,7 +29,6 @@ describe('useBeforeUnload', () => {
   });
 
   beforeEach(() => {
-    vi.clearAllMocks();
     addEventListenerSpy = vi.spyOn(window, 'addEventListener');
     removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
   });

@@ -103,7 +103,6 @@ const renderUrgentCheckout = (
 
 describe('urgent checkout view', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     globalThis.sessionStorage.clear();
   });
 

@@ -53,7 +53,6 @@ vi.mock('utils', () => ({
 
 describe('userService', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
     vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(testToken);
   });

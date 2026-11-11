@@ -217,12 +217,6 @@ export const uiSlice = createSlice({
     setFileInfoItem: (state: UISliceState, action: PayloadAction<FileInfoMenuItem | null>) => {
       state.currentFileInfoMenuItem = action.payload;
     },
-    setCurrentEditingNameDriveItem: (
-      state: UISliceState,
-      action: PayloadAction<UISliceState['currentEditingNameDriveItem']>,
-    ) => {
-      state.currentEditingNameDriveItem = action.payload;
-    },
     setCurrentEditingNameDirty: (
       state: UISliceState,
       action: PayloadAction<UISliceState['currentEditingNameDirty']>,
@@ -260,7 +254,6 @@ export const {
   setIsFileViewerOpen,
   setFileViewerItem,
   setFileInfoItem,
-  setCurrentEditingNameDriveItem,
   setCurrentEditingNameDirty,
   setIsEditFolderNameDialog,
   setIsGlobalSearch,

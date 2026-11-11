@@ -69,10 +69,6 @@ async function dispatchThunk(
 }
 
 describe('Moving items - Thunk', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   test('When moving a file item that has a new name set, then the storage service receives the new name', async () => {
     const destinationFolderId = 'dest-folder-uuid';
     const newItemName = 'renamed-document';
@@ -143,7 +139,6 @@ describe('Moving items - Task logger', () => {
   const destinationFolderId = 'dest-folder-uuid';
 
   beforeEach(() => {
-    vi.clearAllMocks();
     mockMoveItem.mockResolvedValue(undefined);
     mockTasksCreate.mockReturnValue('mock-task-id');
   });
