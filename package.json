@@ -2,7 +2,6 @@
   "name": "drive-web",
   "version": "v1.1.4",
   "private": true,
-  "packageManager": "yarn@1.22.22",
   "dependencies": {
     "@dashlane/pqc-kem-kyber512-browser": "^1.0.0",
     "@headlessui/react": "^2.2.10",
@@ -78,7 +77,6 @@
     "xlsx-preview": "^1.0.4"
   },
   "scripts": {
-    "preinstall": "node scripts/use-yarn.js",
     "prepare": "husky install",
     "dev": "vite",
     "build": "vite build",
@@ -86,21 +84,21 @@
     "build:staging": "vite build --mode staging",
     "test:related": "vitest run --changed HEAD --passWithNoTests",
     "test:coverage": "vitest run --coverage",
-    "test:playwright": "yarn playwright test",
-    "test:chromium": "yarn playwright test --project=chromium",
-    "test:firefox": "yarn playwright test --project=firefox",
-    "test:safari": "yarn playwright test --project=webkit",
-    "test:edge": "yarn playwright test --project=edge",
+    "test:playwright": "npx playwright test",
+    "test:chromium": "npx playwright test --project=chromium",
+    "test:firefox": "npx playwright test --project=firefox",
+    "test:safari": "npx playwright test --project=webkit",
+    "test:edge": "npx playwright test --project=edge",
     "test": "vitest run",
     "format": "prettier \"{src,test}/**/*.{ts,tsx,json}\" --write",
     "lint:ts": "eslint \"./{src,test}/**/*.{ts,tsx}\"",
-    "lint:ts:fix": "yarn run lint:ts --fix",
+    "lint:ts:fix": "npm run lint:ts -- --fix",
     "lint:scss": "stylelint \"src/**/*.{css,scss}\"",
-    "lint:scss:fix": "yarn run lint:scss --fix",
-    "lint": "yarn run lint:ts && yarn run lint:scss",
-    "lint:fix": "yarn run lint:ts:fix && yarn run lint:scss:fix",
+    "lint:scss:fix": "npm run lint:scss -- --fix",
+    "lint": "npm run lint:ts && npm run lint:scss",
+    "lint:fix": "npm run lint:ts:fix && npm run lint:scss:fix",
     "typecheck": "tsc --noEmit",
-    "analyze": "cross-env ANALYZE=true yarn build",
+    "analyze": "cross-env ANALYZE=true npm run build",
     "check:i18n": "node scripts/check-i18n.cjs"
   },
   "browserslist": {
@@ -176,12 +174,31 @@
       "prettier --write"
     ]
   },
-  "resolutions": {
+  "overrides": {
     "glob": "^10.5.0",
     "js-yaml": "^4.1.1",
-    "readdir-glob/minimatch": "5.1.8",
-    "readdir-glob/minimatch/brace-expansion": "2.1.4",
-    "babel-plugin-macros/yaml": "1.10.3",
-    "xlsx-preview/exceljs/uuid": "^11.1.1"
+    "readdir-glob": {
+      "minimatch": {
+        ".": "5.1.8",
+        "brace-expansion": "2.1.4"
+      }
+    },
+    "babel-plugin-macros": {
+      "yaml": "1.10.3"
+    },
+    "xlsx-preview": {
+      "exceljs": {
+        "uuid": "^11.1.1"
+      }
+    }
+  },
+  "allowScripts": {
+    "canvas@3.1.0": true,
+    "esbuild@0.25.5": true,
+    "@parcel/watcher@2.5.6": true,
+    "fsevents@2.3.2": true,
+    "fsevents@2.3.3": true,
+    "core-js-pure": false,
+    "javascript-obfuscator": false
   }
 }

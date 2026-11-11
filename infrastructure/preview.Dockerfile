@@ -1,16 +1,15 @@
 FROM node:24-alpine
 
 RUN apk update
-RUN apk add nginx git yarn
+RUN apk add nginx git
 
 WORKDIR /app
-COPY package.json yarn.lock ./
+COPY package.json package-lock.json ./
 COPY .npmrc ./.npmrc
-COPY ./scripts ./scripts/
 
-RUN yarn
+RUN npm ci
 COPY . /app
 
 EXPOSE 3000
 
-CMD ["yarn", "dev"]
+CMD ["npm", "run", "dev"]

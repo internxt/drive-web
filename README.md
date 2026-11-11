@@ -19,13 +19,12 @@ We aim to have:
 
 ## Installation
 
-- Create a .npmrc file by copying the .npmrc.template provided in the repo.
 - Fill the .env file using .env.template.
-- Use `yarn` to install project dependencies.
+- Use `npm ci` to install project dependencies (the committed `.npmrc` sets `legacy-peer-deps`).
 
 ## Scripts
 
-### `yarn run dev`
+### `npm run dev`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
@@ -33,7 +32,7 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
 
-### `yarn run preview`
+### `npm start`
 
 Serves the built application locally to preview the production output.
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
@@ -41,24 +40,24 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 - Useful for testing the result of a production build.
 - No hot reloading or development tools included.
 
-> Before running `yarn run preview`, make sure you have already built the application using:
-> `yarn run build`
+> Before running `npm start`, make sure you have already built the application using:
+> `npm run build`
 > The preview command serves the latest build output, so if you haven't run build beforehand, it will either fail or serve outdated files.
 
-### `yarn run lint` (`yarn run lint:ts` && `yarn run lint:scss`)
+### `npm run lint` (`npm run lint:ts` && `npm run lint:scss`)
 
 - Runs .ts linter
 - Runs .scss linter
 
-### `yarn test` (`yarn test:unit`)
+### `npm test`
 
 - Runs unit tests with [Vitest](https://vitest.dev/)
 
-### `yarn test:playwright` (`yarn playwright test`)
+### `npm run test:playwright` (`npx playwright test`)
 
 - Runs end to end tests with [Playwright](https://playwright.dev/)
 
-### `yarn build`
+### `npm run build`
 
 Builds the app for production to the `build` folder.\
 It correctly bundles React in production mode and optimizes the build for the best performance.

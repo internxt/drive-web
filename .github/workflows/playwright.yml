@@ -45,16 +45,16 @@ jobs:
       - run: echo '${{ secrets.TEST_USER_DATA }}' > test/e2e/tests/user.json
 
       - name: Install dependencies
-        run: npm install -g yarn && yarn
+        run: npm ci
 
       - name: Install Playwright Browsers
-        run: yarn playwright install --with-deps
+        run: npx playwright install --with-deps
 
       - name: Start dev server
-        run: yarn dev --host & npx wait-on http://localhost:3000
+        run: npm run dev -- --host & npx wait-on http://localhost:3000
 
       - name: Run Playwright tests
-        run: yarn playwright test
+        run: npx playwright test
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
