@@ -134,18 +134,10 @@ export class UploadManager {
     this.abortActiveUploadsPartOf(item);
   }
 
-  /**
-   * Lets the items queued from now on upload again after the storage was full, e.g. when the user frees space
-   * and retries while other items are still uploading.
-   */
   clearStorageFull(): void {
     this.storageFullFailure = undefined;
   }
 
-  /**
-   * Every queued item is announced once and always ends in exactly one of succeeded, failed or cancelled, so the
-   * caller can tell when everything it queued has finished.
-   */
   private queue(items: UploadItem[]): void {
     for (const item of items) {
       void notifyIgnoringListenerErrors(() => this.events?.onItemQueued?.(item));
