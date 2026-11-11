@@ -1,6 +1,5 @@
 import tasksService from 'app/tasks/services/tasks.service';
 import { TaskStatus, TaskType, UploadFileTask } from 'app/tasks/types';
-import errorService from 'services/error.service';
 import { UploadedItem, UploadFileItem, UploadItem } from '../types';
 import { UploadTracker, UploadTrackerProps } from './UploadTracker';
 
@@ -18,28 +17,23 @@ export class FileUploadTracker extends UploadTracker<UploadFileItem> {
       cancellable: true,
       stop: () => Promise.resolve(props.stop()),
       retry: () => props.retry(),
+      pause: () => Promise.resolve(props.pause()),
+      resume: () => Promise.resolve(props.resume()),
     });
     super(item, props, taskId);
   }
 
   onStarted(item: UploadItem): void {
     super.onStarted(item);
-    if (item !== this.item) return;
-
-    this.props.uploadRepository
-      .setUploadState(this.taskId, TaskStatus.InProcess)
-      .catch((error) => errorService.reportError(error));
+    if (item === this.item) this.saveUploadState(TaskStatus.InProcess);
   }
 
   protected uploadSucceeded(_item: UploadItem, uploadedItem: UploadedItem): void {
     this.uploadedFileUuid = uploadedItem.uuid;
   }
 
-  /**
-   * A retried file is uploaded again from its first byte.
-   */
-  protected getRetryProgress(): number {
-    return 0;
+  protected getUploadedProgress(): number {
+    return this.uploadedFileUuid ? 1 : 0;
   }
 
   /**
