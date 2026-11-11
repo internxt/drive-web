@@ -30,7 +30,6 @@ describe('useBackupListActions', () => {
   } as DriveItemData;
 
   beforeEach(() => {
-    vi.clearAllMocks();
     onBreadcrumbFolderChanges = vi.fn();
     dispatch = vi.fn();
   });

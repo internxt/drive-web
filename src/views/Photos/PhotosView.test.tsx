@@ -157,7 +157,6 @@ document.head.appendChild(galleryStyles);
 
 describe('Photos view', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     givenGallerySize(1000, 600);
     vi.stubGlobal('ResizeObserver', FakeResizeObserver);
     givenSubfolders({});

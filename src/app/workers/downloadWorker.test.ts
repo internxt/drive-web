@@ -45,8 +45,6 @@ describe('Download Worker', () => {
   };
 
   beforeEach(() => {
-    vi.clearAllMocks();
-
     mockCallbacks = {
       onProgress: vi.fn(),
       onSuccess: vi.fn(),
@@ -59,7 +57,6 @@ describe('Download Worker', () => {
   });
 
   afterEach(() => {
-    vi.clearAllMocks();
     vi.restoreAllMocks();
   });
 

@@ -1,5 +1,5 @@
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { processDuplicateFiles } from './processDuplicateFiles';
 import { getUniqueFilename } from './getUniqueFilename';
 
@@ -10,10 +10,6 @@ vi.mock('./getUniqueFilename', () => ({
 const mockGetUniqueFilename = vi.mocked(getUniqueFilename);
 
 describe('Process duplicated files', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   test('When processing a single file without duplicates check, then it should add the file with original name', async () => {
     const fileName = 'document';
     const fileType = 'pff';

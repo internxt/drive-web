@@ -110,7 +110,6 @@ describe('Encryption and Decryption', () => {
   });
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 
@@ -167,10 +166,6 @@ describe('Inviting user to Shared Folder', () => {
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
 
   test('When inviting a user, then the captcha token should be generated and included when creating the client', async () => {
     const { generateCaptchaToken } = await import('utils');
@@ -506,10 +501,6 @@ describe('decryptPublicSharingCodeWithOwner', () => {
   const mnemonic = 'test mnemonic';
   const plainCode = 'test plain code';
 
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   test('When encryptionAlgorithm is NEW_SHARING_VERSION, then code is decrypted using bucket key', async () => {
     const bucketKey = await generateFileBucketKey(mnemonic, bucket);
     const bucketKeyHex = Buffer.from(bucketKey.subarray(0, 32)).toString('hex');
@@ -540,7 +531,6 @@ describe('decryptPublicSharingCodeWithOwner', () => {
 
   describe('when user is not found', () => {
     beforeEach(() => {
-      vi.clearAllMocks();
       vi.restoreAllMocks();
     });
 
@@ -626,10 +616,6 @@ describe('Download public shared items', () => {
       name: 'encrypted-name',
       isFolder: true,
     }) as unknown as AdvancedSharedItem;
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
 
   test('When a single file is downloaded, then it is fetched with the share credentials and key and saved with its plain name', async () => {
     const file = createPublicFile('photo', 'network-file-id');
@@ -796,10 +782,6 @@ describe('Download public shared items', () => {
 });
 
 describe('Download public shared folder', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   test('When credentials are returned, then the folder contents are downloaded with the derived key', async () => {
     vi.spyOn(shareService, 'getPublicSharedFolderContent').mockResolvedValueOnce({
       items: [],

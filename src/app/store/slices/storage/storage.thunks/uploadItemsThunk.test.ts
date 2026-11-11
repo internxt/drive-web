@@ -98,7 +98,6 @@ describe('uploadItemsThunk', () => {
   const mockFile = new File(['content'], 'file.txt', { type: 'text/plain' });
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 
@@ -251,7 +250,6 @@ describe('upload shared items thunk', () => {
   const mockFile = new File(['content'], 'file.txt', { type: 'text/plain' });
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 
@@ -287,7 +285,6 @@ describe('Upload items in parallel thunk', () => {
   const mockFile = new File(['content'], 'file.txt', { type: 'text/plain' });
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 
@@ -353,7 +350,6 @@ describe('uploadItemsThunkExtraReducers', () => {
   const sampleFile = { taskId: 'task1' };
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 

@@ -1,6 +1,7 @@
 import { describe, expect, test, vi, beforeEach } from 'vitest';
 import { fetchFavoriteFolders, fetchFavoriteFiles } from './fetchFavorites.service';
 import { SdkFactory } from 'app/core/factory/sdk';
+import { mockSdkFactory } from 'testUtils/sdk.mock';
 
 describe('fetchFavorites services', () => {
   const mockFolders = [
@@ -19,12 +20,8 @@ describe('fetchFavorites services', () => {
     ]);
 
   beforeEach(() => {
-    vi.clearAllMocks();
-
     const mockStorageClient = { getFavorites: mockGetFavorites };
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createNewStorageClient: vi.fn().mockReturnValue(mockStorageClient),
-    } as unknown as SdkFactory);
+    mockSdkFactory({ createNewStorageClient: mockStorageClient });
   });
 
   test('When fetching favorite folders, then it requests them with the given limit and offset', async () => {

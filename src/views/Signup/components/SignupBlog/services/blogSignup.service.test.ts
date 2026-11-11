@@ -30,7 +30,6 @@ describe('submitBlogSignup', () => {
   let mockSetError: Mock;
 
   beforeEach(() => {
-    vi.clearAllMocks();
     mockDispatch = vi.fn() as unknown as AppDispatch;
     mockDoRegister = vi.fn();
     mockSetLoading = vi.fn();
