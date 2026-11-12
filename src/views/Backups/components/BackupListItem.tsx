@@ -50,7 +50,7 @@ export default function BackupListItem({ item, onItemClicked }: Readonly<BackupL
 
       {/* DATE */}
       <div className="block shrink-0 w-date items-center whitespace-nowrap">
-        {dateService.formatDefaultDate(item.updatedAt, t)}
+        {dateService.formatDefaultDate(item.modificationTime ?? item.updatedAt, t)}
       </div>
 
       {/* SIZE */}
