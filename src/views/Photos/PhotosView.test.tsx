@@ -671,13 +671,13 @@ describe('Photos view', () => {
         );
       });
 
-      test('When the photos of a burst are in several days of the month, then the burst is shown once on its main photo', async () => {
+      test('When a photo has burst photos, then the burst is shown once on its main photo', async () => {
         givenPhotosInFolders({
           'iphone-2025-11-03': [
             file('IMG_0003', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
             file('IMG_0003.burst.1', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+            file('IMG_0003.burst.2', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:01Z'),
           ],
-          'iphone-2025-11-01': [file('IMG_0003.burst.2', 'jpg', 'iphone-2025-11-01', '2025-11-01T09:00:00Z')],
         });
 
         render(<PhotosView />);
@@ -685,6 +685,52 @@ describe('Photos view', () => {
 
         expect(shownTimeline()).toStrictEqual(['Mon, 3 Nov 2025', ['IMG_0003.jpg']]);
         expect(tile('IMG_0003.jpg')).toHaveAccessibleDescription('views.photos.badges.burst');
+      });
+
+      test('When photos with the same name are on different days of the month, then each Live Photo and burst stays on its own day', async () => {
+        givenPhotosInFolders({
+          'iphone-2025-11-01': [
+            file('IMG_0001', 'heic', 'iphone-2025-11-01', '2025-11-01T10:00:00Z'),
+            file('IMG_0001.livephoto', 'mov', 'iphone-2025-11-01', '2025-11-01T10:00:00Z'),
+            file('IMG_0002', 'heic', 'iphone-2025-11-01', '2025-11-01T09:00:00Z'),
+            file('IMG_0002.burst.1', 'heic', 'iphone-2025-11-01', '2025-11-01T09:00:00Z'),
+          ],
+          'iphone-2025-11-03': [
+            file('IMG_0001', 'heic', 'iphone-2025-11-03', '2025-11-03T10:00:00Z'),
+            file('IMG_0002', 'heic', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          ],
+        });
+
+        render(<PhotosView />);
+        await screen.findAllByRole('img', { name: 'IMG_0001.heic' });
+
+        const [photoOfDay3, livePhotoOfDay1] = screen.getAllByRole('img', { name: 'IMG_0001.heic' });
+        const [otherPhotoOfDay3, burstOfDay1] = screen.getAllByRole('img', { name: 'IMG_0002.heic' });
+        expect(shownTimeline()).toStrictEqual([
+          'Mon, 3 Nov 2025',
+          ['IMG_0001.heic', 'IMG_0002.heic'],
+          'Sat, 1 Nov 2025',
+          ['IMG_0001.heic', 'IMG_0002.heic'],
+        ]);
+        expect(livePhotoOfDay1).toHaveAccessibleDescription('views.photos.badges.livePhoto');
+        expect(burstOfDay1).toHaveAccessibleDescription('views.photos.badges.burst');
+        expect(photoOfDay3).not.toHaveAccessibleDescription();
+        expect(otherPhotoOfDay3).not.toHaveAccessibleDescription();
+      });
+
+      test('When the burst part of a photo name is in capitals, then the photo is still shown inside its burst', async () => {
+        givenPhotosInFolders({
+          'iphone-2025-11-03': [
+            file('IMG_0007', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+            file('IMG_0007.BURST.1', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          ],
+        });
+
+        render(<PhotosView />);
+        await screen.findByRole('img', { name: 'IMG_0007.jpg' });
+
+        expect(shownTimeline()).toStrictEqual(['Mon, 3 Nov 2025', ['IMG_0007.jpg']]);
+        expect(tile('IMG_0007.jpg')).toHaveAccessibleDescription('views.photos.badges.burst');
       });
 
       test('When the main photo of a burst is not in the month, then its other photos are shown on their own', async () => {

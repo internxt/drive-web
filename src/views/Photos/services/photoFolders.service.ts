@@ -2,7 +2,7 @@ import { PhotoFolderFile } from '@internxt/sdk/dist/drive/photos';
 import { FetchFolderFoldersCursorResponse } from '@internxt/sdk/dist/drive/storage/types';
 import { SdkFactory } from 'app/core/factory/sdk';
 import { DriveItemData } from 'app/drive/types';
-import { thumbnailableVideoExtension } from 'app/drive/types/file-types';
+import { videoExtensions } from 'app/drive/types/file-types';
 import { DayKey, MonthKey, Photo, PhotoMonth, PhotoThumbnail } from '../types';
 
 type Folder = FetchFolderFoldersCursorResponse['folders'][number];
@@ -16,7 +16,8 @@ const DAY_FOLDER_NAME = /^(0?[1-9]|[12]\d|3[01])$/;
 
 const LIVE_PHOTO_VIDEO_SUFFIX = '.livephoto';
 const LIVE_PHOTO_VIDEO_TYPE = 'mov';
-const BURST_MEMBER_SUFFIX = /\.burst\.\d+$/;
+const BURST_MEMBER_SUFFIX = /\.burst\.\d+$/i;
+const VIDEO_TYPES = new Set(Object.values(videoExtensions).flat());
 
 interface PhotoFile {
   photo: Photo;
@@ -35,21 +36,24 @@ const getMainPhotoName = (file: PhotoFile): string => {
   if (isLivePhotoVideo(file)) return plainName.slice(0, -LIVE_PHOTO_VIDEO_SUFFIX.length);
   return plainName.replace(BURST_MEMBER_SUFFIX, '');
 };
+const getMainPhotoKey = (file: PhotoFile): string => `${file.photo.day}/${getMainPhotoName(file)}`;
+
 const groupRelatedFiles = (files: PhotoFile[]): Photo[] => {
   const isRelatedFile = (file: PhotoFile) => isLivePhotoVideo(file) || isBurstMember(file);
   const mainPhotos = files.filter((file) => !isRelatedFile(file));
-  const mainPhotoByName = new Map(mainPhotos.map((file) => [file.plainName.toLowerCase(), file.photo]));
+  const mainPhotoByKey = new Map(mainPhotos.map((file) => [getMainPhotoKey(file), file.photo]));
   const relatedFilesByPhoto = new Map<Photo, PhotoFile[]>();
   const photosOnTheirOwn = mainPhotos.map(({ photo }) => photo);
 
   for (const file of files.filter(isRelatedFile)) {
-    const mainPhoto = mainPhotoByName.get(getMainPhotoName(file));
-    const isLiveVideoOfAnotherDay = isLivePhotoVideo(file) && mainPhoto?.day !== file.photo.day;
-    if (!mainPhoto || isLiveVideoOfAnotherDay) {
+    const mainPhoto = mainPhotoByKey.get(getMainPhotoKey(file));
+    if (!mainPhoto) {
       photosOnTheirOwn.push(file.photo);
       continue;
     }
-    relatedFilesByPhoto.set(mainPhoto, [...(relatedFilesByPhoto.get(mainPhoto) ?? []), file]);
+    const relatedFiles = relatedFilesByPhoto.get(mainPhoto);
+    if (relatedFiles) relatedFiles.push(file);
+    else relatedFilesByPhoto.set(mainPhoto, [file]);
   }
 
   return photosOnTheirOwn.map((photo) => {
@@ -111,7 +115,7 @@ export class PhotoFoldersService {
         takenAt: file.creationTime,
         updatedAt: file.updatedAt,
         thumbnail: getLatestThumbnail(file.thumbnails),
-        kind: thumbnailableVideoExtension.includes(file.type.toLowerCase()) ? 'video' : 'photo',
+        kind: VIDEO_TYPES.has(file.type.toLowerCase()) ? 'video' : 'photo',
         relatedFiles: [],
         file: { ...file, size: Number(file.size), isFolder: false, name: file.plainName } as unknown as DriveItemData,
       };
