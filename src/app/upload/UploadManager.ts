@@ -5,6 +5,7 @@ import { QueueUtilsService } from 'utils/queueUtils';
 import { wait } from 'utils/timeUtils';
 import uploadFile from 'app/drive/services/file.service/uploadFile';
 import folderService from 'app/drive/services/folder.service';
+import newStorageService from 'app/drive/services/new-storage.service';
 import { toDriveFolderData } from 'app/drive/services/folder.service/toDriveFolderData';
 import { DriveFileData, DriveFolderData } from 'app/drive/types';
 import { PersistUploadRepository } from 'app/repositories/DatabaseUploadRepository';
@@ -13,6 +14,7 @@ import {
   MAX_CONCURRENT_UPLOADS,
   MAX_UPLOAD_ATTEMPTS,
   TWENTY_MEGABYTES,
+  UPLOAD_IDLE_TIMEOUT_MS,
   USE_MULTIPART_THRESHOLD_BYTES,
 } from 'app/network/networkConstants';
 import { OwnerUserAuthenticationData } from 'app/network/types';
@@ -38,6 +40,8 @@ import {
 
 const SINGLE_TRANSFER_CONCURRENCY = 1;
 export const WORKSPACE_FOLDER_AVAILABILITY_DELAY_MS = 600;
+export const FOLDER_CREATION_TIMEOUT_MS = UPLOAD_IDLE_TIMEOUT_MS;
+const EXISTING_FOLDER_LOOKUP_ATTEMPTS = 3;
 
 enum UploadPriority {
   Folder = 0,
@@ -72,6 +76,20 @@ class UploadCancelledError extends Error {
     super('The upload was cancelled before it started');
   }
 }
+
+class FolderCreationTimeoutError extends Error {
+  constructor() {
+    super('Creating the folder did not answer in time');
+  }
+}
+
+/**
+ * The server didn't say whether the folder was created: no answer, a timeout or a server error.
+ */
+const isUnknownCreationResult = (error: unknown) =>
+  error instanceof FolderCreationTimeoutError ||
+  errorService.isNetworkError(error) ||
+  errorService.isServerError(error);
 
 const isMultipartUpload = (item: UploadItem) =>
   item.kind === UploadItemKind.File && item.file.size >= USE_MULTIPART_THRESHOLD_BYTES;
@@ -108,6 +126,7 @@ const notifyIgnoringListenerErrors = async (notify: () => unknown): Promise<void
 export class UploadManager {
   private readonly uploadByOptions = new WeakMap<UploadRunOptions, UploadInProgress>();
   private readonly uploadByTopLevelItem = new WeakMap<UploadItem, UploadInProgress>();
+  private readonly foldersWithUnknownCreation = new WeakSet<UploadFolderItem>();
   private readonly storageFullFailureByStorage = new Map<string, UploadFailure>();
   private readonly cancelledItems = new WeakSet<UploadItem>();
   private readonly abortActiveUploadOf = new Map<UploadItem, () => void>();
@@ -253,17 +272,66 @@ export class UploadManager {
     return this.uploadFile(item);
   }
 
+  /**
+   * Creating a folder is idempotent: when an attempt ends without knowing whether the folder was created (a lost
+   * response, a timeout) and the next one finds it already exists, the existing one is used. A folder that already
+   * exists on the first attempt belongs to the user, so it is never reused.
+   */
   private async createFolder(folderItem: UploadFolderItem): Promise<DriveFolderData> {
     this.throwIfCancelled(folderItem);
 
+    try {
+      const createdFolder = await this.requestFolderCreation(folderItem);
+      return toDriveFolderData(createdFolder, folderItem.folder.name);
+    } catch (error) {
+      if (!errorService.isConflictError(error)) {
+        if (isUnknownCreationResult(error)) this.foldersWithUnknownCreation.add(folderItem);
+        throw error;
+      }
+
+      const mayHaveBeenCreatedByAPreviousAttempt = this.foldersWithUnknownCreation.has(folderItem);
+      if (!mayHaveBeenCreatedByAPreviousAttempt) throw error;
+
+      return this.findExistingFolder(folderItem, error);
+    }
+  }
+
+  private async requestFolderCreation(folderItem: UploadFolderItem) {
     const workspaceId = this.getOptionsOf(folderItem).ownerUserAuthenticationData?.workspaceId;
     const { parentFolderUuid, folder } = folderItem;
-    const [createdFolderPromise] = workspaceId
+    const [createdFolderPromise, requestCanceler] = workspaceId
       ? workspacesService.createFolder({ workspaceId, parentFolderUuid, plainName: folder.name })
       : folderService.createFolderByUuid(parentFolderUuid, folder.name);
 
-    const createdFolder = await createdFolderPromise;
-    return toDriveFolderData(createdFolder, folder.name);
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    const timedOut = new Promise<never>((_, reject) => {
+      timeout = setTimeout(() => {
+        requestCanceler.cancel();
+        reject(new FolderCreationTimeoutError());
+      }, FOLDER_CREATION_TIMEOUT_MS);
+    });
+
+    try {
+      return await Promise.race([createdFolderPromise, timedOut]);
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  private async findExistingFolder(folderItem: UploadFolderItem, conflictError: unknown): Promise<DriveFolderData> {
+    const { parentFolderUuid, folder } = folderItem;
+
+    for (let attempt = 1; attempt <= EXISTING_FOLDER_LOOKUP_ATTEMPTS; attempt++) {
+      this.throwIfCancelled(folderItem);
+      const { existentFolders } = await newStorageService.checkDuplicatedFolders(parentFolderUuid, [folder.name]);
+      const [existingFolder] = existentFolders;
+      if (existingFolder) return { ...existingFolder, name: folder.name, isFolder: true };
+
+      const hasLookupsLeft = attempt < EXISTING_FOLDER_LOOKUP_ATTEMPTS;
+      if (hasLookupsLeft) await wait(WORKSPACE_FOLDER_AVAILABILITY_DELAY_MS);
+    }
+
+    throw conflictError;
   }
 
   private async uploadFile(fileItem: UploadFileItem): Promise<DriveFileData> {
