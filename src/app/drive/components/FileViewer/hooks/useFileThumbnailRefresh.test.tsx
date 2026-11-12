@@ -99,7 +99,6 @@ const renderRefresh = (file: PreviewFileItem, { isSharedView = false, currentUse
 
 describe('Refreshing the thumbnail of a previewed file', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     storedPreviews.clear();
     uploadToBucket.mockResolvedValue('uploaded');
     createThumbnailEntry.mockResolvedValue(UPLOADED_THUMBNAIL);

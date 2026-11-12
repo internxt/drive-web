@@ -1,4 +1,4 @@
-import { describe, test, expect, vi, beforeEach } from 'vitest';
+import { describe, test, expect, vi } from 'vitest';
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { useUserLocation } from './useUserLocation';
 import { userLocation } from 'utils';
@@ -13,10 +13,6 @@ describe('User location custom hook', () => {
     location: 'ES',
     ip: '1.1.1.1',
   };
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
 
   describe('Initialization', () => {
     test('When the hook is initialized, then user location is fetched and saved correctly', async () => {

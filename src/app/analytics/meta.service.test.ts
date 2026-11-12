@@ -10,8 +10,6 @@ describe('Meta Tracking Service', () => {
   let originalFbq: any;
 
   beforeEach(() => {
-    vi.clearAllMocks();
-
     originalDataLayer = (globalThis.window as any).dataLayer;
     originalFbq = (globalThis.window as any).fbq;
 

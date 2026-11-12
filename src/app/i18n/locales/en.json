@@ -204,7 +204,13 @@
       "success": "You have successfully logged in",
       "error": "Login failed, please try again",
       "closeWindow": "You can close this window",
-      "invalidRedirectUri": "Invalid redirect URL"
+      "invalidRedirectUri": "Invalid redirect URL",
+      "errors": {
+        "CLIENT_VERSION_UNSUPPORTED": {
+          "title": "This version of the app is no longer supported",
+          "description": "Update the app to the latest version, then log in again."
+        }
+      }
     },
     "oauthLink": {
       "continueAs": "Continue as",
@@ -495,6 +501,15 @@
         "title": "We couldn't load your photos",
         "description": "Check your connection and try again",
         "retry": "Try again"
+      },
+      "filters": {
+        "allDevices": "All devices",
+        "allDates": "All dates"
+      },
+      "timeline": {
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "monthError": "Some photos from {{month}} couldn't be loaded"
       }
     },
     "favorites": {
@@ -1397,7 +1412,8 @@
       "errors": {}
     },
     "subtitles": {
-      "upload-failed": "Upload failed"
+      "upload-failed": "Upload failed",
+      "folder-removal-failed": "Couldn't remove the uploaded folder"
     },
     "generalErrorMessages": {
       "retryUploadFailed": "Something went wrong when retrying the upload. Try uploading again",

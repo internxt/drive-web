@@ -86,7 +86,6 @@ describe('Version item menu', () => {
   const mockUseAppSelector = useAppSelector as unknown as Mock;
 
   beforeEach(() => {
-    vi.clearAllMocks();
     mockUseAppDispatch.mockReturnValue(mockDispatch);
     (useTranslationContext as Mock).mockReturnValue({ translate: translateMock });
     mockUseAppSelector.mockImplementation((selector: (state: RootState) => unknown) => selector(baseState));

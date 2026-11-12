@@ -16,7 +16,6 @@ const abortMock = vi.fn();
 
 describe('Download Worker Handler', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     (downloadFileFromBlob as unknown as Mock).mockResolvedValue(undefined);
     vi.spyOn(streamSaver, 'createWriteStream').mockReturnValue({
       getWriter: vi.fn().mockReturnValue({

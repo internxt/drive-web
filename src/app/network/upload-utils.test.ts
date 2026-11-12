@@ -16,7 +16,6 @@ describe('uploadFileUint8Array error handling', () => {
   let mockProgressCallback: any;
 
   beforeEach(() => {
-    vi.clearAllMocks();
     mockAxiosInstance = vi.fn();
     mockProgressCallback = vi.fn();
     (axios.create as any) = vi.fn().mockReturnValue(mockAxiosInstance);

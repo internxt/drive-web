@@ -183,7 +183,13 @@
       "success": "Has iniciado sesión correctamente",
       "error": "No se ha podido iniciar sesion, inténtelo de nuevo",
       "closeWindow": "Puedes cerrar esta ventana",
-      "invalidRedirectUri": "URL de redirección no válida"
+      "invalidRedirectUri": "URL de redirección no válida",
+      "errors": {
+        "CLIENT_VERSION_UNSUPPORTED": {
+          "title": "Esta versión de la aplicación ya no es compatible",
+          "description": "Actualiza la aplicación a la última versión y vuelve a iniciar sesión."
+        }
+      }
     },
     "oauthLink": {
       "continueAs": "Continuar como",
@@ -474,6 +480,15 @@
         "title": "No hemos podido cargar tus fotos",
         "description": "Comprueba tu conexión e inténtalo de nuevo",
         "retry": "Reintentar"
+      },
+      "filters": {
+        "allDevices": "Todos los dispositivos",
+        "allDates": "Todas las fechas"
+      },
+      "timeline": {
+        "today": "Hoy",
+        "yesterday": "Ayer",
+        "monthError": "No se han podido cargar algunas fotos de {{month}}"
       }
     },
     "favorites": {
@@ -1377,7 +1392,8 @@
       "errors": {}
     },
     "subtitles": {
-      "upload-failed": "Error al subir"
+      "upload-failed": "Error al subir",
+      "folder-removal-failed": "No se pudo eliminar la carpeta subida"
     },
     "generalErrorMessages": {
       "retryUploadFailed": "Algo salió mal al reintentar la subida. Intenta subirlo de nuevo",

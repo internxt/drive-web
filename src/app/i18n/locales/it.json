@@ -204,7 +204,13 @@
       "success": "Accesso effettuato con successo",
       "error": "Impossibile accedere, riprova",
       "closeWindow": "Puoi chiudere questa finestra",
-      "invalidRedirectUri": "URL di reindirizzamento non valido"
+      "invalidRedirectUri": "URL di reindirizzamento non valido",
+      "errors": {
+        "CLIENT_VERSION_UNSUPPORTED": {
+          "title": "Questa versione dell'app non è più supportata",
+          "description": "Aggiorna l'app all'ultima versione, quindi accedi di nuovo."
+        }
+      }
     },
     "oauthLink": {
       "continueAs": "Continua come",
@@ -495,6 +501,15 @@
         "title": "Impossibile caricare le tue foto",
         "description": "Controlla la connessione e riprova",
         "retry": "Riprova"
+      },
+      "filters": {
+        "allDevices": "Tutti i dispositivi",
+        "allDates": "Tutte le date"
+      },
+      "timeline": {
+        "today": "Oggi",
+        "yesterday": "Ieri",
+        "monthError": "Non è stato possibile caricare alcune foto di {{month}}"
       }
     },
     "favorites": {
@@ -1397,7 +1412,8 @@
       "errors": {}
     },
     "subtitles": {
-      "upload-failed": "Caricamento fallito"
+      "upload-failed": "Caricamento fallito",
+      "folder-removal-failed": "Impossibile rimuovere la cartella caricata"
     },
     "generalErrorMessages": {
       "retryUploadFailed": "Qualcosa è andato storto nel riprovare a caricare. Prova a caricare di nuovo",

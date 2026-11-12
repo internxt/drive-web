@@ -90,7 +90,6 @@ const createMockDriveItem = (overrides?: Partial<DriveItemData>): DriveItemData 
 const mockDispatch = vi.fn() as unknown as AppDispatch;
 
 beforeEach(() => {
-  vi.clearAllMocks();
   vi.resetModules();
 });
 

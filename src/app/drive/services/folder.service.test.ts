@@ -59,10 +59,6 @@ vi.mock('./foldersZip.service', async (importOriginal) => {
 });
 
 describe('Folder Service', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   const mockFile: DriveFileData = {
     id: 1,
     uuid: 'file-uuid',

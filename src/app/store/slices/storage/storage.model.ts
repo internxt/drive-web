@@ -46,10 +46,6 @@ export interface StorageState {
   currentPath: FolderPath;
 }
 
-export interface StorageSetFiltersPayload {
-  text?: string;
-}
-
 export interface CollisionGroup {
   destinationUuid: string;
   duplicatedItems: (File | IRoot | DriveItemData)[];

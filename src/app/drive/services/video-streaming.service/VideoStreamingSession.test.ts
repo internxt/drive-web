@@ -33,7 +33,6 @@ describe('Video Streaming Session', () => {
   let mockContainer: HTMLElement;
 
   beforeEach(() => {
-    vi.clearAllMocks();
     mockContainer = document.createElement('div');
   });
 

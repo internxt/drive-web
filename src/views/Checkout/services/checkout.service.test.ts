@@ -147,7 +147,6 @@ const getPaymentMethodsFor = async (plan: ReturnType<typeof buildPlan>) => {
 
 describe('Checkout Service tests', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 

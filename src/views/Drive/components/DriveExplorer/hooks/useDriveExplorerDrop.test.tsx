@@ -85,7 +85,6 @@ const releasePendingDrag = () => {
 
 describe('Dropping files into the Drive explorer', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.mocked(transformDraggedItems).mockResolvedValue({ rootList: [], files: [] });
   });
 
