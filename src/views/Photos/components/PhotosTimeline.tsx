@@ -51,6 +51,7 @@ const PhotosTimeline = ({
   const columns = getColumns(widthWithoutScrollbar);
   const days = useMemo(() => groupByDay(photos), [photos]);
   const timeline = useMemo(() => getTimeline(days, columns, failedMonths), [days, columns, failedMonths]);
+  const isSelecting = selectedPhotos.size > 0;
 
   useLayoutEffect(() => {
     const previousTimeline = shownTimeline.current;
@@ -99,6 +100,7 @@ const PhotosTimeline = ({
               day={days[dayIndex].day}
               photos={days[dayIndex].photos}
               selectedPhotos={selectedPhotos}
+              isSelecting={isSelecting}
               onToggleSelection={onToggleSelection}
             />
           )}
@@ -119,7 +121,7 @@ const PhotosTimeline = ({
                     key={photo.uuid}
                     photo={photo}
                     isSelected={selectedPhotos.has(photo.uuid)}
-                    isSelecting={selectedPhotos.size > 0}
+                    isSelecting={isSelecting}
                     onOpen={onOpenPhoto}
                     onToggleSelection={onToggleSelection}
                   />
