@@ -35,6 +35,7 @@ export interface UploadManagerEvents {
   onItemSucceeded?: (item: UploadItem, uploadedItem: UploadedItem) => void | Promise<void>;
   onItemFailed?: (item: UploadItem, failure: UploadFailure) => void;
   onItemCancelled?: (item: UploadItem) => void;
+  onStorageFull?: () => void;
 }
 
 export interface UploadResult {
