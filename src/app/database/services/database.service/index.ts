@@ -14,6 +14,11 @@ export type DriveItemBlobData = {
   updatedAt?: string;
 };
 
+export type PhotoThumbnailBlobData = {
+  preview: Blob;
+  updatedAt: string;
+};
+
 export type AvatarBlobData = {
   srcURL: string;
   avatarBlob: Blob;
@@ -55,6 +60,10 @@ export interface AppDatabase extends DBSchema {
   crypto_keys: {
     key: string;
     value: CryptoKey;
+  };
+  photos_thumbnails: {
+    key: string;
+    value: PhotoThumbnailBlobData;
   };
 }
 

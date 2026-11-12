@@ -14,6 +14,7 @@ export class LRUCache<T> {
   private readonly lruList: string[];
   private readonly size: number;
   private currentSize: number;
+  private previousWrite: Promise<void> = Promise.resolve();
 
   constructor(cache: ICacheStorage<T>, size: number, lRUCacheStruture?: LRUCacheStruture) {
     this.cache = cache;
@@ -32,13 +33,16 @@ export class LRUCache<T> {
     return this.cache.get(key);
   }
 
-  async set(key: string, value: T, size: number): Promise<void> {
-    if (size < this.size) {
-      const existsItem = await this.cache.has(key);
+  set(key: string, value: T, size: number): Promise<void> {
+    const write = this.previousWrite.then(() => this.write(key, value, size));
+    this.previousWrite = write.catch(() => undefined);
+    return write;
+  }
 
-      if (existsItem) {
-        this.updateLRU(key);
-        return;
+  private async write(key: string, value: T, size: number): Promise<void> {
+    if (size < this.size) {
+      if (this.lruList.includes(key)) {
+        await this.untrack(key);
       }
 
       await this.evictEntriesIfNeeded(size);
@@ -47,6 +51,21 @@ export class LRUCache<T> {
       this.currentSize += size;
       this.cache.set(key, value, size);
       this.persistState();
+    }
+  }
+
+  private async untrack(key: string): Promise<void> {
+    const isStored = await this.cache.has(key);
+    if (!isStored) {
+      await this.reconcileState();
+      return;
+    }
+
+    const keySize = await this.cache.getSize(key);
+    const trackedIndex = this.lruList.indexOf(key);
+    if (trackedIndex > -1) {
+      this.currentSize = Math.max(0, this.currentSize - keySize);
+      this.lruList.splice(trackedIndex, 1);
     }
   }
 

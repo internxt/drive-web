@@ -307,9 +307,14 @@ export const generateThumbnailFromFile = async (
   return null;
 };
 
-export const getCachedThumbnail = async (file: { id: number; updatedAt: string }): Promise<Blob | undefined> => {
+export const getCachedThumbnail = async (
+  file: { id: number; updatedAt: string },
+  readCache: (file: {
+    fileId: number;
+  }) => Promise<{ preview?: Blob; updatedAt?: string } | undefined> = getDatabaseFilePreviewData,
+): Promise<Blob | undefined> => {
   try {
-    const cachedPreview = await getDatabaseFilePreviewData({ fileId: file.id });
+    const cachedPreview = await readCache({ fileId: file.id });
     return cachedPreview?.updatedAt === file.updatedAt ? cachedPreview.preview : undefined;
   } catch (error) {
     errorService.reportError(error);
