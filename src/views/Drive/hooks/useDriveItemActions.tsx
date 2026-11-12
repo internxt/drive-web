@@ -2,8 +2,8 @@ import { createRef, useMemo } from 'react';
 
 import navigationService from 'services/navigation.service';
 import { moveItemsToTrash } from 'views/Trash/services';
-import { getDatabaseFilePreviewData, updateDatabaseFilePreviewData } from 'app/drive/services/database.service';
-import { downloadThumbnail, setCurrentThumbnail } from 'app/drive/services/thumbnail.service';
+import { updateDatabaseFilePreviewData } from 'app/drive/services/database.service';
+import { downloadThumbnail, getCachedThumbnail, setCurrentThumbnail } from 'app/drive/services/thumbnail.service';
 import { DriveItemData, DriveItemDetails } from 'app/drive/types';
 import shareService from 'app/share/services/share.service';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
@@ -142,8 +142,7 @@ const useDriveItemActions = (item): DriveItemActions => {
 
   const downloadAndSetThumbnail = async () => {
     if (item.thumbnails && item.thumbnails.length > 0 && !item.currentThumbnail) {
-      const databaseThumbnail = await getDatabaseFilePreviewData({ fileId: item.id });
-      let thumbnailBlob = databaseThumbnail?.preview;
+      let thumbnailBlob = await getCachedThumbnail(item);
       const newThumbnail = item.thumbnails[0];
 
       if (!thumbnailBlob) {
