@@ -549,3 +549,153 @@ describe('Uploading folders', () => {
     expect(startedUploadNames()).toEqual(['beach', 'city', 'dog', 'large']);
   });
 });
+
+const recordItemEvents = () => {
+  const log: string[] = [];
+  const record = (event: string, item: UploadItem) => {
+    log.push(`${event} ${nameOf(item)}`);
+  };
+  const events: UploadManagerEvents = {
+    onItemQueued: (item) => record('queued', item),
+    onItemSucceeded: (item) => record('succeeded', item),
+    onItemFailed: (item) => record('failed', item),
+    onItemCancelled: (item) => record('cancelled', item),
+  };
+  const namesOf = (entries: string[]) => entries.map((entry) => entry.split(' ')[1]).sort();
+  const isQueued = (entry: string) => entry.startsWith('queued ');
+
+  return {
+    events,
+    indexOf: (entry: string) => log.indexOf(entry),
+    queuedNames: () => namesOf(log.filter(isQueued)),
+    endedNames: () => namesOf(log.filter((entry) => !isQueued(entry))),
+  };
+};
+
+describe('Following each queued item until it ends', () => {
+  beforeEach(() => {
+    vi.spyOn(errorService, 'reportError').mockReturnValue();
+    (uploadFile as Mock).mockImplementation(async (file: { name: string }) => ({ uuid: `${file.name}-uuid` }));
+    fakeFolderCreation();
+  });
+
+  afterEach(() => vi.restoreAllMocks());
+
+  test('When a folder tree is uploaded, then every item in it is announced as queued once and ends once', async () => {
+    const recorder = recordItemEvents();
+    const tree = getFolderToUpload('Work', {
+      childrenFiles: [getFileToUpload('report.pdf')],
+      childrenFolders: [getFolderToUpload('Invoices', { childrenFiles: [getFileToUpload('january.pdf')] })],
+    });
+
+    await failIfHangs(createManager({ events: recorder.events }).run([createFolderItem(tree, 'dest')]));
+
+    expect(recorder.queuedNames()).toEqual(['Invoices', 'Work', 'january', 'report']);
+    expect(recorder.endedNames()).toEqual(recorder.queuedNames());
+  });
+
+  test('When a folder is created, then its content is announced as queued before the folder ends', async () => {
+    const recorder = recordItemEvents();
+    const tree = getFolderToUpload('Work', { childrenFiles: [getFileToUpload('report.pdf')] });
+
+    await failIfHangs(createManager({ events: recorder.events }).run([createFolderItem(tree, 'dest')]));
+
+    expect(recorder.indexOf('queued report')).toBeGreaterThanOrEqual(0);
+    expect(recorder.indexOf('queued report')).toBeLessThan(recorder.indexOf('succeeded Work'));
+  });
+
+  test('When the storage gets full, then every queued item still ends once', async () => {
+    uploadAtMostAtTheSameTime(2);
+    fakeUploadFailureOf('fills-the-storage', noSpaceLeftError);
+    const recorder = recordItemEvents();
+    const items = ['fills-the-storage', 'uploading', 'waiting-1', 'waiting-2'].map((name) => getUploadFileItem(name));
+
+    await failIfHangs(createManager({ events: recorder.events }).run(items));
+
+    expect(recorder.queuedNames()).toEqual(['fills-the-storage', 'uploading', 'waiting-1', 'waiting-2']);
+    expect(recorder.endedNames()).toEqual(recorder.queuedNames());
+  });
+
+  test('When a folder is cancelled while its files upload, then every queued item still ends once', async () => {
+    uploadAtMostAtTheSameTime(2);
+    fakeSlowUploads();
+    const recorder = recordItemEvents();
+    const rootItem = createFolderItem(
+      getFolderToUpload('Work', {
+        childrenFiles: ['uploading-1.txt', 'uploading-2.txt', 'waiting.txt'].map((name) => getFileToUpload(name)),
+      }),
+      'dest',
+    );
+    const manager = createManager({ events: recorder.events });
+
+    const upload = manager.run([rootItem]);
+    await vi.waitFor(() => expect(startedUploadNames()).toEqual(['uploading-1', 'uploading-2']));
+    manager.cancelItem(rootItem);
+    await failIfHangs(upload);
+
+    expect(recorder.queuedNames()).toEqual(['Work', 'uploading-1', 'uploading-2', 'waiting']);
+    expect(recorder.endedNames()).toEqual(recorder.queuedNames());
+  });
+
+  test('When a folder cannot be created, then its content is never announced as queued', async () => {
+    vi.mocked(folderService.createFolderByUuid).mockReturnValue([
+      Promise.reject(new Error('Server error')),
+      { cancel: vi.fn() },
+    ]);
+    const recorder = recordItemEvents();
+    const tree = getFolderToUpload('Work', { childrenFiles: [getFileToUpload('report.pdf')] });
+
+    await failIfHangs(createManager({ events: recorder.events }).run([createFolderItem(tree, 'dest')]));
+
+    expect(recorder.queuedNames()).toEqual(['Work']);
+    expect(recorder.endedNames()).toEqual(['Work']);
+  });
+
+  test('When a large file waits for the folders to queue their content, then it is announced as queued only once', async () => {
+    const recorder = recordItemEvents();
+    const largeFile = getUploadFileItem('large', USE_MULTIPART_THRESHOLD_BYTES);
+    const folderItem = createFolderItem(
+      getFolderToUpload('Photos', { childrenFiles: [getFileToUpload('beach.png')] }),
+      'dest',
+    );
+
+    await failIfHangs(createManager({ events: recorder.events }).run([largeFile, folderItem]));
+
+    expect(recorder.queuedNames()).toEqual(['Photos', 'beach', 'large']);
+    expect(recorder.endedNames()).toEqual(recorder.queuedNames());
+  });
+
+  test('When a queued listener throws, then every file is still uploaded', async () => {
+    const events: UploadManagerEvents = {
+      onItemQueued: () => {
+        throw new Error('listener error');
+      },
+    };
+
+    const { succeeded } = await failIfHangs(
+      createManager({ events }).run([getUploadFileItem('report'), getUploadFileItem('invoice')]),
+    );
+
+    expect(succeeded).toHaveLength(2);
+  });
+
+  test('When the user frees space and retries while another file is still uploading, then the retried file uploads', async () => {
+    (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
+      if (file.name === 'fills-the-storage') throw noSpaceLeftError;
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      return { uuid: `${file.name}-uuid` };
+    });
+    const events: UploadManagerEvents = { onStorageFull: vi.fn() };
+    const manager = createManager({ events });
+    const retriedItem = getUploadFileItem('retried');
+
+    const upload = manager.run([getUploadFileItem('fills-the-storage'), getUploadFileItem('uploading')]);
+    await vi.waitFor(() => expect(events.onStorageFull).toHaveBeenCalledOnce());
+    manager.clearStorageFull();
+    const { succeeded } = await failIfHangs(manager.run([retriedItem]));
+    await upload;
+
+    expect(succeeded.map(({ item }) => item)).toContain(retriedItem);
+    expect(startedUploadNames()).toContain('retried');
+  });
+});
