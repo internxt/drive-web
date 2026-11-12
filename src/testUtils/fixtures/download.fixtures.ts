@@ -1,6 +1,8 @@
 import { vi } from 'vitest';
 import { EncryptionVersion, FileStatus } from '@internxt/sdk/dist/drive/storage/types';
-import { DownloadItem, DownloadTask } from 'app/drive/services/downloadManager.service';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { Workspace, WorkspaceCredentialsDetails, WorkspaceData, WorkspaceUser } from '@internxt/sdk/dist/workspaces';
+import { DownloadItem, DownloadItemType, DownloadTask } from 'app/drive/services/downloadManager.service';
 import { DriveFileData, DriveFolderData, DriveItemData } from 'app/drive/types';
 
 export const getDriveFileData = (overrides: Partial<DriveFileData> = {}): DriveFileData => ({
@@ -51,16 +53,15 @@ export const getDriveFolderData = (overrides: Partial<DriveFolderData> = {}): Dr
   ...overrides,
 });
 
-export const getDownloadItem = (payload: Array<DriveFileData | DriveFolderData>): DownloadItem => ({
+type DriveItem = DriveItemData | DriveFileData | DriveFolderData | DownloadItemType;
+
+export const getDownloadItem = (payload: DriveItem[]): DownloadItem => ({
   payload: payload as DriveItemData[],
   selectedWorkspace: null,
   workspaceCredentials: null,
 });
 
-export const getDownloadTask = (
-  items: Array<DriveFileData | DriveFolderData>,
-  overrides: Partial<DownloadTask> = {},
-): DownloadTask => ({
+export const getDownloadTask = (items: DriveItem[], overrides: Partial<DownloadTask> = {}): DownloadTask => ({
   items: items as DriveItemData[],
   credentials: {
     credentials: { user: 'any-user', pass: 'any-pass' },
@@ -72,4 +73,56 @@ export const getDownloadTask = (
   options: { areSharedItems: false, downloadName: items[0].name, showErrors: true },
   failedItems: [],
   ...overrides,
+});
+
+export const getUserSettings = (overrides: Partial<UserSettings> = {}): UserSettings => ({
+  uuid: 'mock-uuid',
+  email: 'mock-email',
+  mnemonic: 'encryptedMockMnemonic',
+  userId: 'mock-userId',
+  name: 'mock-name',
+  lastname: 'mock-lastname',
+  username: 'mock-username',
+  bridgeUser: 'mock-bridgeUser',
+  bucket: 'mock-bucket',
+  backupsBucket: null,
+  root_folder_id: 0,
+  rootFolderId: 'mock-rootFolderId',
+  rootFolderUuid: undefined,
+  sharedWorkspace: false,
+  credit: 0,
+  keys: {
+    ecc: {
+      publicKey: 'keys.ecc.publicKey',
+      privateKey: 'keys.ecc.privateKeyEncrypted',
+    },
+    kyber: {
+      publicKey: 'keys.kyber.publicKey',
+      privateKey: 'keys.kyber.privateKeyEncrypted',
+    },
+  },
+  appSumoDetails: null,
+  registerCompleted: false,
+  hasReferralsProgram: false,
+  createdAt: new Date(),
+  avatar: null,
+  emailVerified: false,
+  ...overrides,
+});
+
+export const getWorkspaceData = (): WorkspaceData => ({
+  workspace: { id: 'workspace-data-id' } as Workspace,
+  workspaceUser: { key: 'workspace-user-key' } as WorkspaceUser,
+});
+
+export const getWorkspaceCredentialsDetails = (): WorkspaceCredentialsDetails => ({
+  credentials: {
+    networkUser: 'workspaceUser',
+    networkPass: 'workspacePass',
+  },
+  bucket: '',
+  email: '',
+  tokenHeader: '',
+  workspaceId: '',
+  workspaceUserId: '',
 });
