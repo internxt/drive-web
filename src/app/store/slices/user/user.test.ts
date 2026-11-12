@@ -3,12 +3,13 @@
  */
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { RootState } from 'app/store';
-import { beforeEach, describe, expect, it, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, test, vi } from 'vitest';
 
 import { vi as _vi } from 'vitest';
 import { auth, TokenStatus } from '@internxt/lib';
-import { refreshAvatarThunk, refreshUserThunk, userThunks } from 'app/store/slices/user';
-import { errorService, userService } from 'services';
+import { initializeUserThunk, refreshAvatarThunk, refreshUserThunk, userThunks } from 'app/store/slices/user';
+import { AppView } from 'app/core/types';
+import { errorService, navigationService, userService } from 'services';
 import encryptedStorageService from 'services/encrypted-storage.service';
 
 _vi.mock('app/drive/services/database.service', () => ({
@@ -174,6 +175,34 @@ describe('user thunks', () => {
       const result = await thunk(dispatchMock, getStateNoUser, undefined);
       expect(result.type).toBe('user/refresh/rejected');
       expect((result as any).error?.name).toBe('UserUnauthorizedError');
+    });
+  });
+
+  describe('initializeUserThunk', () => {
+    const getStateLoggedOut = () =>
+      ({
+        user: { isAuthenticated: false, isInitializing: false, isInitialized: false, user: undefined },
+      }) as RootState;
+
+    afterEach(() => {
+      globalThis.history.replaceState({}, '', '/');
+    });
+
+    test('when a logged-out user starts the app on a shared folder link, then they are sent to login with that folder kept', async () => {
+      const pushSpy = vi.spyOn(navigationService, 'push').mockImplementation(() => {});
+      globalThis.history.replaceState({}, '', '/shared?folderuuid=uuid-1');
+
+      await initializeUserThunk({ redirectToLogin: true })(dispatchMock, getStateLoggedOut, undefined);
+
+      expect(pushSpy).toHaveBeenCalledWith(AppView.Login, { folderuuid: 'uuid-1' });
+    });
+
+    test('when a logged-out user starts the app on a page that does not require login, then they are not sent to login', async () => {
+      const pushSpy = vi.spyOn(navigationService, 'push').mockImplementation(() => {});
+
+      await initializeUserThunk({ redirectToLogin: false })(dispatchMock, getStateLoggedOut, undefined);
+
+      expect(pushSpy).not.toHaveBeenCalled();
     });
   });
 

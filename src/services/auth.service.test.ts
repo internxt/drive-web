@@ -20,7 +20,7 @@ import navigationService from 'services/navigation.service';
 import { BackupData } from 'utils/backupKeyUtils';
 import { AxiosResponseError } from '@internxt/sdk/dist/shared/types/errors';
 import { isAccountSetupPending } from 'services/account-setup.service';
-import { beforeAll, beforeEach, describe, expect, it, test, vi } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it, test, vi } from 'vitest';
 import * as authService from './auth.service';
 import { PasswordMismatchError } from './errors/auth.errors';
 import encryptedStorageService from './encrypted-storage.service';
@@ -1427,6 +1427,34 @@ describe('extractOneUseCredentialsForAutoSubmit', () => {
 
     expect(result.enabled).toBe(true);
     expect(result.credentials).toBeUndefined();
+  });
+});
+
+describe('getLoginRedirectParams', () => {
+  afterEach(() => {
+    globalThis.history.replaceState({}, '', '/');
+  });
+
+  test('when the current URL has a shared folder, referral, universal link and unrelated params, then only the referral and the safe params are kept', () => {
+    globalThis.history.replaceState(
+      {},
+      '',
+      '/shared/?folderuuid=uuid-1&referral=open&universalLink=true&redirectUri=/r&authOrigin=web&workspaceid=w&foo=bar',
+    );
+
+    expect(authService.getLoginRedirectParams()).toStrictEqual({
+      referral: 'open',
+      folderuuid: 'uuid-1',
+      universalLink: 'true',
+      redirectUri: '/r',
+      authOrigin: 'web',
+    });
+  });
+
+  test('when the current URL has no safe params and no referral open param, then no params are kept', () => {
+    globalThis.history.replaceState({}, '', '/?referral=closed&foo=bar');
+
+    expect(authService.getLoginRedirectParams()).toStrictEqual({});
   });
 });
 
