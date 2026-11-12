@@ -318,7 +318,26 @@ describe('LRUCache', () => {
 
     await lru.set('lost-once', { version: 2 }, 20);
 
-    expect(cache.updateLRUState.mock.calls.at(-1)?.[0]?.lruKeyList).toEqual(['kept', 'lost-once']);
+    expect(cache.updateLRUState.mock.calls.at(-1)?.[0]).toEqual({
+      lruKeyList: ['kept', 'lost-once'],
+      itemsListSize: 30,
+    });
     await expect(lru.get('lost-once')).resolves.toEqual({ version: 2 });
+  });
+
+  test('When an entry is replaced while another one is being cached in a full cache, then each entry is tracked once', async () => {
+    const cache = new InMemoryCache<{ version: number }>();
+    const lru = new LRUCache(cache, 30);
+    await lru.set('oldest', { version: 1 }, 10);
+    await lru.set('middle', { version: 1 }, 10);
+    await lru.set('replaced', { version: 1 }, 10);
+
+    await Promise.all([lru.set('replaced', { version: 2 }, 10), lru.set('newest', { version: 1 }, 10)]);
+
+    expect(cache.updateLRUState.mock.calls.at(-1)?.[0]).toEqual({
+      lruKeyList: ['middle', 'replaced', 'newest'],
+      itemsListSize: 30,
+    });
+    await expect(lru.get('replaced')).resolves.toEqual({ version: 2 });
   });
 });

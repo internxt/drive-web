@@ -34,11 +34,8 @@ export class LRUCache<T> {
 
   async set(key: string, value: T, size: number): Promise<void> {
     if (size < this.size) {
-      const trackedIndex = this.lruList.indexOf(key);
-      if (trackedIndex > -1) {
-        const keySize = await this.cache.getSize(key);
-        this.currentSize = Math.max(0, this.currentSize - keySize);
-        this.lruList.splice(trackedIndex, 1);
+      if (this.lruList.includes(key)) {
+        await this.untrack(key);
       }
 
       await this.evictEntriesIfNeeded(size);
@@ -47,6 +44,21 @@ export class LRUCache<T> {
       this.currentSize += size;
       this.cache.set(key, value, size);
       this.persistState();
+    }
+  }
+
+  private async untrack(key: string): Promise<void> {
+    const isStored = await this.cache.has(key);
+    if (!isStored) {
+      await this.reconcileState();
+      return;
+    }
+
+    const keySize = await this.cache.getSize(key);
+    const trackedIndex = this.lruList.indexOf(key);
+    if (trackedIndex > -1) {
+      this.currentSize = Math.max(0, this.currentSize - keySize);
+      this.lruList.splice(trackedIndex, 1);
     }
   }
 
