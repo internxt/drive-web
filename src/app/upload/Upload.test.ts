@@ -373,29 +373,28 @@ describe('Retrying what failed', () => {
     expect(folderTask).toEqual(expect.objectContaining({ status: TaskStatus.Success, progress: 1, failedItems: [] }));
   });
 
-  test('When the user cancels a folder while it is being retried, then the retry finishes only once the folder is removed', async () => {
+  test('When the user cancels the retry of a folder that was already uploaded, then the retry stops and the folder keeps what was uploaded', async () => {
     failUploadsOf(['broken']);
-    const upload = createUpload([getFolderToUpload('Photos', { childrenFiles: [getFileToUpload('broken.png')] })], []);
+    const upload = createUpload(
+      [
+        getFolderToUpload('Photos', {
+          childrenFiles: [getFileToUpload('holidays.png'), getFileToUpload('broken.png')],
+        }),
+      ],
+      [],
+    );
     await upload.run();
     vi.mocked(uploadFile).mockClear();
     fakeUploadsTaking(500);
-    let finishRemoval: () => void = () => undefined;
-    vi.mocked(newStorageService.deleteFolderByUuid).mockReturnValue(
-      new Promise<void>((resolve) => (finishRemoval = resolve)) as never,
-    );
-    const onRetryFinished = vi.fn();
     const [folderTask] = tasksOf(TaskType.UploadFolder);
 
-    const retrying = folderTask.retry?.().then(onRetryFinished);
+    const retrying = folderTask.retry?.();
     await vi.waitFor(() => expect(uploadFile).toHaveBeenCalled());
     await tasksService.cancelTask(folderTask.id);
-    await vi.waitFor(() => expect(newStorageService.deleteFolderByUuid).toHaveBeenCalledWith('Photos-uuid'));
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    expect(onRetryFinished).not.toHaveBeenCalled();
-    finishRemoval();
     await retrying;
-    expect(onRetryFinished).toHaveBeenCalled();
+
+    expect(newStorageService.deleteFolderByUuid).not.toHaveBeenCalled();
+    expect(tasksService.findTask(folderTask.id)?.status).toBe(TaskStatus.Cancelled);
   });
 
   test('When the user retries one failed file, then only that file is uploaded again', async () => {

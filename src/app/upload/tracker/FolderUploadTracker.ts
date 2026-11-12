@@ -14,6 +14,7 @@ export class FolderUploadTracker extends UploadTracker<UploadFolderItem> {
   private readonly totalItems: number;
   private uploadedItems = 0;
   private createdFolder?: DriveFolderData;
+  private wasUploaded = false;
   private removal?: Promise<void>;
 
   constructor(item: UploadFolderItem, props: UploadTrackerProps) {
@@ -53,6 +54,7 @@ export class FolderUploadTracker extends UploadTracker<UploadFolderItem> {
     if (this.isCancelled || !this.createdFolder) return;
 
     this.updateTask({ status: TaskStatus.Success, itemUUID: { rootFolderUUID: this.createdFolder.uuid } });
+    this.wasUploaded = true;
     if (this.failures.isEmpty()) {
       this.track(() => {
         referralService.trackFolderUpload();
@@ -61,9 +63,13 @@ export class FolderUploadTracker extends UploadTracker<UploadFolderItem> {
     }
   }
 
+  /**
+   * Once the folder was uploaded, cancelling a retry only stops what is being retried: the folder keeps what the
+   * user already saw uploaded.
+   */
   cancel(): void {
     super.cancel();
-    this.removeCreatedFolder();
+    if (!this.wasUploaded) this.removeCreatedFolder();
   }
 
   private getUploadedRatio(): number {
