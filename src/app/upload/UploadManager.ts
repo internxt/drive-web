@@ -134,11 +134,20 @@ export class UploadManager {
     this.abortActiveUploadsPartOf(item);
   }
 
+  clearStorageFull(): void {
+    this.storageFullFailure = undefined;
+  }
+
   private queue(items: UploadItem[]): void {
     for (const item of items) {
-      if (isFolderItem(item)) this.foldersStillQueueingContent++;
-      void this.uploadQueue.push(item, getUploadPriority(item));
+      void notifyIgnoringListenerErrors(() => this.events?.onItemQueued?.(item));
+      this.pushToQueue(item);
     }
+  }
+
+  private pushToQueue(item: UploadItem): void {
+    if (isFolderItem(item)) this.foldersStillQueueingContent++;
+    void this.uploadQueue.push(item, getUploadPriority(item));
   }
 
   private async processItem(item: UploadItem): Promise<void> {
@@ -180,7 +189,9 @@ export class UploadManager {
     this.foldersStillQueueingContent--;
 
     const haveAllFoldersQueuedTheirContent = this.foldersStillQueueingContent === 0;
-    if (haveAllFoldersQueuedTheirContent) this.queue(this.largeFilesWaitingForFolders.splice(0));
+    if (haveAllFoldersQueuedTheirContent) {
+      this.largeFilesWaitingForFolders.splice(0).forEach((largeFile) => this.pushToQueue(largeFile));
+    }
   }
 
   private adjustConcurrencyFor(item: UploadItem): void {
