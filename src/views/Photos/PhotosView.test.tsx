@@ -109,6 +109,10 @@ const requestedFolders = () =>
 const photo = (plainName: string, folderUuid: string, creationTime: string) =>
   getPhotoFolderFile({ uuid: plainName, plainName, type: 'jpg', folderUuid, creationTime });
 
+let nextFileId = 1;
+const file = (plainName: string, type: string, folderUuid: string, creationTime: string) =>
+  getPhotoFolderFile({ id: nextFileId++, uuid: `${plainName}.${type}`, plainName, type, folderUuid, creationTime });
+
 const photosOfDay = (folderUuid: string, count: number) =>
   Array.from({ length: count }, (_, index) =>
     photo(`IMG_${String(index + 1).padStart(4, '0')}`, folderUuid, '2025-11-03T09:00:00Z'),
@@ -192,6 +196,20 @@ const pixelPhotosOfOctober2026 = {
   'pixel-2026': [getPhotoFolder({ uuid: 'pixel-2026-10', plainName: '10' })],
 };
 
+const renderWithStore = () => {
+  const store = configureStore({
+    reducer: { storage: storageReducer, ui: uiReducer, user: userReducer, workspaces: workspacesReducer },
+    preloadedState: { user: { ...userReducer(undefined, { type: 'init' }), isAuthenticated: true } },
+  });
+  const wrapper = ({ children }: { children: ReactNode }) => <Provider store={store}>{children}</Provider>;
+  return render(<PhotosView />, { wrapper });
+};
+
+const downloadedFiles = () =>
+  (DownloadManager.downloadItem as Mock).mock.calls.map(([{ payload }]) =>
+    (payload as DriveItemData[]).map((item) => `${item.plainName}.${item.type}`),
+  );
+
 const waitForPhotosToLoad = () =>
   waitFor(() => expect(screen.queryByTestId('photos-grid-skeleton')).not.toBeInTheDocument());
 
@@ -203,6 +221,7 @@ document.head.appendChild(galleryStyles);
 describe('Photos view', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    nextFileId = 1;
     givenGallerySize(1000, 600);
     vi.stubGlobal('ResizeObserver', FakeResizeObserver);
     givenSubfolders({});
@@ -634,9 +653,6 @@ describe('Photos view', () => {
     });
 
     describe('Live Photos, bursts and videos', () => {
-      const file = (plainName: string, type: string, folderUuid: string, creationTime: string) =>
-        getPhotoFolderFile({ uuid: `${plainName}.${type}`, plainName, type, folderUuid, creationTime });
-
       const tile = (name: string) => screen.getByRole('img', { name });
 
       beforeEach(() => {
@@ -1128,19 +1144,6 @@ describe('Photos view', () => {
   });
 
   describe('Viewing a photo', () => {
-    let nextFileId = 1;
-    const file = (plainName: string, type: string, folderUuid: string, creationTime: string) =>
-      getPhotoFolderFile({ id: nextFileId++, uuid: `${plainName}.${type}`, plainName, type, folderUuid, creationTime });
-
-    const renderWithStore = () => {
-      const store = configureStore({
-        reducer: { storage: storageReducer, ui: uiReducer, user: userReducer, workspaces: workspacesReducer },
-        preloadedState: { user: { ...userReducer(undefined, { type: 'init' }), isAuthenticated: true } },
-      });
-      const wrapper = ({ children }: { children: ReactNode }) => <Provider store={store}>{children}</Provider>;
-      return render(<PhotosView />, { wrapper });
-    };
-
     const imageContent = (): Promise<Blob> =>
       new Promise((resolve) => {
         const canvas = document.createElement('canvas');
@@ -1151,13 +1154,8 @@ describe('Photos view', () => {
 
     const openPhoto = async (name: string) => fireEvent.click(await screen.findByRole('button', { name }));
     const viewer = () => screen.getByRole('dialog');
-    const downloadedFiles = () =>
-      (DownloadManager.downloadItem as Mock).mock.calls.map(([{ payload }]) =>
-        (payload as DriveItemData[]).map((item) => `${item.plainName}.${item.type}`),
-      );
 
     beforeEach(() => {
-      nextFileId = 1;
       givenDevices([iphone, pixel]);
       givenSubfolders({
         iphone: [getPhotoFolder({ uuid: 'iphone-2025', plainName: '2025' })],
@@ -1296,6 +1294,180 @@ describe('Photos view', () => {
       fireEvent.click(within(viewer()).getAllByTitle('actions.download')[0]);
 
       expect(downloadedFiles()).toStrictEqual([['IMG_0001.jpg']]);
+    });
+  });
+
+  describe('Selecting photos', () => {
+    const tick = async (name: string) => {
+      await screen.findByRole('checkbox', { name });
+      fireEvent.click(screen.getByRole('checkbox', { name }));
+    };
+    const selectionHeader = () => screen.queryByRole('toolbar', { name: 'views.photos.selection.title' });
+    const selectedCount = () =>
+      within(selectionHeader() as HTMLElement).getByText(/contextMenu\.itemsSelected/).textContent;
+
+    beforeEach(() => {
+      givenDevices([iphone, pixel]);
+      givenSubfolders({
+        iphone: [getPhotoFolder({ uuid: 'iphone-2025', plainName: '2025' })],
+        'iphone-2025': [getPhotoFolder({ uuid: 'iphone-2025-11', plainName: '11' })],
+        'iphone-2025-11': [
+          getPhotoFolder({ uuid: 'iphone-2025-11-03', plainName: '3' }),
+          getPhotoFolder({ uuid: 'iphone-2025-11-01', plainName: '1' }),
+        ],
+        pixel: [getPhotoFolder({ uuid: 'pixel-2025', plainName: '2025' })],
+        'pixel-2025': [getPhotoFolder({ uuid: 'pixel-2025-10', plainName: '10' })],
+        'pixel-2025-10': [getPhotoFolder({ uuid: 'pixel-2025-10-15', plainName: '15' })],
+      });
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [
+          file('IMG_MORNING', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          file('IMG_EVENING', 'jpg', 'iphone-2025-11-03', '2025-11-03T20:00:00Z'),
+        ],
+        'iphone-2025-11-01': [file('IMG_OLDER', 'jpg', 'iphone-2025-11-01', '2025-11-01T09:00:00Z')],
+        'pixel-2025-10-15': [file('IMG_PIXEL', 'jpg', 'pixel-2025-10-15', '2025-10-15T09:00:00Z')],
+      });
+    });
+
+    test('When nothing is selected, then the header shows the title and filters', async () => {
+      renderWithStore();
+      await screen.findByRole('checkbox', { name: 'IMG_MORNING.jpg' });
+
+      expect(selectionHeader()).not.toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'views.photos.head' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /views.photos.filters.allDevices/ })).toBeInTheDocument();
+    });
+
+    test('When the user ticks several photos, then the header shows how many are selected', async () => {
+      renderWithStore();
+      await tick('IMG_MORNING.jpg');
+      await tick('IMG_OLDER.jpg');
+
+      expect(selectedCount()).toBe('2 contextMenu.itemsSelected');
+      expect(screen.getByRole('checkbox', { name: 'IMG_MORNING.jpg' })).toBeChecked();
+      expect(screen.getByRole('checkbox', { name: 'IMG_EVENING.jpg' })).not.toBeChecked();
+      expect(screen.queryByRole('heading', { name: 'views.photos.head' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /views.photos.filters.allDevices/ })).not.toBeInTheDocument();
+    });
+
+    test('When some photos are selected, then clicking another photo selects it instead of opening it', async () => {
+      renderWithStore();
+      await tick('IMG_MORNING.jpg');
+      fireEvent.click(screen.getByRole('button', { name: 'IMG_EVENING.jpg' }));
+
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      expect(selectedCount()).toBe('2 contextMenu.itemsSelected');
+    });
+
+    test('When the user unticks the last selected photo, then the header goes back to normal and clicking a photo opens it again', async () => {
+      renderWithStore();
+      await tick('IMG_MORNING.jpg');
+      await tick('IMG_MORNING.jpg');
+      fireEvent.click(screen.getByRole('button', { name: 'IMG_EVENING.jpg' }));
+
+      expect(selectionHeader()).not.toBeInTheDocument();
+      expect(screen.getByRole('dialog')).toHaveAccessibleName('IMG_EVENING.jpg');
+    });
+
+    test('When the user ticks a day, then all the photos of that day are selected and no others', async () => {
+      renderWithStore();
+      await tick('Mon, 3 Nov 2025');
+
+      expect(selectedCount()).toBe('2 contextMenu.itemsSelected');
+      expect(screen.getByRole('checkbox', { name: 'IMG_MORNING.jpg' })).toBeChecked();
+      expect(screen.getByRole('checkbox', { name: 'IMG_EVENING.jpg' })).toBeChecked();
+      expect(screen.getByRole('checkbox', { name: 'IMG_OLDER.jpg' })).not.toBeChecked();
+    });
+
+    test('When only some photos of a day are selected, then the day shows it and ticking the day selects the rest', async () => {
+      renderWithStore();
+      await tick('IMG_MORNING.jpg');
+
+      expect(screen.getByRole('checkbox', { name: 'Mon, 3 Nov 2025' })).toBePartiallyChecked();
+      await tick('Mon, 3 Nov 2025');
+      expect(screen.getByRole('checkbox', { name: 'Mon, 3 Nov 2025' })).toBeChecked();
+      expect(selectedCount()).toBe('2 contextMenu.itemsSelected');
+    });
+
+    test('When the user unticks a fully selected day, then only the photos of that day are unselected', async () => {
+      renderWithStore();
+      await tick('IMG_OLDER.jpg');
+      await tick('Mon, 3 Nov 2025');
+      await tick('Mon, 3 Nov 2025');
+
+      expect(selectedCount()).toBe('1 contextMenu.itemsSelected');
+      expect(screen.getByRole('checkbox', { name: 'IMG_OLDER.jpg' })).toBeChecked();
+    });
+
+    test('When the user presses Esc right after ticking a photo, then the selection is cleared', async () => {
+      renderWithStore();
+      await tick('IMG_MORNING.jpg');
+      await tick('IMG_OLDER.jpg');
+
+      fireEvent.keyDown(screen.getByRole('checkbox', { name: 'IMG_OLDER.jpg' }), { key: 'Escape' });
+
+      await waitFor(() => expect(selectionHeader()).not.toBeInTheDocument());
+      expect(screen.getByRole('checkbox', { name: 'IMG_MORNING.jpg' })).not.toBeChecked();
+    });
+
+    test('When the user closes the selection, then nothing stays selected', async () => {
+      renderWithStore();
+      await tick('IMG_MORNING.jpg');
+
+      fireEvent.click(
+        within(selectionHeader() as HTMLElement).getByRole('button', { name: 'views.photos.selection.clear' }),
+      );
+
+      expect(selectionHeader()).not.toBeInTheDocument();
+      expect(screen.getByRole('checkbox', { name: 'IMG_MORNING.jpg' })).not.toBeChecked();
+    });
+
+    test('When several selected photos are downloaded, then they are downloaded together as one ZIP in the gallery order', async () => {
+      renderWithStore();
+      await tick('IMG_OLDER.jpg');
+      await tick('IMG_MORNING.jpg');
+      await tick('IMG_EVENING.jpg');
+
+      fireEvent.click(
+        within(selectionHeader() as HTMLElement).getByRole('button', { name: 'drive.dropdown.download' }),
+      );
+
+      expect(downloadedFiles()).toStrictEqual([['IMG_EVENING.jpg', 'IMG_MORNING.jpg', 'IMG_OLDER.jpg']]);
+    });
+
+    test('When a selected Live Photo is downloaded, then its video is downloaded with it', async () => {
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [
+          file('IMG_0001', 'HEIC', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          file('IMG_0001.livephoto', 'MOV', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          file('IMG_0002', 'jpg', 'iphone-2025-11-03', '2025-11-03T08:00:00Z'),
+        ],
+      });
+
+      renderWithStore();
+      await tick('Mon, 3 Nov 2025');
+      fireEvent.click(
+        within(selectionHeader() as HTMLElement).getByRole('button', { name: 'drive.dropdown.download' }),
+      );
+
+      expect(selectedCount()).toBe('2 contextMenu.itemsSelected');
+      expect(downloadedFiles()).toStrictEqual([['IMG_0001.HEIC', 'IMG_0001.livephoto.MOV', 'IMG_0002.jpg']]);
+    });
+
+    test('When a day with hundreds of photos is ticked, then the photos not on screen are downloaded too', async () => {
+      givenDevices([iphone]);
+      givenPhotosInFolders({ 'iphone-2025-11-03': photosOfDay('iphone-2025-11-03', 300) });
+
+      renderWithStore();
+      await tick('Mon, 3 Nov 2025');
+      fireEvent.click(
+        within(selectionHeader() as HTMLElement).getByRole('button', { name: 'drive.dropdown.download' }),
+      );
+
+      expect(selectedCount()).toBe('300 contextMenu.itemsSelected');
+      expect(screen.queryByRole('img', { name: 'IMG_0300.jpg' })).not.toBeInTheDocument();
+      expect(downloadedFiles()[0]).toHaveLength(300);
+      expect(downloadedFiles()[0]).toContain('IMG_0300.jpg');
     });
   });
 });

@@ -494,6 +494,10 @@
         "livePhoto": "Live Photo",
         "burst": "Rafale",
         "video": "Vidéo"
+      },
+      "selection": {
+        "title": "Photos sélectionnées",
+        "clear": "Effacer la sélection"
       }
     },
     "favorites": {

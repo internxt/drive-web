@@ -515,6 +515,10 @@
         "livePhoto": "实况照片",
         "burst": "连拍",
         "video": "视频"
+      },
+      "selection": {
+        "title": "已选照片",
+        "clear": "清除选择"
       }
     },
     "favorites": {
