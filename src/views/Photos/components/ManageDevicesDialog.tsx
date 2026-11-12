@@ -74,7 +74,6 @@ const ManageDevicesDialog = ({ isOpen, devices, onClose, onDeviceRemoved }: Mana
               <button
                 type="button"
                 onClick={() => setDeviceToDelete(device)}
-                aria-label={translate('views.photos.devices.delete')}
                 className="shrink-0 rounded-lg px-3 py-1.5 text-sm font-medium text-red hover:bg-red/10"
               >
                 {translate('views.photos.devices.delete')}
