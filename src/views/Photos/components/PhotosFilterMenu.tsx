@@ -9,11 +9,18 @@ export interface PhotosFilterOption<T extends string> {
   icon?: ReactNode;
 }
 
+interface PhotosFilterMenuAction {
+  label: string;
+  icon: ReactNode;
+  onClick: () => void;
+}
+
 interface PhotosFilterMenuProps<T extends string> {
   allLabel: string;
   options: PhotosFilterOption<T>[];
   selectedId: T | null;
   onSelect: (id: T | null) => void;
+  action?: PhotosFilterMenuAction;
 }
 
 const PhotosFilterMenuRow = ({
@@ -47,6 +54,7 @@ const PhotosFilterMenu = <T extends string>({
   options,
   selectedId,
   onSelect,
+  action,
 }: PhotosFilterMenuProps<T>): JSX.Element => {
   const selectedOption = options.find((option) => option.id === selectedId);
 
@@ -69,6 +77,12 @@ const PhotosFilterMenu = <T extends string>({
             onClick={() => onSelect(option.id)}
           />
         ))}
+        {action && (
+          <>
+            <div className="mx-4 my-1 border-t border-gray-10" />
+            <PhotosFilterMenuRow label={action.label} icon={action.icon} isSelected={false} onClick={action.onClick} />
+          </>
+        )}
       </MenuItems>
     </Menu>
   );

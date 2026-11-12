@@ -14,11 +14,16 @@ const NO_DEVICES: PhotoDevice[] = [];
 const NO_MONTHS: PhotoMonth[] = [];
 
 const PhotosView = (): JSX.Element => {
-  const { state, retry } = usePhotoLibrary();
+  const { state, retry, removeDevice } = usePhotoLibrary();
   const devices = state.status === 'loaded' ? state.devices : NO_DEVICES;
   const filters = usePhotoFilters(state.status === 'loaded' ? state.months : NO_MONTHS);
   const { selectedPhotos, toggleSelection, clearSelection } = usePhotoSelection();
   const { trashedPhotos, moveToTrash } = usePhotoTrash();
+
+  const onDeviceRemoved = (deviceUuid: string) => {
+    removeDevice(deviceUuid);
+    filters.selectDevice(null);
+  };
 
   const content = {
     loading: <PhotosGridSkeleton />,
@@ -36,7 +41,7 @@ const PhotosView = (): JSX.Element => {
 
   return (
     <PhotosLayout
-      filters={<PhotosFilters devices={devices} filters={filters} />}
+      filters={<PhotosFilters devices={devices} filters={filters} onDeviceRemoved={onDeviceRemoved} />}
       selectionHeader={
         selectedPhotos.size > 0 ? (
           <PhotosSelectionHeader
