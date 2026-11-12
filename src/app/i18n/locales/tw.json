@@ -1412,7 +1412,8 @@
       "errors": {}
     },
     "subtitles": {
-      "upload-failed": "上傳失敗"
+      "upload-failed": "上傳失敗",
+      "folder-removal-failed": "無法移除已上傳的資料夾"
     },
     "generalErrorMessages": {
       "retryUploadFailed": "重試上傳時出現問題。請重新上傳",
