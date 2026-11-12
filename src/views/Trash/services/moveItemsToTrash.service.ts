@@ -99,7 +99,7 @@ const moveItemsToTrash = async (
           if (itemsToTrash.length > 0) {
             for (const [destinationId, items] of groupByOriginalFolder(itemsToTrash)) {
               store.dispatch(storageActions.pushItems({ updateRecents: true, items, folderIds: [destinationId] }));
-              store.dispatch(storageThunks.moveItemsThunk({ items, destinationFolderId: destinationId }));
+              void store.dispatch(storageThunks.moveItemsThunk({ items, destinationFolderId: destinationId }));
             }
 
             store.dispatch(storageActions.clearSelectedItems());

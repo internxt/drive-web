@@ -1,6 +1,6 @@
 import { getRowStyle, TILE_GAP } from '../utils/photoTimeline';
 
-export interface PhotosTimelineFooterContext {
+interface PhotosTimelineFooterContext {
   isLoadingMore: boolean;
   columns: number;
 }

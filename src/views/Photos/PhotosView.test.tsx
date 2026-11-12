@@ -117,6 +117,10 @@ const requestedFolders = () =>
 const photo = (plainName: string, folderUuid: string, creationTime: string) =>
   getPhotoFolderFile({ uuid: plainName, plainName, type: 'jpg', folderUuid, creationTime });
 
+let nextFileId = 1;
+const file = (plainName: string, type: string, folderUuid: string, creationTime: string) =>
+  getPhotoFolderFile({ id: nextFileId++, uuid: `${plainName}.${type}`, plainName, type, folderUuid, creationTime });
+
 const photosOfDay = (folderUuid: string, count: number) =>
   Array.from({ length: count }, (_, index) =>
     photo(`IMG_${String(index + 1).padStart(4, '0')}`, folderUuid, '2025-11-03T09:00:00Z'),
@@ -242,6 +246,7 @@ describe('Photos view', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    nextFileId = 1;
     givenGallerySize(1000, 600);
     vi.stubGlobal('ResizeObserver', FakeResizeObserver);
     givenSubfolders({});
@@ -813,9 +818,6 @@ describe('Photos view', () => {
     });
 
     describe('Live Photos, bursts and videos', () => {
-      const file = (plainName: string, type: string, folderUuid: string, creationTime: string) =>
-        getPhotoFolderFile({ uuid: `${plainName}.${type}`, plainName, type, folderUuid, creationTime });
-
       const tile = (name: string) => screen.getByRole('img', { name });
 
       beforeEach(() => {
@@ -850,13 +852,13 @@ describe('Photos view', () => {
         );
       });
 
-      test('When the photos of a burst are in several days of the month, then the burst is shown once on its main photo', async () => {
+      test('When a photo has burst photos, then the burst is shown once on its main photo', async () => {
         givenPhotosInFolders({
           'iphone-2025-11-03': [
             file('IMG_0003', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
             file('IMG_0003.burst.1', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+            file('IMG_0003.burst.2', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:01Z'),
           ],
-          'iphone-2025-11-01': [file('IMG_0003.burst.2', 'jpg', 'iphone-2025-11-01', '2025-11-01T09:00:00Z')],
         });
 
         render(<PhotosView />);
@@ -864,6 +866,52 @@ describe('Photos view', () => {
 
         expect(shownTimeline()).toStrictEqual(['Mon, 3 Nov 2025', ['IMG_0003.jpg']]);
         expect(tile('IMG_0003.jpg')).toHaveAccessibleDescription('views.photos.badges.burst');
+      });
+
+      test('When photos with the same name are on different days of the month, then each Live Photo and burst stays on its own day', async () => {
+        givenPhotosInFolders({
+          'iphone-2025-11-01': [
+            file('IMG_0001', 'heic', 'iphone-2025-11-01', '2025-11-01T10:00:00Z'),
+            file('IMG_0001.livephoto', 'mov', 'iphone-2025-11-01', '2025-11-01T10:00:00Z'),
+            file('IMG_0002', 'heic', 'iphone-2025-11-01', '2025-11-01T09:00:00Z'),
+            file('IMG_0002.burst.1', 'heic', 'iphone-2025-11-01', '2025-11-01T09:00:00Z'),
+          ],
+          'iphone-2025-11-03': [
+            file('IMG_0001', 'heic', 'iphone-2025-11-03', '2025-11-03T10:00:00Z'),
+            file('IMG_0002', 'heic', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          ],
+        });
+
+        render(<PhotosView />);
+        await screen.findAllByRole('img', { name: 'IMG_0001.heic' });
+
+        const [photoOfDay3, livePhotoOfDay1] = screen.getAllByRole('img', { name: 'IMG_0001.heic' });
+        const [otherPhotoOfDay3, burstOfDay1] = screen.getAllByRole('img', { name: 'IMG_0002.heic' });
+        expect(shownTimeline()).toStrictEqual([
+          'Mon, 3 Nov 2025',
+          ['IMG_0001.heic', 'IMG_0002.heic'],
+          'Sat, 1 Nov 2025',
+          ['IMG_0001.heic', 'IMG_0002.heic'],
+        ]);
+        expect(livePhotoOfDay1).toHaveAccessibleDescription('views.photos.badges.livePhoto');
+        expect(burstOfDay1).toHaveAccessibleDescription('views.photos.badges.burst');
+        expect(photoOfDay3).not.toHaveAccessibleDescription();
+        expect(otherPhotoOfDay3).not.toHaveAccessibleDescription();
+      });
+
+      test('When the burst part of a photo name is in capitals, then the photo is still shown inside its burst', async () => {
+        givenPhotosInFolders({
+          'iphone-2025-11-03': [
+            file('IMG_0007', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+            file('IMG_0007.BURST.1', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          ],
+        });
+
+        render(<PhotosView />);
+        await screen.findByRole('img', { name: 'IMG_0007.jpg' });
+
+        expect(shownTimeline()).toStrictEqual(['Mon, 3 Nov 2025', ['IMG_0007.jpg']]);
+        expect(tile('IMG_0007.jpg')).toHaveAccessibleDescription('views.photos.badges.burst');
       });
 
       test('When the main photo of a burst is not in the month, then its other photos are shown on their own', async () => {
@@ -1261,10 +1309,6 @@ describe('Photos view', () => {
   });
 
   describe('Viewing a photo', () => {
-    let nextFileId = 1;
-    const file = (plainName: string, type: string, folderUuid: string, creationTime: string) =>
-      getPhotoFolderFile({ id: nextFileId++, uuid: `${plainName}.${type}`, plainName, type, folderUuid, creationTime });
-
     const imageContent = (): Promise<Blob> =>
       new Promise((resolve) => {
         const canvas = document.createElement('canvas');
@@ -1277,7 +1321,6 @@ describe('Photos view', () => {
     const viewer = () => screen.getByRole('dialog');
 
     beforeEach(() => {
-      nextFileId = 1;
       givenDevices([iphone, pixel]);
       givenSubfolders({
         iphone: [getPhotoFolder({ uuid: 'iphone-2025', plainName: '2025' })],
@@ -1369,13 +1412,13 @@ describe('Photos view', () => {
       expect(downloadedFiles()).toStrictEqual([['IMG_0001.HEIC', 'IMG_0001.livephoto.MOV']]);
     });
 
-    test('When a burst is downloaded from the viewer, then all its photos are downloaded, even those of other days', async () => {
+    test('When a burst is downloaded from the viewer, then all its photos are downloaded', async () => {
       givenPhotosInFolders({
         'iphone-2025-11-03': [
           file('IMG_0003', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
           file('IMG_0003.burst.1', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          file('IMG_0003.burst.2', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
         ],
-        'iphone-2025-11-01': [file('IMG_0003.burst.2', 'jpg', 'iphone-2025-11-01', '2025-11-01T09:00:00Z')],
       });
 
       renderWithStore();
@@ -1459,10 +1502,6 @@ describe('Photos view', () => {
   });
 
   describe('Selecting photos', () => {
-    let nextFileId = 1;
-    const file = (plainName: string, type: string, folderUuid: string, creationTime: string) =>
-      getPhotoFolderFile({ id: nextFileId++, uuid: `${plainName}.${type}`, plainName, type, folderUuid, creationTime });
-
     const tick = async (name: string) => {
       await screen.findByRole('checkbox', { name });
       fireEvent.click(screen.getByRole('checkbox', { name }));
@@ -1472,7 +1511,6 @@ describe('Photos view', () => {
       within(selectionHeader() as HTMLElement).getByText(/contextMenu\.itemsSelected/).textContent;
 
     beforeEach(() => {
-      nextFileId = 1;
       givenDevices([iphone, pixel]);
       givenSubfolders({
         iphone: [getPhotoFolder({ uuid: 'iphone-2025', plainName: '2025' })],

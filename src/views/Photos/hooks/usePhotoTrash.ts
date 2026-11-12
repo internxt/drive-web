@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import { moveItemsToTrash } from 'views/Trash/services';
+import { getPhotoFiles } from '../services/photoFolders.service';
 import { Photo } from '../types';
 
 export type TrashedPhotos = ReadonlySet<string>;
@@ -11,10 +12,9 @@ export const usePhotoTrash = () => {
 
   const moveToTrash = useCallback((photos: Photo[], onTrashed?: () => void) => {
     const uuids = photos.map(({ uuid }) => uuid);
-    const files = photos.flatMap(({ file, relatedFiles }) => [file, ...relatedFiles.map((related) => related.file)]);
 
     void moveItemsToTrash(
-      files,
+      getPhotoFiles(photos),
       () => {
         setTrashedPhotos((trashed) => new Set([...trashed, ...uuids]));
         onTrashed?.();
