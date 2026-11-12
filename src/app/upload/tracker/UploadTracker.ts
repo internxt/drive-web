@@ -112,18 +112,18 @@ export abstract class UploadTracker<Item extends UploadItem = UploadItem> {
   }
 
   /**
-   * Analytics never make an upload fail.
+   * Analytics and the caller's callbacks never change how an upload ends.
    */
-  protected track(trackUpload: () => void): void {
+  protected reportingErrors(action: () => void): void {
     try {
-      trackUpload();
+      action();
     } catch (error) {
       errorService.reportError(error);
     }
   }
 
   private trackFileUpload(file: FileToUpload): void {
-    this.track(() => {
+    this.reportingErrors(() => {
       referralService.trackFileUpload();
       logNetworkInfoForUpload({ fileName: file.name, fileSize: file.size });
     });

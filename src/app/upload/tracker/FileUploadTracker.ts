@@ -42,8 +42,11 @@ export class FileUploadTracker extends UploadTracker<UploadFileItem> {
     return 0;
   }
 
+  /**
+   * A file that finished uploading right after being cancelled is in its folder, so its task succeeds.
+   */
   protected finishUpload(): void {
-    if (this.isCancelled || !this.uploadedFileUuid) return;
+    if (!this.uploadedFileUuid) return;
 
     this.updateTask({ status: TaskStatus.Success, itemUUID: { fileUUID: this.uploadedFileUuid } });
   }
