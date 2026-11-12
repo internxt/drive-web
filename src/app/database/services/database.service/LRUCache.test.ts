@@ -340,4 +340,15 @@ describe('LRUCache', () => {
     });
     await expect(lru.get('replaced')).resolves.toEqual({ version: 2 });
   });
+
+  test('When the same entry is cached twice at the same time, then it is tracked once with the last size', async () => {
+    const cache = new InMemoryCache<{ version: number }>();
+    const lru = new LRUCache(cache, 100);
+    await lru.set('entry', { version: 1 }, 10);
+
+    await Promise.all([lru.set('entry', { version: 2 }, 10), lru.set('entry', { version: 3 }, 20)]);
+
+    expect(cache.updateLRUState.mock.calls.at(-1)?.[0]).toEqual({ lruKeyList: ['entry'], itemsListSize: 20 });
+    await expect(lru.get('entry')).resolves.toEqual({ version: 3 });
+  });
 });
