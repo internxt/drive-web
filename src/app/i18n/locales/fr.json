@@ -487,7 +487,8 @@
       },
       "timeline": {
         "today": "Aujourd'hui",
-        "yesterday": "Hier"
+        "yesterday": "Hier",
+        "monthError": "Certaines photos de {{month}} n'ont pas pu être chargées"
       }
     },
     "favorites": {

@@ -508,7 +508,8 @@
       },
       "timeline": {
         "today": "今天",
-        "yesterday": "昨天"
+        "yesterday": "昨天",
+        "monthError": "無法載入 {{month}} 的部分照片"
       }
     },
     "favorites": {

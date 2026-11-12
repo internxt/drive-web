@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { MonthKey, PhotoMonth } from '../types';
+import { getUniqueMonthKeysNewestFirst } from '../utils/monthKeys';
 
 export type PhotoFilters = ReturnType<typeof usePhotoFilters>;
 
@@ -12,18 +13,15 @@ export const usePhotoFilters = (months: PhotoMonth[]) => {
     [months, selectedDeviceUuid],
   );
 
-  const availableMonths = useMemo(() => {
-    const uniqueMonthKeys = new Set(monthsOfSelectedDevices.map((month) => month.key));
-    const monthsNewestFirst = [...uniqueMonthKeys].sort((month, otherMonth) => otherMonth.localeCompare(month));
-
-    return monthsNewestFirst;
-  }, [monthsOfSelectedDevices]);
-
-  const shownMonthKey = selectedMonth ?? availableMonths[0];
+  const availableMonths = useMemo(
+    () => getUniqueMonthKeysNewestFirst(monthsOfSelectedDevices),
+    [monthsOfSelectedDevices],
+  );
 
   const shownMonths = useMemo(
-    () => monthsOfSelectedDevices.filter((month) => month.key === shownMonthKey),
-    [monthsOfSelectedDevices, shownMonthKey],
+    () =>
+      selectedMonth ? monthsOfSelectedDevices.filter((month) => month.key === selectedMonth) : monthsOfSelectedDevices,
+    [monthsOfSelectedDevices, selectedMonth],
   );
 
   const selectDevice = (deviceUuid: string | null) => {
