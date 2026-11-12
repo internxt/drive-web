@@ -45,7 +45,6 @@ const PhotosViewer = ({ photo, photos, onClose, onMoveToTrash }: PhotosViewerPro
       name: translate('drive.dropdown.moveToTrash'),
       icon: TrashIcon,
       action: moveToTrashAndClose,
-      disabled: () => false,
     },
   ];
 
