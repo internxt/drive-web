@@ -23,7 +23,7 @@ interface FileViewerWrapperProps {
   contextMenu?: Array<MenuItemType<DriveItemData>>;
   isSharedView?: boolean;
   keyboardShortcuts?: FileViewerKeyboardShortcuts;
-  onDownload?: (file: DriveItemData) => void;
+  onDownloadFile?: (file: DriveItemData) => void;
   refreshesThumbnail?: boolean;
 }
 
@@ -35,7 +35,7 @@ const FileViewerWrapper = ({
   contextMenu,
   isSharedView,
   keyboardShortcuts,
-  onDownload: downloadFile,
+  onDownloadFile,
   refreshesThumbnail = true,
 }: FileViewerWrapperProps): JSX.Element => {
   const dispatch = useAppDispatch();
@@ -55,15 +55,16 @@ const FileViewerWrapper = ({
   });
 
   const onDownload = () => {
-    if (currentFile && downloadFile) {
-      downloadFile(currentFile as DriveItemData);
-    } else if (currentFile) {
-      DownloadManager.downloadItem({
-        payload: [currentFile as DriveItemData],
-        selectedWorkspace,
-        workspaceCredentials,
-      });
+    if (!currentFile) return;
+    if (onDownloadFile) {
+      onDownloadFile(currentFile as DriveItemData);
+      return;
     }
+    DownloadManager.downloadItem({
+      payload: [currentFile as DriveItemData],
+      selectedWorkspace,
+      workspaceCredentials,
+    });
   };
 
   const { refreshThumbnail } = useFileThumbnailRefresh({ isSharedView, isWorkspace });
