@@ -32,7 +32,6 @@ const PhotosViewer = ({ photo, photos, onClose }: PhotosViewerProps): JSX.Elemen
       name: translate('drive.dropdown.download'),
       icon: DownloadSimpleIcon,
       action: downloadPhoto,
-      disabled: () => false,
     },
   ];
 
@@ -43,7 +42,7 @@ const PhotosViewer = ({ photo, photos, onClose }: PhotosViewerProps): JSX.Elemen
       showPreview
       onClose={onClose}
       contextMenu={menu}
-      onDownload={downloadPhoto}
+      onDownloadFile={downloadPhoto}
       refreshesThumbnail={false}
     />
   );
