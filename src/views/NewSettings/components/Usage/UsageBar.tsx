@@ -39,7 +39,7 @@ const UsageBar = ({
           popsFrom="top"
           className={`${driveShapeClass} !w-full ${driveColor}`}
         >
-          <div></div>
+          <div />
         </Tooltip>
       </div>
 
@@ -51,7 +51,7 @@ const UsageBar = ({
           popsFrom="top"
           className={`${backupShapeClass} !w-full ${backupColor}`}
         >
-          <div></div>
+          <div />
         </Tooltip>
       </div>
     </div>

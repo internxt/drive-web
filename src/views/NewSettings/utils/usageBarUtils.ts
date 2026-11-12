@@ -12,11 +12,6 @@ interface UsageBarPercentages {
 
 const toNonNegativeNumber = (value: number): number => (Number.isFinite(value) && value > 0 ? value : 0);
 
-/**
- * Computes the share of the bar (0-100) taken by the Drive and Backups segments.
- * Over the limit (or with an invalid limit and some usage) both segments are scaled
- * proportionally so together they fill exactly 100%.
- */
 export const getUsageBarPercentages = ({
   driveUsageBytes,
   backupsUsageBytes,
