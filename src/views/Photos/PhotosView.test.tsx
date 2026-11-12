@@ -605,6 +605,132 @@ describe('Photos view', () => {
       expect(shownTimeline()).toStrictEqual(['Wed, 15 Oct 2025', ['IMG_OCTOBER.jpg']]);
     });
 
+    describe('Live Photos, bursts and videos', () => {
+      const file = (plainName: string, type: string, folderUuid: string, creationTime: string) =>
+        getPhotoFolderFile({ uuid: `${plainName}.${type}`, plainName, type, folderUuid, creationTime });
+
+      const tile = (name: string) => screen.getByRole('img', { name });
+
+      beforeEach(() => {
+        givenDevices([iphone]);
+        givenSubfolders(iphonePhotosOf2025);
+      });
+
+      test('When a photo has its Live Photo video, then it is shown once as a Live Photo', async () => {
+        givenPhotosInFolders({
+          'iphone-2025-11-03': [
+            file('IMG_0001', 'HEIC', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+            file('img_0001.livephoto', 'MOV', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          ],
+        });
+
+        render(<PhotosView />);
+        await screen.findByRole('img', { name: 'IMG_0001.HEIC' });
+
+        expect(shownTimeline()).toStrictEqual(['Mon, 3 Nov 2025', ['IMG_0001.HEIC']]);
+        expect(tile('IMG_0001.HEIC')).toHaveAccessibleDescription('views.photos.badges.livePhoto');
+      });
+
+      test('When a Live Photo video has no photo, then it is shown as a video', async () => {
+        givenPhotosInFolders({
+          'iphone-2025-11-03': [file('IMG_0002.livephoto', 'mov', 'iphone-2025-11-03', '2025-11-03T09:00:00Z')],
+        });
+
+        render(<PhotosView />);
+
+        expect(await screen.findByRole('img', { name: 'IMG_0002.livephoto.mov' })).toHaveAccessibleDescription(
+          'views.photos.badges.video',
+        );
+      });
+
+      test('When a photo has burst photos, then the burst is shown once on its main photo', async () => {
+        givenPhotosInFolders({
+          'iphone-2025-11-03': [
+            file('IMG_0003', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+            file('IMG_0003.burst.1', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+            file('IMG_0003.burst.2', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:01Z'),
+          ],
+        });
+
+        render(<PhotosView />);
+        await screen.findByRole('img', { name: 'IMG_0003.jpg' });
+
+        expect(shownTimeline()).toStrictEqual(['Mon, 3 Nov 2025', ['IMG_0003.jpg']]);
+        expect(tile('IMG_0003.jpg')).toHaveAccessibleDescription('views.photos.badges.burst');
+      });
+
+      test('When photos with the same name are on different days of the month, then each Live Photo and burst stays on its own day', async () => {
+        givenPhotosInFolders({
+          'iphone-2025-11-01': [
+            file('IMG_0001', 'heic', 'iphone-2025-11-01', '2025-11-01T10:00:00Z'),
+            file('IMG_0001.livephoto', 'mov', 'iphone-2025-11-01', '2025-11-01T10:00:00Z'),
+            file('IMG_0002', 'heic', 'iphone-2025-11-01', '2025-11-01T09:00:00Z'),
+            file('IMG_0002.burst.1', 'heic', 'iphone-2025-11-01', '2025-11-01T09:00:00Z'),
+          ],
+          'iphone-2025-11-03': [
+            file('IMG_0001', 'heic', 'iphone-2025-11-03', '2025-11-03T10:00:00Z'),
+            file('IMG_0002', 'heic', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          ],
+        });
+
+        render(<PhotosView />);
+        await screen.findAllByRole('img', { name: 'IMG_0001.heic' });
+
+        const [photoOfDay3, livePhotoOfDay1] = screen.getAllByRole('img', { name: 'IMG_0001.heic' });
+        const [otherPhotoOfDay3, burstOfDay1] = screen.getAllByRole('img', { name: 'IMG_0002.heic' });
+        expect(shownTimeline()).toStrictEqual([
+          'Mon, 3 Nov 2025',
+          ['IMG_0001.heic', 'IMG_0002.heic'],
+          'Sat, 1 Nov 2025',
+          ['IMG_0001.heic', 'IMG_0002.heic'],
+        ]);
+        expect(livePhotoOfDay1).toHaveAccessibleDescription('views.photos.badges.livePhoto');
+        expect(burstOfDay1).toHaveAccessibleDescription('views.photos.badges.burst');
+        expect(photoOfDay3).not.toHaveAccessibleDescription();
+        expect(otherPhotoOfDay3).not.toHaveAccessibleDescription();
+      });
+
+      test('When the burst part of a photo name is in capitals, then the photo is still shown inside its burst', async () => {
+        givenPhotosInFolders({
+          'iphone-2025-11-03': [
+            file('IMG_0007', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+            file('IMG_0007.BURST.1', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          ],
+        });
+
+        render(<PhotosView />);
+        await screen.findByRole('img', { name: 'IMG_0007.jpg' });
+
+        expect(shownTimeline()).toStrictEqual(['Mon, 3 Nov 2025', ['IMG_0007.jpg']]);
+        expect(tile('IMG_0007.jpg')).toHaveAccessibleDescription('views.photos.badges.burst');
+      });
+
+      test('When the main photo of a burst is not in the month, then its other photos are shown on their own', async () => {
+        givenPhotosInFolders({
+          'iphone-2025-11-03': [file('IMG_0004.burst.1', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z')],
+        });
+
+        render(<PhotosView />);
+
+        expect(await screen.findByRole('img', { name: 'IMG_0004.burst.1.jpg' })).not.toHaveAccessibleDescription();
+      });
+
+      test('When a video is shown, then it is marked as a video', async () => {
+        givenPhotosInFolders({
+          'iphone-2025-11-03': [
+            file('VID_0005', 'mp4', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+            file('IMG_0006', 'jpg', 'iphone-2025-11-03', '2025-11-03T10:00:00Z'),
+          ],
+        });
+
+        render(<PhotosView />);
+        await screen.findByRole('img', { name: 'VID_0005.mp4' });
+
+        expect(tile('VID_0005.mp4')).toHaveAccessibleDescription('views.photos.badges.video');
+        expect(tile('IMG_0006.jpg')).not.toHaveAccessibleDescription();
+      });
+    });
+
     test('When the photos of a day come from several devices, then they are shown together', async () => {
       givenDevices([iphone, pixel]);
       givenSubfolders({

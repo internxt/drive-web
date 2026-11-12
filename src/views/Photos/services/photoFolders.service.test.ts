@@ -127,6 +127,8 @@ describe('Photo backup folders', () => {
           takenAt: '2026-11-02T09:00:00Z',
           updatedAt: '2026-11-03T10:00:00.000Z',
           thumbnail: null,
+          kind: 'photo',
+          relatedFiles: [],
         },
         {
           id: 1,
@@ -138,6 +140,8 @@ describe('Photo backup folders', () => {
           takenAt: '2026-11-15T09:00:00Z',
           updatedAt: '2026-11-03T10:00:00.000Z',
           thumbnail: null,
+          kind: 'photo',
+          relatedFiles: [],
         },
       ]);
       expect(photosClient.getFilesInFolders).toHaveBeenCalledWith({
