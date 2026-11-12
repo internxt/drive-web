@@ -5,6 +5,7 @@ import { DownloadManager } from 'app/network/DownloadManager';
 import TooltipElement, { DELAY_SHOW_MS } from 'components/TooltipElement';
 import { HOTKEYS, useAppHotkey } from 'hooks';
 import { PhotoSelection } from '../hooks/usePhotoSelection';
+import { getPhotoFiles } from '../services/photoFolders.service';
 import { sortPhotosNewestFirst } from '../utils/photoTimeline';
 
 interface PhotosSelectionHeaderProps {
@@ -18,10 +19,7 @@ const PhotosSelectionHeader = ({ selectedPhotos, onClear }: PhotosSelectionHeade
 
   const downloadSelection = () => {
     void DownloadManager.downloadItem({
-      payload: sortPhotosNewestFirst([...selectedPhotos.values()]).flatMap(({ file, relatedFiles }) => [
-        file,
-        ...relatedFiles.map((related) => related.file),
-      ]),
+      payload: getPhotoFiles(sortPhotosNewestFirst([...selectedPhotos.values()])),
       selectedWorkspace: null,
       workspaceCredentials: null,
     });

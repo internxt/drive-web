@@ -10,6 +10,7 @@ interface PhotosDayHeaderProps {
   day: DayKey;
   photos: Photo[];
   selectedPhotos: PhotoSelection;
+  isSelecting: boolean;
   onToggleSelection: (photos: Photo[]) => void;
 }
 
@@ -19,7 +20,13 @@ const getDayLabel = (day: DayKey, translate: Translate): string => {
   return dateService.format(day, 'ddd, D MMM YYYY');
 };
 
-const PhotosDayHeader = ({ day, photos, selectedPhotos, onToggleSelection }: PhotosDayHeaderProps): JSX.Element => {
+const PhotosDayHeader = ({
+  day,
+  photos,
+  selectedPhotos,
+  isSelecting,
+  onToggleSelection,
+}: PhotosDayHeaderProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const label = getDayLabel(day, translate);
   const selectedPhotosOfDay = photos.filter(({ uuid }) => selectedPhotos.has(uuid)).length;
@@ -33,7 +40,7 @@ const PhotosDayHeader = ({ day, photos, selectedPhotos, onToggleSelection }: Pho
         checked={isWholeDaySelected}
         indeterminate={selectedPhotosOfDay > 0 && !isWholeDaySelected}
         onChange={() => onToggleSelection(photos)}
-        className={selectedPhotos.size > 0 ? '' : 'opacity-0 focus:opacity-100 group-hover:opacity-100'}
+        className={isSelecting ? '' : 'opacity-0 focus:opacity-100 group-hover:opacity-100'}
       />
     </div>
   );

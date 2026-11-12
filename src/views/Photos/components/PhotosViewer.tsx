@@ -5,6 +5,7 @@ import { DriveItemData } from 'app/drive/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { DownloadManager } from 'app/network/DownloadManager';
 import { useMemo } from 'react';
+import { getPhotoFiles } from '../services/photoFolders.service';
 import { Photo } from '../types';
 
 interface PhotosViewerProps {
@@ -19,9 +20,10 @@ const PhotosViewer = ({ photo, photos, onClose }: PhotosViewerProps): JSX.Elemen
   const photoByFileId = useMemo(() => new Map(photos.map((shownPhoto) => [shownPhoto.file.id, shownPhoto])), [photos]);
 
   const downloadPhoto = (file: DriveItemData) => {
-    const relatedFiles = photoByFileId.get(file.id)?.relatedFiles ?? [];
+    const shownPhoto = photoByFileId.get(file.id);
+    if (!shownPhoto) return;
     void DownloadManager.downloadItem({
-      payload: [file, ...relatedFiles.map((relatedFile) => relatedFile.file)],
+      payload: getPhotoFiles([shownPhoto]),
       selectedWorkspace: null,
       workspaceCredentials: null,
     });

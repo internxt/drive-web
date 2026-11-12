@@ -77,6 +77,9 @@ const getLatestThumbnail = (thumbnails: PhotoFolderFile['thumbnails']): PhotoThu
   return { bucket_id: latestThumbnail.bucketId, bucket_file: latestThumbnail.bucketFile };
 };
 
+export const getPhotoFiles = (photos: Photo[]): DriveItemData[] =>
+  photos.flatMap(({ file, relatedFiles }) => [file, ...relatedFiles.map((relatedFile) => relatedFile.file)]);
+
 export class PhotoFoldersService {
   public static readonly instance: PhotoFoldersService = new PhotoFoldersService();
 
