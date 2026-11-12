@@ -2,7 +2,9 @@ import { ReactNode } from 'react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { act, fireEvent, render, renderHook, screen, waitFor, within } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import i18next from 'i18next';
+import toast, { Toaster } from 'react-hot-toast';
+import { afterEach, beforeAll, beforeEach, describe, expect, Mock, test, vi } from 'vitest';
 import { getDatabasePhotoThumbnail, updateDatabasePhotoThumbnail } from 'app/drive/services/database.service';
 import fetchFileBlob from 'app/drive/services/download.service/fetchFileBlob';
 import errorService from 'services/error.service';
@@ -27,9 +29,14 @@ import {
 import { useTimelinePhotos } from './hooks/useTimelinePhotos';
 import PhotosView from './PhotosView';
 
-const { photosClient, storageClient } = vi.hoisted(() => ({
+const { photosClient, storageClient, trashClient } = vi.hoisted(() => ({
   photosClient: { listDevices: vi.fn(), getFilesInFolders: vi.fn() },
-  storageClient: { getFolderFoldersByUuidWithCursor: vi.fn(), createThumbnailEntryWithUUID: vi.fn() },
+  storageClient: {
+    getFolderFoldersByUuidWithCursor: vi.fn(),
+    createThumbnailEntryWithUUID: vi.fn(),
+    moveFileByUuid: vi.fn(),
+  },
+  trashClient: { addItemsToTrash: vi.fn() },
 }));
 
 vi.mock('app/core/factory/sdk', () => ({
@@ -37,6 +44,7 @@ vi.mock('app/core/factory/sdk', () => ({
     getNewApiInstance: () => ({
       createPhotosClient: () => photosClient,
       createNewStorageClient: () => storageClient,
+      createTrashClient: () => trashClient,
     }),
   },
 }));
@@ -47,7 +55,7 @@ vi.mock('react-helmet-async', () => ({
   Helmet: () => null,
 }));
 vi.mock('services/error.service', () => ({
-  default: { reportError: vi.fn() },
+  default: { reportError: vi.fn(), castError: (error: Error) => error },
 }));
 vi.mock('app/drive/services/download.service/fetchFileBlob', () => ({
   default: vi.fn(),
@@ -202,8 +210,24 @@ const renderWithStore = () => {
     preloadedState: { user: { ...userReducer(undefined, { type: 'init' }), isAuthenticated: true } },
   });
   const wrapper = ({ children }: { children: ReactNode }) => <Provider store={store}>{children}</Provider>;
-  return render(<PhotosView />, { wrapper });
+  return render(
+    <>
+      <PhotosView />
+      <Toaster />
+    </>,
+    { wrapper },
+  );
 };
+
+const trashedFiles = () =>
+  trashClient.addItemsToTrash.mock.calls.flatMap(([{ items }]) =>
+    (items as { uuid: string; type: string }[]).map(({ uuid, type }) => `${uuid} (${type})`),
+  );
+
+const filesMovedBack = () =>
+  storageClient.moveFileByUuid.mock.calls.map(
+    ([fileUuid, { destinationFolder }]) => `${fileUuid} -> ${destinationFolder as string}`,
+  );
 
 const downloadedFiles = () =>
   (DownloadManager.downloadItem as Mock).mock.calls.map(([{ payload }]) =>
@@ -219,6 +243,10 @@ galleryStyles.textContent = 'h2 { margin: 0; } .aspect-square { aspect-ratio: 1 
 document.head.appendChild(galleryStyles);
 
 describe('Photos view', () => {
+  beforeAll(async () => {
+    await i18next.init({ lng: 'cimode' });
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
     nextFileId = 1;
@@ -230,11 +258,14 @@ describe('Photos view', () => {
     givenPhotosInFolders({});
     (getDatabasePhotoThumbnail as Mock).mockResolvedValue(undefined);
     (updateDatabasePhotoThumbnail as Mock).mockResolvedValue(undefined);
+    trashClient.addItemsToTrash.mockResolvedValue(undefined);
+    storageClient.moveFileByUuid.mockResolvedValue({});
   });
 
   afterEach(() => {
     vi.unstubAllGlobals();
     resizeObservers.clear();
+    act(() => toast.remove());
   });
 
   test('When the devices are loading, then the photos grid placeholder is shown under the title', () => {
@@ -1263,7 +1294,7 @@ describe('Photos view', () => {
       expect(downloadedFiles()).toStrictEqual([['IMG_0003.jpg', 'IMG_0003.burst.1.jpg', 'IMG_0003.burst.2.jpg']]);
     });
 
-    test('When the user opens the menu of the viewer, then they can only download, with the related files', async () => {
+    test('When the user opens the menu of the viewer, then they can download or move to the trash', async () => {
       givenPhotosInFolders({
         'iphone-2025-11-03': [
           file('IMG_0001', 'HEIC', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
@@ -1276,9 +1307,48 @@ describe('Photos view', () => {
       fireEvent.click(within(viewer()).getByRole('button', { expanded: false }));
       const menuItems = within(viewer()).getAllByText(/^drive\.dropdown\./);
 
-      expect(menuItems.map((item) => item.textContent)).toStrictEqual(['drive.dropdown.download']);
+      expect(menuItems.map((item) => item.textContent)).toStrictEqual([
+        'drive.dropdown.download',
+        'drive.dropdown.moveToTrash',
+      ]);
       fireEvent.click(menuItems[0]);
       expect(downloadedFiles()).toStrictEqual([['IMG_0001.HEIC', 'IMG_0001.livephoto.MOV']]);
+    });
+
+    test('When the user moves a Live Photo to the trash from the viewer, then the viewer closes and the photo and its video leave the gallery', async () => {
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [
+          file('IMG_0001', 'HEIC', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          file('IMG_0001.livephoto', 'MOV', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          file('IMG_0002', 'jpg', 'iphone-2025-11-03', '2025-11-03T08:00:00Z'),
+        ],
+      });
+
+      renderWithStore();
+      await openPhoto('IMG_0001.HEIC');
+      fireEvent.click(within(viewer()).getByRole('button', { expanded: false }));
+      fireEvent.click(within(viewer()).getByText('drive.dropdown.moveToTrash'));
+
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      await waitFor(() => expect(screen.queryByRole('img', { name: 'IMG_0001.HEIC' })).not.toBeInTheDocument());
+      expect(trashedFiles()).toStrictEqual(['IMG_0001.HEIC (file)', 'IMG_0001.livephoto.MOV (file)']);
+      expect(screen.getByRole('img', { name: 'IMG_0002.jpg' })).toBeInTheDocument();
+    });
+
+    test('When the user presses the trash key in the viewer, then the photo shown is moved to the trash, as in Drive', async () => {
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [
+          file('IMG_0001', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          file('IMG_0002', 'jpg', 'iphone-2025-11-03', '2025-11-03T08:00:00Z'),
+        ],
+      });
+
+      renderWithStore();
+      await openPhoto('IMG_0001.jpg');
+      fireEvent.keyDown(viewer(), { key: 'Backspace', code: 'Backspace' });
+
+      await waitFor(() => expect(trashedFiles()).toStrictEqual(['IMG_0001.jpg (file)']));
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
 
     test('When a single photo is downloaded from the viewer, then only that photo is downloaded', async () => {
@@ -1468,6 +1538,138 @@ describe('Photos view', () => {
       expect(screen.queryByRole('img', { name: 'IMG_0300.jpg' })).not.toBeInTheDocument();
       expect(downloadedFiles()[0]).toHaveLength(300);
       expect(downloadedFiles()[0]).toContain('IMG_0300.jpg');
+    });
+  });
+
+  describe('Moving photos to the trash', () => {
+    let nextFileId = 1;
+    const file = (plainName: string, type: string, folderUuid: string, creationTime: string) =>
+      getPhotoFolderFile({ id: nextFileId++, uuid: `${plainName}.${type}`, plainName, type, folderUuid, creationTime });
+
+    const tick = async (name: string) => {
+      await screen.findByRole('checkbox', { name });
+      fireEvent.click(screen.getByRole('checkbox', { name }));
+    };
+    const selectionHeader = () => screen.queryByRole('toolbar', { name: 'views.photos.selection.title' });
+    const moveSelectionToTrash = () =>
+      fireEvent.click(
+        within(selectionHeader() as HTMLElement).getByRole('button', { name: 'drive.dropdown.moveToTrash' }),
+      );
+    const undo = async () => fireEvent.click(await screen.findByRole('button', { name: 'actions.undo' }));
+
+    beforeEach(() => {
+      nextFileId = 1;
+      givenDevices([iphone]);
+      givenSubfolders({
+        iphone: [getPhotoFolder({ uuid: 'iphone-2025', plainName: '2025' })],
+        'iphone-2025': [
+          getPhotoFolder({ uuid: 'iphone-2025-11', plainName: '11' }),
+          getPhotoFolder({ uuid: 'iphone-2025-10', plainName: '10' }),
+        ],
+        'iphone-2025-11': [
+          getPhotoFolder({ uuid: 'iphone-2025-11-03', plainName: '3' }),
+          getPhotoFolder({ uuid: 'iphone-2025-11-01', plainName: '1' }),
+        ],
+        'iphone-2025-10': [getPhotoFolder({ uuid: 'iphone-2025-10-15', plainName: '15' })],
+      });
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [
+          file('IMG_LIVE', 'HEIC', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          file('IMG_LIVE.livephoto', 'MOV', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          file('IMG_KEPT', 'jpg', 'iphone-2025-11-03', '2025-11-03T08:00:00Z'),
+        ],
+        'iphone-2025-11-01': [
+          file('IMG_BURST', 'jpg', 'iphone-2025-11-01', '2025-11-01T09:00:00Z'),
+          file('IMG_BURST.burst.1', 'jpg', 'iphone-2025-11-01', '2025-11-01T09:00:00Z'),
+        ],
+        'iphone-2025-10-15': [file('IMG_OCTOBER', 'jpg', 'iphone-2025-10-15', '2025-10-15T09:00:00Z')],
+      });
+    });
+
+    test('When selected photos are moved to the trash, then they go to the Drive Trash with their related files right away', async () => {
+      renderWithStore();
+      await tick('IMG_LIVE.HEIC');
+      await tick('IMG_BURST.jpg');
+
+      moveSelectionToTrash();
+
+      await waitFor(() =>
+        expect(trashedFiles()).toStrictEqual([
+          'IMG_LIVE.HEIC (file)',
+          'IMG_LIVE.livephoto.MOV (file)',
+          'IMG_BURST.jpg (file)',
+          'IMG_BURST.burst.1.jpg (file)',
+        ]),
+      );
+    });
+
+    test('When selected photos are moved to the trash, then they leave the gallery and the selection is closed', async () => {
+      renderWithStore();
+      await tick('IMG_LIVE.HEIC');
+      await tick('IMG_BURST.jpg');
+
+      moveSelectionToTrash();
+
+      await waitFor(() => expect(screen.queryByRole('img', { name: 'IMG_LIVE.HEIC' })).not.toBeInTheDocument());
+      expect(screen.queryByRole('img', { name: 'IMG_BURST.jpg' })).not.toBeInTheDocument();
+      expect(screen.getByRole('img', { name: 'IMG_KEPT.jpg' })).toBeInTheDocument();
+      expect(selectionHeader()).not.toBeInTheDocument();
+    });
+
+    test('When the user undoes moving photos of two days to the trash, then each file goes back to its own day folder', async () => {
+      renderWithStore();
+      await tick('IMG_LIVE.HEIC');
+      await tick('IMG_BURST.jpg');
+      moveSelectionToTrash();
+
+      await undo();
+
+      await waitFor(() =>
+        expect(filesMovedBack()).toStrictEqual([
+          'IMG_LIVE.HEIC -> iphone-2025-11-03',
+          'IMG_LIVE.livephoto.MOV -> iphone-2025-11-03',
+          'IMG_BURST.jpg -> iphone-2025-11-01',
+          'IMG_BURST.burst.1.jpg -> iphone-2025-11-01',
+        ]),
+      );
+    });
+
+    test('When the user undoes moving photos to the trash, then they are shown again in the gallery', async () => {
+      renderWithStore();
+      await tick('IMG_LIVE.HEIC');
+      moveSelectionToTrash();
+      await waitFor(() => expect(screen.queryByRole('img', { name: 'IMG_LIVE.HEIC' })).not.toBeInTheDocument());
+
+      await undo();
+
+      expect(await screen.findByRole('img', { name: 'IMG_LIVE.HEIC' })).toBeInTheDocument();
+    });
+
+    test('When moving photos to the trash fails, then they stay in the gallery and stay selected', async () => {
+      trashClient.addItemsToTrash.mockRejectedValueOnce(new Error('Network error'));
+      renderWithStore();
+      await tick('IMG_LIVE.HEIC');
+
+      moveSelectionToTrash();
+
+      expect(await screen.findByText('error.errorMovingToTrash')).toBeInTheDocument();
+      expect(screen.getByRole('img', { name: 'IMG_LIVE.HEIC' })).toBeInTheDocument();
+      expect(selectionHeader()).toBeInTheDocument();
+    });
+
+    test('When every photo loaded so far is moved to the trash, then the photos of the previous month are shown', async () => {
+      givenPhotosInFolders({
+        'iphone-2025-11-03': photosOfDay('iphone-2025-11-03', 300),
+        'iphone-2025-10-15': [file('IMG_OCTOBER', 'jpg', 'iphone-2025-10-15', '2025-10-15T09:00:00Z')],
+      });
+      renderWithStore();
+      await tick('Mon, 3 Nov 2025');
+      expect(requestedFolders()).not.toContain('iphone-2025-10-15');
+
+      moveSelectionToTrash();
+
+      expect(await screen.findByRole('img', { name: 'IMG_OCTOBER.jpg' })).toBeInTheDocument();
+      expect(screen.queryByText('views.photos.empty.title')).not.toBeInTheDocument();
     });
   });
 });

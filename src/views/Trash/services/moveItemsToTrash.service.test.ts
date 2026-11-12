@@ -228,6 +228,69 @@ describe('moveItemsToTrash', () => {
     expect(storageThunks.fetchFavoritesThunk).not.toHaveBeenCalled();
   });
 
+  describe('Undo', () => {
+    const trashAndUndo = async (items: DriveItemData[], onUndo?: () => void) => {
+      let undo: (() => void) | undefined;
+      (notificationsService.show as Mock).mockImplementation((config) => {
+        if (config.action) undo = config.action.onClick;
+        return 'notification-id';
+      });
+      (processBatchConcurrently as Mock).mockResolvedValue(undefined);
+      (deleteDatabaseItems as Mock).mockResolvedValue(undefined);
+      (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
+        createTrashClient: () => ({ addItemsToTrash: vi.fn() }),
+      });
+      (storageThunks.moveItemsThunk as unknown as Mock).mockImplementation((payload) => payload);
+
+      await moveItemsToTrash(items, undefined, onUndo);
+      undo?.();
+    };
+
+    const movedBack = () =>
+      (storageThunks.moveItemsThunk as unknown as Mock).mock.calls.map(([{ items, destinationFolderId }]) => ({
+        items: (items as DriveItemData[]).map(({ uuid }) => uuid),
+        destinationFolderId,
+      }));
+
+    test('When items of different folders are trashed and the user undoes it, then each item goes back to its own folder', async () => {
+      const items = [
+        { uuid: 'photo-of-monday', isFolder: false, type: 'jpg', folderUuid: 'monday-folder' },
+        { uuid: 'photo-of-tuesday', isFolder: false, type: 'jpg', folderUuid: 'tuesday-folder' },
+        { uuid: 'video-of-monday', isFolder: false, type: 'mov', folderUuid: 'monday-folder' },
+        { uuid: 'subfolder', isFolder: true, type: 'folder', parentUuid: 'tuesday-folder' },
+      ] as unknown as DriveItemData[];
+
+      await trashAndUndo(items);
+
+      expect(movedBack()).toStrictEqual([
+        { items: ['photo-of-monday', 'video-of-monday'], destinationFolderId: 'monday-folder' },
+        { items: ['photo-of-tuesday', 'subfolder'], destinationFolderId: 'tuesday-folder' },
+      ]);
+    });
+
+    test('When items of one folder are trashed and the user undoes it, then they all go back together to that folder', async () => {
+      const items = [
+        { uuid: 'report', isFolder: false, type: 'pdf', folderUuid: 'documents' },
+        { uuid: 'invoices', isFolder: true, type: 'folder', parentUuid: 'documents' },
+      ] as unknown as DriveItemData[];
+
+      await trashAndUndo(items);
+
+      expect(movedBack()).toStrictEqual([{ items: ['report', 'invoices'], destinationFolderId: 'documents' }]);
+    });
+
+    test('When the user undoes it, then the caller is told so it can show the items again', async () => {
+      const onUndo = vi.fn();
+
+      await trashAndUndo(
+        [{ uuid: 'report', isFolder: false, type: 'pdf', folderUuid: 'documents' }] as DriveItemData[],
+        onUndo,
+      );
+
+      expect(onUndo).toHaveBeenCalledTimes(1);
+    });
+  });
+
   it('should handle errors', async () => {
     const mockItems = [{ uuid: 'file-1', isFolder: false, type: 'file' }] as DriveItemData[];
     const mockError = new Error('Move failed');
