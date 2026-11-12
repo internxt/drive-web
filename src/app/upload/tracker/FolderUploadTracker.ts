@@ -56,7 +56,7 @@ export class FolderUploadTracker extends UploadTracker<UploadFolderItem> {
     this.updateTask({ status: TaskStatus.Success, itemUUID: { rootFolderUUID: this.createdFolder.uuid } });
     this.wasUploaded = true;
     if (this.failures.isEmpty()) {
-      this.track(() => {
+      this.reportingErrors(() => {
         referralService.trackFolderUpload();
         logNetworkInfoForUpload({ folderName: this.item.folder.name });
       });
@@ -79,14 +79,18 @@ export class FolderUploadTracker extends UploadTracker<UploadFolderItem> {
   private removeCreatedFolder(): void {
     if (!this.createdFolder || this.removal) return;
 
-    this.removal = this.removeFolder(this.createdFolder).catch((error) => {
-      errorService.reportError(error);
-      this.updateTask(folderRemovalFailedMerge());
-    });
+    this.removal = this.removeFolder(this.createdFolder);
   }
 
   private async removeFolder(folder: DriveFolderData): Promise<void> {
-    await newStorageService.deleteFolderByUuid(folder.uuid);
-    this.props.onItemRemoved?.(folder, this.item.parentFolderUuid);
+    try {
+      await newStorageService.deleteFolderByUuid(folder.uuid);
+    } catch (error) {
+      errorService.reportError(error);
+      this.updateTask(folderRemovalFailedMerge());
+      return;
+    }
+
+    this.reportingErrors(() => this.props.onItemRemoved?.(folder, this.item.parentFolderUuid));
   }
 }

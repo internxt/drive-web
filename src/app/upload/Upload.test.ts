@@ -73,7 +73,7 @@ const failUploadsOf = (failingNames: string[], error: unknown = new Error('Serve
 const uploadSucceeds = () =>
   (uploadFile as Mock).mockImplementation(async (file: { name: string }) => ({ uuid: `${file.name}-uuid` }));
 
-const countUploadsAtTheSameTime = (failingNames: string[]) => {
+const countUploadsAtTheSameTime = (failingNames: Set<string>) => {
   let uploading = 0;
   let mostAtTheSameTime = 0;
   (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
@@ -81,7 +81,7 @@ const countUploadsAtTheSameTime = (failingNames: string[]) => {
     mostAtTheSameTime = Math.max(mostAtTheSameTime, uploading);
     await new Promise((resolve) => setTimeout(resolve, 100));
     uploading--;
-    if (failingNames.includes(file.name)) throw new Error('Server error');
+    if (failingNames.has(file.name)) throw new Error('Server error');
     return { uuid: `${file.name}-uuid` };
   });
   return () => mostAtTheSameTime;
@@ -302,6 +302,43 @@ describe('Uploading what the user picked', () => {
       expect.objectContaining({ status: TaskStatus.Error, subtitle: 'tasks.subtitles.folder-removal-failed' }),
     );
     expect(onItemRemoved).not.toHaveBeenCalled();
+  });
+
+  test('When the cancelled folder is removed but reporting it fails, then its task does not show a removal error', async () => {
+    fakeUploadsTaking(500);
+    const onItemRemoved = vi.fn(() => {
+      throw new Error('List not updated');
+    });
+    const upload = createUpload([getFolderToUpload('Photos', { childrenFiles: [getFileToUpload('beach.png')] })], [], {
+      onItemRemoved,
+    });
+
+    const running = upload.run();
+    await vi.waitFor(() => expect(uploadFile).toHaveBeenCalled());
+    await tasksService.cancelTask(tasksOf(TaskType.UploadFolder)[0].id);
+    await running;
+
+    expect(newStorageService.deleteFolderByUuid).toHaveBeenCalledWith('Photos-uuid');
+    expect(tasksOf(TaskType.UploadFolder)[0].status).toBe(TaskStatus.Cancelled);
+    expect(errorService.reportError).toHaveBeenCalledWith(new Error('List not updated'));
+  });
+
+  test('When a file finishes uploading right after the user cancels it, then its task succeeds', async () => {
+    (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      return { uuid: `${file.name}-uuid` };
+    });
+    const upload = createUpload([], [getFileToUpload('report.pdf')]);
+
+    const running = upload.run();
+    await vi.waitFor(() => expect(uploadFile).toHaveBeenCalled());
+    const [reportTask] = tasksOf(TaskType.UploadFile);
+    await tasksService.cancelTask(reportTask.id);
+    await running;
+
+    expect(tasksService.findTask(reportTask.id)).toEqual(
+      expect.objectContaining({ status: TaskStatus.Success, itemUUID: { fileUUID: 'report-uuid' } }),
+    );
   });
 
   test('When the user cancels a folder while it is being created, then it is removed once it exists', async () => {
@@ -661,7 +698,8 @@ describe('Retrying what failed', () => {
     vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(MAX_CONCURRENT_UPLOADS);
     const failingNames = ['a1', 'a2', 'a3', 'a4', 'a5', 'a6'];
     const bigFolderNames = Array.from({ length: 30 }, (_, index) => `b${index}`);
-    let mostAtTheSameTime = countUploadsAtTheSameTime(failingNames);
+    const stillFailing = new Set(failingNames);
+    const mostAtTheSameTime = countUploadsAtTheSameTime(stillFailing);
     const upload = createUpload(
       [getFolderWithFiles('Small', failingNames), getFolderWithFiles('Big', bigFolderNames)],
       [],
@@ -671,7 +709,7 @@ describe('Retrying what failed', () => {
     await vi.waitFor(() => expect(tasksService.findTask(smallTask.id)?.failedItems).toHaveLength(failingNames.length), {
       timeout: 3000,
     });
-    mostAtTheSameTime = countUploadsAtTheSameTime([]);
+    stillFailing.clear();
 
     const retrying = smallTask.retry?.();
     await Promise.all([retrying, running]);
