@@ -1,7 +1,7 @@
 import { PhotoFolderFile } from '@internxt/sdk/dist/drive/photos';
 import { FetchFolderFoldersCursorResponse } from '@internxt/sdk/dist/drive/storage/types';
 import { SdkFactory } from 'app/core/factory/sdk';
-import { thumbnailableVideoExtension } from 'app/drive/types/file-types';
+import { videoExtensions } from 'app/drive/types/file-types';
 import { DayKey, MonthKey, Photo, PhotoMonth, PhotoThumbnail } from '../types';
 
 type Folder = FetchFolderFoldersCursorResponse['folders'][number];
@@ -16,6 +16,7 @@ const DAY_FOLDER_NAME = /^(0?[1-9]|[12]\d|3[01])$/;
 const LIVE_PHOTO_VIDEO_SUFFIX = '.livephoto';
 const LIVE_PHOTO_VIDEO_TYPE = 'mov';
 const BURST_MEMBER_SUFFIX = /\.burst\.\d+$/i;
+const VIDEO_TYPES = new Set(Object.values(videoExtensions).flat());
 
 interface PhotoFile {
   photo: Photo;
@@ -49,7 +50,9 @@ const groupRelatedFiles = (files: PhotoFile[]): Photo[] => {
       photosOnTheirOwn.push(file.photo);
       continue;
     }
-    relatedFilesByPhoto.set(mainPhoto, [...(relatedFilesByPhoto.get(mainPhoto) ?? []), file]);
+    const relatedFiles = relatedFilesByPhoto.get(mainPhoto);
+    if (relatedFiles) relatedFiles.push(file);
+    else relatedFilesByPhoto.set(mainPhoto, [file]);
   }
 
   return photosOnTheirOwn.map((photo) => {
@@ -111,7 +114,7 @@ export class PhotoFoldersService {
         takenAt: file.creationTime,
         updatedAt: file.updatedAt,
         thumbnail: getLatestThumbnail(file.thumbnails),
-        kind: thumbnailableVideoExtension.includes(file.type.toLowerCase()) ? 'video' : 'photo',
+        kind: VIDEO_TYPES.has(file.type.toLowerCase()) ? 'video' : 'photo',
         relatedFiles: [],
       };
       return [{ photo, plainName: file.plainName }];
