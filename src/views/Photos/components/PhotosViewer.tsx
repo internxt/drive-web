@@ -21,9 +21,8 @@ const PhotosViewer = ({ photo, photos, onClose }: PhotosViewerProps): JSX.Elemen
 
   const downloadPhoto = (file: DriveItemData) => {
     const shownPhoto = photoByFileId.get(file.id);
-    if (!shownPhoto) return;
     void DownloadManager.downloadItem({
-      payload: getPhotoFiles([shownPhoto]),
+      payload: shownPhoto ? getPhotoFiles([shownPhoto]) : [file],
       selectedWorkspace: null,
       workspaceCredentials: null,
     });
