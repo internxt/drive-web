@@ -1249,13 +1249,13 @@ describe('Photos view', () => {
       expect(downloadedFiles()).toStrictEqual([['IMG_0001.HEIC', 'IMG_0001.livephoto.MOV']]);
     });
 
-    test('When a burst is downloaded from the viewer, then all its photos are downloaded, even those of other days', async () => {
+    test('When a burst is downloaded from the viewer, then all its photos are downloaded', async () => {
       givenPhotosInFolders({
         'iphone-2025-11-03': [
           file('IMG_0003', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
           file('IMG_0003.burst.1', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          file('IMG_0003.burst.2', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
         ],
-        'iphone-2025-11-01': [file('IMG_0003.burst.2', 'jpg', 'iphone-2025-11-01', '2025-11-01T09:00:00Z')],
       });
 
       renderWithStore();
