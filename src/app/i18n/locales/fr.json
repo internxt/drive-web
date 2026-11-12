@@ -487,7 +487,8 @@
       },
       "timeline": {
         "today": "Aujourd'hui",
-        "yesterday": "Hier"
+        "yesterday": "Hier",
+        "monthError": "Certaines photos de {{month}} n'ont pas pu être chargées"
       }
     },
     "favorites": {
@@ -1390,7 +1391,8 @@
       "errors": {}
     },
     "subtitles": {
-      "upload-failed": "Échec du téléchargement"
+      "upload-failed": "Échec du téléchargement",
+      "folder-removal-failed": "Impossible de supprimer le dossier importé"
     },
     "generalErrorMessages": {
       "retryUploadFailed": "Quelque chose s'est mal passé en réessayant de télécharger. Essayez de télécharger à nouveau",

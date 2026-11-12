@@ -40,6 +40,17 @@ export enum TaskEvent {
   TaskError = 'task-error',
 }
 
+export interface FailedUploadItem {
+  name: string;
+  type?: string;
+  size: number;
+  modifiedAt: number;
+  isFolder: boolean;
+  isRetryable: boolean;
+  isRetrying: boolean;
+  retry: () => Promise<void>;
+}
+
 export interface BaseTask {
   id: string;
   relatedTaskId?: string;
@@ -51,6 +62,8 @@ export interface BaseTask {
   downloadedProgress?: number;
   subtitle?: string;
   stop?: () => Promise<void>;
+  failedItems?: FailedUploadItem[];
+  retry?: () => Promise<void>;
 }
 
 export interface CreateFolderTask extends BaseTask {
