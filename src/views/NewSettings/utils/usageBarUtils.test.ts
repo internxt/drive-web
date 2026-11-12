@@ -42,14 +42,19 @@ describe('getUsageBarPercentages', () => {
     expect(result).toEqual({ drivePercentage: 0, backupPercentage: 0, isOverLimit: false });
   });
 
-  test('when values are not finite, then percentages are never NaN or Infinity', () => {
+  test('when values are not finite, then they are treated as zero and nothing is drawn', () => {
     const result = getPercentages({
       driveUsageBytes: Number.NaN,
       backupsUsageBytes: Infinity,
       spaceLimitBytes: Infinity,
     });
 
-    expect(Number.isFinite(result.drivePercentage)).toBe(true);
-    expect(Number.isFinite(result.backupPercentage)).toBe(true);
+    expect(result).toEqual({ drivePercentage: 0, backupPercentage: 0, isOverLimit: false });
+  });
+
+  test('when a usage value is negative, then it is treated as zero', () => {
+    const result = getPercentages({ driveUsageBytes: -5 * GB, backupsUsageBytes: 2.5 * GB });
+
+    expect(result).toEqual({ drivePercentage: 0, backupPercentage: 25, isOverLimit: false });
   });
 });
