@@ -8,17 +8,16 @@ interface ErrorWithStatus extends Error {
   headers?: Record<string, string>;
 }
 
-const toMessageText = (candidate: unknown): string => {
-  const texts = Array.isArray(candidate) ? candidate : [candidate];
-  return texts.filter((text): text is string => typeof text === 'string' && text.trim() !== '').join(', ');
-};
+const isNonBlankString = (value: unknown): value is string => typeof value === 'string' && value.trim() !== '';
+
+const joinNonBlankStrings = (field: unknown): string => [field].flat().filter(isNonBlankString).join(', ');
 
 /**
- * Returns the first candidate that yields readable text: a non-blank string, or an array
- * (e.g. validation errors) joined by ', ' from its non-blank string items.
+ * Returns the first response field with readable text. Array fields
+ * (e.g. validation errors) are joined by ', '.
  */
-const pickMessage = (...candidates: unknown[]): string | undefined =>
-  candidates.map(toMessageText).find((text) => text !== '');
+const findFirstReadableMessage = (...fields: unknown[]): string | undefined =>
+  fields.map(joinNonBlankStrings).find((text) => text !== '');
 
 const errorService = {
   /**
@@ -44,7 +43,7 @@ const errorService = {
 
     if (err instanceof AxiosResponseError) {
       const data = err.data as { error?: string; message?: string } | undefined;
-      const message = pickMessage(data?.message, data?.error, err.message) ?? 'Unknown error';
+      const message = findFirstReadableMessage(data?.message, data?.error, err.message) ?? 'Unknown error';
       const headers = err.xRequestId ? { 'x-request-id': err.xRequestId } : undefined;
       return new AppError(message, err.status, data?.error, headers);
     }
@@ -57,7 +56,8 @@ const errorService = {
       const axiosError = err as AxiosError<{ error?: string; message?: string }>;
       const responseData = axiosError.response?.data;
       const headers = axiosError.response?.headers as Record<string, string>;
-      const message = pickMessage(responseData?.message, responseData?.error, axiosError.message) ?? 'Unknown error';
+      const message =
+        findFirstReadableMessage(responseData?.message, responseData?.error, axiosError.message) ?? 'Unknown error';
       return new AppError(message, axiosError.response?.status, undefined, headers);
     }
 
@@ -71,7 +71,7 @@ const errorService = {
     }
 
     const map = err as Record<string, unknown>;
-    const message = pickMessage(map.message);
+    const message = findFirstReadableMessage(map.message);
     return message ? new AppError(message, map.status as number) : new AppError('Unknown error');
   },
 };

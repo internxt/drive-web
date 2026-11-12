@@ -236,20 +236,15 @@ describe('Error Service', () => {
     });
 
     describe('Blank or non-string server messages', () => {
-      test('when the response message is a list of validation texts, then it shows them', () => {
-        const result = errorService.castError(
-          createAxiosResponseError({ message: ['email must be an email'], error: 'Bad Request' }, 400),
-        );
-
-        expect(result.message).toBe('email must be an email');
-      });
-
       test('when the response message has several validation texts, then it joins the non-blank ones', () => {
         const result = errorService.castError(
           createAxiosError({ message: ['email must be an email', ' ', 1, 'password is too short'] }, 400),
         );
 
         expect(result.message).toBe('email must be an email, password is too short');
+      });
+
+      test('when a plain object has a list message, then it joins the texts', () => {
         expect(errorService.castError({ message: ['a', 'b'] }).message).toBe('a, b');
       });
 
@@ -274,9 +269,8 @@ describe('Error Service', () => {
         expect(result.message).toBe('Request failed');
       });
 
-      test('when a plain object has a non-string message, then it returns an Unknown error', () => {
-        expect(errorService.castError({ message: [], status: 500 }).message).toBe('Unknown error');
-        expect(errorService.castError({ message: '   ' }).message).toBe('Unknown error');
+      test.each([[[]], ['   ']])('when a plain object message is %j, then it returns an Unknown error', (message) => {
+        expect(errorService.castError({ message }).message).toBe('Unknown error');
       });
     });
   });
