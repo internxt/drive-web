@@ -109,6 +109,10 @@ const requestedFolders = () =>
 const photo = (plainName: string, folderUuid: string, creationTime: string) =>
   getPhotoFolderFile({ uuid: plainName, plainName, type: 'jpg', folderUuid, creationTime });
 
+let nextFileId = 1;
+const file = (plainName: string, type: string, folderUuid: string, creationTime: string) =>
+  getPhotoFolderFile({ id: nextFileId++, uuid: `${plainName}.${type}`, plainName, type, folderUuid, creationTime });
+
 const photosOfDay = (folderUuid: string, count: number) =>
   Array.from({ length: count }, (_, index) =>
     photo(`IMG_${String(index + 1).padStart(4, '0')}`, folderUuid, '2025-11-03T09:00:00Z'),
@@ -217,6 +221,7 @@ document.head.appendChild(galleryStyles);
 describe('Photos view', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    nextFileId = 1;
     givenGallerySize(1000, 600);
     vi.stubGlobal('ResizeObserver', FakeResizeObserver);
     givenSubfolders({});
@@ -648,9 +653,6 @@ describe('Photos view', () => {
     });
 
     describe('Live Photos, bursts and videos', () => {
-      const file = (plainName: string, type: string, folderUuid: string, creationTime: string) =>
-        getPhotoFolderFile({ uuid: `${plainName}.${type}`, plainName, type, folderUuid, creationTime });
-
       const tile = (name: string) => screen.getByRole('img', { name });
 
       beforeEach(() => {
@@ -1142,10 +1144,6 @@ describe('Photos view', () => {
   });
 
   describe('Viewing a photo', () => {
-    let nextFileId = 1;
-    const file = (plainName: string, type: string, folderUuid: string, creationTime: string) =>
-      getPhotoFolderFile({ id: nextFileId++, uuid: `${plainName}.${type}`, plainName, type, folderUuid, creationTime });
-
     const imageContent = (): Promise<Blob> =>
       new Promise((resolve) => {
         const canvas = document.createElement('canvas');
@@ -1158,7 +1156,6 @@ describe('Photos view', () => {
     const viewer = () => screen.getByRole('dialog');
 
     beforeEach(() => {
-      nextFileId = 1;
       givenDevices([iphone, pixel]);
       givenSubfolders({
         iphone: [getPhotoFolder({ uuid: 'iphone-2025', plainName: '2025' })],
@@ -1301,10 +1298,6 @@ describe('Photos view', () => {
   });
 
   describe('Selecting photos', () => {
-    let nextFileId = 1;
-    const file = (plainName: string, type: string, folderUuid: string, creationTime: string) =>
-      getPhotoFolderFile({ id: nextFileId++, uuid: `${plainName}.${type}`, plainName, type, folderUuid, creationTime });
-
     const tick = async (name: string) => {
       await screen.findByRole('checkbox', { name });
       fireEvent.click(screen.getByRole('checkbox', { name }));
@@ -1314,7 +1307,6 @@ describe('Photos view', () => {
       within(selectionHeader() as HTMLElement).getByText(/contextMenu\.itemsSelected/).textContent;
 
     beforeEach(() => {
-      nextFileId = 1;
       givenDevices([iphone, pixel]);
       givenSubfolders({
         iphone: [getPhotoFolder({ uuid: 'iphone-2025', plainName: '2025' })],
