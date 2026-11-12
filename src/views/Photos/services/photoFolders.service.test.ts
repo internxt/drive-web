@@ -130,6 +130,13 @@ describe('Photo backup folders', () => {
           thumbnail: null,
           kind: 'photo',
           relatedFiles: [],
+          file: expect.objectContaining({
+            uuid: 'photo-a',
+            name: 'IMG_A',
+            type: 'heic',
+            size: 2048000,
+            isFolder: false,
+          }),
         },
         {
           id: 1,
@@ -143,6 +150,13 @@ describe('Photo backup folders', () => {
           thumbnail: null,
           kind: 'photo',
           relatedFiles: [],
+          file: expect.objectContaining({
+            uuid: 'photo-b',
+            name: 'IMG_B',
+            type: 'jpg',
+            size: 2048000,
+            isFolder: false,
+          }),
         },
       ]);
       expect(photosClient.getFilesInFolders).toHaveBeenCalledWith({

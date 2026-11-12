@@ -1,8 +1,22 @@
+import { ReactNode } from 'react';
+import { configureStore } from '@reduxjs/toolkit';
+import { Provider } from 'react-redux';
 import { act, fireEvent, render, renderHook, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, Mock, test, vi } from 'vitest';
 import { getDatabasePhotoThumbnail, updateDatabasePhotoThumbnail } from 'app/drive/services/database.service';
 import fetchFileBlob from 'app/drive/services/download.service/fetchFileBlob';
 import errorService from 'services/error.service';
+import { DriveItemData } from 'app/drive/types';
+import { DownloadManager } from 'app/network/DownloadManager';
+import { uploadFile as uploadToBucket } from 'app/network/upload';
+import {
+  FilePreviewContentSource,
+  getFilePreviewContent,
+} from 'app/drive/components/FileViewer/services/filePreviewContent.service';
+import storageReducer from 'app/store/slices/storage';
+import uiReducer from 'app/store/slices/ui';
+import userReducer from 'app/store/slices/user';
+import workspacesReducer from 'app/store/slices/workspaces/workspacesStore';
 import { PhotoDevice as SdkPhotoDevice } from '@internxt/sdk/dist/drive/photos';
 import {
   getPhotoFolder,
@@ -15,7 +29,7 @@ import PhotosView from './PhotosView';
 
 const { photosClient, storageClient } = vi.hoisted(() => ({
   photosClient: { listDevices: vi.fn(), getFilesInFolders: vi.fn() },
-  storageClient: { getFolderFoldersByUuidWithCursor: vi.fn() },
+  storageClient: { getFolderFoldersByUuidWithCursor: vi.fn(), createThumbnailEntryWithUUID: vi.fn() },
 }));
 
 vi.mock('app/core/factory/sdk', () => ({
@@ -43,6 +57,19 @@ vi.mock('app/drive/services/database.service', async (importOriginal) => ({
   getDatabasePhotoThumbnail: vi.fn(),
   updateDatabasePhotoThumbnail: vi.fn(),
 }));
+
+vi.mock('app/network/DownloadManager', () => ({
+  DownloadManager: { downloadItem: vi.fn() },
+}));
+vi.mock('app/drive/components/FileViewer/services/filePreviewContent.service', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('app/drive/components/FileViewer/services/filePreviewContent.service')>()),
+  getFilePreviewContent: vi.fn(() => new Promise(() => undefined)),
+}));
+
+vi.mock('app/drive/services/network.service/getEnvironmentConfig', () => ({
+  getEnvironmentConfig: async () => ({ bridgeUser: 'user', bridgePass: 'pass', encryptionKey: 'key', bucketId: 'b' }),
+}));
+vi.mock('app/network/upload', () => ({ uploadFile: vi.fn() }));
 
 type Folder = ReturnType<typeof getPhotoFolder>;
 
@@ -1097,6 +1124,178 @@ describe('Photos view', () => {
 
         await waitFor(() => expect(revokeObjectURL).toHaveBeenCalledWith(thumbnailUrl));
       });
+    });
+  });
+
+  describe('Viewing a photo', () => {
+    let nextFileId = 1;
+    const file = (plainName: string, type: string, folderUuid: string, creationTime: string) =>
+      getPhotoFolderFile({ id: nextFileId++, uuid: `${plainName}.${type}`, plainName, type, folderUuid, creationTime });
+
+    const renderWithStore = () => {
+      const store = configureStore({
+        reducer: { storage: storageReducer, ui: uiReducer, user: userReducer, workspaces: workspacesReducer },
+        preloadedState: { user: { ...userReducer(undefined, { type: 'init' }), isAuthenticated: true } },
+      });
+      const wrapper = ({ children }: { children: ReactNode }) => <Provider store={store}>{children}</Provider>;
+      return render(<PhotosView />, { wrapper });
+    };
+
+    const imageContent = (): Promise<Blob> =>
+      new Promise((resolve) => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 400;
+        canvas.height = 300;
+        canvas.toBlob((blob) => resolve(blob as Blob), 'image/jpeg');
+      });
+
+    const openPhoto = async (name: string) => fireEvent.click(await screen.findByRole('button', { name }));
+    const viewer = () => screen.getByRole('dialog');
+    const downloadedFiles = () =>
+      (DownloadManager.downloadItem as Mock).mock.calls.map(([{ payload }]) =>
+        (payload as DriveItemData[]).map((item) => `${item.plainName}.${item.type}`),
+      );
+
+    beforeEach(() => {
+      nextFileId = 1;
+      givenDevices([iphone, pixel]);
+      givenSubfolders({
+        iphone: [getPhotoFolder({ uuid: 'iphone-2025', plainName: '2025' })],
+        'iphone-2025': [getPhotoFolder({ uuid: 'iphone-2025-11', plainName: '11' })],
+        'iphone-2025-11': [
+          getPhotoFolder({ uuid: 'iphone-2025-11-03', plainName: '3' }),
+          getPhotoFolder({ uuid: 'iphone-2025-11-01', plainName: '1' }),
+        ],
+        pixel: [getPhotoFolder({ uuid: 'pixel-2025', plainName: '2025' })],
+        'pixel-2025': [getPhotoFolder({ uuid: 'pixel-2025-11', plainName: '11' })],
+        'pixel-2025-11': [getPhotoFolder({ uuid: 'pixel-2025-11-03', plainName: '3' })],
+      });
+    });
+
+    test('When the user clicks a photo, then it is opened full size in the viewer', async () => {
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [file('IMG_0001', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z')],
+      });
+
+      renderWithStore();
+      await openPhoto('IMG_0001.jpg');
+
+      expect(viewer()).toHaveAccessibleName('IMG_0001.jpg');
+    });
+
+    test('When the user clicks a video, then the viewer opens it as a video to be played', async () => {
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [file('VID_0001', 'mp4', 'iphone-2025-11-03', '2025-11-03T09:00:00Z')],
+      });
+
+      renderWithStore();
+      await openPhoto('VID_0001.mp4');
+
+      expect(viewer()).toHaveAccessibleName('VID_0001.mp4');
+      expect(within(viewer()).queryByText('error.noFilePreview')).not.toBeInTheDocument();
+      expect(within(viewer()).queryByText(/error.filePreviewTooLarge/)).not.toBeInTheDocument();
+    });
+
+    test('When a photo is opened in the viewer, then the thumbnail made by the phone is kept', async () => {
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [file('IMG_0001', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z')],
+      });
+      (getFilePreviewContent as Mock).mockResolvedValueOnce({
+        blob: await imageContent(),
+        source: FilePreviewContentSource.Download,
+      });
+
+      renderWithStore();
+      await openPhoto('IMG_0001.jpg');
+
+      await within(viewer()).findByRole('img', { name: 'IMG_0001' });
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      expect(uploadToBucket).not.toHaveBeenCalled();
+      expect(storageClient.createThumbnailEntryWithUUID).not.toHaveBeenCalled();
+    });
+
+    test('When the user moves to the next and previous photos, then they follow the gallery order across days and devices', async () => {
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [file('IMG_IPHONE', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z')],
+        'pixel-2025-11-03': [file('IMG_PIXEL', 'jpg', 'pixel-2025-11-03', '2025-11-03T12:00:00Z')],
+        'iphone-2025-11-01': [file('IMG_OLDER', 'jpg', 'iphone-2025-11-01', '2025-11-01T09:00:00Z')],
+      });
+
+      renderWithStore();
+      await openPhoto('IMG_PIXEL.jpg');
+
+      fireEvent.click(screen.getByTitle('actions.next'));
+      expect(viewer()).toHaveAccessibleName('IMG_IPHONE.jpg');
+      fireEvent.click(screen.getByTitle('actions.next'));
+      expect(viewer()).toHaveAccessibleName('IMG_OLDER.jpg');
+      expect(screen.queryByTitle('actions.next')).not.toBeInTheDocument();
+
+      fireEvent.click(screen.getByTitle('actions.previous'));
+      expect(viewer()).toHaveAccessibleName('IMG_IPHONE.jpg');
+    });
+
+    test('When a Live Photo is downloaded from the viewer, then its video is downloaded with it', async () => {
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [
+          file('IMG_0001', 'HEIC', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          file('IMG_0001.livephoto', 'MOV', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+        ],
+      });
+
+      renderWithStore();
+      await openPhoto('IMG_0001.HEIC');
+      fireEvent.click(within(viewer()).getAllByTitle('actions.download')[0]);
+
+      expect(downloadedFiles()).toStrictEqual([['IMG_0001.HEIC', 'IMG_0001.livephoto.MOV']]);
+    });
+
+    test('When a burst is downloaded from the viewer, then all its photos are downloaded', async () => {
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [
+          file('IMG_0003', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          file('IMG_0003.burst.1', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          file('IMG_0003.burst.2', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+        ],
+      });
+
+      renderWithStore();
+      await openPhoto('IMG_0003.jpg');
+      fireEvent.click(within(viewer()).getAllByTitle('actions.download')[0]);
+
+      expect(downloadedFiles()).toStrictEqual([['IMG_0003.jpg', 'IMG_0003.burst.1.jpg', 'IMG_0003.burst.2.jpg']]);
+    });
+
+    test('When the user opens the menu of the viewer, then they can only download, with the related files', async () => {
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [
+          file('IMG_0001', 'HEIC', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          file('IMG_0001.livephoto', 'MOV', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+        ],
+      });
+
+      renderWithStore();
+      await openPhoto('IMG_0001.HEIC');
+      fireEvent.click(within(viewer()).getByRole('button', { expanded: false }));
+      const menuItems = within(viewer()).getAllByText(/^drive\.dropdown\./);
+
+      expect(menuItems.map((item) => item.textContent)).toStrictEqual(['drive.dropdown.download']);
+      fireEvent.click(menuItems[0]);
+      expect(downloadedFiles()).toStrictEqual([['IMG_0001.HEIC', 'IMG_0001.livephoto.MOV']]);
+    });
+
+    test('When a single photo is downloaded from the viewer, then only that photo is downloaded', async () => {
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [
+          file('IMG_0001', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          file('IMG_0002', 'jpg', 'iphone-2025-11-03', '2025-11-03T10:00:00Z'),
+        ],
+      });
+
+      renderWithStore();
+      await openPhoto('IMG_0001.jpg');
+      fireEvent.click(within(viewer()).getAllByTitle('actions.download')[0]);
+
+      expect(downloadedFiles()).toStrictEqual([['IMG_0001.jpg']]);
     });
   });
 });

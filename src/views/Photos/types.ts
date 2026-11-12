@@ -1,4 +1,5 @@
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
+import { DriveItemData } from 'app/drive/types';
 
 export interface PhotoDevice {
   uuid: string;
@@ -31,4 +32,5 @@ export interface Photo {
   thumbnail: PhotoThumbnail | null;
   kind: PhotoKind;
   relatedFiles: Photo[];
+  file: DriveItemData;
 }
