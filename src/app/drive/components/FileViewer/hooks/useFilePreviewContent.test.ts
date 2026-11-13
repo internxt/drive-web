@@ -146,19 +146,23 @@ describe('Loading the content of a file preview', () => {
     expect(result.current.blob).toBe(secondContent);
   });
 
-  test('When two files share the same numeric id, then each one keeps its own cached content', async () => {
-    cachedFiles.set(FILE_UUID, { source: contentOf('first'), updatedAt: UPDATED_AT });
+  test('When two different files are opened, then each one keeps its own cached content', async () => {
+    renderPreview(createFile({ id: 0, uuid: FILE_UUID }));
+    const firstDownload = await waitForDownload(FILE_UUID);
+    const firstContent = contentOf('first');
+    await act(async () => firstDownload.finish(firstContent));
 
     const { result } = renderPreview(createFile({ id: 0, uuid: OTHER_FILE_UUID }));
-    const download = await waitForDownload(OTHER_FILE_UUID);
+    const secondDownload = await waitForDownload(OTHER_FILE_UUID);
     const secondContent = contentOf('second');
-    await act(async () => download.finish(secondContent));
+    await act(async () => secondDownload.finish(secondContent));
 
     expect(result.current.blob).toBe(secondContent);
+    expect(cachedFiles.get(FILE_UUID)?.source).toBe(firstContent);
     expect(cachedFiles.get(OTHER_FILE_UUID)?.source).toBe(secondContent);
   });
 
-  test('When the user moves between files with the same numeric id, then the new file is loaded', async () => {
+  test('When the user moves to another file after the first one has loaded, then the new file content is shown', async () => {
     const { result, rerender } = renderPreview(createFile({ id: 0, uuid: FILE_UUID }));
     const firstDownload = await waitForDownload(FILE_UUID);
     await act(async () => firstDownload.finish(contentOf('first')));

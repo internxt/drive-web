@@ -326,7 +326,7 @@ export async function downloadFolderAsZip({
   }, maxConcurrency);
 
   const addUniqueItem = (item) => {
-    const isItemAlreadyAdded = totalItems.some((i) => i.id === item.id);
+    const isItemAlreadyAdded = totalItems.some((i) => i.uuid === item.uuid);
     if (!isItemAlreadyAdded) {
       totalItems.push(item);
     }
