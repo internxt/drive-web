@@ -1,7 +1,6 @@
 import { FileToUpload } from 'app/drive/services/file.service/types';
 import { logNetworkInfoForUpload } from 'app/network/networkInformation';
 import { PersistUploadRepository } from 'app/repositories/DatabaseUploadRepository';
-import tasksService from 'app/tasks/services/tasks.service';
 import { TaskData, TaskStatus } from 'app/tasks/types';
 import { errorMerge } from 'app/tasks/upload/uploadTaskErrors';
 import errorService from 'services/error.service';
@@ -15,6 +14,8 @@ export interface UploadTrackerProps {
   uploadRepository: PersistUploadRepository;
   stop: () => void;
   retry: (pickedItem?: UploadItem) => Promise<void>;
+  pause: () => void;
+  resume: () => void;
   onItemRemoved?: (removedItem: UploadedItem, parentFolderUuid: string) => void;
 }
 
@@ -25,6 +26,7 @@ export interface UploadTrackerProps {
 export abstract class UploadTracker<Item extends UploadItem = UploadItem> {
   protected readonly failures = new FailureList();
   protected isCancelled = false;
+  private isPaused = false;
   private pendingItems = 0;
   private finished = Promise.resolve();
   private resolveFinished = () => undefined as void;
@@ -40,7 +42,7 @@ export abstract class UploadTracker<Item extends UploadItem = UploadItem> {
 
   protected abstract uploadSucceeded(item: UploadItem, uploadedItem: UploadedItem): void;
 
-  protected abstract getRetryProgress(): number;
+  protected abstract getUploadedProgress(): number;
 
   protected abstract finishUpload(): void | Promise<void>;
 
@@ -97,6 +99,27 @@ export abstract class UploadTracker<Item extends UploadItem = UploadItem> {
     this.taskUpdater.dropPendingProgress();
   }
 
+  canBePaused(): boolean {
+    return !this.hasEnded() && !this.isPaused;
+  }
+
+  canBeResumed(): boolean {
+    return !this.hasEnded() && this.isPaused;
+  }
+
+  pause(): void {
+    this.isPaused = true;
+    this.taskUpdater.dropPendingProgress();
+    this.updateTask({ status: TaskStatus.Paused });
+    this.saveUploadState(TaskStatus.Paused);
+  }
+
+  resume(): void {
+    this.isPaused = false;
+    this.updateTask({ status: TaskStatus.InProcess });
+    this.saveUploadState(TaskStatus.InProcess);
+  }
+
   takeRetryable(pickedItem?: UploadItem): UploadItem[] {
     if (this.isCancelled) return [];
 
@@ -104,7 +127,11 @@ export abstract class UploadTracker<Item extends UploadItem = UploadItem> {
     if (items.length === 0) return [];
 
     this.taskUpdater.updateFailedItems();
-    this.updateTask({ status: TaskStatus.InProcess, subtitle: undefined, progress: this.getRetryProgress() });
+    this.updateTask({
+      status: this.isPaused ? TaskStatus.Paused : TaskStatus.InProcess,
+      subtitle: undefined,
+      progress: this.getUploadedProgress(),
+    });
     return items;
   }
 
@@ -116,8 +143,22 @@ export abstract class UploadTracker<Item extends UploadItem = UploadItem> {
     if (!this.isStopped()) this.taskUpdater.updateProgress(progress);
   }
 
+  /**
+   * Cancelled, or with nothing left to upload. A paused upload has not ended.
+   */
+  private hasEnded(): boolean {
+    return this.isCancelled || this.pendingItems === 0;
+  }
+
   protected isStopped(): boolean {
-    return this.isCancelled || tasksService.findTask(this.taskId)?.status === TaskStatus.Paused;
+    return this.isCancelled || this.isPaused;
+  }
+
+  /**
+   * The upload worker reads this state to pause or continue the files already uploading.
+   */
+  protected saveUploadState(status: TaskStatus): void {
+    this.props.uploadRepository.setUploadState(this.taskId, status).catch((error) => errorService.reportError(error));
   }
 
   /**

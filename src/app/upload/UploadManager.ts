@@ -121,7 +121,7 @@ const notifyIgnoringListenerErrors = async (notify: () => unknown): Promise<void
  * files found later never end up uploading one at a time behind them. Every item ends either succeeded, failed or
  * cancelled: a failed item never stops the others, except when the storage is full, which fails the pending
  * ones. An item that finishes uploading right after being cancelled is still reported as succeeded, since it
- * does exist in the destination.
+ * does exist in the destination. The items of a paused upload wait without starting until it is resumed.
  */
 export class UploadManager {
   private readonly uploadByOptions = new WeakMap<UploadRunOptions, UploadInProgress>();
@@ -130,6 +130,8 @@ export class UploadManager {
   private readonly storageFullFailureByStorage = new Map<string, UploadFailure>();
   private readonly cancelledItems = new WeakSet<UploadItem>();
   private readonly abortActiveUploadOf = new Map<UploadItem, () => void>();
+  private readonly pausedUploads = new WeakSet<UploadItem>();
+  private readonly itemsWaitingForResumeOf = new Map<UploadItem, UploadItem[]>();
   private result: UploadResult = { succeeded: [], failed: [] };
 
   private readonly uploadQueue: AsyncPriorityQueue<UploadItem> = priorityQueue<UploadItem>((item, done) => {
@@ -163,6 +165,21 @@ export class UploadManager {
   cancelItem(item: UploadItem): void {
     this.cancelledItems.add(item);
     this.abortActiveUploadsPartOf(item);
+    this.releaseItemsWaitingForResume(getTopLevelItem(item));
+  }
+
+  /**
+   * The items of the upload that have not started yet wait until it is resumed, and `run` doesn't wait for them:
+   * they end later, through the events. The ones already uploading keep going: pausing them is up to the upload
+   * worker.
+   */
+  pause(topLevelItem: UploadItem): void {
+    this.pausedUploads.add(topLevelItem);
+  }
+
+  resume(topLevelItem: UploadItem): void {
+    this.pausedUploads.delete(topLevelItem);
+    this.releaseItemsWaitingForResume(topLevelItem);
   }
 
   clearStorageFull(ownerUserAuthenticationData?: OwnerUserAuthenticationData): void {
@@ -184,6 +201,12 @@ export class UploadManager {
   private async processItem(item: UploadItem): Promise<void> {
     if (this.isItemCancelled(item)) {
       await notifyIgnoringListenerErrors(() => this.getEventsOf(item)?.onItemCancelled?.(item));
+      return;
+    }
+
+    const topLevelItem = getTopLevelItem(item);
+    if (this.pausedUploads.has(topLevelItem)) {
+      this.waitForResume(topLevelItem, item);
       return;
     }
 
@@ -226,6 +249,20 @@ export class UploadManager {
     if (haveAllFoldersQueuedTheirContent) {
       upload.largeFilesWaitingForFolders.splice(0).forEach((largeFile) => this.pushToQueue(largeFile));
     }
+  }
+
+  private waitForResume(topLevelItem: UploadItem, item: UploadItem): void {
+    const waitingItems = this.itemsWaitingForResumeOf.get(topLevelItem) ?? [];
+    waitingItems.push(item);
+    this.itemsWaitingForResumeOf.set(topLevelItem, waitingItems);
+  }
+
+  private releaseItemsWaitingForResume(topLevelItem: UploadItem): void {
+    const waitingItems = this.itemsWaitingForResumeOf.get(topLevelItem);
+    if (!waitingItems) return;
+
+    this.itemsWaitingForResumeOf.delete(topLevelItem);
+    waitingItems.forEach((item) => this.pushToQueue(item));
   }
 
   private adjustConcurrencyFor(item: UploadItem): void {
