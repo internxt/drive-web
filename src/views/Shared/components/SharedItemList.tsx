@@ -70,7 +70,7 @@ export const SharedItemList = ({
   );
 
   const checkIfIsItemSelected = (item: AdvancedSharedItem) => {
-    return selectedItems.some((i) => item.id === i.id);
+    return selectedItems.some((i) => item.uuid === i.uuid);
   };
 
   const itemComposition = (item: AdvancedSharedItem) => (

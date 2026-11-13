@@ -96,7 +96,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
     if (folders) {
       const unselectedFolders = folders?.filter((folderItem) => {
-        return !itemsToMove.some((itemToMove) => itemToMove.id === folderItem.id);
+        return !itemsToMove.some((itemToMove) => itemToMove.uuid === folderItem.uuid);
       });
       setShownFolders(unselectedFolders);
     } else {

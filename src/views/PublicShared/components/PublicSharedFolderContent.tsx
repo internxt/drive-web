@@ -88,7 +88,7 @@ const PublicSharedFolderContent = ({
     let updatedSelectedItems = selectedItems;
 
     for (const change of changes) {
-      updatedSelectedItems = updatedSelectedItems.filter((item) => item.id !== change.props.id);
+      updatedSelectedItems = updatedSelectedItems.filter((item) => item.uuid !== change.props.uuid);
       if (change.value) {
         updatedSelectedItems = [...updatedSelectedItems, change.props];
       }

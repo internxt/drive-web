@@ -572,7 +572,7 @@ export const areItemArraysEqual = (firstArray: DownloadItemType[], secondArray: 
   return firstArray.every((itemInFirstArray) =>
     secondArray.some(
       (itemInSecondArray) =>
-        itemInSecondArray.id === itemInFirstArray.id &&
+        itemInSecondArray.uuid === itemInFirstArray.uuid &&
         Boolean(itemInSecondArray?.isFolder) === Boolean(itemInFirstArray?.isFolder),
     ),
   );

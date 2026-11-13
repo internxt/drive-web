@@ -28,7 +28,7 @@ const DriveExplorerGrid: FC<DriveExplorerGridProps> = (props: DriveExplorerGridP
 
   function itemsList(): JSX.Element[] {
     return props.items.map((item) => {
-      const itemKey = `${item.isFolder ? 'folder' : 'file'}-${item.id}`;
+      const itemKey = `${item.isFolder ? 'folder' : 'file'}-${item.uuid}`;
       return <DriveExplorerGridItem setEditNameItem={setEditNameItem} key={itemKey} item={item} />;
     });
   }
@@ -46,7 +46,7 @@ const DriveExplorerGrid: FC<DriveExplorerGridProps> = (props: DriveExplorerGridP
       .filter((item) => !item.isFolder)
       .map((item) => {
         const itemParentId = item.parentId || item.folderId;
-        const itemKey = `'file'-${item.id}-${itemParentId}`;
+        const itemKey = `'file'-${item.uuid}-${itemParentId}`;
 
         return (
           <DriveExplorerGridItem
@@ -65,7 +65,7 @@ const DriveExplorerGrid: FC<DriveExplorerGridProps> = (props: DriveExplorerGridP
       .filter((item) => item.isFolder)
       .map((item) => {
         const itemParentId = item.parentId || item.folderId;
-        const itemKey = `'folder'-${item.id}-${itemParentId}`;
+        const itemKey = `'folder'-${item.uuid}-${itemParentId}`;
 
         return (
           <DriveExplorerGridItem

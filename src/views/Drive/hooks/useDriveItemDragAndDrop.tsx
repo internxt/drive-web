@@ -54,7 +54,7 @@ const handleDriveItemDrop = async (
 ) => {
   const itemsToMove = isSomeItemSelected
     ? [...selectedItems, droppedData].filter(
-        (a, index, self) => index === self.findIndex((b) => a.id === b.id && a.isFolder === b.isFolder),
+        (a, index, self) => index === self.findIndex((b) => a.uuid === b.uuid && a.isFolder === b.isFolder),
       )
     : [droppedData];
 

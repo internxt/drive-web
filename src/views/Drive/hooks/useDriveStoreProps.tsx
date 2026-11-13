@@ -20,7 +20,7 @@ const useDriveItemStoreProps = (): DriveItemStoreProps => {
     (state: RootState) =>
     (item: DriveItemData): boolean => {
       return (
-        item.id === state.ui.currentEditingNameDriveItem?.id &&
+        item.uuid === state.ui.currentEditingNameDriveItem?.uuid &&
         item.isFolder === state.ui.currentEditingNameDriveItem?.isFolder
       );
     };

@@ -328,9 +328,9 @@ function SharedView({
   };
 
   const removeItemsFromList = (itemsToRemove: DriveItemData[]) => {
-    const selectedItemsIDs = new Set(itemsToRemove.map((selectedItem) => selectedItem.id));
-    const newSharedFoldersList = shareFolders.filter((sharedItem) => !selectedItemsIDs.has(sharedItem.id));
-    const newSharedFilesList = shareFiles.filter((sharedItem) => !selectedItemsIDs.has(sharedItem.id));
+    const selectedItemsUuids = new Set(itemsToRemove.map((selectedItem) => selectedItem.uuid));
+    const newSharedFoldersList = shareFolders.filter((sharedItem) => !selectedItemsUuids.has(sharedItem.uuid));
+    const newSharedFilesList = shareFiles.filter((sharedItem) => !selectedItemsUuids.has(sharedItem.uuid));
 
     actionDispatch(setSharedFolders(newSharedFoldersList));
     actionDispatch(setSharedFiles(newSharedFilesList));

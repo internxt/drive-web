@@ -193,7 +193,7 @@ export const storageSlice = createSlice({
     },
     selectItems: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       const itemsToSelect = action.payload.filter((item) => {
-        return !state.selectedItems.some((i) => item.id === i.id && item.isFolder === i.isFolder);
+        return !state.selectedItems.some((i) => item.uuid === i.uuid && item.isFolder === i.isFolder);
       });
 
       state.selectedItems.push(...itemsToSelect);
@@ -201,10 +201,10 @@ export const storageSlice = createSlice({
     deselectItems: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       action.payload.forEach((itemToDeselect) => {
         const index: number = state.selectedItems.findIndex(
-          (item) => item.id === itemToDeselect.id && item.isFolder === itemToDeselect.isFolder,
+          (item) => item.uuid === itemToDeselect.uuid && item.isFolder === itemToDeselect.isFolder,
         );
 
-        state.selectedItems.splice(index, 1);
+        if (index !== -1) state.selectedItems.splice(index, 1);
       });
     },
     clearSelectedItems: (state: StorageState) => {
@@ -238,10 +238,10 @@ export const storageSlice = createSlice({
     popItemsToDelete: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       action.payload.forEach((itemToPop) => {
         const index: number = state.itemsOnTrash.findIndex(
-          (item) => item.id === itemToPop.id && item.isFolder === itemToPop.isFolder,
+          (item) => item.uuid === itemToPop.uuid && item.isFolder === itemToPop.isFolder,
         );
 
-        state.itemsOnTrash.splice(index, 1);
+        if (index !== -1) state.itemsOnTrash.splice(index, 1);
       });
     },
     popNamePathUpTo: (state: StorageState, action: PayloadAction<FolderPath>) => {
@@ -360,12 +360,12 @@ export const storageSlice = createSlice({
       const folderItems = action.payload.folderIds ?? Object.keys(state.levels).map((folderId) => folderId);
       const folderIds = Array.isArray(folderItems) ? folderItems : [folderItems];
 
-      const uniqueNewItemsId = new Set(itemsToPush.map((item) => item.id));
+      const uniqueNewItemsUuid = new Set(itemsToPush.map((item) => item.uuid));
 
       folderIds.forEach((folderId) => {
         const folderList = state.levels[folderId] ?? [];
 
-        const filteredItems = folderList.filter((existingItem) => !uniqueNewItemsId.has(existingItem.id));
+        const filteredItems = folderList.filter((existingItem) => !uniqueNewItemsUuid.has(existingItem.uuid));
         const items = [...filteredItems, ...itemsToPush];
 
         state.levels[folderId] = items;
@@ -375,7 +375,7 @@ export const storageSlice = createSlice({
 
       if (action.payload.updateRecents) {
         state.recents = [
-          ...state.recents.filter((existingItem) => !uniqueNewItemsId.has(existingItem.id)),
+          ...state.recents.filter((existingItem) => !uniqueNewItemsUuid.has(existingItem.uuid)),
           ...itemsToPush.filter((item) => !item.isFolder),
         ];
       }
@@ -387,7 +387,7 @@ export const storageSlice = createSlice({
       const folderIds = action.payload.folderIds || Object.keys(state.levels).map((folderId) => folderId);
       const itemsToDelete = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
       const isItemToDelete = (item: DriveItemData) =>
-        itemsToDelete.some((i) => i.id === item.id && !!i.isFolder === !!item.isFolder);
+        itemsToDelete.some((i) => i.uuid === item.uuid && !!i.isFolder === !!item.isFolder);
 
       folderIds.forEach((folderId) => {
         const folderItems = state.levels[folderId] ?? [];

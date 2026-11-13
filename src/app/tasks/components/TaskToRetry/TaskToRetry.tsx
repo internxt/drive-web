@@ -27,7 +27,7 @@ const getTaskId = ({ taskId, params }: Pick<RetryableTask, 'taskId' | 'params'>)
 
 const changeFileStatus = (file: RetryableTask, status: RetryableTaskStatus): void => {
   if (file.type === RetryableTaskType.Download) {
-    RetryManager.changeStatus(getTaskId(file), status, { id: file.params?.id });
+    RetryManager.changeStatus(getTaskId(file), status, { uuid: file.params?.uuid });
     return;
   }
   RetryManager.changeStatus(getTaskId(file), status);
