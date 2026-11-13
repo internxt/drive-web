@@ -12,7 +12,7 @@ export class PhotoThumbnailsService {
 
     const thumbnailBlob = await downloadThumbnail(thumbnail, false, abortController);
     updateDatabaseFilePreviewData({
-      fileId: photo.id,
+      fileUuid: photo.uuid,
       folderId: photo.folderId,
       previewBlob: thumbnailBlob,
       updatedAt: photo.updatedAt,

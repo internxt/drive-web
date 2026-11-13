@@ -4,28 +4,32 @@ import downloadService from 'app/drive/services/download.service';
 import { PreviewFileItem } from 'app/share/types';
 import errorService from 'services/error.service';
 import { useFilePreviewContent } from './useFilePreviewContent';
+import { v7 as uuidV7 } from 'uuid';
 
-type CachedFile = { fileId: number; sourceBlob: Blob; updatedAt: string };
+type CachedFile = { fileUuid: string; sourceBlob: Blob; updatedAt: string };
 
-const { cachedFiles } = vi.hoisted(() => ({ cachedFiles: new Map<number, { source: Blob; updatedAt: string }>() }));
+const { cachedFiles } = vi.hoisted(() => ({ cachedFiles: new Map<string, { source: Blob; updatedAt: string }>() }));
 
 const CACHE_SIZE_LIMIT = 50 * 1024 * 1024;
 
 vi.mock('app/drive/services/database.service', () => ({
   canFileBeCached: (file: PreviewFileItem) => file.size < CACHE_SIZE_LIMIT,
-  getDatabaseFileSourceData: async ({ fileId }: { fileId: number }) => cachedFiles.get(fileId),
-  updateDatabaseFileSourceData: async ({ fileId, sourceBlob, updatedAt }: CachedFile) => {
-    cachedFiles.set(fileId, { source: sourceBlob, updatedAt });
+  getDatabaseFileSourceData: async ({ fileUuid }: { fileUuid: string }) => cachedFiles.get(fileUuid),
+  updateDatabaseFileSourceData: async ({ fileUuid, sourceBlob, updatedAt }: CachedFile) => {
+    cachedFiles.set(fileUuid, { source: sourceBlob, updatedAt });
   },
 }));
 vi.mock('app/drive/services/download.service', () => ({ default: { fetchFileBlob: vi.fn() } }));
 vi.mock('services/error.service', () => ({ default: { reportError: vi.fn() } }));
 
+const FILE_UUID = uuidV7();
+const OTHER_FILE_UUID = uuidV7();
+
 const UPDATED_AT = '2026-01-02T00:00:00.000Z';
 const OLDER_DATE = '2026-01-01T00:00:00.000Z';
 
 type PendingDownload = {
-  fileId: number;
+  fileUuid: string;
   signal: AbortSignal;
   reportProgress: (progress: number) => void;
   finish: (blob: Blob) => void;
@@ -37,6 +41,7 @@ let downloads: PendingDownload[] = [];
 const createFile = (overrides: Partial<PreviewFileItem> = {}): PreviewFileItem =>
   ({
     id: 1,
+    uuid: FILE_UUID,
     fileId: 'network-file',
     bucket: 'bucket',
     type: 'txt',
@@ -54,9 +59,9 @@ const renderPreview = (file: PreviewFileItem, onFreshDownload = vi.fn()) =>
     { initialProps: { previewFile: file, isEnabled: true } },
   );
 
-const waitForDownload = async (fileId: number): Promise<PendingDownload> => {
-  await waitFor(() => expect(downloads.some((download) => download.fileId === fileId)).toBe(true));
-  return downloads.find((download) => download.fileId === fileId) as PendingDownload;
+const waitForDownload = async (fileUuid: string): Promise<PendingDownload> => {
+  await waitFor(() => expect(downloads.some((download) => download.fileUuid === fileUuid)).toBe(true));
+  return downloads.find((download) => download.fileUuid === fileUuid) as PendingDownload;
 };
 
 describe('Loading the content of a file preview', () => {
@@ -66,9 +71,9 @@ describe('Loading the content of a file preview', () => {
     vi.mocked(downloadService.fetchFileBlob).mockImplementation(
       (item, options) =>
         new Promise((finish, fail) => {
-          const { id: fileId } = item as unknown as PreviewFileItem;
+          const { uuid: fileUuid } = item as unknown as PreviewFileItem;
           const signal = options.abortController?.signal as AbortSignal;
-          downloads.push({ fileId, signal, reportProgress: options.updateProgressCallback, finish, fail });
+          downloads.push({ fileUuid, signal, reportProgress: options.updateProgressCallback, finish, fail });
         }),
     );
   });
@@ -77,7 +82,7 @@ describe('Loading the content of a file preview', () => {
     const content = contentOf('hello');
     const { result } = renderPreview(createFile());
 
-    const download = await waitForDownload(1);
+    const download = await waitForDownload(FILE_UUID);
     act(() => download.reportProgress(0.4));
     expect(result.current).toMatchObject({ progress: 0.4, blob: null });
 
@@ -87,7 +92,7 @@ describe('Loading the content of a file preview', () => {
 
   test('When the file is cached and up to date, then it is shown without downloading it again', async () => {
     const cachedContent = contentOf('cached');
-    cachedFiles.set(1, { source: cachedContent, updatedAt: UPDATED_AT });
+    cachedFiles.set(FILE_UUID, { source: cachedContent, updatedAt: UPDATED_AT });
     const onFreshDownload = vi.fn();
 
     const { result } = renderPreview(createFile(), onFreshDownload);
@@ -98,15 +103,15 @@ describe('Loading the content of a file preview', () => {
   });
 
   test('When the cached copy is older than the file, then it is downloaded again and the cache is refreshed', async () => {
-    cachedFiles.set(1, { source: contentOf('old'), updatedAt: OLDER_DATE });
+    cachedFiles.set(FILE_UUID, { source: contentOf('old'), updatedAt: OLDER_DATE });
     const newContent = contentOf('new');
     const { result } = renderPreview(createFile());
 
-    const download = await waitForDownload(1);
+    const download = await waitForDownload(FILE_UUID);
     await act(async () => download.finish(newContent));
 
     expect(result.current.blob).toBe(newContent);
-    expect(cachedFiles.get(1)).toStrictEqual({ source: newContent, updatedAt: UPDATED_AT });
+    expect(cachedFiles.get(FILE_UUID)).toStrictEqual({ source: newContent, updatedAt: UPDATED_AT });
   });
 
   test.each([
@@ -118,20 +123,20 @@ describe('Loading the content of a file preview', () => {
     const onFreshDownload = vi.fn();
     const { result } = renderPreview(file, onFreshDownload);
 
-    const download = await waitForDownload(1);
+    const download = await waitForDownload(FILE_UUID);
     await act(async () => download.finish(content));
 
     expect(result.current.blob).toBe(content);
-    expect(cachedFiles.has(1)).toBe(isCached);
+    expect(cachedFiles.has(FILE_UUID)).toBe(isCached);
     expect(onFreshDownload).toHaveBeenCalledWith(file, content);
   });
 
   test('When the user moves to another file before the first one finishes, then only the new file content and progress are shown', async () => {
-    const { result, rerender } = renderPreview(createFile({ id: 1 }));
-    const firstDownload = await waitForDownload(1);
+    const { result, rerender } = renderPreview(createFile({ id: 1, uuid: FILE_UUID }));
+    const firstDownload = await waitForDownload(FILE_UUID);
 
-    rerender({ previewFile: createFile({ id: 2 }), isEnabled: true });
-    const secondDownload = await waitForDownload(2);
+    rerender({ previewFile: createFile({ id: 2, uuid: OTHER_FILE_UUID }), isEnabled: true });
+    const secondDownload = await waitForDownload(OTHER_FILE_UUID);
     act(() => firstDownload.reportProgress(0.9));
     await act(async () => firstDownload.finish(contentOf('first')));
     expect(result.current).toMatchObject({ progress: 0, blob: null });
@@ -141,9 +146,34 @@ describe('Loading the content of a file preview', () => {
     expect(result.current.blob).toBe(secondContent);
   });
 
+  test('When two files share the same numeric id, then each one keeps its own cached content', async () => {
+    cachedFiles.set(FILE_UUID, { source: contentOf('first'), updatedAt: UPDATED_AT });
+
+    const { result } = renderPreview(createFile({ id: 0, uuid: OTHER_FILE_UUID }));
+    const download = await waitForDownload(OTHER_FILE_UUID);
+    const secondContent = contentOf('second');
+    await act(async () => download.finish(secondContent));
+
+    expect(result.current.blob).toBe(secondContent);
+    expect(cachedFiles.get(OTHER_FILE_UUID)?.source).toBe(secondContent);
+  });
+
+  test('When the user moves between files with the same numeric id, then the new file is loaded', async () => {
+    const { result, rerender } = renderPreview(createFile({ id: 0, uuid: FILE_UUID }));
+    const firstDownload = await waitForDownload(FILE_UUID);
+    await act(async () => firstDownload.finish(contentOf('first')));
+
+    rerender({ previewFile: createFile({ id: 0, uuid: OTHER_FILE_UUID }), isEnabled: true });
+    const secondDownload = await waitForDownload(OTHER_FILE_UUID);
+    const secondContent = contentOf('second');
+    await act(async () => secondDownload.finish(secondContent));
+
+    expect(result.current.blob).toBe(secondContent);
+  });
+
   test('When the viewer is closed while downloading, then the download is cancelled without reporting an error', async () => {
     const { result, rerender } = renderPreview(createFile());
-    const download = await waitForDownload(1);
+    const download = await waitForDownload(FILE_UUID);
 
     rerender({ previewFile: createFile(), isEnabled: false });
     await act(async () => download.fail(Object.assign(new Error('aborted'), { name: 'AbortError' })));
@@ -157,7 +187,7 @@ describe('Loading the content of a file preview', () => {
     const error = new Error('network down');
     const { result } = renderPreview(createFile());
 
-    const download = await waitForDownload(1);
+    const download = await waitForDownload(FILE_UUID);
     await act(async () => download.fail(error));
 
     expect(result.current).toMatchObject({ hasFailed: true, blob: null });
@@ -168,7 +198,7 @@ describe('Loading the content of a file preview', () => {
     const file = createFile();
     const content = contentOf('hello');
     const { result, rerender } = renderPreview(file);
-    const download = await waitForDownload(1);
+    const download = await waitForDownload(FILE_UUID);
     await act(async () => download.finish(content));
 
     rerender({ previewFile: { ...file, name: 'renamed', plainName: 'renamed' }, isEnabled: true });
@@ -194,7 +224,7 @@ describe('Loading the content of a file preview', () => {
   test('When an image that needs converting is downloading, then the progress stops short of complete', async () => {
     const { result } = renderPreview(createFile({ type: 'heic' }));
 
-    const download = await waitForDownload(1);
+    const download = await waitForDownload(FILE_UUID);
     act(() => download.reportProgress(1));
 
     expect(result.current.progress).toBe(0.95);

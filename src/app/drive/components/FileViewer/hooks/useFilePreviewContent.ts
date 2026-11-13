@@ -14,7 +14,7 @@ interface UseFilePreviewContentProps {
 }
 
 interface PreviewContentState {
-  fileId: PreviewFileItem['id'];
+  fileUuid: PreviewFileItem['uuid'];
   blob: Blob | null;
   progress: number;
   hasFailed: boolean;
@@ -41,7 +41,7 @@ export const useFilePreviewContent = ({
   }, []);
 
   useEffect(() => {
-    setContent({ fileId: file.id, blob: null, progress: 0, hasFailed: false });
+    setContent({ fileUuid: file.uuid, blob: null, progress: 0, hasFailed: false });
 
     if (!isEnabled) return;
 
@@ -75,11 +75,11 @@ export const useFilePreviewContent = ({
       });
 
     return () => abortController.abort();
-  }, [file.id, isEnabled, isWorkspace]);
+  }, [file.uuid, isEnabled, isWorkspace]);
 
   const updateProgress = useCallback((progress: number) => updateContent({ progress }), [updateContent]);
 
-  const isCurrentFileContent = content?.fileId === file.id;
+  const isCurrentFileContent = content?.fileUuid === file.uuid;
 
   return {
     blob: isCurrentFileContent ? content.blob : null,

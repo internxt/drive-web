@@ -54,7 +54,7 @@ const FileViewer = ({
   onConvertedContent,
 }: FileViewerProps): JSX.Element => {
   const { translate } = useTranslationContext();
-  const [failedFileId, setFailedFileId] = useState<DriveFileData['id'] | null>(null);
+  const [failedFileUuid, setFailedFileUuid] = useState<DriveFileData['uuid'] | null>(null);
 
   const fileViewer = getFileViewer(file);
   const isTypeAllowed = !!fileViewer;
@@ -63,11 +63,11 @@ const FileViewer = ({
   const isVideoStreaming = isStreamed && (!isSafari || isFileSizePreviewable(file.size));
   const shouldRenderThePreview = isTypeAllowed && (isVideoStreaming || isPreviewableBySize(file));
   const isTooLargeToPreview = isTypeAllowed && !isPreviewableBySize(file);
-  const isItemValidToPreview = show && shouldRenderThePreview && failedFileId !== file.id && !hasPreviewFailed;
+  const isItemValidToPreview = show && shouldRenderThePreview && failedFileUuid !== file.uuid && !hasPreviewFailed;
   const canGoToPrevious = !isShareView && !!navigation?.hasPrevious;
   const canGoToNext = !isShareView && !!navigation?.hasNext;
 
-  const onViewerError = useCallback(() => setFailedFileId(file.id), [file.id]);
+  const onViewerError = useCallback(() => setFailedFileUuid(file.uuid), [file.uuid]);
 
   useNestedDialogsEscape();
 
@@ -123,7 +123,7 @@ const FileViewer = ({
                 {fileViewer && (isStreamed || blob) ? (
                   <Suspense fallback={<div></div>}>
                     <fileViewer.Viewer
-                      key={file.id}
+                      key={file.uuid}
                       blob={blob ?? null}
                       file={file}
                       disableVideoStream={disableVideoStream}
