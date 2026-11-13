@@ -7,6 +7,9 @@ import { AppView } from '../../core/types';
 import { AdvancedSharedItem } from '../types';
 import shareService from './share.service';
 
+const FIRST_PAGE = 0;
+const MIN_ITEMS_PER_PAGE = 1;
+
 /**
  * Handles access to a private shared folder, fetching its content and navigating accordingly.
  *
@@ -60,10 +63,15 @@ const handlePrivateSharedFolderAccess = async ({
 const getPrivateSharedFolderAccessData = async (folderUUID: string, workspaceId?: string) => {
   let response;
   if (workspaceId) {
-    const [promise] = workspacesService.getAllWorkspaceTeamSharedFolderFiles(workspaceId, folderUUID, 0, 0);
+    const [promise] = workspacesService.getAllWorkspaceTeamSharedFolderFiles(
+      workspaceId,
+      folderUUID,
+      FIRST_PAGE,
+      MIN_ITEMS_PER_PAGE,
+    );
     response = await promise;
   } else {
-    response = await shareService.getSharedFolderContent(folderUUID, 'folders', '', 0, 0);
+    response = await shareService.getSharedFolderContent(folderUUID, 'folders', '', FIRST_PAGE, MIN_ITEMS_PER_PAGE);
   }
 
   // TODO: ADD TO SDK TYPES THE NECESSARY FIELDS
