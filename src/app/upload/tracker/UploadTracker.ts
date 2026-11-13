@@ -9,6 +9,7 @@ import referralService from 'services/referral.service';
 import { UploadedItem, UploadItem, UploadItemKind } from '../types';
 import { UploadFailure } from '../uploadFailure';
 import { FailureList } from './FailureList';
+import { TaskUpdater } from './TaskUpdater';
 
 export interface UploadTrackerProps {
   uploadRepository: PersistUploadRepository;
@@ -27,12 +28,15 @@ export abstract class UploadTracker<Item extends UploadItem = UploadItem> {
   private pendingItems = 0;
   private finished = Promise.resolve();
   private resolveFinished = () => undefined as void;
+  private readonly taskUpdater: TaskUpdater;
 
   protected constructor(
     readonly item: Item,
     protected readonly props: UploadTrackerProps,
     readonly taskId: string,
-  ) {}
+  ) {
+    this.taskUpdater = new TaskUpdater(taskId, () => this.failures.toFailedItems());
+  }
 
   protected abstract uploadSucceeded(item: UploadItem, uploadedItem: UploadedItem): void;
 
@@ -51,7 +55,7 @@ export abstract class UploadTracker<Item extends UploadItem = UploadItem> {
   }
 
   onProgress(item: UploadItem, progress: number): void {
-    if (item === this.item && !this.isStopped()) this.updateTask({ progress });
+    if (item === this.item) this.updateProgress(progress);
   }
 
   onSucceeded(item: UploadItem, uploadedItem: UploadedItem): void {
@@ -67,7 +71,7 @@ export abstract class UploadTracker<Item extends UploadItem = UploadItem> {
   onFailed(item: UploadItem, failure: UploadFailure): void {
     try {
       this.failures.add(item, failure, () => this.props.retry(item));
-      this.syncFailedItems();
+      this.taskUpdater.updateFailedItems();
       if (item === this.item) this.updateTask(errorMerge(failure.reason));
     } finally {
       this.itemEnded();
@@ -90,6 +94,7 @@ export abstract class UploadTracker<Item extends UploadItem = UploadItem> {
 
   cancel(): void {
     this.isCancelled = true;
+    this.taskUpdater.dropPendingProgress();
   }
 
   takeRetryable(pickedItem?: UploadItem): UploadItem[] {
@@ -98,13 +103,17 @@ export abstract class UploadTracker<Item extends UploadItem = UploadItem> {
     const items = this.failures.takeRetryable(pickedItem);
     if (items.length === 0) return [];
 
-    this.syncFailedItems();
+    this.taskUpdater.updateFailedItems();
     this.updateTask({ status: TaskStatus.InProcess, subtitle: undefined, progress: this.getRetryProgress() });
     return items;
   }
 
   protected updateTask(merge: Partial<TaskData>): void {
-    tasksService.updateTask({ taskId: this.taskId, merge });
+    this.taskUpdater.update(merge);
+  }
+
+  protected updateProgress(progress: number): void {
+    if (!this.isStopped()) this.taskUpdater.updateProgress(progress);
   }
 
   protected isStopped(): boolean {
@@ -137,11 +146,7 @@ export abstract class UploadTracker<Item extends UploadItem = UploadItem> {
 
   private removeFailure(item: UploadItem): void {
     const hadFailed = this.failures.remove(item);
-    if (hadFailed) this.syncFailedItems();
-  }
-
-  private syncFailedItems(): void {
-    this.updateTask({ failedItems: this.failures.toFailedItems() });
+    if (hadFailed) this.taskUpdater.updateFailedItems();
   }
 
   private itemEnded(): void {
@@ -153,6 +158,7 @@ export abstract class UploadTracker<Item extends UploadItem = UploadItem> {
     const resolveFinished = this.resolveFinished;
     try {
       await this.finishUpload();
+      this.taskUpdater.flush();
       this.props.uploadRepository.removeUploadState(this.taskId).catch((error) => errorService.reportError(error));
     } catch (error) {
       errorService.reportError(error);
