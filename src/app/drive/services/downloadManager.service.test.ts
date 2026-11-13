@@ -8,6 +8,7 @@ import {
   areItemArraysEqual,
 } from 'app/drive/services/downloadManager.service';
 import { ErrorMessages } from 'app/core/constants';
+import { v7 as uuidV7 } from 'uuid';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, Mock, MockInstance, test, vi } from 'vitest';
 import { DriveFileData, DriveFolderData, DriveItemData } from '../types';
 import {
@@ -487,7 +488,7 @@ describe('downloadManagerService', () => {
 
   it('should downloadFolder keep working if some files fails', async () => {
     const mockTask = getTask([mockFolder]);
-    const mockFile2: DriveFileData = { ...mockFile, id: 2, name: 'File2' };
+    const mockFile2: DriveFileData = { ...mockFile, id: 2, uuid: uuidV7(), name: 'File2' };
 
     const mockTaskStatusProgress = vi.fn((progress: number) => progress);
     const mockUpdateProgress = vi.fn((progress: number) => progress);
@@ -890,7 +891,7 @@ describe('downloadManagerService', () => {
   });
 
   it('should handle partial failures during downloadItems', async () => {
-    const mockFile2: DriveFileData = { ...mockFile, id: 2, name: 'File2' };
+    const mockFile2: DriveFileData = { ...mockFile, id: 2, uuid: uuidV7(), name: 'File2' };
     const downloadItem = getDownloadItem([mockFile, mockFile2]);
     const mockTask = getTask(downloadItem.payload);
 
@@ -1063,7 +1064,7 @@ describe('downloadManagerService', () => {
     });
 
     it('should throw an error when the connection is lost', async () => {
-      const mockFile2: DriveFileData = { ...mockFile, id: 2, name: 'File2' };
+      const mockFile2: DriveFileData = { ...mockFile, id: 2, uuid: uuidV7(), name: 'File2' };
       const mockTask = getTask([mockFile, mockFile2]);
 
       const mockUpdateProgress = vi.fn();
@@ -1104,7 +1105,7 @@ describe('downloadManagerService', () => {
     });
 
     it('should throw a ServerUnavailable error when all items fail', async () => {
-      const mockFile2: DriveFileData = { ...mockFile, id: 2, name: 'File2' };
+      const mockFile2: DriveFileData = { ...mockFile, id: 2, uuid: uuidV7(), name: 'File2' };
       const mockTask = getTask([mockFile, mockFile2]);
 
       const mockUpdateProgress = vi.fn();
@@ -1148,16 +1149,18 @@ describe('downloadManagerService', () => {
   });
 
   describe('areItemArraysEqual', () => {
+    const [uuid1, uuid2, uuid3] = [uuidV7(), uuidV7(), uuidV7()];
+
     it('should return true for identical arrays', () => {
       const arr1 = [
-        { id: 5, isFolder: true },
-        { id: 1, isFolder: true },
-        { id: 7, isFolder: true },
+        { uuid: uuid3, isFolder: true },
+        { uuid: uuid1, isFolder: true },
+        { uuid: uuid2, isFolder: true },
       ] as DownloadItemType[];
       const arr2 = [
-        { id: 1, isFolder: true },
-        { id: 7, isFolder: true },
-        { id: 5, isFolder: true },
+        { uuid: uuid1, isFolder: true },
+        { uuid: uuid2, isFolder: true },
+        { uuid: uuid3, isFolder: true },
       ] as DownloadItemType[];
 
       const result = areItemArraysEqual(arr1, arr2);
@@ -1165,10 +1168,10 @@ describe('downloadManagerService', () => {
     });
 
     it('should return false for arrays with different lengths', () => {
-      const arr1 = [{ id: 1, isFolder: true }] as DownloadItemType[];
+      const arr1 = [{ uuid: uuid1, isFolder: true }] as DownloadItemType[];
       const arr2 = [
-        { id: 1, isFolder: true },
-        { id: 2, isFolder: false },
+        { uuid: uuid1, isFolder: true },
+        { uuid: uuid2, isFolder: false },
       ] as DownloadItemType[];
 
       const result = areItemArraysEqual(arr1, arr2);
@@ -1177,13 +1180,21 @@ describe('downloadManagerService', () => {
 
     it('should return false for arrays with different items', () => {
       const arr1 = [
-        { id: 1, isFolder: true },
-        { id: 3, isFolder: true },
+        { uuid: uuid1, isFolder: true },
+        { uuid: uuid3, isFolder: true },
       ] as DownloadItemType[];
       const arr2 = [
-        { id: 2, isFolder: true },
-        { id: 1, isFolder: true },
+        { uuid: uuid2, isFolder: true },
+        { uuid: uuid1, isFolder: true },
       ] as DownloadItemType[];
+
+      const result = areItemArraysEqual(arr1, arr2);
+      expect(result).toBe(false);
+    });
+
+    it('should return false when items share the numeric id but have different uuids', () => {
+      const arr1 = [{ id: 0, uuid: uuid1, isFolder: false }] as DownloadItemType[];
+      const arr2 = [{ id: 0, uuid: uuid2, isFolder: false }] as DownloadItemType[];
 
       const result = areItemArraysEqual(arr1, arr2);
       expect(result).toBe(false);
@@ -1213,7 +1224,7 @@ describe('downloadManagerService', () => {
     });
 
     it('should handle connection loss in downloadItems and throw ConnectionLostError', async () => {
-      const mockFile2: DriveFileData = { ...mockFile, id: 2, name: 'File2' };
+      const mockFile2: DriveFileData = { ...mockFile, id: 2, uuid: uuidV7(), name: 'File2' };
       const mockTask = getTask([mockFile, mockFile2]);
 
       const mockUpdateProgress = vi.fn();

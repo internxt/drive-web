@@ -45,7 +45,7 @@ export const useBackupListActions = (
     let updatedSelectedItems = selectedItems;
 
     for (const change of changes) {
-      updatedSelectedItems = updatedSelectedItems.filter((item) => item.id !== change.device.id);
+      updatedSelectedItems = updatedSelectedItems.filter((item) => item.uuid !== change.device.uuid);
       if (change.isSelected) {
         updatedSelectedItems = [...updatedSelectedItems, change.device];
       }

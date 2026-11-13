@@ -3,6 +3,7 @@ import { DriveItemData } from 'app/drive/types';
 import storageReducer, { storageActions } from '.';
 import databaseService, { DatabaseCollection } from '../../../database/services/database.service';
 import { StorageState } from './storage.model';
+import { v7 as uuidV7 } from 'uuid';
 
 vi.mock('./storage.thunks', () => ({ default: {}, storageExtraReducers: () => undefined }));
 
@@ -155,6 +156,86 @@ describe('storage slice', () => {
 
       expect(nextState.levels[folderId]).toEqual([existingItem]);
       expect(databaseService.put).toHaveBeenCalledWith(DatabaseCollection.Levels, folderId, [existingItem]);
+    });
+  });
+
+  describe('Items are identified by uuid', () => {
+    const buildFilesWithDifferentUuids = () => [
+      buildDriveItemData({ id: 0, uuid: uuidV7(), name: 'first.pdf' }),
+      buildDriveItemData({ id: 0, uuid: uuidV7(), name: 'second.pdf' }),
+    ];
+
+    test('When the second file is selected after the first, then both are kept in the selection', () => {
+      const [first, second] = buildFilesWithDifferentUuids();
+
+      const stateWithFirst = storageReducer(buildInitialState(), storageActions.selectItems([first]));
+
+      const nextState = storageReducer(stateWithFirst, storageActions.selectItems([second]));
+
+      expect(nextState.selectedItems).toEqual([first, second]);
+    });
+
+    test('When one of them is deselected, then the other one stays selected', () => {
+      const [first, second] = buildFilesWithDifferentUuids();
+      const stateWithSelection = storageReducer(buildInitialState(), storageActions.selectItems([first, second]));
+
+      const nextState = storageReducer(stateWithSelection, storageActions.deselectItems([first]));
+
+      expect(nextState.selectedItems).toEqual([second]);
+    });
+
+    test('When one of them is removed from a folder, then the other one stays in the folder', () => {
+      const folderId = 'folder-same-id';
+      const [first, second] = buildFilesWithDifferentUuids();
+      const stateWithItems = storageReducer(
+        buildInitialState(),
+        storageActions.addItems({ folderId, items: [first, second] }),
+      );
+
+      const nextState = storageReducer(
+        stateWithItems,
+        storageActions.popItems({ folderIds: [folderId], items: first }),
+      );
+
+      expect(nextState.levels[folderId]).toEqual([second]);
+    });
+
+    test('When one of them is pushed into a folder that has the other, then both are in the folder', () => {
+      const folderId = 'folder-push-same-id';
+      const [first, second] = buildFilesWithDifferentUuids();
+      const stateWithFirst = storageReducer(buildInitialState(), storageActions.addItems({ folderId, items: [first] }));
+
+      const nextState = storageReducer(
+        stateWithFirst,
+        storageActions.pushItems({ folderIds: [folderId], items: second }),
+      );
+
+      expect(nextState.levels[folderId]).toEqual([first, second]);
+    });
+  });
+
+  describe('Items that are not in the list', () => {
+    const buildFiles = () => [
+      buildDriveItemData({ uuid: uuidV7(), name: 'first.pdf' }),
+      buildDriveItemData({ uuid: uuidV7(), name: 'second.pdf' }),
+    ];
+
+    test('When an item that is not selected is deselected, then the selection does not change', () => {
+      const [selected, notSelected] = buildFiles();
+      const stateWithSelection = storageReducer(buildInitialState(), storageActions.selectItems([selected]));
+
+      const nextState = storageReducer(stateWithSelection, storageActions.deselectItems([notSelected]));
+
+      expect(nextState.selectedItems).toEqual([selected]);
+    });
+
+    test('When an item that is not on trash is popped from trash, then the trash does not change', () => {
+      const [onTrash, notOnTrash] = buildFiles();
+      const stateWithTrash = storageReducer(buildInitialState(), storageActions.setItemsOnTrash([onTrash]));
+
+      const nextState = storageReducer(stateWithTrash, storageActions.popItemsToDelete([notOnTrash]));
+
+      expect(nextState.itemsOnTrash).toEqual([onTrash]);
     });
   });
 

@@ -353,7 +353,7 @@ export class DownloadManager {
    */
   private static readonly removeRetryItems = (items: DownloadItemType[], downloadTask: DownloadTask) => {
     items
-      .filter((item) => !downloadTask.failedItems?.some((failedItem) => failedItem.id === item.id))
-      .forEach((item) => RetryManager.removeTaskByIdAndParams(downloadTask.taskId, { id: item.id }));
+      .filter((item) => !downloadTask.failedItems?.some((failedItem) => failedItem.uuid === item.uuid))
+      .forEach((item) => RetryManager.removeTaskByIdAndParams(downloadTask.taskId, { uuid: item.uuid }));
   };
 }
