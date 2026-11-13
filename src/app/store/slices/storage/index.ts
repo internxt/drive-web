@@ -204,7 +204,9 @@ export const storageSlice = createSlice({
           (item) => item.uuid === itemToDeselect.uuid && item.isFolder === itemToDeselect.isFolder,
         );
 
-        if (index !== -1) state.selectedItems.splice(index, 1);
+        if (index !== -1) {
+          state.selectedItems.splice(index, 1);
+        }
       });
     },
     clearSelectedItems: (state: StorageState) => {
@@ -241,7 +243,9 @@ export const storageSlice = createSlice({
           (item) => item.uuid === itemToPop.uuid && item.isFolder === itemToPop.isFolder,
         );
 
-        if (index !== -1) state.itemsOnTrash.splice(index, 1);
+        if (index !== -1) {
+          state.itemsOnTrash.splice(index, 1);
+        }
       });
     },
     popNamePathUpTo: (state: StorageState, action: PayloadAction<FolderPath>) => {
