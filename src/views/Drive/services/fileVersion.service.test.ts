@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { SdkFactory } from 'app/core/factory/sdk';
 import { DownloadManager } from 'app/network/DownloadManager';
 import fileVersionService from './fileVersion.service';
 import { FileVersion, RestoreFileVersionResponse } from '@internxt/sdk/dist/drive/storage/types';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
+import { mockSdkFactory } from 'testUtils/sdk.mock';
 
 vi.mock('app/core/factory/sdk', () => ({
   SdkFactory: {
@@ -37,9 +37,7 @@ describe('File version actions', () => {
 
     vi.clearAllMocks();
 
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createNewStorageClient: () => storageClientMock,
-    } as any);
+    mockSdkFactory({ createNewStorageClient: storageClientMock });
   });
 
   it('when file versions are requested, then the available list is returned', async () => {

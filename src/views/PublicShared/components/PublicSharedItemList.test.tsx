@@ -58,7 +58,6 @@ const renderList = (items: AdvancedSharedItem[], onItemDoubleClicked = vi.fn()) 
 
 describe('PublicSharedItemList', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.spyOn(URL, 'createObjectURL').mockReturnValue(OBJECT_URL);
     vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
   });

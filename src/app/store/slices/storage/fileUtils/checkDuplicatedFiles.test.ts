@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 import newStorageService from 'app/drive/services/new-storage.service';
 
@@ -6,10 +6,6 @@ import { checkDuplicatedFiles } from './checkDuplicatedFiles';
 
 describe('Check for duplicated files', () => {
   const parentFolderId = 'parent-folder-id';
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
 
   test('When a file with extension already exists in the folder, then it should be detected as duplicated', async () => {
     const fileWithExtension = new File(['content'], 'document.pdf', { type: 'application/pdf' });

@@ -80,7 +80,6 @@ describe('filesZip', () => {
   const zip = new MockFlatFolderZip('folderName') as unknown as MockFlatFolderZip;
 
   afterEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
     iterator = {
       next: vi

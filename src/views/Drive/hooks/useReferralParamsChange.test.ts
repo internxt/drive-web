@@ -81,7 +81,6 @@ const flush = () => new Promise((resolve) => setTimeout(resolve, 50));
 
 describe('useReferralParamsChange', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     mockOpenPanel.mockResolvedValue(undefined);
     setStoreState({ user: mockUser, isEligible: true });
     setSearch('');

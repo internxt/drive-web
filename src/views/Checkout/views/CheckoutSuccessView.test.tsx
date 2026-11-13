@@ -115,7 +115,6 @@ const expectCheckoutFinished = () => {
 
 describe('Checkout success view', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     mocks.getSessionToken.mockReturnValue('session_token');
     mocks.localStorageGet.mockReturnValue(null);
     landOn(SUCCESS_PATH);

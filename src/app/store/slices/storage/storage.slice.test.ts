@@ -1,4 +1,4 @@
-import { describe, test, expect, vi, beforeEach } from 'vitest';
+import { describe, test, expect, vi } from 'vitest';
 import { DriveItemData } from 'app/drive/types';
 import storageReducer, { storageActions } from '.';
 import databaseService, { DatabaseCollection } from '../../../database/services/database.service';
@@ -50,10 +50,6 @@ const buildDriveItemData = (overrides: Partial<DriveItemData> = {}): DriveItemDa
 const buildInitialState = () => storageReducer(undefined, { type: '@@INIT' });
 
 describe('storage slice', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   describe('Add items', () => {
     test('When items are added to a folder with no prior content, then the folder contains exactly those items', () => {
       const folderId = 'folder-a';

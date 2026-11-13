@@ -1,13 +1,13 @@
 import { AxiosResponseError } from '@internxt/sdk/dist/shared/types/errors';
 import { CreateCustomerWithoutAccountPayload } from '@internxt/sdk/dist/payments/types';
 import { act, renderHook } from '@testing-library/react';
-import { SdkFactory } from 'app/core/factory/sdk';
 import { LocalStorageItem } from 'app/core/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import localStorageService from 'services/local-storage.service';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { AuthMethodTypes } from '../types';
 import { usePasswordlessCheckout } from './usePasswordlessCheckout';
+import { mockSdkFactory } from 'testUtils/sdk.mock';
 
 vi.mock('app/i18n/provider/TranslationProvider', () => ({
   useTranslationContext: () => ({ translate: (key: string) => key }),
@@ -32,11 +32,8 @@ const renderPasswordlessCheckout = ({
 
 describe('Paying without creating a password first', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     localStorage.clear();
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createCheckoutClientWithoutSession: () => ({ createCustomerWithoutAccount }),
-    } as unknown as SdkFactory);
+    mockSdkFactory({ createCheckoutClientWithoutSession: { createCustomerWithoutAccount } });
     createCustomerWithoutAccount.mockResolvedValue({ customerId: 'cus_123', token: 'payments_token' });
   });
 

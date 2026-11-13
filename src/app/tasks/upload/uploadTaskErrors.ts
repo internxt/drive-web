@@ -18,3 +18,8 @@ export const errorMerge = (reason?: UploadFailureReason) => {
   const subtitle = errorSubtitle(reason);
   return subtitle !== undefined ? { status: TaskStatus.Error, subtitle } : { status: TaskStatus.Error };
 };
+
+export const folderRemovalFailedMerge = () => ({
+  status: TaskStatus.Error,
+  subtitle: t('tasks.subtitles.folder-removal-failed') as string,
+});

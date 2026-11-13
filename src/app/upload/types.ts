@@ -30,11 +30,13 @@ export type UploadItem = UploadFileItem | UploadFolderItem;
 export type UploadedItem = DriveFileData | DriveFolderData;
 
 export interface UploadManagerEvents {
+  onItemQueued?: (item: UploadItem) => void;
   onItemStarted?: (item: UploadItem) => void;
   onItemProgress?: (item: UploadItem, progress: number) => void;
   onItemSucceeded?: (item: UploadItem, uploadedItem: UploadedItem) => void | Promise<void>;
   onItemFailed?: (item: UploadItem, failure: UploadFailure) => void;
   onItemCancelled?: (item: UploadItem) => void;
+  onStorageFull?: () => void;
 }
 
 export interface UploadResult {
