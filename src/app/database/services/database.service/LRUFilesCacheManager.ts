@@ -12,8 +12,8 @@ export class LevelsBlobsCache implements ICacheStorage<DriveItemBlobData> {
     return blobItem;
   }
 
-  set(key: string, value: DriveItemBlobData): void {
-    databaseService.put(DatabaseCollection.LevelsBlobs, key, value);
+  set(key: string, value: DriveItemBlobData): Promise<void> {
+    return databaseService.put(DatabaseCollection.LevelsBlobs, key, value);
   }
 
   delete(key: string): void {

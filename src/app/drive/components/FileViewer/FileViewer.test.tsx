@@ -7,15 +7,19 @@ import { DriveFileData, DriveItemData } from 'app/drive/types';
 import storageReducer, { storageActions } from 'app/store/slices/storage';
 import uiReducer, { uiActions } from 'app/store/slices/ui';
 import FileViewer from './FileViewer';
+import { v7 as uuidV7 } from 'uuid';
 
 vi.mock('app/i18n/provider/TranslationProvider', () => ({
   useTranslationContext: () => ({ translate: (key: string) => key }),
 }));
 
+const FILE_UUID = uuidV7();
+const OTHER_FILE_UUID = uuidV7();
+
 const createFile = (overrides: Partial<DriveFileData> = {}): DriveFileData =>
   ({
     id: 1,
-    uuid: 'uuid-1',
+    uuid: FILE_UUID,
     name: 'notes',
     plainName: 'notes',
     type: 'txt',
@@ -74,14 +78,14 @@ describe('File viewer', () => {
   });
 
   test('When the preview of a file fails, then it stays unavailable after renaming it and the next file is shown right away', async () => {
-    const brokenPdf = createFile({ id: 1, type: 'pdf', name: 'broken' });
+    const brokenPdf = createFile({ uuid: FILE_UUID, type: 'pdf', name: 'broken' });
     const { rerender } = renderViewer({ file: brokenPdf, blob: new Blob(['not a pdf']) });
     await screen.findByText('error.noFilePreview', {}, { timeout: 5000 });
 
     rerender({ file: { ...brokenPdf, name: 'renamed', plainName: 'renamed' }, blob: new Blob(['not a pdf']) });
     expect(screen.getByText('error.noFilePreview')).toBeInTheDocument();
 
-    rerender({ file: createFile({ id: 2 }), blob: new Blob(['next file']) });
+    rerender({ file: createFile({ uuid: OTHER_FILE_UUID }), blob: new Blob(['next file']) });
     expect(screen.queryByText('error.noFilePreview')).not.toBeInTheDocument();
     expect(await screen.findByText('next file')).toBeInTheDocument();
   });

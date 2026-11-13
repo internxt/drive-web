@@ -174,7 +174,7 @@ export async function getFileStream({
   downloadProgress,
 }: GetFileStreamParams): Promise<ReadableStream<Uint8Array>> {
   const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-  const cachedFile = await lruFilesCacheManager.get(file.id?.toString());
+  const cachedFile = await lruFilesCacheManager.get(file.uuid);
   const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
 
   if (cachedFile?.source && !isCachedFileOlder) {
@@ -206,7 +206,7 @@ export async function getFileStream({
   await updateDatabaseFileSourceData({
     folderId: file.folderId,
     sourceBlob,
-    fileId: file.id,
+    fileUuid: file.uuid,
     updatedAt: file.updatedAt,
   });
 
@@ -238,7 +238,7 @@ const downloadSharedFileForZip = async (
   await updateDatabaseFileSourceData({
     folderId: file.folderId,
     sourceBlob,
-    fileId: file.id,
+    fileUuid: file.uuid,
     updatedAt: file.updatedAt,
   });
 
@@ -326,7 +326,7 @@ export async function downloadFolderAsZip({
   }, maxConcurrency);
 
   const addUniqueItem = (item) => {
-    const isItemAlreadyAdded = totalItems.some((i) => i.id === item.id);
+    const isItemAlreadyAdded = totalItems.some((i) => i.uuid === item.uuid);
     if (!isItemAlreadyAdded) {
       totalItems.push(item);
     }
@@ -386,7 +386,7 @@ export async function downloadFolderAsZip({
         addUniqueItem(file);
         try {
           const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-          const cachedFile = await lruFilesCacheManager.get(file.id?.toString());
+          const cachedFile = await lruFilesCacheManager.get(file.uuid);
           const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
 
           updateNumItems();
