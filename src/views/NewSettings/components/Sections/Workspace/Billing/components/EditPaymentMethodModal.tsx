@@ -34,7 +34,11 @@ const EditPaymentMethodModal = ({
   }, [isEditPaymentMethodModalOpen]);
 
   return (
-    <Modal isOpen={isEditPaymentMethodModalOpen} onClose={() => setIsEditPaymentMethodModalOpen(false)}>
+    <Modal
+      isOpen={isEditPaymentMethodModalOpen}
+      onClose={() => setIsEditPaymentMethodModalOpen(false)}
+      className="max-h-[calc(100vh-2rem)] supports-[height:100dvh]:max-h-[calc(100dvh-2rem)] overflow-y-auto p-5"
+    >
       <h1 className="text-2xl font-medium text-gray-80">{t('views.account.tabs.billing.paymentMethod.title')}</h1>
       {setupIntentSecret ? (
         <Elements stripe={paymentService.getStripe()} options={{ clientSecret: setupIntentSecret }}>
