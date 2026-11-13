@@ -488,7 +488,7 @@ describe('downloadManagerService', () => {
 
   it('should downloadFolder keep working if some files fails', async () => {
     const mockTask = getTask([mockFolder]);
-    const mockFile2: DriveFileData = { ...mockFile, id: 2, name: 'File2' };
+    const mockFile2: DriveFileData = { ...mockFile, id: 2, uuid: uuidV7(), name: 'File2' };
 
     const mockTaskStatusProgress = vi.fn((progress: number) => progress);
     const mockUpdateProgress = vi.fn((progress: number) => progress);
@@ -891,7 +891,7 @@ describe('downloadManagerService', () => {
   });
 
   it('should handle partial failures during downloadItems', async () => {
-    const mockFile2: DriveFileData = { ...mockFile, id: 2, name: 'File2' };
+    const mockFile2: DriveFileData = { ...mockFile, id: 2, uuid: uuidV7(), name: 'File2' };
     const downloadItem = getDownloadItem([mockFile, mockFile2]);
     const mockTask = getTask(downloadItem.payload);
 
@@ -1060,7 +1060,7 @@ describe('downloadManagerService', () => {
     });
 
     it('should throw an error when the connection is lost', async () => {
-      const mockFile2: DriveFileData = { ...mockFile, id: 2, name: 'File2' };
+      const mockFile2: DriveFileData = { ...mockFile, id: 2, uuid: uuidV7(), name: 'File2' };
       const mockTask = getTask([mockFile, mockFile2]);
 
       const mockUpdateProgress = vi.fn();
@@ -1101,7 +1101,7 @@ describe('downloadManagerService', () => {
     });
 
     it('should throw a ServerUnavailable error when all items fail', async () => {
-      const mockFile2: DriveFileData = { ...mockFile, id: 2, name: 'File2' };
+      const mockFile2: DriveFileData = { ...mockFile, id: 2, uuid: uuidV7(), name: 'File2' };
       const mockTask = getTask([mockFile, mockFile2]);
 
       const mockUpdateProgress = vi.fn();
@@ -1220,7 +1220,7 @@ describe('downloadManagerService', () => {
     });
 
     it('should handle connection loss in downloadItems and throw ConnectionLostError', async () => {
-      const mockFile2: DriveFileData = { ...mockFile, id: 2, name: 'File2' };
+      const mockFile2: DriveFileData = { ...mockFile, id: 2, uuid: uuidV7(), name: 'File2' };
       const mockTask = getTask([mockFile, mockFile2]);
 
       const mockUpdateProgress = vi.fn();
