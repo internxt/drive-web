@@ -135,17 +135,21 @@ const deleteDatabaseItems = async (items: DriveItemData[]): Promise<void> => {
   });
 
   if (foldersInFolder.length) {
-    await foldersInFolder.forEach(async (folder) => {
+    foldersInFolder.forEach(async (folder) => {
       const folderItems = await databaseService.get(DatabaseCollection.Levels, folder?.uuid);
 
       if (folderItems) {
-        deleteDatabaseItems(folderItems as DriveItemData[]);
+        deleteDatabaseItems(folderItems as DriveItemData[]).catch((error) =>
+          console.error('Error deleting cached folder items:', error),
+        );
       }
     });
   }
 
   filesToRemove.forEach((item) => {
-    lruFilesCacheManager?.delete(item.uuid, item.size);
+    lruFilesCacheManager
+      ?.delete(item.uuid, item.size)
+      .catch((error) => console.error('Error deleting cached file:', error));
   });
 };
 
