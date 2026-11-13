@@ -39,6 +39,7 @@ import { List } from '@internxt/ui';
 import { DownloadManager } from 'app/network/DownloadManager';
 import { useVersionHistoryMenuConfig } from 'views/Drive/hooks/useVersionHistoryMenuConfig';
 import { useMoveItems } from 'hooks/moveItems/useMoveItems';
+import { getDriveItemId } from 'utils/driveItemsUtils';
 
 interface DriveExplorerListProps {
   folderId: string;
@@ -517,6 +518,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
         )}
         <ShareWithTeamDialog item={props.selectedItems[0]} roles={roles} />
         <List<DriveItemData, SortField>
+          getItemId={getDriveItemId}
           header={getListHeaders(translate, isRecents, isTrash, canSortByModified)}
           checkboxDataCy="driveListHeaderCheckbox"
           disableKeyboardShortcuts={props.disableKeyboardShortcuts || props.showStopSharingConfirmation}

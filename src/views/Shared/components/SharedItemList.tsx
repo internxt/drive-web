@@ -4,6 +4,7 @@ import { OrderDirection } from '../../../app/core/types';
 import { AdvancedSharedItem } from '../../../app/share/types';
 import { List, MenuItemType } from '@internxt/ui';
 import { SharedListItem } from './SharedListItem';
+import { getDriveItemId } from 'utils/driveItemsUtils';
 
 const skinSkeleton = [
   <div key="1" className="flex flex-row items-center space-x-4">
@@ -87,6 +88,7 @@ export const SharedItemList = ({
 
   return (
     <List<AdvancedSharedItem, OrderField>
+      getItemId={getDriveItemId}
       header={[
         {
           label: t('shared-links.list.name'),
