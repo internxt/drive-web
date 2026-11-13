@@ -159,22 +159,24 @@ describe('storage slice', () => {
     });
   });
 
-  describe('Items that share the same numeric id', () => {
-    const buildFilesWithSameId = () => [
+  describe('Items are identified by uuid', () => {
+    const buildFilesWithDifferentUuids = () => [
       buildDriveItemData({ id: 0, uuid: uuidV7(), name: 'first.pdf' }),
       buildDriveItemData({ id: 0, uuid: uuidV7(), name: 'second.pdf' }),
     ];
 
-    test('When both files are selected, then both are kept in the selection', () => {
-      const [first, second] = buildFilesWithSameId();
+    test('When the second file is selected after the first, then both are kept in the selection', () => {
+      const [first, second] = buildFilesWithDifferentUuids();
 
-      const nextState = storageReducer(buildInitialState(), storageActions.selectItems([first, second]));
+      const stateWithFirst = storageReducer(buildInitialState(), storageActions.selectItems([first]));
+
+      const nextState = storageReducer(stateWithFirst, storageActions.selectItems([second]));
 
       expect(nextState.selectedItems).toEqual([first, second]);
     });
 
     test('When one of them is deselected, then the other one stays selected', () => {
-      const [first, second] = buildFilesWithSameId();
+      const [first, second] = buildFilesWithDifferentUuids();
       const stateWithSelection = storageReducer(buildInitialState(), storageActions.selectItems([first, second]));
 
       const nextState = storageReducer(stateWithSelection, storageActions.deselectItems([first]));
@@ -184,7 +186,7 @@ describe('storage slice', () => {
 
     test('When one of them is removed from a folder, then the other one stays in the folder', () => {
       const folderId = 'folder-same-id';
-      const [first, second] = buildFilesWithSameId();
+      const [first, second] = buildFilesWithDifferentUuids();
       const stateWithItems = storageReducer(
         buildInitialState(),
         storageActions.addItems({ folderId, items: [first, second] }),
@@ -200,7 +202,7 @@ describe('storage slice', () => {
 
     test('When one of them is pushed into a folder that has the other, then both are in the folder', () => {
       const folderId = 'folder-push-same-id';
-      const [first, second] = buildFilesWithSameId();
+      const [first, second] = buildFilesWithDifferentUuids();
       const stateWithFirst = storageReducer(buildInitialState(), storageActions.addItems({ folderId, items: [first] }));
 
       const nextState = storageReducer(
