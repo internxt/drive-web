@@ -150,11 +150,13 @@ export const fetchFolderContentThunkExtraReducers = (builder: ActionReducerMapBu
       state.latestFolderRequestId[action.meta.arg] = action.meta.requestId;
     })
     .addCase(fetchPaginatedFolderContentThunk.fulfilled, (state, action) => {
-      state.loadingFolders[action.meta.arg] = false;
+      if (isLatestRequest(state, action.meta.arg, action.meta.requestId)) {
+        state.loadingFolders[action.meta.arg] = false;
+      }
     })
     .addCase(fetchPaginatedFolderContentThunk.rejected, (state, action) => {
-      state.loadingFolders[action.meta.arg] = false;
       if (isLatestRequest(state, action.meta.arg, action.meta.requestId)) {
+        state.loadingFolders[action.meta.arg] = false;
         state.hasFetchFailedByFolderId[action.meta.arg] = true;
       }
       const isUnauthorizedError = (payload: unknown): payload is { status: number } =>

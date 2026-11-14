@@ -584,5 +584,31 @@ describe('Thunk of fetch folder content', () => {
         latestFolderRequestId: { [mockFolderId]: 'newer-request-id' },
       });
     });
+
+    test('When an earlier request fails while a newer one is still loading, then the folder keeps loading', () => {
+      const bothPending = startRequest(startRequest(initialState, 'older-request-id'), 'newer-request-id');
+
+      const nextState = failRequest(bothPending, 'older-request-id');
+
+      expect(nextState).toEqual({
+        ...initialState,
+        loadingFolders: { [otherFolderId]: true, [mockFolderId]: true },
+        hasFetchFailedByFolderId: { [otherFolderId]: true, [mockFolderId]: false },
+        latestFolderRequestId: { [mockFolderId]: 'newer-request-id' },
+      });
+    });
+
+    test('When an earlier request succeeds while a newer one is still loading, then the folder keeps loading', () => {
+      const bothPending = startRequest(startRequest(initialState, 'older-request-id'), 'newer-request-id');
+
+      const nextState = succeedRequest(bothPending, 'older-request-id');
+
+      expect(nextState).toEqual({
+        ...initialState,
+        loadingFolders: { [otherFolderId]: true, [mockFolderId]: true },
+        hasFetchFailedByFolderId: { [otherFolderId]: true, [mockFolderId]: false },
+        latestFolderRequestId: { [mockFolderId]: 'newer-request-id' },
+      });
+    });
   });
 });
