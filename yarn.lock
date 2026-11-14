@@ -6266,10 +6266,10 @@ hasown@^2.0.2, hasown@^2.0.4:
   dependencies:
     function-bind "^1.1.2"
 
-heic2any@^0.0.4:
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/heic2any/-/heic2any-0.0.4.tgz#eddb8e6fec53c8583a6e18b65069bb5e8d19028a"
-  integrity sha512-3lLnZiDELfabVH87htnRolZ2iehX9zwpRyGNz22GKXIu0fznlblf0/ftppXKNqS26dqFSeqfIBhAmAj/uSp0cA==
+heic-to@^1.6.7:
+  version "1.6.7"
+  resolved "https://registry.yarnpkg.com/heic-to/-/heic-to-1.6.7.tgz#b72ad703ddb6a0b1827aff74b5fefab27c029ec5"
+  integrity sha512-GCPYNl86u6eZ7mr2aa+uQB+PrQOVKSBYfH8esovr8kh2c6EYQSDYIJ6uhXSmM2hPC8PdBVJ/Trn0jnfM9H9gvg==
 
 history@^4.10.1, history@^4.9.0:
   version "4.10.1"
