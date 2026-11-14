@@ -52,13 +52,26 @@ describe('Building the urgent checkout summary', () => {
     expect(summary.totalAmount).toBe('2.18');
     expect(summary.savingsAmount).toBe('28.20');
     expect(summary.discountPercent).toBe(94);
+    expect(summary.hasIntroPrice).toBe(true);
     expect(summary.isRecurring).toBe(true);
+  });
+
+  it('When the applied coupon is one of the hidden affiliate codes, then the summary exposes no discount', () => {
+    const hiddenCoupon: CouponCodeData = { ...percentOffCoupon, codeName: 'AFFIOFFER' };
+
+    const summary = getUrgentCheckoutPlanSummary(getPlan(29.99, 2.18), translateMock, hiddenCoupon);
+
+    expect(summary.discountPercent).toBeUndefined();
+    expect(summary.hasIntroPrice).toBe(true);
+    expect(summary.discountedAmount).toBe('1.79');
+    expect(summary.totalAmount).toBe('2.18');
   });
 
   it('When no coupon is applied, then there is no discount and no savings', () => {
     const summary = getUrgentCheckoutPlanSummary(getPlan(29.99, 36.29), translateMock);
 
     expect(summary.discountPercent).toBeUndefined();
+    expect(summary.hasIntroPrice).toBe(false);
     expect(summary.discountedAmount).toBe('29.99');
     expect(summary.savingsAmount).toBe('0');
     expect(summary.taxAmount).toBe('6.30');

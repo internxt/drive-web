@@ -344,7 +344,7 @@
       "passwordLabel": "La tua password",
       "passwordPlaceholder": "Password",
       "togglePasswordVisibility": "Mostra o nascondi la password",
-      "incompleteDetails": "Inserisci la tua email e la tua password per continuare.",
+      "incompleteDetails": "Inserisci i tuoi dati per continuare.",
       "encryptedTitle": "I tuoi file sono crittografati e privati.",
       "encryptedDescription": "Internxt non può accedere ai tuoi contenuti."
     },
