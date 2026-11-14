@@ -10,7 +10,7 @@ const RedirectToAppView = (): JSX.Element => {
   const allowedPaths = ROUTES.views.map((view) => view.path);
   const { translate } = useTranslationContext();
   const qs = queryString.parse(navigationService.history.location.search);
-  const path = Array.isArray(qs.path) ? qs.path[0] : qs.path || '';
+  const path = (Array.isArray(qs.path) ? qs.path[0] : qs.path) ?? '';
   const isValidRedirect = allowedPaths.includes(path);
   const securePath = isValidRedirect ? path : '/not-found';
   const [appUrl] = useState(`inxt://${securePath}`);

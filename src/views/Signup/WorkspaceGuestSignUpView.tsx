@@ -89,7 +89,7 @@ function WorkspaceGuestSingUpView(): JSX.Element {
 
   useEffect(() => {
     if (password.length > 0)
-      onChangePasswordHandler({ password, setPasswordState, setIsValidPassword, email: qs.email });
+      onChangePasswordHandler({ password, setPasswordState, setIsValidPassword, email: qs.email as string });
   }, [password]);
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
