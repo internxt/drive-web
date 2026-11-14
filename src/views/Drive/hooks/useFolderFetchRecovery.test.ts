@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react';
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { useFolderFetchRecovery } from './useFolderFetchRecovery';
 
 const mockDispatch = vi.fn();
@@ -23,10 +23,6 @@ const renderRecovery = ({ hasFetchFailed = false, isDriveFolder = true } = {}) =
 };
 
 describe('Recovering a folder whose content failed to load', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   test('when the folder content failed to load, then the list stops asking for more items', () => {
     const { result } = renderRecovery({ hasFetchFailed: true });
 
@@ -39,6 +35,15 @@ describe('Recovering a folder whose content failed to load', () => {
     globalThis.dispatchEvent(new Event('online'));
 
     expect(mockDispatch).toHaveBeenCalledExactlyOnceWith({ type: 'fetchFolderContent', payload: FOLDER_ID });
+  });
+
+  test('when the list is unmounted after the folder failed to load, then coming back online requests nothing', () => {
+    const { unmount } = renderRecovery({ hasFetchFailed: true });
+
+    unmount();
+    globalThis.dispatchEvent(new Event('online'));
+
+    expect(mockDispatch).not.toHaveBeenCalled();
   });
 
   test('when the browser comes back online and the folder loaded fine, then nothing is requested', () => {

@@ -147,6 +147,7 @@ export const fetchFolderContentThunkExtraReducers = (builder: ActionReducerMapBu
     })
     .addCase(fetchPaginatedFolderContentThunk.fulfilled, (state, action) => {
       state.loadingFolders[action.meta.arg] = false;
+      state.hasFetchFailedByFolderId[action.meta.arg] = false;
     })
     .addCase(fetchPaginatedFolderContentThunk.rejected, (state, action) => {
       state.loadingFolders[action.meta.arg] = false;

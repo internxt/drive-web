@@ -12,6 +12,7 @@ import { useStopSharingAndTrash } from './useStopSharingAndTrash';
 
 vi.mock('app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk', () => ({
   fetchSortedFolderContentThunk: vi.fn((folderId: string) => ({ type: 'reloadFolder', payload: folderId })),
+  fetchSortedFolderContentThunkExtraReducers: vi.fn(),
 }));
 vi.mock('views/Trash/services', () => ({ moveItemsToTrash: vi.fn(() => Promise.resolve()) }));
 

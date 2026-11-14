@@ -517,12 +517,11 @@ describe('Thunk of fetch folder content', () => {
   });
 
   describe('Folder content request status', () => {
-    const otherFolderId = 'folder-other';
-    const initialState = {
-      levels: {},
+    const otherFolderId = 987;
+    const initialState = createMockState({
       loadingFolders: { [otherFolderId]: true },
       hasFetchFailedByFolderId: { [otherFolderId]: true },
-    } as unknown as StorageState;
+    }).storage;
     const reducer = createReducer(initialState, fetchFolderContentThunkExtraReducers);
     const failFolderRequest = (state: StorageState) =>
       reducer(state, fetchPaginatedFolderContentThunk.rejected(new Error('offline'), 'request-id', mockFolderId));
@@ -550,6 +549,25 @@ describe('Thunk of fetch folder content', () => {
       expect(nextState).toEqual({
         ...initialState,
         loadingFolders: { [otherFolderId]: true, [mockFolderId]: true },
+        hasFetchFailedByFolderId: { [otherFolderId]: true, [mockFolderId]: false },
+      });
+    });
+
+    test('When an earlier request for a folder fails while a newer one succeeds, then the folder is no longer marked as failed', () => {
+      const newerRequestPending = reducer(
+        initialState,
+        fetchPaginatedFolderContentThunk.pending('newer-request-id', mockFolderId),
+      );
+      const olderRequestFailed = failFolderRequest(newerRequestPending);
+
+      const nextState = reducer(
+        olderRequestFailed,
+        fetchPaginatedFolderContentThunk.fulfilled(undefined, 'newer-request-id', mockFolderId),
+      );
+
+      expect(nextState).toEqual({
+        ...initialState,
+        loadingFolders: { [otherFolderId]: true, [mockFolderId]: false },
         hasFetchFailedByFolderId: { [otherFolderId]: true, [mockFolderId]: false },
       });
     });

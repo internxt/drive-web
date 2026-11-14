@@ -14,17 +14,17 @@ interface UseFolderFetchRecoveryProps {
  */
 export const useFolderFetchRecovery = ({ folderId, hasMoreItems, isDriveFolder }: UseFolderFetchRecoveryProps) => {
   const dispatch = useAppDispatch();
-  const hasFolderFetchFailed = useAppSelector((state) => state.storage.hasFetchFailedByFolderId[folderId] ?? false);
-  const hasDriveFolderFetchFailed = isDriveFolder && hasFolderFetchFailed;
+  const hasFetchFailed = useAppSelector((state) => state.storage.hasFetchFailedByFolderId[folderId] ?? false);
+  const shouldPausePaging = isDriveFolder && hasFetchFailed;
 
   useEffect(() => {
-    if (!hasDriveFolderFetchFailed) return;
+    if (!shouldPausePaging) return;
 
     const refetchFolder = () => dispatch(fetchPaginatedFolderContentThunk(folderId));
     window.addEventListener('online', refetchFolder);
 
     return () => window.removeEventListener('online', refetchFolder);
-  }, [hasDriveFolderFetchFailed, folderId]);
+  }, [shouldPausePaging, folderId, dispatch]);
 
-  return { canRequestMorePages: hasMoreItems && !hasDriveFolderFetchFailed };
+  return { canRequestMorePages: hasMoreItems && !shouldPausePaging };
 };

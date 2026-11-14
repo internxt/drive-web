@@ -1,4 +1,4 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { storageActions } from '..';
 import { RootState } from '../../..';
@@ -9,6 +9,7 @@ import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { applyCachedFolderSizes } from './applyCachedFolderSizes';
 import { DEFAULT_LIMIT, getCursorPageQuery, hasMorePages } from './getCursorPageQuery';
 import { toDriveThumbnail } from 'utils/driveThumbnail.utils';
+import { StorageState } from '../storage.model';
 
 export const fetchSortedFolderContentThunk = createAsyncThunk<void, string, { state: RootState }>(
   'storage/fetchSortedFolderContentThunk',
@@ -123,3 +124,9 @@ export const fetchSortedFolderContentThunk = createAsyncThunk<void, string, { st
     }
   },
 );
+
+export const fetchSortedFolderContentThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
+  builder.addCase(fetchSortedFolderContentThunk.fulfilled, (state, action) => {
+    state.hasFetchFailedByFolderId[action.meta.arg] = false;
+  });
+};
