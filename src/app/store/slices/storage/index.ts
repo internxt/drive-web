@@ -22,6 +22,7 @@ const initialState: StorageState = {
   driveFoldersCursor: {},
   driveFilesCursor: {},
   hasFetchFailedByFolderId: {},
+  latestFolderRequestId: {},
   recents: [],
   isLoadingRecents: false,
   favorites: [],
