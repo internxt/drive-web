@@ -233,5 +233,44 @@ describe('Error Service', () => {
         }
       });
     });
+
+    describe('Blank or non-string server messages', () => {
+      test('when the response message has several validation texts, then it joins the non-blank ones', () => {
+        const result = errorService.castError(
+          createAxiosError({ message: ['email must be an email', ' ', 1, 'password is too short'] }, 400),
+        );
+
+        expect(result.message).toBe('email must be an email, password is too short');
+      });
+
+      test('when a plain object has a list message, then it joins the texts', () => {
+        expect(errorService.castError({ message: ['a', 'b'] }).message).toBe('a, b');
+      });
+
+      test.each([[[]], [' '], [{}], [{ nested: true }]])(
+        'when the response message is %j, then it falls back to the error message',
+        (blankMessage) => {
+          const result = errorService.castError(createAxiosResponseError({ message: blankMessage }, 502));
+
+          expect(result.message).toBe('Request failed with status code 502');
+        },
+      );
+
+      test('when the message is blank and the error field is valid, then it uses the error field', () => {
+        const result = errorService.castError(createAxiosError({ message: '  ', error: 'Bad Gateway' }, 502));
+
+        expect(result.message).toBe('Bad Gateway');
+      });
+
+      test('when an axios error has a blank message and error, then it falls back to the axios message', () => {
+        const result = errorService.castError(createAxiosError({ message: [], error: ' ' }, 502));
+
+        expect(result.message).toBe('Request failed');
+      });
+
+      test.each([[[]], ['   ']])('when a plain object message is %j, then it returns an Unknown error', (message) => {
+        expect(errorService.castError({ message }).message).toBe('Unknown error');
+      });
+    });
   });
 });
