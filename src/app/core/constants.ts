@@ -14,6 +14,7 @@ export enum ErrorMessages {
   NetworkError = 'Network Error',
   ConnectionLost = 'Connection lost',
   FilePickerCancelled = 'File picker was canceled or failed',
+  DownloadCancelledFromBrowser = 'Download was cancelled from the browser',
 }
 
 export const HTTP_CODE_ERRORS = {

@@ -1,12 +1,6 @@
 import { ErrorMessages } from 'app/core/constants';
-import { ConnectionLostError } from 'app/network/requests';
-import { isFirefox } from 'react-device-detect';
 import streamSaver from '../../../../libs/streamSaver';
-import { DriveFileData } from '../../types';
 import { BlobWritable, downloadFileAsBlob } from './downloadFileAsBlob';
-import fetchFileStream from './fetchFileStream';
-import fetchFileStreamUsingCredentials from './fetchFileStreamUsingCredentials';
-import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
 
 async function pipe(readable: ReadableStream, writable: BlobWritable): Promise<void> {
   const reader = readable.getReader();
@@ -28,15 +22,7 @@ async function pipe(readable: ReadableStream, writable: BlobWritable): Promise<v
   await writer.close();
 }
 
-export default async function downloadFile(
-  itemData: DriveFileData,
-  isWorkspace: boolean,
-  updateProgressCallback: (progress: number) => void,
-  abortController?: AbortController,
-  sharingOptions?: { credentials: NetworkCredentials; key: FileKey },
-): Promise<void> {
-  const fileName = itemData.plainName ?? itemData.name;
-  const completeFilename = itemData.type ? `${fileName}.${itemData.type}` : `${fileName}`;
+export async function getDownloadSupport(): Promise<DownloadSupport> {
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
   const isCypress = window['Cypress'] !== undefined;
 
@@ -57,34 +43,7 @@ export default async function downloadFile(
     support = DownloadSupport.PartialStreamApi;
   }
 
-  const fileStreamPromise = !sharingOptions
-    ? fetchFileStream(
-        { ...itemData, bucketId: itemData.bucket },
-        { isWorkspace, updateProgressCallback, abortController },
-      )
-    : fetchFileStreamUsingCredentials(
-        { ...itemData, bucketId: itemData.bucket },
-        {
-          updateProgressCallback,
-          abortController,
-          creds: sharingOptions.credentials,
-          key: sharingOptions.key,
-        },
-      );
-
-  let connectionLost = false;
-  try {
-    const connectionLostListener = () => {
-      connectionLost = true;
-      window.removeEventListener('offline', connectionLostListener);
-    };
-    window.addEventListener('offline', connectionLostListener);
-
-    await downloadToFs(completeFilename, fileStreamPromise, support, isFirefox, abortController);
-  } catch (err) {
-    if (connectionLost) throw new ConnectionLostError();
-    else throw err;
-  }
+  return support;
 }
 
 function downloadFileUsingStreamApi(
@@ -97,24 +56,28 @@ function downloadFileUsingStreamApi(
     : pipe(source, destination as BlobWritable);
 }
 
-enum DownloadSupport {
+export enum DownloadSupport {
   StreamApi = 'StreamApi',
   PartialStreamApi = 'PartialStreamApi',
   Blob = 'Blob',
 }
 
-async function downloadToFs(
-  filename: string,
-  source: Promise<ReadableStream>,
-  supports: DownloadSupport,
-  isFirefoxBrowser?: boolean,
-  abortController?: AbortController,
-): Promise<void> {
-  if (isFirefoxBrowser) {
-    return downloadFileAsBlob(filename, await source);
-  }
+export interface DownloadToFsOptions {
+  filename: string;
+  source: Promise<ReadableStream>;
+  support: DownloadSupport;
+  abortController?: AbortController;
+  size?: number;
+}
 
-  switch (supports) {
+export async function downloadToFs({
+  filename,
+  source,
+  support,
+  abortController,
+  size,
+}: DownloadToFsOptions): Promise<void> {
+  switch (support) {
     case DownloadSupport.StreamApi:
       // eslint-disable-next-line no-case-declarations
       const fsHandle = await window.showSaveFilePicker({ suggestedName: filename }).catch((_) => {
@@ -126,7 +89,11 @@ async function downloadToFs(
 
       return downloadFileUsingStreamApi(await source, destination, abortController);
     case DownloadSupport.PartialStreamApi:
-      return downloadFileUsingStreamApi(await source, streamSaver.createWriteStream(filename), abortController);
+      return downloadFileUsingStreamApi(
+        await source,
+        streamSaver.createWriteStream(filename, { size }),
+        abortController,
+      );
 
     default:
       return downloadFileAsBlob(filename, await source);

@@ -31,6 +31,7 @@ import { downloadFileBySize } from 'app/network/download/downloadFileBySize';
 import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
 import downloadService from 'app/drive/services/download.service';
 import { binaryStreamToBlob } from 'services/stream.service';
+import { DownloadSupport, downloadToFs, getDownloadSupport } from 'app/drive/services/download.service/downloadFile';
 import { FlatFolderZip } from 'services/zip.service';
 import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
 import { AdvancedSharedItem } from '../types';
@@ -608,6 +609,34 @@ const getPublicItemDownloadName = (item: AdvancedSharedItem): string => {
   return `${item.plainName ?? item.name}${extension}`;
 };
 
+const getSupportWithoutSavePicker = async (): Promise<DownloadSupport> => {
+  const support = await getDownloadSupport();
+  return support === DownloadSupport.StreamApi ? DownloadSupport.PartialStreamApi : support;
+};
+
+interface SaveToDownloadsOptions {
+  filename: string;
+  size: number;
+  isEmptyFile: boolean;
+  getSource: () => Promise<ReadableStream>;
+  abortController?: AbortController;
+}
+
+const saveToDownloads = async ({
+  filename,
+  size,
+  isEmptyFile,
+  getSource,
+  abortController,
+}: SaveToDownloadsOptions): Promise<void> => {
+  if (isEmptyFile) {
+    return downloadService.downloadFileFromBlob(new Blob([]), filename);
+  }
+
+  const support = await getSupportWithoutSavePicker();
+  return downloadToFs({ filename, source: getSource(), support, abortController, size });
+};
+
 export async function downloadPublicSharedItems({
   items,
   credentials,
@@ -745,6 +774,47 @@ export async function downloadPublicSharedFolder({
   });
 }
 
+export interface PublicSharedFile {
+  bucketId: string;
+  fileId: string | null;
+  size: number;
+  encryptionKey: string;
+  token: string;
+}
+
+export interface DownloadPublicSharedFileOptions {
+  file: PublicSharedFile;
+  filename: string;
+  abortController: AbortController;
+  onProgress: (downloadedRatio: number) => void;
+}
+
+export async function downloadPublicSharedFile({
+  file,
+  filename,
+  abortController,
+  onProgress,
+}: DownloadPublicSharedFileOptions): Promise<void> {
+  return saveToDownloads({
+    filename,
+    size: file.size,
+    abortController,
+    isEmptyFile: !file.encryptionKey || file.size === 0 || !file.fileId,
+    getSource: () =>
+      downloadFileBySize({
+        bucketId: file.bucketId,
+        fileId: file.fileId,
+        encryptionKey: Buffer.from(file.encryptionKey, 'hex'),
+        token: file.token,
+        fileSize: file.size,
+        options: {
+          abortController,
+          notifyProgress: (totalBytes, downloadedBytes) => onProgress(downloadedBytes / totalBytes),
+        },
+      }),
+  });
+}
+
 export const processInvitation = async (
   isDeclineAction: boolean,
   invitationId: string,
@@ -865,6 +935,7 @@ const shareService = {
   inviteUserToSharedFolder,
   getSharedFolderInvitationsAsInvitedUser,
   getSharingRoles,
+  downloadPublicSharedFile,
 };
 
 export default shareService;

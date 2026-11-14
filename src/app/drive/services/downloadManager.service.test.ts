@@ -18,7 +18,6 @@ import {
 } from './folder.service';
 import tasksService from 'app/tasks/services/tasks.service';
 import { TaskStatus, TaskType } from 'app/tasks/types';
-import downloadService from './download.service';
 import { getDatabaseFileSourceData, updateDatabaseFileSourceData } from './database.service';
 import { FlatFolderZip } from 'services/zip.service';
 import { binaryStreamToBlob } from 'services/stream.service';
@@ -592,10 +591,6 @@ describe('downloadManagerService', () => {
     (getDatabaseFileSourceData as Mock).mockImplementation(getDatabaseFileSourceDataSpy);
     (checkIfCachedSourceIsOlder as Mock).mockImplementation(checkIfCachedSourceIsOlderSpy);
 
-    const downloadFileSpy = vi
-      .spyOn(downloadService, 'downloadFile')
-      .mockRejectedValue(new Error('It should download from cache'));
-
     await DownloadManagerService.instance.downloadFile(mockTask, mockUpdateProgress);
 
     expect(getDatabaseFileSourceDataSpy).toHaveBeenCalledWith({
@@ -603,7 +598,6 @@ describe('downloadManagerService', () => {
     });
     expect(checkIfCachedSourceIsOlderSpy).toHaveBeenCalledOnce();
     expect(mockUpdateProgress).toHaveBeenCalledWith(1);
-    expect(downloadFileSpy).not.toHaveBeenCalled();
   });
 
   describe('Downloading file from network', () => {
