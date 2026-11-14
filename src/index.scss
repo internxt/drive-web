@@ -28,8 +28,10 @@
     --color-red: 255 13 0;
     --color-red-dark: 230 11 0;
     --color-orange: 255 149 0;
+    --color-orange-60: 229 134 0;
     --color-orange-dark: 230 134 0;
     --color-yellow: 255 204 0;
+    --color-yellow-60: 229 183 0;
     --color-yellow-dark: 230 184 0;
     --color-green: 50 195 86;
     --color-green-dark: 45 174 77;
@@ -51,6 +53,9 @@
     --color-gray-80: 58 58 59;
     --color-gray-90: 44 44 48;
     --color-gray-100: 24 24 27;
+    --color-alert: 255 249 229;
+    --color-alert-dark: 255 244 204;
+    --color-danger: 229 11 0;
   }
 
   :root.dark {
@@ -61,8 +66,10 @@
     --color-red: 255 61 51;
     --color-red-dark: 255 36 26;
     --color-orange: 255 164 36;
+    --color-orange-60: 229 147 32;
     --color-orange-dark: 255 153 10;
     --color-yellow: 255 214 51;
+    --color-yellow-60: 229 192 45;
     --color-yellow-dark: 255 209 26;
     --color-green: 72 208 106;
     --color-green-dark: 52 203 90;
@@ -84,6 +91,9 @@
     --color-gray-80: 229 229 235;
     --color-gray-90: 243 243 248;
     --color-gray-100: 249 249 252;
+    --color-alert: 76 64 15;
+    --color-alert-dark: 127 107 25;
+    --color-danger: 229 54 45;
   }
 }
 
@@ -96,8 +106,10 @@
     --color-red: 255 61 51;
     --color-red-dark: 255 36 26;
     --color-orange: 255 164 36;
+    --color-orange-60: 229 147 32;
     --color-orange-dark: 255 153 10;
     --color-yellow: 255 214 51;
+    --color-yellow-60: 229 192 45;
     --color-yellow-dark: 255 209 26;
     --color-green: 72 208 106;
     --color-green-dark: 52 203 90;
@@ -119,6 +131,10 @@
     --color-gray-80: 229 229 235;
     --color-gray-90: 243 243 248;
     --color-gray-100: 249 249 252;
+    --color-alert: 76 64 15;
+    --color-alert-dark: 127 107 25;
+    --color-danger: 229 54 45;
+
   }
 
   :root:not(.dark) {
@@ -129,8 +145,10 @@
     --color-red: 255 13 0;
     --color-red-dark: 230 11 0;
     --color-orange: 255 149 0;
+    --color-orange-60: 229 134 0;
     --color-orange-dark: 230 134 0;
     --color-yellow: 255 204 0;
+    --color-yellow-60: 229 183 0;
     --color-yellow-dark: 230 184 0;
     --color-green: 50 195 86;
     --color-green-dark: 45 174 77;
@@ -152,6 +170,10 @@
     --color-gray-80: 58 58 59;
     --color-gray-90: 44 44 48;
     --color-gray-100: 24 24 27;
+    --color-alert: 255 249 229;
+    --color-alert-dark: 255 244 204;
+    --color-danger: 229 11 0;
+
   }
 }
 

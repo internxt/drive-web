@@ -229,8 +229,9 @@ const DriveExplorer = ({
           </div>
 
           <div className="flex h-full grow flex-col justify-between overflow-y-hidden">
-            <WarningMessageWrapper />
-
+            <div className="px-5">
+              <WarningMessageWrapper />
+            </div>
             <div className="flex grow flex-col justify-between overflow-hidden">
               <ViewModeComponent
                 folderId={currentFolderId}

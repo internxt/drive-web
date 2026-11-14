@@ -158,6 +158,7 @@ export enum LocalStorageItem {
   StpatricksTheme = 'stpatricks_theme_enabled',
   AnniversaryTheme = 'anniversary_theme_enabled',
   SubscriptionEndingModalClosed = 'subscription_ending_modal_closed',
+  StorageWarningBannerDismissals = 'storageWarningBannerDismissals',
   CheckoutAccountSetupEmail = 'checkout_account_setup_email',
   CheckoutCustomerId = 'checkout_customer_id',
   ImpactSource = 'impact_source',
