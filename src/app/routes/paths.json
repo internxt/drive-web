@@ -4,7 +4,8 @@
       "id": "signup",
       "layout": "empty",
       "path": "/new",
-      "exact": true
+      "exact": true,
+      "auth": false
     },
     {
       "id": "appsumo",
@@ -22,7 +23,8 @@
       "id": "login",
       "layout": "empty",
       "path": "/login",
-      "exact": true
+      "exact": true,
+      "auth": false
     },
     {
       "id": "auth",
