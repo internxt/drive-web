@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, vi, Mock, test } from 'vitest';
-import { fetchPaginatedFolderContentThunk } from './fetchFolderContentThunk';
+import { createReducer } from '@reduxjs/toolkit';
+import { fetchFolderContentThunkExtraReducers, fetchPaginatedFolderContentThunk } from './fetchFolderContentThunk';
 import { RootState } from '../../..';
 import errorService from 'services/error.service';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
@@ -7,6 +8,7 @@ import { StorageState } from '../storage.model';
 import { storageActions } from '..';
 import { getDriveItemData, getDriveThumbnail, getThumbnailDto } from 'testUtils/fixtures/drive.fixtures';
 import { mockSdkFactory } from 'testUtils/sdk.mock';
+import notificationsService from '../../../../notifications/services/notifications.service';
 
 vi.mock('../../../../core/factory/sdk', () => ({
   SdkFactory: {
@@ -512,5 +514,101 @@ describe('Thunk of fetch folder content', () => {
         items: [enrichedFolder],
       }),
     );
+  });
+
+  describe('Folder content request status', () => {
+    const otherFolderId = 987;
+    const initialState = createMockState({
+      loadingFolders: { [otherFolderId]: true },
+      hasFetchFailedByFolderId: { [otherFolderId]: true },
+      latestFolderRequestId: {},
+    }).storage;
+    const reducer = createReducer(initialState, fetchFolderContentThunkExtraReducers);
+    const startRequest = (state: StorageState, requestId: string) =>
+      reducer(state, fetchPaginatedFolderContentThunk.pending(requestId, mockFolderId));
+    const failRequest = (state: StorageState, requestId: string) =>
+      reducer(state, fetchPaginatedFolderContentThunk.rejected(new Error('offline'), requestId, mockFolderId));
+    const succeedRequest = (state: StorageState, requestId: string) =>
+      reducer(state, fetchPaginatedFolderContentThunk.fulfilled(undefined, requestId, mockFolderId));
+
+    beforeEach(() => {
+      vi.spyOn(notificationsService, 'show').mockReturnValue('toast-id');
+    });
+
+    test('When the latest folder content request fails, then the folder is marked as failed and stops loading', () => {
+      const nextState = failRequest(startRequest(initialState, 'request-id'), 'request-id');
+
+      expect(nextState).toEqual({
+        ...initialState,
+        loadingFolders: { [otherFolderId]: true, [mockFolderId]: false },
+        hasFetchFailedByFolderId: { [otherFolderId]: true, [mockFolderId]: true },
+        latestFolderRequestId: { [mockFolderId]: 'request-id' },
+      });
+    });
+
+    test('When a failed folder is requested again, then its failure is cleared while it loads', () => {
+      const failedState = failRequest(startRequest(initialState, 'older-request-id'), 'older-request-id');
+
+      const nextState = startRequest(failedState, 'newer-request-id');
+
+      expect(nextState).toEqual({
+        ...initialState,
+        loadingFolders: { [otherFolderId]: true, [mockFolderId]: true },
+        hasFetchFailedByFolderId: { [otherFolderId]: true, [mockFolderId]: false },
+        latestFolderRequestId: { [mockFolderId]: 'newer-request-id' },
+      });
+    });
+
+    test('When an earlier request for a folder fails while a newer one succeeds, then the folder is no longer marked as failed', () => {
+      const bothPending = startRequest(startRequest(initialState, 'older-request-id'), 'newer-request-id');
+
+      const nextState = succeedRequest(failRequest(bothPending, 'older-request-id'), 'newer-request-id');
+
+      expect(nextState).toEqual({
+        ...initialState,
+        loadingFolders: { [otherFolderId]: true, [mockFolderId]: false },
+        hasFetchFailedByFolderId: { [otherFolderId]: true, [mockFolderId]: false },
+        latestFolderRequestId: { [mockFolderId]: 'newer-request-id' },
+      });
+    });
+
+    test('When a newer request succeeds before an earlier one fails, then the folder is not marked as failed', () => {
+      const bothPending = startRequest(startRequest(initialState, 'older-request-id'), 'newer-request-id');
+
+      const nextState = failRequest(succeedRequest(bothPending, 'newer-request-id'), 'older-request-id');
+
+      expect(nextState).toEqual({
+        ...initialState,
+        loadingFolders: { [otherFolderId]: true, [mockFolderId]: false },
+        hasFetchFailedByFolderId: { [otherFolderId]: true, [mockFolderId]: false },
+        latestFolderRequestId: { [mockFolderId]: 'newer-request-id' },
+      });
+    });
+
+    test('When an earlier request fails while a newer one is still loading, then the folder keeps loading', () => {
+      const bothPending = startRequest(startRequest(initialState, 'older-request-id'), 'newer-request-id');
+
+      const nextState = failRequest(bothPending, 'older-request-id');
+
+      expect(nextState).toEqual({
+        ...initialState,
+        loadingFolders: { [otherFolderId]: true, [mockFolderId]: true },
+        hasFetchFailedByFolderId: { [otherFolderId]: true, [mockFolderId]: false },
+        latestFolderRequestId: { [mockFolderId]: 'newer-request-id' },
+      });
+    });
+
+    test('When an earlier request succeeds while a newer one is still loading, then the folder keeps loading', () => {
+      const bothPending = startRequest(startRequest(initialState, 'older-request-id'), 'newer-request-id');
+
+      const nextState = succeedRequest(bothPending, 'older-request-id');
+
+      expect(nextState).toEqual({
+        ...initialState,
+        loadingFolders: { [otherFolderId]: true, [mockFolderId]: true },
+        hasFetchFailedByFolderId: { [otherFolderId]: true, [mockFolderId]: false },
+        latestFolderRequestId: { [mockFolderId]: 'newer-request-id' },
+      });
+    });
   });
 });
