@@ -37,7 +37,7 @@ export default function BackupsAsFoldersList({
   return (
     <div className={`${className} flex min-h-0 grow flex-col`}>
       <div className="flex h-full w-full flex-col overflow-y-auto">
-        <List<DriveItemData, 'name' | 'updatedAt' | 'size'>
+        <List<DriveItemData, 'name' | 'modificationTime' | 'size'>
           header={[
             {
               label: translate('drive.list.columns.name'),
@@ -49,7 +49,7 @@ export default function BackupsAsFoldersList({
             {
               label: translate('drive.list.columns.modified'),
               width: 'w-date',
-              name: 'updatedAt',
+              name: 'modificationTime',
               orderable: true,
               defaultDirection: 'ASC',
             },

@@ -2,6 +2,7 @@ import { PhotoDevice as SdkPhotoDevice, PhotoFolderFile } from '@internxt/sdk/di
 import { FetchFolderFoldersCursorResponse } from '@internxt/sdk/dist/drive/storage/types';
 
 type Folder = FetchFolderFoldersCursorResponse['folders'][number];
+type PhotoFolderFileThumbnail = NonNullable<PhotoFolderFile['thumbnails']>[number];
 
 export const getSdkPhotoDevice = (overrides: Partial<SdkPhotoDevice> = {}): SdkPhotoDevice => ({
   uuid: 'iphone-uuid',
@@ -56,3 +57,19 @@ export const getPhotoFolderFile = (overrides: Partial<PhotoFolderFile> = {}): Ph
     thumbnails: [],
     ...overrides,
   }) as unknown as PhotoFolderFile;
+
+export const getPhotoThumbnail = (overrides: Partial<PhotoFolderFileThumbnail> = {}): PhotoFolderFileThumbnail => ({
+  id: 1,
+  fileId: 0,
+  fileUuid: 'file-uuid',
+  maxWidth: 300,
+  maxHeight: 300,
+  type: 'jpg',
+  size: 20000,
+  bucketId: 'photos-bucket',
+  bucketFile: 'thumbnail-bucket-file',
+  encryptVersion: '03-aes',
+  createdAt: '2026-11-03T10:00:00.000Z',
+  updatedAt: '2026-11-03T10:00:00.000Z',
+  ...overrides,
+});

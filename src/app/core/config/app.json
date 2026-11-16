@@ -16,7 +16,7 @@
   },
   "database": {
     "name": "app-database",
-    "version": 7,
+    "version": 8,
     "provider": "indexed-db"
   }
 }

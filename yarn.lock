@@ -8333,6 +8333,11 @@ react-transition-group@^4.4.5:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
+react-virtuoso@^4.18.21:
+  version "4.18.21"
+  resolved "https://registry.yarnpkg.com/react-virtuoso/-/react-virtuoso-4.18.21.tgz#accd451e386694bbbfcd4d0d75cd1858b9e98be0"
+  integrity sha512-2F7utTLDpzc0MjIRfN1ObU1K7UgwDuNs420iPA9Jqg0QxpHi2AnTF1ir7YIhk44Xj4hgi+7iY8krCMOUbKhnXA==
+
 react-window@^1.8.11:
   version "1.8.11"
   resolved "https://registry.yarnpkg.com/react-window/-/react-window-1.8.11.tgz#a857b48fa85bd77042d59cc460964ff2e0648525"

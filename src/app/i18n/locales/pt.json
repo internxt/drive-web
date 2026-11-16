@@ -508,7 +508,8 @@
       },
       "timeline": {
         "today": "Hoje",
-        "yesterday": "Ontem"
+        "yesterday": "Ontem",
+        "monthError": "Não foi possível carregar algumas fotos de {{month}}"
       }
     },
     "favorites": {

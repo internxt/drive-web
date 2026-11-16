@@ -508,7 +508,8 @@
       },
       "timeline": {
         "today": "Oggi",
-        "yesterday": "Ieri"
+        "yesterday": "Ieri",
+        "monthError": "Non è stato possibile caricare alcune foto di {{month}}"
       }
     },
     "favorites": {

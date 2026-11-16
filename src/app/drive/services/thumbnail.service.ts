@@ -307,11 +307,24 @@ export const generateThumbnailFromFile = async (
   return null;
 };
 
-export const downloadThumbnail = async (thumbnailToDownload: Thumbnail, isWorkspace: boolean): Promise<Blob> => {
+export const getCachedThumbnail = async (file: { uuid: string; updatedAt: string }): Promise<Blob | undefined> => {
+  try {
+    const cachedPreview = await getDatabaseFilePreviewData({ fileUuid: file.uuid });
+    return cachedPreview?.updatedAt === file.updatedAt ? cachedPreview.preview : undefined;
+  } catch (error) {
+    errorService.reportError(error);
+    return undefined;
+  }
+};
+
+export const downloadThumbnail = async (
+  thumbnailToDownload: Pick<Thumbnail, 'bucket_id' | 'bucket_file'>,
+  isWorkspace: boolean,
+  abortController = new AbortController(),
+): Promise<Blob> => {
   const updateProgressCallback = () => {
     return;
   };
-  const abortController = new AbortController();
 
   let useWorkspaceCredentials = isWorkspace;
 
@@ -426,10 +439,10 @@ export const refreshFileThumbnailFromContent = async ({
   if (!thumbnailFile) return;
 
   const currentThumbnail = file.thumbnails?.[0];
-  const previewData = { fileId: file.id, folderId: file.folderId, updatedAt: file.updatedAt };
+  const previewData = { fileUuid: file.uuid, folderId: file.folderId, updatedAt: file.updatedAt };
 
   if (currentThumbnail && compareThumbnail(currentThumbnail, generatedThumbnail)) {
-    const isStoredLocally = !!(await getDatabaseFilePreviewData({ fileId: file.id }));
+    const isStoredLocally = !!(await getDatabaseFilePreviewData({ fileUuid: file.uuid }));
     if (!isStoredLocally) {
       await updateDatabaseFilePreviewData({
         ...previewData,

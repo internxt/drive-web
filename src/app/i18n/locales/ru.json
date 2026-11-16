@@ -487,7 +487,8 @@
       },
       "timeline": {
         "today": "Сегодня",
-        "yesterday": "Вчера"
+        "yesterday": "Вчера",
+        "monthError": "Не удалось загрузить некоторые фото за {{month}}"
       }
     },
     "favorites": {
