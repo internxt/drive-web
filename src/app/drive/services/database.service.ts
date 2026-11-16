@@ -2,7 +2,7 @@ import databaseService, {
   AvatarBlobData,
   DatabaseCollection,
   DriveItemBlobData,
-  PhotoThumbnailBlobData,
+  PreviewBlobData,
 } from 'app/database/services/database.service';
 import { LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
 import { LRUFilesPreviewCacheManager } from 'app/database/services/database.service/LRUFilesPreviewCacheManager';
@@ -53,36 +53,18 @@ const deleteDatabaseWorkspaceAvatar = async (uuid: string): Promise<void> =>
 
 const updateDatabaseFilePreviewData = async ({
   fileUuid,
-  folderId,
   previewBlob,
   updatedAt,
 }: {
   fileUuid: string;
-  folderId: number;
   previewBlob: Blob;
   updatedAt: string;
 }): Promise<void> => {
   const lruFilesPreviewCacheManager = await LRUFilesPreviewCacheManager.getInstance();
-  const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileUuid);
-
-  lruFilesPreviewCacheManager?.set(
-    fileUuid,
-    {
-      ...fileData,
-      uuid: fileUuid,
-      parentId: folderId,
-      updatedAt: updatedAt,
-      preview: previewBlob,
-    },
-    previewBlob.size,
-  );
+  lruFilesPreviewCacheManager.set(fileUuid, { preview: previewBlob, updatedAt }, previewBlob.size);
 };
 
-const getDatabasePhotoThumbnail = async ({
-  fileUuid,
-}: {
-  fileUuid: string;
-}): Promise<PhotoThumbnailBlobData | undefined> => {
+const getDatabasePhotoThumbnail = async ({ fileUuid }: { fileUuid: string }): Promise<PreviewBlobData | undefined> => {
   const lruPhotosThumbnailsCacheManager = await LRUPhotosThumbnailsCacheManager.getInstance();
   return lruPhotosThumbnailsCacheManager.get(fileUuid);
 };
@@ -100,11 +82,7 @@ const updateDatabasePhotoThumbnail = async ({
   await lruPhotosThumbnailsCacheManager.set(fileUuid, { preview: previewBlob, updatedAt }, previewBlob.size);
 };
 
-const getDatabaseFilePreviewData = async ({
-  fileUuid,
-}: {
-  fileUuid: string;
-}): Promise<DriveItemBlobData | undefined> => {
+const getDatabaseFilePreviewData = async ({ fileUuid }: { fileUuid: string }): Promise<PreviewBlobData | undefined> => {
   const lruFilesPreviewCacheManager = await LRUFilesPreviewCacheManager.getInstance();
 
   return lruFilesPreviewCacheManager?.get(fileUuid);
@@ -131,17 +109,9 @@ const updateDatabaseFileSourceData = async ({
   updatedAt: string;
 }): Promise<void> => {
   const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-  const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileUuid);
-
-  lruFilesCacheManager?.set(
+  lruFilesCacheManager.set(
     fileUuid,
-    {
-      ...fileData,
-      uuid: fileUuid,
-      parentId: folderId,
-      source: sourceBlob,
-      updatedAt: updatedAt,
-    },
+    { uuid: fileUuid, parentId: folderId, source: sourceBlob, updatedAt },
     sourceBlob.size,
   );
 };

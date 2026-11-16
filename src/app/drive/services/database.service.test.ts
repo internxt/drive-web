@@ -39,7 +39,6 @@ describe('databaseService', () => {
       const fileUuid = uuidV7();
       await updateDatabaseFilePreviewData({
         fileUuid,
-        folderId: 1,
         previewBlob: thumbnail('drive'),
         updatedAt: 'v1',
       });
@@ -65,6 +64,50 @@ describe('databaseService', () => {
   describe('File blobs cache', () => {
     afterAll(() => databaseService.clear());
 
+    const blob = (content: string) => new Blob([content]);
+
+    it('When the content and the thumbnail of a file are saved at the same time, then both stay cached', async () => {
+      const fileUuid = uuidV7();
+
+      await Promise.all([
+        updateDatabaseFileSourceData({ fileUuid, folderId: 1, sourceBlob: blob('content'), updatedAt: 'v1' }),
+        updateDatabaseFilePreviewData({ fileUuid, previewBlob: blob('thumbnail'), updatedAt: 'v1' }),
+      ]);
+
+      await vi.waitFor(async () => {
+        expect(await (await getDatabaseFileSourceData({ fileUuid }))?.source?.text()).toBe('content');
+        expect(await (await getDatabaseFilePreviewData({ fileUuid }))?.preview?.text()).toBe('thumbnail');
+      });
+    });
+
+    it('When the thumbnail of a changed file is saved, then its cached content still reports the older version', async () => {
+      const fileUuid = uuidV7();
+      await updateDatabaseFileSourceData({ fileUuid, folderId: 1, sourceBlob: blob('old content'), updatedAt: 'v1' });
+
+      await updateDatabaseFilePreviewData({ fileUuid, previewBlob: blob('new thumbnail'), updatedAt: 'v2' });
+
+      await vi.waitFor(async () => {
+        expect((await getDatabaseFilePreviewData({ fileUuid }))?.updatedAt).toBe('v2');
+      });
+      const cachedContent = await getDatabaseFileSourceData({ fileUuid });
+      expect(cachedContent?.updatedAt).toBe('v1');
+      expect(await cachedContent?.source?.text()).toBe('old content');
+    });
+
+    it('When the content of a changed file is saved, then its cached thumbnail still reports the older version', async () => {
+      const fileUuid = uuidV7();
+      await updateDatabaseFilePreviewData({ fileUuid, previewBlob: blob('old thumbnail'), updatedAt: 'v1' });
+
+      await updateDatabaseFileSourceData({ fileUuid, folderId: 1, sourceBlob: blob('new content'), updatedAt: 'v2' });
+
+      await vi.waitFor(async () => {
+        expect((await getDatabaseFileSourceData({ fileUuid }))?.updatedAt).toBe('v2');
+      });
+      const cachedThumbnail = await getDatabaseFilePreviewData({ fileUuid });
+      expect(cachedThumbnail?.updatedAt).toBe('v1');
+      expect(await cachedThumbnail?.preview?.text()).toBe('old thumbnail');
+    });
+
     it('when files have no id, then their source, preview and deletion are resolved by uuid', async () => {
       const fileA = { uuid: uuidV7(), size: 3 };
       const fileB = { uuid: uuidV7(), size: 3 };
@@ -83,7 +126,6 @@ describe('databaseService', () => {
       });
       await updateDatabaseFilePreviewData({
         fileUuid: fileA.uuid,
-        folderId: 1,
         previewBlob: new Blob(['pa']),
         updatedAt: '',
       });

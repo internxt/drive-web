@@ -444,7 +444,7 @@ export const refreshFileThumbnailFromContent = async ({
   if (!thumbnailFile) return;
 
   const currentThumbnail = file.thumbnails?.[0];
-  const previewData = { fileUuid: file.uuid, folderId: file.folderId, updatedAt: file.updatedAt };
+  const previewData = { fileUuid: file.uuid, updatedAt: file.updatedAt };
 
   if (currentThumbnail && compareThumbnail(currentThumbnail, generatedThumbnail)) {
     const isStoredLocally = !!(await getDatabaseFilePreviewData({ fileUuid: file.uuid }));

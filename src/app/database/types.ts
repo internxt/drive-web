@@ -6,6 +6,7 @@ export enum DatabaseCollection {
   Levels = 'levels',
   MoveDialogLevels = 'move_levels',
   LevelsBlobs = 'levels_blobs',
+  LevelsBlobsPreviews = 'levels_blobs_previews',
   LRU_cache = 'lru_cache',
   Account_settings = 'account_settings',
   UploadItemStatus = 'upload_item_status',

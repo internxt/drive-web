@@ -31,6 +31,18 @@ const open = (name: string, version?: number): Promise<idb.IDBPDatabase<AppDatab
         objectStore.createIndex('parent_index' as never, 'parentId', { unique: false });
         db.createObjectStore('lru_cache');
       }
+      if (oldVersion === 8) {
+        db.deleteObjectStore('levels_blobs');
+        db.deleteObjectStore('lru_cache');
+        const objectStore = db.createObjectStore('levels_blobs');
+        objectStore.createIndex('parent_index' as never, 'parentId', { unique: false });
+        db.createObjectStore('lru_cache');
+      }
+      if (oldVersion <= 8) {
+        for (const storeName of ['levels_blobs_previews', 'photos_thumbnails'] as const) {
+          if (!db.objectStoreNames.contains(storeName)) db.createObjectStore(storeName);
+        }
+      }
     },
     blocked: () => undefined,
     blocking: () => undefined,
