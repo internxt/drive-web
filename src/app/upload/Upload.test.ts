@@ -910,6 +910,35 @@ describe('Pausing an upload', () => {
     expect(uploadedNames()).toEqual(['beach', 'movie', 'trailer']);
   });
 
+  test('When the user frees space and resumes a folder while another upload is still running, then the folder uploads', async () => {
+    uploadAtMostAtTheSameTime(3);
+    let isStorageFull = true;
+    (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
+      if (file.name === 'video') await new Promise((resolve) => setTimeout(resolve, 2000));
+      else if (file.name === 'report' && isStorageFull)
+        throw new AppError('No space left', HTTP_STATUS_CODES.MAX_SPACE_USED);
+      return { uuid: `${file.name}-uuid` };
+    });
+    const uploadManager = new UploadManager();
+    const photos = createUpload([getFolderWithFiles('Photos', ['beach.png', 'city.png'])], [], { uploadManager });
+    const others = createUpload([], [getFileToUpload('report.pdf'), getFileToUpload('video.mp4')], { uploadManager });
+    const runningPhotos = photos.run();
+    const [photosTask] = tasksOf(TaskType.UploadFolder);
+    await photosTask.pause?.();
+    const runningOthers = others.run();
+    const [reportTask, videoTask] = tasksOf(TaskType.UploadFile);
+    await vi.waitFor(() => expect(statusOf(reportTask.id)).toBe(TaskStatus.Error));
+    isStorageFull = false;
+
+    await photosTask.resume?.();
+    expect(statusOf(videoTask.id)).toBe(TaskStatus.InProcess);
+    await vi.runAllTimersAsync();
+    await Promise.all([runningPhotos, runningOthers]);
+
+    expect(statusOf(photosTask.id)).toBe(TaskStatus.Success);
+    expect(uploadedNames()).toEqual(expect.arrayContaining(['beach', 'city']));
+  });
+
   test('When one of two uploads is paused, then the other one keeps uploading until it finishes', async () => {
     const uploadManager = new UploadManager();
     const photos = createUpload([getFolderWithFiles('Photos', ['beach.png', 'city.png'])], [], { uploadManager });

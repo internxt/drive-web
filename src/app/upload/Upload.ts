@@ -99,6 +99,7 @@ export class Upload {
     if (!tracker.canBeResumed()) return;
 
     tracker.resume();
+    this.manager.clearStorageFull(this.props.ownerUserAuthenticationData);
     this.manager.resume(topLevelItem);
   }
 
