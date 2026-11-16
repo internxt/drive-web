@@ -19,6 +19,8 @@ export interface UploadItemsPayload {
   files: File[];
 }
 
+export type UploadItemsHandler = (payload: UploadItemsPayload) => Promise<void>;
+
 interface PlanStorage {
   limit: number;
   usage: number;
@@ -170,7 +172,7 @@ export const uploadItems = async (
 /**
  * Uploads items that already went through the checks, such as those whose name collision the user resolved.
  */
-const startUpload = async (
+export const startUpload = async (
   { destinationFolderUuid, roots, files }: UploadItemsPayload,
   context: UploadContext,
 ): Promise<void> => {

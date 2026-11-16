@@ -11,12 +11,13 @@ import {
 } from '../context/SharedViewContext.actions';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { storageActions, storageSelectors } from 'app/store/slices/storage';
-import { canItemDrop, onItemDropped } from 'components/BreadcrumbsHelper';
+import { canItemDrop, createOnItemDropped } from 'components/BreadcrumbsHelper';
 import iconService from 'app/drive/services/icon.service';
 import { DragAndDropType } from 'app/core/types';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { BreadcrumbItemData, Breadcrumbs } from '@internxt/ui';
 import { useDrop } from 'react-dnd';
+import { useUploadItems } from 'app/upload/useUploadItems';
 
 interface BreadcrumbsSharedViewProps {
   resetSharedItems: () => void;
@@ -25,6 +26,7 @@ interface BreadcrumbsSharedViewProps {
 
 const BreadcrumbsSharedView = ({ resetSharedItems, sharedNamePath }: BreadcrumbsSharedViewProps) => {
   const dispatch = useAppDispatch();
+  const { uploadItems } = useUploadItems();
   const { state, actionDispatch } = useShareViewContext();
 
   const { isLoading } = state;
@@ -82,7 +84,7 @@ const BreadcrumbsSharedView = ({ resetSharedItems, sharedNamePath }: Breadcrumbs
       namePath={namePath}
       isSomeItemSelected={isSomeItemSelected}
       selectedItems={selectedItems}
-      onItemDropped={onItemDropped}
+      onItemDropped={createOnItemDropped(uploadItems)}
       canItemDrop={canItemDrop}
       dispatch={dispatch}
       acceptedTypes={[NativeTypes.FILE, DragAndDropType.DriveItem]}

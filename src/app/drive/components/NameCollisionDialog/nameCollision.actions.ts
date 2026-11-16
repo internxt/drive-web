@@ -1,7 +1,6 @@
 import { items as itemUtils } from '@internxt/lib';
 import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { renameFile } from 'app/crypto/services/utils';
-import { uploadFoldersWithTracking } from 'app/drive/services/folder.service/uploadFoldersWithTracking';
 import { Network, getEnvironmentConfig } from 'app/drive/services/network.service';
 import { DriveItemData } from 'app/drive/types';
 import { AppDispatch } from 'app/store';
@@ -19,6 +18,7 @@ import {
   handleRepeatedUploadingFolders,
 } from 'app/store/slices/storage/storage.thunks/renameItemsThunk';
 import { IRoot } from 'app/store/slices/storage/types';
+import { UploadItemsHandler } from 'app/upload/uploadItems';
 import { isVersioningExtensionAllowed } from 'views/Drive/components/VersionHistory/utils';
 import replaceFileService from 'views/Drive/services/replaceFile.service';
 import { moveItemsToTrash } from 'views/Trash/services';
@@ -39,9 +39,9 @@ export type CollisionOperation = 'keep' | 'replace' | 'skip';
 export interface NameCollisionContext {
   dispatch: AppDispatch;
   selectedWorkspace: WorkspaceData | null;
-  maxUploadFileSize: number;
   isVersioningEnabled: boolean;
   versioningMaxFileSize: number;
+  startUpload: UploadItemsHandler;
 }
 
 export interface ResolveCollisionParams {
@@ -264,53 +264,20 @@ const replaceFileVersion = async (file: File, itemToReplace: DriveItemData, cont
   context.dispatch(fileVersionsActions.invalidateCache(itemToReplace.uuid));
 };
 
-const uploadFiles = async (
-  files: File[],
-  destinationUuid: string,
-  { dispatch }: NameCollisionContext,
-  shouldSkipDuplicatesCheck = false,
-) => {
-  if (files.length === 0) return;
-
-  await dispatch(
-    storageThunks.uploadItemsThunk({
-      files,
-      parentFolderId: destinationUuid,
-      options: { disableDuplicatedNamesCheck: shouldSkipDuplicatesCheck },
-    }),
-  );
-};
-
-const uploadFolders = async (
-  folders: IRoot[],
-  destinationUuid: string,
-  { dispatch, selectedWorkspace, maxUploadFileSize }: NameCollisionContext,
-) => {
-  if (folders.length === 0) return;
-
-  await uploadFoldersWithTracking({
-    payload: folders.map((root) => ({ root: { ...root }, currentFolderId: destinationUuid })),
-    selectedWorkspace,
-    dispatch,
-    maxUploadFileSize,
-  });
-};
-
 const splitFoldersAndFiles = (items: (IRoot | File)[]) => ({
   folders: items.filter((item): item is IRoot => !isLocalFile(item)),
   files: items.filter(isLocalFile),
 });
 
-const uploadItems = async (
+const uploadResolvedItems = async (
   items: (IRoot | File)[],
   destinationUuid: string,
-  context: NameCollisionContext,
-  shouldSkipDuplicatesCheck = false,
+  { startUpload }: NameCollisionContext,
 ) => {
-  const { folders, files } = splitFoldersAndFiles(items);
+  if (items.length === 0) return;
 
-  await uploadFolders(folders, destinationUuid, context);
-  await uploadFiles(files, destinationUuid, context, shouldSkipDuplicatesCheck);
+  const { folders, files } = splitFoldersAndFiles(items);
+  await startUpload({ destinationFolderUuid: destinationUuid, roots: folders, files });
 };
 
 const isVersionedFilePair = (
@@ -339,11 +306,10 @@ const trashAndUploadItems = async (
   if (pairs.length === 0) return;
 
   await moveItemsToTrash(pairs.map((pair) => pair.existing));
-  await uploadItems(
+  await uploadResolvedItems(
     pairs.map((pair) => pair.item),
     destinationUuid,
     context,
-    true,
   );
 };
 
@@ -372,11 +338,6 @@ const replaceAndUploadItems = async (
   await context.dispatch(fetchSortedFolderContentThunk(destinationUuid));
 };
 
-const uploadNewFilesOnly = async (files: File[], destinationUuid: string, context: NameCollisionContext) => {
-  const { unrepeatedItems: newFiles } = await handleRepeatedUploadingFiles(files, destinationUuid);
-  await uploadFiles(newFiles as File[], destinationUuid, context, true);
-};
-
 /**
  * Merges a skipped folder upload into its existing counterpart: files that already
  * exist are left untouched, new files and new subfolders are uploaded into the
@@ -384,15 +345,13 @@ const uploadNewFilesOnly = async (files: File[], destinationUuid: string, contex
  * structure is preserved.
  */
 const mergeSkipFolderUpload = async (root: IRoot, existingFolderUuid: string, context: NameCollisionContext) => {
-  await uploadNewFilesOnly(root.childrenFiles, existingFolderUuid, context);
+  const [{ unrepeatedItems: newFiles }, foldersCheck] = await Promise.all([
+    handleRepeatedUploadingFiles(root.childrenFiles, existingFolderUuid),
+    handleRepeatedUploadingFolders(root.childrenFolders, existingFolderUuid),
+  ]);
+  const { unrepeatedItems: newFolders, repeatedItems: collidingFolders, existingItems: existingFolders } = foldersCheck;
 
-  const {
-    unrepeatedItems: newFolders,
-    repeatedItems: collidingFolders,
-    existingItems: existingFolders,
-  } = await handleRepeatedUploadingFolders(root.childrenFolders, existingFolderUuid);
-
-  await uploadFolders(newFolders as IRoot[], existingFolderUuid, context);
+  await uploadResolvedItems([...(newFolders as IRoot[]), ...(newFiles as File[])], existingFolderUuid, context);
 
   await Promise.all(
     (collidingFolders as IRoot[]).map(async (collidingFolder) => {
@@ -425,6 +384,9 @@ const getFileLookupItem = (file: File): DriveItemData => {
   return { name: filename, plainName: filename, type: extension, isFolder: false } as DriveItemData;
 };
 
+const getFolderLookupItem = (folder: IRoot): DriveItemData =>
+  ({ name: folder.name, plainName: folder.name, isFolder: true }) as DriveItemData;
+
 const getUniquelyNamedFiles = async (files: File[], destinationUuid: string): Promise<File[]> => {
   const lookupItems = files.map(getFileLookupItem);
   const namedItems = await getUniqueNames(lookupItems, destinationUuid);
@@ -432,6 +394,13 @@ const getUniquelyNamedFiles = async (files: File[], destinationUuid: string): Pr
   return namedItems.map(({ item, uniqueName }) =>
     renameFile(files[lookupItems.indexOf(item)], itemUtils.getItemDisplayName({ name: uniqueName, type: item.type })),
   );
+};
+
+const getUniquelyNamedFolders = async (folders: IRoot[], destinationUuid: string): Promise<IRoot[]> => {
+  const lookupItems = folders.map(getFolderLookupItem);
+  const namedItems = await getUniqueNames(lookupItems, destinationUuid);
+
+  return namedItems.map(({ item, uniqueName }) => ({ ...folders[lookupItems.indexOf(item)], name: uniqueName }));
 };
 
 /**
@@ -445,9 +414,11 @@ const keepAndUploadItems = async (
   if (items.length === 0) return;
 
   const { folders, files } = splitFoldersAndFiles(items);
-  await uploadFolders(folders, destinationUuid, context);
-  await uploadFiles(await getUniquelyNamedFiles(files, destinationUuid), destinationUuid, context, true);
-  await context.dispatch(fetchSortedFolderContentThunk(destinationUuid));
+  const [uniquelyNamedFolders, uniquelyNamedFiles] = await Promise.all([
+    getUniquelyNamedFolders(folders, destinationUuid),
+    getUniquelyNamedFiles(files, destinationUuid),
+  ]);
+  await uploadResolvedItems([...uniquelyNamedFolders, ...uniquelyNamedFiles], destinationUuid, context);
 };
 
 /**
