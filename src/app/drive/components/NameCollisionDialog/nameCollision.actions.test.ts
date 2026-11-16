@@ -8,7 +8,7 @@ const mocks = vi.hoisted(() => ({
   dispatch: vi.fn(),
   moveItemsToTrash: vi.fn(),
   moveItemsThunk: vi.fn(),
-  uploadItemsThunk: vi.fn(),
+  startUpload: vi.fn(),
   fetchSortedFolderContentThunk: vi.fn(),
   popItemsToDelete: vi.fn(),
   invalidateCache: vi.fn(),
@@ -16,7 +16,6 @@ const mocks = vi.hoisted(() => ({
   getUniqueFilename: vi.fn(),
   checkFolderDuplicated: vi.fn(),
   getUniqueFolderName: vi.fn(),
-  uploadFoldersWithTracking: vi.fn(),
   getEnvironmentConfig: vi.fn(),
   networkUploadFile: vi.fn(),
   replaceFile: vi.fn(),
@@ -26,7 +25,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('views/Trash/services', () => ({ moveItemsToTrash: mocks.moveItemsToTrash }));
 vi.mock('app/store/slices/storage/storage.thunks', () => ({
-  default: { moveItemsThunk: mocks.moveItemsThunk, uploadItemsThunk: mocks.uploadItemsThunk },
+  default: { moveItemsThunk: mocks.moveItemsThunk },
 }));
 vi.mock('app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk', () => ({
   fetchSortedFolderContentThunk: mocks.fetchSortedFolderContentThunk,
@@ -47,9 +46,6 @@ vi.mock('app/store/slices/storage/storage.thunks/renameItemsThunk', () => ({
   handleRepeatedUploadingFiles: mocks.handleRepeatedUploadingFiles,
   handleRepeatedUploadingFolders: mocks.handleRepeatedUploadingFolders,
 }));
-vi.mock('app/drive/services/folder.service/uploadFoldersWithTracking', () => ({
-  uploadFoldersWithTracking: mocks.uploadFoldersWithTracking,
-}));
 vi.mock('app/drive/services/network.service', () => ({
   getEnvironmentConfig: mocks.getEnvironmentConfig,
   Network: class {
@@ -66,7 +62,6 @@ const VERSIONING_MAX_FILE_SIZE = 10;
 
 const asMoveAction = (payload: unknown) => ({ type: 'move', payload });
 const asPopAction = (payload: unknown) => ({ type: 'pop', payload });
-const asUploadAction = (payload: unknown) => ({ type: 'upload', payload });
 const asRefreshAction = (payload: unknown) => ({ type: 'refresh', payload });
 const asInvalidateCacheAction = (payload: unknown) => ({ type: 'invalidateCache', payload });
 
@@ -82,9 +77,9 @@ const getRoot = (name = 'Photos', children: Partial<Pick<IRoot, 'childrenFiles' 
 const getContext = (overrides: Partial<NameCollisionContext> = {}): NameCollisionContext => ({
   dispatch: mocks.dispatch as unknown as NameCollisionContext['dispatch'],
   selectedWorkspace: null,
-  maxUploadFileSize: 5000,
   isVersioningEnabled: false,
   versioningMaxFileSize: VERSIONING_MAX_FILE_SIZE,
+  startUpload: mocks.startUpload,
   ...overrides,
 });
 
@@ -176,7 +171,7 @@ beforeEach(() => {
   mocks.getUniqueFolderName.mockResolvedValue('Photos (1)');
   mocks.moveItemsThunk.mockImplementation(asMoveAction);
   mocks.popItemsToDelete.mockImplementation(asPopAction);
-  mocks.uploadItemsThunk.mockImplementation(asUploadAction);
+  mocks.startUpload.mockResolvedValue(undefined);
   mocks.fetchSortedFolderContentThunk.mockImplementation(asRefreshAction);
   mocks.invalidateCache.mockImplementation(asInvalidateCacheAction);
   mocks.getEnvironmentConfig.mockResolvedValue({ bridgeUser: 'u', bridgePass: 'p', encryptionKey: 'k', bucketId: 'b' });
@@ -199,7 +194,6 @@ describe('resolveCollision', () => {
       await resolve({ operationType, operation, items, existingItems: [] });
 
       expect(mocks.moveItemsToTrash).not.toHaveBeenCalled();
-      expect(mocks.uploadFoldersWithTracking).not.toHaveBeenCalled();
       expect(mocks.dispatch.mock.calls).toEqual(expectedDispatchCalls);
     },
   );
@@ -354,28 +348,20 @@ describe('resolveCollision', () => {
     expectMovesThenPop([asRenamed(file, 'report (1)')], [file]);
   });
 
-  test('when uploading with keep, then folders upload with tracking, files upload under a unique name without the duplicates check, and the folder is refreshed', async () => {
-    const context = getContext({ maxUploadFileSize: 123, selectedWorkspace: { id: 'ws' } as never });
+  test('when uploading with keep, then folders and files upload together under a unique name', async () => {
     const file = new File(['content'], 'report.pdf');
     const root = getRoot();
 
-    await resolve({ operationType: 'upload', operation: 'keep', items: [file, root], existingItems: [] }, context);
+    await resolve({ operationType: 'upload', operation: 'keep', items: [file, root], existingItems: [] });
 
-    expect(mocks.uploadFoldersWithTracking).toHaveBeenCalledWith({
-      payload: [{ root: { ...root }, currentFolderId: DESTINATION }],
-      selectedWorkspace: { id: 'ws' },
-      dispatch: context.dispatch,
-      maxUploadFileSize: 123,
-    });
-    expect(mocks.dispatch.mock.calls).toEqual([
+    expect(mocks.startUpload.mock.calls).toEqual([
       [
-        asUploadAction({
+        {
+          destinationFolderUuid: DESTINATION,
+          roots: [{ ...root, name: 'Photos (1)' }],
           files: [expect.objectContaining({ name: 'report (1).pdf' })],
-          parentFolderId: DESTINATION,
-          options: { disableDuplicatedNamesCheck: true },
-        }),
+        },
       ],
-      [asRefreshAction(DESTINATION)],
     ]);
     expect(mocks.popItemsToDelete).not.toHaveBeenCalled();
   });
@@ -394,19 +380,18 @@ describe('resolveCollision', () => {
       existingItems: [],
     });
 
-    expect(mocks.dispatch.mock.calls).toEqual([
+    expect(mocks.startUpload.mock.calls).toEqual([
       [
-        asUploadAction({
+        {
+          destinationFolderUuid: DESTINATION,
+          roots: [],
           files: ['file (3).txt', 'file (4).txt', 'file (5).txt'].map((name) => expect.objectContaining({ name })),
-          parentFolderId: DESTINATION,
-          options: { disableDuplicatedNamesCheck: true },
-        }),
+        },
       ],
-      [asRefreshAction(DESTINATION)],
     ]);
   });
 
-  test('when uploading with replace and versioning is off, then only matched existing items are trashed and re-uploaded without the duplicates check', async () => {
+  test('when uploading with replace and versioning is off, then only matched existing items are trashed and re-uploaded', async () => {
     const matched = new File(['content'], 'report.pdf');
     const unmatched = new File(['content'], 'other.txt');
     const existing = getDriveItemData({ uuid: 'existing', plainName: 'report', type: 'pdf' });
@@ -419,18 +404,9 @@ describe('resolveCollision', () => {
     });
 
     expect(mocks.moveItemsToTrash).toHaveBeenCalledWith([existing]);
-    expect(mocks.uploadFoldersWithTracking).not.toHaveBeenCalled();
     expect(mocks.networkUploadFile).not.toHaveBeenCalled();
-    expect(mocks.dispatch.mock.calls).toEqual([
-      [
-        asUploadAction({
-          files: [matched],
-          parentFolderId: DESTINATION,
-          options: { disableDuplicatedNamesCheck: true },
-        }),
-      ],
-      [asRefreshAction(DESTINATION)],
-    ]);
+    expect(mocks.startUpload).toHaveBeenCalledWith({ destinationFolderUuid: DESTINATION, roots: [], files: [matched] });
+    expect(mocks.dispatch.mock.calls).toEqual([[asRefreshAction(DESTINATION)]]);
   });
 
   test('when uploading with replace and versioning is on, then allowed extensions become a new version while folders and other files are trashed and re-uploaded', async () => {
@@ -458,9 +434,6 @@ describe('resolveCollision', () => {
     );
 
     expect(mocks.moveItemsToTrash).toHaveBeenCalledWith([existingImage, existingFolder]);
-    expect(mocks.uploadFoldersWithTracking).toHaveBeenCalledWith(
-      expect.objectContaining({ payload: [{ root: { ...root }, currentFolderId: DESTINATION }] }),
-    );
     expect(mocks.getEnvironmentConfig).toHaveBeenCalledWith(true);
     expect(mocks.networkUploadFile).toHaveBeenCalledWith(
       'b',
@@ -468,8 +441,12 @@ describe('resolveCollision', () => {
       { taskId: expect.stringMatching(/^replace-existing-pdf-\d+$/) },
     );
     expect(mocks.replaceFile).toHaveBeenCalledWith('existing-pdf', { fileId: 'new-file-id', size: pdf.size });
+    expect(mocks.startUpload).toHaveBeenCalledWith({
+      destinationFolderUuid: DESTINATION,
+      roots: [root],
+      files: [image],
+    });
     expect(mocks.dispatch.mock.calls).toEqual([
-      [asUploadAction(expect.objectContaining({ files: [image], options: { disableDuplicatedNamesCheck: true } }))],
       [asInvalidateCacheAction('existing-pdf')],
       [asRefreshAction(DESTINATION)],
     ]);
@@ -506,27 +483,11 @@ describe('resolveCollision', () => {
     });
 
     expect(mocks.moveItemsToTrash).not.toHaveBeenCalled();
-    expect(mocks.uploadFoldersWithTracking).toHaveBeenCalledTimes(1);
-    expect(mocks.uploadFoldersWithTracking).toHaveBeenCalledWith(
-      expect.objectContaining({ payload: [{ root: { ...newSubfolder }, currentFolderId: 'photos-uuid' }] }),
-    );
-    expect(mocks.dispatch.mock.calls).toEqual([
-      [
-        asUploadAction({
-          files: [newFile],
-          parentFolderId: 'photos-uuid',
-          options: { disableDuplicatedNamesCheck: true },
-        }),
-      ],
-      [
-        asUploadAction({
-          files: [nestedFile],
-          parentFolderId: 'sub-uuid',
-          options: { disableDuplicatedNamesCheck: true },
-        }),
-      ],
-      [asRefreshAction(DESTINATION)],
+    expect(mocks.startUpload.mock.calls).toEqual([
+      [{ destinationFolderUuid: 'photos-uuid', roots: [newSubfolder], files: [newFile] }],
+      [{ destinationFolderUuid: 'sub-uuid', roots: [], files: [nestedFile] }],
     ]);
+    expect(mocks.dispatch.mock.calls).toEqual([[asRefreshAction(DESTINATION)]]);
   });
 
   test('when several files are versioned, then they are replaced one at a time', async () => {
@@ -574,7 +535,7 @@ describe('resolveCollision', () => {
 
       expect(mocks.replaceFile).toHaveBeenCalledWith(existing.uuid, { fileId: 'new-file-id', size });
       expect(mocks.moveItemsToTrash).not.toHaveBeenCalled();
-      expect(mocks.uploadItemsThunk).not.toHaveBeenCalled();
+      expect(mocks.startUpload).not.toHaveBeenCalled();
     },
   );
 
@@ -586,11 +547,7 @@ describe('resolveCollision', () => {
     expect(mocks.replaceFile).not.toHaveBeenCalled();
     expect(mocks.networkUploadFile).not.toHaveBeenCalled();
     expect(mocks.moveItemsToTrash).toHaveBeenCalledWith([existing]);
-    expect(mocks.uploadItemsThunk).toHaveBeenCalledWith({
-      files: [file],
-      parentFolderId: DESTINATION,
-      options: { disableDuplicatedNamesCheck: true },
-    });
+    expect(mocks.startUpload).toHaveBeenCalledWith({ destinationFolderUuid: DESTINATION, roots: [], files: [file] });
   });
 
   test('when replacing versionable files of mixed sizes at once, then only the ones within the limit become new versions', async () => {
@@ -605,6 +562,6 @@ describe('resolveCollision', () => {
       size: small.file.size,
     });
     expect(mocks.moveItemsToTrash).toHaveBeenCalledWith([big.existing]);
-    expect(mocks.uploadItemsThunk).toHaveBeenCalledWith(expect.objectContaining({ files: [big.file] }));
+    expect(mocks.startUpload).toHaveBeenCalledWith(expect.objectContaining({ files: [big.file] }));
   });
 });
