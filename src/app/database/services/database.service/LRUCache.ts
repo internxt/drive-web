@@ -47,9 +47,9 @@ export class LRUCache<T> {
 
       await this.evictEntriesIfNeeded(size);
 
+      await this.cache.set(key, value, size);
       this.lruList.push(key);
       this.currentSize += size;
-      await this.cache.set(key, value, size);
       this.persistState();
     }
   }

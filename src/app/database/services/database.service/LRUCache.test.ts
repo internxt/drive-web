@@ -309,6 +309,18 @@ describe('LRUCache', () => {
     expect(cache.updateLRUState.mock.calls.at(-1)?.[0]?.lruKeyList).toEqual(['tracked', 'untracked']);
   });
 
+  test('When an entry cannot be stored, then it is not counted in the cache', async () => {
+    const cache = new InMemoryCache<{ version: number }>();
+    const writeError = new Error('Quota exceeded');
+    vi.spyOn(cache, 'set').mockImplementationOnce(() => Promise.reject(writeError));
+    const lru = new LRUCache(cache, 100);
+
+    await expect(lru.set('failed', { version: 1 }, 20)).rejects.toBe(writeError);
+    await lru.set('kept', { version: 1 }, 10);
+
+    expect(cache.updateLRUState.mock.calls.at(-1)?.[0]).toEqual({ lruKeyList: ['kept'], itemsListSize: 10 });
+  });
+
   test('When an entry whose earlier write was lost is cached again, then it is tracked only once', async () => {
     const cache = new CacheLosingWritesOf<{ version: number }>('lost-once');
     const lru = new LRUCache(cache, 100);
