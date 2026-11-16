@@ -14,6 +14,7 @@ import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 import { DriveItemData } from '../types';
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
 import errorService from 'services/error.service';
+import { LRUFilesPreviewCacheManager } from 'app/database/services/database.service/LRUFilesPreviewCacheManager';
 
 describe('databaseService', () => {
   describe('canFileBeCached', () => {
@@ -112,6 +113,18 @@ describe('databaseService', () => {
         }
       },
     );
+
+    it('When the thumbnail of a file is removed from the cache, then its content stays cached', async () => {
+      const fileUuid = uuidV7();
+      await updateDatabaseFileSourceData({ fileUuid, folderId: 1, sourceBlob: blob('content'), updatedAt: 'v1' });
+      await updateDatabaseFilePreviewData({ fileUuid, previewBlob: blob('thumbnail'), updatedAt: 'v1' });
+      await vi.waitFor(async () => expect(await getDatabaseFilePreviewData({ fileUuid })).toBeDefined());
+
+      await (await LRUFilesPreviewCacheManager.getInstance()).delete(fileUuid, blob('thumbnail').size);
+
+      await vi.waitFor(async () => expect(await getDatabaseFilePreviewData({ fileUuid })).toBeUndefined());
+      expect(await (await getDatabaseFileSourceData({ fileUuid }))?.source?.text()).toBe('content');
+    });
 
     it('When the thumbnail of a changed file is saved, then its cached content still reports the older version', async () => {
       const fileUuid = uuidV7();
