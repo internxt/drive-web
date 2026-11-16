@@ -32,8 +32,9 @@ const open = (name: string, version?: number): Promise<idb.IDBPDatabase<AppDatab
         db.createObjectStore('lru_cache');
       }
       if (oldVersion === 8) {
-        db.deleteObjectStore('levels_blobs');
-        db.deleteObjectStore('lru_cache');
+        for (const storeName of ['levels_blobs', 'lru_cache', 'photos_thumbnails'] as const) {
+          if (db.objectStoreNames.contains(storeName)) db.deleteObjectStore(storeName);
+        }
         const objectStore = db.createObjectStore('levels_blobs');
         objectStore.createIndex('parent_index' as never, 'parentId', { unique: false });
         db.createObjectStore('lru_cache');
