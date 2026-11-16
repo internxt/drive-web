@@ -12,7 +12,8 @@ import {
 } from './database.service';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 import { DriveItemData } from '../types';
-import databaseService from 'app/database/services/database.service';
+import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
+import errorService from 'services/error.service';
 
 describe('databaseService', () => {
   describe('canFileBeCached', () => {
@@ -79,6 +80,38 @@ describe('databaseService', () => {
         expect(await (await getDatabaseFilePreviewData({ fileUuid }))?.preview?.text()).toBe('thumbnail');
       });
     });
+
+    it.each([
+      [
+        'content',
+        () => updateDatabaseFileSourceData({ fileUuid: uuidV7(), folderId: 1, sourceBlob: blob('c'), updatedAt: 'v1' }),
+      ],
+      [
+        'thumbnail',
+        () => updateDatabaseFilePreviewData({ fileUuid: uuidV7(), previewBlob: blob('t'), updatedAt: 'v1' }),
+      ],
+    ])(
+      'When the %s of a file cannot be cached, then the error is reported and the save still finishes',
+      async (_, save) => {
+        const writeError = new Error('Quota exceeded');
+        const put = databaseService.put as (...args: unknown[]) => Promise<void>;
+        const failBlobWrites = (collection: DatabaseCollection, ...rest: unknown[]) =>
+          collection === DatabaseCollection.LRU_cache ? put(collection, ...rest) : Promise.reject(writeError);
+        const putSpy = vi
+          .spyOn(databaseService, 'put')
+          .mockImplementation(failBlobWrites as typeof databaseService.put);
+        const reportErrorSpy = vi.spyOn(errorService, 'reportError').mockImplementation(() => undefined);
+
+        try {
+          await expect(save()).resolves.toBeUndefined();
+
+          await vi.waitFor(() => expect(reportErrorSpy).toHaveBeenCalledWith(writeError));
+        } finally {
+          putSpy.mockRestore();
+          reportErrorSpy.mockRestore();
+        }
+      },
+    );
 
     it('When the thumbnail of a changed file is saved, then its cached content still reports the older version', async () => {
       const fileUuid = uuidV7();
