@@ -2,7 +2,7 @@ import { Button } from '@internxt/ui';
 import { WarningCircleIcon } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Translate } from 'app/i18n/types';
-import { CSSProperties, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { CSSProperties, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { GroupedVirtuoso, GroupedVirtuosoHandle, ListRange } from 'react-virtuoso';
 import dateService from 'services/date.service';
 import { useElementSize } from '../hooks/useElementSize';
@@ -144,6 +144,8 @@ const PhotosTimeline = ({
   const columns = getColumns(widthWithoutScrollbar);
   const days = useMemo(() => groupByDayNewestFirst(photos), [photos]);
   const timeline = useMemo(() => getTimeline(days, columns, failedMonths), [days, columns, failedMonths]);
+
+  useEffect(() => () => PhotoThumbnailsService.instance.resumeDownloads(), []);
 
   useLayoutEffect(() => {
     const previousTimeline = shownTimeline.current;

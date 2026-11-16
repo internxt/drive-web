@@ -4,7 +4,7 @@ import { ICacheStorage, LRUCache, LRUCacheStruture } from './LRUCache';
 type CacheEntry<T> = { value: T; size: number };
 
 class InMemoryCache<T> implements ICacheStorage<T> {
-  private readonly store = new Map<string, CacheEntry<T>>();
+  protected readonly store = new Map<string, CacheEntry<T>>();
   readonly updateLRUState = vi.fn<(state: LRUCacheStruture) => void>();
 
   async get(key: string): Promise<T | undefined> {
@@ -40,6 +40,21 @@ class CacheLosingWritesOf<T> extends InMemoryCache<T> {
 
   storeFromNowOn(): void {
     this.lostKey = undefined;
+  }
+}
+
+class CacheWithQuota<T> extends InMemoryCache<T> {
+  constructor(private readonly quota: number) {
+    super();
+  }
+
+  set(key: string, value: T, size: number): void {
+    const otherEntriesSize = [...this.store].reduce(
+      (total, [storedKey, entry]) => (storedKey === key ? total : total + entry.size),
+      0,
+    );
+    if (otherEntriesSize + size > this.quota) throw new Error('Quota exceeded');
+    super.set(key, value, size);
   }
 }
 
@@ -319,6 +334,35 @@ describe('LRUCache', () => {
     await lru.set('kept', { version: 1 }, 10);
 
     expect(cache.updateLRUState.mock.calls.at(-1)?.[0]).toEqual({ lruKeyList: ['kept'], itemsListSize: 10 });
+  });
+
+  test('When replacing an entry fails, then its previous version is still counted in the cache', async () => {
+    const cache = new InMemoryCache<{ version: number }>();
+    const lru = new LRUCache(cache, 100);
+    await lru.set('replaced', { version: 1 }, 40);
+    await lru.set('other', { version: 1 }, 30);
+    const writeError = new Error('Quota exceeded');
+    vi.spyOn(cache, 'set').mockImplementationOnce(() => Promise.reject(writeError));
+
+    await expect(lru.set('replaced', { version: 2 }, 50)).rejects.toBe(writeError);
+    await lru.set('newest', { version: 1 }, 60);
+
+    expect(cache.updateLRUState.mock.calls.at(-1)?.[0]).toEqual({
+      lruKeyList: ['replaced', 'newest'],
+      itemsListSize: 100,
+    });
+    await expect(lru.get('replaced')).resolves.toEqual({ version: 1 });
+  });
+
+  test('When the storage has no room for a new entry, then the oldest one is evicted before storing it', async () => {
+    const cache = new CacheWithQuota<{ version: number }>(100);
+    const lru = new LRUCache(cache, 100);
+    await lru.set('oldest', { version: 1 }, 60);
+
+    await lru.set('newest', { version: 1 }, 50);
+
+    await expect(lru.get('oldest')).resolves.toBeUndefined();
+    await expect(lru.get('newest')).resolves.toEqual({ version: 1 });
   });
 
   test('When an entry whose earlier write was lost is cached again, then it is tracked only once', async () => {

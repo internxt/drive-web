@@ -28,6 +28,7 @@ import { getEnvironmentConfig } from './network.service';
 import { FileToUpload } from './file.service/types';
 import { ErrorLoadingVideoFileError } from './errors/thumbnail.service.errors';
 import encryptedStorageService from 'services/encrypted-storage.service';
+import { PreviewBlobData } from 'app/database/services/database.service';
 import { getDatabaseFilePreviewData, updateDatabaseFilePreviewData } from './database.service';
 
 export interface ThumbnailToUpload {
@@ -309,9 +310,7 @@ export const generateThumbnailFromFile = async (
 
 export const getCachedThumbnail = async (
   file: { uuid: string; updatedAt: string },
-  readCache: (file: {
-    fileUuid: string;
-  }) => Promise<{ preview?: Blob; updatedAt?: string } | undefined> = getDatabaseFilePreviewData,
+  readCache: (file: { fileUuid: string }) => Promise<PreviewBlobData | undefined> = getDatabaseFilePreviewData,
 ): Promise<Blob | undefined> => {
   try {
     const cachedPreview = await readCache({ fileUuid: file.uuid });

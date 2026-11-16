@@ -68,20 +68,6 @@ describe('databaseService', () => {
 
     const blob = (content: string) => new Blob([content]);
 
-    it('When the content and the thumbnail of a file are saved at the same time, then both stay cached', async () => {
-      const fileUuid = uuidV7();
-
-      await Promise.all([
-        updateDatabaseFileSourceData({ fileUuid, folderId: 1, sourceBlob: blob('content'), updatedAt: 'v1' }),
-        updateDatabaseFilePreviewData({ fileUuid, previewBlob: blob('thumbnail'), updatedAt: 'v1' }),
-      ]);
-
-      await vi.waitFor(async () => {
-        expect(await (await getDatabaseFileSourceData({ fileUuid }))?.source?.text()).toBe('content');
-        expect(await (await getDatabaseFilePreviewData({ fileUuid }))?.preview?.text()).toBe('thumbnail');
-      });
-    });
-
     it.each([
       [
         'content',

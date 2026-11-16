@@ -40,33 +40,27 @@ export class LRUCache<T> {
   }
 
   private async write(key: string, value: T, size: number): Promise<void> {
-    if (size < this.size) {
-      if (this.lruList.includes(key)) {
-        await this.untrack(key);
-      }
+    if (size >= this.size) return;
 
-      await this.evictEntriesIfNeeded(size);
+    const previousSize = await this.trackedSize(key);
+    if (this.lruList.includes(key)) this.updateLRU(key);
+    await this.evictEntriesIfNeeded(size - previousSize);
 
-      await this.cache.set(key, value, size);
-      this.lruList.push(key);
-      this.currentSize += size;
-      this.persistState();
-    }
+    await this.cache.set(key, value, size);
+
+    const isTracked = this.lruList.includes(key);
+    if (!isTracked) this.lruList.push(key);
+    this.currentSize += isTracked ? size - previousSize : size;
+    this.persistState();
   }
 
-  private async untrack(key: string): Promise<void> {
+  private async trackedSize(key: string): Promise<number> {
+    if (!this.lruList.includes(key)) return 0;
     const isStored = await this.cache.has(key);
-    if (!isStored) {
-      await this.reconcileState();
-      return;
-    }
+    if (isStored) return this.cache.getSize(key);
 
-    const keySize = await this.cache.getSize(key);
-    const trackedIndex = this.lruList.indexOf(key);
-    if (trackedIndex > -1) {
-      this.currentSize = Math.max(0, this.currentSize - keySize);
-      this.lruList.splice(trackedIndex, 1);
-    }
+    await this.reconcileState();
+    return 0;
   }
 
   /**
