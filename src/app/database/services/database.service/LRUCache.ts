@@ -1,6 +1,6 @@
 export interface ICacheStorage<T> {
   get(key: string): Promise<T | undefined>;
-  set(key: string, value: T, size: number): void;
+  set(key: string, value: T, size: number): void | Promise<void>;
   delete(key: string): void;
   has(key: string): Promise<boolean>;
   getSize(key: string): Promise<number>;
@@ -49,7 +49,7 @@ export class LRUCache<T> {
 
       this.lruList.push(key);
       this.currentSize += size;
-      this.cache.set(key, value, size);
+      await this.cache.set(key, value, size);
       this.persistState();
     }
   }

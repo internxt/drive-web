@@ -52,25 +52,24 @@ const deleteDatabaseWorkspaceAvatar = async (uuid: string): Promise<void> =>
   databaseService.delete(DatabaseCollection.WorkspacesAvatarBlobs, uuid);
 
 const updateDatabaseFilePreviewData = async ({
-  fileId,
+  fileUuid,
   folderId,
   previewBlob,
   updatedAt,
 }: {
-  fileId: number;
+  fileUuid: string;
   folderId: number;
   previewBlob: Blob;
   updatedAt: string;
 }): Promise<void> => {
   const lruFilesPreviewCacheManager = await LRUFilesPreviewCacheManager.getInstance();
-  // CHECK IF THAT THE PREVIEW KEY IS THE ID HAS ANY UNEXPECTED EFFECT INSTEAD OF BE THE FILE UUID
-  const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileId?.toString());
+  const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileUuid);
 
   lruFilesPreviewCacheManager?.set(
-    fileId.toString(),
+    fileUuid,
     {
       ...fileData,
-      id: fileId,
+      uuid: fileUuid,
       parentId: folderId,
       updatedAt: updatedAt,
       preview: previewBlob,
@@ -80,59 +79,65 @@ const updateDatabaseFilePreviewData = async ({
 };
 
 const getDatabasePhotoThumbnail = async ({
-  fileId,
+  fileUuid,
 }: {
-  fileId: number;
+  fileUuid: string;
 }): Promise<PhotoThumbnailBlobData | undefined> => {
   const lruPhotosThumbnailsCacheManager = await LRUPhotosThumbnailsCacheManager.getInstance();
-  return lruPhotosThumbnailsCacheManager.get(fileId.toString());
+  return lruPhotosThumbnailsCacheManager.get(fileUuid);
 };
 
 const updateDatabasePhotoThumbnail = async ({
-  fileId,
+  fileUuid,
   previewBlob,
   updatedAt,
 }: {
-  fileId: number;
+  fileUuid: string;
   previewBlob: Blob;
   updatedAt: string;
 }): Promise<void> => {
   const lruPhotosThumbnailsCacheManager = await LRUPhotosThumbnailsCacheManager.getInstance();
-  await lruPhotosThumbnailsCacheManager.set(fileId.toString(), { preview: previewBlob, updatedAt }, previewBlob.size);
+  await lruPhotosThumbnailsCacheManager.set(fileUuid, { preview: previewBlob, updatedAt }, previewBlob.size);
 };
 
-const getDatabaseFilePreviewData = async ({ fileId }: { fileId: number }): Promise<DriveItemBlobData | undefined> => {
+const getDatabaseFilePreviewData = async ({
+  fileUuid,
+}: {
+  fileUuid: string;
+}): Promise<DriveItemBlobData | undefined> => {
   const lruFilesPreviewCacheManager = await LRUFilesPreviewCacheManager.getInstance();
 
-  return lruFilesPreviewCacheManager?.get(fileId.toString());
+  return lruFilesPreviewCacheManager?.get(fileUuid);
 };
 
-const getDatabaseFileSourceData = async ({ fileId }: { fileId: number }): Promise<DriveItemBlobData | undefined> => {
+const getDatabaseFileSourceData = async ({
+  fileUuid,
+}: {
+  fileUuid: string;
+}): Promise<DriveItemBlobData | undefined> => {
   const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-  return lruFilesCacheManager?.get(fileId?.toString());
+  return lruFilesCacheManager?.get(fileUuid);
 };
 
 const updateDatabaseFileSourceData = async ({
-  fileId,
+  fileUuid,
   folderId,
   updatedAt,
   sourceBlob,
 }: {
-  fileId: number;
+  fileUuid: string;
   folderId: number;
   sourceBlob: Blob;
   updatedAt: string;
 }): Promise<void> => {
   const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-  // CHECK IF THAT THE PREVIEW KEY IS THE ID HAS ANY UNEXPECTED EFFECT INSTEAD OF BE THE FILE UUID
-
-  const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileId?.toString());
+  const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileUuid);
 
   lruFilesCacheManager?.set(
-    fileId.toString(),
+    fileUuid,
     {
       ...fileData,
-      id: fileId,
+      uuid: fileUuid,
       parentId: folderId,
       source: sourceBlob,
       updatedAt: updatedAt,
@@ -154,17 +159,21 @@ const deleteDatabaseItems = async (items: DriveItemData[]): Promise<void> => {
   });
 
   if (foldersInFolder.length) {
-    await foldersInFolder.forEach(async (folder) => {
+    foldersInFolder.forEach(async (folder) => {
       const folderItems = await databaseService.get(DatabaseCollection.Levels, folder?.uuid);
 
       if (folderItems) {
-        deleteDatabaseItems(folderItems as DriveItemData[]);
+        deleteDatabaseItems(folderItems as DriveItemData[]).catch((error) =>
+          console.error('Error deleting cached folder items:', error),
+        );
       }
     });
   }
 
   filesToRemove.forEach((item) => {
-    lruFilesCacheManager?.delete(item.id.toString(), item.size);
+    lruFilesCacheManager
+      ?.delete(item.uuid, item.size)
+      .catch((error) => console.error('Error deleting cached file:', error));
   });
 };
 

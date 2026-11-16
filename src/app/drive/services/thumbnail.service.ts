@@ -308,13 +308,13 @@ export const generateThumbnailFromFile = async (
 };
 
 export const getCachedThumbnail = async (
-  file: { id: number; updatedAt: string },
+  file: { uuid: string; updatedAt: string },
   readCache: (file: {
-    fileId: number;
+    fileUuid: string;
   }) => Promise<{ preview?: Blob; updatedAt?: string } | undefined> = getDatabaseFilePreviewData,
 ): Promise<Blob | undefined> => {
   try {
-    const cachedPreview = await readCache({ fileId: file.id });
+    const cachedPreview = await readCache({ fileUuid: file.uuid });
     return cachedPreview?.updatedAt === file.updatedAt ? cachedPreview.preview : undefined;
   } catch (error) {
     errorService.reportError(error);
@@ -444,10 +444,10 @@ export const refreshFileThumbnailFromContent = async ({
   if (!thumbnailFile) return;
 
   const currentThumbnail = file.thumbnails?.[0];
-  const previewData = { fileId: file.id, folderId: file.folderId, updatedAt: file.updatedAt };
+  const previewData = { fileUuid: file.uuid, folderId: file.folderId, updatedAt: file.updatedAt };
 
   if (currentThumbnail && compareThumbnail(currentThumbnail, generatedThumbnail)) {
-    const isStoredLocally = !!(await getDatabaseFilePreviewData({ fileId: file.id }));
+    const isStoredLocally = !!(await getDatabaseFilePreviewData({ fileUuid: file.uuid }));
     if (!isStoredLocally) {
       await updateDatabaseFilePreviewData({
         ...previewData,

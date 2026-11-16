@@ -19,6 +19,7 @@ import encryptedStorageService from 'services/encrypted-storage.service';
 import errorService from 'services/error.service';
 import { getDatabaseFilePreviewData } from './database.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { v7 as uuidV7 } from 'uuid';
 
 const { convertImageForPreviewSpy } = vi.hoisted(() => ({ convertImageForPreviewSpy: vi.fn() }));
 
@@ -466,12 +467,13 @@ describe('Thumbnail Service', () => {
   });
 
   describe('Cached Thumbnail', () => {
-    const file = { id: 7, updatedAt: '2026-11-03T10:00:00.000Z' };
+    const fileUuid = uuidV7();
+    const file = { uuid: fileUuid, updatedAt: '2026-11-03T10:00:00.000Z' };
     const cachedThumbnail = new Blob(['cached'], { type: 'image/jpeg' });
 
     test('When the saved thumbnail is from the current version of the file, then it is returned', async () => {
       vi.mocked(getDatabaseFilePreviewData).mockResolvedValue({
-        id: 7,
+        uuid: fileUuid,
         parentId: 1,
         preview: cachedThumbnail,
         updatedAt: file.updatedAt,
@@ -482,7 +484,7 @@ describe('Thumbnail Service', () => {
 
     test('When the file changed after its thumbnail was saved, then no thumbnail is returned', async () => {
       vi.mocked(getDatabaseFilePreviewData).mockResolvedValue({
-        id: 7,
+        uuid: fileUuid,
         parentId: 1,
         preview: cachedThumbnail,
         updatedAt: '2026-11-01T10:00:00.000Z',

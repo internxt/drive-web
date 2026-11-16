@@ -7,7 +7,7 @@ import { LRUCacheStruture } from './LRUCache';
 import indexedDBService from './indexed-db.service';
 
 export type DriveItemBlobData = {
-  id: number;
+  uuid: string;
   parentId: number;
   preview?: Blob;
   source?: Blob;
