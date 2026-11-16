@@ -16,7 +16,7 @@ import {
   getUploadFileItem,
   getUploadRepository,
 } from 'testUtils/fixtures/upload.fixtures';
-import { UploadManager, WORKSPACE_FOLDER_AVAILABILITY_DELAY_MS } from './UploadManager';
+import { UploadManager, UploadRunOptions, WORKSPACE_FOLDER_AVAILABILITY_DELAY_MS } from './UploadManager';
 import { createFolderItem } from './uploadItemTree';
 import { UploadFailureReason, UploadItem, UploadItemKind, UploadManagerEvents } from './types';
 
@@ -40,8 +40,15 @@ const failIfHangs = <T>(promise: Promise<T>): Promise<T> =>
     new Promise<never>((_, reject) => setTimeout(() => reject(new Error('upload never settled')), HANG_TIMEOUT_MS)),
   ]);
 
-const createManager = (props: Partial<ConstructorParameters<typeof UploadManager>[0]> = {}) =>
-  new UploadManager({ uploadRepository: getUploadRepository(), getPauseKey: nameOf, ...props });
+const createManager = (options: Partial<UploadRunOptions> = {}) => {
+  const manager = new UploadManager();
+  const runOptions: UploadRunOptions = { uploadRepository: getUploadRepository(), getPauseKey: nameOf, ...options };
+  return {
+    run: (items: UploadItem[]) => manager.run(items, runOptions),
+    cancelItem: (item: UploadItem) => manager.cancelItem(item),
+    clearStorageFull: () => manager.clearStorageFull(runOptions.ownerUserAuthenticationData),
+  };
+};
 
 const startedUploadNames = () => (uploadFile as Mock).mock.calls.map(([file]) => file.name);
 
@@ -194,6 +201,48 @@ describe('Uploading files', () => {
     await createManager({ events }).run(items);
 
     expect(events.onStorageFull).toHaveBeenCalledOnce();
+  });
+
+  test('When the user frees space in one storage while uploads are running, then only that storage uploads again', async () => {
+    let isSharedStorageFull = true;
+    (uploadFile as Mock).mockImplementation(
+      async (file: { name: string }, _progress, options: { ownerUserAuthenticationData?: { bucketId: string } }) => {
+        if (file.name === 'keeps-the-queue-busy') return new Promise(() => undefined);
+        const isSharedStorage = options.ownerUserAuthenticationData?.bucketId === 'shared-bucket';
+        if (!isSharedStorage || isSharedStorageFull) throw noSpaceLeftError;
+        return { uuid: `${file.name}-uuid` };
+      },
+    );
+    const endedNames = (events: UploadManagerEvents, event: 'onItemSucceeded' | 'onItemFailed') =>
+      (events[event] as Mock).mock.calls.map(([item]) => nameOf(item));
+    const ownEvents: UploadManagerEvents = { onItemSucceeded: vi.fn(), onItemFailed: vi.fn() };
+    const sharedEvents: UploadManagerEvents = { onItemSucceeded: vi.fn(), onItemFailed: vi.fn() };
+    const toOwnStorage: UploadRunOptions = {
+      uploadRepository: getUploadRepository(),
+      getPauseKey: nameOf,
+      events: ownEvents,
+    };
+    const toSharedStorage: UploadRunOptions = {
+      ...toOwnStorage,
+      events: sharedEvents,
+      ownerUserAuthenticationData: { bucketId: 'shared-bucket' } as never,
+    };
+    const manager = new UploadManager();
+    void manager.run([getUploadFileItem('keeps-the-queue-busy')], toOwnStorage);
+    void manager.run([getUploadFileItem('fills-own')], toOwnStorage);
+    void manager.run([getUploadFileItem('fills-shared')], toSharedStorage);
+    await vi.waitFor(() =>
+      expect([...endedNames(ownEvents, 'onItemFailed'), ...endedNames(sharedEvents, 'onItemFailed')]).toHaveLength(2),
+    );
+
+    isSharedStorageFull = false;
+    manager.clearStorageFull(toSharedStorage.ownerUserAuthenticationData);
+    void manager.run([getUploadFileItem('after-freeing-shared')], toSharedStorage);
+    void manager.run([getUploadFileItem('still-full-own')], toOwnStorage);
+
+    await vi.waitFor(() => expect(endedNames(sharedEvents, 'onItemSucceeded')).toEqual(['after-freeing-shared']));
+    await vi.waitFor(() => expect(endedNames(ownEvents, 'onItemFailed')).toEqual(['fills-own', 'still-full-own']));
+    expect(startedUploadNames()).not.toContain('still-full-own');
   });
 
   test('When the storage is still full on a new upload, then it is announced again', async () => {
@@ -547,6 +596,21 @@ describe('Uploading folders', () => {
     await failIfHangs(createManager().run([largeFile, folderItem]));
 
     expect(startedUploadNames()).toEqual(['beach', 'city', 'dog', 'large']);
+  });
+
+  test('When a large file is uploaded while another upload is still creating its folder, then it does not wait for that folder', async () => {
+    makeFolderCreationNeverFinish();
+    const manager = new UploadManager();
+    const runOptions = (): UploadRunOptions => ({ uploadRepository: getUploadRepository(), getPauseKey: nameOf });
+    const folderItem = createFolderItem(
+      getFolderToUpload('Photos', { childrenFiles: [getFileToUpload('beach.png')] }),
+      'dest',
+    );
+
+    void manager.run([folderItem], runOptions());
+    void manager.run([getUploadFileItem('large', USE_MULTIPART_THRESHOLD_BYTES)], runOptions());
+
+    await vi.waitFor(() => expect(startedUploadNames()).toEqual(['large']));
   });
 });
 
