@@ -13,9 +13,9 @@ import { TaskStatus } from 'app/tasks/types';
 import {
   MAX_CONCURRENT_UPLOADS,
   MAX_UPLOAD_ATTEMPTS,
+  MIN_MULTIPART_SIZE,
   TWENTY_MEGABYTES,
   UPLOAD_IDLE_TIMEOUT_MS,
-  USE_MULTIPART_THRESHOLD_BYTES,
 } from 'app/network/networkConstants';
 import { OwnerUserAuthenticationData } from 'app/network/types';
 import {
@@ -92,7 +92,7 @@ const isUnknownCreationResult = (error: unknown) =>
   errorService.isServerError(error);
 
 const isMultipartUpload = (item: UploadItem) =>
-  item.kind === UploadItemKind.File && item.file.size >= USE_MULTIPART_THRESHOLD_BYTES;
+  item.kind === UploadItemKind.File && item.file.size >= MIN_MULTIPART_SIZE;
 
 const isMediumSizedFile = (item: UploadItem) => item.kind === UploadItemKind.File && item.file.size >= TWENTY_MEGABYTES;
 
