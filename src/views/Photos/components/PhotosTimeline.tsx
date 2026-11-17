@@ -1,4 +1,4 @@
-import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { GroupedVirtuoso, GroupedVirtuosoHandle, ListRange } from 'react-virtuoso';
 import { useElementSize } from '../hooks/useElementSize';
 import { PhotoThumbnailsService } from '../services/photoThumbnails.service';
@@ -46,6 +46,8 @@ const PhotosTimeline = ({
   const columns = getColumns(widthWithoutScrollbar);
   const days = useMemo(() => groupByDay(photos), [photos]);
   const timeline = useMemo(() => getTimeline(days, columns, failedMonths), [days, columns, failedMonths]);
+
+  useEffect(() => () => PhotoThumbnailsService.instance.resumeDownloads(), []);
 
   useLayoutEffect(() => {
     const previousTimeline = shownTimeline.current;

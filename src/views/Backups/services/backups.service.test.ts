@@ -1,7 +1,7 @@
-import { describe, expect, it, Mock, vi, beforeEach } from 'vitest';
+import { describe, expect, it, vi, beforeEach } from 'vitest';
 import backupsService from './backups.service';
-import { SdkFactory } from '../../../app/core/factory/sdk';
 import { Device } from '@internxt/sdk/dist/drive/backups/types';
+import { mockSdkFactory } from 'testUtils/sdk.mock';
 
 vi.mock('../../../app/core/factory/sdk', () => ({
   SdkFactory: {
@@ -18,14 +18,11 @@ describe('backupsService', () => {
   let mockBackupsClient: any;
 
   beforeEach(() => {
-    vi.clearAllMocks();
     mockBackupsClient = {
       getBackupDevices: vi.fn(),
       getAllDevicesAsFolder: vi.fn(),
     };
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createBackupsClient: () => mockBackupsClient,
-    });
+    mockSdkFactory({ createBackupsClient: mockBackupsClient });
   });
 
   describe('getAllDevices', () => {

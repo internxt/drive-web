@@ -37,7 +37,6 @@ describe('TurnstileWidget', () => {
   };
 
   beforeEach(() => {
-    vi.clearAllMocks();
     widgetProps = undefined;
   });
 

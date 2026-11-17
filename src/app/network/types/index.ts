@@ -1,15 +1,5 @@
 import { DownloadProgressCallback } from '../download';
 
-export interface LegacyShardMeta {
-  hash: string;
-  size: number;
-  index: number;
-  parity: boolean;
-  challenges?: Buffer[];
-  challenges_as_str: string[];
-  tree: string[];
-}
-
 export interface DownloadOptions {
   key?: Buffer;
   token?: string;

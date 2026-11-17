@@ -59,10 +59,6 @@ vi.mock('./foldersZip.service', async (importOriginal) => {
 });
 
 describe('Folder Service', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   const mockFile: DriveFileData = {
     id: 1,
     uuid: 'file-uuid',
@@ -306,7 +302,7 @@ describe('Folder Service', () => {
       expect(updateDatabaseFileSourceData).toHaveBeenCalledWith({
         folderId: sharedFile.folderId,
         sourceBlob: downloadedBlob,
-        fileId: sharedFile.id,
+        fileUuid: sharedFile.uuid,
         updatedAt: sharedFile.updatedAt,
       });
       expect(fileStreams[0]).toBeInstanceOf(ReadableStream);

@@ -112,7 +112,6 @@ describe('uploadFoldersWithManager', () => {
   };
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 

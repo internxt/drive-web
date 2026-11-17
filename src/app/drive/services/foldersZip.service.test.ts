@@ -18,7 +18,6 @@ class MockFlatFolderZip {
 
 describe('foldersZip', () => {
   afterEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 

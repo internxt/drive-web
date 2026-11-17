@@ -2,7 +2,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { renderHook, act } from '@testing-library/react';
 import { navigationService } from 'services';
 import { AppView } from 'app/core/types';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import oauthService from 'services/oauth.service';
 import { useOAuthFlow } from './useOAuthFlow';
 import encryptedStorageService from 'services/encrypted-storage.service';
@@ -52,10 +52,6 @@ vi.mock('services/oauth.service', () => ({
 const mockSendAuthSuccess = vi.mocked(oauthService.sendAuthSuccess);
 
 describe('OAuth custom hook', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   afterEach(() => {
     vi.restoreAllMocks();
   });

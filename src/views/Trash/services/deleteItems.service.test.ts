@@ -1,6 +1,5 @@
-import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
+import { describe, it, expect, vi, Mock } from 'vitest';
 import deleteItems from './deleteItems.service';
-import { SdkFactory } from 'app/core/factory/sdk';
 import errorService from 'services/error.service';
 import { deleteDatabaseItems } from 'app/drive/services/database.service';
 import { DriveItemData } from 'app/drive/types';
@@ -8,6 +7,7 @@ import notificationsService from 'app/notifications/services/notifications.servi
 import { store } from 'app/store';
 import { storageActions } from 'app/store/slices/storage';
 import { processBatchConcurrently } from './batchProcessor.service';
+import { mockSdkFactory } from 'testUtils/sdk.mock';
 
 vi.mock('app/core/factory/sdk', () => ({
   SdkFactory: {
@@ -60,10 +60,6 @@ vi.mock('i18next', () => ({
 }));
 
 describe('DeleteItems', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   it('should delete multiple items permanently', async () => {
     const mockItems = [
       { uuid: 'file-1', isFolder: false },
@@ -78,11 +74,7 @@ describe('DeleteItems', () => {
     });
     (deleteDatabaseItems as Mock).mockResolvedValue(undefined);
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createTrashClient: () => ({
-        deleteItemsPermanentlyByUUID: mockDeletePermanently,
-      }),
-    });
+    mockSdkFactory({ createTrashClient: { deleteItemsPermanentlyByUUID: mockDeletePermanently } });
 
     await deleteItems(mockItems);
 
@@ -107,11 +99,7 @@ describe('DeleteItems', () => {
     (processBatchConcurrently as Mock).mockResolvedValue(undefined);
     (deleteDatabaseItems as Mock).mockResolvedValue(undefined);
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createTrashClient: () => ({
-        deleteItemsPermanentlyByUUID: vi.fn(),
-      }),
-    });
+    mockSdkFactory({ createTrashClient: { deleteItemsPermanentlyByUUID: vi.fn() } });
 
     await deleteItems(mockItems);
 
@@ -129,11 +117,7 @@ describe('DeleteItems', () => {
     (processBatchConcurrently as Mock).mockResolvedValue(undefined);
     (deleteDatabaseItems as Mock).mockResolvedValue(undefined);
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createTrashClient: () => ({
-        deleteItemsPermanentlyByUUID: vi.fn(),
-      }),
-    });
+    mockSdkFactory({ createTrashClient: { deleteItemsPermanentlyByUUID: vi.fn() } });
 
     await deleteItems(mockItems);
 
@@ -147,11 +131,7 @@ describe('DeleteItems', () => {
 
     (processBatchConcurrently as Mock).mockRejectedValue(mockError);
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createTrashClient: () => ({
-        deleteItemsPermanentlyByUUID: vi.fn(),
-      }),
-    });
+    mockSdkFactory({ createTrashClient: { deleteItemsPermanentlyByUUID: vi.fn() } });
 
     await deleteItems(mockItems);
 

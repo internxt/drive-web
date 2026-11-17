@@ -23,7 +23,7 @@ export const useFileViewerNavigation = ({ initialFile, folderItems }: UseFileVie
     () => (folderItems ?? listedItems ?? []).filter((item) => !item.isFolder) as PreviewFileItem[],
     [folderItems, listedItems],
   );
-  const currentIndex = files.findIndex((item) => item.id === currentFile.id);
+  const currentIndex = files.findIndex((item) => item.uuid === currentFile.uuid);
   const isCurrentFileListed = currentIndex !== -1;
 
   const hasPrevious = isCurrentFileListed && currentIndex > 0;
