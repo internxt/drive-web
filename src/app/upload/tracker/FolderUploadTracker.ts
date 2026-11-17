@@ -27,6 +27,8 @@ export class FolderUploadTracker extends UploadTracker<UploadFolderItem> {
       cancellable: true,
       stop: () => Promise.resolve(props.stop()),
       retry: () => props.retry(),
+      pause: () => Promise.resolve(props.pause()),
+      resume: () => Promise.resolve(props.resume()),
     });
     super(item, props, taskId);
     this.totalItems = countItemsIn(item.folder);
@@ -39,14 +41,11 @@ export class FolderUploadTracker extends UploadTracker<UploadFolderItem> {
     }
 
     this.uploadedItems++;
-    this.updateProgress(this.getUploadedRatio());
+    this.updateProgress(this.getUploadedProgress());
   }
 
-  /**
-   * A retried folder keeps what was already uploaded in it.
-   */
-  protected getRetryProgress(): number {
-    return this.getUploadedRatio();
+  protected getUploadedProgress(): number {
+    return this.uploadedItems / this.totalItems;
   }
 
   protected async finishUpload(): Promise<void> {
@@ -70,10 +69,6 @@ export class FolderUploadTracker extends UploadTracker<UploadFolderItem> {
   cancel(): void {
     super.cancel();
     if (!this.wasUploaded) this.removeCreatedFolder();
-  }
-
-  private getUploadedRatio(): number {
-    return this.uploadedItems / this.totalItems;
   }
 
   private removeCreatedFolder(): void {
