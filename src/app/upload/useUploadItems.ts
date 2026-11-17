@@ -35,9 +35,9 @@ const createUploadContext = (dispatch: AppDispatch, state: RootState): UploadCon
     dispatch(storageActions.popItems({ folderIds: [parentFolderUuid], items: [removedItem] })),
   onUploadFinished: (destinationFolderUuid) => {
     dispatch(fetchSortedFolderContentThunk(destinationFolderUuid));
-    dispatch(planThunks.fetchUsageThunk());
+    void dispatch(planThunks.fetchUsageThunk());
     const isWorkspaceMember = !!workspacesSelectors.getSelectedWorkspace(state)?.workspaceUser?.memberId;
-    if (isWorkspaceMember) dispatch(planThunks.fetchBusinessLimitUsageThunk());
+    if (isWorkspaceMember) void dispatch(planThunks.fetchBusinessLimitUsageThunk());
   },
 });
 
