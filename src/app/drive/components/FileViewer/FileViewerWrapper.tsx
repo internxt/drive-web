@@ -25,6 +25,7 @@ interface FileViewerWrapperProps {
   keyboardShortcuts?: FileViewerKeyboardShortcuts;
   onDownloadFile?: (file: DriveItemData) => void;
   refreshesThumbnail?: boolean;
+  onLastFileReached?: () => void;
 }
 
 const FileViewerWrapper = ({
@@ -37,6 +38,7 @@ const FileViewerWrapper = ({
   keyboardShortcuts,
   onDownloadFile,
   refreshesThumbnail = true,
+  onLastFileReached,
 }: FileViewerWrapperProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
@@ -45,7 +47,11 @@ const FileViewerWrapper = ({
   const dirtyName = useAppSelector((state: RootState) => state.ui.currentEditingNameDirty);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
 
-  const { currentFile, setCurrentFile, navigation } = useFileViewerNavigation({ initialFile: file, folderItems });
+  const { currentFile, setCurrentFile, navigation } = useFileViewerNavigation({
+    initialFile: file,
+    folderItems,
+    onLastFileReached,
+  });
 
   const { menuItems, keyboardShortcuts: viewerKeyboardShortcuts } = useFileViewerActions({
     file: currentFile,

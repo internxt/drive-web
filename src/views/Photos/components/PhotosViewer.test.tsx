@@ -12,7 +12,7 @@ vi.mock('app/i18n/provider/TranslationProvider', () => ({
 
 const mockViewerProps = vi.hoisted(() => vi.fn());
 vi.mock('app/drive/components/FileViewer/FileViewerWrapper', () => ({
-  default: (props: { onDownloadFile: (file: DriveItemData) => void }) => {
+  default: (props: { onDownloadFile: (file: DriveItemData) => void; onLastFileReached?: () => void }) => {
     mockViewerProps(props);
     return null;
   },
@@ -48,5 +48,17 @@ describe('Downloading a photo from the viewer', () => {
 
     expect(download?.payload).toHaveLength(2);
     expect(download?.downloadOptions?.downloadName).toBe('IMG_2');
+  });
+});
+
+describe('Moving past the last loaded photo in the viewer', () => {
+  test('When the user reaches the last loaded photo, then older photos are requested', () => {
+    const photo = aPhoto('IMG_3', 'jpg');
+    const onLastPhotoReached = vi.fn();
+    render(<PhotosViewer photo={photo} photos={[photo]} onClose={vi.fn()} onLastPhotoReached={onLastPhotoReached} />);
+
+    mockViewerProps.mock.calls.at(-1)?.[0].onLastFileReached();
+
+    expect(onLastPhotoReached).toHaveBeenCalledOnce();
   });
 });

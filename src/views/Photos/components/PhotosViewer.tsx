@@ -11,9 +11,10 @@ interface PhotosViewerProps {
   photo: Photo;
   photos: Photo[];
   onClose: () => void;
+  onLastPhotoReached?: () => void;
 }
 
-const PhotosViewer = ({ photo, photos, onClose }: PhotosViewerProps): JSX.Element => {
+const PhotosViewer = ({ photo, photos, onClose, onLastPhotoReached }: PhotosViewerProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const files = useMemo(() => photos.map(({ file }) => file), [photos]);
   const photoByFileId = useMemo(() => new Map(photos.map((shownPhoto) => [shownPhoto.file.id, shownPhoto])), [photos]);
@@ -48,6 +49,7 @@ const PhotosViewer = ({ photo, photos, onClose }: PhotosViewerProps): JSX.Elemen
       contextMenu={menu}
       onDownloadFile={downloadPhoto}
       refreshesThumbnail={false}
+      onLastFileReached={onLastPhotoReached}
     />
   );
 };

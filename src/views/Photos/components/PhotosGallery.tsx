@@ -34,7 +34,12 @@ const PhotosGallery = ({ months }: PhotosGalleryProps): JSX.Element => {
         onOpenPhoto={setOpenedPhoto}
       />
       {openedPhoto && (
-        <PhotosViewer photo={openedPhoto} photos={photosNewestFirst} onClose={() => setOpenedPhoto(undefined)} />
+        <PhotosViewer
+          photo={openedPhoto}
+          photos={photosNewestFirst}
+          onClose={() => setOpenedPhoto(undefined)}
+          onLastPhotoReached={loadNextMonth}
+        />
       )}
     </>
   );
