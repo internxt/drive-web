@@ -20,12 +20,13 @@ const PhotosViewer = ({ photo, photos, onClose }: PhotosViewerProps): JSX.Elemen
 
   const downloadPhoto = (file: DriveItemData) => {
     const relatedFiles = photoByFileId.get(file.id)?.relatedFiles ?? [];
+    const photoFiles = [file, ...relatedFiles.map((relatedFile) => relatedFile.file)];
     void DownloadManager.downloadItem({
-      payload: [file, ...relatedFiles.map((relatedFile) => relatedFile.file)],
+      payload: photoFiles,
       selectedWorkspace: null,
       workspaceCredentials: null,
       downloadOptions: {
-        downloadName: file.name,
+        downloadName: photoFiles.length > 1 ? file.name : undefined,
       },
     });
   };
