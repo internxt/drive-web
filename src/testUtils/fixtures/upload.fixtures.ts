@@ -47,11 +47,12 @@ export const getCreatedFolderRequest = (name: string) =>
 
 export const splitByExistingNames =
   (existingNames: string[]) =>
-  async <T extends { name: string }>(items: T[]) => ({
-    repeatedItems: items.filter(({ name }) => existingNames.includes(name)),
-    existingItems: existingNames.map((name) => getDriveItemData({ name, uuid: `existing-${name}-uuid` })),
-    unrepeatedItems: items.filter(({ name }) => !existingNames.includes(name)),
-  });
+  <T extends { name: string }>(items: T[]) =>
+    Promise.resolve({
+      repeatedItems: items.filter(({ name }) => existingNames.includes(name)),
+      existingItems: existingNames.map((name) => getDriveItemData({ name, uuid: `existing-${name}-uuid` })),
+      unrepeatedItems: items.filter(({ name }) => !existingNames.includes(name)),
+    });
 
 export const getUploadContext = (overrides: Partial<UploadContext> = {}): UploadContext => ({
   uploadRepository: getUploadRepository(),
