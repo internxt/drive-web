@@ -1,6 +1,6 @@
 import { ListSharedItemsResponse } from '@internxt/sdk/dist/drive/share/types';
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import usePublicSharedFolderContent from './usePublicSharedFolderContent';
 
 vi.mock('app/share/services/share.service', () => ({
@@ -48,10 +48,6 @@ const renderContentHook = () =>
   );
 
 describe('usePublicSharedFolderContent', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   test('When the hook mounts, then it fetches the root folders and then the files of the public shared folder', async () => {
     mockedGetPublicSharedFolderContent.mockImplementation((_, type) =>
       type === 'folders'

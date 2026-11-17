@@ -482,7 +482,18 @@
         "retry": "Reintentar"
       },
       "filters": {
-        "allDevices": "Todos los dispositivos"
+        "allDevices": "Todos los dispositivos",
+        "allDates": "Todas las fechas"
+      },
+      "timeline": {
+        "today": "Hoy",
+        "yesterday": "Ayer",
+        "monthError": "No se han podido cargar algunas fotos de {{month}}"
+      },
+      "badges": {
+        "livePhoto": "Live Photo",
+        "burst": "Ráfaga",
+        "video": "Vídeo"
       }
     },
     "favorites": {
@@ -1386,7 +1397,8 @@
       "errors": {}
     },
     "subtitles": {
-      "upload-failed": "Error al subir"
+      "upload-failed": "Error al subir",
+      "folder-removal-failed": "No se pudo eliminar la carpeta subida"
     },
     "generalErrorMessages": {
       "retryUploadFailed": "Algo salió mal al reintentar la subida. Intenta subirlo de nuevo",

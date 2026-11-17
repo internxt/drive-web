@@ -103,7 +103,6 @@ describe('TaskToRetry', () => {
   const files: RetryableTask[] = [createUploadTask('file', 'txt')];
 
   beforeEach(() => {
-    vi.clearAllMocks();
     mockUnwrapRetryUpload.mockResolvedValue(undefined);
     mockUploadRetryItem.mockReturnValue({ unwrap: mockUnwrapRetryUpload });
   });

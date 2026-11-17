@@ -1,39 +1,28 @@
-import { useState } from 'react';
-import PhotosDeviceFilter from './components/PhotosDeviceFilter';
-import PhotosEmptyState from './components/PhotosEmptyState';
 import PhotosErrorState from './components/PhotosErrorState';
+import PhotosFilters from './components/PhotosFilters';
 import PhotosGridSkeleton from './components/PhotosGridSkeleton';
 import PhotosLayout from './components/PhotosLayout';
-import { usePhotoDevices } from './hooks/usePhotoDevices';
+import PhotosLibrary from './components/PhotosLibrary';
+import { usePhotoFilters } from './hooks/usePhotoFilters';
+import { usePhotoLibrary } from './hooks/usePhotoLibrary';
+import { PhotoDevice, PhotoMonth } from './types';
+
+const NO_DEVICES: PhotoDevice[] = [];
+const NO_MONTHS: PhotoMonth[] = [];
 
 const PhotosView = (): JSX.Element => {
-  const { state, retry } = usePhotoDevices();
-  const [selectedDeviceUuid, setSelectedDeviceUuid] = useState<string | null>(null);
-
-  const devices = state.status === 'loaded' ? state.devices : [];
-  const hasSeveralDevices = devices.length > 1;
+  const { state, retry } = usePhotoLibrary();
+  const devices = state.status === 'loaded' ? state.devices : NO_DEVICES;
+  const filters = usePhotoFilters(state.status === 'loaded' ? state.months : NO_MONTHS);
 
   const content = {
     loading: <PhotosGridSkeleton />,
     error: <PhotosErrorState onRetry={retry} />,
-    // TODO: show the photos of the chosen devices when there are devices, once the gallery is added
-    loaded: devices.length === 0 && <PhotosEmptyState />,
+    loaded: <PhotosLibrary months={filters.shownMonths} />,
   };
 
   return (
-    <PhotosLayout
-      filters={
-        hasSeveralDevices && (
-          <PhotosDeviceFilter
-            devices={devices}
-            selectedDeviceUuid={selectedDeviceUuid}
-            onSelect={setSelectedDeviceUuid}
-          />
-        )
-      }
-    >
-      {content[state.status]}
-    </PhotosLayout>
+    <PhotosLayout filters={<PhotosFilters devices={devices} filters={filters} />}>{content[state.status]}</PhotosLayout>
   );
 };
 

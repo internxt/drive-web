@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { onChangePasswordHandler } from './passwordValidation';
 
 const mockTestPasswordStrength = vi.hoisted(() => vi.fn());
@@ -16,10 +16,6 @@ vi.mock('components/ValidPassword', () => ({
 describe('onChangePasswordHandler', () => {
   const mockSetIsValidPassword = vi.fn();
   const mockSetPasswordState = vi.fn();
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
 
   it('should set error state when password exceeds max length', () => {
     const longPassword = 'a'.repeat(257);
