@@ -9,6 +9,7 @@ import { TWENTY_MEGABYTES, USE_MULTIPART_THRESHOLD_BYTES } from 'app/network/net
 import { QueueUtilsService } from 'utils/queueUtils';
 import workspacesService from 'services/workspace.service';
 import folderService from 'app/drive/services/folder.service';
+import newStorageService from 'app/drive/services/new-storage.service';
 import {
   getCreatedFolder,
   getFileToUpload,
@@ -16,13 +17,19 @@ import {
   getUploadFileItem,
   getUploadRepository,
 } from 'testUtils/fixtures/upload.fixtures';
-import { UploadManager, UploadRunOptions, WORKSPACE_FOLDER_AVAILABILITY_DELAY_MS } from './UploadManager';
+import {
+  FOLDER_CREATION_TIMEOUT_MS,
+  UploadManager,
+  UploadRunOptions,
+  WORKSPACE_FOLDER_AVAILABILITY_DELAY_MS,
+} from './UploadManager';
 import { createFolderItem } from './uploadItemTree';
-import { UploadFailureReason, UploadItem, UploadItemKind, UploadManagerEvents } from './types';
+import { UploadFailureReason, UploadItem, UploadItemKind, UploadManagerEvents, UploadResult } from './types';
 
 vi.mock('app/drive/services/file.service/uploadFile', () => ({ default: vi.fn() }));
 vi.mock('app/drive/services/folder.service', () => ({ default: { createFolderByUuid: vi.fn() } }));
 vi.mock('services/workspace.service', () => ({ default: { createFolder: vi.fn() } }));
+vi.mock('app/drive/services/new-storage.service', () => ({ default: { checkDuplicatedFolders: vi.fn() } }));
 
 type UploadFileOptions = { abortCallback?: (abort?: () => void) => void };
 
@@ -46,6 +53,8 @@ const createManager = (options: Partial<UploadRunOptions> = {}) => {
   return {
     run: (items: UploadItem[]) => manager.run(items, runOptions),
     cancelItem: (item: UploadItem) => manager.cancelItem(item),
+    pause: (item: UploadItem) => manager.pause(item),
+    resume: (item: UploadItem) => manager.resume(item),
     clearStorageFull: () => manager.clearStorageFull(runOptions.ownerUserAuthenticationData),
   };
 };
@@ -614,6 +623,222 @@ describe('Uploading folders', () => {
   });
 });
 
+const serverErrorAfterCreatingError = new AppError('Server error', HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR);
+const folderAlreadyExistsError = new AppError('Folder already exists', HTTP_STATUS_CODES.CONFLICT);
+
+const folderCreated = (name: string) => () => [Promise.resolve(getCreatedFolder(name)), { cancel: vi.fn() }] as never;
+const folderCreationAnswerLost = () => [Promise.reject(serverErrorAfterCreatingError), { cancel: vi.fn() }] as never;
+const folderAlreadyExists = () => [Promise.reject(folderAlreadyExistsError), { cancel: vi.fn() }] as never;
+
+const findExistingFolder = (uuid: string) => ({ existentFolders: [{ uuid }] }) as never;
+const findNoFolder = () => ({ existentFolders: [] }) as never;
+
+describe('Uploading a folder that already exists', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    vi.spyOn(errorService, 'reportError').mockReturnValue();
+    (uploadFile as Mock).mockImplementation(async (file: { name: string }) => ({ uuid: `${file.name}-uuid` }));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  const runUntilItSettles = async (upload: Promise<UploadResult>) => {
+    await vi.runAllTimersAsync();
+    return upload;
+  };
+
+  test('When a subfolder was created but its answer was lost, then the existing one is used and its files are uploaded inside it', async () => {
+    vi.mocked(folderService.createFolderByUuid)
+      .mockImplementationOnce(folderCreated('Work'))
+      .mockImplementationOnce(folderCreationAnswerLost)
+      .mockImplementationOnce(folderAlreadyExists);
+    vi.mocked(newStorageService.checkDuplicatedFolders).mockResolvedValue(findExistingFolder('existing-invoices-uuid'));
+    const tree = getFolderToUpload('Work', {
+      childrenFolders: [getFolderToUpload('Invoices', { childrenFiles: [getFileToUpload('january.pdf')] })],
+    });
+
+    const { failed } = await runUntilItSettles(createManager().run([createFolderItem(tree, 'dest')]));
+
+    expect(failed).toEqual([]);
+    expect(newStorageService.checkDuplicatedFolders).toHaveBeenCalledWith('Work-uuid', ['Invoices']);
+    expect(uploadedFileParents()).toEqual({ january: 'existing-invoices-uuid' });
+  });
+
+  test('When the folder whose answer was lost does not show up at first, then it is looked up again until it does', async () => {
+    vi.mocked(folderService.createFolderByUuid)
+      .mockImplementationOnce(folderCreationAnswerLost)
+      .mockImplementationOnce(folderAlreadyExists);
+    vi.mocked(newStorageService.checkDuplicatedFolders)
+      .mockResolvedValueOnce(findNoFolder())
+      .mockResolvedValueOnce(findNoFolder())
+      .mockResolvedValueOnce(findExistingFolder('existing-work-uuid'));
+    const rootItem = createFolderItem(
+      getFolderToUpload('Work', { childrenFiles: [getFileToUpload('report.pdf')] }),
+      'dest',
+    );
+
+    const { failed } = await runUntilItSettles(createManager().run([rootItem]));
+
+    expect(failed).toEqual([]);
+    expect(newStorageService.checkDuplicatedFolders).toHaveBeenCalledTimes(3);
+    expect(uploadedFileParents()).toEqual({ report: 'existing-work-uuid' });
+  });
+
+  test('When the folder whose answer was lost still does not show up after three lookups, then it fails and its content is not uploaded', async () => {
+    vi.mocked(folderService.createFolderByUuid)
+      .mockImplementationOnce(folderCreationAnswerLost)
+      .mockImplementationOnce(folderAlreadyExists);
+    vi.mocked(newStorageService.checkDuplicatedFolders).mockResolvedValue(findNoFolder());
+    const rootItem = createFolderItem(
+      getFolderToUpload('Work', { childrenFiles: [getFileToUpload('report.pdf')] }),
+      'dest',
+    );
+
+    const { failed } = await runUntilItSettles(createManager().run([rootItem]));
+
+    expect(failed).toEqual([{ item: rootItem, failure: expect.objectContaining({ error: folderAlreadyExistsError }) }]);
+    expect(newStorageService.checkDuplicatedFolders).toHaveBeenCalledTimes(3);
+    expect(uploadFile).not.toHaveBeenCalled();
+  });
+
+  test('When creating the folder lost the connection and then it already exists, then the existing one is used', async () => {
+    vi.mocked(folderService.createFolderByUuid)
+      .mockImplementationOnce(() => [Promise.reject(new Error('Network Error')), { cancel: vi.fn() }] as never)
+      .mockImplementation(folderAlreadyExists);
+    vi.mocked(newStorageService.checkDuplicatedFolders).mockResolvedValue(findExistingFolder('existing-work-uuid'));
+    const rootItem = createFolderItem(
+      getFolderToUpload('Work', { childrenFiles: [getFileToUpload('report.pdf')] }),
+      'dest',
+    );
+
+    const { failed } = await runUntilItSettles(createManager().run([rootItem]));
+
+    expect(failed).toEqual([]);
+    expect(uploadedFileParents()).toEqual({ report: 'existing-work-uuid' });
+  });
+
+  test('When creating the folder was refused and then it already exists, then the existing one is not reused and fails', async () => {
+    const forbiddenError = new AppError('Forbidden', HTTP_STATUS_CODES.FORBIDDEN);
+    vi.mocked(folderService.createFolderByUuid)
+      .mockImplementationOnce(() => [Promise.reject(forbiddenError), { cancel: vi.fn() }] as never)
+      .mockImplementation(folderAlreadyExists);
+    vi.mocked(newStorageService.checkDuplicatedFolders).mockResolvedValue(findExistingFolder('users-own-work-uuid'));
+    const rootItem = createFolderItem(
+      getFolderToUpload('Work', { childrenFiles: [getFileToUpload('report.pdf')] }),
+      'dest',
+    );
+
+    const { failed } = await runUntilItSettles(createManager().run([rootItem]));
+
+    expect(failed).toEqual([{ item: rootItem, failure: expect.objectContaining({ error: folderAlreadyExistsError }) }]);
+    expect(newStorageService.checkDuplicatedFolders).not.toHaveBeenCalled();
+    expect(uploadFile).not.toHaveBeenCalled();
+  });
+
+  test('When the user cancels while the folder whose answer was lost is being looked up, then the lookup stops', async () => {
+    vi.mocked(folderService.createFolderByUuid)
+      .mockImplementationOnce(folderCreationAnswerLost)
+      .mockImplementationOnce(folderAlreadyExists);
+    const rootItem = createFolderItem(
+      getFolderToUpload('Work', { childrenFiles: [getFileToUpload('report.pdf')] }),
+      'dest',
+    );
+    const manager = createManager();
+    vi.mocked(newStorageService.checkDuplicatedFolders).mockImplementation(async () => {
+      manager.cancelItem(rootItem);
+      return findNoFolder();
+    });
+
+    const { failed } = await runUntilItSettles(manager.run([rootItem]));
+
+    expect(failed).toEqual([]);
+    expect(newStorageService.checkDuplicatedFolders).toHaveBeenCalledOnce();
+    expect(uploadFile).not.toHaveBeenCalled();
+  });
+
+  test('When the uploaded folder already existed in the destination, then it is not reused and fails', async () => {
+    vi.mocked(folderService.createFolderByUuid).mockImplementation(folderAlreadyExists);
+    vi.mocked(newStorageService.checkDuplicatedFolders).mockResolvedValue(findExistingFolder('users-own-work-uuid'));
+    const rootItem = createFolderItem(
+      getFolderToUpload('Work', { childrenFiles: [getFileToUpload('report.pdf')] }),
+      'dest',
+    );
+
+    const { failed } = await runUntilItSettles(createManager().run([rootItem]));
+
+    expect(failed).toEqual([{ item: rootItem, failure: expect.objectContaining({ error: folderAlreadyExistsError }) }]);
+    expect(uploadFile).not.toHaveBeenCalled();
+  });
+
+  test('When the user already has a folder with the same name where a subfolder goes, then that subfolder is not reused and fails', async () => {
+    vi.mocked(folderService.createFolderByUuid)
+      .mockImplementationOnce(folderCreated('Work'))
+      .mockImplementation(folderAlreadyExists);
+    vi.mocked(newStorageService.checkDuplicatedFolders).mockResolvedValue(
+      findExistingFolder('users-own-invoices-uuid'),
+    );
+    const subfolder = getFolderToUpload('Invoices', { childrenFiles: [getFileToUpload('january.pdf')] });
+
+    const { failed } = await runUntilItSettles(
+      createManager().run([createFolderItem(getFolderToUpload('Work', { childrenFolders: [subfolder] }), 'dest')]),
+    );
+
+    expect(failed).toEqual([
+      {
+        item: expect.objectContaining({ folder: subfolder }),
+        failure: expect.objectContaining({ error: folderAlreadyExistsError }),
+      },
+    ]);
+    expect(uploadFile).not.toHaveBeenCalled();
+  });
+
+  test('When creating a folder does not answer in time, then the request is cancelled and the folder fails so it can be retried', async () => {
+    const cancelRequest = vi.fn();
+    vi.mocked(folderService.createFolderByUuid).mockReturnValue([
+      new Promise(() => undefined),
+      { cancel: cancelRequest },
+    ]);
+    const rootItem = createFolderItem(getFolderToUpload('Work'), 'dest');
+
+    const upload = createManager().run([rootItem]);
+    await vi.advanceTimersByTimeAsync(FOLDER_CREATION_TIMEOUT_MS);
+
+    expect(cancelRequest).toHaveBeenCalledOnce();
+
+    const { failed } = await runUntilItSettles(upload);
+
+    expect(failed).toEqual([
+      {
+        item: rootItem,
+        failure: expect.objectContaining({ reason: UploadFailureReason.UploadFailed, isRetryable: true }),
+      },
+    ]);
+  });
+
+  test('When the user retries a folder whose creation timed out but did happen, then its content is uploaded into it without creating it again', async () => {
+    vi.mocked(folderService.createFolderByUuid).mockReturnValue([new Promise(() => undefined), { cancel: vi.fn() }]);
+    const rootItem = createFolderItem(
+      getFolderToUpload('Work', { childrenFiles: [getFileToUpload('report.pdf')] }),
+      'dest',
+    );
+    const manager = createManager();
+    await runUntilItSettles(manager.run([rootItem]));
+    vi.mocked(folderService.createFolderByUuid).mockImplementation(folderAlreadyExists);
+    vi.mocked(newStorageService.checkDuplicatedFolders).mockResolvedValue(
+      findExistingFolder('work-created-by-the-timed-out-request-uuid'),
+    );
+
+    const { failed, succeeded } = await runUntilItSettles(manager.run([rootItem]));
+
+    expect(failed).toEqual([]);
+    expect(succeeded).toHaveLength(2);
+    expect(uploadedFileParents()).toEqual({ report: 'work-created-by-the-timed-out-request-uuid' });
+  });
+});
+
 const recordItemEvents = () => {
   const log: string[] = [];
   const record = (event: string, item: UploadItem) => {
@@ -761,5 +986,86 @@ describe('Following each queued item until it ends', () => {
 
     expect(succeeded.map(({ item }) => item)).toContain(retriedItem);
     expect(startedUploadNames()).toContain('retried');
+  });
+});
+
+describe('Pausing an upload', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.spyOn(errorService, 'reportError').mockReturnValue();
+    fakeSlowUploads();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  test('When a file is paused before it starts, then it neither starts nor ends until it is resumed', async () => {
+    uploadAtMostAtTheSameTime(1);
+    const { events, endedNames } = recordItemEvents();
+    const manager = createManager({ events });
+    const uploading = getUploadFileItem('uploading');
+    const paused = getUploadFileItem('paused');
+    void manager.run([uploading, paused]);
+    await vi.waitFor(() => expect(startedUploadNames()).toEqual(['uploading']));
+
+    manager.pause(paused);
+    await vi.runAllTimersAsync();
+
+    expect(startedUploadNames()).toEqual(['uploading']);
+    expect(endedNames()).toEqual(['uploading']);
+  });
+
+  test('When an upload stays paused after the storage got full, then a later upload is still tried', async () => {
+    (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
+      if (file.name === 'fills-the-storage') throw noSpaceLeftError;
+      return { uuid: `${file.name}-uuid` };
+    });
+    const manager = new UploadManager();
+    const runOptions = (): UploadRunOptions => ({ uploadRepository: getUploadRepository(), getPauseKey: nameOf });
+    const neverResumed = getUploadFileItem('never-resumed');
+    manager.pause(neverResumed);
+    await failIfHangs(manager.run([getUploadFileItem('fills-the-storage'), neverResumed], runOptions()));
+
+    const { succeeded } = await failIfHangs(manager.run([getUploadFileItem('after-freeing-space')], runOptions()));
+
+    expect(succeeded.map(({ item }) => nameOf(item))).toEqual(['after-freeing-space']);
+  });
+
+  test('When one upload is paused, then another one using the same engine still ends', async () => {
+    uploadAtMostAtTheSameTime(1);
+    const manager = new UploadManager();
+    const runOptions = (): UploadRunOptions => ({ uploadRepository: getUploadRepository(), getPauseKey: nameOf });
+    const paused = getUploadFileItem('paused');
+    void manager.run([getUploadFileItem('uploading'), paused], runOptions());
+    await vi.waitFor(() => expect(startedUploadNames()).toEqual(['uploading']));
+    manager.pause(paused);
+
+    const otherUpload = manager.run([getUploadFileItem('other')], runOptions());
+    const hasOtherUploadEnded = vi.fn();
+    void otherUpload.then(hasOtherUploadEnded);
+    await vi.runAllTimersAsync();
+
+    expect(hasOtherUploadEnded).toHaveBeenCalled();
+    expect(startedUploadNames()).toEqual(['uploading', 'other']);
+  });
+
+  test('When a paused file is resumed, then it uploads and the upload ends with every file uploaded once', async () => {
+    uploadAtMostAtTheSameTime(1);
+    const manager = createManager();
+    const uploading = getUploadFileItem('uploading');
+    const paused = getUploadFileItem('paused');
+    const running = manager.run([uploading, paused]);
+    await vi.waitFor(() => expect(startedUploadNames()).toEqual(['uploading']));
+    manager.pause(paused);
+    await vi.runAllTimersAsync();
+
+    manager.resume(paused);
+    await vi.runAllTimersAsync();
+    const { succeeded } = await running;
+
+    expect(startedUploadNames()).toEqual(['uploading', 'paused']);
+    expect(succeeded.map(({ item }) => item)).toEqual([uploading, paused]);
   });
 });
