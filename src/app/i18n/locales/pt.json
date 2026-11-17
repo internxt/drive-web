@@ -1160,6 +1160,7 @@
   "error": {
     "wrongPassword": "Senha incorreta, tente novamente ou entre em contato com o dono do link",
     "serverError": "Erro interno do servidor. Tente novamente mais tarde",
+    "accountKeysError": "Não foi possível desbloquear as chaves da sua conta. Tentar novamente não ajudará. Entre em contato com o suporte.",
     "changingName": "Erro ao alterar o nome",
     "fileAlreadyExists": "Já existe um arquivo com o mesmo nome",
     "folderAlreadyExists": "Já existe uma pasta com o mesmo nome",

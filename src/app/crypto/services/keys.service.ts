@@ -51,9 +51,19 @@ export class KeysDoNotMatchError extends Error {
   constructor() {
     super('Keys do not match');
 
-    Object.setPrototypeOf(this, CorruptedEncryptedPrivateKeyError.prototype);
+    Object.setPrototypeOf(this, KeysDoNotMatchError.prototype);
   }
 }
+
+/**
+ * Whether the error comes from validating the user's account keys.
+ * Retrying cannot fix these, the user must contact support.
+ */
+export const isAccountKeysError = (error: unknown): boolean =>
+  error instanceof Base64EncodedPrivateKeyError ||
+  error instanceof WrongIterationsToEncryptPrivateKeyError ||
+  error instanceof CorruptedEncryptedPrivateKeyError ||
+  error instanceof KeysDoNotMatchError;
 
 /**
  * This function validates the private key

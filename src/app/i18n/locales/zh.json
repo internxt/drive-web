@@ -1150,6 +1150,7 @@
   "error": {
     "wrongPassword": "密码不正确，请重试或联系所有者",
     "serverError": "内部服务器错误。稍后再试",
+    "accountKeysError": "我们无法解锁您的账户密钥。重试无济于事，请联系客服。",
     "changingName": "更改名称时出错",
     "fileAlreadyExists": "已存在同名文件",
     "folderAlreadyExists": "已存在同名文件夹",

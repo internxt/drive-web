@@ -1150,6 +1150,7 @@
   "error": {
     "wrongPassword": "Wrong password, try again or contact link owner",
     "serverError": "Internal server error. Try again later",
+    "accountKeysError": "We couldn't unlock your account keys. Retrying won't help. Please contact support.",
     "changingName": "Error during name change",
     "fileAlreadyExists": "File with the same name already exists",
     "folderAlreadyExists": "A folder with the same name already exists",

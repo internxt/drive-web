@@ -1129,6 +1129,7 @@
   "error": {
     "wrongPassword": "Mot de passe incorrect, essayez à nouveau ou contactez le propriétaire.",
     "serverError": "Erreur de serveur interne. Réessayez plus tard",
+    "accountKeysError": "Nous n'avons pas pu déverrouiller les clés de votre compte. Réessayer n'y changera rien. Veuillez contacter le support.",
     "changingName": "Erreur lors du changement de nom",
     "fileAlreadyExists": "Un fichier portant le même nom existe déjà",
     "folderAlreadyExists": "Un dossier portant le même nom existe déjà",
