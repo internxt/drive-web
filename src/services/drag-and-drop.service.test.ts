@@ -1,13 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { transformDraggedItems } from './drag-and-drop.service';
 
 describe('Drag and Drop Service', () => {
   describe('transformDraggedItems', () => {
     let mockDataTransferItemList: DataTransferItemList;
-
-    beforeEach(() => {
-      vi.clearAllMocks();
-    });
 
     const createMockFile = (name: string): File => new File(['content'], name, { type: 'text/plain' });
 

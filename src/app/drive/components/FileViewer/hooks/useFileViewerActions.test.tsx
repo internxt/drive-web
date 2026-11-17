@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { act, renderHook } from '@testing-library/react';
 import { FileStatus } from '@internxt/sdk/dist/drive/storage/types';
 import { MenuItemType } from '@internxt/ui';
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { DriveItemData } from 'app/drive/types';
 import { PreviewFileItem } from 'app/share/types';
 import storageReducer from 'app/store/slices/storage';
@@ -53,10 +53,6 @@ const findMenuAction = (menuItems: Array<MenuItemType<DriveItemData>>, name: str
   menuActions(menuItems).find((menuItem) => menuItem.name === name) as MenuAction;
 
 describe('File viewer actions', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   test('When a file that is not shared is open, then the menu offers to share it and the usual file actions', () => {
     const { result } = renderActions(createFile());
 

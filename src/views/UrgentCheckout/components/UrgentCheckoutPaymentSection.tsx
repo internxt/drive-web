@@ -15,6 +15,7 @@ export const URGENT_CHECKOUT_PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOption
   },
   layout: {
     type: 'accordion',
+    defaultCollapsed: true,
     radios: false,
     spacedAccordionItems: true,
   },

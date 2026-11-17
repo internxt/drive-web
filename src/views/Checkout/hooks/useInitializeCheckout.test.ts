@@ -58,7 +58,6 @@ describe('Initialize checkout custom hook', () => {
   } as UserSettings;
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.spyOn(paymentService, 'getStripe').mockResolvedValue(mockStripe as any);
     vi.spyOn(checkoutService, 'loadStripeElements').mockImplementation(async (_theme, plan) => ({
       ...mockStripeElementsOptions,

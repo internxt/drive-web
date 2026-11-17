@@ -120,8 +120,6 @@ describe('Upload Folder Thunk', () => {
   const taskId = 'task-1';
 
   beforeEach(() => {
-    vi.clearAllMocks();
-
     (checkFolderDuplicated as Mock).mockResolvedValue({
       duplicatedFoldersResponse: [],
       foldersWithDuplicates: [],

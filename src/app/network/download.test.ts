@@ -1,4 +1,4 @@
-import { describe, test, expect, vi, beforeEach } from 'vitest';
+import { describe, test, expect, vi } from 'vitest';
 
 vi.mock('./download/v2');
 vi.mock('./requests');
@@ -10,10 +10,6 @@ import { multipartDownloadFile, IDownloadParams } from './download';
 import { DownloadFailedWithUnknownError } from './errors/download.errors';
 
 describe('Multipart Download File', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   test('When multipart download is called, then it is called with correct params', async () => {
     const mockStream = new ReadableStream();
     const params: IDownloadParams & { fileSize?: number } = {

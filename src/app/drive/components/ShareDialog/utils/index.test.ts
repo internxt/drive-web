@@ -1,4 +1,4 @@
-import { describe, expect, test, vi, beforeEach, afterEach } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { cropSharedName, isAdvancedShareItem, getLocalUserData, filterEditorAndReader } from '.';
 import { DriveItemData } from 'app/drive/types';
 import { AdvancedSharedItem } from 'app/share/types';
@@ -84,14 +84,6 @@ describe('Check if it is an advanced share item', () => {
 });
 
 describe('Get the local user data', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
   test('When user data exists in local storage, then returns formatted owner data', async () => {
     const mockUser = {
       name: 'John',

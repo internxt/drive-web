@@ -16,6 +16,7 @@ import { useDefaultPaymentMethod } from '../hooks';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { RootState } from 'app/store';
 import { useSelector } from 'react-redux';
+import { createPortal } from 'react-dom';
 
 const BillingPaymentMethodCard = ({
   subscription,
@@ -125,11 +126,14 @@ const BillingPaymentMethodCard = ({
         )}
       </div>
       <Card className={`${defaultPaymentMethod.tag === 'empty' && 'h-20'}`}>{renderCardContent()}</Card>
-      <EditPaymentMethodModal
-        isEditPaymentMethodModalOpen={isEditPaymentMethodModalOpen}
-        setIsEditPaymentMethodModalOpen={setIsEditPaymentMethodModalOpen}
-        userType={userType}
-      />
+      {createPortal(
+        <EditPaymentMethodModal
+          isEditPaymentMethodModalOpen={isEditPaymentMethodModalOpen}
+          setIsEditPaymentMethodModalOpen={setIsEditPaymentMethodModalOpen}
+          userType={userType}
+        />,
+        document.body,
+      )}
     </section>
   );
 };

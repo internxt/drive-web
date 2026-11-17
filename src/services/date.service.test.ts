@@ -99,4 +99,30 @@ describe('dateService', () => {
       expect(dateService.hasElapsed(thirtySecondsAgo, 1, 'minute')).toBe(false);
     });
   });
+
+  describe('Telling today and yesterday apart', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date(2026, 10, 1, 0, 30));
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    test('When a date is earlier the same day, then it is today and not yesterday', () => {
+      expect(dateService.isToday('2026-11-01')).toBe(true);
+      expect(dateService.isYesterday('2026-11-01')).toBe(false);
+    });
+
+    test('When a date is the day before, even in the previous month, then it is yesterday', () => {
+      expect(dateService.isYesterday('2026-10-31')).toBe(true);
+      expect(dateService.isToday('2026-10-31')).toBe(false);
+    });
+
+    test('When a date is older than yesterday, then it is neither today nor yesterday', () => {
+      expect(dateService.isToday('2026-10-30')).toBe(false);
+      expect(dateService.isYesterday('2026-10-30')).toBe(false);
+    });
+  });
 });

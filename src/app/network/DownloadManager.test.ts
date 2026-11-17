@@ -1,6 +1,5 @@
 import {
   areItemArraysEqual,
-  DownloadItem,
   DownloadItemType,
   DownloadManagerService,
   DownloadTask,
@@ -8,17 +7,22 @@ import {
 } from 'app/drive/services/downloadManager.service';
 import { ErrorMessages } from 'app/core/constants';
 import { createFilesIterator, createFoldersIterator } from 'app/drive/services/folder.service';
-import { DriveFileData, DriveFolderData, DriveItemData } from 'app/drive/types';
+import { DriveFileData, DriveFolderData } from 'app/drive/types';
 import tasksService from 'app/tasks/services/tasks.service';
 import { QueueUtilsService } from 'utils/queueUtils';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, MockInstance, vi } from 'vitest';
 import { DownloadManager } from './DownloadManager';
-import { EncryptionVersion, FileStatus } from '@internxt/sdk/dist/drive/storage/types';
 import { ConnectionLostError } from './requests';
 import errorService from 'services/error.service';
 import { TaskData, TaskStatus } from 'app/tasks/types';
 import retryManager, { RetryableTask } from './RetryManager';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import {
+  getDownloadItem,
+  getDownloadTask,
+  getDriveFileData,
+  getDriveFolderData,
+} from 'testUtils/fixtures/download.fixtures';
 
 const MOCK_TRANSLATION_MESSAGE = 'Test translation message';
 
@@ -44,8 +48,41 @@ vi.mock('app/drive/services/downloadManager.service', () => ({
 }));
 
 describe('downloadManager', () => {
+  type DownloadMethod = 'downloadFolder' | 'downloadFile' | 'downloadItems';
+  type DownloadSpies = Record<DownloadMethod, MockInstance>;
+
+  const getTaskData = (status: TaskStatus) => ({ id: 'any-taskId', status }) as TaskData;
+
+  const mockDownloadFlow = (
+    task: DownloadTask,
+    { concurrency = 6, taskData }: { concurrency?: number; taskData?: TaskData } = {},
+  ) => {
+    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(task);
+    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(concurrency);
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
+    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'findTask').mockReturnValue(taskData);
+  };
+
+  const spyOnDownloadMethods = (expected: DownloadMethod, expectedError?: Error): DownloadSpies => {
+    const unexpectedCall = new Error(`It should download using ${expected}`);
+    const spies: DownloadSpies = {
+      downloadFolder: vi.spyOn(DownloadManagerService.instance, 'downloadFolder').mockRejectedValue(unexpectedCall),
+      downloadFile: vi.spyOn(DownloadManagerService.instance, 'downloadFile').mockRejectedValue(unexpectedCall),
+      downloadItems: vi.spyOn(DownloadManagerService.instance, 'downloadItems').mockRejectedValue(unexpectedCall),
+    };
+    spies[expected].mockResolvedValue(undefined);
+    if (expectedError) spies[expected].mockRejectedValue(expectedError);
+    return spies;
+  };
+
+  const expectOnlyCalled = (spies: DownloadSpies, expected?: DownloadMethod) => {
+    const unexpected = (Object.keys(spies) as DownloadMethod[]).filter((method) => method !== expected);
+    unexpected.forEach((method) => expect(spies[method]).not.toHaveBeenCalled());
+  };
+
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 
@@ -53,699 +90,120 @@ describe('downloadManager', () => {
     vi.restoreAllMocks();
   });
 
-  it('should generate task for a folder and download it using the queue', async () => {
-    const mockFolder: DriveFolderData = {
-      id: 0,
-      uuid: 'uuid',
-      name: 'Folder1',
-      bucket: 'bucket',
-      parentId: 0,
-      parent_id: 0,
-      parentUuid: 'parentUuid',
-      userId: 0,
-      user_id: 0,
-      icon: null,
-      iconId: null,
-      icon_id: null,
-      isFolder: true,
-      color: null,
-      encrypt_version: null,
-      plain_name: 'Folder1',
-      deleted: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    const downloadItem: DownloadItem = {
-      payload: [mockFolder as DriveItemData],
-      selectedWorkspace: null,
-      workspaceCredentials: null,
-    };
-    const mockTask: DownloadTask = {
-      items: downloadItem.payload,
-      credentials: {
-        credentials: {
-          user: 'any-user',
-          pass: 'any-pass',
-        },
-        key: {
-          mnemonic: 'any-mnemonic',
-        },
-      },
-      taskId: 'any-taskId',
-      createFilesIterator: createFilesIterator,
-      createFoldersIterator: createFoldersIterator,
-      options: {
-        areSharedItems: false,
-        downloadName: mockFolder.name,
-        showErrors: true,
-      },
-      failedItems: [],
-    };
+  const downloadCases: Array<{
+    name: string;
+    items: Array<DriveFileData | DriveFolderData>;
+    method: DownloadMethod;
+    extraArgs: number;
+  }> = [
+    {
+      name: 'should generate task for a folder and download it using the queue',
+      items: [getDriveFolderData()],
+      method: 'downloadFolder',
+      extraArgs: 3,
+    },
+    {
+      name: 'should generate task for a file and download it using the queue',
+      items: [getDriveFileData()],
+      method: 'downloadFile',
+      extraArgs: 1,
+    },
+    {
+      name: 'should generate task for items and download them together using the queue',
+      items: [getDriveFileData(), getDriveFolderData()],
+      method: 'downloadItems',
+      extraArgs: 3,
+    },
+  ];
 
-    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
-    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(6);
-    vi.spyOn(tasksService, 'addListener').mockReturnValue();
-    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
-    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
-    vi.spyOn(tasksService, 'findTask').mockReturnValue(undefined);
+  it.each(downloadCases)('$name', async ({ items, method, extraArgs }) => {
+    const task = getDownloadTask(items);
+    mockDownloadFlow(task);
+    const spies = spyOnDownloadMethods(method);
 
-    const downloadFolderSpy = vi.spyOn(DownloadManagerService.instance, 'downloadFolder').mockResolvedValue();
-    const downloadFileSpy = vi
-      .spyOn(DownloadManagerService.instance, 'downloadFile')
-      .mockRejectedValue(new Error('It should download folder'));
-    const downloadItemsSpy = vi
-      .spyOn(DownloadManagerService.instance, 'downloadItems')
-      .mockRejectedValue(new Error('It should download folder'));
+    await DownloadManager.downloadItem(getDownloadItem(items));
 
-    await DownloadManager.downloadItem(downloadItem);
-
-    expect(downloadFolderSpy).toHaveBeenCalledOnce();
-    expect(downloadFolderSpy).toHaveBeenCalledWith(mockTask, expect.anything(), expect.anything(), expect.anything());
-    expect(downloadFileSpy).not.toHaveBeenCalled();
-    expect(downloadItemsSpy).not.toHaveBeenCalled();
-  });
-
-  it('should generate task for a file and download it using the queue', async () => {
-    const mockFile: DriveFileData = {
-      id: 0,
-      uuid: 'uuid',
-      bucket: 'bucket',
-      name: 'File1',
-      plainName: 'File1',
-      plain_name: 'File1',
-      type: 'jpg',
-      size: 100,
-      fileId: 'fileId1',
-      folder_id: 1,
-      folderId: 1,
-      folderUuid: 'uuid1',
-      createdAt: new Date().toISOString(),
-      created_at: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      deleted: false,
-      deletedAt: null,
-      currentThumbnail: null,
-      encrypt_version: EncryptionVersion.Aes03,
-      status: FileStatus.EXISTS,
-      thumbnails: [],
-    };
-    const downloadItem: DownloadItem = {
-      payload: [mockFile as DriveItemData],
-      selectedWorkspace: null,
-      workspaceCredentials: null,
-    };
-    const mockTask: DownloadTask = {
-      items: downloadItem.payload,
-      credentials: {
-        credentials: {
-          user: 'any-user',
-          pass: 'any-pass',
-        },
-        key: {
-          mnemonic: 'any-mnemonic',
-        },
-      },
-      taskId: 'any-taskId',
-      createFilesIterator: createFilesIterator,
-      createFoldersIterator: createFoldersIterator,
-      options: {
-        areSharedItems: false,
-        downloadName: mockFile.name,
-        showErrors: true,
-      },
-      failedItems: [],
-    };
-
-    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
-    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(6);
-    vi.spyOn(tasksService, 'addListener').mockReturnValue();
-    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
-    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
-    vi.spyOn(tasksService, 'findTask').mockReturnValue(undefined);
-
-    const downloadFolderSpy = vi
-      .spyOn(DownloadManagerService.instance, 'downloadFolder')
-      .mockRejectedValue(new Error('It should download file'));
-    const downloadFileSpy = vi.spyOn(DownloadManagerService.instance, 'downloadFile').mockResolvedValue();
-    const downloadItemsSpy = vi
-      .spyOn(DownloadManagerService.instance, 'downloadItems')
-      .mockRejectedValue(new Error('It should download file'));
-
-    await DownloadManager.downloadItem(downloadItem);
-
-    expect(downloadFileSpy).toHaveBeenCalledOnce();
-    expect(downloadFileSpy).toHaveBeenCalledWith(mockTask, expect.anything());
-    expect(downloadFolderSpy).not.toHaveBeenCalled();
-    expect(downloadItemsSpy).not.toHaveBeenCalled();
-  });
-
-  it('should generate task for items and download them together using the queue', async () => {
-    const mockFile: DriveFileData = {
-      id: 0,
-      uuid: 'uuid',
-      bucket: 'bucket',
-      name: 'File1',
-      plainName: 'File1',
-      plain_name: 'File1',
-      type: 'jpg',
-      size: 100,
-      fileId: 'fileId1',
-      folder_id: 1,
-      folderId: 1,
-      folderUuid: 'uuid1',
-      createdAt: new Date().toISOString(),
-      created_at: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      deleted: false,
-      deletedAt: null,
-      currentThumbnail: null,
-      encrypt_version: EncryptionVersion.Aes03,
-      status: FileStatus.EXISTS,
-      thumbnails: [],
-    };
-    const mockFolder: DriveFolderData = {
-      id: 0,
-      uuid: 'uuid',
-      name: 'Folder1',
-      bucket: 'bucket',
-      parentId: 0,
-      parent_id: 0,
-      parentUuid: 'parentUuid',
-      userId: 0,
-      user_id: 0,
-      icon: null,
-      iconId: null,
-      icon_id: null,
-      isFolder: true,
-      color: null,
-      encrypt_version: null,
-      plain_name: 'Folder1',
-      deleted: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    const downloadItem: DownloadItem = {
-      payload: [mockFile as DriveItemData, mockFolder as DriveItemData],
-      selectedWorkspace: null,
-      workspaceCredentials: null,
-    };
-    const mockTask: DownloadTask = {
-      items: downloadItem.payload,
-      credentials: {
-        credentials: {
-          user: 'any-user',
-          pass: 'any-pass',
-        },
-        key: {
-          mnemonic: 'any-mnemonic',
-        },
-      },
-      taskId: 'any-taskId',
-      createFilesIterator: createFilesIterator,
-      createFoldersIterator: createFoldersIterator,
-      options: {
-        areSharedItems: false,
-        downloadName: mockFile.name,
-        showErrors: true,
-      },
-      failedItems: [],
-    };
-
-    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
-    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(6);
-    vi.spyOn(tasksService, 'addListener').mockReturnValue();
-    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
-    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
-    vi.spyOn(tasksService, 'findTask').mockReturnValue(undefined);
-
-    const downloadFolderSpy = vi
-      .spyOn(DownloadManagerService.instance, 'downloadFolder')
-      .mockRejectedValue(new Error('It should download items'));
-    const downloadFileSpy = vi
-      .spyOn(DownloadManagerService.instance, 'downloadFile')
-      .mockRejectedValue(new Error('It should download items'));
-    const downloadItemsSpy = vi.spyOn(DownloadManagerService.instance, 'downloadItems').mockResolvedValue();
-
-    await DownloadManager.downloadItem(downloadItem);
-
-    expect(downloadItemsSpy).toHaveBeenCalledOnce();
-    expect(downloadItemsSpy).toHaveBeenCalledWith(mockTask, expect.anything(), expect.anything(), expect.anything());
-    expect(downloadFolderSpy).not.toHaveBeenCalled();
-    expect(downloadFileSpy).not.toHaveBeenCalled();
+    expect(spies[method]).toHaveBeenCalledOnce();
+    expect(spies[method]).toHaveBeenCalledWith(task, ...Array.from({ length: extraArgs }, () => expect.anything()));
+    expectOnlyCalled(spies, method);
   });
 
   it('should modify queue concurrency if its needed', async () => {
-    const mockFile: DriveFileData = {
-      id: 0,
-      uuid: 'uuid',
-      bucket: 'bucket',
-      name: 'File1',
-      plainName: 'File1',
-      plain_name: 'File1',
-      type: 'jpg',
-      size: 100,
-      fileId: 'fileId1',
-      folder_id: 1,
-      folderId: 1,
-      folderUuid: 'uuid1',
-      createdAt: new Date().toISOString(),
-      created_at: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      deleted: false,
-      deletedAt: null,
-      currentThumbnail: null,
-      encrypt_version: EncryptionVersion.Aes03,
-      status: FileStatus.EXISTS,
-      thumbnails: [],
-    };
-    const downloadItem: DownloadItem = {
-      payload: [mockFile as DriveItemData],
-      selectedWorkspace: null,
-      workspaceCredentials: null,
-    };
-    const mockTask: DownloadTask = {
-      items: downloadItem.payload,
-      credentials: {
-        credentials: {
-          user: 'any-user',
-          pass: 'any-pass',
-        },
-        key: {
-          mnemonic: 'any-mnemonic',
-        },
-      },
-      taskId: 'any-taskId',
-      createFilesIterator: createFilesIterator,
-      createFoldersIterator: createFoldersIterator,
-      options: {
-        areSharedItems: false,
-        downloadName: mockFile.name,
-        showErrors: true,
-      },
-      failedItems: [],
-    };
+    const items = [getDriveFileData()];
     const newConcurrency = DownloadManager.downloadQueue.concurrency + 1;
+    mockDownloadFlow(getDownloadTask(items), { concurrency: newConcurrency });
+    spyOnDownloadMethods('downloadFile');
 
-    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(newConcurrency);
+    await DownloadManager.downloadItem(getDownloadItem(items));
 
-    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
-    vi.spyOn(tasksService, 'addListener').mockReturnValue();
-    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
-    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
-    vi.spyOn(tasksService, 'findTask').mockReturnValue(undefined);
-
-    vi.spyOn(DownloadManagerService.instance, 'downloadFolder').mockResolvedValue();
-    vi.spyOn(DownloadManagerService.instance, 'downloadFile').mockResolvedValue();
-    vi.spyOn(DownloadManagerService.instance, 'downloadItems').mockResolvedValue();
-
-    await DownloadManager.downloadItem(downloadItem);
-    const currentConcurrency = DownloadManager.downloadQueue.concurrency;
-
-    expect(currentConcurrency).toEqual(newConcurrency);
+    expect(DownloadManager.downloadQueue.concurrency).toEqual(newConcurrency);
   });
 
   it('should abort download task when abortcontroller abort is called', async () => {
     const abortController = new AbortController();
-    const mockFile: DriveFileData = {
-      id: 0,
-      uuid: 'uuid',
-      bucket: 'bucket',
-      name: 'File1',
-      plainName: 'File1',
-      plain_name: 'File1',
-      type: 'jpg',
-      size: 100,
-      fileId: 'fileId1',
-      folder_id: 1,
-      folderId: 1,
-      folderUuid: 'uuid1',
-      createdAt: new Date().toISOString(),
-      created_at: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      deleted: false,
-      deletedAt: null,
-      currentThumbnail: null,
-      encrypt_version: EncryptionVersion.Aes03,
-      status: FileStatus.EXISTS,
-      thumbnails: [],
-    };
-    const downloadItem: DownloadItem = {
-      payload: [mockFile as DriveItemData],
-      selectedWorkspace: null,
-      workspaceCredentials: null,
-    };
-    const mockTask: DownloadTask = {
-      items: downloadItem.payload,
-      credentials: {
-        credentials: {
-          user: 'any-user',
-          pass: 'any-pass',
-        },
-        key: {
-          mnemonic: 'any-mnemonic',
-        },
-      },
-      taskId: 'any-taskId',
-      createFilesIterator: createFilesIterator,
-      createFoldersIterator: createFoldersIterator,
-      options: {
-        areSharedItems: false,
-        downloadName: mockFile.name,
-        showErrors: true,
-      },
-      abortController,
-      failedItems: [],
-    };
-    const newConcurrency = DownloadManager.downloadQueue.concurrency + 1;
+    const items = [getDriveFileData()];
+    mockDownloadFlow(getDownloadTask(items, { abortController }), {
+      concurrency: DownloadManager.downloadQueue.concurrency + 1,
+    });
+    const spies = spyOnDownloadMethods('downloadFile');
 
-    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(newConcurrency);
-
-    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
-    vi.spyOn(tasksService, 'addListener').mockReturnValue();
-    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
-    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
-    vi.spyOn(tasksService, 'findTask').mockReturnValue(undefined);
-
-    const downloadFolderSpy = vi.spyOn(DownloadManagerService.instance, 'downloadFolder').mockResolvedValue();
-    const downloadFileSpy = vi.spyOn(DownloadManagerService.instance, 'downloadFile').mockResolvedValue();
-    const downloadItemsSpy = vi.spyOn(DownloadManagerService.instance, 'downloadItems').mockResolvedValue();
-
-    const downloadPromise = DownloadManager.downloadItem(downloadItem);
+    const downloadPromise = DownloadManager.downloadItem(getDownloadItem(items));
     abortController.abort();
 
     await expect(downloadPromise).rejects.toThrow();
     expect(abortController.signal.aborted).toBe(true);
-    expect(downloadFolderSpy).not.toHaveBeenCalled();
-    expect(downloadFileSpy).not.toHaveBeenCalled();
-    expect(downloadItemsSpy).not.toHaveBeenCalled();
+    expectOnlyCalled(spies);
   });
 
   it('should handle connection lost error during download', async () => {
-    const mockFile: DriveFileData = {
-      id: 0,
-      uuid: 'uuid',
-      bucket: 'bucket',
-      name: 'File1',
-      plainName: 'File1',
-      plain_name: 'File1',
-      type: 'jpg',
-      size: 100,
-      fileId: 'fileId1',
-      folder_id: 1,
-      folderId: 1,
-      folderUuid: 'uuid1',
-      createdAt: new Date().toISOString(),
-      created_at: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      deleted: false,
-      deletedAt: null,
-      currentThumbnail: null,
-      encrypt_version: EncryptionVersion.Aes03,
-      status: FileStatus.EXISTS,
-      thumbnails: [],
-    };
-
-    const downloadItem: DownloadItem = {
-      payload: [mockFile as DriveItemData],
-      selectedWorkspace: null,
-      workspaceCredentials: null,
-    };
-
-    const mockTask: DownloadTask = {
-      items: downloadItem.payload,
-      credentials: {
-        credentials: {
-          user: 'any-user',
-          pass: 'any-pass',
-        },
-        key: {
-          mnemonic: 'any-mnemonic',
-        },
-      },
-      taskId: 'any-taskId',
-      createFilesIterator: createFilesIterator,
-      createFoldersIterator: createFoldersIterator,
-      options: {
-        areSharedItems: false,
-        downloadName: mockFile.name,
-        showErrors: true,
-      },
-      failedItems: [],
-    };
-
-    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
-    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(6);
-    vi.spyOn(tasksService, 'addListener').mockReturnValue();
-    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
-    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
-    vi.spyOn(tasksService, 'findTask').mockReturnValue(undefined);
-
+    const items = [getDriveFileData()];
+    const task = getDownloadTask(items);
     const connectionLostError = new ConnectionLostError();
+    mockDownloadFlow(task);
+    const spies = spyOnDownloadMethods('downloadFile', connectionLostError);
 
-    const downloadFolderSpy = vi
-      .spyOn(DownloadManagerService.instance, 'downloadFolder')
-      .mockRejectedValue(new Error('It should download file'));
-    const downloadFileSpy = vi
-      .spyOn(DownloadManagerService.instance, 'downloadFile')
-      .mockRejectedValue(connectionLostError);
-    const downloadItemsSpy = vi
-      .spyOn(DownloadManagerService.instance, 'downloadItems')
-      .mockRejectedValue(new Error('It should download file'));
+    await expect(DownloadManager.downloadItem(getDownloadItem(items))).rejects.toThrow(connectionLostError);
 
-    const downloadPromise = DownloadManager.downloadItem(downloadItem);
-
-    await expect(downloadPromise).rejects.toThrow(connectionLostError);
-
-    expect(downloadFileSpy).toHaveBeenCalledWith(mockTask, expect.anything());
-    expect(downloadFolderSpy).not.toHaveBeenCalled();
-    expect(downloadItemsSpy).not.toHaveBeenCalled();
+    expect(spies.downloadFile).toHaveBeenCalledWith(task, expect.anything());
+    expectOnlyCalled(spies, 'downloadFile');
   });
 
   it('should handle file error during download', async () => {
-    const mockFile: DriveFileData = {
-      id: 0,
-      uuid: 'uuid',
-      bucket: 'bucket',
-      name: 'File1',
-      plainName: 'File1',
-      plain_name: 'File1',
-      type: 'jpg',
-      size: 100,
-      fileId: 'fileId1',
-      folder_id: 1,
-      folderId: 1,
-      folderUuid: 'uuid1',
-      createdAt: new Date().toISOString(),
-      created_at: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      deleted: false,
-      deletedAt: null,
-      currentThumbnail: null,
-      encrypt_version: EncryptionVersion.Aes03,
-      status: FileStatus.EXISTS,
-      thumbnails: [],
-    };
-
-    const downloadItem: DownloadItem = {
-      payload: [mockFile as DriveItemData],
-      selectedWorkspace: null,
-      workspaceCredentials: null,
-    };
-
-    const mockTask: DownloadTask = {
-      items: downloadItem.payload,
-      credentials: {
-        credentials: {
-          user: 'any-user',
-          pass: 'any-pass',
-        },
-        key: {
-          mnemonic: 'any-mnemonic',
-        },
-      },
-      taskId: 'any-taskId',
-      createFilesIterator: createFilesIterator,
-      createFoldersIterator: createFoldersIterator,
-      options: {
-        areSharedItems: false,
-        downloadName: mockFile.name,
-        showErrors: true,
-      },
-      failedItems: [],
-    };
-
-    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
-    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(6);
-    vi.spyOn(tasksService, 'addListener').mockReturnValue();
-    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
-    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
-    vi.spyOn(tasksService, 'findTask').mockReturnValue({
-      id: 'any-taskId',
-      status: TaskStatus.Error,
-    } as TaskData);
-
+    const items = [getDriveFileData()];
+    const task = getDownloadTask(items);
     const testError = new Error(ErrorMessages.ServerUnavailable);
-
-    const downloadFolderSpy = vi
-      .spyOn(DownloadManagerService.instance, 'downloadFolder')
-      .mockRejectedValue(new Error('It should download file'));
-    const downloadFileSpy = vi.spyOn(DownloadManagerService.instance, 'downloadFile').mockRejectedValue(testError);
-    const downloadItemsSpy = vi
-      .spyOn(DownloadManagerService.instance, 'downloadItems')
-      .mockRejectedValue(new Error('It should download file'));
-
+    mockDownloadFlow(task, { taskData: getTaskData(TaskStatus.Error) });
+    const spies = spyOnDownloadMethods('downloadFile', testError);
     const errorServiceSpy = vi.spyOn(errorService, 'reportError');
 
-    const downloadPromise = DownloadManager.downloadItem(downloadItem);
-    await expect(downloadPromise).rejects.toThrow(testError);
+    await expect(DownloadManager.downloadItem(getDownloadItem(items))).rejects.toThrow(testError);
 
     expect(errorServiceSpy).toHaveBeenCalledWith(testError);
-    expect(downloadFileSpy).toHaveBeenCalledWith(mockTask, expect.anything());
-    expect(downloadFolderSpy).not.toHaveBeenCalled();
-    expect(downloadItemsSpy).not.toHaveBeenCalled();
+    expect(spies.downloadFile).toHaveBeenCalledWith(task, expect.anything());
+    expectOnlyCalled(spies, 'downloadFile');
   });
 
   it('should handle folder error during download', async () => {
-    const mockFolder: DriveFolderData = {
-      id: 0,
-      uuid: 'uuid',
-      name: 'Folder1',
-      bucket: 'bucket',
-      parentId: 0,
-      parent_id: 0,
-      parentUuid: 'parentUuid',
-      userId: 0,
-      user_id: 0,
-      icon: null,
-      iconId: null,
-      icon_id: null,
-      isFolder: true,
-      color: null,
-      encrypt_version: null,
-      plain_name: 'Folder1',
-      deleted: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    const downloadItem: DownloadItem = {
-      payload: [mockFolder as DriveItemData],
-      selectedWorkspace: null,
-      workspaceCredentials: null,
-    };
-    const mockTask: DownloadTask = {
-      items: downloadItem.payload,
-      credentials: {
-        credentials: {
-          user: 'any-user',
-          pass: 'any-pass',
-        },
-        key: {
-          mnemonic: 'any-mnemonic',
-        },
-      },
-      taskId: 'any-taskId',
-      createFilesIterator: createFilesIterator,
-      createFoldersIterator: createFoldersIterator,
-      options: {
-        areSharedItems: false,
-        downloadName: mockFolder.name,
-        showErrors: true,
-      },
-      failedItems: [],
-    };
-
-    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
-    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(6);
-    vi.spyOn(tasksService, 'addListener').mockReturnValue();
-    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
-    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
-    vi.spyOn(tasksService, 'findTask').mockReturnValue({
-      id: 'any-taskId',
-      status: TaskStatus.Error,
-    } as TaskData);
-
+    const items = [getDriveFolderData()];
+    const task = getDownloadTask(items);
     const testError = new Error(ErrorMessages.ServerUnavailable);
-
-    const downloadFolderSpy = vi.spyOn(DownloadManagerService.instance, 'downloadFolder').mockRejectedValue(testError);
-    const downloadFileSpy = vi
-      .spyOn(DownloadManagerService.instance, 'downloadFile')
-      .mockRejectedValue(new Error('It should download folder'));
-    const downloadItemsSpy = vi
-      .spyOn(DownloadManagerService.instance, 'downloadItems')
-      .mockRejectedValue(new Error('It should download folder'));
-
+    mockDownloadFlow(task, { taskData: getTaskData(TaskStatus.Error) });
+    const spies = spyOnDownloadMethods('downloadFolder', testError);
     const errorServiceSpy = vi.spyOn(errorService, 'reportError');
 
-    const downloadPromise = DownloadManager.downloadItem(downloadItem);
-    await expect(downloadPromise).rejects.toThrow(testError);
+    await expect(DownloadManager.downloadItem(getDownloadItem(items))).rejects.toThrow(testError);
 
     expect(errorServiceSpy).toHaveBeenCalledWith(testError);
-    expect(downloadFileSpy).not.toHaveBeenCalled();
-    expect(downloadFolderSpy).toHaveBeenCalledWith(mockTask, expect.anything(), expect.anything(), expect.anything());
-    expect(downloadItemsSpy).not.toHaveBeenCalled();
+    expect(spies.downloadFolder).toHaveBeenCalledWith(task, expect.anything(), expect.anything(), expect.anything());
+    expectOnlyCalled(spies, 'downloadFolder');
   });
 
   it('should handle task cancellation during download', async () => {
-    const mockFile: DriveFileData = {
-      id: 0,
-      uuid: 'uuid',
-      bucket: 'bucket',
-      name: 'File1',
-      plainName: 'File1',
-      plain_name: 'File1',
-      type: 'jpg',
-      size: 100,
-      fileId: 'fileId1',
-      folder_id: 1,
-      folderId: 1,
-      folderUuid: 'uuid1',
-      createdAt: new Date().toISOString(),
-      created_at: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      deleted: false,
-      deletedAt: null,
-      currentThumbnail: null,
-      encrypt_version: EncryptionVersion.Aes03,
-      status: FileStatus.EXISTS,
-      thumbnails: [],
-    };
+    const items = [getDriveFileData()];
+    mockDownloadFlow(getDownloadTask(items), { taskData: getTaskData(TaskStatus.Cancelled) });
+    spyOnDownloadMethods('downloadFile');
 
-    const downloadItem: DownloadItem = {
-      payload: [mockFile as DriveItemData],
-      selectedWorkspace: null,
-      workspaceCredentials: null,
-    };
-
-    const mockTask: DownloadTask = {
-      items: downloadItem.payload,
-      credentials: {
-        credentials: {
-          user: 'any-user',
-          pass: 'any-pass',
-        },
-        key: {
-          mnemonic: 'any-mnemonic',
-        },
-      },
-      taskId: 'any-taskId',
-      createFilesIterator: createFilesIterator,
-      createFoldersIterator: createFoldersIterator,
-      options: {
-        areSharedItems: false,
-        downloadName: mockFile.name,
-        showErrors: true,
-      },
-      failedItems: [],
-    };
-
-    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
-    vi.spyOn(DownloadManagerService.instance, 'downloadFile').mockResolvedValue();
-    vi.spyOn(tasksService, 'findTask').mockReturnValue({
-      id: 'any-taskId',
-      status: TaskStatus.Cancelled,
-    } as TaskData);
-
-    await expect(DownloadManager.downloadItem(downloadItem)).resolves.not.toThrow();
+    await expect(DownloadManager.downloadItem(getDownloadItem(items))).resolves.not.toThrow();
   });
 
   describe('downloadTask', () => {
