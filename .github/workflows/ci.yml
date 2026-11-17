@@ -15,6 +15,52 @@ env:
   CI: false
 
 jobs:
+  version-bump:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.CI_USER_GH_TOKEN || github.token }}
+
+      - name: Bump version if the PR did not
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+          CAN_PUSH: ${{ secrets.CI_USER_GH_TOKEN != '' && github.event.pull_request.head.repo.full_name == github.repository }}
+        run: |
+          git fetch --depth=1 origin "$BASE_REF"
+          base=$(git show "origin/$BASE_REF:package.json" | node -p "JSON.parse(require('fs').readFileSync(0)).version")
+          head=$(node -p "require('./package.json').version")
+          echo "base: $base, head: $head"
+
+          highest=$(printf '%s\n%s\n' "${base#v}" "${head#v}" | sort -V | tail -n1)
+          if [ "$head" != "$base" ] && [ "$highest" = "${head#v}" ]; then
+            echo "Version already bumped"
+            exit 0
+          fi
+
+          if [ "$CAN_PUSH" != "true" ]; then
+            echo "::error file=package.json::Bump the version in package.json (currently $head, $BASE_REF has $base)"
+            exit 1
+          fi
+
+          IFS=. read -r major minor patch <<< "${base#v}"
+          next="v${major}.${minor}.$((patch + 1))"
+          NEXT="$next" node -e '
+            const fs = require("fs");
+            const pkg = fs.readFileSync("package.json", "utf8");
+            const updated = pkg.replace(/("version":\s*")[^"]+(")/, `$1${process.env.NEXT}$2`);
+            if (updated === pkg) throw new Error("version field not found");
+            fs.writeFileSync("package.json", updated);
+          '
+
+          git config user.name "inxtci"
+          git config user.email "inxtci@internxt.com"
+          git commit -am "chore: bump version to ${next}"
+          git push origin "HEAD:${HEAD_REF}"
+
   tests:
     runs-on: ubuntu-24.04
     strategy:
