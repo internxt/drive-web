@@ -269,17 +269,6 @@ const splitFoldersAndFiles = (items: (IRoot | File)[]) => ({
   files: items.filter(isLocalFile),
 });
 
-const uploadResolvedItems = async (
-  items: (IRoot | File)[],
-  destinationUuid: string,
-  { startUpload }: NameCollisionContext,
-) => {
-  if (items.length === 0) return;
-
-  const { folders, files } = splitFoldersAndFiles(items);
-  await startUpload({ destinationFolderUuid: destinationUuid, roots: folders, files });
-};
-
 const isVersionedFilePair = (
   pair: CollisionPair<IRoot | File>,
   { isVersioningEnabled, versioningMaxFileSize }: NameCollisionContext,
@@ -306,11 +295,8 @@ const trashAndUploadItems = async (
   if (pairs.length === 0) return;
 
   await moveItemsToTrash(pairs.map((pair) => pair.existing));
-  await uploadResolvedItems(
-    pairs.map((pair) => pair.item),
-    destinationUuid,
-    context,
-  );
+  const { folders, files } = splitFoldersAndFiles(pairs.map((pair) => pair.item));
+  await context.startUpload({ destinationFolderUuid: destinationUuid, roots: folders, files });
 };
 
 /**
@@ -351,7 +337,14 @@ const mergeSkipFolderUpload = async (root: IRoot, existingFolderUuid: string, co
   ]);
   const { unrepeatedItems: newFolders, repeatedItems: collidingFolders, existingItems: existingFolders } = foldersCheck;
 
-  await uploadResolvedItems([...(newFolders as IRoot[]), ...(newFiles as File[])], existingFolderUuid, context);
+  const hasNewContent = newFolders.length > 0 || newFiles.length > 0;
+  if (hasNewContent) {
+    await context.startUpload({
+      destinationFolderUuid: existingFolderUuid,
+      roots: newFolders as IRoot[],
+      files: newFiles as File[],
+    });
+  }
 
   await Promise.all(
     (collidingFolders as IRoot[]).map(async (collidingFolder) => {
@@ -418,7 +411,11 @@ const keepAndUploadItems = async (
     getUniquelyNamedFolders(folders, destinationUuid),
     getUniquelyNamedFiles(files, destinationUuid),
   ]);
-  await uploadResolvedItems([...uniquelyNamedFolders, ...uniquelyNamedFiles], destinationUuid, context);
+  await context.startUpload({
+    destinationFolderUuid: destinationUuid,
+    roots: uniquelyNamedFolders,
+    files: uniquelyNamedFiles,
+  });
 };
 
 /**

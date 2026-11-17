@@ -50,15 +50,6 @@ export const handleDriveItemDrop = async (
   }
 };
 
-export const handleFileDrop = async (
-  droppedItems: DataTransferItemList,
-  destinationFolderUuid: string,
-  uploadItems: UploadItemsHandler,
-) => {
-  const { rootList, files } = await transformDraggedItems(droppedItems);
-  await uploadItems({ destinationFolderUuid, roots: rootList, files });
-};
-
 export const createOnItemDropped =
   (uploadItems: UploadItemsHandler) =>
   (
@@ -76,7 +67,12 @@ export const createOnItemDropped =
       await handleDriveItemDrop(droppedData as DriveItemData, isSomeItemSelected, selectedItems, item, dispatch);
     } else if (droppedType === NativeTypes.FILE) {
       const { items: droppedItems } = droppedData as { items: DataTransferItemList };
-      await handleFileDrop(droppedItems, item.uuid, uploadItems).catch(notifyUploadFailed);
+      try {
+        const { rootList, files } = await transformDraggedItems(droppedItems);
+        await uploadItems({ destinationFolderUuid: item.uuid, roots: rootList, files });
+      } catch (error) {
+        notifyUploadFailed(error);
+      }
     }
   };
 

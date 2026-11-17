@@ -1,7 +1,6 @@
 import { describe, expect, Mock, test, vi } from 'vitest';
 import uploadFile from 'app/drive/services/file.service/uploadFile';
 import folderService from 'app/drive/services/folder.service';
-import { DriveItemData } from 'app/drive/types';
 import { OwnerUserAuthenticationData } from 'app/network/types';
 import {
   handleRepeatedUploadingFiles,
@@ -9,13 +8,15 @@ import {
 } from 'app/store/slices/storage/storage.thunks/renameItemsThunk';
 import workspacesService from 'services/workspace.service';
 import {
-  getCreatedFolder,
+  getCreatedFolderRequest,
   getFileToUpload,
   getFolderToUpload,
   getFolderWithFiles,
-  getUploadRepository,
+  getUploadContext,
+  MAX_UPLOAD_FILE_SIZE,
+  splitByExistingNames,
 } from 'testUtils/fixtures/upload.fixtures';
-import { UPLOAD_ITEMS_LIMIT, UploadContext, uploadItems } from './uploadItems';
+import { UPLOAD_ITEMS_LIMIT, uploadItems } from './uploadItems';
 
 vi.mock('app/drive/services/file.service/uploadFile', () => ({ default: vi.fn() }));
 vi.mock('app/drive/services/folder.service', () => ({ default: { createFolderByUuid: vi.fn() } }));
@@ -30,42 +31,18 @@ vi.mock('app/network/networkInformation', () => ({ logNetworkInfoForUpload: vi.f
 vi.mock('i18next', () => ({ t: (key: string) => key }));
 
 const DESTINATION_UUID = 'destination-uuid';
-const MAX_FILE_SIZE = 100;
-
-const getUploadContext = (overrides: Partial<UploadContext> = {}): UploadContext => ({
-  uploadRepository: getUploadRepository(),
-  maxUploadFileSize: MAX_FILE_SIZE,
-  planStorage: { limit: 0, usage: 0 },
-  onUploadItemsLimitExceeded: vi.fn(),
-  onFilesTooLarge: vi.fn(),
-  onPlanLimitReached: vi.fn(),
-  onNameCollisions: vi.fn(),
-  onItemUploaded: vi.fn(),
-  onItemRemoved: vi.fn(),
-  onUploadFinished: vi.fn(),
-  ...overrides,
-});
-
-const anExistingItem = (name: string) => ({ name, uuid: `existing-${name}-uuid` }) as unknown as DriveItemData;
 
 const inTheDestinationAlreadyExist = (existingNames: string[]) => {
-  const splitByName = async <T extends { name: string }>(items: T[]) => ({
-    repeatedItems: items.filter(({ name }) => existingNames.includes(name)),
-    existingItems: existingNames.map(anExistingItem),
-    unrepeatedItems: items.filter(({ name }) => !existingNames.includes(name)),
-  });
-  vi.mocked(handleRepeatedUploadingFiles).mockImplementation(splitByName as never);
-  vi.mocked(handleRepeatedUploadingFolders).mockImplementation(splitByName as never);
+  vi.mocked(handleRepeatedUploadingFiles).mockImplementation(splitByExistingNames(existingNames) as never);
+  vi.mocked(handleRepeatedUploadingFolders).mockImplementation(splitByExistingNames(existingNames) as never);
 };
 
 const nothingExistsInTheDestination = () => inTheDestinationAlreadyExist([]);
 
 const uploadsSucceed = () => {
   (uploadFile as Mock).mockImplementation(async (file: { name: string }) => ({ uuid: `${file.name}-uuid` }));
-  const createFolder = (_parentUuid: string, name: string) =>
-    [Promise.resolve(getCreatedFolder(name)), { cancel: vi.fn() }] as never;
-  vi.mocked(folderService.createFolderByUuid).mockImplementation(createFolder);
-  vi.mocked(workspacesService.createFolder).mockImplementation(({ plainName }) => createFolder('', plainName));
+  vi.mocked(folderService.createFolderByUuid).mockImplementation((_parentUuid, name) => getCreatedFolderRequest(name));
+  vi.mocked(workspacesService.createFolder).mockImplementation(({ plainName }) => getCreatedFolderRequest(plainName));
 };
 
 const upload = (roots: ReturnType<typeof getFolderToUpload>[], files: File[], context = getUploadContext()) =>
@@ -191,8 +168,8 @@ describe('Uploading items into a folder', () => {
   test('When some files are too large, then the user is told which ones and the rest is uploaded', async () => {
     prepare();
     const context = getUploadContext();
-    const tooLarge = getFileToUpload('movie.mp4', MAX_FILE_SIZE + 1);
-    const tooLargeInsideFolder = getFileToUpload('trailer.mp4', MAX_FILE_SIZE + 1);
+    const tooLarge = getFileToUpload('movie.mp4', MAX_UPLOAD_FILE_SIZE + 1);
+    const tooLargeInsideFolder = getFileToUpload('trailer.mp4', MAX_UPLOAD_FILE_SIZE + 1);
 
     await upload(
       [getFolderToUpload('Videos', { childrenFiles: [tooLargeInsideFolder, getFileToUpload('cover.png')] })],
@@ -207,7 +184,7 @@ describe('Uploading items into a folder', () => {
   test('When a folder only has files that are too large, then nothing of its uploaded folder is created and the rest is uploaded', async () => {
     prepare();
     const context = getUploadContext();
-    const tooLarge = getFileToUpload('movie.mp4', MAX_FILE_SIZE + 1);
+    const tooLarge = getFileToUpload('movie.mp4', MAX_UPLOAD_FILE_SIZE + 1);
     const videos = getFolderToUpload('Videos', { childrenFiles: [tooLarge] });
     const trip = getFolderToUpload('Trip', {
       childrenFiles: [getFileToUpload('map.png')],

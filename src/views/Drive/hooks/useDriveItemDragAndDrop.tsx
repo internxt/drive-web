@@ -1,5 +1,6 @@
 import { ConnectDragSource, ConnectDropTarget, useDrag, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
+import { transformDraggedItems } from 'services/drag-and-drop.service';
 import { DragAndDropType } from 'app/core/types';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
@@ -8,7 +9,6 @@ import { getCollisionGroups } from 'app/store/slices/storage/storage.thunks/rena
 import { uiActions } from 'app/store/slices/ui';
 import { DriveItemData } from 'app/drive/types';
 import { notifyUploadFailed } from 'app/upload/notifications';
-import { handleFileDrop } from 'components/BreadcrumbsHelper';
 import { useUploadItems } from 'app/upload/useUploadItems';
 
 interface DragSourceCollectorProps {
@@ -98,7 +98,12 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
           await handleDriveItemDrop(droppedData, item, isSomeItemSelected, selectedItems, dispatch);
         } else if (droppedType === NativeTypes.FILE) {
           const { items: droppedItems } = monitor.getItem<{ items: DataTransferItemList }>();
-          await handleFileDrop(droppedItems, item.uuid, uploadItems).catch(notifyUploadFailed);
+          try {
+            const { rootList, files } = await transformDraggedItems(droppedItems);
+            await uploadItems({ destinationFolderUuid: item.uuid, roots: rootList, files });
+          } catch (error) {
+            notifyUploadFailed(error);
+          }
         }
       },
     }),

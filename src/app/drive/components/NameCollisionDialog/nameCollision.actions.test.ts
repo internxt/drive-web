@@ -490,6 +490,27 @@ describe('resolveCollision', () => {
     expect(mocks.dispatch.mock.calls).toEqual([[asRefreshAction(DESTINATION)]]);
   });
 
+  test('when uploading with skip and everything inside the folder already exists, then nothing is uploaded', async () => {
+    const existingFile = new File(['a'], 'a.txt');
+    const root = getRoot('Photos', { childrenFiles: [existingFile] });
+    const existingFolder = getDriveItemData({ uuid: 'photos-uuid', plainName: 'Photos', isFolder: true });
+    mocks.handleRepeatedUploadingFiles.mockResolvedValue({
+      unrepeatedItems: [],
+      repeatedItems: [existingFile],
+      existingItems: [],
+    });
+    mocks.handleRepeatedUploadingFolders.mockResolvedValue({
+      unrepeatedItems: [],
+      repeatedItems: [],
+      existingItems: [],
+    });
+
+    await resolve({ operationType: 'upload', operation: 'skip', items: [root], existingItems: [existingFolder] });
+
+    expect(mocks.startUpload).not.toHaveBeenCalled();
+    expect(mocks.dispatch.mock.calls).toEqual([[asRefreshAction(DESTINATION)]]);
+  });
+
   test('when several files are versioned, then they are replaced one at a time', async () => {
     let inFlight = 0;
     let maxInFlight = 0;
