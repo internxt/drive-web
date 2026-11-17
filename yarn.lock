@@ -1946,9 +1946,10 @@
   dependencies:
     axios "^1.20.0"
 
-"@internxt/ui@github:internxt/ui#feat/PB-7114-list-get-item-id":
+"@internxt/ui@=0.1.30":
   version "0.1.30"
-  resolved "https://codeload.github.com/internxt/ui/tar.gz/d1897bea59638555fd5a0af479c1db27e417423c"
+  resolved "https://registry.yarnpkg.com/@internxt/ui/-/ui-0.1.30.tgz#0bcf99ebdc251cc0256799ce4d13ccfc40eee394"
+  integrity sha512-D2rA69/UTZpByt4kTmjjkXAFUa9pKRSA7YYoX1aGCKUIgr9xc8eu43OVFbw29IZ/8OgNuYFvC7O032j9pnkh9w==
   dependencies:
     "@internxt/css-config" "1.1.0"
     "@phosphor-icons/react" "^2.1.10"
