@@ -12,6 +12,7 @@ import { HTTP_STATUS_CODES } from 'app/core/constants';
 import { MAX_CONCURRENT_UPLOADS, MAX_UPLOAD_ATTEMPTS } from 'app/network/networkConstants';
 import {
   getCreatedFolder,
+  getFolderCreationRequest,
   getFileToUpload,
   getFolderToUpload,
   getFolderWithFiles,
@@ -194,8 +195,8 @@ describe('Uploading what the user picked', () => {
   });
 
   test('When a folder cannot be created, then its task shows the error', async () => {
-    vi.mocked(folderService.createFolderByUuid).mockImplementation(
-      () => [Promise.reject(new Error('Server error')), { cancel: vi.fn() }] as never,
+    vi.mocked(folderService.createFolderByUuid).mockImplementation(() =>
+      getFolderCreationRequest(Promise.reject(new Error('Server error'))),
     );
 
     await createUpload([getFolderToUpload('Photos')], []).run();
@@ -528,8 +529,8 @@ describe('Retrying what failed', () => {
   });
 
   test('When a folder that could not be created is retried, then it is created with all its content', async () => {
-    vi.mocked(folderService.createFolderByUuid).mockImplementation(
-      () => [Promise.reject(new Error('Server error')), { cancel: vi.fn() }] as never,
+    vi.mocked(folderService.createFolderByUuid).mockImplementation(() =>
+      getFolderCreationRequest(Promise.reject(new Error('Server error'))),
     );
     await createUpload([getFolderToUpload('Photos', { childrenFiles: [getFileToUpload('beach.png')] })], []).run();
     fakeFolderCreationTaking();
@@ -657,7 +658,7 @@ describe('Retrying what failed', () => {
       const shouldFail = name === 'Photos' && failedPhotosCreations < MAX_UPLOAD_ATTEMPTS;
       if (shouldFail) failedPhotosCreations++;
       const creation = shouldFail ? Promise.reject(new Error('Server error')) : Promise.resolve(getCreatedFolder(name));
-      return [creation, { cancel: vi.fn() }] as never;
+      return getFolderCreationRequest(creation);
     });
     (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
       const uploadTimeMs = file.name === 'movie' ? 300 : 600;
