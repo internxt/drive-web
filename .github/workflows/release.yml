@@ -22,7 +22,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          version=$(node -p "require('./package.json').version")
+          version="v$(node -p "require('./package.json').version.replace(/^v/, '')")"
           if gh release view "$version" > /dev/null 2>&1; then
             echo "Release $version already exists, skipping"
             exit 0

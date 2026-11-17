@@ -36,7 +36,7 @@ jobs:
           echo "base: $base, head: $head"
 
           highest=$(printf '%s\n%s\n' "${base#v}" "${head#v}" | sort -V | tail -n1)
-          if [ "$head" != "$base" ] && [ "$highest" = "${head#v}" ]; then
+          if [ "${head#v}" != "${base#v}" ] && [ "$highest" = "${head#v}" ]; then
             echo "Version already bumped"
             exit 0
           fi
