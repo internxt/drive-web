@@ -28,6 +28,8 @@ import {
 } from 'testUtils/fixtures/photos.fixtures';
 import { useTimelinePhotos } from './hooks/useTimelinePhotos';
 import PhotosView from './PhotosView';
+import { PhotoThumbnailsService } from './services/photoThumbnails.service';
+import { Photo } from './types';
 
 const { photosClient, storageClient, trashClient } = vi.hoisted(() => ({
   photosClient: { listDevices: vi.fn(), getFilesInFolders: vi.fn() },
@@ -1153,9 +1155,15 @@ describe('Photos view', () => {
           unmount();
           (fetchFileBlob as Mock).mockClear();
 
-          render(<PhotosView />);
+          PhotoThumbnailsService.instance
+            .getThumbnail(
+              { uuid: 'IMG_NEXT', updatedAt: '2025-11-03T09:00:00Z' } as Photo,
+              { bucket_id: 'photos-bucket', bucket_file: 'thumbnail-IMG_NEXT' },
+              new AbortController(),
+            )
+            .catch(() => undefined);
 
-          await waitFor(() => expect(thumbnailDownloadOf('IMG_0001')).toBeDefined());
+          await waitFor(() => expect(thumbnailDownloadOf('IMG_NEXT')).toBeDefined());
         });
       });
 

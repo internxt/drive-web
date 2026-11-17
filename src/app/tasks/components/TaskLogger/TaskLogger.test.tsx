@@ -33,7 +33,6 @@ const closeButton = () => screen.getAllByRole('button')[1];
 
 describe('Task logger', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     tasksService.clearTasks();
   });
 

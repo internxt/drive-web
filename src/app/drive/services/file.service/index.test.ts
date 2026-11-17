@@ -32,7 +32,6 @@ describe('fileService', () => {
   }));
 
   beforeEach(() => {
-    vi.clearAllMocks();
     mockGetNewApiInstance.mockImplementation(() => ({ createNewStorageClient: mockCreateNewStorageClient }));
     mockCreateNewStorageClient.mockImplementation(() => ({
       deleteFileByUuid: mockDeleteFileByUuid,

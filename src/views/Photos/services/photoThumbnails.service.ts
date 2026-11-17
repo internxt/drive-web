@@ -28,7 +28,7 @@ export class PhotoThumbnailsService {
 
     const thumbnailBlob = await this.downloads.pushAsync<Blob>({ thumbnail, abortController });
     updateDatabasePhotoThumbnail({
-      fileId: photo.id,
+      fileUuid: photo.uuid,
       previewBlob: thumbnailBlob,
       updatedAt: photo.updatedAt,
     }).catch(errorService.reportError);

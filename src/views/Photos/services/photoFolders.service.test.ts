@@ -1,7 +1,7 @@
-import { SdkFactory } from 'app/core/factory/sdk';
 import { getPhotoFolder, getPhotoFolderFile, getPhotoThumbnail } from 'testUtils/fixtures/photos.fixtures';
-import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { PhotoFoldersService } from './photoFolders.service';
+import { mockSdkFactory } from 'testUtils/sdk.mock';
 
 vi.mock('app/core/factory/sdk', () => ({
   SdkFactory: { getNewApiInstance: vi.fn() },
@@ -19,10 +19,9 @@ describe('Photo backup folders', () => {
   };
 
   beforeEach(() => {
-    vi.clearAllMocks();
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createNewStorageClient: () => storageClient,
-      createPhotosClient: () => photosClient,
+    mockSdkFactory({
+      createNewStorageClient: storageClient,
+      createPhotosClient: photosClient,
     });
   });
 

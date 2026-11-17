@@ -14,7 +14,6 @@ describe('checkFolderDuplicated', () => {
   const parentFolderId = 'parent-folder-id';
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 

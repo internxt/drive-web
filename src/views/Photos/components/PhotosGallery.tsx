@@ -61,6 +61,7 @@ const PhotosGallery = ({
           photos={photosNewestFirst}
           onClose={() => setOpenedPhoto(undefined)}
           onMoveToTrash={onMoveToTrash}
+          onLastPhotoReached={loadNextMonth}
         />
       )}
     </>

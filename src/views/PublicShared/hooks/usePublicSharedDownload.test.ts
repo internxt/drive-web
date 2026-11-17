@@ -1,5 +1,5 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { AdvancedSharedItem } from 'app/share/types';
 import usePublicSharedDownload from './usePublicSharedDownload';
 
@@ -87,10 +87,6 @@ const renderDownloadHook = ({ withCredentials = true }: { withCredentials?: bool
   );
 
 describe('usePublicSharedDownload', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   describe('openPreview', () => {
     test('When a previewable file is opened, then its blob is downloaded and exposed', async () => {
       const fileStream = new ReadableStream();

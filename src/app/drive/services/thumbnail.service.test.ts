@@ -19,6 +19,7 @@ import encryptedStorageService from 'services/encrypted-storage.service';
 import errorService from 'services/error.service';
 import { getDatabaseFilePreviewData } from './database.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { v7 as uuidV7 } from 'uuid';
 
 const { convertImageForPreviewSpy } = vi.hoisted(() => ({ convertImageForPreviewSpy: vi.fn() }));
 
@@ -94,8 +95,6 @@ describe('Thumbnail Service', () => {
     const originalCreateElement = document.createElement.bind(document);
 
     beforeEach(() => {
-      vi.clearAllMocks();
-
       mockVideoElement = createMockVideoElement();
       mockCanvas = createMockCanvas();
 
@@ -230,7 +229,6 @@ describe('Thumbnail Service', () => {
     let mockImage: { onload: (() => void) | null; onerror: (() => void) | null };
 
     beforeEach(() => {
-      vi.clearAllMocks();
       (Resizer as any).imageFileResizer = vi.fn();
       URL.createObjectURL = vi.fn(() => 'blob:mock-url');
 
@@ -298,7 +296,6 @@ describe('Thumbnail Service', () => {
     });
 
     beforeEach(async () => {
-      vi.clearAllMocks();
       const { convertImageForPreview } =
         await vi.importActual<typeof import('./image-preview.service')>('./image-preview.service');
       const realResizer = await vi.importActual<typeof import('react-image-file-resizer')>('react-image-file-resizer');
@@ -352,7 +349,6 @@ describe('Thumbnail Service', () => {
     };
 
     beforeEach(() => {
-      vi.clearAllMocks();
       vi.mocked(fetchFileBlob).mockResolvedValue(new Blob(['thumbnail-data']));
     });
 
@@ -471,13 +467,12 @@ describe('Thumbnail Service', () => {
   });
 
   describe('Cached Thumbnail', () => {
-    const file = { id: 7, updatedAt: '2026-11-03T10:00:00.000Z' };
+    const fileUuid = uuidV7();
+    const file = { uuid: fileUuid, updatedAt: '2026-11-03T10:00:00.000Z' };
     const cachedThumbnail = new Blob(['cached'], { type: 'image/jpeg' });
 
     test('When the saved thumbnail is from the current version of the file, then it is returned', async () => {
       vi.mocked(getDatabaseFilePreviewData).mockResolvedValue({
-        id: 7,
-        parentId: 1,
         preview: cachedThumbnail,
         updatedAt: file.updatedAt,
       });
@@ -487,8 +482,6 @@ describe('Thumbnail Service', () => {
 
     test('When the file changed after its thumbnail was saved, then no thumbnail is returned', async () => {
       vi.mocked(getDatabaseFilePreviewData).mockResolvedValue({
-        id: 7,
-        parentId: 1,
         preview: cachedThumbnail,
         updatedAt: '2026-11-01T10:00:00.000Z',
       });

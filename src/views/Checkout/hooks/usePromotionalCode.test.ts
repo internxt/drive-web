@@ -1,6 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
-import { beforeEach, describe, test, expect, vi } from 'vitest';
+import { describe, test, expect, vi } from 'vitest';
 import { usePromotionalCode } from './usePromotionalCode';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { checkoutService } from '../services';
@@ -19,10 +19,6 @@ const mockPromoCodeData = {
 };
 
 describe('Promotional Codes Custom Hook', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   describe('Fetching a promotional code', () => {
     test('When there is an initial promo code name, then it is fetched directly', async () => {
       const initialCouponCode = 'INITIAL_COUPON_CODE';

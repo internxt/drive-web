@@ -38,14 +38,6 @@ export interface ProductPriceRecurringData {
   usage_type: string;
 }
 
-export interface ProductData {
-  id: string;
-  name: string;
-  metadata: ProductMetadata;
-  price: ProductPriceData;
-  renewalPeriod: RenewalPeriod;
-}
-
 export enum ProductPriceType {
   Recurring = 'recurring',
   OneTime = 'one_time',

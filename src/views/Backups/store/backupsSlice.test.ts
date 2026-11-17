@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import backupsReducer, { backupsActions, backupsThunks } from './backupsSlice';
 import backupsService from '../services/backups.service';
 import { Device } from '@internxt/sdk/dist/drive/backups/types';
@@ -38,10 +38,6 @@ describe('backupsSlice', () => {
     deleted: true,
     isFolder: true,
   } as unknown as DriveFolderData;
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
 
   it('should clear backups when setting current device', () => {
     const initialState = backupsReducer(undefined, { type: 'init' });

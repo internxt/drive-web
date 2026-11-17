@@ -28,7 +28,6 @@ vi.mock('utils/userLocation', () => ({
 
 describe('Fetching the prices', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 
@@ -72,7 +71,6 @@ describe('Fetching the prices', () => {
 
 describe('Getting the stripe SDK', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 

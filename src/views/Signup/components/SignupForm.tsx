@@ -27,12 +27,6 @@ import encryptedStorageService from 'services/encrypted-storage.service';
 import { isAccountSetupPending } from 'services/account-setup.service';
 import { AccountSetupPendingNotice } from 'views/Login/components/AccountSetupPendingNotice';
 
-export interface SignUpProps {
-  location: {
-    search: string;
-  };
-}
-
 type PasswordState = {
   tag: 'error' | 'warning' | 'success';
   label: string;

@@ -13,19 +13,30 @@ interface PhotosViewerProps {
   photos: Photo[];
   onClose: () => void;
   onMoveToTrash: (photos: Photo[]) => void;
+  onLastPhotoReached?: () => void;
 }
 
-const PhotosViewer = ({ photo, photos, onClose, onMoveToTrash }: PhotosViewerProps): JSX.Element => {
+const PhotosViewer = ({
+  photo,
+  photos,
+  onClose,
+  onMoveToTrash,
+  onLastPhotoReached,
+}: PhotosViewerProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const files = useMemo(() => photos.map(({ file }) => file), [photos]);
   const photoByFileId = useMemo(() => new Map(photos.map((shownPhoto) => [shownPhoto.file.id, shownPhoto])), [photos]);
 
   const downloadPhoto = (file: DriveItemData) => {
     const shownPhoto = photoByFileId.get(file.id);
+    const photoFiles = shownPhoto ? getPhotoFiles([shownPhoto]) : [file];
     void DownloadManager.downloadItem({
-      payload: shownPhoto ? getPhotoFiles([shownPhoto]) : [file],
+      payload: photoFiles,
       selectedWorkspace: null,
       workspaceCredentials: null,
+      downloadOptions: {
+        downloadName: photoFiles.length > 1 ? file.name : undefined,
+      },
     });
   };
 
@@ -58,6 +69,7 @@ const PhotosViewer = ({ photo, photos, onClose, onMoveToTrash }: PhotosViewerPro
       keyboardShortcuts={{ removeItemFromKeyboard: moveToTrashAndClose }}
       onDownloadFile={downloadPhoto}
       refreshesThumbnail={false}
+      onLastFileReached={onLastPhotoReached}
     />
   );
 };

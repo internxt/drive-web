@@ -14,7 +14,6 @@ vi.mock('services/vpnAuth.service', () => ({
 
 describe('VPN authentication management', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 

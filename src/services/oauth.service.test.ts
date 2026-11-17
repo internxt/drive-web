@@ -43,7 +43,6 @@ describe('OAuth authentication service', () => {
   let mockWindowClose: any;
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
 
     mockWindowClose = vi.fn();
