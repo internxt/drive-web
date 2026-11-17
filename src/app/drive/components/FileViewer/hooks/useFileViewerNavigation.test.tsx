@@ -27,19 +27,30 @@ const folder = (id: number, name: string) => item(id, name, { isFolder: true, ty
 
 const asPreviewFile = (driveItem: DriveItemData) => driveItem as unknown as PreviewFileItem;
 
-type ListedItems = { folderContent?: DriveItemData[]; recents?: DriveItemData[]; folderItems?: DriveItemData[] };
+type ListedItems = {
+  folderContent?: DriveItemData[];
+  recents?: DriveItemData[];
+  folderItems?: DriveItemData[];
+  onLastFileReached?: () => void;
+};
 
 const renderNavigation = (
   openedFile: DriveItemData,
-  { folderContent, recents = [], folderItems }: ListedItems = {},
+  { folderContent, recents = [], folderItems, onLastFileReached }: ListedItems = {},
 ) => {
   const store = configureStore({ reducer: { storage: storageReducer } });
   if (folderContent) store.dispatch(storageActions.setItems({ folderId: FOLDER_UUID, items: folderContent }));
   store.dispatch(storageActions.setRecents(recents));
 
-  return renderHook(() => useFileViewerNavigation({ initialFile: asPreviewFile(openedFile), folderItems }), {
-    wrapper: ({ children }: { children: ReactNode }) => <Provider store={store}>{children}</Provider>,
-  });
+  return renderHook(
+    (props: { folderItems?: DriveItemData[] } = { folderItems }) =>
+      useFileViewerNavigation({
+        initialFile: asPreviewFile(openedFile),
+        folderItems: props.folderItems,
+        onLastFileReached,
+      }),
+    { wrapper: ({ children }: { children: ReactNode }) => <Provider store={store}>{children}</Provider> },
+  );
 };
 
 const openedFileName = (result: { current: ReturnType<typeof useFileViewerNavigation> }) =>
@@ -129,5 +140,45 @@ describe('Moving between files in the file viewer', () => {
     expect(result.current.navigation).toMatchObject({ hasPrevious: true, hasNext: true });
     act(() => result.current.navigation.goToNext());
     expect(openedFileName(result)).toBe('last');
+  });
+
+  test('When the user reaches the last file of the list, then the viewer asks for more files', () => {
+    const files = [item(1, 'first'), item(2, 'last')];
+    const onLastFileReached = vi.fn();
+    const { result } = renderNavigation(files[0], { folderItems: files, onLastFileReached });
+    expect(onLastFileReached).not.toHaveBeenCalled();
+
+    act(() => result.current.navigation.goToNext());
+
+    expect(onLastFileReached).toHaveBeenCalledOnce();
+  });
+
+  test('When the last file stays open and nothing new arrives, then the viewer asks for more files only once', () => {
+    const files = [item(1, 'first'), item(2, 'last')];
+    const askedForMore = vi.fn();
+    const store = configureStore({ reducer: { storage: storageReducer } });
+    const { rerender } = renderHook(
+      ({ onLastFileReached }: { onLastFileReached: () => void }) =>
+        useFileViewerNavigation({ initialFile: asPreviewFile(files[1]), folderItems: files, onLastFileReached }),
+      {
+        initialProps: { onLastFileReached: () => askedForMore() },
+        wrapper: ({ children }: { children: ReactNode }) => <Provider store={store}>{children}</Provider>,
+      },
+    );
+
+    rerender({ onLastFileReached: () => askedForMore() });
+
+    expect(askedForMore).toHaveBeenCalledOnce();
+  });
+
+  test('When more files arrive while the last one is open, then the user can move on to them', () => {
+    const files = [item(1, 'first'), item(2, 'last loaded')];
+    const { result, rerender } = renderNavigation(files[1], { folderItems: files });
+    expect(result.current.navigation.hasNext).toBe(false);
+
+    rerender({ folderItems: [...files, item(3, 'older')] });
+    act(() => result.current.navigation.goToNext());
+
+    expect(openedFileName(result)).toBe('older');
   });
 });

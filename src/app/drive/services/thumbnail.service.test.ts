@@ -473,8 +473,6 @@ describe('Thumbnail Service', () => {
 
     test('When the saved thumbnail is from the current version of the file, then it is returned', async () => {
       vi.mocked(getDatabaseFilePreviewData).mockResolvedValue({
-        uuid: fileUuid,
-        parentId: 1,
         preview: cachedThumbnail,
         updatedAt: file.updatedAt,
       });
@@ -484,8 +482,6 @@ describe('Thumbnail Service', () => {
 
     test('When the file changed after its thumbnail was saved, then no thumbnail is returned', async () => {
       vi.mocked(getDatabaseFilePreviewData).mockResolvedValue({
-        uuid: fileUuid,
-        parentId: 1,
         preview: cachedThumbnail,
         updatedAt: '2026-11-01T10:00:00.000Z',
       });

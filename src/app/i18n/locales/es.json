@@ -489,6 +489,11 @@
         "today": "Hoy",
         "yesterday": "Ayer",
         "monthError": "No se han podido cargar algunas fotos de {{month}}"
+      },
+      "badges": {
+        "livePhoto": "Live Photo",
+        "burst": "Ráfaga",
+        "video": "Vídeo"
       }
     },
     "favorites": {
