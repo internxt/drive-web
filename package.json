@@ -170,7 +170,7 @@
     "webpack-bundle-analyzer": "^4.9.1"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "lint-staged": {
     "*.{js,jsx,tsx,ts,json}": [
