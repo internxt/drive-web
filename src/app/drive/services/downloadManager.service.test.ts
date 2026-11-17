@@ -842,6 +842,39 @@ describe('downloadManagerService', () => {
     expect(lruCacheSpy).toHaveBeenCalledTimes(2);
   });
 
+  test('When several downloaded files share a name and extension, then the first keeps it and the rest get the next free one', async () => {
+    const photos: DriveFileData[] = [
+      { ...mockFile, id: 1, uuid: 'monday-photo', name: 'IMG_0001', type: 'heic' },
+      { ...mockFile, id: 2, uuid: 'tuesday-photo', name: 'IMG_0001', type: 'heic' },
+      { ...mockFile, id: 3, uuid: 'friday-photo', name: 'img_0001', type: 'HEIC' },
+    ];
+    const streamOf = new Map(photos.map(({ uuid }) => [uuid, new ReadableStream()]));
+    const mockTask = getTask(getDownloadItem(photos).payload);
+    const lruCache = new LRUCache<DriveItemBlobData>(createFilesCacheStorage(), 1);
+    vi.spyOn(lruCache, 'get').mockImplementation(async (uuid: string) => ({
+      uuid,
+      parentId: mockFile.folderId,
+      source: { stream: () => streamOf.get(uuid) } as unknown as Blob,
+    }));
+    vi.spyOn(LRUFilesCacheManager, 'getInstance').mockResolvedValue(lruCache);
+    (checkIfCachedSourceIsOlder as Mock).mockReturnValue(false);
+    vi.spyOn(FlatFolderZip.prototype, 'abort').mockImplementation(() => {});
+    const addFileZipSpy = vi.spyOn(FlatFolderZip.prototype, 'addFile').mockResolvedValue();
+    vi.spyOn(FlatFolderZip.prototype, 'close').mockResolvedValue();
+
+    await DownloadManagerService.instance.downloadItems(mockTask, vi.fn(), vi.fn(), vi.fn());
+
+    const uuidOfStream = new Map([...streamOf].map(([uuid, stream]) => [stream, uuid]));
+    const nameOfEachPhoto = Object.fromEntries(
+      addFileZipSpy.mock.calls.map(([name, stream]) => [uuidOfStream.get(stream), name]),
+    );
+    expect(nameOfEachPhoto).toStrictEqual({
+      'monday-photo': 'IMG_0001.heic',
+      'tuesday-photo': 'IMG_0001 (1).heic',
+      'friday-photo': 'img_0001 (2).HEIC',
+    });
+  });
+
   it('should handle errors during downloadItems and add to failedItems', async () => {
     const mockFileCache: DriveFileData = { ...mockFile, id: 2, name: 'File2', type: '' };
     const downloadItem = getDownloadItem([mockFile, mockFileCache]);
