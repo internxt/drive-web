@@ -1,4 +1,4 @@
-import { describe, test, expect, vi, beforeEach } from 'vitest';
+import { describe, test, expect, vi } from 'vitest';
 import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
 import { StorageState } from 'app/store/slices/storage/storage.model';
 import { DriveItemData } from 'app/drive/types';
@@ -51,10 +51,6 @@ const buildItem = (overrides: Partial<DriveItemData> = {}): DriveItemData =>
 describe('toggleFavoriteThunk', () => {
   const dispatch = vi.fn();
   const getState = vi.fn();
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
 
   test('When a non-favorited file is toggled, then it is marked as favorite and added to the favorites list', async () => {
     const { toggleFavoriteThunk } = await import('./toggleFavoriteThunk');
@@ -217,10 +213,6 @@ describe('toggleFavoriteThunk', () => {
 });
 
 describe('toggleFavoriteThunkExtraReducers', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   const buildCallbacks = async () => {
     const { toggleFavoriteThunkExtraReducers, toggleFavoriteThunk } = await import('./toggleFavoriteThunk');
 

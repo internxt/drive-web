@@ -1,5 +1,5 @@
 import { Tier } from '@internxt/sdk/dist/drive/payments/types/tiers';
-import { describe, expect, test, vi, beforeEach } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 
 vi.mock('app/core/factory/sdk', () => ({
   SdkFactory: {
@@ -61,10 +61,6 @@ const mockedUserTier: Tier = {
 
 describe('Products Service', () => {
   describe('Fetching the available user features', () => {
-    beforeEach(() => {
-      vi.clearAllMocks();
-    });
-
     test('When the available features for a given user are requested, then the list is returned', async () => {
       const mockPaymentsClient = {
         getUserTier: vi.fn().mockResolvedValue(mockedUserTier),

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { WorkspaceLogType } from '@internxt/sdk/dist/workspaces';
 import errorService from './error.service';
 import * as workspaceService from './workspace.service';
@@ -79,10 +79,6 @@ const testErrorHandling = async (fn: () => Promise<any>, mockFn: any) => {
 };
 
 describe('workspace service', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   describe('When retrieving workspace information', () => {
     it.each([
       {

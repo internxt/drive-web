@@ -7,11 +7,15 @@ import { LRUCacheStruture } from './LRUCache';
 import indexedDBService from './indexed-db.service';
 
 export type DriveItemBlobData = {
-  id: number;
+  uuid: string;
   parentId: number;
-  preview?: Blob;
   source?: Blob;
   updatedAt?: string;
+};
+
+export type PreviewBlobData = {
+  preview: Blob;
+  updatedAt: string;
 };
 
 export type AvatarBlobData = {
@@ -36,6 +40,10 @@ export interface AppDatabase extends DBSchema {
     value: DriveItemBlobData;
     indexes?: Record<string, IDBValidKey>;
   };
+  levels_blobs_previews: {
+    key: string;
+    value: PreviewBlobData;
+  };
   lru_cache: {
     key: LRUCacheTypes;
     value: LRUCacheStruture;
@@ -55,6 +63,10 @@ export interface AppDatabase extends DBSchema {
   crypto_keys: {
     key: string;
     value: CryptoKey;
+  };
+  photos_thumbnails: {
+    key: string;
+    value: PreviewBlobData;
   };
 }
 

@@ -34,7 +34,6 @@ const waitForRefreshDelay = () => act(() => vi.advanceTimersByTime(REFRESH_AFTER
 
 describe('Refreshing the Drive explorer after a change', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.useFakeTimers();
   });
 

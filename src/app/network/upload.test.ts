@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { uploadFile } from './upload';
 import { ConnectionLostError } from './requests';
 import { Network } from '@internxt/sdk/dist/network';
@@ -24,10 +24,6 @@ vi.mock('./NetworkFacade', () => ({
 }));
 
 describe('uploadFile', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   it('should successfully upload a file', async () => {
     uploadMock.mockResolvedValue('upload-success');
 

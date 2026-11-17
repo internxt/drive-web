@@ -1,4 +1,4 @@
-import { describe, expect, test, vi, beforeEach } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { getEnvironmentConfig } from './getEnvironmentConfig';
 import envService from 'services/env.service';
@@ -43,10 +43,6 @@ const createMockWorkspaceCredentials = () =>
 const createMockWorkspaceMnemonic = () => 'workspace-key';
 
 describe('Get Environment Config', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   describe('Personal account context', () => {
     test('When the user is not in a workspace, then the personal credentials are returned', async () => {
       mockedEncryptedStorage.getUser.mockResolvedValue(createMockUser());

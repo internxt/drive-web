@@ -45,7 +45,13 @@ const DEFAULT_BANNER_STATE: BannerState = {
 
 const getBannerState = (): BannerState => {
   const stored = localStorageService.get(LocalStorageItem.BannerStateKey);
-  return stored ? { ...DEFAULT_BANNER_STATE, ...JSON.parse(stored) } : { ...DEFAULT_BANNER_STATE };
+  if (!stored) return { ...DEFAULT_BANNER_STATE };
+
+  try {
+    return { ...DEFAULT_BANNER_STATE, ...JSON.parse(stored) };
+  } catch {
+    return { ...DEFAULT_BANNER_STATE };
+  }
 };
 
 const updateBannerState = (update: Partial<BannerState>): void => {

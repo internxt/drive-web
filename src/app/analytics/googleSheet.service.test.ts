@@ -15,7 +15,6 @@ describe('Google Sheets Conversion Logger', () => {
   const originalFetch = globalThis.fetch;
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
     globalThis.window.grecaptcha = {
       ready: mockGrecaptchaReady,

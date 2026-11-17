@@ -1,12 +1,12 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useForm } from 'react-hook-form';
-import { SdkFactory } from 'app/core/factory/sdk';
 import { IFormValues } from 'app/core/types';
 import enTranslations from 'app/i18n/locales/en.json';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { AuthMethodTypes } from '../types';
 import { CheckoutUserAuth } from './CheckoutUserAuth';
+import { mockSdkFactory } from 'testUtils/sdk.mock';
 
 const translate = (key: string, props?: Record<string, unknown>) => {
   const value = key.split('.').reduce<unknown>((accumulator, part) => accumulator?.[part], enTranslations);
@@ -56,14 +56,11 @@ const CheckoutUserAuthForm = ({
 
 describe('Checkout account details', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     globalThis.grecaptcha = {
       ready: (callback: () => void) => callback(),
       execute: vi.fn().mockResolvedValue('captcha_token'),
     } as unknown as typeof globalThis.grecaptcha;
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: () => ({ resendAccountSetupEmail }),
-    } as unknown as SdkFactory);
+    mockSdkFactory({ createAuthClient: { resendAccountSetupEmail } });
   });
 
   test('When a new buyer can pay without a password, then only the email is asked', () => {

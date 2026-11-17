@@ -1,6 +1,6 @@
-import { describe, expect, it, Mock, test, vi } from 'vitest';
+import { describe, expect, it, test, vi } from 'vitest';
 import newStorageService from './new-storage.service';
-import { SdkFactory } from 'app/core/factory/sdk';
+import { mockSdkFactory } from 'testUtils/sdk.mock';
 
 vi.mock('app/core/factory/sdk', () => ({
   SdkFactory: {
@@ -15,9 +15,7 @@ describe('newStorageService', () => {
     it('should call deleteFolderByUuid with the correct folderId', async () => {
       const mockResponse = vi.fn().mockResolvedValue({});
       const mockStorageClient = { deleteFolderByUuid: mockResponse };
-      (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-        createNewStorageClient: () => mockStorageClient,
-      });
+      mockSdkFactory({ createNewStorageClient: mockStorageClient });
 
       await newStorageService.deleteFolderByUuid(mockFolderId);
 
@@ -39,9 +37,7 @@ describe('newStorageService', () => {
       const mockStorageClient = {
         getFolderContentByUuid: vi.fn().mockReturnValue([Promise.resolve(mockResponse), mockCanceler]),
       };
-      (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-        createNewStorageClient: () => mockStorageClient,
-      });
+      mockSdkFactory({ createNewStorageClient: mockStorageClient });
 
       const [promise, canceler] = newStorageService.getFolderContentByUuid({
         folderUuid: 'test-folder-uuid',
@@ -62,9 +58,7 @@ describe('newStorageService', () => {
       const mockStorageClient = {
         getFolderContentByUuid: vi.fn().mockReturnValue([Promise.resolve(mockResponse), mockCanceler]),
       };
-      (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-        createNewStorageClient: () => mockStorageClient,
-      });
+      mockSdkFactory({ createNewStorageClient: mockStorageClient });
 
       const [promise] = newStorageService.getFolderContentByUuid({
         folderUuid: 'test-folder-uuid',
@@ -80,9 +74,7 @@ describe('newStorageService', () => {
       const mockCanceler = vi.fn();
       const mockGetFolderContentByUuid = vi.fn().mockReturnValue([Promise.resolve(mockResponse), mockCanceler]);
       const mockStorageClient = { getFolderContentByUuid: mockGetFolderContentByUuid };
-      (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-        createNewStorageClient: () => mockStorageClient,
-      });
+      mockSdkFactory({ createNewStorageClient: mockStorageClient });
 
       const params = {
         folderUuid: 'test-folder-uuid',
@@ -106,9 +98,7 @@ describe('newStorageService', () => {
       };
       const mockGetFolderStats = vi.fn().mockResolvedValue(mockStatsResponse);
       const mockStorageClient = { getFolderStats: mockGetFolderStats };
-      (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-        createNewStorageClient: () => mockStorageClient,
-      });
+      mockSdkFactory({ createNewStorageClient: mockStorageClient });
 
       const result = await newStorageService.getFolderStats(mockUuid);
 
