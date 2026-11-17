@@ -427,28 +427,31 @@ function SharedView({
       ? currentFolderLevelResourcesToken
       : nextFolderLevelResourcesToken;
     const filesWithContent = Array.from(items).filter((file) => file.size > 0);
+    const hasFilesWithContent = filesWithContent.length > 0;
 
-    try {
-      const filesWithFreeNames = await renameToFreeNamesInSharedFolder(filesWithContent, {
-        uuid: currentFolderId,
-        resourcesToken: isSecondLevelOfFoldersOrMore ? resourcesToken : '',
-        workspaceId: defaultTeamId ? workspaceId : undefined,
-      });
-      const ownerUserAuthenticationData = await getSharedFolderAuthenticationData(
-        { workspaceAuthenticationData, filesOwnerCredentials, currentUser, ownerEncryptionKey, ownerBucket },
-        resourcesToken,
-      );
+    if (hasFilesWithContent) {
+      try {
+        const filesWithFreeNames = await renameToFreeNamesInSharedFolder(filesWithContent, {
+          uuid: currentFolderId,
+          resourcesToken: isSecondLevelOfFoldersOrMore ? resourcesToken : '',
+          workspaceId: defaultTeamId ? workspaceId : undefined,
+        });
+        const ownerUserAuthenticationData = await getSharedFolderAuthenticationData(
+          { workspaceAuthenticationData, filesOwnerCredentials, currentUser, ownerEncryptionKey, ownerBucket },
+          resourcesToken,
+        );
 
-      await startUpload(
-        { destinationFolderUuid: currentParentFolderId, roots: [], files: filesWithFreeNames },
-        {
-          ownerUserAuthenticationData,
-          onPlanLimitReached: openOwnerStorageIsFullDialog,
-          onUploadFinished: refreshUsage,
-        },
-      );
-    } catch (error) {
-      notifyUploadFailed(error);
+        await startUpload(
+          { destinationFolderUuid: currentParentFolderId, roots: [], files: filesWithFreeNames },
+          {
+            ownerUserAuthenticationData,
+            onPlanLimitReached: openOwnerStorageIsFullDialog,
+            onUploadFinished: refreshUsage,
+          },
+        );
+      } catch (error) {
+        notifyUploadFailed(error);
+      }
     }
 
     actionDispatch(setHasMoreFiles(true));
