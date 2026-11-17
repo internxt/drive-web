@@ -39,7 +39,9 @@ vi.mock('app/notifications/services/notifications.service', () => ({
   },
 }));
 
+import { ErrorMessages } from 'app/core/constants';
 import { downloadFile } from 'app/network/download';
+import errorService from 'services/error.service';
 import notificationsService from 'app/notifications/services/notifications.service';
 import { downloadPublicSharedItems } from 'app/share/services/share.service';
 import { binaryStreamToBlob } from 'services/stream.service';
@@ -257,6 +259,21 @@ describe('usePublicSharedDownload', () => {
         expect(result.current.isDownloading).toBe(false);
       });
       expect(notificationsService.show).toHaveBeenCalledWith({ text: 'zip failed', type: 'error' });
+    });
+
+    test('when the download is cancelled from the browser, then it ends without reporting or showing an error', async () => {
+      mockedDownloadPublicSharedItems.mockRejectedValue(new Error(ErrorMessages.DownloadCancelledFromBrowser));
+
+      const { result } = renderDownloadHook();
+      act(() => {
+        result.current.downloadItems([createFileItem()]);
+      });
+
+      await waitFor(() => {
+        expect(result.current.isDownloading).toBe(false);
+      });
+      expect(errorService.reportError).not.toHaveBeenCalled();
+      expect(notificationsService.show).not.toHaveBeenCalled();
     });
 
     test('When there are no items or no credentials, then no download is started', () => {

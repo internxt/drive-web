@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { ErrorMessages } from 'app/core/constants';
 import { getIsTypeAllowedAndFileExtensionGroupValues } from 'app/drive/components/FileViewer/utils/fileViewerUtils';
 import { downloadFile } from 'app/network/download';
 import { FileKey, NetworkCredentials } from 'app/network/types/helper-types';
@@ -44,8 +45,12 @@ const usePublicSharedDownload = ({
       resourcesToken,
     })
       .catch((err) => {
+        const { message } = errorService.castError(err);
+        const isCancelledFromBrowser = message === ErrorMessages.DownloadCancelledFromBrowser;
+        if (isCancelledFromBrowser) return;
+
         errorService.reportError(err);
-        notificationsService.show({ text: errorService.castError(err).message, type: ToastType.Error });
+        notificationsService.show({ text: message, type: ToastType.Error });
       })
       .finally(() => {
         setIsDownloading(false);

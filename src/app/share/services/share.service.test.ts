@@ -638,12 +638,17 @@ describe('Download public shared items', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(getDownloadSupport).mockResolvedValue(DownloadSupport.StreamApi);
+    vi.mocked(downloadToFs).mockImplementation(async ({ source }) => {
+      await source;
+    });
   });
 
-  test('When a single file is downloaded, then it is fetched with the share credentials and key and saved with its plain name', async () => {
-    const file = createPublicFile('photo', 'network-file-id');
+  test('When a single file is downloaded, then it is fetched with the share credentials and key and streamed to Downloads with its plain name and size', async () => {
+    const file = { ...createPublicFile('photo', 'network-file-id'), size: '3' } as AdvancedSharedItem;
     const updateNumItems = vi.fn();
-    vi.mocked(downloadFile).mockResolvedValueOnce(createStream(new Uint8Array([1, 2, 3])));
+    const fileStream = createStream(new Uint8Array([1, 2, 3]));
+    vi.mocked(downloadFile).mockResolvedValueOnce(fileStream);
 
     await downloadPublicSharedItems({
       items: [file],
@@ -659,7 +664,13 @@ describe('Download public shared items', () => {
       creds: CREDENTIALS,
       key: KEY,
     });
-    expect(downloadService.downloadFileFromBlob).toHaveBeenCalledWith(expect.any(Blob), 'photo.png');
+    expect(downloadToFs).toHaveBeenCalledWith({
+      filename: 'photo.png',
+      source: expect.any(Promise),
+      support: DownloadSupport.PartialStreamApi,
+      size: 3,
+    });
+    await expect(vi.mocked(downloadToFs).mock.calls[0][0].source).resolves.toBe(fileStream);
     expect(updateNumItems).toHaveBeenCalledTimes(1);
     expect(FlatFolderZip).not.toHaveBeenCalled();
   });
@@ -680,6 +691,7 @@ describe('Download public shared items', () => {
     const [blob, name] = vi.mocked(downloadService.downloadFileFromBlob).mock.calls[0];
     expect((blob as Blob).size).toBe(0);
     expect(name).toBe('empty.png');
+    expect(downloadToFs).not.toHaveBeenCalled();
     expect(updateNumItems).toHaveBeenCalledTimes(1);
   });
 
@@ -701,7 +713,7 @@ describe('Download public shared items', () => {
         options: { credentials: CREDENTIALS, key: KEY, isPublicShare: true },
       }),
     );
-    expect(downloadService.downloadFileFromBlob).not.toHaveBeenCalled();
+    expect(downloadToFs).not.toHaveBeenCalled();
   });
 
   test('When several items are downloaded, then files and folders are packed into a single zip that is closed at the end', async () => {
