@@ -1,8 +1,22 @@
+import { ReactNode } from 'react';
+import { configureStore } from '@reduxjs/toolkit';
+import { Provider } from 'react-redux';
 import { act, fireEvent, render, renderHook, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, Mock, test, vi } from 'vitest';
-import { getDatabaseFilePreviewData, updateDatabaseFilePreviewData } from 'app/drive/services/database.service';
+import { getDatabasePhotoThumbnail, updateDatabasePhotoThumbnail } from 'app/drive/services/database.service';
 import fetchFileBlob from 'app/drive/services/download.service/fetchFileBlob';
 import errorService from 'services/error.service';
+import { DriveItemData } from 'app/drive/types';
+import { DownloadManager } from 'app/network/DownloadManager';
+import { uploadFile as uploadToBucket } from 'app/network/upload';
+import {
+  FilePreviewContentSource,
+  getFilePreviewContent,
+} from 'app/drive/components/FileViewer/services/filePreviewContent.service';
+import storageReducer from 'app/store/slices/storage';
+import uiReducer from 'app/store/slices/ui';
+import userReducer from 'app/store/slices/user';
+import workspacesReducer from 'app/store/slices/workspaces/workspacesStore';
 import { PhotoDevice as SdkPhotoDevice } from '@internxt/sdk/dist/drive/photos';
 import {
   getPhotoFolder,
@@ -12,10 +26,12 @@ import {
 } from 'testUtils/fixtures/photos.fixtures';
 import { useTimelinePhotos } from './hooks/useTimelinePhotos';
 import PhotosView from './PhotosView';
+import { PhotoThumbnailsService } from './services/photoThumbnails.service';
+import { Photo } from './types';
 
 const { photosClient, storageClient } = vi.hoisted(() => ({
   photosClient: { listDevices: vi.fn(), getFilesInFolders: vi.fn() },
-  storageClient: { getFolderFoldersByUuidWithCursor: vi.fn() },
+  storageClient: { getFolderFoldersByUuidWithCursor: vi.fn(), createThumbnailEntryWithUUID: vi.fn() },
 }));
 
 vi.mock('app/core/factory/sdk', () => ({
@@ -40,9 +56,22 @@ vi.mock('app/drive/services/download.service/fetchFileBlob', () => ({
 }));
 vi.mock('app/drive/services/database.service', async (importOriginal) => ({
   ...(await importOriginal<typeof import('app/drive/services/database.service')>()),
-  getDatabaseFilePreviewData: vi.fn(),
-  updateDatabaseFilePreviewData: vi.fn(),
+  getDatabasePhotoThumbnail: vi.fn(),
+  updateDatabasePhotoThumbnail: vi.fn(),
 }));
+
+vi.mock('app/network/DownloadManager', () => ({
+  DownloadManager: { downloadItem: vi.fn() },
+}));
+vi.mock('app/drive/components/FileViewer/services/filePreviewContent.service', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('app/drive/components/FileViewer/services/filePreviewContent.service')>()),
+  getFilePreviewContent: vi.fn(() => new Promise(() => undefined)),
+}));
+
+vi.mock('app/drive/services/network.service/getEnvironmentConfig', () => ({
+  getEnvironmentConfig: async () => ({ bridgeUser: 'user', bridgePass: 'pass', encryptionKey: 'key', bucketId: 'b' }),
+}));
+vi.mock('app/network/upload', () => ({ uploadFile: vi.fn() }));
 
 type Folder = ReturnType<typeof getPhotoFolder>;
 
@@ -181,8 +210,8 @@ describe('Photos view', () => {
     failingFolders.clear();
     waitingFolders.clear();
     givenPhotosInFolders({});
-    (getDatabaseFilePreviewData as Mock).mockResolvedValue(undefined);
-    (updateDatabaseFilePreviewData as Mock).mockResolvedValue(undefined);
+    (getDatabasePhotoThumbnail as Mock).mockResolvedValue(undefined);
+    (updateDatabasePhotoThumbnail as Mock).mockResolvedValue(undefined);
   });
 
   afterEach(() => {
@@ -605,6 +634,132 @@ describe('Photos view', () => {
       expect(shownTimeline()).toStrictEqual(['Wed, 15 Oct 2025', ['IMG_OCTOBER.jpg']]);
     });
 
+    describe('Live Photos, bursts and videos', () => {
+      const file = (plainName: string, type: string, folderUuid: string, creationTime: string) =>
+        getPhotoFolderFile({ uuid: `${plainName}.${type}`, plainName, type, folderUuid, creationTime });
+
+      const tile = (name: string) => screen.getByRole('img', { name });
+
+      beforeEach(() => {
+        givenDevices([iphone]);
+        givenSubfolders(iphonePhotosOf2025);
+      });
+
+      test('When a photo has its Live Photo video, then it is shown once as a Live Photo', async () => {
+        givenPhotosInFolders({
+          'iphone-2025-11-03': [
+            file('IMG_0001', 'HEIC', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+            file('img_0001.livephoto', 'MOV', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          ],
+        });
+
+        render(<PhotosView />);
+        await screen.findByRole('img', { name: 'IMG_0001.HEIC' });
+
+        expect(shownTimeline()).toStrictEqual(['Mon, 3 Nov 2025', ['IMG_0001.HEIC']]);
+        expect(tile('IMG_0001.HEIC')).toHaveAccessibleDescription('views.photos.badges.livePhoto');
+      });
+
+      test('When a Live Photo video has no photo, then it is shown as a video', async () => {
+        givenPhotosInFolders({
+          'iphone-2025-11-03': [file('IMG_0002.livephoto', 'mov', 'iphone-2025-11-03', '2025-11-03T09:00:00Z')],
+        });
+
+        render(<PhotosView />);
+
+        expect(await screen.findByRole('img', { name: 'IMG_0002.livephoto.mov' })).toHaveAccessibleDescription(
+          'views.photos.badges.video',
+        );
+      });
+
+      test('When a photo has burst photos, then the burst is shown once on its main photo', async () => {
+        givenPhotosInFolders({
+          'iphone-2025-11-03': [
+            file('IMG_0003', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+            file('IMG_0003.burst.1', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+            file('IMG_0003.burst.2', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:01Z'),
+          ],
+        });
+
+        render(<PhotosView />);
+        await screen.findByRole('img', { name: 'IMG_0003.jpg' });
+
+        expect(shownTimeline()).toStrictEqual(['Mon, 3 Nov 2025', ['IMG_0003.jpg']]);
+        expect(tile('IMG_0003.jpg')).toHaveAccessibleDescription('views.photos.badges.burst');
+      });
+
+      test('When photos with the same name are on different days of the month, then each Live Photo and burst stays on its own day', async () => {
+        givenPhotosInFolders({
+          'iphone-2025-11-01': [
+            file('IMG_0001', 'heic', 'iphone-2025-11-01', '2025-11-01T10:00:00Z'),
+            file('IMG_0001.livephoto', 'mov', 'iphone-2025-11-01', '2025-11-01T10:00:00Z'),
+            file('IMG_0002', 'heic', 'iphone-2025-11-01', '2025-11-01T09:00:00Z'),
+            file('IMG_0002.burst.1', 'heic', 'iphone-2025-11-01', '2025-11-01T09:00:00Z'),
+          ],
+          'iphone-2025-11-03': [
+            file('IMG_0001', 'heic', 'iphone-2025-11-03', '2025-11-03T10:00:00Z'),
+            file('IMG_0002', 'heic', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          ],
+        });
+
+        render(<PhotosView />);
+        await screen.findAllByRole('img', { name: 'IMG_0001.heic' });
+
+        const [photoOfDay3, livePhotoOfDay1] = screen.getAllByRole('img', { name: 'IMG_0001.heic' });
+        const [otherPhotoOfDay3, burstOfDay1] = screen.getAllByRole('img', { name: 'IMG_0002.heic' });
+        expect(shownTimeline()).toStrictEqual([
+          'Mon, 3 Nov 2025',
+          ['IMG_0001.heic', 'IMG_0002.heic'],
+          'Sat, 1 Nov 2025',
+          ['IMG_0001.heic', 'IMG_0002.heic'],
+        ]);
+        expect(livePhotoOfDay1).toHaveAccessibleDescription('views.photos.badges.livePhoto');
+        expect(burstOfDay1).toHaveAccessibleDescription('views.photos.badges.burst');
+        expect(photoOfDay3).not.toHaveAccessibleDescription();
+        expect(otherPhotoOfDay3).not.toHaveAccessibleDescription();
+      });
+
+      test('When the burst part of a photo name is in capitals, then the photo is still shown inside its burst', async () => {
+        givenPhotosInFolders({
+          'iphone-2025-11-03': [
+            file('IMG_0007', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+            file('IMG_0007.BURST.1', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          ],
+        });
+
+        render(<PhotosView />);
+        await screen.findByRole('img', { name: 'IMG_0007.jpg' });
+
+        expect(shownTimeline()).toStrictEqual(['Mon, 3 Nov 2025', ['IMG_0007.jpg']]);
+        expect(tile('IMG_0007.jpg')).toHaveAccessibleDescription('views.photos.badges.burst');
+      });
+
+      test('When the main photo of a burst is not in the month, then its other photos are shown on their own', async () => {
+        givenPhotosInFolders({
+          'iphone-2025-11-03': [file('IMG_0004.burst.1', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z')],
+        });
+
+        render(<PhotosView />);
+
+        expect(await screen.findByRole('img', { name: 'IMG_0004.burst.1.jpg' })).not.toHaveAccessibleDescription();
+      });
+
+      test('When a video is shown, then it is marked as a video', async () => {
+        givenPhotosInFolders({
+          'iphone-2025-11-03': [
+            file('VID_0005', 'mp4', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+            file('IMG_0006', 'jpg', 'iphone-2025-11-03', '2025-11-03T10:00:00Z'),
+          ],
+        });
+
+        render(<PhotosView />);
+        await screen.findByRole('img', { name: 'VID_0005.mp4' });
+
+        expect(tile('VID_0005.mp4')).toHaveAccessibleDescription('views.photos.badges.video');
+        expect(tile('IMG_0006.jpg')).not.toHaveAccessibleDescription();
+      });
+    });
+
     test('When the photos of a day come from several devices, then they are shown together', async () => {
       givenDevices([iphone, pixel]);
       givenSubfolders({
@@ -793,7 +948,7 @@ describe('Photos view', () => {
 
     test('When a thumbnail was already downloaded, then it is shown without downloading it again', async () => {
       givenPhotosWithThumbnail(['IMG_A']);
-      (getDatabaseFilePreviewData as Mock).mockResolvedValue({
+      (getDatabasePhotoThumbnail as Mock).mockResolvedValue({
         preview: new Blob(['cached'], { type: 'image/jpeg' }),
         updatedAt: photoUpdatedAt,
       });
@@ -807,7 +962,7 @@ describe('Photos view', () => {
 
     test('When the photo changed after its thumbnail was saved, then the new thumbnail is downloaded', async () => {
       givenPhotosWithThumbnail(['IMG_A']);
-      (getDatabaseFilePreviewData as Mock).mockResolvedValue({
+      (getDatabasePhotoThumbnail as Mock).mockResolvedValue({
         preview: new Blob(['outdated'], { type: 'image/jpeg' }),
         updatedAt: '2026-11-01T10:00:00.000Z',
       });
@@ -818,16 +973,14 @@ describe('Photos view', () => {
 
       await waitFor(() => expect(thumbnail()?.getAttribute('src')).toMatch(/^blob:/));
       expect(fetchFileBlob).toHaveBeenCalled();
-      expect(updateDatabaseFilePreviewData).toHaveBeenCalledWith(
-        expect.objectContaining({ updatedAt: photoUpdatedAt }),
-      );
+      expect(updateDatabasePhotoThumbnail).toHaveBeenCalledWith(expect.objectContaining({ updatedAt: photoUpdatedAt }));
     });
 
     test('When the thumbnail cannot be saved, then the error is reported and the thumbnail is still shown', async () => {
       givenPhotosWithThumbnail(['IMG_A']);
       const saveError = new Error('Quota exceeded');
       (fetchFileBlob as Mock).mockResolvedValue(new Blob(['thumbnail'], { type: 'image/jpeg' }));
-      (updateDatabaseFilePreviewData as Mock).mockRejectedValue(saveError);
+      (updateDatabasePhotoThumbnail as Mock).mockRejectedValue(saveError);
 
       render(<PhotosView />);
       const thumbnail = await thumbnailOf('IMG_A.jpg');
@@ -839,7 +992,7 @@ describe('Photos view', () => {
     test('When the saved thumbnails cannot be read, then the thumbnail is downloaded and shown', async () => {
       givenPhotosWithThumbnail(['IMG_A']);
       const readError = new Error('IndexedDB blocked');
-      (getDatabaseFilePreviewData as Mock).mockRejectedValue(readError);
+      (getDatabasePhotoThumbnail as Mock).mockRejectedValue(readError);
       (fetchFileBlob as Mock).mockResolvedValue(new Blob(['thumbnail'], { type: 'image/jpeg' }));
 
       render(<PhotosView />);
@@ -862,9 +1015,17 @@ describe('Photos view', () => {
     });
 
     describe('A day with hundreds of photos', () => {
+      const downloadsUntilCancelled = () =>
+        (fetchFileBlob as Mock).mockImplementation(
+          (_file, { abortController }: { abortController: AbortController }) =>
+            new Promise((_resolve, reject) =>
+              abortController.signal.addEventListener('abort', () => reject(new Error('Aborted'))),
+            ),
+        );
+
       beforeEach(() => {
         givenPhotosWithThumbnail(photosOfDay('iphone-2026-11-03', 300).map((file) => file.plainName));
-        (fetchFileBlob as Mock).mockReturnValue(new Promise(() => undefined));
+        downloadsUntilCancelled();
       });
 
       test('When the user opens Photos, then only the thumbnails of the photos on screen are downloaded', async () => {
@@ -883,6 +1044,81 @@ describe('Photos view', () => {
         await waitFor(() => expect(thumbnailDownloadOf('IMG_0001').abortController.signal.aborted).toBe(true));
       });
 
+      describe('Downloads are paced so the backend is not flooded', () => {
+        const STILL_SCROLLING_MS = 40;
+
+        const photoNamed = (tileName: string | null) => String(tileName).replace('.jpg', '');
+
+        const tileNames = () =>
+          screen
+            .getAllByRole('img')
+            .map((element) => element.getAttribute('aria-label'))
+            .filter((name) => name !== null);
+
+        const countTiles = () => tileNames().length;
+
+        const thumbnailsOnScreenWereRead = async () => {
+          const tilesOnScreen = countTiles();
+          await waitFor(() => expect(getDatabasePhotoThumbnail).toHaveBeenCalledTimes(tilesOnScreen));
+          await act(async () => undefined);
+          return tilesOnScreen;
+        };
+
+        test('When many photos are on screen, then at most 6 thumbnails are downloaded at the same time', async () => {
+          render(<PhotosView />);
+          await screen.findByRole('img', { name: 'IMG_0001.jpg' });
+          const tilesOnScreen = await thumbnailsOnScreenWereRead();
+
+          expect(tilesOnScreen).toBeGreaterThan(6);
+          expect(fetchFileBlob).toHaveBeenCalledTimes(6);
+        });
+
+        test('When a thumbnail arrives, then the next waiting one is downloaded', async () => {
+          (fetchFileBlob as Mock).mockResolvedValue(new Blob(['thumbnail'], { type: 'image/jpeg' }));
+
+          render(<PhotosView />);
+          await screen.findByRole('img', { name: 'IMG_0001.jpg' });
+          const tilesOnScreen = countTiles();
+
+          await waitFor(() => expect(fetchFileBlob).toHaveBeenCalledTimes(tilesOnScreen));
+        });
+
+        test('When the user scrolls past photos, then their thumbnails are never downloaded', async () => {
+          render(<PhotosView />);
+          await waitFor(() => expect(thumbnailDownloadOf('IMG_0001')).toBeDefined());
+          const downloadsBeforeScrolling = (fetchFileBlob as Mock).mock.calls.length;
+
+          scrollGalleryTo('middle');
+          await new Promise((resolve) => setTimeout(resolve, STILL_SCROLLING_MS));
+          scrollGalleryTo('end');
+
+          await waitFor(() => expect(thumbnailDownloadOf(photoNamed(photosOnScreen()[0]))).toBeDefined());
+          const tilesAtTheEnd = tileNames();
+          const downloadsAfterScrolling = (fetchFileBlob as Mock).mock.calls
+            .slice(downloadsBeforeScrolling)
+            .map(([file]) => `${file.fileId.replace('thumbnail-', '')}.jpg`);
+          expect(downloadsAfterScrolling.filter((photoName) => !tilesAtTheEnd.includes(photoName))).toStrictEqual([]);
+        });
+
+        test('When the user leaves Photos while scrolling, then thumbnails still download the next time', async () => {
+          const { unmount } = render(<PhotosView />);
+          await waitFor(() => expect(thumbnailDownloadOf('IMG_0001')).toBeDefined());
+          scrollGalleryTo('middle');
+          unmount();
+          (fetchFileBlob as Mock).mockClear();
+
+          PhotoThumbnailsService.instance
+            .getThumbnail(
+              { uuid: 'IMG_NEXT', updatedAt: '2025-11-03T09:00:00Z' } as Photo,
+              { bucket_id: 'photos-bucket', bucket_file: 'thumbnail-IMG_NEXT' },
+              new AbortController(),
+            )
+            .catch(() => undefined);
+
+          await waitFor(() => expect(thumbnailDownloadOf('IMG_NEXT')).toBeDefined());
+        });
+      });
+
       test('When a photo leaves the screen, then the memory of its thumbnail is released', async () => {
         (fetchFileBlob as Mock).mockResolvedValue(new Blob(['thumbnail'], { type: 'image/jpeg' }));
         const revokeObjectURL = vi.spyOn(URL, 'revokeObjectURL');
@@ -895,6 +1131,178 @@ describe('Photos view', () => {
 
         await waitFor(() => expect(revokeObjectURL).toHaveBeenCalledWith(thumbnailUrl));
       });
+    });
+  });
+
+  describe('Viewing a photo', () => {
+    let nextFileId = 1;
+    const file = (plainName: string, type: string, folderUuid: string, creationTime: string) =>
+      getPhotoFolderFile({ id: nextFileId++, uuid: `${plainName}.${type}`, plainName, type, folderUuid, creationTime });
+
+    const renderWithStore = () => {
+      const store = configureStore({
+        reducer: { storage: storageReducer, ui: uiReducer, user: userReducer, workspaces: workspacesReducer },
+        preloadedState: { user: { ...userReducer(undefined, { type: 'init' }), isAuthenticated: true } },
+      });
+      const wrapper = ({ children }: { children: ReactNode }) => <Provider store={store}>{children}</Provider>;
+      return render(<PhotosView />, { wrapper });
+    };
+
+    const imageContent = (): Promise<Blob> =>
+      new Promise((resolve) => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 400;
+        canvas.height = 300;
+        canvas.toBlob((blob) => resolve(blob as Blob), 'image/jpeg');
+      });
+
+    const openPhoto = async (name: string) => fireEvent.click(await screen.findByRole('button', { name }));
+    const viewer = () => screen.getByRole('dialog');
+    const downloadedFiles = () =>
+      (DownloadManager.downloadItem as Mock).mock.calls.map(([{ payload }]) =>
+        (payload as DriveItemData[]).map((item) => `${item.plainName}.${item.type}`),
+      );
+
+    beforeEach(() => {
+      nextFileId = 1;
+      givenDevices([iphone, pixel]);
+      givenSubfolders({
+        iphone: [getPhotoFolder({ uuid: 'iphone-2025', plainName: '2025' })],
+        'iphone-2025': [getPhotoFolder({ uuid: 'iphone-2025-11', plainName: '11' })],
+        'iphone-2025-11': [
+          getPhotoFolder({ uuid: 'iphone-2025-11-03', plainName: '3' }),
+          getPhotoFolder({ uuid: 'iphone-2025-11-01', plainName: '1' }),
+        ],
+        pixel: [getPhotoFolder({ uuid: 'pixel-2025', plainName: '2025' })],
+        'pixel-2025': [getPhotoFolder({ uuid: 'pixel-2025-11', plainName: '11' })],
+        'pixel-2025-11': [getPhotoFolder({ uuid: 'pixel-2025-11-03', plainName: '3' })],
+      });
+    });
+
+    test('When the user clicks a photo, then it is opened full size in the viewer', async () => {
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [file('IMG_0001', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z')],
+      });
+
+      renderWithStore();
+      await openPhoto('IMG_0001.jpg');
+
+      expect(viewer()).toHaveAccessibleName('IMG_0001.jpg');
+    });
+
+    test('When the user clicks a video, then the viewer opens it as a video to be played', async () => {
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [file('VID_0001', 'mp4', 'iphone-2025-11-03', '2025-11-03T09:00:00Z')],
+      });
+
+      renderWithStore();
+      await openPhoto('VID_0001.mp4');
+
+      expect(viewer()).toHaveAccessibleName('VID_0001.mp4');
+      expect(within(viewer()).queryByText('error.noFilePreview')).not.toBeInTheDocument();
+      expect(within(viewer()).queryByText(/error.filePreviewTooLarge/)).not.toBeInTheDocument();
+    });
+
+    test('When a photo is opened in the viewer, then the thumbnail made by the phone is kept', async () => {
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [file('IMG_0001', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z')],
+      });
+      (getFilePreviewContent as Mock).mockResolvedValueOnce({
+        blob: await imageContent(),
+        source: FilePreviewContentSource.Download,
+      });
+
+      renderWithStore();
+      await openPhoto('IMG_0001.jpg');
+
+      await within(viewer()).findByRole('img', { name: 'IMG_0001' });
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      expect(uploadToBucket).not.toHaveBeenCalled();
+      expect(storageClient.createThumbnailEntryWithUUID).not.toHaveBeenCalled();
+    });
+
+    test('When the user moves to the next and previous photos, then they follow the gallery order across days and devices', async () => {
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [file('IMG_IPHONE', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z')],
+        'pixel-2025-11-03': [file('IMG_PIXEL', 'jpg', 'pixel-2025-11-03', '2025-11-03T12:00:00Z')],
+        'iphone-2025-11-01': [file('IMG_OLDER', 'jpg', 'iphone-2025-11-01', '2025-11-01T09:00:00Z')],
+      });
+
+      renderWithStore();
+      await openPhoto('IMG_PIXEL.jpg');
+
+      fireEvent.click(screen.getByTitle('actions.next'));
+      expect(viewer()).toHaveAccessibleName('IMG_IPHONE.jpg');
+      fireEvent.click(screen.getByTitle('actions.next'));
+      expect(viewer()).toHaveAccessibleName('IMG_OLDER.jpg');
+      expect(screen.queryByTitle('actions.next')).not.toBeInTheDocument();
+
+      fireEvent.click(screen.getByTitle('actions.previous'));
+      expect(viewer()).toHaveAccessibleName('IMG_IPHONE.jpg');
+    });
+
+    test('When a Live Photo is downloaded from the viewer, then its video is downloaded with it', async () => {
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [
+          file('IMG_0001', 'HEIC', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          file('IMG_0001.livephoto', 'MOV', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+        ],
+      });
+
+      renderWithStore();
+      await openPhoto('IMG_0001.HEIC');
+      fireEvent.click(within(viewer()).getAllByTitle('actions.download')[0]);
+
+      expect(downloadedFiles()).toStrictEqual([['IMG_0001.HEIC', 'IMG_0001.livephoto.MOV']]);
+    });
+
+    test('When a burst is downloaded from the viewer, then all its photos are downloaded', async () => {
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [
+          file('IMG_0003', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          file('IMG_0003.burst.1', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          file('IMG_0003.burst.2', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+        ],
+      });
+
+      renderWithStore();
+      await openPhoto('IMG_0003.jpg');
+      fireEvent.click(within(viewer()).getAllByTitle('actions.download')[0]);
+
+      expect(downloadedFiles()).toStrictEqual([['IMG_0003.jpg', 'IMG_0003.burst.1.jpg', 'IMG_0003.burst.2.jpg']]);
+    });
+
+    test('When the user opens the menu of the viewer, then they can only download, with the related files', async () => {
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [
+          file('IMG_0001', 'HEIC', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          file('IMG_0001.livephoto', 'MOV', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+        ],
+      });
+
+      renderWithStore();
+      await openPhoto('IMG_0001.HEIC');
+      fireEvent.click(within(viewer()).getByRole('button', { expanded: false }));
+      const menuItems = within(viewer()).getAllByText(/^drive\.dropdown\./);
+
+      expect(menuItems.map((item) => item.textContent)).toStrictEqual(['drive.dropdown.download']);
+      fireEvent.click(menuItems[0]);
+      expect(downloadedFiles()).toStrictEqual([['IMG_0001.HEIC', 'IMG_0001.livephoto.MOV']]);
+    });
+
+    test('When a single photo is downloaded from the viewer, then only that photo is downloaded', async () => {
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [
+          file('IMG_0001', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          file('IMG_0002', 'jpg', 'iphone-2025-11-03', '2025-11-03T10:00:00Z'),
+        ],
+      });
+
+      renderWithStore();
+      await openPhoto('IMG_0001.jpg');
+      fireEvent.click(within(viewer()).getAllByTitle('actions.download')[0]);
+
+      expect(downloadedFiles()).toStrictEqual([['IMG_0001.jpg']]);
     });
   });
 });
