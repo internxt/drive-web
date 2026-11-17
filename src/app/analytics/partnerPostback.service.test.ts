@@ -44,7 +44,6 @@ describe('Partner postback service', () => {
   let fetchMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    vi.clearAllMocks();
     fetchMock = vi.fn().mockResolvedValue(undefined);
     vi.stubGlobal('fetch', fetchMock);
   });

@@ -24,6 +24,16 @@ const open = (name: string, version?: number): Promise<idb.IDBPDatabase<AppDatab
       if (oldVersion <= 6 && !db.objectStoreNames.contains('crypto_keys')) {
         db.createObjectStore('crypto_keys');
       }
+      if (oldVersion <= 8) {
+        for (const storeName of ['levels_blobs', 'levels_blobs_previews', 'photos_thumbnails', 'lru_cache'] as const) {
+          if (db.objectStoreNames.contains(storeName)) db.deleteObjectStore(storeName);
+        }
+        const objectStore = db.createObjectStore('levels_blobs');
+        objectStore.createIndex('parent_index' as never, 'parentId', { unique: false });
+        db.createObjectStore('levels_blobs_previews');
+        db.createObjectStore('photos_thumbnails');
+        db.createObjectStore('lru_cache');
+      }
     },
     blocked: () => undefined,
     blocking: () => undefined,

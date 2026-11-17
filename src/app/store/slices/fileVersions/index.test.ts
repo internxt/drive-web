@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { FileVersion, FileLimitsResponse } from '@internxt/sdk/dist/drive/storage/types';
 import fileVersionService from 'views/Drive/services/fileVersion.service';
 import { fileVersionsActions, fileVersionsReducer, fetchFileVersionsThunk, fetchVersionLimitsThunk } from './index';
@@ -17,10 +17,6 @@ describe('File history state', () => {
     { id: 'v1', fileId: fileUuid } as FileVersion,
     { id: 'v2', fileId: fileUuid } as FileVersion,
   ];
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
 
   describe('Loading file history', () => {
     it('when file history is requested, then the versions load successfully', async () => {

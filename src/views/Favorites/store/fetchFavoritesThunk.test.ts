@@ -56,8 +56,6 @@ describe('fetchFavoritesThunk', () => {
   const dispatch = vi.fn();
 
   beforeEach(async () => {
-    vi.clearAllMocks();
-
     const cryptoUtils = await import('app/crypto/services/utils');
 
     vi.mocked(cryptoUtils.getItemPlainName).mockImplementation(

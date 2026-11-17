@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import operatingSystemService, { OperatingSystem } from './operating-system.service';
 
 vi.mock('./operating-system.service');
@@ -23,10 +23,6 @@ describe('desktopService', () => {
   beforeEach(() => {
     globalThis.fetch = mockFetch;
     vi.resetModules();
-  });
-
-  afterEach(() => {
-    vi.clearAllMocks();
   });
 
   describe('getDownloadAppUrl', () => {

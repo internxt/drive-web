@@ -2,9 +2,12 @@ import databaseService, {
   AvatarBlobData,
   DatabaseCollection,
   DriveItemBlobData,
+  PreviewBlobData,
 } from 'app/database/services/database.service';
 import { LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
 import { LRUFilesPreviewCacheManager } from 'app/database/services/database.service/LRUFilesPreviewCacheManager';
+import { LRUPhotosThumbnailsCacheManager } from 'app/database/services/database.service/LRUPhotosThumbnailsCacheManager';
+import errorService from 'services/error.service';
 import { DriveFileData, DriveFolderData, DriveItemData } from '../types';
 
 const updateDatabaseProfileAvatar = async ({
@@ -50,71 +53,68 @@ const deleteDatabaseWorkspaceAvatar = async (uuid: string): Promise<void> =>
   databaseService.delete(DatabaseCollection.WorkspacesAvatarBlobs, uuid);
 
 const updateDatabaseFilePreviewData = async ({
-  fileId,
-  folderId,
+  fileUuid,
   previewBlob,
   updatedAt,
 }: {
-  fileId: number;
-  folderId: number;
+  fileUuid: string;
   previewBlob: Blob;
   updatedAt: string;
 }): Promise<void> => {
   const lruFilesPreviewCacheManager = await LRUFilesPreviewCacheManager.getInstance();
-  // CHECK IF THAT THE PREVIEW KEY IS THE ID HAS ANY UNEXPECTED EFFECT INSTEAD OF BE THE FILE UUID
-  const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileId?.toString());
-
-  lruFilesPreviewCacheManager?.set(
-    fileId.toString(),
-    {
-      ...fileData,
-      id: fileId,
-      parentId: folderId,
-      updatedAt: updatedAt,
-      preview: previewBlob,
-    },
-    previewBlob.size,
-  );
+  lruFilesPreviewCacheManager
+    .set(fileUuid, { preview: previewBlob, updatedAt }, previewBlob.size)
+    .catch(errorService.reportError);
 };
 
-const getDatabaseFilePreviewData = async ({ fileId }: { fileId: number }): Promise<DriveItemBlobData | undefined> => {
+const getDatabasePhotoThumbnail = async ({ fileUuid }: { fileUuid: string }): Promise<PreviewBlobData | undefined> => {
+  const lruPhotosThumbnailsCacheManager = await LRUPhotosThumbnailsCacheManager.getInstance();
+  return lruPhotosThumbnailsCacheManager.get(fileUuid);
+};
+
+const updateDatabasePhotoThumbnail = async ({
+  fileUuid,
+  previewBlob,
+  updatedAt,
+}: {
+  fileUuid: string;
+  previewBlob: Blob;
+  updatedAt: string;
+}): Promise<void> => {
+  const lruPhotosThumbnailsCacheManager = await LRUPhotosThumbnailsCacheManager.getInstance();
+  await lruPhotosThumbnailsCacheManager.set(fileUuid, { preview: previewBlob, updatedAt }, previewBlob.size);
+};
+
+const getDatabaseFilePreviewData = async ({ fileUuid }: { fileUuid: string }): Promise<PreviewBlobData | undefined> => {
   const lruFilesPreviewCacheManager = await LRUFilesPreviewCacheManager.getInstance();
 
-  return lruFilesPreviewCacheManager?.get(fileId.toString());
+  return lruFilesPreviewCacheManager?.get(fileUuid);
 };
 
-const getDatabaseFileSourceData = async ({ fileId }: { fileId: number }): Promise<DriveItemBlobData | undefined> => {
+const getDatabaseFileSourceData = async ({
+  fileUuid,
+}: {
+  fileUuid: string;
+}): Promise<DriveItemBlobData | undefined> => {
   const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-  return lruFilesCacheManager?.get(fileId?.toString());
+  return lruFilesCacheManager?.get(fileUuid);
 };
 
 const updateDatabaseFileSourceData = async ({
-  fileId,
+  fileUuid,
   folderId,
   updatedAt,
   sourceBlob,
 }: {
-  fileId: number;
+  fileUuid: string;
   folderId: number;
   sourceBlob: Blob;
   updatedAt: string;
 }): Promise<void> => {
   const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-  // CHECK IF THAT THE PREVIEW KEY IS THE ID HAS ANY UNEXPECTED EFFECT INSTEAD OF BE THE FILE UUID
-
-  const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileId?.toString());
-
-  lruFilesCacheManager?.set(
-    fileId.toString(),
-    {
-      ...fileData,
-      id: fileId,
-      parentId: folderId,
-      source: sourceBlob,
-      updatedAt: updatedAt,
-    },
-    sourceBlob.size,
-  );
+  lruFilesCacheManager
+    .set(fileUuid, { uuid: fileUuid, parentId: folderId, source: sourceBlob, updatedAt }, sourceBlob.size)
+    .catch(errorService.reportError);
 };
 
 const deleteDatabaseItems = async (items: DriveItemData[]): Promise<void> => {
@@ -130,17 +130,21 @@ const deleteDatabaseItems = async (items: DriveItemData[]): Promise<void> => {
   });
 
   if (foldersInFolder.length) {
-    await foldersInFolder.forEach(async (folder) => {
+    foldersInFolder.forEach(async (folder) => {
       const folderItems = await databaseService.get(DatabaseCollection.Levels, folder?.uuid);
 
       if (folderItems) {
-        deleteDatabaseItems(folderItems as DriveItemData[]);
+        deleteDatabaseItems(folderItems as DriveItemData[]).catch((error) =>
+          console.error('Error deleting cached folder items:', error),
+        );
       }
     });
   }
 
   filesToRemove.forEach((item) => {
-    lruFilesCacheManager?.delete(item.id.toString(), item.size);
+    lruFilesCacheManager
+      ?.delete(item.uuid, item.size)
+      .catch((error) => console.error('Error deleting cached file:', error));
   });
 };
 
@@ -155,10 +159,12 @@ export {
   deleteDatabaseWorkspaceAvatar,
   getDatabaseFilePreviewData,
   getDatabaseFileSourceData,
+  getDatabasePhotoThumbnail,
   getDatabaseProfileAvatar,
   getDatabaseWorkspaceAvatar,
   updateDatabaseFilePreviewData,
   updateDatabaseFileSourceData,
+  updateDatabasePhotoThumbnail,
   updateDatabaseProfileAvatar,
   updateDatabaseWorkspaceAvatar,
 };

@@ -1,5 +1,5 @@
 import { StorageTypes } from '@internxt/sdk/dist/drive';
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { createFileEntry, uploadFile } from './uploadFile';
 import { FileToUpload } from './types';
 
@@ -45,10 +45,6 @@ const mockNetwork = vi.mocked(Network);
 const mockGetEnvironmentConfig = vi.mocked(getEnvironmentConfig);
 
 describe('Create File Entry', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   test('When creating a file entry for a workspace, then the file entry for workspaces should be created', async () => {
     const file: FileToUpload = {
       name: 'test-file',
@@ -201,10 +197,6 @@ describe('Create File Entry', () => {
 });
 
 describe('Uploading a file', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   test('When uploading a workspace file with resources token, then should be used to create a file entry', async () => {
     const file: FileToUpload = {
       name: 'test-file',

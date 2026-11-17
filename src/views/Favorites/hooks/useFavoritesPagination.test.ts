@@ -13,7 +13,6 @@ vi.mock('app/store/hooks', () => ({
 
 describe('useFavoritesPagination', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     mockStorageState = { hasMoreFavoriteFolders: true, hasMoreFavoriteFiles: true };
   });
 

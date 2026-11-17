@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { SdkFactory } from 'app/core/factory/sdk';
 import { AccountSetupPendingNotice } from './AccountSetupPendingNotice';
+import { mockSdkFactory } from 'testUtils/sdk.mock';
 
 vi.mock('app/i18n/provider/TranslationProvider', () => ({
   useTranslationContext: () => ({ translate: (key: string) => key }),
@@ -18,9 +18,7 @@ vi.mock('services/error.service', () => ({
 const PENDING_EMAIL = 'Pending@Example.com';
 
 const mockResendEndpoint = (resendAccountSetupEmail: ReturnType<typeof vi.fn>) => {
-  vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
-    createAuthClient: () => ({ resendAccountSetupEmail }),
-  } as unknown as ReturnType<typeof SdkFactory.getNewApiInstance>);
+  mockSdkFactory({ createAuthClient: { resendAccountSetupEmail } });
 };
 
 describe('Pending account setup notice', () => {

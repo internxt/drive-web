@@ -1,5 +1,6 @@
 import { AppError } from '@internxt/sdk';
 import { AxiosResponseError, AxiosUnknownError } from '@internxt/sdk/dist/shared/types/errors';
+import { ErrorMessages, HTTP_STATUS_CODES } from 'app/core/constants';
 import { AxiosError } from 'axios';
 import envService from './env.service';
 
@@ -60,6 +61,22 @@ const errorService = {
 
     const map = err as Record<string, unknown>;
     return map.message ? new AppError(map.message as string, map.status as number) : new AppError('Unknown error');
+  },
+
+  isConflictError(err: unknown): boolean {
+    return errorService.castError(err).status === HTTP_STATUS_CODES.CONFLICT;
+  },
+
+  isServerError(err: unknown): boolean {
+    const { status } = errorService.castError(err);
+    return !!status && status >= HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR;
+  },
+
+  /**
+   * The request never got an answer from the server (no connection, or the connection dropped).
+   */
+  isNetworkError(err: unknown): boolean {
+    return errorService.castError(err).message === ErrorMessages.NetworkError;
   },
 };
 

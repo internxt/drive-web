@@ -69,7 +69,6 @@ describe('guestSignupOnSubmit', () => {
   };
 
   beforeEach(() => {
-    vi.clearAllMocks();
     mockDispatch.mockResolvedValue(undefined);
     vi.mocked(parseAndDecryptUserKeys).mockReturnValue(mockParsedKeys);
     vi.mocked(userThunks.initializeUserThunk).mockReturnValue({} as any);

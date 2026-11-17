@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { RetryOptions } from '@internxt/sdk/dist/shared';
 import { retryStrategies, SILENT_MAX_RETRIES, USER_NOTIFICATION_MAX_RETRIES } from './retryStrategies';
 
@@ -8,10 +8,6 @@ const getOnRetry = (options: RetryOptions): ((attempt: number, delay: number) =>
 };
 
 describe('retryStrategies', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   describe('silent', () => {
     it('When a silent strategy is created, then it retries up to the configured max', () => {
       const options = retryStrategies.silent('Test');

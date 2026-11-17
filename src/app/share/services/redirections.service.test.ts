@@ -64,7 +64,6 @@ describe('handlePrivateSharedFolderAccess', () => {
   };
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
 
     history = createMemoryHistory();

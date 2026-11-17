@@ -60,7 +60,6 @@ describe('Purchase tracking', () => {
   let fetchMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    vi.clearAllMocks();
     mocks.isProduction.mockReturnValue(true);
     mocks.getUser.mockResolvedValue(LOGGED_IN_BUYER);
     givenPurchaseFrom(COLLABORATOR_UTM_SOURCE);

@@ -67,7 +67,6 @@ const buildItemWithDeletedParent = (overrides: Partial<DriveItemData> = {}): Dri
 
 describe('Restore items from trash', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     mockDispatch.mockImplementation((action: unknown) => action);
   });
 

@@ -151,9 +151,10 @@ vi.mock('components', () => ({
   MAX_PASSWORD_LENGTH: 256,
 }));
 
-vi.mock('query-string', () => ({
-  parse: vi.fn().mockImplementation((input: string) => input),
-}));
+vi.mock('query-string', () => {
+  const parse = vi.fn().mockImplementation((input: string) => input);
+  return { default: { parse }, parse };
+});
 
 vi.mock('react-hook-form', () => {
   const mockEmail = 'mock@email.com';
@@ -222,7 +223,6 @@ vi.mock('app/store/slices/user', () => ({
 
 describe('onSubmit', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
     vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
       if (key === 'newApi') return mockApi;
@@ -339,7 +339,6 @@ describe('onSubmit', () => {
 
 describe('Pending account setup', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
       if (key === 'newApi') return mockApi;
       if (key === 'secret') return mockSecret;
