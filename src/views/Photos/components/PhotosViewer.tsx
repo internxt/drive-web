@@ -24,6 +24,9 @@ const PhotosViewer = ({ photo, photos, onClose }: PhotosViewerProps): JSX.Elemen
       payload: [file, ...relatedFiles.map((relatedFile) => relatedFile.file)],
       selectedWorkspace: null,
       workspaceCredentials: null,
+      downloadOptions: {
+        downloadName: file.name,
+      },
     });
   };
 
