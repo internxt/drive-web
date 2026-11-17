@@ -397,8 +397,8 @@ function SharedView({
     );
 
   const refreshUsage = () => {
-    dispatch(planThunks.fetchUsageThunk());
-    if (selectedWorkspace?.workspaceUser?.memberId) dispatch(planThunks.fetchBusinessLimitUsageThunk());
+    void dispatch(planThunks.fetchUsageThunk());
+    if (selectedWorkspace?.workspaceUser?.memberId) void dispatch(planThunks.fetchBusinessLimitUsageThunk());
   };
 
   const onUploadFileInputChanged = async ({ files }: { files: FileList | null }) => {
