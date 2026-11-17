@@ -9,6 +9,7 @@ import { usePhotoLibrary } from './hooks/usePhotoLibrary';
 import { usePhotoSelection } from './hooks/usePhotoSelection';
 import { usePhotoTrash } from './hooks/usePhotoTrash';
 import { PhotoDevice, PhotoMonth } from './types';
+import { getShownMonthsKey } from './utils/monthKeys';
 
 const NO_DEVICES: PhotoDevice[] = [];
 const NO_MONTHS: PhotoMonth[] = [];
@@ -18,7 +19,7 @@ const PhotosView = (): JSX.Element => {
   const devices = state.status === 'loaded' ? state.devices : NO_DEVICES;
   const filters = usePhotoFilters(state.status === 'loaded' ? state.months : NO_MONTHS);
   const { selectedPhotos, toggleSelection, clearSelection } = usePhotoSelection();
-  const { trashedPhotos, moveToTrash } = usePhotoTrash();
+  const { trashedPhotos, galleryReloads, moveToTrash } = usePhotoTrash(getShownMonthsKey(filters.shownMonths));
 
   const content = {
     loading: <PhotosGridSkeleton />,
@@ -28,6 +29,7 @@ const PhotosView = (): JSX.Element => {
         months={filters.shownMonths}
         selectedPhotos={selectedPhotos}
         trashedPhotos={trashedPhotos}
+        galleryReloads={galleryReloads}
         onToggleSelection={toggleSelection}
         onMoveToTrash={moveToTrash}
       />

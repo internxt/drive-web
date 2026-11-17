@@ -1564,6 +1564,22 @@ describe('Photos view', () => {
         within(selectionHeader() as HTMLElement).getByRole('button', { name: 'drive.dropdown.moveToTrash' }),
       );
     const undo = async () => fireEvent.click(await screen.findByRole('button', { name: 'actions.undo' }));
+    const photosOnTheServer = ({ withoutLivePhoto = false } = {}) => ({
+      'iphone-2025-11-03': [
+        ...(withoutLivePhoto
+          ? []
+          : [
+              file('IMG_LIVE', 'HEIC', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+              file('IMG_LIVE.livephoto', 'MOV', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+            ]),
+        file('IMG_KEPT', 'jpg', 'iphone-2025-11-03', '2025-11-03T08:00:00Z'),
+      ],
+      'iphone-2025-11-01': [
+        file('IMG_BURST', 'jpg', 'iphone-2025-11-01', '2025-11-01T09:00:00Z'),
+        file('IMG_BURST.burst.1', 'jpg', 'iphone-2025-11-01', '2025-11-01T09:00:00Z'),
+      ],
+      'iphone-2025-10-15': [file('IMG_OCTOBER', 'jpg', 'iphone-2025-10-15', '2025-10-15T09:00:00Z')],
+    });
 
     beforeEach(() => {
       nextFileId = 1;
@@ -1580,18 +1596,7 @@ describe('Photos view', () => {
         ],
         'iphone-2025-10': [getPhotoFolder({ uuid: 'iphone-2025-10-15', plainName: '15' })],
       });
-      givenPhotosInFolders({
-        'iphone-2025-11-03': [
-          file('IMG_LIVE', 'HEIC', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
-          file('IMG_LIVE.livephoto', 'MOV', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
-          file('IMG_KEPT', 'jpg', 'iphone-2025-11-03', '2025-11-03T08:00:00Z'),
-        ],
-        'iphone-2025-11-01': [
-          file('IMG_BURST', 'jpg', 'iphone-2025-11-01', '2025-11-01T09:00:00Z'),
-          file('IMG_BURST.burst.1', 'jpg', 'iphone-2025-11-01', '2025-11-01T09:00:00Z'),
-        ],
-        'iphone-2025-10-15': [file('IMG_OCTOBER', 'jpg', 'iphone-2025-10-15', '2025-10-15T09:00:00Z')],
-      });
+      givenPhotosInFolders(photosOnTheServer());
     });
 
     test('When selected photos are moved to the trash, then they go to the Drive Trash with their related files right away', async () => {
@@ -1648,6 +1653,53 @@ describe('Photos view', () => {
       moveSelectionToTrash();
       await waitFor(() => expect(screen.queryByRole('img', { name: 'IMG_LIVE.HEIC' })).not.toBeInTheDocument());
 
+      await undo();
+
+      expect(await screen.findByRole('img', { name: 'IMG_LIVE.HEIC' })).toBeInTheDocument();
+    });
+
+    test('When the user undoes moving photos to the trash, then the photos already loaded are not loaded again', async () => {
+      renderWithStore();
+      await tick('IMG_LIVE.HEIC');
+      moveSelectionToTrash();
+      await waitFor(() => expect(screen.queryByRole('img', { name: 'IMG_LIVE.HEIC' })).not.toBeInTheDocument());
+      const foldersRequestedBeforeUndo = requestedFolders().length;
+
+      await undo();
+
+      expect(await screen.findByRole('img', { name: 'IMG_LIVE.HEIC' })).toBeInTheDocument();
+      expect(requestedFolders()).toHaveLength(foldersRequestedBeforeUndo);
+    });
+
+    test('When the user changes the filter after moving photos to the trash and then undoes it, then they are shown again in the gallery', async () => {
+      renderWithStore();
+      await tick('IMG_LIVE.HEIC');
+      moveSelectionToTrash();
+      await waitFor(() => expect(screen.queryByRole('img', { name: 'IMG_LIVE.HEIC' })).not.toBeInTheDocument());
+      givenPhotosInFolders(photosOnTheServer({ withoutLivePhoto: true }));
+
+      fireEvent.click(await screen.findByRole('button', { name: /views.photos.filters.allDates/ }));
+      fireEvent.click(await screen.findByRole('menuitem', { name: /November 2025/ }));
+      expect(await screen.findByRole('img', { name: 'IMG_KEPT.jpg' })).toBeInTheDocument();
+      givenPhotosInFolders(photosOnTheServer());
+      await undo();
+
+      expect(await screen.findByRole('img', { name: 'IMG_LIVE.HEIC' })).toBeInTheDocument();
+    });
+
+    test('When the user changes the filter and goes back to the same one before undoing, then the restored photos are shown again', async () => {
+      renderWithStore();
+      await tick('IMG_LIVE.HEIC');
+      moveSelectionToTrash();
+      await waitFor(() => expect(screen.queryByRole('img', { name: 'IMG_LIVE.HEIC' })).not.toBeInTheDocument());
+      givenPhotosInFolders(photosOnTheServer({ withoutLivePhoto: true }));
+
+      fireEvent.click(await screen.findByRole('button', { name: /views.photos.filters.allDates/ }));
+      fireEvent.click(await screen.findByRole('menuitem', { name: /November 2025/ }));
+      fireEvent.click(await screen.findByRole('button', { name: /November 2025/ }));
+      fireEvent.click(await screen.findByRole('menuitem', { name: /views.photos.filters.allDates/ }));
+      expect(await screen.findByRole('img', { name: 'IMG_KEPT.jpg' })).toBeInTheDocument();
+      givenPhotosInFolders(photosOnTheServer());
       await undo();
 
       expect(await screen.findByRole('img', { name: 'IMG_LIVE.HEIC' })).toBeInTheDocument();
