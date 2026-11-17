@@ -21,7 +21,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ github.event.pull_request.head.repo.full_name == github.repository && github.head_ref || '' }}
           token: ${{ secrets.CI_USER_GH_TOKEN || github.token }}
 
       - name: Bump version if the PR did not
