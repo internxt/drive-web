@@ -5,7 +5,7 @@ import { DriveFileData } from 'app/drive/types';
 import { ErrorMessages, HTTP_CODE_ERRORS, HTTP_STATUS_CODES } from 'app/core/constants';
 import errorService from 'services/error.service';
 import { ConnectionLostError } from 'app/network/requests';
-import { TWENTY_MEGABYTES, USE_MULTIPART_THRESHOLD_BYTES } from 'app/network/networkConstants';
+import { TWENTY_MEGABYTES, MIN_MULTIPART_SIZE } from 'app/network/networkConstants';
 import { QueueUtilsService } from 'utils/queueUtils';
 import workspacesService from 'services/workspace.service';
 import folderService from 'app/drive/services/folder.service';
@@ -347,10 +347,10 @@ describe('Uploading files', () => {
 
   test('When small, medium and large files are uploaded together, then the small ones start first and the large ones last', async () => {
     const items = [
-      getUploadFileItem('large-1', USE_MULTIPART_THRESHOLD_BYTES),
+      getUploadFileItem('large-1', MIN_MULTIPART_SIZE),
       getUploadFileItem('medium-1', TWENTY_MEGABYTES),
       getUploadFileItem('small-1'),
-      getUploadFileItem('large-2', USE_MULTIPART_THRESHOLD_BYTES),
+      getUploadFileItem('large-2', MIN_MULTIPART_SIZE),
       getUploadFileItem('medium-2', TWENTY_MEGABYTES),
       getUploadFileItem('small-2'),
     ];
@@ -362,10 +362,7 @@ describe('Uploading files', () => {
 
   test('When several large files are uploaded, then only one uploads at a time', async () => {
     makeUploadsNeverFinish();
-    const items = [
-      getUploadFileItem('large-1', USE_MULTIPART_THRESHOLD_BYTES),
-      getUploadFileItem('large-2', USE_MULTIPART_THRESHOLD_BYTES),
-    ];
+    const items = [getUploadFileItem('large-1', MIN_MULTIPART_SIZE), getUploadFileItem('large-2', MIN_MULTIPART_SIZE)];
 
     void createManager().run(items);
 
@@ -375,7 +372,7 @@ describe('Uploading files', () => {
   test('When small files are uploaded after a large file in a browser without memory information, then they upload at the same time again', async () => {
     vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockImplementation((current) => current);
     const manager = createManager();
-    await manager.run([getUploadFileItem('large', USE_MULTIPART_THRESHOLD_BYTES)]);
+    await manager.run([getUploadFileItem('large', MIN_MULTIPART_SIZE)]);
     makeUploadsNeverFinish();
 
     void manager.run(['report', 'invoice', 'photo'].map((name) => getUploadFileItem(name)));
@@ -594,7 +591,7 @@ describe('Uploading folders', () => {
   });
 
   test('When a large file is uploaded together with a folder, then it waits for the files inside the folder so they are not uploaded one at a time behind it', async () => {
-    const largeFile = getUploadFileItem('large', USE_MULTIPART_THRESHOLD_BYTES);
+    const largeFile = getUploadFileItem('large', MIN_MULTIPART_SIZE);
     const folderItem = createFolderItem(
       getFolderToUpload('Photos', {
         childrenFiles: [getFileToUpload('beach.png'), getFileToUpload('city.png'), getFileToUpload('dog.png')],
@@ -617,7 +614,7 @@ describe('Uploading folders', () => {
     );
 
     void manager.run([folderItem], runOptions());
-    void manager.run([getUploadFileItem('large', USE_MULTIPART_THRESHOLD_BYTES)], runOptions());
+    void manager.run([getUploadFileItem('large', MIN_MULTIPART_SIZE)], runOptions());
 
     await vi.waitFor(() => expect(startedUploadNames()).toEqual(['large']));
   });
@@ -942,7 +939,7 @@ describe('Following each queued item until it ends', () => {
 
   test('When a large file waits for the folders to queue their content, then it is announced as queued only once', async () => {
     const recorder = recordItemEvents();
-    const largeFile = getUploadFileItem('large', USE_MULTIPART_THRESHOLD_BYTES);
+    const largeFile = getUploadFileItem('large', MIN_MULTIPART_SIZE);
     const folderItem = createFolderItem(
       getFolderToUpload('Photos', { childrenFiles: [getFileToUpload('beach.png')] }),
       'dest',
