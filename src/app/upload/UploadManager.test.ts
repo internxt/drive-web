@@ -11,7 +11,8 @@ import workspacesService from 'services/workspace.service';
 import folderService from 'app/drive/services/folder.service';
 import newStorageService from 'app/drive/services/new-storage.service';
 import {
-  getCreatedFolder,
+  getCreatedFolderRequest,
+  getFolderCreationRequest,
   getFileToUpload,
   getFolderToUpload,
   getUploadFileItem,
@@ -443,12 +444,10 @@ describe('Uploading files', () => {
 });
 
 const fakeFolderCreation = () =>
-  vi
-    .mocked(folderService.createFolderByUuid)
-    .mockImplementation((_parentUuid, name) => [Promise.resolve(getCreatedFolder(name)), { cancel: vi.fn() }] as never);
+  vi.mocked(folderService.createFolderByUuid).mockImplementation((_parentUuid, name) => getCreatedFolderRequest(name));
 
 const makeFolderCreationNeverFinish = () =>
-  vi.mocked(folderService.createFolderByUuid).mockReturnValue([new Promise(() => undefined), { cancel: vi.fn() }]);
+  vi.mocked(folderService.createFolderByUuid).mockReturnValue(getFolderCreationRequest(new Promise(() => undefined)));
 
 const uploadedFileParents = () =>
   Object.fromEntries((uploadFile as Mock).mock.calls.map(([file]) => [file.name, file.parentFolderId]));
@@ -494,10 +493,9 @@ describe('Uploading folders', () => {
   });
 
   test('When a folder cannot be created, then it fails and its content is not uploaded', async () => {
-    vi.mocked(folderService.createFolderByUuid).mockReturnValue([
-      Promise.reject(new Error('Server error')),
-      { cancel: vi.fn() },
-    ]);
+    vi.mocked(folderService.createFolderByUuid).mockReturnValue(
+      getFolderCreationRequest(Promise.reject(new Error('Server error'))),
+    );
     const rootItem = createFolderItem(
       getFolderToUpload('Work', { childrenFiles: [getFileToUpload('report.pdf')] }),
       'dest',
@@ -556,9 +554,7 @@ describe('Uploading folders', () => {
   });
 
   test('When a folder is uploaded to a workspace, then it is created in the workspace', async () => {
-    vi.mocked(workspacesService.createFolder).mockImplementation(
-      ({ plainName }) => [Promise.resolve(getCreatedFolder(plainName)), { cancel: vi.fn() }] as never,
-    );
+    vi.mocked(workspacesService.createFolder).mockImplementation(({ plainName }) => getCreatedFolderRequest(plainName));
     const ownerUserAuthenticationData = { workspaceId: 'workspace-id' } as never;
 
     await createManager({ ownerUserAuthenticationData }).run([createFolderItem(getFolderToUpload('Work'), 'dest')]);
@@ -573,9 +569,7 @@ describe('Uploading folders', () => {
 
   test('When a folder is created in a workspace, then its content waits until the folder is available', async () => {
     vi.useFakeTimers();
-    vi.mocked(workspacesService.createFolder).mockImplementation(
-      ({ plainName }) => [Promise.resolve(getCreatedFolder(plainName)), { cancel: vi.fn() }] as never,
-    );
+    vi.mocked(workspacesService.createFolder).mockImplementation(({ plainName }) => getCreatedFolderRequest(plainName));
     const ownerUserAuthenticationData = { workspaceId: 'workspace-id' } as never;
     const rootItem = createFolderItem(
       getFolderToUpload('Work', { childrenFiles: [getFileToUpload('report.pdf')] }),
@@ -626,9 +620,9 @@ describe('Uploading folders', () => {
 const serverErrorAfterCreatingError = new AppError('Server error', HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR);
 const folderAlreadyExistsError = new AppError('Folder already exists', HTTP_STATUS_CODES.CONFLICT);
 
-const folderCreated = (name: string) => () => [Promise.resolve(getCreatedFolder(name)), { cancel: vi.fn() }] as never;
-const folderCreationAnswerLost = () => [Promise.reject(serverErrorAfterCreatingError), { cancel: vi.fn() }] as never;
-const folderAlreadyExists = () => [Promise.reject(folderAlreadyExistsError), { cancel: vi.fn() }] as never;
+const folderCreated = (name: string) => () => getCreatedFolderRequest(name);
+const folderCreationAnswerLost = () => getFolderCreationRequest(Promise.reject(serverErrorAfterCreatingError));
+const folderAlreadyExists = () => getFolderCreationRequest(Promise.reject(folderAlreadyExistsError));
 
 const findExistingFolder = (uuid: string) => ({ existentFolders: [{ uuid }] }) as never;
 const findNoFolder = () => ({ existentFolders: [] }) as never;
@@ -706,7 +700,7 @@ describe('Uploading a folder that already exists', () => {
 
   test('When creating the folder lost the connection and then it already exists, then the existing one is used', async () => {
     vi.mocked(folderService.createFolderByUuid)
-      .mockImplementationOnce(() => [Promise.reject(new Error('Network Error')), { cancel: vi.fn() }] as never)
+      .mockImplementationOnce(() => getFolderCreationRequest(Promise.reject(new Error('Network Error'))))
       .mockImplementation(folderAlreadyExists);
     vi.mocked(newStorageService.checkDuplicatedFolders).mockResolvedValue(findExistingFolder('existing-work-uuid'));
     const rootItem = createFolderItem(
@@ -723,7 +717,7 @@ describe('Uploading a folder that already exists', () => {
   test('When creating the folder was refused and then it already exists, then the existing one is not reused and fails', async () => {
     const forbiddenError = new AppError('Forbidden', HTTP_STATUS_CODES.FORBIDDEN);
     vi.mocked(folderService.createFolderByUuid)
-      .mockImplementationOnce(() => [Promise.reject(forbiddenError), { cancel: vi.fn() }] as never)
+      .mockImplementationOnce(() => getFolderCreationRequest(Promise.reject(forbiddenError)))
       .mockImplementation(folderAlreadyExists);
     vi.mocked(newStorageService.checkDuplicatedFolders).mockResolvedValue(findExistingFolder('users-own-work-uuid'));
     const rootItem = createFolderItem(
@@ -819,7 +813,7 @@ describe('Uploading a folder that already exists', () => {
   });
 
   test('When the user retries a folder whose creation timed out but did happen, then its content is uploaded into it without creating it again', async () => {
-    vi.mocked(folderService.createFolderByUuid).mockReturnValue([new Promise(() => undefined), { cancel: vi.fn() }]);
+    vi.mocked(folderService.createFolderByUuid).mockReturnValue(getFolderCreationRequest(new Promise(() => undefined)));
     const rootItem = createFolderItem(
       getFolderToUpload('Work', { childrenFiles: [getFileToUpload('report.pdf')] }),
       'dest',
@@ -927,10 +921,9 @@ describe('Following each queued item until it ends', () => {
   });
 
   test('When a folder cannot be created, then its content is never announced as queued', async () => {
-    vi.mocked(folderService.createFolderByUuid).mockReturnValue([
-      Promise.reject(new Error('Server error')),
-      { cancel: vi.fn() },
-    ]);
+    vi.mocked(folderService.createFolderByUuid).mockReturnValue(
+      getFolderCreationRequest(Promise.reject(new Error('Server error'))),
+    );
     const recorder = recordItemEvents();
     const tree = getFolderToUpload('Work', { childrenFiles: [getFileToUpload('report.pdf')] });
 
