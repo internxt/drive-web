@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { AppView } from 'app/core/types';
 import { DriveItemData } from 'app/drive/types';
 import { PreviewFileItem } from 'app/share/types';
@@ -10,9 +10,14 @@ import { FileViewerNavigation } from '../types';
 interface UseFileViewerNavigationProps {
   initialFile: PreviewFileItem;
   folderItems?: DriveItemData[];
+  onLastFileReached?: () => void;
 }
 
-export const useFileViewerNavigation = ({ initialFile, folderItems }: UseFileViewerNavigationProps) => {
+export const useFileViewerNavigation = ({
+  initialFile,
+  folderItems,
+  onLastFileReached,
+}: UseFileViewerNavigationProps) => {
   const [currentFile, setCurrentFile] = useState<PreviewFileItem>(initialFile);
   const isRecentsView = navigationService.isCurrentPath(AppView.Recents);
   const listedItems = useAppSelector((state: RootState) =>
@@ -23,11 +28,18 @@ export const useFileViewerNavigation = ({ initialFile, folderItems }: UseFileVie
     () => (folderItems ?? listedItems ?? []).filter((item) => !item.isFolder) as PreviewFileItem[],
     [folderItems, listedItems],
   );
-  const currentIndex = files.findIndex((item) => item.id === currentFile.id);
+  const currentIndex = files.findIndex((item) => item.uuid === currentFile.uuid);
   const isCurrentFileListed = currentIndex !== -1;
 
   const hasPrevious = isCurrentFileListed && currentIndex > 0;
   const hasNext = isCurrentFileListed && currentIndex < files.length - 1;
+  const isLastFile = isCurrentFileListed && !hasNext;
+  const onLastFileReachedRef = useRef(onLastFileReached);
+  onLastFileReachedRef.current = onLastFileReached;
+
+  useEffect(() => {
+    if (isLastFile) onLastFileReachedRef.current?.();
+  }, [isLastFile]);
 
   const goToPrevious = () => {
     if (hasPrevious) setCurrentFile(files[currentIndex - 1]);

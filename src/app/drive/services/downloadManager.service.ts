@@ -286,7 +286,7 @@ export class DownloadManagerService {
       let cachedFile: DriveItemBlobData | undefined;
       let isCachedFileOlder = false;
       try {
-        cachedFile = await getDatabaseFileSourceData({ fileId: file.id });
+        cachedFile = await getDatabaseFileSourceData({ fileUuid: file.uuid });
         isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
       } catch (error) {
         errorService.reportError(error);
@@ -353,7 +353,7 @@ export class DownloadManagerService {
       const addFileStreamToZip = async (index: number, driveItem: DownloadItemType) => {
         const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
         let fileStream: ReadableStream<Uint8Array>;
-        const cachedFile = await lruFilesCacheManager.get(driveItem.id.toString());
+        const cachedFile = await lruFilesCacheManager.get(driveItem.uuid);
         const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file: driveItem });
 
         if (cachedFile?.source && !isCachedFileOlder) {
@@ -404,7 +404,7 @@ export class DownloadManagerService {
         await updateDatabaseFileSourceData({
           folderId: driveItem.folderId,
           sourceBlob,
-          fileId: driveItem.id,
+          fileUuid: driveItem.uuid,
           updatedAt: driveItem.updatedAt,
         });
 

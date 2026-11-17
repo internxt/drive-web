@@ -1,12 +1,20 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, afterAll } from 'vitest';
+import { v7 as uuidV7 } from 'uuid';
 import {
   canFileBeCached,
+  deleteDatabaseItems,
   getDatabaseFilePreviewData,
+  getDatabaseFileSourceData,
   getDatabasePhotoThumbnail,
   updateDatabaseFilePreviewData,
+  updateDatabaseFileSourceData,
   updateDatabasePhotoThumbnail,
 } from './database.service';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
+import { DriveItemData } from '../types';
+import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
+import errorService from 'services/error.service';
+import { LRUFilesPreviewCacheManager } from 'app/database/services/database.service/LRUFilesPreviewCacheManager';
 
 describe('databaseService', () => {
   describe('canFileBeCached', () => {
@@ -30,27 +38,142 @@ describe('databaseService', () => {
     const thumbnail = (content: string) => new Blob([content], { type: 'image/jpeg' });
 
     it('When a photo thumbnail is saved, then it is kept apart from the Drive previews', async () => {
+      const fileUuid = uuidV7();
       await updateDatabaseFilePreviewData({
-        fileId: 101,
-        folderId: 1,
+        fileUuid,
         previewBlob: thumbnail('drive'),
         updatedAt: 'v1',
       });
 
-      await updateDatabasePhotoThumbnail({ fileId: 101, previewBlob: thumbnail('photos'), updatedAt: 'v1' });
+      await updateDatabasePhotoThumbnail({ fileUuid, previewBlob: thumbnail('photos'), updatedAt: 'v1' });
 
-      await expect((await getDatabasePhotoThumbnail({ fileId: 101 }))?.preview.text()).resolves.toBe('photos');
-      await expect((await getDatabaseFilePreviewData({ fileId: 101 }))?.preview?.text()).resolves.toBe('drive');
+      await expect((await getDatabasePhotoThumbnail({ fileUuid }))?.preview.text()).resolves.toBe('photos');
+      await expect((await getDatabaseFilePreviewData({ fileUuid }))?.preview?.text()).resolves.toBe('drive');
     });
 
     it('When a newer thumbnail of a photo is saved, then it replaces the outdated one', async () => {
-      await updateDatabasePhotoThumbnail({ fileId: 102, previewBlob: thumbnail('old'), updatedAt: 'v1' });
+      const fileUuid = uuidV7();
+      await updateDatabasePhotoThumbnail({ fileUuid, previewBlob: thumbnail('old'), updatedAt: 'v1' });
 
-      await updateDatabasePhotoThumbnail({ fileId: 102, previewBlob: thumbnail('new'), updatedAt: 'v2' });
+      await updateDatabasePhotoThumbnail({ fileUuid, previewBlob: thumbnail('new'), updatedAt: 'v2' });
 
-      const savedThumbnail = await getDatabasePhotoThumbnail({ fileId: 102 });
+      const savedThumbnail = await getDatabasePhotoThumbnail({ fileUuid });
       expect(savedThumbnail?.updatedAt).toBe('v2');
       await expect(savedThumbnail?.preview.text()).resolves.toBe('new');
+    });
+  });
+
+  describe('File blobs cache', () => {
+    afterAll(() => databaseService.clear());
+
+    const blob = (content: string) => new Blob([content]);
+
+    it.each([
+      [
+        'content',
+        () => updateDatabaseFileSourceData({ fileUuid: uuidV7(), folderId: 1, sourceBlob: blob('c'), updatedAt: 'v1' }),
+      ],
+      [
+        'thumbnail',
+        () => updateDatabaseFilePreviewData({ fileUuid: uuidV7(), previewBlob: blob('t'), updatedAt: 'v1' }),
+      ],
+    ])(
+      'When the %s of a file cannot be cached, then the error is reported and the save still finishes',
+      async (_, save) => {
+        const writeError = new Error('Quota exceeded');
+        const put = databaseService.put as (...args: unknown[]) => Promise<void>;
+        const failBlobWrites = (collection: DatabaseCollection, ...rest: unknown[]) =>
+          collection === DatabaseCollection.LRU_cache ? put(collection, ...rest) : Promise.reject(writeError);
+        const putSpy = vi
+          .spyOn(databaseService, 'put')
+          .mockImplementation(failBlobWrites as typeof databaseService.put);
+        const reportErrorSpy = vi.spyOn(errorService, 'reportError').mockImplementation(() => undefined);
+
+        try {
+          await expect(save()).resolves.toBeUndefined();
+
+          await vi.waitFor(() => expect(reportErrorSpy).toHaveBeenCalledWith(writeError));
+        } finally {
+          putSpy.mockRestore();
+          reportErrorSpy.mockRestore();
+        }
+      },
+    );
+
+    it('When the thumbnail of a file is removed from the cache, then its content stays cached', async () => {
+      const fileUuid = uuidV7();
+      await updateDatabaseFileSourceData({ fileUuid, folderId: 1, sourceBlob: blob('content'), updatedAt: 'v1' });
+      await updateDatabaseFilePreviewData({ fileUuid, previewBlob: blob('thumbnail'), updatedAt: 'v1' });
+      await vi.waitFor(async () => expect(await getDatabaseFilePreviewData({ fileUuid })).toBeDefined());
+
+      await (await LRUFilesPreviewCacheManager.getInstance()).delete(fileUuid, blob('thumbnail').size);
+
+      await vi.waitFor(async () => expect(await getDatabaseFilePreviewData({ fileUuid })).toBeUndefined());
+      expect(await (await getDatabaseFileSourceData({ fileUuid }))?.source?.text()).toBe('content');
+    });
+
+    it('When the thumbnail of a changed file is saved, then its cached content still reports the older version', async () => {
+      const fileUuid = uuidV7();
+      await updateDatabaseFileSourceData({ fileUuid, folderId: 1, sourceBlob: blob('old content'), updatedAt: 'v1' });
+
+      await updateDatabaseFilePreviewData({ fileUuid, previewBlob: blob('new thumbnail'), updatedAt: 'v2' });
+
+      await vi.waitFor(async () => {
+        expect((await getDatabaseFilePreviewData({ fileUuid }))?.updatedAt).toBe('v2');
+      });
+      const cachedContent = await getDatabaseFileSourceData({ fileUuid });
+      expect(cachedContent?.updatedAt).toBe('v1');
+      expect(await cachedContent?.source?.text()).toBe('old content');
+    });
+
+    it('When the content of a changed file is saved, then its cached thumbnail still reports the older version', async () => {
+      const fileUuid = uuidV7();
+      await updateDatabaseFilePreviewData({ fileUuid, previewBlob: blob('old thumbnail'), updatedAt: 'v1' });
+
+      await updateDatabaseFileSourceData({ fileUuid, folderId: 1, sourceBlob: blob('new content'), updatedAt: 'v2' });
+
+      await vi.waitFor(async () => {
+        expect((await getDatabaseFileSourceData({ fileUuid }))?.updatedAt).toBe('v2');
+      });
+      const cachedThumbnail = await getDatabaseFilePreviewData({ fileUuid });
+      expect(cachedThumbnail?.updatedAt).toBe('v1');
+      expect(await cachedThumbnail?.preview?.text()).toBe('old thumbnail');
+    });
+
+    it('when files have no id, then their source, preview and deletion are resolved by uuid', async () => {
+      const fileA = { uuid: uuidV7(), size: 3 };
+      const fileB = { uuid: uuidV7(), size: 3 };
+
+      await updateDatabaseFileSourceData({
+        fileUuid: fileA.uuid,
+        folderId: 1,
+        sourceBlob: new Blob(['aaa']),
+        updatedAt: '',
+      });
+      await updateDatabaseFileSourceData({
+        fileUuid: fileB.uuid,
+        folderId: 1,
+        sourceBlob: new Blob(['bbb']),
+        updatedAt: '',
+      });
+      await updateDatabaseFilePreviewData({
+        fileUuid: fileA.uuid,
+        previewBlob: new Blob(['pa']),
+        updatedAt: '',
+      });
+
+      expect(await (await getDatabaseFileSourceData({ fileUuid: fileA.uuid }))?.source?.text()).toBe('aaa');
+      expect(await (await getDatabaseFileSourceData({ fileUuid: fileB.uuid }))?.source?.text()).toBe('bbb');
+      expect(await (await getDatabaseFilePreviewData({ fileUuid: fileA.uuid }))?.preview?.text()).toBe('pa');
+      expect(await getDatabaseFilePreviewData({ fileUuid: fileB.uuid })).toBeUndefined();
+
+      await deleteDatabaseItems([fileA as unknown as DriveItemData]);
+
+      await vi.waitFor(async () => {
+        expect(await getDatabaseFileSourceData({ fileUuid: fileA.uuid })).toBeUndefined();
+      });
+      expect(await (await getDatabaseFileSourceData({ fileUuid: fileB.uuid }))?.source?.text()).toBe('bbb');
+      expect(await (await getDatabaseFilePreviewData({ fileUuid: fileA.uuid }))?.preview?.text()).toBe('pa');
     });
   });
 });

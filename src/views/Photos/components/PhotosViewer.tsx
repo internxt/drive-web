@@ -12,19 +12,24 @@ interface PhotosViewerProps {
   photo: Photo;
   photos: Photo[];
   onClose: () => void;
+  onLastPhotoReached?: () => void;
 }
 
-const PhotosViewer = ({ photo, photos, onClose }: PhotosViewerProps): JSX.Element => {
+const PhotosViewer = ({ photo, photos, onClose, onLastPhotoReached }: PhotosViewerProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const files = useMemo(() => photos.map(({ file }) => file), [photos]);
   const photoByFileId = useMemo(() => new Map(photos.map((shownPhoto) => [shownPhoto.file.id, shownPhoto])), [photos]);
 
   const downloadPhoto = (file: DriveItemData) => {
     const shownPhoto = photoByFileId.get(file.id);
+    const photoFiles = shownPhoto ? getPhotoFiles([shownPhoto]) : [file];
     void DownloadManager.downloadItem({
-      payload: shownPhoto ? getPhotoFiles([shownPhoto]) : [file],
+      payload: photoFiles,
       selectedWorkspace: null,
       workspaceCredentials: null,
+      downloadOptions: {
+        downloadName: photoFiles.length > 1 ? file.name : undefined,
+      },
     });
   };
 
@@ -45,6 +50,7 @@ const PhotosViewer = ({ photo, photos, onClose }: PhotosViewerProps): JSX.Elemen
       contextMenu={menu}
       onDownloadFile={downloadPhoto}
       refreshesThumbnail={false}
+      onLastFileReached={onLastPhotoReached}
     />
   );
 };

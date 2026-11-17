@@ -39,7 +39,12 @@ const PhotosGallery = ({ months, selectedPhotos, onToggleSelection }: PhotosGall
         onToggleSelection={onToggleSelection}
       />
       {openedPhoto && (
-        <PhotosViewer photo={openedPhoto} photos={photosNewestFirst} onClose={() => setOpenedPhoto(undefined)} />
+        <PhotosViewer
+          photo={openedPhoto}
+          photos={photosNewestFirst}
+          onClose={() => setOpenedPhoto(undefined)}
+          onLastPhotoReached={loadNextMonth}
+        />
       )}
     </>
   );

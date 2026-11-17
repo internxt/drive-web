@@ -1,10 +1,10 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, test, vi } from 'vitest';
 import { ICacheStorage, LRUCache, LRUCacheStruture } from './LRUCache';
 
 type CacheEntry<T> = { value: T; size: number };
 
 class InMemoryCache<T> implements ICacheStorage<T> {
-  private readonly store = new Map<string, CacheEntry<T>>();
+  protected readonly store = new Map<string, CacheEntry<T>>();
   readonly updateLRUState = vi.fn<(state: LRUCacheStruture) => void>();
 
   async get(key: string): Promise<T | undefined> {
@@ -25,6 +25,36 @@ class InMemoryCache<T> implements ICacheStorage<T> {
 
   async getSize(key: string): Promise<number> {
     return this.store.get(key)?.size ?? 0;
+  }
+}
+
+class CacheLosingWritesOf<T> extends InMemoryCache<T> {
+  constructor(private lostKey?: string) {
+    super();
+  }
+
+  set(key: string, value: T, size: number): void {
+    if (key === this.lostKey) return;
+    super.set(key, value, size);
+  }
+
+  storeFromNowOn(): void {
+    this.lostKey = undefined;
+  }
+}
+
+class CacheWithQuota<T> extends InMemoryCache<T> {
+  constructor(private readonly quota: number) {
+    super();
+  }
+
+  set(key: string, value: T, size: number): void {
+    const otherEntriesSize = [...this.store].reduce(
+      (total, [storedKey, entry]) => (storedKey === key ? total : total + entry.size),
+      0,
+    );
+    if (otherEntriesSize + size > this.quota) throw new Error('Quota exceeded');
+    super.set(key, value, size);
   }
 }
 
@@ -292,5 +322,89 @@ describe('LRUCache', () => {
     await lru.set('untracked', { version: 2 }, 10);
 
     expect(cache.updateLRUState.mock.calls.at(-1)?.[0]?.lruKeyList).toEqual(['tracked', 'untracked']);
+  });
+
+  test('When an entry cannot be stored, then it is not counted in the cache', async () => {
+    const cache = new InMemoryCache<{ version: number }>();
+    const writeError = new Error('Quota exceeded');
+    vi.spyOn(cache, 'set').mockImplementationOnce(() => Promise.reject(writeError));
+    const lru = new LRUCache(cache, 100);
+
+    await expect(lru.set('failed', { version: 1 }, 20)).rejects.toBe(writeError);
+    await lru.set('kept', { version: 1 }, 10);
+
+    expect(cache.updateLRUState.mock.calls.at(-1)?.[0]).toEqual({ lruKeyList: ['kept'], itemsListSize: 10 });
+  });
+
+  test('When replacing an entry fails, then its previous version is still counted in the cache', async () => {
+    const cache = new InMemoryCache<{ version: number }>();
+    const lru = new LRUCache(cache, 100);
+    await lru.set('replaced', { version: 1 }, 40);
+    await lru.set('other', { version: 1 }, 30);
+    const writeError = new Error('Quota exceeded');
+    vi.spyOn(cache, 'set').mockImplementationOnce(() => Promise.reject(writeError));
+
+    await expect(lru.set('replaced', { version: 2 }, 50)).rejects.toBe(writeError);
+    await lru.set('newest', { version: 1 }, 60);
+
+    expect(cache.updateLRUState.mock.calls.at(-1)?.[0]).toEqual({
+      lruKeyList: ['replaced', 'newest'],
+      itemsListSize: 100,
+    });
+    await expect(lru.get('replaced')).resolves.toEqual({ version: 1 });
+  });
+
+  test('When the storage has no room for a new entry, then the oldest one is evicted before storing it', async () => {
+    const cache = new CacheWithQuota<{ version: number }>(100);
+    const lru = new LRUCache(cache, 100);
+    await lru.set('oldest', { version: 1 }, 60);
+
+    await lru.set('newest', { version: 1 }, 50);
+
+    await expect(lru.get('oldest')).resolves.toBeUndefined();
+    await expect(lru.get('newest')).resolves.toEqual({ version: 1 });
+  });
+
+  test('When an entry whose earlier write was lost is cached again, then it is tracked only once', async () => {
+    const cache = new CacheLosingWritesOf<{ version: number }>('lost-once');
+    const lru = new LRUCache(cache, 100);
+    await lru.set('lost-once', { version: 1 }, 20);
+    await lru.set('kept', { version: 1 }, 10);
+    cache.storeFromNowOn();
+
+    await lru.set('lost-once', { version: 2 }, 20);
+
+    expect(cache.updateLRUState.mock.calls.at(-1)?.[0]).toEqual({
+      lruKeyList: ['kept', 'lost-once'],
+      itemsListSize: 30,
+    });
+    await expect(lru.get('lost-once')).resolves.toEqual({ version: 2 });
+  });
+
+  test('When an entry is replaced while another one is being cached in a full cache, then each entry is tracked once', async () => {
+    const cache = new InMemoryCache<{ version: number }>();
+    const lru = new LRUCache(cache, 30);
+    await lru.set('oldest', { version: 1 }, 10);
+    await lru.set('middle', { version: 1 }, 10);
+    await lru.set('replaced', { version: 1 }, 10);
+
+    await Promise.all([lru.set('replaced', { version: 2 }, 10), lru.set('newest', { version: 1 }, 10)]);
+
+    expect(cache.updateLRUState.mock.calls.at(-1)?.[0]).toEqual({
+      lruKeyList: ['middle', 'replaced', 'newest'],
+      itemsListSize: 30,
+    });
+    await expect(lru.get('replaced')).resolves.toEqual({ version: 2 });
+  });
+
+  test('When the same entry is cached twice at the same time, then it is tracked once with the last size', async () => {
+    const cache = new InMemoryCache<{ version: number }>();
+    const lru = new LRUCache(cache, 100);
+    await lru.set('entry', { version: 1 }, 10);
+
+    await Promise.all([lru.set('entry', { version: 2 }, 10), lru.set('entry', { version: 3 }, 20)]);
+
+    expect(cache.updateLRUState.mock.calls.at(-1)?.[0]).toEqual({ lruKeyList: ['entry'], itemsListSize: 20 });
+    await expect(lru.get('entry')).resolves.toEqual({ version: 3 });
   });
 });

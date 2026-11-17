@@ -1,4 +1,4 @@
-import { describe, expect, vi, beforeEach, test } from 'vitest';
+import { describe, expect, vi, test } from 'vitest';
 import { downloadFileAsBlob } from './downloadFileAsBlob';
 import downloadFileFromBlob from './downloadFileFromBlob';
 
@@ -18,10 +18,6 @@ function createStream(chunks: (Uint8Array | string)[]) {
 }
 
 describe('downloadFileAsBlob', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   test('When a blob is created, then it should be created and downloaded with the correct name and content', async () => {
     const chunks = [new TextEncoder().encode('Hello '), new TextEncoder().encode('World')];
     const stream = createStream(chunks);

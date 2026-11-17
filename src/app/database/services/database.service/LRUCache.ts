@@ -1,6 +1,6 @@
 export interface ICacheStorage<T> {
   get(key: string): Promise<T | undefined>;
-  set(key: string, value: T, size: number): void;
+  set(key: string, value: T, size: number): void | Promise<void>;
   delete(key: string): void;
   has(key: string): Promise<boolean>;
   getSize(key: string): Promise<number>;
@@ -14,6 +14,7 @@ export class LRUCache<T> {
   private readonly lruList: string[];
   private readonly size: number;
   private currentSize: number;
+  private previousWrite: Promise<void> = Promise.resolve();
 
   constructor(cache: ICacheStorage<T>, size: number, lRUCacheStruture?: LRUCacheStruture) {
     this.cache = cache;
@@ -32,24 +33,34 @@ export class LRUCache<T> {
     return this.cache.get(key);
   }
 
-  async set(key: string, value: T, size: number): Promise<void> {
-    if (size < this.size) {
-      const existsItem = await this.cache.has(key);
+  set(key: string, value: T, size: number): Promise<void> {
+    const write = this.previousWrite.then(() => this.write(key, value, size));
+    this.previousWrite = write.catch(() => undefined);
+    return write;
+  }
 
-      const trackedIndex = this.lruList.indexOf(key);
-      if (existsItem && trackedIndex > -1) {
-        const keySize = await this.cache.getSize(key);
-        this.currentSize = Math.max(0, this.currentSize - keySize);
-        this.lruList.splice(trackedIndex, 1);
-      }
+  private async write(key: string, value: T, size: number): Promise<void> {
+    if (size >= this.size) return;
 
-      await this.evictEntriesIfNeeded(size);
+    const previousSize = await this.trackedSize(key);
+    if (this.lruList.includes(key)) this.updateLRU(key);
+    await this.evictEntriesIfNeeded(size - previousSize);
 
-      this.lruList.push(key);
-      this.currentSize += size;
-      this.cache.set(key, value, size);
-      this.persistState();
-    }
+    await this.cache.set(key, value, size);
+
+    const isTracked = this.lruList.includes(key);
+    if (!isTracked) this.lruList.push(key);
+    this.currentSize += isTracked ? size - previousSize : size;
+    this.persistState();
+  }
+
+  private async trackedSize(key: string): Promise<number> {
+    if (!this.lruList.includes(key)) return 0;
+    const isStored = await this.cache.has(key);
+    if (isStored) return this.cache.getSize(key);
+
+    await this.reconcileState();
+    return 0;
   }
 
   /**
