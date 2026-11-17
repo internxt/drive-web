@@ -149,12 +149,13 @@ export const uploadFilesWithTasks = async (props: UploadFilesWithTasksProps): Pr
     },
   };
 
-  const manager = new UploadManager({
+  const manager = new UploadManager();
+  const runOptions = {
     ownerUserAuthenticationData: options?.ownerUserAuthenticationData,
     uploadRepository,
     getPauseKey,
     events,
-  });
+  };
 
   const items = files.map((file): UploadItem => {
     const item: UploadItem = {
@@ -188,7 +189,7 @@ export const uploadFilesWithTasks = async (props: UploadFilesWithTasksProps): Pr
     }
   }
 
-  const { failed } = await manager.run(items);
+  const { failed } = await manager.run(items, runOptions);
 
   if (failed.length > 0) {
     RetryManager.addTasks(

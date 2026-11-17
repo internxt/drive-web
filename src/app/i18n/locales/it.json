@@ -508,7 +508,8 @@
       },
       "timeline": {
         "today": "Oggi",
-        "yesterday": "Ieri"
+        "yesterday": "Ieri",
+        "monthError": "Non è stato possibile caricare alcune foto di {{month}}"
       }
     },
     "favorites": {
@@ -1411,7 +1412,8 @@
       "errors": {}
     },
     "subtitles": {
-      "upload-failed": "Caricamento fallito"
+      "upload-failed": "Caricamento fallito",
+      "folder-removal-failed": "Impossibile rimuovere la cartella caricata"
     },
     "generalErrorMessages": {
       "retryUploadFailed": "Qualcosa è andato storto nel riprovare a caricare. Prova a caricare di nuovo",

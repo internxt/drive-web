@@ -508,7 +508,8 @@
       },
       "timeline": {
         "today": "Today",
-        "yesterday": "Yesterday"
+        "yesterday": "Yesterday",
+        "monthError": "Some photos from {{month}} couldn't be loaded"
       }
     },
     "favorites": {
@@ -1411,7 +1412,8 @@
       "errors": {}
     },
     "subtitles": {
-      "upload-failed": "Upload failed"
+      "upload-failed": "Upload failed",
+      "folder-removal-failed": "Couldn't remove the uploaded folder"
     },
     "generalErrorMessages": {
       "retryUploadFailed": "Something went wrong when retrying the upload. Try uploading again",

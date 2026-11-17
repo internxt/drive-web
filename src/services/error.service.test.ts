@@ -234,4 +234,39 @@ describe('Error Service', () => {
       });
     });
   });
+
+  describe('isConflictError', () => {
+    test('When the server answers that the item already exists, then it is a conflict', () => {
+      expect(errorService.isConflictError(new AppError('Folder already exists', 409))).toBe(true);
+      expect(errorService.isConflictError({ message: 'Folder already exists', status: 409 })).toBe(true);
+    });
+
+    test('When the error has another status or no status, then it is not a conflict', () => {
+      expect(errorService.isConflictError(new AppError('Forbidden', 403))).toBe(false);
+      expect(errorService.isConflictError(new Error('Network Error'))).toBe(false);
+      expect(errorService.isConflictError(undefined)).toBe(false);
+    });
+  });
+
+  describe('isServerError', () => {
+    test('When the server fails, then it is a server error', () => {
+      expect(errorService.isServerError(new AppError('Internal error', 500))).toBe(true);
+      expect(errorService.isServerError(new AppError('Bad gateway', 502))).toBe(true);
+    });
+
+    test('When the server refuses the request or there is no answer, then it is not a server error', () => {
+      expect(errorService.isServerError(new AppError('Forbidden', 403))).toBe(false);
+      expect(errorService.isServerError(new Error('Network Error'))).toBe(false);
+    });
+  });
+
+  describe('isNetworkError', () => {
+    test('When the request got no answer, then it is a network error', () => {
+      expect(errorService.isNetworkError(new Error('Network Error'))).toBe(true);
+    });
+
+    test('When the server answered with an error, then it is not a network error', () => {
+      expect(errorService.isNetworkError(new AppError('Internal error', 500))).toBe(false);
+    });
+  });
 });
