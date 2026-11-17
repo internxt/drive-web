@@ -138,6 +138,22 @@ describe('Uploading items into a folder', () => {
     expect(uploadedFileNames()).toEqual(['invoice']);
   });
 
+  test('When both files and folders already exist in the folder, then the dialog shows a group for each', async () => {
+    prepare();
+    inTheDestinationAlreadyExist(['report.pdf', 'Photos']);
+    const context = getUploadContext();
+    const repeatedFile = getFileToUpload('report.pdf');
+    const repeatedFolder = getFolderToUpload('Photos');
+
+    await upload([repeatedFolder], [repeatedFile], context);
+
+    expect(context.onNameCollisions).toHaveBeenCalledOnce();
+    expect(context.onNameCollisions).toHaveBeenCalledWith([
+      expect.objectContaining({ duplicatedItems: [repeatedFile] }),
+      expect.objectContaining({ duplicatedItems: [repeatedFolder] }),
+    ]);
+  });
+
   test('When every item already exists in the folder, then nothing is uploaded', async () => {
     prepare();
     inTheDestinationAlreadyExist(['Photos']);
@@ -159,6 +175,17 @@ describe('Uploading items into a folder', () => {
     expect(context.onUploadItemsLimitExceeded).toHaveBeenCalledOnce();
     expect(handleRepeatedUploadingFiles).not.toHaveBeenCalled();
     expect(uploadFile).not.toHaveBeenCalled();
+  });
+
+  test('When the user picks exactly as many files as the limit, then they are uploaded', async () => {
+    prepare();
+    const context = getUploadContext();
+    const filesAtTheLimit = Array.from({ length: UPLOAD_ITEMS_LIMIT }, (_, index) => getFileToUpload(`${index}.txt`));
+
+    await upload([], filesAtTheLimit, context);
+
+    expect(context.onUploadItemsLimitExceeded).not.toHaveBeenCalled();
+    expect(uploadFile).toHaveBeenCalledTimes(UPLOAD_ITEMS_LIMIT);
   });
 
   test('When some files are too large, then the user is told which ones and the rest is uploaded', async () => {
