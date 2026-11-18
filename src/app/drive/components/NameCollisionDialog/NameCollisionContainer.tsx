@@ -6,11 +6,13 @@ import { uiActions } from 'app/store/slices/ui';
 import { IRoot } from 'app/store/slices/storage/types';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { fileVersionsSelectors } from 'app/store/slices/fileVersions';
+import { useUploadItems } from 'app/upload/useUploadItems';
 import { NameCollisionContext, resolveCollision } from './nameCollision.actions';
 import { findExistingItemFor, findPendingGroupIndex, getRemainingGroups } from './nameCollision.utils';
 
 const NameCollisionContainer: FC = () => {
   const dispatch = useAppDispatch();
+  const { startUpload } = useUploadItems();
 
   const isOpen = useAppSelector((state: RootState) => state.ui.isNameCollisionDialogOpen);
   const collisionDialogInfo = useAppSelector((state: RootState) => state.ui.nameCollisionDialogInfo);
@@ -22,16 +24,15 @@ const NameCollisionContainer: FC = () => {
 
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const limits = useAppSelector(fileVersionsSelectors.getLimits);
-  const maxUploadFileSize = useAppSelector(fileVersionsSelectors.getMaxFileSizeLimit);
   const isVersioningEnabled = limits?.versioning?.enabled ?? false;
   const versioningMaxFileSize = limits?.versioning?.maxFileSize ?? 0;
 
   const context: NameCollisionContext = {
     dispatch,
     selectedWorkspace,
-    maxUploadFileSize,
     isVersioningEnabled,
     versioningMaxFileSize,
+    startUpload,
   };
 
   const closeDialog = () => {

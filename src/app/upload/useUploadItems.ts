@@ -11,7 +11,7 @@ import { storageActions } from 'app/store/slices/storage';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import { uiActions } from 'app/store/slices/ui';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-import { UploadContext, uploadItems, UploadItemsPayload } from './uploadItems';
+import { startUpload, UploadContext, uploadItems, UploadItemsPayload } from './uploadItems';
 
 const createUploadContext = (dispatch: AppDispatch, state: RootState): UploadContext => ({
   ownerUserAuthenticationData: workspacesSelectors.getOwnerUserAuthenticationData(state),
@@ -54,6 +54,7 @@ export const useUploadItems = () => {
 
     return {
       uploadItems: (payload: UploadItemsPayload) => uploadItems(payload, getUploadContext()),
+      startUpload: (payload: UploadItemsPayload) => startUpload(payload, getUploadContext()),
     };
   }, [dispatch, store]);
 };
