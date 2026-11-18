@@ -44,7 +44,7 @@ describe('removeDuplicates', () => {
 describe('getDriveItemId', () => {
   it('should return the item uuid', () => {
     const uuid = uuidV7();
-    const item = { id: 0, uuid, name: 'file' } as unknown as DriveItemData;
+    const item = { uuid, name: 'file' } as unknown as DriveItemData;
 
     expect(getDriveItemId(item)).toBe(uuid);
   });

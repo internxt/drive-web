@@ -21,5 +21,12 @@ describe('storage selectors', () => {
 
       expect(storageSelectors.isItemSelected(buildState([selected]))(other)).toBe(false);
     });
+
+    test('When another file with no id is selected, then the item is not selected', () => {
+      const selected = { uuid: uuidV7(), isFolder: false } as DriveItemData;
+      const other = { uuid: uuidV7(), isFolder: false } as DriveItemData;
+
+      expect(storageSelectors.isItemSelected(buildState([selected]))(other)).toBe(false);
+    });
   });
 });

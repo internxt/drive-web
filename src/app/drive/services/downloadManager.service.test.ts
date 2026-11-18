@@ -1195,9 +1195,9 @@ describe('downloadManagerService', () => {
       expect(result).toBe(false);
     });
 
-    it('should return false when items share the numeric id but have different uuids', () => {
-      const arr1 = [{ id: 0, uuid: uuid1, isFolder: false }] as DownloadItemType[];
-      const arr2 = [{ id: 0, uuid: uuid2, isFolder: false }] as DownloadItemType[];
+    it('should return false when items have no id but have different uuids', () => {
+      const arr1 = [{ uuid: uuid1, isFolder: false }] as DownloadItemType[];
+      const arr2 = [{ uuid: uuid2, isFolder: false }] as DownloadItemType[];
 
       const result = areItemArraysEqual(arr1, arr2);
       expect(result).toBe(false);

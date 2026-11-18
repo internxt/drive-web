@@ -14,8 +14,7 @@ vi.mock('../../../database/services/database.service', () => ({
 
 const buildDriveItemData = (overrides: Partial<DriveItemData> = {}): DriveItemData =>
   ({
-    id: 1,
-    uuid: 'item-uuid-1',
+    uuid: uuidV7(),
     name: 'document',
     plain_name: 'document',
     plainName: 'document',
@@ -54,7 +53,7 @@ describe('storage slice', () => {
   describe('Add items', () => {
     test('When items are added to a folder with no prior content, then the folder contains exactly those items', () => {
       const folderId = 'folder-a';
-      const item = buildDriveItemData({ uuid: 'uuid-1', id: 1 });
+      const item = buildDriveItemData();
       const initialState = buildInitialState();
 
       const nextState = storageReducer(initialState, storageActions.addItems({ folderId, items: [item] }));
@@ -64,8 +63,8 @@ describe('storage slice', () => {
 
     test('When new items are added to a folder that already has content, then the new items appear after the existing ones', () => {
       const folderId = 'folder-b';
-      const existing = buildDriveItemData({ uuid: 'uuid-existing', id: 1, name: 'existing.pdf' });
-      const incoming = buildDriveItemData({ uuid: 'uuid-incoming', id: 2, name: 'incoming.pdf' });
+      const existing = buildDriveItemData({ name: 'existing.pdf' });
+      const incoming = buildDriveItemData({ name: 'incoming.pdf' });
 
       const stateWithExisting = storageReducer(
         buildInitialState(),
@@ -79,8 +78,8 @@ describe('storage slice', () => {
 
     test('When an item with a duplicate uuid is added, then only the first occurrence is kept in the folder', () => {
       const folderId = 'folder-c';
-      const original = buildDriveItemData({ uuid: 'shared-uuid', id: 1, name: 'original.pdf' });
-      const duplicate = buildDriveItemData({ uuid: 'shared-uuid', id: 99, name: 'duplicate.pdf' });
+      const original = buildDriveItemData({ uuid: 'shared-uuid', name: 'original.pdf' });
+      const duplicate = buildDriveItemData({ uuid: 'shared-uuid', name: 'duplicate.pdf' });
 
       const stateWithOriginal = storageReducer(
         buildInitialState(),
@@ -115,8 +114,8 @@ describe('storage slice', () => {
     test('When items are added to one folder, then a different folder is not affected', () => {
       const folderA = 'folder-a';
       const folderB = 'folder-b';
-      const itemA = buildDriveItemData({ uuid: 'uuid-a', id: 1, name: 'file-a.pdf' });
-      const itemB = buildDriveItemData({ uuid: 'uuid-b', id: 2, name: 'file-b.pdf' });
+      const itemA = buildDriveItemData({ name: 'file-a.pdf' });
+      const itemB = buildDriveItemData({ name: 'file-b.pdf' });
 
       const stateWithFolderB = storageReducer(
         buildInitialState(),
@@ -134,7 +133,7 @@ describe('storage slice', () => {
 
     test('When items are added to a folder, then the database is updated with the deduplicated folder contents', () => {
       const folderId = 'folder-e';
-      const item = buildDriveItemData({ uuid: 'uuid-db', id: 1 });
+      const item = buildDriveItemData();
 
       storageReducer(buildInitialState(), storageActions.addItems({ folderId, items: [item] }));
 
@@ -143,7 +142,7 @@ describe('storage slice', () => {
 
     test('When an empty array of items is dispatched to a folder that already has content, then the folder content remains unchanged', () => {
       const folderId = 'folder-f';
-      const existingItem = buildDriveItemData({ uuid: 'uuid-unchanged', id: 1 });
+      const existingItem = buildDriveItemData();
 
       const stateWithContent = storageReducer(
         buildInitialState(),
@@ -161,8 +160,8 @@ describe('storage slice', () => {
 
   describe('Items are identified by uuid', () => {
     const buildFilesWithDifferentUuids = () => [
-      buildDriveItemData({ id: 0, uuid: uuidV7(), name: 'first.pdf' }),
-      buildDriveItemData({ id: 0, uuid: uuidV7(), name: 'second.pdf' }),
+      buildDriveItemData({ name: 'first.pdf' }),
+      buildDriveItemData({ name: 'second.pdf' }),
     ];
 
     test('When the second file is selected after the first, then both are kept in the selection', () => {
@@ -216,8 +215,8 @@ describe('storage slice', () => {
 
   describe('Items that are not in the list', () => {
     const buildFiles = () => [
-      buildDriveItemData({ uuid: uuidV7(), name: 'first.pdf' }),
-      buildDriveItemData({ uuid: uuidV7(), name: 'second.pdf' }),
+      buildDriveItemData({ name: 'first.pdf' }),
+      buildDriveItemData({ name: 'second.pdf' }),
     ];
 
     test('When an item that is not selected is deselected, then the selection does not change', () => {
@@ -241,8 +240,8 @@ describe('storage slice', () => {
 
   describe('Favorites', () => {
     test('When favorites are added to existing ones, then the new items appear after the existing ones', () => {
-      const existing = buildDriveItemData({ uuid: 'fav-uuid-1', id: 1, name: 'existing.pdf' });
-      const incoming = buildDriveItemData({ uuid: 'fav-uuid-2', id: 2, name: 'incoming.pdf' });
+      const existing = buildDriveItemData({ name: 'existing.pdf' });
+      const incoming = buildDriveItemData({ name: 'incoming.pdf' });
 
       const stateWithExisting = storageReducer(buildInitialState(), storageActions.addFavorites([existing]));
 
@@ -252,8 +251,8 @@ describe('storage slice', () => {
     });
 
     test('When a favorite with a duplicate uuid is added, then only the first occurrence is kept', () => {
-      const original = buildDriveItemData({ uuid: 'fav-shared-uuid', id: 1, name: 'original.pdf' });
-      const duplicate = buildDriveItemData({ uuid: 'fav-shared-uuid', id: 99, name: 'duplicate.pdf' });
+      const original = buildDriveItemData({ uuid: 'fav-shared-uuid', name: 'original.pdf' });
+      const duplicate = buildDriveItemData({ uuid: 'fav-shared-uuid', name: 'duplicate.pdf' });
 
       const stateWithOriginal = storageReducer(buildInitialState(), storageActions.addFavorites([original]));
 
@@ -264,8 +263,8 @@ describe('storage slice', () => {
     });
 
     test('When favorites are removed, then only the matching items disappear from the list', () => {
-      const toRemove = buildDriveItemData({ uuid: 'fav-uuid-1', id: 1, isFolder: false });
-      const toKeep = buildDriveItemData({ uuid: 'fav-uuid-2', id: 2, isFolder: false });
+      const toRemove = buildDriveItemData({ isFolder: false });
+      const toKeep = buildDriveItemData({ isFolder: false });
       const state = storageReducer(buildInitialState(), storageActions.addFavorites([toRemove, toKeep]));
 
       const nextState = storageReducer(state, storageActions.removeFavorites([toRemove]));
@@ -274,8 +273,8 @@ describe('storage slice', () => {
     });
 
     test('When a favorite file shares its uuid with a folder, then removing the file keeps the folder', () => {
-      const file = buildDriveItemData({ uuid: 'fav-shared-uuid', id: 1, isFolder: false });
-      const folder = buildDriveItemData({ uuid: 'fav-folder-uuid', id: 2, isFolder: true });
+      const file = buildDriveItemData({ isFolder: false });
+      const folder = buildDriveItemData({ id: 2, isFolder: true });
       const state = storageReducer(buildInitialState(), storageActions.addFavorites([file, folder]));
 
       const nextState = storageReducer(state, storageActions.removeFavorites([file]));
@@ -295,7 +294,7 @@ describe('storage slice', () => {
     });
 
     test('When the favorites pagination is reset, then the favorites are cleared and the has-more flags are restored', () => {
-      const favorite = buildDriveItemData({ uuid: 'fav-uuid-1', id: 1 });
+      const favorite = buildDriveItemData();
       let state = storageReducer(buildInitialState(), storageActions.addFavorites([favorite]));
       state = storageReducer(state, storageActions.setHasMoreFavoriteFolders(false));
       state = storageReducer(state, storageActions.setHasMoreFavoriteFiles(false));
@@ -308,8 +307,8 @@ describe('storage slice', () => {
     });
 
     test('When an item is patched, then the matching favorite is updated and the rest are not affected', () => {
-      const matching = buildDriveItemData({ uuid: 'fav-uuid-1', id: 1, name: 'old-name.pdf', isFolder: false });
-      const other = buildDriveItemData({ uuid: 'fav-uuid-2', id: 2, name: 'other.pdf', isFolder: false });
+      const matching = buildDriveItemData({ name: 'old-name.pdf', isFolder: false });
+      const other = buildDriveItemData({ name: 'other.pdf', isFolder: false });
       const state = storageReducer(buildInitialState(), storageActions.addFavorites([matching, other]));
 
       const nextState = storageReducer(
@@ -328,8 +327,6 @@ describe('storage slice', () => {
 
     test('When the current thumbnails are cleared, then the favorites thumbnails are cleared too', () => {
       const favorite = buildDriveItemData({
-        uuid: 'fav-uuid-1',
-        id: 1,
         currentThumbnail: { urlObject: 'blob:thumbnail' } as unknown as DriveItemData['currentThumbnail'],
       });
       const state = storageReducer(buildInitialState(), storageActions.addFavorites([favorite]));
@@ -343,8 +340,8 @@ describe('storage slice', () => {
     });
 
     test('When items are popped updating recents, then the matching favorites are removed and the rest are kept', () => {
-      const toDelete = buildDriveItemData({ uuid: 'fav-uuid-1', id: 1, isFolder: false });
-      const toKeep = buildDriveItemData({ uuid: 'fav-uuid-2', id: 2, isFolder: false });
+      const toDelete = buildDriveItemData({ isFolder: false });
+      const toKeep = buildDriveItemData({ isFolder: false });
       const state = storageReducer(buildInitialState(), storageActions.addFavorites([toDelete, toKeep]));
 
       const nextState = storageReducer(state, storageActions.popItems({ updateRecents: true, items: [toDelete] }));
