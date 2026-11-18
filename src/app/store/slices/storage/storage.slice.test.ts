@@ -274,8 +274,8 @@ describe('storage slice', () => {
 
     test('When a favorite file shares its uuid with a folder, then removing the file keeps the folder', () => {
       const file = buildDriveItemData({ isFolder: false });
-      const folder = buildDriveItemData({ id: 2, isFolder: true });
-      const state = storageReducer(buildInitialState(), storageActions.addFavorites([file, folder]));
+      const folder = buildDriveItemData({ uuid: file.uuid, id: 2, isFolder: true });
+      const state: StorageState = { ...buildInitialState(), favorites: [file, folder] };
 
       const nextState = storageReducer(state, storageActions.removeFavorites([file]));
 
