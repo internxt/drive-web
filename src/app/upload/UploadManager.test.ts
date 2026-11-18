@@ -35,6 +35,7 @@ vi.mock('app/drive/services/new-storage.service', () => ({ default: { checkDupli
 type UploadFileOptions = { abortCallback?: (abort?: () => void) => void };
 
 const HANG_TIMEOUT_MS = 2000;
+const MULTIPART_FILE_SIZE = MIN_MULTIPART_SIZE + 1;
 const networkError = new AppError(ErrorMessages.NetworkError);
 const noSpaceLeftError = new AppError('No space left', HTTP_STATUS_CODES.MAX_SPACE_USED);
 const paymentRequiredError = new AppError('Payment required', HTTP_STATUS_CODES.PAYMENT_REQUIRED);
@@ -348,10 +349,10 @@ describe('Uploading files', () => {
 
   test('When small, medium and large files are uploaded together, then the small ones start first and the large ones last', async () => {
     const items = [
-      getUploadFileItem('large-1', MIN_MULTIPART_SIZE),
+      getUploadFileItem('large-1', MULTIPART_FILE_SIZE),
       getUploadFileItem('medium-1', TWENTY_MEGABYTES),
       getUploadFileItem('small-1'),
-      getUploadFileItem('large-2', MIN_MULTIPART_SIZE),
+      getUploadFileItem('large-2', MULTIPART_FILE_SIZE),
       getUploadFileItem('medium-2', TWENTY_MEGABYTES),
       getUploadFileItem('small-2'),
     ];
@@ -363,17 +364,29 @@ describe('Uploading files', () => {
 
   test('When several large files are uploaded, then only one uploads at a time', async () => {
     makeUploadsNeverFinish();
-    const items = [getUploadFileItem('large-1', MIN_MULTIPART_SIZE), getUploadFileItem('large-2', MIN_MULTIPART_SIZE)];
+    const items = [
+      getUploadFileItem('large-1', MULTIPART_FILE_SIZE),
+      getUploadFileItem('large-2', MULTIPART_FILE_SIZE),
+    ];
 
     void createManager().run(items);
 
     await vi.waitFor(() => expect(startedUploadNames()).toEqual(['large-1']));
   });
 
+  test('When files are exactly the multipart size, then they upload at the same time', async () => {
+    makeUploadsNeverFinish();
+    const items = [getUploadFileItem('edge-1', MIN_MULTIPART_SIZE), getUploadFileItem('edge-2', MIN_MULTIPART_SIZE)];
+
+    void createManager().run(items);
+
+    await vi.waitFor(() => expect(startedUploadNames()).toEqual(['edge-1', 'edge-2']));
+  });
+
   test('When small files are uploaded after a large file in a browser without memory information, then they upload at the same time again', async () => {
     vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockImplementation((current) => current);
     const manager = createManager();
-    await manager.run([getUploadFileItem('large', MIN_MULTIPART_SIZE)]);
+    await manager.run([getUploadFileItem('large', MULTIPART_FILE_SIZE)]);
     makeUploadsNeverFinish();
 
     void manager.run(['report', 'invoice', 'photo'].map((name) => getUploadFileItem(name)));
@@ -585,7 +598,7 @@ describe('Uploading folders', () => {
   });
 
   test('When a large file is uploaded together with a folder, then it waits for the files inside the folder so they are not uploaded one at a time behind it', async () => {
-    const largeFile = getUploadFileItem('large', MIN_MULTIPART_SIZE);
+    const largeFile = getUploadFileItem('large', MULTIPART_FILE_SIZE);
     const folderItem = createFolderItem(
       getFolderToUpload('Photos', {
         childrenFiles: [getFileToUpload('beach.png'), getFileToUpload('city.png'), getFileToUpload('dog.png')],
@@ -608,7 +621,7 @@ describe('Uploading folders', () => {
     );
 
     void manager.run([folderItem], runOptions());
-    void manager.run([getUploadFileItem('large', MIN_MULTIPART_SIZE)], runOptions());
+    void manager.run([getUploadFileItem('large', MULTIPART_FILE_SIZE)], runOptions());
 
     await vi.waitFor(() => expect(startedUploadNames()).toEqual(['large']));
   });
@@ -932,7 +945,7 @@ describe('Following each queued item until it ends', () => {
 
   test('When a large file waits for the folders to queue their content, then it is announced as queued only once', async () => {
     const recorder = recordItemEvents();
-    const largeFile = getUploadFileItem('large', MIN_MULTIPART_SIZE);
+    const largeFile = getUploadFileItem('large', MULTIPART_FILE_SIZE);
     const folderItem = createFolderItem(
       getFolderToUpload('Photos', { childrenFiles: [getFileToUpload('beach.png')] }),
       'dest',

@@ -92,7 +92,7 @@ const isUnknownCreationResult = (error: unknown) =>
   errorService.isServerError(error);
 
 const isMultipartUpload = (item: UploadItem) =>
-  item.kind === UploadItemKind.File && item.file.size >= MIN_MULTIPART_SIZE;
+  item.kind === UploadItemKind.File && item.file.size > MIN_MULTIPART_SIZE;
 
 const isMediumSizedFile = (item: UploadItem) => item.kind === UploadItemKind.File && item.file.size >= TWENTY_MEGABYTES;
 
