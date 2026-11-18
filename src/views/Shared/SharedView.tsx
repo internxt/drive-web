@@ -1,5 +1,5 @@
 import _ from 'utils/lodash';
-import { connect, useSelector } from 'react-redux';
+import { connect, shallowEqual, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { ChangeEvent, useEffect, useLayoutEffect, useRef, useState } from 'react';
@@ -31,8 +31,12 @@ import WarningMessageWrapper from 'views/Home/components/WarningMessageWrapper';
 import { AdvancedSharedItem, PreviewFileItem, SharedNamePath } from '../../app/share/types';
 import { RootState } from '../../app/store';
 import { sharedActions, sharedThunks } from '../../app/store/slices/sharedLinks';
-import storageThunks from '../../app/store/slices/storage/storage.thunks';
 import workspacesSelectors from '../../app/store/slices/workspaces/workspaces.selectors';
+import { planThunks } from 'app/store/slices/plan';
+import { notifyUploadFailed } from 'app/upload/notifications';
+import { renameToFreeNamesInSharedFolder } from 'app/upload/sharedFolderNames';
+import { getSharedFolderAuthenticationData } from 'app/upload/sharedFolderAuthentication';
+import { useUploadItems } from 'app/upload/useUploadItems';
 import { handlePrivateSharedFolderAccess } from '../../app/share/services/redirections.service';
 import TopBarButtons from './components/TopBarButtons';
 import SharedItemListContainer from './components/SharedItemListContainer';
@@ -136,6 +140,8 @@ function SharedView({
   const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
   const workspaceId = selectedWorkspace?.workspace.id;
   const defaultTeamId = selectedWorkspace?.workspace.defaultTeamId;
+  const workspaceAuthenticationData = useSelector(workspacesSelectors.getOwnerUserAuthenticationData, shallowEqual);
+  const { startUpload } = useUploadItems();
 
   useLayoutEffect(() => {
     if (page === 0 && !folderUUID) {
@@ -378,6 +384,23 @@ function SharedView({
     fileInputRef.current?.click();
   };
 
+  const openOwnerStorageIsFullDialog = () =>
+    dispatch(
+      uiActions.setOpenReachedPlanLimitDialog({
+        open: true,
+        info: {
+          title: translate('error.ownerStorageIsFull'),
+          description: translate('error.ownerStorageIsFullDescription'),
+          hidePrimaryAction: true,
+        },
+      }),
+    );
+
+  const refreshUsage = () => {
+    void dispatch(planThunks.fetchUsageThunk());
+    if (selectedWorkspace?.workspaceUser?.memberId) void dispatch(planThunks.fetchBusinessLimitUsageThunk());
+  };
+
   const onUploadFileInputChanged = async ({ files }: { files: FileList | null }) => {
     const items = files;
 
@@ -399,44 +422,37 @@ function SharedView({
       return; // Exit the function if the condition fails
     }
 
-    let ownerUserAuthenticationData;
-
     const isSecondLevelOfFoldersOrMore = sharedNamePath.length >= 2;
-    const isOwnerOfFolder = filesOwnerCredentials?.networkUser === currentUser?.email;
-    const token = isSecondLevelOfFoldersOrMore ? currentFolderLevelResourcesToken : nextFolderLevelResourcesToken;
-    if (filesOwnerCredentials && currentUser && isOwnerOfFolder) {
-      ownerUserAuthenticationData = {
-        bridgeUser: filesOwnerCredentials?.networkUser,
-        bridgePass: filesOwnerCredentials?.networkPass,
-        encryptionKey: currentUser?.mnemonic,
-        bucketId: currentUser.bucket,
-        token,
-        resourcesToken: token,
-      };
-    } else {
-      const mnemonicDecrypted =
-        selectedWorkspace?.workspaceUser.key ?? (ownerEncryptionKey ? await decryptMnemonic(ownerEncryptionKey) : null);
-      if (filesOwnerCredentials && mnemonicDecrypted && ownerBucket) {
-        ownerUserAuthenticationData = {
-          bridgeUser: filesOwnerCredentials?.networkUser,
-          bridgePass: filesOwnerCredentials?.networkPass,
-          encryptionKey: mnemonicDecrypted,
-          bucketId: ownerBucket,
-          token,
-          resourcesToken: token,
-        };
+    const resourcesToken = isSecondLevelOfFoldersOrMore
+      ? currentFolderLevelResourcesToken
+      : nextFolderLevelResourcesToken;
+    const filesWithContent = Array.from(items).filter((file) => file.size > 0);
+    const hasFilesWithContent = filesWithContent.length > 0;
+
+    if (hasFilesWithContent) {
+      try {
+        const filesWithFreeNames = await renameToFreeNamesInSharedFolder(filesWithContent, {
+          uuid: currentFolderId,
+          resourcesToken: isSecondLevelOfFoldersOrMore ? resourcesToken : '',
+          workspaceId: defaultTeamId ? workspaceId : undefined,
+        });
+        const ownerUserAuthenticationData = await getSharedFolderAuthenticationData(
+          { workspaceAuthenticationData, filesOwnerCredentials, currentUser, ownerEncryptionKey, ownerBucket },
+          resourcesToken,
+        );
+
+        await startUpload(
+          { destinationFolderUuid: currentParentFolderId, roots: [], files: filesWithFreeNames },
+          {
+            ownerUserAuthenticationData,
+            onPlanLimitReached: openOwnerStorageIsFullDialog,
+            onUploadFinished: refreshUsage,
+          },
+        );
+      } catch (error) {
+        notifyUploadFailed(error);
       }
     }
-
-    await dispatch(
-      storageThunks.uploadSharedItemsThunk({
-        files: Array.from(items),
-        parentFolderId: currentParentFolderId,
-        currentFolderId,
-        ownerUserAuthenticationData,
-        isDeepFolder: isSecondLevelOfFoldersOrMore,
-      }),
-    );
 
     actionDispatch(setHasMoreFiles(true));
     fetchFiles(true, workspaceId);
