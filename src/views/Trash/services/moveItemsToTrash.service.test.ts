@@ -204,16 +204,25 @@ describe('moveItemsToTrash', () => {
   });
 
   describe('Undo', () => {
-    const trashAndUndo = async (items: DriveItemData[], onUndo?: () => void) => {
+    const trashAndUndo = async (
+      items: DriveItemData[],
+      {
+        onUndo,
+        isRestoreFailing = false,
+      }: { onUndo?: (isEverythingRestored: boolean) => void; isRestoreFailing?: boolean } = {},
+    ) => {
       let undo: (() => void) | undefined;
       (notificationsService.show as Mock).mockImplementation((config) => {
         if (config.action) undo = config.action.onClick;
         return 'notification-id';
       });
-      (processBatchConcurrently as Mock).mockResolvedValue(undefined);
+      (processBatchConcurrently as Mock).mockImplementation(({ items: batch, processor }) => processor(batch));
       (deleteDatabaseItems as Mock).mockResolvedValue(undefined);
       mockSdkFactory({ createTrashClient: { addItemsToTrash: vi.fn() } });
       (storageThunks.moveItemsThunk as unknown as Mock).mockImplementation((payload) => payload);
+      (store.dispatch as Mock).mockReturnValue({
+        unwrap: () => (isRestoreFailing ? Promise.reject(new Error('Network error')) : Promise.resolve()),
+      });
 
       await moveItemsToTrash(items, undefined, onUndo);
       undo?.();
@@ -252,15 +261,31 @@ describe('moveItemsToTrash', () => {
       expect(movedBack()).toStrictEqual([{ items: ['report', 'invoices'], destinationFolderId: 'documents' }]);
     });
 
-    test('When the user undoes it, then the caller is told so it can show the items again', async () => {
+    test('When the user undoes it, then the caller is told once the items are back so it can show them again', async () => {
       const onUndo = vi.fn();
 
       await trashAndUndo(
         [{ uuid: 'report', isFolder: false, type: 'pdf', folderUuid: 'documents' }] as DriveItemData[],
-        onUndo,
+        {
+          onUndo,
+        },
       );
 
-      expect(onUndo).toHaveBeenCalledTimes(1);
+      await vi.waitFor(() => expect(onUndo).toHaveBeenCalledExactlyOnceWith(true));
+    });
+
+    test('When the items cannot be moved back, then the caller is told not everything was restored', async () => {
+      const onUndo = vi.fn();
+
+      await trashAndUndo(
+        [{ uuid: 'report', isFolder: false, type: 'pdf', folderUuid: 'documents' }] as DriveItemData[],
+        {
+          onUndo,
+          isRestoreFailing: true,
+        },
+      );
+
+      await vi.waitFor(() => expect(onUndo).toHaveBeenCalledExactlyOnceWith(false));
     });
   });
 

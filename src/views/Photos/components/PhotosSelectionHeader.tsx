@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Button } from '@internxt/ui';
 import { DownloadSimpleIcon, TrashIcon, XIcon } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -11,12 +12,19 @@ import { sortPhotosNewestFirst } from '../utils/photoTimeline';
 interface PhotosSelectionHeaderProps {
   selectedPhotos: PhotoSelection;
   onClear: () => void;
-  onMoveToTrash: () => void;
+  onMoveToTrash: () => Promise<void>;
 }
 
 const PhotosSelectionHeader = ({ selectedPhotos, onClear, onMoveToTrash }: PhotosSelectionHeaderProps): JSX.Element => {
   const { translate } = useTranslationContext();
+  const [isMovingToTrash, setIsMovingToTrash] = useState(false);
   useAppHotkey(HOTKEYS.close, onClear, { enableOnFormTags: ['input'] });
+
+  const moveSelectionToTrash = async () => {
+    setIsMovingToTrash(true);
+    await onMoveToTrash();
+    setIsMovingToTrash(false);
+  };
 
   const downloadSelection = () => {
     void DownloadManager.downloadItem({
@@ -62,7 +70,12 @@ const PhotosSelectionHeader = ({ selectedPhotos, onClear, onMoveToTrash }: Photo
           data-tooltip-content={translate('drive.dropdown.moveToTrash')}
           data-tooltip-place="bottom"
         >
-          <Button variant="ghost" className="aspect-square" onClick={onMoveToTrash}>
+          <Button
+            variant="ghost"
+            className="aspect-square"
+            disabled={isMovingToTrash}
+            onClick={() => void moveSelectionToTrash()}
+          >
             <TrashIcon className="h-6 w-6" />
             <span className="sr-only">{translate('drive.dropdown.moveToTrash')}</span>
           </Button>

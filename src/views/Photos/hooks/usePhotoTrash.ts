@@ -10,7 +10,8 @@ const NOTHING_TRASHED: TrashedPhotos = new Set();
 /**
  * @param shownMonthsKey the months the gallery shows: each time they change, the gallery loads them again without the
  * photos in the trash, so undoing after any change, even back to the same filter, reloads the gallery to bring the
- * restored photos back.
+ * restored photos back. Restored photos are shown once they are back in their folders; if some couldn't be restored,
+ * the gallery is reloaded to show only the ones that are.
  */
 export const usePhotoTrash = (shownMonthsKey: string) => {
   const [trashedPhotos, setTrashedPhotos] = useState(NOTHING_TRASHED);
@@ -28,16 +29,16 @@ export const usePhotoTrash = (shownMonthsKey: string) => {
     const uuids = photos.map(({ uuid }) => uuid);
     const shownMonthsChangesWhenTrashed = shownMonthsChanges.current;
 
-    void moveItemsToTrash(
+    return moveItemsToTrash(
       getPhotoFiles(photos),
       () => {
         setTrashedPhotos((trashed) => new Set([...trashed, ...uuids]));
         onTrashed?.();
       },
-      () => {
+      (isEverythingRestored) => {
         setTrashedPhotos((trashed) => new Set([...trashed].filter((uuid) => !uuids.includes(uuid))));
         const hasFilterChanged = shownMonthsChanges.current !== shownMonthsChangesWhenTrashed;
-        if (hasFilterChanged) setGalleryReloads((reloads) => reloads + 1);
+        if (hasFilterChanged || !isEverythingRestored) setGalleryReloads((reloads) => reloads + 1);
       },
     );
   }, []);

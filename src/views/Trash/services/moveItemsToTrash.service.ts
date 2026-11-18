@@ -9,8 +9,8 @@ import { store } from 'app/store';
 import { storageActions } from 'app/store/slices/storage';
 import { processBatchConcurrently } from './batchProcessor.service';
 
-const MAX_ITEMS_TO_DELETE = 10;
-const MAX_CONCURRENT_REQUESTS = 3;
+const BATCH_SIZE = 10;
+const MAX_CONCURRENT_BATCHES = 3;
 
 const isFolder = (item: DriveItemData) => item?.type === 'folder' || item?.isFolder;
 
@@ -23,6 +23,30 @@ const groupByOriginalFolder = (items: DriveItemData[]) => {
   return itemsByFolder;
 };
 
+/**
+ * Moves the items back to the folders they were trashed from, in batches as when they were trashed. A failed batch
+ * doesn't stop the others.
+ */
+const restoreToOriginalFolders = async (items: DriveItemData[]): Promise<boolean> => {
+  let isEverythingRestored = true;
+
+  await processBatchConcurrently({
+    items,
+    batchSize: BATCH_SIZE,
+    maxConcurrentBatches: MAX_CONCURRENT_BATCHES,
+    processor: async (batch) => {
+      const results = await Promise.allSettled(
+        [...groupByOriginalFolder(batch)].map(([destinationFolderId, folderItems]) =>
+          store.dispatch(storageThunks.moveItemsThunk({ items: folderItems, destinationFolderId })).unwrap(),
+        ),
+      );
+      if (results.some(({ status }) => status === 'rejected')) isEverythingRestored = false;
+    },
+  });
+
+  return isEverythingRestored;
+};
+
 const refetchFavoritesIfNeeded = (items: DriveItemData[]) => {
   if (items.some(isFolder) && store.getState().storage.favorites.length > 0) {
     store.dispatch(storageActions.resetFavoritesPagination());
@@ -33,7 +57,7 @@ const refetchFavoritesIfNeeded = (items: DriveItemData[]) => {
 const moveItemsToTrash = async (
   itemsToTrash: DriveItemData[],
   onSuccess?: () => void,
-  onUndo?: () => void,
+  onUndo?: (isEverythingRestored: boolean) => void,
 ): Promise<void> => {
   const items: Array<{ uuid: string; type: 'file' | 'folder' }> = itemsToTrash.map((item) => {
     return {
@@ -55,8 +79,8 @@ const moveItemsToTrash = async (
 
     await processBatchConcurrently({
       items,
-      batchSize: MAX_ITEMS_TO_DELETE,
-      maxConcurrentBatches: MAX_CONCURRENT_REQUESTS,
+      batchSize: BATCH_SIZE,
+      maxConcurrentBatches: MAX_CONCURRENT_BATCHES,
       processor: (batch) => trashClient.addItemsToTrash({ items: batch }),
     });
 
@@ -85,6 +109,17 @@ const moveItemsToTrash = async (
       suffix = 'o';
     }
 
+    const undoMoveToTrash = async () => {
+      for (const [destinationId, items] of groupByOriginalFolder(itemsToTrash)) {
+        store.dispatch(storageActions.pushItems({ updateRecents: true, items, folderIds: [destinationId] }));
+      }
+      store.dispatch(storageActions.clearSelectedItems());
+      refetchFavoritesIfNeeded(itemsToTrash);
+
+      const isEverythingRestored = await restoreToOriginalFolders(itemsToTrash);
+      onUndo?.(isEverythingRestored);
+    };
+
     const id = notificationsService.show({
       type: ToastType.Success,
       text: t('notificationMessages.itemsMovedToTrash', {
@@ -96,16 +131,7 @@ const moveItemsToTrash = async (
         text: t('actions.undo'),
         onClick: () => {
           notificationsService.dismiss(id);
-          if (itemsToTrash.length > 0) {
-            for (const [destinationId, items] of groupByOriginalFolder(itemsToTrash)) {
-              store.dispatch(storageActions.pushItems({ updateRecents: true, items, folderIds: [destinationId] }));
-              void store.dispatch(storageThunks.moveItemsThunk({ items, destinationFolderId: destinationId }));
-            }
-
-            store.dispatch(storageActions.clearSelectedItems());
-            refetchFavoritesIfNeeded(itemsToTrash);
-            onUndo?.();
-          }
+          void undoMoveToTrash();
         },
       },
     });
