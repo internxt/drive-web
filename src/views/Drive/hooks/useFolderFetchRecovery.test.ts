@@ -46,6 +46,30 @@ describe('Recovering a folder whose content failed to load', () => {
     expect(mockDispatch).not.toHaveBeenCalled();
   });
 
+  test('when the failed folder loads fine on rerender, then coming back online requests nothing', () => {
+    const { rerender } = renderRecovery({ hasFetchFailed: true });
+
+    mockStorageState = { hasFetchFailedByFolderId: { [FOLDER_ID]: false } };
+    rerender();
+    globalThis.dispatchEvent(new Event('online'));
+
+    expect(mockDispatch).not.toHaveBeenCalled();
+  });
+
+  test('when the list moves to another folder after the failure, then coming back online requests nothing', () => {
+    const OTHER_FOLDER_ID = 'other-folder-uuid';
+    mockStorageState = { hasFetchFailedByFolderId: { [FOLDER_ID]: true, [OTHER_FOLDER_ID]: false } };
+    const { rerender } = renderHook(
+      ({ folderId }) => useFolderFetchRecovery({ folderId, hasMoreItems: true, isDriveFolder: true }),
+      { initialProps: { folderId: FOLDER_ID } },
+    );
+
+    rerender({ folderId: OTHER_FOLDER_ID });
+    globalThis.dispatchEvent(new Event('online'));
+
+    expect(mockDispatch).not.toHaveBeenCalled();
+  });
+
   test('when the browser comes back online and the folder loaded fine, then nothing is requested', () => {
     const { result } = renderRecovery();
 

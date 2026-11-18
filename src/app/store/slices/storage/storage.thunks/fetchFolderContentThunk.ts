@@ -150,15 +150,16 @@ export const fetchFolderContentThunkExtraReducers = (builder: ActionReducerMapBu
       state.latestFolderRequestId[action.meta.arg] = action.meta.requestId;
     })
     .addCase(fetchPaginatedFolderContentThunk.fulfilled, (state, action) => {
-      if (isLatestRequest(state, action.meta.arg, action.meta.requestId)) {
-        state.loadingFolders[action.meta.arg] = false;
-      }
+      if (!isLatestRequest(state, action.meta.arg, action.meta.requestId)) return;
+
+      state.loadingFolders[action.meta.arg] = false;
     })
     .addCase(fetchPaginatedFolderContentThunk.rejected, (state, action) => {
-      if (isLatestRequest(state, action.meta.arg, action.meta.requestId)) {
-        state.loadingFolders[action.meta.arg] = false;
-        state.hasFetchFailedByFolderId[action.meta.arg] = true;
-      }
+      if (!isLatestRequest(state, action.meta.arg, action.meta.requestId)) return;
+
+      state.loadingFolders[action.meta.arg] = false;
+      state.hasFetchFailedByFolderId[action.meta.arg] = true;
+
       const isUnauthorizedError = (payload: unknown): payload is { status: number } =>
         typeof payload === 'object' && payload !== null && 'status' in payload && payload.status === 401;
 

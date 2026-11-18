@@ -598,6 +598,20 @@ describe('Thunk of fetch folder content', () => {
       });
     });
 
+    test('when an outdated request fails after a newer one started, then no error toast is shown', () => {
+      const bothPending = startRequest(startRequest(initialState, 'older-request-id'), 'newer-request-id');
+
+      failRequest(bothPending, 'older-request-id');
+
+      expect(notificationsService.show).not.toHaveBeenCalled();
+    });
+
+    test('when the latest request fails, then exactly one error toast is shown', () => {
+      failRequest(startRequest(initialState, 'request-id'), 'request-id');
+
+      expect(notificationsService.show).toHaveBeenCalledTimes(1);
+    });
+
     test('When an earlier request succeeds while a newer one is still loading, then the folder keeps loading', () => {
       const bothPending = startRequest(startRequest(initialState, 'older-request-id'), 'newer-request-id');
 
