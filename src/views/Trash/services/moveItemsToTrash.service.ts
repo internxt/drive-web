@@ -3,6 +3,7 @@ import { t } from 'i18next';
 import { SdkFactory } from 'app/core/factory/sdk';
 import errorService from 'services/error.service';
 import { deleteDatabaseItems } from 'app/drive/services/database.service';
+import storageService from 'app/drive/services/storage.service';
 import { DriveItemData } from 'app/drive/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { store } from 'app/store';
@@ -14,37 +15,40 @@ const MAX_CONCURRENT_BATCHES = 3;
 
 const isFolder = (item: DriveItemData) => item?.type === 'folder' || item?.isFolder;
 
+const getOriginalFolderUuid = (item: DriveItemData) => (isFolder(item) ? item.parentUuid : item.folderUuid);
+
 const groupByOriginalFolder = (items: DriveItemData[]) => {
   const itemsByFolder = new Map<string, DriveItemData[]>();
   for (const item of items) {
-    const folderUuid = isFolder(item) ? item.parentUuid : item.folderUuid;
+    const folderUuid = getOriginalFolderUuid(item);
     itemsByFolder.set(folderUuid, [...(itemsByFolder.get(folderUuid) ?? []), item]);
   }
   return itemsByFolder;
 };
 
 /**
- * Moves the items back to the folders they were trashed from, in batches as when they were trashed. A failed batch
- * doesn't stop the others.
+ * Moves the items back to the folders they were trashed from, in batches as when they were trashed, and returns the
+ * ones that couldn't be moved. A failed item doesn't stop the others.
  */
-const restoreToOriginalFolders = async (items: DriveItemData[]): Promise<boolean> => {
-  let isEverythingRestored = true;
+const restoreToOriginalFolders = async (items: DriveItemData[]): Promise<DriveItemData[]> => {
+  const failedItems: DriveItemData[] = [];
 
   await processBatchConcurrently({
     items,
     batchSize: BATCH_SIZE,
     maxConcurrentBatches: MAX_CONCURRENT_BATCHES,
-    processor: async (batch) => {
-      const results = await Promise.allSettled(
-        [...groupByOriginalFolder(batch)].map(([destinationFolderId, folderItems]) =>
-          store.dispatch(storageThunks.moveItemsThunk({ items: folderItems, destinationFolderId })).unwrap(),
+    processor: (batch) =>
+      Promise.all(
+        batch.map((item) =>
+          storageService.moveItem(item, getOriginalFolderUuid(item)).catch((error) => {
+            errorService.reportError(error);
+            failedItems.push(item);
+          }),
         ),
-      );
-      if (results.some(({ status }) => status === 'rejected')) isEverythingRestored = false;
-    },
+      ),
   });
 
-  return isEverythingRestored;
+  return failedItems;
 };
 
 const refetchFavoritesIfNeeded = (items: DriveItemData[]) => {
@@ -116,7 +120,14 @@ const moveItemsToTrash = async (
       store.dispatch(storageActions.clearSelectedItems());
       refetchFavoritesIfNeeded(itemsToTrash);
 
-      const isEverythingRestored = await restoreToOriginalFolders(itemsToTrash);
+      const failedItems = await restoreToOriginalFolders(itemsToTrash);
+      const isEverythingRestored = failedItems.length === 0;
+      if (!isEverythingRestored) {
+        for (const [folderUuid, items] of groupByOriginalFolder(failedItems)) {
+          store.dispatch(storageActions.popItems({ updateRecents: true, items, folderIds: [folderUuid] }));
+        }
+        notificationsService.show({ text: t('error.movingItem'), type: ToastType.Error });
+      }
       onUndo?.(isEverythingRestored);
     };
 

@@ -1721,7 +1721,7 @@ describe('Photos view', () => {
 
       await undo();
 
-      expect(await screen.findByText('Network error')).toBeInTheDocument();
+      expect(await screen.findByText('error.movingItem')).toBeInTheDocument();
       expect(await screen.findByRole('img', { name: 'IMG_KEPT.jpg' })).toBeInTheDocument();
       expect(screen.queryByRole('img', { name: 'IMG_LIVE.HEIC' })).not.toBeInTheDocument();
     });
