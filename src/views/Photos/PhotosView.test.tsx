@@ -1750,6 +1750,28 @@ describe('Photos view', () => {
       expect(trashButton()).toBeDisabled();
     });
 
+    test('When undoing another trash reloaded the gallery, then undoing an earlier trash shows its photos again', async () => {
+      renderWithStore();
+      await tick('IMG_LIVE.HEIC');
+      moveSelectionToTrash();
+      await waitFor(() => expect(screen.queryByRole('img', { name: 'IMG_LIVE.HEIC' })).not.toBeInTheDocument());
+      givenPhotosInFolders(photosOnTheServer({ withoutLivePhoto: true }));
+      await tick('IMG_KEPT.jpg');
+      moveSelectionToTrash();
+      await waitFor(() => expect(screen.queryByRole('img', { name: 'IMG_KEPT.jpg' })).not.toBeInTheDocument());
+      givenPhotosBackOnTheServerOnceMovedBack();
+      storageClient.moveFileByUuid.mockRejectedValueOnce(new Error('Network error'));
+      const [undoKept, undoLive] = await screen.findAllByRole('button', { name: 'actions.undo' });
+
+      fireEvent.click(undoKept);
+      expect(await screen.findByText('error.movingItem')).toBeInTheDocument();
+      await waitForPhotosToLoad();
+      fireEvent.click(undoLive);
+
+      expect(await screen.findByRole('img', { name: 'IMG_LIVE.HEIC' })).toBeInTheDocument();
+      expect(filesMovedBack()[0]).toBe('IMG_KEPT.jpg -> iphone-2025-11-03');
+    });
+
     test('When moving photos to the trash fails, then they stay in the gallery and stay selected', async () => {
       trashClient.addItemsToTrash.mockRejectedValueOnce(new Error('Network error'));
       renderWithStore();
