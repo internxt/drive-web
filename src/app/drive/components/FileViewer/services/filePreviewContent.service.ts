@@ -51,7 +51,7 @@ export const getFilePreviewContent = async (
   file: PreviewFileItem,
   options: FilePreviewContentOptions,
 ): Promise<FilePreviewContent> => {
-  const cachedFile = await getDatabaseFileSourceData({ fileId: file.id });
+  const cachedFile = await getDatabaseFileSourceData({ fileUuid: file.uuid });
   const isCacheUpToDate =
     !!cachedFile?.updatedAt && !dateService.isDateOneBefore({ dateOne: cachedFile.updatedAt, dateTwo: file.updatedAt });
 
@@ -63,7 +63,7 @@ export const getFilePreviewContent = async (
 
   if (cachedFile || canFileBeCached(file)) {
     await updateDatabaseFileSourceData({
-      fileId: file.id,
+      fileUuid: file.uuid,
       folderId: file.folderId,
       sourceBlob: blob,
       updatedAt: file.updatedAt,

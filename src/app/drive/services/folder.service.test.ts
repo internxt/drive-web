@@ -302,7 +302,7 @@ describe('Folder Service', () => {
       expect(updateDatabaseFileSourceData).toHaveBeenCalledWith({
         folderId: sharedFile.folderId,
         sourceBlob: downloadedBlob,
-        fileId: sharedFile.id,
+        fileUuid: sharedFile.uuid,
         updatedAt: sharedFile.updatedAt,
       });
       expect(fileStreams[0]).toBeInstanceOf(ReadableStream);

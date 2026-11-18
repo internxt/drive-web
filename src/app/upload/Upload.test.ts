@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, Mock, onTestFinished, test, vi } from 'vitest';
 import uploadFile from 'app/drive/services/file.service/uploadFile';
 import folderService from 'app/drive/services/folder.service';
 import newStorageService from 'app/drive/services/new-storage.service';
@@ -9,14 +9,17 @@ import errorService from 'services/error.service';
 import referralService from 'services/referral.service';
 import { AppError } from '@internxt/sdk';
 import { HTTP_STATUS_CODES } from 'app/core/constants';
-import { MAX_UPLOAD_ATTEMPTS } from 'app/network/networkConstants';
+import { MAX_CONCURRENT_UPLOADS, MAX_UPLOAD_ATTEMPTS } from 'app/network/networkConstants';
 import {
   getCreatedFolder,
   getFileToUpload,
   getFolderToUpload,
+  getFolderWithFiles,
   getUploadRepository,
 } from 'testUtils/fixtures/upload.fixtures';
+import { QueueUtilsService } from 'utils/queueUtils';
 import { Upload } from './Upload';
+import { UploadManager } from './UploadManager';
 
 vi.mock('app/drive/services/file.service/uploadFile', () => ({ default: vi.fn() }));
 vi.mock('app/drive/services/folder.service', () => ({ default: { createFolderByUuid: vi.fn() } }));
@@ -56,7 +59,15 @@ const createUpload = (
   roots: IRoot[],
   files: File[],
   callbacks: Partial<ConstructorParameters<typeof Upload>[0]> = {},
-) => new Upload({ destinationFolderUuid: DESTINATION_UUID, roots, files, uploadRepository, ...callbacks });
+) =>
+  new Upload({
+    destinationFolderUuid: DESTINATION_UUID,
+    roots,
+    files,
+    uploadRepository,
+    uploadManager: new UploadManager(),
+    ...callbacks,
+  });
 
 const uploadedNames = () => vi.mocked(uploadFile).mock.calls.map(([file]) => file.name);
 
@@ -70,6 +81,20 @@ const failUploadsOf = (failingNames: string[], error: unknown = new Error('Serve
 
 const uploadSucceeds = () =>
   (uploadFile as Mock).mockImplementation(async (file: { name: string }) => ({ uuid: `${file.name}-uuid` }));
+
+const countUploadsAtTheSameTime = (failingNames: Set<string>) => {
+  let uploading = 0;
+  let mostAtTheSameTime = 0;
+  (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
+    uploading++;
+    mostAtTheSameTime = Math.max(mostAtTheSameTime, uploading);
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    uploading--;
+    if (failingNames.has(file.name)) throw new Error('Server error');
+    return { uuid: `${file.name}-uuid` };
+  });
+  return () => mostAtTheSameTime;
+};
 
 describe('Uploading what the user picked', () => {
   beforeEach(() => {
@@ -157,11 +182,14 @@ describe('Uploading what the user picked', () => {
       [],
     );
 
-    const { failed } = await upload.run();
+    await upload.run();
 
-    expect(failed).toHaveLength(1);
     expect(tasksOf(TaskType.UploadFolder)[0]).toEqual(
-      expect.objectContaining({ status: TaskStatus.Success, progress: 2 / 3 }),
+      expect.objectContaining({
+        status: TaskStatus.Success,
+        progress: 2 / 3,
+        failedItems: [expect.objectContaining({ name: 'broken' })],
+      }),
     );
   });
 
@@ -212,6 +240,20 @@ describe('Uploading what the user picked', () => {
     await running;
 
     expect(uploadRepository.removeUploadState).toHaveBeenCalledWith(reportTask.id);
+  });
+
+  test('When a file starts uploading, then its upload is saved as in process, but not the one of a folder', async () => {
+    fakeUploadsTaking(500);
+    const upload = createUpload([getFolderToUpload('Photos')], [getFileToUpload('report.pdf')]);
+
+    const running = upload.run();
+    await vi.waitFor(() => expect(uploadFile).toHaveBeenCalled());
+    const [fileTask] = tasksOf(TaskType.UploadFile);
+    const [folderTask] = tasksOf(TaskType.UploadFolder);
+    await running;
+
+    expect(uploadRepository.setUploadState).toHaveBeenCalledWith(fileTask.id, TaskStatus.InProcess);
+    expect(uploadRepository.setUploadState).not.toHaveBeenCalledWith(folderTask.id, expect.anything());
   });
 
   test('When the user cancels a folder, then its upload stops and the folder already created is removed', async () => {
@@ -269,6 +311,43 @@ describe('Uploading what the user picked', () => {
       expect.objectContaining({ status: TaskStatus.Error, subtitle: 'tasks.subtitles.folder-removal-failed' }),
     );
     expect(onItemRemoved).not.toHaveBeenCalled();
+  });
+
+  test('When the cancelled folder is removed but reporting it fails, then its task does not show a removal error', async () => {
+    fakeUploadsTaking(500);
+    const onItemRemoved = vi.fn(() => {
+      throw new Error('List not updated');
+    });
+    const upload = createUpload([getFolderToUpload('Photos', { childrenFiles: [getFileToUpload('beach.png')] })], [], {
+      onItemRemoved,
+    });
+
+    const running = upload.run();
+    await vi.waitFor(() => expect(uploadFile).toHaveBeenCalled());
+    await tasksService.cancelTask(tasksOf(TaskType.UploadFolder)[0].id);
+    await running;
+
+    expect(newStorageService.deleteFolderByUuid).toHaveBeenCalledWith('Photos-uuid');
+    expect(tasksOf(TaskType.UploadFolder)[0].status).toBe(TaskStatus.Cancelled);
+    expect(errorService.reportError).toHaveBeenCalledWith(new Error('List not updated'));
+  });
+
+  test('When a file finishes uploading right after the user cancels it, then its task succeeds', async () => {
+    (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      return { uuid: `${file.name}-uuid` };
+    });
+    const upload = createUpload([], [getFileToUpload('report.pdf')]);
+
+    const running = upload.run();
+    await vi.waitFor(() => expect(uploadFile).toHaveBeenCalled());
+    const [reportTask] = tasksOf(TaskType.UploadFile);
+    await tasksService.cancelTask(reportTask.id);
+    await running;
+
+    expect(tasksService.findTask(reportTask.id)).toEqual(
+      expect.objectContaining({ status: TaskStatus.Success, itemUUID: { fileUUID: 'report-uuid' } }),
+    );
   });
 
   test('When the user cancels a folder while it is being created, then it is removed once it exists', async () => {
@@ -340,29 +419,28 @@ describe('Retrying what failed', () => {
     expect(folderTask).toEqual(expect.objectContaining({ status: TaskStatus.Success, progress: 1, failedItems: [] }));
   });
 
-  test('When the user cancels a folder while it is being retried, then the retry finishes only once the folder is removed', async () => {
+  test('When the user cancels the retry of a folder that was already uploaded, then the retry stops and the folder keeps what was uploaded', async () => {
     failUploadsOf(['broken']);
-    const upload = createUpload([getFolderToUpload('Photos', { childrenFiles: [getFileToUpload('broken.png')] })], []);
+    const upload = createUpload(
+      [
+        getFolderToUpload('Photos', {
+          childrenFiles: [getFileToUpload('holidays.png'), getFileToUpload('broken.png')],
+        }),
+      ],
+      [],
+    );
     await upload.run();
     vi.mocked(uploadFile).mockClear();
     fakeUploadsTaking(500);
-    let finishRemoval: () => void = () => undefined;
-    vi.mocked(newStorageService.deleteFolderByUuid).mockReturnValue(
-      new Promise<void>((resolve) => (finishRemoval = resolve)) as never,
-    );
-    const onRetryFinished = vi.fn();
     const [folderTask] = tasksOf(TaskType.UploadFolder);
 
-    const retrying = folderTask.retry?.().then(onRetryFinished);
+    const retrying = folderTask.retry?.();
     await vi.waitFor(() => expect(uploadFile).toHaveBeenCalled());
     await tasksService.cancelTask(folderTask.id);
-    await vi.waitFor(() => expect(newStorageService.deleteFolderByUuid).toHaveBeenCalledWith('Photos-uuid'));
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    expect(onRetryFinished).not.toHaveBeenCalled();
-    finishRemoval();
     await retrying;
-    expect(onRetryFinished).toHaveBeenCalled();
+
+    expect(newStorageService.deleteFolderByUuid).not.toHaveBeenCalled();
+    expect(tasksService.findTask(folderTask.id)?.status).toBe(TaskStatus.Cancelled);
   });
 
   test('When the user retries one failed file, then only that file is uploaded again', async () => {
@@ -413,7 +491,7 @@ describe('Retrying what failed', () => {
     ]);
   });
 
-  test('When the user retries while a retry of the same task is still running, then nothing else is uploaded', async () => {
+  test('When the user retries everything while one failed file is being retried, then the rest is queued too and nothing is uploaded twice', async () => {
     failUploadsOf(['retrying', 'waiting']);
     await createUpload(
       [
@@ -432,12 +510,9 @@ describe('Retrying what failed', () => {
     const retryingEverything = tasksService.findTask(folderTask.id)?.retry?.();
     await Promise.all([retryingOne, retryingEverything]);
 
-    expect(uploadedNames()).toEqual(['retrying']);
+    expect(uploadedNames().sort()).toEqual(['retrying', 'waiting']);
     expect(tasksService.findTask(folderTask.id)).toEqual(
-      expect.objectContaining({
-        status: TaskStatus.Success,
-        failedItems: [expect.objectContaining({ name: 'waiting' })],
-      }),
+      expect.objectContaining({ status: TaskStatus.Success, failedItems: [] }),
     );
   });
 
@@ -628,6 +703,53 @@ describe('Retrying what failed', () => {
     expect(tasksService.findTask(folderTask.id)?.failedItems).toEqual([]);
   });
 
+  test('When a folder is retried while another folder is still uploading, then no more than the usual uploads run at the same time', async () => {
+    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(MAX_CONCURRENT_UPLOADS);
+    const failingNames = ['a1', 'a2', 'a3', 'a4', 'a5', 'a6'];
+    const bigFolderNames = Array.from({ length: 30 }, (_, index) => `b${index}`);
+    const stillFailing = new Set(failingNames);
+    const mostAtTheSameTime = countUploadsAtTheSameTime(stillFailing);
+    const upload = createUpload(
+      [getFolderWithFiles('Small', failingNames), getFolderWithFiles('Big', bigFolderNames)],
+      [],
+    );
+    const running = upload.run();
+    const [smallTask, bigTask] = tasksOf(TaskType.UploadFolder);
+    await vi.waitFor(() => expect(tasksService.findTask(smallTask.id)?.failedItems).toHaveLength(failingNames.length), {
+      timeout: 3000,
+    });
+    stillFailing.clear();
+
+    const retrying = smallTask.retry?.();
+    await Promise.all([retrying, running]);
+
+    expect(tasksService.findTask(bigTask.id)?.status).toBe(TaskStatus.Success);
+    expect(tasksService.findTask(smallTask.id)?.failedItems).toEqual([]);
+    expect(mostAtTheSameTime()).toBeLessThanOrEqual(MAX_CONCURRENT_UPLOADS);
+  });
+
+  test('When a failed file is retried while the rest of its folder is still uploading, then it is uploaded and the folder ends with nothing failed', async () => {
+    let isBrokenFixed = false;
+    (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
+      if (file.name === 'video') await new Promise((resolve) => setTimeout(resolve, 500));
+      if (file.name === 'broken' && !isBrokenFixed) throw new Error('Server error');
+      return { uuid: `${file.name}-uuid` };
+    });
+    const upload = createUpload([getFolderWithFiles('Photos', ['broken.png', 'video.mp4'])], []);
+    const running = upload.run();
+    const [folderTask] = tasksOf(TaskType.UploadFolder);
+    await vi.waitFor(() => expect(tasksService.findTask(folderTask.id)?.failedItems).toHaveLength(1));
+    isBrokenFixed = true;
+
+    await tasksService.findTask(folderTask.id)?.failedItems?.[0].retry();
+    await running;
+
+    expect(uploadedNames().filter((name) => name === 'broken')).toHaveLength(MAX_UPLOAD_ATTEMPTS + 1);
+    expect(tasksService.findTask(folderTask.id)).toEqual(
+      expect.objectContaining({ status: TaskStatus.Success, progress: 1, failedItems: [] }),
+    );
+  });
+
   test('When the user cancels a failed file while it is retried, then it is no longer shown as retrying', async () => {
     failUploadsOf(['report']);
     await createUpload([], [getFileToUpload('report.pdf')]).run();
@@ -642,5 +764,465 @@ describe('Retrying what failed', () => {
     expect(tasksService.findTask(fileTask.id)).toEqual(
       expect.objectContaining({ status: TaskStatus.Cancelled, failedItems: [] }),
     );
+  });
+});
+
+const uploadAtMostAtTheSameTime = (concurrency: number) =>
+  vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(concurrency);
+
+const statusOf = (taskId: string) => tasksService.findTask(taskId)?.status;
+
+describe('Pausing an upload', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.clearAllMocks();
+    tasksService.clearTasks();
+    vi.spyOn(errorService, 'reportError').mockReturnValue();
+    vi.mocked(newStorageService.deleteFolderByUuid).mockResolvedValue(undefined as never);
+    fakeFolderCreationTaking();
+    fakeUploadsTaking(500);
+    uploadAtMostAtTheSameTime(1);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  test('When the user pauses a folder, then no new file inside it starts uploading', async () => {
+    const upload = createUpload([getFolderWithFiles('Photos', ['beach.png', 'city.png', 'forest.png'])], []);
+    void upload.run();
+    const [photosTask] = tasksOf(TaskType.UploadFolder);
+    await vi.waitFor(() => expect(uploadedNames()).toEqual(['beach']));
+
+    await photosTask.pause?.();
+    await vi.runAllTimersAsync();
+
+    expect(uploadedNames()).toEqual(['beach']);
+    expect(statusOf(photosTask.id)).toBe(TaskStatus.Paused);
+  });
+
+  test('When the user resumes a paused folder, then the rest of its files upload and none is uploaded twice', async () => {
+    const upload = createUpload([getFolderWithFiles('Photos', ['beach.png', 'city.png', 'forest.png'])], []);
+    const running = upload.run();
+    const [photosTask] = tasksOf(TaskType.UploadFolder);
+    await vi.waitFor(() => expect(uploadedNames()).toEqual(['beach']));
+    await photosTask.pause?.();
+    await vi.runAllTimersAsync();
+
+    await photosTask.resume?.();
+    await vi.runAllTimersAsync();
+    await running;
+
+    expect(uploadedNames()).toEqual(['beach', 'city', 'forest']);
+    expect(tasksService.findTask(photosTask.id)).toEqual(
+      expect.objectContaining({ status: TaskStatus.Success, progress: 1 }),
+    );
+  });
+
+  test('When the user pauses a folder, then the files already uploading in it are told to pause', async () => {
+    const upload = createUpload([getFolderWithFiles('Photos', ['beach.png', 'city.png'])], []);
+    void upload.run();
+    const [photosTask] = tasksOf(TaskType.UploadFolder);
+    await vi.waitFor(() => expect(uploadedNames()).toEqual(['beach']));
+
+    await photosTask.pause?.();
+
+    expect(uploadRepository.setUploadState).toHaveBeenCalledWith(photosTask.id, TaskStatus.Paused);
+  });
+
+  test('When the user resumes a folder, then the files already uploading in it are told to continue', async () => {
+    const upload = createUpload([getFolderWithFiles('Photos', ['beach.png', 'city.png'])], []);
+    void upload.run();
+    const [photosTask] = tasksOf(TaskType.UploadFolder);
+    await vi.waitFor(() => expect(uploadedNames()).toEqual(['beach']));
+    await photosTask.pause?.();
+
+    await photosTask.resume?.();
+
+    expect(uploadRepository.setUploadState).toHaveBeenLastCalledWith(photosTask.id, TaskStatus.InProcess);
+  });
+
+  test('When a file inside a paused folder finishes, then the folder progress stays where it was paused', async () => {
+    const upload = createUpload([getFolderWithFiles('Photos', ['beach.png', 'city.png', 'forest.png'])], []);
+    void upload.run();
+    const [photosTask] = tasksOf(TaskType.UploadFolder);
+    await vi.waitFor(() => expect(uploadedNames()).toEqual(['beach']));
+    await vi.advanceTimersByTimeAsync(100);
+    const progressWhenPaused = tasksService.findTask(photosTask.id)?.progress;
+
+    await photosTask.pause?.();
+    await vi.runAllTimersAsync();
+
+    expect(tasksService.findTask(photosTask.id)?.progress).toBe(progressWhenPaused);
+  });
+
+  test('When the user pauses a file that has not started yet, then it stays paused when its turn comes', async () => {
+    const upload = createUpload([], [getFileToUpload('report.pdf'), getFileToUpload('invoice.pdf')]);
+    void upload.run();
+    const [reportTask, invoiceTask] = tasksOf(TaskType.UploadFile);
+    await vi.waitFor(() => expect(uploadedNames()).toEqual(['report']));
+
+    await invoiceTask.pause?.();
+    await vi.runAllTimersAsync();
+
+    expect(statusOf(reportTask.id)).toBe(TaskStatus.Success);
+    expect(statusOf(invoiceTask.id)).toBe(TaskStatus.Paused);
+    expect(uploadedNames()).toEqual(['report']);
+  });
+
+  test('When the user cancels a paused folder, then the upload ends without uploading the rest of it', async () => {
+    const upload = createUpload([getFolderWithFiles('Photos', ['beach.png', 'city.png', 'forest.png'])], []);
+    const running = upload.run();
+    const [photosTask] = tasksOf(TaskType.UploadFolder);
+    await vi.waitFor(() => expect(uploadedNames()).toEqual(['beach']));
+    await photosTask.pause?.();
+    await vi.runAllTimersAsync();
+
+    await tasksService.cancelTask(photosTask.id);
+    await vi.runAllTimersAsync();
+    await running;
+
+    expect(uploadedNames()).toEqual(['beach']);
+    expect(statusOf(photosTask.id)).toBe(TaskStatus.Cancelled);
+  });
+
+  test('When the user pauses two folders and resumes only the second, then only the second one continues', async () => {
+    const upload = createUpload(
+      [
+        getFolderWithFiles('Photos', ['beach.png', 'city.png']),
+        getFolderWithFiles('Videos', ['movie.mp4', 'trailer.mp4']),
+      ],
+      [],
+    );
+    void upload.run();
+    const [photosTask, videosTask] = tasksOf(TaskType.UploadFolder);
+    await vi.waitFor(() => expect(uploadedNames()).toEqual(['beach']));
+    await photosTask.pause?.();
+    await videosTask.pause?.();
+    await vi.runAllTimersAsync();
+
+    await videosTask.resume?.();
+    await vi.runAllTimersAsync();
+
+    expect(statusOf(videosTask.id)).toBe(TaskStatus.Success);
+    expect(statusOf(photosTask.id)).toBe(TaskStatus.Paused);
+    expect(uploadedNames()).toEqual(['beach', 'movie', 'trailer']);
+  });
+
+  test('When the user frees space and resumes a folder while another upload is still running, then the folder uploads', async () => {
+    uploadAtMostAtTheSameTime(3);
+    let isStorageFull = true;
+    (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
+      if (file.name === 'video') await new Promise((resolve) => setTimeout(resolve, 2000));
+      else if (file.name === 'report' && isStorageFull)
+        throw new AppError('No space left', HTTP_STATUS_CODES.MAX_SPACE_USED);
+      return { uuid: `${file.name}-uuid` };
+    });
+    const uploadManager = new UploadManager();
+    const photos = createUpload([getFolderWithFiles('Photos', ['beach.png', 'city.png'])], [], { uploadManager });
+    const others = createUpload([], [getFileToUpload('report.pdf'), getFileToUpload('video.mp4')], { uploadManager });
+    const runningPhotos = photos.run();
+    const [photosTask] = tasksOf(TaskType.UploadFolder);
+    await photosTask.pause?.();
+    const runningOthers = others.run();
+    const [reportTask, videoTask] = tasksOf(TaskType.UploadFile);
+    await vi.waitFor(() => expect(statusOf(reportTask.id)).toBe(TaskStatus.Error));
+    isStorageFull = false;
+
+    await photosTask.resume?.();
+    expect(statusOf(videoTask.id)).toBe(TaskStatus.InProcess);
+    await vi.runAllTimersAsync();
+    await Promise.all([runningPhotos, runningOthers]);
+
+    expect(statusOf(photosTask.id)).toBe(TaskStatus.Success);
+    expect(uploadedNames()).toEqual(expect.arrayContaining(['beach', 'city']));
+  });
+
+  test('When one of two uploads is paused, then the other one keeps uploading until it finishes', async () => {
+    const uploadManager = new UploadManager();
+    const photos = createUpload([getFolderWithFiles('Photos', ['beach.png', 'city.png'])], [], { uploadManager });
+    const videos = createUpload([getFolderWithFiles('Videos', ['movie.mp4', 'trailer.mp4'])], [], { uploadManager });
+    void photos.run();
+    const runningVideos = videos.run();
+    const [photosTask, videosTask] = tasksOf(TaskType.UploadFolder);
+    await vi.waitFor(() => expect(uploadedNames()).toEqual(['beach']));
+
+    await photosTask.pause?.();
+    await vi.runAllTimersAsync();
+    await runningVideos;
+
+    expect(statusOf(videosTask.id)).toBe(TaskStatus.Success);
+    expect(statusOf(photosTask.id)).toBe(TaskStatus.Paused);
+    expect(uploadedNames()).toEqual(['beach', 'movie', 'trailer']);
+  });
+
+  const failUploadsOfUntilFixed = (failingName: string) => {
+    let isFixed = false;
+    (uploadFile as Mock).mockImplementation(async (file: { name: string }) => {
+      if (file.name === failingName && !isFixed) throw new Error('Server error');
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      return { uuid: `${file.name}-uuid` };
+    });
+    return () => {
+      isFixed = true;
+    };
+  };
+
+  test('When the user retries a failed file while its folder is paused, then the folder stays paused', async () => {
+    failUploadsOfUntilFixed('broken');
+    const upload = createUpload([getFolderWithFiles('Photos', ['broken.png', 'beach.png', 'city.png'])], []);
+    void upload.run();
+    const [photosTask] = tasksOf(TaskType.UploadFolder);
+    await vi.advanceTimersByTimeAsync(200);
+    expect(tasksService.findTask(photosTask.id)?.failedItems).toHaveLength(1);
+    await photosTask.pause?.();
+
+    void tasksService.findTask(photosTask.id)?.failedItems?.[0].retry();
+    await vi.runAllTimersAsync();
+
+    expect(statusOf(photosTask.id)).toBe(TaskStatus.Paused);
+  });
+
+  test('When the user pauses a folder that already finished, then nothing changes and a later retry still uploads', async () => {
+    const fixBroken = failUploadsOfUntilFixed('broken');
+    const upload = createUpload([getFolderWithFiles('Photos', ['broken.png', 'beach.png'])], []);
+    const running = upload.run();
+    await vi.runAllTimersAsync();
+    await running;
+    const [photosTask] = tasksOf(TaskType.UploadFolder);
+    expect(tasksService.findTask(photosTask.id)?.failedItems).toHaveLength(1);
+
+    await photosTask.pause?.();
+    expect(statusOf(photosTask.id)).toBe(TaskStatus.Success);
+
+    fixBroken();
+
+    const retrying = tasksService.findTask(photosTask.id)?.retry?.();
+    await vi.runAllTimersAsync();
+    await retrying;
+    expect(tasksService.findTask(photosTask.id)).toEqual(
+      expect.objectContaining({ status: TaskStatus.Success, failedItems: [] }),
+    );
+  });
+
+  test('When a paused folder finishes with the files that were already uploading, then resuming it changes nothing', async () => {
+    const upload = createUpload([getFolderWithFiles('Photos', ['beach.png'])], []);
+    void upload.run();
+    const [photosTask] = tasksOf(TaskType.UploadFolder);
+    await vi.waitFor(() => expect(uploadedNames()).toEqual(['beach']));
+    await photosTask.pause?.();
+    await vi.runAllTimersAsync();
+
+    await photosTask.resume?.();
+
+    expect(statusOf(photosTask.id)).toBe(TaskStatus.Success);
+  });
+
+  test('When the user resumes a folder that was cancelled while paused, then it stays cancelled', async () => {
+    const upload = createUpload([getFolderWithFiles('Photos', ['beach.png', 'city.png'])], []);
+    void upload.run();
+    const [photosTask] = tasksOf(TaskType.UploadFolder);
+    await vi.waitFor(() => expect(uploadedNames()).toEqual(['beach']));
+    await photosTask.pause?.();
+    await tasksService.cancelTask(photosTask.id);
+    await vi.runAllTimersAsync();
+
+    await photosTask.resume?.();
+
+    expect(statusOf(photosTask.id)).toBe(TaskStatus.Cancelled);
+  });
+
+  test('When the user pauses a file right after its progress was reported, then that progress is not shown', async () => {
+    const upload = createUpload([], [getFileToUpload('report.pdf')]);
+    const [reportTask] = tasksOf(TaskType.UploadFile);
+    (uploadFile as Mock).mockImplementation(
+      (_file, reportProgress: (progress: number) => void) =>
+        new Promise(() => {
+          reportProgress(0.5);
+          void reportTask.pause?.();
+        }),
+    );
+
+    void upload.run();
+    await vi.waitFor(() => expect(uploadFile).toHaveBeenCalled());
+    await vi.runAllTimersAsync();
+
+    expect(tasksService.findTask(reportTask.id)).toEqual(
+      expect.objectContaining({ status: TaskStatus.Paused, progress: 0 }),
+    );
+  });
+});
+
+describe('Keeping the tasks list up to date', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    tasksService.clearTasks();
+    vi.spyOn(errorService, 'reportError').mockReturnValue();
+    fakeFolderCreationTaking();
+  });
+
+  test('When thousands of files fail in a folder, then its task is updated a few times instead of once per file', async () => {
+    const failingNames = Array.from({ length: 3000 }, (_, index) => `broken${index}`);
+    failUploadsOf(failingNames);
+    const updateTask = vi.spyOn(tasksService, 'updateTask');
+
+    await createUpload([getFolderWithFiles('Photos', failingNames)], []).run();
+
+    const [folderTask] = tasksOf(TaskType.UploadFolder);
+    const failedItemsUpdates = updateTask.mock.calls.filter(([{ merge }]) => 'failedItems' in merge);
+    expect(folderTask.failedItems).toHaveLength(failingNames.length);
+    expect(failedItemsUpdates.length).toBeLessThan(100);
+  });
+
+  test('When the user cancels a file right after its progress was reported, then that progress is not shown on the cancelled task', async () => {
+    const upload = createUpload([], [getFileToUpload('report.pdf')]);
+    const [reportTask] = tasksOf(TaskType.UploadFile);
+    (uploadFile as Mock).mockImplementation(
+      (_file, reportProgress: (progress: number) => void, options: { abortCallback: (abort: () => void) => void }) =>
+        new Promise((_, reject) => {
+          options.abortCallback(() => reject(new Error('aborted')));
+          reportProgress(0.5);
+          void tasksService.cancelTask(reportTask.id);
+        }),
+    );
+
+    await upload.run();
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
+    expect(tasksService.findTask(reportTask.id)).toEqual(
+      expect.objectContaining({ status: TaskStatus.Cancelled, progress: 0 }),
+    );
+  });
+
+  test('When the tasks list fails to show some progress, then the error is reported and the upload still finishes', async () => {
+    const showOnTasksList = tasksService.updateTask.bind(tasksService);
+    const updateTask = vi.spyOn(tasksService, 'updateTask');
+    onTestFinished(() => updateTask.mockRestore());
+    updateTask.mockImplementation((update) => {
+      if ('progress' in update.merge) throw new Error('Tasks list not updated');
+      showOnTasksList(update);
+    });
+    (uploadFile as Mock).mockImplementation(
+      async (file: { name: string }, reportProgress: (progress: number) => void) => {
+        reportProgress(0.5);
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        return { uuid: `${file.name}-uuid` };
+      },
+    );
+
+    await createUpload([], [getFileToUpload('report.pdf')]).run();
+
+    expect(errorService.reportError).toHaveBeenCalledWith(new Error('Tasks list not updated'));
+    expect(tasksOf(TaskType.UploadFile)[0].status).toBe(TaskStatus.Success);
+  });
+});
+
+describe('Several uploads at the same time', () => {
+  const noSpaceLeftError = new AppError('No space left', HTTP_STATUS_CODES.MAX_SPACE_USED);
+  const sharedFolderOwner = {
+    token: 'owner-token',
+    bridgeUser: 'owner@internxt.com',
+    bridgePass: 'owner-pass',
+    encryptionKey: 'owner-key',
+    bucketId: 'owner-bucket',
+  };
+  const fileNames = (prefix: string, count: number) => Array.from({ length: count }, (_, index) => `${prefix}${index}`);
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    tasksService.clearTasks();
+    vi.spyOn(errorService, 'reportError').mockReturnValue();
+    vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerformance').mockReturnValue(MAX_CONCURRENT_UPLOADS);
+    fakeFolderCreationTaking();
+  });
+
+  test('When two uploads run at the same time, then together they never go over the usual number of uploads at once', async () => {
+    const mostAtTheSameTime = countUploadsAtTheSameTime(new Set());
+    const uploadManager = new UploadManager();
+    const photos = createUpload([getFolderWithFiles('Photos', fileNames('photo', 15))], [], { uploadManager });
+    const videos = createUpload([getFolderWithFiles('Videos', fileNames('video', 15))], [], { uploadManager });
+
+    await Promise.all([photos.run(), videos.run()]);
+
+    expect(tasksOf(TaskType.UploadFolder).map(({ status }) => status)).toEqual([
+      TaskStatus.Success,
+      TaskStatus.Success,
+    ]);
+    expect(mostAtTheSameTime()).toBeLessThanOrEqual(MAX_CONCURRENT_UPLOADS);
+  });
+
+  test('When one upload is retried while another one is still running, then together they never go over the usual number of uploads at once', async () => {
+    const stillFailing = new Set(fileNames('broken', 6));
+    const mostAtTheSameTime = countUploadsAtTheSameTime(stillFailing);
+    const uploadManager = new UploadManager();
+    const photos = createUpload([getFolderWithFiles('Photos', [...stillFailing])], [], { uploadManager });
+    const videos = createUpload([getFolderWithFiles('Videos', fileNames('video', 30))], [], { uploadManager });
+    const runningPhotos = photos.run();
+    const runningVideos = videos.run();
+    const [photosTask] = tasksOf(TaskType.UploadFolder);
+    await vi.waitFor(() => expect(tasksService.findTask(photosTask.id)?.failedItems).toHaveLength(6), {
+      timeout: 3000,
+    });
+    stillFailing.clear();
+
+    await Promise.all([photosTask.retry?.(), runningPhotos, runningVideos]);
+
+    expect(tasksOf(TaskType.UploadFolder).map(({ status }) => status)).toEqual([
+      TaskStatus.Success,
+      TaskStatus.Success,
+    ]);
+    expect(tasksService.findTask(photosTask.id)?.failedItems).toEqual([]);
+    expect(mostAtTheSameTime()).toBeLessThanOrEqual(MAX_CONCURRENT_UPLOADS);
+  });
+
+  test('When two uploads run at the same time, then each one only hears about its own items', async () => {
+    uploadSucceeds();
+    const uploadManager = new UploadManager();
+    const onPhotoUploaded = vi.fn();
+    const onVideoUploaded = vi.fn();
+    const photos = createUpload([getFolderWithFiles('Photos', ['beach.png'])], [], {
+      uploadManager,
+      onItemUploaded: onPhotoUploaded,
+    });
+    const videos = createUpload([getFolderWithFiles('Videos', ['movie.mp4'])], [], {
+      uploadManager,
+      onItemUploaded: onVideoUploaded,
+    });
+
+    await Promise.all([photos.run(), videos.run()]);
+
+    const uploadedUuids = (onItemUploaded: Mock) => onItemUploaded.mock.calls.map(([uploaded]) => uploaded.uuid).sort();
+    expect(uploadedUuids(onPhotoUploaded)).toEqual(['Photos-uuid', 'beach-uuid']);
+    expect(uploadedUuids(onVideoUploaded)).toEqual(['Videos-uuid', 'movie-uuid']);
+    expect(tasksOf(TaskType.UploadFolder).map(({ progress }) => progress)).toEqual([1, 1]);
+  });
+
+  test('When the storage of a shared folder is full, then an upload to your own Drive still uploads', async () => {
+    (uploadFile as Mock).mockImplementation(
+      async (file: { name: string }, _progress, options: { ownerUserAuthenticationData?: { bucketId: string } }) => {
+        if (file.name === 'slow') await new Promise((resolve) => setTimeout(resolve, 500));
+        else if (options.ownerUserAuthenticationData?.bucketId === 'owner-bucket') throw noSpaceLeftError;
+        return { uuid: `${file.name}-uuid` };
+      },
+    );
+    const uploadManager = new UploadManager();
+    const onStorageFull = vi.fn();
+    const toSharedFolder = createUpload([], [getFileToUpload('full.pdf'), getFileToUpload('slow.pdf')], {
+      uploadManager,
+      ownerUserAuthenticationData: sharedFolderOwner,
+      onStorageFull,
+    });
+    const runningToSharedFolder = toSharedFolder.run();
+    await vi.waitFor(() => expect(onStorageFull).toHaveBeenCalled());
+
+    const toOwnDrive = createUpload([], [getFileToUpload('mine.pdf')], { uploadManager });
+    await Promise.all([toOwnDrive.run(), runningToSharedFolder]);
+
+    const [fullTask, slowTask, mineTask] = tasksOf(TaskType.UploadFile);
+    expect(fullTask.status).toBe(TaskStatus.Error);
+    expect(slowTask.status).toBe(TaskStatus.Success);
+    expect(mineTask.status).toBe(TaskStatus.Success);
+    expect(uploadedNames()).toContain('mine');
   });
 });
