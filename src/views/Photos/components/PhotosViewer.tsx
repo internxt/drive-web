@@ -17,10 +17,13 @@ interface PhotosViewerProps {
 const PhotosViewer = ({ photo, photos, onClose, onLastPhotoReached }: PhotosViewerProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const files = useMemo(() => photos.map(({ file }) => file), [photos]);
-  const photoByFileId = useMemo(() => new Map(photos.map((shownPhoto) => [shownPhoto.file.id, shownPhoto])), [photos]);
+  const photoByFileUuid = useMemo(
+    () => new Map(photos.map((shownPhoto) => [shownPhoto.file.uuid, shownPhoto])),
+    [photos],
+  );
 
   const downloadPhoto = (file: DriveItemData) => {
-    const relatedFiles = photoByFileId.get(file.id)?.relatedFiles ?? [];
+    const relatedFiles = photoByFileUuid.get(file.uuid)?.relatedFiles ?? [];
     const photoFiles = [file, ...relatedFiles.map((relatedFile) => relatedFile.file)];
     void DownloadManager.downloadItem({
       payload: photoFiles,
