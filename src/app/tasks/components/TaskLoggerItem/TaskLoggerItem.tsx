@@ -11,6 +11,7 @@ import { TaskData, TaskNotification, TaskStatus, TaskType, UploadFileData, Uploa
 import { TaskLoggerActions } from '../TaskLoggerActions/TaskLoggerActions';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import TaskToRetry from '../TaskToRetry/TaskToRetry';
+import { useRetryManagerFailedItems } from '../TaskToRetry/useRetryManagerFailedItems';
 import { RetryableTask, RetryableTaskType } from 'app/network/RetryManager';
 
 const THREE_HUNDRED_MB_IN_BYTES = 3 * 100 * 1024 * 1024;
@@ -141,7 +142,16 @@ const TaskLoggerItem = ({ notification, task, filesToRetry }: TaskLoggerItemProp
     return isDownload ? retryDownload : retryUpload;
   };
 
-  const retryFunction = getRetryActionFunction(isDownloadError);
+  const retryTask = task?.retry;
+  const retryFunction = retryTask ? () => retryTask() : getRetryActionFunction(isDownloadError);
+
+  const retryManagerFailedItems = useRetryManagerFailedItems(filesToRetry ?? []);
+  const failedUploadItems = task?.failedItems ?? [];
+  const hasFailedUploadItems = failedUploadItems.length > 0;
+  const failedItems = hasFailedUploadItems ? failedUploadItems : retryManagerFailedItems;
+  const hasFailedItems = failedItems.length > 0;
+  const isUploadRetry = hasFailedUploadItems || filesToRetry?.[0]?.type === RetryableTaskType.Upload;
+  const retryAllFailedUploadItems = hasFailedUploadItems ? () => task?.retry?.() : undefined;
 
   const handleRetryClick = () => {
     if (!isRetryActionDisabled) {
@@ -160,12 +170,17 @@ const TaskLoggerItem = ({ notification, task, filesToRetry }: TaskLoggerItemProp
     tasksService.removeTask(notification.taskId);
   };
 
-  const hasFilesToRetry = (filesToRetry?.length ?? 0) > 0;
-  if (isModalOpen && !hasFilesToRetry) setIsModalOpen(false);
+  if (isModalOpen && !hasFailedItems) setIsModalOpen(false);
 
   return (
     <div className="relative">
-      <TaskToRetry isOpen={isModalOpen} files={filesToRetry ?? []} onClose={() => setIsModalOpen(false)} />
+      <TaskToRetry
+        isOpen={isModalOpen}
+        failedItems={failedItems}
+        isUpload={isUploadRetry}
+        onClose={() => setIsModalOpen(false)}
+        onRetryAll={retryAllFailedUploadItems}
+      />
       <div
         className={'flex h-12 items-center space-x-2 px-2 hover:bg-gray-5'}
         role="none"
@@ -191,7 +206,7 @@ const TaskLoggerItem = ({ notification, task, filesToRetry }: TaskLoggerItemProp
           openItemAction={openItem}
           openRetryItemsAction={() => setIsModalOpen(true)}
           showPauseButton={shouldDisplayPauseButton(notification)}
-          haveWarnings={filesToRetry?.length > 0}
+          haveWarnings={hasFailedItems}
         />
       </div>
       {showProgressBar && <ProgressBar progress={progress} isPaused={notification.status === TaskStatus.Paused} />}
