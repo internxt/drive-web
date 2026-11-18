@@ -250,6 +250,16 @@ describe('urgent checkout view', () => {
       expect(screen.getByText('Resend email')).toBeTruthy();
     });
 
+    it('When the buyer switches to logging in, then the pending setup notice is not shown', () => {
+      renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, {
+        authMethod: 'signIn',
+        pendingAccountSetupEmail: 'buyer@internxt.com',
+      });
+
+      expect(screen.queryByText(/buyer@internxt.com already has a paid plan waiting to be set up/)).toBeNull();
+      expect(screen.queryByText('Resend email')).toBeNull();
+    });
+
     it.each<[AuthMethodTypes, string, AuthMethodTypes]>([
       ['signUp', 'Log in', 'signIn'],
       ['signIn', 'Create account', 'signUp'],

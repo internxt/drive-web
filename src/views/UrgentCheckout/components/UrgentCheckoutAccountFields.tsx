@@ -112,7 +112,7 @@ export const UrgentCheckoutAccountFields = ({
         </div>
       )}
 
-      {pendingAccountSetupEmail && (
+      {isPasswordlessSignUp && pendingAccountSetupEmail && (
         <div className="flex flex-col items-start gap-3 rounded-xl border border-[#2A5BA8] bg-[#0E1E38] p-4">
           <p className="text-sm text-white">
             {translate('checkout.accountSetup.pendingSetup', { email: pendingAccountSetupEmail })}
@@ -123,7 +123,10 @@ export const UrgentCheckoutAccountFields = ({
 
       {(authError || errors.email || errors.password) && (
         <p id="authError" className="text-sm text-red">
-          {authError ?? translate('urgentCheckout.form.incompleteDetails')}
+          {authError ??
+            (errors.email
+              ? translate('urgentCheckout.form.emailMustNotBeEmpty')
+              : translate('urgentCheckout.form.passwordMustNotBeEmpty'))}
         </p>
       )}
 
