@@ -68,7 +68,6 @@ describe('useBackupDeviceActions', () => {
   } as DriveFolderData;
 
   beforeEach(() => {
-    vi.clearAllMocks();
     onFolderUuidChanges = vi.fn();
     onBreadcrumbFolderChanges = vi.fn();
     dispatch = vi.fn((action) => {

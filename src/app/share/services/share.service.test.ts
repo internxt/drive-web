@@ -119,7 +119,6 @@ describe('Encryption and Decryption', () => {
   });
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 
@@ -176,10 +175,6 @@ describe('Inviting user to Shared Folder', () => {
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
 
   test('When inviting a user, then the captcha token should be generated and included when creating the client', async () => {
     const { generateCaptchaToken } = await import('utils');
@@ -515,10 +510,6 @@ describe('decryptPublicSharingCodeWithOwner', () => {
   const mnemonic = 'test mnemonic';
   const plainCode = 'test plain code';
 
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   test('When encryptionAlgorithm is NEW_SHARING_VERSION, then code is decrypted using bucket key', async () => {
     const bucketKey = await generateFileBucketKey(mnemonic, bucket);
     const bucketKeyHex = Buffer.from(bucketKey.subarray(0, 32)).toString('hex');
@@ -549,7 +540,6 @@ describe('decryptPublicSharingCodeWithOwner', () => {
 
   describe('when user is not found', () => {
     beforeEach(() => {
-      vi.clearAllMocks();
       vi.restoreAllMocks();
     });
 
@@ -637,7 +627,6 @@ describe('Download public shared items', () => {
     }) as unknown as AdvancedSharedItem;
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.mocked(getDownloadSupport).mockResolvedValue(DownloadSupport.StreamApi);
     vi.mocked(downloadToFs).mockImplementation(async ({ source }) => {
       await source;
@@ -909,10 +898,6 @@ describe('Download public shared file', () => {
 });
 
 describe('Download public shared folder', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   test('When credentials are returned, then the folder contents are downloaded with the derived key', async () => {
     vi.spyOn(shareService, 'getPublicSharedFolderContent').mockResolvedValueOnce({
       items: [],

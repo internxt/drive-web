@@ -91,6 +91,7 @@ export enum AppView {
   RecoverAccount = 'recover-account',
   CompleteAccount = 'complete-account',
   Drive = 'drive',
+  Photos = 'photos',
   Favorites = 'favorites',
   Recents = 'recents',
   Trash = 'trash',

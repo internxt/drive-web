@@ -6,7 +6,7 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { validateMnemonic } from 'bip39';
 import { saveAs } from 'file-saver';
 import localStorageService from 'services/local-storage.service';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   BackupData,
   detectBackupKeyFormat,
@@ -61,10 +61,6 @@ vi.mock('app/crypto/services/pgp.service');
 
 describe('backupKeyUtils', () => {
   const mockTranslate = vi.fn((key) => `Translated: ${key}`);
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
 
   afterEach(() => {
     vi.resetAllMocks();
@@ -425,10 +421,6 @@ describe('backupKeyUtils', () => {
   });
 
   describe('prepareOldBackupRecoverPayloadForBackend', () => {
-    beforeEach(() => {
-      vi.clearAllMocks();
-    });
-
     it('should prepare recovery payload correctly', async () => {
       const mockMnemonic =
         'whip pipe sphere rail witness sting hawk project east return unhappy focus shop dry midnight frog critic lion horror slide luxury consider vibrant timber';

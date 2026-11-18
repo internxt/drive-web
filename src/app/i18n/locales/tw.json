@@ -204,7 +204,13 @@
       "success": "您已成功登入",
       "error": "無法登入，請再試一次",
       "closeWindow": "您可以關閉此視窗",
-      "invalidRedirectUri": "無效的重新導向網址"
+      "invalidRedirectUri": "無效的重新導向網址",
+      "errors": {
+        "CLIENT_VERSION_UNSUPPORTED": {
+          "title": "此版本的應用程式已不再受支援",
+          "description": "請將應用程式更新至最新版本，然後再次登入。"
+        }
+      }
     },
     "oauthLink": {
       "continueAs": "繼續使用",
@@ -290,7 +296,11 @@
       "offerPillNoDiscount": "限時專屬優惠",
       "title": "讓您的檔案、照片和影片",
       "titleHighlight": "100% 私密。",
-      "subtitle": "首月僅需 {{price}}，即可獲得 {{storage}} 私人雲端儲存空間。",
+      "subtitle": {
+        "month": "首月僅需 {{price}}，即可獲得 {{storage}} 私人雲端儲存空間。",
+        "year": "首年僅需 {{price}}，即可獲得 {{storage}} 私人雲端儲存空間。",
+        "lifetime": "一次性付款 {{price}}，即可永久擁有 {{storage}} 私人雲端儲存空間。"
+      },
       "imageAlt": "筆記型電腦和手機上的 Internxt Drive",
       "points": {
         "privacy": {
@@ -300,6 +310,10 @@
         "storage": {
           "title": "您的私人雲端，安全無虞",
           "description": "儲存您的照片、影片、文件和個人檔案，隱私保護內建其中。"
+        },
+        "suite": {
+          "title": "不只是雲端儲存空間",
+          "description": "依您的方案提供隱私工具。"
         },
         "offer": {
           "title": "立減 {{percent}}% — 限時優惠",
@@ -336,8 +350,8 @@
     },
     "cta": {
       "button": {
-        "lifetime": "取得 Lifetime 儲存空間",
-        "subscription": "訂閱私人雲端儲存空間"
+        "lifetime": "取得 Lifetime 方案",
+        "subscription": "取得訂閱方案"
       },
       "billingDisclosure": {
         "withIntroPrice": {
@@ -464,6 +478,7 @@
   },
   "sideNav": {
     "drive": "雲端硬碟",
+    "photos": "照片",
     "favorites": "收藏",
     "backups": "備份",
     "shared": "共享",
@@ -476,6 +491,32 @@
     }
   },
   "views": {
+    "photos": {
+      "head": "照片",
+      "empty": {
+        "title": "尚無照片",
+        "description": "在 Internxt 行動應用程式中開啟照片備份,照片就會顯示在這裡"
+      },
+      "error": {
+        "title": "無法載入照片",
+        "description": "請檢查網路連線後再試一次",
+        "retry": "重試"
+      },
+      "filters": {
+        "allDevices": "所有裝置",
+        "allDates": "所有日期"
+      },
+      "timeline": {
+        "today": "今天",
+        "yesterday": "昨天",
+        "monthError": "無法載入 {{month}} 的部分照片"
+      },
+      "badges": {
+        "livePhoto": "原況照片",
+        "burst": "連拍",
+        "video": "影片"
+      }
+    },
     "favorites": {
       "head": "收藏",
       "empty": {
@@ -1376,7 +1417,8 @@
       "errors": {}
     },
     "subtitles": {
-      "upload-failed": "上傳失敗"
+      "upload-failed": "上傳失敗",
+      "folder-removal-failed": "無法移除已上傳的資料夾"
     },
     "generalErrorMessages": {
       "retryUploadFailed": "重試上傳時出現問題。請重新上傳",

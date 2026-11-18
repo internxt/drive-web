@@ -1,6 +1,5 @@
 import { describe, it, test, expect, vi, beforeEach, Mock } from 'vitest';
 import moveItemsToTrash from './moveItemsToTrash.service';
-import { SdkFactory } from 'app/core/factory/sdk';
 import errorService from 'services/error.service';
 import { deleteDatabaseItems } from 'app/drive/services/database.service';
 import { DriveItemData } from 'app/drive/types';
@@ -9,6 +8,7 @@ import { store } from 'app/store';
 import { storageActions } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { processBatchConcurrently } from './batchProcessor.service';
+import { mockSdkFactory } from 'testUtils/sdk.mock';
 
 vi.mock('app/core/factory/sdk', () => ({
   SdkFactory: {
@@ -72,7 +72,6 @@ vi.mock('i18next', () => ({
 
 describe('moveItemsToTrash', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     (store.getState as Mock).mockReturnValue({ storage: { favorites: [] } });
   });
 
@@ -90,11 +89,7 @@ describe('moveItemsToTrash', () => {
     });
     (deleteDatabaseItems as Mock).mockResolvedValue(undefined);
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createTrashClient: () => ({
-        addItemsToTrash: mockAddItemsToTrash,
-      }),
-    });
+    mockSdkFactory({ createTrashClient: { addItemsToTrash: mockAddItemsToTrash } });
 
     await moveItemsToTrash(mockItems, onSuccess);
 
@@ -120,11 +115,7 @@ describe('moveItemsToTrash', () => {
     (processBatchConcurrently as Mock).mockResolvedValue(undefined);
     (deleteDatabaseItems as Mock).mockResolvedValue(undefined);
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createTrashClient: () => ({
-        addItemsToTrash: vi.fn(),
-      }),
-    });
+    mockSdkFactory({ createTrashClient: { addItemsToTrash: vi.fn() } });
 
     await moveItemsToTrash(mockItems);
 
@@ -154,11 +145,7 @@ describe('moveItemsToTrash', () => {
     (processBatchConcurrently as Mock).mockResolvedValue(undefined);
     (deleteDatabaseItems as Mock).mockResolvedValue(undefined);
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createTrashClient: () => ({
-        addItemsToTrash: vi.fn(),
-      }),
-    });
+    mockSdkFactory({ createTrashClient: { addItemsToTrash: vi.fn() } });
 
     await moveItemsToTrash(mockItems);
 
@@ -177,11 +164,7 @@ describe('moveItemsToTrash', () => {
     (processBatchConcurrently as Mock).mockResolvedValue(undefined);
     (deleteDatabaseItems as Mock).mockResolvedValue(undefined);
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createTrashClient: () => ({
-        addItemsToTrash: vi.fn(),
-      }),
-    });
+    mockSdkFactory({ createTrashClient: { addItemsToTrash: vi.fn() } });
 
     await moveItemsToTrash(mockItems);
 
@@ -197,11 +180,7 @@ describe('moveItemsToTrash', () => {
     (processBatchConcurrently as Mock).mockResolvedValue(undefined);
     (deleteDatabaseItems as Mock).mockResolvedValue(undefined);
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createTrashClient: () => ({
-        addItemsToTrash: vi.fn(),
-      }),
-    });
+    mockSdkFactory({ createTrashClient: { addItemsToTrash: vi.fn() } });
 
     await moveItemsToTrash(mockItems);
 
@@ -216,11 +195,7 @@ describe('moveItemsToTrash', () => {
     (processBatchConcurrently as Mock).mockResolvedValue(undefined);
     (deleteDatabaseItems as Mock).mockResolvedValue(undefined);
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createTrashClient: () => ({
-        addItemsToTrash: vi.fn(),
-      }),
-    });
+    mockSdkFactory({ createTrashClient: { addItemsToTrash: vi.fn() } });
 
     await moveItemsToTrash(mockItems);
 
@@ -235,11 +210,7 @@ describe('moveItemsToTrash', () => {
     (notificationsService.show as Mock).mockReturnValue('toast-id');
     (processBatchConcurrently as Mock).mockRejectedValue(mockError);
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createTrashClient: () => ({
-        addItemsToTrash: vi.fn(),
-      }),
-    });
+    mockSdkFactory({ createTrashClient: { addItemsToTrash: vi.fn() } });
 
     await moveItemsToTrash(mockItems);
 

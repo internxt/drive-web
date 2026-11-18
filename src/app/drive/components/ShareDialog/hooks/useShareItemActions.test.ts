@@ -55,7 +55,6 @@ describe('Share Item Actions', () => {
   } as SharingMeta;
 
   beforeEach(() => {
-    vi.clearAllMocks();
     mockUseShareDialogContext.mockReturnValue({
       state: {
         accessMode: 'restricted',

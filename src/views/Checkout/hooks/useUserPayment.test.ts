@@ -18,7 +18,6 @@ const mockHostname = 'https://hostname.com';
 
 describe('Custom hook to handle payments', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.doUnmock('@internxt/sdk');
     vi.doUnmock('app/core/factory/sdk');
     vi.doUnmock('services/payment.service');
