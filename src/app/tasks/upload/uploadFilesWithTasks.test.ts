@@ -21,11 +21,11 @@ const { managerState } = vi.hoisted(() => ({
 }));
 
 vi.mock('app/upload/UploadManager', () => ({
-  UploadManager: vi.fn(function (this: NonNullable<typeof managerState.instance>, props) {
-    this.props = props;
+  UploadManager: vi.fn(function (this: NonNullable<typeof managerState.instance>) {
     this.cancelItem = vi.fn();
-    this.run = vi.fn(async (items: UploadItem[]) => {
+    this.run = vi.fn(async (items: UploadItem[], options: { events: UploadManagerEvents }) => {
       this.items = items;
+      this.props = options;
       return managerState.result;
     });
     managerState.instance = this;
@@ -83,12 +83,14 @@ const runUpload = async (files: ReturnType<typeof buildFile>[], props: Record<st
 };
 
 const failWith = (failure: Partial<UploadFailure>) => {
-  vi.mocked(UploadManager).mockImplementationOnce(function (this: NonNullable<typeof managerState.instance>, props) {
-    this.props = props;
-    this.run = vi.fn(async (items: UploadItem[]) => ({
-      succeeded: [],
-      failed: [{ item: items[0], failure: { error: new Error('failed'), isRetryable: true, ...failure } }],
-    }));
+  vi.mocked(UploadManager).mockImplementationOnce(function (this: NonNullable<typeof managerState.instance>) {
+    this.run = vi.fn(async (items: UploadItem[], options: { events: UploadManagerEvents }) => {
+      this.props = options;
+      return {
+        succeeded: [],
+        failed: [{ item: items[0], failure: { error: new Error('failed'), isRetryable: true, ...failure } }],
+      };
+    });
     managerState.instance = this;
   } as never);
 };

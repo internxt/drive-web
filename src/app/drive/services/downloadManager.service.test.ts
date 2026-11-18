@@ -23,7 +23,10 @@ import downloadService from './download.service';
 import { getDatabaseFileSourceData, updateDatabaseFileSourceData } from './database.service';
 import { FlatFolderZip } from 'services/zip.service';
 import { binaryStreamToBlob } from 'services/stream.service';
-import { LevelsBlobsCache, LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
+import {
+  createFilesCacheStorage,
+  LRUFilesCacheManager,
+} from 'app/database/services/database.service/LRUFilesCacheManager';
 import { LRUCache } from 'app/database/services/database.service/LRUCache';
 import { DriveItemBlobData } from 'app/database/services/database.service';
 import { ConnectionLostError } from 'app/network/requests';
@@ -789,7 +792,7 @@ describe('downloadManagerService', () => {
     const downloadItem = getDownloadItem([mockFile, mockFileCache]);
     const mockTask = getTask(downloadItem.payload);
 
-    const levelsBlobsCache = new LevelsBlobsCache();
+    const levelsBlobsCache = createFilesCacheStorage();
     const lruCache = new LRUCache<DriveItemBlobData>(levelsBlobsCache, 1);
     const lruCacheSpy = vi
       .spyOn(lruCache, 'get')
@@ -849,7 +852,7 @@ describe('downloadManagerService', () => {
     const mockUpdateStatusProgress = vi.fn((progress: number) => progress);
     const mockIncrementItemCount = vi.fn();
 
-    const levelsBlobsCache = new LevelsBlobsCache();
+    const levelsBlobsCache = createFilesCacheStorage();
     const lruCache = new LRUCache<DriveItemBlobData>(levelsBlobsCache, 1);
     const lruCacheSpy = vi
       .spyOn(lruCache, 'get')
@@ -899,7 +902,7 @@ describe('downloadManagerService', () => {
     const mockUpdateStatusProgress = vi.fn((progress: number) => progress);
     const mockIncrementItemCount = vi.fn();
 
-    const levelsBlobsCache = new LevelsBlobsCache();
+    const levelsBlobsCache = createFilesCacheStorage();
     const lruCache = new LRUCache<DriveItemBlobData>(levelsBlobsCache, 1);
     const lruCacheSpy = vi
       .spyOn(lruCache, 'get')
@@ -944,7 +947,7 @@ describe('downloadManagerService', () => {
       const mockUpdateDownloadedProgress = vi.fn();
       const mockIncrementItemCount = vi.fn();
 
-      const levelsBlobsCache = new LevelsBlobsCache();
+      const levelsBlobsCache = createFilesCacheStorage();
       const lruCache = new LRUCache<DriveItemBlobData>(levelsBlobsCache, 1);
       vi.spyOn(lruCache, 'get').mockResolvedValue({
         uuid: mockFile.uuid,
@@ -991,7 +994,7 @@ describe('downloadManagerService', () => {
       const mockUpdateStatusProgress = vi.fn((progress: number) => progress);
       const mockIncrementItemCount = vi.fn();
 
-      const levelsBlobsCache = new LevelsBlobsCache();
+      const levelsBlobsCache = createFilesCacheStorage();
       const lruCache = new LRUCache<DriveItemBlobData>(levelsBlobsCache, 1);
       vi.spyOn(lruCache, 'get').mockResolvedValueOnce({
         uuid: emptyFile.uuid,
@@ -1027,7 +1030,7 @@ describe('downloadManagerService', () => {
       const mockUpdateStatusProgress = vi.fn((progress: number) => progress);
       const mockIncrementItemCount = vi.fn();
 
-      const levelsBlobsCache = new LevelsBlobsCache();
+      const levelsBlobsCache = createFilesCacheStorage();
       const lruCache = new LRUCache<DriveItemBlobData>(levelsBlobsCache, 1);
       const lruCacheSpy = vi.spyOn(lruCache, 'get').mockResolvedValueOnce({
         uuid: mockFile.uuid,
@@ -1071,7 +1074,7 @@ describe('downloadManagerService', () => {
       const mockUpdateStatusProgress = vi.fn((progress: number) => progress);
       const mockIncrementItemCount = vi.fn();
 
-      const levelsBlobsCache = new LevelsBlobsCache();
+      const levelsBlobsCache = createFilesCacheStorage();
       const lruCache = new LRUCache<DriveItemBlobData>(levelsBlobsCache, 1);
       vi.spyOn(lruCache, 'get').mockResolvedValueOnce({
         uuid: mockFile.uuid,
@@ -1112,7 +1115,7 @@ describe('downloadManagerService', () => {
       const mockUpdateStatusProgress = vi.fn((progress: number) => progress);
       const mockIncrementItemCount = vi.fn();
 
-      const levelsBlobsCache = new LevelsBlobsCache();
+      const levelsBlobsCache = createFilesCacheStorage();
       const lruCache = new LRUCache<DriveItemBlobData>(levelsBlobsCache, 1);
       vi.spyOn(lruCache, 'get')
         .mockRejectedValueOnce(() => {
@@ -1231,7 +1234,7 @@ describe('downloadManagerService', () => {
       const mockUpdateStatusProgress = vi.fn((progress: number) => progress);
       const mockIncrementItemCount = vi.fn();
 
-      const levelsBlobsCache = new LevelsBlobsCache();
+      const levelsBlobsCache = createFilesCacheStorage();
       const lruCache = new LRUCache<DriveItemBlobData>(levelsBlobsCache, 1);
       const lruCacheSpy = vi
         .spyOn(lruCache, 'get')
@@ -1308,7 +1311,7 @@ describe('downloadManagerService', () => {
       const mockUpdateStatusProgress = vi.fn((progress: number) => progress);
       const mockIncrementItemCount = vi.fn();
 
-      const levelsBlobsCache = new LevelsBlobsCache();
+      const levelsBlobsCache = createFilesCacheStorage();
       const lruCache = new LRUCache<DriveItemBlobData>(levelsBlobsCache, 1);
       const lruCacheSpy = vi.spyOn(lruCache, 'get').mockResolvedValueOnce({
         uuid: mockFile.uuid,
