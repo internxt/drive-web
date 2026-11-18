@@ -2,9 +2,12 @@ import databaseService, {
   AvatarBlobData,
   DatabaseCollection,
   DriveItemBlobData,
+  PreviewBlobData,
 } from 'app/database/services/database.service';
 import { LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
 import { LRUFilesPreviewCacheManager } from 'app/database/services/database.service/LRUFilesPreviewCacheManager';
+import { LRUPhotosThumbnailsCacheManager } from 'app/database/services/database.service/LRUPhotosThumbnailsCacheManager';
+import errorService from 'services/error.service';
 import { DriveFileData, DriveFolderData, DriveItemData } from '../types';
 
 const updateDatabaseProfileAvatar = async ({
@@ -51,36 +54,38 @@ const deleteDatabaseWorkspaceAvatar = async (uuid: string): Promise<void> =>
 
 const updateDatabaseFilePreviewData = async ({
   fileUuid,
-  folderId,
   previewBlob,
   updatedAt,
 }: {
   fileUuid: string;
-  folderId: number;
   previewBlob: Blob;
   updatedAt: string;
 }): Promise<void> => {
   const lruFilesPreviewCacheManager = await LRUFilesPreviewCacheManager.getInstance();
-  const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileUuid);
-
-  lruFilesPreviewCacheManager?.set(
-    fileUuid,
-    {
-      ...fileData,
-      uuid: fileUuid,
-      parentId: folderId,
-      updatedAt: updatedAt,
-      preview: previewBlob,
-    },
-    previewBlob.size,
-  );
+  lruFilesPreviewCacheManager
+    .set(fileUuid, { preview: previewBlob, updatedAt }, previewBlob.size)
+    .catch(errorService.reportError);
 };
 
-const getDatabaseFilePreviewData = async ({
+const getDatabasePhotoThumbnail = async ({ fileUuid }: { fileUuid: string }): Promise<PreviewBlobData | undefined> => {
+  const lruPhotosThumbnailsCacheManager = await LRUPhotosThumbnailsCacheManager.getInstance();
+  return lruPhotosThumbnailsCacheManager.get(fileUuid);
+};
+
+const updateDatabasePhotoThumbnail = async ({
   fileUuid,
+  previewBlob,
+  updatedAt,
 }: {
   fileUuid: string;
-}): Promise<DriveItemBlobData | undefined> => {
+  previewBlob: Blob;
+  updatedAt: string;
+}): Promise<void> => {
+  const lruPhotosThumbnailsCacheManager = await LRUPhotosThumbnailsCacheManager.getInstance();
+  await lruPhotosThumbnailsCacheManager.set(fileUuid, { preview: previewBlob, updatedAt }, previewBlob.size);
+};
+
+const getDatabaseFilePreviewData = async ({ fileUuid }: { fileUuid: string }): Promise<PreviewBlobData | undefined> => {
   const lruFilesPreviewCacheManager = await LRUFilesPreviewCacheManager.getInstance();
 
   return lruFilesPreviewCacheManager?.get(fileUuid);
@@ -107,19 +112,9 @@ const updateDatabaseFileSourceData = async ({
   updatedAt: string;
 }): Promise<void> => {
   const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-  const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileUuid);
-
-  lruFilesCacheManager?.set(
-    fileUuid,
-    {
-      ...fileData,
-      uuid: fileUuid,
-      parentId: folderId,
-      source: sourceBlob,
-      updatedAt: updatedAt,
-    },
-    sourceBlob.size,
-  );
+  lruFilesCacheManager
+    .set(fileUuid, { uuid: fileUuid, parentId: folderId, source: sourceBlob, updatedAt }, sourceBlob.size)
+    .catch(errorService.reportError);
 };
 
 const deleteDatabaseItems = async (items: DriveItemData[]): Promise<void> => {
@@ -164,10 +159,12 @@ export {
   deleteDatabaseWorkspaceAvatar,
   getDatabaseFilePreviewData,
   getDatabaseFileSourceData,
+  getDatabasePhotoThumbnail,
   getDatabaseProfileAvatar,
   getDatabaseWorkspaceAvatar,
   updateDatabaseFilePreviewData,
   updateDatabaseFileSourceData,
+  updateDatabasePhotoThumbnail,
   updateDatabaseProfileAvatar,
   updateDatabaseWorkspaceAvatar,
 };

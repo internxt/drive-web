@@ -127,6 +127,15 @@ describe('Photo backup folders', () => {
           takenAt: '2026-11-02T09:00:00Z',
           updatedAt: '2026-11-03T10:00:00.000Z',
           thumbnail: null,
+          kind: 'photo',
+          relatedFiles: [],
+          file: expect.objectContaining({
+            uuid: 'photo-a',
+            name: 'IMG_A',
+            type: 'heic',
+            size: 2048000,
+            isFolder: false,
+          }),
         },
         {
           id: 1,
@@ -138,6 +147,15 @@ describe('Photo backup folders', () => {
           takenAt: '2026-11-15T09:00:00Z',
           updatedAt: '2026-11-03T10:00:00.000Z',
           thumbnail: null,
+          kind: 'photo',
+          relatedFiles: [],
+          file: expect.objectContaining({
+            uuid: 'photo-b',
+            name: 'IMG_B',
+            type: 'jpg',
+            size: 2048000,
+            isFolder: false,
+          }),
         },
       ]);
       expect(photosClient.getFilesInFolders).toHaveBeenCalledWith({

@@ -510,6 +510,11 @@
         "today": "Hoje",
         "yesterday": "Ontem",
         "monthError": "Não foi possível carregar algumas fotos de {{month}}"
+      },
+      "badges": {
+        "livePhoto": "Live Photo",
+        "burst": "Sequência",
+        "video": "Vídeo"
       }
     },
     "favorites": {
