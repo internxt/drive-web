@@ -4,6 +4,7 @@ import { DriveItemData } from 'app/drive/types';
 import { DownloadManager } from 'app/network/DownloadManager';
 import { Photo } from '../types';
 import PhotosViewer from './PhotosViewer';
+import { v7 as uuidV7 } from 'uuid';
 
 vi.mock('app/network/DownloadManager', () => ({ DownloadManager: { downloadItem: vi.fn() } }));
 vi.mock('app/i18n/provider/TranslationProvider', () => ({
@@ -24,7 +25,7 @@ const aPhoto = (name: string, type: string, relatedFiles: Photo[] = []): Photo =
     name,
     type,
     relatedFiles,
-    file: { id: name.length, name, type, isFolder: false } as DriveItemData,
+    file: { uuid: uuidV7(), name, type, isFolder: false } as DriveItemData,
   }) as unknown as Photo;
 
 const downloadFromTheViewer = (photo: Photo) => {

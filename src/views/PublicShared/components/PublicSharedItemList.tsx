@@ -15,6 +15,7 @@ import { t } from 'i18next';
 import { useEffect, useState } from 'react';
 import errorService from 'services/error.service';
 import { OrderField } from 'views/Shared/components/SharedItemList';
+import { getDriveItemId } from 'utils/driveItemsUtils';
 
 const skinSkeleton = [
   <div key="1" className="flex flex-row items-center space-x-4">
@@ -179,6 +180,7 @@ export const PublicSharedItemList = ({
 
   return (
     <List<AdvancedSharedItem, OrderField>
+      getItemId={getDriveItemId}
       header={[
         {
           label: t('shared-links.list.name'),
