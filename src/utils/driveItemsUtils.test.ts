@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { DriveItemData } from 'app/drive/types';
 import { AdvancedSharedItem } from 'app/share/types';
-import { removeDuplicates } from './driveItemsUtils';
+import { v7 as uuidV7 } from 'uuid';
+import { getDriveItemId, removeDuplicates } from './driveItemsUtils';
 
 describe('removeDuplicates', () => {
   const sharedItems = [
@@ -37,5 +38,14 @@ describe('removeDuplicates', () => {
   it('handles an empty list', () => {
     const result = removeDuplicates([]);
     expect(result).toHaveLength(0);
+  });
+});
+
+describe('getDriveItemId', () => {
+  it('should return the item uuid', () => {
+    const uuid = uuidV7();
+    const item = { uuid, name: 'file' } as unknown as DriveItemData;
+
+    expect(getDriveItemId(item)).toBe(uuid);
   });
 });

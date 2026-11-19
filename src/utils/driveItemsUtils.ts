@@ -23,4 +23,9 @@ const removeDuplicates = <T extends ItemData>(list: T[]) => {
   });
 };
 
-export { removeDuplicates };
+/**
+ * Returns the identity used to compare drive items in lists (selection, keys, context menu).
+ */
+const getDriveItemId = (item: ItemData): string => item.uuid;
+
+export { removeDuplicates, getDriveItemId };
