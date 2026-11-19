@@ -9,6 +9,12 @@ const photosDevicesService = {
       .filter((device) => device.status === 'EXISTS')
       .map((device) => ({ uuid: device.uuid, name: device.plainName }));
   },
+
+  /** Deletes the device and every photo backed up from it, for good. */
+  deleteDevice(deviceUuid: string): Promise<void> {
+    const photosClient = SdkFactory.getNewApiInstance().createPhotosClient();
+    return photosClient.deleteDevice(deviceUuid);
+  },
 };
 
 export default photosDevicesService;

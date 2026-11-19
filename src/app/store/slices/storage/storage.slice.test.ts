@@ -214,10 +214,7 @@ describe('storage slice', () => {
   });
 
   describe('Items that are not in the list', () => {
-    const buildFiles = () => [
-      buildDriveItemData({ name: 'first.pdf' }),
-      buildDriveItemData({ name: 'second.pdf' }),
-    ];
+    const buildFiles = () => [buildDriveItemData({ name: 'first.pdf' }), buildDriveItemData({ name: 'second.pdf' })];
 
     test('When an item that is not selected is deselected, then the selection does not change', () => {
       const [selected, notSelected] = buildFiles();
