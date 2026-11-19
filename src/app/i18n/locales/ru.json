@@ -489,6 +489,11 @@
         "today": "Сегодня",
         "yesterday": "Вчера",
         "monthError": "Не удалось загрузить некоторые фото за {{month}}"
+      },
+      "badges": {
+        "livePhoto": "Live Photo",
+        "burst": "Серия",
+        "video": "Видео"
       }
     },
     "favorites": {
@@ -1412,7 +1417,8 @@
       "errors": {}
     },
     "subtitles": {
-      "upload-failed": "Не удалось загрузить"
+      "upload-failed": "Не удалось загрузить",
+      "folder-removal-failed": "Не удалось удалить загруженную папку"
     },
     "generalErrorMessages": {
       "retryUploadFailed": "Что-то пошло не так при повторной попытке загрузки. Попробуйте загрузить снова",

@@ -15,6 +15,9 @@ export const getFolderToUpload = (name: string, content: Partial<IRoot> = {}): I
   ...content,
 });
 
+export const getFolderWithFiles = (name: string, fileNames: string[]): IRoot =>
+  getFolderToUpload(name, { childrenFiles: fileNames.map((fileName) => getFileToUpload(fileName)) });
+
 export const getUploadFileItem = (name: string, size = 1024): UploadFileItem => ({
   kind: UploadItemKind.File,
   file: { name, size, type: 'txt', content: getFileToUpload(name), parentFolderId: 'folder-uuid' },

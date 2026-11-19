@@ -103,10 +103,10 @@ export default function BackupsView(): JSX.Element {
     }
 
     setIsDeletingItems(true);
-    const itemIdsToDelete = new Set(items.map((item) => item.id));
-    const filteredCurrentItems = currentItems.filter((item) => !itemIdsToDelete.has(item.id));
+    const itemUuidsToDelete = new Set(items.map((item) => item.uuid));
+    const filteredCurrentItems = currentItems.filter((item) => !itemUuidsToDelete.has(item.uuid));
 
-    const isViewerItemBeingDeleted = isFileViewerOpen && fileViewerItem && itemIdsToDelete.has(fileViewerItem.id);
+    const isViewerItemBeingDeleted = isFileViewerOpen && fileViewerItem && itemUuidsToDelete.has(fileViewerItem.uuid);
 
     try {
       const deletePromises = items.map((item) =>
