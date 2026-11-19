@@ -21,9 +21,7 @@ export type PhotoThumbnail = Pick<Thumbnail, 'bucket_id' | 'bucket_file'>;
 export type PhotoKind = 'photo' | 'video' | 'livePhoto' | 'burst';
 
 export interface Photo {
-  id: number;
   uuid: string;
-  folderId: number;
   name: string;
   type: string;
   day: DayKey;

@@ -4,7 +4,7 @@ import { Photo } from '../types';
 import PhotosGallery from './PhotosGallery';
 
 const loadNextMonth = vi.fn();
-const shownPhoto = { id: 1, takenAt: '2026-11-01T10:00:00Z', file: { id: 1 } } as unknown as Photo;
+const shownPhoto = { uuid: 'photo-1', takenAt: '2026-11-01T10:00:00Z', file: { uuid: 'photo-1' } } as unknown as Photo;
 
 vi.mock('../hooks/useTimelinePhotos', () => ({
   useTimelinePhotos: () => ({
@@ -33,7 +33,15 @@ vi.mock('./PhotosViewer', () => ({
 
 describe('Opening a photo from the gallery', () => {
   test('When the viewer reaches the last loaded photo, then the gallery loads the next older month', () => {
-    render(<PhotosGallery months={[]} />);
+    render(
+      <PhotosGallery
+        months={[]}
+        selectedPhotos={new Map()}
+        trashedPhotos={new Set()}
+        onToggleSelection={vi.fn()}
+        onMoveToTrash={vi.fn()}
+      />,
+    );
     fireEvent.click(screen.getByRole('button', { name: 'Open photo' }));
 
     mockViewerProps.mock.calls.at(-1)?.[0].onLastPhotoReached();

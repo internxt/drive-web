@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { GroupedVirtuoso, GroupedVirtuosoHandle, ListRange } from 'react-virtuoso';
 import { useElementSize } from '../hooks/useElementSize';
+import { PhotoSelection } from '../hooks/usePhotoSelection';
 import { PhotoThumbnailsService } from '../services/photoThumbnails.service';
 import { MonthKey, Photo } from '../types';
 import {
@@ -25,7 +26,9 @@ interface PhotosTimelineProps {
   isLoadingMore: boolean;
   onEndReached: () => void;
   onRetryMonth: (month: MonthKey) => void;
+  selectedPhotos: PhotoSelection;
   onOpenPhoto: (photo: Photo) => void;
+  onToggleSelection: (photos: Photo[]) => void;
 }
 
 const PhotosTimeline = ({
@@ -34,7 +37,9 @@ const PhotosTimeline = ({
   isLoadingMore,
   onEndReached,
   onRetryMonth,
+  selectedPhotos,
   onOpenPhoto,
+  onToggleSelection,
 }: PhotosTimelineProps): JSX.Element => {
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
   const [scroller, setScroller] = useState<HTMLElement | null>(null);
@@ -46,6 +51,7 @@ const PhotosTimeline = ({
   const columns = getColumns(widthWithoutScrollbar);
   const days = useMemo(() => groupByDay(photos), [photos]);
   const timeline = useMemo(() => getTimeline(days, columns, failedMonths), [days, columns, failedMonths]);
+  const isSelecting = selectedPhotos.size > 0;
 
   useEffect(() => () => PhotoThumbnailsService.instance.resumeDownloads(), []);
 
@@ -91,7 +97,15 @@ const PhotosTimeline = ({
           }
           context={{ isLoadingMore, columns }}
           components={{ Footer: PhotosTimelineFooter }}
-          groupContent={(dayIndex) => <PhotosDayHeader day={timeline.days[dayIndex]} />}
+          groupContent={(dayIndex) => (
+            <PhotosDayHeader
+              day={days[dayIndex].day}
+              photos={days[dayIndex].photos}
+              selectedPhotos={selectedPhotos}
+              isSelecting={isSelecting}
+              onToggleSelection={onToggleSelection}
+            />
+          )}
           itemContent={(rowIndex) => {
             const row = timeline.rows[rowIndex];
             const paddingBottom = timeline.isLastRowOfDay[rowIndex] ? DAY_GAP : TILE_GAP;
@@ -105,7 +119,14 @@ const PhotosTimeline = ({
             return (
               <div style={getRowStyle(columns, paddingBottom)}>
                 {row.photos.map((photo) => (
-                  <PhotoGridItem key={photo.uuid} photo={photo} onOpen={onOpenPhoto} />
+                  <PhotoGridItem
+                    key={photo.uuid}
+                    photo={photo}
+                    isSelected={selectedPhotos.has(photo.uuid)}
+                    isSelecting={isSelecting}
+                    onOpen={onOpenPhoto}
+                    onToggleSelection={onToggleSelection}
+                  />
                 ))}
               </div>
             );
