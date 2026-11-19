@@ -7,6 +7,7 @@ interface PostbackPartner {
   utmSource: string;
   postbackUrl: string;
   networkId: string;
+  couponCode: string;
 }
 
 const POSTBACK_PARTNERS: readonly PostbackPartner[] = [
@@ -14,6 +15,7 @@ const POSTBACK_PARTNERS: readonly PostbackPartner[] = [
     utmSource: 'S42MF2',
     postbackUrl: 'https://www.p0stb4ck.com/',
     networkId: '1134',
+    couponCode: 'TFA',
   },
 ];
 
@@ -44,6 +46,16 @@ function setPostbackCookie(cookieName: string, value: string): void {
   document.cookie = `${cookieName}=${encodeURIComponent(value)};expires=${expiration.toUTCString()};Path=/;Secure`;
 }
 
+function clearPostbackCookies(): void {
+  for (const cookieName of [PARTNER_COOKIE, CLICK_ID_COOKIE]) {
+    document.cookie = `${cookieName}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;Path=/;Secure`;
+  }
+}
+
+function isPartnerCoupon(partner: PostbackPartner, couponCode: string | null): boolean {
+  return couponCode?.toLowerCase() === partner.couponCode.toLowerCase();
+}
+
 export function capturePostbackPartner(utmSource: string | null, affiliateClickId: string | null): void {
   const partner = findPartnerByUtmSource(utmSource);
 
@@ -59,9 +71,13 @@ export function capturePostbackPartner(utmSource: string | null, affiliateClickI
 }
 
 export async function sendPurchasePostback(): Promise<void> {
+  const partner = findPartnerByUtmSource(getCookie(PARTNER_COOKIE));
+  if (!partner) {
+    return;
+  }
+
   try {
-    const partner = findPartnerByUtmSource(getCookie(PARTNER_COOKIE));
-    if (!partner) {
+    if (!isPartnerCoupon(partner, localStorageService.get(LocalStorageItem.CouponCode))) {
       return;
     }
 
@@ -86,5 +102,7 @@ export async function sendPurchasePostback(): Promise<void> {
   } catch (error) {
     const castedError = errorService.castError(error);
     errorService.reportError(castedError);
+  } finally {
+    clearPostbackCookies();
   }
 }

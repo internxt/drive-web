@@ -41,6 +41,7 @@ const PURCHASE_DATA: Partial<Record<string, string>> = {
   [LocalStorageItem.SubscriptionID]: 'sub_123',
   [LocalStorageItem.AmountPaid]: '9.99',
   [LocalStorageItem.PriceId]: 'price_1U6Ev3FAOdcgaBMQHxOAmWPO',
+  [LocalStorageItem.CouponCode]: 'TFA',
 };
 
 const givenStoredData = (data: Partial<Record<string, string>>) => {
@@ -95,6 +96,15 @@ describe('Purchase tracking', () => {
     expect(mocks.gaTrackPurchase).toHaveBeenCalledWith({ id: 'cus_123', email: 'new.buyer@internxt.com' });
     expect(mocks.trackPaymentConversion).toHaveBeenCalledOnce();
     expect(fetchMock).toHaveBeenCalledOnce();
+  });
+
+  it('When a buyer clicked the collaborator link but paid with the coupon of another affiliate, then no postback is sent', async () => {
+    givenStoredData({ ...PURCHASE_DATA, [LocalStorageItem.CouponCode]: 'AFFIOFFER' });
+
+    await trackCheckoutCompleted(translate);
+
+    expect(mocks.trackPaymentConversion).toHaveBeenCalledOnce();
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it('When the purchase comes from anywhere else, then Impact is tracked and no postback is sent', async () => {
