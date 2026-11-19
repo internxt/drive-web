@@ -19,6 +19,10 @@ import storageReducer from 'app/store/slices/storage';
 import uiReducer from 'app/store/slices/ui';
 import userReducer from 'app/store/slices/user';
 import workspacesReducer from 'app/store/slices/workspaces/workspacesStore';
+import { AppError } from '@internxt/sdk';
+import navigationService from 'services/navigation.service';
+import { UserSubscription, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
+import planReducer, { fetchSubscriptionThunk } from 'app/store/slices/plan';
 import { PhotoDevice as SdkPhotoDevice } from '@internxt/sdk/dist/drive/photos';
 import {
   getPhotoFolder,
@@ -340,6 +344,100 @@ describe('Photos view', () => {
 
     expect(await screen.findByText('views.photos.empty.title')).toBeInTheDocument();
     expect(photosClient.listDevices).toHaveBeenCalledTimes(2);
+  });
+
+  describe('Plan without Photos', () => {
+    const photosNotInPlan = new AppError('Payment required', 402);
+    const freePlan: UserSubscription = { type: 'free' };
+    const photosPlan = { type: 'subscription', priceId: 'photos-price' } as UserSubscription;
+    const renderWithPlan = (individualSubscription: UserSubscription | null = freePlan) => {
+      const store = configureStore({
+        reducer: { plan: planReducer },
+        preloadedState: { plan: { ...planReducer(undefined, { type: 'init' }), individualSubscription } },
+      });
+      render(
+        <Provider store={store}>
+          <PhotosView />
+        </Provider>,
+      );
+      const subscriptionFetched = (subscription: UserSubscription) =>
+        act(() => {
+          store.dispatch(fetchSubscriptionThunk.fulfilled(subscription, 'request', { userType: UserType.Individual }));
+        });
+      return { subscriptionFetched };
+    };
+
+    test('When the plan does not include Photos, then a locked state with an upgrade button is shown instead of the photos', async () => {
+      photosClient.listDevices.mockRejectedValue(photosNotInPlan);
+
+      renderWithPlan();
+
+      expect(await screen.findByText('views.photos.locked.title')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /views.photos.locked.upgrade/ })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /views.photos.error.retry/ })).not.toBeInTheDocument();
+      expect(screen.queryByText('views.photos.empty.title')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('photos-grid-skeleton')).not.toBeInTheDocument();
+    });
+
+    test('When the user chooses to upgrade from the locked state, then the plans open in the settings', async () => {
+      photosClient.listDevices.mockRejectedValue(photosNotInPlan);
+      const openPreferences = vi.spyOn(navigationService, 'openPreferencesDialog').mockReturnValue();
+
+      renderWithPlan();
+      fireEvent.click(await screen.findByRole('button', { name: /views.photos.locked.upgrade/ }));
+
+      expect(openPreferences).toHaveBeenCalledWith({ section: 'account', subsection: 'plans' });
+    });
+
+    test('When the user upgrades to a plan with Photos while it is locked, then their photos are shown without reloading', async () => {
+      photosClient.listDevices.mockRejectedValueOnce(photosNotInPlan);
+      givenDevices([iphone]);
+      givenSubfolders({
+        ...iphonePhotosOfNovember2026,
+        'iphone-2026-11': [getPhotoFolder({ uuid: 'iphone-2026-11-03', plainName: '03' })],
+      });
+      givenPhotosInFolders({
+        'iphone-2026-11-03': [photo('IMG_UPGRADED', 'iphone-2026-11-03', '2026-11-03T09:00:00Z')],
+      });
+      const { subscriptionFetched } = renderWithPlan();
+      await screen.findByText('views.photos.locked.title');
+
+      subscriptionFetched(photosPlan);
+
+      expect(await screen.findByRole('img', { name: 'IMG_UPGRADED.jpg' })).toBeInTheDocument();
+      expect(screen.queryByText('views.photos.locked.title')).not.toBeInTheDocument();
+    });
+
+    test('When the same plan is fetched again while it is locked, then Photos is not requested again', async () => {
+      photosClient.listDevices.mockRejectedValue(photosNotInPlan);
+      const { subscriptionFetched } = renderWithPlan();
+      await screen.findByText('views.photos.locked.title');
+
+      subscriptionFetched({ type: 'free' });
+
+      expect(screen.getByText('views.photos.locked.title')).toBeInTheDocument();
+      expect(photosClient.listDevices).toHaveBeenCalledOnce();
+    });
+
+    test('When the plan finishes loading after Photos was locked, then Photos is not requested again', async () => {
+      photosClient.listDevices.mockRejectedValue(photosNotInPlan);
+      const { subscriptionFetched } = renderWithPlan(null);
+      await screen.findByText('views.photos.locked.title');
+
+      subscriptionFetched(freePlan);
+
+      expect(screen.getByText('views.photos.locked.title')).toBeInTheDocument();
+      expect(photosClient.listDevices).toHaveBeenCalledOnce();
+    });
+
+    test('When the plan does not include Photos, then it is not reported as an error', async () => {
+      photosClient.listDevices.mockRejectedValue(photosNotInPlan);
+
+      renderWithPlan();
+
+      await screen.findByText('views.photos.locked.title');
+      expect(errorService.reportError).not.toHaveBeenCalled();
+    });
   });
 
   describe('Filtering by device', () => {

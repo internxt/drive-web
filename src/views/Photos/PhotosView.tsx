@@ -2,6 +2,7 @@ import PhotosErrorState from './components/PhotosErrorState';
 import PhotosFilters from './components/PhotosFilters';
 import PhotosGridSkeleton from './components/PhotosGridSkeleton';
 import PhotosLayout from './components/PhotosLayout';
+import PhotosLockedState from './components/PhotosLockedState';
 import PhotosLibrary from './components/PhotosLibrary';
 import PhotosSelectionHeader from './components/PhotosSelectionHeader';
 import { usePhotoFilters } from './hooks/usePhotoFilters';
@@ -29,6 +30,7 @@ const PhotosView = (): JSX.Element => {
   const content = {
     loading: <PhotosGridSkeleton />,
     error: <PhotosErrorState onRetry={retry} />,
+    locked: <PhotosLockedState onPlanChanged={retry} />,
     loaded: (
       <PhotosLibrary
         months={filters.shownMonths}
