@@ -4,6 +4,7 @@ import { DriveItemData } from '../../../app/drive/types';
 import { useTranslationContext } from '../../../app/i18n/provider/TranslationProvider';
 import { List, MenuItemType, Empty } from '@internxt/ui';
 import BackupListItem from './BackupListItem';
+import { getDriveItemId } from 'utils/driveItemsUtils';
 
 interface BackupsAsFoldersListProps {
   className?: string;
@@ -38,6 +39,7 @@ export default function BackupsAsFoldersList({
     <div className={`${className} flex min-h-0 grow flex-col`}>
       <div className="flex h-full w-full flex-col overflow-y-auto">
         <List<DriveItemData, 'name' | 'modificationTime' | 'size'>
+          getItemId={getDriveItemId}
           header={[
             {
               label: translate('drive.list.columns.name'),

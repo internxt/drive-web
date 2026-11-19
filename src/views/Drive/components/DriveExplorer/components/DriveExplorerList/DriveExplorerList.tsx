@@ -39,6 +39,7 @@ import { List } from '@internxt/ui';
 import { DownloadManager } from 'app/network/DownloadManager';
 import { useVersionHistoryMenuConfig } from 'views/Drive/hooks/useVersionHistoryMenuConfig';
 import { useMoveItems } from 'hooks/moveItems/useMoveItems';
+import { getDriveItemId } from 'utils/driveItemsUtils';
 
 interface DriveExplorerListProps {
   folderId: string;
@@ -62,21 +63,21 @@ interface DriveExplorerListProps {
   resetPaginationState: () => void;
 }
 
-type ObjectWithId = { id: string | number };
-
 type ContextMenuDriveItem = DriveItemData | Pick<DriveItemData, SortField> | (ListShareLinksItem & { code: string });
 
-function findUniqueItems<T extends ObjectWithId>(array1: T[], array2: T[]): T[] {
+type ObjectWithUuid = { uuid: string };
+
+function findUniqueItems<T extends ObjectWithUuid>(array1: T[], array2: T[]): T[] {
   const result: T[] = [];
   const map = new Map<string, T>();
 
   for (const item of array1) {
-    map.set(item.id.toString(), item);
+    map.set(item.uuid, item);
   }
 
   for (const item of array2) {
-    if (map.has(item.id.toString())) {
-      map.delete(item.id.toString());
+    if (map.has(item.uuid)) {
+      map.delete(item.uuid);
     } else {
       result.push(item);
     }
@@ -144,7 +145,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     let updatedSelectedItems = props.selectedItems;
 
     for (const change of changes) {
-      updatedSelectedItems = updatedSelectedItems.filter((item) => item.id !== change.props.id);
+      updatedSelectedItems = updatedSelectedItems.filter((item) => item.uuid !== change.props.uuid);
       if (change.value) {
         updatedSelectedItems = [...updatedSelectedItems, change.props];
       }
@@ -517,6 +518,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
         )}
         <ShareWithTeamDialog item={props.selectedItems[0]} roles={roles} />
         <List<DriveItemData, SortField>
+          getItemId={getDriveItemId}
           header={getListHeaders(translate, isRecents, isTrash, canSortByModified)}
           checkboxDataCy="driveListHeaderCheckbox"
           disableKeyboardShortcuts={props.disableKeyboardShortcuts || props.showStopSharingConfirmation}
