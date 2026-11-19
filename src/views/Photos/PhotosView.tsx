@@ -19,7 +19,7 @@ const PhotosView = (): JSX.Element => {
   const devices = state.status === 'loaded' ? state.devices : NO_DEVICES;
   const filters = usePhotoFilters(state.status === 'loaded' ? state.months : NO_MONTHS);
   const { selectedPhotos, toggleSelection, clearSelection } = usePhotoSelection();
-  const { trashedPhotos, galleryReloads, moveToTrash } = usePhotoTrash(getShownMonthsKey(filters.shownMonths));
+  const { trashedPhotos, galleryKey, moveToTrash } = usePhotoTrash(getShownMonthsKey(filters.shownMonths));
 
   const onDeviceRemoved = (deviceUuid: string) => {
     removeDevice(deviceUuid);
@@ -34,7 +34,7 @@ const PhotosView = (): JSX.Element => {
         months={filters.shownMonths}
         selectedPhotos={selectedPhotos}
         trashedPhotos={trashedPhotos}
-        galleryReloads={galleryReloads}
+        galleryKey={galleryKey}
         onToggleSelection={toggleSelection}
         onMoveToTrash={moveToTrash}
       />

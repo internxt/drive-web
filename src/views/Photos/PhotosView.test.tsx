@@ -236,6 +236,9 @@ const downloadedFiles = () =>
     (payload as DriveItemData[]).map((item) => `${item.plainName}.${item.type}`),
   );
 
+const waitForPhotosToLoad = () =>
+  waitFor(() => expect(screen.queryByTestId('photos-grid-skeleton')).not.toBeInTheDocument());
+
 // Tests run without the app's CSS: the few rules the gallery layout depends on are added here.
 const galleryStyles = document.createElement('style');
 galleryStyles.textContent = 'h2 { margin: 0; } .aspect-square { aspect-ratio: 1 / 1; }';
@@ -1725,10 +1728,9 @@ describe('Photos view', () => {
       fireEvent.click(screen.getByRole('checkbox', { name }));
     };
     const selectionHeader = () => screen.queryByRole('toolbar', { name: 'views.photos.selection.title' });
-    const moveSelectionToTrash = () =>
-      fireEvent.click(
-        within(selectionHeader() as HTMLElement).getByRole('button', { name: 'drive.dropdown.moveToTrash' }),
-      );
+    const trashButton = () =>
+      within(selectionHeader() as HTMLElement).getByRole('button', { name: 'drive.dropdown.moveToTrash' });
+    const moveSelectionToTrash = () => fireEvent.click(trashButton());
     const undo = async () => fireEvent.click(await screen.findByRole('button', { name: 'actions.undo' }));
     const photosOnTheServer = ({ withoutLivePhoto = false } = {}) => ({
       'iphone-2025-11-03': [
@@ -1746,6 +1748,13 @@ describe('Photos view', () => {
       ],
       'iphone-2025-10-15': [file('IMG_OCTOBER', 'jpg', 'iphone-2025-10-15', '2025-10-15T09:00:00Z')],
     });
+
+    const givenPhotosBackOnTheServerOnceMovedBack = () =>
+      storageClient.moveFileByUuid.mockImplementation(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        givenPhotosInFolders(photosOnTheServer());
+        return {};
+      });
 
     beforeEach(() => {
       nextFileId = 1;
@@ -1847,7 +1856,7 @@ describe('Photos view', () => {
       fireEvent.click(await screen.findByRole('button', { name: /views.photos.filters.allDates/ }));
       fireEvent.click(await screen.findByRole('menuitem', { name: /November 2025/ }));
       expect(await screen.findByRole('img', { name: 'IMG_KEPT.jpg' })).toBeInTheDocument();
-      givenPhotosInFolders(photosOnTheServer());
+      givenPhotosBackOnTheServerOnceMovedBack();
       await undo();
 
       expect(await screen.findByRole('img', { name: 'IMG_LIVE.HEIC' })).toBeInTheDocument();
@@ -1865,10 +1874,71 @@ describe('Photos view', () => {
       fireEvent.click(await screen.findByRole('button', { name: /November 2025/ }));
       fireEvent.click(await screen.findByRole('menuitem', { name: /views.photos.filters.allDates/ }));
       expect(await screen.findByRole('img', { name: 'IMG_KEPT.jpg' })).toBeInTheDocument();
-      givenPhotosInFolders(photosOnTheServer());
+      givenPhotosBackOnTheServerOnceMovedBack();
       await undo();
 
       expect(await screen.findByRole('img', { name: 'IMG_LIVE.HEIC' })).toBeInTheDocument();
+    });
+
+    test('When undoing fails, then the photos stay out of the gallery and the error is shown', async () => {
+      storageClient.moveFileByUuid.mockRejectedValueOnce(new Error('Network error'));
+      renderWithStore();
+      await tick('IMG_LIVE.HEIC');
+      moveSelectionToTrash();
+      await waitFor(() => expect(screen.queryByRole('img', { name: 'IMG_LIVE.HEIC' })).not.toBeInTheDocument());
+      givenPhotosInFolders(photosOnTheServer({ withoutLivePhoto: true }));
+
+      await undo();
+
+      expect(await screen.findByText('error.movingItem')).toBeInTheDocument();
+      expect(await screen.findByRole('img', { name: 'IMG_KEPT.jpg' })).toBeInTheDocument();
+      expect(screen.queryByRole('img', { name: 'IMG_LIVE.HEIC' })).not.toBeInTheDocument();
+    });
+
+    test('When the user undoes moving many photos to the trash, then they are moved back a few at a time', async () => {
+      givenPhotosInFolders({ 'iphone-2025-11-03': photosOfDay('iphone-2025-11-03', 300) });
+      renderWithStore();
+      await tick('Mon, 3 Nov 2025');
+      moveSelectionToTrash();
+      storageClient.moveFileByUuid.mockReturnValue(new Promise(() => undefined));
+
+      await undo();
+
+      await waitFor(() => expect(filesMovedBack()).toHaveLength(30));
+    });
+
+    test('When the user clicks the trash button twice, then the photos are moved to the trash once', async () => {
+      trashClient.addItemsToTrash.mockReturnValue(new Promise(() => undefined));
+      renderWithStore();
+      await tick('IMG_KEPT.jpg');
+
+      moveSelectionToTrash();
+      moveSelectionToTrash();
+
+      await waitFor(() => expect(trashedFiles()).toStrictEqual(['IMG_KEPT.jpg (file)']));
+      expect(trashButton()).toBeDisabled();
+    });
+
+    test('When undoing another trash reloaded the gallery, then undoing an earlier trash shows its photos again', async () => {
+      renderWithStore();
+      await tick('IMG_LIVE.HEIC');
+      moveSelectionToTrash();
+      await waitFor(() => expect(screen.queryByRole('img', { name: 'IMG_LIVE.HEIC' })).not.toBeInTheDocument());
+      givenPhotosInFolders(photosOnTheServer({ withoutLivePhoto: true }));
+      await tick('IMG_KEPT.jpg');
+      moveSelectionToTrash();
+      await waitFor(() => expect(screen.queryByRole('img', { name: 'IMG_KEPT.jpg' })).not.toBeInTheDocument());
+      givenPhotosBackOnTheServerOnceMovedBack();
+      storageClient.moveFileByUuid.mockRejectedValueOnce(new Error('Network error'));
+      const [undoKept, undoLive] = await screen.findAllByRole('button', { name: 'actions.undo' });
+
+      fireEvent.click(undoKept);
+      expect(await screen.findByText('error.movingItem')).toBeInTheDocument();
+      await waitForPhotosToLoad();
+      fireEvent.click(undoLive);
+
+      expect(await screen.findByRole('img', { name: 'IMG_LIVE.HEIC' })).toBeInTheDocument();
+      expect(filesMovedBack()[0]).toBe('IMG_KEPT.jpg -> iphone-2025-11-03');
     });
 
     test('When moving photos to the trash fails, then they stay in the gallery and stay selected', async () => {

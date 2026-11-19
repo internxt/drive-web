@@ -109,9 +109,7 @@ export class PhotoFoldersService {
       if (file.status !== 'EXISTS' || !day) return [];
 
       const photo: Photo = {
-        id: file.id,
         uuid: file.uuid,
-        folderId: file.folderId,
         name: `${file.plainName}.${file.type}`,
         type: file.type,
         day,

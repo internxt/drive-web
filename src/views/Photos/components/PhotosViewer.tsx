@@ -25,10 +25,13 @@ const PhotosViewer = ({
 }: PhotosViewerProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const files = useMemo(() => photos.map(({ file }) => file), [photos]);
-  const photoByFileId = useMemo(() => new Map(photos.map((shownPhoto) => [shownPhoto.file.id, shownPhoto])), [photos]);
+  const photoByFileUuid = useMemo(
+    () => new Map(photos.map((shownPhoto) => [shownPhoto.file.uuid, shownPhoto])),
+    [photos],
+  );
 
   const downloadPhoto = (file: DriveItemData) => {
-    const shownPhoto = photoByFileId.get(file.id);
+    const shownPhoto = photoByFileUuid.get(file.uuid);
     const photoFiles = shownPhoto ? getPhotoFiles([shownPhoto]) : [file];
     void DownloadManager.downloadItem({
       payload: photoFiles,
@@ -41,7 +44,7 @@ const PhotosViewer = ({
   };
 
   const moveToTrashAndClose = (file: DriveItemData) => {
-    const shownPhoto = photoByFileId.get(file.id);
+    const shownPhoto = photoByFileUuid.get(file.uuid);
     onClose();
     if (shownPhoto) onMoveToTrash([shownPhoto]);
   };
