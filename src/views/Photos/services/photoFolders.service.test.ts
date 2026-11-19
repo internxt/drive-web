@@ -118,26 +118,40 @@ describe('Photo backup folders', () => {
 
       expect(photos).toStrictEqual([
         {
-          id: 1,
           uuid: 'photo-a',
-          folderId: 10,
           name: 'IMG_A.heic',
           type: 'heic',
           day: '2026-11-02',
           takenAt: '2026-11-02T09:00:00Z',
           updatedAt: '2026-11-03T10:00:00.000Z',
           thumbnail: null,
+          kind: 'photo',
+          relatedFiles: [],
+          file: expect.objectContaining({
+            uuid: 'photo-a',
+            name: 'IMG_A',
+            type: 'heic',
+            size: 2048000,
+            isFolder: false,
+          }),
         },
         {
-          id: 1,
           uuid: 'photo-b',
-          folderId: 10,
           name: 'IMG_B.jpg',
           type: 'jpg',
           day: '2026-11-15',
           takenAt: '2026-11-15T09:00:00Z',
           updatedAt: '2026-11-03T10:00:00.000Z',
           thumbnail: null,
+          kind: 'photo',
+          relatedFiles: [],
+          file: expect.objectContaining({
+            uuid: 'photo-b',
+            name: 'IMG_B',
+            type: 'jpg',
+            size: 2048000,
+            isFolder: false,
+          }),
         },
       ]);
       expect(photosClient.getFilesInFolders).toHaveBeenCalledWith({

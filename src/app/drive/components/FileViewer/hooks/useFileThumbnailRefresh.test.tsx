@@ -9,9 +9,10 @@ import { PreviewFileItem } from 'app/share/types';
 import storageReducer, { storageActions } from 'app/store/slices/storage';
 import errorService from 'services/error.service';
 import { useFileThumbnailRefresh } from './useFileThumbnailRefresh';
+import { v7 as uuidV7 } from 'uuid';
 
 const { storedPreviews, createThumbnailEntry, uploadToBucket, THUMBNAIL_FILE } = vi.hoisted(() => ({
-  storedPreviews: new Map<number, Blob>(),
+  storedPreviews: new Map<string, Blob>(),
   createThumbnailEntry: vi.fn(),
   uploadToBucket: vi.fn(),
   THUMBNAIL_FILE: new File(['thumbnail'], 'thumbnail.png', { type: 'image/png' }),
@@ -32,9 +33,9 @@ vi.mock('app/drive/services/database.service', () => ({
   getDatabaseWorkspaceAvatar: vi.fn(),
   updateDatabaseWorkspaceAvatar: vi.fn(),
   deleteDatabaseWorkspaceAvatar: vi.fn(),
-  getDatabaseFilePreviewData: async ({ fileId }: { fileId: number }) => storedPreviews.get(fileId),
-  updateDatabaseFilePreviewData: async ({ fileId, previewBlob }: { fileId: number; previewBlob: Blob }) => {
-    storedPreviews.set(fileId, previewBlob);
+  getDatabaseFilePreviewData: async ({ fileUuid }: { fileUuid: string }) => storedPreviews.get(fileUuid),
+  updateDatabaseFilePreviewData: async ({ fileUuid, previewBlob }: { fileUuid: string; previewBlob: Blob }) => {
+    storedPreviews.set(fileUuid, previewBlob);
   },
 }));
 vi.mock('app/drive/services/network.service/getEnvironmentConfig', () => ({
@@ -58,10 +59,12 @@ const thumbnail = (overrides: Partial<Thumbnail> = {}): Thumbnail =>
 
 const UPLOADED_THUMBNAIL = thumbnail({ id: 99, bucket_file: 'uploaded' });
 
+const FILE_UUID = uuidV7();
+
 const createFile = (overrides: Partial<PreviewFileItem> = {}): PreviewFileItem =>
   ({
     id: 1,
-    uuid: 'file-uuid',
+    uuid: FILE_UUID,
     name: 'photo',
     type: 'png',
     size: 1024,
@@ -113,7 +116,7 @@ describe('Refreshing the thumbnail of a previewed file', () => {
     expect(getItem().thumbnails).toStrictEqual([UPLOADED_THUMBNAIL]);
     expect(getItem().currentThumbnail).toMatchObject({ id: UPLOADED_THUMBNAIL.id, urlObject: expect.any(String) });
     expect(createObjectURL.mock.calls.filter(([source]) => source === THUMBNAIL_FILE)).toHaveLength(1);
-    expect(storedPreviews.get(1)).toBe(THUMBNAIL_FILE);
+    expect(storedPreviews.get(FILE_UUID)).toBe(THUMBNAIL_FILE);
   });
 
   test('When the generated thumbnail differs from the current one, then it replaces it instead of being added', async () => {
@@ -133,7 +136,7 @@ describe('Refreshing the thumbnail of a previewed file', () => {
     await refreshThumbnail(file, await createImageContent());
 
     expect(uploadToBucket).not.toHaveBeenCalled();
-    expect(storedPreviews.get(1)?.size).toBe(THUMBNAIL_FILE.size);
+    expect(storedPreviews.get(FILE_UUID)?.size).toBe(THUMBNAIL_FILE.size);
   });
 
   test('When a file shared by someone else is previewed, then its thumbnail is left untouched', async () => {

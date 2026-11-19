@@ -8,6 +8,7 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import i18next from 'i18next';
 
 describe('Initialize checkout custom hook', () => {
   const mockTranslate = vi.fn((key: string) => key);
@@ -125,6 +126,23 @@ describe('Initialize checkout custom hook', () => {
         expect(checkoutService.loadStripeElements).toHaveBeenCalled();
         expect(result.current.stripeElementsOptions).toBeDefined();
       });
+    });
+
+    test('When Stripe elements are loaded, then they use the language selected in the app instead of the browser one', async () => {
+      const previousLanguage = i18next.resolvedLanguage;
+      i18next.resolvedLanguage = 'de';
+
+      try {
+        renderHook(() =>
+          useInitializeCheckout({ checkoutTheme: 'light', price: mockPriceWithTax, translate: mockTranslate }),
+        );
+
+        await waitFor(() => {
+          expect(checkoutService.loadStripeElements).toHaveBeenCalledWith(expect.anything(), mockPriceWithTax, 'de');
+        });
+      } finally {
+        i18next.resolvedLanguage = previousLanguage;
+      }
     });
 
     test('When Stripe elements fail to load, then user is redirected to signup page', async () => {

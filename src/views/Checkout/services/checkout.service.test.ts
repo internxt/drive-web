@@ -474,6 +474,22 @@ describe('Checkout Service tests', () => {
       });
     });
 
+    describe('Stripe Elements locale', () => {
+      const plan = buildPlan({ currency: 'eur', interval: 'year' });
+
+      test('When a locale is given, then the card form is shown in that language', async () => {
+        const options = await checkoutService.loadStripeElements(THEME, plan, 'de');
+
+        expect(options.locale).toBe('de');
+      });
+
+      test('When no locale is given, then Stripe falls back to auto detection', async () => {
+        const options = await checkoutService.loadStripeElements(THEME, plan);
+
+        expect(options.locale).toBe('auto');
+      });
+    });
+
     describe('Payment methods per currency and interval', () => {
       test('When the currency is EUR and the interval is monthly, then PayPal is allowed alongside card', async () => {
         const result = await getPaymentMethodsFor(buildPlan({ currency: 'eur', interval: 'month' }));

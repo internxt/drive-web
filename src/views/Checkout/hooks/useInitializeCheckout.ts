@@ -1,4 +1,4 @@
-import { Stripe, StripeElementsOptionsMode } from '@stripe/stripe-js';
+import { Stripe, StripeElementLocale, StripeElementsOptionsMode } from '@stripe/stripe-js';
 import { checkoutService, paymentService } from '../services';
 import { useEffect, useState } from 'react';
 import { errorService, navigationService } from 'services';
@@ -9,6 +9,7 @@ import { STRIPE_MINIMUM_CHARGE_AMOUNT, THEME_STYLES } from '../constants';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { Translate } from 'app/i18n/types';
+import i18next from 'i18next';
 
 interface UseInitializeCheckoutProps {
   checkoutTheme: string;
@@ -92,7 +93,11 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
     }
 
     try {
-      const stripeElements = await checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme], price);
+      const stripeElements = await checkoutService.loadStripeElements(
+        THEME_STYLES[checkoutTheme],
+        price,
+        i18next.resolvedLanguage as StripeElementLocale | undefined,
+      );
       setStripeElementsOptions(stripeElements);
     } catch (error) {
       const castedError = errorService.castError(error);

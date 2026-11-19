@@ -1,6 +1,6 @@
 {
   "name": "drive-web",
-  "version": "v1.1.4",
+  "version": "v1.1.15",
   "private": true,
   "packageManager": "yarn@1.22.22",
   "dependencies": {
@@ -10,7 +10,7 @@
     "@internxt/css-config": "1.1.1",
     "@internxt/lib": "=1.5.1",
     "@internxt/sdk": "=1.26.0",
-    "@internxt/ui": "=0.1.29",
+    "@internxt/ui": "=0.1.30",
     "@marsidev/react-turnstile": "^1.6.1",
     "@phosphor-icons/react": "^2.1.10",
     "@popperjs/core": "^2.11.6",
@@ -44,7 +44,7 @@
     "path-browserify": "^1.0.1",
     "pdfjs-dist": "=4.8.69",
     "prettysize": "^2.0.0",
-    "query-string": "^6.13.8",
+    "query-string": "^9.5.1",
     "react": "^18.2.0",
     "react-avatar-editor": "^13.0.2",
     "react-bootstrap": "^2.9.0",
@@ -170,7 +170,7 @@
     "webpack-bundle-analyzer": "^4.9.1"
   },
   "engines": {
-    "node": ">=14.17.0"
+    "node": ">=22"
   },
   "lint-staged": {
     "*.{js,jsx,tsx,ts,json}": [
@@ -178,7 +178,7 @@
     ]
   },
   "resolutions": {
-    "glob": "^10.5.0",
+    "glob": "^14.0.2",
     "js-yaml": "^4.1.1",
     "readdir-glob/minimatch": "5.1.8",
     "readdir-glob/minimatch/brace-expansion": "2.1.4",

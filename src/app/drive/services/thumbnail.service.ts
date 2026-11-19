@@ -28,6 +28,7 @@ import { getEnvironmentConfig } from './network.service';
 import { FileToUpload } from './file.service/types';
 import { ErrorLoadingVideoFileError } from './errors/thumbnail.service.errors';
 import encryptedStorageService from 'services/encrypted-storage.service';
+import { PreviewBlobData } from 'app/database/services/database.service';
 import { getDatabaseFilePreviewData, updateDatabaseFilePreviewData } from './database.service';
 
 export interface ThumbnailToUpload {
@@ -307,9 +308,12 @@ export const generateThumbnailFromFile = async (
   return null;
 };
 
-export const getCachedThumbnail = async (file: { id: number; updatedAt: string }): Promise<Blob | undefined> => {
+export const getCachedThumbnail = async (
+  file: { uuid: string; updatedAt: string },
+  readCache: (file: { fileUuid: string }) => Promise<PreviewBlobData | undefined> = getDatabaseFilePreviewData,
+): Promise<Blob | undefined> => {
   try {
-    const cachedPreview = await getDatabaseFilePreviewData({ fileId: file.id });
+    const cachedPreview = await readCache({ fileUuid: file.uuid });
     return cachedPreview?.updatedAt === file.updatedAt ? cachedPreview.preview : undefined;
   } catch (error) {
     errorService.reportError(error);
@@ -439,10 +443,10 @@ export const refreshFileThumbnailFromContent = async ({
   if (!thumbnailFile) return;
 
   const currentThumbnail = file.thumbnails?.[0];
-  const previewData = { fileId: file.id, folderId: file.folderId, updatedAt: file.updatedAt };
+  const previewData = { fileUuid: file.uuid, updatedAt: file.updatedAt };
 
   if (currentThumbnail && compareThumbnail(currentThumbnail, generatedThumbnail)) {
-    const isStoredLocally = !!(await getDatabaseFilePreviewData({ fileId: file.id }));
+    const isStoredLocally = !!(await getDatabaseFilePreviewData({ fileUuid: file.uuid }));
     if (!isStoredLocally) {
       await updateDatabaseFilePreviewData({
         ...previewData,

@@ -148,8 +148,7 @@ const useDriveItemActions = (item): DriveItemActions => {
       if (!thumbnailBlob) {
         thumbnailBlob = await downloadThumbnail(newThumbnail, isWorkspace);
         updateDatabaseFilePreviewData({
-          fileId: item.id,
-          folderId: item.folderId,
+          fileUuid: item.uuid,
           previewBlob: thumbnailBlob,
           updatedAt: item.updatedAt,
         });
