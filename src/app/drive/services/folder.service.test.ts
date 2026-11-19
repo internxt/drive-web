@@ -60,7 +60,6 @@ vi.mock('./foldersZip.service', async (importOriginal) => {
 
 describe('Folder Service', () => {
   const mockFile: DriveFileData = {
-    id: 1,
     uuid: 'file-uuid',
     bucket: 'bucket',
     name: 'TestFile',
@@ -85,7 +84,6 @@ describe('Folder Service', () => {
 
   const mockEmptyFile: DriveFileData = {
     ...mockFile,
-    id: 2,
     name: 'EmptyFile',
     size: 0,
   };
