@@ -28,6 +28,7 @@ export default function BackupsView(): JSX.Element {
   const isLoadingDevices = useAppSelector((state) => state.backups.isLoadingDevices);
   const devices = useAppSelector((state) => state.backups.devices);
   const currentDevice = useAppSelector((state) => state.backups.currentDevice);
+  const fileViewerItem = useAppSelector((state) => state.ui.fileViewerItem);
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const workspaceCredentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
   const [foldersInBreadcrumbs, setFoldersInBreadcrumbs] = useState<DriveFolderData[]>([]);
@@ -72,10 +73,10 @@ export default function BackupsView(): JSX.Element {
     });
   };
 
-  const onDownloadFileFormFileViewer = () => {
-    if (itemToPreview && isFileViewerOpen) {
+  const onDownloadFileFormFileViewer = (item: DriveItemData) => {
+    if (item && isFileViewerOpen) {
       DownloadManager.downloadItem({
-        payload: [itemToPreview as DriveItemData],
+        payload: [item],
         selectedWorkspace,
         workspaceCredentials,
       });
@@ -102,10 +103,10 @@ export default function BackupsView(): JSX.Element {
     }
 
     setIsDeletingItems(true);
-    const itemIdsToDelete = new Set(items.map((item) => item.id));
-    const filteredCurrentItems = currentItems.filter((item) => !itemIdsToDelete.has(item.id));
+    const itemUuidsToDelete = new Set(items.map((item) => item.uuid));
+    const filteredCurrentItems = currentItems.filter((item) => !itemUuidsToDelete.has(item.uuid));
 
-    const isViewerItemBeingDeleted = isFileViewerOpen && itemToPreview && itemIdsToDelete.has(itemToPreview.id);
+    const isViewerItemBeingDeleted = isFileViewerOpen && fileViewerItem && itemUuidsToDelete.has(fileViewerItem.uuid);
 
     try {
       const deletePromises = items.map((item) =>
@@ -139,12 +140,12 @@ export default function BackupsView(): JSX.Element {
     openDeleteItemsDialog(selectedItems);
   };
 
-  const onDeleteFileItemFromFilePreview = async () => {
-    if (!itemToPreview || !isFileViewerOpen) {
+  const onDeleteFileItemFromFilePreview = async (item: DriveItemData) => {
+    if (!item || !isFileViewerOpen) {
       return;
     }
 
-    openDeleteItemsDialog([itemToPreview as DriveItemData]);
+    openDeleteItemsDialog([item]);
   };
 
   const onConfirmDeleteItems = async () => {
@@ -248,6 +249,7 @@ export default function BackupsView(): JSX.Element {
           showPreview={isFileViewerOpen}
           folderItems={currentItems}
           contextMenu={contextMenuForFileViewer}
+          keyboardShortcuts={{ removeItemFromKeyboard: onDeleteFileItemFromFilePreview }}
         />
       )}
       <div className="flex h-14 shrink-0 items-center px-5">

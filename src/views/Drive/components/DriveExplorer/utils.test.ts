@@ -1,4 +1,4 @@
-import { describe, expect, test, vi, beforeEach } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { shareItemWithTeamV2 } from './utils';
 import { DriveItemData } from 'app/drive/types';
 import { Role } from '@internxt/sdk/dist/drive/share/types';
@@ -25,10 +25,6 @@ describe('shareItemWithTeamV2', () => {
     updatedAt: '2024-01-01',
     size: 0,
   } as DriveItemData;
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
 
   test('When sharing item with team fails, then should return false', async () => {
     // Arrange

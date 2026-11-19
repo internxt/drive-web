@@ -17,6 +17,11 @@ export type RetryableTask = {
   retryable?: boolean;
 };
 
+type ParamsFilter = { [attribute: string]: unknown };
+
+const matchesTask = (task: RetryableTask, taskId: string, where: ParamsFilter = {}): boolean =>
+  task.taskId === taskId && Object.entries(where).every(([key, value]) => task.params?.[key] === value);
+
 class RetryManager {
   private tasksToRetry: RetryableTask[] = [];
   private listeners: (() => void)[] = [];
@@ -30,17 +35,27 @@ class RetryManager {
    * Adds tasks to the retry list, marking them as failed.
    * A task can only appear once per taskId: re-adding a failed task
    * replaces its entry instead of duplicating it in the retry list.
+   * A re-added task without a relatedTaskId keeps the one of the entry it replaces.
    */
   addTasks(tasks: RetryableTask[]) {
     const incomingTaskIds = new Set(tasks.map((task) => task.taskId).filter(Boolean));
-    const tasksWithStatus = tasks.map((task) => ({ ...task, status: RetryableTaskStatus.Failed }));
+    const tasksWithStatus = tasks.map((task) => {
+      const previousRelatedTaskId = this.getTasksById(task.taskId)[0]?.params?.relatedTaskId;
+      return {
+        ...task,
+        params: { ...task.params, relatedTaskId: task.params?.relatedTaskId ?? previousRelatedTaskId },
+        status: RetryableTaskStatus.Failed,
+      };
+    });
     this.tasksToRetry = this.tasksToRetry.filter((task) => !incomingTaskIds.has(task.taskId));
     this.tasksToRetry.push(...tasksWithStatus);
     this.notify();
   }
 
-  changeStatus(taskId: string, status: RetryableTaskStatus) {
-    this.tasksToRetry = this.tasksToRetry.map((task) => (task.taskId === taskId ? { ...task, status } : task));
+  changeStatus(taskId: string, status: RetryableTaskStatus, where?: ParamsFilter) {
+    this.tasksToRetry = this.tasksToRetry.map((task) =>
+      matchesTask(task, taskId, where) ? { ...task, status } : task,
+    );
     this.notify();
   }
 
@@ -49,15 +64,16 @@ class RetryManager {
     this.notify();
   }
 
-  removeTaskByIdAndParams(taskId: string, where: { [attribute: string]: any }) {
-    this.tasksToRetry = this.tasksToRetry.filter((task) => {
-      const idMatches = task.taskId === taskId;
+  removeTaskByIdAndParams(taskId: string, where: ParamsFilter) {
+    this.tasksToRetry = this.tasksToRetry.filter((task) => !matchesTask(task, taskId, where));
 
-      const attributesMatch = Object.entries(where).every(([key, value]) => task.params[key] === value);
+    this.notify();
+  }
 
-      return !(idMatches && attributesMatch);
-    });
-
+  removeTasksOfRelatedTask(relatedTaskId: string) {
+    this.tasksToRetry = this.tasksToRetry.filter(
+      (task) => (task.params?.relatedTaskId ?? task.taskId) !== relatedTaskId,
+    );
     this.notify();
   }
 

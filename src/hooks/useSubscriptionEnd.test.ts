@@ -31,7 +31,6 @@ const createCommitment = (cancellationDate?: string): Commitment => ({ cancellat
 
 describe('Subscription ending management - Custom hook', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     localStorageGetMock.mockReturnValue(null);
     subscriptionCancellationState = {
       isReactivatingSubscription: false,

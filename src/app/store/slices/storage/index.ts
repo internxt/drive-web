@@ -6,7 +6,7 @@ import { OrderDirection, OrderSettings } from '../../../core/types';
 import databaseService, { DatabaseCollection } from '../../../database/services/database.service';
 import { DriveItemData, DriveItemPatch, FileViewMode, FolderPath } from 'app/drive/types';
 import { storageExtraReducers } from '../storage/storage.thunks';
-import { filtersFactory, orderFactory, StorageSetFiltersPayload, StorageState } from './storage.model';
+import { filtersFactory, orderFactory, StorageState } from './storage.model';
 import selectors from './storage.selectors';
 
 const initialState: StorageState = {
@@ -19,6 +19,8 @@ const initialState: StorageState = {
   levelsFilesLength: {},
   hasMoreDriveFolders: {},
   hasMoreDriveFiles: {},
+  driveFoldersCursor: {},
+  driveFilesCursor: {},
   recents: [],
   isLoadingRecents: false,
   favorites: [],
@@ -69,15 +71,6 @@ export const storageSlice = createSlice({
     setForceLoading: (state: StorageState, action: PayloadAction<boolean>) => {
       state.forceLoading = action.payload;
     },
-    setIsLoadingRecents: (state: StorageState, action: PayloadAction<boolean>) => {
-      state.isLoadingRecents = action.payload;
-    },
-    setIsLoadingFavorites: (state: StorageState, action: PayloadAction<boolean>) => {
-      state.isLoadingFavorites = action.payload;
-    },
-    setIsLoadingDeleted: (state: StorageState, action: PayloadAction<boolean>) => {
-      state.isLoadingDeleted = action.payload;
-    },
     setItems: (state: StorageState, action: PayloadAction<{ folderId: string; items: DriveItemData[] }>) => {
       const { folderId, items } = action.payload;
       state.levels[folderId] = items;
@@ -118,12 +111,23 @@ export const storageSlice = createSlice({
       state.levelsFoldersLength[action.payload.folderId] = 0;
       state.levelsFilesLength[action.payload.folderId] = 0;
       state.levels[action.payload.folderId] = [];
+      delete state.driveFoldersCursor[action.payload.folderId];
+      delete state.driveFilesCursor[action.payload.folderId];
     },
     setHasMoreDriveFolders: (state: StorageState, action: PayloadAction<{ folderId: string; status: boolean }>) => {
       state.hasMoreDriveFolders[action.payload.folderId] = action.payload.status;
     },
     setHasMoreDriveFiles: (state: StorageState, action: PayloadAction<{ folderId: string; status: boolean }>) => {
       state.hasMoreDriveFiles[action.payload.folderId] = action.payload.status;
+    },
+    setDriveFoldersCursor: (
+      state: StorageState,
+      action: PayloadAction<{ folderId: string; cursor: string | null }>,
+    ) => {
+      state.driveFoldersCursor[action.payload.folderId] = action.payload.cursor;
+    },
+    setDriveFilesCursor: (state: StorageState, action: PayloadAction<{ folderId: string; cursor: string | null }>) => {
+      state.driveFilesCursor[action.payload.folderId] = action.payload.cursor;
     },
     resetDrivePagination: (state: StorageState) => {
       state.hasMoreDriveFolders[state.currentPath.uuid] = true;
@@ -181,21 +185,15 @@ export const storageSlice = createSlice({
     setMoveDestinationFolderId: (state: StorageState, action: PayloadAction<string | null>) => {
       state.moveDestinationFolderId = action.payload;
     },
-    setFilters: (state: StorageState, action: PayloadAction<StorageSetFiltersPayload>) => {
-      Object.assign(state.filters, action.payload);
-    },
     setOrder: (state: StorageState, action: PayloadAction<Partial<OrderSettings>>) => {
       Object.assign(state.order, action.payload);
     },
     resetOrder: (state: StorageState) => {
       state.order = orderFactory('name', OrderDirection.Asc);
     },
-    resetFilters: (state: StorageState) => {
-      state.filters = filtersFactory();
-    },
     selectItems: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       const itemsToSelect = action.payload.filter((item) => {
-        return !state.selectedItems.some((i) => item.id === i.id && item.isFolder === i.isFolder);
+        return !state.selectedItems.some((i) => item.uuid === i.uuid && item.isFolder === i.isFolder);
       });
 
       state.selectedItems.push(...itemsToSelect);
@@ -203,10 +201,12 @@ export const storageSlice = createSlice({
     deselectItems: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       action.payload.forEach((itemToDeselect) => {
         const index: number = state.selectedItems.findIndex(
-          (item) => item.id === itemToDeselect.id && item.isFolder === itemToDeselect.isFolder,
+          (item) => item.uuid === itemToDeselect.uuid && item.isFolder === itemToDeselect.isFolder,
         );
 
-        state.selectedItems.splice(index, 1);
+        if (index !== -1) {
+          state.selectedItems.splice(index, 1);
+        }
       });
     },
     clearSelectedItems: (state: StorageState) => {
@@ -240,10 +240,12 @@ export const storageSlice = createSlice({
     popItemsToDelete: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       action.payload.forEach((itemToPop) => {
         const index: number = state.itemsOnTrash.findIndex(
-          (item) => item.id === itemToPop.id && item.isFolder === itemToPop.isFolder,
+          (item) => item.uuid === itemToPop.uuid && item.isFolder === itemToPop.isFolder,
         );
 
-        state.itemsOnTrash.splice(index, 1);
+        if (index !== -1) {
+          state.itemsOnTrash.splice(index, 1);
+        }
       });
     },
     popNamePathUpTo: (state: StorageState, action: PayloadAction<FolderPath>) => {
@@ -280,9 +282,6 @@ export const storageSlice = createSlice({
       const folderIndex: number = state.sharedNamePath.map((path) => path.uuid).indexOf(action.payload.uuid);
 
       state.sharedNamePath = state.sharedNamePath.slice(0, folderIndex + 1);
-    },
-    pathChangeWorkSpace: (state: StorageState, action: PayloadAction<FolderPath>) => {
-      state.namePath = [action.payload];
     },
     setCurrentPath: (state: StorageState, action: PayloadAction<FolderPath>) => {
       state.currentPath = action.payload;
@@ -365,12 +364,12 @@ export const storageSlice = createSlice({
       const folderItems = action.payload.folderIds ?? Object.keys(state.levels).map((folderId) => folderId);
       const folderIds = Array.isArray(folderItems) ? folderItems : [folderItems];
 
-      const uniqueNewItemsId = new Set(itemsToPush.map((item) => item.id));
+      const uniqueNewItemsUuid = new Set(itemsToPush.map((item) => item.uuid));
 
       folderIds.forEach((folderId) => {
         const folderList = state.levels[folderId] ?? [];
 
-        const filteredItems = folderList.filter((existingItem) => !uniqueNewItemsId.has(existingItem.id));
+        const filteredItems = folderList.filter((existingItem) => !uniqueNewItemsUuid.has(existingItem.uuid));
         const items = [...filteredItems, ...itemsToPush];
 
         state.levels[folderId] = items;
@@ -380,7 +379,7 @@ export const storageSlice = createSlice({
 
       if (action.payload.updateRecents) {
         state.recents = [
-          ...state.recents.filter((existingItem) => !uniqueNewItemsId.has(existingItem.id)),
+          ...state.recents.filter((existingItem) => !uniqueNewItemsUuid.has(existingItem.uuid)),
           ...itemsToPush.filter((item) => !item.isFolder),
         ];
       }
@@ -392,7 +391,7 @@ export const storageSlice = createSlice({
       const folderIds = action.payload.folderIds || Object.keys(state.levels).map((folderId) => folderId);
       const itemsToDelete = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
       const isItemToDelete = (item: DriveItemData) =>
-        itemsToDelete.some((i) => i.id === item.id && !!i.isFolder === !!item.isFolder);
+        itemsToDelete.some((i) => i.uuid === item.uuid && !!i.isFolder === !!item.isFolder);
 
       folderIds.forEach((folderId) => {
         const folderItems = state.levels[folderId] ?? [];
@@ -417,6 +416,11 @@ export const storageSlice = createSlice({
     },
 
     setDriveItemsOrder: (state: StorageState, action: PayloadAction<string>) => {
+      const hasOrderChanged = state.driveItemsOrder !== action.payload;
+      if (hasOrderChanged) {
+        state.driveFoldersCursor = {};
+        state.driveFilesCursor = {};
+      }
       state.driveItemsOrder = action.payload;
     },
   },
@@ -425,9 +429,6 @@ export const storageSlice = createSlice({
 
 export const {
   setIsLoadingFolder,
-  setIsLoadingRecents,
-  setIsLoadingFavorites,
-  setIsLoadingDeleted,
   setItems,
   setRecents,
   addFavorites,
@@ -435,8 +436,6 @@ export const {
   setHasMoreFavoriteFolders,
   setHasMoreFavoriteFiles,
   resetFavoritesPagination,
-  setFilters,
-  resetFilters,
   selectItems,
   deselectItems,
   setItemToShare,
@@ -448,7 +447,6 @@ export const {
   pushNamePath,
   setNamePath,
   popNamePathUpTo,
-  pathChangeWorkSpace,
   patchItem,
   pushItems,
   clearCurrentThumbnailItems,

@@ -10,7 +10,7 @@ import { t } from 'i18next';
 import { SdkFactory } from 'app/core/factory/sdk';
 import errorService from 'services/error.service';
 import workspacesService from 'services/workspace.service';
-import { DriveFileData, DriveFolderData, DriveFolderMetadataPayload, DriveItemData } from '../types';
+import { DriveFileData, DriveFolderData, DriveFolderMetadataPayload } from '../types';
 import { updateDatabaseFileSourceData } from './database.service';
 import { addAllFilesToZip, addAllSharedFilesToZip } from './filesZip.service';
 import { addAllFoldersToZip, addAllSharedFoldersToZip } from './foldersZip.service';
@@ -37,40 +37,6 @@ interface GetFileStreamParams {
   key: FileKey;
   abortController?: AbortController;
   downloadProgress?: (progress: number) => void;
-}
-
-interface FolderChild {
-  bucket: string;
-  color: string;
-  createdAt: string;
-  encrypt_version: string;
-  icon: string;
-  iconId: number | null;
-  icon_id: number | null;
-  id: number;
-  name: string;
-  parentId: number;
-  parent_id: number;
-  updatedAt: string;
-  userId: number;
-  user_id: number;
-}
-
-export interface FetchFolderContentResponse {
-  bucket: string;
-  children: FolderChild[];
-  color: string;
-  createdAt: string;
-  encrypt_version: string;
-  files: DriveItemData[];
-  icon: string;
-  id: number;
-  name: string;
-  parentId: number;
-  parent_id: number;
-  updatedAt: string;
-  userId: number;
-  user_id: number;
 }
 
 interface DownloadFolderAsZipOptions {
@@ -117,11 +83,6 @@ export async function updateMetaData(
   };
 
   return storageClient.updateFolderNameWithUUID(payload, resourcesToken);
-}
-
-export async function deleteFolder(folderData: DriveFolderData): Promise<void> {
-  const trashClient = SdkFactory.getNewApiInstance().createTrashClient();
-  await trashClient.deleteFolder(folderData.id);
 }
 
 class DirectoryFolderIterator implements Iterator<DriveFolderData> {
@@ -213,7 +174,7 @@ export async function getFileStream({
   downloadProgress,
 }: GetFileStreamParams): Promise<ReadableStream<Uint8Array>> {
   const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-  const cachedFile = await lruFilesCacheManager.get(file.id?.toString());
+  const cachedFile = await lruFilesCacheManager.get(file.uuid);
   const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
 
   if (cachedFile?.source && !isCachedFileOlder) {
@@ -245,7 +206,7 @@ export async function getFileStream({
   await updateDatabaseFileSourceData({
     folderId: file.folderId,
     sourceBlob,
-    fileId: file.id,
+    fileUuid: file.uuid,
     updatedAt: file.updatedAt,
   });
 
@@ -277,7 +238,7 @@ const downloadSharedFileForZip = async (
   await updateDatabaseFileSourceData({
     folderId: file.folderId,
     sourceBlob,
-    fileId: file.id,
+    fileUuid: file.uuid,
     updatedAt: file.updatedAt,
   });
 
@@ -343,13 +304,7 @@ export async function downloadFolderAsZip({
   const downloadQueue: QueueObject<FolderRef> = queue<FolderRef>((folderToDownload, next: (err?: Error) => void) => {
     if (abortController?.signal.aborted) return next(new Error('Download aborted'));
 
-    const newConcurrency = QueueUtilsService.instance.getConcurrencyUsingPerformance(
-      downloadQueue.concurrency,
-      maxConcurrency,
-    );
-    if (downloadQueue.concurrency !== newConcurrency) {
-      downloadQueue.concurrency = newConcurrency;
-    }
+    QueueUtilsService.instance.adjustConcurrency(downloadQueue, maxConcurrency);
 
     if (!isSharedFolder) {
       downloadFolder(folderToDownload)
@@ -371,7 +326,7 @@ export async function downloadFolderAsZip({
   }, maxConcurrency);
 
   const addUniqueItem = (item) => {
-    const isItemAlreadyAdded = totalItems.some((i) => i.id === item.id);
+    const isItemAlreadyAdded = totalItems.some((i) => i.uuid === item.uuid);
     if (!isItemAlreadyAdded) {
       totalItems.push(item);
     }
@@ -431,7 +386,7 @@ export async function downloadFolderAsZip({
         addUniqueItem(file);
         try {
           const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-          const cachedFile = await lruFilesCacheManager.get(file.id?.toString());
+          const cachedFile = await lruFilesCacheManager.get(file.uuid);
           const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
 
           updateNumItems();

@@ -15,9 +15,7 @@ import { fileExtensionPreviewableGroups } from 'app/drive/types/file-types';
 import UilArrowRight from '@iconscout/react-unicons/icons/uil-arrow-right';
 import { CheckIcon, DownloadSimpleIcon, EyeIcon } from '@phosphor-icons/react';
 
-import downloadService from 'app/drive/services/download.service';
-import { MIN_DOWNLOAD_MULTIPART_SIZE } from 'app/network/networkConstants';
-import { IDownloadParams } from 'app/network/download';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import './components/ShareView.scss';
 
 import { ShareTypes } from '@internxt/sdk/dist/drive';
@@ -25,7 +23,7 @@ import { PublicSharedItemInfo, SharingMeta } from '@internxt/sdk/dist/drive/shar
 import errorService from 'services/error.service';
 import { binaryStreamToBlob } from 'services/stream.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { HTTP_STATUS_CODES } from 'app/core/constants';
+import { ErrorMessages, HTTP_STATUS_CODES } from 'app/core/constants';
 
 import { Button, Loader } from '@internxt/ui';
 import { stringUtils } from '@internxt/lib';
@@ -43,13 +41,16 @@ interface ShareViewState {
   token: string;
 }
 
+const MAX_PROGRESS_BEFORE_SAVED = 99;
+const DOWNLOADED_PROGRESS = 100;
+
 export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Element {
   const { translate } = useTranslationContext();
 
   const code = props.match.params.code;
   const sharingId = stringUtils.decodeV4Uuid(props.match.params.token);
 
-  const [progress, setProgress] = useState(TaskProgress.Min);
+  const [progress, setProgress] = useState<number>(TaskProgress.Min);
   const [blobProgress, setBlobProgress] = useState(TaskProgress.Min);
   const [isDownloading, setIsDownloading] = useState(false);
   const [info, setInfo] = useState<SharingMeta | Record<string, any>>({});
@@ -103,7 +104,7 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
   };
 
   const renderDownloadButton = () => {
-    if (Number(progress) === 100) {
+    if (Number(progress) === DOWNLOADED_PROGRESS) {
       return (
         <>
           {/* Download completed */}
@@ -198,54 +199,54 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
     download();
   }
 
+  const saveFile = (abortController: AbortController): Promise<void> =>
+    shareService.downloadPublicSharedFile({
+      file: {
+        bucketId: info.item.bucket,
+        fileId: info.item.fileId,
+        size: Number(info.item.size),
+        encryptionKey: info.encryptionKey,
+        token: info.itemToken,
+      },
+      filename: getFormatFileName(),
+      abortController,
+      onProgress: (downloadedRatio) => {
+        if (abortController.signal.aborted) return;
+        const readProgress = Math.trunc(downloadedRatio * 100);
+        setProgress(Math.min(readProgress, MAX_PROGRESS_BEFORE_SAVED));
+      },
+    });
+
   const download = async (): Promise<void> => {
-    if (!isDownloading) {
-      const fileInfo = info;
-      const MIN_PROGRESS = 0;
+    if (isDownloading) return;
 
-      if (fileInfo) {
-        let fileBlob: Blob;
-
-        if (isEmptySharedFile) {
-          setProgress(100 as TaskProgress);
-          fileBlob = new Blob([]);
-        } else {
-          const fileSize = fileInfo.item.size;
-          setProgress(MIN_PROGRESS);
-          setIsDownloading(true);
-
-          const downloadParams: IDownloadParams = {
-            bucketId: fileInfo.item.bucket,
-            fileId: fileInfo.item.fileId,
-            encryptionKey: Buffer.from(fileInfo.encryptionKey, 'hex'),
-            token: fileInfo.itemToken,
-            options: {
-              notifyProgress: (totalProgress, downloadedBytes) => {
-                const progress = Math.trunc((downloadedBytes / totalProgress) * 100);
-                setProgress(progress);
-                if (progress == 100) {
-                  setIsDownloading(false);
-                }
-              },
-            },
-          };
-
-          const shouldUseMultipart = fileSize >= MIN_DOWNLOAD_MULTIPART_SIZE;
-          const readable = shouldUseMultipart
-            ? await network.multipartDownloadFile({ ...downloadParams, fileSize })
-            : await network.downloadFile(downloadParams);
-          fileBlob = await binaryStreamToBlob(readable);
-        }
-
-        await downloadService.downloadFileFromBlob(fileBlob, getFormatFileName());
-        setTimeout(() => {
-          setSendBannerVisible(true);
-        }, 3000);
+    const abortController = new AbortController();
+    setProgress(TaskProgress.Min);
+    setIsDownloading(true);
+    try {
+      await saveFile(abortController);
+      setProgress(DOWNLOADED_PROGRESS);
+      setTimeout(() => {
+        setSendBannerVisible(true);
+      }, 3000);
+    } catch (err) {
+      abortController.abort();
+      setProgress(TaskProgress.Min);
+      const { message } = errorService.castError(err);
+      const isCancelledFromBrowser = message === ErrorMessages.DownloadCancelledFromBrowser;
+      if (!isCancelledFromBrowser) {
+        errorService.reportError(err);
+        notificationsService.show({
+          text: translate('error.downloadingFile', { message }),
+          type: ToastType.Error,
+        });
       }
+    } finally {
+      setIsDownloading(false);
     }
   };
 
-  useBeforeUnload(() => isDownloading && progress < 100);
+  useBeforeUnload(() => isDownloading);
 
   if (isError) {
     const ItemIconComponent = iconService.getItemIcon(false, 'default');

@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { convertImageForPreview } from 'app/drive/services/image-preview.service';
 import { convertibleImageExtensions, heicImageExtensions } from 'app/drive/types/file-types';
-import { FormatFileViewerProps } from '../../FileViewer';
+import { FileContentViewerProps } from '../types';
 
 const PROGRESS_BAR_STATUS = {
   PENDING: 0.95,
@@ -14,7 +14,7 @@ const FILE_TYPE_BY_MIME: Record<string, string> = { 'image/png': 'png', 'image/j
 const DEFAULT_CONVERTED_FILE_TYPE = 'jpg';
 
 interface UseDisplayableImageProps
-  extends Pick<FormatFileViewerProps, 'file' | 'blob' | 'handlersForSpecialItems' | 'setIsPreviewAvailable'> {
+  extends Pick<FileContentViewerProps, 'file' | 'blob' | 'onError' | 'onProgress' | 'onConvertedContent'> {
   extension: string;
 }
 
@@ -39,8 +39,9 @@ export const useDisplayableImage = ({
   file,
   blob,
   extension,
-  handlersForSpecialItems,
-  setIsPreviewAvailable,
+  onError,
+  onProgress,
+  onConvertedContent,
 }: UseDisplayableImageProps): DisplayableImage => {
   const [imageBlob, setImageBlob] = useState<Blob | null>(null);
   const [isConverting, setIsConverting] = useState(false);
@@ -50,7 +51,7 @@ export const useDisplayableImage = ({
 
   useEffect(() => {
     if (!blob) {
-      setIsPreviewAvailable(false);
+      onError();
       return;
     }
     if (!isConvertibleImage) {
@@ -62,26 +63,23 @@ export const useDisplayableImage = ({
 
     const convert = async () => {
       setIsConverting(true);
-      handlersForSpecialItems?.handleUpdateProgress(PROGRESS_BAR_STATUS.PENDING);
+      onProgress?.(PROGRESS_BAR_STATUS.PENDING);
 
       try {
         const convertedBlob = await convertToDisplayableBlob(blob, extension);
         if (isCancelled) return;
 
         setImageBlob(convertedBlob);
-        handlersForSpecialItems?.handleUpdateProgress(PROGRESS_BAR_STATUS.COMPLETED);
+        onProgress?.(PROGRESS_BAR_STATUS.COMPLETED);
         if (!hasThumbnail) {
-          await handlersForSpecialItems?.handleUpdateThumbnail(
-            { ...file, type: getConvertedFileType(convertedBlob) },
-            convertedBlob,
-          );
+          await onConvertedContent?.({ ...file, type: getConvertedFileType(convertedBlob) }, convertedBlob);
         }
       } catch (error) {
         if (isCancelled) return;
 
         console.error(`Error converting ${extension} image for preview:`, error);
-        setIsPreviewAvailable(false);
-        handlersForSpecialItems?.handleUpdateProgress(PROGRESS_BAR_STATUS.COMPLETED);
+        onError();
+        onProgress?.(PROGRESS_BAR_STATUS.COMPLETED);
       } finally {
         if (!isCancelled) setIsConverting(false);
       }

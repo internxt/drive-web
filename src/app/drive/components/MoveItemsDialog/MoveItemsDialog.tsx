@@ -96,7 +96,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
     if (folders) {
       const unselectedFolders = folders?.filter((folderItem) => {
-        return !itemsToMove.some((itemToMove) => itemToMove.id === folderItem.id);
+        return !itemsToMove.some((itemToMove) => itemToMove.uuid === folderItem.uuid);
       });
       setShownFolders(unselectedFolders);
     } else {
@@ -230,7 +230,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
                           : 'hover:bg-gray-1 dark:hover:bg-gray-5'
                       } flex h-12 items-center space-x-4 px-4`}
                       onDoubleClick={() => onShowFolderContentClicked(folder.uuid, folder.name)}
-                      key={folder.id}
+                      key={folder.uuid}
                     >
                       <div className="flex min-w-0 flex-1 flex-row gap-3 items-center">
                         <img className="flex h-8 w-8 shrink-0" alt="Folder icon" src={folderImage} />

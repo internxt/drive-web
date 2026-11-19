@@ -46,7 +46,6 @@ const sentPayload = (): CompleteAccountSetupPayload => authClient.completeAccoun
 
 describe('Completing the setup of a paid account', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     globalThis.Buffer = Buffer;
     globalThis.grecaptcha = {
       ready: (callback: () => void) => callback(),

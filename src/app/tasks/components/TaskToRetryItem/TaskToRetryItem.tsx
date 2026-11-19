@@ -7,7 +7,7 @@ import { t } from 'i18next';
 import { TaskLoggerButton } from '../TaskLoggerButton/TaskLoggerButton';
 import { SpinnerIcon } from '@phosphor-icons/react';
 import { RetryableTask, RetryableTaskStatus, RetryableTaskType } from 'app/network/RetryManager';
-import { UploadManagerFileParams } from 'app/network/UploadManager';
+import { UploadManagerFileParams } from 'app/tasks/upload/uploadFilesWithTasks';
 import { DownloadItemType } from 'app/drive/services/downloadManager.service';
 
 interface DisplayData {

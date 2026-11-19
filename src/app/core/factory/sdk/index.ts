@@ -1,5 +1,5 @@
 import { Auth, Token } from '@internxt/sdk/dist/auth';
-import { Backups, Payments, Referrals, Share, Storage, Trash, Users } from '@internxt/sdk/dist/drive';
+import { Backups, Payments, Photos, Referrals, Share, Storage, Trash, Users } from '@internxt/sdk/dist/drive';
 import { ApiSecurity, ApiUrl, AppDetails } from '@internxt/sdk/dist/shared';
 import { WorkspaceCredentialsDetails, Workspaces } from '@internxt/sdk/dist/workspaces';
 import packageJson from '../../../../../package.json';
@@ -65,7 +65,7 @@ export class SdkFactory {
       turnstileToken: options?.turnstileToken,
     });
     const apiSecurity = this.getNewApiSecurity(options?.unauthorizedCallback);
-    return Auth.client(apiUrl, appDetails, apiSecurity);
+    return Auth.client(apiUrl, appDetails, apiSecurity, SdkFactory.getAuthHttpOptions());
   }
 
   public createDesktopAuthClient(options?: { turnstileToken?: string }): Auth {
@@ -74,7 +74,7 @@ export class SdkFactory {
       options?.turnstileToken ? { 'x-internxt-turnstile': options.turnstileToken } : undefined,
     );
     const apiSecurity = this.getNewApiSecurity();
-    return Auth.client(apiUrl, appDetails, apiSecurity);
+    return Auth.client(apiUrl, appDetails, apiSecurity, SdkFactory.getAuthHttpOptions());
   }
 
   public createNewStorageClient(): Storage {
@@ -143,6 +143,13 @@ export class SdkFactory {
     return Backups.client(apiUrl, appDetails, apiSecurity);
   }
 
+  public createPhotosClient(): Photos {
+    const apiUrl = this.getApiUrl();
+    const appDetails = SdkFactory.getAppDetails();
+    const apiSecurity = this.getNewApiSecurity();
+    return Photos.client(apiUrl, appDetails, apiSecurity);
+  }
+
   public createLocationClient(): Location {
     const apiUrl = envService.getVariable('location');
 
@@ -176,6 +183,10 @@ export class SdkFactory {
 
   public getApiUrl(): ApiUrl {
     return this.apiUrl;
+  }
+
+  private static getAuthHttpOptions(): { withCredentials: boolean } {
+    return { withCredentials: envService.getVariable('sendCookiesOnAuthRequests') === 'true' };
   }
 
   private static getAppDetails(customHeaders?: Record<string, string>): AppDetails {

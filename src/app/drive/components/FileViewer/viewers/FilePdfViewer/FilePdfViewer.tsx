@@ -1,8 +1,8 @@
 import { MagnifyingGlassMinus, MagnifyingGlassPlus } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
-import { FormatFileViewerProps } from '../../FileViewer';
+import { FileContentViewerProps } from '../types';
 import { getPortraitFitWidth } from '../../utils/fileViewerUtils';
 
 import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?raw';
@@ -24,33 +24,23 @@ const observerConfig = {
 const zoomRange = [0.85, 1, 1.5, 2, 3];
 
 const PageWithObserver: React.FC<PageWithObserverProps> = ({ pageNumber, zoom, onPageVisible, ...otherProps }) => {
-  const [observerReady, setObserverReady] = useState(false);
+  const [pageCanvas, setPageCanvas] = useState<HTMLCanvasElement | null>(null);
   const portraitFitWidth = getPortraitFitWidth();
 
   useEffect(() => {
-    // If the zoom changes, we need to re-observe the page
-    setObserverReady(false);
-  }, [zoom]);
+    if (!pageCanvas) return;
 
-  const prepareObserver = (entry: HTMLCanvasElement) => {
-    const observer = new IntersectionObserver((entries) => {
-      const entry = entries[0];
-      if (entry.isIntersecting) {
-        onPageVisible(pageNumber);
-      }
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) onPageVisible(pageNumber);
     }, observerConfig);
+    observer.observe(pageCanvas);
 
-    observer.observe(entry);
-  };
+    return () => observer.disconnect();
+  }, [pageCanvas, pageNumber, onPageVisible]);
 
   return (
     <Page
-      canvasRef={(entry: HTMLCanvasElement) => {
-        if (entry && !observerReady) {
-          prepareObserver(entry);
-          setObserverReady(true);
-        }
-      }}
+      canvasRef={setPageCanvas}
       pageNumber={pageNumber}
       width={portraitFitWidth ? portraitFitWidth * zoomRange[zoom] : undefined}
       height={window.innerHeight * zoomRange[zoom]}
@@ -62,9 +52,12 @@ const PageWithObserver: React.FC<PageWithObserverProps> = ({ pageNumber, zoom, o
 };
 const DEFAULT_ZOOM = 1;
 
-const FilePdfViewer = ({ blob, setIsPreviewAvailable }: FormatFileViewerProps): JSX.Element => {
+const FilePdfViewer = ({ blob, onError }: FileContentViewerProps): JSX.Element => {
   const { translate } = useTranslationContext();
-  const [fileUrl] = useState(blob ? URL.createObjectURL(new Blob([blob], { type: 'application/pdf' })) : null);
+  const fileUrl = useMemo(
+    () => (blob ? URL.createObjectURL(new Blob([blob], { type: 'application/pdf' })) : null),
+    [blob],
+  );
   const [numPages, setNumPages] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [zoom, setZoom] = useState(DEFAULT_ZOOM);
@@ -81,6 +74,12 @@ const FilePdfViewer = ({ blob, setIsPreviewAvailable }: FormatFileViewerProps): 
       setZoom(zoom - 1);
     }
   }
+
+  useEffect(() => {
+    return () => {
+      if (fileUrl) URL.revokeObjectURL(fileUrl);
+    };
+  }, [fileUrl]);
 
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
@@ -102,12 +101,7 @@ const FilePdfViewer = ({ blob, setIsPreviewAvailable }: FormatFileViewerProps): 
     <div className="flex max-h-full w-full items-center justify-center">
       <div>
         <div className="flex items-center justify-center">
-          <Document
-            file={fileUrl}
-            loading=""
-            onLoadSuccess={onDocumentLoadSuccess}
-            onLoadError={() => setIsPreviewAvailable(false)}
-          >
+          <Document file={fileUrl} loading="" onLoadSuccess={onDocumentLoadSuccess} onLoadError={onError}>
             <div className="flex flex-col items-center space-y-3">
               {Array.from(new Array(renderPages), (el, index) => (
                 <PageWithObserver

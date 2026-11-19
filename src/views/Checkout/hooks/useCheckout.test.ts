@@ -21,7 +21,6 @@ describe('useCheckout hook actions', () => {
   } = useCheckout(dispatch);
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 

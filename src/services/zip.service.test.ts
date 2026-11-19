@@ -24,7 +24,6 @@ describe('FlatFolderZip', () => {
   let consoleInfoSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    vi.clearAllMocks();
     consoleInfoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
 
     const defaultWritableStream = new WritableStream({

@@ -2,7 +2,7 @@ import { ComponentClass, FunctionComponent } from 'react';
 
 import { AppView } from '../types';
 
-import { AuthView, ButtonAuth, SignupBlog } from '../../../views/Signup/components';
+import { AuthView, SignupBlog } from '../../../views/Signup/components';
 import BackupsView from 'views/Backups/BackupsView';
 import {
   BlockedAccountView,
@@ -19,6 +19,7 @@ import AccountSetupView from 'views/AccountSetup';
 import DeactivationView from '../../core/views/DeactivationView/DeactivationView';
 import DriveView from 'views/Drive';
 import FavoritesView from 'views/Favorites';
+import PhotosView from 'views/Photos';
 import FolderFileNotFound from 'app/drive/views/FolderFileNotFound/FolderFileNotFound';
 import RecentsView from 'views/Recents';
 import RequestAccess from 'app/drive/views/RequestAccess/RequestAccess';
@@ -45,9 +46,9 @@ const views: Array<{
   { id: AppView.ShareGuestAcceptInvite, component: ShareGuestSignUpView },
   { id: AppView.WorkspaceGuestInvite, component: WorkspaceGuestSignUpView },
   { id: AppView.Auth, component: AuthView },
-  { id: AppView.ButtonAuth, component: ButtonAuth },
   { id: AppView.RecoverAccount, component: RecoverAccountView },
   { id: AppView.CompleteAccount, component: AccountSetupView },
+  { id: AppView.Photos, component: PhotosView },
   { id: AppView.Favorites, component: FavoritesView },
   { id: AppView.Recents, component: RecentsView },
   { id: AppView.Trash, component: TrashView },

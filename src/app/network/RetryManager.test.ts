@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, test, expect, vi, beforeEach } from 'vitest';
 import RetryManager, { RetryableTask, RetryableTaskStatus, RetryableTaskType } from './RetryManager';
 
 describe('RetryManager', () => {
@@ -48,12 +48,86 @@ describe('RetryManager', () => {
     expect(tasks[0].status).toBe(RetryableTaskStatus.Failed);
   });
 
+  const addTwoDownloadsSharingTaskId = (): void =>
+    RetryManager.addTasks([
+      { taskId: 'download-1', params: { id: 'a' }, type: RetryableTaskType.Download },
+      { taskId: 'download-1', params: { id: 'b' }, type: RetryableTaskType.Download },
+    ]);
+
+  const getDownloadStatuses = (): (RetryableTaskStatus | undefined)[] =>
+    RetryManager.getTasksById('download-1').map((task) => task.status);
+
+  test('when one of two downloads sharing a task id is retried, then only that one is Retrying', () => {
+    addTwoDownloadsSharingTaskId();
+
+    RetryManager.changeStatus('download-1', RetryableTaskStatus.Retrying, { id: 'a' });
+
+    expect(getDownloadStatuses()).toEqual([RetryableTaskStatus.Retrying, RetryableTaskStatus.Failed]);
+  });
+
+  test('when the status changes without params to match, then every task with that task id changes', () => {
+    addTwoDownloadsSharingTaskId();
+
+    RetryManager.changeStatus('download-1', RetryableTaskStatus.Retrying);
+
+    expect(getDownloadStatuses()).toEqual([RetryableTaskStatus.Retrying, RetryableTaskStatus.Retrying]);
+  });
+
   it('should remove a task by taskId', () => {
     RetryManager.addTasks([sampleTask, anotherTask]);
     RetryManager.removeTask('task1');
     const tasks = RetryManager.getTasks();
     expect(tasks).toHaveLength(1);
     expect(tasks[0].taskId).toBe('task2');
+  });
+
+  describe('when removing the entries of a related task', () => {
+    const buildTask = (taskId: string, relatedTaskId?: string): RetryableTask => ({
+      taskId,
+      type: RetryableTaskType.Upload,
+      params: relatedTaskId ? { relatedTaskId } : {},
+    });
+    const remainingTaskIds = () => RetryManager.getTasks().map((task) => task.taskId);
+
+    beforeEach(() => {
+      RetryManager.addTasks([
+        buildTask('folder-file-a', 'folder'),
+        buildTask('folder-file-b', 'folder'),
+        buildTask('folder'),
+        buildTask('other-folder-file', 'other-folder'),
+        buildTask('standalone-file'),
+      ]);
+    });
+
+    test('when entries belong to the task, then they are removed and the other entries are kept', () => {
+      RetryManager.removeTasksOfRelatedTask('folder');
+
+      expect(remainingTaskIds()).toEqual(['other-folder-file', 'standalone-file']);
+    });
+
+    test('when an entry has no related task and its own id matches, then it is removed', () => {
+      RetryManager.removeTasksOfRelatedTask('standalone-file');
+
+      expect(remainingTaskIds()).toEqual(['folder-file-a', 'folder-file-b', 'folder', 'other-folder-file']);
+    });
+
+    test('when an entry is re-added without a related task, then it keeps the replaced entry related task', () => {
+      RetryManager.addTasks([buildTask('folder-file-a')]);
+
+      RetryManager.removeTasksOfRelatedTask('folder');
+
+      expect(remainingTaskIds()).toEqual(['other-folder-file', 'standalone-file']);
+    });
+
+    test('when entries are removed, then listeners are notified', () => {
+      const listener = vi.fn();
+      RetryManager.subscribe(listener);
+
+      RetryManager.removeTasksOfRelatedTask('folder');
+
+      expect(listener).toHaveBeenCalledTimes(1);
+      RetryManager.unsubscribe(listener);
+    });
   });
 
   it('should clear all tasks', () => {

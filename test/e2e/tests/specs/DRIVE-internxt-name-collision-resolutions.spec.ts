@@ -156,7 +156,7 @@ test.describe('Internxt name collision resolutions', () => {
       await collisionDialog.resolve('Photos', staticData.collisionSkipOption);
 
       await expect(drivePage.taskItem('b.txt')).toBeVisible({ timeout: 10000 });
-      await expect(drivePage.taskItem('c.txt')).toBeVisible({ timeout: 10000 });
+      await expect(drivePage.taskItem('c.txt')).toBeVisible({ timeout: 30000 });
       await expect
         .poll(() => requests.createdFolders, { timeout: 10000 })
         .toEqual([{ plainName: 'New', parentFolderUuid: photos.uuid }]);

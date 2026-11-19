@@ -46,7 +46,6 @@ describe('checkCreateFolder', () => {
   const mockDispatch = vi.fn();
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 

@@ -41,13 +41,7 @@ export class DownloadManager {
     (downloadTask, next: (err?: Error) => void) => {
       if (downloadTask.abortController?.signal.aborted) return next(new Error('Download aborted'));
 
-      const newConcurrency = QueueUtilsService.instance.getConcurrencyUsingPerformance(
-        this.downloadQueue.concurrency,
-        DownloadManager.MAX_CONCURRENT_DOWNLOADS,
-      );
-      if (this.downloadQueue.concurrency !== newConcurrency) {
-        this.downloadQueue.concurrency = newConcurrency;
-      }
+      QueueUtilsService.instance.adjustConcurrency(this.downloadQueue, DownloadManager.MAX_CONCURRENT_DOWNLOADS);
 
       this.downloadTask(downloadTask)
         .then(() => {
@@ -359,7 +353,7 @@ export class DownloadManager {
    */
   private static readonly removeRetryItems = (items: DownloadItemType[], downloadTask: DownloadTask) => {
     items
-      .filter((item) => !downloadTask.failedItems?.some((failedItem) => failedItem.id === item.id))
-      .forEach((item) => RetryManager.removeTaskByIdAndParams(downloadTask.taskId, { id: item.id }));
+      .filter((item) => !downloadTask.failedItems?.some((failedItem) => failedItem.uuid === item.uuid))
+      .forEach((item) => RetryManager.removeTaskByIdAndParams(downloadTask.taskId, { uuid: item.uuid }));
   };
 }

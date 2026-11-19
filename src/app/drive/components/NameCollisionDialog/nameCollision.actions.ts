@@ -28,7 +28,7 @@ import {
   getCollisionPairs,
   getUnpairedItems,
   groupByNameSeries,
-  isFolderUpload,
+  isLocalFile,
   isNameTakenBy,
   splitReplacingPairs,
 } from './nameCollision.utils';
@@ -297,8 +297,8 @@ const uploadFolders = async (
 };
 
 const splitFoldersAndFiles = (items: (IRoot | File)[]) => ({
-  folders: items.filter(isFolderUpload),
-  files: items.filter((item): item is File => !isFolderUpload(item)),
+  folders: items.filter((item): item is IRoot => !isLocalFile(item)),
+  files: items.filter(isLocalFile),
 });
 
 const uploadItems = async (
@@ -317,7 +317,7 @@ const isVersionedFilePair = (
   pair: CollisionPair<IRoot | File>,
   { isVersioningEnabled, versioningMaxFileSize }: NameCollisionContext,
 ) =>
-  !isFolderUpload(pair.item) &&
+  isLocalFile(pair.item) &&
   isVersioningEnabled &&
   isVersioningExtensionAllowed(pair.existing) &&
   pair.item.size <= versioningMaxFileSize;
@@ -413,7 +413,7 @@ const skipAndUploadItems = async (
   destinationUuid: string,
   context: NameCollisionContext,
 ): Promise<void> => {
-  const folderPairs = pairs.filter((pair) => isFolderUpload(pair.item));
+  const folderPairs = pairs.filter((pair) => !isLocalFile(pair.item));
   if (folderPairs.length === 0) return;
 
   await Promise.all(folderPairs.map((pair) => mergeSkipFolderUpload(pair.item as IRoot, pair.existing.uuid, context)));

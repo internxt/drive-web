@@ -1,11 +1,10 @@
-import { FileMeta } from '@internxt/sdk/dist/drive/storage/types';
 import { useEffect, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 
 import { AppView } from 'app/core/types';
 import fileService from 'app/drive/services/file.service';
 import newStorageService from 'app/drive/services/new-storage.service';
-import { DriveFileData, DriveItemData, FolderPath } from 'app/drive/types';
+import { DriveItemData, FolderPath } from 'app/drive/types';
 import useDriveNavigation from 'app/routes/hooks/Drive/useDrive';
 import { AppDispatch, RootState } from 'app/store';
 import { useAppSelector } from 'app/store/hooks';
@@ -25,21 +24,7 @@ import workspacesService from 'services/workspace.service';
 import DriveExplorer from 'views/Drive/components/DriveExplorer/DriveExplorer';
 import encryptedStorageService from 'services/encrypted-storage.service';
 import { Loader } from '@internxt/ui';
-
-type DriveThumbnail = DriveFileData['thumbnails'][number];
-type FileMetaThumbnail = NonNullable<FileMeta['thumbnails']>[number];
-
-const toDriveThumbnail = (thumbnail: FileMetaThumbnail): DriveThumbnail => ({
-  id: thumbnail.id,
-  file_id: thumbnail.fileId,
-  type: thumbnail.type,
-  max_width: thumbnail.maxWidth,
-  max_height: thumbnail.maxHeight,
-  size: thumbnail.size,
-  bucket_id: thumbnail.bucketId,
-  bucket_file: thumbnail.bucketFile,
-  encrypt_version: thumbnail.encryptVersion,
-});
+import { toDriveThumbnail } from 'utils/driveThumbnail.utils';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -201,6 +186,8 @@ const DriveView = (props: DriveViewProps) => {
           updatedAt: fileMeta.updatedAt,
           thumbnails: listedFile?.thumbnails ?? fileMeta.thumbnails?.map(toDriveThumbnail) ?? [],
           currentThumbnail: listedFile?.currentThumbnail ?? null,
+          sharings: listedFile?.sharings,
+          shares: listedFile?.shares,
         }),
       );
       fileMeta.plainName && setTitle(`${fileMeta.plainName}.${fileMeta.type} - Internxt Drive`);

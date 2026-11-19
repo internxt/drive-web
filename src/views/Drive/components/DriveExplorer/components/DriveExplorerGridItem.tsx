@@ -10,7 +10,7 @@ import { useDriveItemActions, useDriveItemStoreProps, useDriveItemDrag, useDrive
 
 import './DriveExplorerGridItem.scss';
 import { Menu, MenuButton, MenuItems } from '@headlessui/react';
-import { useHotkeys } from 'react-hotkeys-hook';
+import { HOTKEYS, useAppHotkey } from 'hooks';
 import { moveItemsToTrash } from '../../../../../views/Trash/services';
 import transformItemService from 'app/drive/services/item-transform.service';
 
@@ -73,21 +73,8 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
     downloadAndSetThumbnail();
   }, [item]);
 
-  useHotkeys('backspace', () => {
-    if (isItemSelected(item)) {
-      moveItemsToTrash([item]);
-    }
-  });
-  useHotkeys(
-    'r',
-    (e) => {
-      e.preventDefault();
-      if (isItemSelected(item)) {
-        props.setEditNameItem?.(item);
-      }
-    },
-    [isItemSelected(item)],
-  );
+  useAppHotkey(HOTKEYS.moveToTrash, () => moveItemsToTrash([item]), { enabled: isItemSelected(item) });
+  useAppHotkey(HOTKEYS.rename, () => props.setEditNameItem?.(item), { enabled: isItemSelected(item) });
 
   const handleRightClick = (e) => {
     e.preventDefault();

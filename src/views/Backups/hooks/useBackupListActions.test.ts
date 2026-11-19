@@ -4,6 +4,7 @@ import { useBackupListActions } from './useBackupListActions';
 import { backupsActions } from '../store/backupsSlice';
 import { DriveItemData } from 'app/drive/types';
 import { DriveFolderData } from 'app/drive/types';
+import { v7 as uuidV7 } from 'uuid';
 
 vi.mock('../store/backupsSlice', () => ({
   backupsActions: {
@@ -30,7 +31,6 @@ describe('useBackupListActions', () => {
   } as DriveItemData;
 
   beforeEach(() => {
-    vi.clearAllMocks();
     onBreadcrumbFolderChanges = vi.fn();
     dispatch = vi.fn();
   });
@@ -109,9 +109,9 @@ describe('useBackupListActions', () => {
   it('should select and deselect multiple items', () => {
     const { result } = renderHook(() => useBackupListActions(onBreadcrumbFolderChanges, dispatch));
 
-    const item1 = { ...mockFile, id: 1 };
-    const item2 = { ...mockFile, id: 2 };
-    const item3 = { ...mockFile, id: 3 };
+    const item1 = { ...mockFile, id: 1, uuid: uuidV7() };
+    const item2 = { ...mockFile, id: 2, uuid: uuidV7() };
+    const item3 = { ...mockFile, id: 3, uuid: uuidV7() };
 
     act(() => {
       result.current.onItemSelected([
@@ -142,8 +142,8 @@ describe('useBackupListActions', () => {
   it('should update selection state when items are checked or unchecked', () => {
     const { result } = renderHook(() => useBackupListActions(onBreadcrumbFolderChanges, dispatch));
 
-    const item1 = { ...mockFile, id: 1 };
-    const item2 = { ...mockFile, id: 2 };
+    const item1 = { ...mockFile, id: 1, uuid: uuidV7() };
+    const item2 = { ...mockFile, id: 2, uuid: uuidV7() };
 
     act(() => {
       result.current.onSelectedItemsChanged([
@@ -164,8 +164,8 @@ describe('useBackupListActions', () => {
   it('should deselect all items when selection is cleared', () => {
     const { result } = renderHook(() => useBackupListActions(onBreadcrumbFolderChanges, dispatch));
 
-    const item1 = { ...mockFile, id: 1 };
-    const item2 = { ...mockFile, id: 2 };
+    const item1 = { ...mockFile, id: 1, uuid: uuidV7() };
+    const item2 = { ...mockFile, id: 2, uuid: uuidV7() };
 
     act(() => {
       result.current.onItemSelected([

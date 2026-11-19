@@ -12,7 +12,7 @@ import {
   PaymentIntent,
   PriceWithTax,
 } from '@internxt/sdk/dist/payments/types';
-import { StripeElementsOptionsMode } from '@stripe/stripe-js';
+import { StripeElementLocale, StripeElementsOptionsMode } from '@stripe/stripe-js';
 import envService from 'services/env.service';
 import errorService from 'services/error.service';
 import { bytesToString } from 'app/drive/services/size.service';
@@ -214,6 +214,7 @@ const loadStripeElements = async (
     placeholderTextColor: string;
   },
   plan: PriceWithTax,
+  locale: StripeElementLocale = 'auto',
 ): Promise<StripeElementsOptionsMode> => {
   const {
     stripeTheme,
@@ -226,6 +227,7 @@ const loadStripeElements = async (
   } = theme;
 
   return {
+    locale,
     appearance: {
       labels: 'above',
       variables: {

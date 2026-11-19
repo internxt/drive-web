@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { applyCachedFolderSizes } from './applyCachedFolderSizes';
 import { getDriveItemData } from 'testUtils/fixtures/drive.fixtures';
 
@@ -15,10 +15,6 @@ vi.mock('../../../../database/services/database.service', () => ({
 
 describe('Apply Cached Folder Sizes', () => {
   const folderId = 'parent-folder-uuid';
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
 
   test('When there is no cache entry for the folder, then items are returned unchanged', async () => {
     mockDatabaseGet.mockResolvedValue(null);

@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { FormatFileViewerProps } from '../../FileViewer';
+import { FileContentViewerProps } from '../types';
 import { PORTRAIT_VIEWER_PADDING_CLASS } from '../../utils/fileViewerUtils';
 
 const CHUNK_SIZE = 2 * 1024 * 1024;
 
-const FileTxtViewer: React.FC<FormatFileViewerProps> = ({ blob, setIsPreviewAvailable }) => {
+const FileTxtViewer: React.FC<FileContentViewerProps> = ({ blob, onError }) => {
   const [content, setContent] = useState('');
   const rootRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -23,12 +23,12 @@ const FileTxtViewer: React.FC<FormatFileViewerProps> = ({ blob, setIsPreviewAvai
       offsetRef.current = to;
       setContent((prev) => prev + text);
     } catch (err) {
-      setIsPreviewAvailable(false);
+      onError();
       console.error(err);
     } finally {
       loadingRef.current = false;
     }
-  }, [blob, setIsPreviewAvailable]);
+  }, [blob, onError]);
 
   useEffect(() => {
     if (!blob) return;

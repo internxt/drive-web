@@ -39,10 +39,10 @@ const variableList = {
   recaptchaV3: 'REACT_APP_RECAPTCHA_V3',
   turnstileSiteKey: 'REACT_APP_TURNSTILE_SITE_KEY',
   turnstileEnabled: 'REACT_APP_TURNSTILE_ENABLED',
+  sendCookiesOnAuthRequests: 'REACT_APP_SEND_COOKIES_ON_AUTH_REQUESTS',
   shareLinksDomain: 'REACT_APP_SHARE_LINKS_DOMAIN',
   proxy: 'REACT_APP_PROXY',
   dontUseProxy: 'REACT_APP_DONT_USE_PROXY',
-  notifications: 'REACT_APP_NOTIFICATIONS_URL',
   fbId: 'REACT_APP_META_PIXEL',
   gaId: 'REACT_APP_GA_ID',
   gaConversionTag: 'REACT_APP_GA_CONVERSION_TAG',
@@ -54,6 +54,7 @@ const variableList = {
   dontRedirect: 'REACT_APP_DONT_REDIRECT',
   celloProductId: 'REACT_APP_CELLO_PRODUCT_ID',
   celloAssetsUrl: 'REACT_APP_CELLO_ASSETS_URL',
+  maxPreviewableFileSize: 'REACT_APP_MAX_PREVIEWABLE_FILE_SIZE_IN_BYTES',
 };
 
 function getVariable(variable: keyof typeof variableList): string {

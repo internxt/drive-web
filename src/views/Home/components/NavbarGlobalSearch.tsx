@@ -13,7 +13,7 @@ import i18next from 'i18next';
 import { PlanState } from 'app/store/slices/plan';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import iconService from 'app/drive/services/icon.service';
-import { useHotkeys } from 'react-hotkeys-hook';
+import { HOTKEYS, useAppHotkey } from 'hooks';
 import { isMacOs } from 'react-device-detect';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
@@ -136,17 +136,10 @@ const Navbar = (props: NavbarProps) => {
   const isUpgradePlanDialogOpen = useAppSelector((state) => state.ui.isUpgradePlanDialogOpen);
   const currentUpgradePlanDialogInfo = useAppSelector((state) => state.ui.currentUpgradePlanDialogInfo);
 
-  useHotkeys(
-    ['Meta+F', 'Control+F'],
-    (e) => {
-      e.preventDefault();
-      if (!hideSearch) {
-        searchInput.current?.focus();
-      }
-    },
-    [hideSearch, openSearchBox],
-    { enableOnFormTags: ['INPUT'] },
-  );
+  useAppHotkey(HOTKEYS.focusSearch, () => searchInput.current?.focus(), {
+    enabled: !hideSearch,
+    enableOnFormTags: ['INPUT'],
+  });
 
   const toggleTypeFilter = (category: SearchFileCategory) =>
     setFilters((current) => ({ ...current, type: toggleTypeCategory(current.type, category) }));

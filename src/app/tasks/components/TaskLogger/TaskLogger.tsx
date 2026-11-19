@@ -51,11 +51,14 @@ const TaskLogger = (): JSX.Element => {
   }, [allNotifications, filesToRetryGroupedByTask]);
 
   const onCloseButtonClicked = () => {
-    if (hasFinished) {
-      dispatch(uiActions.setIsFileLoggerOpen(false));
-      tasksService.clearTasks();
-      RetryManager.clearTasks();
-    }
+    const hasUnfinishedTasks = tasksService
+      .getNotifications()
+      .some((notification) => !tasksService.isTaskFinished(notification.taskId));
+    if (hasUnfinishedTasks) return;
+
+    dispatch(uiActions.setIsFileLoggerOpen(false));
+    tasksService.clearTasks();
+    RetryManager.clearTasks();
   };
 
   const handleLeavePage = (e) => {

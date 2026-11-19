@@ -21,13 +21,15 @@ import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
 import { AppView } from 'app/core/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { DriveItemData, ThumbnailConfig } from '../types';
+import { DriveFileData, DriveItemData, ThumbnailConfig } from '../types';
 import fetchFileBlob from './download.service/fetchFileBlob';
 import { convertImageForPreview } from './image-preview.service';
 import { getEnvironmentConfig } from './network.service';
 import { FileToUpload } from './file.service/types';
 import { ErrorLoadingVideoFileError } from './errors/thumbnail.service.errors';
 import encryptedStorageService from 'services/encrypted-storage.service';
+import { PreviewBlobData } from 'app/database/services/database.service';
+import { getDatabaseFilePreviewData, updateDatabaseFilePreviewData } from './database.service';
 
 export interface ThumbnailToUpload {
   fileId: string;
@@ -43,6 +45,13 @@ interface ThumbnailGenerated {
   max_width: number;
   max_height: number;
   type: string;
+}
+
+interface RefreshFileThumbnailPayload {
+  file: DriveFileData;
+  content: Blob;
+  isWorkspace: boolean;
+  dispatch: AppDispatch;
 }
 
 const VIDEO_FRAME_QUALITY = 0.75;
@@ -299,11 +308,27 @@ export const generateThumbnailFromFile = async (
   return null;
 };
 
-export const downloadThumbnail = async (thumbnailToDownload: Thumbnail, isWorkspace: boolean): Promise<Blob> => {
+export const getCachedThumbnail = async (
+  file: { uuid: string; updatedAt: string },
+  readCache: (file: { fileUuid: string }) => Promise<PreviewBlobData | undefined> = getDatabaseFilePreviewData,
+): Promise<Blob | undefined> => {
+  try {
+    const cachedPreview = await readCache({ fileUuid: file.uuid });
+    return cachedPreview?.updatedAt === file.updatedAt ? cachedPreview.preview : undefined;
+  } catch (error) {
+    errorService.reportError(error);
+    return undefined;
+  }
+};
+
+export const downloadThumbnail = async (
+  thumbnailToDownload: Pick<Thumbnail, 'bucket_id' | 'bucket_file'>,
+  isWorkspace: boolean,
+  abortController = new AbortController(),
+): Promise<Blob> => {
   const updateProgressCallback = () => {
     return;
   };
-  const abortController = new AbortController();
 
   let useWorkspaceCredentials = isWorkspace;
 
@@ -389,4 +414,63 @@ export const compareThumbnail = (thumbnail: Thumbnail, compareTo: ThumbnailGener
     Number(thumbnail.max_width) === Number(compareTo.max_width) &&
     Number(thumbnail.max_height) === Number(compareTo.max_height)
   );
+};
+
+const generateThumbnailFromContent = (file: DriveFileData, content: Blob): Promise<ThumbnailGenerated> => {
+  const isImageContent = content.type?.startsWith('image/');
+
+  return getThumbnailFrom({
+    name: file.name,
+    size: file.size,
+    type: isImageContent ? content.type.split('/')[1] : file.type,
+    content: new File([content], file.name, { type: content.type }),
+    parentFolderId: file.folderUuid,
+  });
+};
+
+/**
+ * Regenerates the thumbnail of a file from its downloaded content. A thumbnail that differs from
+ * the current one is uploaded and replaces it; an equal one is only stored locally if missing.
+ */
+export const refreshFileThumbnailFromContent = async ({
+  file,
+  content,
+  isWorkspace,
+  dispatch,
+}: RefreshFileThumbnailPayload): Promise<void> => {
+  const generatedThumbnail = await generateThumbnailFromContent(file, content);
+  const thumbnailFile = generatedThumbnail.file;
+  if (!thumbnailFile) return;
+
+  const currentThumbnail = file.thumbnails?.[0];
+  const previewData = { fileUuid: file.uuid, updatedAt: file.updatedAt };
+
+  if (currentThumbnail && compareThumbnail(currentThumbnail, generatedThumbnail)) {
+    const isStoredLocally = !!(await getDatabaseFilePreviewData({ fileUuid: file.uuid }));
+    if (!isStoredLocally) {
+      await updateDatabaseFilePreviewData({
+        ...previewData,
+        previewBlob: new Blob([thumbnailFile], { type: thumbnailFile.type }),
+      });
+    }
+    return;
+  }
+
+  const uploadedThumbnail = await uploadThumbnail(
+    {
+      fileId: file.uuid,
+      size: thumbnailFile.size,
+      max_width: generatedThumbnail.max_width,
+      max_height: generatedThumbnail.max_height,
+      type: generatedThumbnail.type,
+      content: thumbnailFile,
+    },
+    isWorkspace,
+    () => undefined,
+  );
+  const thumbnails = currentThumbnail ? [uploadedThumbnail, ...file.thumbnails.slice(1)] : [uploadedThumbnail];
+
+  setCurrentThumbnail(thumbnailFile, uploadedThumbnail, file as DriveItemData, dispatch);
+  setThumbnails(thumbnails, file as DriveItemData, dispatch);
+  await updateDatabaseFilePreviewData({ ...previewData, previewBlob: thumbnailFile });
 };

@@ -147,7 +147,6 @@ const getPaymentMethodsFor = async (plan: ReturnType<typeof buildPlan>) => {
 
 describe('Checkout Service tests', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 
@@ -472,6 +471,22 @@ describe('Checkout Service tests', () => {
         amount: 1500,
         currency: 'eur',
         payment_method_types: ['card', 'paypal'],
+      });
+    });
+
+    describe('Stripe Elements locale', () => {
+      const plan = buildPlan({ currency: 'eur', interval: 'year' });
+
+      test('When a locale is given, then the card form is shown in that language', async () => {
+        const options = await checkoutService.loadStripeElements(THEME, plan, 'de');
+
+        expect(options.locale).toBe('de');
+      });
+
+      test('When no locale is given, then Stripe falls back to auto detection', async () => {
+        const options = await checkoutService.loadStripeElements(THEME, plan);
+
+        expect(options.locale).toBe('auto');
       });
     });
 

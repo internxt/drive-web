@@ -6,3 +6,15 @@ export type TopBarActionsMenu =
   | Array<MenuItemType<DriveItemData>>
   | Array<MenuItemType<AdvancedSharedItem>>
   | undefined;
+
+export interface FileViewerNavigation {
+  hasPrevious: boolean;
+  hasNext: boolean;
+  goToPrevious: () => void;
+  goToNext: () => void;
+}
+
+export interface FileViewerKeyboardShortcuts {
+  renameItemFromKeyboard?: (item: DriveItemData) => void;
+  removeItemFromKeyboard?: (item: DriveItemData) => void;
+}

@@ -24,7 +24,12 @@ const isStorageHost = (url: URL) => !url.hostname.includes('internxt') && url.ho
 
 const allowApiCallsFromLocalhost = (page: Page) =>
   page.route(isInternxtApi, async (route, request) => {
-    const corsHeaders = { 'access-control-allow-origin': LOCAL_ORIGIN, 'access-control-allow-headers': '*' };
+    const corsHeaders = {
+      'access-control-allow-origin': LOCAL_ORIGIN,
+      'access-control-allow-credentials': 'true',
+      'access-control-allow-headers': request.headers()['access-control-request-headers'] ?? '',
+      'access-control-allow-methods': request.headers()['access-control-request-method'] ?? '',
+    };
     const isPreflight = request.method() === 'OPTIONS';
     if (isPreflight) return route.fulfill({ status: 204, headers: corsHeaders });
 

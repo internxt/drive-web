@@ -24,6 +24,7 @@ import { beforeAll, beforeEach, describe, expect, it, test, vi } from 'vitest';
 import * as authService from './auth.service';
 import { PasswordMismatchError } from './errors/auth.errors';
 import encryptedStorageService from './encrypted-storage.service';
+import { mockSdkFactory } from 'testUtils/sdk.mock';
 
 const DUMMY_TOKEN = 'XXXX.DUMMY.TOKEN.XXXX';
 
@@ -94,14 +95,6 @@ beforeAll(() => {
     },
   }));
 
-  vi.mock('services/sockets/socket.service', () => ({
-    default: {
-      getInstance: vi.fn().mockReturnValue({
-        stop: vi.fn(),
-      }),
-    },
-  }));
-
   vi.mock('app/analytics/utils', () => ({
     getCookie: vi.fn(),
     setCookie: vi.fn(),
@@ -150,7 +143,6 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
-  vi.clearAllMocks();
   vi.resetModules();
   vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
     if (key === 'newApi') return mockApi;
@@ -211,20 +203,20 @@ describe('logIn', () => {
     const mockUser = await getMockUser(mockPassword, mockMnemonic);
     const mockTwoFactorCode = '123456';
 
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue({
+    mockSdkFactory({
+      createAuthClient: {
         login: vi.fn().mockResolvedValue({
           user: mockUser,
           newToken: mockNewToken,
         }),
-      }),
-      createDesktopAuthClient: vi.fn().mockReturnValue({
+      },
+      createDesktopAuthClient: {
         login: vi.fn().mockResolvedValue({
           user: mockUser,
           newToken: mockNewToken,
         }),
-      }),
-    } as any);
+      },
+    });
 
     const result = await authService.doLogin(mockUser.email, mockPassword, mockTwoFactorCode, mockLoginType);
 
@@ -473,19 +465,19 @@ describe('Change password', () => {
     const encryptedSalt = encryptText(mockSalt);
 
     const changePasswordMock = vi.fn().mockReturnValue(Promise.resolve({ newToken: 'newMockToken' }));
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue({
+    mockSdkFactory({
+      createAuthClient: {
         changePassword: changePasswordMock,
         securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
-      }),
-      createDesktopAuthClient: vi.fn().mockReturnValue({
+      },
+      createDesktopAuthClient: {
         changePassword: changePasswordMock,
         securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
-      }),
-      createUsersClient: vi.fn().mockReturnValue({
+      },
+      createUsersClient: {
         changePassword: changePasswordMock,
-      }),
-    } as any);
+      },
+    });
 
     await authService.changePassword(mockNewPassword, mockOldPassword);
     expect(changePasswordMock).toBeCalled();
@@ -526,17 +518,17 @@ describe('Change password', () => {
     vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue(mockUser);
 
     const encryptedSalt = encryptText('mockSalt');
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue({
+    mockSdkFactory({
+      createAuthClient: {
         securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
-      }),
-      createDesktopAuthClient: vi.fn().mockReturnValue({
+      },
+      createDesktopAuthClient: {
         securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
-      }),
-      createUsersClient: vi.fn().mockReturnValue({
+      },
+      createUsersClient: {
         changePassword: vi.fn().mockRejectedValue(new Error('Server error')),
-      }),
-    } as any);
+      },
+    });
 
     vi.spyOn(errorService, 'castError').mockReturnValueOnce({ message: 'Server error', status: 500 } as any);
 
@@ -570,17 +562,17 @@ describe('Change password', () => {
     vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue(mockUser);
 
     const encryptedSalt = encryptText('mockSalt');
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue({
+    mockSdkFactory({
+      createAuthClient: {
         securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
-      }),
-      createDesktopAuthClient: vi.fn().mockReturnValue({
+      },
+      createDesktopAuthClient: {
         securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
-      }),
-      createUsersClient: vi.fn().mockReturnValue({
+      },
+      createUsersClient: {
         changePassword: vi.fn().mockRejectedValue(new Error('Forbidden')),
-      }),
-    } as any);
+      },
+    });
 
     const appErr = { message: 'Forbidden', status: 403 };
     vi.spyOn(errorService, 'castError').mockReturnValueOnce(appErr as any);
@@ -593,11 +585,11 @@ describe('Change password', () => {
 
   it('should cancel account', async () => {
     const mockSendDeactivationEmail = vi.fn().mockReturnValue({ success: true });
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue({
+    mockSdkFactory({
+      createAuthClient: {
         sendUserDeactivationEmail: mockSendDeactivationEmail,
-      }),
-    } as any);
+      },
+    });
     vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue('token');
 
     await authService.cancelAccount();
@@ -619,11 +611,11 @@ describe('updateCredentialsWithToken', () => {
     (validateMnemonic as any).mockReturnValue(true);
 
     const mockChangePasswordWithLink = vi.fn().mockResolvedValue({ success: true });
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue({
+    mockSdkFactory({
+      createAuthClient: {
         changePasswordWithLinkV2: mockChangePasswordWithLink,
-      }),
-    } as any);
+      },
+    });
 
     await authService.updateCredentialsWithToken(mockToken, mockNewPassword, mockMnemonic);
 
@@ -656,11 +648,11 @@ describe('updateCredentialsWithToken', () => {
     const aesEncryptSpy = vi.spyOn(aes, 'encrypt').mockReturnValue('mock-encrypted-data');
 
     const mockChangePasswordWithLink = vi.fn().mockResolvedValue({ success: true });
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue({
+    mockSdkFactory({
+      createAuthClient: {
         changePasswordWithLinkV2: mockChangePasswordWithLink,
-      }),
-    } as any);
+      },
+    });
 
     await authService.updateCredentialsWithToken(mockToken, mockNewPassword, mockMnemonic, mockBackupData);
 
@@ -703,11 +695,11 @@ describe('updateCredentialsWithToken', () => {
     const aesEncryptSpy = vi.spyOn(aes, 'encrypt').mockReturnValue('mock-encrypted-data');
 
     const mockChangePasswordWithLink = vi.fn().mockResolvedValue({ success: true });
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue({
+    mockSdkFactory({
+      createAuthClient: {
         changePasswordWithLinkV2: mockChangePasswordWithLink,
-      }),
-    } as any);
+      },
+    });
 
     await authService.updateCredentialsWithToken(mockToken, mockNewPassword, mockMnemonic, mockBackupData);
 
@@ -752,11 +744,11 @@ describe('updateCredentialsWithToken', () => {
 
     const mockError = new Error('API error');
     const mockChangePasswordWithLink = vi.fn().mockRejectedValue(mockError);
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue({
+    mockSdkFactory({
+      createAuthClient: {
         changePasswordWithLinkV2: mockChangePasswordWithLink,
-      }),
-    } as any);
+      },
+    });
 
     await expect(authService.updateCredentialsWithToken(mockToken, mockNewPassword, mockMnemonic)).rejects.toThrow(
       'API error',
@@ -775,12 +767,12 @@ describe('areCredentialsCorrect', () => {
     const encryptedSalt = encryptText(mockSalt);
     const mockAreCredentialsCorrect = vi.fn().mockResolvedValue(true);
 
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue({
+    mockSdkFactory({
+      createAuthClient: {
         securityDetails: vi.fn().mockResolvedValue({ encryptedSalt }),
         areCredentialsCorrect: mockAreCredentialsCorrect,
-      }),
-    } as any);
+      },
+    });
 
     const result = await authService.areCredentialsCorrect(mockPassword);
 
@@ -798,12 +790,12 @@ describe('areCredentialsCorrect', () => {
     const encryptedSalt = encryptText(mockSalt);
     const mockAreCredentialsCorrect = vi.fn().mockResolvedValue(false);
 
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue({
+    mockSdkFactory({
+      createAuthClient: {
         securityDetails: vi.fn().mockResolvedValue({ encryptedSalt }),
         areCredentialsCorrect: mockAreCredentialsCorrect,
-      }),
-    } as any);
+      },
+    });
 
     const result = await authService.areCredentialsCorrect(mockPassword);
 
@@ -820,12 +812,12 @@ describe('areCredentialsCorrect', () => {
     const encryptedSalt = encryptText(mockSalt);
     const mockAreCredentialsCorrect = vi.fn().mockResolvedValue(true);
 
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue({
+    mockSdkFactory({
+      createAuthClient: {
         securityDetails: vi.fn().mockResolvedValue({ encryptedSalt }),
         areCredentialsCorrect: mockAreCredentialsCorrect,
-      }),
-    } as any);
+      },
+    });
 
     const result = await authService.areCredentialsCorrect(mockPassword);
 
@@ -844,12 +836,12 @@ describe('areCredentialsCorrect', () => {
     const mockError = new Error('API error');
     const mockAreCredentialsCorrect = vi.fn().mockRejectedValue(mockError);
 
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue({
+    mockSdkFactory({
+      createAuthClient: {
         securityDetails: vi.fn().mockResolvedValue({ encryptedSalt }),
         areCredentialsCorrect: mockAreCredentialsCorrect,
-      }),
-    } as any);
+      },
+    });
 
     await expect(authService.areCredentialsCorrect(mockPassword)).rejects.toThrow('API error');
   });
@@ -923,9 +915,7 @@ describe('Security and validation', () => {
         securityDetails: vi.fn().mockResolvedValue({ tfaEnabled: true }),
       };
 
-      vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-        createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
-      } as any);
+      mockSdkFactory({ createAuthClient: mockAuthClient });
 
       expect(await authService.is2FANeeded('test@example.com')).toBe(true);
 
@@ -951,9 +941,7 @@ describe('Security and validation', () => {
 
   describe('Pending account setup on login', () => {
     const mockSecurityDetailsFailure = (error: unknown) => {
-      vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-        createAuthClient: vi.fn().mockReturnValue({ securityDetails: vi.fn().mockRejectedValue(error) }),
-      } as unknown as ReturnType<typeof SdkFactory.getNewApiInstance>);
+      mockSdkFactory({ createAuthClient: { securityDetails: vi.fn().mockRejectedValue(error) } });
     };
 
     test('When the email belongs to a paid account whose setup is not finished, then the error still says the setup is pending', async () => {
@@ -1008,9 +996,7 @@ describe('logOut', () => {
       logout: vi.fn().mockResolvedValue(undefined),
     };
 
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
-    } as any);
+    mockSdkFactory({ createAuthClient: mockAuthClient });
 
     vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue('test-token');
     vi.spyOn(localStorageService, 'clear').mockImplementation(() => {});
@@ -1036,9 +1022,7 @@ describe('logOut', () => {
       logout: vi.fn().mockResolvedValue(undefined),
     };
 
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
-    } as any);
+    mockSdkFactory({ createAuthClient: mockAuthClient });
 
     vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue('test-token');
     vi.spyOn(localStorageService, 'clear').mockImplementation(() => {});
@@ -1142,9 +1126,7 @@ describe('cancelAccount', () => {
       sendUserDeactivationEmail: vi.fn().mockResolvedValue(undefined),
     };
 
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
-    } as any);
+    mockSdkFactory({ createAuthClient: mockAuthClient });
 
     vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue('test-token');
 
@@ -1158,9 +1140,7 @@ describe('cancelAccount', () => {
       sendUserDeactivationEmail: vi.fn().mockResolvedValue(undefined),
     };
 
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
-    } as any);
+    mockSdkFactory({ createAuthClient: mockAuthClient });
 
     vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(undefined);
 
@@ -1176,9 +1156,7 @@ describe('getSalt', () => {
       securityDetails: vi.fn().mockResolvedValue({ encryptedSalt: encryptText('test-salt') }),
     };
 
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
-    } as any);
+    mockSdkFactory({ createAuthClient: mockAuthClient });
 
     vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue({ email: 'test@test.com' } as UserSettings);
 
@@ -1195,9 +1173,7 @@ describe('getPasswordDetails', () => {
       securityDetails: vi.fn().mockResolvedValue({ encryptedSalt: encryptText('test-salt') }),
     };
 
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
-    } as any);
+    mockSdkFactory({ createAuthClient: mockAuthClient });
 
     vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue({ email: 'test@test.com' } as UserSettings);
 
@@ -1214,9 +1190,7 @@ describe('getPasswordDetails', () => {
       securityDetails: vi.fn().mockResolvedValue({ encryptedSalt: encryptText('') }),
     };
 
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
-    } as any);
+    mockSdkFactory({ createAuthClient: mockAuthClient });
 
     vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue({ email: 'test@test.com' } as UserSettings);
 
@@ -1232,9 +1206,7 @@ describe('recoverAccountWithBackupKey', () => {
       legacyRecoverAccount: vi.fn().mockResolvedValue(undefined),
     };
 
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
-    } as any);
+    mockSdkFactory({ createAuthClient: mockAuthClient });
 
     const oldBackupContent = 'test mnemonic words here for old format backup key content test';
 
@@ -1248,9 +1220,7 @@ describe('recoverAccountWithBackupKey', () => {
       changePasswordWithLinkV2: vi.fn().mockResolvedValue(undefined),
     };
 
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
-    } as any);
+    mockSdkFactory({ createAuthClient: mockAuthClient });
 
     const newBackupContent = JSON.stringify({
       mnemonic: 'test mnemonic words here for new format backup key content test with proper length',
@@ -1273,9 +1243,7 @@ describe('userHas2FAStored', () => {
       securityDetails: vi.fn().mockResolvedValue({ tfaEnabled: true }),
     };
 
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
-    } as any);
+    mockSdkFactory({ createAuthClient: mockAuthClient });
 
     vi.spyOn(encryptedStorageService, 'getUser').mockResolvedValue({ email: 'test@test.com' } as UserSettings);
 
@@ -1292,9 +1260,7 @@ describe('generateNew2FA', () => {
       generateTwoFactorAuthQR: vi.fn().mockResolvedValue({ qr: 'qr-code-data', secret: 'secret-key' }),
     };
 
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
-    } as any);
+    mockSdkFactory({ createAuthClient: mockAuthClient });
 
     vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue('test-token');
 
@@ -1309,9 +1275,7 @@ describe('generateNew2FA', () => {
       generateTwoFactorAuthQR: vi.fn().mockResolvedValue({ qr: 'qr-code-data', secret: 'secret-key' }),
     };
 
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
-    } as any);
+    mockSdkFactory({ createAuthClient: mockAuthClient });
 
     vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(undefined);
 
@@ -1328,9 +1292,7 @@ describe('deactivate2FA', () => {
       disableTwoFactorAuth: vi.fn().mockResolvedValue(undefined),
     };
 
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
-    } as any);
+    mockSdkFactory({ createAuthClient: mockAuthClient });
 
     vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue('test-token');
 
@@ -1345,9 +1307,7 @@ describe('deactivate2FA', () => {
       disableTwoFactorAuth: vi.fn().mockResolvedValue(undefined),
     };
 
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
-    } as any);
+    mockSdkFactory({ createAuthClient: mockAuthClient });
 
     vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(undefined);
 
@@ -1364,9 +1324,7 @@ describe('requestUnblockAccount', () => {
       requestUnblockAccount: vi.fn().mockResolvedValue(undefined),
     };
 
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
-    } as any);
+    mockSdkFactory({ createAuthClient: mockAuthClient });
 
     await authService.requestUnblockAccount('test@test.com');
 
@@ -1380,9 +1338,7 @@ describe('unblockAccount', () => {
       unblockAccount: vi.fn().mockResolvedValue(undefined),
     };
 
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
-    } as any);
+    mockSdkFactory({ createAuthClient: mockAuthClient });
 
     await authService.unblockAccount('unblock-token');
 
@@ -1483,9 +1439,7 @@ describe('authService default export', () => {
       resetAccountWithToken: vi.fn().mockResolvedValue(undefined),
     };
 
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
-    } as any);
+    mockSdkFactory({ createAuthClient: mockAuthClient });
 
     vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue('auth-token');
 
@@ -1503,9 +1457,7 @@ describe('authService default export', () => {
       resetAccountWithToken: vi.fn().mockResolvedValue(undefined),
     };
 
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
-    } as any);
+    mockSdkFactory({ createAuthClient: mockAuthClient });
 
     vi.spyOn(encryptedStorageService, 'getToken').mockReturnValue(undefined);
 
@@ -1521,9 +1473,7 @@ describe('authService default export', () => {
       resetAccountWithToken: vi.fn().mockResolvedValue(undefined),
     };
 
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
-    } as any);
+    mockSdkFactory({ createAuthClient: mockAuthClient });
 
     await authService.default.resetAccountWithToken('reset-token', 'new-password');
 

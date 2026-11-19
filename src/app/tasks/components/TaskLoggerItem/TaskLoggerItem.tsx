@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useOpenItem } from '../../hooks/useOpen';
 import { useRetryDownload, useRetryUpload } from '../../hooks/useRetry';
@@ -160,6 +160,9 @@ const TaskLoggerItem = ({ notification, task, filesToRetry }: TaskLoggerItemProp
     tasksService.removeTask(notification.taskId);
   };
 
+  const hasFilesToRetry = (filesToRetry?.length ?? 0) > 0;
+  if (isModalOpen && !hasFilesToRetry) setIsModalOpen(false);
+
   return (
     <div className="relative">
       <TaskToRetry isOpen={isModalOpen} files={filesToRetry ?? []} onClose={() => setIsModalOpen(false)} />
@@ -196,4 +199,4 @@ const TaskLoggerItem = ({ notification, task, filesToRetry }: TaskLoggerItemProp
   );
 };
 
-export default TaskLoggerItem;
+export default memo(TaskLoggerItem);

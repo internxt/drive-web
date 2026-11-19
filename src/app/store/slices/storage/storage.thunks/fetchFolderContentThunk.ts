@@ -10,8 +10,8 @@ import notificationsService, { ToastType } from '../../../../notifications/servi
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { StorageState } from '../storage.model';
 import { applyCachedFolderSizes } from './applyCachedFolderSizes';
-
-const DEFAULT_LIMIT = 50;
+import { DEFAULT_LIMIT, getCursorPageQuery, hasMorePages } from './getCursorPageQuery';
+import { toDriveThumbnail } from 'utils/driveThumbnail.utils';
 
 const filterFolderItems = (item: DriveItemData) => item.isFolder;
 const filterFilesItems = (item: DriveItemData) => !item.isFolder;
@@ -30,6 +30,8 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, string, {
     const driveItemsSort = storageState.driveItemsSort;
     const driveItemsOrder = storageState.driveItemsOrder;
     const driveItemsSortForFolders = driveItemsSort === 'size' ? 'name' : driveItemsSort;
+
+    const isCursorPagination = !selectedWorkspace;
 
     try {
       if (folderId) {
@@ -50,12 +52,9 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, string, {
               driveItemsOrder,
             );
           } else {
-            [itemsPromise] = storageClient.getFolderFoldersByUuid(
+            [itemsPromise] = storageClient.getFolderFoldersByUuidWithCursor(
               folderId,
-              foldersOffset,
-              DEFAULT_LIMIT,
-              driveItemsSortForFolders,
-              driveItemsOrder,
+              getCursorPageQuery(driveItemsOrder, storageState.driveFoldersCursor[folderId]),
             );
           }
         } else if (hasMoreDriveFiles) {
@@ -70,18 +69,21 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, string, {
               driveItemsOrder,
             );
           } else {
-            [itemsPromise] = storageClient.getFolderFilesByUuid(
-              folderId,
-              filesOffset,
-              DEFAULT_LIMIT,
-              driveItemsSort,
-              driveItemsOrder,
-            );
+            [itemsPromise] = storageClient.getFolderFilesByUuidWithCursor(folderId, {
+              ...getCursorPageQuery(driveItemsOrder, storageState.driveFilesCursor[folderId]),
+              withThumbnails: true,
+            });
           }
         } else {
           return;
         }
         const itemsUnparsed = await itemsPromise;
+
+        const isSameOrder = getState().storage.driveItemsOrder === driveItemsOrder;
+        if (!isSameOrder) {
+          return;
+        }
+
         let parsedItems;
         let itemsLength = 0;
 
@@ -101,6 +103,7 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, string, {
                 ...item,
                 isFolder: hasMoreDriveFolders,
                 name: item.plainName,
+                thumbnails: item.thumbnails?.map(toDriveThumbnail),
                 size: item.size === 0 ? undefined : Number(item.size),
               }) as DriveItemData,
           );
@@ -108,16 +111,23 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, string, {
           itemsLength = items.length;
         }
 
-        const areLastItems = itemsLength < DEFAULT_LIMIT;
+        const hasMoreItems = hasMorePages({ isCursorPagination, nextCursor: itemsUnparsed.nextCursor, itemsLength });
         const itemsWithCachedSizes = await applyCachedFolderSizes(folderId, parsedItems);
 
         dispatch(storageActions.addItems({ folderId, items: itemsWithCachedSizes }));
 
+        if (isCursorPagination) {
+          const setCursor = hasMoreDriveFolders
+            ? storageActions.setDriveFoldersCursor
+            : storageActions.setDriveFilesCursor;
+          dispatch(setCursor({ folderId, cursor: itemsUnparsed.nextCursor }));
+        }
+
         if (hasMoreDriveFolders) {
-          dispatch(storageActions.setHasMoreDriveFolders({ folderId, status: !areLastItems }));
+          dispatch(storageActions.setHasMoreDriveFolders({ folderId, status: hasMoreItems }));
           dispatch(storageActions.addFolderFoldersLength({ folderId, foldersLength: itemsLength }));
         } else {
-          dispatch(storageActions.setHasMoreDriveFiles({ folderId, status: !areLastItems }));
+          dispatch(storageActions.setHasMoreDriveFiles({ folderId, status: hasMoreItems }));
           dispatch(storageActions.addFolderFilesLength({ folderId, filesLength: itemsLength }));
         }
       }

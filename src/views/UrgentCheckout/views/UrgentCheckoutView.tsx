@@ -11,6 +11,7 @@ import { CheckoutViewManager, UserInfoProps } from 'views/Checkout/types/checkou
 import { UrgentCheckoutAccountFields } from '../components/UrgentCheckoutAccountFields';
 import { UrgentCheckoutHeader } from '../components/UrgentCheckoutHeader';
 import { UrgentCheckoutHero } from '../components/UrgentCheckoutHero';
+import { UrgentCheckoutLifetimeNotice } from '../components/UrgentCheckoutLifetimeNotice';
 import { UrgentCheckoutOrderSummary } from '../components/UrgentCheckoutOrderSummary';
 import { UrgentCheckoutPaymentSection } from '../components/UrgentCheckoutPaymentSection';
 import { OfferCountdownCard } from '../components/OfferCountdownCard';
@@ -103,6 +104,7 @@ const UrgentCheckoutView = ({
             />
             <div className={`flex flex-col gap-5 p-5 ${URGENT_CHECKOUT_CARD_CLASSNAME}`}>
               <UrgentCheckoutOrderSummary planSummary={planSummary} />
+              {!planSummary.isRecurring && <UrgentCheckoutLifetimeNotice />}
               <UrgentCheckoutAccountFields
                 authMethod={authMethod}
                 authError={authError}

@@ -1,27 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import xlsxPreview from 'xlsx-preview';
 import { PORTRAIT_VIEWER_PADDING_CLASS } from '../../utils/fileViewerUtils';
+import { FileContentViewerProps } from '../types';
 
-interface FileDocumentsViewerProps {
-  blob: Blob;
-  setIsPreviewAvailable: (isPreviewAvailable: boolean) => void;
-}
-
-const FileXlsxViewer: React.FC<FileDocumentsViewerProps> = ({ blob, setIsPreviewAvailable }) => {
+const FileXlsxViewer: React.FC<FileContentViewerProps> = ({ blob, onError }) => {
   const [htmlContent, setHtmlContent] = useState<string>('');
 
   useEffect(() => {
+    if (!blob) return;
+
+    let isCancelled = false;
+    let htmlUrl: string | undefined;
+
     xlsxPreview
       .xlsx2Html(blob, {
         output: 'arrayBuffer',
       })
       .then((html) => {
-        setHtmlContent(URL.createObjectURL(new Blob([html], { type: 'text/html' })));
+        if (isCancelled) return;
+        htmlUrl = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+        setHtmlContent(htmlUrl);
       })
       .catch((err) => {
-        setIsPreviewAvailable(false);
+        if (isCancelled) return;
+        onError();
         console.error(err);
       });
+
+    return () => {
+      isCancelled = true;
+      if (htmlUrl) URL.revokeObjectURL(htmlUrl);
+    };
   }, [blob]);
 
   return (

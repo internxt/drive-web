@@ -183,7 +183,13 @@
       "success": "Du hast dich erfolgreich angemeldet",
       "error": "Anmeldung fehlgeschlagen, bitte versuche es erneut",
       "closeWindow": "Du kannst dieses Fenster schließen",
-      "invalidRedirectUri": "Ungültige Weiterleitungs-URL"
+      "invalidRedirectUri": "Ungültige Weiterleitungs-URL",
+      "errors": {
+        "CLIENT_VERSION_UNSUPPORTED": {
+          "title": "Diese Version der App wird nicht mehr unterstützt",
+          "description": "Aktualisiere die App auf die neueste Version und melde dich dann erneut an."
+        }
+      }
     },
     "oauthLink": {
       "continueAs": "Fortfahren als",
@@ -196,10 +202,6 @@
     "continue": "Weiter",
     "processing": "Verarbeitung läuft...",
     "checkout": "Zur Kasse",
-    "postalCode": {
-      "title": "Postleitzahl",
-      "placeholder": "Postleitzahl"
-    },
     "authComponent": {
       "signUp": {
         "emailAddress": "Ihre E-Mail-Adresse",
@@ -218,14 +220,6 @@
         "invalidData": "Bitte überprüfe, ob deine E-Mail-Adresse und dein Passwort korrekt sind, und versuche es erneut.",
         "serverError": "Wir konnten diesen Schritt nicht abschließen. Bitte versuche es in einigen Minuten erneut oder wende dich an den Support, wenn das Problem weiterhin besteht.",
         "unknown": "Wir konnten deine Daten nicht überprüfen. Bitte überprüfe deine E-Mail-Adresse und dein Passwort und versuche es erneut."
-      }
-    },
-    "addressBillingTitle": "Rechnungsadresse",
-    "addressBilling": {
-      "optional": {
-        "cta": "Optional",
-        "companyName": "Firmenname",
-        "companyVatId": "USt-ID der Firma"
       }
     },
     "productCard": {
@@ -252,7 +246,6 @@
     "error": {
       "invalidPlan": "Nicht unterstützter Plantyp. Bitte wählen Sie einen gültigen Plan.",
       "businessPlan": "Der Unternehmensplan ist nicht verfügbar",
-      "postalCodeRequired": "Bitte geben Sie Ihre Postleitzahl ein, um fortzufahren",
       "countryRequired": "Wir konnten Ihr Land nicht ermitteln. Bitte versuchen Sie es später erneut.",
       "missingPaymentDetails": "Fehlende Zahlungsdaten zur Bestätigung der Zahlung",
       "paymentFailed": "Zahlung fehlgeschlagen"
@@ -282,7 +275,11 @@
       "offerPillNoDiscount": "Exklusives Angebot für kurze Zeit",
       "title": "Halten Sie Ihre Dateien, Fotos und Videos",
       "titleHighlight": "100% privat.",
-      "subtitle": "Sichern Sie sich {{storage}} privaten Cloud-Speicher für nur {{price}} im ersten Monat.",
+      "subtitle": {
+        "month": "Sichern Sie sich {{storage}} privaten Cloud-Speicher für nur {{price}} im ersten Monat.",
+        "year": "Sichern Sie sich {{storage}} privaten Cloud-Speicher für nur {{price}} im ersten Jahr.",
+        "lifetime": "Sichern Sie sich {{storage}} privaten Cloud-Speicher für immer mit einer einmaligen Zahlung von {{price}}."
+      },
       "imageAlt": "Internxt Drive auf einem Laptop und einem Smartphone",
       "points": {
         "privacy": {
@@ -292,6 +289,10 @@
         "storage": {
           "title": "Ihre private Cloud, geschützt",
           "description": "Speichern Sie Ihre Fotos, Videos, Dokumente und persönlichen Dateien mit integriertem Datenschutz."
+        },
+        "suite": {
+          "title": "Mehr als Cloud-Speicher",
+          "description": "Privatsphäre-Tools inklusive, je nach Tarif."
         },
         "offer": {
           "title": "{{percent}}% RABATT — für kurze Zeit",
@@ -327,13 +328,32 @@
       "encryptedDescription": "Internxt kann nicht auf Ihre Inhalte zugreifen."
     },
     "cta": {
-      "button": "{{storage}} für {{price}} sichern",
-      "renewalNoteMonthly": "Erster Monat {{price}}, danach {{renewalPrice}}/Monat. Jederzeit kündbar.",
-      "renewalNoteYearly": "Erstes Jahr {{price}}, danach {{renewalPrice}}/Jahr. Jederzeit kündbar."
+      "button": {
+        "lifetime": "Lifetime-Tarif sichern",
+        "subscription": "Abo-Tarif sichern"
+      },
+      "billingDisclosure": {
+        "withIntroPrice": {
+          "month": "{{price}} im ersten Monat, danach {{renewalPrice}} jeden Monat. Jederzeit kündbar.",
+          "year": "{{price}} im ersten Jahr, danach {{renewalPrice}} jedes Jahr. Jederzeit kündbar."
+        },
+        "withoutIntroPrice": {
+          "month": "{{renewalPrice}} jeden Monat. Jederzeit kündbar.",
+          "year": "{{renewalPrice}} jedes Jahr. Jederzeit kündbar."
+        }
+      }
+    },
+    "lifetimeNotice": {
+      "title": "Was Sie kaufen, bleibt Ihnen",
+      "description": "Ihr gekaufter Lifetime-Speicher wird durch künftige Tarifänderungen nicht verringert.",
+      "singlePayment": "Einmalige Zahlung — Keine wiederkehrenden Gebühren."
+    },
+    "guarantee": {
+      "title": "30-Tage-Geld-zurück-Garantie",
+      "description": "Risikofrei ausprobieren."
     }
   },
   "general": {
-    "of": "von",
     "at": "um",
     "terms": "Geschäftsbedingungen",
     "contactSupport": "Kundensupport kontaktieren",
@@ -400,9 +420,6 @@
     "stage": {
       "development": "Entwicklung"
     },
-    "loading": {
-      "default": "Laden..."
-    },
     "renewal": {
       "annually": "Jährlich",
       "lifetime": "Lifetime"
@@ -440,6 +457,7 @@
   },
   "sideNav": {
     "drive": "Drive",
+    "photos": "Fotos",
     "favorites": "Favoriten",
     "backups": "Backups",
     "shared": "Geteilt",
@@ -452,6 +470,32 @@
     }
   },
   "views": {
+    "photos": {
+      "head": "Fotos",
+      "empty": {
+        "title": "Noch keine Fotos",
+        "description": "Aktiviere die Fotosicherung in der mobilen Internxt-App, dann erscheinen deine Fotos hier"
+      },
+      "error": {
+        "title": "Deine Fotos konnten nicht geladen werden",
+        "description": "Überprüfe deine Verbindung und versuche es erneut",
+        "retry": "Erneut versuchen"
+      },
+      "filters": {
+        "allDevices": "Alle Geräte",
+        "allDates": "Alle Daten"
+      },
+      "timeline": {
+        "today": "Heute",
+        "yesterday": "Gestern",
+        "monthError": "Einige Fotos aus {{month}} konnten nicht geladen werden"
+      },
+      "badges": {
+        "livePhoto": "Live Photo",
+        "burst": "Serienaufnahme",
+        "video": "Video"
+      }
+    },
     "favorites": {
       "head": "Favoriten",
       "empty": {
@@ -1230,7 +1274,8 @@
       "processing": "Wird bearbeitet {{pending}} von {{finished}}",
       "failedToUpload": "Fehler beim Hochladen",
       "failedToDownload": "Fehler beim Herunterladen",
-      "notAllowed": "Nicht erlaubt"
+      "notAllowed": "Nicht erlaubt",
+      "retryAll": "Alle wiederholen"
     },
     "waiting": "Warten",
     "paused": "Pausiert",
@@ -1348,7 +1393,8 @@
       "errors": {}
     },
     "subtitles": {
-      "upload-failed": "Upload fehlgeschlagen"
+      "upload-failed": "Upload fehlgeschlagen",
+      "folder-removal-failed": "Der hochgeladene Ordner konnte nicht entfernt werden"
     },
     "generalErrorMessages": {
       "retryUploadFailed": "Beim erneuten Hochladen ist etwas schiefgegangen. Versuche es erneut",
@@ -1359,7 +1405,6 @@
   },
   "success": {
     "passwordChanged": "Passwort wurde erfolgreich geändert",
-    "linkCopied": "Link kopiert!",
     "twoFactorAuthActivated": "Deine Zwei-Faktor-Authentifizierung wurde aktiviert!",
     "twoFactorAuthDisabled": "Deine Zwei-Faktor-Authentifizierung wurde deaktiviert!"
   },
@@ -1446,7 +1491,6 @@
     "restoreHere": "Wiederherstellen",
     "rename": "Umbenennen",
     "restore": "Wiederherstellen",
-    "copyLink": "Kopiere Link",
     "report": "Missbrauch melden",
     "yes": "Ja",
     "no": "Nein",
