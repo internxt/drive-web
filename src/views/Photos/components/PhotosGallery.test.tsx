@@ -4,7 +4,7 @@ import { Photo } from '../types';
 import PhotosGallery from './PhotosGallery';
 
 const loadNextMonth = vi.fn();
-const shownPhoto = { id: 1, takenAt: '2026-11-01T10:00:00Z', file: { id: 1 } } as unknown as Photo;
+const shownPhoto = { uuid: 'photo-1', takenAt: '2026-11-01T10:00:00Z', file: { uuid: 'photo-1' } } as unknown as Photo;
 
 vi.mock('../hooks/useTimelinePhotos', () => ({
   useTimelinePhotos: () => ({

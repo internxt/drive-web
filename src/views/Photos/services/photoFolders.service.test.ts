@@ -118,9 +118,7 @@ describe('Photo backup folders', () => {
 
       expect(photos).toStrictEqual([
         {
-          id: 1,
           uuid: 'photo-a',
-          folderId: 10,
           name: 'IMG_A.heic',
           type: 'heic',
           day: '2026-11-02',
@@ -138,9 +136,7 @@ describe('Photo backup folders', () => {
           }),
         },
         {
-          id: 1,
           uuid: 'photo-b',
-          folderId: 10,
           name: 'IMG_B.jpg',
           type: 'jpg',
           day: '2026-11-15',
