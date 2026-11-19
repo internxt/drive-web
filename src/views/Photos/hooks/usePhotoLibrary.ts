@@ -31,5 +31,17 @@ export const usePhotoLibrary = () => {
     void loadLibrary();
   }, [loadLibrary]);
 
-  return { state, retry: loadLibrary };
+  const removeDevice = useCallback((deviceUuid: string) => {
+    setState((current) =>
+      current.status === 'loaded'
+        ? {
+            status: 'loaded',
+            devices: current.devices.filter((device) => device.uuid !== deviceUuid),
+            months: current.months.filter((month) => month.deviceUuid !== deviceUuid),
+          }
+        : current,
+    );
+  }, []);
+
+  return { state, retry: loadLibrary, removeDevice };
 };
