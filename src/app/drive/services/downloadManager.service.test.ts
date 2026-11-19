@@ -839,9 +839,9 @@ describe('downloadManagerService', () => {
 
   test('When several downloaded files share a name and extension, then the first keeps it and the rest get the next free one', async () => {
     const photos: DriveFileData[] = [
-      { ...mockFile, id: 1, uuid: 'monday-photo', name: 'IMG_0001', type: 'heic' },
-      { ...mockFile, id: 2, uuid: 'tuesday-photo', name: 'IMG_0001', type: 'heic' },
-      { ...mockFile, id: 3, uuid: 'friday-photo', name: 'img_0001', type: 'HEIC' },
+      { ...mockFile, uuid: 'monday-photo', name: 'IMG_0001', type: 'heic' },
+      { ...mockFile, uuid: 'tuesday-photo', name: 'IMG_0001', type: 'heic' },
+      { ...mockFile, uuid: 'friday-photo', name: 'img_0001', type: 'HEIC' },
     ];
     const streamOf = new Map(photos.map(({ uuid }) => [uuid, new ReadableStream()]));
     const mockTask = getTask(getDownloadItem(photos).payload);
