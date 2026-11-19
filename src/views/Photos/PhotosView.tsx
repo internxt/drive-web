@@ -23,7 +23,7 @@ const PhotosView = (): JSX.Element => {
 
   const onDeviceRemoved = (deviceUuid: string) => {
     removeDevice(deviceUuid);
-    filters.selectDevice(null);
+    if (deviceUuid === filters.selectedDeviceUuid) filters.selectDevice(null);
   };
 
   const content = {

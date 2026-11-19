@@ -18,10 +18,11 @@ export const usePhotoFilters = (months: PhotoMonth[]) => {
     [monthsOfSelectedDevices],
   );
 
+  const shownMonth = selectedMonth && availableMonths.includes(selectedMonth) ? selectedMonth : null;
+
   const shownMonths = useMemo(
-    () =>
-      selectedMonth ? monthsOfSelectedDevices.filter((month) => month.key === selectedMonth) : monthsOfSelectedDevices,
-    [monthsOfSelectedDevices, selectedMonth],
+    () => (shownMonth ? monthsOfSelectedDevices.filter((month) => month.key === shownMonth) : monthsOfSelectedDevices),
+    [monthsOfSelectedDevices, shownMonth],
   );
 
   const selectDevice = (deviceUuid: string | null) => {
@@ -33,7 +34,7 @@ export const usePhotoFilters = (months: PhotoMonth[]) => {
     selectedDeviceUuid,
     selectDevice,
     availableMonths,
-    selectedMonth,
+    selectedMonth: shownMonth,
     selectMonth: setSelectedMonth,
     shownMonths,
   };

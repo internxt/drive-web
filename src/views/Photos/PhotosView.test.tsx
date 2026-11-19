@@ -468,6 +468,38 @@ describe('Photos view', () => {
       expect(screen.queryByRole('img', { name: 'IMG_PIXEL.jpg' })).not.toBeInTheDocument();
     });
 
+    test('When the user deletes a device other than the chosen one, then the chosen device and month stay', async () => {
+      renderWithStore();
+      fireEvent.click(await screen.findByRole('button', { name: /views.photos.filters.allDevices/ }));
+      fireEvent.click(await screen.findByRole('menuitem', { name: /iPhone/ }));
+      fireEvent.click(await screen.findByRole('button', { name: /views.photos.filters.allDates/ }));
+      fireEvent.click(await screen.findByRole('menuitem', { name: /November 2026/ }));
+      await manageDevices();
+
+      deleteDevice('Pixel');
+      await confirmDeletion();
+
+      await waitFor(() => expect(shownDevices()).toStrictEqual(['iPhone']));
+      expect(screen.getByRole('button', { name: /iPhone/ })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /November 2026/ })).toBeInTheDocument();
+      expect(await screen.findByRole('img', { name: 'IMG_IPHONE.jpg' })).toBeInTheDocument();
+    });
+
+    test('When the user deletes the only device with the chosen month, then the date filter goes back to all dates', async () => {
+      renderWithStore();
+      fireEvent.click(await screen.findByRole('button', { name: /views.photos.filters.allDates/ }));
+      fireEvent.click(await screen.findByRole('menuitem', { name: /October 2026/ }));
+      await manageDevices();
+
+      deleteDevice('Pixel');
+      await confirmDeletion();
+
+      await waitFor(() => expect(shownDevices()).toStrictEqual(['iPhone']));
+      expect(screen.getByRole('button', { name: /views.photos.filters.allDates/ })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /October 2026/ })).not.toBeInTheDocument();
+      expect(await screen.findByRole('img', { name: 'IMG_IPHONE.jpg' })).toBeInTheDocument();
+    });
+
     test('When the device is being deleted, then the confirmation cannot be dismissed until it finishes', async () => {
       let finishDeletion = () => undefined as void;
       photosClient.deleteDevice.mockReturnValue(new Promise<void>((resolve) => (finishDeletion = resolve)));
