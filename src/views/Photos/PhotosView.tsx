@@ -30,7 +30,7 @@ const PhotosView = (): JSX.Element => {
   const content = {
     loading: <PhotosGridSkeleton />,
     error: <PhotosErrorState onRetry={retry} />,
-    locked: <PhotosLockedState onPlanChanged={retry} />,
+    locked: <PhotosLockedState />,
     loaded: (
       <PhotosLibrary
         months={filters.shownMonths}
