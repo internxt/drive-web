@@ -6,11 +6,8 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { clearPaymentStorage } from 'services/storage-keys';
 import { Translate } from 'app/i18n/types';
 import { LocalStorageItem } from 'app/core/types';
-import metaService from './meta.service';
-import gaService from './ga.service';
-import { trackPaymentConversion } from './impact.service';
+import { PurchaseBuyer, sendPurchaseEvents as sendAnalyticsPurchaseEvents } from '@internxt/analytics';
 import { sendPurchasePostback } from './partnerPostback.service';
-import { PurchaseBuyer } from './types';
 
 const hasStripeReportedPaymentFailed = async (): Promise<boolean> => {
   const params = new URLSearchParams(globalThis.location.search);
@@ -56,17 +53,12 @@ const sendPurchaseEvents = async (): Promise<void> => {
     return;
   }
 
-  metaService.trackPurchase();
-
   const buyer = await getPurchaseBuyer();
-  if (!buyer) {
-    console.warn('[Analytics] No buyer found, GA and Impact purchase events are not sent');
-    return;
-  }
+  await sendAnalyticsPurchaseEvents(buyer);
 
-  gaService.trackPurchase(buyer);
-  await trackPaymentConversion(buyer);
-  await sendPurchasePostback();
+  if (buyer) {
+    await sendPurchasePostback();
+  }
 };
 
 export const trackCheckoutCompleted = async (translate: Translate): Promise<void> => {
