@@ -210,6 +210,18 @@ describe('Testing Impact Service', () => {
       expect(localStorageService.set).not.toHaveBeenCalledWith('impact_source', expect.anything());
       expect(localStorageService.removeItem).toHaveBeenCalledWith('impact_source');
     });
+
+    it('When no discount code is provided, then it drops any coupon kept from an earlier attempt', () => {
+      savePayment({ couponCodeData: undefined });
+
+      expect(localStorageService.removeItem).toHaveBeenCalledWith('couponCode');
+    });
+
+    it('When a discount code is provided, then it keeps the coupon instead of dropping it', () => {
+      savePayment();
+
+      expect(localStorageService.removeItem).not.toHaveBeenCalledWith('couponCode');
+    });
   });
 
   describe('trackSignUp', () => {
