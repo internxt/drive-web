@@ -14,6 +14,7 @@ const mockUserSettings: UserSettings = {
   bridgeUser: 'bridge_user',
   bucket: 'user-bucket',
   backupsBucket: 'backups-bucket',
+  photosBucket: null,
   root_folder_id: 1,
   rootFolderId: 'folder-id-123',
   rootFolderUuid: 'folder-uuid-456',

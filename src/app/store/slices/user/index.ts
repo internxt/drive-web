@@ -113,10 +113,12 @@ export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean 
       if (isRefreshRequired || forceRefresh) {
         const { user, newToken } = await userService.refreshUserData(currentUser.uuid);
 
-        const { emailVerified, name, lastname, uuid, createdAt } = user;
+        const { emailVerified, name, lastname, uuid, createdAt, photosBucket } = user;
         const avatar = await refreshAvatar(uuid);
 
-        dispatch(userThunks.setUserThunk({ ...currentUser, avatar, emailVerified, name, lastname, createdAt }));
+        dispatch(
+          userThunks.setUserThunk({ ...currentUser, avatar, emailVerified, name, lastname, createdAt, photosBucket }),
+        );
         await encryptedStorageService.setToken(newToken);
       }
     } catch (err) {

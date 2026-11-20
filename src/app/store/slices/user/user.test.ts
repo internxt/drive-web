@@ -159,6 +159,19 @@ describe('user thunks', () => {
       expect(setTokenSpy).toHaveBeenCalledWith('forced-token-xyz');
     });
 
+    test('When the user is refreshed, then the Photos bucket is kept up to date', async () => {
+      const refreshed = {
+        user: { ...baseUser, photosBucket: 'photos-bucket-id' },
+        newToken: 'new-token',
+        oldToken: 'old-token',
+      } as unknown as Awaited<ReturnType<typeof userService.refreshUserData>>;
+      vi.spyOn(userService, 'refreshUserData').mockResolvedValue(refreshed);
+
+      await refreshUserThunk({ forceRefresh: true })(dispatchMock, getStateWithUser, undefined);
+
+      expect(setUserThunkSpy).toHaveBeenCalledWith(expect.objectContaining({ photosBucket: 'photos-bucket-id' }));
+    });
+
     it('reports error when refresh fails', async () => {
       vi.spyOn(userService, 'refreshUserData').mockRejectedValue(new Error('network'));
 

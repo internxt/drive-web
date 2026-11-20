@@ -85,6 +85,7 @@ export const getUserSettings = (overrides: Partial<UserSettings> = {}): UserSett
   bridgeUser: 'mock-bridgeUser',
   bucket: 'mock-bucket',
   backupsBucket: null,
+  photosBucket: null,
   root_folder_id: 0,
   rootFolderId: 'mock-rootFolderId',
   rootFolderUuid: undefined,
