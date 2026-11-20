@@ -7,6 +7,7 @@ interface PostbackPartner {
   utmSource: string;
   postbackUrl: string;
   networkId: string;
+  couponCode: string;
 }
 
 const POSTBACK_PARTNERS: readonly PostbackPartner[] = [
@@ -14,6 +15,7 @@ const POSTBACK_PARTNERS: readonly PostbackPartner[] = [
     utmSource: 'S42MF2',
     postbackUrl: 'https://www.p0stb4ck.com/',
     networkId: '1134',
+    couponCode: 'TFA',
   },
 ];
 
@@ -22,7 +24,13 @@ const CLICK_ID_COOKIE = 'postbackClickId';
 
 const CPA_AMOUNT_BY_PLAN: Readonly<Record<string, number>> = {
   price_1U6Ev3FAOdcgaBMQHxOAmWPO: 180,
+  price_1T1xQtFAOdcgaBMQ1r2JnHsE: 180,
+  price_1UAwSbFAOdcgaBMQkJhPExCz: 180,
   price_1TRoAJFAOdcgaBMQveT6cebN: 80,
+  price_1UZCCZFAOdcgaBMQO9bKb6I9: 80,
+  price_1UAsSAFAOdcgaBMQNF0j8UfV: 80,
+  price_1UKYnMFAOdcgaBMQ09GLzJhJ: 80,
+  price_1UKYjUFAOdcgaBMQ7ZdV42BA: 19,
 };
 
 function getCpaAmount(priceId: string | null): number {
@@ -44,6 +52,16 @@ function setPostbackCookie(cookieName: string, value: string): void {
   document.cookie = `${cookieName}=${encodeURIComponent(value)};expires=${expiration.toUTCString()};Path=/;Secure`;
 }
 
+function clearPostbackCookies(): void {
+  for (const cookieName of [PARTNER_COOKIE, CLICK_ID_COOKIE]) {
+    document.cookie = `${cookieName}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;Path=/;Secure`;
+  }
+}
+
+function isPartnerCoupon(partner: PostbackPartner, couponCode: string | null): boolean {
+  return couponCode?.toLowerCase() === partner.couponCode.toLowerCase();
+}
+
 export function capturePostbackPartner(utmSource: string | null, affiliateClickId: string | null): void {
   const partner = findPartnerByUtmSource(utmSource);
 
@@ -59,9 +77,13 @@ export function capturePostbackPartner(utmSource: string | null, affiliateClickI
 }
 
 export async function sendPurchasePostback(): Promise<void> {
+  const partner = findPartnerByUtmSource(getCookie(PARTNER_COOKIE));
+  if (!partner) {
+    return;
+  }
+
   try {
-    const partner = findPartnerByUtmSource(getCookie(PARTNER_COOKIE));
-    if (!partner) {
+    if (!isPartnerCoupon(partner, localStorageService.get(LocalStorageItem.CouponCode))) {
       return;
     }
 
@@ -86,5 +108,7 @@ export async function sendPurchasePostback(): Promise<void> {
   } catch (error) {
     const castedError = errorService.castError(error);
     errorService.reportError(castedError);
+  } finally {
+    clearPostbackCookies();
   }
 }
