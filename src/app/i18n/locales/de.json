@@ -481,6 +481,11 @@
         "description": "Überprüfe deine Verbindung und versuche es erneut",
         "retry": "Erneut versuchen"
       },
+      "locked": {
+        "title": "Fotos ist nicht in deinem Tarif enthalten",
+        "description": "Upgrade deinen Tarif, um die von deinem Handy gesicherten Fotos zu sehen",
+        "upgrade": "Upgrade"
+      },
       "filters": {
         "allDevices": "Alle Geräte",
         "allDates": "Alle Daten"
