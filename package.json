@@ -31,7 +31,7 @@
     "fflate": "^0.8.3",
     "file-saver": "^2.0.5",
     "hash-wasm": "^4.11.0",
-    "heic2any": "^0.0.4",
+    "heic-to": "^1.6.7",
     "history": "^4.10.1",
     "https-browserify": "^1.0.0",
     "i18next": "^22.5.1",
