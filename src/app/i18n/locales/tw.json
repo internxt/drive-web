@@ -502,6 +502,11 @@
         "description": "請檢查網路連線後再試一次",
         "retry": "重試"
       },
+      "locked": {
+        "title": "您的方案不包含相片功能",
+        "description": "升級方案即可查看從手機備份的相片",
+        "upgrade": "升級"
+      },
       "filters": {
         "allDevices": "所有裝置",
         "allDates": "所有日期"
