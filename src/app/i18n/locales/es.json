@@ -481,6 +481,11 @@
         "description": "Comprueba tu conexión e inténtalo de nuevo",
         "retry": "Reintentar"
       },
+      "locked": {
+        "title": "Fotos no está incluido en tu plan",
+        "description": "Mejora tu plan para ver las fotos de las que has hecho copia desde tu móvil",
+        "upgrade": "Mejorar plan"
+      },
       "filters": {
         "allDevices": "Todos los dispositivos",
         "allDates": "Todas las fechas"
