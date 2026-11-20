@@ -44,6 +44,12 @@ describe('Trash list item location', () => {
     expect(screen.queryByText('Holidays')).not.toBeInTheDocument();
   });
 
+  test('When the original folder of a photo no longer exists, then its location is still Photos', () => {
+    renderTrashItem({ bucket: PHOTOS_BUCKET, parent: undefined });
+
+    expect(screen.getByText('sideNav.photos')).toBeInTheDocument();
+  });
+
   test('When a Drive file is in the trash, then its location is the folder it was in', () => {
     renderTrashItem({ bucket: 'drive-bucket-id', parent: parentFolder });
 
