@@ -1,14 +1,14 @@
 import { useCallback, useMemo } from 'react';
 import { matchPath } from 'react-router-dom';
 import {
-  Clock,
-  ClockCounterClockwise,
-  Desktop,
-  FolderSimple,
+  ClockIcon,
+  ClockCounterClockwiseIcon,
+  DesktopIcon,
+  FolderSimpleIcon,
   ImagesIcon,
   StarIcon,
-  Trash,
-  Users,
+  TrashIcon,
+  UsersIcon,
 } from '@phosphor-icons/react';
 import { useSelector } from 'react-redux';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -56,7 +56,7 @@ export const useSidenavNavigation = () => {
       {
         isActive: isActiveButton('/') || isActiveButton('/file/:uuid') || isActiveButton('/folder/:uuid'),
         label: translate('sideNav.drive'),
-        icon: FolderSimple,
+        icon: FolderSimpleIcon,
         iconDataCy: 'sideNavDriveIcon',
         isVisible: true,
         onClick: () => onSidenavItemClick(AppView.Drive, workspaceUuid, resetAccessTokenFileFolder),
@@ -80,7 +80,7 @@ export const useSidenavNavigation = () => {
       {
         isActive: isActiveButton('/backups'),
         label: translate('sideNav.backups'),
-        icon: ClockCounterClockwise,
+        icon: ClockCounterClockwiseIcon,
         iconDataCy: 'sideNavBackupsIcon',
         isVisible: !isB2BWorkspace,
         onClick: () => onSidenavItemClick(AppView.Backups, workspaceUuid, resetAccessTokenFileFolder),
@@ -88,7 +88,7 @@ export const useSidenavNavigation = () => {
       {
         isActive: isActiveButton('/shared'),
         label: translate('sideNav.shared'),
-        icon: Users,
+        icon: UsersIcon,
         notifications: pendingInvitations.length > 0 ? pendingInvitations.length : undefined,
         iconDataCy: 'sideNavSharedIcon',
         isVisible: true,
@@ -97,7 +97,7 @@ export const useSidenavNavigation = () => {
       {
         isActive: isActiveButton('/recents'),
         label: translate('sideNav.recents'),
-        icon: Clock,
+        icon: ClockIcon,
         iconDataCy: 'sideNavRecentsIcon',
         isVisible: !isB2BWorkspace,
         onClick: () => onSidenavItemClick(AppView.Recents, workspaceUuid, resetAccessTokenFileFolder),
@@ -105,14 +105,14 @@ export const useSidenavNavigation = () => {
       {
         isActive: isActiveButton('/trash'),
         label: translate('sideNav.trash'),
-        icon: Trash,
+        icon: TrashIcon,
         iconDataCy: 'sideNavTrashIcon',
         isVisible: true,
         onClick: () => onSidenavItemClick(AppView.Trash, workspaceUuid, resetAccessTokenFileFolder),
       },
       {
         label: translate('sideNav.desktop'),
-        icon: Desktop,
+        icon: DesktopIcon,
         iconDataCy: 'sideNavDesktopIcon',
         onClick: () => handleDownloadApp(translate),
         isVisible: !isB2BWorkspace,
