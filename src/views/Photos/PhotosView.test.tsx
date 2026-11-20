@@ -214,13 +214,14 @@ const renderWithStore = () => {
     preloadedState: { user: { ...userReducer(undefined, { type: 'init' }), isAuthenticated: true } },
   });
   const wrapper = ({ children }: { children: ReactNode }) => <Provider store={store}>{children}</Provider>;
-  return render(
+  const result = render(
     <>
       <PhotosView />
       <Toaster />
     </>,
     { wrapper },
   );
+  return { ...result, store };
 };
 
 const trashedFiles = () =>
@@ -350,7 +351,7 @@ describe('Photos view', () => {
     test('When the plan does not include Photos, then a locked state with an upgrade button is shown instead of the photos', async () => {
       photosClient.listDevices.mockRejectedValue(photosNotInPlan);
 
-      render(<PhotosView />);
+      renderWithStore();
 
       expect(await screen.findByText('views.photos.locked.title')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /views.photos.locked.upgrade/ })).toBeInTheDocument();
@@ -363,16 +364,17 @@ describe('Photos view', () => {
       photosClient.listDevices.mockRejectedValue(photosNotInPlan);
       const openPreferences = vi.spyOn(navigationService, 'openPreferencesDialog').mockReturnValue();
 
-      render(<PhotosView />);
+      const { store } = renderWithStore();
       fireEvent.click(await screen.findByRole('button', { name: /views.photos.locked.upgrade/ }));
 
       expect(openPreferences).toHaveBeenCalledWith({ section: 'account', subsection: 'plans' });
+      expect(store.getState().ui.isPreferencesDialogOpen).toBe(true);
     });
 
     test('When the plan does not include Photos, then it is not reported as an error', async () => {
       photosClient.listDevices.mockRejectedValue(photosNotInPlan);
 
-      render(<PhotosView />);
+      renderWithStore();
 
       await screen.findByText('views.photos.locked.title');
       expect(errorService.reportError).not.toHaveBeenCalled();
