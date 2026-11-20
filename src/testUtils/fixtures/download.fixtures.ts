@@ -6,7 +6,6 @@ import { DownloadItem, DownloadItemType, DownloadTask } from 'app/drive/services
 import { DriveFileData, DriveFolderData, DriveItemData } from 'app/drive/types';
 
 export const getDriveFileData = (overrides: Partial<DriveFileData> = {}): DriveFileData => ({
-  id: 0,
   uuid: 'uuid',
   bucket: 'bucket',
   name: 'File1',

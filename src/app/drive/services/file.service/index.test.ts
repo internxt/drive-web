@@ -41,7 +41,6 @@ describe('fileService', () => {
 
   describe('deleteFileByUuid', () => {
     const mockFile: DriveFileData = {
-      id: 0,
       uuid: 'uuid',
       bucket: 'bucket',
       name: 'File1',

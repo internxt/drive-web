@@ -2,7 +2,6 @@ import { DriveFileData } from 'app/drive/types';
 import { AdvancedSharedItem } from 'app/share/types';
 
 const mapSharedItemToPreviewFile = (item: AdvancedSharedItem): DriveFileData => ({
-  id: item.id,
   uuid: item.uuid,
   bucket: item.bucket ?? '',
   fileId: item.fileId ?? null,
