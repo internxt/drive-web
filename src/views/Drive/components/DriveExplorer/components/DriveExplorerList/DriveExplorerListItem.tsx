@@ -97,6 +97,7 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
     downloadAndSetThumbnail,
   } = useDriveItemActions(item);
   const isWorkspaceSelected = !!useAppSelector(workspacesSelectors.getSelectedWorkspace);
+  const photosBucket = useAppSelector((state) => state.user.user?.photosBucket);
 
   const { connectDragSource, isDraggingThisItem } = useDriveItemDrag(item);
   const { connectDropTarget, isDraggingOverThisItem } = useDriveItemDrop(item);
@@ -131,6 +132,8 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
   const itemClassNames = getItemClassNames(isItemSelected(item), isDraggingOverThisItem, isDraggingThisItem);
   const hasExistingParent = item.parent?.status === FileStatus.EXISTS;
   const parentFolderName = hasExistingParent ? (item.parent?.plainName ?? 'Drive') : undefined;
+  const isPhoto = !!photosBucket && item.bucket === photosBucket;
+  const trashLocation = isPhoto ? translate('sideNav.photos') : parentFolderName;
   const basicFileDataTest = `file-list-${item.isFolder ? 'folder' : 'file'}-${transformItemService.getItemPlainNameWithExtension(item)}`;
   const itemName = transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item);
 
@@ -219,8 +222,8 @@ const DriveExplorerListItem = ({ item, isTrash }: DriveExplorerItemProps): JSX.E
       )}
 
       {isTrash && (
-        <div className="flex shrink-0 w-date items-center whitespace-nowrap pr-3" title={parentFolderName}>
-          {hasExistingParent ? <p className="truncate">{parentFolderName}</p> : <span className="opacity-25">—</span>}
+        <div className="flex shrink-0 w-date items-center whitespace-nowrap pr-3" title={trashLocation}>
+          {trashLocation ? <p className="truncate">{trashLocation}</p> : <span className="opacity-25">—</span>}
         </div>
       )}
 
