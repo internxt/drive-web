@@ -56,7 +56,6 @@ describe('MultipartDownload ', () => {
   const networkFacade = NetworkFacade.prototype;
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
     multipartDownload = new MultipartDownload(networkFacade);
   });

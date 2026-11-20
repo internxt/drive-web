@@ -17,7 +17,6 @@ describe('getUniqueFolderName', () => {
   const parentFolderId = 'parent123';
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 

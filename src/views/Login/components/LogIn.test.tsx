@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { AxiosResponseError } from '@internxt/sdk/dist/shared/types/errors';
-import { SdkFactory } from 'app/core/factory/sdk';
 import LogIn from './LogIn';
+import { mockSdkFactory } from 'testUtils/sdk.mock';
 
 vi.mock('app/i18n/provider/TranslationProvider', () => ({
   useTranslationContext: () => ({ translate: (key: string) => key }),
@@ -36,10 +36,10 @@ const backendError = (status: number, data: Record<string, unknown>) =>
   new AxiosResponseError('Request failed', '', { status, data, headers: {} } as never);
 
 const mockAuthBackend = (authClient: Record<string, unknown>) => {
-  vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
-    createAuthClient: () => authClient,
-    createDesktopAuthClient: () => authClient,
-  } as unknown as ReturnType<typeof SdkFactory.getNewApiInstance>);
+  mockSdkFactory({
+    createAuthClient: authClient,
+    createDesktopAuthClient: authClient,
+  });
 };
 
 const submitCredentials = (container: HTMLElement, email: string) => {

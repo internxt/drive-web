@@ -72,6 +72,23 @@ export type DownloadTask = {
 };
 
 /**
+ * Files downloaded together go to the root of one zip, so files with the same name and extension, such as photos of
+ * different days, get the next free name instead of overwriting each other: "IMG_0001.heic", "IMG_0001 (1).heic"…
+ * Names are compared ignoring case, as macOS and Windows do when the zip is extracted.
+ */
+const getUniqueZipEntryNames = (items: DownloadItemType[]): string[] => {
+  const usedNames = new Set<string>();
+
+  return items.map(({ name, type }) => {
+    const extension = type ? `.${type}` : '';
+    let entryName = `${name}${extension}`;
+    for (let copy = 1; usedNames.has(entryName.toLowerCase()); copy++) entryName = `${name} (${copy})${extension}`;
+    usedNames.add(entryName.toLowerCase());
+    return entryName;
+  });
+};
+
+/**
  * DownloadManagerService handles file and folder downloads with queue management
  *
  * @class DownloadManagerService
@@ -286,7 +303,7 @@ export class DownloadManagerService {
       let cachedFile: DriveItemBlobData | undefined;
       let isCachedFileOlder = false;
       try {
-        cachedFile = await getDatabaseFileSourceData({ fileId: file.id });
+        cachedFile = await getDatabaseFileSourceData({ fileUuid: file.uuid });
         isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
       } catch (error) {
         errorService.reportError(error);
@@ -336,6 +353,7 @@ export class DownloadManagerService {
       const lastReportedBytes: number[] = [];
       const failedItems: DownloadItemType[] = [];
       let downloadedProgress = 0;
+      const zipEntryNames = getUniqueZipEntryNames(items);
 
       items.forEach((_, index) => {
         downloadProgress[index] = 0;
@@ -353,14 +371,14 @@ export class DownloadManagerService {
       const addFileStreamToZip = async (index: number, driveItem: DownloadItemType) => {
         const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
         let fileStream: ReadableStream<Uint8Array>;
-        const cachedFile = await lruFilesCacheManager.get(driveItem.id.toString());
+        const cachedFile = await lruFilesCacheManager.get(driveItem.uuid);
         const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file: driveItem });
 
         if (cachedFile?.source && !isCachedFileOlder) {
           const blob = cachedFile.source;
           downloadProgress[index] = 1;
           fileStream = blob.stream();
-          folderZip.addFile(`${driveItem.name}${driveItem.type ? '.' + driveItem.type : ''}`, fileStream);
+          folderZip.addFile(zipEntryNames[index], fileStream);
           return;
         }
 
@@ -368,7 +386,7 @@ export class DownloadManagerService {
           const emptyBlob = new Blob([]);
           downloadProgress[index] = 1;
           fileStream = emptyBlob.stream();
-          folderZip.addFile(`${driveItem.name}${driveItem.type ? '.' + driveItem.type : ''}`, fileStream);
+          folderZip.addFile(zipEntryNames[index], fileStream);
           return;
         }
 
@@ -404,12 +422,12 @@ export class DownloadManagerService {
         await updateDatabaseFileSourceData({
           folderId: driveItem.folderId,
           sourceBlob,
-          fileId: driveItem.id,
+          fileUuid: driveItem.uuid,
           updatedAt: driveItem.updatedAt,
         });
 
         fileStream = sourceBlob.stream();
-        folderZip.addFile(`${driveItem.name}${driveItem.type ? '.' + driveItem.type : ''}`, fileStream);
+        folderZip.addFile(zipEntryNames[index], fileStream);
       };
 
       const addFolderToZip = async (index: number, driveItem: DownloadItemType) => {
@@ -572,7 +590,7 @@ export const areItemArraysEqual = (firstArray: DownloadItemType[], secondArray: 
   return firstArray.every((itemInFirstArray) =>
     secondArray.some(
       (itemInSecondArray) =>
-        itemInSecondArray.id === itemInFirstArray.id &&
+        itemInSecondArray.uuid === itemInFirstArray.uuid &&
         Boolean(itemInSecondArray?.isFolder) === Boolean(itemInFirstArray?.isFolder),
     ),
   );

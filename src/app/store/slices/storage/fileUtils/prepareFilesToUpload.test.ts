@@ -23,7 +23,6 @@ describe('prepareFilesToUpload', () => {
   const mockFileType = 'text/plain';
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 
@@ -79,7 +78,6 @@ describe('prepareFilesToUpload', () => {
         folderId: 123,
         folder_id: 123,
         folderUuid: 'folderUuid123',
-        id: 1,
         name: 'file1.txt',
         plain_name: 'file1.txt',
         plainName: 'file1.txt',

@@ -4,6 +4,8 @@ import {
   DriveFileData,
   FetchPaginatedFolderContentResponse,
   FetchTrashContentResponse,
+  TrashedFile,
+  TrashedFolder,
 } from '@internxt/sdk/dist/drive/storage/types';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
 import {
@@ -224,7 +226,7 @@ export function getTrashItems(
   workspaceId: string,
   type: 'file' | 'folder',
   offset,
-): Promise<FetchTrashContentResponse> {
+): Promise<FetchTrashContentResponse<TrashedFile | TrashedFolder>> {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
   return workspaceClient.getPersonalTrash(workspaceId, type, offset).catch((error) => {
     throw errorService.castError(error);

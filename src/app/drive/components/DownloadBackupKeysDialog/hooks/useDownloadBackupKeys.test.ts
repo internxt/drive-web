@@ -26,7 +26,6 @@ const translate = vi.fn((key: string) => key);
 
 describe('Download Backup Keys - Custom hook', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     mockIsDialogOpen.mockReturnValue(false);
   });
 

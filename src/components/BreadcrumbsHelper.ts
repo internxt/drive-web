@@ -15,7 +15,7 @@ export const getItemsToMoveWhenSelected = (
   selectedItems: DriveItemData[],
 ): DriveItemData[] => {
   return [...selectedItems, droppedData].filter(
-    (a, index, self) => index === self.findIndex((b) => a.id === b.id && a.isFolder === b.isFolder),
+    (a, index, self) => index === self.findIndex((b) => a.uuid === b.uuid && a.isFolder === b.isFolder),
   );
 };
 

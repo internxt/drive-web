@@ -19,7 +19,6 @@ const ROTATED_90_CW = 6;
 const RAW_PADDING = new Uint8Array(3000);
 const EXISTING_THUMBNAIL: Thumbnail = {
   id: 1,
-  file_id: 1,
   max_width: 300,
   max_height: 300,
   type: 'png',

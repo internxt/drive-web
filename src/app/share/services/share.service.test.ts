@@ -8,15 +8,18 @@ import { generateNewKeys } from '../../crypto/services/pgp.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { downloadFolderAsZip } from 'app/drive/services/folder.service';
 import downloadService from 'app/drive/services/download.service';
+import { DownloadSupport, downloadToFs, getDownloadSupport } from 'app/drive/services/download.service/downloadFile';
 import { downloadFile, multipartDownloadFile } from 'app/network/download';
 import { MIN_DOWNLOAD_MULTIPART_SIZE } from 'app/network/networkConstants';
 import { FlatFolderZip } from 'services/zip.service';
 import { AdvancedSharedItem } from '../types';
 import shareService, {
   derivePublicSharingKey,
+  downloadPublicSharedFile,
   downloadPublicSharedFolder,
   downloadPublicSharedItems,
   getPublicShareLink,
+  PublicSharedFile,
 } from './share.service';
 import { decryptMnemonic } from './share.crypto';
 import { stringUtils, aes } from '@internxt/lib';
@@ -56,6 +59,12 @@ vi.mock('app/drive/services/download.service', () => ({
   default: {
     downloadFileFromBlob: vi.fn(),
   },
+}));
+
+vi.mock('app/drive/services/download.service/downloadFile', () => ({
+  DownloadSupport: { StreamApi: 'StreamApi', PartialStreamApi: 'PartialStreamApi', Blob: 'Blob' },
+  downloadToFs: vi.fn(),
+  getDownloadSupport: vi.fn(),
 }));
 
 vi.mock('services/zip.service', () => ({
@@ -110,7 +119,6 @@ describe('Encryption and Decryption', () => {
   });
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 
@@ -167,10 +175,6 @@ describe('Inviting user to Shared Folder', () => {
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
 
   test('When inviting a user, then the captcha token should be generated and included when creating the client', async () => {
     const { generateCaptchaToken } = await import('utils');
@@ -506,10 +510,6 @@ describe('decryptPublicSharingCodeWithOwner', () => {
   const mnemonic = 'test mnemonic';
   const plainCode = 'test plain code';
 
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   test('When encryptionAlgorithm is NEW_SHARING_VERSION, then code is decrypted using bucket key', async () => {
     const bucketKey = await generateFileBucketKey(mnemonic, bucket);
     const bucketKeyHex = Buffer.from(bucketKey.subarray(0, 32)).toString('hex');
@@ -540,7 +540,6 @@ describe('decryptPublicSharingCodeWithOwner', () => {
 
   describe('when user is not found', () => {
     beforeEach(() => {
-      vi.clearAllMocks();
       vi.restoreAllMocks();
     });
 
@@ -628,13 +627,17 @@ describe('Download public shared items', () => {
     }) as unknown as AdvancedSharedItem;
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.mocked(getDownloadSupport).mockResolvedValue(DownloadSupport.StreamApi);
+    vi.mocked(downloadToFs).mockImplementation(async ({ source }) => {
+      await source;
+    });
   });
 
-  test('When a single file is downloaded, then it is fetched with the share credentials and key and saved with its plain name', async () => {
-    const file = createPublicFile('photo', 'network-file-id');
+  test('When a single file is downloaded, then it is fetched with the share credentials and key and streamed to Downloads with its plain name and size', async () => {
+    const file = { ...createPublicFile('photo', 'network-file-id'), size: '3' } as AdvancedSharedItem;
     const updateNumItems = vi.fn();
-    vi.mocked(downloadFile).mockResolvedValueOnce(createStream(new Uint8Array([1, 2, 3])));
+    const fileStream = createStream(new Uint8Array([1, 2, 3]));
+    vi.mocked(downloadFile).mockResolvedValueOnce(fileStream);
 
     await downloadPublicSharedItems({
       items: [file],
@@ -650,7 +653,13 @@ describe('Download public shared items', () => {
       creds: CREDENTIALS,
       key: KEY,
     });
-    expect(downloadService.downloadFileFromBlob).toHaveBeenCalledWith(expect.any(Blob), 'photo.png');
+    expect(downloadToFs).toHaveBeenCalledWith({
+      filename: 'photo.png',
+      source: expect.any(Promise),
+      support: DownloadSupport.PartialStreamApi,
+      size: 3,
+    });
+    await expect(vi.mocked(downloadToFs).mock.calls[0][0].source).resolves.toBe(fileStream);
     expect(updateNumItems).toHaveBeenCalledTimes(1);
     expect(FlatFolderZip).not.toHaveBeenCalled();
   });
@@ -671,6 +680,7 @@ describe('Download public shared items', () => {
     const [blob, name] = vi.mocked(downloadService.downloadFileFromBlob).mock.calls[0];
     expect((blob as Blob).size).toBe(0);
     expect(name).toBe('empty.png');
+    expect(downloadToFs).not.toHaveBeenCalled();
     expect(updateNumItems).toHaveBeenCalledTimes(1);
   });
 
@@ -692,7 +702,7 @@ describe('Download public shared items', () => {
         options: { credentials: CREDENTIALS, key: KEY, isPublicShare: true },
       }),
     );
-    expect(downloadService.downloadFileFromBlob).not.toHaveBeenCalled();
+    expect(downloadToFs).not.toHaveBeenCalled();
   });
 
   test('When several items are downloaded, then files and folders are packed into a single zip that is closed at the end', async () => {
@@ -795,11 +805,99 @@ describe('Download public shared items', () => {
   });
 });
 
-describe('Download public shared folder', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
+describe('Download public shared file', () => {
+  const FILE_SIZE = 1000;
+  const FILENAME = 'report.pdf';
+  const NETWORK_STREAM = new ReadableStream<Uint8Array>();
+
+  const createSharedFile = (overrides: Partial<PublicSharedFile> = {}): PublicSharedFile => ({
+    bucketId: 'bucket-id',
+    fileId: 'file-id',
+    size: FILE_SIZE,
+    encryptionKey: 'abcd',
+    token: 'item-token',
+    ...overrides,
   });
 
+  const downloadSharedFile = (file = createSharedFile()) => {
+    const abortController = new AbortController();
+    const onProgress = vi.fn();
+    const download = downloadPublicSharedFile({ file, filename: FILENAME, abortController, onProgress });
+    return { download, abortController, onProgress };
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(getDownloadSupport).mockResolvedValue(DownloadSupport.PartialStreamApi);
+    vi.mocked(downloadFile).mockResolvedValue(NETWORK_STREAM);
+    vi.mocked(downloadToFs).mockResolvedValue(undefined);
+  });
+
+  test('when the file is downloaded, then it is streamed with the share token and key and the progress is reported as a fraction', async () => {
+    const { download, abortController, onProgress } = downloadSharedFile();
+    await download;
+
+    const { options, ...networkParams } = vi.mocked(downloadFile).mock.calls[0][0];
+    options?.notifyProgress(FILE_SIZE, FILE_SIZE / 2);
+
+    expect(networkParams).toStrictEqual({
+      bucketId: 'bucket-id',
+      fileId: 'file-id',
+      encryptionKey: Buffer.from('abcd', 'hex'),
+      token: 'item-token',
+    });
+    expect(options?.abortController).toBe(abortController);
+    expect(onProgress).toHaveBeenCalledWith(0.5);
+    await expect(vi.mocked(downloadToFs).mock.calls[0][0].source).resolves.toBe(NETWORK_STREAM);
+  });
+
+  test.each([
+    [
+      'the browser supports the save dialog',
+      'saved straight to Downloads',
+      DownloadSupport.StreamApi,
+      DownloadSupport.PartialStreamApi,
+    ],
+    ['the user is on Brave', 'kept in memory as a blob', DownloadSupport.Blob, DownloadSupport.Blob],
+  ])('when %s, then the file is %s', async (_scenario, _outcome, detected, expected) => {
+    vi.mocked(getDownloadSupport).mockResolvedValue(detected);
+
+    const { download, abortController } = downloadSharedFile();
+    await download;
+
+    expect(downloadToFs).toHaveBeenCalledWith({
+      filename: FILENAME,
+      source: expect.any(Promise),
+      support: expected,
+      abortController,
+      size: FILE_SIZE,
+    });
+  });
+
+  test('when the download support is still being checked, then the network download has not started yet', async () => {
+    let resolveSupport!: (support: DownloadSupport) => void;
+    vi.mocked(getDownloadSupport).mockReturnValue(new Promise((resolve) => (resolveSupport = resolve)));
+
+    const { download } = downloadSharedFile();
+    const hasDownloadStartedBeforeSupport = vi.mocked(downloadFile).mock.calls.length > 0;
+    resolveSupport(DownloadSupport.PartialStreamApi);
+    await download;
+
+    expect(hasDownloadStartedBeforeSupport).toBe(false);
+    expect(downloadFile).toHaveBeenCalledTimes(1);
+  });
+
+  test('when the shared file is empty, then an empty file is saved without downloading anything', async () => {
+    const { download } = downloadSharedFile(createSharedFile({ size: 0 }));
+    await download;
+
+    expect(downloadService.downloadFileFromBlob).toHaveBeenCalledWith(new Blob([]), FILENAME);
+    expect(downloadFile).not.toHaveBeenCalled();
+    expect(downloadToFs).not.toHaveBeenCalled();
+  });
+});
+
+describe('Download public shared folder', () => {
   test('When credentials are returned, then the folder contents are downloaded with the derived key', async () => {
     vi.spyOn(shareService, 'getPublicSharedFolderContent').mockResolvedValueOnce({
       items: [],

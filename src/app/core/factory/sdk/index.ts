@@ -1,5 +1,5 @@
 import { Auth, Token } from '@internxt/sdk/dist/auth';
-import { Backups, Payments, Referrals, Share, Storage, Trash, Users } from '@internxt/sdk/dist/drive';
+import { Backups, Payments, Photos, Referrals, Share, Storage, Trash, Users } from '@internxt/sdk/dist/drive';
 import { ApiSecurity, ApiUrl, AppDetails } from '@internxt/sdk/dist/shared';
 import { WorkspaceCredentialsDetails, Workspaces } from '@internxt/sdk/dist/workspaces';
 import packageJson from '../../../../../package.json';
@@ -141,6 +141,13 @@ export class SdkFactory {
     const appDetails = SdkFactory.getAppDetails();
     const apiSecurity = this.getNewApiSecurity();
     return Backups.client(apiUrl, appDetails, apiSecurity);
+  }
+
+  public createPhotosClient(): Photos {
+    const apiUrl = this.getApiUrl();
+    const appDetails = SdkFactory.getAppDetails();
+    const apiSecurity = this.getNewApiSecurity();
+    return Photos.client(apiUrl, appDetails, apiSecurity);
   }
 
   public createLocationClient(): Location {

@@ -77,7 +77,6 @@ async function getMockUser(
 
 describe('should decrypt mnemonics', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.resetModules();
   });
 
@@ -116,10 +115,6 @@ describe('should decrypt mnemonics', () => {
   });
 
   describe('bucket key encryption/decryption', () => {
-    beforeEach(() => {
-      vi.clearAllMocks();
-    });
-
     test('should encrypt and decrypt a bucket key roundtrip without kyber', async () => {
       const keys = await generateNewKeys();
 
@@ -187,10 +182,6 @@ describe('should decrypt mnemonics', () => {
   });
 
   describe('decryptSharingKey', () => {
-    beforeEach(() => {
-      vi.clearAllMocks();
-    });
-
     test('routes to bucket key decryption when ciphertext is a bucket key', async () => {
       const keys = await generateNewKeys();
       const encrypted = await encryptBucketKey(mnemonic, bucketId, keys.publicKeyArmored, keys.publicKyberKeyBase64);

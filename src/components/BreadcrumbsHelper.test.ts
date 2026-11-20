@@ -90,7 +90,6 @@ const createMockDriveItem = (overrides?: Partial<DriveItemData>): DriveItemData 
 const mockDispatch = vi.fn() as unknown as AppDispatch;
 
 beforeEach(() => {
-  vi.clearAllMocks();
   vi.resetModules();
 });
 
@@ -113,7 +112,7 @@ describe('getItemsToMove', () => {
     expect(result).toEqual([droppedData]);
   });
 
-  it('should filter out duplicate items based on id and isFolder', () => {
+  it('should filter out duplicate items based on uuid and isFolder', () => {
     const droppedData = createMockDriveItem({ id: 3, name: 'file3.txt', uuid: 'file-uuid-789' });
     const selectedItems = [
       createMockDriveItem({ id: 1, isFolder: true }),

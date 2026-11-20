@@ -78,7 +78,6 @@ const submitPassword = async (password = STRONG_PASSWORD) => {
 
 describe('Account setup from the email link', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     globalThis.Buffer = Buffer;
     globalThis.grecaptcha = { ready: (callback: () => void) => callback(), execute: async () => 'captcha' } as never;
     vi.spyOn(envService, 'getVariable').mockImplementation((key) => (key === 'secret' ? 'crypto-secret' : 'value'));

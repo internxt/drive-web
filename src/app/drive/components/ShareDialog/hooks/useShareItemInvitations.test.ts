@@ -63,7 +63,6 @@ describe('Share item Invitations', () => {
   });
 
   beforeEach(() => {
-    vi.clearAllMocks();
     mockUseShareDialogContext.mockReturnValue({
       state: { roles: mockRoles },
       dispatch: mockDispatch,

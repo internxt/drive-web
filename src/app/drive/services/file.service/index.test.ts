@@ -32,7 +32,6 @@ describe('fileService', () => {
   }));
 
   beforeEach(() => {
-    vi.clearAllMocks();
     mockGetNewApiInstance.mockImplementation(() => ({ createNewStorageClient: mockCreateNewStorageClient }));
     mockCreateNewStorageClient.mockImplementation(() => ({
       deleteFileByUuid: mockDeleteFileByUuid,
@@ -42,7 +41,6 @@ describe('fileService', () => {
 
   describe('deleteFileByUuid', () => {
     const mockFile: DriveFileData = {
-      id: 0,
       uuid: 'uuid',
       bucket: 'bucket',
       name: 'File1',

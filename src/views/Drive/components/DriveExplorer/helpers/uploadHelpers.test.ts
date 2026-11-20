@@ -52,7 +52,6 @@ const withoutConflicts = <T>(items: T[]) => ({ repeatedItems: [], existingItems:
 
 describe('Uploading items to the current folder', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.mocked(handleRepeatedUploadingFiles).mockImplementation(async (files) => withoutConflicts(files));
     vi.mocked(handleRepeatedUploadingFolders).mockImplementation(async (folders) => withoutConflicts(folders));
   });

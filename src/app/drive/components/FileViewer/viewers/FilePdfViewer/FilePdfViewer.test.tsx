@@ -16,7 +16,7 @@ const ONE_PAGE_PDF = [
   '%%EOF',
 ].join('\n');
 
-const file = { id: 1, name: 'document', type: 'pdf' } as PreviewFileItem;
+const file = { name: 'document', type: 'pdf' } as PreviewFileItem;
 
 let activeObservers = 0;
 

@@ -1,6 +1,5 @@
 import { describe, it, test, expect, vi, beforeEach, Mock } from 'vitest';
 import moveItemsToTrash from './moveItemsToTrash.service';
-import { SdkFactory } from 'app/core/factory/sdk';
 import errorService from 'services/error.service';
 import { deleteDatabaseItems } from 'app/drive/services/database.service';
 import { DriveItemData } from 'app/drive/types';
@@ -8,7 +7,9 @@ import notificationsService from 'app/notifications/services/notifications.servi
 import { store } from 'app/store';
 import { storageActions } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
+import storageService from 'app/drive/services/storage.service';
 import { processBatchConcurrently } from './batchProcessor.service';
+import { mockSdkFactory } from 'testUtils/sdk.mock';
 
 vi.mock('app/core/factory/sdk', () => ({
   SdkFactory: {
@@ -57,9 +58,12 @@ vi.mock('app/store/slices/storage', () => ({
 
 vi.mock('app/store/slices/storage/storage.thunks', () => ({
   default: {
-    moveItemsThunk: vi.fn(),
     fetchFavoritesThunk: vi.fn(),
   },
+}));
+
+vi.mock('app/drive/services/storage.service', () => ({
+  default: { moveItem: vi.fn() },
 }));
 
 vi.mock('./batchProcessor.service', () => ({
@@ -72,7 +76,6 @@ vi.mock('i18next', () => ({
 
 describe('moveItemsToTrash', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     (store.getState as Mock).mockReturnValue({ storage: { favorites: [] } });
   });
 
@@ -90,11 +93,7 @@ describe('moveItemsToTrash', () => {
     });
     (deleteDatabaseItems as Mock).mockResolvedValue(undefined);
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createTrashClient: () => ({
-        addItemsToTrash: mockAddItemsToTrash,
-      }),
-    });
+    mockSdkFactory({ createTrashClient: { addItemsToTrash: mockAddItemsToTrash } });
 
     await moveItemsToTrash(mockItems, onSuccess);
 
@@ -120,11 +119,7 @@ describe('moveItemsToTrash', () => {
     (processBatchConcurrently as Mock).mockResolvedValue(undefined);
     (deleteDatabaseItems as Mock).mockResolvedValue(undefined);
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createTrashClient: () => ({
-        addItemsToTrash: vi.fn(),
-      }),
-    });
+    mockSdkFactory({ createTrashClient: { addItemsToTrash: vi.fn() } });
 
     await moveItemsToTrash(mockItems);
 
@@ -132,12 +127,6 @@ describe('moveItemsToTrash', () => {
 
     expect(store.dispatch).toHaveBeenCalledWith(
       storageActions.pushItems({ updateRecents: true, items: mockItems, folderIds: ['parent-456'] }),
-    );
-    expect(store.dispatch).toHaveBeenCalledWith(
-      storageThunks.moveItemsThunk({
-        items: mockItems,
-        destinationFolderId: 'parent-456',
-      }),
     );
   });
 
@@ -154,11 +143,7 @@ describe('moveItemsToTrash', () => {
     (processBatchConcurrently as Mock).mockResolvedValue(undefined);
     (deleteDatabaseItems as Mock).mockResolvedValue(undefined);
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createTrashClient: () => ({
-        addItemsToTrash: vi.fn(),
-      }),
-    });
+    mockSdkFactory({ createTrashClient: { addItemsToTrash: vi.fn() } });
 
     await moveItemsToTrash(mockItems);
 
@@ -177,11 +162,7 @@ describe('moveItemsToTrash', () => {
     (processBatchConcurrently as Mock).mockResolvedValue(undefined);
     (deleteDatabaseItems as Mock).mockResolvedValue(undefined);
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createTrashClient: () => ({
-        addItemsToTrash: vi.fn(),
-      }),
-    });
+    mockSdkFactory({ createTrashClient: { addItemsToTrash: vi.fn() } });
 
     await moveItemsToTrash(mockItems);
 
@@ -197,11 +178,7 @@ describe('moveItemsToTrash', () => {
     (processBatchConcurrently as Mock).mockResolvedValue(undefined);
     (deleteDatabaseItems as Mock).mockResolvedValue(undefined);
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createTrashClient: () => ({
-        addItemsToTrash: vi.fn(),
-      }),
-    });
+    mockSdkFactory({ createTrashClient: { addItemsToTrash: vi.fn() } });
 
     await moveItemsToTrash(mockItems);
 
@@ -216,16 +193,91 @@ describe('moveItemsToTrash', () => {
     (processBatchConcurrently as Mock).mockResolvedValue(undefined);
     (deleteDatabaseItems as Mock).mockResolvedValue(undefined);
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createTrashClient: () => ({
-        addItemsToTrash: vi.fn(),
-      }),
-    });
+    mockSdkFactory({ createTrashClient: { addItemsToTrash: vi.fn() } });
 
     await moveItemsToTrash(mockItems);
 
     expect(storageActions.resetFavoritesPagination).not.toHaveBeenCalled();
     expect(storageThunks.fetchFavoritesThunk).not.toHaveBeenCalled();
+  });
+
+  describe('Undo', () => {
+    const trashAndUndo = async (
+      items: DriveItemData[],
+      { onUndo, failingItems = [] }: { onUndo?: (isEverythingRestored: boolean) => void; failingItems?: string[] } = {},
+    ) => {
+      let undo: (() => void) | undefined;
+      (notificationsService.show as Mock).mockImplementation((config) => {
+        if (config.action) undo = config.action.onClick;
+        return 'notification-id';
+      });
+      (processBatchConcurrently as Mock).mockImplementation(({ items: batch, processor }) => processor(batch));
+      (deleteDatabaseItems as Mock).mockResolvedValue(undefined);
+      mockSdkFactory({ createTrashClient: { addItemsToTrash: vi.fn() } });
+      (storageService.moveItem as Mock).mockImplementation(async ({ uuid }: DriveItemData) => {
+        if (failingItems.includes(uuid)) throw new Error('Network error');
+      });
+
+      await moveItemsToTrash(items, undefined, onUndo);
+      undo?.();
+    };
+
+    const movedBack = () =>
+      vi
+        .mocked(storageService.moveItem)
+        .mock.calls.map(([{ uuid }, destinationFolderId]) => `${uuid} -> ${destinationFolderId}`);
+
+    test('When items of different folders are trashed and the user undoes it, then each item goes back to its own folder', async () => {
+      const items = [
+        { uuid: 'photo-of-monday', isFolder: false, type: 'jpg', folderUuid: 'monday-folder' },
+        { uuid: 'photo-of-tuesday', isFolder: false, type: 'jpg', folderUuid: 'tuesday-folder' },
+        { uuid: 'subfolder', isFolder: true, type: 'folder', parentUuid: 'tuesday-folder' },
+      ] as unknown as DriveItemData[];
+
+      await trashAndUndo(items);
+
+      await vi.waitFor(() =>
+        expect(movedBack()).toStrictEqual([
+          'photo-of-monday -> monday-folder',
+          'photo-of-tuesday -> tuesday-folder',
+          'subfolder -> tuesday-folder',
+        ]),
+      );
+    });
+
+    test('When the user undoes it, then the caller is told once the items are back so it can show them again', async () => {
+      const onUndo = vi.fn();
+
+      await trashAndUndo(
+        [{ uuid: 'report', isFolder: false, type: 'pdf', folderUuid: 'documents' }] as DriveItemData[],
+        {
+          onUndo,
+        },
+      );
+
+      await vi.waitFor(() => expect(onUndo).toHaveBeenCalledExactlyOnceWith(true));
+    });
+
+    test('When some items cannot be moved back, then only those leave their folder again, one error is shown and the caller is told', async () => {
+      const onUndo = vi.fn();
+      const report = { id: 1, uuid: 'report', isFolder: false, type: 'pdf', folderUuid: 'documents' };
+      const invoice = { id: 2, uuid: 'invoice', isFolder: false, type: 'pdf', folderUuid: 'documents' };
+      const contract = { id: 3, uuid: 'contract', isFolder: false, type: 'pdf', folderUuid: 'documents' };
+
+      await trashAndUndo([report, invoice, contract] as unknown as DriveItemData[], {
+        onUndo,
+        failingItems: ['report', 'contract'],
+      });
+
+      await vi.waitFor(() => expect(onUndo).toHaveBeenCalledExactlyOnceWith(false));
+      expect(storageActions.popItems).toHaveBeenLastCalledWith({
+        updateRecents: true,
+        items: [report, contract],
+        folderIds: ['documents'],
+      });
+      expect(notificationsService.show).toHaveBeenCalledWith({ text: 'error.movingItem', type: 'error' });
+      expect((notificationsService.show as Mock).mock.calls.filter(([{ type }]) => type === 'error')).toHaveLength(1);
+    });
   });
 
   it('should handle errors', async () => {
@@ -235,11 +287,7 @@ describe('moveItemsToTrash', () => {
     (notificationsService.show as Mock).mockReturnValue('toast-id');
     (processBatchConcurrently as Mock).mockRejectedValue(mockError);
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-      createTrashClient: () => ({
-        addItemsToTrash: vi.fn(),
-      }),
-    });
+    mockSdkFactory({ createTrashClient: { addItemsToTrash: vi.fn() } });
 
     await moveItemsToTrash(mockItems);
 

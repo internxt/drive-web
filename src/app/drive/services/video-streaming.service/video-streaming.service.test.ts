@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { ChunkRequestPayload, VideoStreamingService } from '.';
 import { VideoStreamingSessionConfig } from './VideoStreamingSession';
 import { VideoSessionDestroyedError } from '../errors/video-streaming.errors';
@@ -27,10 +27,6 @@ describe('Video Streaming Service', () => {
   beforeEach(() => {
     vi.mocked(downloadChunkFile).mockResolvedValue(new ReadableStream());
     vi.mocked(binaryStreamToUint8Array).mockResolvedValue(new Uint8Array([1, 2, 3]));
-  });
-
-  afterEach(() => {
-    vi.clearAllMocks();
   });
 
   describe('Handling chunk requests', () => {

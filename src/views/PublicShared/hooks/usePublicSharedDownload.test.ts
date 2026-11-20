@@ -1,5 +1,5 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { AdvancedSharedItem } from 'app/share/types';
 import usePublicSharedDownload from './usePublicSharedDownload';
 
@@ -39,7 +39,9 @@ vi.mock('app/notifications/services/notifications.service', () => ({
   },
 }));
 
+import { ErrorMessages } from 'app/core/constants';
 import { downloadFile } from 'app/network/download';
+import errorService from 'services/error.service';
 import notificationsService from 'app/notifications/services/notifications.service';
 import { downloadPublicSharedItems } from 'app/share/services/share.service';
 import { binaryStreamToBlob } from 'services/stream.service';
@@ -87,10 +89,6 @@ const renderDownloadHook = ({ withCredentials = true }: { withCredentials?: bool
   );
 
 describe('usePublicSharedDownload', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   describe('openPreview', () => {
     test('When a previewable file is opened, then its blob is downloaded and exposed', async () => {
       const fileStream = new ReadableStream();
@@ -257,6 +255,21 @@ describe('usePublicSharedDownload', () => {
         expect(result.current.isDownloading).toBe(false);
       });
       expect(notificationsService.show).toHaveBeenCalledWith({ text: 'zip failed', type: 'error' });
+    });
+
+    test('when the download is cancelled from the browser, then it ends without reporting or showing an error', async () => {
+      mockedDownloadPublicSharedItems.mockRejectedValue(new Error(ErrorMessages.DownloadCancelledFromBrowser));
+
+      const { result } = renderDownloadHook();
+      act(() => {
+        result.current.downloadItems([createFileItem()]);
+      });
+
+      await waitFor(() => {
+        expect(result.current.isDownloading).toBe(false);
+      });
+      expect(errorService.reportError).not.toHaveBeenCalled();
+      expect(notificationsService.show).not.toHaveBeenCalled();
     });
 
     test('When there are no items or no credentials, then no download is started', () => {

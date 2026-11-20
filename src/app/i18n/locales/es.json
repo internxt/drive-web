@@ -183,7 +183,13 @@
       "success": "Has iniciado sesión correctamente",
       "error": "No se ha podido iniciar sesion, inténtelo de nuevo",
       "closeWindow": "Puedes cerrar esta ventana",
-      "invalidRedirectUri": "URL de redirección no válida"
+      "invalidRedirectUri": "URL de redirección no válida",
+      "errors": {
+        "CLIENT_VERSION_UNSUPPORTED": {
+          "title": "Esta versión de la aplicación ya no es compatible",
+          "description": "Actualiza la aplicación a la última versión y vuelve a iniciar sesión."
+        }
+      }
     },
     "oauthLink": {
       "continueAs": "Continuar como",
@@ -269,7 +275,11 @@
       "offerPillNoDiscount": "Oferta exclusiva por tiempo limitado",
       "title": "Mantén tus archivos, fotos y vídeos",
       "titleHighlight": "100% privados.",
-      "subtitle": "Consigue {{storage}} de almacenamiento en la nube privada por solo {{price}} el primer mes.",
+      "subtitle": {
+        "month": "Consigue {{storage}} de almacenamiento en la nube privada por solo {{price}} el primer mes.",
+        "year": "Consigue {{storage}} de almacenamiento en la nube privada por solo {{price}} el primer año.",
+        "lifetime": "Consigue {{storage}} de almacenamiento en la nube privada para siempre con un pago único de {{price}}."
+      },
       "imageAlt": "Internxt Drive en un portátil y un móvil",
       "points": {
         "privacy": {
@@ -279,6 +289,10 @@
         "storage": {
           "title": "Tu nube privada, protegida",
           "description": "Guarda tus fotos, vídeos, documentos y archivos personales con la privacidad integrada."
+        },
+        "suite": {
+          "title": "Más que almacenamiento en la nube",
+          "description": "Herramientas de privacidad incluidas, según tu plan."
         },
         "offer": {
           "title": "{{percent}}% DE DESCUENTO — por tiempo limitado",
@@ -315,8 +329,8 @@
     },
     "cta": {
       "button": {
-        "lifetime": "Consigue almacenamiento Lifetime",
-        "subscription": "Suscríbete al almacenamiento en la nube privada"
+        "lifetime": "Consigue el plan Lifetime",
+        "subscription": "Consigue el plan de suscripción"
       },
       "billingDisclosure": {
         "withIntroPrice": {
@@ -457,7 +471,53 @@
   },
   "views": {
     "photos": {
-      "head": "Fotos"
+      "head": "Fotos",
+      "empty": {
+        "title": "Aún no tienes fotos",
+        "description": "Activa la copia de fotos en la app móvil de Internxt y aparecerán aquí"
+      },
+      "error": {
+        "title": "No hemos podido cargar tus fotos",
+        "description": "Comprueba tu conexión e inténtalo de nuevo",
+        "retry": "Reintentar"
+      },
+      "locked": {
+        "title": "Fotos no está incluido en tu plan",
+        "description": "Mejora tu plan para ver las fotos de las que has hecho copia desde tu móvil",
+        "upgrade": "Mejorar plan"
+      },
+      "filters": {
+        "allDevices": "Todos los dispositivos",
+        "allDates": "Todas las fechas"
+      },
+      "timeline": {
+        "today": "Hoy",
+        "yesterday": "Ayer",
+        "monthError": "No se han podido cargar algunas fotos de {{month}}"
+      },
+      "badges": {
+        "livePhoto": "Live Photo",
+        "burst": "Ráfaga",
+        "video": "Vídeo"
+      },
+      "selection": {
+        "title": "Fotos seleccionadas",
+        "clear": "Quitar selección"
+      },
+      "devices": {
+        "manage": "Gestionar dispositivos",
+        "title": "Tus dispositivos",
+        "close": "Cerrar",
+        "delete": "Eliminar",
+        "deleted": "Dispositivo eliminado",
+        "notFound": "Este dispositivo ya se había eliminado",
+        "deleteError": "No se ha podido eliminar el dispositivo. Inténtalo de nuevo.",
+        "deleteDialog": {
+          "title": "¿Eliminar las fotos de {{name}}?",
+          "description": "Todas las fotos y vídeos de este dispositivo se eliminarán de forma permanente. No se puede deshacer.",
+          "confirm": "Eliminar para siempre"
+        }
+      }
     },
     "favorites": {
       "head": "Favoritos",
@@ -1360,7 +1420,8 @@
       "errors": {}
     },
     "subtitles": {
-      "upload-failed": "Error al subir"
+      "upload-failed": "Error al subir",
+      "folder-removal-failed": "No se pudo eliminar la carpeta subida"
     },
     "generalErrorMessages": {
       "retryUploadFailed": "Algo salió mal al reintentar la subida. Intenta subirlo de nuevo",

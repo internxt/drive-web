@@ -1,18 +1,63 @@
-import { Helmet } from 'react-helmet-async';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import PhotosErrorState from './components/PhotosErrorState';
+import PhotosFilters from './components/PhotosFilters';
+import PhotosGridSkeleton from './components/PhotosGridSkeleton';
+import PhotosLayout from './components/PhotosLayout';
+import PhotosLockedState from './components/PhotosLockedState';
+import PhotosLibrary from './components/PhotosLibrary';
+import PhotosSelectionHeader from './components/PhotosSelectionHeader';
+import { usePhotoFilters } from './hooks/usePhotoFilters';
+import { usePhotoLibrary } from './hooks/usePhotoLibrary';
+import { usePhotoSelection } from './hooks/usePhotoSelection';
+import { usePhotoTrash } from './hooks/usePhotoTrash';
+import { PhotoDevice, PhotoMonth } from './types';
+import { getShownMonthsKey } from './utils/monthKeys';
+
+const NO_DEVICES: PhotoDevice[] = [];
+const NO_MONTHS: PhotoMonth[] = [];
 
 const PhotosView = (): JSX.Element => {
-  const { translate } = useTranslationContext();
+  const { state, retry, removeDevice } = usePhotoLibrary();
+  const devices = state.status === 'loaded' ? state.devices : NO_DEVICES;
+  const filters = usePhotoFilters(state.status === 'loaded' ? state.months : NO_MONTHS);
+  const { selectedPhotos, toggleSelection, clearSelection } = usePhotoSelection();
+  const { trashedPhotos, galleryKey, moveToTrash } = usePhotoTrash(getShownMonthsKey(filters.shownMonths));
+
+  const onDeviceRemoved = (deviceUuid: string) => {
+    removeDevice(deviceUuid);
+    if (deviceUuid === filters.selectedDeviceUuid) filters.selectDevice(null);
+  };
+
+  const content = {
+    loading: <PhotosGridSkeleton />,
+    error: <PhotosErrorState onRetry={retry} />,
+    locked: <PhotosLockedState />,
+    loaded: (
+      <PhotosLibrary
+        months={filters.shownMonths}
+        selectedPhotos={selectedPhotos}
+        trashedPhotos={trashedPhotos}
+        galleryKey={galleryKey}
+        onToggleSelection={toggleSelection}
+        onMoveToTrash={moveToTrash}
+      />
+    ),
+  };
 
   return (
-    <div className="flex w-full shrink-0 grow flex-col">
-      <Helmet>
-        <title>{translate('sideNav.photos')} - Internxt Drive</title>
-      </Helmet>
-      <header className="flex h-14 shrink-0 items-center px-5">
-        <h1 className="text-lg">{translate('views.photos.head')}</h1>
-      </header>
-    </div>
+    <PhotosLayout
+      filters={<PhotosFilters devices={devices} filters={filters} onDeviceRemoved={onDeviceRemoved} />}
+      selectionHeader={
+        selectedPhotos.size > 0 ? (
+          <PhotosSelectionHeader
+            selectedPhotos={selectedPhotos}
+            onClear={clearSelection}
+            onMoveToTrash={() => moveToTrash([...selectedPhotos.values()], clearSelection)}
+          />
+        ) : undefined
+      }
+    >
+      {content[state.status]}
+    </PhotosLayout>
   );
 };
 
