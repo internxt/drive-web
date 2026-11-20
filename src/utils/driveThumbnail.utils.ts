@@ -10,7 +10,6 @@ export const toDriveThumbnail = (thumbnail: ThumbnailDto | DriveThumbnail): Driv
 
   return {
     id: thumbnail.id,
-    file_id: thumbnail.fileId,
     type: thumbnail.type,
     max_width: thumbnail.maxWidth,
     max_height: thumbnail.maxHeight,
