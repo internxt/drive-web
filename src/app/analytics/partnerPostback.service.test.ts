@@ -27,8 +27,18 @@ const PARTNER_UTM_SOURCE = 'S42MF2';
 const PARTNER_COUPON = 'TFA';
 const AFFILIATE_CLICK_ID = 'click_123';
 const EXPIRED_COOKIE_DATE = 'expires=Thu, 01 Jan 1970 00:00:00 GMT';
-const PLAN_WITH_180_CPA = 'price_1U6Ev3FAOdcgaBMQHxOAmWPO';
-const PLAN_WITH_80_CPA = 'price_1TRoAJFAOdcgaBMQveT6cebN';
+const AGREED_CPA_BY_PLAN = [
+  { planId: 'price_1U6Ev3FAOdcgaBMQHxOAmWPO', agreedCpa: '180' },
+  { planId: 'price_1T1xQtFAOdcgaBMQ1r2JnHsE', agreedCpa: '180' },
+  { planId: 'price_1UAwSbFAOdcgaBMQkJhPExCz', agreedCpa: '180' },
+  { planId: 'price_1TRoAJFAOdcgaBMQveT6cebN', agreedCpa: '80' },
+  { planId: 'price_1UZCCZFAOdcgaBMQO9bKb6I9', agreedCpa: '80' },
+  { planId: 'price_1UAsSAFAOdcgaBMQNF0j8UfV', agreedCpa: '80' },
+  { planId: 'price_1UKYnMFAOdcgaBMQ09GLzJhJ', agreedCpa: '80' },
+  { planId: 'price_1UKYjUFAOdcgaBMQ7ZdV42BA', agreedCpa: '19' },
+];
+
+const [{ planId: ANY_CAMPAIGN_PLAN, agreedCpa: ANY_CAMPAIGN_PLAN_CPA }] = AGREED_CPA_BY_PLAN;
 
 type StoredPaymentData = Partial<Record<string, string>>;
 
@@ -152,7 +162,7 @@ describe('Partner postback service', () => {
     };
 
     it('When a purchase comes from the collaborator, then it is reported with the click of its link and the agreed amount', async () => {
-      await sendPostbackForStoredPaymentData({ priceId: PLAN_WITH_180_CPA, amountPaid: '9.99' });
+      await sendPostbackForStoredPaymentData({ priceId: ANY_CAMPAIGN_PLAN, amountPaid: '9.99' });
 
       expect(fetchMock).toHaveBeenCalledOnce();
 
@@ -160,14 +170,17 @@ describe('Partner postback service', () => {
       expect(url.origin + url.pathname).toBe('https://www.p0stb4ck.com/');
       expect(url.searchParams.get('nid')).toBe('1134');
       expect(url.searchParams.get('transaction_id')).toBe(AFFILIATE_CLICK_ID);
-      expect(url.searchParams.get('amount')).toBe('180');
+      expect(url.searchParams.get('amount')).toBe(ANY_CAMPAIGN_PLAN_CPA);
     });
 
-    it('When the other plan of the campaign is bought, then its agreed amount is reported instead of what was paid', async () => {
-      await sendPostbackForStoredPaymentData({ priceId: PLAN_WITH_80_CPA, amountPaid: '299' });
+    it.each(AGREED_CPA_BY_PLAN)(
+      'When the plan $planId of the campaign is bought, then its agreed amount of $agreedCpa is reported instead of what was paid',
+      async ({ planId, agreedCpa }) => {
+        await sendPostbackForStoredPaymentData({ priceId: planId, amountPaid: '299' });
 
-      expect(getPostbackUrl(fetchMock).searchParams.get('amount')).toBe('80');
-    });
+        expect(getPostbackUrl(fetchMock).searchParams.get('amount')).toBe(agreedCpa);
+      },
+    );
 
     it('When a plan outside the campaign is bought, then the purchase is reported with no amount to pay', async () => {
       await sendPostbackForStoredPaymentData({ priceId: 'price_other', amountPaid: '9.99' });
@@ -221,32 +234,32 @@ describe('Partner postback service', () => {
     });
 
     it('When the purchase was paid with the coupon of another affiliate, then it is not reported to the collaborator', async () => {
-      await sendPostbackForStoredPaymentData({ couponCode: 'AFFIOFFER', priceId: PLAN_WITH_80_CPA });
+      await sendPostbackForStoredPaymentData({ couponCode: 'AFFIOFFER', priceId: ANY_CAMPAIGN_PLAN });
 
       expect(fetchMock).not.toHaveBeenCalled();
     });
 
     it('When the purchase was paid without any coupon, then it is not reported to the collaborator', async () => {
-      await sendPostbackForStoredPaymentData({ couponCode: undefined, priceId: PLAN_WITH_80_CPA });
+      await sendPostbackForStoredPaymentData({ couponCode: undefined, priceId: ANY_CAMPAIGN_PLAN });
 
       expect(fetchMock).not.toHaveBeenCalled();
     });
 
     it('When the collaborator coupon is written in a different case, then the purchase is still reported', async () => {
-      await sendPostbackForStoredPaymentData({ couponCode: PARTNER_COUPON.toLowerCase(), priceId: PLAN_WITH_80_CPA });
+      await sendPostbackForStoredPaymentData({ couponCode: PARTNER_COUPON.toLowerCase(), priceId: ANY_CAMPAIGN_PLAN });
 
       expect(fetchMock).toHaveBeenCalledOnce();
     });
 
     it('When a purchase is reported, then the collaborator attribution is forgotten so it cannot be reported again', async () => {
-      await sendPostbackForStoredPaymentData({ priceId: PLAN_WITH_80_CPA });
+      await sendPostbackForStoredPaymentData({ priceId: ANY_CAMPAIGN_PLAN });
 
       expect(fetchMock).toHaveBeenCalledOnce();
       expectPostbackCookiesCleared();
     });
 
     it('When a purchase is paid with the coupon of another affiliate, then the collaborator attribution is forgotten too', async () => {
-      await sendPostbackForStoredPaymentData({ couponCode: 'AFFIOFFER', priceId: PLAN_WITH_80_CPA });
+      await sendPostbackForStoredPaymentData({ couponCode: 'AFFIOFFER', priceId: ANY_CAMPAIGN_PLAN });
 
       expectPostbackCookiesCleared();
     });
@@ -254,7 +267,7 @@ describe('Partner postback service', () => {
     it('When the collaborator endpoint fails, then the collaborator attribution is forgotten anyway', async () => {
       fetchMock.mockRejectedValue(new Error('Network error'));
 
-      await sendPostbackForStoredPaymentData({ priceId: PLAN_WITH_80_CPA });
+      await sendPostbackForStoredPaymentData({ priceId: ANY_CAMPAIGN_PLAN });
 
       expectPostbackCookiesCleared();
     });

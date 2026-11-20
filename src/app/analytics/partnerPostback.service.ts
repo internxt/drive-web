@@ -24,7 +24,13 @@ const CLICK_ID_COOKIE = 'postbackClickId';
 
 const CPA_AMOUNT_BY_PLAN: Readonly<Record<string, number>> = {
   price_1U6Ev3FAOdcgaBMQHxOAmWPO: 180,
+  price_1T1xQtFAOdcgaBMQ1r2JnHsE: 180,
+  price_1UAwSbFAOdcgaBMQkJhPExCz: 180,
   price_1TRoAJFAOdcgaBMQveT6cebN: 80,
+  price_1UZCCZFAOdcgaBMQO9bKb6I9: 80,
+  price_1UAsSAFAOdcgaBMQNF0j8UfV: 80,
+  price_1UKYnMFAOdcgaBMQ09GLzJhJ: 80,
+  price_1UKYjUFAOdcgaBMQ7ZdV42BA: 19,
 };
 
 function getCpaAmount(priceId: string | null): number {
