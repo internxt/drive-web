@@ -108,15 +108,26 @@ export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean 
     }
 
     const isRefreshRequired = tokenStatus === TokenStatus.REFRESH_REQUIRED;
+    const isSavedBeforePhotos = !('photosBucket' in currentUser);
 
     try {
-      if (isRefreshRequired || forceRefresh) {
+      if (isRefreshRequired || forceRefresh || isSavedBeforePhotos) {
         const { user, newToken } = await userService.refreshUserData(currentUser.uuid);
 
-        const { emailVerified, name, lastname, uuid, createdAt } = user;
+        const { emailVerified, name, lastname, uuid, createdAt, photosBucket } = user;
         const avatar = await refreshAvatar(uuid);
 
-        dispatch(userThunks.setUserThunk({ ...currentUser, avatar, emailVerified, name, lastname, createdAt }));
+        await dispatch(
+          userThunks.setUserThunk({
+            ...currentUser,
+            avatar,
+            emailVerified,
+            name,
+            lastname,
+            createdAt,
+            photosBucket: photosBucket ?? null,
+          }),
+        );
         await encryptedStorageService.setToken(newToken);
       }
     } catch (err) {
