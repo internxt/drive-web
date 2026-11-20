@@ -490,7 +490,7 @@ describe('downloadManagerService', () => {
 
   it('should downloadFolder keep working if some files fails', async () => {
     const mockTask = getTask([mockFolder]);
-    const mockFile2: DriveFileData = { ...mockFile, id: 2, uuid: uuidV7(), name: 'File2' };
+    const mockFile2: DriveFileData = { ...mockFile, uuid: uuidV7(), name: 'File2' };
 
     const mockTaskStatusProgress = vi.fn((progress: number) => progress);
     const mockUpdateProgress = vi.fn((progress: number) => progress);
@@ -705,7 +705,7 @@ describe('downloadManagerService', () => {
     test('When the file size is 0, then it should save an empty blob without downloading', async () => {
       const emptyBlob = new Blob([]);
       const { saveAs } = await import('file-saver');
-      const emptyFile: DriveFileData = { ...mockFile, id: 4, name: 'EmptyFile', size: 0 };
+      const emptyFile: DriveFileData = { ...mockFile, name: 'EmptyFile', size: 0 };
       const emptyFileTask = getTask([emptyFile], {
         options: { areSharedItems: false, downloadName: `${emptyFile.name}.${emptyFile.type}`, showErrors: true },
       });
@@ -782,7 +782,7 @@ describe('downloadManagerService', () => {
   });
 
   it('should download file items from task as zip using download service', async () => {
-    const mockFileCache: DriveFileData = { ...mockFile, id: 2, name: 'File2', type: '' };
+    const mockFileCache: DriveFileData = { ...mockFile, name: 'File2', type: '' };
     const downloadItem = getDownloadItem([mockFile, mockFileCache]);
     const mockTask = getTask(downloadItem.payload);
 
@@ -839,9 +839,9 @@ describe('downloadManagerService', () => {
 
   test('When several downloaded files share a name and extension, then the first keeps it and the rest get the next free one', async () => {
     const photos: DriveFileData[] = [
-      { ...mockFile, id: 1, uuid: 'monday-photo', name: 'IMG_0001', type: 'heic' },
-      { ...mockFile, id: 2, uuid: 'tuesday-photo', name: 'IMG_0001', type: 'heic' },
-      { ...mockFile, id: 3, uuid: 'friday-photo', name: 'img_0001', type: 'HEIC' },
+      { ...mockFile, uuid: 'monday-photo', name: 'IMG_0001', type: 'heic' },
+      { ...mockFile, uuid: 'tuesday-photo', name: 'IMG_0001', type: 'heic' },
+      { ...mockFile, uuid: 'friday-photo', name: 'img_0001', type: 'HEIC' },
     ];
     const streamOf = new Map(photos.map(({ uuid }) => [uuid, new ReadableStream()]));
     const mockTask = getTask(getDownloadItem(photos).payload);
@@ -871,7 +871,7 @@ describe('downloadManagerService', () => {
   });
 
   it('should handle errors during downloadItems and add to failedItems', async () => {
-    const mockFileCache: DriveFileData = { ...mockFile, id: 2, name: 'File2', type: '' };
+    const mockFileCache: DriveFileData = { ...mockFile, name: 'File2', type: '' };
     const downloadItem = getDownloadItem([mockFile, mockFileCache]);
     const mockTask = getTask(downloadItem.payload);
 
@@ -921,7 +921,7 @@ describe('downloadManagerService', () => {
   });
 
   it('should handle partial failures during downloadItems', async () => {
-    const mockFile2: DriveFileData = { ...mockFile, id: 2, uuid: uuidV7(), name: 'File2' };
+    const mockFile2: DriveFileData = { ...mockFile, uuid: uuidV7(), name: 'File2' };
     const downloadItem = getDownloadItem([mockFile, mockFile2]);
     const mockTask = getTask(downloadItem.payload);
 
@@ -1012,7 +1012,7 @@ describe('downloadManagerService', () => {
     });
 
     test('When there is an empty file, then it should be added to the zip without downloading', async () => {
-      const emptyFile: DriveFileData = { ...mockFile, id: 3, name: 'EmptyFile', size: 0 };
+      const emptyFile: DriveFileData = { ...mockFile, name: 'EmptyFile', size: 0 };
       const mockTask = getTask([emptyFile], {
         options: { areSharedItems: false, downloadName: `${emptyFile.name}.${emptyFile.type}`, showErrors: true },
       });
@@ -1094,7 +1094,7 @@ describe('downloadManagerService', () => {
     });
 
     it('should throw an error when the connection is lost', async () => {
-      const mockFile2: DriveFileData = { ...mockFile, id: 2, uuid: uuidV7(), name: 'File2' };
+      const mockFile2: DriveFileData = { ...mockFile, uuid: uuidV7(), name: 'File2' };
       const mockTask = getTask([mockFile, mockFile2]);
 
       const mockUpdateProgress = vi.fn();
@@ -1135,7 +1135,7 @@ describe('downloadManagerService', () => {
     });
 
     it('should throw a ServerUnavailable error when all items fail', async () => {
-      const mockFile2: DriveFileData = { ...mockFile, id: 2, uuid: uuidV7(), name: 'File2' };
+      const mockFile2: DriveFileData = { ...mockFile, uuid: uuidV7(), name: 'File2' };
       const mockTask = getTask([mockFile, mockFile2]);
 
       const mockUpdateProgress = vi.fn();
@@ -1254,7 +1254,7 @@ describe('downloadManagerService', () => {
     });
 
     it('should handle connection loss in downloadItems and throw ConnectionLostError', async () => {
-      const mockFile2: DriveFileData = { ...mockFile, id: 2, uuid: uuidV7(), name: 'File2' };
+      const mockFile2: DriveFileData = { ...mockFile, uuid: uuidV7(), name: 'File2' };
       const mockTask = getTask([mockFile, mockFile2]);
 
       const mockUpdateProgress = vi.fn();

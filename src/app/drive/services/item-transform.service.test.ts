@@ -41,7 +41,6 @@ describe('Item Transform Service', () => {
 
     test('When converting the file size, then should preserve all other file properties', () => {
       const originalFile = createMockFile({
-        id: 42,
         uuid: 'unique-uuid',
         plainName: 'my-file',
         type: 'pdf',
@@ -50,7 +49,6 @@ describe('Item Transform Service', () => {
 
       const result = transformItemService.mapFileSizeToNumber([originalFile]);
 
-      expect(result[0].id).toBe(42);
       expect(result[0].uuid).toBe('unique-uuid');
       expect(result[0].plainName).toBe('my-file');
       expect(result[0].type).toBe('pdf');
