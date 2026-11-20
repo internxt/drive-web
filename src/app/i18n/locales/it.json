@@ -502,6 +502,11 @@
         "description": "Controlla la connessione e riprova",
         "retry": "Riprova"
       },
+      "locked": {
+        "title": "Foto non è incluso nel tuo piano",
+        "description": "Aggiorna il tuo piano per vedere le foto di cui hai fatto il backup dal telefono",
+        "upgrade": "Aggiorna"
+      },
       "filters": {
         "allDevices": "Tutti i dispositivi",
         "allDates": "Tutte le date"

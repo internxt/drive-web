@@ -19,6 +19,8 @@ import storageReducer from 'app/store/slices/storage';
 import uiReducer from 'app/store/slices/ui';
 import userReducer from 'app/store/slices/user';
 import workspacesReducer from 'app/store/slices/workspaces/workspacesStore';
+import { AppError } from '@internxt/sdk';
+import navigationService from 'services/navigation.service';
 import { PhotoDevice as SdkPhotoDevice } from '@internxt/sdk/dist/drive/photos';
 import {
   getPhotoFolder,
@@ -340,6 +342,41 @@ describe('Photos view', () => {
 
     expect(await screen.findByText('views.photos.empty.title')).toBeInTheDocument();
     expect(photosClient.listDevices).toHaveBeenCalledTimes(2);
+  });
+
+  describe('Plan without Photos', () => {
+    const photosNotInPlan = new AppError('Payment required', 402);
+
+    test('When the plan does not include Photos, then a locked state with an upgrade button is shown instead of the photos', async () => {
+      photosClient.listDevices.mockRejectedValue(photosNotInPlan);
+
+      render(<PhotosView />);
+
+      expect(await screen.findByText('views.photos.locked.title')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /views.photos.locked.upgrade/ })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /views.photos.error.retry/ })).not.toBeInTheDocument();
+      expect(screen.queryByText('views.photos.empty.title')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('photos-grid-skeleton')).not.toBeInTheDocument();
+    });
+
+    test('When the user chooses to upgrade from the locked state, then the plans open in the settings', async () => {
+      photosClient.listDevices.mockRejectedValue(photosNotInPlan);
+      const openPreferences = vi.spyOn(navigationService, 'openPreferencesDialog').mockReturnValue();
+
+      render(<PhotosView />);
+      fireEvent.click(await screen.findByRole('button', { name: /views.photos.locked.upgrade/ }));
+
+      expect(openPreferences).toHaveBeenCalledWith({ section: 'account', subsection: 'plans' });
+    });
+
+    test('When the plan does not include Photos, then it is not reported as an error', async () => {
+      photosClient.listDevices.mockRejectedValue(photosNotInPlan);
+
+      render(<PhotosView />);
+
+      await screen.findByText('views.photos.locked.title');
+      expect(errorService.reportError).not.toHaveBeenCalled();
+    });
   });
 
   describe('Filtering by device', () => {
