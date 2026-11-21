@@ -38,6 +38,7 @@ import { generateMnemonic, validateMnemonic } from 'bip39';
 import { isAccountSetupPending } from 'services/account-setup.service';
 import errorService from 'services/error.service';
 import localStorageService from 'services/local-storage.service';
+import referralService from 'services/referral.service';
 import { ATTRIBUTION_LOCAL_STORAGE_ITEMS, CHECKOUT_LOCAL_STORAGE_ITEMS } from 'services/storage-keys';
 import navigationService from 'services/navigation.service';
 import { generateCaptchaToken } from 'utils';
@@ -119,6 +120,11 @@ const getCurrentUrlParams = (): Record<string, string> => {
 
   return preservedParams;
 };
+
+export const getLoginRedirectParams = (): Record<string, string> => ({
+  ...referralService.getReferralOpenQueryParams(),
+  ...getCurrentUrlParams(),
+});
 
 export async function logOut(loginParams?: Record<string, string>): Promise<void> {
   try {
@@ -683,6 +689,7 @@ export const authenticateUser = async (params: AuthenticateUserParams): Promise<
 
 const authService = {
   logOut,
+  getLoginRedirectParams,
   check2FANeeded: is2FANeeded,
   readReferalCookie,
   cancelAccount,
