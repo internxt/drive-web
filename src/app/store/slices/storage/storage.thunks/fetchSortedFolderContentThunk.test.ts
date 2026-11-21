@@ -1,5 +1,9 @@
 import { beforeEach, describe, expect, test, vi, Mock } from 'vitest';
-import { fetchSortedFolderContentThunk } from './fetchSortedFolderContentThunk';
+import { createReducer } from '@reduxjs/toolkit';
+import {
+  fetchSortedFolderContentThunk,
+  fetchSortedFolderContentThunkExtraReducers,
+} from './fetchSortedFolderContentThunk';
 import { RootState } from '../../..';
 import errorService from 'services/error.service';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
@@ -97,6 +101,7 @@ describe('Thunk of fetch sorted folder content', () => {
       driveItemsSort: 'plainName',
       driveItemsOrder: 'ASC',
       loadingFolders: {} as any,
+      hasFetchFailedByFolderId: {},
       ...overrides,
     } as StorageState,
   });
@@ -427,5 +432,25 @@ describe('Thunk of fetch sorted folder content', () => {
         items: [enrichedFolder],
       }),
     );
+  });
+
+  describe('Folder content request status', () => {
+    const otherFolderId = 'other-folder';
+    const initialState = createMockState({
+      hasFetchFailedByFolderId: { [mockFolderId]: true, [otherFolderId]: true },
+    }).storage;
+    const reducer = createReducer(initialState, fetchSortedFolderContentThunkExtraReducers);
+
+    test('When the folder content is reloaded after a failed page, then the folder is no longer marked as failed', () => {
+      const nextState = reducer(
+        initialState,
+        fetchSortedFolderContentThunk.fulfilled(undefined, 'request-id', mockFolderId),
+      );
+
+      expect(nextState).toEqual({
+        ...initialState,
+        hasFetchFailedByFolderId: { [mockFolderId]: false, [otherFolderId]: true },
+      });
+    });
   });
 });
