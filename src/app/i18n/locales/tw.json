@@ -1190,6 +1190,7 @@
   "error": {
     "wrongPassword": "密碼錯誤，請重試或聯繫鏈接所有者",
     "serverError": "內部服務器錯誤。請稍後再試",
+    "accountKeysError": "我們無法解鎖您的帳戶金鑰。重試無法解決問題，請聯絡客服。",
     "changingName": "更改名稱時出錯",
     "fileAlreadyExists": "具有相同名稱的文件已存在",
     "folderAlreadyExists": "已存在具有相同名稱的文件夾",

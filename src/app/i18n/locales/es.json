@@ -1169,6 +1169,7 @@
   "error": {
     "wrongPassword": "Contraseña incorrecta, inténtelo de nuevo o póngase en contacto con el propietario del enlace",
     "serverError": "Error interno del servidor. Vuelva a intentarlo más tarde",
+    "accountKeysError": "No hemos podido desbloquear las claves de tu cuenta. Reintentar no servirá. Contacta con soporte.",
     "changingName": "Error durante el cambio de nombre",
     "fileAlreadyExists": "Ya existe un archivo con el mismo nombre",
     "folderAlreadyExists": "Ya existe una carpeta con el mismo nombre",

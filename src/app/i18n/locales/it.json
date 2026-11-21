@@ -1190,6 +1190,7 @@
   "error": {
     "wrongPassword": "Password errata, riprova o contatta il proprietario",
     "serverError": "Errore interno del server. Riprovare più tardi",
+    "accountKeysError": "Non siamo riusciti a sbloccare le chiavi del tuo account. Riprovare non servirà. Contatta il supporto.",
     "changingName": "Errore durante la modifica del nome",
     "fileAlreadyExists": "Il file con lo stesso nome esiste già",
     "folderAlreadyExists": "Esiste già una cartella con lo stesso nome",

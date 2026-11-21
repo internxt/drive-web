@@ -31,6 +31,7 @@ vi.mock('app/core/factory/sdk', () => ({
 
 const PENDING_EMAIL = 'pending@example.com';
 const PASSWORD = 'SomePassword123!';
+const UNDECRYPTABLE_PRIVATE_KEY = 'ab'.repeat(200);
 
 const backendError = (status: number, data: Record<string, unknown>) =>
   new AxiosResponseError('Request failed', '', { status, data, headers: {} } as never);
@@ -109,5 +110,24 @@ describe('Login', () => {
 
     expect(await screen.findByText('Wrong login credentials')).toBeInTheDocument();
     expect(screen.queryByText('auth.accountSetupPending.title')).not.toBeInTheDocument();
+  });
+
+  test('When the account keys cannot be unlocked after logging in, then the account keys error is shown instead of the server error', async () => {
+    mockAuthBackend({
+      securityDetails: vi.fn().mockResolvedValue({ tfaEnabled: false, encryptedSalt: 'encrypted-salt' }),
+      login: vi.fn().mockResolvedValue({
+        newToken: 'new-token',
+        user: {
+          mnemonic: 'encrypted-mnemonic',
+          keys: { ecc: { publicKey: 'public-key', privateKey: UNDECRYPTABLE_PRIVATE_KEY }, kyber: {} },
+        },
+      }),
+    });
+    const { container } = renderLogin();
+
+    submitCredentials(container, 'user@example.com');
+
+    expect(await screen.findByText('error.accountKeysError')).toBeInTheDocument();
+    expect(screen.queryByText('error.serverError')).not.toBeInTheDocument();
   });
 });

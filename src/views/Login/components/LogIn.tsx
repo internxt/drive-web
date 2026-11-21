@@ -29,6 +29,8 @@ import TurnstileWidget, { TurnstileWidgetHandle } from 'components/TurnstileWidg
 import encryptedStorageService from 'services/encrypted-storage.service';
 import { isAccountSetupPending } from 'services/account-setup.service';
 import { AccountSetupPendingNotice } from './AccountSetupPendingNotice';
+import { isAccountKeysError } from 'app/crypto/services/keys.service';
+import { getLoginErrorMessage } from '../utils/getLoginErrorMessage';
 
 const showNotification = ({ text, isError }: { text: string; isError: boolean }) => {
   notificationsService.show({
@@ -162,7 +164,9 @@ export default function LogIn(): JSX.Element {
       return;
     }
 
-    setLoginError([castedError.message]);
+    setLoginError([
+      isAccountKeysError(err) ? translate('error.accountKeysError') : getLoginErrorMessage(castedError, translate),
+    ]);
     setShowErrors(true);
 
     if (castedError.status === 403 && castedError.code === 'ACCOUNT_BLOCKED') {
