@@ -25,6 +25,26 @@ interface CheckoutProductCardProps {
   isPaymentProcessing?: boolean;
 }
 
+export const HIDDEN_COUPON_CODES = [
+  'SPECIAL',
+  'ANTIV',
+  'SAVE',
+  'OFFER',
+  'CIPIAIDISCOUNT',
+  'THEFELLASADSOFFER',
+  'GOTZHAOFFER',
+  'TFA',
+  'REOFFER',
+  'WEWE',
+  'AMIOFFER',
+  'VIPOFFER',
+  'VAOFFER',
+  'VEOFFER',
+  'AFFIOFFER',
+  'MAXOFFER',
+  'IDSOFFER',
+];
+
 const Separator = () => <div className="border border-gray-10" />;
 
 export const CheckoutProductCard = ({
@@ -60,25 +80,6 @@ export const CheckoutProductCard = ({
   const derivedTax = Math.max(0, Number(totalAmountFormatted) - Number(planAmountWithoutTaxes));
   const derivedTaxFormatted = formatPrice(derivedTax);
 
-  const HIDDEN_COUPON_CODES = [
-    'SPECIAL',
-    'ANTIV',
-    'SAVE',
-    'OFFER',
-    'CIPIAIDISCOUNT',
-    'THEFELLASADSOFFER',
-    'GOTZHAOFFER',
-    'TFA',
-    'REOFFER',
-    'WEWE',
-    'AMIOFFER',
-    'VIPOFFER',
-    'VAOFFER',
-    'VEOFFER',
-    'AFFIOFFER',
-    'MAXOFFER',
-    'IDSOFFER',
-  ];
   const isHiddenCoupon = HIDDEN_COUPON_CODES.includes(couponCodeData?.codeName ?? '');
 
   const discountPercentage =

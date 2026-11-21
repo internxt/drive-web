@@ -323,7 +323,8 @@
       "passwordLabel": "Ваш пароль",
       "passwordPlaceholder": "Пароль",
       "togglePasswordVisibility": "Показать или скрыть пароль",
-      "incompleteDetails": "Введите адрес электронной почты и пароль, чтобы продолжить.",
+      "emailMustNotBeEmpty": "Электронная почта не должна быть пустой",
+      "passwordMustNotBeEmpty": "Пароль не должен быть пустым",
       "encryptedTitle": "Ваши файлы зашифрованы и защищены.",
       "encryptedDescription": "Internxt не может получить доступ к вашему содержимому."
     },

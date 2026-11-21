@@ -344,7 +344,8 @@
       "passwordLabel": "您的密码",
       "passwordPlaceholder": "密码",
       "togglePasswordVisibility": "显示或隐藏密码",
-      "incompleteDetails": "请输入您的电子邮件地址和密码以继续。",
+      "emailMustNotBeEmpty": "电子邮件不能为空",
+      "passwordMustNotBeEmpty": "密码不能为空",
       "encryptedTitle": "您的文件已加密且完全私密。",
       "encryptedDescription": "Internxt 无法访问您的内容。"
     },

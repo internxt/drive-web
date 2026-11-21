@@ -323,7 +323,8 @@
       "passwordLabel": "Ihr Passwort",
       "passwordPlaceholder": "Passwort",
       "togglePasswordVisibility": "Passwort anzeigen oder ausblenden",
-      "incompleteDetails": "Bitte geben Sie Ihre E-Mail-Adresse und Ihr Passwort ein, um fortzufahren.",
+      "emailMustNotBeEmpty": "Die E-Mail darf nicht leer sein",
+      "passwordMustNotBeEmpty": "Das Passwort darf nicht leer sein",
       "encryptedTitle": "Ihre Dateien sind verschlüsselt und privat.",
       "encryptedDescription": "Internxt kann nicht auf Ihre Inhalte zugreifen."
     },
