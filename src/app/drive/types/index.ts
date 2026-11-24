@@ -50,7 +50,6 @@ export interface DriveFileData {
   folderId: number;
   folder_id: number;
   folderUuid: string;
-  id: number;
   name: string;
   plain_name: string | null;
   plainName?: string | null;
@@ -71,7 +70,6 @@ export interface DriveFileData {
 
 interface Thumbnail {
   id: number;
-  file_id: number;
   type: string;
   max_width: number;
   max_height: number;

@@ -23,6 +23,7 @@ describe('user thunks', () => {
     lastname: 'Doe',
     emailVerified: false,
     createdAt: new Date(),
+    photosBucket: null,
   };
 
   let getStateWithUser: () => RootState;
@@ -157,6 +158,86 @@ describe('user thunks', () => {
         }),
       );
       expect(setTokenSpy).toHaveBeenCalledWith('forced-token-xyz');
+    });
+
+    test('When the user is refreshed, then the Photos bucket is kept up to date', async () => {
+      const refreshed = {
+        user: { ...baseUser, photosBucket: 'photos-bucket-id' },
+        newToken: 'new-token',
+        oldToken: 'old-token',
+      } as unknown as Awaited<ReturnType<typeof userService.refreshUserData>>;
+      vi.spyOn(userService, 'refreshUserData').mockResolvedValue(refreshed);
+
+      await refreshUserThunk({ forceRefresh: true })(dispatchMock, getStateWithUser, undefined);
+
+      expect(setUserThunkSpy).toHaveBeenCalledWith(expect.objectContaining({ photosBucket: 'photos-bucket-id' }));
+    });
+
+    test('When the saved user is from before Photos existed, then it is refreshed even if the token is still valid', async () => {
+      const { photosBucket: _, ...userSavedBeforePhotos } = baseUser;
+      const getStateWithOldUser = () =>
+        ({ user: { ...getStateWithUser().user, user: userSavedBeforePhotos } }) as RootState;
+      vi.spyOn(userService, 'refreshUserData').mockResolvedValue({
+        user: { ...baseUser, photosBucket: 'photos-bucket-id' },
+        newToken: 'new-token',
+        oldToken: 'old-token',
+      } as unknown as Awaited<ReturnType<typeof userService.refreshUserData>>);
+
+      await refreshUserThunk()(dispatchMock, getStateWithOldUser, undefined);
+
+      expect(setUserThunkSpy).toHaveBeenCalledWith(expect.objectContaining({ photosBucket: 'photos-bucket-id' }));
+    });
+
+    test('When the server does not send the Photos bucket yet, then the user is saved without Photos so it is not refreshed on every start', async () => {
+      const { photosBucket: _, ...userWithoutPhotosBucket } = baseUser;
+      const getStateWithOldUser = () =>
+        ({ user: { ...getStateWithUser().user, user: userWithoutPhotosBucket } }) as RootState;
+      vi.spyOn(userService, 'refreshUserData').mockResolvedValue({
+        user: userWithoutPhotosBucket,
+        newToken: 'new-token',
+        oldToken: 'old-token',
+      } as unknown as Awaited<ReturnType<typeof userService.refreshUserData>>);
+
+      await refreshUserThunk()(dispatchMock, getStateWithOldUser, undefined);
+
+      expect(setUserThunkSpy).toHaveBeenCalledWith(expect.objectContaining({ photosBucket: null }));
+    });
+
+    test('When the user has no Photos and the token is still valid, then it is not refreshed', async () => {
+      vi.spyOn(userService, 'refreshUserData');
+
+      await refreshUserThunk()(dispatchMock, getStateWithUser, undefined);
+
+      expect(userService.refreshUserData).not.toHaveBeenCalled();
+    });
+
+    test('When the user is refreshed, then the refresh finishes only once the refreshed user is saved', async () => {
+      let finishSavingUser = () => {};
+      vi.spyOn(encryptedStorageService, 'setUser').mockReturnValue(
+        new Promise<void>((resolve) => {
+          finishSavingUser = resolve;
+        }),
+      );
+      vi.spyOn(userService, 'refreshUserData').mockResolvedValue({
+        user: { ...baseUser, photosBucket: 'photos-bucket-id' },
+        newToken: 'new-token',
+        oldToken: 'old-token',
+      } as unknown as Awaited<ReturnType<typeof userService.refreshUserData>>);
+      const dispatch = vi.fn((action) =>
+        typeof action === 'function' ? action(dispatch, getStateWithUser, undefined) : action,
+      );
+      let isRefreshFinished = false;
+
+      const refresh = refreshUserThunk({ forceRefresh: true })(dispatch, getStateWithUser, undefined).then(() => {
+        isRefreshFinished = true;
+      });
+      await vi.waitFor(() => expect(encryptedStorageService.setUser).toHaveBeenCalled());
+      await Promise.resolve();
+
+      expect(isRefreshFinished).toBe(false);
+      finishSavingUser();
+      await refresh;
+      expect(isRefreshFinished).toBe(true);
     });
 
     it('reports error when refresh fails', async () => {

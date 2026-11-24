@@ -2,7 +2,9 @@ import { ReactNode } from 'react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { act, fireEvent, render, renderHook, screen, waitFor, within } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import i18next from 'i18next';
+import toast, { Toaster } from 'react-hot-toast';
+import { afterEach, beforeAll, beforeEach, describe, expect, Mock, test, vi } from 'vitest';
 import { getDatabasePhotoThumbnail, updateDatabasePhotoThumbnail } from 'app/drive/services/database.service';
 import fetchFileBlob from 'app/drive/services/download.service/fetchFileBlob';
 import errorService from 'services/error.service';
@@ -17,6 +19,8 @@ import storageReducer from 'app/store/slices/storage';
 import uiReducer from 'app/store/slices/ui';
 import userReducer from 'app/store/slices/user';
 import workspacesReducer from 'app/store/slices/workspaces/workspacesStore';
+import { AppError } from '@internxt/sdk';
+import navigationService from 'services/navigation.service';
 import { PhotoDevice as SdkPhotoDevice } from '@internxt/sdk/dist/drive/photos';
 import {
   getPhotoFolder,
@@ -29,9 +33,14 @@ import PhotosView from './PhotosView';
 import { PhotoThumbnailsService } from './services/photoThumbnails.service';
 import { Photo } from './types';
 
-const { photosClient, storageClient } = vi.hoisted(() => ({
-  photosClient: { listDevices: vi.fn(), getFilesInFolders: vi.fn() },
-  storageClient: { getFolderFoldersByUuidWithCursor: vi.fn(), createThumbnailEntryWithUUID: vi.fn() },
+const { photosClient, storageClient, trashClient } = vi.hoisted(() => ({
+  photosClient: { listDevices: vi.fn(), getFilesInFolders: vi.fn(), deleteDevice: vi.fn() },
+  storageClient: {
+    getFolderFoldersByUuidWithCursor: vi.fn(),
+    createThumbnailEntryWithUUID: vi.fn(),
+    moveFileByUuid: vi.fn(),
+  },
+  trashClient: { addItemsToTrash: vi.fn() },
 }));
 
 vi.mock('app/core/factory/sdk', () => ({
@@ -39,6 +48,7 @@ vi.mock('app/core/factory/sdk', () => ({
     getNewApiInstance: () => ({
       createPhotosClient: () => photosClient,
       createNewStorageClient: () => storageClient,
+      createTrashClient: () => trashClient,
     }),
   },
 }));
@@ -49,7 +59,7 @@ vi.mock('react-helmet-async', () => ({
   Helmet: () => null,
 }));
 vi.mock('services/error.service', () => ({
-  default: { reportError: vi.fn() },
+  default: { reportError: vi.fn(), castError: (error: Error) => error },
 }));
 vi.mock('app/drive/services/download.service/fetchFileBlob', () => ({
   default: vi.fn(),
@@ -110,6 +120,10 @@ const requestedFolders = () =>
 
 const photo = (plainName: string, folderUuid: string, creationTime: string) =>
   getPhotoFolderFile({ uuid: plainName, plainName, type: 'jpg', folderUuid, creationTime });
+
+let nextFileId = 1;
+const file = (plainName: string, type: string, folderUuid: string, creationTime: string) =>
+  getPhotoFolderFile({ id: nextFileId++, uuid: `${plainName}.${type}`, plainName, type, folderUuid, creationTime });
 
 const photosOfDay = (folderUuid: string, count: number) =>
   Array.from({ length: count }, (_, index) =>
@@ -194,6 +208,37 @@ const pixelPhotosOfOctober2026 = {
   'pixel-2026': [getPhotoFolder({ uuid: 'pixel-2026-10', plainName: '10' })],
 };
 
+const renderWithStore = () => {
+  const store = configureStore({
+    reducer: { storage: storageReducer, ui: uiReducer, user: userReducer, workspaces: workspacesReducer },
+    preloadedState: { user: { ...userReducer(undefined, { type: 'init' }), isAuthenticated: true } },
+  });
+  const wrapper = ({ children }: { children: ReactNode }) => <Provider store={store}>{children}</Provider>;
+  const result = render(
+    <>
+      <PhotosView />
+      <Toaster />
+    </>,
+    { wrapper },
+  );
+  return { ...result, store };
+};
+
+const trashedFiles = () =>
+  trashClient.addItemsToTrash.mock.calls.flatMap(([{ items }]) =>
+    (items as { uuid: string; type: string }[]).map(({ uuid, type }) => `${uuid} (${type})`),
+  );
+
+const filesMovedBack = () =>
+  storageClient.moveFileByUuid.mock.calls.map(
+    ([fileUuid, { destinationFolder }]) => `${fileUuid} -> ${destinationFolder as string}`,
+  );
+
+const downloadedFiles = () =>
+  (DownloadManager.downloadItem as Mock).mock.calls.map(([{ payload }]) =>
+    (payload as DriveItemData[]).map((item) => `${item.plainName}.${item.type}`),
+  );
+
 const waitForPhotosToLoad = () =>
   waitFor(() => expect(screen.queryByTestId('photos-grid-skeleton')).not.toBeInTheDocument());
 
@@ -203,7 +248,13 @@ galleryStyles.textContent = 'h2 { margin: 0; } .aspect-square { aspect-ratio: 1 
 document.head.appendChild(galleryStyles);
 
 describe('Photos view', () => {
+  beforeAll(async () => {
+    await i18next.init({ lng: 'cimode' });
+  });
+
   beforeEach(() => {
+    vi.clearAllMocks();
+    nextFileId = 1;
     givenGallerySize(1000, 600);
     vi.stubGlobal('ResizeObserver', FakeResizeObserver);
     givenSubfolders({});
@@ -212,11 +263,14 @@ describe('Photos view', () => {
     givenPhotosInFolders({});
     (getDatabasePhotoThumbnail as Mock).mockResolvedValue(undefined);
     (updateDatabasePhotoThumbnail as Mock).mockResolvedValue(undefined);
+    trashClient.addItemsToTrash.mockResolvedValue(undefined);
+    storageClient.moveFileByUuid.mockResolvedValue({});
   });
 
   afterEach(() => {
     vi.unstubAllGlobals();
     resizeObservers.clear();
+    act(() => toast.remove());
   });
 
   test('When the devices are loading, then the photos grid placeholder is shown under the title', () => {
@@ -291,19 +345,55 @@ describe('Photos view', () => {
     expect(photosClient.listDevices).toHaveBeenCalledTimes(2);
   });
 
+  describe('Plan without Photos', () => {
+    const photosNotInPlan = new AppError('Payment required', 402);
+
+    test('When the plan does not include Photos, then a locked state with an upgrade button is shown instead of the photos', async () => {
+      photosClient.listDevices.mockRejectedValue(photosNotInPlan);
+
+      renderWithStore();
+
+      expect(await screen.findByText('views.photos.locked.title')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /views.photos.locked.upgrade/ })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /views.photos.error.retry/ })).not.toBeInTheDocument();
+      expect(screen.queryByText('views.photos.empty.title')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('photos-grid-skeleton')).not.toBeInTheDocument();
+    });
+
+    test('When the user chooses to upgrade from the locked state, then the plans open in the settings', async () => {
+      photosClient.listDevices.mockRejectedValue(photosNotInPlan);
+      const openPreferences = vi.spyOn(navigationService, 'openPreferencesDialog').mockReturnValue();
+
+      const { store } = renderWithStore();
+      fireEvent.click(await screen.findByRole('button', { name: /views.photos.locked.upgrade/ }));
+
+      expect(openPreferences).toHaveBeenCalledWith({ section: 'account', subsection: 'plans' });
+      expect(store.getState().ui.isPreferencesDialogOpen).toBe(true);
+    });
+
+    test('When the plan does not include Photos, then it is not reported as an error', async () => {
+      photosClient.listDevices.mockRejectedValue(photosNotInPlan);
+
+      renderWithStore();
+
+      await screen.findByText('views.photos.locked.title');
+      expect(errorService.reportError).not.toHaveBeenCalled();
+    });
+  });
+
   describe('Filtering by device', () => {
     const openDeviceFilter = async () => {
       fireEvent.click(await screen.findByRole('button', { name: /views.photos.filters.allDevices/ }));
     };
 
-    test('When the user has a single device, then there is no device filter', async () => {
+    test('When the user has a single device, then the device filter is shown so they can manage it', async () => {
       givenDevices([iphone]);
       givenSubfolders(iphonePhotosOfNovember2026);
 
       render(<PhotosView />);
+      await openDeviceFilter();
 
-      await waitForPhotosToLoad();
-      expect(screen.queryByRole('button', { name: /views.photos.filters.allDevices/ })).not.toBeInTheDocument();
+      expect(await screen.findByRole('menuitem', { name: /views.photos.devices.manage/ })).toBeInTheDocument();
     });
 
     test('When the user has several devices, then they can choose one of them', async () => {
@@ -317,6 +407,7 @@ describe('Photos view', () => {
         'views.photos.filters.allDevices',
         'iPhone',
         'Pixel',
+        'views.photos.devices.manage',
       ]);
       expect(screen.getByRole('menuitem', { name: /views.photos.filters.allDevices/ })).toHaveAttribute(
         'aria-current',
@@ -337,6 +428,174 @@ describe('Photos view', () => {
 
       fireEvent.click(await screen.findByRole('menuitem', { name: /views.photos.filters.allDevices/ }));
       expect(await screen.findByRole('button', { name: /views.photos.filters.allDevices/ })).toBeInTheDocument();
+    });
+  });
+
+  describe('Managing devices', () => {
+    const iphoneDay = getPhotoFolder({ uuid: 'iphone-2026-11-03', plainName: '03' });
+    const pixelDay = getPhotoFolder({ uuid: 'pixel-2026-10-20', plainName: '20' });
+
+    const manageDevices = async () => {
+      fireEvent.click(await screen.findByRole('button', { name: /views.photos.filters.allDevices|iPhone|Pixel/ }));
+      fireEvent.click(await screen.findByRole('menuitem', { name: /views.photos.devices.manage/ }));
+      return screen.findByRole('list', { name: 'views.photos.devices.title' });
+    };
+    const shownDevices = () =>
+      within(screen.getByRole('list', { name: 'views.photos.devices.title' }))
+        .queryAllByRole('listitem')
+        .map((device) => device.getAttribute('aria-label'));
+    const deleteDevice = (name: string) =>
+      fireEvent.click(
+        within(screen.getByRole('listitem', { name })).getByRole('button', { name: 'views.photos.devices.delete' }),
+      );
+    const httpError = (status: number) => Object.assign(new Error(`HTTP ${status}`), { status });
+    const confirmDeletion = async () =>
+      fireEvent.click(await screen.findByRole('button', { name: 'views.photos.devices.deleteDialog.confirm' }));
+
+    beforeEach(() => {
+      givenDevices([iphone, pixel]);
+      givenSubfolders({
+        iphone: iphonePhotosOfNovember2026.iphone,
+        'iphone-2026': iphonePhotosOfNovember2026['iphone-2026'],
+        'iphone-2026-11': [iphoneDay],
+        pixel: pixelPhotosOfOctober2026.pixel,
+        'pixel-2026': pixelPhotosOfOctober2026['pixel-2026'],
+        'pixel-2026-10': [pixelDay],
+      });
+      givenPhotosInFolders({
+        'iphone-2026-11-03': [photo('IMG_IPHONE', 'iphone-2026-11-03', '2026-11-03T09:00:00Z')],
+        'pixel-2026-10-20': [photo('IMG_PIXEL', 'pixel-2026-10-20', '2026-10-20T09:00:00Z')],
+      });
+      photosClient.deleteDevice.mockResolvedValue(undefined);
+    });
+
+    test('When the user opens Manage devices, then the backed-up devices are listed', async () => {
+      renderWithStore();
+
+      await manageDevices();
+
+      expect(shownDevices()).toStrictEqual(['iPhone', 'Pixel']);
+    });
+
+    test('When the user deletes a device, then they are warned that its photo backup is deleted for good first', async () => {
+      renderWithStore();
+      await manageDevices();
+
+      deleteDevice('Pixel');
+
+      expect(await screen.findByText('views.photos.devices.deleteDialog.description')).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: 'actions.cancel' }));
+      await waitFor(() =>
+        expect(screen.queryByText('views.photos.devices.deleteDialog.description')).not.toBeInTheDocument(),
+      );
+      expect(photosClient.deleteDevice).not.toHaveBeenCalled();
+      expect(shownDevices()).toStrictEqual(['iPhone', 'Pixel']);
+    });
+
+    test('When the user confirms, then the device and its photos disappear and the filter goes back to all devices', async () => {
+      renderWithStore();
+      fireEvent.click(await screen.findByRole('button', { name: /views.photos.filters.allDevices/ }));
+      fireEvent.click(await screen.findByRole('menuitem', { name: /Pixel/ }));
+      expect(await screen.findByRole('img', { name: 'IMG_PIXEL.jpg' })).toBeInTheDocument();
+      await manageDevices();
+
+      deleteDevice('Pixel');
+      await confirmDeletion();
+
+      await waitFor(() => expect(shownDevices()).toStrictEqual(['iPhone']));
+      expect(photosClient.deleteDevice).toHaveBeenCalledExactlyOnceWith('pixel');
+      expect(await screen.findByText('views.photos.devices.deleted')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /views.photos.filters.allDevices/ })).toBeInTheDocument();
+      expect(await screen.findByRole('img', { name: 'IMG_IPHONE.jpg' })).toBeInTheDocument();
+      expect(screen.queryByRole('img', { name: 'IMG_PIXEL.jpg' })).not.toBeInTheDocument();
+    });
+
+    test('When the user deletes a device other than the chosen one, then the chosen device and month stay', async () => {
+      renderWithStore();
+      fireEvent.click(await screen.findByRole('button', { name: /views.photos.filters.allDevices/ }));
+      fireEvent.click(await screen.findByRole('menuitem', { name: /iPhone/ }));
+      fireEvent.click(await screen.findByRole('button', { name: /views.photos.filters.allDates/ }));
+      fireEvent.click(await screen.findByRole('menuitem', { name: /November 2026/ }));
+      await manageDevices();
+
+      deleteDevice('Pixel');
+      await confirmDeletion();
+
+      await waitFor(() => expect(shownDevices()).toStrictEqual(['iPhone']));
+      expect(screen.getByRole('button', { name: /iPhone/ })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /November 2026/ })).toBeInTheDocument();
+      expect(await screen.findByRole('img', { name: 'IMG_IPHONE.jpg' })).toBeInTheDocument();
+    });
+
+    test('When the user deletes the only device with the chosen month, then the date filter goes back to all dates', async () => {
+      renderWithStore();
+      fireEvent.click(await screen.findByRole('button', { name: /views.photos.filters.allDates/ }));
+      fireEvent.click(await screen.findByRole('menuitem', { name: /October 2026/ }));
+      await manageDevices();
+
+      deleteDevice('Pixel');
+      await confirmDeletion();
+
+      await waitFor(() => expect(shownDevices()).toStrictEqual(['iPhone']));
+      expect(screen.getByRole('button', { name: /views.photos.filters.allDates/ })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /October 2026/ })).not.toBeInTheDocument();
+      expect(await screen.findByRole('img', { name: 'IMG_IPHONE.jpg' })).toBeInTheDocument();
+    });
+
+    test('When the device is being deleted, then the confirmation cannot be dismissed until it finishes', async () => {
+      let finishDeletion = () => undefined as void;
+      photosClient.deleteDevice.mockReturnValue(new Promise<void>((resolve) => (finishDeletion = resolve)));
+      renderWithStore();
+      await manageDevices();
+      deleteDevice('Pixel');
+      await confirmDeletion();
+
+      fireEvent.keyDown(window, { key: 'Escape' });
+      fireEvent.click(screen.getByTestId('dialog-overlay'));
+      await act(() => new Promise((resolve) => setTimeout(resolve, 300)));
+
+      expect(screen.getByText('views.photos.devices.deleteDialog.description')).toBeInTheDocument();
+      finishDeletion();
+      await waitFor(() => expect(shownDevices()).toStrictEqual(['iPhone']));
+      expect(photosClient.deleteDevice).toHaveBeenCalledOnce();
+    });
+
+    test('When the device no longer exists, then it is removed from the list with a message saying so', async () => {
+      photosClient.deleteDevice.mockRejectedValue(httpError(404));
+      renderWithStore();
+      await manageDevices();
+
+      deleteDevice('Pixel');
+      await confirmDeletion();
+
+      expect(await screen.findByText('views.photos.devices.notFound')).toBeInTheDocument();
+      expect(shownDevices()).toStrictEqual(['iPhone']);
+      expect(errorService.reportError).not.toHaveBeenCalled();
+    });
+
+    test('When the device cannot be deleted, then it stays with its photos and the user is told', async () => {
+      photosClient.deleteDevice.mockRejectedValue(httpError(500));
+      renderWithStore();
+      await manageDevices();
+
+      deleteDevice('Pixel');
+      await confirmDeletion();
+
+      expect(await screen.findByText('views.photos.devices.deleteError')).toBeInTheDocument();
+      expect(shownDevices()).toStrictEqual(['iPhone', 'Pixel']);
+      expect(errorService.reportError).toHaveBeenCalled();
+    });
+
+    test('When the last device is deleted, then the user is invited to install the mobile app', async () => {
+      givenDevices([pixel]);
+      renderWithStore();
+      await manageDevices();
+
+      deleteDevice('Pixel');
+      await confirmDeletion();
+
+      expect(await screen.findByText('views.photos.empty.title')).toBeInTheDocument();
+      expect(screen.queryByRole('img', { name: 'IMG_PIXEL.jpg' })).not.toBeInTheDocument();
     });
   });
 
@@ -635,9 +894,6 @@ describe('Photos view', () => {
     });
 
     describe('Live Photos, bursts and videos', () => {
-      const file = (plainName: string, type: string, folderUuid: string, creationTime: string) =>
-        getPhotoFolderFile({ uuid: `${plainName}.${type}`, plainName, type, folderUuid, creationTime });
-
       const tile = (name: string) => screen.getByRole('img', { name });
 
       beforeEach(() => {
@@ -1135,19 +1391,6 @@ describe('Photos view', () => {
   });
 
   describe('Viewing a photo', () => {
-    let nextFileId = 1;
-    const file = (plainName: string, type: string, folderUuid: string, creationTime: string) =>
-      getPhotoFolderFile({ id: nextFileId++, uuid: `${plainName}.${type}`, plainName, type, folderUuid, creationTime });
-
-    const renderWithStore = () => {
-      const store = configureStore({
-        reducer: { storage: storageReducer, ui: uiReducer, user: userReducer, workspaces: workspacesReducer },
-        preloadedState: { user: { ...userReducer(undefined, { type: 'init' }), isAuthenticated: true } },
-      });
-      const wrapper = ({ children }: { children: ReactNode }) => <Provider store={store}>{children}</Provider>;
-      return render(<PhotosView />, { wrapper });
-    };
-
     const imageContent = (): Promise<Blob> =>
       new Promise((resolve) => {
         const canvas = document.createElement('canvas');
@@ -1158,13 +1401,8 @@ describe('Photos view', () => {
 
     const openPhoto = async (name: string) => fireEvent.click(await screen.findByRole('button', { name }));
     const viewer = () => screen.getByRole('dialog');
-    const downloadedFiles = () =>
-      (DownloadManager.downloadItem as Mock).mock.calls.map(([{ payload }]) =>
-        (payload as DriveItemData[]).map((item) => `${item.plainName}.${item.type}`),
-      );
 
     beforeEach(() => {
-      nextFileId = 1;
       givenDevices([iphone, pixel]);
       givenSubfolders({
         iphone: [getPhotoFolder({ uuid: 'iphone-2025', plainName: '2025' })],
@@ -1272,7 +1510,7 @@ describe('Photos view', () => {
       expect(downloadedFiles()).toStrictEqual([['IMG_0003.jpg', 'IMG_0003.burst.1.jpg', 'IMG_0003.burst.2.jpg']]);
     });
 
-    test('When the user opens the menu of the viewer, then they can only download, with the related files', async () => {
+    test('When the user opens the menu of the viewer, then they can download or move to the trash', async () => {
       givenPhotosInFolders({
         'iphone-2025-11-03': [
           file('IMG_0001', 'HEIC', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
@@ -1285,9 +1523,48 @@ describe('Photos view', () => {
       fireEvent.click(within(viewer()).getByRole('button', { expanded: false }));
       const menuItems = within(viewer()).getAllByText(/^drive\.dropdown\./);
 
-      expect(menuItems.map((item) => item.textContent)).toStrictEqual(['drive.dropdown.download']);
+      expect(menuItems.map((item) => item.textContent)).toStrictEqual([
+        'drive.dropdown.download',
+        'drive.dropdown.moveToTrash',
+      ]);
       fireEvent.click(menuItems[0]);
       expect(downloadedFiles()).toStrictEqual([['IMG_0001.HEIC', 'IMG_0001.livephoto.MOV']]);
+    });
+
+    test('When the user moves a Live Photo to the trash from the viewer, then the viewer closes and the photo and its video leave the gallery', async () => {
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [
+          file('IMG_0001', 'HEIC', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          file('IMG_0001.livephoto', 'MOV', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          file('IMG_0002', 'jpg', 'iphone-2025-11-03', '2025-11-03T08:00:00Z'),
+        ],
+      });
+
+      renderWithStore();
+      await openPhoto('IMG_0001.HEIC');
+      fireEvent.click(within(viewer()).getByRole('button', { expanded: false }));
+      fireEvent.click(within(viewer()).getByText('drive.dropdown.moveToTrash'));
+
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      await waitFor(() => expect(screen.queryByRole('img', { name: 'IMG_0001.HEIC' })).not.toBeInTheDocument());
+      expect(trashedFiles()).toStrictEqual(['IMG_0001.HEIC (file)', 'IMG_0001.livephoto.MOV (file)']);
+      expect(screen.getByRole('img', { name: 'IMG_0002.jpg' })).toBeInTheDocument();
+    });
+
+    test('When the user presses the trash key in the viewer, then the photo shown is moved to the trash, as in Drive', async () => {
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [
+          file('IMG_0001', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          file('IMG_0002', 'jpg', 'iphone-2025-11-03', '2025-11-03T08:00:00Z'),
+        ],
+      });
+
+      renderWithStore();
+      await openPhoto('IMG_0001.jpg');
+      fireEvent.keyDown(viewer(), { key: 'Backspace', code: 'Backspace' });
+
+      await waitFor(() => expect(trashedFiles()).toStrictEqual(['IMG_0001.jpg (file)']));
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
 
     test('When a single photo is downloaded from the viewer, then only that photo is downloaded', async () => {
@@ -1303,6 +1580,431 @@ describe('Photos view', () => {
       fireEvent.click(within(viewer()).getAllByTitle('actions.download')[0]);
 
       expect(downloadedFiles()).toStrictEqual([['IMG_0001.jpg']]);
+    });
+  });
+
+  describe('Selecting photos', () => {
+    const tick = async (name: string) => {
+      await screen.findByRole('checkbox', { name });
+      fireEvent.click(screen.getByRole('checkbox', { name }));
+    };
+    const selectionHeader = () => screen.queryByRole('toolbar', { name: 'views.photos.selection.title' });
+    const selectedCount = () =>
+      within(selectionHeader() as HTMLElement).getByText(/contextMenu\.itemsSelected/).textContent;
+
+    beforeEach(() => {
+      givenDevices([iphone, pixel]);
+      givenSubfolders({
+        iphone: [getPhotoFolder({ uuid: 'iphone-2025', plainName: '2025' })],
+        'iphone-2025': [getPhotoFolder({ uuid: 'iphone-2025-11', plainName: '11' })],
+        'iphone-2025-11': [
+          getPhotoFolder({ uuid: 'iphone-2025-11-03', plainName: '3' }),
+          getPhotoFolder({ uuid: 'iphone-2025-11-01', plainName: '1' }),
+        ],
+        pixel: [getPhotoFolder({ uuid: 'pixel-2025', plainName: '2025' })],
+        'pixel-2025': [getPhotoFolder({ uuid: 'pixel-2025-10', plainName: '10' })],
+        'pixel-2025-10': [getPhotoFolder({ uuid: 'pixel-2025-10-15', plainName: '15' })],
+      });
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [
+          file('IMG_MORNING', 'jpg', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          file('IMG_EVENING', 'jpg', 'iphone-2025-11-03', '2025-11-03T20:00:00Z'),
+        ],
+        'iphone-2025-11-01': [file('IMG_OLDER', 'jpg', 'iphone-2025-11-01', '2025-11-01T09:00:00Z')],
+        'pixel-2025-10-15': [file('IMG_PIXEL', 'jpg', 'pixel-2025-10-15', '2025-10-15T09:00:00Z')],
+      });
+    });
+
+    test('When nothing is selected, then the header shows the title and filters', async () => {
+      renderWithStore();
+      await screen.findByRole('checkbox', { name: 'IMG_MORNING.jpg' });
+
+      expect(selectionHeader()).not.toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'views.photos.head' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /views.photos.filters.allDevices/ })).toBeInTheDocument();
+    });
+
+    test('When the user ticks several photos, then the header shows how many are selected', async () => {
+      renderWithStore();
+      await tick('IMG_MORNING.jpg');
+      await tick('IMG_OLDER.jpg');
+
+      expect(selectedCount()).toBe('2 contextMenu.itemsSelected');
+      expect(screen.getByRole('checkbox', { name: 'IMG_MORNING.jpg' })).toBeChecked();
+      expect(screen.getByRole('checkbox', { name: 'IMG_EVENING.jpg' })).not.toBeChecked();
+      expect(screen.queryByRole('heading', { name: 'views.photos.head' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /views.photos.filters.allDevices/ })).not.toBeInTheDocument();
+    });
+
+    test('When some photos are selected, then clicking another photo selects it instead of opening it', async () => {
+      renderWithStore();
+      await tick('IMG_MORNING.jpg');
+      fireEvent.click(screen.getByRole('button', { name: 'IMG_EVENING.jpg' }));
+
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      expect(selectedCount()).toBe('2 contextMenu.itemsSelected');
+    });
+
+    test('When the user unticks the last selected photo, then the header goes back to normal and clicking a photo opens it again', async () => {
+      renderWithStore();
+      await tick('IMG_MORNING.jpg');
+      await tick('IMG_MORNING.jpg');
+      fireEvent.click(screen.getByRole('button', { name: 'IMG_EVENING.jpg' }));
+
+      expect(selectionHeader()).not.toBeInTheDocument();
+      expect(screen.getByRole('dialog')).toHaveAccessibleName('IMG_EVENING.jpg');
+    });
+
+    test('When the user ticks a day, then all the photos of that day are selected and no others', async () => {
+      renderWithStore();
+      await tick('Mon, 3 Nov 2025');
+
+      expect(selectedCount()).toBe('2 contextMenu.itemsSelected');
+      expect(screen.getByRole('checkbox', { name: 'IMG_MORNING.jpg' })).toBeChecked();
+      expect(screen.getByRole('checkbox', { name: 'IMG_EVENING.jpg' })).toBeChecked();
+      expect(screen.getByRole('checkbox', { name: 'IMG_OLDER.jpg' })).not.toBeChecked();
+    });
+
+    test('When only some photos of a day are selected, then the day shows it and ticking the day selects the rest', async () => {
+      renderWithStore();
+      await tick('IMG_MORNING.jpg');
+
+      expect(screen.getByRole('checkbox', { name: 'Mon, 3 Nov 2025' })).toBePartiallyChecked();
+      await tick('Mon, 3 Nov 2025');
+      expect(screen.getByRole('checkbox', { name: 'Mon, 3 Nov 2025' })).toBeChecked();
+      expect(selectedCount()).toBe('2 contextMenu.itemsSelected');
+    });
+
+    test('When the user unticks a fully selected day, then only the photos of that day are unselected', async () => {
+      renderWithStore();
+      await tick('IMG_OLDER.jpg');
+      await tick('Mon, 3 Nov 2025');
+      await tick('Mon, 3 Nov 2025');
+
+      expect(selectedCount()).toBe('1 contextMenu.itemsSelected');
+      expect(screen.getByRole('checkbox', { name: 'IMG_OLDER.jpg' })).toBeChecked();
+    });
+
+    test('When the user presses Esc right after ticking a photo, then the selection is cleared', async () => {
+      renderWithStore();
+      await tick('IMG_MORNING.jpg');
+      await tick('IMG_OLDER.jpg');
+
+      fireEvent.keyDown(screen.getByRole('checkbox', { name: 'IMG_OLDER.jpg' }), { key: 'Escape' });
+
+      await waitFor(() => expect(selectionHeader()).not.toBeInTheDocument());
+      expect(screen.getByRole('checkbox', { name: 'IMG_MORNING.jpg' })).not.toBeChecked();
+    });
+
+    test('When the user closes the selection, then nothing stays selected', async () => {
+      renderWithStore();
+      await tick('IMG_MORNING.jpg');
+
+      fireEvent.click(
+        within(selectionHeader() as HTMLElement).getByRole('button', { name: 'views.photos.selection.clear' }),
+      );
+
+      expect(selectionHeader()).not.toBeInTheDocument();
+      expect(screen.getByRole('checkbox', { name: 'IMG_MORNING.jpg' })).not.toBeChecked();
+    });
+
+    test('When several selected photos are downloaded, then they are downloaded together as one ZIP in the gallery order', async () => {
+      renderWithStore();
+      await tick('IMG_OLDER.jpg');
+      await tick('IMG_MORNING.jpg');
+      await tick('IMG_EVENING.jpg');
+
+      fireEvent.click(
+        within(selectionHeader() as HTMLElement).getByRole('button', { name: 'drive.dropdown.download' }),
+      );
+
+      expect(downloadedFiles()).toStrictEqual([['IMG_EVENING.jpg', 'IMG_MORNING.jpg', 'IMG_OLDER.jpg']]);
+    });
+
+    test('When a selected Live Photo is downloaded, then its video is downloaded with it', async () => {
+      givenPhotosInFolders({
+        'iphone-2025-11-03': [
+          file('IMG_0001', 'HEIC', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          file('IMG_0001.livephoto', 'MOV', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+          file('IMG_0002', 'jpg', 'iphone-2025-11-03', '2025-11-03T08:00:00Z'),
+        ],
+      });
+
+      renderWithStore();
+      await tick('Mon, 3 Nov 2025');
+      fireEvent.click(
+        within(selectionHeader() as HTMLElement).getByRole('button', { name: 'drive.dropdown.download' }),
+      );
+
+      expect(selectedCount()).toBe('2 contextMenu.itemsSelected');
+      expect(downloadedFiles()).toStrictEqual([['IMG_0001.HEIC', 'IMG_0001.livephoto.MOV', 'IMG_0002.jpg']]);
+    });
+
+    test('When a day with hundreds of photos is ticked, then the photos not on screen are downloaded too', async () => {
+      givenDevices([iphone]);
+      givenPhotosInFolders({ 'iphone-2025-11-03': photosOfDay('iphone-2025-11-03', 300) });
+
+      renderWithStore();
+      await tick('Mon, 3 Nov 2025');
+      fireEvent.click(
+        within(selectionHeader() as HTMLElement).getByRole('button', { name: 'drive.dropdown.download' }),
+      );
+
+      expect(selectedCount()).toBe('300 contextMenu.itemsSelected');
+      expect(screen.queryByRole('img', { name: 'IMG_0300.jpg' })).not.toBeInTheDocument();
+      expect(downloadedFiles()[0]).toHaveLength(300);
+      expect(downloadedFiles()[0]).toContain('IMG_0300.jpg');
+    });
+  });
+
+  describe('Moving photos to the trash', () => {
+    let nextFileId = 1;
+    const file = (plainName: string, type: string, folderUuid: string, creationTime: string) =>
+      getPhotoFolderFile({ id: nextFileId++, uuid: `${plainName}.${type}`, plainName, type, folderUuid, creationTime });
+
+    const tick = async (name: string) => {
+      await screen.findByRole('checkbox', { name });
+      fireEvent.click(screen.getByRole('checkbox', { name }));
+    };
+    const selectionHeader = () => screen.queryByRole('toolbar', { name: 'views.photos.selection.title' });
+    const trashButton = () =>
+      within(selectionHeader() as HTMLElement).getByRole('button', { name: 'drive.dropdown.moveToTrash' });
+    const moveSelectionToTrash = () => fireEvent.click(trashButton());
+    const undo = async () => fireEvent.click(await screen.findByRole('button', { name: 'actions.undo' }));
+    const photosOnTheServer = ({ withoutLivePhoto = false } = {}) => ({
+      'iphone-2025-11-03': [
+        ...(withoutLivePhoto
+          ? []
+          : [
+              file('IMG_LIVE', 'HEIC', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+              file('IMG_LIVE.livephoto', 'MOV', 'iphone-2025-11-03', '2025-11-03T09:00:00Z'),
+            ]),
+        file('IMG_KEPT', 'jpg', 'iphone-2025-11-03', '2025-11-03T08:00:00Z'),
+      ],
+      'iphone-2025-11-01': [
+        file('IMG_BURST', 'jpg', 'iphone-2025-11-01', '2025-11-01T09:00:00Z'),
+        file('IMG_BURST.burst.1', 'jpg', 'iphone-2025-11-01', '2025-11-01T09:00:00Z'),
+      ],
+      'iphone-2025-10-15': [file('IMG_OCTOBER', 'jpg', 'iphone-2025-10-15', '2025-10-15T09:00:00Z')],
+    });
+
+    const givenPhotosBackOnTheServerOnceMovedBack = () =>
+      storageClient.moveFileByUuid.mockImplementation(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        givenPhotosInFolders(photosOnTheServer());
+        return {};
+      });
+
+    beforeEach(() => {
+      nextFileId = 1;
+      givenDevices([iphone]);
+      givenSubfolders({
+        iphone: [getPhotoFolder({ uuid: 'iphone-2025', plainName: '2025' })],
+        'iphone-2025': [
+          getPhotoFolder({ uuid: 'iphone-2025-11', plainName: '11' }),
+          getPhotoFolder({ uuid: 'iphone-2025-10', plainName: '10' }),
+        ],
+        'iphone-2025-11': [
+          getPhotoFolder({ uuid: 'iphone-2025-11-03', plainName: '3' }),
+          getPhotoFolder({ uuid: 'iphone-2025-11-01', plainName: '1' }),
+        ],
+        'iphone-2025-10': [getPhotoFolder({ uuid: 'iphone-2025-10-15', plainName: '15' })],
+      });
+      givenPhotosInFolders(photosOnTheServer());
+    });
+
+    test('When selected photos are moved to the trash, then they go to the Drive Trash with their related files right away', async () => {
+      renderWithStore();
+      await tick('IMG_LIVE.HEIC');
+      await tick('IMG_BURST.jpg');
+
+      moveSelectionToTrash();
+
+      await waitFor(() =>
+        expect(trashedFiles()).toStrictEqual([
+          'IMG_LIVE.HEIC (file)',
+          'IMG_LIVE.livephoto.MOV (file)',
+          'IMG_BURST.jpg (file)',
+          'IMG_BURST.burst.1.jpg (file)',
+        ]),
+      );
+    });
+
+    test('When selected photos are moved to the trash, then they leave the gallery and the selection is closed', async () => {
+      renderWithStore();
+      await tick('IMG_LIVE.HEIC');
+      await tick('IMG_BURST.jpg');
+
+      moveSelectionToTrash();
+
+      await waitFor(() => expect(screen.queryByRole('img', { name: 'IMG_LIVE.HEIC' })).not.toBeInTheDocument());
+      expect(screen.queryByRole('img', { name: 'IMG_BURST.jpg' })).not.toBeInTheDocument();
+      expect(screen.getByRole('img', { name: 'IMG_KEPT.jpg' })).toBeInTheDocument();
+      expect(selectionHeader()).not.toBeInTheDocument();
+    });
+
+    test('When the user undoes moving photos of two days to the trash, then each file goes back to its own day folder', async () => {
+      renderWithStore();
+      await tick('IMG_LIVE.HEIC');
+      await tick('IMG_BURST.jpg');
+      moveSelectionToTrash();
+
+      await undo();
+
+      await waitFor(() =>
+        expect(filesMovedBack()).toStrictEqual([
+          'IMG_LIVE.HEIC -> iphone-2025-11-03',
+          'IMG_LIVE.livephoto.MOV -> iphone-2025-11-03',
+          'IMG_BURST.jpg -> iphone-2025-11-01',
+          'IMG_BURST.burst.1.jpg -> iphone-2025-11-01',
+        ]),
+      );
+    });
+
+    test('When the user undoes moving photos to the trash, then they are shown again in the gallery', async () => {
+      renderWithStore();
+      await tick('IMG_LIVE.HEIC');
+      moveSelectionToTrash();
+      await waitFor(() => expect(screen.queryByRole('img', { name: 'IMG_LIVE.HEIC' })).not.toBeInTheDocument());
+
+      await undo();
+
+      expect(await screen.findByRole('img', { name: 'IMG_LIVE.HEIC' })).toBeInTheDocument();
+    });
+
+    test('When the user undoes moving photos to the trash, then the photos already loaded are not loaded again', async () => {
+      renderWithStore();
+      await tick('IMG_LIVE.HEIC');
+      moveSelectionToTrash();
+      await waitFor(() => expect(screen.queryByRole('img', { name: 'IMG_LIVE.HEIC' })).not.toBeInTheDocument());
+      const foldersRequestedBeforeUndo = requestedFolders().length;
+
+      await undo();
+
+      expect(await screen.findByRole('img', { name: 'IMG_LIVE.HEIC' })).toBeInTheDocument();
+      expect(requestedFolders()).toHaveLength(foldersRequestedBeforeUndo);
+    });
+
+    test('When the user changes the filter after moving photos to the trash and then undoes it, then they are shown again in the gallery', async () => {
+      renderWithStore();
+      await tick('IMG_LIVE.HEIC');
+      moveSelectionToTrash();
+      await waitFor(() => expect(screen.queryByRole('img', { name: 'IMG_LIVE.HEIC' })).not.toBeInTheDocument());
+      givenPhotosInFolders(photosOnTheServer({ withoutLivePhoto: true }));
+
+      fireEvent.click(await screen.findByRole('button', { name: /views.photos.filters.allDates/ }));
+      fireEvent.click(await screen.findByRole('menuitem', { name: /November 2025/ }));
+      expect(await screen.findByRole('img', { name: 'IMG_KEPT.jpg' })).toBeInTheDocument();
+      givenPhotosBackOnTheServerOnceMovedBack();
+      await undo();
+
+      expect(await screen.findByRole('img', { name: 'IMG_LIVE.HEIC' })).toBeInTheDocument();
+    });
+
+    test('When the user changes the filter and goes back to the same one before undoing, then the restored photos are shown again', async () => {
+      renderWithStore();
+      await tick('IMG_LIVE.HEIC');
+      moveSelectionToTrash();
+      await waitFor(() => expect(screen.queryByRole('img', { name: 'IMG_LIVE.HEIC' })).not.toBeInTheDocument());
+      givenPhotosInFolders(photosOnTheServer({ withoutLivePhoto: true }));
+
+      fireEvent.click(await screen.findByRole('button', { name: /views.photos.filters.allDates/ }));
+      fireEvent.click(await screen.findByRole('menuitem', { name: /November 2025/ }));
+      fireEvent.click(await screen.findByRole('button', { name: /November 2025/ }));
+      fireEvent.click(await screen.findByRole('menuitem', { name: /views.photos.filters.allDates/ }));
+      expect(await screen.findByRole('img', { name: 'IMG_KEPT.jpg' })).toBeInTheDocument();
+      givenPhotosBackOnTheServerOnceMovedBack();
+      await undo();
+
+      expect(await screen.findByRole('img', { name: 'IMG_LIVE.HEIC' })).toBeInTheDocument();
+    });
+
+    test('When undoing fails, then the photos stay out of the gallery and the error is shown', async () => {
+      storageClient.moveFileByUuid.mockRejectedValueOnce(new Error('Network error'));
+      renderWithStore();
+      await tick('IMG_LIVE.HEIC');
+      moveSelectionToTrash();
+      await waitFor(() => expect(screen.queryByRole('img', { name: 'IMG_LIVE.HEIC' })).not.toBeInTheDocument());
+      givenPhotosInFolders(photosOnTheServer({ withoutLivePhoto: true }));
+
+      await undo();
+
+      expect(await screen.findByText('error.movingItem')).toBeInTheDocument();
+      expect(await screen.findByRole('img', { name: 'IMG_KEPT.jpg' })).toBeInTheDocument();
+      expect(screen.queryByRole('img', { name: 'IMG_LIVE.HEIC' })).not.toBeInTheDocument();
+    });
+
+    test('When the user undoes moving many photos to the trash, then they are moved back a few at a time', async () => {
+      givenPhotosInFolders({ 'iphone-2025-11-03': photosOfDay('iphone-2025-11-03', 300) });
+      renderWithStore();
+      await tick('Mon, 3 Nov 2025');
+      moveSelectionToTrash();
+      storageClient.moveFileByUuid.mockReturnValue(new Promise(() => undefined));
+
+      await undo();
+
+      await waitFor(() => expect(filesMovedBack()).toHaveLength(30));
+    });
+
+    test('When the user clicks the trash button twice, then the photos are moved to the trash once', async () => {
+      trashClient.addItemsToTrash.mockReturnValue(new Promise(() => undefined));
+      renderWithStore();
+      await tick('IMG_KEPT.jpg');
+
+      moveSelectionToTrash();
+      moveSelectionToTrash();
+
+      await waitFor(() => expect(trashedFiles()).toStrictEqual(['IMG_KEPT.jpg (file)']));
+      expect(trashButton()).toBeDisabled();
+    });
+
+    test('When undoing another trash reloaded the gallery, then undoing an earlier trash shows its photos again', async () => {
+      renderWithStore();
+      await tick('IMG_LIVE.HEIC');
+      moveSelectionToTrash();
+      await waitFor(() => expect(screen.queryByRole('img', { name: 'IMG_LIVE.HEIC' })).not.toBeInTheDocument());
+      givenPhotosInFolders(photosOnTheServer({ withoutLivePhoto: true }));
+      await tick('IMG_KEPT.jpg');
+      moveSelectionToTrash();
+      await waitFor(() => expect(screen.queryByRole('img', { name: 'IMG_KEPT.jpg' })).not.toBeInTheDocument());
+      givenPhotosBackOnTheServerOnceMovedBack();
+      storageClient.moveFileByUuid.mockRejectedValueOnce(new Error('Network error'));
+      const [undoKept, undoLive] = await screen.findAllByRole('button', { name: 'actions.undo' });
+
+      fireEvent.click(undoKept);
+      expect(await screen.findByText('error.movingItem')).toBeInTheDocument();
+      await waitForPhotosToLoad();
+      fireEvent.click(undoLive);
+
+      expect(await screen.findByRole('img', { name: 'IMG_LIVE.HEIC' })).toBeInTheDocument();
+      expect(filesMovedBack()[0]).toBe('IMG_KEPT.jpg -> iphone-2025-11-03');
+    });
+
+    test('When moving photos to the trash fails, then they stay in the gallery and stay selected', async () => {
+      trashClient.addItemsToTrash.mockRejectedValueOnce(new Error('Network error'));
+      renderWithStore();
+      await tick('IMG_LIVE.HEIC');
+
+      moveSelectionToTrash();
+
+      expect(await screen.findByText('error.errorMovingToTrash')).toBeInTheDocument();
+      expect(screen.getByRole('img', { name: 'IMG_LIVE.HEIC' })).toBeInTheDocument();
+      expect(selectionHeader()).toBeInTheDocument();
+    });
+
+    test('When every photo loaded so far is moved to the trash, then the photos of the previous month are shown', async () => {
+      givenPhotosInFolders({
+        'iphone-2025-11-03': photosOfDay('iphone-2025-11-03', 300),
+        'iphone-2025-10-15': [file('IMG_OCTOBER', 'jpg', 'iphone-2025-10-15', '2025-10-15T09:00:00Z')],
+      });
+      renderWithStore();
+      await tick('Mon, 3 Nov 2025');
+      expect(requestedFolders()).not.toContain('iphone-2025-10-15');
+
+      moveSelectionToTrash();
+
+      expect(await screen.findByRole('img', { name: 'IMG_OCTOBER.jpg' })).toBeInTheDocument();
+      expect(screen.queryByText('views.photos.empty.title')).not.toBeInTheDocument();
     });
   });
 });

@@ -2,27 +2,62 @@ import PhotosErrorState from './components/PhotosErrorState';
 import PhotosFilters from './components/PhotosFilters';
 import PhotosGridSkeleton from './components/PhotosGridSkeleton';
 import PhotosLayout from './components/PhotosLayout';
+import PhotosLockedState from './components/PhotosLockedState';
 import PhotosLibrary from './components/PhotosLibrary';
+import PhotosSelectionHeader from './components/PhotosSelectionHeader';
 import { usePhotoFilters } from './hooks/usePhotoFilters';
 import { usePhotoLibrary } from './hooks/usePhotoLibrary';
+import { usePhotoSelection } from './hooks/usePhotoSelection';
+import { usePhotoTrash } from './hooks/usePhotoTrash';
 import { PhotoDevice, PhotoMonth } from './types';
+import { getShownMonthsKey } from './utils/monthKeys';
 
 const NO_DEVICES: PhotoDevice[] = [];
 const NO_MONTHS: PhotoMonth[] = [];
 
 const PhotosView = (): JSX.Element => {
-  const { state, retry } = usePhotoLibrary();
+  const { state, retry, removeDevice } = usePhotoLibrary();
   const devices = state.status === 'loaded' ? state.devices : NO_DEVICES;
   const filters = usePhotoFilters(state.status === 'loaded' ? state.months : NO_MONTHS);
+  const { selectedPhotos, toggleSelection, clearSelection } = usePhotoSelection();
+  const { trashedPhotos, galleryKey, moveToTrash } = usePhotoTrash(getShownMonthsKey(filters.shownMonths));
+
+  const onDeviceRemoved = (deviceUuid: string) => {
+    removeDevice(deviceUuid);
+    if (deviceUuid === filters.selectedDeviceUuid) filters.selectDevice(null);
+  };
 
   const content = {
     loading: <PhotosGridSkeleton />,
     error: <PhotosErrorState onRetry={retry} />,
-    loaded: <PhotosLibrary months={filters.shownMonths} />,
+    locked: <PhotosLockedState />,
+    loaded: (
+      <PhotosLibrary
+        months={filters.shownMonths}
+        selectedPhotos={selectedPhotos}
+        trashedPhotos={trashedPhotos}
+        galleryKey={galleryKey}
+        onToggleSelection={toggleSelection}
+        onMoveToTrash={moveToTrash}
+      />
+    ),
   };
 
   return (
-    <PhotosLayout filters={<PhotosFilters devices={devices} filters={filters} />}>{content[state.status]}</PhotosLayout>
+    <PhotosLayout
+      filters={<PhotosFilters devices={devices} filters={filters} onDeviceRemoved={onDeviceRemoved} />}
+      selectionHeader={
+        selectedPhotos.size > 0 ? (
+          <PhotosSelectionHeader
+            selectedPhotos={selectedPhotos}
+            onClear={clearSelection}
+            onMoveToTrash={() => moveToTrash([...selectedPhotos.values()], clearSelection)}
+          />
+        ) : undefined
+      }
+    >
+      {content[state.status]}
+    </PhotosLayout>
   );
 };
 
