@@ -29,9 +29,7 @@ vi.mock('app/drive/services/items-list.service', () => ({
   },
 }));
 
-vi.mock('i18next', () => ({
-  t: vi.fn((key: string) => key),
-}));
+vi.mock('i18next', () => ({ keyFromSelector: vi.fn(), t: vi.fn((key: string) => key) }));
 
 vi.mock('app/store/slices/storage', () => ({
   storageActions: {

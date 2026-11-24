@@ -33,9 +33,7 @@ vi.mock('..', () => ({
   },
 }));
 
-vi.mock('i18next', () => ({
-  t: vi.fn((key) => key),
-}));
+vi.mock('i18next', () => ({ keyFromSelector: vi.fn(), t: vi.fn((key) => key) }));
 
 vi.mock('./applyCachedFolderSizes', () => ({
   applyCachedFolderSizes: vi.fn(async (_, items) => items),
