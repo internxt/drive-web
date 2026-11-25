@@ -459,14 +459,14 @@ class DirectoryPublicSharedFolderIterator implements Iterator<SharedFolders> {
   }
 
   async next() {
-    const { directoryId, resourcesToken, code, accessToken } = this.queryValues;
+    const { directoryId, resourcesToken, accessToken } = this.queryValues;
     const items = await getPublicSharedFolderContent(
       directoryId,
       'folders',
       resourcesToken ?? '',
       this.page,
       this.itemsPerPage,
-      code,
+      undefined,
       undefined,
       accessToken,
     );

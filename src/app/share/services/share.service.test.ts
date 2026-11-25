@@ -828,7 +828,7 @@ describe('Download public shared items', () => {
       return { foldersIterator, filesIterator, getPublicSharedFolderContentFn };
     };
 
-    test('When the link is password protected, then folders and files are listed with the code and the access token', async () => {
+    test('When the link is password protected, then folders are listed with the access token and files with the code and the access token', async () => {
       const { foldersIterator, filesIterator, getPublicSharedFolderContentFn } = await getIterators('access-token');
 
       await foldersIterator('sub-folder-uuid').next();
@@ -840,7 +840,7 @@ describe('Download public shared items', () => {
         'level-token',
         0,
         15,
-        CODE,
+        undefined,
         undefined,
         'access-token',
       );
@@ -856,7 +856,7 @@ describe('Download public shared items', () => {
       );
     });
 
-    test('When the link is not password protected, then folders and files are listed with the code and no access token', async () => {
+    test('When the link is not password protected, then folders are listed without the code and files with the code, and no access token is sent', async () => {
       const { foldersIterator, filesIterator, getPublicSharedFolderContentFn } = await getIterators();
 
       await foldersIterator('sub-folder-uuid').next();
@@ -868,7 +868,7 @@ describe('Download public shared items', () => {
         'level-token',
         0,
         15,
-        CODE,
+        undefined,
         undefined,
         undefined,
       );

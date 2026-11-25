@@ -247,7 +247,7 @@ describe('usePublicSharedDownload', () => {
       expect(result.current.isDownloading).toBe(false);
     });
 
-    test('When the link is accessToken protected, then the download is started with the code and the access token', () => {
+    test('When the link is password protected, then the download is started with the code and the access token', () => {
       mockedDownloadPublicSharedItems.mockResolvedValue();
       const items = [createFileItem()];
 
@@ -266,7 +266,7 @@ describe('usePublicSharedDownload', () => {
       });
     });
 
-    test('When the link is not accessToken protected, then the download is started with the code and no access token', () => {
+    test('When the link is not password protected, then the download is started with the code and no access token', () => {
       mockedDownloadPublicSharedItems.mockResolvedValue();
       const items = [createFileItem()];
 

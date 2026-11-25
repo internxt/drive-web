@@ -65,7 +65,7 @@ describe('usePublicSharedFolderContent', () => {
       '',
       0,
       30,
-      CODE,
+      undefined,
       undefined,
       undefined,
     );
@@ -90,7 +90,7 @@ describe('usePublicSharedFolderContent', () => {
     expect(result.current.folderPath).toEqual([{ uuid: ROOT_UUID, name: 'Root folder', token: '' }]);
   });
 
-  test('When the link is accessToken protected, then folders and files are listed with the code and the access token', async () => {
+  test('When the link is password protected, then folders are listed with the access token and files with the code and the access token', async () => {
     mockedGetPublicSharedFolderContent.mockImplementation((_, type) =>
       type === 'folders'
         ? Promise.resolve(buildResponse([createFolder('folder-uuid', 'Documents')], 'folders-token'))
@@ -107,7 +107,7 @@ describe('usePublicSharedFolderContent', () => {
       '',
       0,
       30,
-      CODE,
+      undefined,
       undefined,
       'access-token',
     );
@@ -150,7 +150,7 @@ describe('usePublicSharedFolderContent', () => {
       'root-files-token',
       0,
       30,
-      CODE,
+      undefined,
       undefined,
       undefined,
     );
@@ -216,7 +216,7 @@ describe('usePublicSharedFolderContent', () => {
       '',
       1,
       30,
-      CODE,
+      undefined,
       undefined,
       undefined,
     );

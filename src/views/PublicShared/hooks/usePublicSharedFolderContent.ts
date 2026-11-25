@@ -109,7 +109,7 @@ const usePublicSharedFolderContent = ({
       currentFolder.token,
       page,
       ITEMS_PER_PAGE,
-      code,
+      isFoldersPhase ? undefined : code,
       undefined,
       accessToken,
     );
