@@ -15,7 +15,7 @@ export const renderWithTranslations = (ui: ReactElement) => {
   void i18n.init({
     lng: 'en',
     resources: { en: { translation: enJson }, es: { translation: esJson } },
-    initImmediate: false,
+    initAsync: false,
   });
 
   const renderResult = render(

@@ -27,7 +27,7 @@ vi.mock('app/store/hooks', () => ({ useAppDispatch: () => mockDispatch }));
 vi.mock('react-redux', () => ({
   useSelector: vi.fn((selector: (s: unknown) => unknown) => selector({ storage: { itemsToMove: [] } })),
 }));
-vi.mock('i18next', () => ({ default: { t: (key: string) => key }, t: (key: string) => key }));
+vi.mock('i18next', () => ({ keyFromSelector: vi.fn(), default: { t: (key: string) => key }, t: (key: string) => key }));
 vi.mock('app/store/slices/storage/storage.thunks', () => ({ default: { moveItemsThunk: mockMoveItemsThunk } }));
 vi.mock('app/store/slices/storage/storage.thunks/renameItemsThunk', () => ({
   getCollisionGroups: vi.fn(async (groups: { destinationUuid: string; items: unknown[] }[]) =>

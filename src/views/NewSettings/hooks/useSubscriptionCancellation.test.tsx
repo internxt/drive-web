@@ -12,7 +12,7 @@ const { mockDispatch, mockInitializeThunk } = vi.hoisted(() => ({
   mockInitializeThunk: vi.fn(() => ({ type: 'initializeThunk' })),
 }));
 
-vi.mock('i18next', () => ({ default: { t: (key: string) => key }, t: (key: string) => key }));
+vi.mock('i18next', () => ({ keyFromSelector: vi.fn(), default: { t: (key: string) => key }, t: (key: string) => key }));
 vi.mock('app/store/hooks', () => ({ useAppDispatch: () => mockDispatch }));
 vi.mock('app/store/slices/plan', () => ({
   planThunks: { initializeThunk: mockInitializeThunk },

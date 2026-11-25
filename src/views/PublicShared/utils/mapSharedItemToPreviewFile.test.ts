@@ -29,7 +29,6 @@ describe('mapSharedItemToPreviewFile', () => {
     const previewFile = mapSharedItemToPreviewFile(createSharedItem());
 
     expect(previewFile).toMatchObject({
-      id: 7,
       uuid: 'file-uuid',
       bucket: 'bucket-id',
       fileId: 'network-file-id',

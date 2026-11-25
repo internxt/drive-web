@@ -14,7 +14,11 @@ import { FileViewerKeyboardShortcuts } from '../types';
 import { useFileViewerActions } from './useFileViewerActions';
 
 vi.mock('views/Trash/services', () => ({ moveItemsToTrash: vi.fn() }));
-vi.mock('i18next', async (importOriginal) => ({ ...(await importOriginal<object>()), t: (key: string) => key }));
+vi.mock('i18next', async (importOriginal) => ({
+  ...(await importOriginal<object>()),
+  keyFromSelector: vi.fn(),
+  t: (key: string) => key,
+}));
 
 const createFile = (overrides: Partial<PreviewFileItem> = {}): PreviewFileItem =>
   ({

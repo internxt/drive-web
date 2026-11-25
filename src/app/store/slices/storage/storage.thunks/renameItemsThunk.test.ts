@@ -17,7 +17,7 @@ vi.mock('app/store/slices/storage/fileUtils/getFilesByBatchs', () => ({
   getFilesByBatchs: (items: unknown[]) => [items],
 }));
 vi.mock('app/store/slices/storage/storage.thunks', () => ({ default: {}, storageExtraReducers: () => undefined }));
-vi.mock('i18next', () => ({ default: { t: (key: string) => key }, t: (key: string) => key }));
+vi.mock('i18next', () => ({ keyFromSelector: vi.fn(), default: { t: (key: string) => key }, t: (key: string) => key }));
 
 describe('Rename items - Thunk', () => {
   describe('Resolving collision groups before a move or copy operation', () => {

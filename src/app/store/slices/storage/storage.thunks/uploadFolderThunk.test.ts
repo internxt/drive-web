@@ -68,9 +68,7 @@ vi.mock('services/error.service', () => ({
   },
 }));
 
-vi.mock('i18next', () => ({
-  t: vi.fn((key) => key),
-}));
+vi.mock('i18next', () => ({ keyFromSelector: vi.fn(), t: vi.fn((key) => key) }));
 
 vi.mock('../../ui', () => ({
   uiActions: {

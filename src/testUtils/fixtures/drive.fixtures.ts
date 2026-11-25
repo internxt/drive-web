@@ -66,7 +66,6 @@ export const getThumbnailDto = () => ({
 
 export const getDriveThumbnail = (): DriveItemData['thumbnails'][number] => ({
   id: 7,
-  file_id: 2,
   type: 'png',
   max_width: 300,
   max_height: 300,

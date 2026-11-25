@@ -132,10 +132,10 @@ describe('Loading the content of a file preview', () => {
   });
 
   test('When the user moves to another file before the first one finishes, then only the new file content and progress are shown', async () => {
-    const { result, rerender } = renderPreview(createFile({ id: 1, uuid: FILE_UUID }));
+    const { result, rerender } = renderPreview(createFile({ uuid: FILE_UUID }));
     const firstDownload = await waitForDownload(FILE_UUID);
 
-    rerender({ previewFile: createFile({ id: 2, uuid: OTHER_FILE_UUID }), isEnabled: true });
+    rerender({ previewFile: createFile({ uuid: OTHER_FILE_UUID }), isEnabled: true });
     const secondDownload = await waitForDownload(OTHER_FILE_UUID);
     act(() => firstDownload.reportProgress(0.9));
     await act(async () => firstDownload.finish(contentOf('first')));
@@ -147,12 +147,12 @@ describe('Loading the content of a file preview', () => {
   });
 
   test('When two different files are opened, then each one keeps its own cached content', async () => {
-    renderPreview(createFile({ id: 0, uuid: FILE_UUID }));
+    renderPreview(createFile({ uuid: FILE_UUID }));
     const firstDownload = await waitForDownload(FILE_UUID);
     const firstContent = contentOf('first');
     await act(async () => firstDownload.finish(firstContent));
 
-    const { result } = renderPreview(createFile({ id: 0, uuid: OTHER_FILE_UUID }));
+    const { result } = renderPreview(createFile({ uuid: OTHER_FILE_UUID }));
     const secondDownload = await waitForDownload(OTHER_FILE_UUID);
     const secondContent = contentOf('second');
     await act(async () => secondDownload.finish(secondContent));
@@ -163,11 +163,11 @@ describe('Loading the content of a file preview', () => {
   });
 
   test('When the user moves to another file after the first one has loaded, then the new file content is shown', async () => {
-    const { result, rerender } = renderPreview(createFile({ id: 0, uuid: FILE_UUID }));
+    const { result, rerender } = renderPreview(createFile({ uuid: FILE_UUID }));
     const firstDownload = await waitForDownload(FILE_UUID);
     await act(async () => firstDownload.finish(contentOf('first')));
 
-    rerender({ previewFile: createFile({ id: 0, uuid: OTHER_FILE_UUID }), isEnabled: true });
+    rerender({ previewFile: createFile({ uuid: OTHER_FILE_UUID }), isEnabled: true });
     const secondDownload = await waitForDownload(OTHER_FILE_UUID);
     const secondContent = contentOf('second');
     await act(async () => secondDownload.finish(secondContent));
