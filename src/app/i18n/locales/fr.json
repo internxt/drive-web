@@ -211,6 +211,7 @@
         "password": "Votre mot de passe"
       },
       "emailMustNotBeEmpty": "L'email ne doit pas être vide",
+      "passwordMustNotBeEmpty": "Le mot de passe ne doit pas être vide",
       "authError": {
         "invalidCredentials": "L'email ou le mot de passe est incorrect. Veuillez réessayer.",
         "twoFactorEnabled": "Ce compte utilise l'authentification à deux facteurs. Connectez-vous depuis la page de connexion, puis revenez pour finaliser votre achat.",
@@ -323,8 +324,6 @@
       "passwordLabel": "Votre mot de passe",
       "passwordPlaceholder": "Mot de passe",
       "togglePasswordVisibility": "Afficher ou masquer le mot de passe",
-      "emailMustNotBeEmpty": "L'email ne doit pas être vide",
-      "passwordMustNotBeEmpty": "Le mot de passe ne doit pas être vide",
       "encryptedTitle": "Vos fichiers sont chiffrés et privés.",
       "encryptedDescription": "Internxt ne peut pas accéder à votre contenu."
     },

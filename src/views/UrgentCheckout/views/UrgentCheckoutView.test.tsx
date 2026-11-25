@@ -231,6 +231,68 @@ describe('urgent checkout view', () => {
       expect(screen.queryByText('Create a password')).toBeNull();
     });
 
+    it('When a new buyer submits with only their email, then the checkout receives no password', async () => {
+      renderUrgentCheckout();
+
+      fireEvent.change(screen.getByPlaceholderText('you@email.com'), { target: { value: 'buyer@internxt.com' } });
+      await act(async () => {
+        fireEvent.click(screen.getByText('Get subscription plan'));
+      });
+
+      expect(checkoutViewManager.onCheckoutButtonClicked).toHaveBeenCalledWith(
+        { email: 'buyer@internxt.com' },
+        expect.anything(),
+        expect.anything(),
+        expect.anything(),
+      );
+    });
+
+    it('When the new buyer submits without an email, then the email error is shown and linked to the field', async () => {
+      renderUrgentCheckout();
+
+      await act(async () => {
+        fireEvent.click(screen.getByText('Get subscription plan'));
+      });
+
+      const email = screen.getByPlaceholderText('you@email.com');
+      expect(screen.getByText('Email must not be empty')).toBeTruthy();
+      expect(email.getAttribute('aria-invalid')).toBe('true');
+      expect(email.getAttribute('aria-describedby')).toBe('emailError');
+    });
+
+    it('When the buyer logs in without a password, then the password error is shown and linked to the field', async () => {
+      renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { authMethod: 'signIn' });
+
+      fireEvent.change(screen.getByPlaceholderText('you@email.com'), { target: { value: 'buyer@internxt.com' } });
+      await act(async () => {
+        fireEvent.click(screen.getByText('Get subscription plan'));
+      });
+
+      const password = screen.getByPlaceholderText('Password');
+      expect(screen.getByText('Password must not be empty')).toBeTruthy();
+      expect(password.getAttribute('aria-invalid')).toBe('true');
+      expect(password.getAttribute('aria-describedby')).toBe('passwordError');
+    });
+
+    it('When the buyer logs in with a password longer than 50 characters, then the length error is shown', async () => {
+      renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { authMethod: 'signIn' });
+
+      fireEvent.change(screen.getByPlaceholderText('you@email.com'), { target: { value: 'buyer@internxt.com' } });
+      fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: 'a'.repeat(51) } });
+      await act(async () => {
+        fireEvent.click(screen.getByText('Get subscription plan'));
+      });
+
+      expect(screen.getByText('The password can have a maximum of 50 characters')).toBeTruthy();
+    });
+
+    it('When Enter is pressed, then it is blocked on the inputs but not on the resend button', () => {
+      renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { pendingAccountSetupEmail: 'buyer@internxt.com' });
+
+      expect(fireEvent.keyDown(screen.getByPlaceholderText('you@email.com'), { key: 'Enter' })).toBe(false);
+      expect(fireEvent.keyDown(screen.getByText('Resend email'), { key: 'Enter' })).toBe(true);
+    });
+
     it('When the buyer chooses to log in, then the password is asked for', () => {
       renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { authMethod: 'signIn' });
 
@@ -247,6 +309,7 @@ describe('urgent checkout view', () => {
             'Check your email to finish setting up your account.',
         ),
       ).toBeTruthy();
+      expect(screen.getByRole('status').textContent).toContain('buyer@internxt.com');
       expect(screen.getByText('Resend email')).toBeTruthy();
     });
 

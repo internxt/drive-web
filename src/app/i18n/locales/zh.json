@@ -232,6 +232,7 @@
         "password": "您的密码"
       },
       "emailMustNotBeEmpty": "电子邮件不能为空",
+      "passwordMustNotBeEmpty": "密码不能为空",
       "authError": {
         "invalidCredentials": "电子邮件或密码不正确，请重试。",
         "twoFactorEnabled": "此账户已启用双重验证。请先前往登录页面登录，再返回此处完成购买。",
@@ -344,8 +345,6 @@
       "passwordLabel": "您的密码",
       "passwordPlaceholder": "密码",
       "togglePasswordVisibility": "显示或隐藏密码",
-      "emailMustNotBeEmpty": "电子邮件不能为空",
-      "passwordMustNotBeEmpty": "密码不能为空",
       "encryptedTitle": "您的文件已加密且完全私密。",
       "encryptedDescription": "Internxt 无法访问您的内容。"
     },

@@ -232,6 +232,7 @@
         "password": "您的密碼"
       },
       "emailMustNotBeEmpty": "電子郵件不能為空",
+      "passwordMustNotBeEmpty": "密碼不能為空",
       "authError": {
         "invalidCredentials": "電子郵件或密碼不正確，請再試一次。",
         "twoFactorEnabled": "此帳戶已啟用雙重驗證。請先前往登入頁面登入，再回到這裡完成購買。",
@@ -344,8 +345,6 @@
       "passwordLabel": "您的密碼",
       "passwordPlaceholder": "密碼",
       "togglePasswordVisibility": "顯示或隱藏密碼",
-      "emailMustNotBeEmpty": "電子郵件不能為空",
-      "passwordMustNotBeEmpty": "密碼不能為空",
       "encryptedTitle": "您的檔案已加密且完全私密。",
       "encryptedDescription": "Internxt 無法存取您的內容。"
     },

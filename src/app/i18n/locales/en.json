@@ -232,6 +232,7 @@
         "password": "Your password"
       },
       "emailMustNotBeEmpty": "Email must not be empty",
+      "passwordMustNotBeEmpty": "Password must not be empty",
       "authError": {
         "invalidCredentials": "The email or password is incorrect. Please try again.",
         "twoFactorEnabled": "This account uses two-factor authentication. Log in from the login page and come back to complete your purchase.",
@@ -344,8 +345,6 @@
       "passwordLabel": "Your password",
       "passwordPlaceholder": "Password",
       "togglePasswordVisibility": "Show or hide password",
-      "emailMustNotBeEmpty": "Email must not be empty",
-      "passwordMustNotBeEmpty": "Password must not be empty",
       "encryptedTitle": "Your files are encrypted and private.",
       "encryptedDescription": "Internxt cannot access your content."
     },

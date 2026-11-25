@@ -211,6 +211,7 @@
         "password": "Ваш пароль"
       },
       "emailMustNotBeEmpty": "Электронная почта не должна быть пустой",
+      "passwordMustNotBeEmpty": "Пароль не должен быть пустым",
       "authError": {
         "invalidCredentials": "Неверный адрес электронной почты или пароль. Пожалуйста, попробуйте снова.",
         "twoFactorEnabled": "В этом аккаунте включена двухфакторная аутентификация. Войдите на странице входа и вернитесь, чтобы завершить покупку.",
@@ -323,8 +324,6 @@
       "passwordLabel": "Ваш пароль",
       "passwordPlaceholder": "Пароль",
       "togglePasswordVisibility": "Показать или скрыть пароль",
-      "emailMustNotBeEmpty": "Электронная почта не должна быть пустой",
-      "passwordMustNotBeEmpty": "Пароль не должен быть пустым",
       "encryptedTitle": "Ваши файлы зашифрованы и защищены.",
       "encryptedDescription": "Internxt не может получить доступ к вашему содержимому."
     },

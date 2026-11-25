@@ -43,7 +43,7 @@ export const UrgentCheckoutAccountFields = ({
   const isPasswordFieldVisible = !isPasswordlessSignUp;
 
   const preventSubmitOnEnter = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter') {
+    if (event.key === 'Enter' && event.target instanceof HTMLInputElement) {
       event.preventDefault();
     }
   };
@@ -78,11 +78,15 @@ export const UrgentCheckoutAccountFields = ({
           autoComplete="email"
           placeholder={translate('urgentCheckout.form.emailPlaceholder')}
           className={URGENT_CHECKOUT_INPUT_CLASSNAME}
-          {...register('email', {
-            required: true,
-            minLength: { value: 1, message: translate('checkout.authComponent.emailMustNotBeEmpty') },
-          })}
+          aria-invalid={Boolean(errors.email)}
+          aria-describedby={errors.email ? 'emailError' : undefined}
+          {...register('email', { required: translate('checkout.authComponent.emailMustNotBeEmpty') })}
         />
+        {errors.email && (
+          <p id="emailError" className="text-sm text-red">
+            {errors.email.message}
+          </p>
+        )}
       </div>
 
       {isPasswordFieldVisible && (
@@ -98,7 +102,15 @@ export const UrgentCheckoutAccountFields = ({
               autoComplete={isSignUp ? 'new-password' : 'current-password'}
               placeholder={translate('urgentCheckout.form.passwordPlaceholder')}
               className={`${URGENT_CHECKOUT_INPUT_CLASSNAME} pr-12`}
-              {...register('password', { required: true, maxLength: MAX_PASSWORD_LENGTH })}
+              aria-invalid={Boolean(errors.password)}
+              aria-describedby={errors.password ? 'passwordError' : undefined}
+              {...register('password', {
+                required: translate('checkout.authComponent.passwordMustNotBeEmpty'),
+                maxLength: {
+                  value: MAX_PASSWORD_LENGTH,
+                  message: translate('modals.changePasswordModal.errors.longPassword'),
+                },
+              })}
             />
             <button
               type="button"
@@ -109,24 +121,26 @@ export const UrgentCheckoutAccountFields = ({
               {isPasswordVisible ? <EyeIcon size={20} /> : <EyeSlashIcon size={20} />}
             </button>
           </div>
+          {errors.password && (
+            <p id="passwordError" className="text-sm text-red">
+              {errors.password.message}
+            </p>
+          )}
         </div>
       )}
 
       {isPasswordlessSignUp && pendingAccountSetupEmail && (
         <div className="flex flex-col items-start gap-3 rounded-xl border border-[#2A5BA8] bg-[#0E1E38] p-4">
-          <p className="text-sm text-white">
+          <p role="status" className="text-sm text-white">
             {translate('checkout.accountSetup.pendingSetup', { email: pendingAccountSetupEmail })}
           </p>
           <ResendAccountSetupEmailButton email={pendingAccountSetupEmail} />
         </div>
       )}
 
-      {(authError || errors.email || errors.password) && (
+      {authError && (
         <p id="authError" className="text-sm text-red">
-          {authError ??
-            (errors.email
-              ? translate('urgentCheckout.form.emailMustNotBeEmpty')
-              : translate('urgentCheckout.form.passwordMustNotBeEmpty'))}
+          {authError}
         </p>
       )}
 

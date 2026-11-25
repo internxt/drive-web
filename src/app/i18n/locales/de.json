@@ -211,6 +211,7 @@
         "password": "Ihr Passwort"
       },
       "emailMustNotBeEmpty": "Die E-Mail darf nicht leer sein",
+      "passwordMustNotBeEmpty": "Das Passwort darf nicht leer sein",
       "authError": {
         "invalidCredentials": "Die E-Mail-Adresse oder das Passwort ist falsch. Bitte versuche es erneut.",
         "twoFactorEnabled": "Dieses Konto verwendet die Zwei-Faktor-Authentifizierung. Melde dich auf der Anmeldeseite an und kehre zurück, um deinen Kauf abzuschließen.",
@@ -323,8 +324,6 @@
       "passwordLabel": "Ihr Passwort",
       "passwordPlaceholder": "Passwort",
       "togglePasswordVisibility": "Passwort anzeigen oder ausblenden",
-      "emailMustNotBeEmpty": "Die E-Mail darf nicht leer sein",
-      "passwordMustNotBeEmpty": "Das Passwort darf nicht leer sein",
       "encryptedTitle": "Ihre Dateien sind verschlüsselt und privat.",
       "encryptedDescription": "Internxt kann nicht auf Ihre Inhalte zugreifen."
     },
