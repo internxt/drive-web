@@ -45,10 +45,12 @@ const usePublicSharedFolderContent = ({
   rootFolderUuid,
   rootFolderName,
   code,
+  accessToken,
 }: {
   rootFolderUuid: string;
   rootFolderName: string;
   code: string;
+  accessToken?: string;
 }) => {
   const [folderPath, setFolderPath] = useState<PublicFolderLevel[]>([
     { uuid: rootFolderUuid, name: rootFolderName, token: '' },
@@ -107,7 +109,9 @@ const usePublicSharedFolderContent = ({
       currentFolder.token,
       page,
       ITEMS_PER_PAGE,
-      isFoldersPhase ? undefined : code,
+      code,
+      undefined,
+      accessToken,
     );
 
     setNextLevelToken(response.token);

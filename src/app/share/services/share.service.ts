@@ -96,10 +96,11 @@ export function getPublicSharedFolderContent(
   perPage: number,
   code?: string,
   orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
+  accessToken?: string,
 ): Promise<ListSharedItemsResponse> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient
-    .getPublicSharedFolderContent(sharedFolderId, type, token, page, perPage, code, orderBy)
+    .getPublicSharedFolderContent(sharedFolderId, type, token, page, perPage, code, orderBy, accessToken)
     .catch((error) => {
       throw error;
     });
@@ -445,22 +446,29 @@ class DirectorySharedFilesIterator implements Iterator<SharedFiles> {
 class DirectoryPublicSharedFolderIterator implements Iterator<SharedFolders> {
   private page: number;
   private itemsPerPage: number;
-  private readonly queryValues: { directoryId: string; resourcesToken?: string };
+  private readonly queryValues: { directoryId: string; resourcesToken?: string; code?: string; accessToken?: string };
 
-  constructor(queryValues: { directoryId: string; resourcesToken?: string }, page?: number, itemsPerPage?: number) {
+  constructor(
+    queryValues: { directoryId: string; resourcesToken?: string; code?: string; accessToken?: string },
+    page?: number,
+    itemsPerPage?: number,
+  ) {
     this.page = page ?? 0;
     this.itemsPerPage = itemsPerPage ?? 5;
     this.queryValues = queryValues;
   }
 
   async next() {
-    const { directoryId, resourcesToken } = this.queryValues;
+    const { directoryId, resourcesToken, code, accessToken } = this.queryValues;
     const items = await getPublicSharedFolderContent(
       directoryId,
       'folders',
       resourcesToken ?? '',
       this.page,
       this.itemsPerPage,
+      code,
+      undefined,
+      accessToken,
     );
     const folders = items.items.map((folder) => ({ ...folder, name: folder?.plainName ?? folder.name }));
     this.page += 1;
@@ -474,10 +482,10 @@ class DirectoryPublicSharedFolderIterator implements Iterator<SharedFolders> {
 class DirectoryPublicSharedFilesIterator implements Iterator<SharedFiles> {
   private page: number;
   private itemsPerPage: number;
-  private readonly queryValues: { directoryId: string; resourcesToken?: string; code?: string };
+  private readonly queryValues: { directoryId: string; resourcesToken?: string; code?: string; accessToken?: string };
 
   constructor(
-    queryValues: { directoryId: string; resourcesToken?: string; code?: string },
+    queryValues: { directoryId: string; resourcesToken?: string; code?: string; accessToken?: string },
     page?: number,
     itemsPerPage?: number,
   ) {
@@ -487,7 +495,7 @@ class DirectoryPublicSharedFilesIterator implements Iterator<SharedFiles> {
   }
 
   async next() {
-    const { directoryId, resourcesToken, code } = this.queryValues;
+    const { directoryId, resourcesToken, code, accessToken } = this.queryValues;
 
     const items = await getPublicSharedFolderContent(
       directoryId,
@@ -496,6 +504,8 @@ class DirectoryPublicSharedFilesIterator implements Iterator<SharedFiles> {
       this.page,
       this.itemsPerPage,
       code,
+      undefined,
+      accessToken,
     );
     const files = items.items.map((file) => ({ ...file, name: file?.plainName ?? file.name }));
     this.page += 1;
@@ -644,6 +654,7 @@ export async function downloadPublicSharedItems({
   credentials,
   key,
   code,
+  accessToken,
   resourcesToken,
   updateNumItems,
 }: {
@@ -651,6 +662,7 @@ export async function downloadPublicSharedItems({
   credentials: NetworkCredentials;
   key: FileKey;
   code: string;
+  accessToken?: string;
   resourcesToken?: string;
   updateNumItems?: () => void;
 }): Promise<void> {
@@ -659,7 +671,7 @@ export async function downloadPublicSharedItems({
 
   const createFoldersIterator = (directoryUuid: string, token?: string) => {
     return new DirectoryPublicSharedFolderIterator(
-      { directoryId: directoryUuid, resourcesToken: token ?? resourcesToken },
+      { directoryId: directoryUuid, resourcesToken: token ?? resourcesToken, code, accessToken },
       initPage,
       itemsPerPage,
     );
@@ -667,7 +679,7 @@ export async function downloadPublicSharedItems({
 
   const createFilesIterator = (directoryUuid: string, token?: string) => {
     return new DirectoryPublicSharedFilesIterator(
-      { directoryId: directoryUuid, resourcesToken: token ?? resourcesToken, code },
+      { directoryId: directoryUuid, resourcesToken: token ?? resourcesToken, code, accessToken },
       initPage,
       itemsPerPage,
     );
@@ -741,6 +753,7 @@ export async function downloadPublicSharedFolder({
   item,
   token,
   code,
+  accessToken,
   incrementItemCount,
   sharingVersion,
 }: {
@@ -748,6 +761,7 @@ export async function downloadPublicSharedFolder({
   item;
   token?: string;
   code: string;
+  accessToken?: string;
   incrementItemCount: () => void;
   sharingVersion: string;
 }): Promise<void> {
@@ -761,6 +775,8 @@ export async function downloadPublicSharedFolder({
     0,
     15,
     code,
+    undefined,
+    accessToken,
   );
 
   if (!credentials) {
@@ -775,6 +791,7 @@ export async function downloadPublicSharedFolder({
     },
     key,
     code,
+    accessToken,
     resourcesToken: token,
     updateNumItems: incrementItemCount,
   });
