@@ -1911,10 +1911,10 @@
   dependencies:
     "@swc/helpers" "^0.5.0"
 
-"@internxt/analytics@0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@internxt/analytics/-/analytics-0.0.1.tgz#862cd5ee82d364455fe7125551d6245ba1b5d4ab"
-  integrity sha512-5T4XtDnNzxl26NHZVyeZeteNig/BEiTYPFluFhdmP6DCuKLtaXN6mCVUT+bt2YaMMWfO6uSA02YO1KPirqi6Ag==
+"@internxt/analytics@0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@internxt/analytics/-/analytics-0.0.2.tgz#9b43e21928991d94a36fe3bd93ac2a6261e28751"
+  integrity sha512-xYStfFJzx1ubxobnWfIixZ/obluuPQ/kZQPsgLmu39KNGXdHzFAFVoItB4dDTKHTC3200TdYEtedS8AjAjSPYQ==
   dependencies:
     axios "^1.20.0"
     dayjs "^1.11.7"
