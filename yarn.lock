@@ -1911,6 +1911,16 @@
   dependencies:
     "@swc/helpers" "^0.5.0"
 
+"@internxt/analytics@0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@internxt/analytics/-/analytics-0.0.2.tgz#9b43e21928991d94a36fe3bd93ac2a6261e28751"
+  integrity sha512-xYStfFJzx1ubxobnWfIixZ/obluuPQ/kZQPsgLmu39KNGXdHzFAFVoItB4dDTKHTC3200TdYEtedS8AjAjSPYQ==
+  dependencies:
+    axios "^1.20.0"
+    dayjs "^1.11.7"
+    prettysize "^2.0.0"
+    uuid "^14.0.0"
+
 "@internxt/css-config@1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@internxt/css-config/-/css-config-1.1.0.tgz#5435c123b185c3c507ac087a13562f76124fa98d"
