@@ -42,9 +42,9 @@ const buildResponse = (items: unknown[], token: string): ListSharedItemsResponse
     role: 'reader',
   }) as ListSharedItemsResponse;
 
-const renderContentHook = () =>
+const renderContentHook = (accessToken?: string) =>
   renderHook(() =>
-    usePublicSharedFolderContent({ rootFolderUuid: ROOT_UUID, rootFolderName: 'Root folder', code: CODE }),
+    usePublicSharedFolderContent({ rootFolderUuid: ROOT_UUID, rootFolderName: 'Root folder', code: CODE, accessToken }),
   );
 
 describe('usePublicSharedFolderContent', () => {
@@ -59,8 +59,26 @@ describe('usePublicSharedFolderContent', () => {
 
     await waitFor(() => expect(result.current.shareItems).toHaveLength(2));
 
-    expect(mockedGetPublicSharedFolderContent).toHaveBeenCalledWith(ROOT_UUID, 'folders', '', 0, 30, undefined);
-    expect(mockedGetPublicSharedFolderContent).toHaveBeenCalledWith(ROOT_UUID, 'files', '', 0, 30, CODE);
+    expect(mockedGetPublicSharedFolderContent).toHaveBeenCalledWith(
+      ROOT_UUID,
+      'folders',
+      '',
+      0,
+      30,
+      undefined,
+      undefined,
+      undefined,
+    );
+    expect(mockedGetPublicSharedFolderContent).toHaveBeenCalledWith(
+      ROOT_UUID,
+      'files',
+      '',
+      0,
+      30,
+      CODE,
+      undefined,
+      undefined,
+    );
 
     const [folder, file] = result.current.shareItems;
     expect(folder.isFolder).toBe(true);
@@ -70,6 +88,39 @@ describe('usePublicSharedFolderContent', () => {
     expect(file.credentials).toEqual(CREDENTIALS);
     expect(result.current.hasMoreItems).toBe(false);
     expect(result.current.folderPath).toEqual([{ uuid: ROOT_UUID, name: 'Root folder', token: '' }]);
+  });
+
+  test('When the link is password protected, then folders are listed with the access token and files with the code and the access token', async () => {
+    mockedGetPublicSharedFolderContent.mockImplementation((_, type) =>
+      type === 'folders'
+        ? Promise.resolve(buildResponse([createFolder('folder-uuid', 'Documents')], 'folders-token'))
+        : Promise.resolve(buildResponse([createFile('file-uuid', 'photo')], 'files-token')),
+    );
+
+    const { result } = renderContentHook('access-token');
+
+    await waitFor(() => expect(result.current.shareItems).toHaveLength(2));
+
+    expect(mockedGetPublicSharedFolderContent).toHaveBeenCalledWith(
+      ROOT_UUID,
+      'folders',
+      '',
+      0,
+      30,
+      undefined,
+      undefined,
+      'access-token',
+    );
+    expect(mockedGetPublicSharedFolderContent).toHaveBeenCalledWith(
+      ROOT_UUID,
+      'files',
+      '',
+      0,
+      30,
+      CODE,
+      undefined,
+      'access-token',
+    );
   });
 
   test('When navigating into a subfolder, then it uses the parent level resources token and can navigate back through the path', async () => {
@@ -100,6 +151,8 @@ describe('usePublicSharedFolderContent', () => {
       0,
       30,
       undefined,
+      undefined,
+      undefined,
     );
     expect(result.current.folderPath).toEqual([
       { uuid: ROOT_UUID, name: 'Root folder', token: '' },
@@ -112,6 +165,48 @@ describe('usePublicSharedFolderContent', () => {
 
     await waitFor(() => expect(result.current.folderPath).toHaveLength(1));
     await waitFor(() => expect(result.current.shareItems[0]?.name).toBe('Documents'));
+  });
+
+  test('When the link is password protected and navigating into a subfolder, then the subfolder is listed with the access token', async () => {
+    mockedGetPublicSharedFolderContent.mockImplementation((folderUuid, type) => {
+      if (folderUuid === ROOT_UUID) {
+        return type === 'folders'
+          ? Promise.resolve(buildResponse([createFolder('subfolder-uuid', 'Documents')], 'root-folders-token'))
+          : Promise.resolve(buildResponse([], 'root-files-token'));
+      }
+      return type === 'folders'
+        ? Promise.resolve(buildResponse([], 'sub-folders-token'))
+        : Promise.resolve(buildResponse([createFile('deep-file-uuid', 'notes')], 'sub-files-token'));
+    });
+
+    const { result } = renderContentHook('access-token');
+    await waitFor(() => expect(result.current.hasMoreItems).toBe(false));
+
+    act(() => {
+      result.current.navigateToFolder(result.current.shareItems[0]);
+    });
+
+    await waitFor(() => expect(result.current.shareItems[0]?.name).toBe('notes'));
+    expect(mockedGetPublicSharedFolderContent).toHaveBeenCalledWith(
+      'subfolder-uuid',
+      'folders',
+      'root-files-token',
+      0,
+      30,
+      undefined,
+      undefined,
+      'access-token',
+    );
+    expect(mockedGetPublicSharedFolderContent).toHaveBeenCalledWith(
+      'subfolder-uuid',
+      'files',
+      'root-files-token',
+      0,
+      30,
+      CODE,
+      undefined,
+      'access-token',
+    );
   });
 
   test('When clicking a file or the current breadcrumb level, then it does not navigate', async () => {
@@ -157,7 +252,16 @@ describe('usePublicSharedFolderContent', () => {
     });
 
     await waitFor(() => expect(result.current.shareItems).toHaveLength(31));
-    expect(mockedGetPublicSharedFolderContent).toHaveBeenCalledWith(ROOT_UUID, 'folders', '', 1, 30, undefined);
+    expect(mockedGetPublicSharedFolderContent).toHaveBeenCalledWith(
+      ROOT_UUID,
+      'folders',
+      '',
+      1,
+      30,
+      undefined,
+      undefined,
+      undefined,
+    );
     await waitFor(() => expect(result.current.hasMoreItems).toBe(false));
   });
 
