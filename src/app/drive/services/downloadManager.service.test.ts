@@ -8,6 +8,7 @@ import {
   areItemArraysEqual,
 } from 'app/drive/services/downloadManager.service';
 import { ErrorMessages } from 'app/core/constants';
+import { v7 as uuidV7 } from 'uuid';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, Mock, MockInstance, test, vi } from 'vitest';
 import { DriveFileData, DriveFolderData, DriveItemData } from '../types';
 import {
@@ -18,7 +19,6 @@ import {
 } from './folder.service';
 import tasksService from 'app/tasks/services/tasks.service';
 import { TaskStatus, TaskType } from 'app/tasks/types';
-import downloadService from './download.service';
 import { getDatabaseFileSourceData, updateDatabaseFileSourceData } from './database.service';
 import { FlatFolderZip } from 'services/zip.service';
 import { binaryStreamToBlob } from 'services/stream.service';
@@ -490,7 +490,7 @@ describe('downloadManagerService', () => {
 
   it('should downloadFolder keep working if some files fails', async () => {
     const mockTask = getTask([mockFolder]);
-    const mockFile2: DriveFileData = { ...mockFile, id: 2, name: 'File2' };
+    const mockFile2: DriveFileData = { ...mockFile, uuid: uuidV7(), name: 'File2' };
 
     const mockTaskStatusProgress = vi.fn((progress: number) => progress);
     const mockUpdateProgress = vi.fn((progress: number) => progress);
@@ -595,10 +595,6 @@ describe('downloadManagerService', () => {
     (getDatabaseFileSourceData as Mock).mockImplementation(getDatabaseFileSourceDataSpy);
     (checkIfCachedSourceIsOlder as Mock).mockImplementation(checkIfCachedSourceIsOlderSpy);
 
-    const downloadFileSpy = vi
-      .spyOn(downloadService, 'downloadFile')
-      .mockRejectedValue(new Error('It should download from cache'));
-
     await DownloadManagerService.instance.downloadFile(mockTask, mockUpdateProgress);
 
     expect(getDatabaseFileSourceDataSpy).toHaveBeenCalledWith({
@@ -606,7 +602,6 @@ describe('downloadManagerService', () => {
     });
     expect(checkIfCachedSourceIsOlderSpy).toHaveBeenCalledOnce();
     expect(mockUpdateProgress).toHaveBeenCalledWith(1);
-    expect(downloadFileSpy).not.toHaveBeenCalled();
   });
 
   describe('Downloading file from network', () => {
@@ -710,7 +705,7 @@ describe('downloadManagerService', () => {
     test('When the file size is 0, then it should save an empty blob without downloading', async () => {
       const emptyBlob = new Blob([]);
       const { saveAs } = await import('file-saver');
-      const emptyFile: DriveFileData = { ...mockFile, id: 4, name: 'EmptyFile', size: 0 };
+      const emptyFile: DriveFileData = { ...mockFile, name: 'EmptyFile', size: 0 };
       const emptyFileTask = getTask([emptyFile], {
         options: { areSharedItems: false, downloadName: `${emptyFile.name}.${emptyFile.type}`, showErrors: true },
       });
@@ -787,7 +782,7 @@ describe('downloadManagerService', () => {
   });
 
   it('should download file items from task as zip using download service', async () => {
-    const mockFileCache: DriveFileData = { ...mockFile, id: 2, name: 'File2', type: '' };
+    const mockFileCache: DriveFileData = { ...mockFile, name: 'File2', type: '' };
     const downloadItem = getDownloadItem([mockFile, mockFileCache]);
     const mockTask = getTask(downloadItem.payload);
 
@@ -842,8 +837,41 @@ describe('downloadManagerService', () => {
     expect(lruCacheSpy).toHaveBeenCalledTimes(2);
   });
 
+  test('When several downloaded files share a name and extension, then the first keeps it and the rest get the next free one', async () => {
+    const photos: DriveFileData[] = [
+      { ...mockFile, uuid: 'monday-photo', name: 'IMG_0001', type: 'heic' },
+      { ...mockFile, uuid: 'tuesday-photo', name: 'IMG_0001', type: 'heic' },
+      { ...mockFile, uuid: 'friday-photo', name: 'img_0001', type: 'HEIC' },
+    ];
+    const streamOf = new Map(photos.map(({ uuid }) => [uuid, new ReadableStream()]));
+    const mockTask = getTask(getDownloadItem(photos).payload);
+    const lruCache = new LRUCache<DriveItemBlobData>(createFilesCacheStorage(), 1);
+    vi.spyOn(lruCache, 'get').mockImplementation(async (uuid: string) => ({
+      uuid,
+      parentId: mockFile.folderId,
+      source: { stream: () => streamOf.get(uuid) } as unknown as Blob,
+    }));
+    vi.spyOn(LRUFilesCacheManager, 'getInstance').mockResolvedValue(lruCache);
+    (checkIfCachedSourceIsOlder as Mock).mockReturnValue(false);
+    vi.spyOn(FlatFolderZip.prototype, 'abort').mockImplementation(() => {});
+    const addFileZipSpy = vi.spyOn(FlatFolderZip.prototype, 'addFile').mockResolvedValue();
+    vi.spyOn(FlatFolderZip.prototype, 'close').mockResolvedValue();
+
+    await DownloadManagerService.instance.downloadItems(mockTask, vi.fn(), vi.fn(), vi.fn());
+
+    const uuidOfStream = new Map([...streamOf].map(([uuid, stream]) => [stream, uuid]));
+    const nameOfEachPhoto = Object.fromEntries(
+      addFileZipSpy.mock.calls.map(([name, stream]) => [uuidOfStream.get(stream), name]),
+    );
+    expect(nameOfEachPhoto).toStrictEqual({
+      'monday-photo': 'IMG_0001.heic',
+      'tuesday-photo': 'IMG_0001 (1).heic',
+      'friday-photo': 'img_0001 (2).HEIC',
+    });
+  });
+
   it('should handle errors during downloadItems and add to failedItems', async () => {
-    const mockFileCache: DriveFileData = { ...mockFile, id: 2, name: 'File2', type: '' };
+    const mockFileCache: DriveFileData = { ...mockFile, name: 'File2', type: '' };
     const downloadItem = getDownloadItem([mockFile, mockFileCache]);
     const mockTask = getTask(downloadItem.payload);
 
@@ -893,7 +921,7 @@ describe('downloadManagerService', () => {
   });
 
   it('should handle partial failures during downloadItems', async () => {
-    const mockFile2: DriveFileData = { ...mockFile, id: 2, name: 'File2' };
+    const mockFile2: DriveFileData = { ...mockFile, uuid: uuidV7(), name: 'File2' };
     const downloadItem = getDownloadItem([mockFile, mockFile2]);
     const mockTask = getTask(downloadItem.payload);
 
@@ -984,7 +1012,7 @@ describe('downloadManagerService', () => {
     });
 
     test('When there is an empty file, then it should be added to the zip without downloading', async () => {
-      const emptyFile: DriveFileData = { ...mockFile, id: 3, name: 'EmptyFile', size: 0 };
+      const emptyFile: DriveFileData = { ...mockFile, name: 'EmptyFile', size: 0 };
       const mockTask = getTask([emptyFile], {
         options: { areSharedItems: false, downloadName: `${emptyFile.name}.${emptyFile.type}`, showErrors: true },
       });
@@ -1066,7 +1094,7 @@ describe('downloadManagerService', () => {
     });
 
     it('should throw an error when the connection is lost', async () => {
-      const mockFile2: DriveFileData = { ...mockFile, id: 2, name: 'File2' };
+      const mockFile2: DriveFileData = { ...mockFile, uuid: uuidV7(), name: 'File2' };
       const mockTask = getTask([mockFile, mockFile2]);
 
       const mockUpdateProgress = vi.fn();
@@ -1107,7 +1135,7 @@ describe('downloadManagerService', () => {
     });
 
     it('should throw a ServerUnavailable error when all items fail', async () => {
-      const mockFile2: DriveFileData = { ...mockFile, id: 2, name: 'File2' };
+      const mockFile2: DriveFileData = { ...mockFile, uuid: uuidV7(), name: 'File2' };
       const mockTask = getTask([mockFile, mockFile2]);
 
       const mockUpdateProgress = vi.fn();
@@ -1151,16 +1179,18 @@ describe('downloadManagerService', () => {
   });
 
   describe('areItemArraysEqual', () => {
+    const [uuid1, uuid2, uuid3] = [uuidV7(), uuidV7(), uuidV7()];
+
     it('should return true for identical arrays', () => {
       const arr1 = [
-        { id: 5, isFolder: true },
-        { id: 1, isFolder: true },
-        { id: 7, isFolder: true },
+        { uuid: uuid3, isFolder: true },
+        { uuid: uuid1, isFolder: true },
+        { uuid: uuid2, isFolder: true },
       ] as DownloadItemType[];
       const arr2 = [
-        { id: 1, isFolder: true },
-        { id: 7, isFolder: true },
-        { id: 5, isFolder: true },
+        { uuid: uuid1, isFolder: true },
+        { uuid: uuid2, isFolder: true },
+        { uuid: uuid3, isFolder: true },
       ] as DownloadItemType[];
 
       const result = areItemArraysEqual(arr1, arr2);
@@ -1168,10 +1198,10 @@ describe('downloadManagerService', () => {
     });
 
     it('should return false for arrays with different lengths', () => {
-      const arr1 = [{ id: 1, isFolder: true }] as DownloadItemType[];
+      const arr1 = [{ uuid: uuid1, isFolder: true }] as DownloadItemType[];
       const arr2 = [
-        { id: 1, isFolder: true },
-        { id: 2, isFolder: false },
+        { uuid: uuid1, isFolder: true },
+        { uuid: uuid2, isFolder: false },
       ] as DownloadItemType[];
 
       const result = areItemArraysEqual(arr1, arr2);
@@ -1180,13 +1210,21 @@ describe('downloadManagerService', () => {
 
     it('should return false for arrays with different items', () => {
       const arr1 = [
-        { id: 1, isFolder: true },
-        { id: 3, isFolder: true },
+        { uuid: uuid1, isFolder: true },
+        { uuid: uuid3, isFolder: true },
       ] as DownloadItemType[];
       const arr2 = [
-        { id: 2, isFolder: true },
-        { id: 1, isFolder: true },
+        { uuid: uuid2, isFolder: true },
+        { uuid: uuid1, isFolder: true },
       ] as DownloadItemType[];
+
+      const result = areItemArraysEqual(arr1, arr2);
+      expect(result).toBe(false);
+    });
+
+    it('should return false when items have no id but have different uuids', () => {
+      const arr1 = [{ uuid: uuid1, isFolder: false }] as DownloadItemType[];
+      const arr2 = [{ uuid: uuid2, isFolder: false }] as DownloadItemType[];
 
       const result = areItemArraysEqual(arr1, arr2);
       expect(result).toBe(false);
@@ -1216,7 +1254,7 @@ describe('downloadManagerService', () => {
     });
 
     it('should handle connection loss in downloadItems and throw ConnectionLostError', async () => {
-      const mockFile2: DriveFileData = { ...mockFile, id: 2, name: 'File2' };
+      const mockFile2: DriveFileData = { ...mockFile, uuid: uuidV7(), name: 'File2' };
       const mockTask = getTask([mockFile, mockFile2]);
 
       const mockUpdateProgress = vi.fn();

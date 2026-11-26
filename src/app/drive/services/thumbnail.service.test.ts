@@ -338,7 +338,6 @@ describe('Thumbnail Service', () => {
 
     const mockThumbnail: Thumbnail = {
       id: 1,
-      file_id: 123,
       bucket_id: workspaceBucket,
       bucket_file: 'bucket-file-hash',
       type: 'image/png',

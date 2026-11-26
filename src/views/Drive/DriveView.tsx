@@ -177,7 +177,6 @@ const DriveView = (props: DriveViewProps) => {
           fileId: fileMeta.fileId,
           folder_id: fileMeta.folderId,
           folderId: fileMeta.folderId,
-          id: fileMeta.id,
           folderUuid: fileMeta.folderUuid,
           plainName: fileMeta.plainName,
           plain_name: fileMeta.plainName,

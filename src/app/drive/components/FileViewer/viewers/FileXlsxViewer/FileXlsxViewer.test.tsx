@@ -7,7 +7,7 @@ const { xlsx2Html } = vi.hoisted(() => ({ xlsx2Html: vi.fn() }));
 
 vi.mock('xlsx-preview', () => ({ __esModule: true, default: { xlsx2Html } }));
 
-const file = { id: 1, name: 'budget', type: 'xlsx' } as PreviewFileItem;
+const file = { name: 'budget', type: 'xlsx' } as PreviewFileItem;
 
 describe('Spreadsheet preview', () => {
   afterEach(() => {

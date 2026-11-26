@@ -7,6 +7,7 @@ import RetryManager, { RetryableTask, RetryableTaskStatus, RetryableTaskType } f
 import { QueueUtilsService } from 'utils/queueUtils';
 import { MAX_CONCURRENT_UPLOADS } from 'app/network/networkConstants';
 import { retryQueue } from '../../services/retryQueue';
+import { v7 as uuidV7 } from 'uuid';
 
 vi.mock('../../../store/hooks', () => ({
   useAppDispatch: vi.fn(),
@@ -257,18 +258,19 @@ describe('Retrying the failed items kept in the retry manager', () => {
   });
 
   test('when a failed download item is retried, then only that item changes status', async () => {
+    const fileUuid = uuidV7();
     const downloadTask = {
       ...createDownloadTaskWithId('download-1'),
-      params: { taskId: 'download-1', uuid: 'file-a' },
+      params: { taskId: 'download-1', uuid: fileUuid },
     };
     mockDownloadItem.mockResolvedValueOnce(undefined);
     const { getByTestId } = render(<RetryManagerDialog files={[downloadTask]} />);
 
     fireEvent.click(getByTestId('task-logger-button'));
 
-    expect(mockChangeStatus).toHaveBeenCalledWith('download-1', RetryableTaskStatus.Retrying, { uuid: 'file-a' });
+    expect(mockChangeStatus).toHaveBeenCalledWith('download-1', RetryableTaskStatus.Retrying, { uuid: fileUuid });
     await vi.waitFor(() =>
-      expect(mockChangeStatus).toHaveBeenCalledWith('download-1', RetryableTaskStatus.Failed, { uuid: 'file-a' }),
+      expect(mockChangeStatus).toHaveBeenCalledWith('download-1', RetryableTaskStatus.Failed, { uuid: fileUuid }),
     );
   });
 

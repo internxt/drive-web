@@ -47,9 +47,7 @@ vi.mock('..', () => ({
   storageActions: vi.fn(),
   storageSelectors: vi.fn(),
 }));
-vi.mock('i18next', () => ({
-  t: vi.fn((key, params) => `${key} ${params?.reason ?? ''}`),
-}));
+vi.mock('i18next', () => ({ keyFromSelector: vi.fn(), t: vi.fn((key, params) => `${key} ${params?.reason ?? ''}`) }));
 
 vi.mock('../../../../repositories/DatabaseUploadRepository', () => ({
   default: {

@@ -23,6 +23,7 @@ import {
   getDriveFileData,
   getDriveFolderData,
 } from 'testUtils/fixtures/download.fixtures';
+import { v7 as uuidV7 } from 'uuid';
 
 const MOCK_TRANSLATION_MESSAGE = 'Test translation message';
 
@@ -32,7 +33,7 @@ vi.mock('app/drive/services/folder.service', () => ({
   createFoldersIterator: vi.fn(),
 }));
 
-vi.mock('i18next', () => ({ t: () => MOCK_TRANSLATION_MESSAGE }));
+vi.mock('i18next', () => ({ keyFromSelector: vi.fn(), t: () => MOCK_TRANSLATION_MESSAGE }));
 
 vi.mock('app/drive/services/downloadManager.service', () => ({
   DownloadManagerService: {
@@ -362,16 +363,18 @@ describe('downloadManager', () => {
   });
 
   describe('removeRetryItems', () => {
+    const [uuid1, uuid2, uuid3] = [uuidV7(), uuidV7(), uuidV7()];
+
     it('should remove retry items that are not in the failed items list', () => {
       const items = [
-        { uuid: 'uuid-1', isFolder: false },
-        { uuid: 'uuid-2', isFolder: true },
-        { uuid: 'uuid-3', isFolder: false },
+        { uuid: uuid1, isFolder: false },
+        { uuid: uuid2, isFolder: true },
+        { uuid: uuid3, isFolder: false },
       ] as DownloadItemType[];
 
       const downloadTask = {
         taskId: 'task-1',
-        failedItems: [{ uuid: 'uuid-2', isFolder: true }],
+        failedItems: [{ uuid: uuid2, isFolder: true }],
       } as DownloadTask;
 
       const removeTaskSpy = vi.spyOn(retryManager, 'removeTaskByIdAndParams');
@@ -379,21 +382,21 @@ describe('downloadManager', () => {
       DownloadManager['removeRetryItems'](items, downloadTask);
 
       expect(removeTaskSpy).toHaveBeenCalledTimes(2);
-      expect(removeTaskSpy).toHaveBeenCalledWith('task-1', { uuid: 'uuid-1' });
-      expect(removeTaskSpy).toHaveBeenCalledWith('task-1', { uuid: 'uuid-3' });
+      expect(removeTaskSpy).toHaveBeenCalledWith('task-1', { uuid: uuid1 });
+      expect(removeTaskSpy).toHaveBeenCalledWith('task-1', { uuid: uuid3 });
     });
 
     it('should not remove any retry items if all items are in the failed items list', () => {
       const items = [
-        { uuid: 'uuid-1', isFolder: false },
-        { uuid: 'uuid-2', isFolder: true },
+        { uuid: uuid1, isFolder: false },
+        { uuid: uuid2, isFolder: true },
       ] as DownloadItemType[];
 
       const downloadTask = {
         taskId: 'task-2',
         failedItems: [
-          { uuid: 'uuid-1', isFolder: false },
-          { uuid: 'uuid-2', isFolder: true },
+          { uuid: uuid1, isFolder: false },
+          { uuid: uuid2, isFolder: true },
         ],
       } as DownloadTask;
 
@@ -406,8 +409,8 @@ describe('downloadManager', () => {
 
     it('should handle an empty failed items list', () => {
       const items = [
-        { uuid: 'uuid-1', isFolder: false },
-        { uuid: 'uuid-2', isFolder: true },
+        { uuid: uuid1, isFolder: false },
+        { uuid: uuid2, isFolder: true },
       ] as DownloadItemType[];
 
       const downloadTask = {
@@ -420,8 +423,8 @@ describe('downloadManager', () => {
       DownloadManager['removeRetryItems'](items, downloadTask);
 
       expect(removeTaskSpy).toHaveBeenCalledTimes(2);
-      expect(removeTaskSpy).toHaveBeenCalledWith('task-3', { uuid: 'uuid-1' });
-      expect(removeTaskSpy).toHaveBeenCalledWith('task-3', { uuid: 'uuid-2' });
+      expect(removeTaskSpy).toHaveBeenCalledWith('task-3', { uuid: uuid1 });
+      expect(removeTaskSpy).toHaveBeenCalledWith('task-3', { uuid: uuid2 });
     });
 
     it('should handle an empty items list', () => {
@@ -429,7 +432,7 @@ describe('downloadManager', () => {
 
       const downloadTask = {
         taskId: 'task-4',
-        failedItems: [{ uuid: 'uuid-1', isFolder: false }],
+        failedItems: [{ uuid: uuid1, isFolder: false }],
       } as DownloadTask;
 
       const removeTaskSpy = vi.spyOn(retryManager, 'removeTaskByIdAndParams').mockReturnValue();

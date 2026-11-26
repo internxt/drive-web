@@ -1,4 +1,4 @@
-import heic2any from 'heic2any';
+import { heicTo } from 'heic-to';
 import { useEffect, useMemo, useState } from 'react';
 
 import { convertImageForPreview } from 'app/drive/services/image-preview.service';
@@ -12,6 +12,7 @@ const PROGRESS_BAR_STATUS = {
 
 const FILE_TYPE_BY_MIME: Record<string, string> = { 'image/png': 'png', 'image/jpeg': 'jpg' };
 const DEFAULT_CONVERTED_FILE_TYPE = 'jpg';
+const HEIC_PREVIEW_QUALITY = 0.92;
 
 interface UseDisplayableImageProps
   extends Pick<FileContentViewerProps, 'file' | 'blob' | 'onError' | 'onProgress' | 'onConvertedContent'> {
@@ -25,7 +26,7 @@ interface DisplayableImage {
 
 const convertToDisplayableBlob = (blob: Blob, extension: string): Promise<Blob> =>
   heicImageExtensions.includes(extension)
-    ? (heic2any({ blob }) as Promise<Blob>)
+    ? heicTo({ blob, type: 'image/jpeg', quality: HEIC_PREVIEW_QUALITY })
     : convertImageForPreview(blob, extension);
 
 const getConvertedFileType = (blob: Blob): string => FILE_TYPE_BY_MIME[blob.type] ?? DEFAULT_CONVERTED_FILE_TYPE;

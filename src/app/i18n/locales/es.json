@@ -481,6 +481,11 @@
         "description": "Comprueba tu conexión e inténtalo de nuevo",
         "retry": "Reintentar"
       },
+      "locked": {
+        "title": "Fotos no está incluido en tu plan",
+        "description": "Mejora tu plan para ver las fotos de las que has hecho copia desde tu móvil",
+        "upgrade": "Mejorar plan"
+      },
       "filters": {
         "allDevices": "Todos los dispositivos",
         "allDates": "Todas las fechas"
@@ -494,6 +499,24 @@
         "livePhoto": "Live Photo",
         "burst": "Ráfaga",
         "video": "Vídeo"
+      },
+      "selection": {
+        "title": "Fotos seleccionadas",
+        "clear": "Quitar selección"
+      },
+      "devices": {
+        "manage": "Gestionar dispositivos",
+        "title": "Tus dispositivos",
+        "close": "Cerrar",
+        "delete": "Eliminar",
+        "deleted": "Dispositivo eliminado",
+        "notFound": "Este dispositivo ya se había eliminado",
+        "deleteError": "No se ha podido eliminar el dispositivo. Inténtalo de nuevo.",
+        "deleteDialog": {
+          "title": "¿Eliminar las fotos de {{name}}?",
+          "description": "Todas las fotos y vídeos de este dispositivo se eliminarán de forma permanente. No se puede deshacer.",
+          "confirm": "Eliminar para siempre"
+        }
       }
     },
     "favorites": {

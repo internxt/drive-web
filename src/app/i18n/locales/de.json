@@ -481,6 +481,11 @@
         "description": "Überprüfe deine Verbindung und versuche es erneut",
         "retry": "Erneut versuchen"
       },
+      "locked": {
+        "title": "Fotos ist nicht in deinem Tarif enthalten",
+        "description": "Upgrade deinen Tarif, um die von deinem Handy gesicherten Fotos zu sehen",
+        "upgrade": "Upgrade"
+      },
       "filters": {
         "allDevices": "Alle Geräte",
         "allDates": "Alle Daten"
@@ -494,6 +499,24 @@
         "livePhoto": "Live Photo",
         "burst": "Serienaufnahme",
         "video": "Video"
+      },
+      "selection": {
+        "title": "Ausgewählte Fotos",
+        "clear": "Auswahl aufheben"
+      },
+      "devices": {
+        "manage": "Geräte verwalten",
+        "title": "Deine Geräte",
+        "close": "Schließen",
+        "delete": "Löschen",
+        "deleted": "Gerät gelöscht",
+        "notFound": "Dieses Gerät wurde bereits gelöscht",
+        "deleteError": "Das Gerät konnte nicht gelöscht werden. Versuche es erneut.",
+        "deleteDialog": {
+          "title": "Fotos von {{name}} löschen?",
+          "description": "Alle von diesem Gerät gesicherten Fotos und Videos werden dauerhaft gelöscht. Dies kann nicht rückgängig gemacht werden.",
+          "confirm": "Dauerhaft löschen"
+        }
       }
     },
     "favorites": {

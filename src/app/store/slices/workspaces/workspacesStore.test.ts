@@ -16,9 +16,7 @@ import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { decryptMnemonic } from '../../../share/services/share.crypto';
 import encryptedStorageService from 'services/encrypted-storage.service';
 
-vi.mock('i18next', () => ({
-  t: vi.fn((key, params) => `${key} ${params?.reason ?? ''}`),
-}));
+vi.mock('i18next', () => ({ keyFromSelector: vi.fn(), t: vi.fn((key, params) => `${key} ${params?.reason ?? ''}`) }));
 
 vi.mock('../../../core/types', () => ({
   AppView: vi.fn(),
