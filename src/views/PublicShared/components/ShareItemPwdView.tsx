@@ -4,6 +4,8 @@ import validationService from 'services/validation.service';
 
 import iconService from 'app/drive/services/icon.service';
 import { HTTP_STATUS_CODES } from 'app/core/constants';
+import transformItemService from 'app/drive/services/item-transform.service';
+import { DriveItemData } from 'app/drive/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import PasswordInput from 'components/PasswordInput';
@@ -23,8 +25,7 @@ const ShareItemPwdView = (props: ShareItemPwdViewProps) => {
   const { onPasswordSubmitted, setItemPassword, itemPassword } = props;
   const [onPasswordError, setOnPasswordError] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const isFolder = props.itemData?.type === 'folder';
-  const Icon = props.itemData ? iconService.getItemIcon(isFolder, props.itemData.type) : null;
+  const Icon = props.itemData ? iconService.getItemIcon(props.itemData.type === 'folder', props.itemData.type) : null;
 
   function handleChange(pwd) {
     const value = pwd.target.value;
@@ -66,7 +67,7 @@ const ShareItemPwdView = (props: ShareItemPwdViewProps) => {
           {translate('shareItemPwdView.putPwd1')}
         </p>
       </div>
-      {Icon && (
+      {props.itemData && Icon !== null && (
         <div className="inline-flex w-full items-center justify-start gap-2.5 rounded-lg border-gray-10 bg-gray-5 p-4">
           <div className="flex h-10 w-10 items-center justify-center px-[5px]">
             <div className="flex h-10 w-10 justify-center drop-shadow-soft">
@@ -74,7 +75,7 @@ const ShareItemPwdView = (props: ShareItemPwdViewProps) => {
             </div>
           </div>
           <div className="text-zinc-900 ml-1 text-base font-medium leading-tight">
-            {translate(isFolder ? 'general.folder' : 'general.file')}
+            {transformItemService.getItemPlainNameWithExtension(props.itemData as DriveItemData)}
           </div>
         </div>
       )}
