@@ -2,12 +2,12 @@ import { render, fireEvent } from '@testing-library/react';
 import { describe, test, vi, expect, beforeEach, afterEach } from 'vitest';
 import TaskToRetry from './TaskToRetry';
 import { useRetryManagerFailedItems } from './useRetryManagerFailedItems';
-import { FailedItemToRetry } from '../TaskToRetryItem/TaskToRetryItem';
 import RetryManager, { RetryableTask, RetryableTaskStatus, RetryableTaskType } from '../../../network/RetryManager';
 import { QueueUtilsService } from 'utils/queueUtils';
 import { MAX_CONCURRENT_UPLOADS } from 'app/network/networkConstants';
 import { retryQueue } from '../../services/retryQueue';
 import { v7 as uuidV7 } from 'uuid';
+import { FailedItemToRetry } from 'app/tasks/types';
 
 vi.mock('../../../store/hooks', () => ({
   useAppDispatch: vi.fn(),

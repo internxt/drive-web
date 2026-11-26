@@ -6,17 +6,7 @@ import { formatDefaultDate } from 'services/date.service';
 import { t } from 'i18next';
 import { TaskLoggerButton } from '../TaskLoggerButton/TaskLoggerButton';
 import { SpinnerIcon } from '@phosphor-icons/react';
-
-export interface FailedItemToRetry {
-  name: string;
-  type?: string;
-  size: number;
-  modifiedAt: number | string;
-  isFolder?: boolean;
-  isRetryable: boolean;
-  isRetrying: boolean;
-  retry: () => void;
-}
+import { FailedItemToRetry } from 'app/tasks/types';
 
 const withExtension = (name: string, type?: string): string =>
   type && !name?.toLowerCase().endsWith(`.${type.toLowerCase()}`) ? `${name}.${type}` : name;

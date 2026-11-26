@@ -1,6 +1,7 @@
 import { render, fireEvent } from '@testing-library/react';
 import { describe, expect, test, vi } from 'vitest';
-import TaskToRetyItem, { FailedItemToRetry } from './TaskToRetryItem';
+import TaskToRetyItem from './TaskToRetryItem';
+import { FailedItemToRetry } from 'app/tasks/types';
 
 vi.mock('app/drive/services/size.service', () => ({
   bytesToString: vi.fn(() => '10 MB'),

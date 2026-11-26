@@ -7,8 +7,8 @@ import { renameFile } from 'app/crypto/services/utils';
 import { FileToUpload } from 'app/drive/services/file.service/types';
 import { DownloadItemType } from 'app/drive/services/downloadManager.service';
 import { UploadManagerFileParams } from 'app/tasks/upload/uploadFilesWithTasks';
-import { FailedItemToRetry } from '../TaskToRetryItem/TaskToRetryItem';
 import { enqueueRetry } from '../../services/retryQueue';
+import { FailedItemToRetry } from 'app/tasks/types';
 
 type DisplayData = Pick<FailedItemToRetry, 'name' | 'type' | 'size' | 'modifiedAt' | 'isFolder'>;
 

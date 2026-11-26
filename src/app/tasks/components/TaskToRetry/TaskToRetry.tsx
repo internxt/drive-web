@@ -1,10 +1,11 @@
 import { X } from '@phosphor-icons/react';
 import { FixedSizeList as List } from 'react-window';
-import TaskToRetryItem, { FailedItemToRetry } from '../TaskToRetryItem/TaskToRetryItem';
+import TaskToRetryItem from '../TaskToRetryItem/TaskToRetryItem';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Button, Modal } from '@internxt/ui';
 import RestartIcon from '../../../../assets/icons/tasklogger/circle-arrow.svg?react';
 import { canBeRetried } from 'app/upload/failedUploadItem';
+import { FailedItemToRetry } from 'app/tasks/types';
 
 interface TaskToRetryProps {
   isOpen: boolean;
