@@ -131,9 +131,9 @@ export const UrgentCheckoutAccountFields = ({
 
       {isPasswordlessSignUp && pendingAccountSetupEmail && (
         <div className="flex flex-col items-start gap-3 rounded-xl border border-[#2A5BA8] bg-[#0E1E38] p-4">
-          <p role="status" className="text-sm text-white">
+          <output className="text-sm text-white">
             {translate('checkout.accountSetup.pendingSetup', { email: pendingAccountSetupEmail })}
-          </p>
+          </output>
           <ResendAccountSetupEmailButton email={pendingAccountSetupEmail} />
         </div>
       )}
