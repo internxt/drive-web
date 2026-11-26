@@ -167,6 +167,48 @@ describe('usePublicSharedFolderContent', () => {
     await waitFor(() => expect(result.current.shareItems[0]?.name).toBe('Documents'));
   });
 
+  test('When the link is password protected and navigating into a subfolder, then the subfolder is listed with the access token', async () => {
+    mockedGetPublicSharedFolderContent.mockImplementation((folderUuid, type) => {
+      if (folderUuid === ROOT_UUID) {
+        return type === 'folders'
+          ? Promise.resolve(buildResponse([createFolder('subfolder-uuid', 'Documents')], 'root-folders-token'))
+          : Promise.resolve(buildResponse([], 'root-files-token'));
+      }
+      return type === 'folders'
+        ? Promise.resolve(buildResponse([], 'sub-folders-token'))
+        : Promise.resolve(buildResponse([createFile('deep-file-uuid', 'notes')], 'sub-files-token'));
+    });
+
+    const { result } = renderContentHook('access-token');
+    await waitFor(() => expect(result.current.hasMoreItems).toBe(false));
+
+    act(() => {
+      result.current.navigateToFolder(result.current.shareItems[0]);
+    });
+
+    await waitFor(() => expect(result.current.shareItems[0]?.name).toBe('notes'));
+    expect(mockedGetPublicSharedFolderContent).toHaveBeenCalledWith(
+      'subfolder-uuid',
+      'folders',
+      'root-files-token',
+      0,
+      30,
+      undefined,
+      undefined,
+      'access-token',
+    );
+    expect(mockedGetPublicSharedFolderContent).toHaveBeenCalledWith(
+      'subfolder-uuid',
+      'files',
+      'root-files-token',
+      0,
+      30,
+      CODE,
+      undefined,
+      'access-token',
+    );
+  });
+
   test('When clicking a file or the current breadcrumb level, then it does not navigate', async () => {
     mockedGetPublicSharedFolderContent.mockImplementation((_, type) =>
       type === 'folders'
