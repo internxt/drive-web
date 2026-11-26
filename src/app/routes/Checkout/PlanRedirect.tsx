@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { Redirect, matchPath, useLocation } from 'react-router-dom';
 
-const CHECKOUT_PATH = '/checkout';
+const CHECKOUT_PATHS = ['/checkout', '/checkout-uc'];
 
 export type CouponRule = 'unlessBlocked' | 'onlyIfAllowed' | 'onlyCouponCode';
 
@@ -86,7 +86,7 @@ function getRedirectPlanIdSearch(
 
 const PlanIdRedirect = ({ children }: { children: ReactNode }): JSX.Element => {
   const location = useLocation();
-  const isCheckout = matchPath(location.pathname, { path: CHECKOUT_PATH }) !== null;
+  const isCheckout = matchPath(location.pathname, { path: CHECKOUT_PATHS }) !== null;
   const search = isCheckout ? getRedirectPlanIdSearch(location.search) : null;
 
   if (search) {

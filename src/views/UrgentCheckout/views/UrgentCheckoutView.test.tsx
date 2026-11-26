@@ -33,6 +33,8 @@ interface RenderOptions {
   authError?: string;
   plan?: PriceWithTax;
   withoutCoupon?: boolean;
+  isPasswordlessSignUp?: boolean;
+  pendingAccountSetupEmail?: string;
 }
 
 const selectedPlan = {
@@ -83,7 +85,14 @@ const CREATIVE_IMAGE_ALT = 'Internxt Drive on a laptop and a phone';
 
 const renderUrgentCheckout = (
   variant = UrgentCheckoutVariant.Mainstream,
-  { authMethod = 'signUp', authError, plan = selectedPlan, withoutCoupon }: RenderOptions = {},
+  {
+    authMethod = 'signUp',
+    authError,
+    plan = selectedPlan,
+    withoutCoupon,
+    isPasswordlessSignUp = authMethod === 'signUp',
+    pendingAccountSetupEmail,
+  }: RenderOptions = {},
 ) =>
   render(
     <UrgentCheckoutView
@@ -96,6 +105,8 @@ const renderUrgentCheckout = (
         authError,
         couponCodeData: withoutCoupon ? undefined : couponCodeData,
         currentSelectedPlan: plan,
+        isPasswordlessSignUp,
+        pendingAccountSetupEmail,
       }}
       checkoutViewManager={checkoutViewManager}
     />,
@@ -197,21 +208,120 @@ describe('urgent checkout view', () => {
       });
     };
 
-    it.each<[AuthMethodTypes, string, string, string]>([
-      ['signUp', 'Create a password', 'Already have an account?', 'Log in'],
-      ['signIn', 'Your password', 'Don’t have an account?', 'Create account'],
+    it.each<[AuthMethodTypes, string, string]>([
+      ['signUp', 'Already have an account?', 'Log in'],
+      ['signIn', 'Don’t have an account?', 'Create account'],
     ])(
       'When the visitor is on %s, then its copy and the link to the other method are shown',
-      (authMethod, passwordLabel, question, link) => {
+      (authMethod, question, link) => {
         renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { authMethod });
 
         expect(screen.getByPlaceholderText('you@email.com')).toBeTruthy();
-        expect(screen.getByText(passwordLabel)).toBeTruthy();
         expect(screen.getByText(question)).toBeTruthy();
         expect(screen.getByText(link)).toBeTruthy();
         expect(screen.getByText('Your files are encrypted and private.')).toBeTruthy();
       },
     );
+
+    it('When a new buyer is creating an account, then only the email is asked for', () => {
+      renderUrgentCheckout();
+
+      expect(screen.getByPlaceholderText('you@email.com')).toBeTruthy();
+      expect(screen.queryByPlaceholderText('Password')).toBeNull();
+      expect(screen.queryByText('Create a password')).toBeNull();
+    });
+
+    it('When a new buyer submits with only their email, then the checkout receives no password', async () => {
+      renderUrgentCheckout();
+
+      fireEvent.change(screen.getByPlaceholderText('you@email.com'), { target: { value: 'buyer@internxt.com' } });
+      await act(async () => {
+        fireEvent.click(screen.getByText('Get subscription plan'));
+      });
+
+      expect(checkoutViewManager.onCheckoutButtonClicked).toHaveBeenCalledWith(
+        { email: 'buyer@internxt.com' },
+        expect.anything(),
+        expect.anything(),
+        expect.anything(),
+      );
+    });
+
+    it('When the new buyer submits without an email, then the email error is shown and linked to the field', async () => {
+      renderUrgentCheckout();
+
+      await act(async () => {
+        fireEvent.click(screen.getByText('Get subscription plan'));
+      });
+
+      const email = screen.getByPlaceholderText('you@email.com');
+      expect(screen.getByText('Email must not be empty')).toBeTruthy();
+      expect(email.getAttribute('aria-invalid')).toBe('true');
+      expect(email.getAttribute('aria-describedby')).toBe('emailError');
+    });
+
+    it('When the buyer logs in without a password, then the password error is shown and linked to the field', async () => {
+      renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { authMethod: 'signIn' });
+
+      fireEvent.change(screen.getByPlaceholderText('you@email.com'), { target: { value: 'buyer@internxt.com' } });
+      await act(async () => {
+        fireEvent.click(screen.getByText('Get subscription plan'));
+      });
+
+      const password = screen.getByPlaceholderText('Password');
+      expect(screen.getByText('Password must not be empty')).toBeTruthy();
+      expect(password.getAttribute('aria-invalid')).toBe('true');
+      expect(password.getAttribute('aria-describedby')).toBe('passwordError');
+    });
+
+    it('When the buyer logs in with a password longer than 50 characters, then the length error is shown', async () => {
+      renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { authMethod: 'signIn' });
+
+      fireEvent.change(screen.getByPlaceholderText('you@email.com'), { target: { value: 'buyer@internxt.com' } });
+      fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: 'a'.repeat(51) } });
+      await act(async () => {
+        fireEvent.click(screen.getByText('Get subscription plan'));
+      });
+
+      expect(screen.getByText('The password can have a maximum of 50 characters')).toBeTruthy();
+    });
+
+    it('When Enter is pressed, then it is blocked on the inputs but not on the resend button', () => {
+      renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { pendingAccountSetupEmail: 'buyer@internxt.com' });
+
+      expect(fireEvent.keyDown(screen.getByPlaceholderText('you@email.com'), { key: 'Enter' })).toBe(false);
+      expect(fireEvent.keyDown(screen.getByText('Resend email'), { key: 'Enter' })).toBe(true);
+    });
+
+    it('When the buyer chooses to log in, then the password is asked for', () => {
+      renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { authMethod: 'signIn' });
+
+      expect(screen.getByText('Your password')).toBeTruthy();
+      expect(screen.getByPlaceholderText('Password')).toBeTruthy();
+    });
+
+    it('When the purchased account is still waiting to be set up, then the buyer is told to check their email', () => {
+      renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { pendingAccountSetupEmail: 'buyer@internxt.com' });
+
+      expect(
+        screen.getByText(
+          'buyer@internxt.com already has a paid plan waiting to be set up. ' +
+            'Check your email to finish setting up your account.',
+        ),
+      ).toBeTruthy();
+      expect(screen.getByRole('status').textContent).toContain('buyer@internxt.com');
+      expect(screen.getByText('Resend email')).toBeTruthy();
+    });
+
+    it('When the buyer switches to logging in, then the pending setup notice is not shown', () => {
+      renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, {
+        authMethod: 'signIn',
+        pendingAccountSetupEmail: 'buyer@internxt.com',
+      });
+
+      expect(screen.queryByText(/buyer@internxt.com already has a paid plan waiting to be set up/)).toBeNull();
+      expect(screen.queryByText('Resend email')).toBeNull();
+    });
 
     it.each<[AuthMethodTypes, string, AuthMethodTypes]>([
       ['signUp', 'Log in', 'signIn'],
@@ -225,20 +335,20 @@ describe('urgent checkout view', () => {
     });
 
     it('When the auth method is switched, then the credentials already typed are cleared', () => {
-      renderUrgentCheckout();
+      renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { authMethod: 'signIn' });
       const email = screen.getByPlaceholderText('you@email.com') as HTMLInputElement;
       const password = screen.getByPlaceholderText('Password') as HTMLInputElement;
 
       fireEvent.change(email, { target: { value: 'test@internxt.com' } });
       fireEvent.change(password, { target: { value: 'a-password' } });
-      fireEvent.click(screen.getByText('Log in'));
+      fireEvent.click(screen.getByText('Create account'));
 
       expect(email.value).toBe('');
       expect(password.value).toBe('');
     });
 
     it('When the password visibility is toggled, then the password stops being masked', () => {
-      renderUrgentCheckout();
+      renderUrgentCheckout(UrgentCheckoutVariant.Mainstream, { authMethod: 'signIn' });
       const password = screen.getByPlaceholderText('Password') as HTMLInputElement;
 
       expect(password.type).toBe('password');

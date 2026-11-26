@@ -232,6 +232,7 @@
         "password": "Sua senha"
       },
       "emailMustNotBeEmpty": "O e-mail não pode ficar vazio",
+      "passwordMustNotBeEmpty": "A senha não pode ficar vazia",
       "authError": {
         "invalidCredentials": "O e-mail ou a senha estão incorretos. Tente novamente.",
         "twoFactorEnabled": "Esta conta usa autenticação de dois fatores. Entre pela página de login e volte para concluir sua compra.",
@@ -344,7 +345,6 @@
       "passwordLabel": "Sua senha",
       "passwordPlaceholder": "Senha",
       "togglePasswordVisibility": "Mostrar ou ocultar a senha",
-      "incompleteDetails": "Informe seu e-mail e sua senha para continuar.",
       "encryptedTitle": "Seus arquivos são criptografados e privados.",
       "encryptedDescription": "A Internxt não pode acessar seu conteúdo."
     },

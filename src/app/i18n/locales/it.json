@@ -232,6 +232,7 @@
         "password": "La tua password"
       },
       "emailMustNotBeEmpty": "L'email non deve essere vuota",
+      "passwordMustNotBeEmpty": "La password non deve essere vuota",
       "authError": {
         "invalidCredentials": "L'email o la password non sono corretti. Riprova.",
         "twoFactorEnabled": "Questo account utilizza l'autenticazione a due fattori. Accedi dalla pagina di accesso e torna qui per completare l'acquisto.",
@@ -344,7 +345,6 @@
       "passwordLabel": "La tua password",
       "passwordPlaceholder": "Password",
       "togglePasswordVisibility": "Mostra o nascondi la password",
-      "incompleteDetails": "Inserisci la tua email e la tua password per continuare.",
       "encryptedTitle": "I tuoi file sono crittografati e privati.",
       "encryptedDescription": "Internxt non può accedere ai tuoi contenuti."
     },
