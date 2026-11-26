@@ -78,12 +78,16 @@ const createDeferred = <T>() => {
   return { promise, resolve, reject };
 };
 
-const renderDownloadHook = ({ withCredentials = true }: { withCredentials?: boolean } = {}) =>
+const renderDownloadHook = ({
+  withCredentials = true,
+  accessToken,
+}: { withCredentials?: boolean; accessToken?: string } = {}) =>
   renderHook(() =>
     usePublicSharedDownload({
       credentials: withCredentials ? CREDENTIALS : undefined,
       publicShareKey: PUBLIC_SHARE_KEY,
       code: CODE,
+      accessToken,
       resourcesToken: 'resources-token',
     }),
   );
@@ -241,6 +245,44 @@ describe('usePublicSharedDownload', () => {
         await deferred.promise;
       });
       expect(result.current.isDownloading).toBe(false);
+    });
+
+    test('When the link is password protected, then the download is started with the code and the access token', () => {
+      mockedDownloadPublicSharedItems.mockResolvedValue();
+      const items = [createFileItem()];
+
+      const { result } = renderDownloadHook({ accessToken: 'access-token' });
+      act(() => {
+        result.current.downloadItems(items);
+      });
+
+      expect(mockedDownloadPublicSharedItems).toHaveBeenCalledWith({
+        items,
+        credentials: CREDENTIALS,
+        key: PUBLIC_SHARE_KEY,
+        code: CODE,
+        accessToken: 'access-token',
+        resourcesToken: 'resources-token',
+      });
+    });
+
+    test('When the link is not password protected, then the download is started with the code and no access token', () => {
+      mockedDownloadPublicSharedItems.mockResolvedValue();
+      const items = [createFileItem()];
+
+      const { result } = renderDownloadHook();
+      act(() => {
+        result.current.downloadItems(items);
+      });
+
+      expect(mockedDownloadPublicSharedItems).toHaveBeenCalledWith({
+        items,
+        credentials: CREDENTIALS,
+        key: PUBLIC_SHARE_KEY,
+        code: CODE,
+        accessToken: undefined,
+        resourcesToken: 'resources-token',
+      });
     });
 
     test('When the download fails, then an error notification is shown and isDownloading is reset', async () => {

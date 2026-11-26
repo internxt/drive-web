@@ -803,6 +803,87 @@ describe('Download public shared items', () => {
     expect(() => foldersIterator('sub-folder-uuid')).not.toThrow();
     expect(() => filesIterator('sub-folder-uuid')).not.toThrow();
   });
+
+  describe('Listing the folder contents while zipping', () => {
+    const getIterators = async (accessToken?: string) => {
+      const { SdkFactory } = await import('../../core/factory/sdk');
+      const getPublicSharedFolderContentFn = vi.fn().mockResolvedValue({ items: [], token: 'next-token' });
+      vi.mocked(SdkFactory.getNewApiInstance).mockReturnValue({
+        createShareClient: () => ({ getPublicSharedFolderContent: getPublicSharedFolderContentFn }),
+      } as any);
+
+      await downloadPublicSharedItems({
+        items: [createPublicFolder('Documents')],
+        credentials: CREDENTIALS,
+        key: KEY,
+        code: CODE,
+        accessToken,
+        resourcesToken: 'level-token',
+      });
+
+      const { foldersIterator, filesIterator } = vi.mocked(downloadFolderAsZip).mock.calls.at(-1)![0] as {
+        foldersIterator: (directoryUuid: string, token?: string) => { next: () => Promise<unknown> };
+        filesIterator: (directoryUuid: string, token?: string) => { next: () => Promise<unknown> };
+      };
+      return { foldersIterator, filesIterator, getPublicSharedFolderContentFn };
+    };
+
+    test('When the link is password protected, then folders are listed with the access token and files with the code and the access token', async () => {
+      const { foldersIterator, filesIterator, getPublicSharedFolderContentFn } = await getIterators('access-token');
+
+      await foldersIterator('sub-folder-uuid').next();
+      await filesIterator('sub-folder-uuid').next();
+
+      expect(getPublicSharedFolderContentFn).toHaveBeenCalledWith(
+        'sub-folder-uuid',
+        'folders',
+        'level-token',
+        0,
+        15,
+        undefined,
+        undefined,
+        'access-token',
+      );
+      expect(getPublicSharedFolderContentFn).toHaveBeenCalledWith(
+        'sub-folder-uuid',
+        'files',
+        'level-token',
+        0,
+        15,
+        CODE,
+        undefined,
+        'access-token',
+      );
+    });
+
+    test('When the link is not password protected, then folders are listed without the code and files with the code, and no access token is sent', async () => {
+      const { foldersIterator, filesIterator, getPublicSharedFolderContentFn } = await getIterators();
+
+      await foldersIterator('sub-folder-uuid').next();
+      await filesIterator('sub-folder-uuid').next();
+
+      expect(getPublicSharedFolderContentFn).toHaveBeenCalledWith(
+        'sub-folder-uuid',
+        'folders',
+        'level-token',
+        0,
+        15,
+        undefined,
+        undefined,
+        undefined,
+      );
+      expect(getPublicSharedFolderContentFn).toHaveBeenCalledWith(
+        'sub-folder-uuid',
+        'files',
+        'level-token',
+        0,
+        15,
+        CODE,
+        undefined,
+        undefined,
+      );
+    });
+  });
 });
 
 describe('Download public shared file', () => {
@@ -921,6 +1002,35 @@ describe('Download public shared folder', () => {
           isPublicShare: true,
         }),
       }),
+    );
+  });
+
+  test('When the link is password protected, then the credentials are requested with the code and the access token', async () => {
+    const getContentSpy = vi.spyOn(shareService, 'getPublicSharedFolderContent').mockResolvedValueOnce({
+      items: [],
+      token: '',
+      credentials: { networkUser: 'net-user', networkPass: 'net-pass' },
+    } as any);
+    const encryptionKey = aes.encrypt('bucket-key-hex', 'plain-code');
+
+    await downloadPublicSharedFolder({
+      encryptionKey,
+      item: { uuid: 'folder-uuid', plainName: 'Documents' },
+      code: 'plain-code',
+      accessToken: 'access-token',
+      incrementItemCount: vi.fn(),
+      sharingVersion: 'inxt-v2',
+    });
+
+    expect(getContentSpy).toHaveBeenCalledWith(
+      'folder-uuid',
+      'files',
+      '',
+      0,
+      15,
+      'plain-code',
+      undefined,
+      'access-token',
     );
   });
 

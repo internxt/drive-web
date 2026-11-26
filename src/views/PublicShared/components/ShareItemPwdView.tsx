@@ -5,7 +5,6 @@ import validationService from 'services/validation.service';
 import iconService from 'app/drive/services/icon.service';
 import { HTTP_STATUS_CODES } from 'app/core/constants';
 import transformItemService from 'app/drive/services/item-transform.service';
-import sizeService from 'app/drive/services/size.service';
 import { DriveItemData } from 'app/drive/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
@@ -38,8 +37,7 @@ const ShareItemPwdView = (props: ShareItemPwdViewProps) => {
   const handlePasswordSubmit = async () => {
     try {
       setIsSubmitting(true);
-      const encodedPassword = encodeURIComponent(itemPassword);
-      await onPasswordSubmitted(encodedPassword);
+      await onPasswordSubmitted(itemPassword);
     } catch (error) {
       const appErr = errorService.castError(error);
       if (appErr.status === HTTP_STATUS_CODES.FORBIDDEN) {
@@ -76,13 +74,8 @@ const ShareItemPwdView = (props: ShareItemPwdViewProps) => {
               <Icon className="h-full" />
             </div>
           </div>
-          <div className="ml-1 inline-flex shrink grow basis-0 flex-col items-start justify-start gap-0.5">
-            <div className="text-zinc-900 self-stretch text-base font-medium leading-tight">
-              {transformItemService.getItemPlainNameWithExtension(props.itemData as DriveItemData)}
-            </div>
-            <div className="text-neutral-700 self-stretch text-sm font-normal">
-              {sizeService.bytesToString(props.itemData?.size ?? 0)}
-            </div>
+          <div className="text-zinc-900 ml-1 text-base font-medium leading-tight">
+            {transformItemService.getItemPlainNameWithExtension(props.itemData as DriveItemData)}
           </div>
         </div>
       )}

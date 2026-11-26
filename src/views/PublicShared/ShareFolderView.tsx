@@ -148,6 +148,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
           encryptionKey: folderInfo.encryptionKey,
           item: folderInfo.item,
           code,
+          accessToken: info?.accessToken ?? undefined,
           incrementItemCount,
           sharingVersion: info.encryptionAlgorithm,
         })
@@ -272,6 +273,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
             rootFolderUuid={info?.item?.uuid}
             rootFolderName={info?.item?.plainName}
             code={code}
+            accessToken={info?.accessToken ?? undefined}
             encryptionKey={info?.encryptionKey}
             sharingVersion={info?.encryptionAlgorithm}
             onExitPreview={() => setIsPreviewingContent(false)}

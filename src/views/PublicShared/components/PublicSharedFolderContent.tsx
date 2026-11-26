@@ -21,6 +21,7 @@ interface PublicSharedFolderContentProps {
   rootFolderUuid: string;
   rootFolderName: string;
   code: string;
+  accessToken?: string;
   encryptionKey: string;
   sharingVersion: string;
   onExitPreview: () => void;
@@ -32,6 +33,7 @@ const PublicSharedFolderContent = ({
   rootFolderUuid,
   rootFolderName,
   code,
+  accessToken,
   encryptionKey,
   sharingVersion,
   onExitPreview,
@@ -53,7 +55,7 @@ const PublicSharedFolderContent = ({
     onNextPage,
     navigateToFolder,
     navigateToFolderAtIndex,
-  } = usePublicSharedFolderContent({ rootFolderUuid, rootFolderName, code });
+  } = usePublicSharedFolderContent({ rootFolderUuid, rootFolderName, code, accessToken });
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const [selectedItems, setSelectedItems] = useState<AdvancedSharedItem[]>([]);
   const [orderBy, setOrderBy] = useState<{ field: OrderField; direction: OrderDirection }>();
@@ -65,6 +67,7 @@ const PublicSharedFolderContent = ({
       credentials: shareCredentials,
       publicShareKey,
       code,
+      accessToken,
       resourcesToken: nextLevelToken,
     });
 
