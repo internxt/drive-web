@@ -257,15 +257,18 @@ describe('Retrying the failed items kept in the retry manager', () => {
   });
 
   test('when a failed download item is retried, then only that item changes status', async () => {
-    const downloadTask = { ...createDownloadTaskWithId('download-1'), params: { taskId: 'download-1', id: 'file-a' } };
+    const downloadTask = {
+      ...createDownloadTaskWithId('download-1'),
+      params: { taskId: 'download-1', uuid: 'file-a' },
+    };
     mockDownloadItem.mockResolvedValueOnce(undefined);
     const { getByTestId } = render(<RetryManagerDialog files={[downloadTask]} />);
 
     fireEvent.click(getByTestId('task-logger-button'));
 
-    expect(mockChangeStatus).toHaveBeenCalledWith('download-1', RetryableTaskStatus.Retrying, { id: 'file-a' });
+    expect(mockChangeStatus).toHaveBeenCalledWith('download-1', RetryableTaskStatus.Retrying, { uuid: 'file-a' });
     await vi.waitFor(() =>
-      expect(mockChangeStatus).toHaveBeenCalledWith('download-1', RetryableTaskStatus.Failed, { id: 'file-a' }),
+      expect(mockChangeStatus).toHaveBeenCalledWith('download-1', RetryableTaskStatus.Failed, { uuid: 'file-a' }),
     );
   });
 

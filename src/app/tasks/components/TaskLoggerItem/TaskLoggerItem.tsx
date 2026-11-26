@@ -13,6 +13,7 @@ import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selector
 import TaskToRetry from '../TaskToRetry/TaskToRetry';
 import { useRetryManagerFailedItems } from '../TaskToRetry/useRetryManagerFailedItems';
 import { RetryableTask, RetryableTaskType } from 'app/network/RetryManager';
+import { canBeRetried } from 'app/upload/failedUploadItem';
 
 const THREE_HUNDRED_MB_IN_BYTES = 3 * 100 * 1024 * 1024;
 interface TaskLoggerItemProps {
@@ -152,6 +153,7 @@ const TaskLoggerItem = ({ notification, task, filesToRetry }: TaskLoggerItemProp
   const hasFailedItems = failedItems.length > 0;
   const isUploadRetry = hasFailedUploadItems || filesToRetry?.[0]?.type === RetryableTaskType.Upload;
   const retryAllFailedUploadItems = hasFailedUploadItems ? () => task?.retry?.() : undefined;
+  const canRetry = !retryTask || failedUploadItems.some(canBeRetried);
 
   const handleRetryClick = () => {
     if (!isRetryActionDisabled) {
@@ -201,7 +203,7 @@ const TaskLoggerItem = ({ notification, task, filesToRetry }: TaskLoggerItemProp
           progress={progress.toString()}
           downloadedProgress={notification.downloadedProgress}
           cancelAction={onCancelButtonClicked}
-          retryAction={handleRetryClick}
+          retryAction={canRetry ? handleRetryClick : undefined}
           taskType={notification.action}
           openItemAction={openItem}
           openRetryItemsAction={() => setIsModalOpen(true)}

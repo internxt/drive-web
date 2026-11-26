@@ -4,6 +4,7 @@ import TaskToRetryItem, { FailedItemToRetry } from '../TaskToRetryItem/TaskToRet
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Button, Modal } from '@internxt/ui';
 import RestartIcon from '../../../../assets/icons/tasklogger/circle-arrow.svg?react';
+import { canBeRetried } from 'app/upload/failedUploadItem';
 
 interface TaskToRetryProps {
   isOpen: boolean;
@@ -12,8 +13,6 @@ interface TaskToRetryProps {
   onClose: () => void;
   onRetryAll?: () => void;
 }
-
-const canBeRetried = (failedItem: FailedItemToRetry) => failedItem.isRetryable && !failedItem.isRetrying;
 
 const TaskToRetry = ({ isOpen, failedItems, isUpload, onClose, onRetryAll }: TaskToRetryProps): JSX.Element => {
   const { translate } = useTranslationContext();

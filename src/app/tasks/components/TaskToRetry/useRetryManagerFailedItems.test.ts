@@ -93,7 +93,7 @@ describe('Failed items kept by the retry manager', () => {
 
   test('When a failed download is retried, then it is downloaded again and shown as failed if it still is', async () => {
     const downloadItem = {
-      id: 7,
+      uuid: 'uuid-7',
       plainName: 'Report',
       name: 'encrypted',
       type: 'pdf',
@@ -109,9 +109,11 @@ describe('Failed items kept by the retry manager', () => {
 
     retryFirstFailedItem(failedDownload);
 
-    expect(RetryManager.changeStatus).toHaveBeenCalledWith('task-2', RetryableTaskStatus.Retrying, { id: 7 });
+    expect(RetryManager.changeStatus).toHaveBeenCalledWith('task-2', RetryableTaskStatus.Retrying, { uuid: 'uuid-7' });
     await vi.waitFor(() =>
-      expect(RetryManager.changeStatus).toHaveBeenLastCalledWith('task-2', RetryableTaskStatus.Failed, { id: 7 }),
+      expect(RetryManager.changeStatus).toHaveBeenLastCalledWith('task-2', RetryableTaskStatus.Failed, {
+        uuid: 'uuid-7',
+      }),
     );
     expect(DownloadManager.downloadItem).toHaveBeenCalledWith(
       expect.objectContaining({ payload: [downloadItem], taskId: 'task-2' }),

@@ -2,6 +2,9 @@ import { UploadItem, UploadItemKind } from 'app/upload/types';
 import { UploadFailure } from 'app/upload/uploadFailure';
 import { FailedUploadItem } from 'app/tasks/types';
 
+export const canBeRetried = ({ isRetryable, isRetrying }: Pick<FailedUploadItem, 'isRetryable' | 'isRetrying'>) =>
+  isRetryable && !isRetrying;
+
 export const toFailedUploadItem = (
   item: UploadItem,
   { isRetryable }: UploadFailure,

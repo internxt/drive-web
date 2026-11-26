@@ -43,7 +43,7 @@ const getTaskId = ({ taskId, params }: RetryableTask): string => taskId ?? param
 
 const changeRetryStatus = (task: RetryableTask, status: RetryableTaskStatus): void => {
   if (task.type === RetryableTaskType.Download) {
-    RetryManager.changeStatus(getTaskId(task), status, { id: task.params?.id });
+    RetryManager.changeStatus(getTaskId(task), status, { uuid: task.params?.uuid });
     return;
   }
   RetryManager.changeStatus(getTaskId(task), status);

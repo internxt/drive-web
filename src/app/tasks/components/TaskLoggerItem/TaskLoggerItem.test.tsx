@@ -165,7 +165,10 @@ describe('TaskLoggerItem', () => {
 
   test('When a file of an upload task fails, then the retry button of its row retries the task', () => {
     const notification = { ...createNotification(), status: TaskStatus.Error };
-    const task = createUploadTaskWithFailures([], { action: TaskType.UploadFile, status: TaskStatus.Error });
+    const task = createUploadTaskWithFailures([createFailedUploadItem('report')], {
+      action: TaskType.UploadFile,
+      status: TaskStatus.Error,
+    });
     const { container } = render(<TaskLoggerItem notification={notification} task={task} filesToRetry={[]} />);
     fireEvent.mouseEnter(container.querySelector('[role="none"]') as HTMLElement);
 
@@ -173,6 +176,18 @@ describe('TaskLoggerItem', () => {
     fireEvent.click(retryButton);
 
     expect(task.retry).toHaveBeenCalledExactlyOnceWith();
+  });
+
+  test('When the only failure of an upload task cannot be fixed by retrying, then its row offers no retry button', () => {
+    const notification = { ...createNotification(), status: TaskStatus.Error };
+    const task = createUploadTaskWithFailures([{ ...createFailedUploadItem('too-large'), isRetryable: false }], {
+      action: TaskType.UploadFile,
+      status: TaskStatus.Error,
+    });
+    const { container } = render(<TaskLoggerItem notification={notification} task={task} filesToRetry={[]} />);
+    fireEvent.mouseEnter(container.querySelector('[role="none"]') as HTMLElement);
+
+    expect(container.querySelectorAll('[data-testid="task-logger-button"]')).toHaveLength(1);
   });
 
   test('When an upload from the previous upload flow fails, then the retry button of its row retries it as before', () => {
