@@ -1169,6 +1169,7 @@
   "error": {
     "wrongPassword": "Falsches Passwort, versuche es erneut oder wende dich an den Linkinhaber",
     "serverError": "Interner Serverfehler. Versuche es später erneut",
+    "accountKeysError": "Wir konnten die Schlüssel deines Kontos nicht entsperren. Ein erneuter Versuch hilft nicht, bitte wende dich an den Support.",
     "changingName": "Fehler bei der Namensänderung",
     "fileAlreadyExists": "Datei mit demselben Namen existiert bereits",
     "folderAlreadyExists": "Ein Ordner mit demselben Namen existiert bereits",
