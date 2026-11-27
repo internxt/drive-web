@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { useTutorialState } from '../../hooks';
+import { useFolderFetchRecovery, useTutorialState } from '../../hooks';
 import { useDriveExplorerContextMenu } from './hooks/useDriveExplorerContextMenu';
 import { useDriveExplorerDrop } from './hooks/useDriveExplorerDrop';
 import { useEditItemName } from './hooks/useEditItemName';
@@ -94,6 +94,11 @@ const DriveExplorer = ({
     resetPaginationState,
     onTrashCleared,
   } = useDriveExplorerItems({ isTrash, isFavorites, isRecents, isLoading, getTrashPaginated });
+  const { canRequestMorePages } = useFolderFetchRecovery({
+    folderId: currentFolderId,
+    hasMoreItems: hasMoreItemsToLoad,
+    isDriveFolder: isDrive,
+  });
   const tutorialState = useTutorialState();
 
   const { refreshItems, refreshItemsAfterChange } = useRefreshDriveExplorerItems(fetchFolderContent);
@@ -237,7 +242,7 @@ const DriveExplorer = ({
                 items={items}
                 isLoading={isTrash ? isLoadingTrashItems : isLoading}
                 onEndOfScroll={loadMoreItems}
-                hasMoreItems={hasMoreItemsToLoad}
+                hasMoreItems={canRequestMorePages}
                 isTrash={isTrash}
                 isRecents={isRecents}
                 isFavorites={isFavorites}

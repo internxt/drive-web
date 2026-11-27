@@ -19,6 +19,8 @@ export interface StorageState {
   hasMoreDriveFiles: Record<number, boolean>;
   driveFoldersCursor: Record<string, string | null>;
   driveFilesCursor: Record<string, string | null>;
+  hasFetchFailedByFolderId: Record<string, boolean>;
+  latestFolderRequestId: Record<string, string>;
   recents: DriveItemData[];
   isLoadingRecents: boolean;
   favorites: DriveItemData[];
