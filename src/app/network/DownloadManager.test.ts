@@ -33,7 +33,7 @@ vi.mock('app/drive/services/folder.service', () => ({
   createFoldersIterator: vi.fn(),
 }));
 
-vi.mock('i18next', () => ({ t: () => MOCK_TRANSLATION_MESSAGE }));
+vi.mock('i18next', () => ({ keyFromSelector: vi.fn(), t: () => MOCK_TRANSLATION_MESSAGE }));
 
 vi.mock('app/drive/services/downloadManager.service', () => ({
   DownloadManagerService: {

@@ -14,6 +14,7 @@ interface UsePublicSharedDownloadProps {
   credentials?: NetworkCredentials;
   publicShareKey: FileKey;
   code: string;
+  accessToken?: string;
   resourcesToken?: string;
 }
 
@@ -24,6 +25,7 @@ const usePublicSharedDownload = ({
   credentials,
   publicShareKey,
   code,
+  accessToken,
   resourcesToken,
 }: UsePublicSharedDownloadProps) => {
   const [isDownloading, setIsDownloading] = useState(false);
@@ -42,6 +44,7 @@ const usePublicSharedDownload = ({
       credentials,
       key: publicShareKey,
       code,
+      accessToken,
       resourcesToken,
     })
       .catch((err) => {
