@@ -42,6 +42,13 @@ const createUploadContext = (dispatch: AppDispatch, state: RootState): UploadCon
 });
 
 /**
+ * What changes when uploading to a folder shared with the user: the owner's storage and its own dialog and refresh.
+ */
+type UploadContextOverrides = Partial<
+  Pick<UploadContext, 'ownerUserAuthenticationData' | 'onPlanLimitReached' | 'onUploadFinished'>
+>;
+
+/**
  * Uploads into a folder of the Drive the user is in (their own or the selected workspace's), reading the state
  * when the upload starts.
  */
@@ -54,7 +61,8 @@ export const useUploadItems = () => {
 
     return {
       uploadItems: (payload: UploadItemsPayload) => uploadItems(payload, getUploadContext()),
-      startUpload: (payload: UploadItemsPayload) => startUpload(payload, getUploadContext()),
+      startUpload: (payload: UploadItemsPayload, contextOverrides: UploadContextOverrides = {}) =>
+        startUpload(payload, { ...getUploadContext(), ...contextOverrides }),
     };
   }, [dispatch, store]);
 };
