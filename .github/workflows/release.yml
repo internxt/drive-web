@@ -1,0 +1,30 @@
+name: Release
+on:
+  push:
+    branches: [master]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  queue: max
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Create GitHub release if the version is new
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          version="v$(node -p "require('./package.json').version.replace(/^v/, '')")"
+          if gh release view "$version" > /dev/null 2>&1; then
+            echo "Release $version already exists, skipping"
+            exit 0
+          fi
+          gh release create "$version" --title "$version" --target "$GITHUB_SHA" --generate-notes
