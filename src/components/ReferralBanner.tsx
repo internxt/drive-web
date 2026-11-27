@@ -43,7 +43,7 @@ const ReferralBanner = ({ onCtaClick, isCollapsed }: ReferralBannerProps) => {
   if (!isVisible || isCollapsed) return null;
 
   return (
-    <div className="mx-3 mb-3 rounded-lg border border-[#E5EFFF] bg-[#F4F8FF] p-3 dark:border-[#082D66] dark:bg-[#031632]">
+    <div className="mx-3 mb-5 rounded-lg border border-[#E5EFFF] bg-[#F4F8FF] p-3 dark:border-[#082D66] dark:bg-[#031632]">
       <div className="flex items-start justify-between gap-2">
         <p className="text-sm text-gray-80">{translate('sideNav.referralBanner.message')}</p>
         <button
