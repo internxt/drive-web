@@ -3,7 +3,7 @@ import {
   canItemDrop,
   getItemsToMoveWhenNotSelected,
   getItemsToMoveWhenSelected,
-  onItemDropped,
+  createOnItemDropped,
 } from './BreadcrumbsHelper';
 import { BreadcrumbItemData } from '@internxt/ui';
 import { DriveItemData } from 'app/drive/types';
@@ -13,15 +13,17 @@ import { DropTargetMonitor } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { transformDraggedItems } from 'services/drag-and-drop.service';
-import { notifyUploadFailed } from 'app/upload/notifications';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import errorService from 'services/error.service';
 
 vi.mock('app/store/slices/storage/storage.thunks', () => ({
   default: {
     moveItemsThunk: vi.fn(),
-    uploadItemsThunk: vi.fn(),
-    uploadFolderThunk: vi.fn(),
   },
 }));
+
+const uploadItems = vi.fn(async () => undefined);
+const onItemDropped = createOnItemDropped(uploadItems);
 
 vi.mock('app/store/slices/storage/storage.thunks/renameItemsThunk', () => ({
   getCollisionGroups: vi.fn(async (groups: { destinationUuid: string; items: unknown[] }[]) =>
@@ -36,10 +38,6 @@ vi.mock('app/store/slices/storage/storage.thunks/renameItemsThunk', () => ({
 
 vi.mock('services/drag-and-drop.service', () => ({
   transformDraggedItems: vi.fn().mockResolvedValue({ rootList: [], files: [] }),
-}));
-
-vi.mock('app/upload/notifications', () => ({
-  notifyUploadFailed: vi.fn(),
 }));
 
 const createMockBreadcrumbItem = (overrides?: Partial<BreadcrumbItemData>): BreadcrumbItemData => ({
@@ -90,6 +88,9 @@ const createMockDriveItem = (overrides?: Partial<DriveItemData>): DriveItemData 
 const mockDispatch = vi.fn() as unknown as AppDispatch;
 
 beforeEach(() => {
+  vi.clearAllMocks();
+  vi.spyOn(notificationsService, 'show').mockReturnValue(undefined as never);
+  vi.spyOn(errorService, 'reportError').mockReturnValue();
   vi.resetModules();
 });
 
@@ -151,11 +152,12 @@ describe('onItemDropped', () => {
       getItem: () => draggedItem,
     } as unknown as DropTargetMonitor;
 
-    vi.mocked(transformDraggedItems).mockResolvedValue({ rootList: [], files: ['file1'] } as any);
+    const droppedFile = new File(['content'], 'file1');
+    vi.mocked(transformDraggedItems).mockResolvedValue({ rootList: [], files: [droppedFile] });
 
     await onItemDropped(item, namePath, false, [], mockDispatch)(draggedItem, monitor);
 
-    expect(storageThunks.uploadItemsThunk).toHaveBeenCalled();
+    expect(uploadItems).toHaveBeenCalledWith({ destinationFolderUuid: item.uuid, roots: [], files: [droppedFile] });
   });
 
   it('should notify the upload failure when the dropped items cannot be read', async () => {
@@ -171,8 +173,10 @@ describe('onItemDropped', () => {
 
     await onItemDropped(item, [], false, [], mockDispatch)(draggedItem, monitor);
 
-    expect(notifyUploadFailed).toHaveBeenCalledWith(readError);
-    expect(storageThunks.uploadItemsThunk).not.toHaveBeenCalled();
+    expect(notificationsService.show).toHaveBeenCalledWith(
+      expect.objectContaining({ text: 'File could not be read', type: ToastType.Error }),
+    );
+    expect(uploadItems).not.toHaveBeenCalled();
   });
 });
 

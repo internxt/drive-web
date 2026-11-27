@@ -12,7 +12,8 @@ import iconService from 'app/drive/services/icon.service';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { BreadcrumbItemData, Breadcrumbs } from '@internxt/ui';
 import { useDrop } from 'react-dnd';
-import { canItemDrop, onItemDropped } from './BreadcrumbsHelper';
+import { canItemDrop, createOnItemDropped } from './BreadcrumbsHelper';
+import { useUploadItems } from 'app/upload/useUploadItems';
 
 interface BreadcrumbsDriveViewProps {
   namePath: FolderPath[];
@@ -21,6 +22,7 @@ interface BreadcrumbsDriveViewProps {
 const BreadcrumbsDriveView = (props: BreadcrumbsDriveViewProps) => {
   const { namePath } = props;
   const dispatch = useAppDispatch();
+  const { uploadItems } = useUploadItems();
   const { selectedWorkspace } = useAppSelector((state: RootState) => state.workspaces);
   const isSomeItemSelected = useAppSelector(storageSelectors.isSomeItemSelected);
   const selectedItems = useAppSelector((state) => state.storage.selectedItems);
@@ -66,7 +68,7 @@ const BreadcrumbsDriveView = (props: BreadcrumbsDriveViewProps) => {
       namePath={props.namePath}
       isSomeItemSelected={isSomeItemSelected}
       selectedItems={selectedItems}
-      onItemDropped={onItemDropped}
+      onItemDropped={createOnItemDropped(uploadItems)}
       canItemDrop={canItemDrop}
       dispatch={dispatch}
       acceptedTypes={[NativeTypes.FILE, DragAndDropType.DriveItem]}

@@ -8,10 +8,8 @@ import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { getCollisionGroups } from 'app/store/slices/storage/storage.thunks/renameItemsThunk';
 import { uiActions } from 'app/store/slices/ui';
 import { DriveItemData } from 'app/drive/types';
-import { uploadFoldersWithTracking } from 'app/drive/services/folder.service/uploadFoldersWithTracking';
-import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-import { fileVersionsSelectors } from 'app/store/slices/fileVersions';
 import { notifyUploadFailed } from 'app/upload/notifications';
+import { useUploadItems } from 'app/upload/useUploadItems';
 
 interface DragSourceCollectorProps {
   isDraggingThisItem: boolean;
@@ -70,41 +68,11 @@ const handleDriveItemDrop = async (
   }
 };
 
-const handleFileDrop = async (
-  droppedData: { items: DataTransferItemList },
-  item: DriveItemData,
-  selectedWorkspace: ReturnType<typeof workspacesSelectors.getSelectedWorkspace>,
-  dispatch: ReturnType<typeof useAppDispatch>,
-  maxUploadFileSize: number,
-) => {
-  const { rootList, files } = await transformDraggedItems(droppedData.items);
-
-  if (files.length) {
-    // only files
-    await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: item.uuid }));
-  }
-
-  if (rootList.length) {
-    // directory tree
-    const folderDataToUpload = rootList.map((root) => ({
-      root,
-      currentFolderId: item.uuid,
-    }));
-    await uploadFoldersWithTracking({
-      payload: folderDataToUpload,
-      selectedWorkspace,
-      dispatch,
-      maxUploadFileSize,
-    });
-  }
-};
-
 export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
   const dispatch = useAppDispatch();
+  const { uploadItems } = useUploadItems();
   const isSomeItemSelected = useAppSelector(storageSelectors.isSomeItemSelected);
   const { selectedItems } = useAppSelector((state) => state.storage);
-  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
-  const maxUploadFileSize = useAppSelector(fileVersionsSelectors.getMaxFileSizeLimit);
 
   const [{ isDraggingOverThisItem, canDrop }, connectDropTarget] = useDrop<
     DriveItemData | DriveItemData[],
@@ -129,14 +97,17 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
           const droppedData = monitor.getItem<DriveItemData>();
           await handleDriveItemDrop(droppedData, item, isSomeItemSelected, selectedItems, dispatch);
         } else if (droppedType === NativeTypes.FILE) {
-          const droppedData = monitor.getItem<{ items: DataTransferItemList }>();
-          await handleFileDrop(droppedData, item, selectedWorkspace, dispatch, maxUploadFileSize).catch(
-            notifyUploadFailed,
-          );
+          const { items: droppedItems } = monitor.getItem<{ items: DataTransferItemList }>();
+          try {
+            const { rootList, files } = await transformDraggedItems(droppedItems);
+            await uploadItems({ destinationFolderUuid: item.uuid, roots: rootList, files });
+          } catch (error) {
+            notifyUploadFailed(error);
+          }
         }
       },
     }),
-    [selectedItems],
+    [selectedItems, uploadItems],
   );
 
   return {
