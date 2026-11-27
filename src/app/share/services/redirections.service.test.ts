@@ -83,7 +83,7 @@ describe('handlePrivateSharedFolderAccess', () => {
         workspaceItemData: {},
       });
 
-      expect(shareService.getSharedFolderContent).toHaveBeenCalledWith(mockFolderUUID, 'folders', '', 0, 0);
+      expect(shareService.getSharedFolderContent).toHaveBeenCalledWith(mockFolderUUID, 'folders', '', 0, 1);
       expect(navigateToFolder).toHaveBeenCalledWith(expectedSharedFolderData);
       expect(onError).not.toHaveBeenCalled();
       expect(navigationService.push).not.toHaveBeenCalled();
@@ -105,7 +105,7 @@ describe('handlePrivateSharedFolderAccess', () => {
         mockWorkspaceId,
         mockFolderUUID,
         0,
-        0,
+        1,
       );
       expect(navigateToFolder).toHaveBeenCalledWith(expectedSharedFolderData);
       expect(onError).not.toHaveBeenCalled();
@@ -251,7 +251,7 @@ describe('handlePrivateSharedFolderAccess', () => {
         mockWorkspaceId,
         mockFolderUUID,
         0,
-        0,
+        1,
       );
       expect(navigationService.push).toHaveBeenCalledWith(AppView.Shared);
       expect(onError).toHaveBeenCalledWith('The folder could not be accessed');
@@ -341,7 +341,7 @@ describe('handlePrivateSharedFolderAccess', () => {
         workspaceItemData: undefined as any,
       });
 
-      expect(shareService.getSharedFolderContent).toHaveBeenCalledWith(mockFolderUUID, 'folders', '', 0, 0);
+      expect(shareService.getSharedFolderContent).toHaveBeenCalledWith(mockFolderUUID, 'folders', '', 0, 1);
       expect(navigateToFolder).toHaveBeenCalledWith(expectedSharedFolderData);
     });
   });
