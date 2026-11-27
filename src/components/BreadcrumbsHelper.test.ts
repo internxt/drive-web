@@ -13,7 +13,7 @@ import { DropTargetMonitor } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { transformDraggedItems } from 'services/drag-and-drop.service';
-import { notifyUploadFailed } from 'views/Drive/components/DriveExplorer/helpers/uploadHelpers';
+import { notifyUploadFailed } from 'app/upload/notifications';
 
 vi.mock('app/store/slices/storage/storage.thunks', () => ({
   default: {
@@ -38,7 +38,7 @@ vi.mock('services/drag-and-drop.service', () => ({
   transformDraggedItems: vi.fn().mockResolvedValue({ rootList: [], files: [] }),
 }));
 
-vi.mock('views/Drive/components/DriveExplorer/helpers/uploadHelpers', () => ({
+vi.mock('app/upload/notifications', () => ({
   notifyUploadFailed: vi.fn(),
 }));
 
