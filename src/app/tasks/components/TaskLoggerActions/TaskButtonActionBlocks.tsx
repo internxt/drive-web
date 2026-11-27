@@ -108,7 +108,7 @@ const ErrorBlock = ({ isHovered, cancelAction, retryAction }): JSX.Element => {
   return isHovered ? (
     <div className="flex flex-row justify-between space-x-1.5">
       <TaskLoggerButton onClick={cancelAction} Icon={Cross} />
-      <TaskLoggerButton onClick={retryAction} Icon={RestartIcon} />
+      {retryAction && <TaskLoggerButton onClick={retryAction} Icon={RestartIcon} />}
     </div>
   ) : (
     <div className="flex h-8 w-8 items-center justify-center">

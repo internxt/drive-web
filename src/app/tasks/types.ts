@@ -210,3 +210,14 @@ export interface UpdateTaskPayload {
   downloadedProgress?: number;
   merge: Partial<TaskData>;
 }
+
+export interface FailedItemToRetry {
+  name: string;
+  type?: string;
+  size: number;
+  modifiedAt: number | string;
+  isFolder?: boolean;
+  isRetryable: boolean;
+  isRetrying: boolean;
+  retry: () => void;
+}

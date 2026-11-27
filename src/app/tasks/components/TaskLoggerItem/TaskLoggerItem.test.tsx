@@ -1,22 +1,24 @@
 import { render, fireEvent } from '@testing-library/react';
 import { beforeEach, describe, test, vi, expect } from 'vitest';
 import TaskLoggerItem from './TaskLoggerItem';
-import { TaskData, TaskNotification, TaskStatus, TaskType, UploadFolderTask } from '../../types';
+import { FailedUploadItem, TaskData, TaskNotification, TaskStatus, TaskType, UploadFolderTask } from '../../types';
 import tasksService from '../../services/tasks.service';
 import { getFolderToUpload } from 'testUtils/fixtures/upload.fixtures';
 import { RetryableTask, RetryableTaskStatus, RetryableTaskType } from 'app/network/RetryManager';
 
 vi.mock('react-redux', () => ({
   useSelector: vi.fn().mockReturnValue(null),
+  useDispatch: vi.fn(),
 }));
 
 vi.mock('../../hooks/useOpen', () => ({
   useOpenItem: vi.fn().mockReturnValue({ openItem: vi.fn() }),
 }));
 
+const mockRetryUpload = vi.hoisted(() => vi.fn());
 vi.mock('../../hooks/useRetry', () => ({
   useRetryDownload: vi.fn().mockReturnValue({ retryDownload: vi.fn() }),
-  useRetryUpload: vi.fn().mockReturnValue({ retryUpload: vi.fn() }),
+  useRetryUpload: vi.fn().mockReturnValue({ retryUpload: mockRetryUpload }),
 }));
 
 vi.mock('../../../store/slices/storage/hooks/useReduxActions', () => ({
@@ -66,7 +68,17 @@ describe('TaskLoggerItem', () => {
   const createFileToRetry = (): RetryableTask => ({
     taskId: 'task-1',
     type: RetryableTaskType.Upload,
-    params: {},
+    params: {
+      filecontent: {
+        content: new File(['content'], 'file'),
+        type: 'txt',
+        name: 'file',
+        size: 1024,
+        parentFolderId: 'folder',
+      },
+      parentFolderId: 'folder',
+      userEmail: 'user@example.com',
+    },
     status: RetryableTaskStatus.Failed,
   });
 
@@ -75,6 +87,32 @@ describe('TaskLoggerItem', () => {
     fireEvent.mouseEnter(row);
     fireEvent.click(container.querySelector('[data-testid="task-logger-button"]') as HTMLElement);
   };
+
+  const createFailedUploadItem = (name: string): FailedUploadItem => ({
+    name,
+    type: 'pdf',
+    size: 1024,
+    modifiedAt: 1677654000000,
+    isFolder: false,
+    isRetryable: true,
+    isRetrying: false,
+    retry: vi.fn(),
+  });
+
+  const createUploadTaskWithFailures = (
+    failedItems: FailedUploadItem[],
+    { action = TaskType.UploadFolder, status = TaskStatus.Success } = {},
+  ): TaskData =>
+    ({
+      id: 'task-1',
+      action,
+      status,
+      progress: 1,
+      cancellable: true,
+      showNotification: true,
+      failedItems,
+      retry: vi.fn(),
+    }) as unknown as TaskData;
 
   const lastTaskToRetryProps = () => mockTaskToRetry.mock.calls.at(-1)?.[0];
 
@@ -99,6 +137,68 @@ describe('TaskLoggerItem', () => {
 
     rerender(<TaskLoggerItem notification={createNotification()} filesToRetry={[createFileToRetry()]} />);
     expect(lastTaskToRetryProps()).toMatchObject({ isOpen: false });
+  });
+
+  test('When an upload task has failed items, then they are listed and retrying one retries only that one', () => {
+    const [report, invoice] = [createFailedUploadItem('report'), createFailedUploadItem('invoice')];
+    const task = createUploadTaskWithFailures([report, invoice]);
+    const { container } = render(<TaskLoggerItem notification={createNotification()} task={task} filesToRetry={[]} />);
+    openRetryModal(container);
+
+    lastTaskToRetryProps().failedItems[1].retry();
+
+    expect(lastTaskToRetryProps().failedItems.map(({ name }: { name: string }) => name)).toEqual(['report', 'invoice']);
+    expect(invoice.retry).toHaveBeenCalledOnce();
+    expect(report.retry).not.toHaveBeenCalled();
+    expect(task.retry).not.toHaveBeenCalled();
+  });
+
+  test('When the user retries all the failed items of an upload task, then the whole task is retried', () => {
+    const task = createUploadTaskWithFailures([createFailedUploadItem('report'), createFailedUploadItem('invoice')]);
+    const { container } = render(<TaskLoggerItem notification={createNotification()} task={task} filesToRetry={[]} />);
+    openRetryModal(container);
+
+    lastTaskToRetryProps().onRetryAll();
+
+    expect(task.retry).toHaveBeenCalledExactlyOnceWith();
+  });
+
+  test('When a file of an upload task fails, then the retry button of its row retries the task', () => {
+    const notification = { ...createNotification(), status: TaskStatus.Error };
+    const task = createUploadTaskWithFailures([createFailedUploadItem('report')], {
+      action: TaskType.UploadFile,
+      status: TaskStatus.Error,
+    });
+    const { container } = render(<TaskLoggerItem notification={notification} task={task} filesToRetry={[]} />);
+    fireEvent.mouseEnter(container.querySelector('[role="none"]') as HTMLElement);
+
+    const [, retryButton] = container.querySelectorAll('[data-testid="task-logger-button"]');
+    fireEvent.click(retryButton);
+
+    expect(task.retry).toHaveBeenCalledExactlyOnceWith();
+  });
+
+  test('When the only failure of an upload task cannot be fixed by retrying, then its row offers no retry button', () => {
+    const notification = { ...createNotification(), status: TaskStatus.Error };
+    const task = createUploadTaskWithFailures([{ ...createFailedUploadItem('too-large'), isRetryable: false }], {
+      action: TaskType.UploadFile,
+      status: TaskStatus.Error,
+    });
+    const { container } = render(<TaskLoggerItem notification={notification} task={task} filesToRetry={[]} />);
+    fireEvent.mouseEnter(container.querySelector('[role="none"]') as HTMLElement);
+
+    expect(container.querySelectorAll('[data-testid="task-logger-button"]')).toHaveLength(1);
+  });
+
+  test('When an upload from the previous upload flow fails, then the retry button of its row retries it as before', () => {
+    const notification = { ...createNotification(), status: TaskStatus.Error };
+    const { container } = render(<TaskLoggerItem notification={notification} filesToRetry={[]} />);
+    fireEvent.mouseEnter(container.querySelector('[role="none"]') as HTMLElement);
+
+    const [, retryButton] = container.querySelectorAll('[data-testid="task-logger-button"]');
+    fireEvent.click(retryButton);
+
+    expect(mockRetryUpload).toHaveBeenCalledOnce();
   });
 });
 

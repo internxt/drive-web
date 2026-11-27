@@ -1,7 +1,7 @@
 import { FailedUploadItem } from 'app/tasks/types';
 import { UploadItem } from '../types';
 import { UploadFailure } from '../uploadFailure';
-import { toFailedUploadItem } from '../failedUploadItem';
+import { canBeRetried, toFailedUploadItem } from '../failedUploadItem';
 
 export class FailureList {
   private readonly failedItems = new Map<UploadItem, FailedUploadItem>();
@@ -20,7 +20,7 @@ export class FailureList {
 
   takeRetryable(pickedItem?: UploadItem): UploadItem[] {
     const retryableItems = [...this.failedItems]
-      .filter(([, failedItem]) => failedItem.isRetryable && !failedItem.isRetrying)
+      .filter(([, failedItem]) => canBeRetried(failedItem))
       .filter(([item]) => !pickedItem || item === pickedItem)
       .map(([item]) => item);
 

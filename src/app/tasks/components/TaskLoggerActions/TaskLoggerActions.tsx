@@ -19,7 +19,7 @@ type TaskLoggerActionsProps = {
   progress: string;
   downloadedProgress?: number;
   cancelAction: () => void;
-  retryAction: () => void;
+  retryAction?: () => void;
   taskType: TaskType;
   openItemAction: () => void;
   openRetryItemsAction: () => void;
